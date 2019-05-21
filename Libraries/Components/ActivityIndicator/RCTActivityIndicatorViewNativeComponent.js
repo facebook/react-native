@@ -10,11 +10,11 @@
 
 'use strict';
 
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
-import type {ViewProps} from 'ViewPropTypes';
-import type {ViewStyleProp} from 'StyleSheet';
-import type {NativeComponent} from 'ReactNative';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -46,7 +46,7 @@ type NativeProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/activityindicator.html#size
    */
-  size?: ?(number | 'small' | 'large'),
+  size?: ?('small' | 'large'),
 
   style?: ?ViewStyleProp,
   styleAttr?: ?string,

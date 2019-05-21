@@ -10,8 +10,9 @@
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTBridge+Private.h"
-#import "RCTUtils.h"
+#import "RCTComponentEvent.h"
 #import "RCTProfile.h"
+#import "RCTUtils.h"
 
 const NSInteger RCTTextUpdateLagWarningThreshold = 3;
 
@@ -26,14 +27,16 @@ NSString *RCTNormalizeInputEventName(NSString *eventName)
   return eventName;
 }
 
-static NSNumber *RCTGetEventID(id<RCTEvent> event)
+static NSNumber *RCTGetEventID(NSNumber *viewTag, NSString *eventName, uint16_t coalescingKey)
 {
   return @(
-    event.viewTag.intValue |
-    (((uint64_t)event.eventName.hash & 0xFFFF) << 32) |
-    (((uint64_t)event.coalescingKey) << 48)
+    viewTag.intValue |
+    (((uint64_t)eventName.hash & 0xFFFF) << 32) |
+    (((uint64_t)coalescingKey) << 48)
   );
 }
+
+static uint16_t RCTUniqueCoalescingKeyGenerator = 0;
 
 @implementation RCTEventDispatcher
 {
@@ -79,20 +82,6 @@ RCT_EXPORT_MODULE()
               completion:NULL];
 }
 
-- (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body
-{
-  if (RCT_DEBUG) {
-    RCTAssert([body[@"target"] isKindOfClass:[NSNumber class]],
-      @"Event body dictionary must include a 'target' property containing a React tag");
-  }
-
-  name = RCTNormalizeInputEventName(name);
-  [_bridge enqueueJSCall:@"RCTEventEmitter"
-                  method:@"receiveEvent"
-                    args:body ? @[body[@"target"], name, body] : @[body[@"target"], name]
-              completion:NULL];
-}
-
 - (void)sendTextEventWithType:(RCTTextEventType)type
                      reactTag:(NSNumber *)reactTag
                          text:(NSString *)text
@@ -110,7 +99,6 @@ RCT_EXPORT_MODULE()
 
   NSMutableDictionary *body = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"eventCount": @(eventCount),
-    @"target": reactTag
   }];
 
   if (text) {
@@ -134,10 +122,10 @@ RCT_EXPORT_MODULE()
     body[@"key"] = key;
   }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [self sendInputEventWithName:events[type] body:body];
-#pragma clang diagnostic pop
+  RCTComponentEvent *event = [[RCTComponentEvent alloc] initWithName:events[type]
+                                                             viewTag:reactTag
+                                                                body:body];
+  [self sendEvent:event];
 }
 
 - (void)sendEvent:(id<RCTEvent>)event
@@ -152,15 +140,22 @@ RCT_EXPORT_MODULE()
 
   [_eventQueueLock lock];
 
-  NSNumber *eventID = RCTGetEventID(event);
-
-  id<RCTEvent> previousEvent = _events[eventID];
-  if (previousEvent) {
-    RCTAssert([event canCoalesce], @"Got event %@ which cannot be coalesced, but has the same eventID %@ as the previous event %@", event, eventID, previousEvent);
-    event = [previousEvent coalesceWithEvent:event];
+  NSNumber *eventID;
+  if (event.canCoalesce) {
+    eventID = RCTGetEventID(event.viewTag, event.eventName, event.coalescingKey);
+    id<RCTEvent> previousEvent = _events[eventID];
+    if (previousEvent) {
+      event = [previousEvent coalesceWithEvent:event];
+    } else {
+      [_eventQueue addObject:eventID];
+    }
   } else {
+    id<RCTEvent> previousEvent = _events[eventID];
+    eventID = RCTGetEventID(event.viewTag, event.eventName, RCTUniqueCoalescingKeyGenerator++);
+    RCTAssert(previousEvent == nil, @"Got event %@ which cannot be coalesced, but has the same eventID %@ as the previous event %@", event, eventID, previousEvent);
     [_eventQueue addObject:eventID];
   }
+
   _events[eventID] = event;
 
   BOOL scheduleEventsDispatch = NO;

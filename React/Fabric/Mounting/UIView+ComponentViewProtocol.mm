@@ -17,6 +17,11 @@ using namespace facebook::react;
 
 @implementation UIView (ComponentViewProtocol)
 
++ (std::vector<facebook::react::ComponentDescriptorProvider>)supplementalComponentDescriptorProviders
+{
+  return {};
+}
+
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [self insertSubview:childComponentView atIndex:index];
@@ -82,9 +87,20 @@ using namespace facebook::react;
   }
 }
 
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
+{
+  // Default implementation does nothing.
+}
+
 - (void)prepareForRecycle
 {
   // Default implementation does nothing.
+}
+
+- (facebook::react::SharedProps)props
+{
+  RCTAssert(NO, @"props access should be implemented by RCTViewComponentView.");
+  return nullptr;
 }
 
 @end

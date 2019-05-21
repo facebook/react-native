@@ -15,8 +15,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.Rect;
 import android.hardware.SensorManager;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.text.TextUtilsCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.text.TextUtilsCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -65,6 +65,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
+  private boolean mDisableIntervalMomentum = false;
   private int mSnapInterval = 0;
   private float mDecelerationRate = 0.985f;
   private @Nullable List<Integer> mSnapOffsets;
@@ -139,6 +140,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   @Override
   public boolean getRemoveClippedSubviews() {
     return mRemoveClippedSubviews;
+  }
+
+  public void setDisableIntervalMomentum(boolean disableIntervalMomentum) {
+    mDisableIntervalMomentum = disableIntervalMomentum;
   }
 
   public void setSendMomentumEvents(boolean sendMomentumEvents) {
@@ -579,6 +584,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
     int maximumOffset = Math.max(0, computeHorizontalScrollRange() - getWidth());
     int targetOffset = predictFinalScrollPosition(velocityX);
+    if (mDisableIntervalMomentum) {
+      targetOffset = getScrollX();
+    }
+
     int smallerOffset = 0;
     int largerOffset = maximumOffset;
     int firstOffset = 0;

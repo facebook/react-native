@@ -10,11 +10,11 @@
 
 'use strict';
 
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
-import type {ColorValue} from 'StyleSheetTypes';
-import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'ReactNative';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 
 export type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -43,8 +43,8 @@ export type NativeProps = $ReadOnly<{|
   refreshing: boolean,
 |}>;
 
-type RCTRefreshControlNativeType = Class<NativeComponent<NativeProps>>;
+type PullToRefreshView = Class<NativeComponent<NativeProps>>;
 
 module.exports = ((requireNativeComponent(
   'RCTRefreshControl',
-): any): RCTRefreshControlNativeType);
+): any): PullToRefreshView);

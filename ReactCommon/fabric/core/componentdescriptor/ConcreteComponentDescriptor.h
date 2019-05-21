@@ -45,8 +45,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   using ConcreteState = typename ShadowNodeT::ConcreteState;
   using ConcreteStateData = typename ShadowNodeT::ConcreteState::Data;
 
-  ConcreteComponentDescriptor(EventDispatcher::Shared eventDispatcher)
-      : eventDispatcher_(eventDispatcher) {}
+  using ComponentDescriptor::ComponentDescriptor;
 
   ComponentHandle getComponentHandle() const override {
     return ShadowNodeT::Handle();
@@ -62,8 +61,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     assert(std::dynamic_pointer_cast<const ConcreteEventEmitter>(
         fragment.eventEmitter));
 
-    auto shadowNode =
-        std::make_shared<ShadowNodeT>(fragment, getCloneFunction());
+    auto shadowNode = std::make_shared<ShadowNodeT>(fragment, *this);
 
     adopt(shadowNode);
 
@@ -103,15 +101,14 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
   virtual State::Shared createInitialState(
-      const SharedProps &props) const override {
+      ShadowNodeFragment const &fragment) const override {
     if (std::is_same<ConcreteStateData, StateData>::value) {
       // Default case: Returning `null` for nodes that don't use `State`.
       return nullptr;
     }
 
     return std::make_shared<ConcreteState>(
-        ConcreteShadowNode::initialStateData(
-            std::static_pointer_cast<const ConcreteProps>(props)),
+        ConcreteShadowNode::initialStateData(fragment, *this),
         std::make_shared<StateCoordinator>(eventDispatcher_));
   }
 
@@ -132,23 +129,6 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   virtual void adopt(UnsharedShadowNode shadowNode) const {
     // Default implementation does nothing.
     assert(shadowNode->getComponentHandle() == getComponentHandle());
-  }
-
- private:
-  mutable EventDispatcher::Shared eventDispatcher_{nullptr};
-
-  mutable ShadowNodeCloneFunction cloneFunction_;
-
-  ShadowNodeCloneFunction getCloneFunction() const {
-    if (!cloneFunction_) {
-      cloneFunction_ = [this](
-                           const ShadowNode &shadowNode,
-                           const ShadowNodeFragment &fragment) {
-        return this->cloneShadowNode(shadowNode, fragment);
-      };
-    }
-
-    return cloneFunction_;
   }
 };
 

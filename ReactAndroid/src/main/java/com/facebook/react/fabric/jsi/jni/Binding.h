@@ -34,7 +34,7 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
 
  private:
   void setConstraints(
-      jint rootTag,
+      jint surfaceId,
       jfloat minWidth,
       jfloat maxWidth,
       jfloat minHeight,
@@ -57,16 +57,11 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
   void stopSurface(jint surfaceId);
 
   void schedulerDidFinishTransaction(
-      const Tag rootTag,
-      const ShadowViewMutationList& mutations,
-      const long commitStartTime,
-      const long layoutTime);
+    MountingCoordinator::Shared const &mountingCoordinator);
 
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,
-      const ComponentName componentName,
-      bool isLayoutable,
-      const ComponentHandle componentHandle);
+      const ShadowView &shadowView);
 
   void setPixelDensity(float pointScaleFactor);
 

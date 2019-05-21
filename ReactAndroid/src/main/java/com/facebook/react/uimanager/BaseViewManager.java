@@ -6,17 +6,22 @@
 package com.facebook.react.uimanager;
 
 import android.graphics.Color;
-import android.os.Build;
-import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewParent;
+import androidx.core.view.ViewCompat;
+
+import java.util.HashMap;
+
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.uimanager.AccessibilityDelegateUtil.AccessibilityRole;
+import com.facebook.react.common.MapBuilder;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
 import javax.annotation.Nonnull;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
@@ -32,11 +37,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_Z_INDEX = "zIndex";
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
-  private static final String PROP_ACCESSIBILITY_COMPONENT_TYPE = "accessibilityComponentType";
   private static final String PROP_ACCESSIBILITY_HINT = "accessibilityHint";
   private static final String PROP_ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
   private static final String PROP_ACCESSIBILITY_ROLE = "accessibilityRole";
   private static final String PROP_ACCESSIBILITY_STATES = "accessibilityStates";
+  private static final String PROP_ACCESSIBILITY_ACTIONS = "accessibilityActions";
   private static final String PROP_IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
 
   // DEPRECATED
@@ -58,6 +63,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static MatrixMathHelper.MatrixDecompositionContext sMatrixDecompositionContext =
       new MatrixMathHelper.MatrixDecompositionContext();
   private static double[] sTransformDecompositionArray = new double[16];
+
+  public static final HashMap<String, Integer> sStateDescription= new HashMap<String, Integer>();
+  static {
+      sStateDescription.put("busy", R.string.state_busy_description);
+      sStateDescription.put("expanded", R.string.state_expanded_description);
+      sStateDescription.put("collapsed", R.string.state_collapsed_description);
+  }
 
   @ReactProp(name = PROP_BACKGROUND_COLOR, defaultInt = Color.TRANSPARENT, customType = "Color")
   public void setBackgroundColor(@Nonnull T view, int backgroundColor) {
@@ -114,17 +126,14 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = PROP_ACCESSIBILITY_LABEL)
   public void setAccessibilityLabel(@Nonnull T view, String accessibilityLabel) {
-    view.setContentDescription(accessibilityLabel);
-  }
-
-  @ReactProp(name = PROP_ACCESSIBILITY_COMPONENT_TYPE)
-  public void setAccessibilityComponentType(@Nonnull T view, String accessibilityComponentType) {
-    AccessibilityHelper.updateAccessibilityComponentType(view, accessibilityComponentType);
+    view.setTag(R.id.accessibility_label, accessibilityLabel);
+    updateViewContentDescription(view);
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_HINT)
   public void setAccessibilityHint(@Nonnull T view, String accessibilityHint) {
     view.setTag(R.id.accessibility_hint, accessibilityHint);
+    updateViewContentDescription(view);
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_ROLE)
@@ -132,25 +141,65 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     if (accessibilityRole == null) {
       return;
     }
-
     view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_STATES)
   public void setViewStates(@Nonnull T view, @Nullable ReadableArray accessibilityStates) {
-    view.setSelected(false);
-    view.setEnabled(true);
     if (accessibilityStates == null) {
       return;
     }
+    view.setTag(R.id.accessibility_states, accessibilityStates);
+    view.setSelected(false);
+    view.setEnabled(true);
+    boolean shouldUpdateContentDescription = false;
     for (int i = 0; i < accessibilityStates.size(); i++) {
       String state = accessibilityStates.getString(i);
+      if (sStateDescription.containsKey(state)) {
+        shouldUpdateContentDescription = true;
+      }
       if (state.equals("selected")) {
         view.setSelected(true);
       } else if (state.equals("disabled")) {
         view.setEnabled(false);
       }
     }
+    if (shouldUpdateContentDescription) {
+      updateViewContentDescription(view);
+    }
+  }
+
+  private void updateViewContentDescription(@Nonnull T view) {
+    final String accessibilityLabel = (String) view.getTag(R.id.accessibility_label);
+    final ReadableArray accessibilityStates = (ReadableArray) view.getTag(R.id.accessibility_states);
+    final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
+    StringBuilder contentDescription = new StringBuilder();
+    if (accessibilityLabel != null) {
+      contentDescription.append(accessibilityLabel + ", ");
+    }
+    if (accessibilityStates != null) {
+      for (int i = 0; i < accessibilityStates.size(); i++) {
+        String state = accessibilityStates.getString(i);
+        if (sStateDescription.containsKey(state)) {
+          contentDescription.append(view.getContext().getString(sStateDescription.get(state)) + ", ");
+        }
+      }
+    }
+    if (accessibilityHint != null) {
+      contentDescription.append(accessibilityHint + ", ");
+    }
+    if (contentDescription.length() > 0) {
+      view.setContentDescription(contentDescription.toString());
+    }
+  }
+
+  @ReactProp(name = PROP_ACCESSIBILITY_ACTIONS)
+  public void setAccessibilityActions(T view, ReadableArray accessibilityActions) {
+    if (accessibilityActions == null) {
+      return;
+    }
+
+    view.setTag(R.id.accessibility_actions, accessibilityActions);
   }
 
   @ReactProp(name = PROP_IMPORTANT_FOR_ACCESSIBILITY)
@@ -255,12 +304,19 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   private void updateViewAccessibility(@Nonnull T view) {
-    AccessibilityDelegateUtil.setDelegate(view);
+    ReactAccessibilityDelegate.setDelegate(view);
   }
 
   @Override
   protected void onAfterUpdateTransaction(@Nonnull T view) {
     super.onAfterUpdateTransaction(view);
     updateViewAccessibility(view);
+  }
+
+  @Override
+  public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
+    return MapBuilder.<String, Object>builder()
+          .put("performAction", MapBuilder.of("registrationName", "onAccessibilityAction"))
+          .build();
   }
 }

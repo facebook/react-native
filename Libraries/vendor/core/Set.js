@@ -13,10 +13,10 @@
 
 'use strict';
 
-const Map = require('Map');
+const Map = require('./Map');
 
-const _shouldPolyfillES6Collection = require('_shouldPolyfillES6Collection');
-const toIterator = require('toIterator');
+const _shouldPolyfillES6Collection = require('./_shouldPolyfillES6Collection');
+const toIterator = require('./toIterator');
 
 module.exports = (function(global) {
   // Since our implementation is spec-compliant for the most part we can safely

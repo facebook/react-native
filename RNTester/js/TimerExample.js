@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Alert, Platform, ToastAndroid, Text, View} = ReactNative;
+const {Alert, Platform, ToastAndroid, Text, View} = require('react-native');
 const RNTesterButton = require('./RNTesterButton');
 const performanceNow = require('fbjs/lib/performanceNow');
 

@@ -11,7 +11,6 @@
 /* eslint-env browser */
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   Image,
   PixelRatio,
@@ -21,7 +20,7 @@ const {
   TextInput,
   TouchableOpacity,
   View,
-} = ReactNative;
+} = require('react-native');
 
 const DEFAULT_WS_URL = 'ws://localhost:5555/';
 const DEFAULT_HTTP_URL = 'http://localhost:5556/';

@@ -10,9 +10,9 @@
 
 'use strict';
 
-const NativeModules = require('NativeModules');
+const NativeModules = require('../BatchedBridge/NativeModules');
 const RCTAlertManager = NativeModules.AlertManager;
-const Platform = require('Platform');
+const Platform = require('../Utilities/Platform');
 
 export type Buttons = Array<{
   text?: string,
@@ -25,14 +25,14 @@ type Options = {
   onDismiss?: ?Function,
 };
 
-type AlertType = $Enum<{
+type AlertType = $Keys<{
   default: string,
   'plain-text': string,
   'secure-text': string,
   'login-password': string,
 }>;
 
-export type AlertButtonStyle = $Enum<{
+export type AlertButtonStyle = $Keys<{
   default: string,
   cancel: string,
   destructive: string,
@@ -56,6 +56,7 @@ class Alert {
       let config = {
         title: title || '',
         message: message || '',
+        cancelable: false,
       };
 
       if (options) {

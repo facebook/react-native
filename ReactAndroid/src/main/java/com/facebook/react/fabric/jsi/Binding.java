@@ -49,7 +49,7 @@ public class Binding {
   public native void setPixelDensity(float pointScaleFactor);
 
   public native void setConstraints(
-      int rootTag, float minWidth, float maxWidth, float minHeight, float maxHeight);
+      int surfaceId, float minWidth, float maxWidth, float minHeight, float maxHeight);
 
   public void register(
        JavaScriptContextHolder jsContext,

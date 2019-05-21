@@ -8,16 +8,18 @@
 #include "ImageManager.h"
 
 #import <React/RCTImageLoader.h>
+#import <react/utils/ManagedObjectWrapper.h>
 
 #import "RCTImageManager.h"
 
 namespace facebook {
 namespace react {
 
-ImageManager::ImageManager(void *platformSpecificCounterpart) {
-  self_ = (__bridge_retained void *)[[RCTImageManager alloc]
-      initWithImageLoader:(__bridge RCTImageLoader *)
-                              platformSpecificCounterpart];
+ImageManager::ImageManager(ContextContainer::Shared const &contextContainer)
+{
+  RCTImageLoader *imageLoader =
+      (RCTImageLoader *)unwrapManagedObject(contextContainer->getInstance<std::shared_ptr<void>>("RCTImageLoader"));
+  self_ = (__bridge_retained void *)[[RCTImageManager alloc] initWithImageLoader:imageLoader];
 }
 
 ImageManager::~ImageManager() {

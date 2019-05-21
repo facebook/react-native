@@ -204,6 +204,7 @@ RCT_EXPORT_MODULE()
   // Add built-in items
   __weak RCTBridge *bridge = _bridge;
   __weak RCTDevSettings *devSettings = _bridge.devSettings;
+  __weak RCTDevMenu *weakSelf = self;
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Reload" handler:^{
     [bridge reload];
@@ -219,9 +220,12 @@ RCT_EXPORT_MODULE()
 
   if (!devSettings.isRemoteDebuggingAvailable) {
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Remote JS Debugger Unavailable" handler:^{
+      NSString *message = RCTTurboModuleEnabled() ?
+          @"You cannot use remote JS debugging when TurboModule system is enabled" :
+      @"You need to include the RCTWebSocket library to enable remote JS debugging";
       UIAlertController *alertController = [UIAlertController
         alertControllerWithTitle:@"Remote JS Debugger Unavailable"
-        message:@"You need to include the RCTWebSocket library to enable remote JS debugging"
+        message:message
         preferredStyle:UIAlertControllerStyleAlert];
       __weak typeof(alertController) weakAlertController = alertController;
       [alertController addAction:
@@ -293,7 +297,7 @@ RCT_EXPORT_MODULE()
       textField.placeholder = @"index";
     }];
     [alertController addAction:[UIAlertAction actionWithTitle:@"Use bundled JS" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action) {
-      [self setDefaultJSBundle];
+      [weakSelf setDefaultJSBundle];
     }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"Use packager location" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action) {
       NSArray * textfields = alertController.textFields;
@@ -305,7 +309,7 @@ RCT_EXPORT_MODULE()
         bundleRoot = @"index";
       }
       if(ipTextField.text.length == 0 && portTextField.text.length == 0) {
-        [self setDefaultJSBundle];
+        [weakSelf setDefaultJSBundle];
         return;
       }
       NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
@@ -316,8 +320,11 @@ RCT_EXPORT_MODULE()
       }
       [RCTBundleURLProvider sharedSettings].jsLocation = [NSString stringWithFormat:@"%@:%d",
                                                           ipTextField.text, portNumber.intValue];
-      self->_bridge.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:bundleRoot fallbackResource:nil];
-      [self->_bridge reload];
+      __strong RCTBridge *strongBridge = bridge;
+      if (strongBridge) {
+        strongBridge.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:bundleRoot fallbackResource:nil];
+        [strongBridge reload];
+      }
     }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(__unused UIAlertAction *action) {
       return;

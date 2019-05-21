@@ -9,9 +9,9 @@
 
 'use strict';
 
-const Blob = require('Blob');
+const Blob = require('./Blob');
 
-const {BlobModule} = require('NativeModules');
+const {BlobModule} = require('../BatchedBridge/NativeModules');
 
 let BLOB_URL_PREFIX = null;
 

@@ -91,7 +91,6 @@ rn_xplat_cxx_library(
     visibility = ["PUBLIC"],
     deps = [
         "fbsource//xplat/fbsystrace:fbsystrace",
-        "fbsource//xplat/folly:futures",
         "fbsource//xplat/folly:headers_only",
         "fbsource//xplat/folly:memory",
         "fbsource//xplat/folly:molly",

@@ -1,7 +1,7 @@
 //  Copyright (c) Facebook, Inc. and its affiliates.
 //
 // This source code is licensed under the MIT license found in the
- // LICENSE file in the root directory of this source tree.
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -46,7 +46,7 @@ namespace react {
 //       })
 //
 using JSIScopedTimeoutInvoker = std::function<void(
-    const std::function<void()>& invokee,
+    const std::function<void()> &invokee,
     std::function<std::string()> errorMessageProducer)>;
 
 class BigStringBuffer : public jsi::Buffer {
@@ -58,8 +58,8 @@ class BigStringBuffer : public jsi::Buffer {
     return script_->size();
   }
 
-  const uint8_t* data() const override {
-    return reinterpret_cast<const uint8_t*>(script_->c_str());
+  const uint8_t *data() const override {
+    return reinterpret_cast<const uint8_t *>(script_->c_str());
   }
 
  private:
@@ -68,60 +68,56 @@ class BigStringBuffer : public jsi::Buffer {
 
 class JSIExecutor : public JSExecutor {
  public:
-  using Logger =
-      std::function<void(const std::string& message, unsigned int logLevel)>;
-
-  using RuntimeInstaller = std::function<void(jsi::Runtime& runtime)>;
+  using RuntimeInstaller = std::function<void(jsi::Runtime &runtime)>;
 
   JSIExecutor(
       std::shared_ptr<jsi::Runtime> runtime,
       std::shared_ptr<ExecutorDelegate> delegate,
-      Logger logger,
-      const JSIScopedTimeoutInvoker& timeoutInvoker,
+      const JSIScopedTimeoutInvoker &timeoutInvoker,
       RuntimeInstaller runtimeInstaller);
   void loadApplicationScript(
       std::unique_ptr<const JSBigString> script,
       std::string sourceURL) override;
   void setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) override;
-  void registerBundle(uint32_t bundleId, const std::string& bundlePath)
+  void registerBundle(uint32_t bundleId, const std::string &bundlePath)
       override;
   void callFunction(
-      const std::string& moduleId,
-      const std::string& methodId,
-      const folly::dynamic& arguments) override;
-  void invokeCallback(const double callbackId, const folly::dynamic& arguments)
+      const std::string &moduleId,
+      const std::string &methodId,
+      const folly::dynamic &arguments) override;
+  void invokeCallback(const double callbackId, const folly::dynamic &arguments)
       override;
   void setGlobalVariable(
       std::string propName,
       std::unique_ptr<const JSBigString> jsonValue) override;
   std::string getDescription() override;
-  void* getJavaScriptContext() override;
+  void *getJavaScriptContext() override;
   bool isInspectable() override;
 
   // An implementation of JSIScopedTimeoutInvoker that simply runs the
   // invokee, with no timeout.
   static void defaultTimeoutInvoker(
-      const std::function<void()>& invokee,
+      const std::function<void()> &invokee,
       std::function<std::string()> errorMessageProducer) {
     (void)errorMessageProducer;
     invokee();
   }
 
+  void flush() override;
+
  private:
   class NativeModuleProxy;
 
-  void flush();
   void bindBridge();
-  void callNativeModules(const jsi::Value& queue, bool isEndOfBatch);
-  jsi::Value nativeCallSyncHook(const jsi::Value* args, size_t count);
-  jsi::Value nativeRequire(const jsi::Value* args, size_t count);
+  void callNativeModules(const jsi::Value &queue, bool isEndOfBatch);
+  jsi::Value nativeCallSyncHook(const jsi::Value *args, size_t count);
+  jsi::Value nativeRequire(const jsi::Value *args, size_t count);
 
   std::shared_ptr<jsi::Runtime> runtime_;
   std::shared_ptr<ExecutorDelegate> delegate_;
   JSINativeModules nativeModules_;
   std::once_flag bindFlag_;
   std::unique_ptr<RAMBundleRegistry> bundleRegistry_;
-  Logger logger_;
   JSIScopedTimeoutInvoker scopedTimeoutInvoker_;
   RuntimeInstaller runtimeInstaller_;
 
@@ -131,5 +127,8 @@ class JSIExecutor : public JSExecutor {
   folly::Optional<jsi::Function> callFunctionReturnResultAndFlushedQueue_;
 };
 
+using Logger =
+    std::function<void(const std::string &message, unsigned int logLevel)>;
+void bindNativeLogger(jsi::Runtime &runtime, Logger logger);
 } // namespace react
 } // namespace facebook

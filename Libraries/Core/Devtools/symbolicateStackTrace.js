@@ -10,14 +10,14 @@
 
 'use strict';
 
-const getDevServer = require('getDevServer');
+const getDevServer = require('./getDevServer');
 
-const {SourceCode} = require('NativeModules');
+const {SourceCode} = require('../../BatchedBridge/NativeModules');
 
 // Avoid requiring fetch on load of this module; see symbolicateStackTrace
 let fetch;
 
-import type {StackFrame} from 'parseErrorStack';
+import type {StackFrame} from './parseErrorStack';
 
 function isSourcedFromDisk(sourcePath: string): boolean {
   return !/^http/.test(sourcePath) && /[\\/]/.test(sourcePath);
@@ -38,7 +38,7 @@ async function symbolicateStackTrace(
   // The fix below postpones trying to load fetch until the first call to symbolicateStackTrace.
   // At that time, we will have either global.fetch (whatwg-fetch) or RN's fetch.
   if (!fetch) {
-    fetch = global.fetch || require('fetch').fetch;
+    fetch = global.fetch || require('../../Network/fetch').fetch;
   }
 
   const devServer = getDevServer();

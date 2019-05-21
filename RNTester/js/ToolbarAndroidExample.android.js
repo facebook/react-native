@@ -11,15 +11,18 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
+const {
+  StyleSheet,
+  Switch,
+  Text,
+  ToolbarAndroid,
+  View,
+} = require('react-native');
 
-const nativeImageSource = require('nativeImageSource');
-const {StyleSheet, Text, View} = ReactNative;
+const nativeImageSource = require('../../Libraries/Image/nativeImageSource');
+
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');
-
-const Switch = require('Switch');
-const ToolbarAndroid = require('ToolbarAndroid');
 
 class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
   state = {

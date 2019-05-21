@@ -12,14 +12,12 @@
 
 import type {Item} from './ListExampleShared';
 
-const Alert = require('Alert');
 const React = require('react');
-const ReactNative = require('react-native');
-const {Animated, StyleSheet, View} = ReactNative;
+const {Alert, Animated, StyleSheet, View} = require('react-native');
 
 const RNTesterPage = require('./RNTesterPage');
 
-const infoLog = require('infoLog');
+const infoLog = require('../../Libraries/Utilities/infoLog');
 
 const {
   FooterComponent,
@@ -53,6 +51,7 @@ type State = {|
   logViewable: boolean,
   virtualized: boolean,
   empty: boolean,
+  useFlatListItemComponent: boolean,
 |};
 
 class FlatListExample extends React.PureComponent<Props, State> {
@@ -66,6 +65,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     logViewable: false,
     virtualized: true,
     empty: false,
+    useFlatListItemComponent: false,
   };
 
   _onChangeFilterText = filterText => {
@@ -97,6 +97,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     const filter = item =>
       filterRegex.test(item.text) || filterRegex.test(item.title);
     const filteredData = this.state.data.filter(filter);
+    const flatListItemRendererProps = this._renderItemComponent();
     return (
       <RNTesterPage noSpacer={true} noScroll={true}>
         <View style={styles.container}>
@@ -120,6 +121,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
               {renderSmallSwitchOption(this, 'inverted')}
               {renderSmallSwitchOption(this, 'empty')}
               {renderSmallSwitchOption(this, 'debug')}
+              {renderSmallSwitchOption(this, 'useFlatListItemComponent')}
               <Spindicator value={this._scrollPos} />
             </View>
           </View>
@@ -152,9 +154,9 @@ class FlatListExample extends React.PureComponent<Props, State> {
             onViewableItemsChanged={this._onViewableItemsChanged}
             ref={this._captureRef}
             refreshing={false}
-            renderItem={this._renderItemComponent}
             contentContainerStyle={styles.list}
             viewabilityConfig={VIEWABILITY_CONFIG}
+            {...flatListItemRendererProps}
           />
         </View>
       </RNTesterPage>
@@ -175,17 +177,26 @@ class FlatListExample extends React.PureComponent<Props, State> {
     }));
   };
   _onRefresh = () => Alert.alert('onRefresh: nothing to refresh :P');
-  _renderItemComponent = ({item, separators}) => {
-    return (
-      <ItemComponent
-        item={item}
-        horizontal={this.state.horizontal}
-        fixedHeight={this.state.fixedHeight}
-        onPress={this._pressItem}
-        onShowUnderlay={separators.highlight}
-        onHideUnderlay={separators.unhighlight}
-      />
-    );
+  _renderItemComponent = () => {
+    const flatListPropKey = this.state.useFlatListItemComponent
+      ? 'ListItemComponent'
+      : 'renderItem';
+
+    return {
+      renderItem: undefined,
+      [flatListPropKey]: ({item, separators}) => {
+        return (
+          <ItemComponent
+            item={item}
+            horizontal={this.state.horizontal}
+            fixedHeight={this.state.fixedHeight}
+            onPress={this._pressItem}
+            onShowUnderlay={separators.highlight}
+            onHideUnderlay={separators.unhighlight}
+          />
+        );
+      },
+    };
   };
   // This is called when items change viewability by scrolling into or out of
   // the viewable area.

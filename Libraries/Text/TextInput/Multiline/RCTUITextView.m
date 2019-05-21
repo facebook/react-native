@@ -58,6 +58,15 @@ static UIColor *defaultPlaceholderColor()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark - Accessibility
+
+- (void)setIsAccessibilityElement:(BOOL)isAccessibilityElement
+{
+  // UITextView is accessible by default (some nested views are) and disabling that is not supported.
+  // On iOS accessible elements cannot be nested, therefore enabling accessibility for some container view
+  // (even in a case where this view is a part of public API of TextInput on iOS) shadows some features implemented inside the component.
+}
+
 - (NSString *)accessibilityLabel
 {
   NSMutableString *accessibilityLabel = [NSMutableString new];
@@ -82,7 +91,7 @@ static UIColor *defaultPlaceholderColor()
 - (void)setPlaceholder:(NSString *)placeholder
 {
   _placeholder = placeholder;
-  _placeholderView.text = _placeholder;
+  _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self placeholderEffectiveTextAttributes]];
 }
 
 - (void)setPlaceholderColor:(UIColor *)placeholderColor
@@ -98,7 +107,8 @@ static UIColor *defaultPlaceholderColor()
   }
   self.typingAttributes = reactTextAttributes.effectiveTextAttributes;
   _reactTextAttributes = reactTextAttributes;
-  _placeholderView.font = self.font ?: defaultPlaceholderFont();
+  // Update placeholder text attributes
+  [self setPlaceholder:_placeholder];
 }
 
 - (RCTTextAttributes *)reactTextAttributes
@@ -185,7 +195,7 @@ static UIColor *defaultPlaceholderColor()
   UIEdgeInsets textContainerInset = self.textContainerInset;
   NSString *placeholder = self.placeholder ?: @"";
   CGSize maxPlaceholderSize = CGSizeMake(UIEdgeInsetsInsetRect(self.bounds, textContainerInset).size.width, CGFLOAT_MAX);
-  CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: self.font ?: defaultPlaceholderFont()} context:nil].size;
+  CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize options:NSStringDrawingUsesLineFragmentOrigin attributes:[self placeholderEffectiveTextAttributes] context:nil].size;
   placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
   placeholderSize.width += textContainerInset.left + textContainerInset.right;
   placeholderSize.height += textContainerInset.top + textContainerInset.bottom;
@@ -247,6 +257,21 @@ static UIColor *defaultPlaceholderColor()
 {
   BOOL isVisible = _placeholder.length != 0 && self.attributedText.length == 0;
   _placeholderView.hidden = !isVisible;
+}
+
+- (NSDictionary<NSAttributedStringKey, id> *)placeholderEffectiveTextAttributes
+{
+  NSMutableDictionary<NSAttributedStringKey, id> *effectiveTextAttributes = [NSMutableDictionary dictionaryWithDictionary:@{
+                                                                                                                            NSFontAttributeName: _reactTextAttributes.effectiveFont ?: defaultPlaceholderFont(),
+                                                                                                                            NSForegroundColorAttributeName: self.placeholderColor ?: defaultPlaceholderColor(),
+                                                                                                                            NSKernAttributeName:isnan(_reactTextAttributes.letterSpacing) ? @0 : @(_reactTextAttributes.letterSpacing)
+                                                                                                                            }];
+  NSParagraphStyle *paragraphStyle = [_reactTextAttributes effectiveParagraphStyle];
+  if (paragraphStyle) {
+    effectiveTextAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+  }
+  
+  return [effectiveTextAttributes copy];
 }
 
 #pragma mark - Utility Methods

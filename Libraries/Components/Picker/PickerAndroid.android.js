@@ -10,18 +10,18 @@
 
 'use strict';
 
-const AndroidDropdownPickerNativeComponent = require('AndroidDropdownPickerNativeComponent');
-const AndroidDialogPickerNativeComponent = require('AndroidDialogPickerNativeComponent');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
+const AndroidDropdownPickerNativeComponent = require('./AndroidDropdownPickerNativeComponent');
+const AndroidDialogPickerNativeComponent = require('./AndroidDialogPickerNativeComponent');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
 
-const processColor = require('processColor');
+const processColor = require('../../StyleSheet/processColor');
 
 const REF_PICKER = 'picker';
 const MODE_DROPDOWN = 'dropdown';
 
-import type {SyntheticEvent} from 'CoreEventTypes';
-import type {TextStyleProp} from 'StyleSheet';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 
 type PickerAndroidChangeEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -64,6 +64,9 @@ class PickerAndroid extends React.Component<
   ): PickerAndroidState {
     let selectedIndex = 0;
     const items = React.Children.map(props.children, (child, index) => {
+      if (child === null) {
+        return;
+      }
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
       }
@@ -110,11 +113,15 @@ class PickerAndroid extends React.Component<
     if (this.props.onValueChange) {
       const position = event.nativeEvent.position;
       if (position >= 0) {
-        const children = React.Children.toArray(this.props.children);
+        const children = React.Children.toArray(this.props.children).filter(
+          item => item != null,
+        );
         const value = children[position].props.value;
         /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
          * found when making Flow check .android.js files. */
-        this.props.onValueChange(value, position);
+        if (this.props.selectedValue !== value) {
+          this.props.onValueChange(value, position);
+        }
       } else {
         this.props.onValueChange(null, position);
       }

@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <folly/dynamic.h>
 #include <react/core/StateCoordinator.h>
 
 namespace facebook {
@@ -23,8 +24,14 @@ class State {
  public:
   using Shared = std::shared_ptr<const State>;
 
-  State(StateCoordinator::Shared stateCoordinator);
+  explicit State(State const &state);
+  explicit State(StateCoordinator::Shared const &stateCoordinator);
   virtual ~State() = default;
+
+#ifdef ANDROID
+  virtual const folly::dynamic getDynamic() const;
+  virtual void updateState(folly::dynamic data) const;
+#endif
 
  protected:
   StateCoordinator::Shared stateCoordinator_;

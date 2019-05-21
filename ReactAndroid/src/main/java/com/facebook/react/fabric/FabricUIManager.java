@@ -7,6 +7,7 @@
 package com.facebook.react.fabric;
 
 import static com.facebook.infer.annotation.ThreadConfined.UI;
+import static com.facebook.react.fabric.FabricComponents.getFabricComponentName;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMaxSize;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMinSize;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getYogaMeasureMode;
@@ -15,12 +16,13 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.annotation.SuppressLint;
 import android.os.SystemClock;
-import android.support.annotation.GuardedBy;
-import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
 import android.view.View;
+import androidx.annotation.GuardedBy;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
+import com.facebook.debug.holder.PrinterHolder;
+import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -50,13 +52,16 @@ import com.facebook.react.fabric.mounting.mountitems.UpdateEventEmitterMountItem
 import com.facebook.react.fabric.mounting.mountitems.UpdateLayoutMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateLocalDataMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
+import com.facebook.react.fabric.mounting.mountitems.UpdateStateMountItem;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,25 +71,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressLint("MissingNativeLoadLibrary")
 public class FabricUIManager implements UIManager, LifecycleEventListener {
 
-  private static final String TAG = FabricUIManager.class.getSimpleName();
-
-  private static final Map<String, String> sComponentNames = new HashMap<>();
+  public static final String TAG = FabricUIManager.class.getSimpleName();
+  public static final boolean DEBUG =
+      PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
+  private static final int FRAME_TIME_MS = 16;
+  private static final int MAX_TIME_IN_FRAME_FOR_NON_BATCHED_OPERATIONS_MS = 8;
+  private static final int PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY = 250;
 
   static {
     FabricSoLoader.staticInit();
-
-    // TODO T31905686: unify component names between JS - Android - iOS - C++
-    sComponentNames.put("View", "RCTView");
-    sComponentNames.put("Image", "RCTImageView");
-    sComponentNames.put("ScrollView", "RCTScrollView");
-    sComponentNames.put("Slider", "RCTSlider");
-    sComponentNames.put("ReactPerformanceLoggerFlag", "ReactPerformanceLoggerFlag");
-    sComponentNames.put("Paragraph", "RCTText");
-    sComponentNames.put("Text", "RCText");
-    sComponentNames.put("RawText", "RCTRawText");
-    sComponentNames.put("ActivityIndicatorView", "AndroidProgressBar");
-    sComponentNames.put("ShimmeringView", "RKShimmeringView");
-    sComponentNames.put("TemplateView", "RCTTemplateView");
   }
 
   private Binding mBinding;
@@ -101,16 +96,17 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private List<MountItem> mMountItems = new ArrayList<>();
 
   @GuardedBy("mPreMountItemsLock")
-  private List<MountItem> mPreMountItems = new ArrayList<>();
+  private ArrayDeque<MountItem> mPreMountItems =
+      new ArrayDeque<>(PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY);
 
   @ThreadConfined(UI)
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
 
   @ThreadConfined(UI)
   private boolean mIsMountingEnabled = true;
+
   private long mRunStartTime = 0l;
   private long mBatchedExecutionTime = 0l;
-  private long mNonBatchedExecutionTime = 0l;
   private long mDispatchViewUpdatesTime = 0l;
   private long mCommitStartTime = 0l;
   private long mLayoutTime = 0l;
@@ -147,6 +143,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   /** Method called when an event has been dispatched on the C++ side. */
   @DoNotStrip
+  @SuppressWarnings("unused")
   public void onRequestEventBeat() {
     mEventDispatcher.dispatchAllEvents();
   }
@@ -156,21 +153,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // TODO T31905686: integrate with the unmounting of Fabric React Renderer.
     mMountingManager.removeRootView(reactRootTag);
     mReactContextForRootTag.remove(reactRootTag);
-  }
-
-  @DoNotStrip
-  @SuppressWarnings("unused")
-  private MountItem createMountItem(
-      String componentName, int reactRootTag, int reactTag, boolean isVirtual) {
-    String component = sComponentNames.get(componentName);
-    if (component == null) {
-      throw new IllegalArgumentException("Unable to find component with name " + componentName);
-    }
-    ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
-    if (reactContext == null) {
-      throw new IllegalArgumentException("Unable to find ReactContext for root: " + reactRootTag);
-    }
-    return new CreateMountItem(reactContext, component, reactTag, isVirtual);
   }
 
   @Override
@@ -188,18 +170,37 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @DoNotStrip
-  private void preallocateView(final int rootTag, final String componentName) {
-    if (UiThreadUtil.isOnUiThread()) {
-      // There is no reason to allocate views ahead of time on the main thread.
-      return;
-    }
+  @SuppressWarnings("unused")
+  private void preallocateView(
+      int rootTag,
+      int reactTag,
+      final String componentName,
+      @Nullable ReadableMap props,
+      boolean isLayoutable) {
+    ThemedReactContext context = mReactContextForRootTag.get(rootTag);
+    String component = getFabricComponentName(componentName);
     synchronized (mPreMountItemsLock) {
-      ThemedReactContext context =
-        Assertions.assertNotNull(mReactContextForRootTag.get(rootTag));
-      String component = sComponentNames.get(componentName);
-      Assertions.assertNotNull(component);
-      mPreMountItems.add(new PreAllocateViewMountItem(context, rootTag, component));
+      mPreMountItems.add(
+          new PreAllocateViewMountItem(
+              context,
+              rootTag,
+              reactTag,
+              component,
+              props,
+              isLayoutable));
     }
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private MountItem createMountItem(
+    String componentName, int reactRootTag, int reactTag, boolean isLayoutable) {
+    String component = getFabricComponentName(componentName);
+    ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
+    if (reactContext == null) {
+      throw new IllegalArgumentException("Unable to find ReactContext for root: " + reactRootTag);
+    }
+    return new CreateMountItem(reactContext, reactRootTag, reactTag, component, isLayoutable);
   }
 
   @DoNotStrip
@@ -240,6 +241,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @DoNotStrip
   @SuppressWarnings("unused")
+  private MountItem updateStateMountItem(int reactTag, Object stateWrapper) {
+    return new UpdateStateMountItem(reactTag, (StateWrapper) stateWrapper);
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
   private MountItem updateEventEmitterMountItem(int reactTag, Object eventEmitter) {
     return new UpdateEventEmitterMountItem(reactTag, (EventEmitterWrapper) eventEmitter);
   }
@@ -256,16 +263,18 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       String componentName,
       ReadableMap localData,
       ReadableMap props,
-      int minWidth,
-      int maxWidth,
-      int minHeight,
-      int maxHeight) {
+      ReadableMap state,
+      float minWidth,
+      float maxWidth,
+      float minHeight,
+      float maxHeight) {
 
     return mMountingManager.measure(
         mReactApplicationContext,
         componentName,
         localData,
         props,
+        state,
         getYogaSize(minWidth, maxWidth),
         getYogaMeasureMode(minWidth, maxWidth),
         getYogaSize(minHeight, maxHeight),
@@ -275,7 +284,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props) {
     long time = SystemClock.uptimeMillis();
-    scheduleMountItems(updatePropsMountItem(reactTag, props), time, 0, time, time);
+    try {
+      scheduleMountItems(updatePropsMountItem(reactTag, props), time, 0, time, time);
+    } catch (Exception ex) {
+      // ignore exceptions for now
+      // TODO T42943890: Fix animations in Fabric and remove this try/catch
+    }
   }
 
   /**
@@ -302,58 +316,77 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
 
     if (UiThreadUtil.isOnUiThread()) {
-      flushMountItems();
+      dispatchMountItems();
     }
   }
 
   @UiThread
-  private void flushMountItems() {
-    if (!mIsMountingEnabled) {
-      FLog.w(
-          ReactConstants.TAG,
-          "Not flushing pending UI operations because of previously thrown Exception");
-      return;
+  private void dispatchMountItems() {
+    mRunStartTime = SystemClock.uptimeMillis();
+
+    List<MountItem> mountItemsToDispatch;
+    synchronized (mMountItemsLock) {
+      if (mMountItems.isEmpty()) {
+        return;
+      }
+      mountItemsToDispatch = mMountItems;
+      mMountItems = new ArrayList<>();
     }
 
-    try {
-      List<MountItem> preMountItemsToDispatch;
-      synchronized (mPreMountItemsLock) {
-        preMountItemsToDispatch = mPreMountItems;
-        mPreMountItems = new ArrayList<>();
+    // If there are MountItems to dispatch, we make sure all the "pre mount items" are executed
+    ArrayDeque<MountItem> mPreMountItemsToDispatch = null;
+    synchronized (mPreMountItemsLock) {
+      if (!mPreMountItems.isEmpty()) {
+        mPreMountItemsToDispatch = mPreMountItems;
+        mPreMountItems = new ArrayDeque<>(PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY);
       }
-
-      mRunStartTime = SystemClock.uptimeMillis();
-      List<MountItem> mountItemsToDispatch;
-      synchronized (mMountItemsLock) {
-        mountItemsToDispatch = mMountItems;
-        mMountItems = new ArrayList<>();
-      }
-
-      long nonBatchedExecutionStartTime = SystemClock.uptimeMillis();
-      Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-        "FabricUIManager::premountViews (" + preMountItemsToDispatch.size() + " batches)");
-      for (MountItem mountItem : preMountItemsToDispatch) {
-        mountItem.execute(mMountingManager);
-      }
-      mNonBatchedExecutionTime = SystemClock.uptimeMillis() - nonBatchedExecutionStartTime;
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-
+    }
+    if (mPreMountItemsToDispatch != null) {
       Systrace.beginSection(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "FabricUIManager::mountViews (" + mountItemsToDispatch.size() + " batches)");
+          "FabricUIManager::mountViews preMountItems to execute: "
+              + mPreMountItemsToDispatch.size());
 
-      long batchedExecutionStartTime = SystemClock.uptimeMillis();
-      for (MountItem mountItem : mountItemsToDispatch) {
-        mountItem.execute(mMountingManager);
+      while (!mPreMountItemsToDispatch.isEmpty()) {
+        mPreMountItemsToDispatch.pollFirst().execute(mMountingManager);
       }
-      mBatchedExecutionTime = SystemClock.uptimeMillis() - batchedExecutionStartTime;
+
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-    } catch (Exception ex) {
-      FLog.e(ReactConstants.TAG, "Exception thrown when executing UIFrameGuarded", ex);
-      mIsMountingEnabled = false;
-      throw ex;
     }
+
+    Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "FabricUIManager::mountViews mountItems to execute: " + mountItemsToDispatch.size());
+
+    long batchedExecutionStartTime = SystemClock.uptimeMillis();
+    for (MountItem mountItem : mountItemsToDispatch) {
+      mountItem.execute(mMountingManager);
+    }
+    mBatchedExecutionTime = SystemClock.uptimeMillis() - batchedExecutionStartTime;
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+  }
+
+  @UiThread
+  private void dispatchPreMountItems(long frameTimeNanos) {
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::premountViews");
+
+    while (true) {
+      long timeLeftInFrame = FRAME_TIME_MS - ((System.nanoTime() - frameTimeNanos) / 1000000);
+      if (timeLeftInFrame < MAX_TIME_IN_FRAME_FOR_NON_BATCHED_OPERATIONS_MS) {
+        break;
+      }
+
+      MountItem preMountItemsToDispatch;
+      synchronized (mPreMountItemsLock) {
+        if (mPreMountItems.isEmpty()) {
+          break;
+        }
+        preMountItemsToDispatch = mPreMountItems.pollFirst();
+      }
+
+      preMountItemsToDispatch.execute(mMountingManager);
+    }
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
   public void setBinding(Binding binding) {
@@ -403,7 +436,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @Override
   public void dispatchCommand(
-      final int reactTag, final int commandId, final ReadableArray commandArgs) {
+      final int reactTag, final int commandId, @Nullable final ReadableArray commandArgs) {
     synchronized (mMountItemsLock) {
       mMountItems.add(new DispatchCommandMountItem(reactTag, commandId, commandArgs));
     }
@@ -432,7 +465,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     performanceCounters.put("DispatchViewUpdatesTime", mDispatchViewUpdatesTime);
     performanceCounters.put("RunStartTime", mRunStartTime);
     performanceCounters.put("BatchedExecutionTime", mBatchedExecutionTime);
-    performanceCounters.put("NonBatchedExecutionTime", mNonBatchedExecutionTime);
     performanceCounters.put("FinishFabricTransactionTime", mFinishTransactionTime);
     performanceCounters.put("FinishFabricTransactionCPPTime", mFinishTransactionCPPTime);
     return performanceCounters;
@@ -454,7 +486,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       }
 
       try {
-        flushMountItems();
+
+        dispatchPreMountItems(frameTimeNanos);
+
+        dispatchMountItems();
+
       } catch (Exception ex) {
         FLog.i(ReactConstants.TAG, "Exception thrown when executing UIFrameGuarded", ex);
         mIsMountingEnabled = false;

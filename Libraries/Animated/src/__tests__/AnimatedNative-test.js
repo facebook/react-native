@@ -15,22 +15,22 @@ ClassComponentMock.prototype.isReactComponent = true;
 
 jest
   .clearAllMocks()
-  .setMock('Text', ClassComponentMock)
-  .setMock('View', ClassComponentMock)
-  .setMock('Image', ClassComponentMock)
-  .setMock('ScrollView', ClassComponentMock)
-  .setMock('FlatList', ClassComponentMock)
-  .setMock('SectionList', ClassComponentMock)
-  .setMock('React', {Component: class {}})
-  .setMock('NativeModules', {
+  .setMock('../../../Text/Text', ClassComponentMock)
+  .setMock('../../../Components/View/View', ClassComponentMock)
+  .setMock('../../../Image/Image', ClassComponentMock)
+  .setMock('../../../Components/ScrollView/ScrollView', ClassComponentMock)
+  .setMock('../../../Lists/FlatList', ClassComponentMock)
+  .setMock('../../../Lists/SectionList', ClassComponentMock)
+  .setMock('react', {Component: class {}})
+  .setMock('../../../BatchedBridge/NativeModules', {
     NativeAnimatedModule: {},
   })
-  .mock('NativeEventEmitter')
+  .mock('../../../EventEmitter/NativeEventEmitter')
   // findNodeHandle is imported from ReactNative so mock that whole module.
-  .setMock('ReactNative', {findNodeHandle: () => 1});
+  .setMock('../../../Renderer/shims/ReactNative', {findNodeHandle: () => 1});
 
-const Animated = require('Animated');
-const NativeAnimatedHelper = require('NativeAnimatedHelper');
+const Animated = require('../Animated');
+const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
 function createAndMountComponent(ComponentClass, props) {
   const component = new ComponentClass();
@@ -43,7 +43,8 @@ function createAndMountComponent(ComponentClass, props) {
 }
 
 describe('Native Animated', () => {
-  const nativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
+  const nativeAnimatedModule = require('../../../BatchedBridge/NativeModules')
+    .NativeAnimatedModule;
 
   beforeEach(() => {
     nativeAnimatedModule.addAnimatedEventToView = jest.fn();

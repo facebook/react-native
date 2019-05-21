@@ -45,20 +45,20 @@ void fromRawValue(const RawValue &rawValue, std::vector<T> &result) {
   result.push_back(itemResult);
 }
 
-template <typename T>
+template <typename T, typename U = T>
 T convertRawProp(
     const RawProps &rawProps,
     const std::string &name,
     const T &sourceValue,
-    const T &defaultValue = T()) {
+    const U &defaultValue = U()) {
   const auto rawValue = rawProps.at(name);
 
   if (!rawValue) {
     return sourceValue;
   }
 
-  // Special case: `null` always means `the prop was removed, use default
-  // value`.
+  // Special case: `null` always means "the prop was removed, use default
+  // value".
   if (!rawValue->hasValue()) {
     return defaultValue;
   }

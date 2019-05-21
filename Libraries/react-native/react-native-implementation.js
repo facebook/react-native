@@ -29,6 +29,12 @@ module.exports = {
     return require('Button');
   },
   get CheckBox() {
+    warnOnce(
+      'checkBox-moved',
+      'CheckBox has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/checkbox' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-checkbox',
+    );
     return require('CheckBox');
   },
   get DatePickerIOS() {
@@ -125,9 +131,6 @@ module.exports = {
   get StatusBar() {
     return require('StatusBar');
   },
-  get SwipeableFlatList() {
-    return require('SwipeableFlatList');
-  },
   get Text() {
     return require('Text');
   },
@@ -167,14 +170,8 @@ module.exports = {
   get VirtualizedList() {
     return require('VirtualizedList');
   },
-  get WebView() {
-    warnOnce(
-      'webview-moved',
-      'WebView has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-webview',
-    );
-    return require('WebView');
+  get VirtualizedSectionList() {
+    return require('VirtualizedSectionList');
   },
 
   // APIs
@@ -182,13 +179,6 @@ module.exports = {
     return require('ActionSheetIOS');
   },
   get Alert() {
-    return require('Alert');
-  },
-  get AlertIOS() {
-    warnOnce(
-      'alert-ios',
-      'AlertIOS is deprecated. Use the `Alert` module directly instead.',
-    );
     return require('Alert');
   },
   get Animated() {
@@ -213,6 +203,12 @@ module.exports = {
     return require('BackHandler');
   },
   get CameraRoll() {
+    warnOnce(
+      'cameraroll-moved',
+      'CameraRoll has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/cameraroll' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-cameraroll',
+    );
     return require('CameraRoll');
   },
   get Clipboard() {
@@ -254,15 +250,6 @@ module.exports = {
   get NativeEventEmitter() {
     return require('NativeEventEmitter');
   },
-  get NetInfo() {
-    warnOnce(
-      'netinfo-moved',
-      'NetInfo has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/netinfo' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-netinfo',
-    );
-    return require('NetInfo');
-  },
   get PanResponder() {
     return require('PanResponder');
   },
@@ -302,6 +289,9 @@ module.exports = {
   get ToastAndroid() {
     return require('ToastAndroid');
   },
+  get TurboModuleRegistry() {
+    return require('TurboModuleRegistry');
+  },
   get TVEventHandler() {
     return require('TVEventHandler');
   },
@@ -339,9 +329,6 @@ module.exports = {
   },
   get requireNativeComponent() {
     return require('requireNativeComponent');
-  },
-  get takeSnapshot() {
-    return require('takeSnapshot');
   },
 
   // Prop Types
@@ -382,6 +369,19 @@ if (__DEV__) {
         'SwipeableListView has been removed from React Native. ' +
           'See https://fb.me/nolistview for more information or use ' +
           '`deprecated-react-native-swipeable-listview`.',
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access WebView.
+  Object.defineProperty(module.exports, 'WebView', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'WebView has been removed from React Native. ' +
+          "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-webview',
       );
     },
   });

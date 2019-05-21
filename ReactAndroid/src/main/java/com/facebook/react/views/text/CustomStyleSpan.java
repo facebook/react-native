@@ -7,13 +7,14 @@
 
 package com.facebook.react.views.text;
 
-import javax.annotation.Nullable;
-
 import android.content.res.AssetManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
 
@@ -39,7 +40,7 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       int fontStyle,
       int fontWeight,
       @Nullable String fontFamily,
-      AssetManager assetManager) {
+      @NonNull AssetManager assetManager) {
     mStyle = fontStyle;
     mWeight = fontWeight;
     mFontFamily = fontFamily;
@@ -52,7 +53,7 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   }
 
   @Override
-  public void updateMeasureState(TextPaint paint) {
+  public void updateMeasureState(@NonNull TextPaint paint) {
     apply(paint, mStyle, mWeight, mFontFamily, mAssetManager);
   }
 
@@ -116,5 +117,4 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     }
     paint.setSubpixelText(true);
   }
-
 }

@@ -15,11 +15,10 @@ import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
+import com.facebook.react.views.text.ReactFontManager;
 
 import java.util.Arrays;
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 public class RNTesterApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
@@ -29,7 +28,7 @@ public class RNTesterApplication extends Application implements ReactApplication
     }
 
     @Override
-    public @Nullable String getBundleAssetName() {
+    public String getBundleAssetName() {
       return "RNTesterApp.android.bundle";
     }
 
@@ -45,6 +44,12 @@ public class RNTesterApplication extends Application implements ReactApplication
       );
     }
   };
+
+  @Override
+  public void onCreate() {
+    ReactFontManager.getInstance().addCustomFont(this, "Srisakdi", R.font.srisakdi);
+    super.onCreate();
+  }
 
   @Override
   public ReactNativeHost getReactNativeHost() {

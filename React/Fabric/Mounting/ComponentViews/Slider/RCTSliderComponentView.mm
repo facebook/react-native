@@ -8,12 +8,10 @@
 #import "RCTSliderComponentView.h"
 
 #import <React/RCTImageResponseObserverProxy.h>
-#import <react/components/slider/SliderEventEmitter.h>
+#import <react/components/rncore/EventEmitters.h>
+#import <react/components/rncore/Props.h>
+#import <react/components/slider/SliderComponentDescriptor.h>
 #import <react/components/slider/SliderLocalData.h>
-#import <react/components/slider/SliderProps.h>
-#import <react/components/slider/SliderShadowNode.h>
-
-#import "MainQueueExecutor.h"
 
 using namespace facebook::react;
 
@@ -104,9 +102,9 @@ using namespace facebook::react;
 
 #pragma mark - RCTComponentViewProtocol
 
-+ (ComponentHandle)componentHandle
++ (ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return SliderShadowNode::Handle();
+  return concreteComponentDescriptorProvider<SliderComponentDescriptor>();
 }
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
@@ -301,10 +299,12 @@ using namespace facebook::react;
   }
 
   if (continuous && _previousValue != value) {
-    std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)->onValueChange(value);
+    std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)
+        ->onValueChange(SliderOnValueChangeStruct{.value = static_cast<Float>(value)});
   }
   if (!continuous) {
-    std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)->onSlidingComplete(value);
+    std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)
+        ->onSlidingComplete(SliderOnSlidingCompleteStruct{.value = static_cast<Float>(value)});
   }
 
   _previousValue = value;

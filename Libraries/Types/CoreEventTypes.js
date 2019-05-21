@@ -125,7 +125,8 @@ export type ScrollEvent = SyntheticEvent<
       y: number,
       x: number,
     |}>,
-    zoomScale: number,
+    zoomScale?: number,
+    responderIgnoreScroll?: boolean,
   |}>,
 >;
 

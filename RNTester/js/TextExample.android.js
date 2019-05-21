@@ -13,10 +13,10 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Image, StyleSheet, Text, View} = ReactNative;
+const {Image, StyleSheet, Text, View} = require('react-native');
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');
+const TextInlineView = require('./Shared/TextInlineView');
 const TextLegend = require('./Shared/TextLegend');
 
 class Entity extends React.Component<{|children: React.Node|}> {
@@ -183,6 +183,14 @@ class TextExample extends React.Component<{}> {
               <Text style={{fontFamily: 'notoserif', fontStyle: 'italic'}}>
                 NotoSerif Italic (Missing Font file)
               </Text>
+              <Text style={{fontFamily: 'Srisakdi'}}>Srisakdi Regular</Text>
+              <Text
+                style={{
+                  fontFamily: 'Srisakdi',
+                  fontWeight: 'bold',
+                }}>
+                Srisakdi Bold
+              </Text>
             </View>
           </View>
         </RNTesterBlock>
@@ -324,6 +332,12 @@ class TextExample extends React.Component<{}> {
           <Text style={{textAlign: 'right'}}>
             right right right right right right right right right right right
             right right
+          </Text>
+          <Text style={{textAlign: 'justify'}}>
+            justify (works when api level >= 26 otherwise fallbacks to "left"):
+            this text component{"'"}s contents are laid out with "textAlign:
+            justify" and as you can see all of the lines except the last one
+            span the available width of the parent container.
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Unicode">
@@ -471,9 +485,8 @@ class TextExample extends React.Component<{}> {
             app.
           </Text>
           <Text style={{marginTop: 10}}>
-            You can disable scaling for your Text component by passing {'"'}allowFontScaling={
-              '{'
-            }false{'}"'} prop.
+            You can disable scaling for your Text component by passing {'"'}
+            allowFontScaling={'{'}false{'}"'} prop.
           </Text>
           <Text allowFontScaling={false} style={{marginTop: 20, fontSize: 15}}>
             This text will not scale.{' '}
@@ -494,11 +507,20 @@ class TextExample extends React.Component<{}> {
             This text will have a orange highlight on selection.
           </Text>
         </RNTesterBlock>
-        <RNTesterBlock title="Inline images">
-          <Text>
-            This text contains an inline image{' '}
-            <Image source={require('./flux.png')} />. Neat, huh?
-          </Text>
+        <RNTesterBlock title="Inline views">
+          <TextInlineView.Basic />
+        </RNTesterBlock>
+        <RNTesterBlock title="Inline image/view clipped by <Text>">
+          <TextInlineView.ClippedByText />
+        </RNTesterBlock>
+        <RNTesterBlock title="Relayout inline image">
+          <TextInlineView.ChangeImageSize />
+        </RNTesterBlock>
+        <RNTesterBlock title="Relayout inline view">
+          <TextInlineView.ChangeViewSize />
+        </RNTesterBlock>
+        <RNTesterBlock title="Relayout nested inline view">
+          <TextInlineView.ChangeInnerViewSize />
         </RNTesterBlock>
         <RNTesterBlock title="Text shadow">
           <Text
@@ -615,11 +637,26 @@ class TextExample extends React.Component<{}> {
             Works with other text styles
           </Text>
         </RNTesterBlock>
+        <RNTesterBlock title="Substring Emoji (should only see 'test')">
+          <Text>{'test🙃'.substring(0, 5)}</Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Text linkify">
+          <Text dataDetectorType="phoneNumber">Phone number: 123-123-1234</Text>
+          <Text dataDetectorType="link">Link: https://www.facebook.com</Text>
+          <Text dataDetectorType="email">Email: employee@facebook.com</Text>
+          <Text dataDetectorType="none">
+            Phone number: 123-123-1234 Link: https://www.facebook.com Email:
+            employee@facebook.com
+          </Text>
+          <Text dataDetectorType="all">
+            Phone number: 123-123-1234 Link: https://www.facebook.com Email:
+            employee@facebook.com
+          </Text>
+        </RNTesterBlock>
       </RNTesterPage>
     );
   }
 }
-
 const styles = StyleSheet.create({
   backgroundColorText: {
     left: 5,
@@ -634,7 +671,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
-
 exports.title = '<Text>';
 exports.description = 'Base component for rendering styled text.';
 exports.examples = [

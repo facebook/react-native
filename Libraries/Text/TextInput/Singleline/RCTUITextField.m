@@ -43,6 +43,15 @@
   _textWasPasted = NO;
 }
 
+#pragma mark - Accessibility
+
+- (void)setIsAccessibilityElement:(BOOL)isAccessibilityElement
+{
+  // UITextField is accessible by default (some nested views are) and disabling that is not supported.
+  // On iOS accessible elements cannot be nested, therefore enabling accessibility for some container view
+  // (even in a case where this view is a part of public API of TextInput on iOS) shadows some features implemented inside the component.
+}
+
 #pragma mark - Properties
 
 - (void)setTextContainerInset:(UIEdgeInsets)textContainerInset
@@ -70,6 +79,7 @@
   }
   self.defaultTextAttributes = reactTextAttributes.effectiveTextAttributes;
   _reactTextAttributes = reactTextAttributes;
+  [self _updatePlaceholder];
 }
 
 - (RCTTextAttributes *)reactTextAttributes
@@ -83,13 +93,8 @@
     return;
   }
 
-  NSMutableDictionary *attributes = [NSMutableDictionary new];
-  if (_placeholderColor) {
-    [attributes setObject:_placeholderColor forKey:NSForegroundColorAttributeName];
-  }
-
   self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
-                                                               attributes:attributes];
+                                                               attributes:[self placeholderEffectiveTextAttributes]];
 }
 
 - (BOOL)isEditable
@@ -110,6 +115,28 @@
 - (BOOL)scrollEnabled
 {
   return NO;
+}
+
+#pragma mark - Placeholder
+
+- (NSDictionary<NSAttributedStringKey, id> *)placeholderEffectiveTextAttributes
+{
+  NSMutableDictionary<NSAttributedStringKey, id> *effectiveTextAttributes = [NSMutableDictionary dictionary];
+  
+  if (_placeholderColor) {
+    effectiveTextAttributes[NSForegroundColorAttributeName] = _placeholderColor;
+  }
+  // Kerning
+  if (!isnan(_reactTextAttributes.letterSpacing)) {
+    effectiveTextAttributes[NSKernAttributeName] = @(_reactTextAttributes.letterSpacing);
+  }
+  
+  NSParagraphStyle *paragraphStyle = [_reactTextAttributes effectiveParagraphStyle];
+  if (paragraphStyle) {
+    effectiveTextAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+  }
+  
+  return [effectiveTextAttributes copy];
 }
 
 #pragma mark - Context Menu
@@ -149,6 +176,16 @@
 
 #pragma mark - Overrides
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+// Overrides selectedTextRange setter to get notify when selectedTextRange changed.
+- (void)setSelectedTextRange:(UITextRange *)selectedTextRange
+{
+  [super setSelectedTextRange:selectedTextRange];
+  [_textInputDelegateAdapter selectedTextRangeWasSet];
+}
+#pragma clang diagnostic pop
+
 - (void)setSelectedTextRange:(UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate
 {
   if (!notifyDelegate) {
@@ -178,7 +215,7 @@
 {
   // Note: `placeholder` defines intrinsic size for `<TextInput>`.
   NSString *text = self.placeholder ?: @"";
-  CGSize size = [text sizeWithAttributes:@{NSFontAttributeName: self.font}];
+  CGSize size = [text sizeWithAttributes:[self placeholderEffectiveTextAttributes]];
   size = CGSizeMake(RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height));
   size.width += _textContainerInset.left + _textContainerInset.right;
   size.height += _textContainerInset.top + _textContainerInset.bottom;

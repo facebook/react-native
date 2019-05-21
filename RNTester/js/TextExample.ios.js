@@ -10,11 +10,29 @@
 
 'use strict';
 
-const Platform = require('Platform');
 const React = require('react');
-const ReactNative = require('react-native');
-const {Text, TextInput, View, LayoutAnimation, Button} = ReactNative;
+const {
+  Button,
+  LayoutAnimation,
+  Platform,
+  Text,
+  TextInput,
+  View,
+} = require('react-native');
+const TextAncestor = require('TextAncestor');
+const TextInlineView = require('./Shared/TextInlineView');
 const TextLegend = require('./Shared/TextLegend');
+
+// TODO: Is there a cleaner way to flip the TextAncestor value to false? I
+//   suspect apps won't even be able to leverage this workaround because
+//   TextAncestor is not public.
+function InlineView(props) {
+  return (
+    <TextAncestor.Provider value={false}>
+      <View {...props} />
+    </TextAncestor.Provider>
+  );
+}
 
 type TextAlignExampleRTLState = {|
   isRTL: boolean,
@@ -269,6 +287,28 @@ class TextBaseLineLayoutExample extends React.Component<*, *> {
           {marker}
         </View>
 
+        {/* iOS-only because it relies on inline views being able to size to content.
+         * Android's implementation requires that a width and height be specified
+         * on the inline view. */}
+        <Text style={subtitleStyle}>{'Interleaving <View> and <Text>:'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          {marker}
+          <Text selectable={true}>
+            Some text.
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'baseline',
+                backgroundColor: '#eee',
+              }}>
+              {marker}
+              <Text>Text inside View.</Text>
+              {marker}
+            </View>
+          </Text>
+          {marker}
+        </View>
+
         <Text style={subtitleStyle}>{'<TextInput/>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -424,6 +464,25 @@ exports.examples = [
         <Text>
           The text should wrap if it goes on multiple lines. See, this is going
           to the next line.
+        </Text>
+      );
+    },
+  },
+  {
+    title: "Substring Emoji (should only see 'test')",
+    render: function() {
+      return <Text>{'test🙃'.substring(0, 5)}</Text>;
+    },
+  },
+  {
+    title: 'Transparent Background Color',
+    render: function() {
+      return (
+        <Text style={{backgroundColor: '#00000020', padding: 10}}>
+          Text in a gray box!
+          <Text style={{backgroundColor: 'red'}}>
+            Another text in a (inline) red box (which is inside the gray box).
+          </Text>
         </Text>
       );
     },
@@ -876,9 +935,8 @@ exports.examples = [
             </Text>
           </Text>
           <Text style={{marginTop: 10}}>
-            You can disable scaling for your Text component by passing {'"'}allowFontScaling={
-              '{'
-            }false{'}"'} prop.
+            You can disable scaling for your Text component by passing {'"'}
+            allowFontScaling={'{'}false{'}"'} prop.
           </Text>
           <Text allowFontScaling={false} style={{marginTop: 20, fontSize: 15}}>
             This text will not scale.{' '}
@@ -890,6 +948,26 @@ exports.examples = [
         </View>
       );
     },
+  },
+  {
+    title: 'Inline views',
+    render: () => <TextInlineView.Basic />,
+  },
+  {
+    title: 'Inline image/view clipped by <Text>',
+    render: () => <TextInlineView.ClippedByText />,
+  },
+  {
+    title: 'Relayout inline image',
+    render: () => <TextInlineView.ChangeImageSize />,
+  },
+  {
+    title: 'Relayout inline view',
+    render: () => <TextInlineView.ChangeViewSize />,
+  },
+  {
+    title: 'Relayout nested inline view',
+    render: () => <TextInlineView.ChangeInnerViewSize />,
   },
   {
     title: 'Text shadow',
@@ -961,6 +1039,34 @@ exports.examples = [
             2222{'\n'}
           </Text>
         </View>
+      );
+    },
+  },
+  {
+    title: 'Nested content',
+    render: function() {
+      // iOS-only because it relies on inline views being able to size to content.
+      // Android's implementation requires that a width and height be specified
+      // on the inline view.
+      return (
+        <Text>
+          This text has a view
+          <InlineView style={{borderColor: 'red', borderWidth: 1}}>
+            <Text style={{borderColor: 'blue', borderWidth: 1}}>which has</Text>
+            <Text style={{borderColor: 'green', borderWidth: 1}}>
+              another text inside.
+            </Text>
+            <Text style={{borderColor: 'yellow', borderWidth: 1}}>
+              And moreover, it has another view
+              <InlineView style={{borderColor: 'red', borderWidth: 1}}>
+                <Text style={{borderColor: 'blue', borderWidth: 1}}>
+                  with another text inside!
+                </Text>
+              </InlineView>
+            </Text>
+          </InlineView>
+          Because we need to go deeper.
+        </Text>
       );
     },
   },

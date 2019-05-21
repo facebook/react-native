@@ -4,6 +4,11 @@ PODS:
   - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
+    - Folly/Default (= 2018.10.22.00)
+    - glog
+  - Folly/Default (2018.10.22.00):
+    - boost-for-react-native
+    - DoubleConversion
     - glog
   - glog (0.3.5)
   - React (1000.0.0):
@@ -12,7 +17,6 @@ PODS:
     - React-RCTActionSheet (= 1000.0.0)
     - React-RCTAnimation (= 1000.0.0)
     - React-RCTBlob (= 1000.0.0)
-    - React-RCTGeolocation (= 1000.0.0)
     - React-RCTImage (= 1000.0.0)
     - React-RCTLinking (= 1000.0.0)
     - React-RCTNetwork (= 1000.0.0)
@@ -42,6 +46,12 @@ PODS:
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
+    - React-jsi/Default (= 1000.0.0)
+  - React-jsi/Default (1000.0.0):
+    - boost-for-react-native (= 1.63.0)
+    - DoubleConversion
+    - Folly (= 2018.10.22.00)
+    - glog
   - React-jsiexecutor (1000.0.0):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
@@ -60,8 +70,6 @@ PODS:
   - React-RCTCameraRoll (1000.0.0):
     - React-Core (= 1000.0.0)
     - React-RCTImage (= 1000.0.0)
-  - React-RCTGeolocation (1000.0.0):
-    - React-Core (= 1000.0.0)
   - React-RCTImage (1000.0.0):
     - React-Core (= 1000.0.0)
     - React-RCTNetwork (= 1000.0.0)
@@ -80,6 +88,30 @@ PODS:
   - React-RCTWebSocket (1000.0.0):
     - React-Core (= 1000.0.0)
     - React-fishhook (= 1000.0.0)
+  - React-turbomodule-core (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-Core (= 1000.0.0)
+    - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - React-turbomodule-core/core-ios (= 1000.0.0)
+  - React-turbomodule-core/core-ios (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-Core (= 1000.0.0)
+    - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+  - React-turbomodule-samples (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-Core (= 1000.0.0)
+    - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - React-turbomodule-core (= 1000.0.0)
+    - React-turbomodule-samples/samples-ios (= 1000.0.0)
+  - React-turbomodule-samples/samples-ios (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-Core (= 1000.0.0)
+    - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - React-turbomodule-core (= 1000.0.0)
   - yoga (1000.0.0.React)
 
 DEPENDENCIES:
@@ -99,7 +131,6 @@ DEPENDENCIES:
   - React-RCTAnimation (from `../Libraries/NativeAnimation`)
   - React-RCTBlob (from `../Libraries/Blob`)
   - React-RCTCameraRoll (from `../Libraries/CameraRoll`)
-  - React-RCTGeolocation (from `../Libraries/Geolocation`)
   - React-RCTImage (from `../Libraries/Image`)
   - React-RCTLinking (from `../Libraries/LinkingIOS`)
   - React-RCTNetwork (from `../Libraries/Network`)
@@ -108,6 +139,8 @@ DEPENDENCIES:
   - React-RCTText (from `../Libraries/Text`)
   - React-RCTVibration (from `../Libraries/Vibration`)
   - React-RCTWebSocket (from `../Libraries/WebSocket`)
+  - React-turbomodule-core (from `../ReactCommon/turbomodule/core`)
+  - React-turbomodule-samples (from `../ReactCommon/turbomodule/samples`)
   - yoga (from `../ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -147,8 +180,6 @@ EXTERNAL SOURCES:
     :path: "../Libraries/Blob"
   React-RCTCameraRoll:
     :path: "../Libraries/CameraRoll"
-  React-RCTGeolocation:
-    :path: "../Libraries/Geolocation"
   React-RCTImage:
     :path: "../Libraries/Image"
   React-RCTLinking:
@@ -165,38 +196,43 @@ EXTERNAL SOURCES:
     :path: "../Libraries/Vibration"
   React-RCTWebSocket:
     :path: "../Libraries/WebSocket"
+  React-turbomodule-core:
+    :path: "../ReactCommon/turbomodule/core"
+  React-turbomodule-samples:
+    :path: "../ReactCommon/turbomodule/samples"
   yoga:
     :path: "../ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  DoubleConversion: 3eb87e5bfd9737e9a8cc698f74ee064d00c8dafc
-  Folly: de497beb10f102453a1afa9edbf8cf8a251890de
-  glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
-  React: 4d01f91757abcfd2adccf80248285957ac1a2de2
-  React-ART: f03123e0f0b9850db4733ad94ded11d29c719dc6
-  React-Core: fcb8a6f34de5a43426efcb9dfda6a434c1b1275d
-  React-cxxreact: 2a2acf4466abf5b794da53bf69e757a885259452
-  React-DevSupport: 140c1ccfa9ccba495977225c117dc78c8858224f
-  React-fishhook: aefe3414f44d4deaa880f0e39dc76644f1072bf7
-  React-jsi: 425cd468e0be54cdc9009a2b4d2c1a4eada83805
-  React-jsiexecutor: 520560a0b08226e4e758645940253e270b4d7d76
-  React-jsinspector: c9020e3a37b7b27125d824b1d02b9be0d1c737ac
-  React-RCTActionSheet: 78b940169b3c12d199dbbd382c5a3d22ec2197e2
-  React-RCTAnimation: da0026d00ed99669b6175a941189539d8f9d52a4
-  React-RCTBlob: c5a2104bd8b8e0462fc35eefa9133dc04ced56dd
-  React-RCTCameraRoll: effa220c8e244af93b44011ab85cab814c469e08
-  React-RCTGeolocation: 3517483e877750bae5a03d9f52e7b0e48c49651e
-  React-RCTImage: ed045a58ebc9c97870a4fe5d066fdf04f247023b
-  React-RCTLinking: e5f174d3f9e6ffe30087b9edc8c9860d62c1413c
-  React-RCTNetwork: 9fbf72be6083a4b5fffe3dc1afad9fa2b70c4f19
-  React-RCTPushNotification: 106e9846882a8dcce372fc90531be996ce0bb29b
-  React-RCTSettings: afd7ae33bacd09b12c8a0d3151069d465344ce24
-  React-RCTText: 03945b44521b34f89f9a728e1c265fa096af9f94
-  React-RCTVibration: ef9e4e077360a599a1b59cee7d18398871d37759
-  React-RCTWebSocket: 510a4eef2c064ef30508aba41628e6d69f4df4c5
-  yoga: c63f2cb4fd93594d29e792c198a8050d5daf9fdf
+  DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
+  Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
+  glog: 1f3da668190260b06b429bb211bfbee5cd790c28
+  React: e7b61c9123f89c4cd9becea2122af02568be6e13
+  React-ART: 3dba78ec04b585a82456d1df4bda7a08dbc83a8d
+  React-Core: d1c3aa4b1c5c57bf839de3c83396b59c1efbf1ba
+  React-cxxreact: 5f2b678adbe8ff5256801603e1b496e481bc2430
+  React-DevSupport: 9bde3ce4f7707d9487759101ea3188f4f07c9003
+  React-fishhook: a9a43c2c84ab2519809810bcdd363e2774007c69
+  React-jsi: cdf32eb002ff3e243364a1abb71925e0e93003db
+  React-jsiexecutor: 6e53c44a5371297f0c9cc39780f12cb3efba3b81
+  React-jsinspector: 2f42a591151e828d0422cbd3b609eedcb920d58e
+  React-RCTActionSheet: 4ad4bfac1ba9ec020edf278362855448d607cafd
+  React-RCTAnimation: f050e9fbe85e5616f74cea7a2557bdfb6be73cee
+  React-RCTBlob: 9f907aab3417a43bbda84aef76f88ee528e877d4
+  React-RCTCameraRoll: 288b1007d8e540771b917f89d7d99118a3477ee1
+  React-RCTImage: 4234a754ebdb922416f5f77cff121c680fd3ccbe
+  React-RCTLinking: 3a52500942cc73999df19f541b7bda5887c3c43d
+  React-RCTNetwork: 2042d2648e1160770ac0e5068bb5b648c03296a5
+  React-RCTPushNotification: 3cfbf863d0597b5da80a15c9a9285a0ad89b23ba
+  React-RCTSettings: 8099c9d904c0fbe46c463de8791478b5bc72809e
+  React-RCTText: c4a643a08fce4727316366fea5ad17fa14f72f54
+  React-RCTVibration: c5933466242187bffe55fa5496f841e04db66c8a
+  React-RCTWebSocket: 233c66a6394de3816ee46861bbe0dba9f83e45a0
+  React-turbomodule-core: 7ae77c38b85f6f81be40c0c3dc456d3a5fda4797
+  React-turbomodule-samples: 483f2c80e81b89197737828405a0ac27c77f58b5
+  yoga: 56698cdff46e3dbb7aa71fd2fd7dc0ce650dc0fb
 
-PODFILE CHECKSUM: c144025e9b0ade3d8b536a343fee89da69391cdc
+PODFILE CHECKSUM: bb578b8286c0068879a41ac092c9690cc3ede523
 
-COCOAPODS: 1.6.0
+COCOAPODS: 1.6.3

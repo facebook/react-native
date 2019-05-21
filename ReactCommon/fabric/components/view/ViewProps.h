@@ -10,59 +10,66 @@
 #include <react/components/view/AccessibilityProps.h>
 #include <react/components/view/YogaStylableProps.h>
 #include <react/components/view/primitives.h>
+#include <react/core/LayoutMetrics.h>
 #include <react/core/Props.h>
 #include <react/graphics/Color.h>
 #include <react/graphics/Geometry.h>
+#include <react/graphics/Transform.h>
 
 namespace facebook {
 namespace react {
 
 class ViewProps;
 
-using SharedViewProps = std::shared_ptr<const ViewProps>;
+using SharedViewProps = std::shared_ptr<ViewProps const>;
 
 class ViewProps : public Props,
                   public YogaStylableProps,
                   public AccessibilityProps {
  public:
   ViewProps() = default;
-  ViewProps(const YGStyle &yogaStyle);
-  ViewProps(const ViewProps &sourceProps, const RawProps &rawProps);
+  ViewProps(YGStyle const &yogaStyle);
+  ViewProps(ViewProps const &sourceProps, RawProps const &rawProps);
 
 #pragma mark - Props
 
   // Color
-  const Float opacity{1.0};
-  const SharedColor foregroundColor{};
-  const SharedColor backgroundColor{};
+  Float const opacity{1.0};
+  SharedColor const foregroundColor{};
+  SharedColor const backgroundColor{};
 
   // Borders
-  const CascadedBorderRadii borderRadii{};
-  const CascadedBorderColors borderColors{};
-  const CascadedBorderStyles borderStyles{};
+  CascadedBorderRadii const borderRadii{};
+  CascadedBorderColors const borderColors{};
+  CascadedBorderStyles const borderStyles{};
 
   // Shadow
-  const SharedColor shadowColor{};
-  const Size shadowOffset{};
-  const Float shadowOpacity{};
-  const Float shadowRadius{};
+  SharedColor const shadowColor{};
+  Size const shadowOffset{};
+  Float const shadowOpacity{};
+  Float const shadowRadius{};
 
   // Transform
-  const Transform transform{};
-  const bool backfaceVisibility{};
-  const bool shouldRasterize{};
-  const int zIndex{};
+  Transform transform{};
+  BackfaceVisibility const backfaceVisibility{};
+  bool const shouldRasterize{};
+  int const zIndex{};
 
   // Events
-  const PointerEventsMode pointerEvents{};
-  const EdgeInsets hitSlop{};
-  const bool onLayout{};
+  PointerEventsMode const pointerEvents{};
+  EdgeInsets const hitSlop{};
+  bool const onLayout{};
 
-  const bool collapsable{true};
+  bool const collapsable{true};
 
 #pragma mark - Convenience Methods
 
-  BorderMetrics resolveBorderMetrics(bool isRTL) const;
+  BorderMetrics resolveBorderMetrics(LayoutMetrics const &layoutMetrics) const;
+  bool getClipsContentToBounds() const;
+
+#ifdef ANDROID
+  bool getProbablyMoreHorizontalThanVertical_DEPRECATED() const;
+#endif
 
 #pragma mark - DebugStringConvertible
 

@@ -6,6 +6,7 @@
  */
 
 #include <cstdlib>
+#include <limits>
 
 #include <react/components/image/ImageLocalData.h>
 #include <react/components/image/ImageShadowNode.h>
@@ -48,7 +49,9 @@ ImageSource ImageShadowNode::getImageSource() const {
   auto sources = getProps()->sources;
 
   if (sources.size() == 0) {
-    return {.type = ImageSource::Type::Invalid};
+    return {
+        /* .type = */ ImageSource::Type::Invalid,
+    };
   }
 
   if (sources.size() == 1) {
@@ -59,7 +62,7 @@ ImageSource ImageShadowNode::getImageSource() const {
   auto size = layoutMetrics.getContentFrame().size;
   auto scale = layoutMetrics.pointScaleFactor;
   auto targetImageArea = size.width * size.height * scale * scale;
-  auto bestFit = kFloatMax;
+  auto bestFit = std::numeric_limits<Float>::infinity();
 
   auto bestSource = ImageSource{};
 

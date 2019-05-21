@@ -9,10 +9,11 @@
  */
 'use strict';
 
-const RCTActionSheetManager = require('NativeModules').ActionSheetManager;
+const RCTActionSheetManager = require('../BatchedBridge/NativeModules')
+  .ActionSheetManager;
 
 const invariant = require('invariant');
-const processColor = require('processColor');
+const processColor = require('../StyleSheet/processColor');
 
 /**
  * Display action sheets and share sheets on iOS.

@@ -41,7 +41,7 @@ import static org.junit.Assert.assertNotNull;
 
 @PrepareForTest({Arguments.class})
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ShareModuleTest {
 
   private Activity mActivity;

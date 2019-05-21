@@ -19,9 +19,14 @@ rn_android_library(
         ["**/*.java"],
         exclude = INTERFACES,
     ),
+    is_androidx = True,
     proguard_config = "reactnative.pro",
     provided_deps = [
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+        react_native_dep("third-party/android/androidx:annotation"),
+        react_native_dep("third-party/android/androidx:core"),
+        react_native_dep("third-party/android/androidx:fragment"),
+        react_native_dep("third-party/android/androidx:legacy-support-core-ui"),
+        react_native_dep("third-party/android/androidx:legacy-support-core-utils"),
     ],
     required_for_source_only_abi = True,
     visibility = [
@@ -42,6 +47,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/uimanager/common:common"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
+        react_native_target("java/com/facebook/react/turbomodule/core:jscallinvokerholder"),
     ] + ([react_native_target("jni/react/jni:jni")] if not IS_OSS_BUILD else []),
     exported_deps = [
         react_native_dep("java/com/facebook/jni:jni"),
@@ -54,9 +60,14 @@ rn_android_library(
 rn_android_library(
     name = "interfaces",
     srcs = glob(INTERFACES),
+    is_androidx = True,
     proguard_config = "reactnative.pro",
     provided_deps = [
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+        react_native_dep("third-party/android/androidx:annotation"),
+        react_native_dep("third-party/android/androidx:core"),
+        react_native_dep("third-party/android/androidx:fragment"),
+        react_native_dep("third-party/android/androidx:legacy-support-core-ui"),
+        react_native_dep("third-party/android/androidx:legacy-support-core-utils"),
     ],
     required_for_source_only_abi = True,
     visibility = [

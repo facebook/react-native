@@ -57,8 +57,8 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
 
   ConcreteViewShadowNode(
       const ShadowNodeFragment &fragment,
-      const ShadowNodeCloneFunction &cloneFunction)
-      : BaseShadowNode(fragment, cloneFunction),
+      const ComponentDescriptor &componentDescriptor)
+      : BaseShadowNode(fragment, componentDescriptor),
         AccessibleShadowNode(
             std::static_pointer_cast<const ConcreteViewProps>(fragment.props)),
         YogaLayoutableShadowNode() {
@@ -115,6 +115,10 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
         clonedChildShadowNode,
         suggestedIndex);
     return clonedChildShadowNode.get();
+  }
+
+  Transform getTransform() const override {
+    return BaseShadowNode::getProps()->transform;
   }
 
 #pragma mark - DebugStringConvertible

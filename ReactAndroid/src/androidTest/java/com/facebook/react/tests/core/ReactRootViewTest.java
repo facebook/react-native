@@ -8,8 +8,8 @@ package com.facebook.react.tests.core;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import android.app.Instrumentation;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.runner.AndroidJUnit4;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;

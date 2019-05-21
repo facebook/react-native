@@ -9,21 +9,18 @@
  */
 'use strict';
 
-const Platform = require('Platform');
-const Systrace = require('Systrace');
+const Platform = require('../../Utilities/Platform');
+const Systrace = require('../../Performance/Systrace');
 
 const invariant = require('invariant');
-const {Timing} = require('NativeModules');
-const BatchedBridge = require('BatchedBridge');
+const {Timing} = require('../../BatchedBridge/NativeModules');
+const BatchedBridge = require('../../BatchedBridge/BatchedBridge');
 
-import type {ExtendedError} from 'parseErrorStack';
+import type {ExtendedError} from '../Devtools/parseErrorStack';
 
 let _performanceNow = null;
 function performanceNow() {
   if (!_performanceNow) {
-    /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
-     * error found when Flow v0.54 was deployed. To see the error delete this
-     * comment and run Flow. */
     _performanceNow = require('fbjs/lib/performanceNow');
   }
   return _performanceNow();
@@ -85,7 +82,7 @@ function _allocateCallback(func: Function, type: JSTimerType): number {
   callbacks[freeIndex] = func;
   types[freeIndex] = type;
   if (__DEV__) {
-    const parseErrorStack = require('parseErrorStack');
+    const parseErrorStack = require('../Devtools/parseErrorStack');
     const error: ExtendedError = new Error();
     error.framesToPop = 1;
     const stack = parseErrorStack(error);
@@ -102,9 +99,6 @@ function _allocateCallback(func: Function, type: JSTimerType): number {
  * recurring (setInterval).
  */
 function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
-  /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
-   * error found when Flow v0.54 was deployed. To see the error delete this
-   * comment and run Flow. */
   require('fbjs/lib/warning')(
     timerID <= GUID,
     'Tried to call timer with ID %s but no such timer exists.',

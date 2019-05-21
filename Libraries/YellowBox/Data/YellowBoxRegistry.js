@@ -10,15 +10,15 @@
 
 'use strict';
 
-const YellowBoxWarning = require('YellowBoxWarning');
+const YellowBoxWarning = require('./YellowBoxWarning');
 
-import type {Category} from 'YellowBoxCategory';
+import type {Category} from './YellowBoxCategory';
 
 export type Registry = Map<Category, $ReadOnlyArray<YellowBoxWarning>>;
 
 export type Observer = (registry: Registry) => void;
 
-type IgnorePattern = string | RegExp;
+export type IgnorePattern = string | RegExp;
 
 export type Subscription = $ReadOnly<{|
   unsubscribe: () => void,

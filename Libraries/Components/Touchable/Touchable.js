@@ -10,21 +10,21 @@
 
 'use strict';
 
-const BoundingDimensions = require('BoundingDimensions');
-const Platform = require('Platform');
-const Position = require('Position');
-const React = require('React');
-const ReactNative = require('ReactNative');
-const StyleSheet = require('StyleSheet');
-const TVEventHandler = require('TVEventHandler');
-const UIManager = require('UIManager');
-const View = require('View');
+const BoundingDimensions = require('./BoundingDimensions');
+const Platform = require('../../Utilities/Platform');
+const Position = require('./Position');
+const React = require('react');
+const ReactNative = require('../../Renderer/shims/ReactNative');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const TVEventHandler = require('../AppleTV/TVEventHandler');
+const UIManager = require('../../ReactNative/UIManager');
+const View = require('../View/View');
 
 const keyMirror = require('fbjs/lib/keyMirror');
-const normalizeColor = require('normalizeColor');
+const normalizeColor = require('../../Color/normalizeColor');
 
-import type {PressEvent} from 'CoreEventTypes';
-import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
+import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 
 const extractSingleTouch = nativeEvent => {
   const touches = nativeEvent.touches;
@@ -35,8 +35,8 @@ const extractSingleTouch = nativeEvent => {
   return !hasTouches && hasChangedTouches
     ? changedTouches[0]
     : hasTouches
-      ? touches[0]
-      : nativeEvent;
+    ? touches[0]
+    : nativeEvent;
 };
 
 /**
@@ -484,6 +484,7 @@ const TouchableMixin = {
    * Place as callback for a DOM element's `onResponderRelease` event.
    */
   touchableHandleResponderRelease: function(e: PressEvent) {
+    this.pressInLocation = null;
     this._receiveSignal(Signals.RESPONDER_RELEASE, e);
   },
 
@@ -491,6 +492,7 @@ const TouchableMixin = {
    * Place as callback for a DOM element's `onResponderTerminate` event.
    */
   touchableHandleResponderTerminate: function(e: PressEvent) {
+    this.pressInLocation = null;
     this._receiveSignal(Signals.RESPONDER_TERMINATED, e);
   },
 
@@ -558,9 +560,13 @@ const TouchableMixin = {
           dimensionsOnActivate.height +
           pressExpandBottom;
     if (isTouchWithinActive) {
+      const prevState = this.state.touchable.touchState;
       this._receiveSignal(Signals.ENTER_PRESS_RECT, e);
       const curState = this.state.touchable.touchState;
-      if (curState === States.RESPONDER_INACTIVE_PRESS_IN) {
+      if (
+        curState === States.RESPONDER_INACTIVE_PRESS_IN &&
+        prevState !== States.RESPONDER_INACTIVE_PRESS_IN
+      ) {
         // fix for t7967420
         this._cancelLongPressDelayTimeout();
       }
@@ -866,7 +872,7 @@ const TouchableMixin = {
           this._startHighlight(e);
           this._endHighlight(e);
         }
-        if (Platform.OS === 'android') {
+        if (Platform.OS === 'android' && !this.props.touchSoundDisabled) {
           this._playTouchSound();
         }
         this.touchableHandlePress(e);

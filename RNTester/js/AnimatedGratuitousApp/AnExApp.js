@@ -11,10 +11,15 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Animated, LayoutAnimation, PanResponder, StyleSheet, View} = ReactNative;
+const {
+  Animated,
+  LayoutAnimation,
+  PanResponder,
+  StyleSheet,
+  View,
+} = require('react-native');
 
-const AnExSet = require('AnExSet');
+const AnExSet = require('./AnExSet');
 
 const CIRCLE_SIZE = 80;
 const CIRCLE_MARGIN = 18;

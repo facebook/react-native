@@ -44,6 +44,7 @@ void UIManagerBinding::startSurface(
   folly::dynamic parameters = folly::dynamic::object();
   parameters["rootTag"] = surfaceId;
   parameters["initialProps"] = initalProps;
+  parameters["fabric"] = true;
 
   auto module = getModule(runtime, "AppRegistry");
   auto method = module.getPropertyAsFunction(runtime, "runApplication");
@@ -310,6 +311,69 @@ jsi::Value UIManagerBinding::get(
           result.setProperty(runtime, "width", frame.size.width);
           result.setProperty(runtime, "height", frame.size.height);
           return result;
+        });
+  }
+
+  // Legacy API
+  if (methodName == "measureLayout") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        4,
+        [&uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          auto layoutMetrics = uiManager.getRelativeLayoutMetrics(
+              *shadowNodeFromValue(runtime, arguments[0]),
+              shadowNodeFromValue(runtime, arguments[1]).get());
+
+          if (layoutMetrics == EmptyLayoutMetrics) {
+            auto onFailFunction =
+                arguments[2].getObject(runtime).getFunction(runtime);
+            onFailFunction.call(runtime);
+            return jsi::Value::undefined();
+          }
+
+          auto onSuccessFunction =
+              arguments[3].getObject(runtime).getFunction(runtime);
+          auto frame = layoutMetrics.frame;
+
+          onSuccessFunction.call(
+              runtime,
+              {jsi::Value{runtime, (double)frame.origin.x},
+               jsi::Value{runtime, (double)frame.origin.y},
+               jsi::Value{runtime, (double)frame.size.width},
+               jsi::Value{runtime, (double)frame.size.height}});
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (methodName == "measureInWindow") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        2,
+        [&uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          auto layoutMetrics = uiManager.getRelativeLayoutMetrics(
+              *shadowNodeFromValue(runtime, arguments[0]), nullptr);
+
+          auto onSuccessFunction =
+              arguments[1].getObject(runtime).getFunction(runtime);
+          auto frame = layoutMetrics.frame;
+
+          onSuccessFunction.call(
+              runtime,
+              {jsi::Value{runtime, (double)frame.origin.x},
+               jsi::Value{runtime, (double)frame.origin.y},
+               jsi::Value{runtime, (double)frame.size.width},
+               jsi::Value{runtime, (double)frame.size.height}});
+          return jsi::Value::undefined();
         });
   }
 

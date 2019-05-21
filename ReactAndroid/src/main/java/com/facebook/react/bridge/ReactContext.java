@@ -18,6 +18,7 @@ import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import java.lang.ref.WeakReference;
+import java.util.concurrent.CopyOnWriteArraySet;
 import javax.annotation.Nullable;
 
 /**
@@ -31,35 +32,10 @@ public class ReactContext extends ContextWrapper {
       "ReactContext#getJSModule should only happen once initialize() has been called on your " +
       "native module.";
 
-  private final SynchronizedWeakHashSet<LifecycleEventListener> mLifecycleEventListeners =
-      new SynchronizedWeakHashSet<>();
-  private final SynchronizedWeakHashSet<ActivityEventListener> mActivityEventListeners =
-      new SynchronizedWeakHashSet<>();
-
-
-  private final GuardedIteration<LifecycleEventListener> mResumeIteration =
-    new GuardedIteration<LifecycleEventListener>() {
-      @Override
-      public void onIterate(LifecycleEventListener listener) {
-        listener.onHostResume();
-      }
-    };
-
-  private final GuardedIteration<LifecycleEventListener> mPauseIteration =
-    new GuardedIteration<LifecycleEventListener>() {
-      @Override
-      public void onIterate(LifecycleEventListener listener) {
-        listener.onHostPause();
-      }
-    };
-
-  private final GuardedIteration<LifecycleEventListener> mDestroyIteration =
-    new GuardedIteration<LifecycleEventListener>() {
-      @Override
-      public void onIterate(LifecycleEventListener listener) {
-        listener.onHostDestroy();
-      }
-    };
+  private final CopyOnWriteArraySet<LifecycleEventListener> mLifecycleEventListeners =
+      new CopyOnWriteArraySet<>();
+  private final CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners =
+      new CopyOnWriteArraySet<>();
 
   private LifecycleState mLifecycleState = LifecycleState.BEFORE_CREATE;
 
@@ -89,6 +65,17 @@ public class ReactContext extends ContextWrapper {
     mCatalystInstance = catalystInstance;
 
     ReactQueueConfiguration queueConfig = catalystInstance.getReactQueueConfiguration();
+    initializeMessageQueueThreads(queueConfig);
+  }
+
+  /**
+   * Initialize message queue threads using a ReactQueueConfiguration.
+   * TODO (janzer) T43898341 Make this package instead of public
+   */
+  public void initializeMessageQueueThreads(ReactQueueConfiguration queueConfig) {
+    if (mUiMessageQueueThread != null || mNativeModulesMessageQueueThread != null || mJSMessageQueueThread != null) {
+      throw new IllegalStateException("Message queue threads already initialized");
+    }
     mUiMessageQueueThread = queueConfig.getUIQueueThread();
     mNativeModulesMessageQueueThread = queueConfig.getNativeModulesQueueThread();
     mJSMessageQueueThread = queueConfig.getJSQueueThread();
@@ -160,6 +147,10 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance != null && !mCatalystInstance.isDestroyed();
   }
 
+  public boolean hasCatalystInstance() {
+    return mCatalystInstance != null;
+  }
+
   public LifecycleState getLifecycleState() {
     return mLifecycleState;
   }
@@ -212,19 +203,26 @@ public class ReactContext extends ContextWrapper {
     mLifecycleState = LifecycleState.RESUMED;
     mCurrentActivity = new WeakReference(activity);
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_RESUME_START);
-    mLifecycleEventListeners.iterate(mResumeIteration);
+    for (LifecycleEventListener listener : mLifecycleEventListeners) {
+      try {
+        listener.onHostResume();
+      } catch (RuntimeException e) {
+        handleException(e);
+      }
+    }
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_RESUME_END);
   }
 
-  public void onNewIntent(@Nullable Activity activity, final Intent intent) {
+  public void onNewIntent(@Nullable Activity activity, Intent intent) {
     UiThreadUtil.assertOnUiThread();
     mCurrentActivity = new WeakReference(activity);
-    mActivityEventListeners.iterate(new GuardedIteration<ActivityEventListener>() {
-      @Override
-      public void onIterate(ActivityEventListener listener) {
+    for (ActivityEventListener listener : mActivityEventListeners) {
+      try {
         listener.onNewIntent(intent);
+      } catch (RuntimeException e) {
+        handleException(e);
       }
-    });
+    }
   }
 
   /**
@@ -233,7 +231,13 @@ public class ReactContext extends ContextWrapper {
   public void onHostPause() {
     mLifecycleState = LifecycleState.BEFORE_RESUME;
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_START);
-    mLifecycleEventListeners.iterate(mPauseIteration);
+    for (LifecycleEventListener listener : mLifecycleEventListeners) {
+      try {
+        listener.onHostPause();
+      } catch (RuntimeException e) {
+        handleException(e);
+      }
+    }
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_END);
   }
 
@@ -243,7 +247,13 @@ public class ReactContext extends ContextWrapper {
   public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_CREATE;
-    mLifecycleEventListeners.iterate(mDestroyIteration);
+    for (LifecycleEventListener listener : mLifecycleEventListeners) {
+      try {
+        listener.onHostDestroy();
+      } catch (RuntimeException e) {
+        handleException(e);
+      }
+    }
     mCurrentActivity = null;
   }
 
@@ -261,13 +271,14 @@ public class ReactContext extends ContextWrapper {
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onActivityResult}
    */
-  public void onActivityResult(final Activity activity, final int requestCode, final int resultCode, final Intent data) {
-    mActivityEventListeners.iterate(new GuardedIteration<ActivityEventListener>() {
-      @Override
-      public void onIterate(ActivityEventListener listener) {
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    for (ActivityEventListener listener : mActivityEventListeners) {
+      try {
         listener.onActivityResult(activity, requestCode, resultCode, data);
+      } catch (RuntimeException e) {
+        handleException(e);
       }
-    });
+    }
   }
 
   public void assertOnUiQueueThread() {
@@ -363,16 +374,4 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance.getJavaScriptContextHolder();
   }
 
-  private abstract class GuardedIteration<T> implements SynchronizedWeakHashSet.Iteration<T> {
-    @Override
-    public void iterate(T listener) {
-      try {
-        onIterate(listener);
-      } catch (RuntimeException e) {
-        handleException(e);
-      }
-    }
-
-    public abstract void onIterate(T listener);
-  }
 }

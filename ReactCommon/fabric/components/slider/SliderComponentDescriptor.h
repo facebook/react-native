@@ -22,24 +22,13 @@ class SliderComponentDescriptor final
  public:
   SliderComponentDescriptor(
       EventDispatcher::Shared eventDispatcher,
-      const SharedContextContainer &contextContainer)
+      ContextContainer::Shared const &contextContainer)
       : ConcreteComponentDescriptor(eventDispatcher),
-  // TODO (39486757): implement image manager on Android, currently Android does
-  // not have an ImageManager so this will crash
-#ifndef ANDROID
-        imageManager_(
-            contextContainer
-                ? contextContainer->getInstance<SharedImageManager>(
-                      "ImageManager")
-                : nullptr),
-#else
-        imageManager_(nullptr),
-#endif
+        imageManager_(std::make_shared<ImageManager>(contextContainer)),
         measurementsManager_(
             SliderMeasurementsManager::shouldMeasureSlider()
                 ? std::make_shared<SliderMeasurementsManager>(contextContainer)
-                : nullptr) {
-  }
+                : nullptr) {}
 
   void adopt(UnsharedShadowNode shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);

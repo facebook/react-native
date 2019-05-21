@@ -6,8 +6,8 @@
 #include "AsyncEventBeat.h"
 #include "EventEmitterWrapper.h"
 #include "ReactNativeConfigHolder.h"
+#include "StateWrapperImpl.h"
 
-#include <android/log.h>
 #include <fb/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
@@ -16,11 +16,11 @@
 #include <react/core/EventBeat.h>
 #include <react/core/EventEmitter.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 #include <react/uimanager/Scheduler.h>
 #include <react/uimanager/SchedulerDelegate.h>
-#include <react/uimanager/TimeUtils.h>
 #include <react/uimanager/primitives.h>
+#include <react/utils/TimeUtils.h>
 
 using namespace facebook::jni;
 using namespace facebook::jsi;
@@ -67,7 +67,7 @@ void Binding::stopSurface(jint surfaceId) {
 }
 
 void Binding::setConstraints(
-    jint rootTag,
+    jint surfaceId,
     jfloat minWidth,
     jfloat maxWidth,
     jfloat minHeight,
@@ -84,7 +84,7 @@ void Binding::setConstraints(
     constraints.minimumSize = minimumSize;
     constraints.maximumSize = maximumSize;
 
-    scheduler_->constraintSurfaceLayout(rootTag, constraints, context);
+    scheduler_->constraintSurfaceLayout(surfaceId, constraints, context);
   }
 }
 
@@ -95,15 +95,15 @@ void Binding::installFabricUIManager(
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
     ComponentFactoryDelegate* componentsRegistry,
     jni::alias_ref<jobject> reactNativeConfig) {
-  Runtime* runtime = (Runtime*)jsContextNativePointer;
-
   javaUIManager_ = make_global(javaUIManager);
 
-  SharedContextContainer contextContainer =
+  ContextContainer::Shared contextContainer =
       std::make_shared<ContextContainer>();
 
   auto sharedJSMessageQueueThread =
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
+
+  Runtime* runtime = (Runtime*)jsContextNativePointer;
   RuntimeExecutor runtimeExecutor =
       [runtime, sharedJSMessageQueueThread](
           std::function<void(facebook::jsi::Runtime & runtime)>&& callback) {
@@ -113,18 +113,20 @@ void Binding::installFabricUIManager(
             });
       };
 
+  eventBeatManager->setRuntimeExecutor(runtimeExecutor);
+
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
   EventBeatFactory synchronousBeatFactory =
-      [eventBeatManager, runtime, localJavaUIManager]() mutable {
+      [eventBeatManager, runtimeExecutor, localJavaUIManager]() {
         return std::make_unique<AsyncEventBeat>(
-            eventBeatManager, runtime, localJavaUIManager);
+            eventBeatManager, runtimeExecutor, localJavaUIManager);
       };
 
   EventBeatFactory asynchronousBeatFactory =
-      [eventBeatManager, runtime, localJavaUIManager]() mutable {
+      [eventBeatManager, runtimeExecutor, localJavaUIManager]() {
         return std::make_unique<AsyncEventBeat>(
-            eventBeatManager, runtime, localJavaUIManager);
+            eventBeatManager, runtimeExecutor, localJavaUIManager);
       };
 
   std::shared_ptr<const ReactNativeConfig> config = std::make_shared<const ReactNativeConfigHolder>(reactNativeConfig);
@@ -159,36 +161,12 @@ local_ref<JString> getPlatformComponentName(const ShadowView& shadowView) {
       std::dynamic_pointer_cast<const ScrollViewProps>(shadowView.props);
 
   if (newViewProps &&
-      newViewProps->yogaStyle.flexDirection == YGFlexDirectionRow) {
+      newViewProps->getProbablyMoreHorizontalThanVertical_DEPRECATED()) {
     componentName = make_jstring("AndroidHorizontalScrollView");
   } else {
     componentName = make_jstring(shadowView.componentName);
   }
   return componentName;
-}
-
-local_ref<JMountItem::javaobject> createCreateMountItem(
-    const jni::global_ref<jobject>& javaUIManager,
-    const ShadowViewMutation& mutation,
-    const Tag rootTag) {
-  static auto createJavaInstruction =
-      jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<alias_ref<JMountItem>(jstring, jint, jint, jboolean)>(
-              "createMountItem");
-
-  auto newChildShadowView = mutation.newChildShadowView;
-
-  local_ref<JString> componentName =
-      getPlatformComponentName(newChildShadowView);
-
-  jboolean isVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics;
-
-  return createJavaInstruction(
-      javaUIManager,
-      componentName.get(),
-      rootTag,
-      newChildShadowView.tag,
-      isVirtual);
 }
 
 local_ref<JMountItem::javaobject> createUpdateEventEmitterMountItem(
@@ -299,6 +277,30 @@ local_ref<JMountItem::javaobject> createUpdateLocalData(
       castReadableMap(readableNativeMap).get());
 }
 
+local_ref<JMountItem::javaobject> createUpdateStateMountItem(
+    const jni::global_ref<jobject>& javaUIManager,
+    const ShadowViewMutation& mutation) {
+  static auto updateStateInstruction =
+      jni::findClassStatic(UIManagerJavaDescriptor)
+          ->getMethod<alias_ref<JMountItem>(jint, jobject)>(
+              "updateStateMountItem");
+
+  auto state = mutation.newChildShadowView.state;
+
+  // Do not hold onto Java object from C
+  // We DO want to hold onto C object from Java, since we don't know the
+  // lifetime of the Java object
+  auto javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
+  StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
+  cStateWrapper->state_ = state;
+
+  return updateStateInstruction(
+      javaUIManager,
+      mutation.newChildShadowView.tag,
+      javaStateWrapper.get());
+}
+
+
 local_ref<JMountItem::javaobject> createRemoveMountItem(
     const jni::global_ref<jobject>& javaUIManager,
     const ShadowViewMutation& mutation) {
@@ -324,12 +326,44 @@ local_ref<JMountItem::javaobject> createDeleteMountItem(
   return deleteInstruction(javaUIManager, mutation.oldChildShadowView.tag);
 }
 
+local_ref<JMountItem::javaobject> createCreateMountItem(
+    const jni::global_ref<jobject>& javaUIManager,
+    const ShadowViewMutation& mutation,
+    const Tag surfaceId) {
+  static auto createJavaInstruction =
+      jni::findClassStatic(UIManagerJavaDescriptor)
+          ->getMethod<alias_ref<JMountItem>(jstring, jint, jint, jboolean)>(
+              "createMountItem");
+
+  auto newChildShadowView = mutation.newChildShadowView;
+
+  local_ref<JString> componentName =
+      getPlatformComponentName(newChildShadowView);
+
+  jboolean isLayoutable = newChildShadowView.layoutMetrics != EmptyLayoutMetrics;
+
+  return createJavaInstruction(
+      javaUIManager,
+      componentName.get(),
+      surfaceId,
+      newChildShadowView.tag,
+      isLayoutable);
+}
+
 void Binding::schedulerDidFinishTransaction(
-    const Tag rootTag,
-    const ShadowViewMutationList& mutations,
-    const long commitStartTime,
-    const long layoutTime) {
+    MountingCoordinator::Shared const &mountingCoordinator) {
   SystraceSection s("FabricUIManager::schedulerDidFinishTransaction");
+
+  auto mountingTransaction = mountingCoordinator->pullTransaction();
+
+  if (!mountingTransaction.has_value()) {
+    return;
+  }
+
+  auto telemetry = mountingTransaction->getTelemetry();
+  auto surfaceId = mountingTransaction->getSurfaceId();
+  auto &mutations = mountingTransaction->getMutations();
+
   std::vector<local_ref<jobject>> queue;
   // Upper bound estimation of mount items to be delivered to Java side.
   int size = mutations.size() * 3 + 42;
@@ -340,6 +374,7 @@ void Binding::schedulerDidFinishTransaction(
       JArrayClass<JMountItem::javaobject>::newArray(size);
 
   auto mountItems = *(mountItemsArray);
+  std::unordered_set<Tag> deletedViewTags;
 
   int position = 0;
   for (const auto& mutation : mutations) {
@@ -351,9 +386,12 @@ void Binding::schedulerDidFinishTransaction(
 
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
-        mountItems[position++] =
-            createCreateMountItem(javaUIManager_, mutation, rootTag);
-        break;
+        if (mutation.newChildShadowView.props->revision > 1
+            || deletedViewTags.find(mutation.newChildShadowView.tag) != deletedViewTags.end()) {
+          mountItems[position++] =
+              createCreateMountItem(javaUIManager_, mutation, surfaceId);
+        }
+      break;
       }
       case ShadowViewMutation::Remove: {
         if (!isVirtual) {
@@ -365,6 +403,8 @@ void Binding::schedulerDidFinishTransaction(
       case ShadowViewMutation::Delete: {
         mountItems[position++] =
             createDeleteMountItem(javaUIManager_, mutation);
+
+        deletedViewTags.insert(mutation.oldChildShadowView.tag);
         break;
       }
       case ShadowViewMutation::Update: {
@@ -378,6 +418,11 @@ void Binding::schedulerDidFinishTransaction(
               mutation.newChildShadowView.localData) {
             mountItems[position++] =
                 createUpdateLocalData(javaUIManager_, mutation);
+          }
+          if (mutation.oldChildShadowView.state !=
+              mutation.newChildShadowView.state) {
+            mountItems[position++] =
+                createUpdateStateMountItem(javaUIManager_, mutation);
           }
 
           auto updateLayoutMountItem =
@@ -399,29 +444,42 @@ void Binding::schedulerDidFinishTransaction(
       }
       case ShadowViewMutation::Insert: {
         if (!isVirtual) {
-          mountItems[position++] =
-              createInsertMountItem(javaUIManager_, mutation);
+          // Insert item
+          mountItems[position++] = createInsertMountItem(javaUIManager_, mutation);
 
-          mountItems[position++] =
-              createUpdatePropsMountItem(javaUIManager_, mutation);
+          if (mutation.newChildShadowView.props->revision > 1 ||
+              deletedViewTags.find(mutation.newChildShadowView.tag) != deletedViewTags.end()) {
+            mountItems[position++] =
+                createUpdatePropsMountItem(javaUIManager_, mutation);
+          }
 
+          // LocalData
+          if (mutation.newChildShadowView.localData) {
+            mountItems[position++] =
+                createUpdateLocalData(javaUIManager_, mutation);
+          }
+
+          // Layout
           auto updateLayoutMountItem =
               createUpdateLayoutMountItem(javaUIManager_, mutation);
           if (updateLayoutMountItem) {
             mountItems[position++] = updateLayoutMountItem;
           }
 
-          if (mutation.newChildShadowView.localData) {
+          // State
+          if (mutation.newChildShadowView.state) {
             mountItems[position++] =
-                createUpdateLocalData(javaUIManager_, mutation);
+                createUpdateStateMountItem(javaUIManager_, mutation);
           }
         }
 
+        // EventEmitter
         auto updateEventEmitterMountItem =
             createUpdateEventEmitterMountItem(javaUIManager_, mutation);
         if (updateEventEmitterMountItem) {
           mountItems[position++] = updateEventEmitterMountItem;
         }
+
         break;
       }
       default: {
@@ -449,8 +507,8 @@ void Binding::schedulerDidFinishTransaction(
   scheduleMountItems(
       javaUIManager_,
       batch.get(),
-      commitStartTime,
-      layoutTime,
+      telemetry.getCommitStartTime(),
+      telemetry.getLayoutTime(),
       finishTransactionStartTime,
       finishTransactionEndTime);
 }
@@ -461,17 +519,19 @@ void Binding::setPixelDensity(float pointScaleFactor) {
 
 void Binding::schedulerDidRequestPreliminaryViewAllocation(
     const SurfaceId surfaceId,
-    const ComponentName componentName,
-    bool isLayoutable,
-    const ComponentHandle componentHandle) {
-  if (isLayoutable) {
-    static auto preallocateView =
-        jni::findClassStatic(UIManagerJavaDescriptor)
-            ->getMethod<void(jint, jstring)>("preallocateView");
+    const ShadowView &shadowView) {
 
-    preallocateView(
-        javaUIManager_, surfaceId, make_jstring(componentName).get());
-  }
+  bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
+
+  static auto preallocateView =
+      jni::findClassStatic(UIManagerJavaDescriptor)
+          ->getMethod<void(jint, jint, jstring, ReadableMap::javaobject, jboolean)>("preallocateView");
+
+  local_ref<ReadableMap::javaobject> readableMap =
+      castReadableMap(ReadableNativeMap::newObjectCxxArgs(shadowView.props->rawProps));
+  auto component = getPlatformComponentName(shadowView);
+  preallocateView(
+      javaUIManager_, surfaceId, shadowView.tag, component.get(), readableMap.get(), isLayoutableShadowNode);
 }
 
 void Binding::registerNatives() {

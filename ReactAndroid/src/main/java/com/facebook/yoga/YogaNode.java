@@ -10,11 +10,11 @@ import javax.annotation.Nullable;
 
 public abstract class YogaNode {
   public static YogaNode create() {
-    return new YogaNodeJNI();
+    return YogaConfig.useBatchingForLayoutOutputs ? new YogaNodeJNIBatching() : new YogaNodeJNI();
   }
 
   public static YogaNode create(YogaConfig config) {
-    return new YogaNodeJNI(config);
+    return YogaConfig.useBatchingForLayoutOutputs ? new YogaNodeJNIBatching(config) : new YogaNodeJNI(config);
   }
 
   public abstract void reset();
@@ -89,6 +89,8 @@ public abstract class YogaNode {
 
   public abstract void setPositionType(YogaPositionType positionType);
 
+  public abstract YogaWrap getWrap();
+
   public abstract void setWrap(YogaWrap flexWrap);
 
   public abstract YogaOverflow getOverflow();
@@ -98,6 +100,8 @@ public abstract class YogaNode {
   public abstract YogaDisplay getDisplay();
 
   public abstract void setDisplay(YogaDisplay display);
+
+  public abstract float getFlex();
 
   public abstract void setFlex(float flex);
 
@@ -207,9 +211,16 @@ public abstract class YogaNode {
 
   public abstract boolean isMeasureDefined();
 
+  public abstract boolean isBaselineDefined();
+
   public abstract void setData(Object data);
 
+  @Nullable
   public abstract Object getData();
 
   public abstract void print();
+
+  public abstract void setStyleInputs(float[] styleInputs, int size);
+
+  public abstract YogaNode cloneWithoutChildren();
 }

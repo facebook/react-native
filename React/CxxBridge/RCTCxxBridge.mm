@@ -99,6 +99,19 @@ static bool isRAMBundle(NSData *script) {
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
 
+static void notifyAboutModuleSetup(RCTPerformanceLogger *performanceLogger, const char *tag) {
+  NSString *moduleName = [[NSString alloc] initWithUTF8String:tag];
+  if (moduleName) {
+    int64_t setupTime = [performanceLogger durationForTag:RCTPLNativeModuleSetup];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidSetupModuleNotification
+                                                        object:nil
+                                                      userInfo:@{
+                                                                 RCTDidSetupModuleNotificationModuleNameKey: moduleName,
+                                                                 RCTDidSetupModuleNotificationSetupTimeKey: @(setupTime)
+                                                                 }];
+  }
+}
+
 static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger) {
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
   ReactMarker::logTaggedMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *__unused tag) {
@@ -116,11 +129,16 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
         [weakPerformanceLogger appendStopForTag:RCTPLRAMNativeRequires];
         [weakPerformanceLogger addValue:1 forTag:RCTPLRAMNativeRequiresCount];
         break;
+      case ReactMarker::NATIVE_MODULE_SETUP_START:
+        [weakPerformanceLogger markStartForTag:RCTPLNativeModuleSetup];
+        break;
+      case ReactMarker::NATIVE_MODULE_SETUP_STOP:
+        [weakPerformanceLogger markStopForTag:RCTPLNativeModuleSetup];
+        notifyAboutModuleSetup(weakPerformanceLogger, tag);
+        break;
       case ReactMarker::CREATE_REACT_CONTEXT_STOP:
       case ReactMarker::JS_BUNDLE_STRING_CONVERT_START:
       case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
-      case ReactMarker::NATIVE_MODULE_SETUP_START:
-      case ReactMarker::NATIVE_MODULE_SETUP_STOP:
       case ReactMarker::REGISTER_JS_SEGMENT_START:
       case ReactMarker::REGISTER_JS_SEGMENT_STOP:
         // These are not used on iOS.
@@ -190,6 +208,11 @@ struct RCTInstanceCallback : public InstanceCallback {
 - (std::shared_ptr<MessageQueueThread>)jsMessageThread
 {
   return _jsMessageThread;
+}
+
+- (std::weak_ptr<Instance>)reactInstance
+{
+  return _reactInstance;
 }
 
 - (BOOL)isInspectable
@@ -409,9 +432,10 @@ struct RCTInstanceCallback : public InstanceCallback {
                                          "server or have included a .jsbundle file in your application bundle.");
     onSourceLoad(error, nil);
   } else {
+    __weak RCTCxxBridge *weakSelf = self;
     [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:^(NSError *error, RCTSource *source) {
       if (error) {
-        RCTLogError(@"Failed to load bundle(%@) with error:(%@ %@)", self.bundleURL, error.localizedDescription, error.localizedFailureReason);
+        [weakSelf handleError:error];
         return;
       }
       onSourceLoad(error, source);
@@ -983,7 +1007,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (void)reload
 {
   if (!_valid) {
-    RCTLogError(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
+    RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
   }
   [_parentBridge reload];
 }
@@ -1075,6 +1099,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       }
       [moduleData invalidate];
     }
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeDidInvalidateModulesNotification
+                                                        object:self->_parentBridge
+                                                      userInfo:@{@"bridge": self}];
 
     if (dispatch_group_wait(moduleInvalidation, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC))) {
       RCTLogError(@"Timed out waiting for modules to be invalidated");
@@ -1386,6 +1414,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 
   return _reactInstance->getJavaScriptContext();
+}
+
+- (void)invokeAsync:(std::function<void()>&&)func
+{
+  __block auto retainedFunc = std::move(func);
+  __weak __typeof(self) weakSelf = self;
+  [self _runAfterLoad:^{
+    __strong __typeof(self) strongSelf = weakSelf;
+    if (strongSelf->_reactInstance == nullptr) {
+      return;
+    }
+    strongSelf->_reactInstance->invokeAsync(std::move(retainedFunc));
+  }];
 }
 
 @end
