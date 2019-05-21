@@ -14,6 +14,7 @@ const LayoutAnimation = require('../../LayoutAnimation/LayoutAnimation');
 const invariant = require('invariant');
 const NativeEventEmitter = require('../../EventEmitter/NativeEventEmitter');
 const dismissKeyboard = require('../../Utilities/dismissKeyboard');
+
 import NativeKeyboardObserver from './NativeKeyboardObserver';
 const KeyboardEventEmitter = new NativeEventEmitter(NativeKeyboardObserver);
 
