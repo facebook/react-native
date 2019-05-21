@@ -292,7 +292,6 @@ public:
       const float mainSize,
       const float crossSize,
       const float ownerWidth);
-  void setAndPropogateUseLegacyFlag(bool useLegacyFlag);
   void setLayoutDoesLegacyFlagAffectsLayout(bool doesLegacyFlagAffectsLayout);
   void setLayoutDidUseLegacyFlag(bool didUseLegacyFlag);
   void markDirtyAndPropogateDownwards();

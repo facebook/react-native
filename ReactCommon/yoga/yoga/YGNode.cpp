@@ -539,13 +539,6 @@ bool YGNode::didUseLegacyFlag() {
   return didUseLegacyFlag;
 }
 
-void YGNode::setAndPropogateUseLegacyFlag(bool useLegacyFlag) {
-  config_->useLegacyStretchBehaviour = useLegacyFlag;
-  for_each(children_.begin(), children_.end(), [=](YGNodeRef childNode) {
-    childNode->getConfig()->useLegacyStretchBehaviour = useLegacyFlag;
-  });
-}
-
 void YGNode::setLayoutDoesLegacyFlagAffectsLayout(
     bool doesLegacyFlagAffectsLayout) {
   layout_.doesLegacyStretchFlagAffectsLayout = doesLegacyFlagAffectsLayout;

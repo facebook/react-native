@@ -3992,6 +3992,13 @@ static void YGRoundToPixelGrid(
   }
 }
 
+static void unsetUseLegacyFlagRecursively(YGNodeRef node) {
+  node->getConfig()->useLegacyStretchBehaviour = false;
+  for (auto child : node->getChildren()) {
+    unsetUseLegacyFlagRecursively(child);
+  }
+}
+
 void YGNodeCalculateLayoutWithContext(
     const YGNodeRef node,
     const float ownerWidth,
@@ -4096,16 +4103,16 @@ void YGNodeCalculateLayoutWithContext(
   // run experiments.
   if (node->getConfig()->shouldDiffLayoutWithoutLegacyStretchBehaviour &&
       node->didUseLegacyFlag()) {
-    const YGNodeRef originalNode = YGNodeDeepClone(node);
-    originalNode->resolveDimension();
+    const YGNodeRef nodeWithoutLegacyFlag = YGNodeDeepClone(node);
+    nodeWithoutLegacyFlag->resolveDimension();
     // Recursively mark nodes as dirty
-    originalNode->markDirtyAndPropogateDownwards();
+    nodeWithoutLegacyFlag->markDirtyAndPropogateDownwards();
     gCurrentGenerationCount++;
     // Rerun the layout, and calculate the diff
-    originalNode->setAndPropogateUseLegacyFlag(false);
+    unsetUseLegacyFlagRecursively(nodeWithoutLegacyFlag);
     YGMarkerLayoutData layoutMarkerData;
     if (YGLayoutNodeInternal(
-            originalNode,
+            nodeWithoutLegacyFlag,
             width,
             height,
             ownerDirection,
@@ -4115,37 +4122,37 @@ void YGNodeCalculateLayoutWithContext(
             ownerHeight,
             true,
             "initial",
-            originalNode->getConfig(),
+            nodeWithoutLegacyFlag->getConfig(),
             layoutMarkerData,
             layoutContext)) {
-      originalNode->setPosition(
-          originalNode->getLayout().direction,
+      nodeWithoutLegacyFlag->setPosition(
+          nodeWithoutLegacyFlag->getLayout().direction,
           ownerWidth,
           ownerHeight,
           ownerWidth);
       YGRoundToPixelGrid(
-          originalNode,
-          originalNode->getConfig()->pointScaleFactor,
+          nodeWithoutLegacyFlag,
+          nodeWithoutLegacyFlag->getConfig()->pointScaleFactor,
           0.0f,
           0.0f);
 
       // Set whether the two layouts are different or not.
       auto neededLegacyStretchBehaviour =
-          !originalNode->isLayoutTreeEqualToNode(*node);
+          !nodeWithoutLegacyFlag->isLayoutTreeEqualToNode(*node);
       node->setLayoutDoesLegacyFlagAffectsLayout(neededLegacyStretchBehaviour);
 
 #ifdef DEBUG
-      if (originalNode->getConfig()->printTree) {
+      if (nodeWithoutLegacyFlag->getConfig()->printTree) {
         YGNodePrint(
-            originalNode,
+            nodeWithoutLegacyFlag,
             (YGPrintOptions)(
                 YGPrintOptionsLayout | YGPrintOptionsChildren |
                 YGPrintOptionsStyle));
       }
 #endif
     }
-    YGConfigFreeRecursive(originalNode);
-    YGNodeFreeRecursive(originalNode);
+    YGConfigFreeRecursive(nodeWithoutLegacyFlag);
+    YGNodeFreeRecursive(nodeWithoutLegacyFlag);
   }
 }
 
