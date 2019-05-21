@@ -409,8 +409,8 @@ static YGSize RCTTextShadowViewMeasure(YGNodeRef node, float width, YGMeasureMod
   // `double` to `float`, and then rounding them to pixel grid in Yoga.
   CGFloat epsilon = 0.001;
   return (YGSize){
-    RCTYogaFloatFromCoreGraphicsFloat(size.width + epsilon),
-    RCTYogaFloatFromCoreGraphicsFloat(size.height + epsilon)
+    ceil(RCTYogaFloatFromCoreGraphicsFloat(size.width + epsilon)),
+    ceil(RCTYogaFloatFromCoreGraphicsFloat(size.height + epsilon))
   };
 }
 
