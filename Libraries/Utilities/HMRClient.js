@@ -14,6 +14,8 @@ const invariant = require('invariant');
 
 const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
 
+import NativeRedBox from '../NativeModules/specs/NativeRedBox';
+
 /**
  * HMR Client that receives from the server HMR updates and propagates them
  * runtime to reflects those changes.
@@ -72,9 +74,12 @@ Error: ${e.message}`;
     });
 
     hmrClient.on('update', () => {
-      if (Platform.OS === 'ios') {
-        const RCTRedBox = require('../BatchedBridge/NativeModules').RedBox;
-        RCTRedBox && RCTRedBox.dismiss && RCTRedBox.dismiss();
+      if (
+        Platform.OS === 'ios' &&
+        NativeRedBox != null &&
+        NativeRedBox.dismiss != null
+      ) {
+        NativeRedBox.dismiss();
       } else {
         const RCTExceptionsManager = require('../BatchedBridge/NativeModules')
           .ExceptionsManager;
