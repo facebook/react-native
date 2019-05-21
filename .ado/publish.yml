@@ -110,5 +110,5 @@ jobs:
         displayName: 'NuGet push'
         inputs:
           command: push
-          packagesToPush: '$(System.DefaultWorkingDirectory)/ReactAndroid*.nupkg'
+          packagesToPush: '$(System.DefaultWorkingDirectory)/OfficeReact.Android*.nupkg'
           publishVstsFeed: '86ec7889-a365-4cd1-90df-6e18cc2ea59f'
