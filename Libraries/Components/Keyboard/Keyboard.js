@@ -33,18 +33,29 @@ export type KeyboardEventEasing =
   | 'linear'
   | 'keyboard';
 
-type ScreenRect = $ReadOnly<{|
+export type KeyboardEventCoordinates = $ReadOnly<{|
   screenX: number,
   screenY: number,
   width: number,
   height: number,
 |}>;
 
-export type KeyboardEvent = $ReadOnly<{|
+export type KeyboardEvent = AndroidKeyboardEvent | IOSKeyboardEvent;
+
+type BaseKeyboardEvent = {|
   duration: number,
   easing: KeyboardEventEasing,
-  endCoordinates: ScreenRect,
-  startCoordinates: ScreenRect,
+  endCoordinates: KeyboardEventCoordinates,
+|};
+
+export type AndroidKeyboardEvent = $ReadOnly<{|
+  ...BaseKeyboardEvent,
+  easing: 'keyboard',
+|}>;
+
+export type IOSKeyboardEvent = $ReadOnly<{|
+  ...BaseKeyboardEvent,
+  startCoordinates: KeyboardEventCoordinates,
   isEventFromThisApp: boolean,
 |}>;
 
