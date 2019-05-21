@@ -325,7 +325,7 @@ class NetworkOverlay extends React.Component<Props, State> {
     WebSocketInterceptor.disableInterception();
   }
 
-  _renderItem = ({item, index}): ?React.Element<any> => {
+  _renderItem = ({item, index}): React.Element<any> => {
     const tableRowViewStyle = [
       styles.tableRow,
       index % 2 === 1 ? styles.tableRowOdd : styles.tableRowEven,

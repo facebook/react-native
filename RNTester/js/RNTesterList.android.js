@@ -34,6 +34,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('./ImageExample'),
   },
   {
+    key: 'KeyboardAvoidingViewExample',
+    module: require('./KeyboardAvoidingViewExample'),
+  },
+  {
     key: 'ModalExample',
     module: require('./ModalExample'),
   },
@@ -183,10 +187,6 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'NativeAnimationsExample',
     module: require('./NativeAnimationsExample'),
-  },
-  {
-    key: 'NetInfoExample',
-    module: require('./NetInfoExample'),
   },
   {
     key: 'OrientationChangeExample',

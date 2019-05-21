@@ -12,11 +12,11 @@
 
 import type {SchemaType} from '../../../packages/react-native-codegen/src/CodegenSchema.js';
 
-const RCTRefreshControlNativeTypeSchema: SchemaType = {
+const PullToRefreshViewSchema: SchemaType = {
   modules: {
-    RCTRefreshControlNativeType: {
+    PullToRefreshView: {
       components: {
-        RCTRefreshControlNativeType: {
+        PullToRefreshView: {
           extendsProps: [
             {
               type: 'ReactNativeBuiltInType',
@@ -27,7 +27,6 @@ const RCTRefreshControlNativeTypeSchema: SchemaType = {
             {
               name: 'onRefresh',
               optional: true,
-
               bubblingType: 'bubble',
               typeAnnotation: {
                 type: 'EventTypeAnnotation',
@@ -78,4 +77,4 @@ const RCTRefreshControlNativeTypeSchema: SchemaType = {
   },
 };
 
-module.exports = RCTRefreshControlNativeTypeSchema;
+module.exports = PullToRefreshViewSchema;

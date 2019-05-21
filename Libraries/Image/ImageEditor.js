@@ -40,7 +40,7 @@ type ImageCropData = {
    * (Optional) the resizing mode to use when scaling the image. If the
    * `displaySize` param is not specified, this has no effect.
    */
-  resizeMode?: ?$Enum<{
+  resizeMode?: ?$Keys<{
     contain: string,
     cover: string,
     stretch: string,

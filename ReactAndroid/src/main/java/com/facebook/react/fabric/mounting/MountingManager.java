@@ -174,7 +174,7 @@ public class MountingManager {
       ThemedReactContext themedReactContext,
       String componentName,
       int reactTag,
-      ReadableMap props,
+      @Nullable ReadableMap props,
       boolean isLayoutable) {
     if (mTagToViewState.get(reactTag) != null) {
       return;
@@ -312,7 +312,7 @@ public class MountingManager {
       ThemedReactContext reactContext,
       String componentName,
       int reactTag,
-      ReadableMap props,
+      @Nullable ReadableMap props,
       boolean isLayoutable) {
 
     if (mTagToViewState.get(reactTag) != null) {

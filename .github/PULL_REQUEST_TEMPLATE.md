@@ -6,7 +6,7 @@
 
 ## Changelog
 
-<!-- Help reviewers and the release process by writing your own changelog entry. See http://facebook.github.io/react-native/docs/contributing#changelog for an example. -->
+<!-- Help reviewers and the release process by writing your own changelog entry. See https://github.com/facebook/react-native/wiki/Changelog for an example. -->
 
 [CATEGORY] [TYPE] - Message
 

@@ -64,7 +64,7 @@ function genModule(
   Object.assign(module, constants);
 
   if (module.getConstants == null) {
-    module.getConstants = () => constants;
+    module.getConstants = () => constants || Object.freeze({});
   } else {
     console.warn(
       `Unable to define method 'getConstants()' on NativeModule '${moduleName}'. NativeModule '${moduleName}' already has a constant or method called 'getConstants'. Please remove it.`,

@@ -56,8 +56,7 @@ const App = () => {
             <View style={styles.sectionContainer}>
               <Text style={styles.sectionTitle}>Learn More</Text>
               <Text style={styles.sectionDescription}>
-                Read the docs on what to do once seen how to work in React
-                Native.
+                Read the docs to discover what to do next:
               </Text>
             </View>
             <LearnMoreLinks />
