@@ -16,11 +16,11 @@ import * as TurboModuleRegistry from 'TurboModuleRegistry';
 export interface Spec extends TurboModule {
   +getConstants: () => {|BLOB_URI_SCHEME: string, BLOB_URI_HOST: ?string|};
   +addNetworkingHandler: () => void;
-  +addWebSocketHandler: (id: number | string) => void;
-  +removeWebSocketHandler: (id: number | string) => void;
-  +sendOverSocket: (blob: Object, id: number | string) => void;
-  +createFromParts: (parts: Array<Object>, blobId: number | string) => void;
-  +release: (blobId: number | string) => void;
+  +addWebSocketHandler: (id: number) => void;
+  +removeWebSocketHandler: (id: number) => void;
+  +sendOverSocket: (blob: Object, id: number) => void;
+  +createFromParts: (parts: Array<Object>, blobId: string) => void;
+  +release: (blobId: string) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('BlobModule');
