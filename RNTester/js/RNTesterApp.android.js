@@ -168,6 +168,8 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
           <View style={styles.container}>
             <Header
               title={ExampleModule.title}
+              /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue
+               * was found when making Flow check .android.js files. */
               onPressDrawer={() => this.drawer.openDrawer()}
             />
             <RNTesterExampleContainer
@@ -187,6 +189,8 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
       <View style={styles.container}>
         <Header
           title="RNTester"
+          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue
+           * was found when making Flow check .android.js files. */
           onPressDrawer={() => this.drawer.openDrawer()}
         />
         <RNTesterExampleList
