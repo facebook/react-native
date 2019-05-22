@@ -2859,11 +2859,8 @@ static void YGNodelayoutImpl(
         availableInnerMainDim = maxInnerMainDim;
       } else {
         if (!node->getConfig()->useLegacyStretchBehaviour &&
-            ((YGFloatIsUndefined(
-                  collectedFlexItemsValues.totalFlexGrowFactors) &&
-              collectedFlexItemsValues.totalFlexGrowFactors == 0) ||
-             (YGFloatIsUndefined(node->resolveFlexGrow()) &&
-              node->resolveFlexGrow() == 0))) {
+            (collectedFlexItemsValues.totalFlexGrowFactors == 0 ||
+             node->resolveFlexGrow() == 0)) {
           // If we don't have any children to flex or we can't flex the node
           // itself, space we've used is all space we need. Root node also
           // should be shrunk to minimum
