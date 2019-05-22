@@ -12,7 +12,7 @@
 #include <jsi/jsi.h>
 
 #include <jsireact/TurboModuleBinding.h>
-
+#include <jsireact/TurboCxxModule.h>
 #include <react/jni/JMessageQueueThread.h>
 
 #include "TurboModuleManager.h"
@@ -55,13 +55,18 @@ void TurboModuleManager::installJSIBindings() {
     return; // Runtime doesn't exist when attached to Chrome debugger.
   }
   TurboModuleBinding::install(*runtime_, std::make_shared<TurboModuleBinding>(
-      [this](const std::string &name) {
+      [this](const std::string &name) -> std::shared_ptr<TurboModule> {
         auto cxxModule = turboModuleManagerDelegate_->cthis()->getTurboModule(name, jsCallInvoker_);
         if (cxxModule) {
           return cxxModule;
         }
 
-        const auto moduleInstance = getJavaModule(name);
+        auto legacyCxxModule = getLegacyCxxJavaModule(name);
+        if (legacyCxxModule) {
+          return std::make_shared<react::TurboCxxModule>(legacyCxxModule->cthis()->getModule(), jsCallInvoker_);
+        }
+
+        auto moduleInstance = getJavaModule(name);
 
         if (moduleInstance) {
           return turboModuleManagerDelegate_->cthis()->getTurboModule(name, moduleInstance, jsCallInvoker_);
@@ -77,6 +82,12 @@ jni::global_ref<JTurboModule> TurboModuleManager::getJavaModule(std::string name
 
   auto module = jni::make_global(method(javaPart_.get(), name));
 
+  return module;
+}
+
+jni::global_ref<CxxModuleWrapper::javaobject> TurboModuleManager::getLegacyCxxJavaModule(std::string name) {
+  static auto method = turboModuleManagerDelegate_->getClass()->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(const std::string&)>("getLegacyCxxModule");
+  auto module = jni::make_global(method(turboModuleManagerDelegate_.get(), name));
   return module;
 }
 
