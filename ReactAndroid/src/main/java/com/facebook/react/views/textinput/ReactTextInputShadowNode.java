@@ -18,14 +18,9 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.uimanager.LayoutShadowNode;
-import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
-import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
-import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactBaseTextShadowNode;
 import com.facebook.react.views.text.ReactTextUpdate;
@@ -157,6 +152,10 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     mMostRecentEventCount = mostRecentEventCount;
   }
 
+  public int getMostRecentEventCount() {
+    return mMostRecentEventCount;
+  }
+
   @ReactProp(name = PROP_TEXT)
   public void setText(@Nullable String text) {
     mText = text;
@@ -188,6 +187,14 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
       mSelectionEnd = selection.getInt("end");
       markUpdated();
     }
+  }
+
+  public int getSelectionStart() {
+    return mSelectionStart;
+  }
+
+  public int getSelectionEnd() {
+    return mSelectionEnd;
   }
 
   @Override
