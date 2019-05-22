@@ -19,12 +19,12 @@ export interface Spec extends TurboModule {
   +getConstants: () => {|
     // Common interface
     isTesting: boolean,
-    reactNativeVersion: {
+    reactNativeVersion: {|
       major: number,
       minor: number,
       patch: number,
       prerelease: ?number,
-    },
+    |},
 
     // Android only
     Version?: number,
@@ -33,17 +33,17 @@ export interface Spec extends TurboModule {
     Fingerprint?: string,
     Model?: string,
     ServerHost?: string,
-    uiMode?: 'tv' | 'car' | 'desk' | 'watch' | 'normal' | 'unknown',
+    uiMode?: string,
 
     // iOS only
     forceTouchAvailable?: boolean,
     osVersion?: number,
     systemName?: string,
-    interfaceIdiom?: 'phone' | 'pad' | 'tv' | 'carplay' | 'unknown',
+    interfaceIdiom?: string,
   |};
 
   // Android only
-  +getAndroidID?: () => string;
+  +getAndroidID: () => string;
 }
 
 export default (Platform.OS === 'ios'
