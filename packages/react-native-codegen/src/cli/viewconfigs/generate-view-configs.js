@@ -10,8 +10,8 @@
 
 'use strict';
 
-const RNCodegen = require('../src/generators/RNCodegen.js');
-const RNParser = require('../src/generators/RNParser.js');
+const RNCodegen = require('../../generators/RNCodegen.js');
+const SchemaParser = require('../../parsers/schema');
 
 const path = require('path');
 
@@ -25,7 +25,7 @@ function generateFilesWithResults(
   test: boolean,
 ): Array<Result> {
   return files.reduce((aggregated, filename) => {
-    const schema = RNParser.parse(filename);
+    const schema = SchemaParser.parse(filename);
     if (schema && schema.modules) {
       const libraryName = path.basename(filename).replace('Schema.js', '');
       const success = RNCodegen.generate(

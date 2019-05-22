@@ -9,14 +9,14 @@
  */
 
 'use strict';
-import type {SchemaType} from '../src/CodegenSchema.js';
+import type {SchemaType} from '../../CodegenSchema.js';
 
-const RNParser = require('../src/generators/RNParser.js');
+const SchemaParser = require('../../parsers/schema');
 
 function combineSchemas(files: Array<string>): SchemaType {
   return files.reduce(
     (merged, filename) => {
-      const schema = RNParser.parse(filename);
+      const schema = SchemaParser.parse(filename);
       if (schema && schema.modules) {
         merged.modules = {...merged.modules, ...schema.modules};
       }

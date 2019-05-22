@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {SchemaType} from '../CodegenSchema.js';
+import type {SchemaType} from '../../CodegenSchema.js';
 
 function parse(filename: string): ?SchemaType {
   try {
