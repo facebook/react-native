@@ -10,6 +10,8 @@
 
 'use strict';
 
+import NativeHeapCapture from './NativeHeapCapture';
+
 const HeapCapture = {
   captureHeap: function(path: string) {
     let error = null;
@@ -20,10 +22,9 @@ const HeapCapture = {
       console.log('HeapCapture.captureHeap error: ' + e.toString());
       error = e.toString();
     }
-    require('../BatchedBridge/NativeModules').JSCHeapCapture.captureComplete(
-      path,
-      error,
-    );
+    if (NativeHeapCapture) {
+      NativeHeapCapture.captureComplete(path, error);
+    }
   },
 };
 
