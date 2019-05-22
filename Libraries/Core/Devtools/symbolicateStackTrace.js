@@ -12,7 +12,7 @@
 
 const getDevServer = require('./getDevServer');
 
-const {SourceCode} = require('../../BatchedBridge/NativeModules');
+import NativeSourceCode from '../../NativeModules/specs/NativeSourceCode';
 
 // Avoid requiring fetch on load of this module; see symbolicateStackTrace
 let fetch;
@@ -48,7 +48,8 @@ async function symbolicateStackTrace(
 
   let stackCopy = stack;
 
-  if (SourceCode.scriptURL) {
+  const {scriptURL} = NativeSourceCode.getConstants();
+  if (scriptURL) {
     let foundInternalSource: boolean = false;
     stackCopy = stack.map((frame: StackFrame) => {
       // If the sources exist on disk rather than appearing to come from the packager,
@@ -57,7 +58,7 @@ async function symbolicateStackTrace(
       // the application to a surrounding debugging environment.
       if (!foundInternalSource && isSourcedFromDisk(frame.file)) {
         // Copy frame into new object and replace 'file' property
-        return {...frame, file: SourceCode.scriptURL};
+        return {...frame, file: scriptURL};
       }
 
       foundInternalSource = true;
