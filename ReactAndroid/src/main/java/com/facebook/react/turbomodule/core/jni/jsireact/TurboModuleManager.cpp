@@ -62,7 +62,12 @@ void TurboModuleManager::installJSIBindings() {
         }
 
         const auto moduleInstance = getJavaModule(name);
-        return turboModuleManagerDelegate_->cthis()->getTurboModule(name, moduleInstance, jsCallInvoker_);
+
+        if (moduleInstance) {
+          return turboModuleManagerDelegate_->cthis()->getTurboModule(name, moduleInstance, jsCallInvoker_);
+        }
+
+        return std::shared_ptr<TurboModule>(nullptr);
       })
   );
 }
