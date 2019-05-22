@@ -10,8 +10,53 @@
   </metadata>
   <files>
 
-    <!-- This is largely a placeholder right now, to get the publishing pipeline to be complete.. we obviously need the built binaries too.. -->
+    <file src="build\react-ndk\all\x86_64\libfb.so" target="lib\droidx64"/>
+    <file src="build\react-ndk\all\armeabi-v7a\libfb.so" target="lib\droidarm"/>
+    <file src="build\react-ndk\all\x86\libfb.so" target="lib\droidx86"/>
+    <file src="build\react-ndk\all\arm64-v8a\libfb.so" target="lib\droidarm64"/>
 
+    <file src="build\react-ndk\all\x86_64\libfolly_json.so" target="lib\droidx64"/>
+    <file src="build\react-ndk\all\armeabi-v7a\libfolly_json.so" target="lib\droidarm"/>
+    <file src="build\react-ndk\all\x86\libfolly_json.so" target="lib\droidx86"/>
+    <file src="build\react-ndk\all\arm64-v8a\libfolly_json.so" target="lib\droidarm64"/>
+
+    <file src="build\react-ndk\all\x86_64\libglog.so" target="lib\droidx64"/>
+    <file src="build\react-ndk\all\armeabi-v7a\libglog.so" target="lib\droidarm"/>
+    <file src="build\react-ndk\all\x86\libglog.so" target="lib\droidx86"/>
+    <file src="build\react-ndk\all\arm64-v8a\libglog.so" target="lib\droidarm64"/>
+
+    <file src="build\react-ndk\all\x86_64\libglog_init.so" target="lib\droidx64"/>
+    <file src="build\react-ndk\all\armeabi-v7a\libglog_init.so" target="lib\droidarm"/>
+    <file src="build\react-ndk\all\x86\libglog_init.so" target="lib\droidx86"/>
+    <file src="build\react-ndk\all\arm64-v8a\libglog_init.so" target="lib\droidarm64"/>
+
+    <file src="build\react-ndk\all\x86_64\libprivatedata.so" target="lib\droidx64"/>
+    <file src="build\react-ndk\all\armeabi-v7a\libprivatedata.so" target="lib\droidarm"/>
+    <file src="build\react-ndk\all\x86\libprivatedata.so" target="lib\droidx86"/>
+    <file src="build\react-ndk\all\arm64-v8a\libprivatedata.so" target="lib\droidarm64"/>
+
+    <file src="build\react-ndk\all\x86_64\libreactnativejni.so" target="lib\droidx64"/>
+    <file src="build\react-ndk\all\armeabi-v7a\libreactnativejni.so" target="lib\droidarm"/>
+    <file src="build\react-ndk\all\x86\libreactnativejni.so" target="lib\droidx86"/>
+    <file src="build\react-ndk\all\arm64-v8a\libreactnativejni.so" target="lib\droidarm64"/>
+
+    <file src="build\react-ndk\all\x86_64\libv8executor.so" target="lib\droidx64"/>
+    <file src="build\react-ndk\all\armeabi-v7a\libv8executor.so" target="lib\droidarm"/>
+    <file src="build\react-ndk\all\x86\libv8executor.so" target="lib\droidx86"/>
+    <file src="build\react-ndk\all\arm64-v8a\libv8executor.so" target="lib\droidarm64"/>
+
+    <file src="build\react-ndk\all\x86_64\libyoga.so" target="lib\droidx64"/>
+    <file src="build\react-ndk\all\armeabi-v7a\libyoga.so" target="lib\droidarm"/>
+    <file src="build\react-ndk\all\x86\libyoga.so" target="lib\droidx86"/>
+    <file src="build\react-ndk\all\arm64-v8a\libyoga.so" target="lib\droidarm64"/>
+
+    <file src="build\react-ndk\all\x86_64\libyoga.so" target="lib\droidx64"/>
+    <file src="build\react-ndk\all\armeabi-v7a\libyoga.so" target="lib\droidarm"/>
+    <file src="build\react-ndk\all\x86\libyoga.so" target="lib\droidx86"/>
+    <file src="build\react-ndk\all\arm64-v8a\libyoga.so" target="lib\droidarm64"/>
+
+    <file src="..\android\com\facebook\react\react-native\*\react-native-*.aar" target="lib"/>
+    <file src="..\android\com\facebook\react\react-native\*\react-native-*.pom" target="lib"/>
 
     <!-- Ideally we'd only exported the needed headers, not the complete list -->
     <file src="..\ReactCommon\cxxreact\**\*.h" target="inc\cxxreact"/>
