@@ -17,7 +17,7 @@ import NativeSourceCode from '../../NativeModules/specs/NativeSourceCode';
 // Avoid requiring fetch on load of this module; see symbolicateStackTrace
 let fetch;
 
-import type {StackFrame} from './parseErrorStack';
+import type {StackFrame} from '../NativeExceptionsManager';
 
 function isSourcedFromDisk(sourcePath: string): boolean {
   return !/^http/.test(sourcePath) && /[\\/]/.test(sourcePath);
