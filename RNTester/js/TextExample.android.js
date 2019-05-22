@@ -8,12 +8,10 @@
  * @flow
  */
 
-/* eslint-disable react-native/no-inline-styles */
-
 'use strict';
 
 const React = require('react');
-const {Image, StyleSheet, Text, View} = require('react-native');
+const {StyleSheet, Text, View} = require('react-native');
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');
 const TextInlineView = require('./Shared/TextInlineView');
