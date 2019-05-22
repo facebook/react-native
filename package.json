@@ -58,6 +58,8 @@
     "flow-check-ios": "flow check",
     "flow-check-android": "flow check --flowconfig-name .flowconfig.android",
     "lint": "eslint .",
+    "lint-ci": "./scripts/circleci/analyze_code.sh && yarn shellcheck",
+    "shellcheck": "./scripts/circleci/analyze_scripts.sh",
     "clang-format": "clang-format -i --glob=*/**/*.{h,cpp,m,mm}",
     "format": "npm run prettier && npm run clang-format",
     "prettier": "prettier --write \"./**/*.{js,md,yml}\"",

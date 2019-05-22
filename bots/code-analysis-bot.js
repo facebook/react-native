@@ -33,8 +33,10 @@ function push(arr, key, value) {
 const converterSummary = {
   eslint:
     '`eslint` found some issues. Run `yarn lint --fix` to automatically fix problems.',
-  flow: '`flow` found some issues.',
-  shellcheck: '`shellcheck` found some issues.',
+  flow:
+    '`flow` found some issues. Run `yarn flow check` to analyze your code and address any errors.',
+  shellcheck:
+    '`shellcheck` found some issues. Run `yarn shellcheck` to analyze shell scripts.',
 };
 
 /**
@@ -172,6 +174,9 @@ function sendReview(owner, repo, number, commit_id, body, comments) {
     if (comments.length === 0) {
       // Do not leave an empty review.
       return;
+    } else if (comments.length > 5) {
+      // Avoid noisy reviews and rely solely on the body of the review.
+      comments = [];
     }
 
     const event = 'REQUEST_CHANGES';
@@ -227,7 +232,7 @@ function main(messages, owner, repo, number) {
     });
   } else {
     console.log(
-      'Missing GITHUB_TOKEN. Example: 5fd88b964fa214c4be2b144dc5af5d486a2f8c1e. Review feedback with code analysis results will not be provided on GitHub.',
+      'Missing GITHUB_TOKEN. Example: 5fd88b964fa214c4be2b144dc5af5d486a2f8c1e. Review feedback with code analysis results will not be provided on GitHub without a valid token.',
     );
   }
 
@@ -319,7 +324,9 @@ process.stdin.on('end', function() {
   const repo = process.env.GITHUB_REPO;
 
   if (!process.env.GITHUB_PR_NUMBER) {
-    console.error('Missing GITHUB_PR_NUMBER. Example: 4687');
+    console.error(
+      'Missing GITHUB_PR_NUMBER. Example: 4687. Review feedback with code analysis results cannot be provided on GitHub without a valid pull request number.',
+    );
     // for master branch, don't throw an error
     process.exit(0);
   }

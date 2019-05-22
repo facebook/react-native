@@ -215,44 +215,27 @@ jobs:
 
       - restore-cache: *restore-yarn-cache
       - run: *yarn
-
       - run:
-          name: Analyze Shell Scripts
+          name: Install dependencies
           command: |
-            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
-            apt update && apt install -y shellcheck jq
-            yarn add @octokit/rest@15.18.0
-            echo -e "\\x1B[36mAnalyzing shell scripts\\x1B[0m"; \
-            GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
-            GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
-            GITHUB_REPO="$CIRCLE_PROJECT_REPONAME" \
-            GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" \
-            ./scripts/circleci/analyze_scripts.sh
-          when: always
-
-      - run:
-          name: Analyze Code
-          command: |
-            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.18.0
-            echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; \
-            GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
-            GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
-            GITHUB_REPO="$CIRCLE_PROJECT_REPONAME" \
-            GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" \
-            ./scripts/circleci/analyze_code.sh
-          when: always
-
-      - run:
-          name: Analyze Pull Request
-          command: |
-            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
+            apt update
+            apt install -y shellcheck jq
             cd bots
             yarn install --non-interactive --cache-folder ~/.cache/yarn
-            echo -e "\\x1B[36mAnalyzing pull request\\x1B[0m"; \
-            DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" \
-            yarn danger ci --use-github-checks
-          when: always
       - save-cache: *save-yarn-cache
+
+      - run:
+          name: Run linters against modified files (analysis-bot)
+          command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" yarn lint-ci
+          when: always
+
+      - run:
+          name: Analyze Pull Request (pull-bot)
+          command: |
+            cd bots
+            DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" yarn danger ci --use-github-checks
+          when: always
+
 
   # -------------------------
   #    JOBS: Analyze Code
