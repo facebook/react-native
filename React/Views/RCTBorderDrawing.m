@@ -245,6 +245,11 @@ static UIImage *RCTGetSolidBorderImage(RCTCornerRadii cornerRadii,
     edgeInsets.top + 1 + edgeInsets.bottom
   } : viewSize;
 
+  // [TODO(OSS Candidate ISS#2710739): size must nonzero
+  if (size.width <= 0 || size.height <= 0) {
+    return nil;
+  } // ]TODO(OSS Candidate ISS#2710739)
+
   CGContextRef ctx = RCTUIGraphicsBeginImageContext(size, backgroundColor, hasCornerRadii, drawToEdge, scaleFactor); // TODO(macOS ISS#2323203)
   const CGRect rect = {.size = size};
   CGPathRef path = RCTPathCreateOuterOutline(drawToEdge, rect, cornerRadii);
@@ -490,6 +495,11 @@ static UIImage *RCTGetDashedOrDottedBorderImage(RCTBorderStyle borderStyle,
   if (lineWidth <= 0.0) {
     return nil;
   }
+
+  // [TODO(OSS Candidate ISS#2710739): viewSize must nonzero
+  if (viewSize.width <= 0 || viewSize.height <= 0) {
+    return nil;
+  } // ]TODO(OSS Candidate ISS#2710739)
 
   const BOOL hasCornerRadii = RCTCornerRadiiAreAboveThreshold(cornerRadii);
   CGContextRef ctx = RCTUIGraphicsBeginImageContext(viewSize, backgroundColor, hasCornerRadii, drawToEdge, scaleFactor); // TODO(macOS ISS#2323203)
