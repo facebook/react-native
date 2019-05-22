@@ -56,6 +56,11 @@ void TurboModuleManager::installJSIBindings() {
   }
   TurboModuleBinding::install(*runtime_, std::make_shared<TurboModuleBinding>(
       [this](const std::string &name) {
+        auto cxxModule = turboModuleManagerDelegate_->cthis()->getTurboModule(name, jsCallInvoker_);
+        if (cxxModule) {
+          return cxxModule;
+        }
+
         const auto moduleInstance = getJavaModule(name);
         return turboModuleManagerDelegate_->cthis()->getTurboModule(name, moduleInstance, jsCallInvoker_);
       })
