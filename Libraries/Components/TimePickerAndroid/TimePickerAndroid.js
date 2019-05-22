@@ -10,13 +10,10 @@
 
 'use strict';
 
-const TimePickerModule = require('../../BatchedBridge/NativeModules')
-  .TimePickerAndroid;
-
-import type {
-  TimePickerOptions,
-  TimePickerResult,
-} from './TimePickerAndroidTypes';
+import NativeTimePickerAndroid, {
+  type TimePickerOptions,
+  type TimePickerResult,
+} from './NativeTimePickerAndroid';
 
 /**
  * Opens the standard Android time picker dialog.
@@ -58,8 +55,16 @@ class TimePickerAndroid {
    * still be resolved with action being `TimePickerAndroid.dismissedAction` and all the other keys
    * being undefined. **Always** check whether the `action` before reading the values.
    */
-  static async open(options: TimePickerOptions): Promise<TimePickerResult> {
-    return TimePickerModule.open(options);
+  static async open(
+    options: TimePickerOptions,
+  ): Promise<$ReadOnly<TimePickerResult>> {
+    if (NativeTimePickerAndroid) {
+      return NativeTimePickerAndroid.open(options);
+    } else {
+      return Promise.reject({
+        message: 'TimePickerAndroid is not supported on this platform.',
+      });
+    }
   }
 
   /**
