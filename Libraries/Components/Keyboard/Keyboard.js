@@ -13,10 +13,10 @@
 const LayoutAnimation = require('../../LayoutAnimation/LayoutAnimation');
 const invariant = require('invariant');
 const NativeEventEmitter = require('../../EventEmitter/NativeEventEmitter');
-const KeyboardObserver = require('../../BatchedBridge/NativeModules')
-  .KeyboardObserver;
 const dismissKeyboard = require('../../Utilities/dismissKeyboard');
-const KeyboardEventEmitter = new NativeEventEmitter(KeyboardObserver);
+
+import NativeKeyboardObserver from './NativeKeyboardObserver';
+const KeyboardEventEmitter = new NativeEventEmitter(NativeKeyboardObserver);
 
 export type KeyboardEventName =
   | 'keyboardWillShow'
