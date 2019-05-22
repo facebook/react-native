@@ -6,17 +6,12 @@
  */
 
 #include "ModalHostViewState.h"
-#include <glog/logging.h>
-
-#ifdef ANDROID
-#include <folly/dynamic.h>
-#endif
 
 namespace facebook {
 namespace react {
 
 #ifdef ANDROID
-const folly::dynamic ModalHostViewState::getDynamic() const {
+folly::dynamic ModalHostViewState::getDynamic() const {
   return folly::dynamic::object("screenWidth", screenSize.width)(
       "screenHeight", screenSize.height);
 }
