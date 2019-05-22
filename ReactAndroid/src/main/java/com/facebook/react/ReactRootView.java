@@ -770,6 +770,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
       keyboardEventParams.putMap("endCoordinates", endCoordinates);
       keyboardEventParams.putString("easing", "keyboard");
+      keyboardEventParams.putDouble("duration", 0);
       return keyboardEventParams;
     }
   }

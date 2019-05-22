@@ -50,6 +50,7 @@ type BaseKeyboardEvent = {|
 
 export type AndroidKeyboardEvent = $ReadOnly<{|
   ...BaseKeyboardEvent,
+  duration: 0,
   easing: 'keyboard',
 |}>;
 
