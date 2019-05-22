@@ -321,8 +321,7 @@ const mockNativeModules = {
     },
   },
   BlobModule: {
-    BLOB_URI_SCHEME: 'content',
-    BLOB_URI_HOST: null,
+    getConstants: () => ({BLOB_URI_SCHEME: 'content', BLOB_URI_HOST: null}),
     addNetworkingHandler: jest.fn(),
     enableBlobSupport: jest.fn(),
     disableBlobSupport: jest.fn(),
