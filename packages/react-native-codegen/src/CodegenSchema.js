@@ -83,7 +83,7 @@ export type EventTypeShape = $ReadOnly<{|
   optional: boolean,
   typeAnnotation: $ReadOnly<{|
     type: 'EventTypeAnnotation',
-    argument: $ReadOnly<{|
+    argument?: $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
       properties: $ReadOnlyArray<ObjectPropertyType>,
     |}>,

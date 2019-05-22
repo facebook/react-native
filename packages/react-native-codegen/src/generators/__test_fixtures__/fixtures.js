@@ -560,6 +560,14 @@ const EVENT_PROPS: SchemaType = {
                 },
               },
             },
+            {
+              name: 'onEnd',
+              optional: true,
+              bubblingType: 'bubble',
+              typeAnnotation: {
+                type: 'EventTypeAnnotation',
+              },
+            },
           ],
           props: [
             {

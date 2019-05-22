@@ -285,6 +285,13 @@ const EventsNativeComponentViewConfig = {
         bubbled: 'onChange',
       },
     },
+
+    topEnd: {
+      phasedRegistrationNames: {
+        captured: 'onEndCapture',
+        bubbled: 'onEnd',
+      },
+    },
   },
 
   directEventTypes: {
@@ -300,6 +307,7 @@ const EventsNativeComponentViewConfig = {
     disabled: true,
     onChange: true,
     onEventDirect: true,
+    onEnd: true,
   },
 };
 
