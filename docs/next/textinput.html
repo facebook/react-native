@@ -151,7 +151,7 @@ AppRegistry.registerComponent(
 <ul>
 <li><a href="/react-native/docs/next/textinput#allowfontscaling"><code>allowFontScaling</code></a></li>
 <li><a href="/react-native/docs/next/textinput#autocapitalize"><code>autoCapitalize</code></a></li>
-<li><a href="/react-native/docs/next/textinput#autocomplete"><code>autoComplete</code></a></li>
+<li><a href="/react-native/docs/next/textinput#autocompletetype"><code>autoCompleteType</code></a></li>
 <li><a href="/react-native/docs/next/textinput#autocorrect"><code>autoCorrect</code></a></li>
 <li><a href="/react-native/docs/next/textinput#autofocus"><code>autoFocus</code></a></li>
 <li><a href="/react-native/docs/next/textinput#bluronsubmit"><code>blurOnSubmit</code></a></li>
@@ -167,6 +167,7 @@ AppRegistry.registerComponent(
 <li><a href="/react-native/docs/next/textinput#importantForAutofill"><code>importantForAutofill</code></a></li>
 <li><a href="/react-native/docs/next/textinput#inlineimageleft"><code>inlineImageLeft</code></a></li>
 <li><a href="/react-native/docs/next/textinput#inlineimagepadding"><code>inlineImagePadding</code></a></li>
+<li><a href="/react-native/docs/next/textinput#inputaccessoryviewid"><code>inputAccessoryViewID</code></a></li>
 <li><a href="/react-native/docs/next/textinput#keyboardappearance"><code>keyboardAppearance</code></a></li>
 <li><a href="/react-native/docs/next/textinput#keyboardtype"><code>keyboardType</code></a></li>
 <li><a href="/react-native/docs/next/text#maxfontsizemultiplier"><code>maxFontSizeMultiplier</code></a></li>
@@ -186,9 +187,9 @@ AppRegistry.registerComponent(
 <li><a href="/react-native/docs/next/textinput#onsubmitediting"><code>onSubmitEditing</code></a></li>
 <li><a href="/react-native/docs/next/textinput#placeholder"><code>placeholder</code></a></li>
 <li><a href="/react-native/docs/next/textinput#placeholdertextcolor"><code>placeholderTextColor</code></a></li>
+<li><a href="/react-native/docs/next/textinput#rejectrespondertermination"><code>rejectResponderTermination</code></a></li>
 <li><a href="/react-native/docs/next/textinput#returnkeylabel"><code>returnKeyLabel</code></a></li>
 <li><a href="/react-native/docs/next/textinput#returnkeytype"><code>returnKeyType</code></a></li>
-<li><a href="/react-native/docs/next/textinput#rejectrespondertermination"><code>rejectResponderTermination</code></a></li>
 <li><a href="/react-native/docs/next/textinput#scrollenabled"><code>scrollEnabled</code></a></li>
 <li><a href="/react-native/docs/next/textinput#securetextentry"><code>secureTextEntry</code></a></li>
 <li><a href="/react-native/docs/next/textinput#selection"><code>selection</code></a></li>
@@ -196,9 +197,9 @@ AppRegistry.registerComponent(
 <li><a href="/react-native/docs/next/textinput#selectionstate"><code>selectionState</code></a></li>
 <li><a href="/react-native/docs/next/textinput#selecttextonfocus"><code>selectTextOnFocus</code></a></li>
 <li><a href="/react-native/docs/next/textinput#spellcheck"><code>spellCheck</code></a></li>
-<li><a href="/react-native/docs/next/textinput#textcontenttype"><code>textContentType</code></a></li>
 <li><a href="/react-native/docs/next/textinput#style"><code>style</code></a></li>
 <li><a href="/react-native/docs/next/textinput#textbreakstrategy"><code>textBreakStrategy</code></a></li>
+<li><a href="/react-native/docs/next/textinput#textcontenttype"><code>textContentType</code></a></li>
 <li><a href="/react-native/docs/next/textinput#underlinecolorandroid"><code>underlineColorAndroid</code></a></li>
 <li><a href="/react-native/docs/next/textinput#value"><code>value</code></a></li>
 </ul>
@@ -238,9 +239,9 @@ AppRegistry.registerComponent(
 </tbody>
 </table>
 <hr>
-<h3><a class="anchor" aria-hidden="true" id="autocomplete"></a><a href="#autocomplete" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>autoComplete</code></h3>
-<p>Specifies autocomplete hints for the system, so it can provide autofill. On Android, the system will aways attempt to offer autofill by using heuristics to identify the type of content. To disable autocomplete, set <code>autoComplete</code> to <code>off</code>.</p>
-<p>Possible values for <code>autoComplete</code> are:</p>
+<h3><a class="anchor" aria-hidden="true" id="autocompletetype"></a><a href="#autocompletetype" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>autoCompleteType</code></h3>
+<p>Specifies autocomplete hints for the system, so it can provide autofill. On Android, the system will aways attempt to offer autofill by using heuristics to identify the type of content. To disable autocomplete, set <code>autoCompleteType</code> to <code>off</code>.</p>
+<p>Possible values for <code>autoCompleteType</code> are:</p>
 <ul>
 <li><code>off</code></li>
 <li><code>username</code></li>
@@ -448,6 +449,17 @@ AppRegistry.registerComponent(
 </thead>
 <tbody>
 <tr><td>number</td><td>No</td><td>Android</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="inputaccessoryviewid"></a><a href="#inputaccessoryviewid" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>inputAccessoryViewID</code></h3>
+<p>An optional identifier which links a custom <a href="/react-native/docs/next/inputaccessoryview">InputAccessoryView</a> to this text input. The InputAccessoryView is rendered above the keyboard when this text input is focused.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>string</td><td>No</td><td>iOS</td></tr>
 </tbody>
 </table>
 <hr>
@@ -739,9 +751,7 @@ AppRegistry.registerComponent(
 </table>
 <h3><a class="anchor" aria-hidden="true" id="rejectrespondertermination"></a><a href="#rejectrespondertermination" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>rejectResponderTermination</code></h3>
 <p><em>iOS Only</em></p>
-<p>If <code>true</code>, allows TextInput to pass touch events to the parent component. This allows components such as SwipeableListView to be swipeable from the TextInput on iOS, as is the case on Android by default.
-If <code>false</code>, TextInput always asks to handle the input (except when disabled).
-The default value is <code>true</code>.</p>
+<p>If <code>true</code>, allows TextInput to pass touch events to the parent component. This allows components such as SwipeableListView to be swipeable from the TextInput on iOS, as is the case on Android by default. If <code>false</code>, TextInput always asks to handle the input (except when disabled). The default value is <code>true</code>.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th><th>Platform</th></tr>
