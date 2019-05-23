@@ -10,10 +10,10 @@
 
 'use strict';
 
-const getNativeComponentAttributes = require('getNativeComponentAttributes');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const getNativeComponentAttributes = require('../../ReactNative/getNativeComponentAttributes');
+const verifyComponentAttributeEquivalence = require('../verifyComponentAttributeEquivalence');
 
-jest.mock('getNativeComponentAttributes', () => () => ({
+jest.mock('../../ReactNative/getNativeComponentAttributes', () => () => ({
   NativeProps: {
     value: 'BOOL',
   },

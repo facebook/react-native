@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {SyntheticEvent} from 'CoreEventTypes';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 
 // This must be kept in sync with the AccessibilityRolesMask in RCTViewManager.m
 export type AccessibilityRole =
