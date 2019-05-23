@@ -28,18 +28,11 @@ type Options = {
   onDismiss?: ?Function,
 };
 
-type AlertType = $Keys<{
-  default: string,
-  'plain-text': string,
-  'secure-text': string,
-  'login-password': string,
-}>;
+/* 'default' | plain-text' | 'secure-text' | 'login-password' */
+type AlertType = string;
 
-export type AlertButtonStyle = $Keys<{
-  default: string,
-  cancel: string,
-  destructive: string,
-}>;
+/* 'default' | 'cancel' | 'destructive' */
+export type AlertButtonStyle = string;
 
 /**
  * Launches an alert dialog with the specified title and message.

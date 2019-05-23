@@ -9,17 +9,13 @@
 
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
-
-type Button = {|
-  text?: string,
-  onPress?: () => void,
-  style?: string,
-|};
+import Platform from '../Utilities/Platform';
+import {type Buttons} from './Alert';
 
 type Args = {|
   title: string,
   message?: string,
-  buttons?: Array<Button>,
+  buttons?: Buttons,
   type?: string,
   defaultValue?: string,
   cancelButtonKey?: string,
@@ -34,4 +30,6 @@ export interface Spec extends TurboModule {
   ) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('AlertManager');
+export default (Platform.OS === 'ios'
+  ? TurboModuleRegistry.getEnforcing<Spec>('AlertManager')
+  : undefined);
