@@ -31,6 +31,7 @@ import type {
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {
   AccessibilityRole,
+  AccessibilityStates,
   AccessibilityState,
 } from '../View/ViewAccessibility';
 
@@ -65,6 +66,7 @@ export type Props = $ReadOnly<{|
   accessibilityHint?: ?Stringish,
   accessibilityIgnoresInvertColors?: ?boolean,
   accessibilityRole?: ?AccessibilityRole,
+  accessibilityStates?: ?AccessibilityStates,
   accessibilityState?: ?AccessibilityState,
   children?: ?React.Node,
   delayLongPress?: ?number,
