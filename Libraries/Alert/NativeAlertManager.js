@@ -11,15 +11,15 @@ import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
 
 type Button = {|
-  text: string,
-  onPress: () => void,
-  style: string,
+  text?: string,
+  onPress?: () => void,
+  style?: string,
 |};
 
 type Args = {|
   title: string,
   message?: string,
-  buttons: Array<Button>,
+  buttons?: Array<Button>,
   type?: string,
   defaultValue?: string,
   cancelButtonKey?: string,
@@ -28,7 +28,10 @@ type Args = {|
 |};
 
 export interface Spec extends TurboModule {
-  +alertWithArgs: (args: Args, callback: () => void) => void;
+  +alertWithArgs: (
+    args: Args,
+    callback: (id: number, value: string) => void,
+  ) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('AlertManager');

@@ -125,11 +125,14 @@ class Alert {
         );
 
         const callback = type;
+        if (!RCTAlertManager) {
+          return;
+        }
         RCTAlertManager.alertWithArgs(
           {
             title: title || '',
             type: 'plain-text',
-            defaultValue: message,
+            defaultValue: message || '',
           },
           (id, value) => {
             callback(value);
@@ -160,6 +163,9 @@ class Alert {
         });
       }
 
+      if (!RCTAlertManager) {
+        return;
+      }
       RCTAlertManager.alertWithArgs(
         {
           title: title || '',
