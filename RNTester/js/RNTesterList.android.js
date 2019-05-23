@@ -15,220 +15,220 @@ import type {RNTesterExample} from './Shared/RNTesterTypes';
 const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'ActivityIndicatorExample',
-    module: require('./ActivityIndicatorExample'),
+    module: require('./examples/ActivityIndicatorExample'),
   },
   {
     key: 'ButtonExample',
-    module: require('./ButtonExample'),
+    module: require('./examples/ButtonExample'),
   },
   {
     key: 'CheckBoxExample',
-    module: require('./CheckBoxExample'),
+    module: require('./examples/CheckBoxExample'),
   },
   {
     key: 'FlatListExample',
-    module: require('./FlatListExample'),
+    module: require('./examples/FlatListExample'),
   },
   {
     key: 'ImageExample',
-    module: require('./ImageExample'),
+    module: require('./examples/ImageExample'),
   },
   {
     key: 'KeyboardAvoidingViewExample',
-    module: require('./KeyboardAvoidingViewExample'),
+    module: require('./examples/KeyboardAvoidingViewExample'),
   },
   {
     key: 'ModalExample',
-    module: require('./ModalExample'),
+    module: require('./examples/ModalExample'),
   },
   {
     key: 'MultiColumnExample',
-    module: require('./MultiColumnExample'),
+    module: require('./examples/MultiColumnExample'),
   },
   {
     key: 'NewAppScreenExample',
-    module: require('./NewAppScreenExample'),
+    module: require('./examples/NewAppScreenExample'),
   },
   {
     key: 'PickerExample',
-    module: require('./PickerExample'),
+    module: require('./examples/PickerExample'),
   },
   {
     key: 'ProgressBarAndroidExample',
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-    module: require('./ProgressBarAndroidExample'),
+    module: require('./examples/ProgressBarAndroidExample'),
   },
   {
     key: 'RefreshControlExample',
-    module: require('./RefreshControlExample'),
+    module: require('./examples/RefreshControlExample'),
   },
   {
     key: 'ScrollViewSimpleExample',
-    module: require('./ScrollViewSimpleExample'),
+    module: require('./examples/ScrollViewSimpleExample'),
   },
   {
     key: 'SectionListExample',
-    module: require('./SectionListExample'),
+    module: require('./examples/SectionListExample'),
   },
   {
     key: 'SliderExample',
-    module: require('./SliderExample'),
+    module: require('./examples/SliderExample'),
   },
   {
     key: 'StatusBarExample',
-    module: require('./StatusBarExample'),
+    module: require('./examples/StatusBarExample'),
   },
   {
     key: 'SwitchExample',
-    module: require('./SwitchExample'),
+    module: require('./examples/SwitchExample'),
   },
   {
     key: 'TextExample',
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-    module: require('./TextExample'),
+    module: require('./examples/TextExample'),
   },
   {
     key: 'TextInputExample',
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-    module: require('./TextInputExample'),
+    module: require('./examples/TextInputExample'),
   },
   {
     key: 'TouchableExample',
-    module: require('./TouchableExample'),
+    module: require('./examples/TouchableExample'),
   },
   {
     key: 'ViewExample',
-    module: require('./ViewExample'),
+    module: require('./examples/ViewExample'),
   },
   {
     key: 'ViewPagerAndroidExample',
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-    module: require('./ViewPagerAndroidExample'),
+    module: require('./examples/ViewPagerAndroidExample'),
   },
 ];
 
 const APIExamples: Array<RNTesterExample> = [
   {
     key: 'AccessibilityExample',
-    module: require('./AccessibilityExample'),
+    module: require('./examples/AccessibilityExample'),
   },
   {
     key: 'AccessibilityAndroidExample',
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-    module: require('./AccessibilityAndroidExample'),
+    module: require('./examples/AccessibilityAndroidExample'),
   },
   {
     key: 'AlertExample',
-    module: require('./AlertExample').AlertExample,
+    module: require('./examples/AlertExample').AlertExample,
   },
   {
     key: 'AnimatedExample',
-    module: require('./AnimatedExample'),
+    module: require('./examples/AnimatedExample'),
   },
   {
     key: 'AppStateExample',
-    module: require('./AppStateExample'),
+    module: require('./examples/AppStateExample'),
   },
   {
     key: 'BorderExample',
-    module: require('./BorderExample'),
+    module: require('./examples/BorderExample'),
   },
   {
     key: 'ClipboardExample',
-    module: require('./ClipboardExample'),
+    module: require('./examples/ClipboardExample'),
   },
   {
     key: 'CrashExample',
-    module: require('./CrashExample'),
+    module: require('./examples/CrashExample'),
   },
   {
     key: 'DatePickerAndroidExample',
-    module: require('./DatePickerAndroidExample'),
+    module: require('./examples/DatePickerAndroidExample'),
   },
   {
     key: 'Dimensions',
-    module: require('./DimensionsExample'),
+    module: require('./examples/DimensionsExample'),
   },
   {
     key: 'LayoutEventsExample',
-    module: require('./LayoutEventsExample'),
+    module: require('./examples/LayoutEventsExample'),
   },
   {
     key: 'LinkingExample',
-    module: require('./LinkingExample'),
+    module: require('./examples/LinkingExample'),
   },
   {
     key: 'LayoutAnimationExample',
-    module: require('./LayoutAnimationExample'),
+    module: require('./examples/LayoutAnimationExample'),
   },
   {
     key: 'LayoutExample',
-    module: require('./LayoutExample'),
+    module: require('./examples/LayoutExample'),
   },
   {
     key: 'NativeAnimationsExample',
-    module: require('./NativeAnimationsExample'),
+    module: require('./examples/NativeAnimationsExample'),
   },
   {
     key: 'OrientationChangeExample',
-    module: require('./OrientationChangeExample'),
+    module: require('./examples/OrientationChangeExample'),
   },
   {
     key: 'PanResponderExample',
-    module: require('./PanResponderExample'),
+    module: require('./examples/PanResponderExample'),
   },
   {
     key: 'PermissionsExampleAndroid',
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-    module: require('./PermissionsExampleAndroid'),
+    module: require('./examples/PermissionsExampleAndroid'),
   },
   {
     key: 'PointerEventsExample',
-    module: require('./PointerEventsExample'),
+    module: require('./examples/PointerEventsExample'),
   },
   {
     key: 'RTLExample',
-    module: require('./RTLExample'),
+    module: require('./examples/RTLExample'),
   },
   {
     key: 'ShareExample',
-    module: require('./ShareExample'),
+    module: require('./examples/ShareExample'),
   },
   {
     key: 'TimePickerAndroidExample',
-    module: require('./TimePickerAndroidExample'),
+    module: require('./examples/TimePickerAndroidExample'),
   },
   {
     key: 'TimerExample',
-    module: require('./TimerExample'),
+    module: require('./examples/TimerExample'),
   },
   {
     key: 'ToastAndroidExample',
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-    module: require('./ToastAndroidExample'),
+    module: require('./examples/ToastAndroidExample'),
   },
   {
     key: 'TransformExample',
-    module: require('./TransformExample'),
+    module: require('./examples/TransformExample'),
   },
   {
     key: 'VibrationExample',
-    module: require('./VibrationExample'),
+    module: require('./examples/VibrationExample'),
   },
   {
     key: 'WebSocketExample',
-    module: require('./WebSocketExample'),
+    module: require('./examples/WebSocketExample'),
   },
   {
     key: 'XHRExample',
-    module: require('./XHRExample'),
+    module: require('./examples/XHRExample'),
   },
 ];
 

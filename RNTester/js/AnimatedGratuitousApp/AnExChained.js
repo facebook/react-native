@@ -99,11 +99,11 @@ const styles = StyleSheet.create({
 });
 
 const CHAIN_IMGS = [
-  require('../hawk.png'),
-  require('../bunny.png'),
-  require('../relay.png'),
-  require('../hawk.png'),
-  require('../bunny.png'),
+  require('../images/hawk.png'),
+  require('../images/bunny.png'),
+  require('../images/relay.png'),
+  require('../images/hawk.png'),
+  require('../images/bunny.png'),
 ];
 
 module.exports = AnExChained;

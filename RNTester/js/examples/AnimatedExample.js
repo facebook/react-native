@@ -12,7 +12,7 @@
 
 const React = require('react');
 const {Animated, Easing, StyleSheet, Text, View} = require('react-native');
-const RNTesterButton = require('./RNTesterButton');
+const RNTesterButton = require('../RNTesterButton');
 
 const styles = StyleSheet.create({
   content: {
@@ -259,7 +259,7 @@ exports.examples = [
             Press to Spin it!
           </RNTesterButton>
           <Animated.Image
-            source={require('./bunny.png')}
+            source={require('../images/bunny.png')}
             style={[
               styles.rotatingImage,
               {

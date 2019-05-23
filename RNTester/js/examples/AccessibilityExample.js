@@ -22,7 +22,7 @@ const {
   Platform,
 } = require('react-native');
 
-const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterBlock = require('../RNTesterBlock');
 
 class AccessibilityExample extends React.Component {
   render() {

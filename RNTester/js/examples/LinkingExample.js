@@ -20,7 +20,7 @@ const {
   View,
 } = require('react-native');
 
-const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterBlock = require('../RNTesterBlock');
 
 type Props = $ReadOnly<{|
   url?: ?string,

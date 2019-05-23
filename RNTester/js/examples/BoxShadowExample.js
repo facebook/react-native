@@ -79,7 +79,7 @@ exports.examples = [
     render() {
       return (
         <Image
-          source={require('./hawk.png')}
+          source={require('../images/hawk.png')}
           style={[styles.box, styles.shadow1, styles.shadowImage]}
         />
       );

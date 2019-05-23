@@ -13,7 +13,7 @@
 const React = require('react');
 const {Text, View, Alert} = require('react-native');
 
-const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterBlock = require('../RNTesterBlock');
 
 type Props = $ReadOnly<{||}>;
 class AccessibilityIOSExample extends React.Component<Props> {

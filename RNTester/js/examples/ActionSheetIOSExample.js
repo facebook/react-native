@@ -324,7 +324,7 @@ exports.examples = [
   {
     title: 'Share Local Image',
     render(): React.Element<any> {
-      return <ShareActionSheetExample url="bunny.png" />;
+      return <ShareActionSheetExample url="../images/bunny.png" />;
     },
   },
   {

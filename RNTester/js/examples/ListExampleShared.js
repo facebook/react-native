@@ -181,18 +181,18 @@ class Spindicator extends React.PureComponent<$FlowFixMeProps> {
 }
 
 const THUMB_URLS = [
-  require('./Thumbnails/like.png'),
-  require('./Thumbnails/dislike.png'),
-  require('./Thumbnails/call.png'),
-  require('./Thumbnails/fist.png'),
-  require('./Thumbnails/bandaged.png'),
-  require('./Thumbnails/flowers.png'),
-  require('./Thumbnails/heart.png'),
-  require('./Thumbnails/liking.png'),
-  require('./Thumbnails/party.png'),
-  require('./Thumbnails/poke.png'),
-  require('./Thumbnails/superlike.png'),
-  require('./Thumbnails/victory.png'),
+  require('../images/Thumbnails/like.png'),
+  require('../images/Thumbnails/dislike.png'),
+  require('../images/Thumbnails/call.png'),
+  require('../images/Thumbnails/fist.png'),
+  require('../images/Thumbnails/bandaged.png'),
+  require('../images/Thumbnails/flowers.png'),
+  require('../images/Thumbnails/heart.png'),
+  require('../images/Thumbnails/liking.png'),
+  require('../images/Thumbnails/party.png'),
+  require('../images/Thumbnails/poke.png'),
+  require('../images/Thumbnails/superlike.png'),
+  require('../images/Thumbnails/victory.png'),
 ];
 
 const LOREM_IPSUM =

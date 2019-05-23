@@ -12,7 +12,7 @@
 
 const React = require('react');
 const {Alert, Platform, ToastAndroid, Text, View} = require('react-native');
-const RNTesterButton = require('./RNTesterButton');
+const RNTesterButton = require('../RNTesterButton');
 const performanceNow = require('fbjs/lib/performanceNow');
 
 function burnCPU(milliseconds) {

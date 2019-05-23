@@ -99,7 +99,7 @@ const IconsExample = withRTLState(({isRTL, setRTL}) => {
       <View style={[styles.flexDirectionRow, directionStyle(isRTL)]}>
         <View>
           <Image
-            source={require('./Thumbnails/like.png')}
+            source={require('../images/Thumbnails/like.png')}
             style={styles.image}
           />
           <Text style={styles.fontSizeExtraSmall}>
@@ -108,7 +108,7 @@ const IconsExample = withRTLState(({isRTL, setRTL}) => {
         </View>
         <View style={styles.rightAlignStyle}>
           <Image
-            source={require('./Thumbnails/poke.png')}
+            source={require('../images/Thumbnails/poke.png')}
             style={[styles.image, styles.withRTLStyle]}
           />
           <Text style={styles.fontSizeExtraSmall}>
@@ -126,7 +126,7 @@ function AnimationBlock(props) {
       <TouchableWithoutFeedback onPress={props.onPress}>
         <Animated.Image
           style={[styles.img, props.imgStyle]}
-          source={require('./Thumbnails/poke.png')}
+          source={require('../images/Thumbnails/poke.png')}
         />
       </TouchableWithoutFeedback>
     </View>
@@ -219,8 +219,8 @@ const SimpleListItemExample = withRTLState(({isRTL, setRTL}) => {
     <View>
       <RTLToggler setRTL={setRTL} isRTL={isRTL} />
       <View style={[styles.list, directionStyle(isRTL)]}>
-        <ListItem imageSource={require('./Thumbnails/like.png')} />
-        <ListItem imageSource={require('./Thumbnails/poke.png')} />
+        <ListItem imageSource={require('../images/Thumbnails/like.png')} />
+        <ListItem imageSource={require('../images/Thumbnails/poke.png')} />
       </View>
     </View>
   );

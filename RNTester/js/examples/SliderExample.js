@@ -132,14 +132,16 @@ exports.examples = [
     title: 'Custom thumb image',
     platform: 'ios',
     render(): React.Element<any> {
-      return <SliderExample thumbImage={require('./uie_thumb_big.png')} />;
+      return (
+        <SliderExample thumbImage={require('../images/uie_thumb_big.png')} />
+      );
     },
   },
   {
     title: 'Custom track image',
     platform: 'ios',
     render(): React.Element<any> {
-      return <SliderExample trackImage={require('./slider.png')} />;
+      return <SliderExample trackImage={require('../images/slider.png')} />;
     },
   },
   {
@@ -148,8 +150,8 @@ exports.examples = [
     render(): React.Element<any> {
       return (
         <SliderExample
-          minimumTrackImage={require('./slider-left.png')}
-          maximumTrackImage={require('./slider-right.png')}
+          minimumTrackImage={require('../images/slider-left.png')}
+          maximumTrackImage={require('../images/slider-right.png')}
         />
       );
     },

@@ -13,9 +13,9 @@
 const React = require('react');
 const {FlatList, StyleSheet, Text, View, Alert} = require('react-native');
 
-const RNTesterPage = require('./RNTesterPage');
+const RNTesterPage = require('../RNTesterPage');
 
-const infoLog = require('../../Libraries/Utilities/infoLog');
+const infoLog = require('../../../Libraries/Utilities/infoLog');
 
 const {
   FooterComponent,

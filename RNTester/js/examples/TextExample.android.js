@@ -12,10 +12,10 @@
 
 const React = require('react');
 const {StyleSheet, Text, View} = require('react-native');
-const RNTesterBlock = require('./RNTesterBlock');
-const RNTesterPage = require('./RNTesterPage');
-const TextInlineView = require('./Shared/TextInlineView');
-const TextLegend = require('./Shared/TextLegend');
+const RNTesterBlock = require('../RNTesterBlock');
+const RNTesterPage = require('../RNTesterPage');
+const TextInlineView = require('../Shared/TextInlineView');
+const TextLegend = require('../Shared/TextLegend');
 
 class Entity extends React.Component<{|children: React.Node|}> {
   render() {

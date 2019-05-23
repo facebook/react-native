@@ -15,9 +15,9 @@ import type {Item} from './ListExampleShared';
 const React = require('react');
 const {Alert, Animated, StyleSheet, View} = require('react-native');
 
-const RNTesterPage = require('./RNTesterPage');
+const RNTesterPage = require('../RNTesterPage');
 
-const infoLog = require('../../Libraries/Utilities/infoLog');
+const infoLog = require('../../../Libraries/Utilities/infoLog');
 
 const {
   FooterComponent,

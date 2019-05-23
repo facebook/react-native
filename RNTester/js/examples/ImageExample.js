@@ -424,19 +424,19 @@ exports.examples = [
       return (
         <View style={styles.horizontal}>
           <Image
-            source={require('./uie_thumb_normal.png')}
+            source={require('../images/uie_thumb_normal.png')}
             style={styles.icon}
           />
           <Image
-            source={require('./uie_thumb_selected.png')}
+            source={require('../images/uie_thumb_selected.png')}
             style={styles.icon}
           />
           <Image
-            source={require('./uie_comment_normal.png')}
+            source={require('../images/uie_comment_normal.png')}
             style={styles.icon}
           />
           <Image
-            source={require('./uie_comment_highlighted.png')}
+            source={require('../images/uie_comment_highlighted.png')}
             style={styles.icon}
           />
         </View>
@@ -490,7 +490,7 @@ exports.examples = [
     render: function() {
       return (
         <Image
-          defaultSource={require('./bunny.png')}
+          defaultSource={require('../images/bunny.png')}
           source={{
             uri: 'https://facebook.github.io/origami/public/images/birds.jpg',
           }}
@@ -510,7 +510,7 @@ exports.examples = [
       return (
         <View style={styles.horizontal}>
           <Image
-            defaultSource={require('./bunny.png')}
+            defaultSource={require('../images/bunny.png')}
             source={{
               uri: smallImage.uri + '?cacheBust=notinCache' + Date.now(),
               cache: 'only-if-cached',
@@ -518,7 +518,7 @@ exports.examples = [
             style={styles.base}
           />
           <Image
-            defaultSource={require('./bunny.png')}
+            defaultSource={require('../images/bunny.png')}
             source={{
               uri: smallImage.uri + '?cacheBust=notinCache' + Date.now(),
               cache: 'reload',
@@ -702,11 +702,11 @@ exports.examples = [
         <View>
           <View style={styles.horizontal}>
             <Image
-              source={require('./uie_thumb_normal.png')}
+              source={require('../images/uie_thumb_normal.png')}
               style={[styles.icon, {borderRadius: 5, tintColor: '#5ac8fa'}]}
             />
             <Image
-              source={require('./uie_thumb_normal.png')}
+              source={require('../images/uie_thumb_normal.png')}
               style={[
                 styles.icon,
                 styles.leftMargin,
@@ -714,7 +714,7 @@ exports.examples = [
               ]}
             />
             <Image
-              source={require('./uie_thumb_normal.png')}
+              source={require('../images/uie_thumb_normal.png')}
               style={[
                 styles.icon,
                 styles.leftMargin,
@@ -722,7 +722,7 @@ exports.examples = [
               ]}
             />
             <Image
-              source={require('./uie_thumb_normal.png')}
+              source={require('../images/uie_thumb_normal.png')}
               style={[
                 styles.icon,
                 styles.leftMargin,
@@ -835,7 +835,7 @@ exports.examples = [
       return (
         <Image
           style={styles.gif}
-          source={require('./tumblr_mfqekpMktw1rn90umo1_500.gif')}
+          source={require('../images/tumblr_mfqekpMktw1rn90umo1_500.gif')}
         />
       );
     },

@@ -18,7 +18,7 @@ const {
   View,
 } = require('react-native');
 
-const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterBlock = require('../RNTesterBlock');
 
 // corporate ipsum > lorem ipsum
 const alertMessage =

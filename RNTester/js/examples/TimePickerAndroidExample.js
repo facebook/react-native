@@ -17,8 +17,8 @@ const {
   TouchableWithoutFeedback,
 } = require('react-native');
 
-const RNTesterBlock = require('./RNTesterBlock');
-const RNTesterPage = require('./RNTesterPage');
+const RNTesterBlock = require('../RNTesterBlock');
+const RNTesterPage = require('../RNTesterPage');
 
 class TimePickerAndroidExample extends React.Component {
   state = {

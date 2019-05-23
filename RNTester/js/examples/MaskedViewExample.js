@@ -198,7 +198,7 @@ exports.examples = [
               <View style={styles.maskContainerStyle}>
                 <Image
                   style={styles.imageStyle}
-                  source={require('./imageMask.png')}
+                  source={require('../images/imageMask.png')}
                 />
               </View>
             }>

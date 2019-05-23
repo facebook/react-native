@@ -18,7 +18,8 @@ function Basic() {
     <Text>
       This text contains an inline blue view{' '}
       <View style={{width: 25, height: 25, backgroundColor: 'steelblue'}} /> and
-      an inline image <Image source={require('../flux.png')} />. Neat, huh?
+      an inline image <Image source={require('../images/flux.png')} />. Neat,
+      huh?
     </Text>
   );
 }

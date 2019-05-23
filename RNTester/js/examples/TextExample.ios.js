@@ -19,9 +19,9 @@ const {
   TextInput,
   View,
 } = require('react-native');
-const TextAncestor = require('../../Libraries/Text/TextAncestor');
-const TextInlineView = require('./Shared/TextInlineView');
-const TextLegend = require('./Shared/TextLegend');
+const TextAncestor = require('../../../Libraries/Text/TextAncestor');
+const TextInlineView = require('../Shared/TextInlineView');
+const TextLegend = require('../Shared/TextLegend');
 
 // TODO: Is there a cleaner way to flip the TextAncestor value to false? I
 //   suspect apps won't even be able to leverage this workaround because
