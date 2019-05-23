@@ -247,6 +247,9 @@ module.exports = {
   get Linking() {
     return require('Linking');
   },
+  get NativeDialogManagerAndroid() {
+    return require('NativeDialogManagerAndroid').default;
+  },
   get NativeEventEmitter() {
     return require('NativeEventEmitter');
   },
