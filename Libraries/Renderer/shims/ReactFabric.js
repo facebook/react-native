@@ -10,10 +10,10 @@
 
 'use strict';
 
-const BatchedBridge = require('../../BatchedBridge/BatchedBridge');
+const BatchedBridge = require('BatchedBridge');
 
 // TODO @sema: Adjust types
-import type {ReactNativeType} from './ReactNativeTypes';
+import type {ReactNativeType} from 'ReactNativeTypes';
 
 let ReactFabric;
 

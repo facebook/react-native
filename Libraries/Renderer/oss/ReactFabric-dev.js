@@ -16,19 +16,12 @@ if (__DEV__) {
   (function() {
 "use strict";
 
-require("InitializeCore");
-var ReactNativeViewConfigRegistry = require("ReactNativeViewConfigRegistry");
-var UIManager = require("UIManager");
+require("react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore");
+var ReactNativePrivateInterface = require("react-native/Libraries/ReactPrivate/ReactNativePrivateInterface");
 var React = require("react");
-var deepDiffer = require("deepDiffer");
-var flattenStyle = require("flattenStyle");
-var deepFreezeAndThrowOnMutationInDev = require("deepFreezeAndThrowOnMutationInDev");
-var TextInputState = require("TextInputState");
-var FabricUIManager = require("FabricUIManager");
 var checkPropTypes = require("prop-types/checkPropTypes");
 var Scheduler = require("scheduler");
 var tracing = require("scheduler/tracing");
-var ExceptionsManager = require("ExceptionsManager");
 
 // Do not require this module directly! Use a normal error constructor with
 // template literal strings. The messages will be converted to ReactError during
@@ -1561,7 +1554,7 @@ function getPooledWarningPropertyDefinition(propName, getVal) {
   return {
     configurable: true,
     set: set,
-    get: get$$1
+    get: get
   };
 
   function set(val) {
@@ -1570,7 +1563,7 @@ function getPooledWarningPropertyDefinition(propName, getVal) {
     return val;
   }
 
-  function get$$1() {
+  function get() {
     var action = isFunction ? "accessing the method" : "accessing the property";
     var result = isFunction
       ? "This is a no-op function"
@@ -1913,7 +1906,7 @@ var changeResponder = function(nextResponderInst, blockHostResponder) {
   }
 };
 
-var eventTypes$1 = {
+var eventTypes = {
   /**
    * On a `touchStart`/`mouseDown`, is it desired that this element become the
    * responder?
@@ -2204,12 +2197,12 @@ function setResponderAndExtractTransfer(
   nativeEventTarget
 ) {
   var shouldSetEventType = isStartish(topLevelType)
-    ? eventTypes$1.startShouldSetResponder
+    ? eventTypes.startShouldSetResponder
     : isMoveish(topLevelType)
-      ? eventTypes$1.moveShouldSetResponder
+      ? eventTypes.moveShouldSetResponder
       : topLevelType === TOP_SELECTION_CHANGE
-        ? eventTypes$1.selectionChangeShouldSetResponder
-        : eventTypes$1.scrollShouldSetResponder;
+        ? eventTypes.selectionChangeShouldSetResponder
+        : eventTypes.scrollShouldSetResponder;
 
   // TODO: stop one short of the current responder.
   var bubbleShouldSetFrom = !responderInst
@@ -2243,7 +2236,7 @@ function setResponderAndExtractTransfer(
   }
   var extracted = void 0;
   var grantEvent = ResponderSyntheticEvent.getPooled(
-    eventTypes$1.responderGrant,
+    eventTypes.responderGrant,
     wantsResponderInst,
     nativeEvent,
     nativeEventTarget
@@ -2254,7 +2247,7 @@ function setResponderAndExtractTransfer(
   var blockHostResponder = executeDirectDispatch(grantEvent) === true;
   if (responderInst) {
     var terminationRequestEvent = ResponderSyntheticEvent.getPooled(
-      eventTypes$1.responderTerminationRequest,
+      eventTypes.responderTerminationRequest,
       responderInst,
       nativeEvent,
       nativeEventTarget
@@ -2271,7 +2264,7 @@ function setResponderAndExtractTransfer(
 
     if (shouldSwitch) {
       var terminateEvent = ResponderSyntheticEvent.getPooled(
-        eventTypes$1.responderTerminate,
+        eventTypes.responderTerminate,
         responderInst,
         nativeEvent,
         nativeEventTarget
@@ -2282,7 +2275,7 @@ function setResponderAndExtractTransfer(
       changeResponder(wantsResponderInst, blockHostResponder);
     } else {
       var rejectEvent = ResponderSyntheticEvent.getPooled(
-        eventTypes$1.responderReject,
+        eventTypes.responderReject,
         wantsResponderInst,
         nativeEvent,
         nativeEventTarget
@@ -2351,7 +2344,7 @@ var ResponderEventPlugin = {
     return responderInst;
   },
 
-  eventTypes: eventTypes$1,
+  eventTypes: eventTypes,
 
   /**
    * We must be resilient to `targetInst` being `null` on `touchMove` or
@@ -2401,11 +2394,11 @@ var ResponderEventPlugin = {
     var isResponderTouchMove = responderInst && isMoveish(topLevelType);
     var isResponderTouchEnd = responderInst && isEndish(topLevelType);
     var incrementalTouch = isResponderTouchStart
-      ? eventTypes$1.responderStart
+      ? eventTypes.responderStart
       : isResponderTouchMove
-        ? eventTypes$1.responderMove
+        ? eventTypes.responderMove
         : isResponderTouchEnd
-          ? eventTypes$1.responderEnd
+          ? eventTypes.responderEnd
           : null;
 
     if (incrementalTouch) {
@@ -2428,9 +2421,9 @@ var ResponderEventPlugin = {
       isEndish(topLevelType) &&
       noResponderTouches(nativeEvent);
     var finalTouch = isResponderTerminate
-      ? eventTypes$1.responderTerminate
+      ? eventTypes.responderTerminate
       : isResponderRelease
-        ? eventTypes$1.responderRelease
+        ? eventTypes.responderRelease
         : null;
     if (finalTouch) {
       var finalEvent = ResponderSyntheticEvent.getPooled(
@@ -2462,8 +2455,18 @@ var ResponderEventPlugin = {
   }
 };
 
+// Module provided by RN:
+var customBubblingEventTypes =
+  ReactNativePrivateInterface.ReactNativeViewConfigRegistry
+    .customBubblingEventTypes;
+var customDirectEventTypes =
+  ReactNativePrivateInterface.ReactNativeViewConfigRegistry
+    .customDirectEventTypes;
+var eventTypes$1 =
+  ReactNativePrivateInterface.ReactNativeViewConfigRegistry.eventTypes;
+
 var ReactNativeBridgeEventPlugin = {
-  eventTypes: ReactNativeViewConfigRegistry.eventTypes,
+  eventTypes: eventTypes$1,
 
   /**
    * @see {EventPluginHub.extractEvents}
@@ -2478,10 +2481,8 @@ var ReactNativeBridgeEventPlugin = {
       // Probably a node belonging to another renderer's tree.
       return null;
     }
-    var bubbleDispatchConfig =
-      ReactNativeViewConfigRegistry.customBubblingEventTypes[topLevelType];
-    var directDispatchConfig =
-      ReactNativeViewConfigRegistry.customDirectEventTypes[topLevelType];
+    var bubbleDispatchConfig = customBubblingEventTypes[topLevelType];
+    var directDispatchConfig = customDirectEventTypes[topLevelType];
     (function() {
       if (!(bubbleDispatchConfig || directDispatchConfig)) {
         throw ReactError(
@@ -2555,9 +2556,12 @@ var ReactFabricGlobalResponderHandler = {
   onChange: function(from, to, blockNativeResponder) {
     if (to !== null) {
       var tag = to.stateNode.canonical._nativeTag;
-      UIManager.setJSResponder(tag, blockNativeResponder);
+      ReactNativePrivateInterface.UIManager.setJSResponder(
+        tag,
+        blockNativeResponder
+      );
     } else {
-      UIManager.clearJSResponder();
+      ReactNativePrivateInterface.UIManager.clearJSResponder();
     }
   }
 };
@@ -2588,7 +2592,7 @@ ResponderEventPlugin.injection.injectGlobalResponderHandler(
  * supported we can rename it.
  */
 
-function get$1(key) {
+function get(key) {
   return key._reactInternalFiber;
 }
 
@@ -2855,7 +2859,7 @@ function isMounted(component) {
     }
   }
 
-  var fiber = get$1(component);
+  var fiber = get(component);
   if (!fiber) {
     return false;
   }
@@ -3145,7 +3149,7 @@ function defaultDiffer(prevProp, nextProp) {
     return true;
   } else {
     // For objects and arrays, the default diffing algorithm is a deep compare
-    return deepDiffer(prevProp, nextProp);
+    return ReactNativePrivateInterface.deepDiffer(prevProp, nextProp);
   }
 }
 
@@ -3285,7 +3289,7 @@ function diffNestedProperty(
     return diffProperties(
       updatePayload,
       // $FlowFixMe - We know that this is always an object when the input is.
-      flattenStyle(prevProp),
+      ReactNativePrivateInterface.flattenStyle(prevProp),
       // $FlowFixMe - We know that this isn't an array because of above flow.
       nextProp,
       validAttributes
@@ -3296,7 +3300,7 @@ function diffNestedProperty(
     updatePayload,
     prevProp,
     // $FlowFixMe - We know that this is always an object when the input is.
-    flattenStyle(nextProp),
+    ReactNativePrivateInterface.flattenStyle(nextProp),
     validAttributes
   );
 }
@@ -3680,7 +3684,7 @@ function shim() {
 
 // Mutation (when unsupported)
 var supportsMutation = false;
-var appendChild$1 = shim;
+var appendChild = shim;
 var appendChildToContainer = shim;
 var commitTextUpdate = shim;
 var commitMount = shim;
@@ -3742,18 +3746,37 @@ function _classCallCheck(instance, Constructor) {
 }
 
 // Modules provided by RN:
+var _nativeFabricUIManage = nativeFabricUIManager;
+var createNode = _nativeFabricUIManage.createNode;
+var cloneNode = _nativeFabricUIManage.cloneNode;
+var cloneNodeWithNewChildren = _nativeFabricUIManage.cloneNodeWithNewChildren;
+var cloneNodeWithNewChildrenAndProps =
+  _nativeFabricUIManage.cloneNodeWithNewChildrenAndProps;
+var cloneNodeWithNewProps = _nativeFabricUIManage.cloneNodeWithNewProps;
+var createChildNodeSet = _nativeFabricUIManage.createChildSet;
+var appendChildNode = _nativeFabricUIManage.appendChild;
+var appendChildNodeToSet = _nativeFabricUIManage.appendChildToSet;
+var completeRoot = _nativeFabricUIManage.completeRoot;
+var registerEventHandler = _nativeFabricUIManage.registerEventHandler;
+var fabricMeasure = _nativeFabricUIManage.measure;
+var fabricMeasureInWindow = _nativeFabricUIManage.measureInWindow;
+var fabricMeasureLayout = _nativeFabricUIManage.measureLayout;
+var getViewConfigForType =
+  ReactNativePrivateInterface.ReactNativeViewConfigRegistry.get;
+
 // Counter for uniquely identifying views.
 // % 10 === 1 means it is a rootTag.
 // % 2 === 0 means it is a Fabric tag.
 // This means that they never overlap.
+
 var nextReactTag = 2;
 
 // TODO: Remove this conditional once all changes have propagated.
-if (FabricUIManager.registerEventHandler) {
+if (registerEventHandler) {
   /**
    * Register the event emitter with the native bridge
    */
-  FabricUIManager.registerEventHandler(dispatchEvent);
+  registerEventHandler(dispatchEvent);
 }
 
 /**
@@ -3776,30 +3799,30 @@ var ReactFabricHostComponent = (function() {
   }
 
   ReactFabricHostComponent.prototype.blur = function blur() {
-    TextInputState.blurTextInput(this._nativeTag);
+    ReactNativePrivateInterface.TextInputState.blurTextInput(this._nativeTag);
   };
 
   ReactFabricHostComponent.prototype.focus = function focus() {
-    TextInputState.focusTextInput(this._nativeTag);
+    ReactNativePrivateInterface.TextInputState.focusTextInput(this._nativeTag);
   };
 
-  ReactFabricHostComponent.prototype.measure = function measure$$1(callback) {
-    FabricUIManager.measure(
+  ReactFabricHostComponent.prototype.measure = function measure(callback) {
+    fabricMeasure(
       this._internalInstanceHandle.stateNode.node,
       mountSafeCallback_NOT_REALLY_SAFE(this, callback)
     );
   };
 
-  ReactFabricHostComponent.prototype.measureInWindow = function measureInWindow$$1(
+  ReactFabricHostComponent.prototype.measureInWindow = function measureInWindow(
     callback
   ) {
-    FabricUIManager.measureInWindow(
+    fabricMeasureInWindow(
       this._internalInstanceHandle.stateNode.node,
       mountSafeCallback_NOT_REALLY_SAFE(this, callback)
     );
   };
 
-  ReactFabricHostComponent.prototype.measureLayout = function measureLayout$$1(
+  ReactFabricHostComponent.prototype.measureLayout = function measureLayout(
     relativeToNativeNode,
     onSuccess,
     onFail /* currently unused */
@@ -3816,7 +3839,7 @@ var ReactFabricHostComponent = (function() {
       return;
     }
 
-    FabricUIManager.measureLayout(
+    fabricMeasureLayout(
       this._internalInstanceHandle.stateNode.node,
       relativeToNativeNode._internalInstanceHandle.stateNode.node,
       mountSafeCallback_NOT_REALLY_SAFE(this, onFail),
@@ -3839,7 +3862,7 @@ var ReactFabricHostComponent = (function() {
 })();
 
 function appendInitialChild(parentInstance, child) {
-  FabricUIManager.appendChild(parentInstance.node, child.node);
+  appendChildNode(parentInstance.node, child.node);
 }
 
 function createInstance(
@@ -3852,19 +3875,21 @@ function createInstance(
   var tag = nextReactTag;
   nextReactTag += 2;
 
-  var viewConfig = ReactNativeViewConfigRegistry.get(type);
+  var viewConfig = getViewConfigForType(type);
 
   {
     for (var key in viewConfig.validAttributes) {
       if (props.hasOwnProperty(key)) {
-        deepFreezeAndThrowOnMutationInDev(props[key]);
+        ReactNativePrivateInterface.deepFreezeAndThrowOnMutationInDev(
+          props[key]
+        );
       }
     }
   }
 
   var updatePayload = create(props, viewConfig.validAttributes);
 
-  var node = FabricUIManager.createNode(
+  var node = createNode(
     tag, // reactTag
     viewConfig.uiViewClassName, // viewName
     rootContainerInstance, // rootTag
@@ -3902,7 +3927,7 @@ function createTextInstance(
   var tag = nextReactTag;
   nextReactTag += 2;
 
-  var node = FabricUIManager.createNode(
+  var node = createNode(
     tag, // reactTag
     "RCTRawText", // viewName
     rootContainerInstance, // rootTag
@@ -4025,18 +4050,15 @@ function cloneInstance(
   var clone = void 0;
   if (keepChildren) {
     if (updatePayload !== null) {
-      clone = FabricUIManager.cloneNodeWithNewProps(node, updatePayload);
+      clone = cloneNodeWithNewProps(node, updatePayload);
     } else {
-      clone = FabricUIManager.cloneNode(node);
+      clone = cloneNode(node);
     }
   } else {
     if (updatePayload !== null) {
-      clone = FabricUIManager.cloneNodeWithNewChildrenAndProps(
-        node,
-        updatePayload
-      );
+      clone = cloneNodeWithNewChildrenAndProps(node, updatePayload);
     } else {
-      clone = FabricUIManager.cloneNodeWithNewChildren(node);
+      clone = cloneNodeWithNewChildren(node);
     }
   }
   return {
@@ -4053,7 +4075,7 @@ function cloneHiddenInstance(instance, type, props, internalInstanceHandle) {
     viewConfig.validAttributes
   );
   return {
-    node: FabricUIManager.cloneNodeWithNewProps(node, updatePayload),
+    node: cloneNodeWithNewProps(node, updatePayload),
     canonical: instance.canonical
   };
 }
@@ -4063,15 +4085,15 @@ function cloneHiddenTextInstance(instance, text, internalInstanceHandle) {
 }
 
 function createContainerChildSet(container) {
-  return FabricUIManager.createChildSet(container);
+  return createChildNodeSet(container);
 }
 
 function appendChildToContainerChildSet(childSet, child) {
-  FabricUIManager.appendChildToSet(childSet, child.node);
+  appendChildNodeToSet(childSet, child.node);
 }
 
 function finalizeContainerChildren(container, newChildren) {
-  FabricUIManager.completeRoot(container, newChildren);
+  completeRoot(container, newChildren);
 }
 
 function mountEventComponent(eventComponentInstance) {
@@ -7565,7 +7587,7 @@ function applyDerivedStateFromProps(
 var classComponentUpdater = {
   isMounted: isMounted,
   enqueueSetState: function(inst, payload, callback) {
-    var fiber = get$1(inst);
+    var fiber = get(inst);
     var currentTime = requestCurrentTime();
     var expirationTime = computeExpirationForFiber(currentTime, fiber);
 
@@ -7583,7 +7605,7 @@ var classComponentUpdater = {
     scheduleWork(fiber, expirationTime);
   },
   enqueueReplaceState: function(inst, payload, callback) {
-    var fiber = get$1(inst);
+    var fiber = get(inst);
     var currentTime = requestCurrentTime();
     var expirationTime = computeExpirationForFiber(currentTime, fiber);
 
@@ -7603,7 +7625,7 @@ var classComponentUpdater = {
     scheduleWork(fiber, expirationTime);
   },
   enqueueForceUpdate: function(inst, callback) {
-    var fiber = get$1(inst);
+    var fiber = get(inst);
     var currentTime = requestCurrentTime();
     var expirationTime = computeExpirationForFiber(currentTime, fiber);
 
@@ -14897,7 +14919,10 @@ function showErrorDialog(capturedError) {
     errorToHandle = new Error("Unspecified error at:" + componentStack);
   }
 
-  ExceptionsManager.handleException(errorToHandle, false);
+  ReactNativePrivateInterface.ExceptionsManager.handleException(
+    errorToHandle,
+    false
+  );
 
   // Return false here to prevent ReactFiberErrorLogger default behavior of
   // logging error details to console.error. Calls to console.error are
@@ -15879,7 +15904,7 @@ function commitPlacement(finishedWork) {
         if (isContainer) {
           appendChildToContainer(parent, stateNode);
         } else {
-          appendChild$1(parent, stateNode);
+          appendChild(parent, stateNode);
         }
       }
     } else if (node.tag === HostPortal) {
@@ -18559,7 +18584,7 @@ function getContextForSubtree(parentComponent) {
     return emptyContextObject;
   }
 
-  var fiber = get$1(parentComponent);
+  var fiber = get(parentComponent);
   var parentContext = findCurrentUnmaskedContext(fiber);
 
   if (fiber.tag === ClassComponent) {
@@ -18645,7 +18670,7 @@ function updateContainerAtExpirationTime(
 }
 
 function findHostInstance(component) {
-  var fiber = get$1(component);
+  var fiber = get(component);
   if (fiber === undefined) {
     if (typeof component.render === "function") {
       (function() {
@@ -18673,7 +18698,7 @@ function findHostInstance(component) {
 
 function findHostInstanceWithWarning(component, methodName) {
   {
-    var fiber = get$1(component);
+    var fiber = get(component);
     if (fiber === undefined) {
       if (typeof component.render === "function") {
         (function() {
@@ -18958,7 +18983,7 @@ var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
           mountSafeCallback_NOT_REALLY_SAFE(this, callback)
         );
       } else {
-        UIManager.measure(
+        ReactNativePrivateInterface.UIManager.measure(
           findNodeHandle(this),
           mountSafeCallback_NOT_REALLY_SAFE(this, callback)
         );
@@ -19006,7 +19031,7 @@ var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
           mountSafeCallback_NOT_REALLY_SAFE(this, callback)
         );
       } else {
-        UIManager.measureInWindow(
+        ReactNativePrivateInterface.UIManager.measureInWindow(
           findNodeHandle(this),
           mountSafeCallback_NOT_REALLY_SAFE(this, callback)
         );
@@ -19069,7 +19094,7 @@ var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
           return;
         }
 
-        UIManager.measureLayout(
+        ReactNativePrivateInterface.UIManager.measureLayout(
           findNodeHandle(this),
           relativeNode,
           mountSafeCallback_NOT_REALLY_SAFE(this, onFail),
@@ -19141,7 +19166,7 @@ var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
       // This is an expensive no-op for Android, and causes an unnecessary
       // view invalidation for certain components (eg RCTTextInput) on iOS.
       if (updatePayload != null) {
-        UIManager.updateView(
+        ReactNativePrivateInterface.UIManager.updateView(
           nativeTag,
           viewConfig.uiViewClassName,
           updatePayload
@@ -19154,14 +19179,18 @@ var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
      * will depend on the platform and type of view.
      */
     focus: function() {
-      TextInputState.focusTextInput(findNodeHandle(this));
+      ReactNativePrivateInterface.TextInputState.focusTextInput(
+        findNodeHandle(this)
+      );
     },
 
     /**
      * Removes focus from an input or view. This is the opposite of `focus()`.
      */
     blur: function() {
-      TextInputState.blurTextInput(findNodeHandle(this));
+      ReactNativePrivateInterface.TextInputState.blurTextInput(
+        findNodeHandle(this)
+      );
     }
   };
 
@@ -19281,7 +19310,9 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
      * declared in the base class need to be redeclared below.
      */
     ReactNativeComponent.prototype.blur = function blur() {
-      TextInputState.blurTextInput(findNodeHandle(this));
+      ReactNativePrivateInterface.TextInputState.blurTextInput(
+        findNodeHandle(this)
+      );
     };
 
     /**
@@ -19289,7 +19320,9 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
      */
 
     ReactNativeComponent.prototype.focus = function focus() {
-      TextInputState.focusTextInput(findNodeHandle(this));
+      ReactNativePrivateInterface.TextInputState.focusTextInput(
+        findNodeHandle(this)
+      );
     };
 
     /**
@@ -19308,7 +19341,7 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
      * [`onLayout` prop](docs/view.html#onlayout) instead.
      */
 
-    ReactNativeComponent.prototype.measure = function measure$$1(callback) {
+    ReactNativeComponent.prototype.measure = function measure(callback) {
       var maybeInstance = void 0;
 
       // Fiber errors if findNodeHandle is called for an umounted component.
@@ -19334,7 +19367,7 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
           mountSafeCallback_NOT_REALLY_SAFE(this, callback)
         );
       } else {
-        UIManager.measure(
+        ReactNativePrivateInterface.UIManager.measure(
           findNodeHandle(this),
           mountSafeCallback_NOT_REALLY_SAFE(this, callback)
         );
@@ -19355,7 +19388,7 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
      * These values are not available until after natives rendering completes.
      */
 
-    ReactNativeComponent.prototype.measureInWindow = function measureInWindow$$1(
+    ReactNativeComponent.prototype.measureInWindow = function measureInWindow(
       callback
     ) {
       var maybeInstance = void 0;
@@ -19383,7 +19416,7 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
           mountSafeCallback_NOT_REALLY_SAFE(this, callback)
         );
       } else {
-        UIManager.measureInWindow(
+        ReactNativePrivateInterface.UIManager.measureInWindow(
           findNodeHandle(this),
           mountSafeCallback_NOT_REALLY_SAFE(this, callback)
         );
@@ -19397,7 +19430,7 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
      * Obtain a native node handle with `ReactNative.findNodeHandle(component)`.
      */
 
-    ReactNativeComponent.prototype.measureLayout = function measureLayout$$1(
+    ReactNativeComponent.prototype.measureLayout = function measureLayout(
       relativeToNativeNode,
       onSuccess,
       onFail /* currently unused */
@@ -19445,7 +19478,7 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
           return;
         }
 
-        UIManager.measureLayout(
+        ReactNativePrivateInterface.UIManager.measureLayout(
           findNodeHandle(this),
           relativeNode,
           mountSafeCallback_NOT_REALLY_SAFE(this, onFail),
@@ -19516,7 +19549,7 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
       // This is an expensive no-op for Android, and causes an unnecessary
       // view invalidation for certain components (eg RCTTextInput) on iOS.
       if (updatePayload != null) {
-        UIManager.updateView(
+        ReactNativePrivateInterface.UIManager.updateView(
           nativeTag,
           viewConfig.uiViewClassName,
           updatePayload
@@ -19602,7 +19635,7 @@ var getInspectorDataForViewTag = void 0;
         getInspectorData: function(findNodeHandle) {
           return {
             measure: function(callback) {
-              return UIManager.measure(
+              return ReactNativePrivateInterface.UIManager.measure(
                 getHostNode(fiber, findNodeHandle),
                 callback
               );
