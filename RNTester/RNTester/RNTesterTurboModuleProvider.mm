@@ -10,8 +10,8 @@
 
 #import "RNTesterTurboModuleProvider.h"
 
-#import <jsireact/RCTSampleTurboCxxModule.h>
-#import <jsireact/SampleTurboModule.h>
+#import <jsireact/SampleTurboCxxModule.h>
+#import <jsireact/RCTSampleTurboModule.h>
 
 // NOTE: This entire file should be codegen'ed.
 
