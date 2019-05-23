@@ -1214,6 +1214,7 @@ const TextInput = createReactClass({
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityRole={this.props.accessibilityRole}
+        accessibilityStates={this.props.accessibilityStates}
         accessibilityState={this.props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={this.props.testID}>
