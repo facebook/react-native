@@ -58,12 +58,16 @@
     <file src="..\android\com\facebook\react\react-native\*\react-native-*.aar" target="lib"/>
     <file src="..\android\com\facebook\react\react-native\*\react-native-*.pom" target="lib"/>
 
+    <file src="..\double-conversion\double-conversion\*.h" target="inc\double-conversion"/>
+
     <!-- Ideally we'd only exported the needed headers, not the complete list -->
     <file src="..\ReactCommon\cxxreact\**\*.h" target="inc\cxxreact"/>
     <file src="..\ReactCommon\jsi\**\*.h" target="inc\jsi"/>
     <file src="..\ReactCommon\yoga\yoga\**\*.h" target="inc\Yoga"/>
     <file src="..\folly\**\*.*" target="inc" />
-    <file src="..\stubs\**\*.*" target="inc" />
+    <file src="..\glog\src\glog\*.h" target="inc\glog" />
+    <file src="..\ReactCommon\privatedata\PrivateDataBase.h" target="inc\privatedata" />
+    <file src="..\jsc\jsc-headers\*.h" target="inc\jsc"/>
 
   </files>
 </package>
