@@ -51,6 +51,7 @@ const OVERRIDE_PROPS = [
   'accessibilityHint',
   'accessibilityIgnoresInvertColors',
   'accessibilityRole',
+  'accessibilityStates',
   'accessibilityState',
   'hitSlop',
   'nativeID',
@@ -105,6 +106,7 @@ const TouchableWithoutFeedback = ((createReactClass({
     accessibilityHint: PropTypes.string,
     accessibilityIgnoresInvertColors: PropTypes.bool,
     accessibilityRole: PropTypes.oneOf(DeprecatedAccessibilityRoles),
+    accessibilityStates: PropTypes.array,
     accessibilityState: PropTypes.object,
     /**
      * When `accessible` is true (which is the default) this may be called when
