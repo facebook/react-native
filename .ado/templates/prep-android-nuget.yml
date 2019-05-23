@@ -1,0 +1,18 @@
+steps:
+  - task: PowerShell@2
+    displayName: Extract version from package.json, and put it in nuspec
+    inputs:
+      targetType: inline # filePath | inline
+      script: |
+        $lines = Get-Content package.json | Where {$_ -match '^\s*"version":.*'} 
+        $npmVersion = $lines.Trim().Split()[1].Trim('",');
+        (Get-Content ReactAndroid/ReactAndroid.nuspec).replace('__BuildBuildNumber__', $npmVersion) | Set-Content ReactAndroid/ReactAndroid.nuspec
+
+  # Pretty yucky - but we dont want devmain to have to update versions _all_ over the place
+  - task: PowerShell@2
+    displayName: Change pom file to always use version 1000
+    inputs:
+      targetType: inline # filePath | inline
+      script: |
+        (Get-Content android\com\facebook\react\react-native\0.58.6\react-native-0.58.6.pom).replace('<version>0.58.6</version>', '<version>1000.0.0-master</version>') | Set-Content android\com\facebook\react\react-native\0.58.6\react-native-0.58.6.pom
+

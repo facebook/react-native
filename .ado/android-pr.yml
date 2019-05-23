@@ -117,14 +117,7 @@ jobs:
           #findBugsRunAnalysis: false # Optional
           #pmdRunAnalysis: false # Optional
 
-      - task: PowerShell@2
-        displayName: Extract version from package.json, and put it in nuspec
-        inputs:
-          targetType: inline # filePath | inline
-          script: |
-            $lines = Get-Content package.json | Where {$_ -match '^\s*"version":.*'} 
-            $npmVersion = $lines.Trim().Split()[1].Trim('",');
-            (Get-Content ReactAndroid/ReactAndroid.nuspec).replace('__BuildBuildNumber__', $npmVersion) | Set-Content ReactAndroid/ReactAndroid.nuspec
+      - template: templates\prep-android-nuget.yml
 
       - task: NuGetCommand@2
         displayName: 'Verify NuGet can be packed'
