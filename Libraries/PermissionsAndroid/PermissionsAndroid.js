@@ -83,6 +83,9 @@ class PermissionsAndroid {
       '"PermissionsAndroid.checkPermission" is deprecated. Use "PermissionsAndroid.check" instead',
     );
     if (Platform.OS !== 'android') {
+      console.warn(
+        '"PermissionsAndroid" module works only for Android platform.',
+      );
       return Promise.resolve(false);
     }
 
@@ -97,6 +100,9 @@ class PermissionsAndroid {
    */
   check(permission: PermissionType): Promise<boolean> {
     if (Platform.OS !== 'android') {
+      console.warn(
+        '"PermissionsAndroid" module works only for Android platform.',
+      );
       return Promise.resolve(false);
     }
     return NativePermissionsAndroid.checkPermission(permission);
@@ -124,6 +130,9 @@ class PermissionsAndroid {
       '"PermissionsAndroid.requestPermission" is deprecated. Use "PermissionsAndroid.request" instead',
     );
     if (Platform.OS !== 'android') {
+      console.warn(
+        '"PermissionsAndroid" module works only for Android platform.',
+      );
       return Promise.resolve(false);
     }
 
@@ -142,6 +151,9 @@ class PermissionsAndroid {
     rationale?: Rationale,
   ): Promise<PermissionStatus> {
     if (Platform.OS !== 'android') {
+      console.warn(
+        '"PermissionsAndroid" module works only for Android platform.',
+      );
       return Promise.resolve(this.RESULTS.DENIED);
     }
 
@@ -175,6 +187,9 @@ class PermissionsAndroid {
     permissions: Array<PermissionType>,
   ): Promise<{[permission: PermissionType]: PermissionStatus}> {
     if (Platform.OS !== 'android') {
+      console.warn(
+        '"PermissionsAndroid" module works only for Android platform.',
+      );
       return Promise.resolve({});
     }
 

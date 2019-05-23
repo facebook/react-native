@@ -13,8 +13,6 @@
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
 
-
-
 export type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
 export type PermissionType =
   | 'android.permission.READ_CALENDAR'
