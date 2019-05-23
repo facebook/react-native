@@ -10,6 +10,6 @@
 
 'use strict';
 
-const RCTAlertManager = require('./NativeAlertManager');
+import RCTAlertManager from './NativeAlertManager';
 
 module.exports = RCTAlertManager;

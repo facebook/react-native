@@ -15,8 +15,7 @@ import Platform from '../Utilities/Platform';
 import DialogManagerAndroid, {
   type DialogOptions,
 } from '../NativeModules/specs/NativeDialogManagerAndroid';
-
-const RCTAlertManager = NativeModules.AlertManager;
+import RCTAlertManager from './RCTAlertManager';
 
 export type Buttons = Array<{
   text?: string,
