@@ -96,12 +96,10 @@ void Scheduler::startSurface(
 
   shadowTreeRegistry_.add(std::move(shadowTree));
 
-#ifndef ANDROID
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     uiManagerBinding_->startSurface(
         runtime, surfaceId, moduleName, initialProps);
   });
-#endif
 }
 
 void Scheduler::renderTemplateToSurface(
@@ -171,11 +169,9 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
   auto shadowTree = shadowTreeRegistry_.remove(surfaceId);
   shadowTree->setDelegate(nullptr);
 
-#ifndef ANDROID
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     uiManagerBinding_->stopSurface(runtime, surfaceId);
   });
-#endif
 }
 
 Size Scheduler::measureSurface(

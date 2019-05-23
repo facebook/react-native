@@ -45,9 +45,13 @@ jni::local_ref<Binding::jhybriddata> Binding::initHybrid(
   return makeCxxInstance();
 }
 
-void Binding::startSurface(jint surfaceId, NativeMap *initialProps) {
+void Binding::startSurface(
+    jint surfaceId,
+    jni::alias_ref<jstring> moduleName,
+    NativeMap *initialProps) {
   if (scheduler_) {
-    scheduler_->startSurface(surfaceId, "", initialProps->consume());
+    scheduler_->startSurface(
+        surfaceId, moduleName->toStdString(), initialProps->consume());
   }
 }
 
