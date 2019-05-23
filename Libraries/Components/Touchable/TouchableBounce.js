@@ -181,6 +181,7 @@ const TouchableBounce = ((createReactClass({
         accessibilityHint={this.props.accessibilityHint}
         accessibilityRole={this.props.accessibilityRole}
         accessibilityStates={this.props.accessibilityStates}
+        accessibilityState={this.props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}

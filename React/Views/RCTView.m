@@ -222,6 +222,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
         return @"0";
       }
     }
+    for (NSString *state in self.accessibilityState) {
+      id val = self.accessibilityState[state];
+      if (!val) {
+        continue;
+      }
+      if ([state isEqualToString:@"checked"] && [val isKindOfClass:[NSNumber class]]) {
+        return [val boolValue] ? @"1" : @"0";
+      }
+    }
   }
   NSMutableArray *valueComponents = [NSMutableArray new];
   static NSDictionary<NSString *, NSString *> *roleDescriptions = nil;
@@ -255,6 +264,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
                           @"busy" : @"busy",
                           @"expanded" : @"expanded",
                           @"collapsed" : @"collapsed",
+                          @"mixed": @"mixed",
                           };
   });
   NSString *roleDescription = self.accessibilityRole ? roleDescriptions[self.accessibilityRole]: nil;
@@ -267,8 +277,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
       [valueComponents addObject:stateDescription];
     }
   }
+  for (NSString *state in self.accessibilityState) {
+    id val = self.accessibilityState[state];
+    if (!val) {
+      continue;
+    }
+    if ([state isEqualToString:@"checked"]) {
+      if ([val isKindOfClass:[NSNumber class]]) {
+        [valueComponents addObject:stateDescriptions[[val boolValue] ? @"checked" : @"unchecked"]];
+      } else if ([val isKindOfClass:[NSString class]] && [val isEqualToString:@"mixed"]) {
+        [valueComponents addObject:stateDescriptions[@"mixed"]];
+      }
+    }
+    if ([state isEqualToString:@"expanded"] && [val isKindOfClass:[NSNumber class]]) {
+      [valueComponents addObject:stateDescriptions[[val boolValue] ? @"expanded" : @"collapsed"]];
+    }
+    if ([state isEqualToString:@"busy"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
+      [valueComponents addObject:stateDescriptions[@"busy"]];
+    }
+  }
   if (valueComponents.count > 0) {
-    return [valueComponents componentsJoinedByString:@",  "];
+    return [valueComponents componentsJoinedByString:@", "];
   }
   return nil;
 }

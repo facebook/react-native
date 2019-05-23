@@ -118,6 +118,7 @@
  */
 @property (nonatomic, copy) NSString *accessibilityRole;
 @property (nonatomic, copy) NSArray <NSString *> *accessibilityStates;
+@property (nonatomic, copy) NSDictionary<NSString *, id> *accessibilityState;
 
 /**
  * Used in debugging to get a description of the view hierarchy rooted at

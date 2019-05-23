@@ -1104,6 +1104,7 @@ const TextInput = createReactClass({
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
         accessibilityStates={props.accessibilityStates}
+        accessibilityState={props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={props.testID}>
         {textContainer}
@@ -1156,6 +1157,7 @@ const TextInput = createReactClass({
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
         accessibilityStates={props.accessibilityStates}
+        accessibilityState={props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={props.testID}>
         {textContainer}
@@ -1213,6 +1215,7 @@ const TextInput = createReactClass({
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityRole={this.props.accessibilityRole}
         accessibilityStates={this.props.accessibilityStates}
+        accessibilityState={this.props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={this.props.testID}>
         {textContainer}
