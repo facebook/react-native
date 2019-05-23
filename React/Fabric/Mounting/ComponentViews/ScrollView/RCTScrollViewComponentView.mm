@@ -31,6 +31,14 @@ using namespace facebook::react;
   CGSize _contentSize;
 }
 
++ (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view
+{
+  do {
+    view = view.superview;
+  } while (view != nil && ![view isKindOfClass:[RCTScrollViewComponentView class]]);
+  return (RCTScrollViewComponentView *)view;
+}
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {

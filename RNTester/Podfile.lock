@@ -70,9 +70,6 @@ PODS:
     - React-Core (= 1000.0.0)
     - React-RCTNetwork (= 1000.0.0)
     - React-RCTWebSocket (= 1000.0.0)
-  - React-RCTCameraRoll (1000.0.0):
-    - React-Core (= 1000.0.0)
-    - React-RCTImage (= 1000.0.0)
   - React-RCTImage (1000.0.0):
     - React-Core (= 1000.0.0)
     - React-RCTNetwork (= 1000.0.0)
@@ -136,7 +133,6 @@ DEPENDENCIES:
   - React-RCTActionSheet (from `../Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../Libraries/NativeAnimation`)
   - React-RCTBlob (from `../Libraries/Blob`)
-  - React-RCTCameraRoll (from `../Libraries/CameraRoll`)
   - React-RCTImage (from `../Libraries/Image`)
   - React-RCTLinking (from `../Libraries/LinkingIOS`)
   - React-RCTNetwork (from `../Libraries/Network`)
@@ -186,8 +182,6 @@ EXTERNAL SOURCES:
     :path: "../Libraries/NativeAnimation"
   React-RCTBlob:
     :path: "../Libraries/Blob"
-  React-RCTCameraRoll:
-    :path: "../Libraries/CameraRoll"
   React-RCTImage:
     :path: "../Libraries/Image"
   React-RCTLinking:
@@ -216,32 +210,31 @@ SPEC CHECKSUMS:
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
-  React: f6b15ac3d6313712cf7c4cf74718ae2a9db2651c
-  React-ART: bd22b2aff1a8bf8cde8a6c1dcbe125d304ed17fc
-  React-Core: c8594da3646d238f10c9762bed24124faf471952
-  React-cxxreact: 14b8e82263631130a4b58fbf730974fc3ff2b441
-  React-DevSupport: 50f8b3975b3c3ed9be55ef68665d167aa1289d51
-  React-fishhook: 00f28cca0d29478e2f3d7eb2ecdf8c5e3a2c7877
-  React-jscallinvoker: a08a42e4bb0cc92126b43d8975bd9cf2f3cde91a
-  React-jsi: 43b01c89d178c5839eb4c6b5d046bff418591f45
-  React-jsiexecutor: b7b57031587bf7263595a90c6c7b7e70e6c80dd4
-  React-jsinspector: 905521b4c179dfeb7cdbcb446be76c2d80049c6a
-  React-RCTActionSheet: 43344f137528bd7e53c8ca2a00cc4d096c12cd9b
-  React-RCTAnimation: ab382fe91f902963f2911fc5045c076898c4bf23
-  React-RCTBlob: dac3d044aafc6af485aa7120289017f34add84d0
-  React-RCTCameraRoll: c23e7a525323f77079ba63020403b476024b983d
-  React-RCTImage: 65c2147bb60c19d6b75c21db521634c837c78e07
-  React-RCTLinking: f1ca322573510c1dd59887fd57bfacbd00e16b0a
-  React-RCTNetwork: 9a1edffc48ad097a8ba81183c37469a4a258e374
-  React-RCTPushNotification: 75270b17e1da623c7cbcf16720b647c028837020
-  React-RCTSettings: cc03a002a124226cc559dcd3b4e6c07c9abcbb3f
-  React-RCTText: 59872b5953d3468449564b0c4f9869f4c462ff75
-  React-RCTVibration: 67ba4c71fad787db8d43cad5bd267f27a7ba10dc
-  React-RCTWebSocket: efeb9c9a823119d0a954e737c52c0843d08d442e
-  React-turbomodule-core: a08cc95a3c61233ddba6dbd45c4574cc5c63b0f6
-  React-turbomodule-samples: cb148cf69854654326b87b0d9a2dfa9e52e5e183
-  yoga: de112610909651685c0d2b598a3220fcf52e5b13
+  React: f6b39f0b49fda55076b4c32b5a5e64d8e7ce522e
+  React-ART: df62a029b801b57b4e65aaf9a0e8cac69aa1831a
+  React-Core: ac822ec58b985ee7b1f1d9bc58c0b1af47383f9b
+  React-cxxreact: 7dba1c7fdd21fbf9db4c774b42697972e35a548b
+  React-DevSupport: a8031d24b222f140b235135412ad6bba6abc76f4
+  React-fishhook: ed18eae4d3cb5dcd939745e75353bfd136439f0a
+  React-jscallinvoker: 20715e40cb35b61f21d571bf61c4d2a5b7858c60
+  React-jsi: 28a005fe245bd2ea16f796ca8758639567a987b0
+  React-jsiexecutor: b6edae907e59e0916b514a306dee772cbf914fb5
+  React-jsinspector: 8db1d5d5008796928243e193e0ccf834dddf1cb0
+  React-RCTActionSheet: 051c9b2e86a51b4d413d927ca93cb99422bd29ff
+  React-RCTAnimation: 18d6560dc68f22adc088c3eeefff90fb843f791c
+  React-RCTBlob: d9735178cfdcaa76f09f6e26a3a415417fa6a721
+  React-RCTImage: 571d916ab95d52affe4a5642c4efdfdccc470d2d
+  React-RCTLinking: b597763790af203178d795e56a96aba85122c8b2
+  React-RCTNetwork: 82efd030ff2910840aa22fb46591b269372d7475
+  React-RCTPushNotification: 4f90eb4c45aeba7e655530307dc8d68b6184fb14
+  React-RCTSettings: b05d5f787c42ceb49c8021ac1bc3ad589ee5bb8a
+  React-RCTText: a8f49320cca8ca93a4d34389e8da220e6ebd3b9c
+  React-RCTVibration: d6a5b35c193220b7354a40e33240b91d45b140c6
+  React-RCTWebSocket: 1c8b14969f9b4e31687e88b6a105165e5bb12d6e
+  React-turbomodule-core: 05ad4636ef8223ce3e0d17a4c841cb6ee861ecb9
+  React-turbomodule-samples: 031f2179270fa7c87fb85b9caba3de66c41ee80d
+  yoga: 5457b0d0c10b6e69af4e157e32272f46dab883e3
 
-PODFILE CHECKSUM: 34bd1fb09ed9a8cde58cb351c276c91a89609967
+PODFILE CHECKSUM: a79215c3ad6df8cdb56fe715f1dfe6f65d89aca6
 
 COCOAPODS: 1.6.1

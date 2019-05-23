@@ -32,7 +32,7 @@ public class CreateMountItem implements MountItem {
 
   @Override
   public void execute(MountingManager mountingManager) {
-    mountingManager.createViewWithProps(mContext, mComponent, mReactTag, null, mIsLayoutable);
+    mountingManager.createView(mContext, mComponent, mReactTag, null, null, mIsLayoutable);
   }
 
   @Override

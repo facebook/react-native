@@ -110,15 +110,12 @@ describe('Android Test App', function() {
     return (
       driver
         .waitForElementByXPath(
-          '//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]',
+          '//android.widget.TextView[starts-with(@text, "Welcome to React")]',
         )
         .then(() => {
           fs.writeFileSync(
             'App.js',
-            androidAppCode.replace(
-              'Welcome to React Native!',
-              'Welcome to React Native! Reloaded',
-            ),
+            androidAppCode.replace('Step One', 'Step 1'),
             'utf-8',
           );
         })
@@ -128,7 +125,7 @@ describe('Android Test App', function() {
         .pressDeviceKey(46)
         .sleep(2000)
         .waitForElementByXPath(
-          '//android.widget.TextView[starts-with(@text, "Welcome to React Native! Reloaded")]',
+          '//android.widget.TextView[starts-with(@text, "Step 1")]',
         )
         .finally(() => {
           clearInterval(intervalToUpdate);
@@ -145,7 +142,7 @@ describe('Android Test App', function() {
     return (
       driver
         .waitForElementByXPath(
-          '//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]',
+          '//android.widget.TextView[starts-with(@text, "Welcome to React")]',
         )
         // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
         .pressDeviceKey(82)

@@ -217,11 +217,6 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'CameraRollExample',
-    module: require('../examples/CameraRoll/CameraRollExample'),
-    supportsTVOS: false,
-  },
-  {
     key: 'ClipboardExample',
     module: require('../examples/Clipboard/ClipboardExample'),
     supportsTVOS: false,
@@ -235,11 +230,6 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'Dimensions',
     module: require('../examples/Dimensions/DimensionsExample'),
     supportsTVOS: true,
-  },
-  {
-    key: 'ImageEditingExample',
-    module: require('../examples/Image/ImageEditingExample'),
-    supportsTVOS: false,
   },
   {
     key: 'LayoutAnimationExample',
@@ -259,11 +249,6 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'NativeAnimationsExample',
     module: require('../examples/NativeAnimation/NativeAnimationsExample'),
-    supportsTVOS: true,
-  },
-  {
-    key: 'NetInfoExample',
-    module: require('../examples/NetInfo/NetInfoExample'),
     supportsTVOS: true,
   },
   {

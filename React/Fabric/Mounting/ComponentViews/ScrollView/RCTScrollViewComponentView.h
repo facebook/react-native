@@ -23,6 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTScrollViewComponentView : RCTViewComponentView
 
 /*
+ * Finds and returns the closet RCTScrollViewComponentView component to the given view
+ */
++ (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view;
+
+/*
  * Returns an actual UIScrollView that this component uses under the hood.
  */
 @property (nonatomic, strong, readonly) UIScrollView *scrollView;

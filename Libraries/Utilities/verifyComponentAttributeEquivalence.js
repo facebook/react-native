@@ -10,9 +10,9 @@
 
 'use strict';
 
-const getNativeComponentAttributes = require('getNativeComponentAttributes');
+const getNativeComponentAttributes = require('../ReactNative/getNativeComponentAttributes');
 
-import type {ReactNativeBaseComponentViewConfig} from 'ReactNativeTypes';
+import type {ReactNativeBaseComponentViewConfig} from '../Renderer/shims/ReactNativeTypes';
 
 const IGNORED_KEYS = ['transform'];
 /**

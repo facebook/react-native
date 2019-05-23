@@ -34,6 +34,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('../examples/Image/ImageExample'),
   },
   {
+    key: 'KeyboardAvoidingViewExample',
+    module: require('../examples/KeyboardAvoidingView/KeyboardAvoidingViewExample'),
+  },
+  {
     key: 'ModalExample',
     module: require('../examples/Modal/ModalExample'),
   },
@@ -53,7 +57,7 @@ const ComponentExamples: Array<RNTesterExample> = [
     key: 'ProgressBarAndroidExample',
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-    module: require('../examples/ProgressBarAndroidExample/ProgressBarAndroidExample'),
+    module: require('../examples/ProgressBarAndroid/ProgressBarAndroidExample'),
   },
   {
     key: 'RefreshControlExample',
@@ -90,12 +94,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
     module: require('../examples/TextInput/TextInputExample'),
-  },
-  {
-    key: 'ToolbarAndroidExample',
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
-    module: require('../examples/ToolbarAndroid/ToolbarAndroidExample'),
   },
   {
     key: 'TouchableExample',
@@ -141,10 +139,6 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/Border/BorderExample'),
   },
   {
-    key: 'CameraRollExample',
-    module: require('../examples/CameraRoll/CameraRollExample'),
-  },
-  {
     key: 'ClipboardExample',
     module: require('../examples/Clipboard/ClipboardExample'),
   },
@@ -159,10 +153,6 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'Dimensions',
     module: require('../examples/Dimensions/DimensionsExample'),
-  },
-  {
-    key: 'ImageEditingExample',
-    module: require('../examples/Image/ImageEditingExample'),
   },
   {
     key: 'LayoutEventsExample',
@@ -183,10 +173,6 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'NativeAnimationsExample',
     module: require('../examples/NativeAnimation/NativeAnimationsExample'),
-  },
-  {
-    key: 'NetInfoExample',
-    module: require('../examples/NetInfo/NetInfoExample'),
   },
   {
     key: 'OrientationChangeExample',
