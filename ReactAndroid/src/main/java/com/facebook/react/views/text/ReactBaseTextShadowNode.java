@@ -226,7 +226,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   }
 
   // `nativeViewHierarchyOptimizer` can be `null` as long as `supportsInlineViews` is `false`.
-  protected static Spannable spannedFromShadowNode(
+  protected Spannable spannedFromShadowNode(
       ReactBaseTextShadowNode textShadowNode,
       String text,
       boolean supportsInlineViews,
