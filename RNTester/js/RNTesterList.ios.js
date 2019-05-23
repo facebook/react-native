@@ -217,11 +217,6 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'CameraRollExample',
-    module: require('./CameraRollExample'),
-    supportsTVOS: false,
-  },
-  {
     key: 'ClipboardExample',
     module: require('./ClipboardExample'),
     supportsTVOS: false,
@@ -235,11 +230,6 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'Dimensions',
     module: require('./DimensionsExample'),
     supportsTVOS: true,
-  },
-  {
-    key: 'ImageEditingExample',
-    module: require('./ImageEditingExample'),
-    supportsTVOS: false,
   },
   {
     key: 'LayoutAnimationExample',
