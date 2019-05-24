@@ -368,10 +368,10 @@ public class MountingManager {
     final int mReactTag;
     final boolean mIsRoot;
     @Nullable final ViewManager mViewManager;
-    public ReactStylesDiffMap mCurrentProps = null;
-    public ReadableMap mCurrentLocalData = null;
-    public ReadableMap mCurrentState = null;
-    public EventEmitterWrapper mEventEmitter = null;
+    @Nullable public ReactStylesDiffMap mCurrentProps = null;
+    @Nullable public ReadableMap mCurrentLocalData = null;
+    @Nullable public ReadableMap mCurrentState = null;
+    @Nullable public EventEmitterWrapper mEventEmitter = null;
 
     private ViewState(int reactTag, @Nullable View view, @Nullable ViewManager viewManager) {
       this(reactTag, view, viewManager, false);
