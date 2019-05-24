@@ -2208,38 +2208,6 @@
 		68EFE4EC1CF6EB3000A1DE13 /* RCTBundleURLProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBundleURLProvider.h; sourceTree = "<group>"; };
 		68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBundleURLProvider.m; sourceTree = "<group>"; };
 		6A15FB0C1BDF663500531DFB /* RCTRootViewInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootViewInternal.h; sourceTree = "<group>"; };
-		6E61319722985B3600AB39AD /* TurboModuleUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TurboModuleUtils.cpp; sourceTree = "<group>"; };
-		6E61319822985B3600AB39AD /* TurboModule.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TurboModule.cpp; sourceTree = "<group>"; };
-		6E61319922985B3600AB39AD /* TurboCxxModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TurboCxxModule.h; sourceTree = "<group>"; };
-		6E61319C22985B3600AB39AD /* RCTTurboModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTTurboModule.mm; sourceTree = "<group>"; };
-		6E61319D22985B3600AB39AD /* RCTTurboModuleManager.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTTurboModuleManager.mm; sourceTree = "<group>"; };
-		6E61319E22985B3600AB39AD /* RCTTurboModuleManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTTurboModuleManager.h; sourceTree = "<group>"; };
-		6E61319F22985B3700AB39AD /* RCTTurboModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTTurboModule.h; sourceTree = "<group>"; };
-		6E6131A122985B3700AB39AD /* JavaTurboModule.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JavaTurboModule.cpp; sourceTree = "<group>"; };
-		6E6131A222985B3700AB39AD /* JavaTurboModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JavaTurboModule.h; sourceTree = "<group>"; };
-		6E6131A322985B3700AB39AD /* TurboCxxModule.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TurboCxxModule.cpp; sourceTree = "<group>"; };
-		6E6131A422985B3700AB39AD /* TurboModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TurboModule.h; sourceTree = "<group>"; };
-		6E6131A522985B3700AB39AD /* BUCK */ = {isa = PBXFileReference; lastKnownFileType = text; path = BUCK; sourceTree = "<group>"; };
-		6E6131A622985B3700AB39AD /* LongLivedObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LongLivedObject.h; sourceTree = "<group>"; };
-		6E6131A722985B3700AB39AD /* LongLivedObject.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LongLivedObject.cpp; sourceTree = "<group>"; };
-		6E6131A822985B3700AB39AD /* TurboModuleUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TurboModuleUtils.h; sourceTree = "<group>"; };
-		6E6131A922985B3700AB39AD /* TurboModuleBinding.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TurboModuleBinding.cpp; sourceTree = "<group>"; };
-		6E6131AA22985B3700AB39AD /* React-turbomodule-core.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = "React-turbomodule-core.podspec"; sourceTree = "<group>"; };
-		6E6131AB22985B3700AB39AD /* TurboModuleBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TurboModuleBinding.h; sourceTree = "<group>"; };
-		6E6131AD22985B3700AB39AD /* NativeSampleTurboCxxModuleSpecJSI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NativeSampleTurboCxxModuleSpecJSI.h; sourceTree = "<group>"; };
-		6E6131AE22985B3700AB39AD /* SampleTurboCxxModule.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SampleTurboCxxModule.cpp; sourceTree = "<group>"; };
-		6E6131AF22985B3700AB39AD /* React-turbomodule-samples.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = "React-turbomodule-samples.podspec"; sourceTree = "<group>"; };
-		6E6131B022985B3700AB39AD /* SampleTurboCxxModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SampleTurboCxxModule.h; sourceTree = "<group>"; };
-		6E6131B122985B3700AB39AD /* NativeSampleTurboCxxModuleSpecJSI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NativeSampleTurboCxxModuleSpecJSI.cpp; sourceTree = "<group>"; };
-		6E6131B422985B3700AB39AD /* RCTNativeSampleTurboModuleSpec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTNativeSampleTurboModuleSpec.h; sourceTree = "<group>"; };
-		6E6131B522985B3700AB39AD /* RCTNativeSampleTurboModuleSpec.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTNativeSampleTurboModuleSpec.mm; sourceTree = "<group>"; };
-		6E6131B622985B3700AB39AD /* SampleTurboCxxModuleLegacyImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SampleTurboCxxModuleLegacyImpl.cpp; sourceTree = "<group>"; };
-		6E6131B722985B3700AB39AD /* SampleTurboCxxModuleLegacyImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SampleTurboCxxModuleLegacyImpl.h; sourceTree = "<group>"; };
-		6E6131B822985B3700AB39AD /* RCTSampleTurboModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTSampleTurboModule.h; sourceTree = "<group>"; };
-		6E6131B922985B3700AB39AD /* RCTSampleTurboCxxModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTSampleTurboCxxModule.mm; sourceTree = "<group>"; };
-		6E6131BA22985B3700AB39AD /* RCTSampleTurboModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTSampleTurboModule.mm; sourceTree = "<group>"; };
-		6E6131BB22985B3700AB39AD /* RCTSampleTurboCxxModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTSampleTurboCxxModule.h; sourceTree = "<group>"; };
-		6E6131BC22985B3700AB39AD /* BUCK */ = {isa = PBXFileReference; lastKnownFileType = text; path = BUCK; sourceTree = "<group>"; };
 		6E6131BF22985B3C00AB39AD /* TurboModuleUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TurboModuleUtils.cpp; sourceTree = "<group>"; };
 		6E6131C022985B3C00AB39AD /* TurboModule.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TurboModule.cpp; sourceTree = "<group>"; };
 		6E6131C122985B3C00AB39AD /* TurboCxxModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TurboCxxModule.h; sourceTree = "<group>"; };
@@ -2941,102 +2909,6 @@
 			name = Inspector;
 			sourceTree = "<group>";
 		};
-		6E61319522985B3600AB39AD /* turbomodule */ = {
-			isa = PBXGroup;
-			children = (
-				6E61319622985B3600AB39AD /* core */,
-				6E6131AC22985B3700AB39AD /* samples */,
-			);
-			name = turbomodule;
-			path = ../ReactCommon/turbomodule;
-			sourceTree = "<group>";
-		};
-		6E61319622985B3600AB39AD /* core */ = {
-			isa = PBXGroup;
-			children = (
-				6E61319722985B3600AB39AD /* TurboModuleUtils.cpp */,
-				6E61319822985B3600AB39AD /* TurboModule.cpp */,
-				6E61319922985B3600AB39AD /* TurboCxxModule.h */,
-				6E61319A22985B3600AB39AD /* platform */,
-				6E6131A322985B3700AB39AD /* TurboCxxModule.cpp */,
-				6E6131A422985B3700AB39AD /* TurboModule.h */,
-				6E6131A522985B3700AB39AD /* BUCK */,
-				6E6131A622985B3700AB39AD /* LongLivedObject.h */,
-				6E6131A722985B3700AB39AD /* LongLivedObject.cpp */,
-				6E6131A822985B3700AB39AD /* TurboModuleUtils.h */,
-				6E6131A922985B3700AB39AD /* TurboModuleBinding.cpp */,
-				6E6131AA22985B3700AB39AD /* React-turbomodule-core.podspec */,
-				6E6131AB22985B3700AB39AD /* TurboModuleBinding.h */,
-			);
-			path = core;
-			sourceTree = "<group>";
-		};
-		6E61319A22985B3600AB39AD /* platform */ = {
-			isa = PBXGroup;
-			children = (
-				6E61319B22985B3600AB39AD /* ios */,
-				6E6131A022985B3700AB39AD /* android */,
-			);
-			path = platform;
-			sourceTree = "<group>";
-		};
-		6E61319B22985B3600AB39AD /* ios */ = {
-			isa = PBXGroup;
-			children = (
-				6E61319C22985B3600AB39AD /* RCTTurboModule.mm */,
-				6E61319D22985B3600AB39AD /* RCTTurboModuleManager.mm */,
-				6E61319E22985B3600AB39AD /* RCTTurboModuleManager.h */,
-				6E61319F22985B3700AB39AD /* RCTTurboModule.h */,
-			);
-			path = ios;
-			sourceTree = "<group>";
-		};
-		6E6131A022985B3700AB39AD /* android */ = {
-			isa = PBXGroup;
-			children = (
-				6E6131A122985B3700AB39AD /* JavaTurboModule.cpp */,
-				6E6131A222985B3700AB39AD /* JavaTurboModule.h */,
-			);
-			path = android;
-			sourceTree = "<group>";
-		};
-		6E6131AC22985B3700AB39AD /* samples */ = {
-			isa = PBXGroup;
-			children = (
-				6E6131AD22985B3700AB39AD /* NativeSampleTurboCxxModuleSpecJSI.h */,
-				6E6131AE22985B3700AB39AD /* SampleTurboCxxModule.cpp */,
-				6E6131AF22985B3700AB39AD /* React-turbomodule-samples.podspec */,
-				6E6131B022985B3700AB39AD /* SampleTurboCxxModule.h */,
-				6E6131B122985B3700AB39AD /* NativeSampleTurboCxxModuleSpecJSI.cpp */,
-				6E6131B222985B3700AB39AD /* platform */,
-				6E6131BC22985B3700AB39AD /* BUCK */,
-			);
-			path = samples;
-			sourceTree = "<group>";
-		};
-		6E6131B222985B3700AB39AD /* platform */ = {
-			isa = PBXGroup;
-			children = (
-				6E6131B322985B3700AB39AD /* ios */,
-			);
-			path = platform;
-			sourceTree = "<group>";
-		};
-		6E6131B322985B3700AB39AD /* ios */ = {
-			isa = PBXGroup;
-			children = (
-				6E6131B422985B3700AB39AD /* RCTNativeSampleTurboModuleSpec.h */,
-				6E6131B522985B3700AB39AD /* RCTNativeSampleTurboModuleSpec.mm */,
-				6E6131B622985B3700AB39AD /* SampleTurboCxxModuleLegacyImpl.cpp */,
-				6E6131B722985B3700AB39AD /* SampleTurboCxxModuleLegacyImpl.h */,
-				6E6131B822985B3700AB39AD /* RCTSampleTurboModule.h */,
-				6E6131B922985B3700AB39AD /* RCTSampleTurboCxxModule.mm */,
-				6E6131BA22985B3700AB39AD /* RCTSampleTurboModule.mm */,
-				6E6131BB22985B3700AB39AD /* RCTSampleTurboCxxModule.h */,
-			);
-			path = ios;
-			sourceTree = "<group>";
-		};
 		6E6131BD22985B3C00AB39AD /* turbomodule */ = {
 			isa = PBXGroup;
 			children = (
@@ -3091,7 +2963,6 @@
 				83CBBA2F1A601D0F00E9B192 /* React */,
 				3D788F841EBD2D240063D616 /* third-party.xcconfig */,
 				3D10A3C71DDF3CED004A0F9D /* ReactCommon */,
-				6E61319522985B3600AB39AD /* turbomodule */,
 				3D1FA0781DE4F2CD00E03CC6 /* Libraries */,
 				3D92B1151E036A690018521A /* ThirdParty */,
 				83CBBA001A601CBA00E9B192 /* Products */,
