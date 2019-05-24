@@ -158,33 +158,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return RCTRecursiveAccessibilityLabel(self);
 }
 
--(void)setAccessibilityActions:(NSArray *)actions
-{
-  if (!actions) {
-    return;
-  }
-  accessibilityActionsNameMap = [[NSMutableDictionary alloc] init];
-  accessibilityActionsLabelMap = [[NSMutableDictionary alloc] init];
-  for (NSDictionary *action in actions) {
-    if (action[@"name"]) {
-      accessibilityActionsNameMap[action[@"name"]] = action;
-    }
-    if (action[@"label"]) {
-      accessibilityActionsLabelMap[action[@"label"]] = action;
-    }
-  }
-  _accessibilityActions = [actions copy];
-}
-
 - (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
   if (!self.accessibilityActions.count) {
     return nil;
   }
 
+  accessibilityActionsNameMap = [[NSMutableDictionary alloc] init];
+  accessibilityActionsLabelMap = [[NSMutableDictionary alloc] init];
   NSMutableArray *actions = [NSMutableArray array];
   for (NSDictionary *action in self.accessibilityActions) {
+    if (action[@"name"]) {
+      accessibilityActionsNameMap[action[@"name"]] = action;
+    }
     if (action[@"label"]) {
+      accessibilityActionsLabelMap[action[@"label"]] = action;
       [actions addObject:[[UIAccessibilityCustomAction alloc] initWithName:action[@"label"]
                                                                     target:self
                                                                   selector:@selector(didActivateAccessibilityCustomAction:)]];
