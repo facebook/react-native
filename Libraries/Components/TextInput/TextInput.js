@@ -252,6 +252,7 @@ type AndroidProps = $ReadOnly<{|
     | 'yes'
     | 'yesExcludeDescendants'
   ),
+  showSoftInputOnFocus?: ?boolean,
 |}>;
 
 type Props = $ReadOnly<{|
@@ -925,6 +926,12 @@ const TextInput = createReactClass({
       'newPassword',
       'oneTimeCode',
     ]),
+    /**
+     * When `false`, it will prevent the soft keyboard from showing when the field is focused.
+     * Defaults to `true`.
+     * @platform android
+     */
+    showSoftInputOnFocus: PropTypes.bool,
   },
   getDefaultProps() {
     return {

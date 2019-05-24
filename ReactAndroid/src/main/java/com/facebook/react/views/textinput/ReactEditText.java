@@ -213,7 +213,9 @@ public class ReactEditText extends EditText {
     }
     setFocusableInTouchMode(true);
     boolean focused = super.requestFocus(direction, previouslyFocusedRect);
-    showSoftKeyboard();
+    if (getShowSoftInputOnFocus()) {
+      showSoftKeyboard();
+    }
     return focused;
   }
 
