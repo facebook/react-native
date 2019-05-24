@@ -41,6 +41,14 @@
     
     _imageSource = imageSource;
     
+    // grab image at the first index
+    CGImageRef imageRef = CGImageSourceCreateImageAtIndex(_imageSource, 0, NULL);
+    if (!imageRef) {
+      return nil;
+    }
+    self = [super initWithCGImage:imageRef scale:MAX(scale, 1) orientation:UIImageOrientationUp];
+    CGImageRelease(imageRef);
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
   }
   

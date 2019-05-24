@@ -31,26 +31,13 @@ RCT_EXPORT_MODULE()
                                         resizeMode:(RCTResizeMode)resizeMode
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
-  CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
-  if (!imageSource) {
+  RCTAnimatedImage *image = [[RCTAnimatedImage alloc] initWithData:imageData scale:scale];
+  
+  if (!image) {
     completionHandler(nil, nil);
     return ^{};
   }
-  UIImage *image = nil;
-  size_t imageCount = CGImageSourceGetCount(imageSource);
-  if (imageCount > 1) {
-    image = [[RCTAnimatedImage alloc] initWithData:imageData scale:scale];
-  } else {
-
-    // Don't bother creating an animation
-    CGImageRef imageRef = CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);
-    if (imageRef) {
-      image = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
-      CFRelease(imageRef);
-    }
-    CFRelease(imageSource);
-  }
-
+  
   completionHandler(nil, image);
   return ^{};
 }
