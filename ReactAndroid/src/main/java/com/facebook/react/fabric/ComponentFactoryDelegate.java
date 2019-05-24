@@ -1,24 +1,25 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
 
-package com.facebook.react.fabric.jsi;
+package com.facebook.react.fabric;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
 @DoNotStrip
-public class ComponentRegistry {
+public class ComponentFactoryDelegate {
 
   static {
     FabricSoLoader.staticInit();
   }
 
+  @DoNotStrip
   private final HybridData mHybridData;
 
   @DoNotStrip
   private static native HybridData initHybrid();
 
-  public ComponentRegistry() {
+  public ComponentFactoryDelegate() {
     mHybridData = initHybrid();
   }
 

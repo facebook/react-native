@@ -16,7 +16,7 @@ class Instance;
 class StateWrapperImpl : public jni::HybridClass<StateWrapperImpl> {
  public:
   constexpr static const char* const kJavaDescriptor =
-      "Lcom/facebook/react/fabric/jsi/StateWrapperImpl;";
+      "Lcom/facebook/react/fabric/StateWrapperImpl;";
 
   static void registerNatives();
 

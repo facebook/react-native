@@ -4,7 +4,7 @@
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
  * directory of this source tree.
  */
-package com.facebook.react.fabric;
+package com.facebook.react.fabric.events;
 
 import static com.facebook.react.uimanager.events.TouchesHelper.CHANGED_TOUCHES_KEY;
 import static com.facebook.react.uimanager.events.TouchesHelper.TARGET_KEY;
@@ -19,6 +19,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.systrace.Systrace;
 import java.util.HashSet;

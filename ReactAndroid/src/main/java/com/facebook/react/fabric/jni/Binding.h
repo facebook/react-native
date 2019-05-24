@@ -21,8 +21,8 @@ class Instance;
 
 class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
  public:
-  constexpr static const char *const kJavaDescriptor =
-      "Lcom/facebook/react/fabric/jsi/Binding;";
+  constexpr static const char* const kJavaDescriptor =
+      "Lcom/facebook/react/fabric/Binding;";
 
   static void registerNatives();
 

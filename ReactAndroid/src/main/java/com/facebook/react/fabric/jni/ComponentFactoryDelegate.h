@@ -23,7 +23,7 @@ class ComponentFactoryDelegate
     : public jni::HybridClass<ComponentFactoryDelegate> {
  public:
   constexpr static const char* const kJavaDescriptor =
-      "Lcom/facebook/react/fabric/jsi/ComponentFactoryDelegate;";
+      "Lcom/facebook/react/fabric/ComponentFactoryDelegate;";
 
   static void registerNatives();
 

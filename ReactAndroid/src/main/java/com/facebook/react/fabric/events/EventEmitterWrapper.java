@@ -4,7 +4,7 @@
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
  * directory of this source tree.
  */
-package com.facebook.react.fabric.jsi;
+package com.facebook.react.fabric.events;
 
 import android.annotation.SuppressLint;
 import androidx.annotation.Nullable;
@@ -13,7 +13,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.fabric.jsi.FabricSoLoader;
+import com.facebook.react.fabric.FabricSoLoader;
 
 /**
  * This class holds reference to the C++ EventEmitter object. Instances of this class are created on
