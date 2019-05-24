@@ -12,40 +12,53 @@
 
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
+import type {
+  Float,
+  BubblingEvent,
+  DirectEvent,
+  WithDefault,
+  CodegenNativeComponent,
+} from '../../Types/CodegenTypes';
+
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ImageSource} from '../../Image/ImageSource';
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
-type Event = SyntheticEvent<
-  $ReadOnly<{|
-    value: number,
-    fromUser?: boolean,
-  |}>,
->;
+type Event = $ReadOnly<{|
+  value: Float,
+  fromUser?: boolean,
+|}>;
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
-  disabled?: ?boolean,
-  enabled?: ?boolean,
+
+  // Props
+  disabled?: ?WithDefault<boolean, false>,
+  enabled?: ?WithDefault<boolean, false>,
   maximumTrackImage?: ?ImageSource,
   maximumTrackTintColor?: ?ColorValue,
-  maximumValue?: ?number,
+  maximumValue?: ?WithDefault<Float, 1>,
   minimumTrackImage?: ?ImageSource,
   minimumTrackTintColor?: ?ColorValue,
-  minimumValue?: ?number,
-  onChange?: ?(event: Event) => void,
-  onSlidingComplete?: ?(event: Event) => void,
-  onValueChange?: ?(event: Event) => void,
-  step?: ?number,
-  testID?: ?string,
+  minimumValue?: ?WithDefault<Float, 0>,
+  step?: ?WithDefault<Float, 0>,
+  testID?: ?WithDefault<string, ''>,
   thumbImage?: ?ImageSource,
   thumbTintColor?: ?ColorValue,
   trackImage?: ?ImageSource,
-  value?: ?number,
+  value: ?WithDefault<Float, 0>,
+
+  // Events
+  onChange?: ?(event: BubblingEvent<Event>) => void,
+  onValueChange?: ?(event: BubblingEvent<Event>) => void,
+  onSlidingComplete?: ?(event: DirectEvent<Event>) => void,
 |}>;
 
-type RCTSliderType = Class<NativeComponent<NativeProps>>;
+type Options = {
+  interfaceOnly: true,
+  isDeprecatedPaperComponentNameRCT: true,
+};
 
-module.exports = ((requireNativeComponent('RCTSlider'): any): RCTSliderType);
+type SliderType = CodegenNativeComponent<'Slider', NativeProps, Options>;
+
+module.exports = ((requireNativeComponent('RCTSlider'): any): SliderType);
