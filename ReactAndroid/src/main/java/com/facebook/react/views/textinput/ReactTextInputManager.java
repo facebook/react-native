@@ -715,6 +715,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setBorderStyle(borderStyle);
   }
 
+  @ReactProp(name = "showSoftInputOnFocus", defaultBoolean = true)
+  public void showKeyboardOnFocus(ReactEditText view, boolean showKeyboardOnFocus) {
+    view.setShowSoftInputOnFocus(showKeyboardOnFocus);
+  }
+
+
   @ReactPropGroup(names = {
       ViewProps.BORDER_WIDTH,
       ViewProps.BORDER_LEFT_WIDTH,
