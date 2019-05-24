@@ -16,23 +16,12 @@ import DialogManagerAndroid, {
   type DialogOptions,
 } from '../NativeModules/specs/NativeDialogManagerAndroid';
 import RCTAlertManager from './RCTAlertManager';
-
-export type Buttons = Array<{
-  text?: string,
-  onPress?: ?Function,
-  style?: AlertButtonStyle,
-}>;
-
-type Options = {
-  cancelable?: ?boolean,
-  onDismiss?: ?Function,
-};
-
-/* 'default' | plain-text' | 'secure-text' | 'login-password' */
-type AlertType = string;
-
-/* 'default' | 'cancel' | 'destructive' */
-export type AlertButtonStyle = string;
+import {
+  type Buttons,
+  type Options,
+  type AlertType,
+  type AlertButtonStyle,
+} from './NativeAlertManager';
 
 /**
  * Launches an alert dialog with the specified title and message.
@@ -172,6 +161,7 @@ class Alert {
         },
         (id, value) => {
           const cb = callbacks[id];
+          // $FlowFixMe
           cb && cb(value);
         },
       );

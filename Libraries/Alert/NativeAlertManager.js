@@ -10,7 +10,23 @@
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
 import Platform from '../Utilities/Platform';
-import {type Buttons} from './Alert';
+
+export type Buttons = Array<{
+  text?: string,
+  onPress?: ?() => void,
+  style?: AlertButtonStyle,
+}>;
+
+export type Options = {
+  cancelable?: ?boolean,
+  onDismiss?: ?() => void,
+};
+
+/* 'default' | plain-text' | 'secure-text' | 'login-password' */
+export type AlertType = string;
+
+/* 'default' | 'cancel' | 'destructive' */
+export type AlertButtonStyle = string;
 
 type Args = {|
   title: string,
