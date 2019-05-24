@@ -17,6 +17,7 @@ const SwitchSchema: SchemaType = {
     ActivityIndicatorSchema: {
       components: {
         ActivityIndicatorView: {
+          isDeprecatedPaperComponentNameRCT: true,
           extendsProps: [
             {
               type: 'ReactNativeBuiltInType',
@@ -42,14 +43,6 @@ const SwitchSchema: SchemaType = {
               },
             },
             {
-              name: 'styleAttr',
-              optional: true,
-              typeAnnotation: {
-                type: 'StringTypeAnnotation',
-                default: '',
-              },
-            },
-            {
               name: 'color',
               optional: true,
               typeAnnotation: {
@@ -71,14 +64,6 @@ const SwitchSchema: SchemaType = {
                     name: 'large',
                   },
                 ],
-              },
-            },
-            {
-              name: 'intermediate',
-              optional: true,
-              typeAnnotation: {
-                type: 'BooleanTypeAnnotation',
-                default: false,
               },
             },
           ],

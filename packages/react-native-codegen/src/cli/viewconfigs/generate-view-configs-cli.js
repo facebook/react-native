@@ -23,7 +23,10 @@ const yargv = yargs.strict().option('t', {
 const argv = yargv.argv;
 const fileList = argv._[0].split('\n');
 
-const CURRENT_VIEW_CONFIG_FILES = ['SliderNativeComponent.js'];
+const CURRENT_VIEW_CONFIG_FILES = [
+  'SliderNativeComponent.js',
+  'ActivityIndicatorViewNativeComponent.js',
+];
 
 generate(
   fileList.filter(fileName =>
