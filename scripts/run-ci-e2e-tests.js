@@ -44,6 +44,7 @@ try {
   // install CLI
   const CLI_PACKAGE = 'react-native-cli';
   if (!argv['skip-cli-install']) {
+    describe('Instal react-native-cli');
     if (exec(`yarn global add ${CLI_PACKAGE}`).code) {
       echo('Could not install react-native-cli globally.');
       echo('Run with --skip-cli-install to skip this step');
@@ -53,6 +54,7 @@ try {
   }
 
   if (argv.android) {
+    describe('Compile Android binaries');
     if (
       exec(
         './gradlew :ReactAndroid:installArchives -Pjobs=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"',
@@ -65,6 +67,7 @@ try {
   }
 
   if (argv.js) {
+    describe('Install Flow');
     if (
       tryExecNTimes(
         () => {
@@ -81,6 +84,7 @@ try {
     }
   }
 
+  describe('Create react-native package');
   if (exec('npm pack').code) {
     echo('Failed to pack react-native');
     exitCode = 1;
@@ -90,12 +94,16 @@ try {
   const PACKAGE = path.join(ROOT, 'react-native-*.tgz');
   cd(TEMP);
 
-  echo('Creating EndToEndTest React Native app');
+  describe('Create EndToEndTest React Native app');
   if (
     tryExecNTimes(
       () => {
-        return exec(`react-native init EndToEndTest --version ${PACKAGE} --npm`)
-          .code;
+        return exec(
+          `${path.join(
+            ROOT,
+            '/node_modules/.bin/react-native',
+          )} init EndToEndTest --version ${PACKAGE} --npm`,
+        ).code;
       },
       numberOfRetries,
       () => {
@@ -116,9 +124,10 @@ try {
   cp(RN_POLYFILLS, 'EndToEndTest/.');
 
   cd('EndToEndTest');
-  echo('Installing React Native package');
+  describe('Install React Native package');
   exec(`npm install ${PACKAGE}`);
-  echo('Installing node_modules');
+
+  describe('Install node_modules');
   if (
     tryExecNTimes(
       () => {
@@ -135,8 +144,7 @@ try {
   }
 
   if (argv.android) {
-    describe('Executing Android end-to-end tests');
-    echo('Installing end-to-end framework');
+    describe('Install end-to-end framework');
     if (
       tryExecNTimes(
         () =>
@@ -154,10 +162,11 @@ try {
     }
     cp(`${SCRIPTS}/android-e2e-test.js`, 'android-e2e-test.js');
     cd('android');
-    echo('Downloading Maven deps');
+    describe('Download Maven deps');
     exec('./gradlew :app:copyDownloadableDepsToLibs');
     cd('..');
 
+    describe('Generate key');
     exec('rm android/app/debug.keystore');
     if (
       exec(
@@ -169,18 +178,18 @@ try {
       throw Error(exitCode);
     }
 
-    echo(`Starting appium server, ${APPIUM_PID}`);
+    describe(`Start appium server, ${APPIUM_PID}`);
     const appiumProcess = spawn('node', ['./node_modules/.bin/appium']);
     APPIUM_PID = appiumProcess.pid;
 
-    echo('Building the app');
-    if (exec('react-native run-android').code) {
+    describe('Build the app');
+    if (exec('./node_modules/.bin/react-native run-android').code) {
       echo('could not execute react-native run-android');
       exitCode = 1;
       throw Error(exitCode);
     }
 
-    echo(`Starting packager server, ${SERVER_PID}`);
+    describe(`Start packager server, ${SERVER_PID}`);
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerProcess = spawn('yarn', ['start', '--max-workers 1'], {
       env: process.env,
@@ -207,11 +216,11 @@ try {
 
   if (argv.ios || argv.tvos) {
     var iosTestType = argv.tvos ? 'tvOS' : 'iOS';
-    describe('Executing ' + iosTestType + ' end-to-end tests');
     cd('ios');
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerEnv = Object.create(process.env);
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
+    describe('Start packager server');
     const packagerProcess = spawn('yarn', ['start'], {
       stdio: 'inherit',
       env: packagerEnv,
@@ -222,9 +231,11 @@ try {
     exec(
       'response=$(curl --write-out %{http_code} --silent --output /dev/null localhost:8081/index.bundle?platform=ios&dev=true)',
     );
-    echo(`Starting packager server, ${SERVER_PID}`);
-    echo('Running pod install');
+    echo(`Packager server up and running, ${SERVER_PID}`);
+
+    describe('Install CocoaPod dependencies');
     exec('pod install');
+
     describe('Test: ' + iosTestType + ' end-to-end test');
     if (
       tryExecNTimes(
@@ -259,7 +270,7 @@ try {
                 '--report',
                 'junit',
                 '--output',
-                `"~/react-native/reports/junit/${iosTestType}-e2e/results.xml"`,
+                `"~/reports/junit/${iosTestType}-e2e/results.xml"`,
               ].join(' ') +
               ' && exit ${PIPESTATUS[0]}',
           ).code;
@@ -277,12 +288,11 @@ try {
   }
 
   if (argv.js) {
-    describe('Executing JavaScript end-to-end tests');
     // Check the packager produces a bundle (doesn't throw an error)
     describe('Test: Verify packager can generate an Android bundle');
     if (
       exec(
-        'react-native bundle --max-workers 1 --platform android --dev true --entry-file index.js --bundle-output android-bundle.js',
+        './node_modules/.bin/react-native bundle --max-workers 1 --dev true --entry-file index.js --bundle-output android-bundle.js --platform android',
       ).code
     ) {
       echo('Could not build Android bundle');
@@ -292,7 +302,7 @@ try {
     describe('Test: Verify packager can generate an iOS bundle');
     if (
       exec(
-        'react-native --max-workers 1 bundle --platform ios --dev true --entry-file index.js --bundle-output ios-bundle.js',
+        './node_modules/.bin/react-native bundle --max-workers 1 --dev true --entry-file index.js --bundle-output ios-bundle.js --platform ios',
       ).code
     ) {
       echo('Could not build iOS bundle');
@@ -308,6 +318,7 @@ try {
   }
   exitCode = 0;
 } finally {
+  describe('Clean up');
   if (SERVER_PID) {
     echo(`Killing packager ${SERVER_PID}`);
     exec(`kill -9 ${SERVER_PID}`);
