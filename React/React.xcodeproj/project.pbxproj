@@ -1014,7 +1014,6 @@
 		6E61320B22985B9400AB39AD /* TurboCxxModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E6131CB22985B3C00AB39AD /* TurboCxxModule.cpp */; };
 		6E61320C22985B9400AB39AD /* LongLivedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E6131CF22985B3C00AB39AD /* LongLivedObject.cpp */; };
 		6E61320D22985B9400AB39AD /* TurboModuleBinding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E6131D122985B3C00AB39AD /* TurboModuleBinding.cpp */; };
-		6E61321422985BC800AB39AD /* libturbomodule.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E6131FE22985B5C00AB39AD /* libturbomodule.a */; };
 		6E61321822985C3700AB39AD /* BridgeJSCallInvoker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6E61321722985C3300AB39AD /* BridgeJSCallInvoker.cpp */; };
 		6E61321922985C4500AB39AD /* BridgeJSCallInvoker.h in Headers */ = {isa = PBXBuildFile; fileRef = 6E61321622985C3300AB39AD /* BridgeJSCallInvoker.h */; };
 		6E61321A22985C4500AB39AD /* JSCallInvoker.h in Headers */ = {isa = PBXBuildFile; fileRef = 6E61321522985C3300AB39AD /* JSCallInvoker.h */; };
@@ -1022,8 +1021,9 @@
 		6E61321C22985C4800AB39AD /* JSCallInvoker.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 6E61321522985C3300AB39AD /* JSCallInvoker.h */; };
 		6E61321F22985D2000AB39AD /* RCTTurboModuleManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 6E6131C622985B3C00AB39AD /* RCTTurboModuleManager.h */; };
 		6E61322022985D2000AB39AD /* RCTTurboModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 6E6131C722985B3C00AB39AD /* RCTTurboModule.h */; };
-		6E61322122985D2700AB39AD /* RCTTurboModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6E6131C422985B3C00AB39AD /* RCTTurboModule.mm */; };
-		6E61322222985D2700AB39AD /* RCTTurboModuleManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6E6131C522985B3C00AB39AD /* RCTTurboModuleManager.mm */; };
+		6E6132F02298651300AB39AD /* SampleTurboCxxModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 6E6132E3229864F000AB39AD /* SampleTurboCxxModule.h */; };
+		6E6132F12298653900AB39AD /* NativeSampleTurboCxxModuleSpecJSI.h in Headers */ = {isa = PBXBuildFile; fileRef = 6E6132E0229864F000AB39AD /* NativeSampleTurboCxxModuleSpecJSI.h */; };
+		6E6132F22298653900AB39AD /* SampleTurboCxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 6E6132E3229864F000AB39AD /* SampleTurboCxxModule.h */; };
 		830A229E1A66C68A008503DA /* RCTRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 830A229D1A66C68A008503DA /* RCTRootView.m */; };
 		83281384217EB70900574D55 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281383217EB70800574D55 /* MallocImpl.cpp */; };
 		83281385217EB71200574D55 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281383217EB70800574D55 /* MallocImpl.cpp */; };
@@ -1242,13 +1242,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = EDEBC6BA214B3E7000DD5AC8;
 			remoteInfo = jsi;
-		};
-		6E61321222985BC100AB39AD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 6E6131E522985B5C00AB39AD;
-			remoteInfo = turbomodule;
 		};
 		ED296F7D214C957300B7C4FE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1772,6 +1765,7 @@
 				6E61320322985B7B00AB39AD /* TurboModuleBinding.h in Copy Headers */,
 				6E61321F22985D2000AB39AD /* RCTTurboModuleManager.h in Copy Headers */,
 				6E61322022985D2000AB39AD /* RCTTurboModule.h in Copy Headers */,
+				6E6132F02298651300AB39AD /* SampleTurboCxxModule.h in Copy Headers */,
 			);
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2226,6 +2220,18 @@
 		6E61321522985C3300AB39AD /* JSCallInvoker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSCallInvoker.h; path = ../../jscallinvoker/jsireact/JSCallInvoker.h; sourceTree = "<group>"; };
 		6E61321622985C3300AB39AD /* BridgeJSCallInvoker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BridgeJSCallInvoker.h; path = ../../jscallinvoker/jsireact/BridgeJSCallInvoker.h; sourceTree = "<group>"; };
 		6E61321722985C3300AB39AD /* BridgeJSCallInvoker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = BridgeJSCallInvoker.cpp; path = ../../jscallinvoker/jsireact/BridgeJSCallInvoker.cpp; sourceTree = "<group>"; };
+		6E6132E0229864F000AB39AD /* NativeSampleTurboCxxModuleSpecJSI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NativeSampleTurboCxxModuleSpecJSI.h; sourceTree = "<group>"; };
+		6E6132E1229864F000AB39AD /* SampleTurboCxxModule.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SampleTurboCxxModule.cpp; sourceTree = "<group>"; };
+		6E6132E3229864F000AB39AD /* SampleTurboCxxModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SampleTurboCxxModule.h; sourceTree = "<group>"; };
+		6E6132E4229864F000AB39AD /* NativeSampleTurboCxxModuleSpecJSI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NativeSampleTurboCxxModuleSpecJSI.cpp; sourceTree = "<group>"; };
+		6E6132E7229864F000AB39AD /* RCTNativeSampleTurboModuleSpec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTNativeSampleTurboModuleSpec.h; sourceTree = "<group>"; };
+		6E6132E8229864F000AB39AD /* RCTNativeSampleTurboModuleSpec.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTNativeSampleTurboModuleSpec.mm; sourceTree = "<group>"; };
+		6E6132E9229864F000AB39AD /* SampleTurboCxxModuleLegacyImpl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SampleTurboCxxModuleLegacyImpl.cpp; sourceTree = "<group>"; };
+		6E6132EA229864F000AB39AD /* SampleTurboCxxModuleLegacyImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SampleTurboCxxModuleLegacyImpl.h; sourceTree = "<group>"; };
+		6E6132EB229864F000AB39AD /* RCTSampleTurboModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTSampleTurboModule.h; sourceTree = "<group>"; };
+		6E6132EC229864F000AB39AD /* RCTSampleTurboCxxModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTSampleTurboCxxModule.mm; sourceTree = "<group>"; };
+		6E6132ED229864F000AB39AD /* RCTSampleTurboModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTSampleTurboModule.mm; sourceTree = "<group>"; };
+		6E6132EE229864F000AB39AD /* RCTSampleTurboCxxModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTSampleTurboCxxModule.h; sourceTree = "<group>"; };
 		830213F31A654E0800B993E6 /* RCTBridgeModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTBridgeModule.h; sourceTree = "<group>"; };
 		830A229C1A66C68A008503DA /* RCTRootView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootView.h; sourceTree = "<group>"; };
 		830A229D1A66C68A008503DA /* RCTRootView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRootView.m; sourceTree = "<group>"; };
@@ -2334,7 +2340,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6E61321422985BC800AB39AD /* libturbomodule.a in Frameworks */,
 				EDEBC7E0214C709200DD5AC8 /* libjsinspector.a in Frameworks */,
 				3D3CD9411DE5FC5300167DC4 /* libcxxreact.a in Frameworks */,
 				EDEBC71A214B40A300DD5AC8 /* libjsi.a in Frameworks */,
@@ -2913,6 +2918,7 @@
 			isa = PBXGroup;
 			children = (
 				6E6131BE22985B3C00AB39AD /* core */,
+				6E6132DF229864F000AB39AD /* samples */,
 			);
 			path = turbomodule;
 			sourceTree = "<group>";
@@ -2953,6 +2959,41 @@
 				6E6131C522985B3C00AB39AD /* RCTTurboModuleManager.mm */,
 				6E6131C622985B3C00AB39AD /* RCTTurboModuleManager.h */,
 				6E6131C722985B3C00AB39AD /* RCTTurboModule.h */,
+			);
+			path = ios;
+			sourceTree = "<group>";
+		};
+		6E6132DF229864F000AB39AD /* samples */ = {
+			isa = PBXGroup;
+			children = (
+				6E6132E0229864F000AB39AD /* NativeSampleTurboCxxModuleSpecJSI.h */,
+				6E6132E1229864F000AB39AD /* SampleTurboCxxModule.cpp */,
+				6E6132E3229864F000AB39AD /* SampleTurboCxxModule.h */,
+				6E6132E4229864F000AB39AD /* NativeSampleTurboCxxModuleSpecJSI.cpp */,
+				6E6132E5229864F000AB39AD /* platform */,
+			);
+			path = samples;
+			sourceTree = "<group>";
+		};
+		6E6132E5229864F000AB39AD /* platform */ = {
+			isa = PBXGroup;
+			children = (
+				6E6132E6229864F000AB39AD /* ios */,
+			);
+			path = platform;
+			sourceTree = "<group>";
+		};
+		6E6132E6229864F000AB39AD /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				6E6132E7229864F000AB39AD /* RCTNativeSampleTurboModuleSpec.h */,
+				6E6132E8229864F000AB39AD /* RCTNativeSampleTurboModuleSpec.mm */,
+				6E6132E9229864F000AB39AD /* SampleTurboCxxModuleLegacyImpl.cpp */,
+				6E6132EA229864F000AB39AD /* SampleTurboCxxModuleLegacyImpl.h */,
+				6E6132EB229864F000AB39AD /* RCTSampleTurboModule.h */,
+				6E6132EC229864F000AB39AD /* RCTSampleTurboCxxModule.mm */,
+				6E6132ED229864F000AB39AD /* RCTSampleTurboModule.mm */,
+				6E6132EE229864F000AB39AD /* RCTSampleTurboCxxModule.h */,
 			);
 			path = ios;
 			sourceTree = "<group>";
@@ -3677,6 +3718,8 @@
 				6E61320822985B8100AB39AD /* TurboModuleBinding.h in Headers */,
 				6E61321922985C4500AB39AD /* BridgeJSCallInvoker.h in Headers */,
 				6E61321A22985C4500AB39AD /* JSCallInvoker.h in Headers */,
+				6E6132F12298653900AB39AD /* NativeSampleTurboCxxModuleSpecJSI.h in Headers */,
+				6E6132F22298653900AB39AD /* SampleTurboCxxModule.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3955,7 +3998,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				6E61321322985BC100AB39AD /* PBXTargetDependency */,
 				EDEBC74F214B477400DD5AC8 /* PBXTargetDependency */,
 				EDEBC7D9214C628300DD5AC8 /* PBXTargetDependency */,
 				EDEBC74B214B46A700DD5AC8 /* PBXTargetDependency */,
@@ -4624,7 +4666,6 @@
 				13BCE8091C99CB9D00DD7AAD /* RCTRootShadowView.m in Sources */,
 				006FC4141D9B20820057AAAD /* RCTMultipartDataTask.m in Sources */,
 				13CC8A821B17642100940AE7 /* RCTBorderDrawing.m in Sources */,
-				6E61322222985D2700AB39AD /* RCTTurboModuleManager.mm in Sources */,
 				C60128AD1F3D1258009DF9FF /* RCTCxxConvert.m in Sources */,
 				3DCE53291FEAB23100613583 /* RCTDatePicker.m in Sources */,
 				0EEEA8DF2239002200A8C82D /* RCTSurfacePresenterStub.m in Sources */,
@@ -4724,7 +4765,6 @@
 				83A1FE8F1B62643A00BE0E65 /* RCTModalHostViewManager.m in Sources */,
 				13E0674A1A70F434002CDEE1 /* RCTUIManager.m in Sources */,
 				1384E2091E806D4E00545659 /* RCTNativeModule.mm in Sources */,
-				6E61322122985D2700AB39AD /* RCTTurboModule.mm in Sources */,
 				391E86A41C623EC800009732 /* RCTTouchEvent.m in Sources */,
 				1450FF861BCFF28A00208362 /* RCTProfile.m in Sources */,
 				13AB90C11B6FA36700713B4F /* RCTComponentData.m in Sources */,
@@ -4829,11 +4869,6 @@
 			isa = PBXTargetDependency;
 			target = EDEBC6BA214B3E7000DD5AC8 /* jsi */;
 			targetProxy = 6E61321022985BB900AB39AD /* PBXContainerItemProxy */;
-		};
-		6E61321322985BC100AB39AD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 6E6131E522985B5C00AB39AD /* turbomodule */;
-			targetProxy = 6E61321222985BC100AB39AD /* PBXContainerItemProxy */;
 		};
 		ED296F7E214C957300B7C4FE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

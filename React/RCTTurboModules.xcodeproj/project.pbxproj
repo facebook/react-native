@@ -55,7 +55,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		6E0C2EC12298704B000E3701 /* libturbomodule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libturbomodule.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		6E0C2EC12298704B000E3701 /* libRCTTurboModules.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTTurboModules.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E61350D22986FCA00AB39AD /* BridgeJSCallInvoker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgeJSCallInvoker.h; sourceTree = "<group>"; };
 		6E61350E22986FCA00AB39AD /* BridgeJSCallInvoker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BridgeJSCallInvoker.cpp; sourceTree = "<group>"; };
 		6E61350F22986FCA00AB39AD /* JSCallInvoker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSCallInvoker.h; sourceTree = "<group>"; };
@@ -204,7 +204,7 @@
 			children = (
 				6E61350922986FCA00AB39AD /* jscallinvoker */,
 				6E61351122986FCB00AB39AD /* turbomodule */,
-				6E0C2EC12298704B000E3701 /* libturbomodule.a */,
+				6E0C2EC12298704B000E3701 /* libRCTTurboModules.a */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -232,9 +232,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		6E6131E522985B5C00AB39AD /* turbomodule */ = {
+		6E6131E522985B5C00AB39AD /* RCTTurboModules */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6E6131FB22985B5C00AB39AD /* Build configuration list for PBXNativeTarget "turbomodule" */;
+			buildConfigurationList = 6E6131FB22985B5C00AB39AD /* Build configuration list for PBXNativeTarget "RCTTurboModules" */;
 			buildPhases = (
 				6E6131E822985B5C00AB39AD /* Headers */,
 				6E6131EF22985B5C00AB39AD /* Copy Headers */,
@@ -245,9 +245,9 @@
 			);
 			dependencies = (
 			);
-			name = turbomodule;
+			name = RCTTurboModules;
 			productName = React;
-			productReference = 6E0C2EC12298704B000E3701 /* libturbomodule.a */;
+			productReference = 6E0C2EC12298704B000E3701 /* libRCTTurboModules.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -273,7 +273,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6E6131E522985B5C00AB39AD /* turbomodule */,
+				6E6131E522985B5C00AB39AD /* RCTTurboModules */,
 			);
 		};
 /* End PBXProject section */
@@ -449,7 +449,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6E6131FB22985B5C00AB39AD /* Build configuration list for PBXNativeTarget "turbomodule" */ = {
+		6E6131FB22985B5C00AB39AD /* Build configuration list for PBXNativeTarget "RCTTurboModules" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6E6131FC22985B5C00AB39AD /* Debug */,
