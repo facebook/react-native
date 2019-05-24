@@ -115,7 +115,6 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     ViewPool.class.getClass();
     Binding.class.getClass();
     ComponentFactoryDelegate.class.getClass();
-    ComponentRegistry.class.getClass();
     EventBeatManager.class.getClass();
     EventEmitterWrapper.class.getClass();
     StateWrapperImpl.class.getClass();
