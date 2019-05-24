@@ -15,7 +15,13 @@ import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {TVViewProps} from '../AppleTV/TVViewPropTypes';
-import type {AccessibilityRole, AccessibilityStates} from './ViewAccessibility';
+import type {
+  AccessibilityRole,
+  AccessibilityStates,
+  AccessibilityState,
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+} from './ViewAccessibility';
 
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
@@ -25,9 +31,8 @@ type DirectEventProps = $ReadOnly<{|
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs an accessibility custom action.
    *
-   * @platform ios
    */
-  onAccessibilityAction?: ?(string) => void,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => void,
 
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -322,13 +327,6 @@ type AndroidViewProps = $ReadOnly<{|
 
 type IOSViewProps = $ReadOnly<{|
   /**
-   * Provides an array of custom actions available for accessibility.
-   *
-   * @platform ios
-   */
-  accessibilityActions?: ?$ReadOnlyArray<string>,
-
-  /**
    * Prevents view from being inverted if set to true and color inversion is turned on.
    *
    * @platform ios
@@ -416,6 +414,13 @@ export type ViewProps = $ReadOnly<{|
    * Indicates to accessibility services that UI Component is in a specific State.
    */
   accessibilityStates?: ?AccessibilityStates,
+  accessibilityState?: ?AccessibilityState,
+
+  /**
+   * Provides an array of custom actions available for accessibility.
+   *
+   */
+  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
 
   /**
    * Used to locate this view in end-to-end tests.

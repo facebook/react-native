@@ -21,7 +21,7 @@ const StatusBarManager = require('../../BatchedBridge/NativeModules')
 /**
  * Status bar style
  */
-export type StatusBarStyle = $Enum<{
+export type StatusBarStyle = $Keys<{
   /**
    * Default status bar style (dark for iOS, light for Android)
    */
@@ -39,7 +39,7 @@ export type StatusBarStyle = $Enum<{
 /**
  * Status bar animation
  */
-export type StatusBarAnimation = $Enum<{
+export type StatusBarAnimation = $Keys<{
   /**
    * No animation
    */

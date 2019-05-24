@@ -165,6 +165,9 @@ void EventsNativeComponentEventEmitter::onEventDirect(EventsNativeComponentOnEve
     return payload;
   });
 }
+void EventsNativeComponentEventEmitter::onEnd() const {
+  dispatchEvent(\\"end\\");
+}
 
 } // namespace react
 } // namespace facebook

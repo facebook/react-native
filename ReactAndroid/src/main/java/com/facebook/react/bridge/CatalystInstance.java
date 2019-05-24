@@ -11,6 +11,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.turbomodule.core.interfaces.JSCallInvokerHolder;
+import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -110,4 +111,12 @@ public interface CatalystInstance
    * Required for TurboModuleManager initialization.
    */
   JSCallInvokerHolder getJSCallInvokerHolder();
+
+  /**
+   * For the time being, we want code relying on the old infra to also
+   * work with TurboModules. Hence, we must provide the TurboModuleRegistry
+   * to CatalystInstance so that getNativeModule, hasNativeModule, and
+   * getNativeModules can also return TurboModules.
+   */
+  void setTurboModuleRegistry(TurboModuleRegistry getter);
 }

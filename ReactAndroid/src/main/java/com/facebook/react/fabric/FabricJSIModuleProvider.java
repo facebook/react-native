@@ -96,6 +96,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   private static void loadClasses() {
     BatchEventDispatchedListener.class.getClass();
     ReactNativeConfig.class.getClass();
+    FabricComponents.class.getClass();
     ViewManagerFactory.class.getClass();
     StateWrapper.class.getClass();
     ViewFactory.class.getClass();

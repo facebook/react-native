@@ -43,8 +43,8 @@ export type NativeProps = $ReadOnly<{|
   refreshing: boolean,
 |}>;
 
-type RCTRefreshControlNativeType = Class<NativeComponent<NativeProps>>;
+type PullToRefreshView = Class<NativeComponent<NativeProps>>;
 
 module.exports = ((requireNativeComponent(
   'RCTRefreshControl',
-): any): RCTRefreshControlNativeType);
+): any): PullToRefreshView);

@@ -19,19 +19,18 @@ const links = [
   {
     title: 'The Basics',
     link: 'https://facebook.github.io/react-native/docs/tutorial',
-    description:
-      'Read the docs on what to do once seen how to work in React Native.',
+    description: 'Explains a Hello World for React Native.',
   },
   {
     title: 'Style',
     link: 'https://facebook.github.io/react-native/docs/style',
-    description: 'All of the core components accept a prop named style.',
+    description:
+      'Covers how to use the prop named style which controls the visuals.',
   },
   {
     title: 'Layout',
     link: 'https://facebook.github.io/react-native/docs/flexbox',
-    description:
-      'A component can specify the layout of its children using the flexbox specification.',
+    description: 'React Native uses flexbox for layout, learn how it works.',
   },
   {
     title: 'Components',

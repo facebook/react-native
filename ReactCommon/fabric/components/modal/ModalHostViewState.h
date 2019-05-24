@@ -7,10 +7,13 @@
 
 #pragma once
 
-#include <react/core/StateData.h>
 #include <react/graphics/Float.h>
 #include <react/graphics/Geometry.h>
 #include <react/graphics/conversions.h>
+
+#ifdef ANDROID
+#include <folly/dynamic.h>
+#endif
 
 namespace facebook {
 namespace react {
@@ -18,13 +21,12 @@ namespace react {
 /*
  * State for <BottomSheetView> component.
  */
-class ModalHostViewState : public StateData {
+class ModalHostViewState final {
  public:
   using Shared = std::shared_ptr<const ModalHostViewState>;
 
   ModalHostViewState(){};
   ModalHostViewState(Size screenSize_) : screenSize(screenSize_){};
-  virtual ~ModalHostViewState() = default;
 
 #ifdef ANDROID
   ModalHostViewState(folly::dynamic data)
@@ -35,7 +37,7 @@ class ModalHostViewState : public StateData {
   const Size screenSize{};
 
 #ifdef ANDROID
-  virtual const folly::dynamic getDynamic() const override;
+  folly::dynamic getDynamic() const;
 #endif
 
 #pragma mark - Getters

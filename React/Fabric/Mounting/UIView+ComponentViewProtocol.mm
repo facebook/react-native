@@ -17,6 +17,12 @@ using namespace facebook::react;
 
 @implementation UIView (ComponentViewProtocol)
 
++ (ComponentDescriptorProvider)componentDescriptorProvider
+{
+  RCTAssert(NO, @"`-[RCTComponentViewProtocol componentDescriptorProvider]` must be implemented in a concrete class.");
+  return {};
+}
+
 + (std::vector<facebook::react::ComponentDescriptorProvider>)supplementalComponentDescriptorProviders
 {
   return {};

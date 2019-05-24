@@ -307,6 +307,10 @@ public class ReactInstanceManager {
     return mMemoryPressureRouter;
   }
 
+  public List<ReactPackage> getPackages() {
+    return new ArrayList<>(mPackages);
+  }
+
   private static void initializeSoLoaderIfNecessary(Context applicationContext) {
     // Call SoLoader.initialize here, this is required for apps that does not use exopackage and
     // does not use SoLoader for loading other native code except from the one used by React Native

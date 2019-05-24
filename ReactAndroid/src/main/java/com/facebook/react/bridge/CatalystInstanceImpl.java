@@ -25,10 +25,10 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.turbomodule.core.JSCallInvokerHolderImpl;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Native;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -96,6 +96,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private @Nullable String mSourceURL;
 
   private JavaScriptContextHolder mJavaScriptContextHolder;
+  private @Nullable TurboModuleRegistry mTurboModuleRegistry = null;
 
   // C++ parts
   private final HybridData mHybridData;
@@ -421,16 +422,25 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   @Override
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
-    return mNativeModuleRegistry.hasModule(getNameFromAnnotation(nativeModuleInterface));
+    String moduleName = getNameFromAnnotation(nativeModuleInterface);
+    return mTurboModuleRegistry != null && mTurboModuleRegistry.hasModule(moduleName) ? true : mNativeModuleRegistry.hasModule(moduleName);
   }
 
   @Override
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
-    return (T) mNativeModuleRegistry.getModule(getNameFromAnnotation(nativeModuleInterface));
+    return (T) getNativeModule(getNameFromAnnotation(nativeModuleInterface));
   }
 
   @Override
   public NativeModule getNativeModule(String moduleName) {
+    if (mTurboModuleRegistry != null) {
+      TurboModule turboModule = mTurboModuleRegistry.getModule(moduleName);
+
+      if (turboModule != null) {
+        return (NativeModule)turboModule;
+      }
+    }
+
     return mNativeModuleRegistry.getModule(moduleName);
   }
 
@@ -445,7 +455,16 @@ public class CatalystInstanceImpl implements CatalystInstance {
   // This is only used by com.facebook.react.modules.common.ModuleDataCleaner
   @Override
   public Collection<NativeModule> getNativeModules() {
-    return mNativeModuleRegistry.getAllModules();
+    Collection<NativeModule> nativeModules = new ArrayList<>();
+    nativeModules.addAll(mNativeModuleRegistry.getAllModules());
+
+    if (mTurboModuleRegistry != null) {
+      for (TurboModule turboModule : mTurboModuleRegistry.getModules()) {
+        nativeModules.add((NativeModule) turboModule);
+      }
+    }
+
+    return nativeModules;
   }
 
   private native void jniHandleMemoryPressure(int level);
@@ -515,6 +534,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
         }
       });
     }
+  }
+
+  public void setTurboModuleRegistry(TurboModuleRegistry getter) {
+    mTurboModuleRegistry = getter;
   }
 
   private void decrementPendingJSCalls() {
