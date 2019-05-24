@@ -128,18 +128,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @Override
   public <T extends View> int addRootView(
-    final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
-    return addRootView(rootView, null, initialProps, initialUITemplate);
-  }
-
-  public <T extends View> int addRootView(
-      final T rootView, final @Nullable String moduleName, final WritableMap initialProps, final @Nullable String initialUITemplate) {
+      final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, rootView.getContext());
     mMountingManager.addRootView(rootTag, rootView);
     mReactContextForRootTag.put(rootTag, reactContext);
-    mBinding.startSurface(rootTag, moduleName == null ? "" : moduleName, (NativeMap) initialProps);
+    mBinding.startSurface(rootTag, (NativeMap) initialProps);
     if (initialUITemplate != null) {
       mBinding.renderTemplateToSurface(rootTag, initialUITemplate);
     }

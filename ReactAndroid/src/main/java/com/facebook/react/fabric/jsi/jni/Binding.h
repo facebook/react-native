@@ -50,10 +50,7 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
       ComponentFactoryDelegate *componentsRegistry,
       jni::alias_ref<jobject> reactNativeConfig);
 
-  void startSurface(
-      jint surfaceId,
-      jni::alias_ref<jstring> moduleName,
-      NativeMap *initialProps);
+  void startSurface(jint surfaceId, NativeMap *initialProps);
 
   void renderTemplateToSurface(jint surfaceId, jstring uiTemplate);
 
