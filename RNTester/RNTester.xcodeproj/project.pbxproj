@@ -113,8 +113,6 @@
 		3DD981D61D33C6FB007DC7BE /* RNTesterUnitTestsBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = 3DD981D51D33C6FB007DC7BE /* RNTesterUnitTestsBundle.js */; };
 		52C11BBB1EEACA7100C1A058 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5281CA511EEAC9A700AC40CD /* libRCTBlob.a */; };
 		52C11BE11EEACA7800C1A058 /* libRCTBlob-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5281CA531EEAC9A700AC40CD /* libRCTBlob-tvOS.a */; };
-		5C2B71672267DB1A0066069E /* RCTNativeSampleTurboModuleSpec.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C2B71152267DB1A0066069E /* RCTNativeSampleTurboModuleSpec.mm */; };
-		5C2B716A2267DB1A0066069E /* RCTSampleTurboModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C2B711A2267DB1A0066069E /* RCTSampleTurboModule.mm */; };
 		5C60EB592264416A0018C04F /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C60EB582264416A0018C04F /* AppDelegate.mm */; };
 		6862DFC62229DCE600684E03 /* libRCTTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6862DFAC2229DCC400684E03 /* libRCTTest.a */; };
 		6862DFC72229DD1000684E03 /* libRCTTest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6862DFAC2229DCC400684E03 /* libRCTTest.a */; };
@@ -123,6 +121,8 @@
 		6862DFCF2229DFCC00684E03 /* Screenshot.m in Sources */ = {isa = PBXBuildFile; fileRef = 6862DFCE2229DFCC00684E03 /* Screenshot.m */; };
 		68FF44381CF6111500720EFD /* RCTBundleURLProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */; };
 		6E0C2F32229871BC000E3701 /* libRCTTurboModules.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E0C2F19229871AE000E3701 /* libRCTTurboModules.a */; };
+		6E0C2F42229874CC000E3701 /* RNTesterTurboModuleProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6E0C2F40229874CC000E3701 /* RNTesterTurboModuleProvider.mm */; };
+		6E0C2F77229875B3000E3701 /* libTurboModuleSamples.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E0C2F76229875B3000E3701 /* libTurboModuleSamples.a */; };
 		834C36EC1AF8DED70019C93C /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 834C36D21AF8DA610019C93C /* libRCTSettings.a */; };
 		83636F8F1B53F22C009F943E /* RCTUIManagerScenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */; };
 		8385CEF51B873B5C00C6273E /* RCTImageLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */; };
@@ -427,6 +427,13 @@
 			remoteGlobalIDString = 6E6131FE22985B5C00AB39AD;
 			remoteInfo = turbomodule;
 		};
+		6E0C2F75229875B3000E3701 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6E0C2EFF229871AE000E3701 /* RCTTurboModules.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 6E0C2F6322987562000E3701;
+			remoteInfo = TurboModuleSamples;
+		};
 		834C36D11AF8DA610019C93C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 13CC9D481AEED2B90020D1C2 /* RCTSettings.xcodeproj */;
@@ -557,16 +564,14 @@
 		3DB99D0B1BA0340600302749 /* RNTesterIntegrationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNTesterIntegrationTests.m; sourceTree = "<group>"; };
 		3DD981D51D33C6FB007DC7BE /* RNTesterUnitTestsBundle.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = RNTesterUnitTestsBundle.js; sourceTree = "<group>"; };
 		5281CA4B1EEAC9A700AC40CD /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = ../Libraries/Blob/RCTBlob.xcodeproj; sourceTree = "<group>"; };
-		5C2B71142267DB1A0066069E /* RCTNativeSampleTurboModuleSpec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTNativeSampleTurboModuleSpec.h; sourceTree = "<group>"; };
-		5C2B71152267DB1A0066069E /* RCTNativeSampleTurboModuleSpec.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTNativeSampleTurboModuleSpec.mm; sourceTree = "<group>"; };
-		5C2B71182267DB1A0066069E /* RCTSampleTurboModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSampleTurboModule.h; sourceTree = "<group>"; };
-		5C2B711A2267DB1A0066069E /* RCTSampleTurboModule.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTSampleTurboModule.mm; sourceTree = "<group>"; };
 		5C60EB582264416A0018C04F /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = RNTester/AppDelegate.mm; sourceTree = "<group>"; };
 		6862DF932229DCC400684E03 /* RCTTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTest.xcodeproj; path = RCTTest/RCTTest.xcodeproj; sourceTree = "<group>"; };
 		6862DFCD2229DFCB00684E03 /* Screenshot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Screenshot.h; sourceTree = "<group>"; };
 		6862DFCE2229DFCC00684E03 /* Screenshot.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Screenshot.m; sourceTree = "<group>"; };
 		68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBundleURLProviderTests.m; sourceTree = "<group>"; };
 		6E0C2EFF229871AE000E3701 /* RCTTurboModules.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTTurboModules.xcodeproj; path = ../React/RCTTurboModules.xcodeproj; sourceTree = "<group>"; };
+		6E0C2F40229874CC000E3701 /* RNTesterTurboModuleProvider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RNTesterTurboModuleProvider.mm; path = RNTester/RNTesterTurboModuleProvider.mm; sourceTree = "<group>"; };
+		6E0C2F41229874CC000E3701 /* RNTesterTurboModuleProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNTesterTurboModuleProvider.h; path = RNTester/RNTesterTurboModuleProvider.h; sourceTree = "<group>"; };
 		83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerScenarioTests.m; sourceTree = "<group>"; };
 		8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderTests.m; sourceTree = "<group>"; };
 		8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderHelpers.m; sourceTree = "<group>"; };
@@ -622,6 +627,7 @@
 				D85B829E1AB6D5D7003F4FE2 /* libRCTVibration.a in Frameworks */,
 				139FDEDB1B0651FB00C62182 /* libRCTWebSocket.a in Frameworks */,
 				6E0C2F32229871BC000E3701 /* libRCTTurboModules.a in Frameworks */,
+				6E0C2F77229875B3000E3701 /* libTurboModuleSamples.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -767,7 +773,8 @@
 				5C60EB582264416A0018C04F /* AppDelegate.mm */,
 				AFEACAB12223EB2C004E5198 /* NativeExampleModules */,
 				6862DFD02229E1DE00684E03 /* NativeModuleExample */,
-				5C2B70EF2267DB1A0066069E /* turbomodule */,
+				6E0C2F41229874CC000E3701 /* RNTesterTurboModuleProvider.h */,
+				6E0C2F40229874CC000E3701 /* RNTesterTurboModuleProvider.mm */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				1323F18D1C04ABAC0091BED0 /* Supporting Files */,
@@ -968,42 +975,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		5C2B70EF2267DB1A0066069E /* turbomodule */ = {
-			isa = PBXGroup;
-			children = (
-				5C2B710E2267DB1A0066069E /* samples */,
-			);
-			name = turbomodule;
-			path = ../ReactCommon/turbomodule;
-			sourceTree = "<group>";
-		};
-		5C2B710E2267DB1A0066069E /* samples */ = {
-			isa = PBXGroup;
-			children = (
-				5C2B71102267DB1A0066069E /* platform */,
-			);
-			path = samples;
-			sourceTree = "<group>";
-		};
-		5C2B71102267DB1A0066069E /* platform */ = {
-			isa = PBXGroup;
-			children = (
-				5C2B71112267DB1A0066069E /* ios */,
-			);
-			path = platform;
-			sourceTree = "<group>";
-		};
-		5C2B71112267DB1A0066069E /* ios */ = {
-			isa = PBXGroup;
-			children = (
-				5C2B71142267DB1A0066069E /* RCTNativeSampleTurboModuleSpec.h */,
-				5C2B71152267DB1A0066069E /* RCTNativeSampleTurboModuleSpec.mm */,
-				5C2B71182267DB1A0066069E /* RCTSampleTurboModule.h */,
-				5C2B711A2267DB1A0066069E /* RCTSampleTurboModule.mm */,
-			);
-			path = ios;
-			sourceTree = "<group>";
-		};
 		6862DF942229DCC400684E03 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1026,6 +997,7 @@
 			isa = PBXGroup;
 			children = (
 				6E0C2F19229871AE000E3701 /* libRCTTurboModules.a */,
+				6E0C2F76229875B3000E3701 /* libTurboModuleSamples.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1603,6 +1575,13 @@
 			remoteRef = 6E0C2F30229871AE000E3701 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		6E0C2F76229875B3000E3701 /* libTurboModuleSamples.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTurboModuleSamples.a;
+			remoteRef = 6E0C2F75229875B3000E3701 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		834C36D21AF8DA610019C93C /* libRCTSettings.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1777,13 +1756,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5C2B716A2267DB1A0066069E /* RCTSampleTurboModule.mm in Sources */,
 				272E6B3F1BEA849E001FCF37 /* UpdatePropertiesExampleView.m in Sources */,
 				27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */,
+				6E0C2F42229874CC000E3701 /* RNTesterTurboModuleProvider.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				AFEACA842223EB05004E5198 /* CrashyCrash.m in Sources */,
 				5C60EB592264416A0018C04F /* AppDelegate.mm in Sources */,
-				5C2B71672267DB1A0066069E /* RCTNativeSampleTurboModuleSpec.mm in Sources */,
 				6862DFCF2229DFCC00684E03 /* Screenshot.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1946,6 +1924,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_CFLAGS = "-DRN_TURBO_MODULE_ENABLED";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = RNTester;
 				RN_BUNDLE_PREFIX = "";
@@ -1969,6 +1948,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_CFLAGS = "-DRN_TURBO_MODULE_ENABLED";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = RNTester;
 				TARGETED_DEVICE_FAMILY = "1,2";
