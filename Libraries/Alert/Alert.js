@@ -16,12 +16,7 @@ import DialogManagerAndroid, {
   type DialogOptions,
 } from '../NativeModules/specs/NativeDialogManagerAndroid';
 import RCTAlertManager from './RCTAlertManager';
-import {
-  type Buttons,
-  type Options,
-  type AlertType,
-  type AlertButtonStyle,
-} from './NativeAlertManager';
+import {type Buttons, type Options, type AlertType} from './NativeAlertManager';
 
 /**
  * Launches an alert dialog with the specified title and message.
