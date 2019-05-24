@@ -18,6 +18,7 @@ const SliderSchema: SchemaType = {
       components: {
         Slider: {
           interfaceOnly: true,
+          isDeprecatedPaperComponentNameRCT: true,
           extendsProps: [
             {
               type: 'ReactNativeBuiltInType',

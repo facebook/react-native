@@ -10,8 +10,6 @@
 
 'use strict';
 
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
-
 import type {
   Float,
   BubblingEvent,
@@ -61,4 +59,4 @@ type Options = {
 
 type SliderType = CodegenNativeComponent<'Slider', NativeProps, Options>;
 
-module.exports = ((requireNativeComponent('RCTSlider'): any): SliderType);
+module.exports = ((require('SliderNativeViewConfig'): any): SliderType);
