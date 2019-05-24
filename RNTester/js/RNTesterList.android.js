@@ -34,6 +34,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('./ImageExample'),
   },
   {
+    key: 'KeyboardAvoidingViewExample',
+    module: require('./KeyboardAvoidingViewExample'),
+  },
+  {
     key: 'ModalExample',
     module: require('./ModalExample'),
   },
@@ -92,12 +96,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('./TextInputExample'),
   },
   {
-    key: 'ToolbarAndroidExample',
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
-    module: require('./ToolbarAndroidExample'),
-  },
-  {
     key: 'TouchableExample',
     module: require('./TouchableExample'),
   },
@@ -141,10 +139,6 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('./BorderExample'),
   },
   {
-    key: 'CameraRollExample',
-    module: require('./CameraRollExample'),
-  },
-  {
     key: 'ClipboardExample',
     module: require('./ClipboardExample'),
   },
@@ -159,10 +153,6 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'Dimensions',
     module: require('./DimensionsExample'),
-  },
-  {
-    key: 'ImageEditingExample',
-    module: require('./ImageEditingExample'),
   },
   {
     key: 'LayoutEventsExample',
@@ -183,10 +173,6 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'NativeAnimationsExample',
     module: require('./NativeAnimationsExample'),
-  },
-  {
-    key: 'NetInfoExample',
-    module: require('./NetInfoExample'),
   },
   {
     key: 'OrientationChangeExample',

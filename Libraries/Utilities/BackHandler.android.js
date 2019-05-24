@@ -10,9 +10,8 @@
 
 'use strict';
 
-const DeviceEventManager = require('../BatchedBridge/NativeModules')
-  .DeviceEventManager;
-const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
+import NativeDeviceEventManager from '../../Libraries/NativeModules/specs/NativeDeviceEventManager';
+import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 
 const DEVICE_BACK_EVENT = 'hardwareBackPress';
 
@@ -73,7 +72,11 @@ type TBackHandler = {|
 |};
 const BackHandler: TBackHandler = {
   exitApp: function(): void {
-    DeviceEventManager.invokeDefaultBackPressHandler();
+    if (!NativeDeviceEventManager) {
+      return;
+    }
+
+    NativeDeviceEventManager.invokeDefaultBackPressHandler();
   },
 
   /**

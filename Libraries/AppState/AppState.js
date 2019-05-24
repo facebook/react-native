@@ -12,8 +12,7 @@
 
 const EventEmitter = require('../vendor/emitter/EventEmitter');
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-const NativeModules = require('../BatchedBridge/NativeModules');
-const RCTAppState = NativeModules.AppState;
+import NativeAppState from './NativeAppState';
 
 const logError = require('../Utilities/logError');
 const invariant = require('invariant');
@@ -30,7 +29,7 @@ class AppState extends NativeEventEmitter {
   isAvailable: boolean;
 
   constructor() {
-    super(RCTAppState);
+    super(NativeAppState);
 
     this.isAvailable = true;
     this._eventHandlers = {
@@ -38,7 +37,7 @@ class AppState extends NativeEventEmitter {
       memoryWarning: new Map(),
     };
 
-    this.currentState = RCTAppState.initialAppState;
+    this.currentState = NativeAppState.getConstants().initialAppState;
 
     let eventUpdated = false;
 
@@ -54,7 +53,7 @@ class AppState extends NativeEventEmitter {
     // TODO: see above - this request just populates the value of `currentState`
     // when the module is first initialized. Would be better to get rid of the
     // prop and expose `getCurrentAppState` method directly.
-    RCTAppState.getCurrentAppState(appStateData => {
+    NativeAppState.getCurrentAppState(appStateData => {
       // It's possible that the state will have changed here & listeners need to be notified
       if (!eventUpdated && this.currentState !== appStateData.app_state) {
         this.currentState = appStateData.app_state;
@@ -152,7 +151,7 @@ class MissingNativeAppStateShim extends EventEmitter {
 // This module depends on the native `RCTAppState` module. If you don't include it,
 // `AppState.isAvailable` will return `false`, and any method calls will throw.
 // We reassign the class variable to keep the autodoc generator happy.
-if (RCTAppState) {
+if (NativeAppState) {
   AppState = new AppState();
 } else {
   AppState = new MissingNativeAppStateShim();

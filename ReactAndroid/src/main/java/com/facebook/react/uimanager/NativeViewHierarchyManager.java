@@ -8,7 +8,6 @@
 package com.facebook.react.uimanager;
 
 import android.content.res.Resources;
-import android.os.Build;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
@@ -19,7 +18,6 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.PopupMenu;
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -28,11 +26,13 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -73,9 +73,11 @@ public class NativeViewHierarchyManager {
   private final RootViewManager mRootViewManager;
   private final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
   private final Map<Integer, SparseIntArray> mTagsToPendingIndicesToDelete = new HashMap<>();
+  private final int[] mDroppedViewArray = new int[100];
 
   private boolean mLayoutAnimationEnabled;
   private PopupMenu mPopupMenu;
+  private int mDroppedViewIndex = 0;
 
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
     this(viewManagers, new RootViewManager());
@@ -101,7 +103,11 @@ public class NativeViewHierarchyManager {
   public synchronized final ViewManager resolveViewManager(int tag) {
     ViewManager viewManager = mTagsToViewManagers.get(tag);
     if (viewManager == null) {
-      throw new IllegalViewOperationException("ViewManager for tag " + tag + " could not be found");
+      boolean alreadyDropped = Arrays.asList(mDroppedViewArray).contains(tag);
+      throw new IllegalViewOperationException("ViewManager for tag "
+          + tag + " could not be found.\n View already dropped? "
+          + alreadyDropped + ".\nLast index "+ mDroppedViewIndex + " in last 100 views"
+          + mDroppedViewArray.toString());
     }
     return viewManager;
   }
@@ -248,7 +254,7 @@ public class NativeViewHierarchyManager {
     try {
       ViewManager viewManager = mViewManagers.get(className);
 
-      View view = viewManager.createViewWithProps(themedContext, null, mJSResponderHandler);
+      View view = viewManager.createView(themedContext, null, null, mJSResponderHandler);
       mTagsToViews.put(tag, view);
       mTagsToViewManagers.put(tag, viewManager);
 
@@ -438,7 +444,7 @@ public class NativeViewHierarchyManager {
             arrayContains(tagsToDelete, viewToRemove.getId())) {
           // The view will be removed and dropped by the 'delete' layout animation
           // instead, so do nothing
-        } else {
+        } else if (viewToManage != null) {
           viewManager.removeViewAt(viewToManage, normalizedIndexToRemove);
         }
 
@@ -587,6 +593,11 @@ public class NativeViewHierarchyManager {
     view.setId(tag);
   }
 
+  private void cacheDroppedTag(int tag) {
+    mDroppedViewArray[mDroppedViewIndex] = tag;
+    mDroppedViewIndex = (mDroppedViewIndex + 1) % 100;
+  }
+
   /**
    * Releases all references to given native View.
    */
@@ -595,6 +606,9 @@ public class NativeViewHierarchyManager {
     if (view == null) {
       // Ignore this drop operation when view is null.
       return;
+    }
+    if (ReactFeatureFlags.logDroppedViews) {
+      cacheDroppedTag(view.getId());
     }
     if (mTagsToViewManagers.get(view.getId()) == null) {
       // This view has already been dropped (likely due to a threading issue caused by async js

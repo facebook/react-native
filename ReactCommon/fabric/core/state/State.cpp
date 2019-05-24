@@ -20,8 +20,10 @@
 namespace facebook {
 namespace react {
 
-State::State(StateCoordinator::Shared stateCoordinator)
-    : stateCoordinator_(std::move(stateCoordinator)){};
+State::State(State const &state) : stateCoordinator_(state.stateCoordinator_){};
+
+State::State(StateCoordinator::Shared const &stateCoordinator)
+    : stateCoordinator_(stateCoordinator){};
 
 void State::commit(const ShadowNode &shadowNode) const {
   stateCoordinator_->setTarget(StateTarget{shadowNode});

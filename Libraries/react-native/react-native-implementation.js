@@ -129,12 +129,6 @@ module.exports = {
     return require('RefreshControl');
   },
   get StatusBar() {
-    warnOnce(
-      'statusbar-moved',
-      'StatusBar has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/status-bar' instead of 'react-native'. " +
-        'https://github.com/react-native-community/react-native-statusbar',
-    );
     return require('StatusBar');
   },
   get Text() {
@@ -208,15 +202,6 @@ module.exports = {
   get BackHandler() {
     return require('BackHandler');
   },
-  get CameraRoll() {
-    warnOnce(
-      'cameraroll-moved',
-      'CameraRoll has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/cameraroll' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-cameraroll',
-    );
-    return require('CameraRoll');
-  },
   get Clipboard() {
     return require('Clipboard');
   },
@@ -253,17 +238,11 @@ module.exports = {
   get Linking() {
     return require('Linking');
   },
+  get NativeDialogManagerAndroid() {
+    return require('NativeDialogManagerAndroid').default;
+  },
   get NativeEventEmitter() {
     return require('NativeEventEmitter');
-  },
-  get NetInfo() {
-    warnOnce(
-      'netinfo-moved',
-      'NetInfo has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/netinfo' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-netinfo',
-    );
-    return require('NetInfo');
   },
   get PanResponder() {
     return require('PanResponder');

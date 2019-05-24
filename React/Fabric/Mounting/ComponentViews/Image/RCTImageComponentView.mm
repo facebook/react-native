@@ -15,7 +15,6 @@
 #import <react/imagemanager/ImageRequest.h>
 #import <react/imagemanager/RCTImagePrimitivesConversions.h>
 
-#import "MainQueueExecutor.h"
 #import "RCTConversions.h"
 
 @implementation RCTImageComponentView {

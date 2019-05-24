@@ -13,26 +13,15 @@
 namespace facebook {
 namespace react {
 
-class Instance;
-
 /**
- * A generic native-to-JS call invoker. It guarantees that any calls from any
- * thread are queued on the right JS thread.
- *
- * For now, this is a thin-wrapper around existing bridge (`Instance`). Eventually,
- * it should be consolidated with Fabric implementation so there's only one
- * API to call JS from native, whether synchronously or asynchronously.
- * Also, this class should not depend on `Instance` in the future.
+ * An interface for a generic native-to-JS call invoker. See BridgeJSCallInvoker
+ * for an implementation.
  */
 class JSCallInvoker {
-public:
-  JSCallInvoker(std::weak_ptr<Instance> reactInstance);
-
-  void invokeAsync(std::function<void()>&& func);
+ public:
+  virtual void invokeAsync(std::function<void()> &&func) = 0;
   // TODO: add sync support
-
-private:
-  std::weak_ptr<Instance> reactInstance_;
+  virtual ~JSCallInvoker() {}
 };
 
 } // namespace react

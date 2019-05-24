@@ -12,6 +12,7 @@
 #include <jsi/jsi.h>
 #include <jsireact/TurboModule.h>
 #include <jsireact/JavaTurboModule.h>
+#include <react/jni/CxxModuleWrapper.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <jsireact/JSCallInvokerHolder.h>
 #include <jsireact/TurboModuleManagerDelegate.h>
@@ -37,6 +38,7 @@ private:
   jni::global_ref<TurboModuleManagerDelegate::javaobject> turboModuleManagerDelegate_;
 
   jni::global_ref<JTurboModule> getJavaModule(std::string name);
+  jni::global_ref<CxxModuleWrapper::javaobject> getLegacyCxxJavaModule(std::string name);
   void installJSIBindings();
   explicit TurboModuleManager(
     jni::alias_ref<TurboModuleManager::jhybridobject> jThis,

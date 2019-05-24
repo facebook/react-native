@@ -7,22 +7,17 @@ target 'RNTester' do
   # use_frameworks!
 
   project 'RNTesterPods.xcodeproj'
-  use_react_native!(path: "..")
+
+  # Enable TurboModule
+  use_react_native!(path: "..", turbo_modules_enabled: true)
+  pod 'React-turbomodule-samples', :path => '../ReactCommon/turbomodule/samples'
 
   # Additional Pods which aren't included in the default Podfile
-  pod 'React-RCTCameraRoll', :path => '../Libraries/CameraRoll'
   pod 'React-ART', :path => '../Libraries/ART'
   pod 'React-RCTPushNotification', :path => '../Libraries/PushNotificationIOS'
 
   # Additional Pods which are classed as unstable
   #
-  # Fabric Pods, uncomment these to enable in RNTester
-  # pod 'React-Fabric', :path => '../ReactCommon'
-  # pod 'React-graphics', :path => '../ReactCommon/fabric/graphics'
-  # pod 'React-jsi/Fabric', :path => '../ReactCommon/jsi'
-  # pod 'React-RCTFabric', :path => '../React'
-  # pod 'Folly/Fabric', :podspec => '../third-party-podspecs/Folly.podspec'
-
-  pod 'React-turbomodule-core', :path => '../ReactCommon/turbomodule/core'
-  pod 'React-turbomodule-samples', :path => '../ReactCommon/turbomodule/samples'
+  # To use fabric: add `fabric_enabled` option to the use_react_native method above, like below
+  # use_react_native!(path: "..", turbo_modules_enabled: true, fabric_enabled: true)
 end

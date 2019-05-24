@@ -178,6 +178,36 @@ export type ReturnKeyType =
 
 export type AutoCapitalize = 'none' | 'sentences' | 'words' | 'characters';
 
+export type TextContentType =
+  | 'none'
+  | 'URL'
+  | 'addressCity'
+  | 'addressCityAndState'
+  | 'addressState'
+  | 'countryName'
+  | 'creditCardNumber'
+  | 'emailAddress'
+  | 'familyName'
+  | 'fullStreetAddress'
+  | 'givenName'
+  | 'jobTitle'
+  | 'location'
+  | 'middleName'
+  | 'name'
+  | 'namePrefix'
+  | 'nameSuffix'
+  | 'nickname'
+  | 'organizationName'
+  | 'postalCode'
+  | 'streetAddressLine1'
+  | 'streetAddressLine2'
+  | 'sublocality'
+  | 'telephoneNumber'
+  | 'username'
+  | 'password'
+  | 'newPassword'
+  | 'oneTimeCode';
+
 type IOSProps = $ReadOnly<{|
   spellCheck?: ?boolean,
   keyboardAppearance?: ?('default' | 'light' | 'dark'),
@@ -189,36 +219,7 @@ type IOSProps = $ReadOnly<{|
     | ?DataDetectorTypesType
     | $ReadOnlyArray<DataDetectorTypesType>,
   inputAccessoryViewID?: ?string,
-  textContentType?: ?(
-    | 'none'
-    | 'URL'
-    | 'addressCity'
-    | 'addressCityAndState'
-    | 'addressState'
-    | 'countryName'
-    | 'creditCardNumber'
-    | 'emailAddress'
-    | 'familyName'
-    | 'fullStreetAddress'
-    | 'givenName'
-    | 'jobTitle'
-    | 'location'
-    | 'middleName'
-    | 'name'
-    | 'namePrefix'
-    | 'nameSuffix'
-    | 'nickname'
-    | 'organizationName'
-    | 'postalCode'
-    | 'streetAddressLine1'
-    | 'streetAddressLine2'
-    | 'sublocality'
-    | 'telephoneNumber'
-    | 'username'
-    | 'password'
-    | 'newPassword'
-    | 'oneTimeCode'
-  ),
+  textContentType?: ?TextContentType,
   scrollEnabled?: ?boolean,
 |}>;
 
@@ -1103,6 +1104,7 @@ const TextInput = createReactClass({
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
         accessibilityStates={props.accessibilityStates}
+        accessibilityState={props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={props.testID}>
         {textContainer}
@@ -1155,6 +1157,7 @@ const TextInput = createReactClass({
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
         accessibilityStates={props.accessibilityStates}
+        accessibilityState={props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={props.testID}>
         {textContainer}
@@ -1212,6 +1215,7 @@ const TextInput = createReactClass({
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityRole={this.props.accessibilityRole}
         accessibilityStates={this.props.accessibilityStates}
+        accessibilityState={this.props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={this.props.testID}>
         {textContainer}

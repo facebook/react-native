@@ -327,6 +327,16 @@
   objc_setAssociatedObject(self, @selector(accessibilityStates), accessibilityStates, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+- (NSDictionary<NSString *, id> *)accessibilityState
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setAccessibilityState:(NSDictionary<NSString *, id> *)accessibilityState
+{
+  objc_setAssociatedObject(self, @selector(accessibilityState), accessibilityState, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
 #pragma mark - Debug
 
 - (void)react_addRecursiveDescriptionToString:(NSMutableString *)string atLevel:(NSUInteger)level

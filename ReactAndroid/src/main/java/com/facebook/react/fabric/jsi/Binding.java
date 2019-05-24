@@ -40,7 +40,7 @@ public class Binding {
       ComponentFactoryDelegate componentsRegistry,
       Object reactNativeConfig);
 
-  public native void startSurface(int surfaceId, NativeMap initialProps);
+  public native void startSurface(int surfaceId, String moduleName, NativeMap initialProps);
 
   public native void renderTemplateToSurface(int surfaceId, String uiTemplate);
 
@@ -49,7 +49,7 @@ public class Binding {
   public native void setPixelDensity(float pointScaleFactor);
 
   public native void setConstraints(
-      int rootTag, float minWidth, float maxWidth, float minHeight, float maxHeight);
+      int surfaceId, float minWidth, float maxWidth, float minHeight, float maxHeight);
 
   public void register(
        JavaScriptContextHolder jsContext,
