@@ -243,13 +243,14 @@ using namespace facebook::react;
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
 }
 
-- (void)updateEventEmitter:(SharedEventEmitter)eventEmitter
+- (void)updateEventEmitter:(EventEmitter::Shared const &)eventEmitter
 {
   assert(std::dynamic_pointer_cast<ViewEventEmitter const>(eventEmitter));
   _eventEmitter = std::static_pointer_cast<ViewEventEmitter const>(eventEmitter);
 }
 
-- (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics oldLayoutMetrics:(LayoutMetrics)oldLayoutMetrics
+- (void)updateLayoutMetrics:(LayoutMetrics const &)layoutMetrics
+           oldLayoutMetrics:(LayoutMetrics const &)oldLayoutMetrics
 {
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
 

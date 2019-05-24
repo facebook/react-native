@@ -73,9 +73,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)updateProps:(facebook::react::Props::Shared const &)props
            oldProps:(facebook::react::Props::Shared const &)oldProps NS_REQUIRES_SUPER;
-- (void)updateEventEmitter:(facebook::react::SharedEventEmitter)eventEmitter NS_REQUIRES_SUPER;
-- (void)updateLayoutMetrics:(facebook::react::LayoutMetrics)layoutMetrics
-           oldLayoutMetrics:(facebook::react::LayoutMetrics)oldLayoutMetrics NS_REQUIRES_SUPER;
+- (void)updateEventEmitter:(facebook::react::EventEmitter::Shared const &)eventEmitter NS_REQUIRES_SUPER;
+- (void)updateLayoutMetrics:(facebook::react::LayoutMetrics const &)layoutMetrics
+           oldLayoutMetrics:(facebook::react::LayoutMetrics const &)oldLayoutMetrics NS_REQUIRES_SUPER;
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask NS_REQUIRES_SUPER;
 - (void)prepareForRecycle NS_REQUIRES_SUPER;
 

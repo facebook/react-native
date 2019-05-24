@@ -115,7 +115,7 @@ using namespace facebook::react;
   // MAP_SCROLL_VIEW_PROP(snapToAlignment);
 }
 
-- (void)updateState:(State::Shared)state oldState:(State::Shared)oldState
+- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
   assert(std::dynamic_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state));
   _state = std::static_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state);

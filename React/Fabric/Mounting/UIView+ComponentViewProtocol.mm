@@ -44,7 +44,7 @@ using namespace facebook::react;
   // Default implementation does nothing.
 }
 
-- (void)updateEventEmitter:(SharedEventEmitter)eventEmitter
+- (void)updateEventEmitter:(EventEmitter::Shared const &)eventEmitter
 {
   // Default implementation does nothing.
 }
@@ -54,12 +54,14 @@ using namespace facebook::react;
   // Default implementation does nothing.
 }
 
-- (void)updateState:(facebook::react::State::Shared)state oldState:(facebook::react::State::Shared)oldState
+- (void)updateState:(facebook::react::State::Shared const &)state
+           oldState:(facebook::react::State::Shared const &)oldState
 {
   // Default implementation does nothing.
 }
 
-- (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics oldLayoutMetrics:(LayoutMetrics)oldLayoutMetrics
+- (void)updateLayoutMetrics:(LayoutMetrics const &)layoutMetrics
+           oldLayoutMetrics:(LayoutMetrics const &)oldLayoutMetrics
 {
   if (layoutMetrics.frame != oldLayoutMetrics.frame) {
     CGRect frame = RCTCGRectFromRect(layoutMetrics.frame);
