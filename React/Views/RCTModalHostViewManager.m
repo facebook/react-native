@@ -104,7 +104,7 @@ RCT_EXPORT_MODULE()
   for (RCTModalHostView *hostView in _hostViews) {
     [hostView invalidate];
   }
-  _hostViews = [NSPointerArray weakObjectsPointerArray];
+  _hostViews = nil;
 }
 
 RCT_EXPORT_VIEW_PROPERTY(animationType, NSString)
