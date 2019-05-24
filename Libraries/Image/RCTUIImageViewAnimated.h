@@ -10,4 +10,3 @@
 @interface RCTUIImageViewAnimated : UIImageView
 
 @end
-

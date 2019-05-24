@@ -16,6 +16,6 @@
 
 @end
 
-@interface RCTAnimatedImage : UIImage<RCTAnimatedImage>
+@interface RCTAnimatedImage : UIImage <RCTAnimatedImage>
 
 @end

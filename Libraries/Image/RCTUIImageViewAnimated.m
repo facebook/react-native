@@ -40,26 +40,20 @@ static NSUInteger RCTDeviceFreeMemory() {
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, UIImage *> *frameBuffer;
 @property (nonatomic, assign) NSTimeInterval currentTime;
 @property (nonatomic, assign) BOOL bufferMiss;
-@property (nonatomic, assign) BOOL shouldAnimate;
 @property (nonatomic, assign) NSUInteger maxBufferCount;
 @property (nonatomic, strong) NSOperationQueue *fetchQueue;
 @property (nonatomic, strong) dispatch_semaphore_t lock;
 @property (nonatomic, assign) CGFloat animatedImageScale;
 @property (nonatomic, strong) CADisplayLink *displayLink;
-@property (nonatomic, assign) NSString *runLoopMode;
 
 @end
 
 @implementation RCTUIImageViewAnimated
 
-#pragma mark - Initializers
-
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
     self.lock = dispatch_semaphore_create(1);
-    self.runLoopMode = [NSProcessInfo processInfo].activeProcessorCount > 1 ? NSRunLoopCommonModes : NSDefaultRunLoopMode;
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
     
   }
@@ -76,7 +70,6 @@ static NSUInteger RCTDeviceFreeMemory() {
   self.currentLoopCount = 0;
   self.currentTime = 0;
   self.bufferMiss = NO;
-  self.shouldAnimate = NO;
   self.maxBufferCount = 0;
   self.animatedImageScale = 1;
   [_fetchQueue cancelAllOperations];
@@ -87,21 +80,16 @@ static NSUInteger RCTDeviceFreeMemory() {
   dispatch_semaphore_signal(self.lock);
 }
 
-#pragma mark - Accessors
-#pragma mark Public
-
 - (void)setImage:(UIImage *)image
 {
   if (self.image == image) {
     return;
   }
 
-  [self stopAnimating];
-  [self resetAnimatedImage];
-
-  super.image = image;
-
   if ([image respondsToSelector:@selector(animatedImageFrameAtIndex:)]) {
+    [self stop];
+    [self resetAnimatedImage];
+    
     NSUInteger animatedImageFrameCount = ((UIImage<RCTAnimatedImage> *)image).animatedImageFrameCount;
     
     // Check the frame count
@@ -115,7 +103,6 @@ static NSUInteger RCTDeviceFreeMemory() {
     // Get the current frame and loop count.
     self.totalLoopCount = self.animatedImage.animatedImageLoopCount;
     
-    // Get the scale
     self.animatedImageScale = image.scale;
     
     self.currentFrame = image;
@@ -126,19 +113,19 @@ static NSUInteger RCTDeviceFreeMemory() {
 
     // Calculate max buffer size
     [self calculateMaxBufferCount];
-    
-    // Update should animate
-    [self updateShouldAnimate];
-    
-    if (self.shouldAnimate) {
-      [self startAnimating];
+
+    if ([self paused]) {
+      [self start];
     }
     
     [self.layer setNeedsDisplay];
+  } else {
+    super.image = image;
   }
 }
 
 #pragma mark - Private
+
 - (NSOperationQueue *)fetchQueue
 {
   if (!_fetchQueue) {
@@ -161,115 +148,31 @@ static NSUInteger RCTDeviceFreeMemory() {
   if (!_displayLink) {
     __weak __typeof(self) weakSelf = self;
     _displayLink = [CADisplayLink displayLinkWithTarget:weakSelf selector:@selector(displayDidRefresh:)];
-    [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:self.runLoopMode];
+    NSString *runLoopMode = [NSProcessInfo processInfo].activeProcessorCount > 1 ? NSRunLoopCommonModes : NSDefaultRunLoopMode;
+    [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:runLoopMode];
   }
   return _displayLink;
 }
 
-#pragma mark - Life Cycle
+#pragma mark - Animation
 
-- (void)dealloc
+- (void)start
 {
-  // Removes the display link from all run loop modes.
-  [_displayLink invalidate];
-  _displayLink = nil;
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
+  self.displayLink.paused = NO;
 }
 
-- (void)didReceiveMemoryWarning:(NSNotification *)notification {
-  [_fetchQueue cancelAllOperations];
-  [_fetchQueue addOperationWithBlock:^{
-    NSNumber *currentFrameIndex = @(self.currentFrameIndex);
-    dispatch_semaphore_wait(self.lock, DISPATCH_TIME_FOREVER);
-    NSArray *keys = self.frameBuffer.allKeys;
-    // only keep the next frame for later rendering
-    for (NSNumber * key in keys) {
-      if (![key isEqualToNumber:currentFrameIndex]) {
-        [self.frameBuffer removeObjectForKey:key];
-      }
-    }
-    dispatch_semaphore_signal(self.lock);
-  }];
+- (void)stop
+{
+  self.displayLink.paused = YES;
 }
 
-#pragma mark - UIView Method Overrides
-#pragma mark Observing View-Related Changes
-
-- (void)didMoveToSuperview
+- (BOOL)paused
 {
-  [super didMoveToSuperview];
-  
-  [self updateShouldAnimate];
-  if (self.shouldAnimate) {
-    [self startAnimating];
-  } else {
-    [self stopAnimating];
-  }
-}
-
-- (void)didMoveToWindow
-{
-  [super didMoveToWindow];
-  
-  [self updateShouldAnimate];
-  if (self.shouldAnimate) {
-    [self startAnimating];
-  } else {
-    [self stopAnimating];
-  }
-}
-
-#pragma mark - UIImageView Method Overrides
-#pragma mark Image Data
-
-- (void)startAnimating
-{
-  if (self.animatedImage) {
-    self.displayLink.paused = NO;
-  } else {
-    [super startAnimating];
-  }
-}
-
-- (void)stopAnimating
-{
-  if (self.animatedImage) {
-    _displayLink.paused = YES;
-  } else {
-    [super stopAnimating];
-  }
-}
-
-- (BOOL)isAnimating
-{
-  BOOL isAnimating = NO;
-  if (self.animatedImage) {
-    isAnimating = !self.displayLink.isPaused;
-  } else {
-    isAnimating = [super isAnimating];
-  }
-  return isAnimating;
-}
-
-#pragma mark - Private Methods
-#pragma mark Animation
-
-// Don't repeatedly check our window & superview in `-displayDidRefresh:` for performance reasons.
-// Just update our cached value whenever the animated image or visibility (window, superview, hidden, alpha) is changed.
-- (void)updateShouldAnimate
-{
-  BOOL isVisible = self.window && self.superview;
-  self.shouldAnimate = self.animatedImage && self.totalFrameCount > 1 && isVisible;
+  return self.displayLink.isPaused;
 }
 
 - (void)displayDidRefresh:(CADisplayLink *)displayLink
 {
-  // If for some reason a wild call makes it through when we shouldn't be animating, bail.
-  // Early return!
-  if (!self.shouldAnimate) {
-    return;
-  }
-  
   NSTimeInterval duration = displayLink.duration * displayLink.frameInterval;
   NSUInteger totalFrameCount = self.totalFrameCount;
   NSUInteger currentFrameIndex = self.currentFrameIndex;
@@ -326,7 +229,7 @@ static NSUInteger RCTDeviceFreeMemory() {
     // if reached the max loop count, stop animating, 0 means loop indefinitely
     NSUInteger maxLoopCount = self.totalLoopCount;
     if (maxLoopCount != 0 && (self.currentLoopCount >= maxLoopCount)) {
-      [self stopAnimating];
+      [self stop];
       return;
     }
   }
@@ -354,7 +257,6 @@ static NSUInteger RCTDeviceFreeMemory() {
   }
 }
 
-#pragma mark Providing the Layer's Content
 #pragma mark - CALayerDelegate
 
 - (void)displayLayer:(CALayer *)layer
@@ -367,7 +269,8 @@ static NSUInteger RCTDeviceFreeMemory() {
 
 #pragma mark - Util
 
-- (void)calculateMaxBufferCount {
+- (void)calculateMaxBufferCount
+{
   NSUInteger bytes = CGImageGetBytesPerRow(self.currentFrame.CGImage) * CGImageGetHeight(self.currentFrame.CGImage);
   if (bytes == 0) bytes = 1024;
   
@@ -388,6 +291,33 @@ static NSUInteger RCTDeviceFreeMemory() {
   }
   
   self.maxBufferCount = maxBufferCount;
+}
+
+#pragma mark - Lifecycle
+
+- (void)dealloc
+{
+  // Removes the display link from all run loop modes.
+  [_displayLink invalidate];
+  _displayLink = nil;
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
+}
+
+- (void)didReceiveMemoryWarning:(NSNotification *)notification
+{
+  [_fetchQueue cancelAllOperations];
+  [_fetchQueue addOperationWithBlock:^{
+    NSNumber *currentFrameIndex = @(self.currentFrameIndex);
+    dispatch_semaphore_wait(self.lock, DISPATCH_TIME_FOREVER);
+    NSArray *keys = self.frameBuffer.allKeys;
+    // only keep the next frame for later rendering
+    for (NSNumber * key in keys) {
+      if (![key isEqualToNumber:currentFrameIndex]) {
+        [self.frameBuffer removeObjectForKey:key];
+      }
+    }
+    dispatch_semaphore_signal(self.lock);
+  }];
 }
 
 @end
