@@ -71,8 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Enforcing `call super` semantic for overridden methods from `RCTComponentViewProtocol`.
  */
-- (void)updateProps:(facebook::react::SharedProps)props
-           oldProps:(facebook::react::SharedProps)oldProps NS_REQUIRES_SUPER;
+- (void)updateProps:(facebook::react::Props::Shared const &)props
+           oldProps:(facebook::react::Props::Shared const &)oldProps NS_REQUIRES_SUPER;
 - (void)updateEventEmitter:(facebook::react::SharedEventEmitter)eventEmitter NS_REQUIRES_SUPER;
 - (void)updateLayoutMetrics:(facebook::react::LayoutMetrics)layoutMetrics
            oldLayoutMetrics:(facebook::react::LayoutMetrics)oldLayoutMetrics NS_REQUIRES_SUPER;

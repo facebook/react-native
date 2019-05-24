@@ -94,7 +94,7 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<ViewComponentDescriptor>();
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
 #ifndef NS_BLOCK_ASSERTIONS
   auto propsRawPtr = _props.get();
@@ -332,12 +332,10 @@ static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
 
 static RCTBorderColors RCTBorderColorsFromBorderColors(BorderColors borderColors)
 {
-  return RCTBorderColors{
-    .left = RCTCGColorRefUnretainedFromSharedColor(borderColors.left),
-    .top =  RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
-    .bottom =  RCTCGColorRefUnretainedFromSharedColor(borderColors.bottom),
-    .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)
-  };
+  return RCTBorderColors{.left = RCTCGColorRefUnretainedFromSharedColor(borderColors.left),
+                         .top = RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
+                         .bottom = RCTCGColorRefUnretainedFromSharedColor(borderColors.bottom),
+                         .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)};
 }
 
 static UIEdgeInsets UIEdgeInsetsFromBorderInsets(EdgeInsets edgeInsets)

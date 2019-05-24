@@ -39,7 +39,7 @@ using namespace facebook::react;
   [childComponentView removeFromSuperview];
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
   // Default implementation does nothing.
 }

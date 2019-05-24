@@ -22,7 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;
 
-- (void)updateProps:(facebook::react::SharedProps)props oldProps:(facebook::react::SharedProps)oldProps;
+- (void)updateProps:(facebook::react::Props::Shared const &)props
+           oldProps:(facebook::react::Props::Shared const &)oldProps;
 
 - (void)updateEventEmitter:(facebook::react::SharedEventEmitter)eventEmitter;
 

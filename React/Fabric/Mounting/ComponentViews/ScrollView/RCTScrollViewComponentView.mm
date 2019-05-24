@@ -69,7 +69,7 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>();
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
   const auto &oldScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(oldProps ?: _props);
   const auto &newScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(props);

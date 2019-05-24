@@ -53,7 +53,7 @@ using namespace facebook::react;
           concreteComponentDescriptorProvider<TextComponentDescriptor>()};
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
   const auto &paragraphProps = std::static_pointer_cast<const ParagraphProps>(props);
 

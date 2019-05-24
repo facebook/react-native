@@ -70,7 +70,8 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
  * Called for updating component's props.
  * Receiver must update native view props accordingly changed props.
  */
-- (void)updateProps:(facebook::react::SharedProps)props oldProps:(facebook::react::SharedProps)oldProps;
+- (void)updateProps:(facebook::react::Props::Shared const &)props
+           oldProps:(facebook::react::Props::Shared const &)oldProps;
 
 /*
  * Called for updating component's local data.
