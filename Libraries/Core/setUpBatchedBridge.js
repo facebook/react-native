@@ -22,7 +22,7 @@ BatchedBridge.registerLazyCallableModule('JSTimers', () =>
   require('./Timers/JSTimers'),
 );
 BatchedBridge.registerLazyCallableModule('HeapCapture', () =>
-  require('../Utilities/HeapCapture'),
+  require('../HeapCapture/HeapCapture'),
 );
 BatchedBridge.registerLazyCallableModule('SamplingProfiler', () =>
   require('../Performance/SamplingProfiler'),

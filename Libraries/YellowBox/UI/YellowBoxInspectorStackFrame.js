@@ -17,7 +17,7 @@ const YellowBoxPressable = require('./YellowBoxPressable');
 const YellowBoxStyle = require('./YellowBoxStyle');
 
 import type {PressEvent} from '../../Types/CoreEventTypes';
-import type {StackFrame} from '../../Core/Devtools/parseErrorStack';
+import type {StackFrame} from '../../Core/NativeExceptionsManager';
 
 type Props = $ReadOnly<{|
   frame: StackFrame,

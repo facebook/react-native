@@ -82,10 +82,14 @@ public class LayoutAnimationController {
   }
 
   public boolean shouldAnimateLayout(View viewToAnimate) {
-    // if view parent is null, skip animation: view have been clipped, we don't want animation to
-    // resume when view is re-attached to parent, which is the standard android animation behavior.
-    // If there's a layout handling animation going on, it should be animated nonetheless since the
-    // ongoing animation needs to be updated.
+    // if view is null or the view parent is null, skip animation: view have been clipped,
+    // we don't want animation to resume when view is re-attached to parent, which is the
+    // standard android animation behavior. If there's a layout handling animation going on,
+    // it should be animated nonetheless since the ongoing animation needs to be updated.
+
+    if (viewToAnimate == null) {
+      return false;
+    }
     return (mShouldAnimateLayout && viewToAnimate.getParent() != null)
       || mLayoutHandlers.get(viewToAnimate.getId()) != null;
   }

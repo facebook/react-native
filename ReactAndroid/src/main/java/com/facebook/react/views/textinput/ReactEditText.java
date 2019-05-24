@@ -58,18 +58,18 @@ public class ReactEditText extends EditText {
   // This flag is set to true when we set the text of the EditText explicitly. In that case, no
   // *TextChanged events should be triggered. This is less expensive than removing the text
   // listeners and adding them back again after the text change is completed.
-  private boolean mIsSettingTextFromJS;
+  protected boolean mIsSettingTextFromJS;
   // This component is controlled, so we want it to get focused only when JS ask it to do so.
   // Whenever android requests focus (which it does for random reasons), it will be ignored.
   private boolean mIsJSSettingFocus;
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
-  private int mNativeEventCount;
-  private int mMostRecentEventCount;
+  protected int mNativeEventCount;
+  protected int mMostRecentEventCount;
   private @Nullable ArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
-  private boolean mContainsImages;
+  protected boolean mContainsImages;
   private @Nullable Boolean mBlurOnSubmit;
   private boolean mDisableFullscreen;
   private @Nullable String mReturnKeyType;

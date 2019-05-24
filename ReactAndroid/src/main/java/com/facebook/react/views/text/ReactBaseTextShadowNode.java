@@ -226,7 +226,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   }
 
   // `nativeViewHierarchyOptimizer` can be `null` as long as `supportsInlineViews` is `false`.
-  protected static Spannable spannedFromShadowNode(
+  protected Spannable spannedFromShadowNode(
       ReactBaseTextShadowNode textShadowNode,
       String text,
       boolean supportsInlineViews,
@@ -459,8 +459,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
-  @ReactProp(name = ViewProps.BACKGROUND_COLOR)
-  public void setBackgroundColor(Integer color) {
+  @ReactProp(name = ViewProps.BACKGROUND_COLOR, customType = "Color")
+  public void setBackgroundColor(@Nullable Integer color) {
     // Background color needs to be handled here for virtual nodes so it can be incorporated into
     // the span. However, it doesn't need to be applied to non-virtual nodes because non-virtual
     // nodes get mapped to native views and native views get their background colors get set via

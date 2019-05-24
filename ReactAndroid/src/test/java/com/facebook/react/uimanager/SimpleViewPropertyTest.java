@@ -83,7 +83,7 @@ public class SimpleViewPropertyTest {
 
   @Test
   public void testOpacity() {
-    View view = mManager.createViewWithProps(mThemedContext, buildStyles(), new JSResponderHandler());
+    View view = mManager.createView(mThemedContext, buildStyles(), null, new JSResponderHandler());
 
     mManager.updateProperties(view, buildStyles());
     assertThat(view.getAlpha()).isEqualTo(1.0f);
@@ -97,7 +97,7 @@ public class SimpleViewPropertyTest {
 
   @Test
   public void testBackgroundColor() {
-    View view = mManager.createViewWithProps(mThemedContext, buildStyles(), new JSResponderHandler());
+    View view = mManager.createView(mThemedContext, buildStyles(), null, new JSResponderHandler());
 
     mManager.updateProperties(view, buildStyles());
     assertThat(view.getBackground()).isEqualTo(null);

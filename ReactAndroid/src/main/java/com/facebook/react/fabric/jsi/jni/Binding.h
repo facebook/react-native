@@ -21,7 +21,7 @@ class Instance;
 
 class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
  public:
-  constexpr static const char* const kJavaDescriptor =
+  constexpr static const char *const kJavaDescriptor =
       "Lcom/facebook/react/fabric/jsi/Binding;";
 
   static void registerNatives();
@@ -34,7 +34,7 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
 
  private:
   void setConstraints(
-      jint rootTag,
+      jint surfaceId,
       jfloat minWidth,
       jfloat maxWidth,
       jfloat minHeight,
@@ -45,19 +45,22 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
   void installFabricUIManager(
       jlong jsContextNativePointer,
       jni::alias_ref<jobject> javaUIManager,
-      EventBeatManager* eventBeatManager,
+      EventBeatManager *eventBeatManager,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
-      ComponentFactoryDelegate* componentsRegistry,
+      ComponentFactoryDelegate *componentsRegistry,
       jni::alias_ref<jobject> reactNativeConfig);
 
-  void startSurface(jint surfaceId, NativeMap* initialProps);
+  void startSurface(
+      jint surfaceId,
+      jni::alias_ref<jstring> moduleName,
+      NativeMap *initialProps);
 
   void renderTemplateToSurface(jint surfaceId, jstring uiTemplate);
 
   void stopSurface(jint surfaceId);
 
   void schedulerDidFinishTransaction(
-    MountingCoordinator::Shared const &mountingCoordinator);
+      MountingCoordinator::Shared const &mountingCoordinator);
 
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,

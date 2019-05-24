@@ -883,6 +883,32 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
+"@hapi/address@2.x.x":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@hapi/address/-/address-2.0.0.tgz#9f05469c88cb2fd3dcd624776b54ee95c312126a"
+  integrity sha512-mV6T0IYqb0xL1UALPFplXYQmR0twnXG0M6jUswpquqT2sD12BOiCiLy3EvMp/Fy7s3DZElC4/aPjEjo2jeZpvw==
+
+"@hapi/hoek@6.x.x":
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/@hapi/hoek/-/hoek-6.2.1.tgz#d3a66329159af879bfdf0b0cff2229c43c5a3451"
+  integrity sha512-+ryw4GU9pjr1uT6lBuErHJg3NYqzwJTvZ75nKuJijEzpd00Uqi6oiawTGDDf5Hl0zWmI7qHfOtaqB0kpQZJQzA==
+
+"@hapi/joi@^15.0.3":
+  version "15.0.3"
+  resolved "https://registry.yarnpkg.com/@hapi/joi/-/joi-15.0.3.tgz#e94568fd859e5e945126d5675e7dd218484638a7"
+  integrity sha512-z6CesJ2YBwgVCi+ci8SI8zixoj8bGFn/vZb9MBPbSyoxsS2PnWYjHcyTM17VLK6tx64YVK38SDIh10hJypB+ig==
+  dependencies:
+    "@hapi/address" "2.x.x"
+    "@hapi/hoek" "6.x.x"
+    "@hapi/topo" "3.x.x"
+
+"@hapi/topo@3.x.x":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@hapi/topo/-/topo-3.1.0.tgz#5c47cd9637c2953db185aa957a27bcb2a8b7a6f8"
+  integrity sha512-gZDI/eXOIk8kP2PkUKjWu9RW8GGVd2Hkgjxyr/S7Z+JF+0mr7bAlbw+DkTRxnD580o8Kqxlnba9wvqp5aOHBww==
+  dependencies:
+    "@hapi/hoek" "6.x.x"
+
 "@jest/console@^24.3.0":
   version "24.3.0"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-24.3.0.tgz#7bd920d250988ba0bf1352c4493a48e1cb97671e"
@@ -1064,72 +1090,44 @@
     "@types/istanbul-lib-coverage" "^2.0.0"
     "@types/yargs" "^12.0.9"
 
-"@react-native-community/cli-platform-android@2.0.0-alpha.15":
-  version "2.0.0-alpha.15"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.0.0-alpha.15.tgz#5ab64c68ee828c30e866923add5e1bab81c9102a"
-  integrity sha512-f5ogc1GxzkkDRw2o7PX+tnEDZ/uZYshf/5UaoH4qmaXhHdCulVSd24jTKH4HiRAXrbLf+3bm6JbwG4OLB09fzA==
+"@react-native-community/cli-platform-android@2.0.0-alpha.20", "@react-native-community/cli-platform-android@^2.0.0-alpha.20":
+  version "2.0.0-alpha.20"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.0.0-alpha.20.tgz#a3b5aceae38bd3c930f0801b721d44551fe98dc2"
+  integrity sha512-Z1eWiK4/oZlKvZTPYnORW6uAZ4rgBFMvswldwdy6r9CnjLTZsgw3aGN6r5TUNSCwbZy4p2l5J1pTELl2Ors24g==
   dependencies:
-    "@react-native-community/cli-tools" "^2.0.0-alpha.14"
+    "@react-native-community/cli-tools" "^2.0.0-alpha.20"
     logkitty "^0.4.0"
     node-fetch "^2.2.0"
     slash "^2.0.0"
     xmldoc "^0.4.0"
 
-"@react-native-community/cli-platform-android@^2.0.0-alpha.19":
-  version "2.0.0-alpha.19"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.0.0-alpha.19.tgz#367f08455561ea7f6d8646e01d5c9d3ca5de2e21"
-  integrity sha512-cfS9m6YaUmmNr7lwJy+tLUUgEBtC4fCfHli3gs0EeGUO972oIJ+DuFlNxjw1lI6Pdf2rOEP5H6lPD54LdAcvNQ==
+"@react-native-community/cli-platform-ios@2.0.0-alpha.20", "@react-native-community/cli-platform-ios@^2.0.0-alpha.20":
+  version "2.0.0-alpha.20"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.0.0-alpha.20.tgz#66eda705b0522b44818806910bbf2b7d47d41b56"
+  integrity sha512-ZDvx2YU/1cFp5/ADbPUwnlvs5D0RIeEZK4Ddskd2Sx7KIq5jLnQbXW+JDOqie5wQgQQ+eCmebCHnCFBWIGXdMQ==
   dependencies:
-    "@react-native-community/cli-tools" "^2.0.0-alpha.19"
-    logkitty "^0.4.0"
-    node-fetch "^2.2.0"
-    slash "^2.0.0"
-    xmldoc "^0.4.0"
-
-"@react-native-community/cli-platform-ios@2.0.0-alpha.15":
-  version "2.0.0-alpha.15"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.0.0-alpha.15.tgz#959190650a1fafeae9bbabcc422329374918b466"
-  integrity sha512-gQKF9Y1dIqs2i5vveZVveUchUm0fw4bFw8XRmiy41yeb3/Qtyg8PCpnjGj+0fK7G5tW/23T6I2v4C1fRCRfnoQ==
-  dependencies:
-    "@react-native-community/cli-tools" "^2.0.0-alpha.14"
+    "@react-native-community/cli-tools" "^2.0.0-alpha.20"
     chalk "^1.1.1"
     xcode "^2.0.0"
 
-"@react-native-community/cli-platform-ios@^2.0.0-alpha.19":
-  version "2.0.0-alpha.19"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.0.0-alpha.19.tgz#7d7777e026f1d281a558247aa04d0978c2181fb2"
-  integrity sha512-SRsLOTeI+DT+53K6lz5bNUvQyjB1eBeDKOwQppkuloHxaRH0E0f9w9IC4x3x0pofMQReW2IgiBpuD4EtORbU+w==
-  dependencies:
-    "@react-native-community/cli-tools" "^2.0.0-alpha.19"
-    chalk "^1.1.1"
-    xcode "^2.0.0"
-
-"@react-native-community/cli-tools@^2.0.0-alpha.14":
-  version "2.0.0-alpha.14"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.0-alpha.14.tgz#c625fcc9d03d77428c242801510280ce88ef0e4b"
-  integrity sha512-nU3bDcVKDuGfLCwayJXEtmFrbtuSsPAykFj1yX1kfItoIQpk7h3V66f1cOkDfaLxyUDO4fUba4oHxaQjjLGAJQ==
+"@react-native-community/cli-tools@^2.0.0-alpha.20":
+  version "2.0.0-alpha.20"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.0-alpha.20.tgz#7762205a701ffabe6aa0b08d9202dd3d101297d7"
+  integrity sha512-G2VcBUuG/WmtbgHA4wTPkYqhuRhzE9EH8+4/WnCQmxSi7bfIYAzyVxgpBLCGzFv4liPmtoVuhcsapVeAMOdSlQ==
   dependencies:
     chalk "^1.1.1"
     lodash "^4.17.5"
     mime "^1.3.4"
 
-"@react-native-community/cli-tools@^2.0.0-alpha.19":
-  version "2.0.0-alpha.19"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.0-alpha.19.tgz#0cdda92a3c51fb526407eb2106537a9197e4804c"
-  integrity sha512-HxiqTy6FtZBsxV4gZFM7YLmfpe4OEb8pNjfkpDC5OspzEG3VgMZlquuA5008/pQP7jrxBsKcoekrCBAxij+15g==
+"@react-native-community/cli@2.0.0-alpha.20":
+  version "2.0.0-alpha.20"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.0.0-alpha.20.tgz#611fe4ad483755ae10d3f7f915e1ed527f4a9bf8"
+  integrity sha512-H71a8gYhhI/7F6UzN3vrzQMtl9dmV/iDf55QeRqWEIU1i+SOpXXk5cmcL7hFY4FBUAkjn4o7GAd089RstGIOeA==
   dependencies:
-    chalk "^1.1.1"
-    lodash "^4.17.5"
-    mime "^1.3.4"
-
-"@react-native-community/cli@2.0.0-alpha.19":
-  version "2.0.0-alpha.19"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.0.0-alpha.19.tgz#6be05d488a67d5a71647a172135e8f3722389320"
-  integrity sha512-1cJ6DY1heQGWaEQcyRm/xQXN8LXrCL71e3fZV43McIjqyONupQqgKjO3Pno9N8QT6S7mOsT9R2gv//ytHjwbxg==
-  dependencies:
-    "@react-native-community/cli-platform-android" "^2.0.0-alpha.19"
-    "@react-native-community/cli-platform-ios" "^2.0.0-alpha.19"
-    "@react-native-community/cli-tools" "^2.0.0-alpha.19"
+    "@hapi/joi" "^15.0.3"
+    "@react-native-community/cli-platform-android" "^2.0.0-alpha.20"
+    "@react-native-community/cli-platform-ios" "^2.0.0-alpha.20"
+    "@react-native-community/cli-tools" "^2.0.0-alpha.20"
     chalk "^1.1.1"
     command-exists "^1.2.8"
     commander "^2.19.0"
@@ -1144,7 +1142,6 @@
     glob "^7.1.1"
     graceful-fs "^4.1.3"
     inquirer "^3.0.6"
-    joi "^14.3.1"
     lodash "^4.17.5"
     metro "^0.53.1"
     metro-config "^0.53.1"
@@ -3517,11 +3514,6 @@ has@^1.0.1, has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
-hoek@6.x.x:
-  version "6.1.3"
-  resolved "https://registry.yarnpkg.com/hoek/-/hoek-6.1.3.tgz#73b7d33952e01fe27a38b0457294b79dd8da242c"
-  integrity sha512-YXXAAhmF9zpQbC7LEcREFtXfGq5K1fmd+4PHkBq8NUqmzW3G+Dq10bI/i0KucLRwss3YYFQ0fSfoxBZYiGUqtQ==
-
 home-or-tmp@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/home-or-tmp/-/home-or-tmp-3.0.0.tgz#57a8fe24cf33cdd524860a15821ddc25c86671fb"
@@ -3863,13 +3855,6 @@ isarray@1.0.0, isarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
   integrity sha1-u5NdSFgsuhaMBoNJV6VKPgcSTxE=
-
-isemail@3.x.x:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/isemail/-/isemail-3.2.0.tgz#59310a021931a9fb06bbb51e155ce0b3f236832c"
-  integrity sha512-zKqkK+O+dGqevc93KNsbZ/TqTUFd46MwWjYOoMrjIMZ51eU7DtQG3Wmd9SQQT7i7RVnuTPEiYEWHU3MSbxC1Tg==
-  dependencies:
-    punycode "2.x.x"
 
 isexe@^2.0.0:
   version "2.0.0"
@@ -4435,15 +4420,6 @@ jest@^24.7.1:
   dependencies:
     import-local "^2.0.0"
     jest-cli "^24.7.1"
-
-joi@^14.3.1:
-  version "14.3.1"
-  resolved "https://registry.yarnpkg.com/joi/-/joi-14.3.1.tgz#164a262ec0b855466e0c35eea2a885ae8b6c703c"
-  integrity sha512-LQDdM+pkOrpAn4Lp+neNIFV3axv1Vna3j38bisbQhETPMANYRbFJFUyOZcOClYvM/hppMhGWuKSFEK9vjrB+bQ==
-  dependencies:
-    hoek "6.x.x"
-    isemail "3.x.x"
-    topo "3.x.x"
 
 js-levenshtein@^1.1.3:
   version "1.1.4"
@@ -6020,15 +5996,15 @@ pump@^3.0.0:
     end-of-stream "^1.1.0"
     once "^1.3.1"
 
-punycode@2.x.x, punycode@^2.1.0:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
-  integrity sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
-
 punycode@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
   integrity sha1-wNWmOycYgArY4esPpSachN1BhF4=
+
+punycode@^2.1.0:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.1.tgz#b58b010ac40c22c5657616c8d2c2c02c7bf479ec"
+  integrity sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
 
 qs@~6.5.2:
   version "6.5.2"
@@ -7119,13 +7095,6 @@ to-regex@^3.0.1, to-regex@^3.0.2:
     extend-shallow "^3.0.2"
     regex-not "^1.0.2"
     safe-regex "^1.1.0"
-
-topo@3.x.x:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/topo/-/topo-3.0.3.tgz#d5a67fb2e69307ebeeb08402ec2a2a6f5f7ad95c"
-  integrity sha512-IgpPtvD4kjrJ7CRA3ov2FhWQADwv+Tdqbsf1ZnPUSAtCJ9e1Z44MmoSGDXGk4IppoZA7jd/QRkNddlLJWlUZsQ==
-  dependencies:
-    hoek "6.x.x"
 
 tough-cookie@>=2.3.3, tough-cookie@^2.3.4, tough-cookie@~2.4.3:
   version "2.4.3"

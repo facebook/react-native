@@ -22,21 +22,17 @@ namespace facebook {
 namespace react {
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode()
-    : yogaNode_({}), yogaConfig_(nullptr) {
-  initializeYogaConfig(yogaConfig_);
-
-  yogaNode_.setConfig(&yogaConfig_);
+    : yogaConfig_(nullptr), yogaNode_(&initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
 }
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     const YogaLayoutableShadowNode &layoutableShadowNode)
     : LayoutableShadowNode(layoutableShadowNode),
-      yogaNode_(layoutableShadowNode.yogaNode_),
-      yogaConfig_(nullptr) {
-  initializeYogaConfig(yogaConfig_);
-
-  yogaNode_.setConfig(&yogaConfig_);
+      yogaConfig_(nullptr),
+      yogaNode_(
+          layoutableShadowNode.yogaNode_,
+          &initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
 
@@ -286,10 +282,11 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
                 yogaFloatFromFloat(size.height)};
 }
 
-void YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
+YGConfig &YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
   config.setCloneNodeCallback(
       YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
   config.useLegacyStretchBehaviour = true;
+  return config;
 }
 
 } // namespace react

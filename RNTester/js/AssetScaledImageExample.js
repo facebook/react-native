@@ -13,7 +13,28 @@
 const React = require('react');
 const {Image, StyleSheet, View, ScrollView} = require('react-native');
 
-import type {PhotoIdentifier} from '../../Libraries/CameraRoll/CameraRoll';
+type PhotoIdentifier = {
+  node: {
+    type: string,
+    group_name: string,
+    image: {
+      filename: string,
+      uri: string,
+      height: number,
+      width: number,
+      isStored?: boolean,
+      playableDuration: number,
+    },
+    timestamp: number,
+    location?: {
+      latitude?: number,
+      longitude?: number,
+      altitude?: number,
+      heading?: number,
+      speed?: number,
+    },
+  },
+};
 
 type Props = $ReadOnly<{|
   asset: PhotoIdentifier,

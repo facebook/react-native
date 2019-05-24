@@ -83,7 +83,7 @@ export type EventTypeShape = $ReadOnly<{|
   optional: boolean,
   typeAnnotation: $ReadOnly<{|
     type: 'EventTypeAnnotation',
-    argument: $ReadOnly<{|
+    argument?: $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
       properties: $ReadOnlyArray<ObjectPropertyType>,
     |}>,
@@ -92,6 +92,7 @@ export type EventTypeShape = $ReadOnly<{|
 
 export type ComponentShape = $ReadOnly<{|
   interfaceOnly?: boolean,
+  isDeprecatedPaperComponentNameRCT?: boolean,
   extendsProps: $ReadOnlyArray<{|
     type: 'ReactNativeBuiltInType',
     knownTypeName: 'ReactNativeCoreViewProps',

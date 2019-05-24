@@ -14,7 +14,6 @@ const React = require('react');
 
 const XHRExampleDownload = require('./XHRExampleDownload');
 const XHRExampleBinaryUpload = require('./XHRExampleBinaryUpload');
-const XHRExampleFormData = require('./XHRExampleFormData');
 const XHRExampleHeaders = require('./XHRExampleHeaders');
 const XHRExampleFetch = require('./XHRExampleFetch');
 const XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
@@ -36,12 +35,6 @@ exports.examples = [
     title: 'multipart/form-data Upload',
     render() {
       return <XHRExampleBinaryUpload />;
-    },
-  },
-  {
-    title: 'multipart/form-data Upload',
-    render() {
-      return <XHRExampleFormData />;
     },
   },
   {

@@ -19,7 +19,7 @@ const {
   TextInput,
   View,
 } = require('react-native');
-const TextAncestor = require('TextAncestor');
+const TextAncestor = require('../../Libraries/Text/TextAncestor');
 const TextInlineView = require('./Shared/TextInlineView');
 const TextLegend = require('./Shared/TextLegend');
 

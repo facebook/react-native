@@ -61,13 +61,19 @@ const Header = ({onBack, title}: {onBack?: () => mixed, title: string}) => (
 );
 
 class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
+  _mounted: boolean;
+
   UNSAFE_componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this._handleBack);
   }
 
   componentDidMount() {
+    this._mounted = true;
     Linking.getInitialURL().then(url => {
       AsyncStorage.getItem(APP_STATE_KEY, (err, storedString) => {
+        if (!this._mounted) {
+          return;
+        }
         const exampleAction = URIActionMap(
           this.props.exampleFromAppetizeParams,
         );
@@ -81,6 +87,10 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     Linking.addEventListener('url', url => {
       this._handleAction(URIActionMap(url));
     });
+  }
+
+  componentWillUnmount() {
+    this._mounted = false;
   }
 
   _handleBack = () => {

@@ -412,8 +412,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     CGColorRelease(borderColor);
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
     layer.backgroundColor = _backgroundColor.CGColor;
-    _contentView.layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
-    _contentView.layer.masksToBounds = YES;
   } else {
     if (!_borderLayer) {
       _borderLayer = [[CALayer alloc] init];
@@ -427,8 +425,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.borderWidth = 0;
     layer.borderColor = nil;
     layer.cornerRadius = 0;
-    _contentView.layer.cornerRadius = 0;
-    _contentView.layer.masksToBounds = NO;
 
     UIImage *image = RCTGetBorderImage(
         RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),

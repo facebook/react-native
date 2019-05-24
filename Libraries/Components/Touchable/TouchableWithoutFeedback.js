@@ -21,7 +21,6 @@ const ensurePositiveDelayProps = require('./ensurePositiveDelayProps');
 
 const {
   DeprecatedAccessibilityRoles,
-  DeprecatedAccessibilityStates,
 } = require('../../DeprecatedPropTypes/DeprecatedViewAccessibility');
 
 import type {
@@ -33,6 +32,7 @@ import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {
   AccessibilityRole,
   AccessibilityStates,
+  AccessibilityState,
 } from '../View/ViewAccessibility';
 
 type TargetEvent = SyntheticEvent<
@@ -52,6 +52,7 @@ const OVERRIDE_PROPS = [
   'accessibilityIgnoresInvertColors',
   'accessibilityRole',
   'accessibilityStates',
+  'accessibilityState',
   'hitSlop',
   'nativeID',
   'onBlur',
@@ -67,6 +68,7 @@ export type Props = $ReadOnly<{|
   accessibilityIgnoresInvertColors?: ?boolean,
   accessibilityRole?: ?AccessibilityRole,
   accessibilityStates?: ?AccessibilityStates,
+  accessibilityState?: ?AccessibilityState,
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,
@@ -104,9 +106,8 @@ const TouchableWithoutFeedback = ((createReactClass({
     accessibilityHint: PropTypes.string,
     accessibilityIgnoresInvertColors: PropTypes.bool,
     accessibilityRole: PropTypes.oneOf(DeprecatedAccessibilityRoles),
-    accessibilityStates: PropTypes.arrayOf(
-      PropTypes.oneOf(DeprecatedAccessibilityStates),
-    ),
+    accessibilityStates: PropTypes.array,
+    accessibilityState: PropTypes.object,
     /**
      * When `accessible` is true (which is the default) this may be called when
      * the OS-specific concept of "focus" occurs. Some platforms may not have

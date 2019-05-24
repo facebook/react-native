@@ -71,6 +71,17 @@ import javax.annotation.Nullable;
       }
     }
 
+    if (outputMin == outputMax) {
+      return outputMin;
+    }
+
+    if (inputMin == inputMax) {
+      if (value <= inputMin) {
+        return outputMin;
+      }
+      return outputMax;
+    }
+
     return outputMin + (outputMax - outputMin) *
       (result - inputMin) / (inputMax - inputMin);
   }
