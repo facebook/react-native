@@ -1020,6 +1020,10 @@
 		6E61321A22985C4500AB39AD /* JSCallInvoker.h in Headers */ = {isa = PBXBuildFile; fileRef = 6E61321522985C3300AB39AD /* JSCallInvoker.h */; };
 		6E61321B22985C4800AB39AD /* BridgeJSCallInvoker.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 6E61321622985C3300AB39AD /* BridgeJSCallInvoker.h */; };
 		6E61321C22985C4800AB39AD /* JSCallInvoker.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 6E61321522985C3300AB39AD /* JSCallInvoker.h */; };
+		6E61321F22985D2000AB39AD /* RCTTurboModuleManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 6E6131C622985B3C00AB39AD /* RCTTurboModuleManager.h */; };
+		6E61322022985D2000AB39AD /* RCTTurboModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 6E6131C722985B3C00AB39AD /* RCTTurboModule.h */; };
+		6E61322122985D2700AB39AD /* RCTTurboModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6E6131C422985B3C00AB39AD /* RCTTurboModule.mm */; };
+		6E61322222985D2700AB39AD /* RCTTurboModuleManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6E6131C522985B3C00AB39AD /* RCTTurboModuleManager.mm */; };
 		830A229E1A66C68A008503DA /* RCTRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 830A229D1A66C68A008503DA /* RCTRootView.m */; };
 		83281384217EB70900574D55 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281383217EB70800574D55 /* MallocImpl.cpp */; };
 		83281385217EB71200574D55 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281383217EB70800574D55 /* MallocImpl.cpp */; };
@@ -1766,6 +1770,8 @@
 				6E61320122985B7B00AB39AD /* LongLivedObject.h in Copy Headers */,
 				6E61320222985B7B00AB39AD /* TurboModuleUtils.h in Copy Headers */,
 				6E61320322985B7B00AB39AD /* TurboModuleBinding.h in Copy Headers */,
+				6E61321F22985D2000AB39AD /* RCTTurboModuleManager.h in Copy Headers */,
+				6E61322022985D2000AB39AD /* RCTTurboModule.h in Copy Headers */,
 			);
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4747,6 +4753,7 @@
 				13BCE8091C99CB9D00DD7AAD /* RCTRootShadowView.m in Sources */,
 				006FC4141D9B20820057AAAD /* RCTMultipartDataTask.m in Sources */,
 				13CC8A821B17642100940AE7 /* RCTBorderDrawing.m in Sources */,
+				6E61322222985D2700AB39AD /* RCTTurboModuleManager.mm in Sources */,
 				C60128AD1F3D1258009DF9FF /* RCTCxxConvert.m in Sources */,
 				3DCE53291FEAB23100613583 /* RCTDatePicker.m in Sources */,
 				0EEEA8DF2239002200A8C82D /* RCTSurfacePresenterStub.m in Sources */,
@@ -4846,6 +4853,7 @@
 				83A1FE8F1B62643A00BE0E65 /* RCTModalHostViewManager.m in Sources */,
 				13E0674A1A70F434002CDEE1 /* RCTUIManager.m in Sources */,
 				1384E2091E806D4E00545659 /* RCTNativeModule.mm in Sources */,
+				6E61322122985D2700AB39AD /* RCTTurboModule.mm in Sources */,
 				391E86A41C623EC800009732 /* RCTTouchEvent.m in Sources */,
 				1450FF861BCFF28A00208362 /* RCTProfile.m in Sources */,
 				13AB90C11B6FA36700713B4F /* RCTComponentData.m in Sources */,
