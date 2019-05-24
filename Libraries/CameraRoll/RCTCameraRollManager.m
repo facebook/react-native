@@ -22,6 +22,9 @@
 
 #import "RCTAssetsLibraryRequestHandler.h"
 
+#define ERROR_PICKER_UNAUTHORIZED_KEY @"E_PERMISSION_MISSING"
+#define ERROR_PICKER_UNAUTHORIZED_MSG @"Cannot access images. Please allow access if you want to be able to select images."
+
 @implementation RCTConvert (ALAssetGroup)
 
 RCT_ENUM_CONVERTER(ALAssetsGroupType, (@{
