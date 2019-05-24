@@ -26,6 +26,7 @@ const fileList = argv._[0].split('\n');
 const CURRENT_VIEW_CONFIG_FILES = [
   'SliderNativeComponent.js',
   'ActivityIndicatorViewNativeComponent.js',
+  'PullToRefreshViewNativeComponent.js',
 ];
 
 generate(
