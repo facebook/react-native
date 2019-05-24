@@ -193,6 +193,9 @@ public class MountingManager {
       viewManager = mViewManagerRegistry.get(componentName);
       view = mViewFactory.getOrCreateView(componentName, propsDiffMap, stateWrapper, themedReactContext);
       view.setId(reactTag);
+      if (stateWrapper != null) {
+        viewManager.updateState(view, stateWrapper);
+      }
     }
 
     ViewState viewState = new ViewState(reactTag, view, viewManager);
