@@ -458,6 +458,12 @@ void Binding::schedulerDidFinishTransaction(
                   deletedViewTags.end()) {
             mountItems[position++] =
                 createUpdatePropsMountItem(javaUIManager_, mutation);
+
+            // State
+            if (mutation.newChildShadowView.state) {
+              mountItems[position++] =
+                  createUpdateStateMountItem(javaUIManager_, mutation);
+            }
           }
 
           // LocalData
@@ -471,12 +477,6 @@ void Binding::schedulerDidFinishTransaction(
               createUpdateLayoutMountItem(javaUIManager_, mutation);
           if (updateLayoutMountItem) {
             mountItems[position++] = updateLayoutMountItem;
-          }
-
-          // State
-          if (mutation.newChildShadowView.state) {
-            mountItems[position++] =
-                createUpdateStateMountItem(javaUIManager_, mutation);
           }
         }
 
