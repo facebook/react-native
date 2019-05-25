@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTScrollableProtocol.h>
 #import <React/RCTViewComponentView.h>
 #import <React/RNGenericDelegateSplitter.h>
 
@@ -43,6 +44,15 @@ NS_ASSUME_NONNULL_BEGIN
  * Returns a delegate splitter that can be used to subscribe for UIScrollView delegate.
  */
 @property (nonatomic, strong, readonly) RNGenericDelegateSplitter<id<UIScrollViewDelegate>> *scrollViewDelegateSplitter;
+
+@end
+
+/*
+ * RCTScrollableProtocol is a protocol which RCTScrollViewManager uses to communicate with all kinds of `UIScrollView`s.
+ * Until Fabric has own command-execution pipeline we have to support that to some extent. The implementation shouldn't
+ * be perfect though because very soon we will migrate that to the new commands infra and get rid of this.
+ */
+@interface RCTScrollViewComponentView (ScrollableProtocol) <RCTScrollableProtocol>
 
 @end
 

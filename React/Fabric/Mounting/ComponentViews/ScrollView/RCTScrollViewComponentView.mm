@@ -218,3 +218,42 @@ using namespace facebook::react;
 }
 
 @end
+
+@implementation RCTScrollViewComponentView (ScrollableProtocol)
+
+- (CGSize)contentSize
+{
+  return _contentSize;
+}
+
+- (void)scrollToOffset:(CGPoint)offset
+{
+  [self scrollToOffset:offset animated:YES];
+}
+
+- (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
+{
+  [self.scrollView setContentOffset:offset animated:animated];
+}
+
+- (void)scrollToEnd:(BOOL)animated
+{
+  // Not implemented.
+}
+
+- (void)zoomToRect:(CGRect)rect animated:(BOOL)animated
+{
+  // Not implemented.
+}
+
+- (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
+{
+  [self.scrollViewDelegateSplitter addDelegate:scrollListener];
+}
+
+- (void)removeScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
+{
+  [self.scrollViewDelegateSplitter removeDelegate:scrollListener];
+}
+
+@end
