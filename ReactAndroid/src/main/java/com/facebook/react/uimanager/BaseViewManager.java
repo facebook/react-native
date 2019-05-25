@@ -33,8 +33,8 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
- * Base class that should be suitable for the majority of subclasses of {@link ViewManager}.
- * It provides support for base view properties such as backgroundColor, opacity, etc.
+ * Base class that should be suitable for the majority of subclasses of {@link ViewManager}. It
+ * provides support for base view properties such as backgroundColor, opacity, etc.
  */
 public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode>
     extends ViewManager<T, C> {
@@ -61,12 +61,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_TRANSLATE_Y = "translateY";
 
   private static final int PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX = 2;
-  private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = (float)Math.sqrt(5);
+  private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = (float) Math.sqrt(5);
 
-  /**
-   * Used to locate views in end-to-end (UI) tests.
-   */
+  /** Used to locate views in end-to-end (UI) tests. */
   public static final String PROP_TEST_ID = "testID";
+
   public static final String PROP_NATIVE_ID = "nativeID";
 
   private static MatrixMathHelper.MatrixDecompositionContext sMatrixDecompositionContext =
@@ -74,10 +73,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static double[] sTransformDecompositionArray = new double[16];
 
   public static final HashMap<String, Integer> sStateDescription = new HashMap<String, Integer>();
+
   static {
-      sStateDescription.put("busy", R.string.state_busy_description);
-      sStateDescription.put("expanded", R.string.state_expanded_description);
-      sStateDescription.put("collapsed", R.string.state_collapsed_description);
+    sStateDescription.put("busy", R.string.state_busy_description);
+    sStateDescription.put("expanded", R.string.state_expanded_description);
+    sStateDescription.put("collapsed", R.string.state_collapsed_description);
   }
 
   // State definition constants -- must match the definition in
@@ -164,22 +164,22 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = PROP_ACCESSIBILITY_STATES)
   public void setViewStates(@Nonnull T view, @Nullable ReadableArray accessibilityStates) {
-    if (accessibilityStates == null) {
-      return;
-    }
+    boolean shouldUpdateContentDescription =
+        view.getTag(R.id.accessibility_states) != null && accessibilityStates == null;
     view.setTag(R.id.accessibility_states, accessibilityStates);
     view.setSelected(false);
     view.setEnabled(true);
-    boolean shouldUpdateContentDescription = false;
-    for (int i = 0; i < accessibilityStates.size(); i++) {
-      String state = accessibilityStates.getString(i);
-      if (sStateDescription.containsKey(state)) {
-        shouldUpdateContentDescription = true;
-      }
-      if (state.equals("selected")) {
-        view.setSelected(true);
-      } else if (state.equals("disabled")) {
-        view.setEnabled(false);
+    if (accessibilityStates != null) {
+      for (int i = 0; i < accessibilityStates.size(); i++) {
+        String state = accessibilityStates.getString(i);
+        if (sStateDescription.containsKey(state)) {
+          shouldUpdateContentDescription = true;
+        }
+        if (state.equals("selected")) {
+          view.setSelected(true);
+        } else if (state.equals("disabled")) {
+          view.setEnabled(false);
+        }
       }
     }
     if (shouldUpdateContentDescription) {
@@ -260,7 +260,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @ReactProp(name = PROP_IMPORTANT_FOR_ACCESSIBILITY)
-  public void setImportantForAccessibility(@Nonnull T view, @Nullable String importantForAccessibility) {
+  public void setImportantForAccessibility(
+      @Nonnull T view, @Nullable String importantForAccessibility) {
     if (importantForAccessibility == null || importantForAccessibility.equals("auto")) {
       ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     } else if (importantForAccessibility.equals("yes")) {
@@ -268,7 +269,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     } else if (importantForAccessibility.equals("no")) {
       ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO);
     } else if (importantForAccessibility.equals("no-hide-descendants")) {
-      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+      ViewCompat.setImportantForAccessibility(
+          view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
     }
   }
 
@@ -304,13 +306,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = PROP_ACCESSIBILITY_LIVE_REGION)
   public void setAccessibilityLiveRegion(@Nonnull T view, @Nullable String liveRegion) {
-      if (liveRegion == null || liveRegion.equals("none")) {
-        ViewCompat.setAccessibilityLiveRegion(view, ViewCompat.ACCESSIBILITY_LIVE_REGION_NONE);
-      } else if (liveRegion.equals("polite")) {
-        ViewCompat.setAccessibilityLiveRegion(view, ViewCompat.ACCESSIBILITY_LIVE_REGION_POLITE);
-      } else if (liveRegion.equals("assertive")) {
-        ViewCompat.setAccessibilityLiveRegion(view, ViewCompat.ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
-      }
+    if (liveRegion == null || liveRegion.equals("none")) {
+      ViewCompat.setAccessibilityLiveRegion(view, ViewCompat.ACCESSIBILITY_LIVE_REGION_NONE);
+    } else if (liveRegion.equals("polite")) {
+      ViewCompat.setAccessibilityLiveRegion(view, ViewCompat.ACCESSIBILITY_LIVE_REGION_POLITE);
+    } else if (liveRegion.equals("assertive")) {
+      ViewCompat.setAccessibilityLiveRegion(view, ViewCompat.ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
+    }
   }
 
   private static void setTransformProperty(@Nonnull View view, ReadableArray transforms) {
@@ -329,7 +331,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     double[] perspectiveArray = sMatrixDecompositionContext.perspective;
 
     if (perspectiveArray.length > PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX) {
-      float invertedCameraDistance = (float) perspectiveArray[PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX];
+      float invertedCameraDistance =
+          (float) perspectiveArray[PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX];
       if (invertedCameraDistance == 0) {
         // Default camera distance, before scale multiplier (1280)
         invertedCameraDistance = 0.00078125f;
@@ -343,9 +346,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       // calculation, so squaring and a normalization value of
       // sqrt(5) produces an exact replica with iOS.
       // For more information, see https://github.com/facebook/react-native/pull/18302
-      float normalizedCameraDistance = scale * scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
+      float normalizedCameraDistance =
+          scale * scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
       view.setCameraDistance(normalizedCameraDistance);
-
     }
   }
 
@@ -373,7 +376,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @Override
   public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.<String, Object>builder()
-          .put("performAction", MapBuilder.of("registrationName", "onAccessibilityAction"))
-          .build();
+        .put("performAction", MapBuilder.of("registrationName", "onAccessibilityAction"))
+        .build();
   }
 }

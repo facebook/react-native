@@ -20,7 +20,7 @@ import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.fabric.FabricUIManager;
-import com.facebook.react.fabric.jsi.EventEmitterWrapper;
+import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -193,6 +193,9 @@ public class MountingManager {
       viewManager = mViewManagerRegistry.get(componentName);
       view = mViewFactory.getOrCreateView(componentName, propsDiffMap, stateWrapper, themedReactContext);
       view.setId(reactTag);
+      if (stateWrapper != null) {
+        viewManager.updateState(view, stateWrapper);
+      }
     }
 
     ViewState viewState = new ViewState(reactTag, view, viewManager);
@@ -365,10 +368,10 @@ public class MountingManager {
     final int mReactTag;
     final boolean mIsRoot;
     @Nullable final ViewManager mViewManager;
-    public ReactStylesDiffMap mCurrentProps = null;
-    public ReadableMap mCurrentLocalData = null;
-    public ReadableMap mCurrentState = null;
-    public EventEmitterWrapper mEventEmitter = null;
+    @Nullable public ReactStylesDiffMap mCurrentProps = null;
+    @Nullable public ReadableMap mCurrentLocalData = null;
+    @Nullable public ReadableMap mCurrentState = null;
+    @Nullable public EventEmitterWrapper mEventEmitter = null;
 
     private ViewState(int reactTag, @Nullable View view, @Nullable ViewManager viewManager) {
       this(reactTag, view, viewManager, false);

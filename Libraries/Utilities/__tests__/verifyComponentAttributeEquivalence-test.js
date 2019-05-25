@@ -13,6 +13,7 @@
 const getNativeComponentAttributes = require('../../ReactNative/getNativeComponentAttributes');
 const verifyComponentAttributeEquivalence = require('../verifyComponentAttributeEquivalence');
 
+jest.dontMock('../verifyComponentAttributeEquivalence');
 jest.mock('../../ReactNative/getNativeComponentAttributes', () => () => ({
   NativeProps: {
     value: 'BOOL',

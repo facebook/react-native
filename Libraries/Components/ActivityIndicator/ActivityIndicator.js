@@ -15,15 +15,12 @@ const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
 
-const RCTActivityIndicatorViewNativeComponent = require('./RCTActivityIndicatorViewNativeComponent');
+const ActivityIndicatorViewNativeComponent = require('./ActivityIndicatorViewNativeComponent');
 
 import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 import type {ViewProps} from '../View/ViewPropTypes';
 
-const RCTActivityIndicator =
-  Platform.OS === 'android'
-    ? require('../ProgressBarAndroid/ProgressBarAndroid')
-    : RCTActivityIndicatorViewNativeComponent;
+const ProgressBarAndroid = require('../ProgressBarAndroid/ProgressBarAndroid');
 
 const GRAY = '#999999';
 
@@ -93,8 +90,6 @@ const ActivityIndicator = (props: Props, forwardedRef?: any) => {
     ref: forwardedRef,
     style: sizeStyle,
     size: sizeProp,
-    styleAttr: 'Normal',
-    indeterminate: true,
   };
 
   return (
@@ -106,7 +101,11 @@ const ActivityIndicator = (props: Props, forwardedRef?: any) => {
       )}>
       {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
        * found when making Flow check .android.js files. */}
-      <RCTActivityIndicator {...nativeProps} />
+      {Platform.OS === 'android' ? (
+        <ProgressBarAndroid {...nativeProps} styleAttr="Normal" indeterminate />
+      ) : (
+        <ActivityIndicatorViewNativeComponent {...nativeProps} />
+      )}
     </View>
   );
 };

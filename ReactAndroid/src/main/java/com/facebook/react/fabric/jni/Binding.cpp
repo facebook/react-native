@@ -45,13 +45,9 @@ jni::local_ref<Binding::jhybriddata> Binding::initHybrid(
   return makeCxxInstance();
 }
 
-void Binding::startSurface(
-    jint surfaceId,
-    jni::alias_ref<jstring> moduleName,
-    NativeMap *initialProps) {
+void Binding::startSurface(jint surfaceId, NativeMap *initialProps) {
   if (scheduler_) {
-    scheduler_->startSurface(
-        surfaceId, moduleName->toStdString(), initialProps->consume());
+    scheduler_->startSurface(surfaceId, "", initialProps->consume());
   }
 }
 
@@ -462,6 +458,12 @@ void Binding::schedulerDidFinishTransaction(
                   deletedViewTags.end()) {
             mountItems[position++] =
                 createUpdatePropsMountItem(javaUIManager_, mutation);
+
+            // State
+            if (mutation.newChildShadowView.state) {
+              mountItems[position++] =
+                  createUpdateStateMountItem(javaUIManager_, mutation);
+            }
           }
 
           // LocalData
@@ -475,12 +477,6 @@ void Binding::schedulerDidFinishTransaction(
               createUpdateLayoutMountItem(javaUIManager_, mutation);
           if (updateLayoutMountItem) {
             mountItems[position++] = updateLayoutMountItem;
-          }
-
-          // State
-          if (mutation.newChildShadowView.state) {
-            mountItems[position++] =
-                createUpdateStateMountItem(javaUIManager_, mutation);
           }
         }
 

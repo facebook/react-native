@@ -363,3 +363,8 @@ jest.doMock('../Libraries/ReactNative/requireNativeComponent', () => {
       }
     };
 });
+
+jest.doMock(
+  '../Libraries/Utilities/verifyComponentAttributeEquivalence',
+  () => function() {},
+);

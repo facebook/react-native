@@ -68,7 +68,29 @@ type PropTypeTypeAnnotation =
     |}>
   | $ReadOnly<{|
       type: 'ArrayTypeAnnotation',
-      elementType: $ReadOnly<PropTypeTypeAnnotation>,
+      elementType:
+        | $ReadOnly<{|
+            type: 'BooleanTypeAnnotation',
+          |}>
+        | $ReadOnly<{|
+            type: 'StringTypeAnnotation',
+          |}>
+        | $ReadOnly<{|
+            type: 'FloatTypeAnnotation',
+          |}>
+        | $ReadOnly<{|
+            type: 'Int32TypeAnnotation',
+          |}>
+        | $ReadOnly<{|
+            type: 'StringEnumTypeAnnotation',
+            options: $ReadOnlyArray<{|
+              name: string,
+            |}>,
+          |}>
+        | $ReadOnly<{|
+            type: 'NativePrimitiveTypeAnnotation',
+            name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
+          |}>,
     |}>;
 
 export type PropTypeShape = $ReadOnly<{|
@@ -90,13 +112,19 @@ export type EventTypeShape = $ReadOnly<{|
   |}>,
 |}>;
 
-export type ComponentShape = $ReadOnly<{|
+export type OptionsShape = $ReadOnly<{|
   interfaceOnly?: boolean,
   isDeprecatedPaperComponentNameRCT?: boolean,
-  extendsProps: $ReadOnlyArray<{|
-    type: 'ReactNativeBuiltInType',
-    knownTypeName: 'ReactNativeCoreViewProps',
-  |}>,
+|}>;
+
+export type ExtendsPropsShape = $ReadOnly<{|
+  type: 'ReactNativeBuiltInType',
+  knownTypeName: 'ReactNativeCoreViewProps',
+|}>;
+
+export type ComponentShape = $ReadOnly<{|
+  ...OptionsShape,
+  extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
   events: $ReadOnlyArray<EventTypeShape>,
   props: $ReadOnlyArray<PropTypeShape>,
 |}>;

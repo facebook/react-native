@@ -12,6 +12,7 @@
 
 const RNCodegen = require('../../generators/RNCodegen.js');
 const SchemaParser = require('../../parsers/schema');
+const FlowParser = require('../../parsers/flow');
 
 const path = require('path');
 
@@ -20,21 +21,31 @@ type Result = $ReadOnly<{|
   success: boolean,
 |}>;
 
+type Config = $ReadOnly<{|
+  test?: boolean,
+  parser?: 'schema' | 'flow',
+|}>;
+
 function generateFilesWithResults(
   files: Array<string>,
-  test: boolean,
+  config: Config,
 ): Array<Result> {
   return files.reduce((aggregated, filename) => {
-    const schema = SchemaParser.parse(filename);
+    const schema =
+      config.parser === 'flow'
+        ? FlowParser.parse(filename)
+        : SchemaParser.parse(filename);
     if (schema && schema.modules) {
-      const libraryName = path.basename(filename).replace('Schema.js', '');
+      const libraryName = path
+        .basename(filename)
+        .replace(/NativeComponent\.js$/, '');
       const success = RNCodegen.generate(
         {
           schema,
           libraryName,
           outputDirectory: path.dirname(filename),
         },
-        {generators: ['view-configs'], test},
+        {generators: ['view-configs'], test: config.test},
       );
 
       aggregated.push({
@@ -46,18 +57,20 @@ function generateFilesWithResults(
   }, []);
 }
 
-function generate(files: Array<string>, test: boolean): void {
-  console.log(`${test ? 'Testing' : 'Generating'} view configs`);
+function generate(files: Array<string>, config: Config): void {
+  console.log(`${config.test ? 'Testing' : 'Generating'} view configs`);
 
-  const results = generateFilesWithResults(files, test);
+  const results = generateFilesWithResults(files, config);
 
   const failed = results.filter(result => !result.success);
   const totalCount = results.length;
 
-  console.log(`\n${test ? 'Tested' : 'Generated'} ${totalCount} view configs`);
+  console.log(
+    `\n${config.test ? 'Tested' : 'Generated'} ${totalCount} view configs`,
+  );
 
   if (failed.length) {
-    if (test === true) {
+    if (config.test === true) {
       console.error(`${failed.length} configs changed`);
       console.error("Please re-run 'js1 build viewconfigs'");
     }

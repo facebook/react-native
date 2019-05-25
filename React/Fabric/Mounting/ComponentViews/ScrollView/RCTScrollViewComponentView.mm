@@ -69,7 +69,7 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>();
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
   const auto &oldScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(oldProps ?: _props);
   const auto &newScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(props);
@@ -115,7 +115,7 @@ using namespace facebook::react;
   // MAP_SCROLL_VIEW_PROP(snapToAlignment);
 }
 
-- (void)updateState:(State::Shared)state oldState:(State::Shared)oldState
+- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
   assert(std::dynamic_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state));
   _state = std::static_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state);
@@ -215,6 +215,45 @@ using namespace facebook::react;
 {
   std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
   [self _updateStateWithContentOffset];
+}
+
+@end
+
+@implementation RCTScrollViewComponentView (ScrollableProtocol)
+
+- (CGSize)contentSize
+{
+  return _contentSize;
+}
+
+- (void)scrollToOffset:(CGPoint)offset
+{
+  [self scrollToOffset:offset animated:YES];
+}
+
+- (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
+{
+  [self.scrollView setContentOffset:offset animated:animated];
+}
+
+- (void)scrollToEnd:(BOOL)animated
+{
+  // Not implemented.
+}
+
+- (void)zoomToRect:(CGRect)rect animated:(BOOL)animated
+{
+  // Not implemented.
+}
+
+- (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
+{
+  [self.scrollViewDelegateSplitter addDelegate:scrollListener];
+}
+
+- (void)removeScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
+{
+  [self.scrollViewDelegateSplitter removeDelegate:scrollListener];
 }
 
 @end

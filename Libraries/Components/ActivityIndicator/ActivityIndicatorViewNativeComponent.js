@@ -10,11 +10,13 @@
 
 'use strict';
 
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+import type {
+  WithDefault,
+  CodegenNativeComponent,
+} from '../../Types/CodegenTypes';
 
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -24,21 +26,21 @@ type NativeProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/activityindicator.html#hideswhenstopped
    */
-  hidesWhenStopped?: ?boolean,
+  hidesWhenStopped?: ?WithDefault<boolean, false>,
 
   /**
    * Whether to show the indicator (true, the default) or hide it (false).
    *
    * See http://facebook.github.io/react-native/docs/activityindicator.html#animating
    */
-  animating?: ?boolean,
+  animating?: ?WithDefault<boolean, false>,
 
   /**
    * The foreground color of the spinner (default is gray).
    *
    * See http://facebook.github.io/react-native/docs/activityindicator.html#color
    */
-  color?: ?string,
+  color?: ?ColorValue,
 
   /**
    * Size of the indicator (default is 'small').
@@ -46,15 +48,17 @@ type NativeProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/activityindicator.html#size
    */
-  size?: ?('small' | 'large'),
-
-  style?: ?ViewStyleProp,
-  styleAttr?: ?string,
-  indeterminate?: ?boolean,
+  size?: ?WithDefault<'small' | 'large', 'small'>,
 |}>;
 
-type ActivityIndicatorNativeType = Class<NativeComponent<NativeProps>>;
+type Options = {
+  isDeprecatedPaperComponentNameRCT: true,
+};
 
-module.exports = ((requireNativeComponent(
-  'RCTActivityIndicatorView',
-): any): ActivityIndicatorNativeType);
+type ActivityIndicatorNativeType = CodegenNativeComponent<
+  'ActivityIndicatorView',
+  NativeProps,
+  Options,
+>;
+
+module.exports = ((require('./ActivityIndicatorViewNativeViewConfig'): any): ActivityIndicatorNativeType);

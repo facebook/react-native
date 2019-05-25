@@ -23,14 +23,18 @@ const yargv = yargs.strict().option('t', {
 const argv = yargv.argv;
 const fileList = argv._[0].split('\n');
 
-const CURRENT_VIEW_CONFIG_SCHEMAS = [''];
+const CURRENT_VIEW_CONFIG_FILES = [
+  'SliderNativeComponent.js',
+  'ActivityIndicatorViewNativeComponent.js',
+  'PullToRefreshViewNativeComponent.js',
+];
 
 generate(
   fileList.filter(fileName =>
-    CURRENT_VIEW_CONFIG_SCHEMAS.find(supportedFileName =>
+    CURRENT_VIEW_CONFIG_FILES.find(supportedFileName =>
       fileName.endsWith(supportedFileName),
     ),
   ),
   // $FlowFixMe Type argv
-  argv.test,
+  {test: argv.test, parser: 'flow'},
 );

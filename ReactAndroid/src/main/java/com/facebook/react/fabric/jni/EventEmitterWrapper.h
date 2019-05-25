@@ -16,7 +16,7 @@ class Instance;
 class EventEmitterWrapper : public jni::HybridClass<EventEmitterWrapper> {
  public:
   constexpr static const char* const kJavaDescriptor =
-      "Lcom/facebook/react/fabric/jsi/EventEmitterWrapper;";
+      "Lcom/facebook/react/fabric/events/EventEmitterWrapper;";
 
   static void registerNatives();
 
