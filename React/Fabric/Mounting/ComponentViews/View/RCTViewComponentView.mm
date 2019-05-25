@@ -564,4 +564,9 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   return _eventEmitter;
 }
 
+- (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN
+{
+  return RCTNSStringFromString([[self class] componentDescriptorProvider].name);
+}
+
 @end

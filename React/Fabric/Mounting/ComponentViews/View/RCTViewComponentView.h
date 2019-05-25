@@ -79,6 +79,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask NS_REQUIRES_SUPER;
 - (void)prepareForRecycle NS_REQUIRES_SUPER;
 
+/*
+ * This is a fragment of temporary workaround that we need only temporary and will get rid of soon.
+ */
+- (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN;
+
 @end
 
 NS_ASSUME_NONNULL_END
