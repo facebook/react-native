@@ -13,6 +13,7 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WindowFocusChangeListener;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.module.annotations.ReactModule;
@@ -23,7 +24,7 @@ import java.util.Map;
 
 @ReactModule(name = AppStateModule.NAME)
 public class AppStateModule extends ReactContextBaseJavaModule
-        implements LifecycleEventListener {
+        implements LifecycleEventListener, WindowFocusChangeListener {
 
   protected static final String NAME = "AppState";
 
@@ -37,6 +38,7 @@ public class AppStateModule extends ReactContextBaseJavaModule
   public AppStateModule(ReactApplicationContext reactContext) {
     super(reactContext);
     reactContext.addLifecycleEventListener(this);
+    reactContext.addWindowFocusChangeListener(this);
     mAppState = (reactContext.getLifecycleState() == LifecycleState.RESUMED ?
             APP_STATE_ACTIVE : APP_STATE_BACKGROUND);
   }
@@ -74,6 +76,12 @@ public class AppStateModule extends ReactContextBaseJavaModule
   public void onHostDestroy() {
     // do not set state to destroyed, do not send an event. By the current implementation, the
     // catalyst instance is going to be immediately dropped, and all JS calls with it.
+  }
+
+  @Override
+  public void onWindowFocusChange(boolean hasFocus) {
+    getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class)
+      .emit("appStateFocusChange", hasFocus);
   }
 
   private WritableMap createAppStateEventMap() {

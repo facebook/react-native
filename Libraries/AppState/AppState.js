@@ -25,6 +25,7 @@ const invariant = require('invariant');
  */
 class AppState extends NativeEventEmitter {
   _eventHandlers: Object;
+  _supportedEvents = ['change', 'memoryWarning', 'focusChanged'];
   currentState: ?string;
   isAvailable: boolean;
 
@@ -35,6 +36,7 @@ class AppState extends NativeEventEmitter {
     this._eventHandlers = {
       change: new Map(),
       memoryWarning: new Map(),
+      focusChanged: new Map(),
     };
 
     this.currentState = NativeAppState.getConstants().initialAppState;
@@ -75,22 +77,37 @@ class AppState extends NativeEventEmitter {
    */
   addEventListener(type: string, handler: Function) {
     invariant(
-      ['change', 'memoryWarning'].indexOf(type) !== -1,
+      this._supportedEvents.indexOf(type) !== -1,
       'Trying to subscribe to unknown event: "%s"',
       type,
     );
-    if (type === 'change') {
-      this._eventHandlers[type].set(
-        handler,
-        this.addListener('appStateDidChange', appStateData => {
-          handler(appStateData.app_state);
-        }),
-      );
-    } else if (type === 'memoryWarning') {
-      this._eventHandlers[type].set(
-        handler,
-        this.addListener('memoryWarning', handler),
-      );
+
+    switch (type) {
+      case 'change': {
+        this._eventHandlers[type].set(
+          handler,
+          this.addListener('appStateDidChange', appStateData => {
+            handler(appStateData.app_state);
+          }),
+        );
+        break;
+      }
+      case 'memoryWarning': {
+        this._eventHandlers[type].set(
+          handler,
+          this.addListener('memoryWarning', handler),
+        );
+        break;
+      }
+
+      case 'focusChanged': {
+        this._eventHandlers[type].set(
+          handler,
+          this.addListener('appStateFocusChange', hasFocus => {
+            handler(hasFocus);
+          }),
+        );
+      }
     }
   }
 
@@ -101,7 +118,7 @@ class AppState extends NativeEventEmitter {
    */
   removeEventListener(type: string, handler: Function) {
     invariant(
-      ['change', 'memoryWarning'].indexOf(type) !== -1,
+      this._supportedEvents.indexOf(type) !== -1,
       'Trying to remove listener for unknown event: "%s"',
       type,
     );

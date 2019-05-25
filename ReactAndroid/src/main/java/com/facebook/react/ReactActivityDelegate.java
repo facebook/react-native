@@ -182,6 +182,12 @@ public class ReactActivityDelegate {
     return false;
   }
 
+  public void onWindowFocusChanged(boolean hasFocus) {
+    if (getReactNativeHost().hasInstance()) {
+      getReactNativeHost().getReactInstanceManager().onWindowFocusChange(hasFocus);
+    }
+  }
+
   @TargetApi(Build.VERSION_CODES.M)
   public void requestPermissions(
     String[] permissions,

@@ -125,6 +125,12 @@ public abstract class ReactActivity extends AppCompatActivity
     mDelegate.onRequestPermissionsResult(requestCode, permissions, grantResults);
   }
 
+  @Override
+  public void onWindowFocusChanged(boolean hasFocus) {
+    super.onWindowFocusChanged(hasFocus);
+    mDelegate.onWindowFocusChanged(hasFocus);
+  }
+
   protected final ReactNativeHost getReactNativeHost() {
     return mDelegate.getReactNativeHost();
   }
