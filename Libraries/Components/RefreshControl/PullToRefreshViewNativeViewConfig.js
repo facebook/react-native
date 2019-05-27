@@ -10,9 +10,9 @@
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
+const ReactNativeViewViewConfig = require('../View/ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('../../Utilities/verifyComponentAttributeEquivalence');
 
 const PullToRefreshViewViewConfig = {
   uiViewClassName: 'PullToRefreshView',
@@ -35,8 +35,8 @@ const PullToRefreshViewViewConfig = {
 
   validAttributes: {
     ...ReactNativeViewViewConfig.validAttributes,
-    tintColor: { process: require('processColor') },
-    titleColor: { process: require('processColor') },
+    tintColor: { process: require('../../StyleSheet/processColor') },
+    titleColor: { process: require('../../StyleSheet/processColor') },
     title: true,
     refreshing: true,
     onRefresh: true,

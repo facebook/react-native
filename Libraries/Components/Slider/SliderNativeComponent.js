@@ -59,4 +59,4 @@ type Options = {
 
 type SliderType = CodegenNativeComponent<'Slider', NativeProps, Options>;
 
-module.exports = ((require('SliderNativeViewConfig'): any): SliderType);
+module.exports = ((require('./SliderNativeViewConfig'): any): SliderType);

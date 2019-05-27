@@ -10,9 +10,9 @@
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
+const ReactNativeViewViewConfig = require('../View/ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('../../Utilities/verifyComponentAttributeEquivalence');
 
 const ActivityIndicatorViewViewConfig = {
   uiViewClassName: 'RCTActivityIndicatorView',
@@ -30,7 +30,7 @@ const ActivityIndicatorViewViewConfig = {
     ...ReactNativeViewViewConfig.validAttributes,
     hidesWhenStopped: true,
     animating: true,
-    color: { process: require('processColor') },
+    color: { process: require('../../StyleSheet/processColor') },
     size: true,
   },
 };

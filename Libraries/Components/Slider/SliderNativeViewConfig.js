@@ -10,9 +10,9 @@
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const ReactNativeViewConfigRegistry = require('../../Renderer/shims/ReactNativeViewConfigRegistry');
+const ReactNativeViewViewConfig = require('../View/ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('../../Utilities/verifyComponentAttributeEquivalence');
 
 const SliderViewConfig = {
   uiViewClassName: 'RCTSlider',
@@ -48,17 +48,17 @@ const SliderViewConfig = {
     ...ReactNativeViewViewConfig.validAttributes,
     disabled: true,
     enabled: true,
-    maximumTrackImage: { process: require('resolveAssetSource') },
-    maximumTrackTintColor: { process: require('processColor') },
+    maximumTrackImage: { process: require('../../Image/resolveAssetSource') },
+    maximumTrackTintColor: { process: require('../../StyleSheet/processColor') },
     maximumValue: true,
-    minimumTrackImage: { process: require('resolveAssetSource') },
-    minimumTrackTintColor: { process: require('processColor') },
+    minimumTrackImage: { process: require('../../Image/resolveAssetSource') },
+    minimumTrackTintColor: { process: require('../../StyleSheet/processColor') },
     minimumValue: true,
     step: true,
     testID: true,
-    thumbImage: { process: require('resolveAssetSource') },
-    thumbTintColor: { process: require('processColor') },
-    trackImage: { process: require('resolveAssetSource') },
+    thumbImage: { process: require('../../Image/resolveAssetSource') },
+    thumbTintColor: { process: require('../../StyleSheet/processColor') },
+    trackImage: { process: require('../../Image/resolveAssetSource') },
     value: true,
     onChange: true,
     onValueChange: true,
