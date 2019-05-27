@@ -11,7 +11,7 @@
 #include <cxxreact/NativeModule.h>
 #include <folly/dynamic.h>
 #include <folly/Optional.h>
-#include "JSModulesUnbundle.h"
+#include "RAMBundle.h"
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -22,7 +22,6 @@ namespace react {
 
 class JSBigString;
 class JSExecutor;
-class JSModulesUnbundle;
 class MessageQueueThread;
 class ModuleRegistry;
 class RAMBundleRegistry;
@@ -59,7 +58,7 @@ public:
    * Sets: nativeRequire (if bundle is RAM), bundleRegistryLoad
    */
   virtual void setupEnvironment(std::function<void(std::string, bool)> loadBundle,
-                                folly::Optional<std::function<JSModulesUnbundle::Module(uint32_t)>> getModule) = 0;
+                                folly::Optional<std::function<RAMBundle::Module(uint32_t)>> getModule) = 0;
 
   /**
    * Execute an application script bundle in the JS context.

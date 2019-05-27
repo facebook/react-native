@@ -13,8 +13,7 @@ class BasicBundle : public Bundle {
 
     std::string getSourceURL() const override;
     std::shared_ptr<const JSBigString> getScript();
-    
-    BundleType bundleType = BundleType::BasicBundle;
+    BundleType getBundleType() const override;
   private:
     std::string sourceURL_;
     std::shared_ptr<const JSBigString> script_;

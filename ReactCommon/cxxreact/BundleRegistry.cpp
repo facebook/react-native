@@ -33,7 +33,36 @@ void BundleRegistry::runNewExecutionEnvironment(std::unique_ptr<const Bundle> in
                                                                   moduleRegistry_,
                                                                   execEnv->jsQueue,
                                                                   callback_);
-    // TODO: setupEnvironment + loadScript
+
+    auto bundle = execEnv->initialBundle.lock();
+    if (bundle->getBundleType() == BundleType::FileRAMBundle ||
+        bundle->getBundleType() == BundleType::IndexedRAMBundle) {
+      std::shared_ptr<const RAMBundle> ramBundle
+        = std::dynamic_pointer_cast<const RAMBundle>(bundle);
+      // TODO: check if ramBundle is not empty or throw exception
+
+      auto getModuleLambda = folly::Optional<std::function<RAMBundle::Module(uint32_t)>>(
+        [ramBundle](uint32_t moduleId) {
+          return ramBundle->getModule(moduleId);
+        });
+      execEnv->nativeToJsBridge->
+        setupEnvironmentSync([](std::string p, bool n) {}, // TODO: provide actual impl
+                             getModuleLambda);
+      
+       // TODO: figure out if we can get away from copying
+      std::unique_ptr<const JSBigString> startupScript = std::make_unique<const JSBigStdString>(
+        std::string(ramBundle->getStartupScript()->c_str()));
+      execEnv->nativeToJsBridge->
+        loadScriptSync(std::move(startupScript),
+                       ramBundle->getSourceURL());
+    } else {
+      std::shared_ptr<const BasicBundle> basicBundle
+        = std::dynamic_pointer_cast<const BasicBundle>(bundle);
+      // TODO: check if ramBundle is not empty or throw exception
+
+      // TODO: setupEnvironment + loadScript
+    }
+
     execEnv->valid = true;
     callback();
   });

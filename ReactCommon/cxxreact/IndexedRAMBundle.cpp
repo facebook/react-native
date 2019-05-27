@@ -61,6 +61,10 @@ void IndexedRAMBundle::init() {
   readBundle(startupScript_->data(), startupCodeSize - 1);
 }
 
+BundleType IndexedRAMBundle::getBundleType() const {
+  return BundleType::IndexedRAMBundle;
+}
+
 std::string IndexedRAMBundle::getSourceURL() const {
   return sourceURL_;
 }

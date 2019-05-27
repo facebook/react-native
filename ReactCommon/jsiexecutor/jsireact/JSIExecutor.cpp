@@ -68,7 +68,7 @@ JSIExecutor::JSIExecutor(
 }
 
 void JSIExecutor::setupEnvironment(std::function<void(std::string, bool)> loadBundle,
-                                   folly::Optional<std::function<JSModulesUnbundle::Module(uint32_t)>> getModule) {
+                                   folly::Optional<std::function<RAMBundle::Module(uint32_t)>> getModule) {
   SystraceSection s("JSIExecutor::setupEnvironment");
 
   runtime_->global().setProperty(
@@ -139,15 +139,17 @@ void JSIExecutor::setupEnvironment(std::function<void(std::string, bool)> loadBu
       Function::createFromHostFunction(
         *runtime_,
         PropNameID::forAscii(*runtime_, "nativeRequire"),
-        1,
+        2,
         [this, getModule](Runtime& rt,
                const facebook::jsi::Value&,
                const facebook::jsi::Value* args,
                size_t count) {
-          if (count != 1) {
+          if (count == 0 || count > 2) {
             throw std::invalid_argument("Got wrong number of args");
           }
 
+          // NOTE: for backward compatibility we accent 2 arguments
+          // but only use the first one.
           uint32_t moduleId = folly::to<uint32_t>(args[0].getNumber());
           auto module = (*getModule)(moduleId);
 

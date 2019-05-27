@@ -8,6 +8,10 @@ BasicBundle::BasicBundle(std::unique_ptr<const JSBigString> script, std::string 
   script_ = std::move(script);
 }
 
+BundleType BasicBundle::getBundleType() const {
+  return BundleType::BasicBundle;
+}
+
 std::string BasicBundle::getSourceURL() const {
   return sourceURL_;
 }

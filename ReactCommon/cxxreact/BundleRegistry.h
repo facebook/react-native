@@ -2,7 +2,8 @@
 
 #include <memory>
 #include "NativeToJsBridge.h"
-#include "Bundle.h"
+#include "RAMBundle.h"
+#include "BasicBundle.h"
 #include "MessageQueueThread.h"
 
 namespace facebook {

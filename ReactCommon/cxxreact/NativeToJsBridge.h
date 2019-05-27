@@ -12,6 +12,7 @@
 
 #include "JSExecutor.h"
 #include "JSBigString.h"
+#include "RAMBundle.h"
 
 namespace folly {
 struct dynamic;
@@ -63,10 +64,10 @@ public:
    * Should be called only once per JSExecutor.
    */
   void setupEnvironment(std::function<void(std::string, bool)> loadBundle,
-                        folly::Optional<std::function<JSModulesUnbundle::Module(uint32_t)>> getModule);
+                        folly::Optional<std::function<RAMBundle::Module(uint32_t)>> getModule);
   
   void setupEnvironmentSync(std::function<void(std::string, bool)> loadBundle,
-                            folly::Optional<std::function<JSModulesUnbundle::Module(uint32_t)>> getModule);
+                            folly::Optional<std::function<RAMBundle::Module(uint32_t)>> getModule);
 
   /**
    * Starts the JS application.  If bundleRegistry is non-null, then it is

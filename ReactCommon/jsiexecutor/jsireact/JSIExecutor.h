@@ -76,7 +76,7 @@ class JSIExecutor : public JSExecutor {
       const JSIScopedTimeoutInvoker &timeoutInvoker,
       RuntimeInstaller runtimeInstaller);
   void setupEnvironment(std::function<void(std::string, bool)> loadBundle,
-                        folly::Optional<std::function<JSModulesUnbundle::Module(uint32_t)>> getModule) override;
+                        folly::Optional<std::function<RAMBundle::Module(uint32_t)>> getModule) override;
   void loadScript(
       std::unique_ptr<const JSBigString> script,
       std::string sourceURL) override;

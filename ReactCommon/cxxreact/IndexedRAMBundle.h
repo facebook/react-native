@@ -22,8 +22,7 @@ public:
   std::string getSourcePath() const override;
   std::shared_ptr<const JSBigString> getStartupScript() const override;
   Module getModule(uint32_t moduleId) const override;
-  
-  BundleType bundleType = BundleType::IndexedRAMBundle;
+  BundleType getBundleType() const override;
 
 private:
   struct ModuleData {

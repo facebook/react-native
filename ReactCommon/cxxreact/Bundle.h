@@ -6,11 +6,11 @@
 namespace facebook {
 namespace react {
 
-enum struct BundleType {
+enum class BundleType : unsigned int {
   BasicBundle = 0,
-  IndexedRAMBundle,
-  FileRAMBundle,
-  DeltaBundle,
+  IndexedRAMBundle = 1,
+  FileRAMBundle = 2,
+  DeltaBundle = 3,
 };
 
 class Bundle {
@@ -21,8 +21,7 @@ class Bundle {
     virtual ~Bundle() {};
 
     virtual std::string getSourceURL() const = 0;
-    
-    BundleType bundleType;
+    virtual BundleType getBundleType() const = 0;
 };
 
 } // react
