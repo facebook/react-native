@@ -11,9 +11,10 @@
 'use strict';
 
 const invariant = require('invariant');
-const warnOnce = require('warnOnce');
+const warnOnce = require('../Utilities/warnOnce');
 
 // Export React, plus some native additions.
+/* eslint-disable @react-native-community/no-haste-imports */
 module.exports = {
   // Components
   get AccessibilityInfo() {

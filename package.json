@@ -85,6 +85,7 @@
     "@react-native-community/cli": "2.0.0-alpha.20",
     "@react-native-community/cli-platform-android": "2.0.0-alpha.20",
     "@react-native-community/cli-platform-ios": "2.0.0-alpha.20",
+    "@react-native-community/eslint-plugin": "file:./packages/eslint-plugin-react-native-community",
     "abort-controller": "^3.0.0",
     "art": "^0.10.0",
     "base64-js": "^1.1.2",

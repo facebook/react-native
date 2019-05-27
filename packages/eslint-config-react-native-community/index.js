@@ -22,6 +22,7 @@ module.exports = {
     'react',
     'react-hooks',
     'react-native',
+    '@react-native-community',
     'jest',
   ],
 
@@ -303,5 +304,7 @@ module.exports = {
     'jest/no-focused-tests': 1,
     'jest/no-identical-title': 1,
     'jest/valid-expect': 1,
+
+    '@react-native-community/no-haste-imports': 2,
   },
 };

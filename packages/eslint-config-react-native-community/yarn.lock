@@ -90,6 +90,9 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
+"@react-native-community/eslint-plugin@file:../eslint-plugin-react-native-community":
+  version "1.0.0"
+
 "@typescript-eslint/eslint-plugin@^1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-1.5.0.tgz#85c509bcfc2eb35f37958fa677379c80b7a8f66f"
