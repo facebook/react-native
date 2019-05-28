@@ -670,22 +670,19 @@ jobs:
   # Only works on stable branches when a properly tagged commit is pushed
   publish_npm_package:
     <<: *android_defaults
+    docker:
+      - image: circleci/android:api-28-node8-alpha
+    environment:
+      - ANDROID_NDK: '/opt/ndk/android-ndk-r17c'
     steps:
       - checkout
-
-      - restore-cache: *restore-yarn-cache
       - run: *yarn
 
       # Fetch dependencies using Buck
-      - restore-cache: *restore-buck-downloads-cache
       - run: *download-dependencies-buck
 
       # Fetch dependencies using Gradle
-      - restore-cache: *restore-gradle-downloads-cache
       - run: *download-dependencies-gradle
-
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
 
       - run:
           name: Authenticate with npm
