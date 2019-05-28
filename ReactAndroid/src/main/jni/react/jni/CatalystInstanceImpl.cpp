@@ -194,7 +194,9 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
 
   std::unique_ptr<Bundle> bundle;
   if (FileRAMBundle::isFileRAMBundle(manager, sourceURL.c_str())) {
-    // TODO: create File RAM Bundle
+    bundle = std::make_unique<FileRAMBundle>(manager,
+                                             sourceURL,
+                                             std::move(script));
   } else if (IndexedRAMBundle::isIndexedRAMBundle(script.get())) {
     bundle = std::make_unique<IndexedRAMBundle>(std::move(script),
                                                 sourceURL,

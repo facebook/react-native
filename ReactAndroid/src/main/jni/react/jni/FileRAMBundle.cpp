@@ -55,9 +55,9 @@ bool FileRAMBundle::isFileRAMBundle(AAssetManager* assetManager,
 FileRAMBundle::FileRAMBundle(
     AAssetManager* assetManager,
     const std::string& moduleDirectory,
-    std::unique_ptr<JSBigString> startupScript)
+    std::unique_ptr<const JSBigString> startupScript)
     : assetManager_(assetManager),
-      moduleDirectory_(moduleDirectory),
+      moduleDirectory_(jsModulesDir(moduleDirectory.c_str())),
       startupScript_(std::move(startupScript)) {}
 
 std::unique_ptr<const JSBigString> FileRAMBundle::getStartupScript() const {

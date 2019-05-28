@@ -19,7 +19,7 @@ class FileRAMBundle : public RAMBundle {
   FileRAMBundle(
       AAssetManager* assetManager,
       const std::string& moduleDirectory,
-      std::unique_ptr<JSBigString> startupScript);
+      std::unique_ptr<const JSBigString> startupScript);
   ~FileRAMBundle() {}
 
   std::string getSourcePath() const override;
@@ -31,7 +31,7 @@ class FileRAMBundle : public RAMBundle {
  private:
   AAssetManager* assetManager_ = nullptr;
   std::string moduleDirectory_;
-  std::unique_ptr<JSBigString> startupScript_;
+  std::unique_ptr<const JSBigString> startupScript_;
 };
 
 } // namespace react
