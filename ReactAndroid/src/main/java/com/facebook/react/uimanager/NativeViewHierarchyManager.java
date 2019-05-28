@@ -338,15 +338,50 @@ public class NativeViewHierarchyManager {
   }
 
   /**
-   * Given an index to action on under synchronous deletes, return an updated index factoring in
-   * asynchronous deletes (where the async delete operations have not yet been performed)
+   * Given an index, normalize against pending view deletion indices in the native view hierarchy
+   * @param index the index in the view operation under the assumption all view operations are synchronous
+   * @param pendingIndicesToDelete sparse array of view tags at normalized indices
    */
-  private int normalizeIndex(int index, SparseIntArray pendingIndices) {
-    int normalizedIndex = index;
-    for (int i = 0; i <= index; i++) {
-      normalizedIndex += pendingIndices.get(i);
+  private int normalizeIndex(int index, SparseIntArray pendingIndicesToDelete) {
+    int normalizedIndex = -1;
+    while (index >= 0) {
+      normalizedIndex += 1;
+      if (pendingIndicesToDelete.get(normalizedIndex, -1) == -1) { // assuming we never have negative tag
+        index--;
+      }
     }
     return normalizedIndex;
+  }
+
+  /**
+   * Add view tag to pendingIndicesToDelete. Views in pendingIndicesToDelete are marked for deletion but have not been deleted yet
+   * @param index the index in the view to be deleted as provided by the view operation
+   * @param tag the view tag
+   * @param pendingIndicesToDelete sparse array of normalizedIndices to view tags marked for deletion
+   */
+  private void addPendingIndex(int index, int tag, SparseIntArray pendingIndicesToDelete) {
+    int normalizedIndex = normalizeIndex(index, pendingIndicesToDelete);
+    if (pendingIndicesToDelete.get(normalizedIndex) > 0) {
+      throw new IllegalViewOperationException("Invalid!!");
+    }
+    pendingIndicesToDelete.put(normalizedIndex, tag);
+  }
+
+  /**
+   * When delete is completed, remove view from pendingIndicesToDelete
+   * @param tag tag of the view to be removed
+   * @param pendingIndicesToDelete sparse array of normalizedIndices to view tags marked for deletion
+   */
+  private void removePendingIndex(int tag, SparseIntArray pendingIndicesToDelete) {
+    // indexAt refers to index within pendingIndicesToDelete sparse array, not the normalized index
+    int indexAt = pendingIndicesToDelete.indexOfValue(tag);
+    pendingIndicesToDelete.removeAt(indexAt);
+    for (indexAt = indexAt + 1; indexAt < pendingIndicesToDelete.size(); indexAt ++) {
+      int nextTag = pendingIndicesToDelete.valueAt(indexAt);
+      int nextKey = pendingIndicesToDelete.keyAt(indexAt);
+      pendingIndicesToDelete.removeAt(indexAt);
+      pendingIndicesToDelete.put(nextKey - 1, nextTag);
+    }
   }
 
   /**
@@ -471,8 +506,8 @@ public class NativeViewHierarchyManager {
 
         if (mLayoutAnimationEnabled &&
           mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
-          int updatedCount = pendingIndicesToDelete.get(indexToDelete, 0) + 1;
-          pendingIndicesToDelete.put(indexToDelete, updatedCount);
+
+          addPendingIndex(indexToDelete, tagToDelete, pendingIndicesToDelete);
           mLayoutAnimator.deleteView(
             viewToDestroy,
             new LayoutAnimationListener() {
@@ -481,8 +516,7 @@ public class NativeViewHierarchyManager {
                 viewManager.removeView(viewToManage, viewToDestroy);
                 dropView(viewToDestroy);
 
-                int count = pendingIndicesToDelete.get(indexToDelete, 0);
-                pendingIndicesToDelete.put(indexToDelete, Math.max(0, count - 1));
+                removePendingIndex(viewToDestroy.getId(), pendingIndicesToDelete);
               }
             });
         } else {
