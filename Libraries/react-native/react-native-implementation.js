@@ -137,9 +137,6 @@ module.exports = {
   get TextInput() {
     return require('TextInput');
   },
-  get ToolbarAndroid() {
-    return require('ToolbarAndroid');
-  },
   get Touchable() {
     return require('Touchable');
   },
