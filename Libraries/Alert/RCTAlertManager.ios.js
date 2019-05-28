@@ -10,6 +10,17 @@
 
 'use strict';
 
-const RCTAlertManager = require('../BatchedBridge/NativeModules').AlertManager;
+import NativeAlertManager from './NativeAlertManager';
+import type {Args} from './NativeAlertManager';
 
-module.exports = RCTAlertManager;
+module.exports = {
+  alertWithArgs(
+    args: Args,
+    callback: (id: number, value: string) => void,
+  ): void {
+    if (NativeAlertManager == null) {
+      return;
+    }
+    NativeAlertManager.alertWithArgs(args, callback);
+  },
+};

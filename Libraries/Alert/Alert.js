@@ -10,37 +10,12 @@
 
 'use strict';
 
-import NativeModules from '../BatchedBridge/NativeModules';
 import Platform from '../Utilities/Platform';
-import DialogManagerAndroid, {
+import NativeDialogManagerAndroid, {
   type DialogOptions,
 } from '../NativeModules/specs/NativeDialogManagerAndroid';
-
-const RCTAlertManager = NativeModules.AlertManager;
-
-export type Buttons = Array<{
-  text?: string,
-  onPress?: ?Function,
-  style?: AlertButtonStyle,
-}>;
-
-type Options = {
-  cancelable?: ?boolean,
-  onDismiss?: ?Function,
-};
-
-type AlertType = $Keys<{
-  default: string,
-  'plain-text': string,
-  'secure-text': string,
-  'login-password': string,
-}>;
-
-export type AlertButtonStyle = $Keys<{
-  default: string,
-  cancel: string,
-  destructive: string,
-}>;
+import RCTAlertManager from './RCTAlertManager';
+import {type Buttons, type Options, type AlertType} from './NativeAlertManager';
 
 /**
  * Launches an alert dialog with the specified title and message.
@@ -57,10 +32,10 @@ class Alert {
     if (Platform.OS === 'ios') {
       Alert.prompt(title, message, buttons, 'default');
     } else if (Platform.OS === 'android') {
-      if (!DialogManagerAndroid) {
+      if (!NativeDialogManagerAndroid) {
         return;
       }
-      const constants = DialogManagerAndroid.getConstants();
+      const constants = NativeDialogManagerAndroid.getConstants();
 
       const config: DialogOptions = {
         title: title || '',
@@ -105,7 +80,7 @@ class Alert {
         }
       };
       const onError = errorMessage => console.warn(errorMessage);
-      DialogManagerAndroid.showAlert(config, onError, onAction);
+      NativeDialogManagerAndroid.showAlert(config, onError, onAction);
     }
   }
 
@@ -131,7 +106,7 @@ class Alert {
           {
             title: title || '',
             type: 'plain-text',
-            defaultValue: message,
+            defaultValue: message || '',
           },
           (id, value) => {
             callback(value);
@@ -175,6 +150,7 @@ class Alert {
         },
         (id, value) => {
           const cb = callbacks[id];
+          // $FlowFixMe
           cb && cb(value);
         },
       );
