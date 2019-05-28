@@ -520,7 +520,9 @@ const BorderExample = withRTLState(({isRTL, setRTL}) => {
 });
 
 const directionStyle = isRTL =>
-  (Platform.OS === 'ios' || Platform.OS === 'macos') ? {direction: isRTL ? 'rtl' : 'ltr'} : null;
+  Platform.OS === 'ios' || Platform.OS === 'macos'
+    ? {direction: isRTL ? 'rtl' : 'ltr'}
+    : null;
 
 const styles = StyleSheet.create({
   container: {
