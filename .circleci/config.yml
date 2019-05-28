@@ -670,19 +670,61 @@ jobs:
   # Only works on stable branches when a properly tagged commit is pushed
   publish_npm_package:
     <<: *android_defaults
-    docker:
-      - image: circleci/android:api-28-node8-alpha
     environment:
       - ANDROID_NDK: '/opt/ndk/android-ndk-r17c'
     steps:
-      - checkout
-      - run: *yarn
+      - attach_workspace:
+          at: ~/react-native
+
+      # Configure Android SDK and related dependencies
+      - run:
+          name: Configure Environment Variables
+          command: |
+            echo 'export PATH=${ANDROID_NDK}:~/buck/bin:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+      - run:
+          name: Install Android Build Dependencies
+          command: ./scripts/circleci/apt-get-android-deps.sh
+
+      - run:
+          name: Install Android SDK Packages
+          command: source scripts/android-setup.sh && getAndroidPackages
+
+      # Install Android NDK
+      - run:
+          name: Create Android NDK Directory
+          command: |
+            if [[ ! -e /opt/ndk ]]; then
+              sudo mkdir /opt/ndk
+            fi
+            sudo chown ${USER:=$(/usr/bin/id -run)}:$USER /opt/ndk
+      - run:
+          name: Install Android NDK
+          command: source scripts/android-setup.sh && getAndroidNDK
 
       # Fetch dependencies using Buck
-      - run: *download-dependencies-buck
+      - run:
+          name: Install Buck
+          command: |
+            if [[ ! -e ~/buck ]]; then
+              git clone https://github.com/facebook/buck.git ~/buck --branch v2019.01.10.01 --depth=1
+            fi
+            cd ~/buck && ant
+            buck --version
+            # Install related tooling
+            if [[ ! -e ~/okbuck ]]; then
+              git clone https://github.com/uber/okbuck.git ~/okbuck --depth=1
+            fi
+            mkdir -p ~/react-native/tooling/junit
+            cp -R ~/okbuck/tooling/junit/* ~/react-native/tooling/junit/.
+      - run:
+          name: Download Dependencies Using Buck
+          command: ./scripts/circleci/buck_fetch.sh
 
       # Fetch dependencies using Gradle
-      - run: *download-dependencies-gradle
+      - run:
+          name: Download Dependencies Using Gradle
+          command: ./scripts/circleci/gradle_download_deps.sh
 
       - run:
           name: Authenticate with npm
@@ -724,8 +766,12 @@ workflows:
 
   releases:
     jobs:
+      - checkout_code:
+          filters: *filter-only-version-tags
       - publish_npm_package:
           filters: *filter-only-version-tags
+          requires:
+            - checkout_code
 
   analysis:
     jobs:
