@@ -14,6 +14,9 @@ class ModuleRegistry;
 
 class BundleRegistry {
   public:
+    using LoadBundleLambda = std::function<void(std::string bundlePath, bool inCurrentEnvironment)>;
+    using GetModuleLambda = std::function<RAMBundle::Module(uint32_t moduleId)>;
+
     struct BundleExecutionEnvironment {
       std::shared_ptr<MessageQueueThread> jsQueue;
       std::unique_ptr<NativeToJsBridge> nativeToJsBridge;
@@ -33,8 +36,8 @@ class BundleRegistry {
                                     std::function<void()> callback);
     void disposeExecutionEnvironments();
     // TODO: get rid of this
-    std::weak_ptr<BundleExecutionEnvironment> getFirstExecutionEnvironemnt();
-    bool hasExecutionEnvironemnt();
+    std::weak_ptr<BundleExecutionEnvironment> getFirstExecutionEnvironment();
+    bool hasExecutionEnvironment();
 
 
   private:
@@ -44,6 +47,18 @@ class BundleRegistry {
     std::shared_ptr<ModuleRegistry> moduleRegistry_;
     std::shared_ptr<InstanceCallback> callback_;
     std::function<std::shared_ptr<MessageQueueThread>()> jsQueueFactory_;
+
+    /**
+     * Setup environment and load initial bundle. Should be called only once
+     * per BundleExecutionEnvironemnt.
+     */
+    void evalInitialBundle(std::shared_ptr<BundleExecutionEnvironment> execEnv,
+                           std::unique_ptr<const JSBigString> startupScript,
+                           std::string sourceURL,
+                           LoadBundleLambda loadBundle,
+                           folly::Optional<GetModuleLambda> getModule);
+
+    LoadBundleLambda makeLoadBundleLambda(/* take pointer to BEE or initial Bundle */);
 };
 
 } // react

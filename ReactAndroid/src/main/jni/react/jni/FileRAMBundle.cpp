@@ -20,8 +20,8 @@ namespace react {
 using asset_ptr =
     std::unique_ptr<AAsset, std::function<decltype(AAsset_close)>>;
 
-static std::string jsModulesDir(const std::string& entryFile) {
-  std::string dir = dirname(entryFile.c_str());
+static std::string jsModulesDir(const char* entryFile) {
+  std::string dir = dirname(entryFile);
 
   // android's asset manager does not work with paths that start with a dot
   return dir == "." ? "js-modules/" : dir + "/js-modules/";
@@ -29,15 +29,14 @@ static std::string jsModulesDir(const std::string& entryFile) {
 
 static asset_ptr openAsset(
     AAssetManager* manager,
-    const std::string& fileName,
+    const char* fileName,
     int mode = AASSET_MODE_STREAMING) {
   return asset_ptr(
-      AAssetManager_open(manager, fileName.c_str(), mode), AAsset_close);
+      AAssetManager_open(manager, fileName, mode), AAsset_close);
 }
 
-bool FileRAMBundle::isFileRAMBundle(
-    AAssetManager* assetManager,
-    const std::string& assetName) {
+bool FileRAMBundle::isFileRAMBundle(AAssetManager* assetManager,
+                                    const char* assetName) {
   if (!assetManager) {
     return false;
   }
@@ -61,8 +60,12 @@ FileRAMBundle::FileRAMBundle(
       moduleDirectory_(moduleDirectory),
       startupScript_(std::move(startupScript)) {}
 
-std::shared_ptr<const JSBigString> FileRAMBundle::getStartupScript() const {
-  return startupScript_;
+std::unique_ptr<const JSBigString> FileRAMBundle::getStartupScript() const {
+  // It might be used multiple times, so we don't want to move it, but instead copy it.
+  std::unique_ptr<JSBigBufferString> script =
+    std::make_unique<JSBigBufferString>(startupScript_->size());
+  std::memcpy(script->data(), startupScript_->c_str(), startupScript_->size());
+  return std::move(script);
 }
 
 std::string FileRAMBundle::getSourcePath() const {
@@ -85,7 +88,7 @@ FileRAMBundle::Module FileRAMBundle::getModule(uint32_t moduleId) const {
   auto sourceUrl = folly::to<std::string>(moduleId, ".js");
 
   auto fileName = moduleDirectory_ + sourceUrl;
-  auto asset = openAsset(assetManager_, fileName, AASSET_MODE_BUFFER);
+  auto asset = openAsset(assetManager_, fileName.c_str(), AASSET_MODE_BUFFER);
 
   const char* buffer = nullptr;
   if (asset != nullptr) {

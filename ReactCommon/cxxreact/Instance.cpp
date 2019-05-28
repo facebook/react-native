@@ -6,16 +6,12 @@
 #include "Instance.h"
 
 #include "JSBigString.h"
-#include "JSBundleType.h"
 #include "JSExecutor.h"
 #include "MessageQueueThread.h"
 #include "MethodCall.h"
-#include "NativeToJsBridge.h"
-#include "RAMBundleRegistry.h"
 #include "RecoverableError.h"
 #include "SystraceSection.h"
 
-#include <cxxreact/JSIndexedRAMBundle.h>
 #include <folly/Memory.h>
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
@@ -49,16 +45,6 @@ void Instance::initializeBridge(
     callback_,
     [jsQueue]() { return jsQueue; } // TODO: use a factory
   );
-  // jsQueue->runOnQueueSync([this, &jsef, jsQueue]() mutable {
-  //   nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
-  //       jsef.get(), moduleRegistry_, jsQueue, callback_);
-
-  //   std::lock_guard<std::mutex> lock(m_syncMutex);
-  //   m_syncReady = true;
-  //   m_syncCV.notify_all();
-  // });
-
-  // CHECK(nativeToJsBridge_);
 }
 
 void Instance::loadBundleAsync(std::unique_ptr<const Bundle> bundle) {
@@ -93,28 +79,9 @@ void Instance::loadBundle(std::unique_ptr<const Bundle> bundle, bool loadSynchro
   }
 }
 
-bool Instance::isIndexedRAMBundle(const char *sourcePath) {
-  std::ifstream bundle_stream(sourcePath, std::ios_base::in);
-  BundleHeader header;
-
-  if (!bundle_stream ||
-      !bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header))) {
-    return false;
-  }
-
-  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
-}
-
-bool Instance::isIndexedRAMBundle(std::unique_ptr<const JSBigString>* script) {
-  BundleHeader header;
-  strncpy(reinterpret_cast<char *>(&header), script->get()->c_str(), sizeof(header));
-
-  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
-}
-
 void Instance::setGlobalVariable(std::string propName,
                                  std::unique_ptr<const JSBigString> jsonValue) {
-  if (auto execEnv = bundleRegistry_->getFirstExecutionEnvironemnt().lock()) {
+  if (auto execEnv = bundleRegistry_->getFirstExecutionEnvironment().lock()) {
     execEnv->nativeToJsBridge->setGlobalVariable(std::move(propName),
                                                  std::move(jsonValue));
   } else {
@@ -123,8 +90,8 @@ void Instance::setGlobalVariable(std::string propName,
 }
 
 void* Instance::getJavaScriptContext() {
-  if (bundleRegistry_->hasExecutionEnvironemnt()) {
-    if (auto execEnv = bundleRegistry_->getFirstExecutionEnvironemnt().lock()) {
+  if (bundleRegistry_->hasExecutionEnvironment()) {
+    if (auto execEnv = bundleRegistry_->getFirstExecutionEnvironment().lock()) {
       return execEnv->nativeToJsBridge ? execEnv->nativeToJsBridge->getJavaScriptContext() : nullptr;
     }
   }
@@ -133,8 +100,8 @@ void* Instance::getJavaScriptContext() {
 }
 
 bool Instance::isInspectable() {
-  if (bundleRegistry_->hasExecutionEnvironemnt()) {
-    if (auto execEnv = bundleRegistry_->getFirstExecutionEnvironemnt().lock()) {
+  if (bundleRegistry_->hasExecutionEnvironment()) {
+    if (auto execEnv = bundleRegistry_->getFirstExecutionEnvironment().lock()) {
       return execEnv->nativeToJsBridge ? execEnv->nativeToJsBridge->isInspectable() : false;
     }
   }
@@ -143,8 +110,8 @@ bool Instance::isInspectable() {
 }
   
 bool Instance::isBatchActive() {
-  if (bundleRegistry_->hasExecutionEnvironemnt()) {
-    if (auto execEnv = bundleRegistry_->getFirstExecutionEnvironemnt().lock()) {
+  if (bundleRegistry_->hasExecutionEnvironment()) {
+    if (auto execEnv = bundleRegistry_->getFirstExecutionEnvironment().lock()) {
       return execEnv->nativeToJsBridge ? execEnv->nativeToJsBridge->isBatchActive() : false;
     }
   }
@@ -155,7 +122,7 @@ bool Instance::isBatchActive() {
 void Instance::callJSFunction(std::string &&module, std::string &&method,
                               folly::dynamic &&params) {
   callback_->incrementPendingJSCalls();
-  if (auto execEnv = bundleRegistry_->getFirstExecutionEnvironemnt().lock()) {
+  if (auto execEnv = bundleRegistry_->getFirstExecutionEnvironment().lock()) {
     execEnv->nativeToJsBridge->callFunction(std::move(module),
                                             std::move(method),
                                             std::move(params));
@@ -167,7 +134,7 @@ void Instance::callJSFunction(std::string &&module, std::string &&method,
 void Instance::callJSCallback(uint64_t callbackId, folly::dynamic &&params) {
   SystraceSection s("Instance::callJSCallback");
   callback_->incrementPendingJSCalls();
-  if (auto execEnv = bundleRegistry_->getFirstExecutionEnvironemnt().lock()) {
+  if (auto execEnv = bundleRegistry_->getFirstExecutionEnvironment().lock()) {
     execEnv->nativeToJsBridge->invokeCallback((double)callbackId, std::move(params));
   } else {
     throw std::runtime_error("BundleExecutionEnvironment pointer is invalid");
@@ -181,7 +148,7 @@ const ModuleRegistry &Instance::getModuleRegistry() const {
 ModuleRegistry &Instance::getModuleRegistry() { return *moduleRegistry_; }
 
 void Instance::handleMemoryPressure(int pressureLevel) {
-  if (auto execEnv = bundleRegistry_->getFirstExecutionEnvironemnt().lock()) {
+  if (auto execEnv = bundleRegistry_->getFirstExecutionEnvironment().lock()) {
     execEnv->nativeToJsBridge->handleMemoryPressure(pressureLevel);
   } else {
     throw std::runtime_error("BundleExecutionEnvironment pointer is invalid");

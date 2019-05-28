@@ -10,6 +10,9 @@ namespace react {
 
 class IndexedRAMBundle : public RAMBundle {
 public:
+  static bool isIndexedRAMBundle(const char* sourcePath);
+  static bool isIndexedRAMBundle(const JSBigString* script);
+
   IndexedRAMBundle(std::string sourcePath, std::string sourceURL);
 
   // For Android IndexedRAMBundle loaded from Assets
@@ -20,7 +23,7 @@ public:
 
   std::string getSourceURL() const override;
   std::string getSourcePath() const override;
-  std::shared_ptr<const JSBigString> getStartupScript() const override;
+  std::unique_ptr<const JSBigString> getStartupScript() const override;
   Module getModule(uint32_t moduleId) const override;
   BundleType getBundleType() const override;
 
@@ -55,7 +58,7 @@ private:
 
   std::string sourceURL_;
   std::string sourcePath_;
-  std::shared_ptr<JSBigBufferString> startupScript_;
+  std::unique_ptr<JSBigBufferString> startupScript_;
   mutable std::unique_ptr<std::istream> bundle_;
   ModuleTable table_;
   size_t baseOffset_;

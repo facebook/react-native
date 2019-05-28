@@ -30,42 +30,62 @@ void BundleRegistry::runNewExecutionEnvironment(std::unique_ptr<const Bundle> in
   execEnv = bundleExecutionEnvironments_.back();
   execEnv->jsQueue->runOnQueueSync([this, execEnv, callback]() mutable {
     execEnv->nativeToJsBridge = std::make_unique<NativeToJsBridge>(jsExecutorFactory_,
-                                                                  moduleRegistry_,
-                                                                  execEnv->jsQueue,
-                                                                  callback_);
+                                                                   moduleRegistry_,
+                                                                   execEnv->jsQueue,
+                                                                   callback_);
 
     auto bundle = execEnv->initialBundle.lock();
     if (bundle->getBundleType() == BundleType::FileRAMBundle ||
         bundle->getBundleType() == BundleType::IndexedRAMBundle) {
       std::shared_ptr<const RAMBundle> ramBundle
         = std::dynamic_pointer_cast<const RAMBundle>(bundle);
-      // TODO: check if ramBundle is not empty or throw exception
+      if (!ramBundle) {
+        throw std::runtime_error("Cannot cast Bundle to RAMBundle");
+      }
 
-      auto getModuleLambda = folly::Optional<std::function<RAMBundle::Module(uint32_t)>>(
-        [ramBundle](uint32_t moduleId) {
-          return ramBundle->getModule(moduleId);
-        });
-      execEnv->nativeToJsBridge->
-        setupEnvironmentSync([](std::string p, bool n) {}, // TODO: provide actual impl
-                             getModuleLambda);
+      auto getModule = folly::Optional<GetModuleLambda>([ramBundle](uint32_t moduleId) {
+        return ramBundle->getModule(moduleId);
+      });
       
-       // TODO: figure out if we can get away from copying
-      std::unique_ptr<const JSBigString> startupScript = std::make_unique<const JSBigStdString>(
-        std::string(ramBundle->getStartupScript()->c_str()));
-      execEnv->nativeToJsBridge->
-        loadScriptSync(std::move(startupScript),
-                       ramBundle->getSourceURL());
+      evalInitialBundle(execEnv,
+                        ramBundle->getStartupScript(),
+                        ramBundle->getSourceURL(),
+                        makeLoadBundleLambda(),
+                        getModule);
     } else {
       std::shared_ptr<const BasicBundle> basicBundle
         = std::dynamic_pointer_cast<const BasicBundle>(bundle);
-      // TODO: check if ramBundle is not empty or throw exception
+      if (!basicBundle) {
+        throw std::runtime_error("Cannot cast Bundle to BasicBundle");
+      }
 
-      // TODO: setupEnvironment + loadScript
+      evalInitialBundle(execEnv,
+                        basicBundle->getScript(),
+                        basicBundle->getSourceURL(),
+                        makeLoadBundleLambda(),
+                        folly::Optional<GetModuleLambda>());
     }
 
     execEnv->valid = true;
     callback();
   });
+}
+
+void BundleRegistry::evalInitialBundle(std::shared_ptr<BundleExecutionEnvironment> execEnv,
+                                       std::unique_ptr<const JSBigString> startupScript,
+                                       std::string sourceURL,
+                                       LoadBundleLambda loadBundle,
+                                       folly::Optional<GetModuleLambda> getModule) {
+  execEnv->nativeToJsBridge->setupEnvironmentSync(loadBundle, getModule);
+  execEnv->nativeToJsBridge->loadScriptSync(std::move(startupScript),
+                                            sourceURL);
+}
+
+BundleRegistry::LoadBundleLambda BundleRegistry::makeLoadBundleLambda() {
+  return [](std::string bundlePath, bool inCurrentEnvironment) {
+    // TODO: provide actual implementation
+    throw std::runtime_error("loadBundle is not implemented yet");
+  };
 }
 
 void BundleRegistry::disposeExecutionEnvironments() {
@@ -74,7 +94,7 @@ void BundleRegistry::disposeExecutionEnvironments() {
   }
 }
 
-std::weak_ptr<BundleRegistry::BundleExecutionEnvironment> BundleRegistry::getFirstExecutionEnvironemnt() {
+std::weak_ptr<BundleRegistry::BundleExecutionEnvironment> BundleRegistry::getFirstExecutionEnvironment() {
   if (bundleExecutionEnvironments_.size() == 0) {
     throw std::runtime_error("Cannot get first BundleExecutionEnvironment");
   }
@@ -82,7 +102,7 @@ std::weak_ptr<BundleRegistry::BundleExecutionEnvironment> BundleRegistry::getFir
   return std::weak_ptr<BundleExecutionEnvironment>(bundleExecutionEnvironments_[0]);
 }
 
-bool BundleRegistry::hasExecutionEnvironemnt() {
+bool BundleRegistry::hasExecutionEnvironment() {
   return bundleExecutionEnvironments_.size() > 0;
 }
 

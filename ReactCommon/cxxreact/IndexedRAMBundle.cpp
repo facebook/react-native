@@ -6,6 +6,28 @@
 namespace facebook {
 namespace react {
 
+
+bool IndexedRAMBundle::isIndexedRAMBundle(const char* sourcePath) {
+  std::ifstream bundle_stream(sourcePath, std::ios_base::in);
+  BundleHeader header;
+
+  if (!bundle_stream ||
+      !bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header))) {
+    return false;
+  }
+
+  return parseTypeFromHeader(header) == BundleType::IndexedRAMBundle;
+}
+
+bool IndexedRAMBundle::isIndexedRAMBundle(const JSBigString* script) {
+  BundleHeader header;
+  std::memcpy(reinterpret_cast<char *>(&header),
+              script->c_str(),
+              sizeof(header));
+
+  return parseTypeFromHeader(header) == BundleType::IndexedRAMBundle;
+}
+
 IndexedRAMBundle::IndexedRAMBundle(std::string sourcePath, std::string sourceURL) {
   bundle_ = std::make_unique<std::ifstream>(
     std::ifstream(sourcePath, std::ifstream::binary));
@@ -80,8 +102,12 @@ IndexedRAMBundle::Module IndexedRAMBundle::getModule(uint32_t moduleId) const {
   return ret;
 }
 
-std::shared_ptr<const JSBigString> IndexedRAMBundle::getStartupScript() const {
-  return startupScript_;
+std::unique_ptr<const JSBigString> IndexedRAMBundle::getStartupScript() const {
+  // It might be used multiple times, so we don't want to move it, but instead copy it.
+  std::unique_ptr<JSBigBufferString> script =
+    std::make_unique<JSBigBufferString>(startupScript_->size());
+  std::memcpy(script->data(), startupScript_->c_str(), startupScript_->size());
+  return std::move(script);
 }
 
 std::string IndexedRAMBundle::getModuleCode(const uint32_t id) const {

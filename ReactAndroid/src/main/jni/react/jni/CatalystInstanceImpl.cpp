@@ -13,14 +13,13 @@
 #include <cxxreact/CxxNativeModule.h>
 #include <cxxreact/Instance.h>
 #include <cxxreact/IndexedRAMBundle.h>
+#include <cxxreact/BasicBundle.h>
 #include <cxxreact/JSBigString.h>
-#include <cxxreact/JSBundleType.h>
 #include <cxxreact/JSDeltaBundleClient.h>
-#include <cxxreact/JSIndexedRAMBundle.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/RecoverableError.h>
-#include <cxxreact/RAMBundleRegistry.h>
+// #include <cxxreact/RAMBundleRegistry.h>
 #include <fb/log.h>
 #include <fb/fbjni/ByteBuffer.h>
 #include <folly/dynamic.h>
@@ -32,8 +31,8 @@
 #include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
 #include "JNativeRunnable.h"
-#include "JniJSModulesUnbundle.h"
 #include "NativeArray.h"
+#include "FileRAMBundle.h"
 
 using namespace facebook::jni;
 
@@ -180,7 +179,7 @@ void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {
 }
 
 void CatalystInstanceImpl::jniRegisterSegment(int segmentId, const std::string& path) {
-  // TODO: remove
+  // TODO: remove or figure out how to port it
 }
 
 void CatalystInstanceImpl::jniLoadScriptFromAssets(
@@ -192,25 +191,19 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
 
   auto manager = extractAssetManager(assetManager);
   auto script = loadScriptFromAssets(manager, sourceURL);
-  // TODO: refactor + add checks
-  std::unique_ptr<IndexedRAMBundle> bundle =
-    std::make_unique<IndexedRAMBundle>(std::move(script), assetURL, sourceURL);
-  instance_->loadBundle(std::move(bundle), loadSynchronously);
 
-  // if (JniJSModulesUnbundle::isUnbundle(manager, sourceURL)) {
-  //   auto bundle = JniJSModulesUnbundle::fromEntryFile(manager, sourceURL);
-  //   auto registry = RAMBundleRegistry::singleBundleRegistry(std::move(bundle));
-  //   instance_->loadRAMBundle(
-  //     std::move(registry),
-  //     std::move(script),
-  //     sourceURL,
-  //     loadSynchronously);
-  //   return;
-  // } else if (Instance::isIndexedRAMBundle(&script)) {
-  //   instance_->loadRAMBundleFromString(std::move(script), sourceURL);
-  // } else {
-  //   instance_->loadScriptFromString(std::move(script), sourceURL, loadSynchronously);
-  // }
+  std::unique_ptr<Bundle> bundle;
+  if (FileRAMBundle::isFileRAMBundle(manager, sourceURL.c_str())) {
+    // TODO: create File RAM Bundle
+  } else if (IndexedRAMBundle::isIndexedRAMBundle(script.get())) {
+    bundle = std::make_unique<IndexedRAMBundle>(std::move(script),
+                                                sourceURL,
+                                                sourceURL);
+  } else {
+    bundle = std::make_unique<BasicBundle>(std::move(script), sourceURL);
+  }
+
+  instance_->loadBundle(std::move(bundle), loadSynchronously);
 }
 
 void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,

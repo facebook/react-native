@@ -42,9 +42,6 @@ public:
                         std::shared_ptr<MessageQueueThread> jsQueue,
                         std::shared_ptr<ModuleRegistry> moduleRegistry);
 
-  static bool isIndexedRAMBundle(const char *sourcePath);
-  static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString>* string);
-
   void loadBundle(std::unique_ptr<const Bundle> bundle, bool loadSynchronously);
 
   bool supportsProfiling();

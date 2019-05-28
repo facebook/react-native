@@ -12,11 +12,11 @@ class BasicBundle : public Bundle {
     BasicBundle(std::unique_ptr<const JSBigString> script, std::string sourceURL);
 
     std::string getSourceURL() const override;
-    std::shared_ptr<const JSBigString> getScript();
+    std::unique_ptr<const JSBigString> getScript() const;
     BundleType getBundleType() const override;
   private:
     std::string sourceURL_;
-    std::shared_ptr<const JSBigString> script_;
+    std::unique_ptr<const JSBigString> script_;
 };
 
 } // react
