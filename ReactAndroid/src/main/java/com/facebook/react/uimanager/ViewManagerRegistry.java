@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager;
 
 import com.facebook.react.common.MapBuilder;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -20,6 +21,15 @@ public final class ViewManagerRegistry {
 
   private final Map<String, ViewManager> mViewManagers;
   private final @Nullable UIManagerModule.ViewManagerResolver mViewManagerResolver;
+  private static Map<String, String> sComponentNames = new HashMap<>();
+
+  static {
+    sComponentNames.put("ForwardRef(Image)", "RCTImageView");
+    sComponentNames.put("Text", "RCTText");
+    sComponentNames.put("TextInput", "AndroidTextInput");
+    sComponentNames.put("TouchableHighlight", "RCTView");
+    sComponentNames.put("WebView", "RCTWebView");
+  }
 
   public ViewManagerRegistry(UIManagerModule.ViewManagerResolver viewManagerResolver) {
     mViewManagers = MapBuilder.newHashMap();
@@ -43,17 +53,24 @@ public final class ViewManagerRegistry {
   }
 
   public ViewManager get(String className) {
-    ViewManager viewManager = mViewManagers.get(className);
+    String newClassName;
+    if (sComponentNames.containsKey(className)) {
+      newClassName = sComponentNames.get(className);
+    } else {
+      newClassName = className;
+    }
+
+    ViewManager viewManager = mViewManagers.get(newClassName);
     if (viewManager != null) {
       return viewManager;
     }
     if (mViewManagerResolver != null) {
-      viewManager = mViewManagerResolver.getViewManager(className);
+      viewManager = mViewManagerResolver.getViewManager(newClassName);
       if (viewManager != null) {
-        mViewManagers.put(className, viewManager);
+        mViewManagers.put(newClassName, viewManager);
         return viewManager;
       }
     }
-    throw new IllegalViewOperationException("No ViewManager defined for class " + className);
+    throw new IllegalViewOperationException("No ViewManager defined for class " + newClassName);
   }
 }

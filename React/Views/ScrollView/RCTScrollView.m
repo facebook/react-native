@@ -185,6 +185,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if ((self = [super initWithFrame:frame])) {
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
     self.scrollEnabled = YES;
+    self.hasHorizontalScroller = YES;
+    self.hasVerticalScroller = YES;
     self.panGestureRecognizer = [[NSPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleCustomPan:)];
 #else // ]TODO(macOS ISS#2323203)
     [self.panGestureRecognizer addTarget:self action:@selector(handleCustomPan:)];

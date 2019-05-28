@@ -90,3 +90,18 @@ jobs:
           filename: npm
           arguments: 'config set $(publishnpmfeed)/registry/:_authToken XXXXX'
 
+      - template: templates\prep-android-nuget.yml
+
+      - task: NuGetCommand@2
+        displayName: 'NuGet pack'
+        inputs:
+          command: pack
+          packagesToPack: 'ReactAndroid/ReactAndroid.nuspec'
+          packDestination: '$(System.DefaultWorkingDirectory)'
+
+      - task: NuGetCommand@2
+        displayName: 'NuGet push'
+        inputs:
+          command: push
+          packagesToPush: '$(System.DefaultWorkingDirectory)/OfficeReact.Android*.nupkg'
+          publishVstsFeed: '86ec7889-a365-4cd1-90df-6e18cc2ea59f'

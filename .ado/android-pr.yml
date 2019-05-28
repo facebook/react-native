@@ -96,7 +96,7 @@ jobs:
         inputs:
           gradleWrapperFile: gradlew
           # workingDirectory: src\react-native\
-          #options: # Optional
+          options: -Pparam='excludeLibs'
           tasks: installArchives
           publishJUnitResults: false
           #testResultsFiles: '**/TEST-*.xml' # Required when publishJUnitResults == True
@@ -116,6 +116,15 @@ jobs:
           #checkStyleRunAnalysis: false # Optional
           #findBugsRunAnalysis: false # Optional
           #pmdRunAnalysis: false # Optional
+
+      - template: templates\prep-android-nuget.yml
+
+      - task: NuGetCommand@2
+        displayName: 'Verify NuGet can be packed'
+        inputs:
+          command: pack
+          packagesToPack: 'ReactAndroid/ReactAndroid.nuspec'
+          packDestination: '$(System.DefaultWorkingDirectory)'
 
       - task: Gradle@1
         displayName: gradlew clean

@@ -264,10 +264,17 @@ task cleanReactNdkLib(type: Exec) {
     }
 }
 
+// usage : gradlew -Pparam="excludeLibs" <taskname>
 task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
-    from("$buildDir/react-ndk/all")
+    def arg = project.hasProperty('param') ? project.property('param') : 'noArg'
+    from "$buildDir/react-ndk/all"
     from("$thirdPartyNdkDir/jsc/jni")
-    into("$buildDir/react-ndk/exported")
+    if(arg.equals("excludeLibs")) {
+        exclude '**/*.so'
+    } else {
+        exclude '**/libjsc.so'
+    }
+    into "$buildDir/react-ndk/exported"
 }
 
 task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {

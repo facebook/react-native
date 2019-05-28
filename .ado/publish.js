@@ -61,7 +61,8 @@ function doPublish() {
 
   if (!onlyTagSource) {
     // -------- Generating Android Artifacts with JavaDoc
-    exec("gradlew installArchives");
+    // -Pparam='excludeLibs' - This argument will not package the DSOs in ReactAndroid aar
+    exec("gradlew -Pparam='excludeLibs' installArchives");
 
     // undo uncommenting javadoc setting
     exec("git checkout ReactAndroid/gradle.properties");
@@ -86,7 +87,7 @@ function doPublish() {
     __dirname,
     `../react-native-${releaseVersion}.tgz`
   );
-  const assetUpdateUrl = `https://uploads.github.com/repos/Microsoft/react-native/releases/{id}/assets?name=react-native-${releaseVersion}.tgz`;
+  const assetUpdateUrl = `https://uploads.github.com/repos/microsoft/react-native/releases/{id}/assets?name=react-native-${releaseVersion}.tgz`;
   const authHeader =
     "Basic " + new Buffer(":" + process.env.githubToken).toString("base64");
   const userAgent = "Microsoft-React-Native-Release-Agent";
@@ -143,7 +144,7 @@ function doPublish() {
 
   request.post(
     {
-      url: "https://api.github.com/repos/Microsoft/react-native/releases",
+      url: "https://api.github.com/repos/microsoft/react-native/releases",
       headers: {
         "User-Agent": userAgent,
         Authorization: authHeader

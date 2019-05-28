@@ -10,6 +10,7 @@
 
 'use strict';
 
+const Platform = require('Platform'); // TODO(macOS ISS#2323203)
 const React = require('react');
 const StyleSheet = require('StyleSheet');
 const TextInput = require('TextInput');
@@ -74,6 +75,11 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
             this.setState(() => ({filter: text}));
           }}
           placeholder="Search..."
+          placeholderTextColor={
+            Platform.OS === 'macos'
+              ? {semantic: 'placeholderTextColor'}
+              : undefined /*TODO(macOS ISS#2323203)*/
+          }
           underlineColorAndroid="transparent"
           style={styles.searchTextInput}
           testID={this.props.testID}
@@ -86,12 +92,32 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
 
 const styles = StyleSheet.create({
   searchRow: {
-    backgroundColor: '#eeeeee',
+    // [TODO(macOS ISS#2323203)
+    ...Platform.select({
+      macos: {
+        backgroundColor: {semantic: 'windowBackgroundColor'},
+      },
+      default: {
+        // ]TODO(macOS ISS#2323203)
+        backgroundColor: '#eeeeee',
+      }, // [TODO(macOS ISS#2323203)
+    }), // ]TODO(macOS ISS#2323203)
     padding: 10,
   },
   searchTextInput: {
-    backgroundColor: 'white',
-    borderColor: '#cccccc',
+    // [TODO(macOS ISS#2323203)
+    ...Platform.select({
+      macos: {
+        color: {semantic: 'textColor'},
+        backgroundColor: {semantic: 'textBackgroundColor'},
+        borderColor: {semantic: 'quaternaryLabelColor'},
+      },
+      default: {
+        // ]TODO(macOS ISS#2323203)
+        backgroundColor: 'white',
+        borderColor: '#cccccc',
+      }, // [TODO(macOS ISS#2323203)
+    }), // ]TODO(macOS ISS#2323203)
     borderRadius: 3,
     borderWidth: 1,
     paddingLeft: 8,
