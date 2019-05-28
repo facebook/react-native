@@ -26,18 +26,18 @@ const {
   UIManager,
   View,
 } = require('react-native');
-const RNTesterActions = require('./RNTesterActions');
-const RNTesterExampleContainer = require('./RNTesterExampleContainer');
-const RNTesterExampleList = require('./RNTesterExampleList');
+const RNTesterActions = require('./utils/RNTesterActions');
+const RNTesterExampleContainer = require('./components/RNTesterExampleContainer');
+const RNTesterExampleList = require('./components/RNTesterExampleList');
 /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found when
  * making Flow check .android.js files. */
-const RNTesterList = require('./RNTesterList');
-const RNTesterNavigationReducer = require('./RNTesterNavigationReducer');
-const URIActionMap = require('./URIActionMap');
+const RNTesterList = require('./utils/RNTesterList');
+const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
+const URIActionMap = require('./utils/URIActionMap');
 
 const nativeImageSource = require('../../Libraries/Image/nativeImageSource');
 
-import type {RNTesterNavigationState} from './RNTesterNavigationReducer';
+import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
 
 UIManager.setLayoutAnimationEnabledExperimental(true);
 
