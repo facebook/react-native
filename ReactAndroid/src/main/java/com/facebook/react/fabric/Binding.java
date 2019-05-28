@@ -39,7 +39,7 @@ public class Binding {
       ComponentFactoryDelegate componentsRegistry,
       Object reactNativeConfig);
 
-  public native void startSurface(int surfaceId, NativeMap initialProps);
+  public native void startSurface(int surfaceId, String moduleName, NativeMap initialProps);
 
   public native void renderTemplateToSurface(int surfaceId, String uiTemplate);
 
