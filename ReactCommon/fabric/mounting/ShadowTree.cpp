@@ -5,15 +5,14 @@
 
 #include "ShadowTree.h"
 
-#include <glog/logging.h>
-
 #include <react/components/root/RootComponentDescriptor.h>
+#include <react/components/view/ViewShadowNode.h>
 #include <react/core/LayoutContext.h>
 #include <react/core/LayoutPrimitives.h>
 #include <react/debug/SystraceSection.h>
-#include <react/mounting/Differentiator.h>
+#include <react/mounting/MountingTelemetry.h>
+#include <react/mounting/ShadowTreeRevision.h>
 #include <react/mounting/ShadowViewMutation.h>
-#include <react/utils/TimeUtils.h>
 
 #include "ShadowTreeDelegate.h"
 
@@ -94,14 +93,13 @@ ShadowTree::ShadowTree(
   rootShadowNode_ = std::static_pointer_cast<const RootShadowNode>(
       rootComponentDescriptor.createShadowNode(ShadowNodeFragment{
           /* .tag = */ surfaceId,
-          /* .rootTag = */ surfaceId,
+          /* .surfaceId = */ surfaceId,
           /* .props = */ props,
           /* .eventEmitter = */ noopEventEmitter,
       }));
 
-#ifdef RN_SHADOW_TREE_INTROSPECTION
-  stubViewTree_ = stubViewTreeFromShadowNode(*rootShadowNode_);
-#endif
+  mountingCoordinator_ = std::make_shared<MountingCoordinator const>(
+      ShadowTreeRevision{rootShadowNode_, 0, {}});
 }
 
 ShadowTree::~ShadowTree() {
@@ -111,30 +109,27 @@ ShadowTree::~ShadowTree() {
             *oldRootShadowNode,
             ShadowNodeFragment{
                 /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
                 /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                 /* .eventEmitter = */
                 ShadowNodeFragment::eventEmitterPlaceholder(),
                 /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
             });
-      },
-      getTime());
+      });
 }
 
 Tag ShadowTree::getSurfaceId() const {
   return surfaceId_;
 }
 
-void ShadowTree::commit(
-    ShadowTreeCommitTransaction transaction,
-    long commitStartTime) const {
+void ShadowTree::commit(ShadowTreeCommitTransaction transaction) const {
   SystraceSection s("ShadowTree::commit");
 
   int attempts = 0;
 
   while (true) {
     attempts++;
-    if (tryCommit(transaction, commitStartTime)) {
+    if (tryCommit(transaction)) {
       return;
     }
 
@@ -144,10 +139,11 @@ void ShadowTree::commit(
   }
 }
 
-bool ShadowTree::tryCommit(
-    ShadowTreeCommitTransaction transaction,
-    long commitStartTime) const {
+bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
   SystraceSection s("ShadowTree::tryCommit");
+
+  auto telemetry = MountingTelemetry{};
+  telemetry.willCommit();
 
   SharedRootShadowNode oldRootShadowNode;
 
@@ -163,14 +159,16 @@ bool ShadowTree::tryCommit(
     return false;
   }
 
-  long layoutTime = getTime();
-  newRootShadowNode->layout();
-  layoutTime = getTime() - layoutTime;
+  std::vector<LayoutableShadowNode const *> affectedLayoutableNodes{};
+  affectedLayoutableNodes.reserve(1024);
+
+  telemetry.willLayout();
+  newRootShadowNode->layout(&affectedLayoutableNodes);
+  telemetry.didLayout();
+
   newRootShadowNode->sealRecursive();
 
-  int revision;
-  auto mutations =
-      calculateShadowViewMutations(*oldRootShadowNode, *newRootShadowNode);
+  auto revisionNumber = ShadowTreeRevision::Number{};
 
   {
     // Updating `rootShadowNode_` in unique manner if it hasn't changed.
@@ -189,79 +187,44 @@ bool ShadowTree::tryCommit(
           oldRootShadowNode->getChildren(), newRootShadowNode->getChildren());
     }
 
-    revision = revision_;
-    revision_++;
-
-#ifdef RN_SHADOW_TREE_INTROSPECTION
-    stubViewTree_.mutate(mutations);
-    auto stubViewTree = stubViewTreeFromShadowNode(*rootShadowNode_);
-    if (stubViewTree_ != stubViewTree) {
-      LOG(ERROR) << "Old tree:"
-                 << "\n"
-                 << oldRootShadowNode->getDebugDescription() << "\n";
-      LOG(ERROR) << "New tree:"
-                 << "\n"
-                 << newRootShadowNode->getDebugDescription() << "\n";
-      LOG(ERROR) << "Mutations:"
-                 << "\n"
-                 << getDebugDescription(mutations);
-      assert(false);
-    }
-#endif
+    revisionNumber_++;
+    revisionNumber = revisionNumber_;
   }
 
-  emitLayoutEvents(mutations);
+  emitLayoutEvents(affectedLayoutableNodes);
+
+  telemetry.didCommit();
+
+  mountingCoordinator_->push(
+      ShadowTreeRevision{newRootShadowNode, revisionNumber, telemetry});
 
   if (delegate_) {
-    delegate_->shadowTreeDidCommit(
-        *this,
-        {surfaceId_,
-         revision,
-         std::move(mutations),
-         {commitStartTime, layoutTime}});
+    delegate_->shadowTreeDidCommit(*this, mountingCoordinator_);
   }
 
   return true;
 }
 
 void ShadowTree::emitLayoutEvents(
-    const ShadowViewMutationList &mutations) const {
+    std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const {
   SystraceSection s("ShadowTree::emitLayoutEvents");
 
-  for (const auto &mutation : mutations) {
-    // Only `Insert` and `Update` mutations can affect layout metrics.
-    if (mutation.type != ShadowViewMutation::Insert &&
-        mutation.type != ShadowViewMutation::Update) {
-      continue;
-    }
-
-    const auto viewEventEmitter =
-        std::dynamic_pointer_cast<const ViewEventEmitter>(
-            mutation.newChildShadowView.eventEmitter);
-
-    // Checking if particular shadow node supports `onLayout` event (part of
-    // `ViewEventEmitter`).
-    if (!viewEventEmitter) {
-      continue;
-    }
+  for (auto const *layoutableNode : affectedLayoutableNodes) {
+    // Only instances of `ViewShadowNode` (and subclasses) are supported.
+    auto const &viewShadowNode =
+        static_cast<ViewShadowNode const &>(*layoutableNode);
+    auto const &viewEventEmitter = static_cast<ViewEventEmitter const &>(
+        *viewShadowNode.getEventEmitter());
 
     // Checking if the `onLayout` event was requested for the particular Shadow
     // Node.
-    const auto viewProps = std::dynamic_pointer_cast<const ViewProps>(
-        mutation.newChildShadowView.props);
-    if (viewProps && !viewProps->onLayout) {
+    auto const &viewProps =
+        static_cast<ViewProps const &>(*viewShadowNode.getProps());
+    if (!viewProps.onLayout) {
       continue;
     }
 
-    // In case if we have `oldChildShadowView`, checking that layout metrics
-    // have changed.
-    if (mutation.type != ShadowViewMutation::Update &&
-        mutation.oldChildShadowView.layoutMetrics ==
-            mutation.newChildShadowView.layoutMetrics) {
-      continue;
-    }
-
-    viewEventEmitter->onLayout(mutation.newChildShadowView.layoutMetrics);
+    viewEventEmitter.onLayout(layoutableNode->getLayoutMetrics());
   }
 }
 

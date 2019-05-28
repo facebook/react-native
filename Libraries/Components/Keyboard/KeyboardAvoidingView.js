@@ -10,17 +10,21 @@
 
 'use strict';
 
-const Keyboard = require('Keyboard');
-const LayoutAnimation = require('LayoutAnimation');
-const Platform = require('Platform');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
+const Keyboard = require('./Keyboard');
+const LayoutAnimation = require('../../LayoutAnimation/LayoutAnimation');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const View = require('../View/View');
 
-import type EmitterSubscription from 'EmitterSubscription';
-import type {ViewStyleProp} from 'StyleSheet';
-import type {ViewProps, ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
-import type {KeyboardEvent} from 'Keyboard';
+import type EmitterSubscription from '../../vendor/emitter/EmitterSubscription';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {
+  ViewProps,
+  ViewLayout,
+  ViewLayoutEvent,
+} from '../View/ViewPropTypes';
+import type {KeyboardEvent} from './Keyboard';
 
 type Props = $ReadOnly<{|
   ...ViewProps,

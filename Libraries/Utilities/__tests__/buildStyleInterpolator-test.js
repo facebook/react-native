@@ -10,7 +10,7 @@
 
 'use strict';
 
-const buildStyleInterpolator = require('buildStyleInterpolator');
+const buildStyleInterpolator = require('../buildStyleInterpolator');
 
 const validateEmpty = function(interpolator, value, validator) {
   const emptyObject = {};

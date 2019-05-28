@@ -10,11 +10,11 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
+const BatchedBridge = require('./BatchedBridge');
 
 const invariant = require('invariant');
 
-import type {ExtendedError} from 'parseErrorStack';
+import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
 
 type ModuleConfig = [
   string /* name */,
@@ -64,7 +64,7 @@ function genModule(
   Object.assign(module, constants);
 
   if (module.getConstants == null) {
-    module.getConstants = () => constants;
+    module.getConstants = () => constants || Object.freeze({});
   } else {
     console.warn(
       `Unable to define method 'getConstants()' on NativeModule '${moduleName}'. NativeModule '${moduleName}' already has a constant or method called 'getConstants'. Please remove it.`,
@@ -164,7 +164,7 @@ if (global.nativeModuleProxy) {
     '__fbBatchedBridgeConfig is not set, cannot invoke native modules',
   );
 
-  const defineLazyObjectProperty = require('defineLazyObjectProperty');
+  const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
   (bridgeConfig.remoteModuleConfig || []).forEach(
     (config: ModuleConfig, moduleID: number) => {
       // Initially this config will only contain the module name when running in JSC. The actual

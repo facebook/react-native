@@ -11,10 +11,8 @@ import android.content.Context;
 import android.view.View;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -35,7 +33,15 @@ import javax.annotation.Nullable;
 public abstract class ViewManager<T extends View, C extends ReactShadowNode>
   extends BaseJavaModule {
 
-  public final void updateProperties(@Nonnull T viewToUpdate, ReactStylesDiffMap props) {
+  /**
+   * For the vast majority of ViewManagers, you will not need to override this. Only
+   * override this if you really know what you're doing and have a very unique use-case.
+   *
+   * @param viewToUpdate
+   * @param props
+   * @param stateWrapper
+   */
+  public void updateProperties(@Nonnull T viewToUpdate, ReactStylesDiffMap props) {
     ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
     onAfterUpdateTransaction(viewToUpdate);
   }
@@ -46,17 +52,18 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
   private final @Nonnull T createView(
       @Nonnull ThemedReactContext reactContext,
       JSResponderHandler jsResponderHandler) {
-    return this.createViewWithProps(reactContext, null, jsResponderHandler);
+    return createView(reactContext, null, null, jsResponderHandler);
   }
 
   /**
    * Creates a view with knowledge of props.
    */
-  public @Nonnull T createViewWithProps(
+  public @Nonnull T createView(
     @Nonnull ThemedReactContext reactContext,
-    ReactStylesDiffMap props,
+    @Nullable ReactStylesDiffMap props,
+    @Nullable StateWrapper stateWrapper,
     JSResponderHandler jsResponderHandler) {
-    T view = createViewInstanceWithProps(reactContext, props);
+    T view = createViewInstance(reactContext, props, stateWrapper);
     addEventEmitters(reactContext, view);
     if (view instanceof ReactInterceptingViewGroup) {
       ((ReactInterceptingViewGroup) view).setOnInterceptTouchEventListener(jsResponderHandler);
@@ -108,7 +115,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * Override it if you need props upon creation of the view.
    * @param reactContext
    */
-  protected @Nonnull T createViewInstanceWithProps(@Nonnull ThemedReactContext reactContext, ReactStylesDiffMap initialProps) {
+  protected @Nonnull T createViewInstance(@Nonnull ThemedReactContext reactContext, @Nullable ReactStylesDiffMap initialProps, @Nullable StateWrapper stateWrapper) {
     T view = createViewInstance(reactContext);
     if (initialProps != null) {
       updateProperties(view, initialProps);
@@ -238,6 +245,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
       Context context,
       ReadableMap localData,
       ReadableMap props,
+      ReadableMap state,
       float width,
       YogaMeasureMode widthMode,
       float height,

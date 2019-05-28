@@ -12,11 +12,12 @@
 
 // Do not require the native RCTNetworking module directly! Use this wrapper module instead.
 // It will add the necessary requestId, so that you don't have to generate it yourself.
-const NativeEventEmitter = require('NativeEventEmitter');
-const RCTNetworkingNative = require('NativeModules').Networking;
-const convertRequestBody = require('convertRequestBody');
+const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
+const RCTNetworkingNative = require('../BatchedBridge/NativeModules')
+  .Networking;
+const convertRequestBody = require('./convertRequestBody');
 
-import type {RequestBody} from 'convertRequestBody';
+import type {RequestBody} from './convertRequestBody';
 
 type Header = [string, string];
 

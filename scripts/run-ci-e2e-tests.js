@@ -64,7 +64,24 @@ try {
     }
   }
 
-  if (exec('yarn pack').code) {
+  if (argv.js) {
+    if (
+      tryExecNTimes(
+        () => {
+          return exec('npm install --save-dev flow-bin').code;
+        },
+        numberOfRetries,
+        () => exec('sleep 10s'),
+      )
+    ) {
+      echo('Failed to install Flow');
+      echo('Most common reason is npm registry connectivity, try again');
+      exitCode = 1;
+      throw Error(exitCode);
+    }
+  }
+
+  if (exec('npm pack').code) {
     echo('Failed to pack react-native');
     exitCode = 1;
     throw Error(exitCode);
@@ -92,23 +109,15 @@ try {
     exitCode = 1;
     throw Error(exitCode);
   }
+
+  const METRO_CONFIG = path.join(ROOT, 'metro.config.js');
+  const RN_POLYFILLS = path.join(ROOT, 'rn-get-polyfills.js');
+  cp(METRO_CONFIG, 'EndToEndTest/.');
+  cp(RN_POLYFILLS, 'EndToEndTest/.');
+
   cd('EndToEndTest');
   echo('Installing React Native package');
   exec(`npm install ${PACKAGE}`);
-  if (
-    tryExecNTimes(
-      () => {
-        return exec('npm install --save-dev flow-bin').code;
-      },
-      numberOfRetries,
-      () => exec('sleep 10s'),
-    )
-  ) {
-    echo('Failed to install Flow');
-    echo('Most common reason is npm registry connectivity, try again');
-    exitCode = 1;
-    throw Error(exitCode);
-  }
   echo('Installing node_modules');
   if (
     tryExecNTimes(
@@ -203,7 +212,7 @@ try {
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerEnv = Object.create(process.env);
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
-    const packagerProcess = spawn('yarn', ['start', '--nonPersistent'], {
+    const packagerProcess = spawn('yarn', ['start'], {
       stdio: 'inherit',
       env: packagerEnv,
     });
@@ -291,7 +300,7 @@ try {
       throw Error(exitCode);
     }
     describe('Test: Flow check');
-    if (exec('./node_modules/.bin/flow check').code) {
+    if (exec(path.join(ROOT, '/node_modules/.bin/flow') + ' check').code) {
       echo('Flow check failed.');
       exitCode = 1;
       throw Error(exitCode);

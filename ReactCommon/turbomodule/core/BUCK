@@ -3,7 +3,9 @@ load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_tar
 
 rn_xplat_cxx_library(
     name = "core",
-    srcs = glob(["*.cpp"]),
+    srcs = glob(
+        ["*.cpp"],
+    ),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
@@ -76,6 +78,7 @@ rn_xplat_cxx_library(
         "fbsource//xplat/third-party/glog:glog",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),
+        react_native_xplat_target("jscallinvoker:jscallinvoker"),
     ],
     exported_deps = [
         "fbsource//xplat/jsi:jsi",

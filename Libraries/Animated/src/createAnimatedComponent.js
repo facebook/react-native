@@ -11,8 +11,8 @@
 
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
-const React = require('React');
-const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
+const React = require('react');
+const DeprecatedViewStylePropTypes = require('../../DeprecatedPropTypes/DeprecatedViewStylePropTypes');
 
 const invariant = require('invariant');
 

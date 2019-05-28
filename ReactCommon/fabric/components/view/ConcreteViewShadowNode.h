@@ -117,6 +117,10 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
     return clonedChildShadowNode.get();
   }
 
+  Transform getTransform() const override {
+    return BaseShadowNode::getProps()->transform;
+  }
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE

@@ -65,7 +65,9 @@ class ConcreteShadowNode : public ShadowNode {
     return defaultSharedProps;
   }
 
-  static ConcreteStateData initialStateData(const SharedConcreteProps &props) {
+  static ConcreteStateData initialStateData(
+      ShadowNodeFragment const &fragment,
+      ComponentDescriptor const &componentDescriptor) {
     return {};
   }
 
@@ -82,8 +84,21 @@ class ConcreteShadowNode : public ShadowNode {
     return std::static_pointer_cast<const PropsT>(props_);
   }
 
-  const typename ConcreteState::Shared getState() const {
-    return std::static_pointer_cast<const ConcreteState>(state_);
+  /*
+   * Returns a concrete state data associated with the node.
+   * Thread-safe after the node is sealed.
+   */
+  ConcreteStateData const &getStateData() const {
+    return std::static_pointer_cast<const ConcreteState>(state_)->getData();
+  }
+
+  /*
+   * Creates and assigns a new state object containing given state data.
+   * Can be called only before the node is sealed (usually during construction).
+   */
+  void setStateData(ConcreteStateData &&data) {
+    ensureUnsealed();
+    state_ = std::make_shared<ConcreteState const>(std::move(data), *state_);
   }
 
   /*

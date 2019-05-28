@@ -109,56 +109,12 @@ jsi::Value convertFromJMapToValue(JNIEnv *env, jsi::Runtime &rt, jobject arg) {
     // This could also be done purely in C++, but iterative over map methods
     // but those may end up calling reflection methods anyway
     // TODO (axe) Investigate the best way to convert Java Map to Value
-    static jclass jArguments = env->FindClass("com/facebook/react/bridge/Arguments");
+    jclass jArguments = env->FindClass("com/facebook/react/bridge/Arguments");
     static jmethodID jMakeNativeMap = env->GetStaticMethodID(jArguments, "makeNativeMap", "(Ljava/util/Map;)Lcom/facebook/react/bridge/WritableNativeMap;");
     auto constants = (jobject) env->CallStaticObjectMethod(jArguments, jMakeNativeMap, arg);
     auto jResult = jni::adopt_local(constants);
     auto result = jni::static_ref_cast<NativeMap::jhybridobject>(jResult);
     return jsi::valueFromDynamic(rt, result->cthis()->consume());
-}
-
-jsi::Value JavaTurboModule::get(jsi::Runtime& runtime, const jsi::PropNameID& propName) {
-  std::string propNameUtf8 = propName.utf8(runtime);
-  if (propNameUtf8 == "getConstants") {
-    // This is the special method to get the constants from the module.
-    // Since `getConstants` in Java only returns a Map, this function takes the map
-    // and converts it to a WritableMap.
-    return jsi::Function::createFromHostFunction(
-      runtime,
-      propName,
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
-        JNIEnv *env = jni::Environment::current();
-        auto instance = instance_.get();
-        jclass cls = env->GetObjectClass(instance);
-        static jmethodID methodID = env->GetMethodID(cls, "getConstants", "()Ljava/util/Map;");
-        auto constantsMap = (jobject) env->CallObjectMethod(instance_.get(), methodID);
-        if (constantsMap == nullptr) {
-          return jsi::Value::undefined();
-        }
-        return convertFromJMapToValue(env, rt, constantsMap);
-      }
-    );
-  } else {
-    return TurboModule::get(runtime, propName);
-  }
-}
-
-static void throwIfJNIReportsPendingException() {
-  JNIEnv *env = jni::Environment::current();
-  if (env->ExceptionCheck()) {
-    jthrowable ex = env->ExceptionOccurred();
-
-    // There should be no pending exceptions before we call into JNI
-    env->ExceptionClear();
-
-    auto exception = jni::adopt_local(ex);
-    auto getMessage =
-        exception->getClass()->getMethod<std::string()>("getMessage");
-    auto message = getMessage(exception)->toStdString();
-
-    throw std::runtime_error(message);
-  }
 }
 
 jsi::Value JavaTurboModule::invokeJavaMethod(
@@ -168,15 +124,24 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     const std::string &methodSignature,
     const jsi::Value *args,
     size_t count) {
-  // We are using JNI directly instead of fbjni since we don't want template functiosn
-  // when finding methods.
   JNIEnv *env = jni::Environment::current();
   auto instance = instance_.get();
 
   jclass cls = env->GetObjectClass(instance);
+  jmethodID methodID =
+      env->GetMethodID(cls, methodName.c_str(), methodSignature.c_str());
 
-  // TODO (axe) Memoize method call, so we don't look it up each time the method is called
-  jmethodID methodID = env->GetMethodID(cls, methodName.c_str(), methodSignature.c_str());
+  // TODO(T43933641): Refactor to remove this special-casing
+  if (methodName == "getConstants") {
+    auto constantsMap = (jobject)env->CallObjectMethod(instance, methodID);
+    FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
+
+    if (constantsMap == nullptr) {
+      return jsi::Value::undefined();
+    }
+
+    return convertFromJMapToValue(env, runtime, constantsMap);
+  }
 
   std::vector<jvalue> jargs =
       convertJSIArgsToJNIArgs(env, runtime, args, count, jsInvoker_, valueKind);
@@ -184,28 +149,28 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   switch (valueKind) {
     case VoidKind: {
       env->CallVoidMethodA(instance, methodID, jargs.data());
-      throwIfJNIReportsPendingException();
+      FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
 
       return jsi::Value::undefined();
     }
     case BooleanKind: {
       bool returnBoolean =
           (bool)env->CallBooleanMethodA(instance, methodID, jargs.data());
-      throwIfJNIReportsPendingException();
+      FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
 
       return jsi::Value(returnBoolean);
     }
     case NumberKind: {
       double returnDouble =
           (double)env->CallDoubleMethodA(instance, methodID, jargs.data());
-      throwIfJNIReportsPendingException();
+      FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
 
       return jsi::Value(returnDouble);
     }
     case StringKind: {
       auto returnString =
           (jstring)env->CallObjectMethodA(instance, methodID, jargs.data());
-      throwIfJNIReportsPendingException();
+      FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
 
       if (returnString == nullptr) {
         return jsi::Value::null();
@@ -218,7 +183,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     case ObjectKind: {
       auto returnObject =
           (jobject)env->CallObjectMethodA(instance, methodID, jargs.data());
-      throwIfJNIReportsPendingException();
+      FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
 
       if (returnObject == nullptr) {
         return jsi::Value::null();
@@ -230,7 +195,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     case ArrayKind: {
       auto returnObject =
           (jobject)env->CallObjectMethodA(instance, methodID, jargs.data());
-      throwIfJNIReportsPendingException();
+      FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
 
       if (returnObject == nullptr) {
         return jsi::Value::null();
@@ -286,7 +251,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
 
       jsi::Value promise =
           Promise.callAsConstructor(runtime, promiseConstructorArg);
-      throwIfJNIReportsPendingException();
+      FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
 
       return promise;
     }

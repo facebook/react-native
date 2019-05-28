@@ -9,35 +9,48 @@
  */
 'use strict';
 
-const Batchinator = require('Batchinator');
-const FillRateHelper = require('FillRateHelper');
+const Batchinator = require('../Interaction/Batchinator');
+const FillRateHelper = require('./FillRateHelper');
 const PropTypes = require('prop-types');
-const React = require('React');
-const ReactNative = require('ReactNative');
-const RefreshControl = require('RefreshControl');
-const ScrollView = require('ScrollView');
-const StyleSheet = require('StyleSheet');
-const UIManager = require('UIManager');
-const View = require('View');
-const ViewabilityHelper = require('ViewabilityHelper');
+const React = require('react');
+const ReactNative = require('../Renderer/shims/ReactNative');
+const RefreshControl = require('../Components/RefreshControl/RefreshControl');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const View = require('../Components/View/View');
+const ViewabilityHelper = require('./ViewabilityHelper');
 
-const flattenStyle = require('flattenStyle');
-const infoLog = require('infoLog');
+const flattenStyle = require('../StyleSheet/flattenStyle');
+const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
 const warning = require('fbjs/lib/warning');
 
-const {computeWindowedRenderLimits} = require('VirtualizeUtils');
+const {computeWindowedRenderLimits} = require('./VirtualizeUtils');
 
-import type {ViewStyleProp} from 'StyleSheet';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
   ViewToken,
   ViewabilityConfigCallbackPair,
-} from 'ViewabilityHelper';
+} from './ViewabilityHelper';
 
 type Item = any;
 
-export type renderItemType = (info: any) => ?React.Element<any>;
+export type Separators = {
+  highlight: () => void,
+  unhighlight: () => void,
+  updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+};
+
+export type RenderItemProps<ItemT> = {
+  item: ItemT,
+  index: number,
+  separators: Separators,
+};
+
+export type RenderItemType<ItemT> = (
+  info: RenderItemProps<ItemT>,
+) => React.Node;
 
 type ViewabilityHelperCallbackTuple = {
   viewabilityHelper: ViewabilityHelper,
@@ -48,11 +61,8 @@ type ViewabilityHelperCallbackTuple = {
 };
 
 type RequiredProps = {
-  // TODO: Conflicts with the optional `renderItem` in
-  // `VirtualizedSectionList`'s props.
-  renderItem: $FlowFixMe<renderItemType>,
   /**
-   * The default accessor functions assume this is an Array<{key: string}> but you can override
+   * The default accessor functions assume this is an Array<{key: string} | {id: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
    */
   data?: any,
@@ -66,6 +76,9 @@ type RequiredProps = {
   getItemCount: (data: any) => number,
 };
 type OptionalProps = {
+  // TODO: Conflicts with the optional `renderItem` in
+  // `VirtualizedSectionList`'s props.
+  renderItem?: $FlowFixMe<?RenderItemType<Item>>,
   /**
    * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
    * implementation, but with a significant perf hit.
@@ -111,6 +124,11 @@ type OptionalProps = {
    * or a render function. Defaults to using View.
    */
   CellRendererComponent?: ?React.ComponentType<any>,
+  /**
+   * Each data item is rendered using this element. Can be a React Component Class,
+   * or a render function.
+   */
+  ListItemComponent?: ?React.ComponentType<any>,
   /**
    * Rendered when the list is empty. Can be a React Component Class, a render function, or
    * a rendered element.
@@ -264,7 +282,7 @@ type State = {first: number, last: number};
  *   offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
  *   blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
  *   and we are working on improving it behind the scenes.
- * - By default, the list looks for a `key` prop on each item and uses that for the React key.
+ * - By default, the list looks for a `key` or `id` prop on each item and uses that for the React key.
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  */
@@ -413,6 +431,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
+  getScrollRef() {
+    if (this._scrollRef && this._scrollRef.getScrollRef) {
+      return this._scrollRef.getScrollRef();
+    } else {
+      return this._scrollRef;
+    }
+  }
+
   setNativeProps(props: Object) {
     if (this._scrollRef) {
       this._scrollRef.setNativeProps(props);
@@ -426,6 +452,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     keyExtractor: (item: Item, index: number) => {
       if (item.key != null) {
         return item.key;
+      }
+      if (item.id != null) {
+        return item.id;
       }
       _usedIndexForKey = true;
       if (item.type && item.type.displayName) {
@@ -518,12 +547,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._cellKeysToChildListKeys.set(childList.cellKey, childListsInCell);
 
     const existingChildData = this._nestedChildLists.get(childList.key);
-    invariant(
-      !(existingChildData && existingChildData.ref !== null),
-      'A VirtualizedList contains a cell which itself contains ' +
-        'more than one VirtualizedList of the same orientation as the parent ' +
-        'list. You must pass a unique listKey prop to each sibling list.',
-    );
+    if (existingChildData && existingChildData.ref !== null) {
+      console.error(
+        'A VirtualizedList contains a cell which itself contains ' +
+          'more than one VirtualizedList of the same orientation as the parent ' +
+          'list. You must pass a unique listKey prop to each sibling list.',
+      );
+    }
     this._nestedChildLists.set(childList.key, {
       ref: childList.ref,
       state: null,
@@ -847,7 +877,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
       if (!this._hasWarned.keys && _usedIndexForKey) {
         console.warn(
-          'VirtualizedList: missing keys for items, make sure to specify a key property on each ' +
+          'VirtualizedList: missing keys for items, make sure to specify a key or id property on each ' +
             'item or provide a custom keyExtractor.',
           _keylessItemComponentName,
         );
@@ -1131,29 +1161,33 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // TODO (T35574538): findNodeHandle sometimes crashes with "Unable to find
     // node on an unmounted component" during scrolling
     try {
-      UIManager.measureLayout(
-        ReactNative.findNodeHandle(this),
-        ReactNative.findNodeHandle(
-          this.context.virtualizedList.getOutermostParentListRef(),
-        ),
-        error => {
-          console.warn(
-            "VirtualizedList: Encountered an error while measuring a list's" +
-              ' offset from its containing VirtualizedList.',
-          );
-        },
+      if (!this._scrollRef) {
+        return;
+      }
+      // We are asuming that getOutermostParentListRef().getScrollRef()
+      // is a non-null reference to a ScrollView
+      this._scrollRef.measureLayout(
+        this.context.virtualizedList
+          .getOutermostParentListRef()
+          .getScrollRef()
+          .getNativeScrollRef(),
         (x, y, width, height) => {
           this._offsetFromParentVirtualizedList = this._selectOffset({x, y});
           this._scrollMetrics.contentLength = this._selectLength({
             width,
             height,
           });
-
           const scrollMetrics = this._convertParentScrollMetrics(
             this.context.virtualizedList.getScrollMetrics(),
           );
           this._scrollMetrics.visibleLength = scrollMetrics.visibleLength;
           this._scrollMetrics.offset = scrollMetrics.offset;
+        },
+        error => {
+          console.warn(
+            "VirtualizedList: Encountered an error while measuring a list's" +
+              ' offset from its containing VirtualizedList.',
+          );
         },
       );
     } catch (error) {
@@ -1644,6 +1678,7 @@ class CellRenderer extends React.PureComponent<
   {
     CellRendererComponent?: ?React.ComponentType<any>,
     ItemSeparatorComponent: ?React.ComponentType<*>,
+    ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
     cellKey: string,
     fillRateHelper: FillRateHelper,
     horizontal: ?boolean,
@@ -1719,10 +1754,41 @@ class CellRenderer extends React.PureComponent<
     this.props.onLayout &&
     this.props.onLayout(e, this.props.cellKey, this.props.index);
 
+  _renderElement(renderItem, ListItemComponent, item, index) {
+    if (renderItem && ListItemComponent) {
+      console.warn(
+        'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take' +
+          ' precedence over renderItem.',
+      );
+    }
+
+    if (ListItemComponent) {
+      return React.createElement(ListItemComponent, {
+        item,
+        index,
+        separators: this._separators,
+      });
+    }
+
+    if (renderItem) {
+      return renderItem({
+        item,
+        index,
+        separators: this._separators,
+      });
+    }
+
+    invariant(
+      false,
+      'VirtualizedList: Either ListItemComponent or renderItem props are required but none were found.',
+    );
+  }
+
   render() {
     const {
       CellRendererComponent,
       ItemSeparatorComponent,
+      ListItemComponent,
       fillRateHelper,
       horizontal,
       item,
@@ -1732,12 +1798,14 @@ class CellRenderer extends React.PureComponent<
       getItemLayout,
       debug,
     } = this.props;
-    invariant(renderItem, 'no renderItem!');
-    const element = renderItem({
+
+    const element = this._renderElement(
+      renderItem,
+      ListItemComponent,
       item,
       index,
-      separators: this._separators,
-    });
+    );
+
     const onLayout =
       /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
        * error found when Flow v0.68 was deployed. To see the error delete this

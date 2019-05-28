@@ -4,7 +4,6 @@
 
 #include <react/core/ShadowNodeFragment.h>
 #include <react/debug/SystraceSection.h>
-#include <react/utils/TimeUtils.h>
 
 namespace facebook {
 namespace react {
@@ -21,12 +20,15 @@ SharedShadowNode UIManager::createNode(
   auto fallbackDescriptor =
       componentDescriptorRegistry_->getFallbackComponentDescriptor();
 
-  const auto &props = componentDescriptor.cloneProps(nullptr, rawProps);
-  const auto &state = componentDescriptor.createInitialState(props);
+  auto const eventEmitter =
+      componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
+  auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
+  auto const state = componentDescriptor.createInitialState(
+      ShadowNodeFragment{surfaceId, tag, props, eventEmitter});
 
   auto shadowNode = componentDescriptor.createShadowNode({
       /* .tag = */ tag,
-      /* .rootTag = */ surfaceId,
+      /* .surfaceId = */ surfaceId,
       /* .props = */
       fallbackDescriptor != nullptr &&
               fallbackDescriptor->getComponentHandle() ==
@@ -34,8 +36,7 @@ SharedShadowNode UIManager::createNode(
           ? componentDescriptor.cloneProps(
                 props, RawProps(folly::dynamic::object("name", name)))
           : props,
-      /* .eventEmitter = */
-      componentDescriptor.createEventEmitter(std::move(eventTarget), tag),
+      /* .eventEmitter = */ eventEmitter,
       /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
       /* .localData = */ ShadowNodeFragment::localDataPlaceholder(),
       /* .state = */ state,
@@ -59,7 +60,7 @@ SharedShadowNode UIManager::cloneNode(
       *shadowNode,
       {
           /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-          /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+          /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
           /* .props = */
           rawProps ? componentDescriptor.cloneProps(
                          shadowNode->getProps(), *rawProps)
@@ -86,8 +87,7 @@ void UIManager::completeSurface(
   SystraceSection s("UIManager::completeSurface");
 
   if (delegate_) {
-    delegate_->uiManagerDidFinishTransaction(
-        surfaceId, rootChildren, getTime());
+    delegate_->uiManagerDidFinishTransaction(surfaceId, rootChildren);
   }
 }
 
@@ -96,13 +96,11 @@ void UIManager::setNativeProps(
     const RawProps &rawProps) const {
   SystraceSection s("UIManager::setNativeProps");
 
-  long startCommitTime = getTime();
-
   auto &componentDescriptor = shadowNode->getComponentDescriptor();
   auto props = componentDescriptor.cloneProps(shadowNode->getProps(), rawProps);
   auto newShadowNode = shadowNode->clone({
       /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-      /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+      /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
       /* .props = */ props,
   });
 
@@ -111,8 +109,7 @@ void UIManager::setNativeProps(
         shadowTree.tryCommit(
             [&](const SharedRootShadowNode &oldRootShadowNode) {
               return oldRootShadowNode->clone(shadowNode, newShadowNode);
-            },
-            startCommitTime);
+            });
       });
 }
 
@@ -121,8 +118,6 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
     const ShadowNode *ancestorShadowNode) const {
   SystraceSection s("UIManager::getRelativeLayoutMetrics");
 
-  long startCommitTime = getTime();
-
   if (!ancestorShadowNode) {
     shadowTreeRegistry_->visit(
         shadowNode.getSurfaceId(), [&](const ShadowTree &shadowTree) {
@@ -130,8 +125,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
               [&](const SharedRootShadowNode &oldRootShadowNode) {
                 ancestorShadowNode = oldRootShadowNode.get();
                 return nullptr;
-              },
-              startCommitTime);
+              });
         });
   }
 
@@ -151,14 +145,12 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
 void UIManager::updateState(
     const SharedShadowNode &shadowNode,
     const StateData::Shared &rawStateData) const {
-  long startCommitTime = getTime();
-
   auto &componentDescriptor = shadowNode->getComponentDescriptor();
   auto state =
       componentDescriptor.createState(shadowNode->getState(), rawStateData);
   auto newShadowNode = shadowNode->clone({
       /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-      /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+      /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
       /* .props = */ ShadowNodeFragment::propsPlaceholder(),
       /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
       /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
@@ -171,8 +163,7 @@ void UIManager::updateState(
         shadowTree.tryCommit(
             [&](const SharedRootShadowNode &oldRootShadowNode) {
               return oldRootShadowNode->clone(shadowNode, newShadowNode);
-            },
-            startCommitTime);
+            });
       });
 }
 

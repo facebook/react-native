@@ -44,13 +44,14 @@ class ContextContainer final {
     instances_.insert({key, std::make_shared<T>(instance)});
 
 #ifndef NDEBUG
-    typeHashes_.insert({key, typeid(T).hash_code()});
+    typeNames_.insert({key, typeid(T).name()});
 #endif
   }
 
   /*
    * Returns a previously registered instance of the particular type `T`
    * for `key`.
+   * Throws an exception if the instance could not be found.
    */
   template <typename T>
   T getInstance(std::string const &key) const {
@@ -60,9 +61,30 @@ class ContextContainer final {
         instances_.find(key) != instances_.end() &&
         "ContextContainer doesn't have an instance for given key.");
     assert(
-        typeHashes_.at(key) == typeid(T).hash_code() &&
+        typeNames_.at(key) == typeid(T).name() &&
         "ContextContainer stores an instance of different type for given key.");
     return *std::static_pointer_cast<T>(instances_.at(key));
+  }
+
+  /*
+   * Returns a (wrapped in an optional) previously registered instance of
+   * the particular type `T` for given `key`.
+   * Returns an empty optional if the instance could not be found.
+   */
+  template <typename T>
+  better::optional<T> findInstance(std::string const &key) const {
+    std::shared_lock<better::shared_mutex> lock(mutex_);
+
+    auto iterator = instances_.find(key);
+    if (iterator == instances_.end()) {
+      return {};
+    }
+
+    assert(
+        typeNames_.at(key) == typeid(T).name() &&
+        "ContextContainer stores an instance of different type for given key.");
+
+    return *std::static_pointer_cast<T>(iterator->second);
   }
 
  private:
@@ -70,7 +92,7 @@ class ContextContainer final {
   // Protected by mutex_`.
   mutable better::map<std::string, std::shared_ptr<void>> instances_;
 #ifndef NDEBUG
-  mutable better::map<std::string, size_t> typeHashes_;
+  mutable better::map<std::string, std::string> typeNames_;
 #endif
 };
 

@@ -10,8 +10,8 @@
 
 'use strict';
 
-import Platform from 'Platform';
-const UIManager = require('UIManager');
+import Platform from '../Utilities/Platform';
+const UIManager = require('../ReactNative/UIManager');
 
 type Type =
   | 'spring'

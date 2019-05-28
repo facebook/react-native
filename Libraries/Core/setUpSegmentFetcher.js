@@ -18,7 +18,8 @@ global.__fetchSegment = function(
   options: {|+otaBuildNumber: ?string|},
   callback: (?Error) => void,
 ) {
-  const SegmentFetcher = require('NativeSegmentFetcher').default;
+  const SegmentFetcher = require('./SegmentFetcher/NativeSegmentFetcher')
+    .default;
   SegmentFetcher.fetchSegment(
     segmentId,
     options,

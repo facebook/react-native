@@ -137,6 +137,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties) {
   RCTFontProperties defaultFontProperties = RCTDefaultFontProperties();
   fontProperties = RCTResolveFontProperties(fontProperties);
 
+  assert(!isnan(fontProperties.sizeMultiplier));
   CGFloat effectiveFontSize =
       fontProperties.sizeMultiplier * fontProperties.size;
   UIFont *font;

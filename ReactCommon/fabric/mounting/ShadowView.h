@@ -61,6 +61,9 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
  * Describes pair of a `ShadowView` and a `ShadowNode`.
  */
 struct ShadowViewNodePair final {
+  using List = better::
+      small_vector<ShadowViewNodePair, kShadowNodeChildrenSmallVectorSize>;
+
   ShadowView shadowView;
   ShadowNode const *shadowNode;
 
@@ -70,9 +73,6 @@ struct ShadowViewNodePair final {
   bool operator==(const ShadowViewNodePair &rhs) const;
   bool operator!=(const ShadowViewNodePair &rhs) const;
 };
-
-using ShadowViewNodePairList = better::
-    small_vector<ShadowViewNodePair, kShadowNodeChildrenSmallVectorSize>;
 
 } // namespace react
 } // namespace facebook

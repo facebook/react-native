@@ -50,13 +50,6 @@
 }
 @end
 
-#ifdef RN_FABRIC_ENABLED
-// FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
-@interface RCTSurfacePresenter ()
--(void)_startAllSurfaces;
-@end
-#endif
-
 @implementation AppDelegate
 
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -67,21 +60,15 @@
 
   _bridge = [[RCTBridge alloc] initWithDelegate:self
                                   launchOptions:launchOptions];
-  
+
   // Appetizer.io params check
   NSDictionary *initProps = @{};
   NSString *_routeUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"route"];
   if (_routeUri) {
     initProps = @{@"exampleFromAppetizeParams": [NSString stringWithFormat:@"rntester://example/%@Example", _routeUri]};
   }
-  
+
 #ifdef RN_FABRIC_ENABLED
-  // FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(handleJavaScriptDidLoadNotification:)
-                                               name:RCTJavaScriptDidLoadNotification
-                                             object:_bridge];
-  
   _surfacePresenter = [[RCTSurfacePresenter alloc] initWithBridge:_bridge config:nil];
   _bridge.surfacePresenter = _surfacePresenter;
 
@@ -89,7 +76,7 @@
 #else
   UIView *rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
 #endif
-  
+
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
@@ -98,18 +85,11 @@
   return YES;
 }
 
-#ifdef RN_FABRIC_ENABLED
-// FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
-- (void)handleJavaScriptDidLoadNotification:(__unused NSNotification*)notification {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self->_surfacePresenter _startAllSurfaces];
-  });
-}
-#endif
-
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"RNTester/js/RNTesterApp.ios"
+  NSString *bundlePrefix = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"RN_BUNDLE_PREFIX"];
+  NSString *bundleRoot = [NSString stringWithFormat:@"%@RNTester/js/RNTesterApp.ios", bundlePrefix];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:bundleRoot
                                                         fallbackResource:nil];
 }
 
@@ -141,8 +121,8 @@
     __typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
 #ifdef RN_TURBO_MODULE_ENABLED
-      strongSelf->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithRuntime:&runtime bridge:bridge delegate:strongSelf];
-      [strongSelf->_turboModuleManager installJSBinding];
+      strongSelf->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:strongSelf];
+      [strongSelf->_turboModuleManager installJSBindingWithRuntime:&runtime];
 #endif
     }
   });

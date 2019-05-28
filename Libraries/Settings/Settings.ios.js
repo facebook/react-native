@@ -10,8 +10,9 @@
 
 'use strict';
 
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-const RCTSettingsManager = require('NativeModules').SettingsManager;
+const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
+const RCTSettingsManager = require('../BatchedBridge/NativeModules')
+  .SettingsManager;
 
 const invariant = require('invariant');
 

@@ -43,6 +43,7 @@ class AnimatedNode {
   /* Methods and props used by native Animated impl */
   __isNative: boolean;
   __nativeTag: ?number;
+  __shouldUpdateListenersForNewNativeTag: boolean;
 
   constructor() {
     this._listeners = {};
@@ -104,8 +105,16 @@ class AnimatedNode {
   }
 
   _startListeningToNativeValueUpdates() {
-    if (this.__nativeAnimatedValueListener) {
+    if (
+      this.__nativeAnimatedValueListener &&
+      !this.__shouldUpdateListenersForNewNativeTag
+    ) {
       return;
+    }
+
+    if (this.__shouldUpdateListenersForNewNativeTag) {
+      this.__shouldUpdateListenersForNewNativeTag = false;
+      this._stopListeningForNativeValueUpdates();
     }
 
     NativeAnimatedAPI.startListeningToAnimatedNodeValue(this.__getNativeTag());
@@ -153,6 +162,7 @@ class AnimatedNode {
         this.__getNativeConfig(),
       );
       this.__nativeTag = nativeTag;
+      this.__shouldUpdateListenersForNewNativeTag = true;
     }
     return this.__nativeTag;
   }

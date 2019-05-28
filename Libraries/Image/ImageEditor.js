@@ -8,8 +8,7 @@
  * @format
  */
 'use strict';
-
-const RCTImageEditingManager = require('NativeModules').ImageEditingManager;
+import NativeImageEditor from './NativeImageEditor';
 
 type ImageCropData = {
   /**
@@ -39,7 +38,7 @@ type ImageCropData = {
    * (Optional) the resizing mode to use when scaling the image. If the
    * `displaySize` param is not specified, this has no effect.
    */
-  resizeMode?: ?$Enum<{
+  resizeMode?: ?$Keys<{
     contain: string,
     cover: string,
     stretch: string,
@@ -65,7 +64,7 @@ class ImageEditor {
     success: (uri: string) => void,
     failure: (error: Object) => void,
   ) {
-    RCTImageEditingManager.cropImage(uri, cropData, success, failure);
+    NativeImageEditor.cropImage(uri, cropData, success, failure);
   }
 }
 

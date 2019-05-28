@@ -11,7 +11,7 @@
 
 'use strict';
 
-const React = require('React');
+const React = require('react');
 // $FlowFixMe
 const ProgressBarAndroid = require('../ProgressBarAndroid.android');
 
@@ -33,7 +33,7 @@ describe('<ProgressBarAndroid />', () => {
   });
 
   it('should shallow render as <ForwardRef(ProgressBarAndroid)> when not mocked', () => {
-    jest.dontMock('ProgressBarAndroid');
+    jest.dontMock('../ProgressBarAndroid');
 
     const output = render.shallow(
       <ProgressBarAndroid styleAttr="Horizontal" />,
@@ -42,7 +42,7 @@ describe('<ProgressBarAndroid />', () => {
   });
 
   it('should render as <ProgressBarAndroid> when not mocked', () => {
-    jest.dontMock('ProgressBarAndroid');
+    jest.dontMock('../ProgressBarAndroid');
 
     const instance = render.create(
       <ProgressBarAndroid styleAttr="Horizontal" />,

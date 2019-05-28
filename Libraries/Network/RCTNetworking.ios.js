@@ -10,11 +10,12 @@
 
 'use strict';
 
-const NativeEventEmitter = require('NativeEventEmitter');
-const RCTNetworkingNative = require('NativeModules').Networking;
-const convertRequestBody = require('convertRequestBody');
+const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
+const RCTNetworkingNative = require('../BatchedBridge/NativeModules')
+  .Networking;
+const convertRequestBody = require('./convertRequestBody');
 
-import type {RequestBody} from 'convertRequestBody';
+import type {RequestBody} from './convertRequestBody';
 
 import type {NativeResponseType} from './XMLHttpRequest';
 

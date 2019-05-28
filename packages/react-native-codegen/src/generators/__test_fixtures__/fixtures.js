@@ -18,6 +18,7 @@ const INTERFACE_ONLY: SchemaType = {
       components: {
         InterfaceOnlyComponent: {
           interfaceOnly: true,
+          isDeprecatedPaperComponentNameRCT: true,
           extendsProps: [
             {
               type: 'ReactNativeBuiltInType',
@@ -484,7 +485,7 @@ const ENUM_PROP: SchemaType = {
                     name: 'center',
                   },
                   {
-                    name: 'bottom',
+                    name: 'bottom-right',
                   },
                 ],
               },
@@ -557,6 +558,14 @@ const EVENT_PROPS: SchemaType = {
                     },
                   ],
                 },
+              },
+            },
+            {
+              name: 'onEnd',
+              optional: true,
+              bubblingType: 'bubble',
+              typeAnnotation: {
+                type: 'EventTypeAnnotation',
               },
             },
           ],

@@ -7,21 +7,20 @@
 package com.facebook.react.fabric.mounting;
 
 import android.content.Context;
-import androidx.annotation.AnyThread;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import androidx.annotation.AnyThread;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.fabric.FabricUIManager;
-import com.facebook.react.fabric.jsi.EventEmitterWrapper;
+import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -33,7 +32,6 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.yoga.YogaMeasureMode;
-import android.util.Log;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -95,7 +93,8 @@ public class MountingManager {
     mTagToViewState.remove(reactTag);
     Context context = view.getContext();
     if (context instanceof ThemedReactContext) {
-      // We only recycle views that were created by RN (its context is instance of ThemedReactContext)
+      // We only recycle views that were created by RN (its context is instance of
+      // ThemedReactContext)
       mViewFactory.recycle(
           (ThemedReactContext) context, Assertions.assertNotNull(viewManager).getName(), view);
     }
@@ -123,7 +122,7 @@ public class MountingManager {
     ViewState viewState = getViewState(tag);
     final View view = viewState.mView;
     if (view == null) {
-      throw new IllegalStateException("Unable to find view for view " + viewState);
+      throw new IllegalStateException("Unable to find view for viewState " + viewState);
     }
     getViewGroupManager(parentViewState).addView(parentView, view, index);
   }
@@ -171,11 +170,12 @@ public class MountingManager {
   }
 
   @UiThread
-  public void createViewWithProps(
+  public void createView(
       ThemedReactContext themedReactContext,
       String componentName,
       int reactTag,
-      ReadableMap props,
+      @Nullable ReadableMap props,
+      @Nullable StateWrapper stateWrapper,
       boolean isLayoutable) {
     if (mTagToViewState.get(reactTag) != null) {
       return;
@@ -184,19 +184,23 @@ public class MountingManager {
     View view = null;
     ViewManager viewManager = null;
 
-    ReactStylesDiffMap diffMap = null;
+    ReactStylesDiffMap propsDiffMap = null;
     if (props != null) {
-      diffMap = new ReactStylesDiffMap(props);
+      propsDiffMap = new ReactStylesDiffMap(props);
     }
 
     if (isLayoutable) {
       viewManager = mViewManagerRegistry.get(componentName);
-      view = mViewFactory.getOrCreateView(componentName, diffMap, themedReactContext);
+      view = mViewFactory.getOrCreateView(componentName, propsDiffMap, stateWrapper, themedReactContext);
       view.setId(reactTag);
+      if (stateWrapper != null) {
+        viewManager.updateState(view, stateWrapper);
+      }
     }
 
     ViewState viewState = new ViewState(reactTag, view, viewManager);
-    viewState.mCurrentProps = diffMap;
+    viewState.mCurrentProps = propsDiffMap;
+    viewState.mCurrentState = (stateWrapper != null ? stateWrapper.getState() : null);
 
     mTagToViewState.put(reactTag, viewState);
   }
@@ -305,24 +309,24 @@ public class MountingManager {
     if (viewManager == null) {
       throw new IllegalStateException("Unable to find ViewManager for tag: " + reactTag);
     }
-    viewManager.updateState(
-      viewState.mView,
-      stateWrapper);
+    viewManager.updateState(viewState.mView, stateWrapper);
   }
 
   @UiThread
   public void preallocateView(
-    ThemedReactContext reactContext,
-    String componentName,
-    int reactTag,
-    ReadableMap props,
-    boolean isLayoutable) {
+      ThemedReactContext reactContext,
+      String componentName,
+      int reactTag,
+      @Nullable ReadableMap props,
+      @Nullable StateWrapper stateWrapper,
+      boolean isLayoutable) {
 
     if (mTagToViewState.get(reactTag) != null) {
-      throw new IllegalStateException("View for component " + componentName + " with tag " + reactTag + " already exists.");
+      throw new IllegalStateException(
+          "View for component " + componentName + " with tag " + reactTag + " already exists.");
     }
 
-    createViewWithProps(reactContext, componentName, reactTag, props, isLayoutable);
+    createView(reactContext, componentName, reactTag, props, stateWrapper, isLayoutable);
   }
 
   @UiThread
@@ -338,6 +342,7 @@ public class MountingManager {
       String componentName,
       ReadableMap localData,
       ReadableMap props,
+      ReadableMap state,
       float width,
       YogaMeasureMode widthMode,
       float height,
@@ -345,7 +350,7 @@ public class MountingManager {
 
     return mViewManagerRegistry
         .get(componentName)
-        .measure(context, localData, props, width, widthMode, height, heightMode);
+        .measure(context, localData, props, state, width, widthMode, height, heightMode);
   }
 
   @AnyThread
@@ -363,10 +368,10 @@ public class MountingManager {
     final int mReactTag;
     final boolean mIsRoot;
     @Nullable final ViewManager mViewManager;
-    public ReactStylesDiffMap mCurrentProps;
-    public ReadableMap mCurrentLocalData;
-    public ReadableMap mCurrentState;
-    public EventEmitterWrapper mEventEmitter;
+    @Nullable public ReactStylesDiffMap mCurrentProps = null;
+    @Nullable public ReadableMap mCurrentLocalData = null;
+    @Nullable public ReadableMap mCurrentState = null;
+    @Nullable public EventEmitterWrapper mEventEmitter = null;
 
     private ViewState(int reactTag, @Nullable View view, @Nullable ViewManager viewManager) {
       this(reactTag, view, viewManager, false);
@@ -381,7 +386,19 @@ public class MountingManager {
 
     @Override
     public String toString() {
-      return "ViewState [" + mReactTag + "] - isRoot: " + mIsRoot + " - props: " + mCurrentProps + " - localData: " + mCurrentLocalData + " - viewManager: " + mViewManager;
+      boolean isLayoutOnly = mViewManager == null;
+      return "ViewState ["
+          + mReactTag
+          + "] - isRoot: "
+          + mIsRoot
+          + " - props: "
+          + mCurrentProps
+          + " - localData: "
+          + mCurrentLocalData
+          + " - viewManager: "
+          + mViewManager
+          + " - isLayoutOnly: "
+          + isLayoutOnly;
     }
   }
 }

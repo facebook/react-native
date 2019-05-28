@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {upperCaseFirst} = require('../Helpers.js');
+const {toSafeCppString} = require('./CppHelpers.js');
 
 // import type {EventTypeShape} from './CodegenSchema';
 
@@ -18,7 +18,7 @@ function generateStructName(
   componentName: string,
   parts: $ReadOnlyArray<string> = [],
 ) {
-  const additional = parts.map(upperCaseFirst).join('');
+  const additional = parts.map(toSafeCppString).join('');
   return `${componentName}${additional}Struct`;
 }
 

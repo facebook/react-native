@@ -10,13 +10,13 @@
 
 'use strict';
 
-const Platform = require('Platform');
-const ReactNative = require('ReactNative');
+const Platform = require('../../Utilities/Platform');
+const ReactNative = require('../../Renderer/shims/ReactNative');
 
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
-import type {SwitchChangeEvent} from 'CoreEventTypes';
-import type {ViewProps} from 'ViewPropTypes';
+import type {SwitchChangeEvent} from '../../Types/CoreEventTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 type SwitchProps = $ReadOnly<{|
   ...ViewProps,

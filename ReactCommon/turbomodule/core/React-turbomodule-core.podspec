@@ -40,6 +40,7 @@ Pod::Spec.new do |s|
   s.dependency "React-cxxreact", version
   s.dependency "React-jsi", version
   s.dependency "Folly", folly_version
+  s.dependency "React-jscallinvoker", version
 
   s.subspec "core-ios" do |ss|
     ss.source_files   = "platform/ios/*.{mm,cpp,h}"

@@ -84,15 +84,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface RCTSurfacePresenter (Deprecated)
-
-/**
- * Returns a underlying bridge.
- */
-- (RCTBridge *)bridge_DO_NOT_USE;
-
-@end
-
 @interface RCTBridge (Deprecated)
 
 @property (nonatomic) RCTSurfacePresenter *surfacePresenter;

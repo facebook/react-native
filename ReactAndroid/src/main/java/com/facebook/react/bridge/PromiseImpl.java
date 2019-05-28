@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 public class PromiseImpl implements Promise {
   // Number of stack frames to parse and return to mReject.invoke
   // for ERROR_MAP_KEY_NATIVE_STACK
-  private static final int ERROR_STACK_FRAME_LIMIT = 10;
+  private static final int ERROR_STACK_FRAME_LIMIT = 50;
 
   private static final String ERROR_DEFAULT_CODE = "EUNSPECIFIED";
   private static final String ERROR_DEFAULT_MESSAGE = "Error not specified.";
@@ -32,6 +32,7 @@ public class PromiseImpl implements Promise {
   private static final String ERROR_MAP_KEY_NATIVE_STACK = "nativeStackAndroid";
 
   // Keys for ERROR_MAP_KEY_NATIVE_STACK's StackFrame maps
+  private static final String STACK_FRAME_KEY_CLASS = "class";
   private static final String STACK_FRAME_KEY_FILE = "file";
   private static final String STACK_FRAME_KEY_LINE_NUMBER = "lineNumber";
   private static final String STACK_FRAME_KEY_METHOD_NAME = "methodName";
@@ -218,6 +219,7 @@ public class PromiseImpl implements Promise {
         StackTraceElement frame = stackTrace[i];
         WritableMap frameMap = new WritableNativeMap();
         // NOTE: no column number exists StackTraceElement
+        frameMap.putString(STACK_FRAME_KEY_CLASS, frame.getClassName());
         frameMap.putString(STACK_FRAME_KEY_FILE, frame.getFileName());
         frameMap.putInt(STACK_FRAME_KEY_LINE_NUMBER, frame.getLineNumber());
         frameMap.putString(STACK_FRAME_KEY_METHOD_NAME, frame.getMethodName());

@@ -10,17 +10,17 @@
 
 'use strict';
 
-const Incremental = require('Incremental');
-const React = require('React');
+const Incremental = require('./Incremental');
+const React = require('react');
 
 const PropTypes = require('prop-types');
 
-const infoLog = require('infoLog');
+const infoLog = require('../Utilities/infoLog');
 
 let _groupCounter = -1;
 const DEBUG = false;
 
-import type {Props, Context} from 'Incremental';
+import type {Props, Context} from './Incremental';
 
 /**
  * WARNING: EXPERIMENTAL. Breaking changes will probably happen a lot and will

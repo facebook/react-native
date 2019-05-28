@@ -17,18 +17,18 @@ fb_native.sh_binary(
 
 fb_native.sh_binary(
     name = "write_to_json",
-    main = "buck_tests/combine_js_to_schema.sh",
+    main = "src/cli/combine/combine_js_to_schema.sh",
     resources = [
-        "buck_tests/combine-js-to-schema.js",
-        "buck_tests/combine_js_to_schema.sh",
         "fbsource//xplat/js:setup_env",
+        "src/cli/combine/combine-js-to-schema.js",
+        "src/cli/combine/combine_js_to_schema.sh",
     ],
     visibility = ["PUBLIC"],
 )
 
 fb_native.sh_binary(
     name = "rn_codegen",
-    main = "buck_tests/generate_tests.sh",
+    main = "buck_tests/generate-tests.sh",
     resources = glob(
         [
             "buck_tests/**/*.js",

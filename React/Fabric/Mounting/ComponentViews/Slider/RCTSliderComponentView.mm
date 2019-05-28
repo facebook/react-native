@@ -13,8 +13,6 @@
 #import <react/components/slider/SliderComponentDescriptor.h>
 #import <react/components/slider/SliderLocalData.h>
 
-#import "MainQueueExecutor.h"
-
 using namespace facebook::react;
 
 @implementation RCTSliderComponentView {
@@ -109,7 +107,7 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<SliderComponentDescriptor>();
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
   const auto &oldSliderProps = *std::static_pointer_cast<const SliderProps>(oldProps ?: _props);
   const auto &newSliderProps = *std::static_pointer_cast<const SliderProps>(props);

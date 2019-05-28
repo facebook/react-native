@@ -363,10 +363,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       self->_pendingImageSource = nil;
     }
 
+    [self->_imageView.layer removeAnimationForKey:@"contents"];
     if (image.reactKeyframeAnimation) {
+      CGImageRef posterImageRef = (__bridge CGImageRef)[image.reactKeyframeAnimation.values firstObject];
+      if (!posterImageRef) {
+        return;
+      }
+      // Apply renderingMode to animated image.
+      self->_imageView.image = [[UIImage imageWithCGImage:posterImageRef] imageWithRenderingMode:self->_renderingMode];
       [self->_imageView.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
     } else {
-      [self->_imageView.layer removeAnimationForKey:@"contents"];
       self.image = image;
     }
 

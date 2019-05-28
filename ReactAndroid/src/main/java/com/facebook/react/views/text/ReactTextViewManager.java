@@ -116,6 +116,7 @@ public class ReactTextViewManager
       Context context,
       ReadableMap localData,
       ReadableMap props,
+      ReadableMap state,
       float width,
       YogaMeasureMode widthMode,
       float height,

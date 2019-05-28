@@ -18,11 +18,11 @@ if (__DEV__) {
     // not when debugging in chrome
     // TODO(t12832058) This check is broken
     if (!window.document) {
-      require('setupDevtools');
+      require('./Devtools/setupDevtools');
     }
 
     // Set up inspector
-    const JSInspector = require('JSInspector');
-    JSInspector.registerAgent(require('NetworkAgent'));
+    const JSInspector = require('../JSInspector/JSInspector');
+    JSInspector.registerAgent(require('../JSInspector/NetworkAgent'));
   }
 }

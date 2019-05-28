@@ -26,12 +26,13 @@
 #import <React/RCTSurfaceView+Internal.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUtils.h>
+
 #import <react/components/root/RootShadowNode.h>
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
-#import <react/imagemanager/ImageManager.h>
 #import <react/uimanager/ComponentDescriptorFactory.h>
 #import <react/utils/ContextContainer.h>
+#import <react/utils/ManagedObjectWrapper.h>
 
 #import "MainRunLoopEventBeat.h"
 #import "RuntimeEventBeat.h"
@@ -195,10 +196,10 @@ using namespace facebook::react;
     return _scheduler;
   }
 
-  auto componentRegistryFactory = [factory = RNWrapManagedObject(self.componentViewFactory)](
+  auto componentRegistryFactory = [factory = wrapManagedObject(self.componentViewFactory)](
                                       EventDispatcher::Shared const &eventDispatcher,
                                       ContextContainer::Shared const &contextContainer) {
-    return [(RCTComponentViewFactory *)RNUnwrapManagedObject(factory)
+    return [(RCTComponentViewFactory *)unwrapManagedObject(factory)
         createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
   };
 
@@ -251,14 +252,17 @@ using namespace facebook::react;
 
   _contextContainer->registerInstance(runtimeExecutor, "runtime-executor");
 
-  _contextContainer->registerInstance(std::make_shared<ImageManager>((__bridge void *)[_bridge imageLoader]), "ImageManager");
+  _contextContainer->registerInstance(wrapManagedObject([_bridge imageLoader]), "RCTImageLoader");
   return _contextContainer;
 }
 
 - (void)_startSurface:(RCTFabricSurface *)surface
 {
-  [_mountingManager.componentViewRegistry dequeueComponentViewWithComponentHandle:RootShadowNode::Handle()
-                                                                              tag:surface.rootTag];
+  RCTMountingManager *mountingManager = _mountingManager;
+  RCTExecuteOnMainQueue(^{
+    [mountingManager.componentViewRegistry dequeueComponentViewWithComponentHandle:RootShadowNode::Handle()
+                                                                               tag:surface.rootTag];
+  });
 
   LayoutContext layoutContext = {
     .pointScaleFactor = RCTScreenScale()
@@ -280,11 +284,14 @@ using namespace facebook::react;
 {
   [self._scheduler stopSurfaceWithSurfaceId:surface.rootTag];
 
-  UIView<RCTComponentViewProtocol> *rootView =
-    [_mountingManager.componentViewRegistry componentViewByTag:surface.rootTag];
-  [_mountingManager.componentViewRegistry enqueueComponentViewWithComponentHandle:RootShadowNode::Handle()
-                                                                              tag:surface.rootTag
-                                                                    componentView:rootView];
+  RCTMountingManager *mountingManager = _mountingManager;
+  RCTExecuteOnMainQueue(^{
+    UIView<RCTComponentViewProtocol> *rootView =
+        [mountingManager.componentViewRegistry componentViewByTag:surface.rootTag];
+    [mountingManager.componentViewRegistry enqueueComponentViewWithComponentHandle:RootShadowNode::Handle()
+                                                                               tag:surface.rootTag
+                                                                     componentView:rootView];
+  });
 
   [surface _unsetStage:(RCTSurfaceStagePrepared | RCTSurfaceStageMounted)];
 }
@@ -309,18 +316,13 @@ using namespace facebook::react;
 
 #pragma mark - RCTSchedulerDelegate
 
-- (void)schedulerDidFinishTransaction:(facebook::react::MountingTransaction &&)mountingTransaction
+- (void)schedulerDidFinishTransaction:(facebook::react::MountingCoordinator::Shared const &)mountingCoordinator
 {
-  RCTFabricSurface *surface = [_surfaceRegistry surfaceForRootTag:mountingTransaction.getSurfaceId()];
+  RCTFabricSurface *surface = [_surfaceRegistry surfaceForRootTag:mountingCoordinator->getSurfaceId()];
 
   [surface _setStage:RCTSurfaceStagePrepared];
 
-  [_mountingManager scheduleTransaction:std::move(mountingTransaction)];
-}
-
-- (void)schedulerOptimisticallyCreateComponentViewWithComponentHandle:(ComponentHandle)componentHandle
-{
-  [_mountingManager optimisticallyCreateComponentViewWithComponentHandle:componentHandle];
+  [_mountingManager scheduleTransaction:mountingCoordinator];
 }
 
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
@@ -404,20 +406,11 @@ using namespace facebook::react;
 
 @end
 
-@implementation RCTSurfacePresenter (Deprecated)
-
-- (RCTBridge *)bridge_DO_NOT_USE
-{
-  return _bridge;
-}
-
-@end
-
 @implementation RCTBridge (Deprecated)
 
 - (void)setSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
 {
-  objc_setAssociatedObject(self, @selector(surfacePresenter), surfacePresenter, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  objc_setAssociatedObject(self, @selector(surfacePresenter), surfacePresenter, OBJC_ASSOCIATION_ASSIGN);
 }
 
 - (RCTSurfacePresenter *)surfacePresenter

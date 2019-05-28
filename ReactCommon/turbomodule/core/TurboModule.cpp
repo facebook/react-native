@@ -16,11 +16,7 @@ TurboModule::TurboModule(const std::string &name, std::shared_ptr<JSCallInvoker>
   : name_(name),
     jsInvoker_(jsInvoker) {}
 
-TurboModule::~TurboModule() {
-  invalidate();
-}
-
-void TurboModule::invalidate() {}
+TurboModule::~TurboModule() {}
 
 jsi::Value TurboModule::get(jsi::Runtime& runtime, const jsi::PropNameID& propName) {
   std::string propNameUtf8 = propName.utf8(runtime);
@@ -37,15 +33,6 @@ jsi::Value TurboModule::get(jsi::Runtime& runtime, const jsi::PropNameID& propNa
     [this, meta](facebook::jsi::Runtime &rt, const facebook::jsi::Value &thisVal, const facebook::jsi::Value *args, size_t count) {
       return meta.invoker(rt, *this, args, count);
     });
-}
-
-jsi::Value TurboModule::invokeMethod(
-    jsi::Runtime &runtime,
-    TurboModuleMethodValueKind valueKind,
-    const std::string &methodName,
-    const jsi::Value *args,
-    size_t count) {
-  return jsi::Value::undefined();
 }
 
 } // namespace react

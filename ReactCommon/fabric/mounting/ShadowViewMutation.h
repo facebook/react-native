@@ -21,6 +21,8 @@ namespace react {
  * Use static methods to instantiate mutations of different types.
  */
 struct ShadowViewMutation final {
+  using List = std::vector<ShadowViewMutation>;
+
 #pragma mark - Designated Initializers
 
   /*

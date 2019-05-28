@@ -10,7 +10,8 @@
 
 'use strict';
 
-const NativeModules = require('NativeModules');
+import NativeDialogManagerAndroid from '../NativeModules/specs/NativeDialogManagerAndroid';
+const NativeModules = require('../BatchedBridge/NativeModules');
 
 export type Rationale = {
   title: string,
@@ -134,10 +135,13 @@ class PermissionsAndroid {
         permission,
       );
 
-      if (shouldShowRationale) {
+      if (shouldShowRationale && !!NativeDialogManagerAndroid) {
         return new Promise((resolve, reject) => {
-          NativeModules.DialogManagerAndroid.showAlert(
-            rationale,
+          const options = {
+            ...rationale,
+          };
+          NativeDialogManagerAndroid.showAlert(
+            options,
             () => reject(new Error('Error showing rationale')),
             () =>
               resolve(
