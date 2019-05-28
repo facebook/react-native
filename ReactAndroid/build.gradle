@@ -233,9 +233,15 @@ task cleanReactNdkLib(type: Exec) {
             'clean'
 }
 
+// usage : gradlew -Pparam="excludeLibs" <taskname>
 task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
+    def arg = project.hasProperty('param') ? project.property('param') : 'noArg'
     from "$buildDir/react-ndk/all"
-    exclude '**/libjsc.so'
+    if(arg.equals("excludeLibs")) {
+        exclude '**/*.so'
+    } else {
+        exclude '**/libjsc.so'
+    }
     into "$buildDir/react-ndk/exported"
 }
 

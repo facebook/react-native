@@ -96,7 +96,7 @@ jobs:
         inputs:
           gradleWrapperFile: gradlew
           # workingDirectory: src\react-native\
-          #options: # Optional
+          options: -Pparam='excludeLibs'
           tasks: installArchives
           publishJUnitResults: false
           #testResultsFiles: '**/TEST-*.xml' # Required when publishJUnitResults == True
