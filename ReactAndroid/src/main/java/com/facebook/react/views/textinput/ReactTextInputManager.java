@@ -715,6 +715,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setBorderStyle(borderStyle);
   }
 
+  @ReactProp(name = "showSoftInputOnFocus", defaultBoolean = true)
+  public void showKeyboardOnFocus(ReactEditText view, boolean showKeyboardOnFocus) {
+    view.setShowSoftInputOnFocus(showKeyboardOnFocus);
+  }
+
+
   @ReactPropGroup(names = {
       ViewProps.BORDER_WIDTH,
       ViewProps.BORDER_LEFT_WIDTH,
@@ -963,16 +969,22 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // Android will call us back for both the SELECTION_START span and SELECTION_END span in text
       // To prevent double calling back into js we cache the result of the previous call and only
       // forward it on if we have new values
-      if (mPreviousSelectionStart != start || mPreviousSelectionEnd != end) {
+
+      // Apparently Android might call this with an end value that is less than the start value
+      // Lets normalize them. See https://github.com/facebook/react-native/issues/18579
+      int realStart = Math.min(start, end);
+      int realEnd = Math.max(start, end);
+
+      if (mPreviousSelectionStart != realStart || mPreviousSelectionEnd != realEnd) {
         mEventDispatcher.dispatchEvent(
             new ReactTextInputSelectionEvent(
                 mReactEditText.getId(),
-                start,
-                end
+                realStart,
+                realEnd
             ));
 
-        mPreviousSelectionStart = start;
-        mPreviousSelectionEnd = end;
+        mPreviousSelectionStart = realStart;
+        mPreviousSelectionEnd = realEnd;
       }
     }
   }

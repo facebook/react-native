@@ -27,8 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)schedulerDidFinishTransaction:(facebook::react::MountingCoordinator::Shared const &)mountingCoordinator;
 
-- (void)schedulerOptimisticallyCreateComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
-
 @end
 
 /**

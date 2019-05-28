@@ -30,7 +30,6 @@
 #import <react/components/root/RootShadowNode.h>
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
-#import <react/imagemanager/ImageManager.h>
 #import <react/uimanager/ComponentDescriptorFactory.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
@@ -253,14 +252,17 @@ using namespace facebook::react;
 
   _contextContainer->registerInstance(runtimeExecutor, "runtime-executor");
 
-  _contextContainer->registerInstance(std::make_shared<ImageManager>((__bridge void *)[_bridge imageLoader]), "ImageManager");
+  _contextContainer->registerInstance(wrapManagedObject([_bridge imageLoader]), "RCTImageLoader");
   return _contextContainer;
 }
 
 - (void)_startSurface:(RCTFabricSurface *)surface
 {
-  [_mountingManager.componentViewRegistry dequeueComponentViewWithComponentHandle:RootShadowNode::Handle()
-                                                                              tag:surface.rootTag];
+  RCTMountingManager *mountingManager = _mountingManager;
+  RCTExecuteOnMainQueue(^{
+    [mountingManager.componentViewRegistry dequeueComponentViewWithComponentHandle:RootShadowNode::Handle()
+                                                                               tag:surface.rootTag];
+  });
 
   LayoutContext layoutContext = {
     .pointScaleFactor = RCTScreenScale()
@@ -282,11 +284,14 @@ using namespace facebook::react;
 {
   [self._scheduler stopSurfaceWithSurfaceId:surface.rootTag];
 
-  UIView<RCTComponentViewProtocol> *rootView =
-    [_mountingManager.componentViewRegistry componentViewByTag:surface.rootTag];
-  [_mountingManager.componentViewRegistry enqueueComponentViewWithComponentHandle:RootShadowNode::Handle()
-                                                                              tag:surface.rootTag
-                                                                    componentView:rootView];
+  RCTMountingManager *mountingManager = _mountingManager;
+  RCTExecuteOnMainQueue(^{
+    UIView<RCTComponentViewProtocol> *rootView =
+        [mountingManager.componentViewRegistry componentViewByTag:surface.rootTag];
+    [mountingManager.componentViewRegistry enqueueComponentViewWithComponentHandle:RootShadowNode::Handle()
+                                                                               tag:surface.rootTag
+                                                                     componentView:rootView];
+  });
 
   [surface _unsetStage:(RCTSurfaceStagePrepared | RCTSurfaceStageMounted)];
 }
@@ -318,11 +323,6 @@ using namespace facebook::react;
   [surface _setStage:RCTSurfaceStagePrepared];
 
   [_mountingManager scheduleTransaction:mountingCoordinator];
-}
-
-- (void)schedulerOptimisticallyCreateComponentViewWithComponentHandle:(ComponentHandle)componentHandle
-{
-  [_mountingManager optimisticallyCreateComponentViewWithComponentHandle:componentHandle];
 }
 
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer

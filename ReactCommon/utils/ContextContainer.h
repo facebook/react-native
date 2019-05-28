@@ -44,7 +44,7 @@ class ContextContainer final {
     instances_.insert({key, std::make_shared<T>(instance)});
 
 #ifndef NDEBUG
-    typeHashes_.insert({key, typeid(T).hash_code()});
+    typeNames_.insert({key, typeid(T).name()});
 #endif
   }
 
@@ -61,7 +61,7 @@ class ContextContainer final {
         instances_.find(key) != instances_.end() &&
         "ContextContainer doesn't have an instance for given key.");
     assert(
-        typeHashes_.at(key) == typeid(T).hash_code() &&
+        typeNames_.at(key) == typeid(T).name() &&
         "ContextContainer stores an instance of different type for given key.");
     return *std::static_pointer_cast<T>(instances_.at(key));
   }
@@ -81,7 +81,7 @@ class ContextContainer final {
     }
 
     assert(
-        typeHashes_.at(key) == typeid(T).hash_code() &&
+        typeNames_.at(key) == typeid(T).name() &&
         "ContextContainer stores an instance of different type for given key.");
 
     return *std::static_pointer_cast<T>(iterator->second);
@@ -92,7 +92,7 @@ class ContextContainer final {
   // Protected by mutex_`.
   mutable better::map<std::string, std::shared_ptr<void>> instances_;
 #ifndef NDEBUG
-  mutable better::map<std::string, size_t> typeHashes_;
+  mutable better::map<std::string, std::string> typeNames_;
 #endif
 };
 

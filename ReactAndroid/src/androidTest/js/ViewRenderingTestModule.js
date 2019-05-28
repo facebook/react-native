@@ -9,12 +9,11 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const React = require('React');
-const View = require('View');
-const StyleSheet = require('StyleSheet');
+const React = require('react');
+const {StyleSheet, View} = require('react-native');
+const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
+const renderApplication = require('react-native/Libraries/ReactNative/renderApplication');
 
-const renderApplication = require('renderApplication');
 class ViewSampleApp extends React.Component {
   state = {};
 

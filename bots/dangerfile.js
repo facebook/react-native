@@ -4,17 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * To test Danger during development, run yarn in this directory, then run:
- * $ yarn danger pr <URL to GitHub PR>
- *
  * @format
  */
 
 'use strict';
 
-const includes = require('lodash.includes');
-
 const {danger, fail, message, warn} = require('danger');
+const includes = require('lodash.includes');
 
 // Provides advice if a summary section is missing, or body is too short
 const includesSummary =

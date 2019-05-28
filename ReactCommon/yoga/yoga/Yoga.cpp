@@ -9,6 +9,7 @@
 #include <float.h>
 #include <string.h>
 #include <algorithm>
+#include <memory>
 #include "Utils.h"
 #include "YGNode.h"
 #include "YGNodePrint.h"
@@ -209,18 +210,13 @@ void YGNodeMarkDirtyAndPropogateToDescendants(const YGNodeRef node) {
 int32_t gConfigInstanceCount = 0;
 
 WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
-  const YGNodeRef node = new YGNode();
+  const YGNodeRef node = new YGNode{config};
   YGAssertWithConfig(
       config, node != nullptr, "Could not allocate memory for node");
 #ifdef YG_ENABLE_EVENTS
   Event::publish<Event::NodeAllocation>(node, {config});
 #endif
 
-  if (config->useWebDefaults) {
-    node->getStyle().flexDirection() = YGFlexDirectionRow;
-    node->getStyle().alignContent() = YGAlignStretch;
-  }
-  node->setConfig(config);
   return node;
 }
 
@@ -2863,11 +2859,8 @@ static void YGNodelayoutImpl(
         availableInnerMainDim = maxInnerMainDim;
       } else {
         if (!node->getConfig()->useLegacyStretchBehaviour &&
-            ((YGFloatIsUndefined(
-                  collectedFlexItemsValues.totalFlexGrowFactors) &&
-              collectedFlexItemsValues.totalFlexGrowFactors == 0) ||
-             (YGFloatIsUndefined(node->resolveFlexGrow()) &&
-              node->resolveFlexGrow() == 0))) {
+            (collectedFlexItemsValues.totalFlexGrowFactors == 0 ||
+             node->resolveFlexGrow() == 0)) {
           // If we don't have any children to flex or we can't flex the node
           // itself, space we've used is all space we need. Root node also
           // should be shrunk to minimum
@@ -3996,13 +3989,26 @@ static void YGRoundToPixelGrid(
   }
 }
 
+static void unsetUseLegacyFlagRecursively(YGNodeRef node) {
+  node->getConfig()->useLegacyStretchBehaviour = false;
+  for (auto child : node->getChildren()) {
+    unsetUseLegacyFlagRecursively(child);
+  }
+}
+
 void YGNodeCalculateLayoutWithContext(
     const YGNodeRef node,
     const float ownerWidth,
     const float ownerHeight,
     const YGDirection ownerDirection,
     void* layoutContext) {
-  marker::MarkerSection<YGMarkerLayout> marker{node};
+
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::LayoutPassStart>(node);
+#endif
+  // unique pointer to allow ending the marker early
+  std::unique_ptr<marker::MarkerSection<YGMarkerLayout>> marker{
+      new marker::MarkerSection<YGMarkerLayout>{node}};
 
   // Increment the generation count. This will force the recursive routine to
   // visit all dirty nodes at least once. Subsequent visits will be skipped if
@@ -4061,7 +4067,7 @@ void YGNodeCalculateLayoutWithContext(
           true,
           "initial",
           node->getConfig(),
-          marker.data,
+          marker->data,
           layoutContext)) {
     node->setPosition(
         node->getLayout().direction, ownerWidth, ownerHeight, ownerWidth);
@@ -4078,6 +4084,13 @@ void YGNodeCalculateLayoutWithContext(
 #endif
   }
 
+  // end marker here
+  marker = nullptr;
+
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::LayoutPassEnd>(node);
+#endif
+
   // We want to get rid off `useLegacyStretchBehaviour` from YGConfig. But we
   // aren't sure whether client's of yoga have gotten rid off this flag or not.
   // So logging this in YGLayout would help to find out the call sites depending
@@ -4087,16 +4100,16 @@ void YGNodeCalculateLayoutWithContext(
   // run experiments.
   if (node->getConfig()->shouldDiffLayoutWithoutLegacyStretchBehaviour &&
       node->didUseLegacyFlag()) {
-    const YGNodeRef originalNode = YGNodeDeepClone(node);
-    originalNode->resolveDimension();
+    const YGNodeRef nodeWithoutLegacyFlag = YGNodeDeepClone(node);
+    nodeWithoutLegacyFlag->resolveDimension();
     // Recursively mark nodes as dirty
-    originalNode->markDirtyAndPropogateDownwards();
+    nodeWithoutLegacyFlag->markDirtyAndPropogateDownwards();
     gCurrentGenerationCount++;
     // Rerun the layout, and calculate the diff
-    originalNode->setAndPropogateUseLegacyFlag(false);
+    unsetUseLegacyFlagRecursively(nodeWithoutLegacyFlag);
     YGMarkerLayoutData layoutMarkerData;
     if (YGLayoutNodeInternal(
-            originalNode,
+            nodeWithoutLegacyFlag,
             width,
             height,
             ownerDirection,
@@ -4106,37 +4119,37 @@ void YGNodeCalculateLayoutWithContext(
             ownerHeight,
             true,
             "initial",
-            originalNode->getConfig(),
+            nodeWithoutLegacyFlag->getConfig(),
             layoutMarkerData,
             layoutContext)) {
-      originalNode->setPosition(
-          originalNode->getLayout().direction,
+      nodeWithoutLegacyFlag->setPosition(
+          nodeWithoutLegacyFlag->getLayout().direction,
           ownerWidth,
           ownerHeight,
           ownerWidth);
       YGRoundToPixelGrid(
-          originalNode,
-          originalNode->getConfig()->pointScaleFactor,
+          nodeWithoutLegacyFlag,
+          nodeWithoutLegacyFlag->getConfig()->pointScaleFactor,
           0.0f,
           0.0f);
 
       // Set whether the two layouts are different or not.
       auto neededLegacyStretchBehaviour =
-          !originalNode->isLayoutTreeEqualToNode(*node);
+          !nodeWithoutLegacyFlag->isLayoutTreeEqualToNode(*node);
       node->setLayoutDoesLegacyFlagAffectsLayout(neededLegacyStretchBehaviour);
 
 #ifdef DEBUG
-      if (originalNode->getConfig()->printTree) {
+      if (nodeWithoutLegacyFlag->getConfig()->printTree) {
         YGNodePrint(
-            originalNode,
+            nodeWithoutLegacyFlag,
             (YGPrintOptions)(
                 YGPrintOptionsLayout | YGPrintOptionsChildren |
                 YGPrintOptionsStyle));
       }
 #endif
     }
-    YGConfigFreeRecursive(originalNode);
-    YGNodeFreeRecursive(originalNode);
+    YGConfigFreeRecursive(nodeWithoutLegacyFlag);
+    YGNodeFreeRecursive(nodeWithoutLegacyFlag);
   }
 }
 

@@ -7,6 +7,7 @@
 #include "event.h"
 #include <memory>
 #include <stdexcept>
+#include <mutex>
 
 #include <iostream>
 
@@ -15,31 +16,40 @@ namespace yoga {
 
 namespace {
 
-// For now, a single subscriber is enough.
-// This can be changed as soon as the need for more than one subscriber arises.
-std::function<Event::Subscriber>& globalEventSubscriber() {
-  static std::function<Event::Subscriber> subscriber = nullptr;
-  return subscriber;
+std::mutex& eventSubscribersMutex() {
+  static std::mutex subscribersMutex;
+  return subscribersMutex;
+}
+
+std::shared_ptr<Event::Subscribers>& eventSubscribers() {
+  static auto subscribers = std::make_shared<Event::Subscribers>();
+  return subscribers;
 }
 
 } // namespace
 
 void Event::reset() {
-  globalEventSubscriber() = nullptr;
+  eventSubscribers() = std::make_shared<Event::Subscribers>();
 }
 
 void Event::subscribe(std::function<Subscriber>&& subscriber) {
-  if (globalEventSubscriber() != nullptr) {
-    throw std::logic_error(
-        "Yoga currently supports only one global event subscriber");
-  }
-  globalEventSubscriber() = std::move(subscriber);
+  std::lock_guard<std::mutex> guard(eventSubscribersMutex());
+  eventSubscribers() =
+      std::make_shared<Event::Subscribers>(*eventSubscribers());
+  eventSubscribers()->push_back(subscriber);
 }
 
 void Event::publish(const YGNode& node, Type eventType, const Data& eventData) {
-  auto& subscriber = globalEventSubscriber();
-  if (subscriber) {
-    subscriber(node, eventType, eventData);
+  std::shared_ptr<Event::Subscribers> subscribers;
+  {
+    std::lock_guard<std::mutex> guard(eventSubscribersMutex());
+    subscribers = eventSubscribers();
+  }
+
+  for (auto& subscriber : *subscribers) {
+    if (subscriber) {
+      subscriber(node, eventType, eventData);
+    }
   }
 }
 

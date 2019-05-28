@@ -7,6 +7,7 @@
 #pragma once
 
 #include <functional>
+#include <vector>
 
 struct YGConfig;
 struct YGNode;
@@ -15,9 +16,16 @@ namespace facebook {
 namespace yoga {
 
 struct Event {
-  enum Type { NodeAllocation, NodeDeallocation, NodeLayout };
+  enum Type {
+    NodeAllocation,
+    NodeDeallocation,
+    NodeLayout,
+    LayoutPassStart,
+    LayoutPassEnd
+  };
   class Data;
   using Subscriber = void(const YGNode&, Type, Data);
+  using Subscribers = std::vector<std::function<Subscriber>>;
 
   template <Type E>
   struct TypedData {};

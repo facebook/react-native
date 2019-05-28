@@ -15,7 +15,6 @@
 #import <react/imagemanager/ImageRequest.h>
 #import <react/imagemanager/RCTImagePrimitivesConversions.h>
 
-#import "MainQueueExecutor.h"
 #import "RCTConversions.h"
 
 @implementation RCTImageComponentView {
@@ -51,7 +50,7 @@
   return concreteComponentDescriptorProvider<ImageComponentDescriptor>();
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
   const auto &oldImageProps = *std::static_pointer_cast<const ImageProps>(oldProps ?: _props);
   const auto &newImageProps = *std::static_pointer_cast<const ImageProps>(props);

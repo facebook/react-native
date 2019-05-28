@@ -177,6 +177,7 @@ inline void fromRawValue(const RawValue &value, YGDirection &result) {
     return;
   }
   LOG(FATAL) << "Could not parse YGDirection:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, YGFlexDirection &result) {
@@ -199,6 +200,7 @@ inline void fromRawValue(const RawValue &value, YGFlexDirection &result) {
     return;
   }
   LOG(FATAL) << "Could not parse YGFlexDirection:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, YGJustify &result) {
@@ -229,6 +231,7 @@ inline void fromRawValue(const RawValue &value, YGJustify &result) {
     return;
   }
   LOG(FATAL) << "Could not parse YGJustify:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, YGAlign &result) {
@@ -267,6 +270,7 @@ inline void fromRawValue(const RawValue &value, YGAlign &result) {
     return;
   }
   LOG(FATAL) << "Could not parse YGAlign:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, YGPositionType &result) {
@@ -281,6 +285,7 @@ inline void fromRawValue(const RawValue &value, YGPositionType &result) {
     return;
   }
   LOG(FATAL) << "Could not parse YGPositionType:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, YGWrap &result) {
@@ -299,6 +304,7 @@ inline void fromRawValue(const RawValue &value, YGWrap &result) {
     return;
   }
   LOG(FATAL) << "Could not parse YGWrap:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, YGOverflow &result) {
@@ -317,6 +323,7 @@ inline void fromRawValue(const RawValue &value, YGOverflow &result) {
     return;
   }
   LOG(FATAL) << "Could not parse YGOverflow:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, YGDisplay &result) {
@@ -331,6 +338,7 @@ inline void fromRawValue(const RawValue &value, YGDisplay &result) {
     return;
   }
   LOG(FATAL) << "Could not parse YGDisplay:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, YGStyle::ValueRepr &result) {
@@ -369,6 +377,7 @@ inline void fromRawValue(const RawValue &value, YGFloatOptional &result) {
     }
   }
   LOG(FATAL) << "Could not parse YGFloatOptional";
+  assert(false);
 }
 
 inline Float toRadians(const RawValue &value) {
@@ -473,6 +482,7 @@ inline void fromRawValue(const RawValue &value, PointerEventsMode &result) {
     return;
   }
   LOG(FATAL) << "Could not parse PointerEventsMode:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, BackfaceVisibility &result) {
@@ -491,6 +501,7 @@ inline void fromRawValue(const RawValue &value, BackfaceVisibility &result) {
     return;
   }
   LOG(FATAL) << "Could not parse BackfaceVisibility:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, BorderStyle &result) {
@@ -509,6 +520,7 @@ inline void fromRawValue(const RawValue &value, BorderStyle &result) {
     return;
   }
   LOG(FATAL) << "Could not parse BorderStyle:" << stringValue;
+  assert(false);
 }
 
 inline std::string toString(

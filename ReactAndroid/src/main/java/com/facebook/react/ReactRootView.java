@@ -507,7 +507,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           // TODO call surface's runApplication
         } else {
 
-          if (mWasMeasured) {
+          boolean isFabric = getUIManagerType() == FABRIC;
+          // Fabric requires to call updateRootLayoutSpecs before starting JS Application,
+          // this ensures the root will hace the correct pointScaleFactor.
+          if (mWasMeasured || isFabric) {
             updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
           }
 
@@ -517,7 +520,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           if (appProperties != null) {
             appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
           }
-          if (getUIManagerType() == FABRIC) {
+          if (isFabric) {
             appParams.putBoolean("fabric", true);
           }
 
@@ -645,21 +648,33 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
       final int heightDiff =
         DisplayMetricsHolder.getWindowDisplayMetrics().heightPixels - mVisibleViewArea.bottom;
-      if (mKeyboardHeight != heightDiff && heightDiff > mMinKeyboardHeightDetected) {
-        // keyboard is now showing, or the keyboard height has changed
+
+      boolean isKeyboardShowingOrKeyboardHeightChanged =
+        mKeyboardHeight != heightDiff && heightDiff > mMinKeyboardHeightDetected;
+      if (isKeyboardShowingOrKeyboardHeightChanged) {
         mKeyboardHeight = heightDiff;
-        WritableMap params = Arguments.createMap();
-        WritableMap coordinates = Arguments.createMap();
-        coordinates.putDouble("screenY", PixelUtil.toDIPFromPixel(mVisibleViewArea.bottom));
-        coordinates.putDouble("screenX", PixelUtil.toDIPFromPixel(mVisibleViewArea.left));
-        coordinates.putDouble("width", PixelUtil.toDIPFromPixel(mVisibleViewArea.width()));
-        coordinates.putDouble("height", PixelUtil.toDIPFromPixel(mKeyboardHeight));
-        params.putMap("endCoordinates", coordinates);
-        sendEvent("keyboardDidShow", params);
-      } else if (mKeyboardHeight != 0 && heightDiff <= mMinKeyboardHeightDetected) {
-        // keyboard is now hidden
+        sendEvent("keyboardDidShow",
+          createKeyboardEventPayload(
+            PixelUtil.toDIPFromPixel(mVisibleViewArea.bottom),
+            PixelUtil.toDIPFromPixel(mVisibleViewArea.left),
+            PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
+            PixelUtil.toDIPFromPixel(mKeyboardHeight))
+        );
+        return;
+      }
+
+      boolean isKeyboardHidden =
+        mKeyboardHeight != 0 && heightDiff <= mMinKeyboardHeightDetected;
+      if (isKeyboardHidden) {
         mKeyboardHeight = 0;
-        sendEvent("keyboardDidHide", null);
+        sendEvent("keyboardDidHide",
+          createKeyboardEventPayload(
+            PixelUtil.toDIPFromPixel(mVisibleViewArea.height()),
+            0,
+            PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
+            0
+          )
+        );
       }
     }
 
@@ -742,6 +757,21 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           .getCurrentReactContext()
           .getNativeModule(DeviceInfoModule.class)
           .emitUpdateDimensionsEvent();
+    }
+
+    private WritableMap createKeyboardEventPayload(double screenY, double screenX, double width, double height) {
+      WritableMap keyboardEventParams = Arguments.createMap();
+      WritableMap endCoordinates = Arguments.createMap();
+
+      endCoordinates.putDouble("height", height);
+      endCoordinates.putDouble("screenX", screenX);
+      endCoordinates.putDouble("width", width);
+      endCoordinates.putDouble("screenY", screenY);
+
+      keyboardEventParams.putMap("endCoordinates", endCoordinates);
+      keyboardEventParams.putString("easing", "keyboard");
+      keyboardEventParams.putDouble("duration", 0);
+      return keyboardEventParams;
     }
   }
 }

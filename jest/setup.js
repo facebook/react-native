@@ -259,7 +259,11 @@ const mockNativeModules = {
     removeListeners: jest.fn(),
   },
   SourceCode: {
-    scriptURL: null,
+    getConstants() {
+      return {
+        scriptURL: null,
+      };
+    },
   },
   StatusBarManager: {
     HEIGHT: 42,
@@ -317,8 +321,7 @@ const mockNativeModules = {
     },
   },
   BlobModule: {
-    BLOB_URI_SCHEME: 'content',
-    BLOB_URI_HOST: null,
+    getConstants: () => ({BLOB_URI_SCHEME: 'content', BLOB_URI_HOST: null}),
     addNetworkingHandler: jest.fn(),
     enableBlobSupport: jest.fn(),
     disableBlobSupport: jest.fn(),
@@ -360,3 +363,8 @@ jest.doMock('../Libraries/ReactNative/requireNativeComponent', () => {
       }
     };
 });
+
+jest.doMock(
+  '../Libraries/Utilities/verifyComponentAttributeEquivalence',
+  () => function() {},
+);

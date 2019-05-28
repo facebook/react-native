@@ -95,12 +95,14 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
       [str appendString:label];
     }
   }
-  return str;
+  return str.length == 0 ? nil : str;
 }
 
 @implementation RCTView
 {
   UIColor *_backgroundColor;
+  NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsNameMap;
+  NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsLabelMap;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -162,11 +164,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     return nil;
   }
 
+  accessibilityActionsNameMap = [[NSMutableDictionary alloc] init];
+  accessibilityActionsLabelMap = [[NSMutableDictionary alloc] init];
   NSMutableArray *actions = [NSMutableArray array];
-  for (NSString *action in self.accessibilityActions) {
-    [actions addObject:[[UIAccessibilityCustomAction alloc] initWithName:action
-                                                                  target:self
-                                                                selector:@selector(didActivateAccessibilityCustomAction:)]];
+  for (NSDictionary *action in self.accessibilityActions) {
+    if (action[@"name"]) {
+      accessibilityActionsNameMap[action[@"name"]] = action;
+    }
+    if (action[@"label"]) {
+      accessibilityActionsLabelMap[action[@"label"]] = action;
+      [actions addObject:[[UIAccessibilityCustomAction alloc] initWithName:action[@"label"]
+                                                                    target:self
+                                                                  selector:@selector(didActivateAccessibilityCustomAction:)]];
+    }
   }
 
   return [actions copy];
@@ -174,15 +184,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
 {
-  if (!_onAccessibilityAction) {
+  if (!_onAccessibilityAction || !accessibilityActionsLabelMap) {
     return NO;
   }
 
-  _onAccessibilityAction(@{
-    @"action": action.name,
-    @"target": self.reactTag
-  });
+  // iOS defines the name as the localized label, so use our map to convert this back to the non-localized action namne when passing to JS. This allows for standard action names across platforms.
 
+  NSDictionary *actionObject = accessibilityActionsLabelMap[action.name];
+  if (actionObject) {
+    _onAccessibilityAction(@{
+      @"actionName": actionObject[@"name"],
+      @"actionTarget": self.reactTag
+    });
+  }
   return YES;
 }
 
@@ -194,6 +208,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
         return @"1";
       } else if ([state isEqualToString:@"unchecked"]) {
         return @"0";
+      }
+    }
+    for (NSString *state in self.accessibilityState) {
+      id val = self.accessibilityState[state];
+      if (!val) {
+        continue;
+      }
+      if ([state isEqualToString:@"checked"] && [val isKindOfClass:[NSNumber class]]) {
+        return [val boolValue] ? @"1" : @"0";
       }
     }
   }
@@ -229,6 +252,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
                           @"busy" : @"busy",
                           @"expanded" : @"expanded",
                           @"collapsed" : @"collapsed",
+                          @"mixed": @"mixed",
                           };
   });
   NSString *roleDescription = self.accessibilityRole ? roleDescriptions[self.accessibilityRole]: nil;
@@ -241,8 +265,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
       [valueComponents addObject:stateDescription];
     }
   }
+  for (NSString *state in self.accessibilityState) {
+    id val = self.accessibilityState[state];
+    if (!val) {
+      continue;
+    }
+    if ([state isEqualToString:@"checked"]) {
+      if ([val isKindOfClass:[NSNumber class]]) {
+        [valueComponents addObject:stateDescriptions[[val boolValue] ? @"checked" : @"unchecked"]];
+      } else if ([val isKindOfClass:[NSString class]] && [val isEqualToString:@"mixed"]) {
+        [valueComponents addObject:stateDescriptions[@"mixed"]];
+      }
+    }
+    if ([state isEqualToString:@"expanded"] && [val isKindOfClass:[NSNumber class]]) {
+      [valueComponents addObject:stateDescriptions[[val boolValue] ? @"expanded" : @"collapsed"]];
+    }
+    if ([state isEqualToString:@"busy"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
+      [valueComponents addObject:stateDescriptions[@"busy"]];
+    }
+  }
   if (valueComponents.count > 0) {
-    return [valueComponents componentsJoinedByString:@",  "];
+    return [valueComponents componentsJoinedByString:@", "];
   }
   return nil;
 }
@@ -327,9 +370,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return NO;
 }
 
+- (BOOL)performAccessibilityAction:(NSString *) name
+{
+  if (_onAccessibilityAction && accessibilityActionsNameMap[name]) {
+    _onAccessibilityAction(@{
+                             @"actionName" : name,
+                             @"actionTarget" : self.reactTag
+                             });
+    return YES;
+  }
+  return NO;
+}
+
 - (BOOL)accessibilityActivate
 {
-  if (_onAccessibilityTap) {
+  if ([self performAccessibilityAction:@"activate"]) {
+    return YES;
+  }
+  else if (_onAccessibilityTap) {
     _onAccessibilityTap(nil);
     return YES;
   } else {
@@ -339,7 +397,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (BOOL)accessibilityPerformMagicTap
 {
-  if (_onMagicTap) {
+  if ([self performAccessibilityAction:@"magicTap"]) {
+    return YES;
+  } else if (_onMagicTap) {
     _onMagicTap(nil);
     return YES;
   } else {
@@ -349,12 +409,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (BOOL)accessibilityPerformEscape
 {
-  if (_onAccessibilityEscape) {
+  if ([self performAccessibilityAction:@"escape"]) {
+    return YES;
+  } else if (_onAccessibilityEscape) {
     _onAccessibilityEscape(nil);
     return YES;
   } else {
     return NO;
   }
+}
+
+- (void)accessibilityIncrement
+{
+  [self performAccessibilityAction:@"increment"];
+}
+
+- (void)accessibilityDecrement
+{
+  [self performAccessibilityAction:@"decrement"];
 }
 
 - (NSString *)description

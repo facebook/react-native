@@ -12,7 +12,7 @@
 
 const symbolicateStackTrace = require('../../Core/Devtools/symbolicateStackTrace');
 
-import type {StackFrame} from '../../Core/Devtools/parseErrorStack';
+import type {StackFrame} from '../../Core/NativeExceptionsManager';
 
 type CacheKey = string;
 

@@ -12,7 +12,7 @@
 
 const invariant = require('invariant');
 
-import type EventSubscription from 'EventSubscription';
+import type EventSubscription from './EventSubscription';
 
 /**
  * EventSubscriptionVendor stores a set of EventSubscriptions that are

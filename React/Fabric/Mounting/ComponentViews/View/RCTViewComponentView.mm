@@ -94,7 +94,7 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<ViewComponentDescriptor>();
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
 #ifndef NS_BLOCK_ASSERTIONS
   auto propsRawPtr = _props.get();
@@ -185,8 +185,8 @@ using namespace facebook::react;
   }
 
   // `overflow`
-  if (oldViewProps.yogaStyle.overflow() != newViewProps.yogaStyle.overflow()) {
-    self.clipsToBounds = newViewProps.yogaStyle.overflow() != YGOverflowVisible;
+  if (oldViewProps.getClipsContentToBounds() != newViewProps.getClipsContentToBounds()) {
+    self.clipsToBounds = newViewProps.getClipsContentToBounds();
     needsInvalidateLayer = YES;
   }
 
@@ -243,13 +243,14 @@ using namespace facebook::react;
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
 }
 
-- (void)updateEventEmitter:(SharedEventEmitter)eventEmitter
+- (void)updateEventEmitter:(EventEmitter::Shared const &)eventEmitter
 {
   assert(std::dynamic_pointer_cast<ViewEventEmitter const>(eventEmitter));
   _eventEmitter = std::static_pointer_cast<ViewEventEmitter const>(eventEmitter);
 }
 
-- (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics oldLayoutMetrics:(LayoutMetrics)oldLayoutMetrics
+- (void)updateLayoutMetrics:(LayoutMetrics const &)layoutMetrics
+           oldLayoutMetrics:(LayoutMetrics const &)oldLayoutMetrics
 {
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
 
@@ -332,12 +333,10 @@ static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
 
 static RCTBorderColors RCTBorderColorsFromBorderColors(BorderColors borderColors)
 {
-  return RCTBorderColors{
-    .left = RCTCGColorRefUnretainedFromSharedColor(borderColors.left),
-    .top =  RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
-    .bottom =  RCTCGColorRefUnretainedFromSharedColor(borderColors.bottom),
-    .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)
-  };
+  return RCTBorderColors{.left = RCTCGColorRefUnretainedFromSharedColor(borderColors.left),
+                         .top = RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
+                         .bottom = RCTCGColorRefUnretainedFromSharedColor(borderColors.bottom),
+                         .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)};
 }
 
 static UIEdgeInsets UIEdgeInsetsFromBorderInsets(EdgeInsets edgeInsets)
@@ -412,8 +411,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     CGColorRelease(borderColor);
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
     layer.backgroundColor = _backgroundColor.CGColor;
-    _contentView.layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
-    _contentView.layer.masksToBounds = YES;
   } else {
     if (!_borderLayer) {
       _borderLayer = [[CALayer alloc] init];
@@ -427,8 +424,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.borderWidth = 0;
     layer.borderColor = nil;
     layer.cornerRadius = 0;
-    _contentView.layer.cornerRadius = 0;
-    _contentView.layer.masksToBounds = NO;
 
     UIImage *image = RCTGetBorderImage(
         RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),
@@ -567,6 +562,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point
 {
   return _eventEmitter;
+}
+
+- (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN
+{
+  return RCTNSStringFromString([[self class] componentDescriptorProvider].name);
 }
 
 @end

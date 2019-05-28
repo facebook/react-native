@@ -31,7 +31,6 @@ require('./setUpGlobals');
 require('./polyfillES6Collections');
 require('./setUpSystrace');
 require('./setUpErrorHandling');
-require('./checkNativeVersion');
 require('./polyfillPromise');
 require('./setUpRegeneratorRuntime');
 require('./setUpTimers');
@@ -41,6 +40,7 @@ require('./setUpNavigator');
 require('./setUpBatchedBridge');
 require('./setUpSegmentFetcher');
 if (__DEV__) {
+  require('./checkNativeVersion');
   require('./setUpDeveloperTools');
 }
 

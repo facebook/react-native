@@ -12,6 +12,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.provider.Settings;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -59,7 +60,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
         String action = intent.getAction();
         Uri uri = intent.getData();
 
-        if (Intent.ACTION_VIEW.equals(action) && uri != null) {
+        if (uri != null && (Intent.ACTION_VIEW.equals(action) || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
           initialURL = uri.toString();
         }
       }

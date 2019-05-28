@@ -81,7 +81,7 @@ try {
     }
   }
 
-  if (exec('yarn pack').code) {
+  if (exec('npm pack').code) {
     echo('Failed to pack react-native');
     exitCode = 1;
     throw Error(exitCode);
