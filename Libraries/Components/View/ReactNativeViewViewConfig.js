@@ -10,12 +10,12 @@
 
 'use strict';
 
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+
 const ReactNativeViewConfig = {
   uiViewClassName: 'RCTView',
-  baseModuleName: null,
-  Manager: 'ViewManager',
   Commands: {},
-  Constants: {},
   bubblingEventTypes: {
     topBlur: {
       phasedRegistrationNames: {
@@ -53,6 +53,12 @@ const ReactNativeViewConfig = {
         captured: 'onPressCapture',
       },
     },
+    topSelect: {
+      phasedRegistrationNames: {
+        bubbled: 'onSelect',
+        captured: 'onSelectCapture',
+      },
+    },
     topSubmitEditing: {
       phasedRegistrationNames: {
         bubbled: 'onSubmitEditing',
@@ -85,6 +91,9 @@ const ReactNativeViewConfig = {
     },
   },
   directEventTypes: {
+    performAction: {
+      registrationName: 'onAccessibilityAction',
+    },
     topAccessibilityAction: {
       registrationName: 'onAccessibilityAction',
     },
@@ -94,11 +103,47 @@ const ReactNativeViewConfig = {
     topAccessibilityTap: {
       registrationName: 'onAccessibilityTap',
     },
+    topClick: {
+      registrationName: 'onClick',
+    },
+    topContentSizeChange: {
+      registrationName: 'onContentSizeChange',
+    },
     topLayout: {
       registrationName: 'onLayout',
     },
+    topLoadingError: {
+      registrationName: 'onLoadingError',
+    },
+    topLoadingFinish: {
+      registrationName: 'onLoadingFinish',
+    },
+    topLoadingStart: {
+      registrationName: 'onLoadingStart',
+    },
     topMagicTap: {
       registrationName: 'onMagicTap',
+    },
+    topMessage: {
+      registrationName: 'onMessage',
+    },
+    topMomentumScrollBegin: {
+      registrationName: 'onMomentumScrollBegin',
+    },
+    topMomentumScrollEnd: {
+      registrationName: 'onMomentumScrollEnd',
+    },
+    topScroll: {
+      registrationName: 'onScroll',
+    },
+    topScrollBeginDrag: {
+      registrationName: 'onScrollBeginDrag',
+    },
+    topScrollEndDrag: {
+      registrationName: 'onScrollEndDrag',
+    },
+    topSelectionChange: {
+      registrationName: 'onSelectionChange',
     },
   },
   validAttributes: {
@@ -156,6 +201,7 @@ const ReactNativeViewConfig = {
     flexGrow: true,
     flexShrink: true,
     flexWrap: true,
+    hasTVPreferredFocus: true,
     height: true,
     hitSlop: {diff: (require('../../Utilities/differ/insetsDiffer'): any)},
     importantForAccessibility: true,
@@ -174,8 +220,15 @@ const ReactNativeViewConfig = {
     maxWidth: true,
     minHeight: true,
     minWidth: true,
+    nativeBackgroundAndroid: true,
+    nativeForegroundAndroid: true,
     nativeID: true,
     needsOffscreenAlphaCompositing: true,
+    nextFocusDown: true,
+    nextFocusForward: true,
+    nextFocusLeft: true,
+    nextFocusRight: true,
+    nextFocusUp: true,
     onAccessibilityAction: true,
     onAccessibilityEscape: true,
     onAccessibilityTap: true,
@@ -325,5 +378,9 @@ const ReactNativeViewConfig = {
     zIndex: true,
   },
 };
+
+verifyComponentAttributeEquivalence('RCTView', ReactNativeViewConfig);
+
+ReactNativeViewConfigRegistry.register('RCTView', () => ReactNativeViewConfig);
 
 module.exports = ReactNativeViewConfig;
