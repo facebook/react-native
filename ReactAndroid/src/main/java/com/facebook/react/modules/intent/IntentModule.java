@@ -60,9 +60,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
         String action = intent.getAction();
         Uri uri = intent.getData();
 
-        if (uri != null &&
-          (Intent.ACTION_VIEW.equals(action) ||
-           NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
+        if (uri != null && (Intent.ACTION_VIEW.equals(action) || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
           initialURL = uri.toString();
         }
       }
