@@ -7,12 +7,13 @@
 
 package com.facebook.react;
 
-import javax.annotation.Nullable;
-
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.KeyEvent;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
@@ -50,24 +51,6 @@ public abstract class ReactActivity extends AppCompatActivity
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mDelegate.onCreate(savedInstanceState);
-  }
-
-  @Override
-  protected void onPause() {
-    super.onPause();
-    mDelegate.onPause();
-  }
-
-  @Override
-  protected void onResume() {
-    super.onResume();
-    mDelegate.onResume();
-  }
-
-  @Override
-  protected void onDestroy() {
-    super.onDestroy();
-    mDelegate.onDestroy();
   }
 
   @Override
@@ -120,8 +103,8 @@ public abstract class ReactActivity extends AppCompatActivity
   @Override
   public void onRequestPermissionsResult(
     int requestCode,
-    String[] permissions,
-    int[] grantResults) {
+    @NonNull String[] permissions,
+    @NonNull int[] grantResults) {
     mDelegate.onRequestPermissionsResult(requestCode, permissions, grantResults);
   }
 

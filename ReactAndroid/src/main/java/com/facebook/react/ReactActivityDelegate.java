@@ -13,22 +13,26 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionListener;
 
-import javax.annotation.Nullable;
-
 /**
  * Delegate class for {@link ReactActivity} and {@link ReactFragmentActivity}. You can subclass this
  * to provide custom implementations for e.g. {@link #getReactNativeHost()}, if your Application
  * class doesn't implement {@link ReactApplication}.
  */
-public class ReactActivityDelegate {
+public class ReactActivityDelegate implements LifecycleObserver {
 
-  private final @Nullable Activity mActivity;
+  private final @NonNull ReactActivity mActivity;
   private final @Nullable String mMainComponentName;
 
   private @Nullable ReactRootView mReactRootView;
@@ -36,14 +40,9 @@ public class ReactActivityDelegate {
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable Callback mPermissionsCallback;
 
-  @Deprecated
-  public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
+  public ReactActivityDelegate(@NonNull ReactActivity activity, @Nullable String mainComponentName) {
     mActivity = activity;
-    mMainComponentName = mainComponentName;
-  }
-
-  public ReactActivityDelegate(ReactActivity activity, @Nullable String mainComponentName) {
-    mActivity = activity;
+    mActivity.getLifecycle().addObserver(this);
     mMainComponentName = mainComponentName;
   }
 
@@ -94,12 +93,14 @@ public class ReactActivityDelegate {
     getPlainActivity().setContentView(mReactRootView);
   }
 
+  @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
   protected void onPause() {
     if (getReactNativeHost().hasInstance()) {
       getReactNativeHost().getReactInstanceManager().onHostPause(getPlainActivity());
     }
   }
 
+  @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
   protected void onResume() {
     if (getReactNativeHost().hasInstance()) {
       getReactNativeHost().getReactInstanceManager().onHostResume(
@@ -113,6 +114,7 @@ public class ReactActivityDelegate {
     }
   }
 
+  @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
   protected void onDestroy() {
     if (mReactRootView != null) {
       mReactRootView.unmountReactApplication();
