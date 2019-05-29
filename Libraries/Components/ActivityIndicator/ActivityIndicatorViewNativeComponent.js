@@ -18,6 +18,8 @@ import type {
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
@@ -61,4 +63,6 @@ type ActivityIndicatorNativeType = CodegenNativeComponent<
   Options,
 >;
 
-module.exports = ((require('./ActivityIndicatorViewNativeViewConfig'): any): ActivityIndicatorNativeType);
+module.exports = ((requireNativeComponent(
+  'RCTActivityIndicatorView',
+): any): ActivityIndicatorNativeType);
