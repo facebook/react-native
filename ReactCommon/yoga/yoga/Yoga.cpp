@@ -253,7 +253,13 @@ static YGConfigRef YGConfigClone(const YGConfig& oldConfig) {
 }
 
 static YGNodeRef YGNodeDeepClone(YGNodeRef oldNode) {
-  YGNodeRef node = YGNodeClone(oldNode);
+  auto config = YGConfigClone(*oldNode->getConfig());
+  auto node = new YGNode{*oldNode, config};
+  node->setOwner(nullptr);
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeAllocation>(node, {node->getConfig()});
+#endif
+
   YGVector vec = YGVector();
   vec.reserve(oldNode->getChildren().size());
   YGNodeRef childNode = nullptr;
@@ -263,10 +269,6 @@ static YGNodeRef YGNodeDeepClone(YGNodeRef oldNode) {
     vec.push_back(childNode);
   }
   node->setChildren(vec);
-
-  if (oldNode->getConfig() != nullptr) {
-    node->setConfig(YGConfigClone(*(oldNode->getConfig())));
-  }
 
   return node;
 }

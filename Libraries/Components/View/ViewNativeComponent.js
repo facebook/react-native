@@ -12,10 +12,12 @@
 
 const ReactNative = require('../../Renderer/shims/ReactNative');
 
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+
 import type {ViewProps} from './ViewPropTypes';
 
 type ViewNativeComponentType = Class<ReactNative.NativeComponent<ViewProps>>;
 
-require('ReactNativeViewViewConfig');
+const NativeViewComponent = requireNativeComponent('RCTView');
 
-module.exports = (('RCTView': any): ViewNativeComponentType);
+module.exports = ((NativeViewComponent: any): ViewNativeComponentType);

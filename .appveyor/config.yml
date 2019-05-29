@@ -38,7 +38,7 @@ build_script:
   - yarn run flow-check-android
   - yarn run flow-check-ios
   - yarn run test
-  - gradlew.bat RNTester:android:app:assembleRelease
+  # - gradlew.bat RNTester:android:app:assembleRelease
 
 cache:
   - node_modules
