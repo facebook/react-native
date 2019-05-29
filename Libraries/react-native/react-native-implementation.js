@@ -206,7 +206,7 @@ module.exports = {
     return require('DatePickerAndroid');
   },
   get DeviceInfo() {
-    return require('DeviceInfo');
+    return require('NativeDeviceInfo').default;
   },
   get Dimensions() {
     return require('Dimensions');
