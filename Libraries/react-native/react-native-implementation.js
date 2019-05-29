@@ -224,7 +224,8 @@ module.exports = {
     warnOnce(
       'imagePickerIOS-moved',
       'ImagePickerIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/image-picker-ios' instead of 'react-native'. " +
+        "Please upgrade to use either '@react-native-community/image-picker-ios' or 'expo-image-picker'. " +
+        'If you cannot upgrade to a different library, please install the deprecated image-picker-ios. ' +
         'See https://github.com/react-native-community/react-native-image-picker-ios',
     );
     return require('ImagePickerIOS');
