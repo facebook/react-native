@@ -44,7 +44,7 @@ def DoubleConversionPath = '../double-conversion'
 def FollyPath = '..'
 def GlogPath = '..'
 def JSCPath = '../jsc'
-def V8Path = 'packages/Office.Google_V8.Android.7.0.276.32'
+def V8Path = 'packages/Office.Google_V8.Android.7.0.276.32-v1'
 
 def hasBoostNuget = file(BoostNugetPath).exists()
 
