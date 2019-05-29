@@ -221,6 +221,12 @@ module.exports = {
     return require('I18nManager');
   },
   get ImagePickerIOS() {
+    warnOnce(
+      'imagePickerIOS-moved',
+      'ImagePickerIOS has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/image-picker-ios' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-image-picker-ios',
+    );
     return require('ImagePickerIOS');
   },
   get InteractionManager() {
