@@ -167,6 +167,9 @@ exports.examples = [
     title: 'Picker with no listener',
     render: function(): React.Element<typeof PromptPickerExample> {
       return (
+        /* $FlowFixMe(>=0.99.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.99 was deployed. To see the error, delete
+         * this comment and run Flow. */
         <>
           <Picker style={styles.picker}>
             <Item label="hello" value="key0" />

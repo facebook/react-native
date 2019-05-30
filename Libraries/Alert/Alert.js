@@ -150,7 +150,6 @@ class Alert {
         },
         (id, value) => {
           const cb = callbacks[id];
-          // $FlowFixMe
           cb && cb(value);
         },
       );
