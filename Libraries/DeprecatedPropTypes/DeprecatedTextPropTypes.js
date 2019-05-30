@@ -10,11 +10,11 @@
 
 'use strict';
 
-const DeprecatedColorPropType = require('DeprecatedColorPropType');
-const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
-const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
+const DeprecatedColorPropType = require('./DeprecatedColorPropType');
+const DeprecatedEdgeInsetsPropType = require('./DeprecatedEdgeInsetsPropType');
+const DeprecatedStyleSheetPropType = require('./DeprecatedStyleSheetPropType');
 const PropTypes = require('prop-types');
-const TextStylePropTypes = require('TextStylePropTypes');
+const TextStylePropTypes = require('../Text/TextStylePropTypes');
 
 const stylePropType = DeprecatedStyleSheetPropType(TextStylePropTypes);
 

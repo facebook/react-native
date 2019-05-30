@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,7 +12,7 @@ namespace react {
 
 #pragma mark - Touches
 
-static jsi::Value touchPayload(jsi::Runtime &runtime, const Touch &touch) {
+static jsi::Value touchPayload(jsi::Runtime &runtime, Touch const &touch) {
   auto object = jsi::Object(runtime);
   object.setProperty(runtime, "locationX", touch.offsetPoint.x);
   object.setProperty(runtime, "locationY", touch.offsetPoint.y);
@@ -29,10 +29,10 @@ static jsi::Value touchPayload(jsi::Runtime &runtime, const Touch &touch) {
 
 static jsi::Value touchesPayload(
     jsi::Runtime &runtime,
-    const Touches &touches) {
+    Touches const &touches) {
   auto array = jsi::Array(runtime, touches.size());
   int i = 0;
-  for (const auto &touch : touches) {
+  for (auto const &touch : touches) {
     array.setValueAtIndex(runtime, i++, touchPayload(runtime, touch));
   }
   return array;
@@ -40,7 +40,7 @@ static jsi::Value touchesPayload(
 
 static jsi::Value touchEventPayload(
     jsi::Runtime &runtime,
-    const TouchEvent &event) {
+    TouchEvent const &event) {
   auto object = jsi::Object(runtime);
   object.setProperty(
       runtime, "touches", touchesPayload(runtime, event.touches));
@@ -52,9 +52,9 @@ static jsi::Value touchEventPayload(
 }
 
 void TouchEventEmitter::dispatchTouchEvent(
-    const std::string &type,
-    const TouchEvent &event,
-    const EventPriority &priority) const {
+    std::string const &type,
+    TouchEvent const &event,
+    EventPriority const &priority) const {
   dispatchEvent(
       type,
       [event](jsi::Runtime &runtime) {
@@ -63,19 +63,19 @@ void TouchEventEmitter::dispatchTouchEvent(
       priority);
 }
 
-void TouchEventEmitter::onTouchStart(const TouchEvent &event) const {
+void TouchEventEmitter::onTouchStart(TouchEvent const &event) const {
   dispatchTouchEvent("touchStart", event, EventPriority::SynchronousUnbatched);
 }
 
-void TouchEventEmitter::onTouchMove(const TouchEvent &event) const {
+void TouchEventEmitter::onTouchMove(TouchEvent const &event) const {
   dispatchTouchEvent("touchMove", event, EventPriority::SynchronousBatched);
 }
 
-void TouchEventEmitter::onTouchEnd(const TouchEvent &event) const {
+void TouchEventEmitter::onTouchEnd(TouchEvent const &event) const {
   dispatchTouchEvent("touchEnd", event, EventPriority::SynchronousBatched);
 }
 
-void TouchEventEmitter::onTouchCancel(const TouchEvent &event) const {
+void TouchEventEmitter::onTouchCancel(TouchEvent const &event) const {
   dispatchTouchEvent("touchCancel", event, EventPriority::SynchronousBatched);
 }
 

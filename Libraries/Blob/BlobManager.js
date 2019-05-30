@@ -10,11 +10,12 @@
 
 'use strict';
 
-const Blob = require('Blob');
-const BlobRegistry = require('BlobRegistry');
-const {BlobModule} = require('NativeModules');
+const Blob = require('./Blob');
+const BlobRegistry = require('./BlobRegistry');
+import NativeBlobModule from './NativeBlobModule';
+import invariant from 'invariant';
 
-import type {BlobData, BlobOptions} from 'BlobTypes';
+import type {BlobData, BlobOptions, BlobCollector} from './BlobTypes';
 
 /*eslint-disable no-bitwise */
 /*eslint-disable eqeqeq */
@@ -31,6 +32,21 @@ function uuidv4(): string {
   });
 }
 
+// **Temporary workaround**
+// TODO(#24654): Use turbomodules for the Blob module.
+// Blob collector is a jsi::HostObject that is used by native to know
+// when the a Blob instance is deallocated. This allows to free the
+// underlying native resources. This is a hack to workaround the fact
+// that the current bridge infra doesn't allow to track js objects
+// deallocation. Ideally the whole Blob object should be a jsi::HostObject.
+function createBlobCollector(blobId: string): BlobCollector | null {
+  if (global.__blobCollectorProvider == null) {
+    return null;
+  } else {
+    return global.__blobCollectorProvider(blobId);
+  }
+}
+
 /**
  * Module to manage blobs. Wrapper around the native blob module.
  */
@@ -38,7 +54,7 @@ class BlobManager {
   /**
    * If the native blob module is available.
    */
-  static isAvailable = !!BlobModule;
+  static isAvailable = !!NativeBlobModule;
 
   /**
    * Create blob from existing array of blobs.
@@ -47,6 +63,8 @@ class BlobManager {
     parts: Array<Blob | string>,
     options?: BlobOptions,
   ): Blob {
+    invariant(NativeBlobModule, 'NativeBlobModule is available.');
+
     const blobId = uuidv4();
     const items = parts.map(part => {
       if (
@@ -77,7 +95,7 @@ class BlobManager {
       }
     }, 0);
 
-    BlobModule.createFromParts(items, blobId);
+    NativeBlobModule.createFromParts(items, blobId);
 
     return BlobManager.createFromOptions({
       blobId,
@@ -94,18 +112,31 @@ class BlobManager {
    */
   static createFromOptions(options: BlobData): Blob {
     BlobRegistry.register(options.blobId);
-    return Object.assign(Object.create(Blob.prototype), {data: options});
+    return Object.assign(Object.create(Blob.prototype), {
+      data:
+        // Reuse the collector instance when creating from an existing blob.
+        // This will make sure that the underlying resource is only deallocated
+        // when all blobs that refer to it are deallocated.
+        options.__collector == null
+          ? {
+              ...options,
+              __collector: createBlobCollector(options.blobId),
+            }
+          : options,
+    });
   }
 
   /**
    * Deallocate resources for a blob.
    */
   static release(blobId: string): void {
+    invariant(NativeBlobModule, 'NativeBlobModule is available.');
+
     BlobRegistry.unregister(blobId);
     if (BlobRegistry.has(blobId)) {
       return;
     }
-    BlobModule.release(blobId);
+    NativeBlobModule.release(blobId);
   }
 
   /**
@@ -113,7 +144,9 @@ class BlobManager {
    * requests and responses.
    */
   static addNetworkingHandler(): void {
-    BlobModule.addNetworkingHandler();
+    invariant(NativeBlobModule, 'NativeBlobModule is available.');
+
+    NativeBlobModule.addNetworkingHandler();
   }
 
   /**
@@ -121,7 +154,9 @@ class BlobManager {
    * messages.
    */
   static addWebSocketHandler(socketId: number): void {
-    BlobModule.addWebSocketHandler(socketId);
+    invariant(NativeBlobModule, 'NativeBlobModule is available.');
+
+    NativeBlobModule.addWebSocketHandler(socketId);
   }
 
   /**
@@ -129,14 +164,18 @@ class BlobManager {
    * binary messages.
    */
   static removeWebSocketHandler(socketId: number): void {
-    BlobModule.removeWebSocketHandler(socketId);
+    invariant(NativeBlobModule, 'NativeBlobModule is available.');
+
+    NativeBlobModule.removeWebSocketHandler(socketId);
   }
 
   /**
    * Send a blob message to a websocket.
    */
   static sendOverSocket(blob: Blob, socketId: number): void {
-    BlobModule.sendOverSocket(blob.data, socketId);
+    invariant(NativeBlobModule, 'NativeBlobModule is available.');
+
+    NativeBlobModule.sendOverSocket(blob.data, socketId);
   }
 }
 

@@ -110,12 +110,14 @@ static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification)
   CGRect endFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
   NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
   UIViewAnimationCurve curve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+  NSInteger isLocalUserInfoKey = [userInfo[UIKeyboardIsLocalUserInfoKey] integerValue];
 
   return @{
     @"startCoordinates": RCTRectDictionaryValue(beginFrame),
     @"endCoordinates": RCTRectDictionaryValue(endFrame),
     @"duration": @(duration * 1000.0), // ms
     @"easing": RCTAnimationNameForCurve(curve),
+    @"isEventFromThisApp": isLocalUserInfoKey == 1 ? @YES : @NO,
   };
 #endif
 }

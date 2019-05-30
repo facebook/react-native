@@ -5,29 +5,53 @@
  * file in the root directory of this source tree.
  */
 #pragma once
+#include <cstdint>
 #include <stdio.h>
+#include "CompactValue.h"
 #include "YGConfig.h"
 #include "YGLayout.h"
 #include "YGStyle.h"
+#include "YGMacros.h"
 #include "Yoga-internal.h"
 
+YGConfigRef YGConfigGetDefault();
+
 struct YGNode {
- private:
+  using MeasureWithContextFn =
+      YGSize (*)(YGNode*, float, YGMeasureMode, float, YGMeasureMode, void*);
+  using BaselineWithContextFn = float (*)(YGNode*, float, float, void*);
+  using PrintWithContextFn = void (*)(YGNode*, void*);
+
+private:
   void* context_ = nullptr;
-  YGPrintFunc print_ = nullptr;
-  bool hasNewLayout_ = true;
-  bool isReferenceBaseline_ = false;
-  YGNodeType nodeType_ = YGNodeTypeDefault;
-  YGMeasureFunc measure_ = nullptr;
-  YGBaselineFunc baseline_ = nullptr;
+  bool hasNewLayout_ : 1;
+  bool isReferenceBaseline_ : 1;
+  bool isDirty_ : 1;
+  YGNodeType nodeType_ : 1;
+  bool measureUsesContext_ : 1;
+  bool baselineUsesContext_ : 1;
+  bool printUsesContext_ : 1;
+  bool useWebDefaults_ : 1;
+  uint8_t reserved_ = 0;
+  union {
+    YGMeasureFunc noContext;
+    MeasureWithContextFn withContext;
+  } measure_ = {nullptr};
+  union {
+    YGBaselineFunc noContext;
+    BaselineWithContextFn withContext;
+  } baseline_ = {nullptr};
+  union {
+    YGPrintFunc noContext;
+    PrintWithContextFn withContext;
+  } print_ = {nullptr};
   YGDirtiedFunc dirtied_ = nullptr;
   YGStyle style_ = {};
   YGLayout layout_ = {};
   uint32_t lineIndex_ = 0;
   YGNodeRef owner_ = nullptr;
   YGVector children_ = {};
-  YGConfigRef config_ = nullptr;
-  bool isDirty_ = false;
+  YGConfigRef config_;
   std::array<YGValue, 2> resolvedDimensions_ = {
       {YGValueUndefined, YGValueUndefined}};
 
@@ -35,97 +59,125 @@ struct YGNode {
       const YGFlexDirection axis,
       const float axisSize) const;
 
- public:
-  YGNode() = default;
+  void setMeasureFunc(decltype(measure_));
+  void setBaselineFunc(decltype(baseline_));
+
+  void useWebDefaults() {
+    useWebDefaults_ = true;
+    style_.flexDirection() = YGFlexDirectionRow;
+    style_.alignContent() = YGAlignStretch;
+  }
+
+  // DANGER DANGER DANGER!
+  // If the the node assigned to has children, we'd either have to deallocate
+  // them (potentially incorrect) or ignore them (danger of leaks). Only ever
+  // use this after checking that there are no children.
+  // DO NOT CHANGE THE VISIBILITY OF THIS METHOD!
+  YGNode& operator=(YGNode&&) = default;
+
+  using CompactValue = facebook::yoga::detail::CompactValue;
+
+public:
+  YGNode() : YGNode{YGConfigGetDefault()} {}
+  explicit YGNode(const YGConfigRef config)
+      : hasNewLayout_{true},
+        isReferenceBaseline_{false},
+        isDirty_{false},
+        nodeType_{YGNodeTypeDefault},
+        measureUsesContext_{false},
+        baselineUsesContext_{false},
+        printUsesContext_{false},
+        useWebDefaults_{config->useWebDefaults},
+        config_{config} {
+    if (useWebDefaults_) {
+      useWebDefaults();
+    }
+  };
   ~YGNode() = default; // cleanup of owner/children relationships in YGNodeFree
-  explicit YGNode(const YGConfigRef newConfig) : config_(newConfig){};
+
+  YGNode(YGNode&&);
+
+  // Does not expose true value semantics, as children are not cloned eagerly.
+  // Should we remove this?
   YGNode(const YGNode& node) = default;
-  YGNode& operator=(const YGNode& node);
+
+  // for RB fabric
+  YGNode(const YGNode& node, YGConfigRef config);
+
+  // assignment means potential leaks of existing children, or alternatively
+  // freeing unowned memory, double free, or freeing stack memory.
+  YGNode& operator=(const YGNode&) = delete;
 
   // Getters
-  void* getContext() const {
-    return context_;
+  void* getContext() const { return context_; }
+
+  uint8_t& reserved() { return reserved_; }
+  uint8_t reserved() const { return reserved_; }
+
+  void print(void*);
+
+  bool getHasNewLayout() const { return hasNewLayout_; }
+
+  YGNodeType getNodeType() const { return nodeType_; }
+
+  bool hasMeasureFunc() const noexcept { return measure_.noContext != nullptr; }
+
+  YGSize measure(float, YGMeasureMode, float, YGMeasureMode, void*);
+
+  bool hasBaselineFunc() const noexcept {
+    return baseline_.noContext != nullptr;
   }
 
-  YGPrintFunc getPrintFunc() const {
-    return print_;
-  }
+  float baseline(float width, float height, void* layoutContext);
 
-  bool getHasNewLayout() const {
-    return hasNewLayout_;
-  }
-
-  YGNodeType getNodeType() const {
-    return nodeType_;
-  }
-
-  YGMeasureFunc getMeasure() const {
-    return measure_;
-  }
-
-  YGBaselineFunc getBaseline() const {
-    return baseline_;
-  }
-
-  YGDirtiedFunc getDirtied() const {
-    return dirtied_;
-  }
+  YGDirtiedFunc getDirtied() const { return dirtied_; }
 
   // For Performance reasons passing as reference.
-  YGStyle& getStyle() {
-    return style_;
-  }
+  YGStyle& getStyle() { return style_; }
 
-  const YGStyle& getStyle() const {
-    return style_;
-  }
+  const YGStyle& getStyle() const { return style_; }
 
   // For Performance reasons passing as reference.
-  YGLayout& getLayout() {
-    return layout_;
-  }
+  YGLayout& getLayout() { return layout_; }
 
-  const YGLayout& getLayout() const {
-    return layout_;
-  }
+  const YGLayout& getLayout() const { return layout_; }
 
-  uint32_t getLineIndex() const {
-    return lineIndex_;
-  }
+  uint32_t getLineIndex() const { return lineIndex_; }
 
-  bool isReferenceBaseline() {
-    return isReferenceBaseline_;
-  }
+  bool isReferenceBaseline() { return isReferenceBaseline_; }
 
   // returns the YGNodeRef that owns this YGNode. An owner is used to identify
-  // the YogaTree that a YGNode belongs to.
-  // This method will return the parent of the YGNode when a YGNode only belongs
-  // to one YogaTree or nullptr when the YGNode is shared between two or more
-  // YogaTrees.
-  YGNodeRef getOwner() const {
-    return owner_;
-  }
+  // the YogaTree that a YGNode belongs to. This method will return the parent
+  // of the YGNode when a YGNode only belongs to one YogaTree or nullptr when
+  // the YGNode is shared between two or more YogaTrees.
+  YGNodeRef getOwner() const { return owner_; }
 
   // Deprecated, use getOwner() instead.
-  YGNodeRef getParent() const {
-    return getOwner();
+  YGNodeRef getParent() const { return getOwner(); }
+
+  const YGVector& getChildren() const { return children_; }
+
+  // Applies a callback to all children, after cloning them if they are not
+  // owned.
+  template <typename T>
+  void iterChildrenAfterCloningIfNeeded(T callback, void* cloneContext) {
+    int i = 0;
+    for (YGNodeRef& child : children_) {
+      if (child->getOwner() != this) {
+        child = config_->cloneNode(child, this, i, cloneContext);
+        child->setOwner(this);
+      }
+      i += 1;
+
+      callback(child, cloneContext);
+    }
   }
 
-  const YGVector& getChildren() const {
-    return children_;
-  }
+  YGNodeRef getChild(uint32_t index) const { return children_.at(index); }
 
-  YGNodeRef getChild(uint32_t index) const {
-    return children_.at(index);
-  }
+  YGConfigRef getConfig() const { return config_; }
 
-  YGConfigRef getConfig() const {
-    return config_;
-  }
-
-  bool isDirty() const {
-    return isDirty_;
-  }
+  bool isDirty() const { return isDirty_; }
 
   std::array<YGValue, 2> getResolvedDimensions() const {
     return resolvedDimensions_;
@@ -169,73 +221,63 @@ struct YGNode {
       const float widthSize) const;
   // Setters
 
-  void setContext(void* context) {
-    context_ = context;
-  }
+  void setContext(void* context) { context_ = context; }
 
   void setPrintFunc(YGPrintFunc printFunc) {
-    print_ = printFunc;
+    print_.noContext = printFunc;
+    printUsesContext_ = false;
   }
+  void setPrintFunc(PrintWithContextFn printFunc) {
+    print_.withContext = printFunc;
+    printUsesContext_ = true;
+  }
+  void setPrintFunc(std::nullptr_t) { setPrintFunc(YGPrintFunc{nullptr}); }
 
-  void setHasNewLayout(bool hasNewLayout) {
-    hasNewLayout_ = hasNewLayout;
-  }
+  void setHasNewLayout(bool hasNewLayout) { hasNewLayout_ = hasNewLayout; }
 
-  void setNodeType(YGNodeType nodeType) {
-    nodeType_ = nodeType;
-  }
-
-  void setStyleFlexDirection(YGFlexDirection direction) {
-    style_.flexDirection = direction;
-  }
-
-  void setStyleAlignContent(YGAlign alignContent) {
-    style_.alignContent = alignContent;
-  }
+  void setNodeType(YGNodeType nodeType) { nodeType_ = nodeType; }
 
   void setMeasureFunc(YGMeasureFunc measureFunc);
-
-  void setBaseLineFunc(YGBaselineFunc baseLineFunc) {
-    baseline_ = baseLineFunc;
+  void setMeasureFunc(MeasureWithContextFn);
+  void setMeasureFunc(std::nullptr_t) {
+    return setMeasureFunc(YGMeasureFunc{nullptr});
   }
 
-  void setDirtiedFunc(YGDirtiedFunc dirtiedFunc) {
-    dirtied_ = dirtiedFunc;
+  void setBaselineFunc(YGBaselineFunc baseLineFunc) {
+    baselineUsesContext_ = false;
+    baseline_.noContext = baseLineFunc;
+  }
+  void setBaselineFunc(BaselineWithContextFn baseLineFunc) {
+    baselineUsesContext_ = true;
+    baseline_.withContext = baseLineFunc;
+  }
+  void setBaselineFunc(std::nullptr_t) {
+    return setBaselineFunc(YGBaselineFunc{nullptr});
   }
 
-  void setStyle(const YGStyle& style) {
-    style_ = style;
-  }
+  void setDirtiedFunc(YGDirtiedFunc dirtiedFunc) { dirtied_ = dirtiedFunc; }
 
-  void setLayout(const YGLayout& layout) {
-    layout_ = layout;
-  }
+  void setStyle(const YGStyle& style) { style_ = style; }
 
-  void setLineIndex(uint32_t lineIndex) {
-    lineIndex_ = lineIndex;
-  }
+  void setLayout(const YGLayout& layout) { layout_ = layout; }
+
+  void setLineIndex(uint32_t lineIndex) { lineIndex_ = lineIndex; }
 
   void setIsReferenceBaseline(bool isReferenceBaseline) {
     isReferenceBaseline_ = isReferenceBaseline;
   }
 
-  void setOwner(YGNodeRef owner) {
-    owner_ = owner;
-  }
+  void setOwner(YGNodeRef owner) { owner_ = owner; }
 
-  void setChildren(const YGVector& children) {
-    children_ = children;
-  }
+  void setChildren(const YGVector& children) { children_ = children; }
 
   // TODO: rvalue override for setChildren
 
-  void setConfig(YGConfigRef config) {
-    config_ = config;
-  }
+  YG_DEPRECATED void setConfig(YGConfigRef config) { config_ = config; }
 
   void setDirty(bool isDirty);
   void setLayoutLastOwnerDirection(YGDirection direction);
-  void setLayoutComputedFlexBasis(const YGFloatOptional& computedFlexBasis);
+  void setLayoutComputedFlexBasis(const YGFloatOptional computedFlexBasis);
   void setLayoutComputedFlexBasisGeneration(
       uint32_t computedFlexBasisGeneration);
   void setLayoutMeasuredDimension(float measuredDimension, int index);
@@ -251,7 +293,6 @@ struct YGNode {
       const float mainSize,
       const float crossSize,
       const float ownerWidth);
-  void setAndPropogateUseLegacyFlag(bool useLegacyFlag);
   void setLayoutDoesLegacyFlagAffectsLayout(bool doesLegacyFlagAffectsLayout);
   void setLayoutDidUseLegacyFlag(bool didUseLegacyFlag);
   void markDirtyAndPropogateDownwards();
@@ -271,11 +312,12 @@ struct YGNode {
   bool removeChild(YGNodeRef child);
   void removeChild(uint32_t index);
 
-  void cloneChildrenIfNeeded();
+  void cloneChildrenIfNeeded(void*);
   void markDirtyAndPropogate();
-  float resolveFlexGrow();
-  float resolveFlexShrink();
+  float resolveFlexGrow() const;
+  float resolveFlexShrink() const;
   bool isNodeFlexible();
   bool didUseLegacyFlag();
   bool isLayoutTreeEqualToNode(const YGNode& node) const;
+  void reset();
 };

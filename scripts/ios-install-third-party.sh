@@ -4,14 +4,20 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-cachedir="$HOME/.rncache"
+if [ -n "$RN_CACHE_DIR" ] && [ -d "$RN_CACHE_DIR" ]; then
+  cachedir="$RN_CACHE_DIR"
+elif [ -d "$HOME/.rncache" ]; then
+  cachedir="$HOME/.rncache" # react-native 0.57.8 and older
+else
+  cachedir="$HOME/Library/Caches/com.facebook.ReactNativeBuild"
+fi
 mkdir -p "$cachedir"
 
 function file_fail () {
     cachefile=$1
     msg=$2
 
-    echo "$msg.  Debug info:" 2>&1
+    echo "$msg. Debug info:" 2>&1
     ls -l "$cachefile" 2>&1
     shasum "$cachefile" 2>&1
     exit 1
@@ -28,12 +34,12 @@ function fetch_and_unpack () {
 
     while true; do
         if [ -f "$cachedir/$file" ]; then
-           if shasum -p "$cachedir/$file" |
-              awk -v hash="$hash" '{exit $1 != hash}'; then
+           if shasum "$cachedir/$file" |
+               awk -v hash="$hash" '{exit $1 != hash}'; then
                break
            else
                echo "Incorrect hash:" 2>&1
-               shasum -p "$cachedir/$file" 2>&1
+               shasum "$cachedir/$file" 2>&1
                echo "Retrying..." 2>&1
            fi
         fi

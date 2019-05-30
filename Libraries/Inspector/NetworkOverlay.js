@@ -10,15 +10,15 @@
 
 'use strict';
 
-const FlatList = require('FlatList');
-const React = require('React');
-const ScrollView = require('ScrollView');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const TouchableHighlight = require('TouchableHighlight');
-const View = require('View');
-const WebSocketInterceptor = require('WebSocketInterceptor');
-const XHRInterceptor = require('XHRInterceptor');
+const FlatList = require('../Lists/FlatList');
+const React = require('react');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Text = require('../Text/Text');
+const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
+const View = require('../Components/View/View');
+const WebSocketInterceptor = require('../WebSocket/WebSocketInterceptor');
+const XHRInterceptor = require('../Network/XHRInterceptor');
 
 const LISTVIEW_CELL_HEIGHT = 15;
 
@@ -88,6 +88,16 @@ class NetworkOverlay extends React.Component<Props, State> {
   _requestsListView: ?React.ElementRef<typeof FlatList>;
   _detailScrollView: ?React.ElementRef<typeof ScrollView>;
 
+  // Metrics are used to decide when if the request list should be sticky, and
+  // scroll to the bottom as new network requests come in, or if the user has
+  // intentionally scrolled away from the bottom - to instead flash the scroll bar
+  // and keep the current position
+  _requestsListViewScrollMetrics = {
+    offset: 0,
+    visibleLength: 0,
+    contentLength: 0,
+  };
+
   // Map of `socketId` -> `index in `this.state.requests`.
   _socketIdMap = {};
   // Map of `xhr._index` -> `index in `this.state.requests`.
@@ -121,7 +131,7 @@ class NetworkOverlay extends React.Component<Props, State> {
         {
           requests: this.state.requests.concat(_xhr),
         },
-        this._scrollRequestsToBottom,
+        this._indicateAdditionalRequests,
       );
     });
 
@@ -214,7 +224,7 @@ class NetworkOverlay extends React.Component<Props, State> {
           {
             requests: this.state.requests.concat(_webSocket),
           },
-          this._scrollRequestsToBottom,
+          this._indicateAdditionalRequests,
         );
       },
     );
@@ -315,7 +325,7 @@ class NetworkOverlay extends React.Component<Props, State> {
     WebSocketInterceptor.disableInterception();
   }
 
-  _renderItem = ({item, index}): ?React.Element<any> => {
+  _renderItem = ({item, index}): React.Element<any> => {
     const tableRowViewStyle = [
       styles.tableRow,
       index % 2 === 1 ? styles.tableRowOdd : styles.tableRowEven,
@@ -383,11 +393,35 @@ class NetworkOverlay extends React.Component<Props, State> {
     );
   }
 
-  _scrollRequestsToBottom(): void {
+  _indicateAdditionalRequests = (): void => {
     if (this._requestsListView) {
-      this._requestsListView.scrollToEnd();
+      const distanceFromEndThreshold = LISTVIEW_CELL_HEIGHT * 2;
+      const {
+        offset,
+        visibleLength,
+        contentLength,
+      } = this._requestsListViewScrollMetrics;
+      const distanceFromEnd = contentLength - visibleLength - offset;
+      const isCloseToEnd = distanceFromEnd <= distanceFromEndThreshold;
+      if (isCloseToEnd) {
+        this._requestsListView.scrollToEnd();
+      } else {
+        this._requestsListView.flashScrollIndicators();
+      }
     }
-  }
+  };
+
+  _captureRequestsListView = (listRef: ?FlatList<NetworkRequestInfo>): void => {
+    this._requestsListView = listRef;
+  };
+
+  _requestsListViewOnScroll = (e: Object): void => {
+    this._requestsListViewScrollMetrics.offset = e.nativeEvent.contentOffset.y;
+    this._requestsListViewScrollMetrics.visibleLength =
+      e.nativeEvent.layoutMeasurement.height;
+    this._requestsListViewScrollMetrics.contentLength =
+      e.nativeEvent.contentSize.height;
+  };
 
   /**
    * Popup a scrollView to dynamically show detailed information of
@@ -446,7 +480,8 @@ class NetworkOverlay extends React.Component<Props, State> {
         </View>
 
         <FlatList
-          ref={listRef => (this._requestsListView = listRef)}
+          ref={this._captureRequestsListView}
+          onScroll={this._requestsListViewOnScroll}
           style={styles.listView}
           data={requests}
           renderItem={this._renderItem}

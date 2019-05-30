@@ -8,14 +8,13 @@
 package com.facebook.react.modules.timepicker;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Build;
 import android.os.Bundle;
+import androidx.fragment.app.DialogFragment;
 import android.text.format.DateFormat;
 
 import java.util.Calendar;

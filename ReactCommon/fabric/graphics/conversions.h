@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include <better/map.h>
 #include <folly/dynamic.h>
+#include <react/core/RawProps.h>
 #include <react/graphics/Color.h>
 #include <react/graphics/Geometry.h>
 
@@ -16,32 +18,34 @@ namespace react {
 
 #pragma mark - Color
 
-inline void fromDynamic(const folly::dynamic &value, SharedColor &result) {
+inline void fromRawValue(const RawValue &value, SharedColor &result) {
   float red;
   float green;
   float blue;
   float alpha;
 
-  if (value.isNumber()) {
-    auto argb = value.asInt();
+  if (value.hasType<int>()) {
+    auto argb = (int64_t)value;
     auto ratio = 256.f;
     alpha = ((argb >> 24) & 0xFF) / ratio;
     red = ((argb >> 16) & 0xFF) / ratio;
     green = ((argb >> 8) & 0xFF) / ratio;
     blue = (argb & 0xFF) / ratio;
-  } else if (value.isArray()) {
-    auto size = value.size();
-    assert(size == 3 || size == 4);
-    red = value[0].asDouble();
-    green = value[1].asDouble();
-    blue = value[2].asDouble();
-    alpha = size == 4 ? value[3].asDouble() : 1.0;
+  } else if (value.hasType<std::vector<float>>()) {
+    auto items = (std::vector<float>)value;
+    auto length = items.size();
+    assert(length == 3 || length == 4);
+    red = items.at(0);
+    green = items.at(1);
+    blue = items.at(2);
+    alpha = length == 4 ? items.at(3) : 1.0;
   } else {
     abort();
   }
-
   result = colorFromComponents({red, green, blue, alpha});
 }
+
+#ifdef ANDROID
 
 inline folly::dynamic toDynamic(const SharedColor &color) {
   ColorComponents components = colorComponentsFromColor(color);
@@ -52,6 +56,8 @@ inline folly::dynamic toDynamic(const SharedColor &color) {
       ((int)(components.green * ratio) & 0xff) << 8 |
       ((int)(components.blue * ratio) & 0xff));
 }
+
+#endif
 
 inline std::string toString(const SharedColor &value) {
   ColorComponents components = colorComponentsFromColor(value);
@@ -64,74 +70,113 @@ inline std::string toString(const SharedColor &value) {
 
 #pragma mark - Geometry
 
-inline void fromDynamic(const folly::dynamic &value, Point &result) {
-  if (value.isObject()) {
-    result = Point{(Float)value["x"].asDouble(), (Float)value["y"].asDouble()};
+inline void fromRawValue(const RawValue &value, Point &result) {
+  if (value.hasType<better::map<std::string, Float>>()) {
+    auto map = (better::map<std::string, Float>)value;
+    for (const auto &pair : map) {
+      if (pair.first == "x") {
+        result.x = pair.second;
+      } else if (pair.first == "y") {
+        result.y = pair.second;
+      }
+    }
     return;
   }
-  if (value.isArray()) {
-    result = Point{(Float)value[0].asDouble(), (Float)value[1].asDouble()};
+
+  if (value.hasType<std::vector<Float>>()) {
+    auto array = (std::vector<Float>)value;
+    assert(array.size() == 2);
+    result = {array.at(0), array.at(1)};
     return;
   }
+
   abort();
 }
 
-inline void fromDynamic(const folly::dynamic &value, Size &result) {
-  if (value.isObject()) {
-    result = Size{(Float)value["width"].asDouble(),
-                  (Float)value["height"].asDouble()};
+inline void fromRawValue(const RawValue &value, Size &result) {
+  if (value.hasType<better::map<std::string, Float>>()) {
+    auto map = (better::map<std::string, Float>)value;
+    for (const auto &pair : map) {
+      if (pair.first == "width") {
+        result.width = pair.second;
+      } else if (pair.first == "height") {
+        result.height = pair.second;
+      }
+    }
     return;
   }
-  if (value.isArray()) {
-    result = Size{(Float)value[0].asDouble(), (Float)value[1].asDouble()};
+
+  if (value.hasType<std::vector<Float>>()) {
+    auto array = (std::vector<Float>)value;
+    assert(array.size() == 2);
+    result = {array.at(0), array.at(1)};
     return;
   }
+
   abort();
 }
 
-inline void fromDynamic(const folly::dynamic &value, EdgeInsets &result) {
-  if (value.isNumber()) {
-    const Float number = value.asDouble();
-    result = EdgeInsets{number, number, number, number};
+inline void fromRawValue(const RawValue &value, EdgeInsets &result) {
+  if (value.hasType<Float>()) {
+    auto number = (Float)value;
+    result = {number, number, number, number};
+  }
+
+  if (value.hasType<better::map<std::string, Float>>()) {
+    auto map = (better::map<std::string, Float>)value;
+    for (const auto &pair : map) {
+      if (pair.first == "top") {
+        result.top = pair.second;
+      } else if (pair.first == "left") {
+        result.left = pair.second;
+      } else if (pair.first == "bottom") {
+        result.bottom = pair.second;
+      } else if (pair.first == "right") {
+        result.right = pair.second;
+      }
+    }
     return;
   }
-  if (value.isObject()) {
-    result = EdgeInsets{(Float)value["top"].asDouble(),
-                        (Float)value["left"].asDouble(),
-                        (Float)value["bottom"].asDouble(),
-                        (Float)value["right"].asDouble()};
+
+  if (value.hasType<std::vector<Float>>()) {
+    auto array = (std::vector<Float>)value;
+    assert(array.size() == 4);
+    result = {array.at(0), array.at(1), array.at(2), array.at(3)};
     return;
   }
-  if (value.isArray()) {
-    result = EdgeInsets{(Float)value[0].asDouble(),
-                        (Float)value[1].asDouble(),
-                        (Float)value[2].asDouble(),
-                        (Float)value[3].asDouble()};
-    return;
-  }
+
   abort();
 }
 
-inline void fromDynamic(const folly::dynamic &value, CornerInsets &result) {
-  if (value.isNumber()) {
-    const Float number = value.asDouble();
-    result = CornerInsets{number, number, number, number};
+inline void fromRawValue(const RawValue &value, CornerInsets &result) {
+  if (value.hasType<Float>()) {
+    auto number = (Float)value;
+    result = {number, number, number, number};
+  }
+
+  if (value.hasType<better::map<std::string, Float>>()) {
+    auto map = (better::map<std::string, Float>)value;
+    for (const auto &pair : map) {
+      if (pair.first == "topLeft") {
+        result.topLeft = pair.second;
+      } else if (pair.first == "topRight") {
+        result.topRight = pair.second;
+      } else if (pair.first == "bottomLeft") {
+        result.bottomLeft = pair.second;
+      } else if (pair.first == "bottomRight") {
+        result.bottomRight = pair.second;
+      }
+    }
     return;
   }
-  if (value.isObject()) {
-    result = CornerInsets{(Float)value["topLeft"].asDouble(),
-                          (Float)value["topRight"].asDouble(),
-                          (Float)value["bottomLeft"].asDouble(),
-                          (Float)value["bottomRight"].asDouble()};
+
+  if (value.hasType<std::vector<Float>>()) {
+    auto array = (std::vector<Float>)value;
+    assert(array.size() == 4);
+    result = {array.at(0), array.at(1), array.at(2), array.at(3)};
     return;
   }
-  if (value.isArray()) {
-    result = CornerInsets{(Float)value[0].asDouble(),
-                          (Float)value[1].asDouble(),
-                          (Float)value[2].asDouble(),
-                          (Float)value[3].asDouble()};
-    return;
-  }
+
   abort();
 }
 

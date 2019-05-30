@@ -148,9 +148,9 @@ static void my_os_log_error_impl(void *dso, os_log_t log, os_log_type_t type, co
 {
   __weak RCTSRWebSocket *socket = _socket;
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-    // Only reconnect if the observer wasn't stoppped while we were waiting
-    if (socket) {
-      [self start];
+    [self start];
+    if (!socket) {
+      [self reconnect];
     }
   });
 }
@@ -163,7 +163,9 @@ static void my_os_log_error_impl(void *dso, os_log_t log, os_log_type_t type, co
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
   [_delegate reconnectingWebSocketDidClose:self];
-  [self reconnect];
+  if ([error code] != ECONNREFUSED) {
+    [self reconnect];
+  }
 }
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean

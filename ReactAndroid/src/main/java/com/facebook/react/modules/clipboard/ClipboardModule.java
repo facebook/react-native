@@ -7,11 +7,9 @@
 
 package com.facebook.react.modules.clipboard;
 
-import android.annotation.SuppressLint;
 import android.content.ClipboardManager;
 import android.content.ClipData;
 import android.content.Context;
-import android.os.Build;
 
 import com.facebook.react.bridge.ContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -44,9 +42,7 @@ public class ClipboardModule extends ContextBaseJavaModule {
     try {
       ClipboardManager clipboard = getClipboardService();
       ClipData clipData = clipboard.getPrimaryClip();
-      if (clipData == null) {
-        promise.resolve("");
-      } else if (clipData.getItemCount() >= 1) {
+      if (clipData != null && clipData.getItemCount() >= 1) {
         ClipData.Item firstItem = clipboard.getPrimaryClip().getItemAt(0);
         promise.resolve("" + firstItem.getText());
       } else {
@@ -57,16 +53,10 @@ public class ClipboardModule extends ContextBaseJavaModule {
     }
   }
 
-  @SuppressLint("DeprecatedMethod")
   @ReactMethod
   public void setString(String text) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-      ClipData clipdata = ClipData.newPlainText(null, text);
-      ClipboardManager clipboard = getClipboardService();
-      clipboard.setPrimaryClip(clipdata);
-    } else {
-      ClipboardManager clipboard = getClipboardService();
-      clipboard.setText(text);
-    }
+    ClipData clipdata = ClipData.newPlainText(null, text);
+    ClipboardManager clipboard = getClipboardService();
+    clipboard.setPrimaryClip(clipdata);
   }
 }

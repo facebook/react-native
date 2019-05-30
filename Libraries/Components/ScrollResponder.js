@@ -10,23 +10,23 @@
 
 'use strict';
 
-const Dimensions = require('Dimensions');
-const FrameRateLogger = require('FrameRateLogger');
-const Keyboard = require('Keyboard');
-const ReactNative = require('ReactNative');
-const TextInputState = require('TextInputState');
-const UIManager = require('UIManager');
+const Dimensions = require('../Utilities/Dimensions');
+const FrameRateLogger = require('../Interaction/FrameRateLogger');
+const Keyboard = require('./Keyboard/Keyboard');
+const ReactNative = require('../Renderer/shims/ReactNative');
+const TextInputState = require('./TextInput/TextInputState');
+const UIManager = require('../ReactNative/UIManager');
 
 const invariant = require('invariant');
 const nullthrows = require('nullthrows');
 const performanceNow = require('fbjs/lib/performanceNow');
 const warning = require('fbjs/lib/warning');
 
-const {ScrollViewManager} = require('NativeModules');
+const {ScrollViewManager} = require('../BatchedBridge/NativeModules');
 
-import type {PressEvent, ScrollEvent} from 'CoreEventTypes';
-import type {KeyboardEvent} from 'Keyboard';
-import type EmitterSubscription from 'EmitterSubscription';
+import type {PressEvent, ScrollEvent} from '../Types/CoreEventTypes';
+import type {KeyboardEvent} from './Keyboard/Keyboard';
+import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well
@@ -108,13 +108,13 @@ import type EmitterSubscription from 'EmitterSubscription';
 
 const IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
 
-type State = {
+export type State = {|
   isTouching: boolean,
   lastMomentumScrollBeginTime: number,
   lastMomentumScrollEndTime: number,
   observedScrollSinceBecomingResponder: boolean,
   becameResponderWhileAnimating: boolean,
-};
+|};
 
 const ScrollResponderMixin = {
   _subscriptionKeyboardWillShow: (null: ?EmitterSubscription),
@@ -141,6 +141,10 @@ const ScrollResponderMixin = {
    * Invoke this from an `onScroll` event.
    */
   scrollResponderHandleScrollShouldSetResponder: function(): boolean {
+    // Allow any event touch pass through if the default pan responder is disabled
+    if (this.props.disableScrollViewPanResponder === true) {
+      return false;
+    }
     return this.state.isTouching;
   },
 
@@ -172,6 +176,11 @@ const ScrollResponderMixin = {
   scrollResponderHandleStartShouldSetResponder: function(
     e: PressEvent,
   ): boolean {
+    // Allow any event touch pass through if the default pan responder is disabled
+    if (this.props.disableScrollViewPanResponder === true) {
+      return false;
+    }
+
     const currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
 
     if (
@@ -202,6 +211,11 @@ const ScrollResponderMixin = {
     // * it is already animating/decelerating
     if (this.scrollResponderIsAnimating()) {
       return true;
+    }
+
+    // Allow any event touch pass through if the default pan responder is disabled
+    if (this.props.disableScrollViewPanResponder === true) {
+      return false;
     }
 
     // * the keyboard is up, keyboardShouldPersistTaps is 'never' (the default),
@@ -614,6 +628,7 @@ const ScrollResponderMixin = {
       'keyboardWillShow',
       this.scrollResponderKeyboardWillShow,
     );
+
     this._subscriptionKeyboardWillHide = Keyboard.addListener(
       'keyboardWillHide',
       this.scrollResponderKeyboardWillHide,

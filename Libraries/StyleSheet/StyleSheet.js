@@ -9,11 +9,11 @@
  */
 'use strict';
 
-const PixelRatio = require('PixelRatio');
-const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-const StyleSheetValidation = require('StyleSheetValidation');
+const PixelRatio = require('../Utilities/PixelRatio');
+const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+const StyleSheetValidation = require('./StyleSheetValidation');
 
-const flatten = require('flattenStyle');
+const flatten = require('./flattenStyle');
 
 import type {
   ____Styles_Internal,
@@ -25,10 +25,7 @@ import type {
   ____TextStyleProp_Internal,
   ____ImageStyle_Internal,
   ____ImageStyleProp_Internal,
-  ____LayoutStyle_Internal,
-  ____ShadowStyle_Internal,
-  ____TransformStyle_Internal,
-} from 'StyleSheetTypes';
+} from './StyleSheetTypes';
 
 /**
  * This type should be used as the type for a prop that is passed through
@@ -154,21 +151,12 @@ export type ImageStyle = ____ImageStyle_Internal;
  */
 export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
 
-/**
- * These types are simlilar to the style types above. They are objects of the
- * possible style keys in that group. For example, ShadowStyle contains
- * keys like `shadowColor` and `shadowRadius`.
- */
-export type LayoutStyle = ____LayoutStyle_Internal;
-export type ShadowStyle = ____ShadowStyle_Internal;
-export type TransformStyle = ____TransformStyle_Internal;
-
 let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
 
-const absoluteFill: LayoutStyle = {
+const absoluteFill = {
   position: 'absolute',
   left: 0,
   right: 0,

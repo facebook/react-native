@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
@@ -21,10 +22,12 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.yoga.YogaConstants;
 import java.util.Locale;
 import java.util.Map;
@@ -63,6 +66,31 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       view.setFocusableInTouchMode(true);
       view.requestFocus();
     }
+  }
+
+  @ReactProp(name = "nextFocusDown", defaultInt = View.NO_ID)
+  public void nextFocusDown(ReactViewGroup view, int viewId) {
+    view.setNextFocusDownId(viewId);
+  }
+
+  @ReactProp(name = "nextFocusForward", defaultInt = View.NO_ID)
+  public void nextFocusForward(ReactViewGroup view, int viewId) {
+    view.setNextFocusForwardId(viewId);
+  }
+
+  @ReactProp(name = "nextFocusLeft", defaultInt = View.NO_ID)
+  public void nextFocusLeft(ReactViewGroup view, int viewId) {
+    view.setNextFocusLeftId(viewId);
+  }
+
+  @ReactProp(name = "nextFocusRight", defaultInt = View.NO_ID)
+  public void nextFocusRight(ReactViewGroup view, int viewId) {
+    view.setNextFocusRightId(viewId);
+  }
+
+  @ReactProp(name = "nextFocusUp", defaultInt = View.NO_ID)
+  public void nextFocusUp(ReactViewGroup view, int viewId) {
+    view.setNextFocusUpId(viewId);
   }
 
   @ReactPropGroup(names = {
@@ -198,6 +226,28 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     // handled in NativeViewHierarchyOptimizer
   }
 
+  @ReactProp(name = "clickable")
+  public void setClickable(final ReactViewGroup view, boolean clickable) {
+    if (clickable) {
+      view.setOnClickListener(
+              new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                  final EventDispatcher mEventDispatcher = ((ReactContext)view.getContext()).getNativeModule(UIManagerModule.class)
+                          .getEventDispatcher();
+                  mEventDispatcher.dispatchEvent(new ViewGroupClickEvent(view.getId()));
+                }});
+
+      // Clickable elements are focusable. On API 26, this is taken care by setClickable.
+      // Explicitly calling setFocusable here for backward compatibility.
+      view.setFocusable(true /*isFocusable*/);
+    }
+    else {
+      view.setOnClickListener(null);
+      view.setClickable(false);
+    }
+  }
+
   @ReactProp(name = ViewProps.OVERFLOW)
   public void setOverflow(ReactViewGroup view, String overflow) {
     view.setOverflow(overflow);
@@ -242,7 +292,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
           throw new JSApplicationIllegalArgumentException(
               "Illegal number of arguments for 'updateHotspot' command");
         }
-        if (Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
           float x = PixelUtil.toPixelFromDIP(args.getDouble(0));
           float y = PixelUtil.toPixelFromDIP(args.getDouble(1));
           root.drawableHotspotChanged(x, y);

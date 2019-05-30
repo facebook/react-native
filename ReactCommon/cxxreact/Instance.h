@@ -58,6 +58,7 @@ public:
                          std::unique_ptr<const JSBigString> jsonValue);
   void *getJavaScriptContext();
   bool isInspectable();
+  bool isBatchActive();
   void callJSFunction(std::string &&module, std::string &&method,
                       folly::dynamic &&params);
   void callJSCallback(uint64_t callbackId, folly::dynamic &&params);
@@ -69,6 +70,8 @@ public:
   ModuleRegistry &getModuleRegistry();
 
   void handleMemoryPressure(int pressureLevel);
+
+  void invokeAsync(std::function<void()>&& func);
 
 private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);

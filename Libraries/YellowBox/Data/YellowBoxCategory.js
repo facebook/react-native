@@ -10,13 +10,13 @@
 
 'use strict';
 
-const React = require('React');
-const Text = require('Text');
-const UTFSequence = require('UTFSequence');
+const React = require('react');
+const Text = require('../../Text/Text');
+const UTFSequence = require('../../UTFSequence');
 
-const stringifySafe = require('stringifySafe');
+const stringifySafe = require('../../Utilities/stringifySafe');
 
-import type {TextStyleProp} from 'StyleSheet';
+import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 
 export type Category = string;
 export type Message = $ReadOnly<{|

@@ -1,9 +1,14 @@
 ---
-name: 📖 Documentation Issue
-about: Report issues with the docs at https://github.com/facebook/react-native-website/issues.
-labels: "🚫Docs"
+name: "📃 Documentation Issue"
+about: Documentation issues are handled in https://github.com/facebook/react-native-website.
+title: 'Docs:'
+labels: 'Type: Docs'
+
 ---
 
-GitHub Issues in the `facebook/react-native` repository are used exclusively for tracking bugs in React Native.
+🚨 Please do not open a documentation issue in the core React Native repository. 🚨
 
-If you would like to report an issue in the React Native documentation, or anything related to the React Native website, please visit https://github.com/facebook/react-native-website/issues.
+The React Native website is hosted on a separate repository. You may let the
+team know about any issues with the documentation by opening an issue there:
+- https://github.com/facebook/react-native-website
+- https://github.com/facebook/react-native-website/issues

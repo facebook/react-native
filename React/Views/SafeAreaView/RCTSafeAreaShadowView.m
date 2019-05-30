@@ -33,10 +33,10 @@
  * Removing support for setting padding from any outside code
  * to prevent interferring this with local data.
  */
-- (void)setPadding:(YGValue)value {}
-- (void)setPaddingLeft:(YGValue)value {}
-- (void)setPaddingRight:(YGValue)value {}
-- (void)setPaddingTop:(YGValue)value {}
-- (void)setPaddingBottom:(YGValue)value {}
+- (void)setPadding:(__unused YGValue)value {}
+- (void)setPaddingLeft:(__unused YGValue)value {}
+- (void)setPaddingRight:(__unused YGValue)value {}
+- (void)setPaddingTop:(__unused YGValue)value {}
+- (void)setPaddingBottom:(__unused YGValue)value {}
 
 @end

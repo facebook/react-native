@@ -10,20 +10,24 @@
 
 'use strict';
 
-const processColor = require('processColor');
-const {DevLoadingView} = require('NativeModules');
+const processColor = require('../StyleSheet/processColor');
+import NativeDevLoadingView from './NativeDevLoadingView';
 
 class HMRLoadingView {
   static showMessage(message: string) {
-    DevLoadingView.showMessage(
-      message,
-      processColor('#000000'),
-      processColor('#aaaaaa'),
-    );
+    if (NativeDevLoadingView != null) {
+      NativeDevLoadingView.showMessage(
+        message,
+        processColor('#000000'),
+        processColor('#aaaaaa'),
+      );
+    }
   }
 
   static hide() {
-    DevLoadingView.hide();
+    if (NativeDevLoadingView != null) {
+      NativeDevLoadingView.hide();
+    }
   }
 }
 

@@ -11,7 +11,7 @@
 
 /* eslint-disable lint/no-unclear-flowtypes */
 
-type JestMockFn<TArguments: $ReadOnlyArray<*>, TReturn> = {
+type JestMockFn<TArguments: $ReadOnlyArray<mixed>, TReturn> = {|
   (...args: TArguments): TReturn,
   /**
    * An object for introspecting mock calls
@@ -105,7 +105,7 @@ type JestMockFn<TArguments: $ReadOnlyArray<*>, TReturn> = {
    * Sugar for jest.fn().mockImplementationOnce(() => Promise.reject(value))
    */
   mockRejectedValueOnce(value: TReturn): JestMockFn<TArguments, Promise<any>>,
-};
+|};
 
 type JestAsymmetricEqualityType = {
   /**
@@ -794,7 +794,7 @@ type JestObjectType = {
    * Returns a new, unused mock function. Optionally takes a mock
    * implementation.
    */
-  fn<TArguments: $ReadOnlyArray<*>, TReturn>(
+  fn<TArguments: $ReadOnlyArray<mixed>, TReturn>(
     implementation?: (...args: TArguments) => TReturn,
   ): JestMockFn<TArguments, TReturn>,
   /**
@@ -1144,6 +1144,17 @@ declare function spyOn(value: mixed, method: string): Object;
 declare var jest: JestObjectType;
 
 /**
+ * https://jasmine.github.io/2.4/custom_reporter.html
+ */
+type JasmineReporter = {
+  jasmineStarted?: (suiteInfo: mixed) => void,
+  suiteStarted?: (result: mixed) => void,
+  specStarted?: (result: mixed) => void,
+  specDone?: (result: mixed) => void,
+  suiteDone?: (result: mixed) => void,
+};
+
+/**
  * The global Jasmine object, this is generally not exposed as the public API,
  * using features inside here could break in later versions of Jest.
  */
@@ -1158,6 +1169,7 @@ declare var jasmine: {
     baseName: string,
     methodNames: Array<string>,
   ): {[methodName: string]: JestSpyType},
+  getEnv(): {addReporter: (jasmineReporter: JasmineReporter) => void},
   objectContaining(value: Object): Object,
   stringMatching(value: string): string,
 };

@@ -10,14 +10,15 @@
 
 'use strict';
 
-const LayoutAnimation = require('LayoutAnimation');
+const LayoutAnimation = require('../../LayoutAnimation/LayoutAnimation');
 const invariant = require('invariant');
-const NativeEventEmitter = require('NativeEventEmitter');
-const KeyboardObserver = require('NativeModules').KeyboardObserver;
-const dismissKeyboard = require('dismissKeyboard');
-const KeyboardEventEmitter = new NativeEventEmitter(KeyboardObserver);
+const NativeEventEmitter = require('../../EventEmitter/NativeEventEmitter');
+const dismissKeyboard = require('../../Utilities/dismissKeyboard');
 
-type KeyboardEventName =
+import NativeKeyboardObserver from './NativeKeyboardObserver';
+const KeyboardEventEmitter = new NativeEventEmitter(NativeKeyboardObserver);
+
+export type KeyboardEventName =
   | 'keyboardWillShow'
   | 'keyboardDidShow'
   | 'keyboardWillHide'
@@ -25,18 +26,38 @@ type KeyboardEventName =
   | 'keyboardWillChangeFrame'
   | 'keyboardDidChangeFrame';
 
-type ScreenRect = $ReadOnly<{|
+export type KeyboardEventEasing =
+  | 'easeIn'
+  | 'easeInEaseOut'
+  | 'easeOut'
+  | 'linear'
+  | 'keyboard';
+
+export type KeyboardEventCoordinates = $ReadOnly<{|
   screenX: number,
   screenY: number,
   width: number,
   height: number,
 |}>;
 
-export type KeyboardEvent = $ReadOnly<{|
-  duration?: number,
-  easing?: string,
-  endCoordinates: ScreenRect,
-  startCoordinates?: ScreenRect,
+export type KeyboardEvent = AndroidKeyboardEvent | IOSKeyboardEvent;
+
+type BaseKeyboardEvent = {|
+  duration: number,
+  easing: KeyboardEventEasing,
+  endCoordinates: KeyboardEventCoordinates,
+|};
+
+export type AndroidKeyboardEvent = $ReadOnly<{|
+  ...BaseKeyboardEvent,
+  duration: 0,
+  easing: 'keyboard',
+|}>;
+
+export type IOSKeyboardEvent = $ReadOnly<{|
+  ...BaseKeyboardEvent,
+  startCoordinates: KeyboardEventCoordinates,
+  isEventFromThisApp: boolean,
 |}>;
 
 type KeyboardEventListener = (e: KeyboardEvent) => void;

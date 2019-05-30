@@ -5,13 +5,14 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_xplat_dep", "rn_xplat_c
 rn_xplat_cxx_library(
     name = "jsi",
     srcs = [
-        "jsi.cpp",
+        "jsi/jsi.cpp",
     ],
-    header_namespace = "jsi",
+    header_namespace = "",
     exported_headers = [
-        "instrumentation.h",
-        "jsi.h",
-        "jsi-inl.h",
+        "jsi/instrumentation.h",
+        "jsi/jsi.h",
+        "jsi/jsi-inl.h",
+        "jsi/jsilib.h",
     ],
     compiler_flags = [
         "-O3",
@@ -39,11 +40,11 @@ rn_xplat_cxx_library(
 rn_xplat_cxx_library(
     name = "JSIDynamic",
     srcs = [
-        "JSIDynamic.cpp",
+        "jsi/JSIDynamic.cpp",
     ],
-    header_namespace = "jsi",
+    header_namespace = "",
     exported_headers = [
-        "JSIDynamic.h",
+        "jsi/JSIDynamic.h",
     ],
     compiler_flags = [
         "-fexceptions",
@@ -55,7 +56,7 @@ rn_xplat_cxx_library(
     ],
     xcode_public_headers_symlinks = True,
     deps = [
-        "xplat//folly:molly",
+        "fbsource//xplat/folly:molly",
         react_native_xplat_dep("jsi:jsi"),
     ],
 )
@@ -82,7 +83,7 @@ rn_xplat_cxx_library(
         (
             "^(linux|gcc|platform)",
             [
-                "xplat//jsc:jsc",
+                "fbsource//xplat/jsc:jsc",
             ],
         ),
     ],
@@ -92,7 +93,7 @@ rn_xplat_cxx_library(
         "-O3",
     ],
     fbandroid_deps = [
-        "xplat//jsc:jsc",
+        "fbsource//xplat/jsc:jsc",
     ],
     fbobjc_compiler_flags = [
         "-Os",

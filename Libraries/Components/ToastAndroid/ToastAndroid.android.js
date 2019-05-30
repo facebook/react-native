@@ -9,8 +9,7 @@
  */
 
 'use strict';
-
-const RCTToastAndroid = require('NativeModules').ToastAndroid;
+import NativeToastAndroid from './NativeToastAndroid';
 
 /**
  * This exposes the native ToastAndroid module as a JS module. This has a function 'show'
@@ -35,16 +34,15 @@ const RCTToastAndroid = require('NativeModules').ToastAndroid;
 
 const ToastAndroid = {
   // Toast duration constants
-  SHORT: RCTToastAndroid.SHORT,
-  LONG: RCTToastAndroid.LONG,
-
+  SHORT: NativeToastAndroid.getConstants().SHORT,
+  LONG: NativeToastAndroid.getConstants().LONG,
   // Toast gravity constants
-  TOP: RCTToastAndroid.TOP,
-  BOTTOM: RCTToastAndroid.BOTTOM,
-  CENTER: RCTToastAndroid.CENTER,
+  TOP: NativeToastAndroid.getConstants().TOP,
+  BOTTOM: NativeToastAndroid.getConstants().BOTTOM,
+  CENTER: NativeToastAndroid.getConstants().CENTER,
 
   show: function(message: string, duration: number): void {
-    RCTToastAndroid.show(message, duration);
+    NativeToastAndroid.show(message, duration);
   },
 
   showWithGravity: function(
@@ -52,7 +50,7 @@ const ToastAndroid = {
     duration: number,
     gravity: number,
   ): void {
-    RCTToastAndroid.showWithGravity(message, duration, gravity);
+    NativeToastAndroid.showWithGravity(message, duration, gravity);
   },
 
   showWithGravityAndOffset: function(
@@ -62,7 +60,7 @@ const ToastAndroid = {
     xOffset: number,
     yOffset: number,
   ): void {
-    RCTToastAndroid.showWithGravityAndOffset(
+    NativeToastAndroid.showWithGravityAndOffset(
       message,
       duration,
       gravity,

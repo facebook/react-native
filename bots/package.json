@@ -4,8 +4,11 @@
     "danger": "node ./node_modules/.bin/danger"
   },
   "devDependencies": {
-    "danger": "^2.1.6",
+    "danger": "^7.1.4",
     "lodash.includes": "^4.3.0",
     "minimatch": "^3.0.4"
+  },
+  "dependencies": {
+    "@octokit/rest": "15.18.0"
   }
 }

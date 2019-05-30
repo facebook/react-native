@@ -18,16 +18,9 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StrikethroughSpan;
-import android.text.style.UnderlineSpan;
 import android.util.LruCache;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.yoga.YogaConstants;
@@ -62,38 +55,24 @@ public class TextLayoutManager {
       ReadableMap fragment = fragments.getMap(i);
       int start = sb.length();
 
-      //ReactRawText
-      sb.append(fragment.getString("string"));
-
-// TODO: add support for TextInlineImage and BaseText
-//      if (child instanceof ReactRawTextShadowNode) {
-//        sb.append(((ReactRawTextShadowNode) child).getText());
-//      } else if (child instanceof ReactBaseTextShadowNode) {
-//        buildSpannableFromFragment((ReactBaseTextShadowNode) child, sb, ops);
-//      } else if (child instanceof ReactTextInlineImageShadowNode) {
-//        // We make the image take up 1 character in the span and put a corresponding character into
-//        // the text so that the image doesn't run over any following text.
-//        sb.append(INLINE_IMAGE_PLACEHOLDER);
-//        ops.add(
-//          new SetSpanOperation(
-//            sb.length() - INLINE_IMAGE_PLACEHOLDER.length(),
-//            sb.length(),
-//            ((ReactTextInlineImageShadowNode) child).buildInlineImageSpan()));
-//      } else {
-//        throw new IllegalViewOperationException(
-//          "Unexpected view type nested under text node: " + child.getClass());
-//      }
-
+      // ReactRawText
       TextAttributeProps textAttributes = new TextAttributeProps(new ReactStylesDiffMap(fragment.getMap("textAttributes")));
+
+      sb.append(TextTransform.apply(
+          fragment.getString("string"),
+          textAttributes.mTextTransform));
+
+      // TODO: add support for TextInlineImage and BaseText
+
       int end = sb.length();
       if (end >= start) {
         if (textAttributes.mIsColorSet) {
-          ops.add(new SetSpanOperation(start, end, new ForegroundColorSpan(textAttributes.mColor)));
+          ops.add(new SetSpanOperation(start, end, new ReactForegroundColorSpan(textAttributes.mColor)));
         }
         if (textAttributes.mIsBackgroundColorSet) {
           ops.add(
             new SetSpanOperation(
-              start, end, new BackgroundColorSpan(textAttributes.mBackgroundColor)));
+              start, end, new ReactBackgroundColorSpan(textAttributes.mBackgroundColor)));
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
           if (!Float.isNaN(textAttributes.mLetterSpacing)) {
@@ -105,7 +84,7 @@ public class TextLayoutManager {
         }
         ops.add(
           new SetSpanOperation(
-            start, end, new AbsoluteSizeSpan(textAttributes.mFontSize)));
+            start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize)));
         if (textAttributes.mFontStyle != UNSET
           || textAttributes.mFontWeight != UNSET
           || textAttributes.mFontFamily != null) {
@@ -120,10 +99,10 @@ public class TextLayoutManager {
                 context.getAssets())));
         }
         if (textAttributes.mIsUnderlineTextDecorationSet) {
-          ops.add(new SetSpanOperation(start, end, new UnderlineSpan()));
+          ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));
         }
         if (textAttributes.mIsLineThroughTextDecorationSet) {
-          ops.add(new SetSpanOperation(start, end, new StrikethroughSpan()));
+          ops.add(new SetSpanOperation(start, end, new ReactStrikethroughSpan()));
         }
         if (textAttributes.mTextShadowOffsetDx != 0 || textAttributes.mTextShadowOffsetDy != 0) {
           ops.add(
@@ -140,13 +119,6 @@ public class TextLayoutManager {
           ops.add(
             new SetSpanOperation(
               start, end, new CustomLineHeightSpan(textAttributes.getEffectiveLineHeight())));
-        }
-        if (textAttributes.mTextTransform != TextTransform.UNSET && textAttributes.mTextTransform != TextTransform.NONE) {
-          ops.add(
-            new SetSpanOperation(
-              start,
-              end,
-              new CustomTextTransformSpan(textAttributes.mTextTransform)));
         }
 
         int reactTag = fragment.getInt("reactTag");
@@ -189,23 +161,10 @@ public class TextLayoutManager {
 
     buildSpannableFromFragment(context, attributedString.getArray("fragments"), sb, ops);
 
-// TODO T31905686: add support for inline Images
-//    textShadowNode.mContainsImages = false;
-//    textShadowNode.mHeightOfTallestInlineImage = Float.NaN;
-
+    // TODO T31905686: add support for inline Images
     // While setting the Spans on the final text, we also check whether any of them are images.
     int priority = 0;
     for (SetSpanOperation op : ops) {
-// TODO T31905686: add support for TextInlineImage in C++
-//      if (op.what instanceof TextInlineImageSpan) {
-//        int height = ((TextInlineImageSpan) op.what).getHeight();
-//        textShadowNode.mContainsImages = true;
-//        if (Float.isNaN(textShadowNode.mHeightOfTallestInlineImage)
-//          || height > textShadowNode.mHeightOfTallestInlineImage) {
-//          textShadowNode.mHeightOfTallestInlineImage = height;
-//        }
-//      }
-
       // Actual order of calling {@code execute} does NOT matter,
       // but the {@code priority} DOES matter.
       op.execute(sb, priority);
@@ -216,9 +175,9 @@ public class TextLayoutManager {
   }
 
   public static long measureText(
-      ReactContext context,
-      ReadableNativeMap attributedString,
-      ReadableNativeMap paragraphAttributes,
+      Context context,
+      ReadableMap attributedString,
+      ReadableMap paragraphAttributes,
       float width,
       YogaMeasureMode widthYogaMeasureMode,
       float height,
@@ -322,11 +281,12 @@ public class TextLayoutManager {
     return YogaMeasureOutput.make(PixelUtil.toSPFromPixel(width), PixelUtil.toSPFromPixel(height));
   }
 
-  private static class SetSpanOperation {
+  // TODO T31905686: This class should be private
+  public static class SetSpanOperation {
     protected int start, end;
-    protected Object what;
+    protected ReactSpan what;
 
-    SetSpanOperation(int start, int end, Object what) {
+    SetSpanOperation(int start, int end, ReactSpan what) {
       this.start = start;
       this.end = end;
       this.what = what;

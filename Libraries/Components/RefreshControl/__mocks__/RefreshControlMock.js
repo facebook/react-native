@@ -10,9 +10,9 @@
 
 'use strict';
 
-const React = require('React');
+const React = require('react');
 
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../../ReactNative/requireNativeComponent');
 
 const RCTRefreshControl = requireNativeComponent('RCTRefreshControl');
 

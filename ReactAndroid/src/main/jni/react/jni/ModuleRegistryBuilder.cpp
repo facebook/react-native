@@ -5,6 +5,8 @@
 
 #include "ModuleRegistryBuilder.h"
 
+#include <glog/logging.h>
+
 #include <cxxreact/CxxNativeModule.h>
 #include <folly/Memory.h>
 

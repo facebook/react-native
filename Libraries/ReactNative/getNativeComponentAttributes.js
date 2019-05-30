@@ -10,15 +10,15 @@
 
 'use strict';
 
-const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-const UIManager = require('UIManager');
+const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+const UIManager = require('./UIManager');
 
-const insetsDiffer = require('insetsDiffer');
-const matricesDiffer = require('matricesDiffer');
-const pointsDiffer = require('pointsDiffer');
-const processColor = require('processColor');
-const resolveAssetSource = require('resolveAssetSource');
-const sizesDiffer = require('sizesDiffer');
+const insetsDiffer = require('../Utilities/differ/insetsDiffer');
+const matricesDiffer = require('../Utilities/differ/matricesDiffer');
+const pointsDiffer = require('../Utilities/differ/pointsDiffer');
+const processColor = require('../StyleSheet/processColor');
+const resolveAssetSource = require('../Image/resolveAssetSource');
+const sizesDiffer = require('../Utilities/differ/sizesDiffer');
 const invariant = require('invariant');
 const warning = require('fbjs/lib/warning');
 

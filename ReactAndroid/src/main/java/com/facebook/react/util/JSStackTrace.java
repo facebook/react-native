@@ -15,7 +15,7 @@ import com.facebook.react.bridge.ReadableType;
 
 public class JSStackTrace {
 
-  final private static Pattern mJsModuleIdPattern = Pattern.compile("(?:^|[/\\\\])(\\d+\\.js)$");
+  private static final Pattern FILE_ID_PATTERN = Pattern.compile("\\b((?:seg-\\d+(?:_\\d+)?|\\d+)\\.js)");
 
   public static String format(String message, ReadableArray stack) {
     StringBuilder stringBuilder = new StringBuilder(message).append(", stack:\n");
@@ -24,8 +24,18 @@ public class JSStackTrace {
       stringBuilder
         .append(frame.getString("methodName"))
         .append("@")
-        .append(stackFrameToModuleId(frame))
-        .append(frame.getInt("lineNumber"));
+        .append(parseFileId(frame));
+      
+      if (frame.hasKey("lineNumber") &&
+        !frame.isNull("lineNumber") &&
+        frame.getType("lineNumber") == ReadableType.Number) {
+        stringBuilder
+          .append(frame.getInt("lineNumber"));
+      } else {
+        stringBuilder
+          .append(-1);
+      }
+      
       if (frame.hasKey("column") &&
         !frame.isNull("column") &&
         frame.getType("column") == ReadableType.Number) {
@@ -33,21 +43,24 @@ public class JSStackTrace {
           .append(":")
           .append(frame.getInt("column"));
       }
+      
       stringBuilder.append("\n");
     }
     return stringBuilder.toString();
   }
 
-  // If the file name of a stack frame is numeric (+ ".js"), we assume it's a lazily injected module
-  // coming from a "random access bundle". We are using special source maps for these bundles, so
-  // that we can symbolicate stack traces for multiple injected files with a single source map.
-  // We have to include the module id in the stack for that, though. The ".js" suffix is kept to
-  // avoid ambiguities between "module-id:line" and "line:column".
-  private static String stackFrameToModuleId(ReadableMap frame) {
+  // Besides a regular bundle (e.g. "bundle.js"), a stack frame can be produced by:
+  // 1) "random access bundle (RAM)", e.g. "1.js", where "1" is a module name
+  // 2) "segment file", e.g. "seg-1.js", where "1" is a segment name
+  // 3) "RAM segment file", e.g. "seg-1_2.js", where "1" is a segment name and "2" is a module name
+  // We are using a special source map format for such cases, so that we could symbolicate
+  // stack traces with a single source map file.
+  // NOTE: The ".js" suffix is kept to avoid ambiguities between "module-id:line" and "line:column".
+  private static String parseFileId(ReadableMap frame) {
     if (frame.hasKey("file") &&
         !frame.isNull("file") &&
         frame.getType("file") == ReadableType.String) {
-      final Matcher matcher = mJsModuleIdPattern.matcher(frame.getString("file"));
+      final Matcher matcher = FILE_ID_PATTERN.matcher(frame.getString("file"));
       if (matcher.find()) {
         return matcher.group(1) + ":";
       }

@@ -52,9 +52,6 @@ else
   fi
 fi
 
-# BUILD_TOOLS_VERSION is in a format like "23.0.1"
-BUILD_TOOLS_VERSION=`grep buildToolsVersion $(dirname $0)/../ReactAndroid/build.gradle | sed 's/^[^"]*\"//' | sed 's/"//'`
-
 # MAJOR is something like "23"
 MAJOR=`grep compileSdkVersion $(dirname $0)/../ReactAndroid/build.gradle | sed 's/[^[:digit:]]//g'`
 
@@ -74,15 +71,15 @@ if [ ! -e "$PLATFORM_DIR" ]; then
 fi
 
 # Check that we have the right version of the build tools.
-BT_DIR="$ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION"
+BT_DIR="$ANDROID_HOME/build-tools/$ANDROID_SDK_BUILD_TOOLS_REVISION"
 if [ ! -e "$BT_DIR" ]; then
-  echo "Error: could not find version $BUILD_TOOLS_VERSION of the Android build tools."
+  echo "Error: could not find version $ANDROID_SDK_BUILD_TOOLS_REVISION of the Android build tools."
   echo "Specifically, the directory $BT_DIR does not exist."
   echo "You probably need to explicitly install the correct version of the Android SDK Build Tools from within Android Studio."
   echo "See https://facebook.github.io/react-native/docs/getting-started.html for details."
   echo "If you are using Android SDK Tools from the command line, you may need to run:"
   echo
-  echo "  sdkmanager \"platform-tools\" \"build-tools;android-$BUILD_TOOLS_VERSION\""
+  echo "  sdkmanager \"platform-tools\" \"build-tools;android-$ANDROID_SDK_BUILD_TOOLS_REVISION\""
   echo
   echo "Check out https://developer.android.com/studio/command-line/sdkmanager.html for details."
   exit 1

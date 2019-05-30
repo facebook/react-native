@@ -11,10 +11,12 @@
 
 'use strict';
 
-const EmitterSubscription = require('EmitterSubscription');
-const EventSubscriptionVendor = require('EventSubscriptionVendor');
+const EmitterSubscription = require('./EmitterSubscription');
+const EventSubscriptionVendor = require('./EventSubscriptionVendor');
 
 const invariant = require('invariant');
+
+const sparseFilterPredicate = () => true;
 
 /**
  * @class EventEmitter
@@ -151,7 +153,13 @@ class EventEmitter {
   listeners(eventType: string): [EmitterSubscription] {
     const subscriptions = this._subscriber.getSubscriptionsForType(eventType);
     return subscriptions
-      ? subscriptions.map(subscription => subscription.listener)
+      ? subscriptions
+          // We filter out missing entries because the array is sparse.
+          // "callbackfn is called only for elements of the array which actually
+          // exist; it is not called for missing elements of the array."
+          // https://www.ecma-international.org/ecma-262/9.0/index.html#sec-array.prototype.filter
+          .filter(sparseFilterPredicate)
+          .map(subscription => subscription.listener)
       : [];
   }
 
@@ -176,7 +184,7 @@ class EventEmitter {
         const subscription = subscriptions[i];
 
         // The subscription may have been removed during this event loop.
-        if (subscription) {
+        if (subscription && subscription.listener) {
           this._currentSubscription = subscription;
           subscription.listener.apply(
             subscription.context,

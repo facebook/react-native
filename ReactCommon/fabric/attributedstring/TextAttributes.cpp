@@ -10,6 +10,7 @@
 #include <react/attributedstring/conversions.h>
 #include <react/core/conversions.h>
 #include <react/graphics/conversions.h>
+#include <react/utils/FloatComparison.h>
 #include <cmath>
 
 #include <react/debug/debugStringConvertibleUtils.h>
@@ -101,16 +102,11 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
   return std::tie(
              foregroundColor,
              backgroundColor,
-             opacity,
              fontFamily,
-             fontSize,
-             fontSizeMultiplier,
              fontWeight,
              fontStyle,
              fontVariant,
              allowFontScaling,
-             letterSpacing,
-             lineHeight,
              alignment,
              baseWritingDirection,
              textDecorationColor,
@@ -118,23 +114,17 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              textDecorationLineStyle,
              textDecorationLinePattern,
              textShadowOffset,
-             textShadowRadius,
              textShadowColor,
              isHighlighted,
              layoutDirection) ==
       std::tie(
              rhs.foregroundColor,
              rhs.backgroundColor,
-             rhs.opacity,
              rhs.fontFamily,
-             rhs.fontSize,
-             rhs.fontSizeMultiplier,
              rhs.fontWeight,
              rhs.fontStyle,
              rhs.fontVariant,
              rhs.allowFontScaling,
-             rhs.letterSpacing,
-             rhs.lineHeight,
              rhs.alignment,
              rhs.baseWritingDirection,
              rhs.textDecorationColor,
@@ -142,10 +132,15 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              rhs.textDecorationLineStyle,
              rhs.textDecorationLinePattern,
              rhs.textShadowOffset,
-             rhs.textShadowRadius,
              rhs.textShadowColor,
              rhs.isHighlighted,
-             rhs.layoutDirection);
+             rhs.layoutDirection) &&
+      floatEquality(opacity, rhs.opacity) &&
+      floatEquality(fontSize, rhs.fontSize) &&
+      floatEquality(fontSizeMultiplier, rhs.fontSizeMultiplier) &&
+      floatEquality(letterSpacing, rhs.letterSpacing) &&
+      floatEquality(lineHeight, rhs.lineHeight) &&
+      floatEquality(textShadowRadius, rhs.textShadowRadius);
 }
 
 bool TextAttributes::operator!=(const TextAttributes &rhs) const {
@@ -159,6 +154,7 @@ TextAttributes TextAttributes::defaultTextAttributes() {
     textAttributes.foregroundColor = blackColor();
     textAttributes.backgroundColor = clearColor();
     textAttributes.fontSize = 14.0;
+    textAttributes.fontSizeMultiplier = 1.0;
     return textAttributes;
   }();
   return textAttributes;

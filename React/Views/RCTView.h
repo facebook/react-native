@@ -12,6 +12,8 @@
 #import <React/RCTPointerEvents.h>
 #import <React/RCTView.h>
 
+extern const UIAccessibilityTraits SwitchAccessibilityTrait;
+
 @protocol RCTAutoInsetsProtocol;
 
 @class RCTView;
@@ -25,11 +27,6 @@
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityTap;
 @property (nonatomic, copy) RCTDirectEventBlock onMagicTap;
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityEscape;
-
-/**
- * Accessibility properties
- */
-@property (nonatomic, copy) NSArray <NSString *> *accessibilityActions;
 
 /**
  * Used to control how touch events are processed.

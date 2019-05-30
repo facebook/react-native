@@ -1,0 +1,69 @@
+load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_native_target", "react_native_xplat_target", "rn_xplat_cxx_library")
+
+rn_xplat_cxx_library(
+    name = "jni",
+    srcs = [
+        "jsireact/OnLoad.cpp",
+        "jsireact/TurboModuleManager.cpp",
+    ],
+    header_namespace = "",
+    exported_headers = {
+        "jsireact/TurboModuleManager.h": "jsireact/TurboModuleManager.h",
+        "jsireact/TurboModuleManagerDelegate.h": "jsireact/TurboModuleManagerDelegate.h",
+    },
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    platforms = ANDROID,
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    soname = "libturbomodulejsijni.$(ext)",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_target("jni/react/jni:jni"),
+    ],
+    exported_deps = [
+        "fbsource//xplat/jsi:jsi",
+        ":jscallinvokerholder",
+        react_native_xplat_target("turbomodule/core:core"),
+    ],
+)
+
+rn_xplat_cxx_library(
+    name = "jscallinvokerholder",
+    srcs = [
+        "jsireact/JSCallInvokerHolder.cpp",
+    ],
+    header_namespace = "",
+    exported_headers = {
+        "jsireact/JSCallInvokerHolder.h": "jsireact/JSCallInvokerHolder.h",
+    },
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    fbandroid_deps = [
+        FBJNI_TARGET,
+    ],
+    platforms = ANDROID,
+    preferred_linkage = "static",
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    exported_deps = [
+        react_native_xplat_target("jscallinvoker:jscallinvoker"),
+    ],
+)

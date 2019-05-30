@@ -10,6 +10,8 @@
 namespace facebook {
 namespace react {
 
+#ifdef ANDROID
+
 inline folly::dynamic toDynamic(const ParagraphLocalData &paragraphLocalData) {
   folly::dynamic newLocalData = folly::dynamic::object();
   newLocalData["attributedString"] =
@@ -17,6 +19,8 @@ inline folly::dynamic toDynamic(const ParagraphLocalData &paragraphLocalData) {
   newLocalData["hash"] = newLocalData["attributedString"]["hash"];
   return newLocalData;
 }
+
+#endif
 
 } // namespace react
 } // namespace facebook

@@ -37,9 +37,13 @@ public:
   std::shared_ptr<ModuleRegistry> getModuleRegistry() override {
     return m_registry;
   }
+  
+  bool isBatchActive() {
+    return m_batchHadNativeModuleCalls;
+  }
 
   void callNativeModules(
-      JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) override {
+      __unused JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) override {
 
     CHECK(m_registry || calls.empty()) <<
       "native module calls cannot be completed with no native modules";
@@ -64,7 +68,7 @@ public:
   }
 
   MethodCallResult callSerializableNativeHook(
-      JSExecutor& executor, unsigned int moduleId, unsigned int methodId,
+      __unused JSExecutor& executor, unsigned int moduleId, unsigned int methodId,
       folly::dynamic&& args) override {
     return m_registry->callSerializableNativeHook(moduleId, methodId, std::move(args));
   }
@@ -80,14 +84,15 @@ private:
 };
 
 NativeToJsBridge::NativeToJsBridge(
-    JSExecutorFactory* jsExecutorFactory,
+    JSExecutorFactory *jsExecutorFactory,
     std::shared_ptr<ModuleRegistry> registry,
     std::shared_ptr<MessageQueueThread> jsQueue,
     std::shared_ptr<InstanceCallback> callback)
-    : m_destroyed(std::make_shared<bool>(false))
-    , m_delegate(std::make_shared<JsToNativeBridge>(registry, callback))
-    , m_executor(jsExecutorFactory->createJSExecutor(m_delegate, jsQueue))
-    , m_executorMessageQueueThread(std::move(jsQueue)) {}
+    : m_destroyed(std::make_shared<bool>(false)),
+      m_delegate(std::make_shared<JsToNativeBridge>(registry, callback)),
+      m_executor(jsExecutorFactory->createJSExecutor(m_delegate, jsQueue)),
+      m_executorMessageQueueThread(std::move(jsQueue)),
+      m_inspectable(m_executor->isInspectable()) {}
 
 // This must be called on the same thread on which the constructor was called.
 NativeToJsBridge::~NativeToJsBridge() {
@@ -99,6 +104,7 @@ void NativeToJsBridge::loadApplication(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> startupScript,
     std::string startupScriptSourceURL) {
+
   runOnExecutorQueue(
       [this,
        bundleRegistryWrap=folly::makeMoveWrapper(std::move(bundleRegistry)),
@@ -220,7 +226,11 @@ void* NativeToJsBridge::getJavaScriptContext() {
 }
 
 bool NativeToJsBridge::isInspectable() {
-  return m_executor->isInspectable();
+  return m_inspectable;
+}
+  
+bool NativeToJsBridge::isBatchActive() {
+  return m_delegate->isBatchActive();
 }
 
 void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {

@@ -7,7 +7,7 @@
 
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -15,11 +15,12 @@ namespace react {
 /**
  * This is a sample implementation. Each app should provide its own.
  */
-SharedComponentDescriptorRegistry ComponentDescriptorFactory::buildRegistry(
-    const SharedEventDispatcher &eventDispatcher,
-    const SharedContextContainer &contextContainer) {
-  auto registry = std::make_shared<ComponentDescriptorRegistry>();
-  return registry;
+ComponentRegistryFactory getDefaultComponentRegistryFactory() {
+  return [](const EventDispatcher::Shared &eventDispatcher,
+            const ContextContainer::Shared &contextContainer) {
+    auto registry = std::make_shared<ComponentDescriptorRegistry>();
+    return registry;
+  };
 }
 
 } // namespace react

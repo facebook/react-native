@@ -10,10 +10,10 @@
  */
 'use strict';
 
-const React = require('React');
+const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
-const VirtualizedList = require('VirtualizedList');
+const VirtualizedList = require('../VirtualizedList');
 
 describe('VirtualizedList', () => {
   it('renders simple list', () => {
@@ -26,6 +26,61 @@ describe('VirtualizedList', () => {
       />,
     );
     expect(component).toMatchSnapshot();
+  });
+
+  it('renders simple list using ListItemComponent', () => {
+    function ListItemComponent({item}) {
+      return <item value={item.key} />;
+    }
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+        ListItemComponent={ListItemComponent}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+      />,
+    );
+    expect(component).toMatchSnapshot();
+  });
+
+  it('warns if both renderItem or ListItemComponent are specified. Uses ListItemComponent', () => {
+    jest.spyOn(global.console, 'warn');
+    function ListItemComponent({item}) {
+      return <item value={item.key} testID={`${item.key}-ListItemComponent`} />;
+    }
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={[{key: 'i1'}]}
+        ListItemComponent={ListItemComponent}
+        renderItem={({item}) => (
+          <item value={item.key} testID={`${item.key}-renderItem`} />
+        )}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+      />,
+    );
+
+    expect(console.warn.mock.calls).toEqual([
+      [
+        'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take precedence over renderItem.',
+      ],
+    ]);
+    expect(component).toMatchSnapshot();
+    console.warn.mockRestore();
+  });
+
+  it('throws if no renderItem or ListItemComponent', () => {
+    const componentFactory = () =>
+      ReactTestRenderer.create(
+        <VirtualizedList
+          data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+        />,
+      );
+    expect(componentFactory).toThrow(
+      'VirtualizedList: Either ListItemComponent or renderItem props are required but none were found.',
+    );
   });
 
   it('renders empty list', () => {
@@ -174,9 +229,9 @@ describe('VirtualizedList', () => {
     const props = {
       data,
       renderItem: ({item}) => <item value={item.key} />,
-      getItem: (data, index) => data[index],
-      getItemCount: data => data.length,
-      getItemLayout: (data, index) => ({
+      getItem: (items, index) => items[index],
+      getItemCount: items => items.length,
+      getItemLayout: (items, index) => ({
         length: ITEM_HEIGHT,
         offset: ITEM_HEIGHT * index,
         index,

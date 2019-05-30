@@ -10,18 +10,30 @@
 
 'use strict';
 
-const NativeModules = require('NativeModules');
-const Promise = require('Promise');
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+import NativeAccessibilityManager from './NativeAccessibilityManager';
 
-const AccessibilityManager = NativeModules.AccessibilityManager;
+const Promise = require('../../Promise');
+const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
 
-const VOICE_OVER_EVENT = 'voiceOverDidChange';
-const ANNOUNCEMENT_DID_FINISH_EVENT = 'announcementDidFinish';
+const CHANGE_EVENT_NAME = {
+  announcementFinished: 'announcementFinished',
+  boldTextChanged: 'boldTextChanged',
+  grayscaleChanged: 'grayscaleChanged',
+  invertColorsChanged: 'invertColorsChanged',
+  reduceMotionChanged: 'reduceMotionChanged',
+  reduceTransparencyChanged: 'reduceTransparencyChanged',
+  screenReaderChanged: 'screenReaderChanged',
+};
 
-type ChangeEventName = $Enum<{
-  change: string,
+type ChangeEventName = $Keys<{
   announcementFinished: string,
+  boldTextChanged: string,
+  change: string,
+  grayscaleChanged: string,
+  invertColorsChanged: string,
+  reduceMotionChanged: string,
+  reduceTransparencyChanged: string,
+  screenReaderChanged: string,
 }>;
 
 const _subscriptions = new Map();
@@ -37,23 +49,145 @@ const _subscriptions = new Map();
  */
 const AccessibilityInfo = {
   /**
+   * Query whether bold text is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when bold text is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isBoldTextEnabled
+   */
+  isBoldTextEnabled: function(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityManager) {
+        NativeAccessibilityManager.getCurrentBoldTextState(resolve, reject);
+      } else {
+        reject(reject);
+      }
+    });
+  },
+
+  /**
+   * Query whether grayscale is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when grayscale is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isGrayscaleEnabled
+   */
+  isGrayscaleEnabled: function(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityManager) {
+        NativeAccessibilityManager.getCurrentGrayscaleState(resolve, reject);
+      } else {
+        reject(reject);
+      }
+    });
+  },
+
+  /**
+   * Query whether inverted colors are currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when invert color is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isInvertColorsEnabled
+   */
+  isInvertColorsEnabled: function(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityManager) {
+        NativeAccessibilityManager.getCurrentInvertColorsState(resolve, reject);
+      } else {
+        reject(reject);
+      }
+    });
+  },
+
+  /**
+   * Query whether reduced motion is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when a reduce motion is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isReduceMotionEnabled
+   */
+  isReduceMotionEnabled: function(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityManager) {
+        NativeAccessibilityManager.getCurrentReduceMotionState(resolve, reject);
+      } else {
+        reject(reject);
+      }
+    });
+  },
+
+  /**
+   * Query whether reduced transparency is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when a reduce transparency is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isReduceTransparencyEnabled
+   */
+  isReduceTransparencyEnabled: function(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (NativeAccessibilityManager) {
+        NativeAccessibilityManager.getCurrentReduceTransparencyState(
+          resolve,
+          reject,
+        );
+      } else {
+        reject(reject);
+      }
+    });
+  },
+
+  /**
    * Query whether a screen reader is currently enabled.
    *
    * Returns a promise which resolves to a boolean.
-   * The result is `true` when a screen reader is enabledand `false` otherwise.
+   * The result is `true` when a screen reader is enabled and `false` otherwise.
    *
-   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#fetch
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isScreenReaderEnabled
    */
-  fetch: function(): Promise {
+  isScreenReaderEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      AccessibilityManager.getCurrentVoiceOverState(resolve, reject);
+      if (NativeAccessibilityManager) {
+        NativeAccessibilityManager.getCurrentVoiceOverState(resolve, reject);
+      } else {
+        reject(reject);
+      }
     });
+  },
+
+  /**
+   * Deprecated
+   *
+   * Same as `isScreenReaderEnabled`
+   */
+  get fetch() {
+    return this.isScreenReaderEnabled;
   },
 
   /**
    * Add an event handler. Supported events:
    *
-   * - `change`: Fires when the state of the screen reader changes. The argument
+   * - `boldTextChanged`: iOS-only event. Fires when the state of the bold text toggle changes.
+   *   The argument to the event handler is a boolean. The boolean is `true` when a bold text
+   *   is enabled and `false` otherwise.
+   * - `grayscaleChanged`: iOS-only event. Fires when the state of the gray scale toggle changes.
+   *   The argument to the event handler is a boolean. The boolean is `true` when a gray scale
+   *   is enabled and `false` otherwise.
+   * - `invertColorsChanged`: iOS-only event. Fires when the state of the invert colors toggle
+   *   changes. The argument to the event handler is a boolean. The boolean is `true` when a invert
+   *   colors is enabled and `false` otherwise.
+   * - `reduceMotionChanged`: Fires when the state of the reduce motion toggle changes.
+   *   The argument to the event handler is a boolean. The boolean is `true` when a reduce
+   *   motion is enabled (or when "Transition Animation Scale" in "Developer options" is
+   *   "Animation off") and `false` otherwise.
+   * - `reduceTransparencyChanged`: iOS-only event. Fires when the state of the reduce transparency
+   *   toggle changes.  The argument to the event handler is a boolean. The boolean is `true`
+   *   when a reduce transparency is enabled and `false` otherwise.
+   * - `screenReaderChanged`: Fires when the state of the screen reader changes. The argument
    *   to the event handler is a boolean. The boolean is `true` when a screen
    *   reader is enabled and `false` otherwise.
    * - `announcementFinished`: iOS-only event. Fires when the screen reader has
@@ -72,12 +206,12 @@ const AccessibilityInfo = {
     let listener;
 
     if (eventName === 'change') {
-      listener = RCTDeviceEventEmitter.addListener(VOICE_OVER_EVENT, handler);
-    } else if (eventName === 'announcementFinished') {
       listener = RCTDeviceEventEmitter.addListener(
-        ANNOUNCEMENT_DID_FINISH_EVENT,
+        CHANGE_EVENT_NAME.screenReaderChanged,
         handler,
       );
+    } else if (CHANGE_EVENT_NAME[eventName]) {
+      listener = RCTDeviceEventEmitter.addListener(eventName, handler);
     }
 
     _subscriptions.set(handler, listener);
@@ -96,18 +230,20 @@ const AccessibilityInfo = {
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#setaccessibilityfocus
    */
   setAccessibilityFocus: function(reactTag: number): void {
-    AccessibilityManager.setAccessibilityFocus(reactTag);
+    if (NativeAccessibilityManager) {
+      NativeAccessibilityManager.setAccessibilityFocus(reactTag);
+    }
   },
 
   /**
    * Post a string to be announced by the screen reader.
    *
-   * @platform ios
-   *
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#announceforaccessibility
    */
   announceForAccessibility: function(announcement: string): void {
-    AccessibilityManager.announceForAccessibility(announcement);
+    if (NativeAccessibilityManager) {
+      NativeAccessibilityManager.announceForAccessibility(announcement);
+    }
   },
 
   /**

@@ -15,7 +15,9 @@
 #include <react/components/view/YogaStylableProps.h>
 #include <react/core/LayoutableShadowNode.h>
 #include <react/core/Sealable.h>
+#include <react/core/ShadowNode.h>
 #include <react/debug/DebugStringConvertible.h>
+#include <react/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {
@@ -24,6 +26,10 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
                                  public virtual DebugStringConvertible,
                                  public virtual Sealable {
  public:
+  using UnsharedList = better::small_vector<
+      YogaLayoutableShadowNode *,
+      kShadowNodeChildrenSmallVectorSize>;
+
 #pragma mark - Constructors
 
   YogaLayoutableShadowNode();
@@ -51,12 +57,22 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
    * instances. Complements `ShadowNode::setChildren(...)` functionality from
    * Yoga perspective.
    */
-  void setChildren(std::vector<YogaLayoutableShadowNode *> children);
+  void setChildren(YogaLayoutableShadowNode::UnsharedList children);
 
   /*
    * Sets Yoga styles based on given `YogaStylableProps`.
    */
   void setProps(const YogaStylableProps &props);
+
+  /**
+   * Sets layoutable size of node.
+   */
+  void setSize(Size size) const;
+
+  /**
+   * Sets position type of Yoga node (relative, absolute).
+   */
+  void setPositionType(YGPositionType positionType) const;
 
 #pragma mark - LayoutableShadowNode
 
@@ -75,9 +91,14 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
 
   void layoutChildren(LayoutContext layoutContext) override;
 
-  std::vector<LayoutableShadowNode *> getLayoutableChildNodes() const override;
+  LayoutableShadowNode::UnsharedList getLayoutableChildNodes() const override;
 
  protected:
+  /*
+   * Yoga config associated (only) with this particular node.
+   */
+  YGConfig yogaConfig_;
+
   /*
    * All Yoga functions only accept non-const arguments, so we have to mark
    * Yoga node as `mutable` here to avoid `static_cast`ing the pointer to this
@@ -85,13 +106,8 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
    */
   mutable YGNode yogaNode_;
 
-  /*
-   * Yoga config associated (only) with this particular node.
-   */
-  YGConfig yogaConfig_;
-
  private:
-  static void initializeYogaConfig(YGConfig &config);
+  static YGConfig &initializeYogaConfig(YGConfig &config);
   static YGNode *yogaNodeCloneCallbackConnector(
       YGNode *oldYogaNode,
       YGNode *parentYogaNode,

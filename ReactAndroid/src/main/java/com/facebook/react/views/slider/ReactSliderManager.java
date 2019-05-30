@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.slider;
 
+import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
@@ -192,4 +194,23 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
         ReactSlidingCompleteEvent.EVENT_NAME,
         MapBuilder.of("registrationName", "onSlidingComplete"));
   }
-}
+
+  @Override
+  public long measure(
+    Context context,
+    ReadableMap localData,
+    ReadableMap props,
+    ReadableMap state,
+    float width,
+    YogaMeasureMode widthMode,
+    float height,
+    YogaMeasureMode heightMode) {
+      SeekBar reactSlider = new ReactSlider(context, null, STYLE);
+      final int spec = View.MeasureSpec.makeMeasureSpec(
+        ViewGroup.LayoutParams.WRAP_CONTENT,
+        View.MeasureSpec.UNSPECIFIED);
+      reactSlider.measure(spec, spec);
+
+      return YogaMeasureOutput.make(reactSlider.getMeasuredWidth(), reactSlider.getMeasuredHeight());
+    }
+  }

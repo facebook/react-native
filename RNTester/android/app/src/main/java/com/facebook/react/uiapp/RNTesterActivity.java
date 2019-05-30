@@ -8,7 +8,6 @@
 
 package com.facebook.react.uiapp;
 
-import android.app.Activity;
 import android.os.Bundle;
 
 import com.facebook.react.ReactActivity;
@@ -20,9 +19,9 @@ public class RNTesterActivity extends ReactActivity {
   public static class RNTesterActivityDelegate extends ReactActivityDelegate {
     private static final String PARAM_ROUTE = "route";
     private Bundle mInitialProps = null;
-    private final @Nullable Activity mActivity;
+    private final @Nullable ReactActivity mActivity;
 
-    public RNTesterActivityDelegate(Activity activity, String mainComponentName) {
+    public RNTesterActivityDelegate(ReactActivity activity, String mainComponentName) {
       super(activity, mainComponentName);
       this.mActivity = activity;
     }

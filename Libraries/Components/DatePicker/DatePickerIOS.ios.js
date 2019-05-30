@@ -13,17 +13,16 @@
 
 'use strict';
 
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const View = require('../View/View');
 
 const invariant = require('invariant');
-const requireNativeComponent = require('requireNativeComponent');
 
-import type {ViewProps} from 'ViewPropTypes';
-import type {SyntheticEvent} from 'CoreEventTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 
-const RCTDatePickerIOS = requireNativeComponent('RCTDatePicker');
+const RCTDatePickerNativeComponent = require('./RCTDatePickerNativeComponent');
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
@@ -118,8 +117,7 @@ class DatePickerIOS extends React.Component<Props> {
     mode: 'datetime',
   };
 
-  // $FlowFixMe How to type a native component to be able to call setNativeProps
-  _picker: ?React.ElementRef<typeof RCTDatePickerIOS> = null;
+  _picker: ?React.ElementRef<typeof RCTDatePickerNativeComponent> = null;
 
   componentDidUpdate() {
     if (this.props.date) {
@@ -147,7 +145,7 @@ class DatePickerIOS extends React.Component<Props> {
     );
     return (
       <View style={props.style}>
-        <RCTDatePickerIOS
+        <RCTDatePickerNativeComponent
           testID={props.testID}
           ref={picker => {
             this._picker = picker;
@@ -157,8 +155,8 @@ class DatePickerIOS extends React.Component<Props> {
             props.date
               ? props.date.getTime()
               : props.initialDate
-                ? props.initialDate.getTime()
-                : undefined
+              ? props.initialDate.getTime()
+              : undefined
           }
           locale={
             props.locale != null && props.locale !== ''

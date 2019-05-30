@@ -25,7 +25,7 @@ function patchfile {
   printf "!plEphiEmie@IsG>>\n\n" >> /tmp/yogasync.tmp
   tail -n +9 $1 >> /tmp/yogasync.tmp
   mv /tmp/yogasync.tmp $1
-  $ROOT/fbandroid/scripts/signedsource.py sign $1
+  "$ROOT"/tools/signedsource.py sign "$1"
 }
 
 if [ -z $1 ]; then

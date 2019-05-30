@@ -7,23 +7,41 @@
 
 package com.facebook.react.views.picker;
 
-import javax.annotation.Nullable;
-
 import android.content.Context;
+import androidx.appcompat.widget.AppCompatSpinner;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 
 import com.facebook.react.common.annotations.VisibleForTesting;
 
-public class ReactPicker extends Spinner {
+import javax.annotation.Nullable;
 
-  private int mMode = MODE_DIALOG;
+public class ReactPicker extends AppCompatSpinner {
+
+  private int mMode = Spinner.MODE_DIALOG;
   private @Nullable Integer mPrimaryColor;
-  private boolean mSuppressNextEvent;
   private @Nullable OnSelectListener mOnSelectListener;
+  private @Nullable SpinnerAdapter mStagedAdapter;
   private @Nullable Integer mStagedSelection;
+
+  private final OnItemSelectedListener mItemSelectedListener = new OnItemSelectedListener() {
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+      if (mOnSelectListener != null) {
+        mOnSelectListener.onItemSelected(position);
+      }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+      if (mOnSelectListener != null) {
+        mOnSelectListener.onItemSelected(-1);
+      }
+    }
+  };
 
   /**
    * Listener interface for ReactPicker events.
@@ -75,31 +93,19 @@ public class ReactPicker extends Spinner {
     post(measureAndLayout);
   }
 
-  public void setOnSelectListener(@Nullable OnSelectListener onSelectListener) {
-    if (getOnItemSelectedListener() == null) {
-      // onItemSelected gets fired immediately after layout because checkSelectionChanged() in
-      // AdapterView updates the selection position from the default INVALID_POSITION. To match iOS
-      // behavior, we don't want the event emitter for onItemSelected to fire right after layout.
-      mSuppressNextEvent = true;
-      setOnItemSelectedListener(
-          new OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-              if (!mSuppressNextEvent && mOnSelectListener != null) {
-                mOnSelectListener.onItemSelected(position);
-              }
-              mSuppressNextEvent = false;
-            }
+  @Override
+  protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    super.onLayout(changed, left, top, right, bottom);
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-              if (!mSuppressNextEvent && mOnSelectListener != null) {
-                mOnSelectListener.onItemSelected(-1);
-              }
-              mSuppressNextEvent = false;
-            }
-          });
-    }
+    // onItemSelected gets fired immediately after layout because checkSelectionChanged() in
+    // AdapterView updates the selection position from the default INVALID_POSITION.
+    // To match iOS behavior, which no onItemSelected during initial layout.
+    // We setup the listener after layout.
+    if (getOnItemSelectedListener() == null)
+      setOnItemSelectedListener(mItemSelectedListener);
+  }
+
+  public void setOnSelectListener(@Nullable OnSelectListener onSelectListener) {
     mOnSelectListener = onSelectListener;
   }
 
@@ -107,32 +113,42 @@ public class ReactPicker extends Spinner {
     return mOnSelectListener;
   }
 
+  /* package */ void setStagedAdapter(final SpinnerAdapter adapter) {
+   mStagedAdapter = adapter;
+  }
+
   /**
-   * Will cache "selection" value locally and set it only once {@link #updateStagedSelection} is
+   * Will cache "selection" value locally and set it only once {@link #commitStagedData} is
    * called
    */
-  public void setStagedSelection(int selection) {
+  /* package */ void setStagedSelection(int selection) {
     mStagedSelection = selection;
   }
 
-  public void updateStagedSelection() {
-    if (mStagedSelection != null) {
-      setSelectionWithSuppressEvent(mStagedSelection);
+  /**
+   * Used to commit staged data into ReactPicker view.
+   * During this period, we will disable {@link OnSelectListener#onItemSelected(int)} temporarily,
+   * so we don't get an event when changing the items/selection ourselves.
+   */
+  /* package */ void commitStagedData() {
+    setOnItemSelectedListener(null);
+
+    final int origSelection = getSelectedItemPosition();
+    if (mStagedAdapter != null && mStagedAdapter != getAdapter()) {
+      setAdapter(mStagedAdapter);
+      // After setAdapter(), Spinner will reset selection and cause unnecessary onValueChange event.
+      // Explicitly setup selection again to prevent this.
+      // Ref: https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/widget/AbsSpinner.java#123
+      setSelection(origSelection, false);
+      mStagedAdapter = null;
+    }
+
+    if (mStagedSelection != null && mStagedSelection != origSelection) {
+      setSelection(mStagedSelection, false);
       mStagedSelection = null;
     }
-  }
 
-  /**
-   * Set the selection while suppressing the follow-up {@link OnSelectListener#onItemSelected(int)}
-   * event. This is used so we don't get an event when changing the selection ourselves.
-   *
-   * @param position the position of the selected item
-   */
-  private void setSelectionWithSuppressEvent(int position) {
-    if (position != getSelectedItemPosition()) {
-      mSuppressNextEvent = true;
-      setSelection(position);
-    }
+    setOnItemSelectedListener(mItemSelectedListener);
   }
 
   public @Nullable Integer getPrimaryColor() {

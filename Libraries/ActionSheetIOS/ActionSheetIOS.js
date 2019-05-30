@@ -9,10 +9,11 @@
  */
 'use strict';
 
-const RCTActionSheetManager = require('NativeModules').ActionSheetManager;
+const RCTActionSheetManager = require('../BatchedBridge/NativeModules')
+  .ActionSheetManager;
 
 const invariant = require('invariant');
-const processColor = require('processColor');
+const processColor = require('../StyleSheet/processColor');
 
 /**
  * Display action sheets and share sheets on iOS.
@@ -27,7 +28,7 @@ const ActionSheetIOS = {
    *
    * - `options` (array of strings) - a list of button titles (required)
    * - `cancelButtonIndex` (int) - index of cancel button in `options`
-   * - `destructiveButtonIndex` (int) - index of destructive button in `options`
+   * - `destructiveButtonIndex` (int or array of ints) - index or indices of destructive buttons in `options`
    * - `title` (string) - a title to show above the action sheet
    * - `message` (string) - a message to show below the title
    *

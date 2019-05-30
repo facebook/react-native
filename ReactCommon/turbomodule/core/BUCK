@@ -1,0 +1,86 @@
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_debug_preprocessor_flags", "get_static_library_ios_flags")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_target", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
+
+rn_xplat_cxx_library(
+    name = "core",
+    srcs = glob(
+        ["*.cpp"],
+    ),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("", "*.h"),
+        ],
+        prefix = "jsireact",
+    ),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    fbandroid_deps = [
+        react_native_target("jni/react/jni:jni"),
+    ],
+    fbandroid_exported_headers = subdir_glob(
+        [
+            ("platform/android", "*.h"),
+        ],
+        prefix = "jsireact",
+    ),
+    fbandroid_srcs = glob(
+        [
+            "platform/android/**/*.cpp",
+        ],
+    ),
+    fbobjc_compiler_flags = [
+        "-Wall",
+        "-fobjc-arc-exceptions",
+    ],
+    fbobjc_inherited_buck_flags = get_static_library_ios_flags(),
+    fbobjc_preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags(),
+    force_static = True,
+    ios_deps = [
+        "fbsource//xplat/FBBaseLite:FBBaseLite",
+        "fbsource//xplat/js/react-native-github:RCTCxxBridge",
+        "fbsource//xplat/js/react-native-github:RCTCxxModule",
+        "fbsource//xplat/js/react-native-github:ReactInternal",
+    ],
+    ios_exported_headers = subdir_glob(
+        [
+            ("platform/ios", "*.h"),
+        ],
+        prefix = "jsireact",
+    ),
+    ios_frameworks = [
+        "$SDKROOT/System/Library/Frameworks/Foundation.framework",
+    ],
+    ios_srcs = glob(
+        [
+            "platform/ios/**/*.cpp",
+            "platform/ios/**/*.mm",
+        ],
+    ),
+    platforms = (ANDROID, APPLE),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        "fbsource//xplat/fbsystrace:fbsystrace",
+        "fbsource//xplat/folly:headers_only",
+        "fbsource//xplat/folly:memory",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/jsi:JSIDynamic",
+        "fbsource//xplat/third-party/glog:glog",
+        react_native_xplat_target("cxxreact:bridge"),
+        react_native_xplat_target("cxxreact:module"),
+        react_native_xplat_target("jscallinvoker:jscallinvoker"),
+    ],
+    exported_deps = [
+        "fbsource//xplat/jsi:jsi",
+    ],
+)

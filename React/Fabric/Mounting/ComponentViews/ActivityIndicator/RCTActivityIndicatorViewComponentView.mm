@@ -7,12 +7,14 @@
 
 #import "RCTActivityIndicatorViewComponentView.h"
 
-#import <react/components/activityindicator/ActivityIndicatorViewShadowNode.h>
-#import <react/components/activityindicator/ActivityIndicatorViewProps.h>
+#import <react/components/rncore/ComponentDescriptors.h>
+#import <react/components/rncore/EventEmitters.h>
+#import <react/components/rncore/Props.h>
 
 using namespace facebook::react;
 
-static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const ActivityIndicatorViewSize &size) {
+static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const ActivityIndicatorViewSize &size)
+{
   switch (size) {
     case ActivityIndicatorViewSize::Small:
       return UIActivityIndicatorViewStyleWhite;
@@ -27,9 +29,9 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
 
 #pragma mark - RCTComponentViewProtocol
 
-+ (ComponentHandle)componentHandle
++ (ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return ActivityIndicatorViewShadowNode::Handle();
+  return concreteComponentDescriptorProvider<ActivityIndicatorViewComponentDescriptor>();
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -56,7 +58,7 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
   return self;
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
   const auto &oldViewProps = *std::static_pointer_cast<const ActivityIndicatorViewProps>(oldProps ?: _props);
   const auto &newViewProps = *std::static_pointer_cast<const ActivityIndicatorViewProps>(props);

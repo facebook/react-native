@@ -37,7 +37,24 @@ class RootShadowNode final
   /*
    * Layouts the shadow tree.
    */
-  void layout();
+  void layout(std::vector<LayoutableShadowNode const *> *affectedNodes = {});
+
+  /*
+   * Clones the node with given `layoutConstraints` and `layoutContext`.
+   */
+  UnsharedRootShadowNode clone(
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext) const;
+
+  /*
+   * Clones the node replacing a given old shadow node with a new one in the
+   * tree by cloning all nodes on the path to the root node and then complete
+   * the tree. Returns `nullptr` if the operation cannot be finished
+   * successfully.
+   */
+  UnsharedRootShadowNode clone(
+      const SharedShadowNode &oldShadowNode,
+      const SharedShadowNode &newShadowNode) const;
 
  private:
   using YogaLayoutableShadowNode::layout;

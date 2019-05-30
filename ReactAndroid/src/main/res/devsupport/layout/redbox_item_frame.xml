@@ -19,7 +19,7 @@
     android:id="@+id/rn_frame_file"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textColor="#E6B8B8"
+    android:textColor="#B3B3B3"
     android:textSize="12sp"
     android:fontFamily="monospace"
     />

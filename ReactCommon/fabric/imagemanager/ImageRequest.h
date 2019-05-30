@@ -7,11 +7,9 @@
 
 #pragma once
 
-#include <mutex>
-
-#include <folly/futures/Future.h>
-#include <folly/futures/FutureSplitter.h>
 #include <react/imagemanager/ImageResponse.h>
+#include <react/imagemanager/ImageResponseObserver.h>
+#include <react/imagemanager/ImageResponseObserverCoordinator.h>
 #include <react/imagemanager/primitives.h>
 
 namespace facebook {
@@ -22,26 +20,15 @@ namespace react {
  * The separate object must be constructed for every single separate
  * image request. The object cannot be copied because it would make managing of
  * event listeners hard and inefficient; the object can be moved though.
- * To subscribe for notifications use `getResponseFuture()` method.
  * Destroy to cancel the underlying request.
  */
 class ImageRequest final {
  public:
-  /*
-   * The exception which is thrown when `ImageRequest` is being deallocated
-   * if the future is not ready yet.
-   */
-  class ImageNoLongerNeededException;
-
-  ImageRequest();
 
   /*
-   * `ImageRequest` is constructed with `ImageSource` and
-   * `ImageResponse` future which must be moved in inside the object.
+   * The default constructor
    */
-  ImageRequest(
-      const ImageSource &imageSource,
-      folly::Future<ImageResponse> &&responseFuture);
+  ImageRequest(const ImageSource &imageSource);
 
   /*
    * The move constructor.
@@ -51,32 +38,44 @@ class ImageRequest final {
   /*
    * `ImageRequest` does not support copying by design.
    */
-  ImageRequest(const ImageRequest &) = delete;
+  ImageRequest(const ImageRequest &other) = delete;
 
   ~ImageRequest();
 
-  /*
-   * Creates and returns a *new* future object with promised `ImageResponse`
-   * result. Multiple consumers can call this method many times to create
-   * their own subscriptions to promised value.
+  /**
+   * Set cancelation function.
    */
-  folly::Future<ImageResponse> getResponseFuture() const;
+  void setCancelationFunction(std::function<void(void)> cancelationFunction);
+
+  /*
+   * Returns stored observer coordinator as a shared pointer.
+   * Retain this *or* `ImageRequest` to ensure a correct lifetime of the object.
+   */
+  const std::shared_ptr<const ImageResponseObserverCoordinator>
+      &getSharedObserverCoordinator() const;
+
+  /*
+   * Returns stored observer coordinator as a reference.
+   * Use this if a correct lifetime of the object is ensured in some other way
+   * (e.g. by retaining an `ImageRequest`).
+   */
+  const ImageResponseObserverCoordinator &getObserverCoordinator() const;
 
  private:
-  /*
-   * Mutext to protect an access to the future.
-   */
-  mutable std::mutex mutex_;
-
   /*
    * Image source assosiated with the request.
    */
   ImageSource imageSource_;
 
   /*
-   * Future splitter powers factory-like `getResponseFuture()` method.
+   * Event coordinator associated with the reqest.
    */
-  mutable folly::FutureSplitter<ImageResponse> responseFutureSplitter_;
+  std::shared_ptr<const ImageResponseObserverCoordinator> coordinator_{};
+
+  /*
+   * Function we can call to cancel image request (see destructor).
+   */
+  std::function<void(void)> cancelRequest_;
 
   /*
    * Indicates that the object was moved and hence cannot be used anymore.

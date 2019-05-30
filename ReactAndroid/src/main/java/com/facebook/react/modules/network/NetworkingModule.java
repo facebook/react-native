@@ -9,6 +9,7 @@ package com.facebook.react.modules.network;
 import android.net.Uri;
 import android.util.Base64;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -104,6 +105,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   protected static final String NAME = "Networking";
 
+  private static final String TAG = "NetworkingModule";
   private static final String CONTENT_ENCODING_HEADER_NAME = "content-encoding";
   private static final String CONTENT_TYPE_HEADER_NAME = "content-type";
   private static final String REQUEST_BODY_KEY_STRING = "string";
@@ -113,6 +115,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private static final String USER_AGENT_HEADER_NAME = "user-agent";
   private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
   private static final int MAX_CHUNK_SIZE_BETWEEN_FLUSHES = 8 * 1024; // 8K
+
+  private static @Nullable CustomClientBuilder customClientBuilder = null;
 
   private final OkHttpClient mClient;
   private final ForwardingCookieHandler mCookieHandler;
@@ -163,7 +167,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * @param context the ReactContext of the application
    */
   public NetworkingModule(final ReactApplicationContext context) {
-    this(context, null, OkHttpClientProvider.createClient(), null);
+    this(context, null, OkHttpClientProvider.createClient(context), null);
   }
 
   /**
@@ -174,7 +178,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   public NetworkingModule(
     ReactApplicationContext context,
     List<NetworkInterceptorCreator> networkInterceptorCreators) {
-    this(context, null, OkHttpClientProvider.createClient(), networkInterceptorCreators);
+    this(context, null, OkHttpClientProvider.createClient(context), networkInterceptorCreators);
   }
 
   /**
@@ -183,7 +187,21 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * caller does not provide one explicitly
    */
   public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
-    this(context, defaultUserAgent, OkHttpClientProvider.createClient(), null);
+    this(context, defaultUserAgent, OkHttpClientProvider.createClient(context), null);
+  }
+
+  public static void setCustomClientBuilder(CustomClientBuilder ccb) {
+    customClientBuilder = ccb;
+  }
+
+  public static interface CustomClientBuilder {
+    public void apply(OkHttpClient.Builder builder);
+  }
+
+  private static void applyCustomBuilder(OkHttpClient.Builder builder) {
+    if (customClientBuilder != null) {
+      customClientBuilder.apply(builder);
+    }
   }
 
   @Override
@@ -234,10 +252,29 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void sendRequest(
+      String method,
+      String url,
+      final int requestId,
+      ReadableArray headers,
+      ReadableMap data,
+      final String responseType,
+      final boolean useIncrementalUpdates,
+      int timeout,
+      boolean withCredentials) {
+    try {
+      sendRequestInternal(method, url, requestId, headers, data, responseType,
+        useIncrementalUpdates, timeout, withCredentials);
+    } catch (Throwable th) {
+      FLog.e(TAG, "Failed to send url request: " + url, th);
+      ResponseUtil.onRequestError(getEventEmitter(), requestId, th.getMessage(), th);
+    }
+  }
+
   /**
    * @param timeout value of 0 results in no timeout
    */
-  public void sendRequest(
+  public void sendRequestInternal(
       String method,
       String url,
       final int requestId,
@@ -279,6 +316,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     }
 
     OkHttpClient.Builder clientBuilder = mClient.newBuilder();
+
+    applyCustomBuilder(clientBuilder);
 
     if (!withCredentials) {
       clientBuilder.cookieJar(CookieJar.NO_COOKIES);
@@ -372,7 +411,13 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
           return;
         }
       } else {
-        requestBody = RequestBody.create(contentMediaType, body);
+        // Use getBytes() to convert the body into a byte[], preventing okhttp from
+        // appending the character set to the Content-Type header when otherwise unspecified
+        // https://github.com/facebook/react-native/issues/8237
+        Charset charset = contentMediaType == null
+          ? StandardCharsets.UTF_8
+          : contentMediaType.charset(StandardCharsets.UTF_8);
+        requestBody = RequestBody.create(contentMediaType, body.getBytes(charset));
       }
     } else if (data.hasKey(REQUEST_BODY_KEY_BASE64)) {
       if (contentType == null) {
@@ -714,8 +759,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       if (header == null || header.size() != 2) {
         return null;
       }
-      String headerName = header.getString(0);
-      String headerValue = header.getString(1);
+      String headerName = HeaderUtil.stripHeaderName(header.getString(0));
+      String headerValue = HeaderUtil.stripHeaderValue(header.getString(1));
       if (headerName == null || headerValue == null) {
         return null;
       }

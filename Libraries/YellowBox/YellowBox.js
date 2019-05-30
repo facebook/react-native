@@ -10,10 +10,14 @@
 
 'use strict';
 
-const React = require('React');
+const React = require('react');
 
-import type {Category} from 'YellowBoxCategory';
-import type {Registry, Subscription} from 'YellowBoxRegistry';
+import type {Category} from './Data/YellowBoxCategory';
+import type {
+  Registry,
+  Subscription,
+  IgnorePattern,
+} from './Data/YellowBoxRegistry';
 
 type Props = $ReadOnly<{||}>;
 type State = {|
@@ -41,16 +45,16 @@ let YellowBox;
  * the ignored warning messages.
  */
 if (__DEV__) {
-  const Platform = require('Platform');
-  const RCTLog = require('RCTLog');
-  const YellowBoxList = require('YellowBoxList');
-  const YellowBoxRegistry = require('YellowBoxRegistry');
+  const Platform = require('../Utilities/Platform');
+  const RCTLog = require('../Utilities/RCTLog');
+  const YellowBoxList = require('./UI/YellowBoxList');
+  const YellowBoxRegistry = require('./Data/YellowBoxRegistry');
 
   const {error, warn} = console;
 
   // eslint-disable-next-line no-shadow
   YellowBox = class YellowBox extends React.Component<Props, State> {
-    static ignoreWarnings(patterns: $ReadOnlyArray<string>): void {
+    static ignoreWarnings(patterns: $ReadOnlyArray<IgnorePattern>): void {
       YellowBoxRegistry.addIgnorePatterns(patterns);
     }
 
@@ -135,7 +139,7 @@ if (__DEV__) {
   };
 } else {
   YellowBox = class extends React.Component<Props> {
-    static ignoreWarnings(patterns: $ReadOnlyArray<string>): void {
+    static ignoreWarnings(patterns: $ReadOnlyArray<IgnorePattern>): void {
       // Do nothing.
     }
 

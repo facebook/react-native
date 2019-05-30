@@ -280,8 +280,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
  */
 - (BOOL)touchesShouldCancelInContentView:(__unused UIView *)view
 {
-  //TODO: shouldn't this call super if _shouldDisableScrollInteraction returns NO?
-  return ![self _shouldDisableScrollInteraction];
+  BOOL shouldDisableScrollInteraction = [self _shouldDisableScrollInteraction];
+  
+  if (shouldDisableScrollInteraction == NO) {
+    [super touchesShouldCancelInContentView:view];
+  }
+  
+  return !shouldDisableScrollInteraction;
 }
 
 /*
@@ -293,7 +298,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)setContentOffset:(CGPoint)contentOffset
 {
   UIView *contentView = [self contentView];
-  if (contentView && _centerContent) {
+  if (contentView && _centerContent && !CGSizeEqualToSize(contentView.frame.size, CGSizeZero)) {
     CGSize subviewSize = contentView.frame.size;
     CGSize scrollViewSize = self.bounds.size;
     if (subviewSize.width <= scrollViewSize.width) {
@@ -323,11 +328,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (CGSizeEqualToSize(contentSize, CGSizeZero)) {
     self.contentOffset = originalOffset;
   } else {
-    // Make sure offset don't exceed bounds. This could happen on screen rotation.
+    if (@available(iOS 11.0, *)) {
+      if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, self.adjustedContentInset)) {
+        contentInset = self.adjustedContentInset;
+      }
+    }
     CGSize boundsSize = self.bounds.size;
+    CGFloat xMaxOffset = contentSize.width - boundsSize.width + contentInset.right;
+    CGFloat yMaxOffset = contentSize.height - boundsSize.height + contentInset.bottom;
+    // Make sure offset doesn't exceed bounds. This can happen on screen rotation.
+    if ((originalOffset.x >= -contentInset.left) && (originalOffset.x <= xMaxOffset) &&
+        (originalOffset.y >= -contentInset.top) && (originalOffset.y <= yMaxOffset)) {
+      return;
+    }
     self.contentOffset = CGPointMake(
-      MAX(-contentInset.left, MIN(contentSize.width - boundsSize.width + contentInset.right, originalOffset.x)),
-      MAX(-contentInset.top, MIN(contentSize.height - boundsSize.height + contentInset.bottom, originalOffset.y)));
+      MAX(-contentInset.left, MIN(xMaxOffset, originalOffset.x)),
+      MAX(-contentInset.top, MIN(yMaxOffset, originalOffset.y)));
   }
 }
 
@@ -355,6 +371,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   self.pinchGestureRecognizer.enabled = _pinchGestureEnabled;
 }
 #endif //TARGET_OS_TV
+
+- (BOOL)shouldGroupAccessibilityChildren
+{
+  return YES;
+}
 
 @end
 
@@ -455,7 +476,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(UIView *view, 
   } else
 #endif
   {
-    RCTAssert(_contentView == nil, @"RCTScrollView may only contain a single subview");
+    RCTAssert(_contentView == nil, @"RCTScrollView may only contain a single subview, the already set subview looks like: %@", [_contentView react_recursiveDescription]);
     _contentView = view;
     RCTApplyTransformationAccordingLayoutDirection(_contentView, self.reactLayoutDirection);
     [_scrollView addSubview:view];
@@ -588,8 +609,19 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(UIView *view, 
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
 {
   if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
+    CGRect maxRect = CGRectMake(fmin(-_scrollView.contentInset.left, 0),
+                                fmin(-_scrollView.contentInset.top, 0),
+                                fmax(_scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right + fmax(_scrollView.contentInset.left, 0), 0.01),
+                                fmax(_scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom + fmax(_scrollView.contentInset.top, 0), 0.01)); // Make width and height greater than 0
     // Ensure at least one scroll event will fire
     _allowNextScrollNoMatterWhat = YES;
+    if (!CGRectContainsPoint(maxRect, offset) && !self.scrollToOverflowEnabled) {
+      CGFloat x = fmax(offset.x, CGRectGetMinX(maxRect));
+      x = fmin(x, CGRectGetMaxX(maxRect));
+      CGFloat y = fmax(offset.y, CGRectGetMinY(maxRect));
+      y = fmin(y, CGRectGetMaxY(maxRect));
+      offset = CGPointMake(x, y);
+    }
     [_scrollView setContentOffset:offset animated:animated];
   }
 }
@@ -665,16 +697,19 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-  [self updateClippedSubviews];
   NSTimeInterval now = CACurrentMediaTime();
+  [self updateClippedSubviews];
   /**
    * TODO: this logic looks wrong, and it may be because it is. Currently, if _scrollEventThrottle
    * is set to zero (the default), the "didScroll" event is only sent once per scroll, instead of repeatedly
    * while scrolling as expected. However, if you "fix" that bug, ScrollView will generate repeated
    * warnings, and behave strangely (ListView works fine however), so don't fix it unless you fix that too!
+   *
+   * We limit the delta to 17ms so that small throttles intended to enable 60fps updates will not
+   * inadvertantly filter out any scroll events.
    */
   if (_allowNextScrollNoMatterWhat ||
-      (_scrollEventThrottle > 0 && _scrollEventThrottle < (now - _lastScrollDispatchTime))) {
+      (_scrollEventThrottle > 0 && _scrollEventThrottle < MAX(17, now - _lastScrollDispatchTime))) {
 
     if (_DEPRECATED_sendUpdatedChildFrames) {
       // Calculate changed frames
@@ -754,7 +789,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     CGFloat smallerOffset = 0.0;
     CGFloat largerOffset = maximumOffset;
 
-    for (int i = 0; i < self.snapToOffsets.count; i++) {
+    for (unsigned long i = 0; i < self.snapToOffsets.count; i++) {
       CGFloat offset = [[self.snapToOffsets objectAtIndex:i] floatValue];
 
       if (offset <= targetOffset) {
@@ -823,7 +858,11 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 
     // What is the current offset?
     CGFloat velocityAlongAxis = isHorizontal ? velocity.x : velocity.y;
-    CGFloat targetContentOffsetAlongAxis = isHorizontal ? targetContentOffset->x : targetContentOffset->y;
+    CGFloat targetContentOffsetAlongAxis = targetContentOffset->y;
+    if (isHorizontal) {
+      // Use current scroll offset to determine the next index to snap to when momentum disabled
+      targetContentOffsetAlongAxis = self.disableIntervalMomentum ? scrollView.contentOffset.x : targetContentOffset->x;
+    }
 
     // Offset based on desired alignment
     CGFloat frameLength = isHorizontal ? self.frame.size.width : self.frame.size.height;
@@ -836,6 +875,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 
     // Pick snap point based on direction and proximity
     CGFloat fractionalIndex = (targetContentOffsetAlongAxis + alignmentOffset) / snapToIntervalF;
+
     NSInteger snapIndex =
       velocityAlongAxis > 0.0 ?
         ceil(fractionalIndex) :
@@ -1019,7 +1059,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 - (void)uiManagerWillPerformMounting:(RCTUIManager *)manager
 {
   RCTAssertUIManagerQueue();
-  [manager prependUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+  [manager prependUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     BOOL horz = [self isHorizontal:self->_scrollView];
     NSUInteger minIdx = [self->_maintainVisibleContentPosition[@"minIndexForVisible"] integerValue];
     for (NSUInteger ii = minIdx; ii < self->_contentView.subviews.count; ++ii) {
@@ -1036,7 +1076,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
       }
     }
   }];
-  [manager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+  [manager addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     if (self->_maintainVisibleContentPosition == nil) {
       return; // The prop might have changed in the previous UIBlocks, so need to abort here.
     }
@@ -1115,7 +1155,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
 - (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior
-{
+API_AVAILABLE(ios(11.0)){
   // `contentInsetAdjustmentBehavior` is available since iOS 11.
   if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
     CGPoint contentOffset = _scrollView.contentOffset;

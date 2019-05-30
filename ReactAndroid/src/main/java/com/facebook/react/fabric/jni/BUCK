@@ -1,0 +1,41 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_native_target", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
+
+rn_xplat_cxx_library(
+    name = "jni",
+    srcs = glob(["*.cpp"]),
+    headers = glob(["*.h"]),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("", "**/*.h"),
+        ],
+        prefix = "react/fabric",
+    ),
+    compiler_flags = [
+        "-Wall",
+        "-fexceptions",
+        "-std=gnu++1y",
+        "-frtti",
+    ],
+    fbandroid_allow_jni_merging = True,
+    platforms = (ANDROID),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    soname = "libfabricjni.$(ext)",
+    visibility = ["PUBLIC"],
+    deps = [
+        react_native_xplat_target("config:config"),
+        react_native_xplat_target("fabric/uimanager:uimanager"),
+        react_native_xplat_target("fabric/components/scrollview:scrollview"),
+        react_native_xplat_target("utils:utils"),
+        react_native_target("jni/react/jni:jni"),
+        "fbsource//xplat/fbsystrace:fbsystrace",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/jsi:JSIDynamic",
+        "fbsource//xplat/jsi:jsi",
+        "fbsource//xplat/third-party/linker_lib:atomic",
+        FBJNI_TARGET,
+    ],
+)

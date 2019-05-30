@@ -8,23 +8,23 @@
  * @format
  */
 
-/* global element, by, expect */
+/* global device, element, by, expect */
+const {
+  openComponentWithLabel,
+  openExampleWithTitle,
+} = require('../e2e-helpers');
 
 describe('Picker', () => {
   beforeAll(async () => {
-    await element(by.id('explorer_search')).replaceText('<Picker>');
-    await element(
-      by.label(
-        '<Picker> Provides multiple options to choose from, using either a dropdown menu or a dialog.',
-      ),
-    ).tap();
-  });
-
-  afterAll(async () => {
-    await element(by.label('Back')).tap();
+    await device.reloadReactNative();
+    await openComponentWithLabel(
+      '<Picker>',
+      '<Picker> Provides multiple options to choose from, using either a dropdown menu or a dialog.',
+    );
   });
 
   it('should be selectable by ID', async () => {
+    await openExampleWithTitle('Basic picker');
     await expect(element(by.id('basic-picker'))).toBeVisible();
   });
 });

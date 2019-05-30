@@ -10,6 +10,7 @@
 #include <functional>
 #include <limits>
 
+#include <folly/Hash.h>
 #include <folly/Optional.h>
 #include <react/attributedstring/primitives.h>
 #include <react/core/LayoutPrimitives.h>
@@ -92,55 +93,36 @@ class TextAttributes : public DebugStringConvertible {
 } // namespace facebook
 
 namespace std {
+
 template <>
 struct hash<facebook::react::TextAttributes> {
   size_t operator()(
       const facebook::react::TextAttributes &textAttributes) const {
-    return std::hash<decltype(textAttributes.foregroundColor)>{}(
-               textAttributes.foregroundColor) +
-        std::hash<decltype(textAttributes.backgroundColor)>{}(
-               textAttributes.backgroundColor) +
-        std::hash<decltype(textAttributes.opacity)>{}(textAttributes.opacity) +
-        std::hash<decltype(textAttributes.fontFamily)>{}(
-               textAttributes.fontFamily) +
-        std::hash<decltype(textAttributes.fontSize)>{}(
-               textAttributes.fontSize) +
-        std::hash<decltype(textAttributes.fontSizeMultiplier)>{}(
-               textAttributes.fontSizeMultiplier) +
-        std::hash<decltype(textAttributes.fontWeight)>{}(
-               textAttributes.fontWeight) +
-        std::hash<decltype(textAttributes.fontStyle)>{}(
-               textAttributes.fontStyle) +
-        std::hash<decltype(textAttributes.fontVariant)>{}(
-               textAttributes.fontVariant) +
-        std::hash<decltype(textAttributes.allowFontScaling)>{}(
-               textAttributes.allowFontScaling) +
-        std::hash<decltype(textAttributes.letterSpacing)>{}(
-               textAttributes.letterSpacing) +
-        std::hash<decltype(textAttributes.lineHeight)>{}(
-               textAttributes.lineHeight) +
-        std::hash<decltype(textAttributes.alignment)>{}(
-               textAttributes.alignment) +
-        std::hash<decltype(textAttributes.baseWritingDirection)>{}(
-               textAttributes.baseWritingDirection) +
-        std::hash<decltype(textAttributes.textDecorationColor)>{}(
-               textAttributes.textDecorationColor) +
-        std::hash<decltype(textAttributes.textDecorationLineType)>{}(
-               textAttributes.textDecorationLineType) +
-        std::hash<decltype(textAttributes.textDecorationLineStyle)>{}(
-               textAttributes.textDecorationLineStyle) +
-        std::hash<decltype(textAttributes.textDecorationLinePattern)>{}(
-               textAttributes.textDecorationLinePattern) +
-        std::hash<decltype(textAttributes.textShadowOffset)>{}(
-               textAttributes.textShadowOffset) +
-        std::hash<decltype(textAttributes.textShadowRadius)>{}(
-               textAttributes.textShadowRadius) +
-        std::hash<decltype(textAttributes.textShadowColor)>{}(
-               textAttributes.textShadowColor) +
-        std::hash<decltype(textAttributes.isHighlighted)>{}(
-               textAttributes.isHighlighted) +
-        std::hash<decltype(textAttributes.layoutDirection)>{}(
-               textAttributes.layoutDirection);
+    return folly::hash::hash_combine(
+        0,
+        textAttributes.foregroundColor,
+        textAttributes.backgroundColor,
+        textAttributes.opacity,
+        textAttributes.fontFamily,
+        textAttributes.fontSize,
+        textAttributes.fontSizeMultiplier,
+        textAttributes.fontWeight,
+        textAttributes.fontStyle,
+        textAttributes.fontVariant,
+        textAttributes.allowFontScaling,
+        textAttributes.letterSpacing,
+        textAttributes.lineHeight,
+        textAttributes.alignment,
+        textAttributes.baseWritingDirection,
+        textAttributes.textDecorationColor,
+        textAttributes.textDecorationLineType,
+        textAttributes.textDecorationLineStyle,
+        textAttributes.textDecorationLinePattern,
+        textAttributes.textShadowOffset,
+        textAttributes.textShadowRadius,
+        textAttributes.textShadowColor,
+        textAttributes.isHighlighted,
+        textAttributes.layoutDirection);
   }
 };
 } // namespace std

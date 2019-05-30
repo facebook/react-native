@@ -10,16 +10,16 @@
 
 'use strict';
 
-const Dimensions = require('Dimensions');
-const InspectorOverlay = require('InspectorOverlay');
-const InspectorPanel = require('InspectorPanel');
-const Platform = require('Platform');
-const React = require('React');
-const ReactNative = require('ReactNative');
-const StyleSheet = require('StyleSheet');
-const Touchable = require('Touchable');
-const UIManager = require('UIManager');
-const View = require('View');
+const Dimensions = require('../Utilities/Dimensions');
+const InspectorOverlay = require('./InspectorOverlay');
+const InspectorPanel = require('./InspectorPanel');
+const Platform = require('../Utilities/Platform');
+const React = require('react');
+const ReactNative = require('../Renderer/shims/ReactNative');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Touchable = require('../Components/Touchable/Touchable');
+const UIManager = require('../ReactNative/UIManager');
+const View = require('../Components/View/View');
 
 const invariant = require('invariant');
 
@@ -31,7 +31,7 @@ const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 const renderers = findRenderers();
 
 // required for devtools to be able to edit react native styles
-hook.resolveRNStyle = require('flattenStyle');
+hook.resolveRNStyle = require('../StyleSheet/flattenStyle');
 
 function findRenderers(): $ReadOnlyArray<ReactRenderer> {
   const allRenderers = Object.keys(hook._renderers).map(
@@ -47,14 +47,20 @@ function findRenderers(): $ReadOnlyArray<ReactRenderer> {
 function getInspectorDataForViewTag(touchedViewTag: number) {
   for (let i = 0; i < renderers.length; i++) {
     const renderer = renderers[i];
-    const inspectorData = renderer.getInspectorDataForViewTag(touchedViewTag);
-    if (inspectorData.hierarchy.length > 0) {
-      return inspectorData;
+    if (
+      Object.prototype.hasOwnProperty.call(
+        renderer,
+        'getInspectorDataForViewTag',
+      )
+    ) {
+      const inspectorData = renderer.getInspectorDataForViewTag(touchedViewTag);
+      if (inspectorData.hierarchy.length > 0) {
+        return inspectorData;
+      }
     }
   }
   throw new Error('Expected to find at least one React renderer.');
 }
-
 class Inspector extends React.Component<
   {
     inspectedViewTag: ?number,
@@ -112,9 +118,6 @@ class Inspector extends React.Component<
   attachToDevtools = (agent: Object) => {
     let _hideWait = null;
     const hlSub = agent.sub('highlight', ({node, name, props}) => {
-      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.63 was deployed. To see the error delete this
-       * comment and run Flow. */
       clearTimeout(_hideWait);
 
       if (typeof node !== 'number') {

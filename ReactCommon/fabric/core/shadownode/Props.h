@@ -18,21 +18,32 @@ namespace react {
 
 class Props;
 
-using SharedProps = std::shared_ptr<const Props>;
+using SharedProps = std::shared_ptr<Props const>;
 
 /*
  * Represents the most generic props object.
  */
 class Props : public virtual Sealable, public virtual DebugStringConvertible {
  public:
+  using Shared = std::shared_ptr<Props const>;
+
   Props() = default;
-  Props(const Props &sourceProps, const RawProps &rawProps);
+  Props(Props const &sourceProps, RawProps const &rawProps);
   virtual ~Props() = default;
 
-  const std::string nativeId;
+  std::string const nativeId;
+
+  /*
+   * Special value that represents generation number of `Props` object, which
+   * increases when the object was constructed with some source `Props` object.
+   * Default props objects (that was constructed using default constructor) have
+   * revision equals `0`.
+   * The value might be used for optimization purposes.
+   */
+  int const revision{0};
 
 #ifdef ANDROID
-  const RawProps rawProps;
+  folly::dynamic const rawProps = folly::dynamic::object();
 #endif
 };
 

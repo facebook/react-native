@@ -113,4 +113,18 @@
  */
 @property (nonatomic, readonly) UIView *reactAccessibilityElement;
 
+/**
+ * Accessibility properties
+ */
+@property (nonatomic, copy) NSString *accessibilityRole;
+@property (nonatomic, copy) NSArray <NSString *> *accessibilityStates;
+@property (nonatomic, copy) NSDictionary<NSString *, id> *accessibilityState;
+@property (nonatomic, copy) NSArray <NSDictionary *> *accessibilityActions;
+
+/**
+ * Used in debugging to get a description of the view hierarchy rooted at
+ * the current view.
+ */
+- (NSString *)react_recursiveDescription;
+
 @end

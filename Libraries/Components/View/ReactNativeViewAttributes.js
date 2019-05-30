@@ -10,7 +10,7 @@
 
 'use strict';
 
-const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeStyleAttributes = require('./ReactNativeStyleAttributes');
 
 const ReactNativeViewAttributes = {};
 
@@ -19,11 +19,10 @@ ReactNativeViewAttributes.UIView = {
   accessible: true,
   accessibilityActions: true,
   accessibilityLabel: true,
-  accessibilityComponentType: true,
   accessibilityLiveRegion: true,
   accessibilityRole: true,
   accessibilityStates: true,
-  accessibilityTraits: true,
+  accessibilityState: true,
   accessibilityHint: true,
   importantForAccessibility: true,
   nativeID: true,

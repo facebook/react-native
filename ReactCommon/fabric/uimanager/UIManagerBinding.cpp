@@ -44,6 +44,7 @@ void UIManagerBinding::startSurface(
   folly::dynamic parameters = folly::dynamic::object();
   parameters["rootTag"] = surfaceId;
   parameters["initialProps"] = initalProps;
+  parameters["fabric"] = true;
 
   auto module = getModule(runtime, "AppRegistry");
   auto method = module.getPropertyAsFunction(runtime, "runApplication");
@@ -71,27 +72,27 @@ void UIManagerBinding::dispatchEvent(
   SystraceSection s("UIManagerBinding::dispatchEvent");
 
   auto payload = payloadFactory(runtime);
-  auto eventTargetValue = jsi::Value::null();
 
-  if (eventTarget) {
-    auto &eventTargetWrapper =
-        static_cast<const EventTargetWrapper &>(*eventTarget);
-    eventTargetValue = eventTargetWrapper.instanceHandle.lock(runtime);
-    if (eventTargetValue.isUndefined()) {
-      return;
-    }
+  auto instanceHandle = eventTarget
+    ? [&]() {
+      auto instanceHandle = eventTarget->getInstanceHandle(runtime);
+      if (instanceHandle.isUndefined()) {
+        return jsi::Value::null();
+      }
 
-    // Mixing `target` into `payload`.
-    assert(payload.isObject());
-    payload.asObject(runtime).setProperty(
-        runtime, "target", eventTargetWrapper.tag);
-  }
+      // Mixing `target` into `payload`.
+      assert(payload.isObject());
+      payload.asObject(runtime).setProperty(runtime, "target", eventTarget->getTag());
+      return instanceHandle;
+    }()
+    : jsi::Value::null();
 
   auto &eventHandlerWrapper =
       static_cast<const EventHandlerWrapper &>(*eventHandler_);
+
   eventHandlerWrapper.callback.call(
       runtime,
-      {std::move(eventTargetValue),
+      {std::move(instanceHandle),
        jsi::String::createFromUtf8(runtime, type),
        std::move(payload)});
 }
@@ -124,7 +125,7 @@ jsi::Value UIManagerBinding::get(
                   tagFromValue(runtime, arguments[0]),
                   componentNameFromValue(runtime, arguments[1]),
                   surfaceIdFromValue(runtime, arguments[2]),
-                  rawPropsFromValue(runtime, arguments[3]),
+                  RawProps(runtime, arguments[3]),
                   eventTargetFromValue(runtime, arguments[4], arguments[0])));
         });
   }
@@ -176,12 +177,13 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value &thisValue,
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
+          const auto &rawProps = RawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
               uiManager.cloneNode(
                   shadowNodeFromValue(runtime, arguments[0]),
                   nullptr,
-                  rawPropsFromValue(runtime, arguments[1])));
+                  &rawProps));
         });
   }
 
@@ -196,12 +198,13 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value &thisValue,
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
+          const auto &rawProps = RawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
               uiManager.cloneNode(
                   shadowNodeFromValue(runtime, arguments[0]),
                   ShadowNode::emptySharedShadowNodeSharedList(),
-                  rawPropsFromValue(runtime, arguments[1])));
+                  &rawProps));
         });
   }
 
@@ -311,6 +314,69 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  // Legacy API
+  if (methodName == "measureLayout") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        4,
+        [&uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          auto layoutMetrics = uiManager.getRelativeLayoutMetrics(
+              *shadowNodeFromValue(runtime, arguments[0]),
+              shadowNodeFromValue(runtime, arguments[1]).get());
+
+          if (layoutMetrics == EmptyLayoutMetrics) {
+            auto onFailFunction =
+                arguments[2].getObject(runtime).getFunction(runtime);
+            onFailFunction.call(runtime);
+            return jsi::Value::undefined();
+          }
+
+          auto onSuccessFunction =
+              arguments[3].getObject(runtime).getFunction(runtime);
+          auto frame = layoutMetrics.frame;
+
+          onSuccessFunction.call(
+              runtime,
+              {jsi::Value{runtime, (double)frame.origin.x},
+               jsi::Value{runtime, (double)frame.origin.y},
+               jsi::Value{runtime, (double)frame.size.width},
+               jsi::Value{runtime, (double)frame.size.height}});
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (methodName == "measureInWindow") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        2,
+        [&uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          auto layoutMetrics = uiManager.getRelativeLayoutMetrics(
+              *shadowNodeFromValue(runtime, arguments[0]), nullptr);
+
+          auto onSuccessFunction =
+              arguments[1].getObject(runtime).getFunction(runtime);
+          auto frame = layoutMetrics.frame;
+
+          onSuccessFunction.call(
+              runtime,
+              {jsi::Value{runtime, (double)frame.origin.x},
+               jsi::Value{runtime, (double)frame.origin.y},
+               jsi::Value{runtime, (double)frame.size.width},
+               jsi::Value{runtime, (double)frame.size.height}});
+          return jsi::Value::undefined();
+        });
+  }
+
   if (methodName == "setNativeProps") {
     return jsi::Function::createFromHostFunction(
         runtime,
@@ -323,7 +389,7 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           uiManager.setNativeProps(
               shadowNodeFromValue(runtime, arguments[0]),
-              rawPropsFromValue(runtime, arguments[1]));
+              RawProps(runtime, arguments[1]));
 
           return jsi::Value::undefined();
         });

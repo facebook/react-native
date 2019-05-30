@@ -38,13 +38,11 @@ class DecayAnimation extends Animation {
 
   constructor(config: DecayAnimationConfigSingle) {
     super();
-    this._deceleration =
-      config.deceleration !== undefined ? config.deceleration : 0.998;
+    this._deceleration = config.deceleration ?? 0.998;
     this._velocity = config.velocity;
     this._useNativeDriver = shouldUseNativeDriver(config);
-    this.__isInteraction =
-      config.isInteraction !== undefined ? config.isInteraction : true;
-    this.__iterations = config.iterations !== undefined ? config.iterations : 1;
+    this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
+    this.__iterations = config.iterations ?? 1;
   }
 
   __getNativeAnimationConfig() {

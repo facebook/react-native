@@ -3,14 +3,18 @@ load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "r
 rn_android_library(
     name = "slider",
     srcs = glob(["*.java"]),
-    provided_deps = [
-        react_native_dep("third-party/android/support/v7/appcompat-orig:appcompat"),
-    ],
+    is_androidx = True,
     visibility = [
         "PUBLIC",
     ],
     deps = [
         YOGA_TARGET,
+        react_native_dep("third-party/android/androidx:annotation"),
+        react_native_dep("third-party/android/androidx:appcompat"),
+        react_native_dep("third-party/android/androidx:core"),
+        react_native_dep("third-party/android/androidx:fragment"),
+        react_native_dep("third-party/android/androidx:legacy-support-core-ui"),
+        react_native_dep("third-party/android/androidx:legacy-support-core-utils"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),

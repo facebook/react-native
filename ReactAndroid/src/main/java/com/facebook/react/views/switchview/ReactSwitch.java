@@ -8,7 +8,10 @@
 package com.facebook.react.views.switchview;
 
 import android.content.Context;
-import android.support.v7.widget.SwitchCompat;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import androidx.appcompat.widget.SwitchCompat;
+import javax.annotation.Nullable;
 
 /**
  * Switch that has its value controlled by JS. Whenever the value of the switch changes, we do not
@@ -18,10 +21,14 @@ import android.support.v7.widget.SwitchCompat;
 /*package*/ class ReactSwitch extends SwitchCompat {
 
   private boolean mAllowChange;
+  @Nullable private Integer mTrackColorForFalse;
+  @Nullable private Integer mTrackColorForTrue;
 
   public ReactSwitch(Context context) {
     super(context);
     mAllowChange = true;
+    mTrackColorForFalse = null;
+    mTrackColorForTrue = null;
   }
 
   @Override
@@ -29,14 +36,63 @@ import android.support.v7.widget.SwitchCompat;
     if (mAllowChange && isChecked() != checked) {
       mAllowChange = false;
       super.setChecked(checked);
+      setTrackColor(checked);
     }
+  }
+
+  void setColor(Drawable drawable, @Nullable Integer color) {
+    if (color == null) {
+      drawable.clearColorFilter();
+    } else {
+      drawable.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+    }
+  }
+
+  public void setTrackColor(@Nullable Integer color) {
+    setColor(super.getTrackDrawable(), color);
+  }
+
+  public void setThumbColor(@Nullable Integer color) {
+    setColor(super.getThumbDrawable(), color);
   }
 
   /*package*/ void setOn(boolean on) {
     // If the switch has a different value than the value sent by JS, we must change it.
     if (isChecked() != on) {
       super.setChecked(on);
+      setTrackColor(on);
     }
     mAllowChange = true;
+  }
+
+  public void setTrackColorForTrue(@Nullable Integer color) {
+    if (color == mTrackColorForTrue) {
+      return;
+    }
+
+    mTrackColorForTrue = color;
+    if (isChecked()) {
+      setTrackColor(mTrackColorForTrue);
+    }
+  }
+
+  public void setTrackColorForFalse(@Nullable Integer color) {
+    if (color == mTrackColorForFalse) {
+      return;
+    }
+
+    mTrackColorForFalse = color;
+    if (!isChecked()) {
+      setTrackColor(mTrackColorForFalse);
+    }
+  }
+
+  private void setTrackColor(boolean checked) {
+    if (mTrackColorForTrue != null || mTrackColorForFalse != null) {
+      // Update the track color to reflect the new value. We only want to do this if these
+      // props were actually set from JS; otherwise we'll just reset the color to the default.
+      Integer currentTrackColor = checked ? mTrackColorForTrue : mTrackColorForFalse;
+      setTrackColor(currentTrackColor);
+    }
   }
 }

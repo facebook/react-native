@@ -10,15 +10,15 @@
 
 'use strict';
 
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-const View = require('View');
-const YellowBoxStyle = require('YellowBoxStyle');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const TouchableWithoutFeedback = require('../../Components/Touchable/TouchableWithoutFeedback');
+const View = require('../../Components/View/View');
+const YellowBoxStyle = require('./YellowBoxStyle');
 
-import type {PressEvent} from 'CoreEventTypes';
-import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
-import type {ViewStyleProp} from 'StyleSheet';
+import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 
 type Props = $ReadOnly<{|
   backgroundColor: $ReadOnly<{|

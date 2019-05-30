@@ -11,6 +11,7 @@
 #import <React/UIView+React.h>
 
 #import "RCTBackedTextInputDelegateAdapter.h"
+#import "RCTTextAttributes.h"
 
 @implementation RCTUITextView
 {
@@ -18,6 +19,8 @@
   UITextView *_detachedTextView;
   RCTBackedTextViewDelegateAdapter *_textInputDelegateAdapter;
 }
+
+@synthesize reactTextAttributes = _reactTextAttributes;
 
 static UIFont *defaultPlaceholderFont()
 {
@@ -55,6 +58,15 @@ static UIColor *defaultPlaceholderColor()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark - Accessibility
+
+- (void)setIsAccessibilityElement:(BOOL)isAccessibilityElement
+{
+  // UITextView is accessible by default (some nested views are) and disabling that is not supported.
+  // On iOS accessible elements cannot be nested, therefore enabling accessibility for some container view
+  // (even in a case where this view is a part of public API of TextInput on iOS) shadows some features implemented inside the component.
+}
+
 - (NSString *)accessibilityLabel
 {
   NSMutableString *accessibilityLabel = [NSMutableString new];
@@ -79,13 +91,29 @@ static UIColor *defaultPlaceholderColor()
 - (void)setPlaceholder:(NSString *)placeholder
 {
   _placeholder = placeholder;
-  _placeholderView.text = _placeholder;
+  _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self placeholderEffectiveTextAttributes]];
 }
 
 - (void)setPlaceholderColor:(UIColor *)placeholderColor
 {
   _placeholderColor = placeholderColor;
   _placeholderView.textColor = _placeholderColor ?: defaultPlaceholderColor();
+}
+
+- (void)setReactTextAttributes:(RCTTextAttributes *)reactTextAttributes
+{
+  if ([reactTextAttributes isEqual:_reactTextAttributes]) {
+    return;
+  }
+  self.typingAttributes = reactTextAttributes.effectiveTextAttributes;
+  _reactTextAttributes = reactTextAttributes;
+  // Update placeholder text attributes
+  [self setPlaceholder:_placeholder];
+}
+
+- (RCTTextAttributes *)reactTextAttributes
+{
+  return _reactTextAttributes;
 }
 
 - (void)textDidChange
@@ -166,7 +194,8 @@ static UIColor *defaultPlaceholderColor()
 {
   UIEdgeInsets textContainerInset = self.textContainerInset;
   NSString *placeholder = self.placeholder ?: @"";
-  CGSize placeholderSize = [placeholder sizeWithAttributes:@{NSFontAttributeName: self.font ?: defaultPlaceholderFont()}];
+  CGSize maxPlaceholderSize = CGSizeMake(UIEdgeInsetsInsetRect(self.bounds, textContainerInset).size.width, CGFLOAT_MAX);
+  CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize options:NSStringDrawingUsesLineFragmentOrigin attributes:[self placeholderEffectiveTextAttributes] context:nil].size;
   placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
   placeholderSize.width += textContainerInset.left + textContainerInset.right;
   placeholderSize.height += textContainerInset.top + textContainerInset.bottom;
@@ -177,7 +206,7 @@ static UIColor *defaultPlaceholderColor()
 - (CGSize)contentSize
 {
   CGSize contentSize = super.contentSize;
-  CGSize placeholderSize = self.placeholderSize;
+  CGSize placeholderSize = _placeholderView.isHidden ? CGSizeZero : self.placeholderSize;
   // When a text input is empty, it actually displays a placehoder.
   // So, we have to consider `placeholderSize` as a minimum `contentSize`.
   // Returning size DOES contain `textContainerInset` (aka `padding`).
@@ -205,35 +234,10 @@ static UIColor *defaultPlaceholderColor()
 - (CGSize)sizeThatFits:(CGSize)size
 {
   // Returned fitting size depends on text size and placeholder size.
-  CGSize textSize = [self fixedSizeThatFits:size];
+  CGSize textSize = [super sizeThatFits:size];
   CGSize placeholderSize = self.placeholderSize;
   // Returning size DOES contain `textContainerInset` (aka `padding`).
   return CGSizeMake(MAX(textSize.width, placeholderSize.width), MAX(textSize.height, placeholderSize.height));
-}
-
-- (CGSize)fixedSizeThatFits:(CGSize)size
-{
-  // UITextView on iOS 8 has a bug that automatically scrolls to the top
-  // when calling `sizeThatFits:`. Use a copy so that self is not screwed up.
-  static BOOL useCustomImplementation = NO;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    useCustomImplementation = ![[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){9,0,0}];
-  });
-
-  if (!useCustomImplementation) {
-    return [super sizeThatFits:size];
-  }
-
-  if (!_detachedTextView) {
-    _detachedTextView = [UITextView new];
-  }
-
-  _detachedTextView.attributedText = self.attributedText;
-  _detachedTextView.font = self.font;
-  _detachedTextView.textContainerInset = self.textContainerInset;
-
-  return [_detachedTextView sizeThatFits:size];
 }
 
 #pragma mark - Context Menu
@@ -253,6 +257,21 @@ static UIColor *defaultPlaceholderColor()
 {
   BOOL isVisible = _placeholder.length != 0 && self.attributedText.length == 0;
   _placeholderView.hidden = !isVisible;
+}
+
+- (NSDictionary<NSAttributedStringKey, id> *)placeholderEffectiveTextAttributes
+{
+  NSMutableDictionary<NSAttributedStringKey, id> *effectiveTextAttributes = [NSMutableDictionary dictionaryWithDictionary:@{
+                                                                                                                            NSFontAttributeName: _reactTextAttributes.effectiveFont ?: defaultPlaceholderFont(),
+                                                                                                                            NSForegroundColorAttributeName: self.placeholderColor ?: defaultPlaceholderColor(),
+                                                                                                                            NSKernAttributeName:isnan(_reactTextAttributes.letterSpacing) ? @0 : @(_reactTextAttributes.letterSpacing)
+                                                                                                                            }];
+  NSParagraphStyle *paragraphStyle = [_reactTextAttributes effectiveParagraphStyle];
+  if (paragraphStyle) {
+    effectiveTextAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+  }
+  
+  return [effectiveTextAttributes copy];
 }
 
 #pragma mark - Utility Methods

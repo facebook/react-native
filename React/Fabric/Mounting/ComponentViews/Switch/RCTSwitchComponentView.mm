@@ -7,9 +7,9 @@
 
 #import "RCTSwitchComponentView.h"
 
-#import <react/components/switch/SwitchEventEmitter.h>
-#import <react/components/switch/SwitchProps.h>
-#import <react/components/switch/SwitchShadowNode.h>
+#import <react/components/rncore/ComponentDescriptors.h>
+#import <react/components/rncore/EventEmitters.h>
+#import <react/components/rncore/Props.h>
 
 using namespace facebook::react;
 
@@ -26,9 +26,7 @@ using namespace facebook::react;
 
     _switchView = [[UISwitch alloc] initWithFrame:self.bounds];
 
-    [_switchView addTarget:self
-                    action:@selector(onChange:)
-          forControlEvents:UIControlEventValueChanged];
+    [_switchView addTarget:self action:@selector(onChange:) forControlEvents:UIControlEventValueChanged];
 
     _switchView.on = defaultProps->value;
 
@@ -40,12 +38,12 @@ using namespace facebook::react;
 
 #pragma mark - RCTComponentViewProtocol
 
-+ (ComponentHandle)componentHandle
++ (ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return SwitchShadowNode::Handle();
+  return concreteComponentDescriptorProvider<SwitchComponentDescriptor>();
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
   const auto &oldSwitchProps = *std::static_pointer_cast<const SwitchProps>(oldProps ?: _props);
   const auto &newSwitchProps = *std::static_pointer_cast<const SwitchProps>(props);
@@ -86,7 +84,8 @@ using namespace facebook::react;
   }
   _wasOn = sender.on;
 
-  std::dynamic_pointer_cast<const SwitchEventEmitter>(_eventEmitter)->onChange(sender.on);
+  std::dynamic_pointer_cast<const SwitchEventEmitter>(_eventEmitter)
+      ->onChange(SwitchOnChangeStruct{.value = static_cast<bool>(sender.on)});
 }
 
 @end

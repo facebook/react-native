@@ -10,7 +10,8 @@
 
 'use strict';
 
-const UIManager = require('UIManager');
+import Platform from '../Utilities/Platform';
+const UIManager = require('../ReactNative/UIManager');
 
 type Type =
   | 'spring'
@@ -42,13 +43,13 @@ function configureNext(
   config: LayoutAnimationConfig,
   onAnimationDidEnd?: Function,
 ) {
-  UIManager.configureNextLayoutAnimation(
-    config,
-    onAnimationDidEnd ?? function() {},
-    function() {
-      /* unused */
-    },
-  );
+  if (!Platform.isTesting) {
+    UIManager.configureNextLayoutAnimation(
+      config,
+      onAnimationDidEnd ?? function() {},
+      function() {} /* unused onError */,
+    );
+  }
 }
 
 function create(

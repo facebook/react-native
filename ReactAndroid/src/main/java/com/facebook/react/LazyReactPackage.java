@@ -8,7 +8,7 @@ package com.facebook.react;
 
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.facebook.react.bridge.ModuleHolder;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
@@ -76,8 +76,7 @@ public abstract class LazyReactPackage implements ReactPackage {
    * @param reactContext
    * @return
    */
-  /* package */
-  Iterable<ModuleHolder> getNativeModuleIterator(final ReactApplicationContext reactContext) {
+  public Iterable<ModuleHolder> getNativeModuleIterator(final ReactApplicationContext reactContext) {
     final Map<String, ReactModuleInfo> reactModuleInfoMap =
         getReactModuleInfoProvider().getReactModuleInfos();
     final List<ModuleSpec> nativeModules = getNativeModules(reactContext);

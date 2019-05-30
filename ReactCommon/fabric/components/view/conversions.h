@@ -7,11 +7,16 @@
 
 #pragma once
 
+#include <better/map.h>
 #include <folly/Conv.h>
 #include <folly/dynamic.h>
+#include <glog/logging.h>
 #include <react/components/view/primitives.h>
 #include <react/core/LayoutMetrics.h>
 #include <react/graphics/Geometry.h>
+#include <react/graphics/Transform.h>
+#include <stdlib.h>
+#include <yoga/YGEnums.h>
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
 #include <cmath>
@@ -19,48 +24,79 @@
 namespace facebook {
 namespace react {
 
+/*
+ * Yoga's `float` <-> React Native's `Float` (can be `double` or `float`)
+ *
+ * Regular Yoga `float` values represent some onscreen-position-related values.
+ * They can be real numbers or special value `YGUndefined` (which actually is
+ * `NaN`). Conceptually, layout computation process inside Yoga should never
+ * produce `NaN` values from non-`NaN` values. At the same time, ` YGUndefined`
+ * values have special "no limit" meaning in Yoga, therefore ` YGUndefined`
+ * usually corresponds to `Infinity` value.
+ */
 inline Float floatFromYogaFloat(float value) {
-  if (value == YGUndefined) {
-    return kFloatUndefined;
+  static_assert(
+      YGUndefined != YGUndefined,
+      "The code of this function assumes that YGUndefined is NaN.");
+  if (std::isnan(value) /* means: `value == YGUndefined` */) {
+    return std::numeric_limits<Float>::infinity();
   }
 
   return (Float)value;
 }
 
 inline float yogaFloatFromFloat(Float value) {
-  if (value == kFloatUndefined) {
+  if (std::isinf(value)) {
     return YGUndefined;
   }
 
   return (float)value;
 }
 
+/*
+ * `YGFloatOptional` <-> React Native's `Float`
+ *
+ * `YGFloatOptional` represents optional dimensionless float values in Yoga
+ * Style object (e.g. `flex`). The most suitable analogy to empty
+ * `YGFloatOptional` is `NaN` value.
+ * `YGFloatOptional` values are usually parsed from some outside data source
+ * which usually has some special corresponding representation for an empty
+ * value.
+ */
 inline Float floatFromYogaOptionalFloat(YGFloatOptional value) {
   if (value.isUndefined()) {
-    return kFloatUndefined;
+    return std::numeric_limits<Float>::quiet_NaN();
   }
 
-  return floatFromYogaFloat(value.getValue());
+  return floatFromYogaFloat(value.unwrap());
 }
 
 inline YGFloatOptional yogaOptionalFloatFromFloat(Float value) {
-  if (value == kFloatUndefined) {
+  if (std::isnan(value)) {
     return YGFloatOptional();
   }
 
-  return YGFloatOptional(yogaFloatFromFloat(value));
+  return YGFloatOptional((float)value);
 }
 
-inline YGValue yogaStyleValueFromFloat(const Float &value) {
-  if (std::isnan(value) || value == kFloatUndefined) {
+/*
+ * `YGValue` <-> `React Native's `Float`
+ *
+ * `YGValue` represents optional dimensionful (a real number and some unit, e.g.
+ * pixels).
+ */
+inline YGValue yogaStyleValueFromFloat(
+    const Float &value,
+    YGUnit unit = YGUnitPoint) {
+  if (std::isnan(value)) {
     return YGValueUndefined;
   }
 
-  return {(float)value, YGUnitPoint};
+  return {(float)value, unit};
 }
 
 inline folly::Optional<Float> optionalFloatFromYogaValue(
-    const YGValue &value,
+    const YGValue value,
     folly::Optional<Float> base = {}) {
   switch (value.unit) {
     case YGUnitUndefined:
@@ -102,7 +138,7 @@ inline LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
       layoutMetrics.borderWidth.bottom +
           floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeBottom))};
 
-  layoutMetrics.displayType = yogaNode.getStyle().display == YGDisplayNone
+  layoutMetrics.displayType = yogaNode.getStyle().display() == YGDisplayNone
       ? DisplayType::None
       : DisplayType::Flex;
 
@@ -125,9 +161,9 @@ inline YGDirection yogaDirectionFromLayoutDirection(LayoutDirection direction) {
   }
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGDirection &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, YGDirection &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "inherit") {
     result = YGDirectionInherit;
     return;
@@ -140,12 +176,17 @@ inline void fromDynamic(const folly::dynamic &value, YGDirection &result) {
     result = YGDirectionRTL;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGDirection:" << stringValue;
+  assert(false);
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGFlexDirection &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, YGFlexDirection &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
+  if (stringValue == "row") {
+    result = YGFlexDirectionRow;
+    return;
+  }
   if (stringValue == "column") {
     result = YGFlexDirectionColumn;
     return;
@@ -154,20 +195,17 @@ inline void fromDynamic(const folly::dynamic &value, YGFlexDirection &result) {
     result = YGFlexDirectionColumnReverse;
     return;
   }
-  if (stringValue == "row") {
-    result = YGFlexDirectionRow;
-    return;
-  }
   if (stringValue == "row-reverse") {
     result = YGFlexDirectionRowReverse;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGFlexDirection:" << stringValue;
+  assert(false);
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGJustify &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, YGJustify &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "flex-start") {
     result = YGJustifyFlexStart;
     return;
@@ -192,12 +230,13 @@ inline void fromDynamic(const folly::dynamic &value, YGJustify &result) {
     result = YGJustifySpaceEvenly;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGJustify:" << stringValue;
+  assert(false);
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGAlign &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, YGAlign &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "auto") {
     result = YGAlignAuto;
     return;
@@ -230,12 +269,13 @@ inline void fromDynamic(const folly::dynamic &value, YGAlign &result) {
     result = YGAlignSpaceAround;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGAlign:" << stringValue;
+  assert(false);
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGPositionType &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, YGPositionType &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "relative") {
     result = YGPositionTypeRelative;
     return;
@@ -244,13 +284,14 @@ inline void fromDynamic(const folly::dynamic &value, YGPositionType &result) {
     result = YGPositionTypeAbsolute;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGPositionType:" << stringValue;
+  assert(false);
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGWrap &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
-  if (stringValue == "no-wrap") {
+inline void fromRawValue(const RawValue &value, YGWrap &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
+  if (stringValue == "nowrap") {
     result = YGWrapNoWrap;
     return;
   }
@@ -262,12 +303,13 @@ inline void fromDynamic(const folly::dynamic &value, YGWrap &result) {
     result = YGWrapWrapReverse;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGWrap:" << stringValue;
+  assert(false);
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGOverflow &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, YGOverflow &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "visible") {
     result = YGOverflowVisible;
     return;
@@ -280,12 +322,13 @@ inline void fromDynamic(const folly::dynamic &value, YGOverflow &result) {
     result = YGOverflowScroll;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGOverflow:" << stringValue;
+  assert(false);
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGDisplay &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, YGDisplay &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "flex") {
     result = YGDisplayFlex;
     return;
@@ -294,26 +337,27 @@ inline void fromDynamic(const folly::dynamic &value, YGDisplay &result) {
     result = YGDisplayNone;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGDisplay:" << stringValue;
+  assert(false);
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGValue &result) {
-  if (value.isNumber()) {
-    result = yogaStyleValueFromFloat(value.asDouble());
+inline void fromRawValue(const RawValue &value, YGStyle::ValueRepr &result) {
+  if (value.hasType<Float>()) {
+    result = yogaStyleValueFromFloat((Float)value);
     return;
-  } else if (value.isString()) {
-    const auto stringValue = value.asString();
+  } else if (value.hasType<std::string>()) {
+    const auto stringValue = (std::string)value;
     if (stringValue == "auto") {
       result = YGValueUndefined;
       return;
     } else {
       if (stringValue.back() == '%') {
-        result = {
+        result = YGValue{
             folly::to<float>(stringValue.substr(0, stringValue.length() - 1)),
             YGUnitPercent};
         return;
       } else {
-        result = {folly::to<float>(stringValue), YGUnitPoint};
+        result = YGValue{folly::to<float>(stringValue), YGUnitPoint};
         return;
       }
     }
@@ -321,90 +365,106 @@ inline void fromDynamic(const folly::dynamic &value, YGValue &result) {
   result = YGValueUndefined;
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGFloatOptional &result) {
-  if (value.isNumber()) {
-    result = YGFloatOptional(value.asDouble());
+inline void fromRawValue(const RawValue &value, YGFloatOptional &result) {
+  if (value.hasType<float>()) {
+    result = YGFloatOptional((float)value);
     return;
-  } else if (value.isString()) {
-    const auto stringValue = value.asString();
+  } else if (value.hasType<std::string>()) {
+    const auto stringValue = (std::string)value;
     if (stringValue == "auto") {
       result = YGFloatOptional();
       return;
     }
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGFloatOptional";
+  assert(false);
 }
 
-inline void fromDynamic(const folly::dynamic &value, Transform &result) {
-  assert(value.isArray());
+inline Float toRadians(const RawValue &value) {
+  if (value.hasType<Float>()) {
+    return (Float)value;
+  }
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
+  char *suffixStart;
+  double num = strtod(
+      stringValue.c_str(), &suffixStart); // can't use std::stod, probably
+                                          // because of old Android NDKs
+  if (0 == strncmp(suffixStart, "deg", 3)) {
+    return num * M_PI / 180;
+  }
+  return num; // assume suffix is "rad"
+}
+
+inline void fromRawValue(const RawValue &value, Transform &result) {
+  assert(value.hasType<std::vector<RawValue>>());
   auto transformMatrix = Transform{};
-  for (const auto &tranformConfiguration : value) {
-    assert(tranformConfiguration.isObject());
-    auto pair = *tranformConfiguration.items().begin();
-    const auto &operation = pair.first.asString();
-    const auto &parameters = pair.second;
+  auto configurations = (std::vector<RawValue>)value;
+
+  for (const auto &configuration : configurations) {
+    auto configurationPair = (better::map<std::string, RawValue>)configuration;
+    auto pair = configurationPair.begin();
+    auto operation = pair->first;
+    auto &parameters = pair->second;
 
     if (operation == "matrix") {
-      assert(parameters.isArray());
-      assert(parameters.size() == transformMatrix.matrix.size());
+      assert(parameters.hasType<std::vector<Float>>());
+      auto numbers = (std::vector<Float>)parameters;
+      assert(numbers.size() == transformMatrix.matrix.size());
       auto i = 0;
-      for (auto item : parameters) {
-        transformMatrix.matrix[i++] = (Float)item.asDouble();
+      for (auto number : numbers) {
+        transformMatrix.matrix[i++] = number;
       }
     } else if (operation == "perspective") {
-      transformMatrix = transformMatrix *
-          Transform::Perspective((Float)parameters.asDouble());
-    } else if (operation == "rotateX") {
-      transformMatrix = transformMatrix *
-          Transform::Rotate((Float)parameters.asDouble(), 0, 0);
-    } else if (operation == "rotateY") {
-      transformMatrix = transformMatrix *
-          Transform::Rotate(0, (Float)parameters.asDouble(), 0);
-    } else if (operation == "rotateZ") {
-      transformMatrix = transformMatrix *
-          Transform::Rotate(0, 0, (Float)parameters.asDouble());
-    } else if (operation == "scale") {
-      transformMatrix = transformMatrix *
-          Transform::Scale((Float)parameters.asDouble(),
-                           (Float)parameters.asDouble(),
-                           (Float)parameters.asDouble());
-    } else if (operation == "scaleX") {
-      transformMatrix = transformMatrix *
-          Transform::Scale((Float)parameters.asDouble(), 0, 0);
-    } else if (operation == "scaleY") {
-      transformMatrix = transformMatrix *
-          Transform::Scale(0, (Float)parameters.asDouble(), 0);
-    } else if (operation == "scaleZ") {
-      transformMatrix = transformMatrix *
-          Transform::Scale(0, 0, (Float)parameters.asDouble());
-    } else if (operation == "translate") {
       transformMatrix =
-          transformMatrix *
-          Transform::Translate(
-              parameters[0].asDouble(), parameters[1].asDouble(), 0);
+          transformMatrix * Transform::Perspective((Float)parameters);
+    } else if (operation == "rotateX") {
+      transformMatrix =
+          transformMatrix * Transform::Rotate(toRadians(parameters), 0, 0);
+    } else if (operation == "rotateY") {
+      transformMatrix =
+          transformMatrix * Transform::Rotate(0, toRadians(parameters), 0);
+    } else if (operation == "rotateZ" || operation == "rotate") {
+      transformMatrix =
+          transformMatrix * Transform::Rotate(0, 0, toRadians(parameters));
+    } else if (operation == "scale") {
+      auto number = (Float)parameters;
+      transformMatrix =
+          transformMatrix * Transform::Scale(number, number, number);
+    } else if (operation == "scaleX") {
+      transformMatrix =
+          transformMatrix * Transform::Scale((Float)parameters, 0, 0);
+    } else if (operation == "scaleY") {
+      transformMatrix =
+          transformMatrix * Transform::Scale(0, (Float)parameters, 0);
+    } else if (operation == "scaleZ") {
+      transformMatrix =
+          transformMatrix * Transform::Scale(0, 0, (Float)parameters);
+    } else if (operation == "translate") {
+      auto numbers = (std::vector<Float>)parameters;
+      transformMatrix = transformMatrix *
+          Transform::Translate(numbers.at(0), numbers.at(1), 0);
     } else if (operation == "translateX") {
       transformMatrix =
-          transformMatrix * Transform::Translate(parameters.asDouble(), 0, 0);
+          transformMatrix * Transform::Translate((Float)parameters, 0, 0);
     } else if (operation == "translateY") {
       transformMatrix =
-          transformMatrix * Transform::Translate(0, parameters.asDouble(), 0);
+          transformMatrix * Transform::Translate(0, (Float)parameters, 0);
     } else if (operation == "skewX") {
       transformMatrix =
-          transformMatrix * Transform::Skew(parameters.asDouble(), 0);
+          transformMatrix * Transform::Skew(toRadians(parameters), 0);
     } else if (operation == "skewY") {
       transformMatrix =
-          transformMatrix * Transform::Skew(0, parameters.asDouble());
+          transformMatrix * Transform::Skew(0, toRadians(parameters));
     }
   }
 
   result = transformMatrix;
 }
 
-inline void fromDynamic(
-    const folly::dynamic &value,
-    PointerEventsMode &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, PointerEventsMode &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "auto") {
     result = PointerEventsMode::Auto;
     return;
@@ -421,12 +481,32 @@ inline void fromDynamic(
     result = PointerEventsMode::BoxOnly;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse PointerEventsMode:" << stringValue;
+  assert(false);
 }
 
-inline void fromDynamic(const folly::dynamic &value, BorderStyle &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, BackfaceVisibility &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
+  if (stringValue == "auto") {
+    result = BackfaceVisibility::Auto;
+    return;
+  }
+  if (stringValue == "visible") {
+    result = BackfaceVisibility::Visible;
+    return;
+  }
+  if (stringValue == "hidden") {
+    result = BackfaceVisibility::Hidden;
+    return;
+  }
+  LOG(FATAL) << "Could not parse BackfaceVisibility:" << stringValue;
+  assert(false);
+}
+
+inline void fromRawValue(const RawValue &value, BorderStyle &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "solid") {
     result = BorderStyle::Solid;
     return;
@@ -439,11 +519,12 @@ inline void fromDynamic(const folly::dynamic &value, BorderStyle &result) {
     result = BorderStyle::Dashed;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse BorderStyle:" << stringValue;
+  assert(false);
 }
 
 inline std::string toString(
-    const std::array<float, YGDimensionCount> &dimensions) {
+    const std::array<float, yoga::enums::count<YGDimension>()> &dimensions) {
   return "{" + folly::to<std::string>(dimensions[0]) + ", " +
       folly::to<std::string>(dimensions[1]) + "}";
 }
@@ -453,7 +534,8 @@ inline std::string toString(const std::array<float, 4> &position) {
       folly::to<std::string>(position[1]) + "}";
 }
 
-inline std::string toString(const std::array<float, YGEdgeCount> &edges) {
+inline std::string toString(
+    const std::array<float, yoga::enums::count<YGEdge>()> &edges) {
   return "{" + folly::to<std::string>(edges[0]) + ", " +
       folly::to<std::string>(edges[1]) + ", " +
       folly::to<std::string>(edges[2]) + ", " +
@@ -580,33 +662,34 @@ inline std::string toString(const YGFloatOptional &value) {
     return "undefined";
   }
 
-  return folly::to<std::string>(floatFromYogaFloat(value.getValue()));
+  return folly::to<std::string>(floatFromYogaFloat(value.unwrap()));
 }
 
-inline std::string toString(
-    const std::array<YGValue, YGDimensionCount> &value) {
+inline std::string toString(const YGStyle::Dimensions &value) {
   return "{" + toString(value[0]) + ", " + toString(value[1]) + "}";
 }
 
-inline std::string toString(const std::array<YGValue, YGEdgeCount> &value) {
-  static std::array<std::string, YGEdgeCount> names = {{"left",
-                                                        "top",
-                                                        "right",
-                                                        "bottom",
-                                                        "start",
-                                                        "end",
-                                                        "horizontal",
-                                                        "vertical",
-                                                        "all"}};
+inline std::string toString(const YGStyle::Edges &value) {
+  static std::array<std::string, yoga::enums::count<YGEdge>()> names = {
+      {"left",
+       "top",
+       "right",
+       "bottom",
+       "start",
+       "end",
+       "horizontal",
+       "vertical",
+       "all"}};
 
   auto result = std::string{};
   auto separator = std::string{", "};
 
-  for (auto i = 0; i < YGEdgeCount; i++) {
-    if (value[i].unit == YGUnitUndefined) {
+  for (auto i = 0; i < yoga::enums::count<YGEdge>(); i++) {
+    YGValue v = value[i];
+    if (v.unit == YGUnitUndefined) {
       continue;
     }
-    result += names[i] + ": " + toString(value[i]) + separator;
+    result += names[i] + ": " + toString(v) + separator;
   }
 
   if (!result.empty()) {

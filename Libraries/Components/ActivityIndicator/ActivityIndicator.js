@@ -10,20 +10,18 @@
 
 'use strict';
 
-const Platform = require('Platform');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const View = require('../View/View');
 
-const requireNativeComponent = require('requireNativeComponent');
+import type {NativeComponent} from '../../Renderer/shims/ReactNative';
+import type {ViewProps} from '../View/ViewPropTypes';
 
-import type {NativeComponent} from 'ReactNative';
-import type {ViewProps} from 'ViewPropTypes';
-
-const RCTActivityIndicator =
+const PlatformActivityIndicator =
   Platform.OS === 'android'
-    ? require('ProgressBarAndroid')
-    : requireNativeComponent('RCTActivityIndicatorView');
+    ? require('../ProgressBarAndroid/ProgressBarAndroid')
+    : require('./ActivityIndicatorViewNativeComponent');
 
 const GRAY = '#999999';
 
@@ -69,19 +67,19 @@ type Props = $ReadOnly<{|
  *
  * See http://facebook.github.io/react-native/docs/activityindicator.html
  */
-const ActivityIndicator = (
-  props: Props,
-  forwardedRef?: ?React.Ref<'RCTActivityIndicatorView'>,
-) => {
-  const {onLayout, style, ...restProps} = props;
+const ActivityIndicator = (props: Props, forwardedRef?: any) => {
+  const {onLayout, style, size, ...restProps} = props;
   let sizeStyle;
+  let sizeProp;
 
-  switch (props.size) {
+  switch (size) {
     case 'small':
       sizeStyle = styles.sizeSmall;
+      sizeProp = 'small';
       break;
     case 'large':
       sizeStyle = styles.sizeLarge;
+      sizeProp = 'large';
       break;
     default:
       sizeStyle = {height: props.size, width: props.size};
@@ -92,6 +90,10 @@ const ActivityIndicator = (
     ...restProps,
     ref: forwardedRef,
     style: sizeStyle,
+    size: sizeProp,
+  };
+
+  const androidProps = {
     styleAttr: 'Normal',
     indeterminate: true,
   };
@@ -103,17 +105,22 @@ const ActivityIndicator = (
         styles.container,
         style,
       )}>
-      {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-        * found when making Flow check .android.js files. */}
-      <RCTActivityIndicator {...nativeProps} />
+      {Platform.OS === 'android' ? (
+        // $FlowFixMe Flow doesn't know when this is the android component
+        <PlatformActivityIndicator {...nativeProps} {...androidProps} />
+      ) : (
+        <PlatformActivityIndicator {...nativeProps} />
+      )}
     </View>
   );
 };
 
-// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const ActivityIndicatorWithRef = React.forwardRef(ActivityIndicator);
 ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
 
+/* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
+ * found when Flow v0.89 was deployed. To see the error, delete this comment
+ * and run Flow. */
 ActivityIndicatorWithRef.defaultProps = {
   animating: true,
   color: Platform.OS === 'ios' ? GRAY : null,
@@ -136,4 +143,7 @@ const styles = StyleSheet.create({
   },
 });
 
+/* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
+ * found when Flow v0.89 was deployed. To see the error, delete this comment
+ * and run Flow. */
 module.exports = (ActivityIndicatorWithRef: Class<NativeComponent<Props>>);

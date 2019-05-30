@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.scroll;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -16,8 +15,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.Rect;
 import android.hardware.SensorManager;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.text.TextUtilsCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.text.TextUtilsCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -42,7 +41,6 @@ import javax.annotation.Nullable;
 /**
  * Similar to {@link ReactScrollView} but only supports horizontal scrolling.
  */
-@TargetApi(16)
 public class ReactHorizontalScrollView extends HorizontalScrollView implements
     ReactClippingViewGroup {
 
@@ -67,6 +65,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
   private int mEndFillColor = Color.TRANSPARENT;
+  private boolean mDisableIntervalMomentum = false;
   private int mSnapInterval = 0;
   private float mDecelerationRate = 0.985f;
   private @Nullable List<Integer> mSnapOffsets;
@@ -141,6 +140,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   @Override
   public boolean getRemoveClippedSubviews() {
     return mRemoveClippedSubviews;
+  }
+
+  public void setDisableIntervalMomentum(boolean disableIntervalMomentum) {
+    mDisableIntervalMomentum = disableIntervalMomentum;
   }
 
   public void setSendMomentumEvents(boolean sendMomentumEvents) {
@@ -286,8 +289,18 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
   @Override
   public void fling(int velocityX) {
+
+    // Workaround.
+    // On Android P if a ScrollView is inverted, we will get a wrong sign for
+    // velocityX (see https://issuetracker.google.com/issues/112385925). 
+    // At the same time, mOnScrollDispatchHelper tracks the correct velocity direction. 
+    //
+    // Hence, we can use the absolute value from whatever the OS gives
+    // us and use the sign of what mOnScrollDispatchHelper has tracked.
+    final int correctedVelocityX = (int)(Math.abs(velocityX) * Math.signum(mOnScrollDispatchHelper.getXFlingVelocity()));
+
     if (mPagingEnabled) {
-      flingAndSnap(velocityX);
+      flingAndSnap(correctedVelocityX);
     } else if (mScroller != null) {
       // FB SCROLLVIEW CHANGE
 
@@ -297,12 +310,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       // as there is content. See #onOverScrolled() to see the second part of this change which properly
       // aborts the scroller animation when we get to the bottom of the ScrollView content.
 
-      int scrollWindowWidth = getWidth() - getPaddingStart() - getPaddingEnd();
+      int scrollWindowWidth = getWidth() - ViewCompat.getPaddingStart(this) - ViewCompat.getPaddingEnd(this);
 
       mScroller.fling(
         getScrollX(), // startX
         getScrollY(), // startY
-        velocityX, // velocityX
+        correctedVelocityX, // velocityX
         0, // velocityY
         0, // minX
         Integer.MAX_VALUE, // maxX
@@ -316,9 +329,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
       // END FB SCROLLVIEW CHANGE
     } else {
-      super.fling(velocityX);
+      super.fling(correctedVelocityX);
     }
-    handlePostTouchScrolling(velocityX, 0);
+    handlePostTouchScrolling(correctedVelocityX, 0);
   }
 
   @Override
@@ -493,7 +506,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
     // predict where a fling would end up so we can scroll to the nearest snap offset
     int maximumOffset = Math.max(0, computeHorizontalScrollRange() - getWidth());
-    int width = getWidth() - getPaddingStart() - getPaddingEnd();
+    int width = getWidth() - ViewCompat.getPaddingStart(this) - ViewCompat.getPaddingEnd(this);
     scroller.fling(
       getScrollX(), // startX
       getScrollY(), // startY
@@ -571,11 +584,15 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
     int maximumOffset = Math.max(0, computeHorizontalScrollRange() - getWidth());
     int targetOffset = predictFinalScrollPosition(velocityX);
+    if (mDisableIntervalMomentum) {
+      targetOffset = getScrollX();
+    }
+
     int smallerOffset = 0;
     int largerOffset = maximumOffset;
     int firstOffset = 0;
     int lastOffset = maximumOffset;
-    int width = getWidth() - getPaddingStart() - getPaddingEnd();
+    int width = getWidth() - ViewCompat.getPaddingStart(this) - ViewCompat.getPaddingEnd(this);
 
     // offsets are from the right edge in RTL layouts
     boolean isRTL = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_RTL;
