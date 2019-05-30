@@ -33,7 +33,7 @@ describe('MessageQueue', function() {
   beforeEach(function() {
     jest.resetModules();
     MessageQueue = require('../MessageQueue');
-    MessageQueueTestModule = require('MessageQueueTestModule');
+    MessageQueueTestModule = require('../__mocks__/MessageQueueTestModule');
     queue = new MessageQueue();
     queue.registerCallableModule(
       'MessageQueueTestModule',
