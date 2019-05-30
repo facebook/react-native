@@ -236,6 +236,11 @@ const mockNativeModules = {
     addListener: jest.fn(),
     removeListeners: jest.fn(),
   },
+  PlatformConstants: {
+    getConstants() {
+      return {};
+    },
+  },
   PushNotificationManager: {
     presentLocalNotification: jest.fn(),
     scheduleLocalNotification: jest.fn(),
