@@ -150,7 +150,7 @@ RCT_EXPORT_MODULE()
     _backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
       typeof(self) strongSelf = weakSelf;
       if (!strongSelf) {
-        return ;
+        return;
       }
       // Mark the end of background task
       [strongSelf markEndOfBackgroundTaskIfNeeded];
