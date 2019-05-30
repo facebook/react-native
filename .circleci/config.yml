@@ -157,7 +157,7 @@ js_defaults: &js_defaults
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-    - image: reactnativecommunity/react-native-android:2019-5-7
+    - image: reactnativecommunity/react-native-android:2019-5-29
   resource_class: "large"
   environment:
     - TERM: "dumb"
@@ -670,32 +670,18 @@ jobs:
   publish_npm_package:
     <<: *android_defaults
     steps:
-      - attach_workspace:
-          at: ~/react-native
+      - checkout
+
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
 
       # Fetch dependencies using Buck
-      - run:
-          name: Install Buck
-          command: |
-            if [[ ! -e ~/buck ]]; then
-              git clone https://github.com/facebook/buck.git ~/buck --branch v2019.01.10.01 --depth=1
-            fi
-            cd ~/buck && ant
-            buck --version
-            # Install related tooling
-            if [[ ! -e ~/okbuck ]]; then
-              git clone https://github.com/uber/okbuck.git ~/okbuck --depth=1
-            fi
-            mkdir -p ~/react-native/tooling/junit
-            cp -R ~/okbuck/tooling/junit/* ~/react-native/tooling/junit/.
-      - run:
-          name: Download Dependencies Using Buck
-          command: ./scripts/circleci/buck_fetch.sh
+      - restore-cache: *restore-buck-downloads-cache
+      - run: *download-dependencies-buck
 
       # Fetch dependencies using Gradle
-      - run:
-          name: Download Dependencies Using Gradle
-          command: ./scripts/circleci/gradle_download_deps.sh
+      - restore-cache: *restore-gradle-downloads-cache
+      - run: *download-dependencies-gradle
 
       - run:
           name: Authenticate with npm
