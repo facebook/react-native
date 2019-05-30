@@ -383,4 +383,30 @@ if (__DEV__) {
       );
     },
   });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access NetInfo.
+  Object.defineProperty(module.exports, 'NetInfo', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'NetInfo has been removed from React Native. ' +
+          "It can now be installed and imported from 'react-native-netinfo' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-netinfo',
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access CameraRoll.
+  Object.defineProperty(module.exports, 'CameraRoll', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'CameraRoll has been removed from React Native. ' +
+          "It can now be installed and imported from 'react-native-cameraroll' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-cameraroll',
+      );
+    },
+  });
 }
