@@ -433,6 +433,13 @@ jobs:
       # Configure Watchman
       - run: touch .watchmanconfig
 
+      - restore_cache:
+          keys:
+            - v1-cocoapods-{{ checksum "template/ios/Podfile" }}
+            - v1-cocoapods-
+
+      - run: pod setup
+
       - run:
           name: Run Detox iOS End-to-End Tests
           command: yarn run build-ios-e2e && yarn run test-ios-e2e
@@ -447,6 +454,11 @@ jobs:
             set -eo pipefail
             node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
           when: always
+
+      - save_cache:
+          paths:
+            - ~/.cocoapods/repos
+          key: v1-cocoapods-{{ checksum "template/ios/Podfile" }}
 
   test_js_e2e:
     executor: node8
