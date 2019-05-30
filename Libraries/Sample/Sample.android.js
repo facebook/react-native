@@ -16,6 +16,7 @@ const warning = require('fbjs/lib/warning');
 
 const Sample = {
   test: function() {
+    // $FlowFixMe warning expects a condition
     warning('Not yet implemented for Android.');
   },
 };
