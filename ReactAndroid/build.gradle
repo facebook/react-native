@@ -193,7 +193,7 @@ def findNdkBuildFullPath() {
     def ndkDir = android.hasProperty("plugin") ? android.plugin.ndkFolder :
             plugins.getPlugin("com.android.library").hasProperty("sdkHandler") ?
                     plugins.getPlugin("com.android.library").sdkHandler.getNdkFolder() :
-                    android.ndkDirectory.absolutePath
+                    android.ndkDirectory ? android.ndkDirectory.absolutePath : null
     if (ndkDir) {
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
