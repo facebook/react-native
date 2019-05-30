@@ -1090,44 +1090,44 @@
     "@types/istanbul-lib-coverage" "^2.0.0"
     "@types/yargs" "^12.0.9"
 
-"@react-native-community/cli-platform-android@2.0.0-alpha.20", "@react-native-community/cli-platform-android@^2.0.0-alpha.20":
-  version "2.0.0-alpha.20"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.0.0-alpha.20.tgz#a3b5aceae38bd3c930f0801b721d44551fe98dc2"
-  integrity sha512-Z1eWiK4/oZlKvZTPYnORW6uAZ4rgBFMvswldwdy6r9CnjLTZsgw3aGN6r5TUNSCwbZy4p2l5J1pTELl2Ors24g==
+"@react-native-community/cli-platform-android@2.0.0-alpha.23", "@react-native-community/cli-platform-android@^2.0.0-alpha.23":
+  version "2.0.0-alpha.23"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.0.0-alpha.23.tgz#f4941cca17eedef694bf420027b816ecd2e1f1c3"
+  integrity sha512-V57NWTyi20VQA2EPL1xmiibIQD0bUVe0ecVQxSb903f4M3ml0x4TEqWOToE2wgda/c4Z3pEKJuRCzyZHfuEYPA==
   dependencies:
-    "@react-native-community/cli-tools" "^2.0.0-alpha.20"
+    "@react-native-community/cli-tools" "^2.0.0-alpha.23"
     logkitty "^0.4.0"
-    node-fetch "^2.2.0"
     slash "^2.0.0"
     xmldoc "^0.4.0"
 
-"@react-native-community/cli-platform-ios@2.0.0-alpha.20", "@react-native-community/cli-platform-ios@^2.0.0-alpha.20":
-  version "2.0.0-alpha.20"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.0.0-alpha.20.tgz#66eda705b0522b44818806910bbf2b7d47d41b56"
-  integrity sha512-ZDvx2YU/1cFp5/ADbPUwnlvs5D0RIeEZK4Ddskd2Sx7KIq5jLnQbXW+JDOqie5wQgQQ+eCmebCHnCFBWIGXdMQ==
+"@react-native-community/cli-platform-ios@2.0.0-alpha.23", "@react-native-community/cli-platform-ios@^2.0.0-alpha.23":
+  version "2.0.0-alpha.23"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.0.0-alpha.23.tgz#3ef22cc5d5ce32b85f9f9604056ca3cea652a59a"
+  integrity sha512-jAffpJNw9zrlI5rwM/BfaTNtKjrx+Rvuei1YqfjLaQKUiXgrbJYbIu9+6Lc+sAn1qFGwL2+CShpywwbvN2ehGQ==
   dependencies:
-    "@react-native-community/cli-tools" "^2.0.0-alpha.20"
+    "@react-native-community/cli-tools" "^2.0.0-alpha.23"
     chalk "^1.1.1"
     xcode "^2.0.0"
 
-"@react-native-community/cli-tools@^2.0.0-alpha.20":
-  version "2.0.0-alpha.20"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.0-alpha.20.tgz#7762205a701ffabe6aa0b08d9202dd3d101297d7"
-  integrity sha512-G2VcBUuG/WmtbgHA4wTPkYqhuRhzE9EH8+4/WnCQmxSi7bfIYAzyVxgpBLCGzFv4liPmtoVuhcsapVeAMOdSlQ==
+"@react-native-community/cli-tools@^2.0.0-alpha.23":
+  version "2.0.0-alpha.23"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.0-alpha.23.tgz#001a6ef134e1488bf8ef41dd203fda67f7aed8d6"
+  integrity sha512-+a+IByj0EXQg6M3Q0aT1hsGSmmqWPPkrx+LeY4Gi2pnmOR+DB9A/dDEDOvwxd/OPBsXqzNmdO+iUcg3HNm/twg==
   dependencies:
     chalk "^1.1.1"
     lodash "^4.17.5"
-    mime "^1.3.4"
+    mime "^2.4.1"
+    node-fetch "^2.5.0"
 
-"@react-native-community/cli@2.0.0-alpha.20":
-  version "2.0.0-alpha.20"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.0.0-alpha.20.tgz#611fe4ad483755ae10d3f7f915e1ed527f4a9bf8"
-  integrity sha512-H71a8gYhhI/7F6UzN3vrzQMtl9dmV/iDf55QeRqWEIU1i+SOpXXk5cmcL7hFY4FBUAkjn4o7GAd089RstGIOeA==
+"@react-native-community/cli@2.0.0-alpha.23":
+  version "2.0.0-alpha.23"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.0.0-alpha.23.tgz#321ea633ffdf1160170e4428b5886f4d731ff373"
+  integrity sha512-NIIRgdqA1IA3+K1l1jcXEtS0qL0aos75GXVwGBOmEkC4TfNoOpVQZl2Ffy+/j+IPGpzl2xecOMMmIvlzQRGDtQ==
   dependencies:
     "@hapi/joi" "^15.0.3"
-    "@react-native-community/cli-platform-android" "^2.0.0-alpha.20"
-    "@react-native-community/cli-platform-ios" "^2.0.0-alpha.20"
-    "@react-native-community/cli-tools" "^2.0.0-alpha.20"
+    "@react-native-community/cli-platform-android" "^2.0.0-alpha.23"
+    "@react-native-community/cli-platform-ios" "^2.0.0-alpha.23"
+    "@react-native-community/cli-tools" "^2.0.0-alpha.23"
     chalk "^1.1.1"
     command-exists "^1.2.8"
     commander "^2.19.0"
@@ -1150,7 +1150,6 @@
     minimist "^1.2.0"
     mkdirp "^0.5.1"
     morgan "^1.9.0"
-    node-fetch "^2.2.0"
     node-notifier "^5.2.1"
     open "^6.2.0"
     ora "^3.4.0"
@@ -5184,10 +5183,15 @@ mime-types@^2.1.12, mime-types@~2.1.18, mime-types@~2.1.19:
   dependencies:
     mime-db "~1.36.0"
 
-mime@1.4.1, mime@^1.3.4:
+mime@1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.4.1.tgz#121f9ebc49e3766f311a76e1fa1c8003c4b03aa6"
   integrity sha512-KI1+qOZu5DcW6wayYHSzR/tXKCDC5Om4s1z2QJjDULzLcmf3DvzS7oluY4HCTrc+9FiKmWUgeNLg7W3uIQvxtQ==
+
+mime@^2.4.1:
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-2.4.3.tgz#229687331e86f68924e6cb59e1cdd937f18275fe"
+  integrity sha512-QgrPRJfE+riq5TPZMcHZOtm8c6K/yYrMbKIoRfapfiGLxS8OTeIfRhUGW5LU7MlRa52KOAGCfUNruqLrIBvWZw==
 
 mimic-fn@^1.0.0:
   version "1.2.0"
@@ -5368,6 +5372,11 @@ node-fetch@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.2.0.tgz#4ee79bde909262f9775f731e3656d0db55ced5b5"
   integrity sha512-OayFWziIxiHY8bCUyLX6sTpDH8Jsbp4FfYd1j1f7vZyfgkcOnAyM4oQR16f8a0s7Gl/viMGRey8eScYk4V4EZA==
+
+node-fetch@^2.5.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
+  integrity sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
 
 node-int64@^0.4.0:
   version "0.4.0"
