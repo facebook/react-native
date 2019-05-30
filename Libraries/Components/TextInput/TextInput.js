@@ -253,6 +253,7 @@ type AndroidProps = $ReadOnly<{|
     | 'yes'
     | 'yesExcludeDescendants'
   ),
+  showSoftInputOnFocus?: ?boolean,
 |}>;
 
 type Props = $ReadOnly<{|
@@ -926,6 +927,12 @@ const TextInput = createReactClass({
       'newPassword',
       'oneTimeCode',
     ]),
+    /**
+     * When `false`, it will prevent the soft keyboard from showing when the field is focused.
+     * Defaults to `true`.
+     * @platform android
+     */
+    showSoftInputOnFocus: PropTypes.bool,
   },
   getDefaultProps() {
     return {
@@ -1104,6 +1111,7 @@ const TextInput = createReactClass({
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
         accessibilityStates={props.accessibilityStates}
+        accessibilityState={props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={props.testID}>
         {textContainer}
@@ -1156,6 +1164,7 @@ const TextInput = createReactClass({
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
         accessibilityStates={props.accessibilityStates}
+        accessibilityState={props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={props.testID}>
         {textContainer}
@@ -1213,6 +1222,7 @@ const TextInput = createReactClass({
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityRole={this.props.accessibilityRole}
         accessibilityStates={this.props.accessibilityStates}
+        accessibilityState={this.props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={this.props.testID}>
         {textContainer}

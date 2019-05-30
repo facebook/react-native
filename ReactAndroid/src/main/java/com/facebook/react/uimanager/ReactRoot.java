@@ -23,6 +23,7 @@ public interface ReactRoot {
    */
   @Nullable Bundle getAppProperties();
   @Nullable String getInitialUITemplate();
+  String getJSModuleName();
 
   /**
    * Fabric or Default UI Manager, see {@link UIManagerType}
@@ -47,4 +48,15 @@ public interface ReactRoot {
    * Return native view for root
    */
   ViewGroup getRootViewGroup();
+
+  /**
+   * @return Cached values for widthMeasureSpec and heightMeasureSpec
+   */
+  int getWidthMeasureSpec();
+  int getHeightMeasureSpec();
+
+  /**
+   * Sets a flag that determines whether to log that content appeared on next view added.
+   */
+  void setShouldLogContentAppeared(boolean shouldLogContentAppeared);
 }

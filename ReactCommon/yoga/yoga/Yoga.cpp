@@ -253,7 +253,13 @@ static YGConfigRef YGConfigClone(const YGConfig& oldConfig) {
 }
 
 static YGNodeRef YGNodeDeepClone(YGNodeRef oldNode) {
-  YGNodeRef node = YGNodeClone(oldNode);
+  auto config = YGConfigClone(*oldNode->getConfig());
+  auto node = new YGNode{*oldNode, config};
+  node->setOwner(nullptr);
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeAllocation>(node, {node->getConfig()});
+#endif
+
   YGVector vec = YGVector();
   vec.reserve(oldNode->getChildren().size());
   YGNodeRef childNode = nullptr;
@@ -263,10 +269,6 @@ static YGNodeRef YGNodeDeepClone(YGNodeRef oldNode) {
     vec.push_back(childNode);
   }
   node->setChildren(vec);
-
-  if (oldNode->getConfig() != nullptr) {
-    node->setConfig(YGConfigClone(*(oldNode->getConfig())));
-  }
 
   return node;
 }
@@ -2859,11 +2861,8 @@ static void YGNodelayoutImpl(
         availableInnerMainDim = maxInnerMainDim;
       } else {
         if (!node->getConfig()->useLegacyStretchBehaviour &&
-            ((YGFloatIsUndefined(
-                  collectedFlexItemsValues.totalFlexGrowFactors) &&
-              collectedFlexItemsValues.totalFlexGrowFactors == 0) ||
-             (YGFloatIsUndefined(node->resolveFlexGrow()) &&
-              node->resolveFlexGrow() == 0))) {
+            (collectedFlexItemsValues.totalFlexGrowFactors == 0 ||
+             node->resolveFlexGrow() == 0)) {
           // If we don't have any children to flex or we can't flex the node
           // itself, space we've used is all space we need. Root node also
           // should be shrunk to minimum

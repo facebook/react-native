@@ -81,11 +81,11 @@ Error: ${e.message}`;
       ) {
         NativeRedBox.dismiss();
       } else {
-        const RCTExceptionsManager = require('../BatchedBridge/NativeModules')
-          .ExceptionsManager;
-        RCTExceptionsManager &&
-          RCTExceptionsManager.dismissRedbox &&
-          RCTExceptionsManager.dismissRedbox();
+        const NativeExceptionsManager = require('../Core/NativeExceptionsManager')
+          .default;
+        NativeExceptionsManager &&
+          NativeExceptionsManager.dismissRedbox &&
+          NativeExceptionsManager.dismissRedbox();
       }
     });
 

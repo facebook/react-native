@@ -56,11 +56,15 @@ function getReactDiffProcessValue(prop) {
           return j.template.expression`{ diff: require('pointsDiffer') }`;
         default:
           (typeAnnotation.name: empty);
-          throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');
+          throw new Error(
+            `Received unknown native typeAnnotation: "${typeAnnotation.name}"`,
+          );
       }
     default:
       (typeAnnotation: empty);
-      throw new Error('Receieved invalid typeAnnotation');
+      throw new Error(
+        `Received unknown typeAnnotation: "${typeAnnotation.type}"`,
+      );
   }
 }
 

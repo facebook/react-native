@@ -1065,6 +1065,25 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
 {
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   RCTComponentData *componentData = _componentDataByName[shadowView.viewName];
+
+  // Achtung! Achtung!
+  // This is a remarkably hacky and ugly workaround.
+  // We need this only temporary for some testing. We need this hack until Fabric fully implements command-execution pipeline.
+  // This does not affect non-Fabric apps.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+  if (!componentData) {
+    __block UIView *view;
+    RCTUnsafeExecuteOnMainQueueSync(^{
+      view = self->_viewRegistry[reactTag];
+    });
+    if ([view respondsToSelector:@selector(componentViewName_DO_NOT_USE_THIS_IS_BROKEN)]) {
+      NSString *name = [view performSelector:@selector(componentViewName_DO_NOT_USE_THIS_IS_BROKEN)];
+      componentData = _componentDataByName[[NSString stringWithFormat:@"RCT%@", name]];
+    }
+  }
+#pragma clang diagnostic pop
+
   Class managerClass = componentData.managerClass;
   RCTModuleData *moduleData = [_bridge moduleDataForName:RCTBridgeModuleNameForClass(managerClass)];
   id<RCTBridgeMethod> method = moduleData.methods[commandID];

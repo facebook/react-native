@@ -35,10 +35,9 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.fabric.jsi.Binding;
-import com.facebook.react.fabric.jsi.EventBeatManager;
-import com.facebook.react.fabric.jsi.EventEmitterWrapper;
-import com.facebook.react.fabric.jsi.FabricSoLoader;
+import com.facebook.react.fabric.events.EventBeatManager;
+import com.facebook.react.fabric.events.EventEmitterWrapper;
+import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.CreateMountItem;
@@ -54,6 +53,7 @@ import com.facebook.react.fabric.mounting.mountitems.UpdateLocalDataMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateStateMountItem;
 import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -128,13 +128,18 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @Override
   public <T extends View> int addRootView(
-      final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
+    final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
+    return addRootView(rootView, ((ReactRoot) rootView).getJSModuleName(), initialProps, initialUITemplate);
+  }
+
+  public <T extends View> int addRootView(
+      final T rootView, final String moduleName, final WritableMap initialProps, final @Nullable String initialUITemplate) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, rootView.getContext());
     mMountingManager.addRootView(rootTag, rootView);
     mReactContextForRootTag.put(rootTag, reactContext);
-    mBinding.startSurface(rootTag, (NativeMap) initialProps);
+    mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
     if (initialUITemplate != null) {
       mBinding.renderTemplateToSurface(rootTag, initialUITemplate);
     }
@@ -176,6 +181,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       int reactTag,
       final String componentName,
       @Nullable ReadableMap props,
+      Object stateWrapper,
       boolean isLayoutable) {
     ThemedReactContext context = mReactContextForRootTag.get(rootTag);
     String component = getFabricComponentName(componentName);
@@ -187,6 +193,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
               reactTag,
               component,
               props,
+              (StateWrapper) stateWrapper,
               isLayoutable));
     }
   }

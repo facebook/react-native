@@ -12,8 +12,9 @@
 
 const AssetRegistry = require('../AssetRegistry');
 const Platform = require('../../Utilities/Platform');
-const NativeModules = require('../../BatchedBridge/NativeModules');
 const resolveAssetSource = require('../resolveAssetSource');
+
+import NativeSourceCode from '../../NativeModules/specs/NativeSourceCode';
 
 function expectResolvesAsset(input, expectedSource) {
   const assetId = AssetRegistry.registerAsset(input);
@@ -57,7 +58,9 @@ describe('resolveAssetSource', () => {
 
   describe('bundle was loaded from network (DEV)', () => {
     beforeEach(() => {
-      NativeModules.SourceCode.scriptURL = 'http://10.0.0.1:8081/main.bundle';
+      NativeSourceCode.getConstants = () => ({
+        scriptURL: 'http://10.0.0.1:8081/main.bundle',
+      });
       Platform.OS = 'ios';
     });
 
@@ -112,8 +115,9 @@ describe('resolveAssetSource', () => {
 
   describe('bundle was loaded from file on iOS', () => {
     beforeEach(() => {
-      NativeModules.SourceCode.scriptURL =
-        'file:///Path/To/Sample.app/main.bundle';
+      NativeSourceCode.getConstants = () => ({
+        scriptURL: 'file:///Path/To/Sample.app/main.bundle',
+      });
       Platform.OS = 'ios';
     });
 
@@ -143,8 +147,9 @@ describe('resolveAssetSource', () => {
 
   describe('bundle was loaded from assets on Android', () => {
     beforeEach(() => {
-      NativeModules.SourceCode.scriptURL =
-        'assets://Path/To/Simulator/main.bundle';
+      NativeSourceCode.getConstants = () => ({
+        scriptURL: 'assets://Path/To/Simulator/main.bundle',
+      });
       Platform.OS = 'android';
     });
 
@@ -174,8 +179,9 @@ describe('resolveAssetSource', () => {
 
   describe('bundle was loaded from file on Android', () => {
     beforeEach(() => {
-      NativeModules.SourceCode.scriptURL =
-        'file:///sdcard/Path/To/Simulator/main.bundle';
+      NativeSourceCode.getConstants = () => ({
+        scriptURL: 'file:///sdcard/Path/To/Simulator/main.bundle',
+      });
       Platform.OS = 'android';
     });
 
@@ -206,8 +212,9 @@ describe('resolveAssetSource', () => {
 
   describe('bundle was loaded from raw file on Android', () => {
     beforeEach(() => {
-      NativeModules.SourceCode.scriptURL =
-        '/sdcard/Path/To/Simulator/main.bundle';
+      NativeSourceCode.getConstants = () => ({
+        scriptURL: '/sdcard/Path/To/Simulator/main.bundle',
+      });
       Platform.OS = 'android';
     });
 
@@ -238,8 +245,9 @@ describe('resolveAssetSource', () => {
 
   describe('source resolver can be customized', () => {
     beforeEach(() => {
-      NativeModules.SourceCode.scriptURL =
-        'file:///sdcard/Path/To/Simulator/main.bundle';
+      NativeSourceCode.getConstants = () => ({
+        scriptURL: 'file:///sdcard/Path/To/Simulator/main.bundle',
+      });
       Platform.OS = 'android';
     });
 

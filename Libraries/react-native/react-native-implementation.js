@@ -137,9 +137,6 @@ module.exports = {
   get TextInput() {
     return require('TextInput');
   },
-  get ToolbarAndroid() {
-    return require('ToolbarAndroid');
-  },
   get Touchable() {
     return require('Touchable');
   },
@@ -202,15 +199,6 @@ module.exports = {
   get BackHandler() {
     return require('BackHandler');
   },
-  get CameraRoll() {
-    warnOnce(
-      'cameraroll-moved',
-      'CameraRoll has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/cameraroll' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-cameraroll',
-    );
-    return require('CameraRoll');
-  },
   get Clipboard() {
     return require('Clipboard');
   },
@@ -218,7 +206,7 @@ module.exports = {
     return require('DatePickerAndroid');
   },
   get DeviceInfo() {
-    return require('DeviceInfo');
+    return require('NativeDeviceInfo').default;
   },
   get Dimensions() {
     return require('Dimensions');
@@ -246,6 +234,9 @@ module.exports = {
   },
   get Linking() {
     return require('Linking');
+  },
+  get NativeDialogManagerAndroid() {
+    return require('NativeDialogManagerAndroid').default;
   },
   get NativeEventEmitter() {
     return require('NativeEventEmitter');
@@ -343,6 +334,10 @@ module.exports = {
   },
   get ViewPropTypes() {
     return require('DeprecatedViewPropTypes');
+  },
+  // TODO(cpojer): Temporary fix for missing Toolbar
+  get ToolbarAndroid() {
+    return require('UnimplementedView');
   },
 };
 

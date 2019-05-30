@@ -9,8 +9,10 @@ package com.facebook.react.fabric.mounting;
 import androidx.annotation.UiThread;
 import android.view.View;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import javax.annotation.Nullable;
 
 public class ViewManagerFactory implements ViewFactory {
 
@@ -23,8 +25,8 @@ public class ViewManagerFactory implements ViewFactory {
   @UiThread
   @Override
   public View getOrCreateView(
-    String componentName, ReactStylesDiffMap props, ThemedReactContext context) {
-    return mViewManagerRegistry.get(componentName).createViewWithProps(context, props, null);
+    String componentName, @Nullable ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper, ThemedReactContext context) {
+    return mViewManagerRegistry.get(componentName).createView(context, props, stateWrapper, null);
   }
 
   @UiThread
