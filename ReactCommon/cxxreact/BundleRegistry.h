@@ -32,16 +32,15 @@ class BundleRegistry {
     BundleRegistry& operator=(const BundleRegistry&) = delete;
     ~BundleRegistry();
 
-    void runNewExecutionEnvironment(std::unique_ptr<const Bundle> initialBundle,
-                                    std::function<void()> callback);
-    void disposeExecutionEnvironments();
-    // TODO: get rid of this
-    std::weak_ptr<BundleExecutionEnvironment> getFirstExecutionEnvironment();
-    bool hasExecutionEnvironment();
+    void preloadEnvironment(std::string environmentId, std::function<void()> callback);
+    void runInPreloadedEnvironment(std::string environmentId, std::unique_ptr<const Bundle> initialBundle);
+    void disposeEnvironments();
 
+    std::weak_ptr<BundleExecutionEnvironment> getEnvironment(std::string environmentId);
+    bool hasEnvironment(std::string environmentId);
 
   private:
-    std::vector<std::shared_ptr<BundleExecutionEnvironment>> bundleExecutionEnvironments_;
+    std::map<std::string, std::shared_ptr<BundleExecutionEnvironment>> bundleEnvironments_;
     std::vector<std::shared_ptr<const Bundle>> bundles_;
     JSExecutorFactory* jsExecutorFactory_;
     std::shared_ptr<ModuleRegistry> moduleRegistry_;
@@ -50,7 +49,7 @@ class BundleRegistry {
 
     /**
      * Setup environment and load initial bundle. Should be called only once
-     * per BundleExecutionEnvironemnt.
+     * per BundleEnvironemnt.
      */
     void evalInitialBundle(std::shared_ptr<BundleExecutionEnvironment> execEnv,
                            std::unique_ptr<const JSBigString> startupScript,

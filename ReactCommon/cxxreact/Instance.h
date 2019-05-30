@@ -70,6 +70,8 @@ private:
   std::shared_ptr<ModuleRegistry> moduleRegistry_;
   std::unique_ptr<BundleRegistry> bundleRegistry_;
 
+  std::string defaultEnvironmentId_ = "default";
+
   std::mutex m_syncMutex;
   std::condition_variable m_syncCV;
   bool m_syncReady = false;

@@ -14,26 +14,39 @@ BundleRegistry::BundleRegistry(JSExecutorFactory* jsExecutorFactory,
 }
 
 BundleRegistry::~BundleRegistry() {
-  bundleExecutionEnvironments_.clear();
+  bundleEnvironments_.clear();
   bundles_.clear();
 }
 
-void BundleRegistry::runNewExecutionEnvironment(std::unique_ptr<const Bundle> initialBundle,
-                                                std::function<void()> callback) {
+void BundleRegistry::preloadEnvironment(std::string environmentId, std::function<void()> callback) {
+  if (hasEnvironment(environmentId)) {
+    throw std::runtime_error(
+      folly::to<std::string>("Environment with id = ", environmentId, " already exists")
+    );
+  }
   std::shared_ptr<BundleExecutionEnvironment> execEnv = std::make_shared<BundleExecutionEnvironment>();
   execEnv->valid = false;
   execEnv->jsQueue = jsQueueFactory_();
-  bundles_.push_back(std::move(initialBundle));
-  execEnv->initialBundle = std::weak_ptr<const Bundle>(bundles_.back());
-  bundleExecutionEnvironments_.push_back(std::move(execEnv));
+  execEnv->initialBundle = std::weak_ptr<const Bundle>();
+  bundleEnvironments_[environmentId] = std::move(execEnv);
 
-  execEnv = bundleExecutionEnvironments_.back();
+  execEnv = bundleEnvironments_[environmentId];
   execEnv->jsQueue->runOnQueueSync([this, execEnv, callback]() mutable {
     execEnv->nativeToJsBridge = std::make_unique<NativeToJsBridge>(jsExecutorFactory_,
                                                                    moduleRegistry_,
                                                                    execEnv->jsQueue,
                                                                    callback_);
+    callback();
+  });
+}
 
+void BundleRegistry::runInPreloadedEnvironment(std::string environmentId,
+                                               std::unique_ptr<const Bundle> initialBundle) {
+  std::shared_ptr<BundleExecutionEnvironment> execEnv = getEnvironment(environmentId).lock();
+  bundles_.push_back(std::move(initialBundle));
+  execEnv->initialBundle = std::weak_ptr<const Bundle>(bundles_.back());
+
+  execEnv->jsQueue->runOnQueueSync([this, execEnv]() mutable {
     auto bundle = execEnv->initialBundle.lock();
     if (bundle->getBundleType() == BundleType::FileRAMBundle ||
         bundle->getBundleType() == BundleType::IndexedRAMBundle) {
@@ -67,7 +80,6 @@ void BundleRegistry::runNewExecutionEnvironment(std::unique_ptr<const Bundle> in
     }
 
     execEnv->valid = true;
-    callback();
   });
 }
 
@@ -88,22 +100,24 @@ BundleRegistry::LoadBundleLambda BundleRegistry::makeLoadBundleLambda() {
   };
 }
 
-void BundleRegistry::disposeExecutionEnvironments() {
-  for (auto execEnv : bundleExecutionEnvironments_) {
-    execEnv->nativeToJsBridge->destroy();
+void BundleRegistry::disposeEnvironments() {
+  for (auto environment : bundleEnvironments_) {
+    environment.second->nativeToJsBridge->destroy();
   }
 }
 
-std::weak_ptr<BundleRegistry::BundleExecutionEnvironment> BundleRegistry::getFirstExecutionEnvironment() {
-  if (bundleExecutionEnvironments_.size() == 0) {
-    throw std::runtime_error("Cannot get first BundleExecutionEnvironment");
+std::weak_ptr<BundleRegistry::BundleExecutionEnvironment> BundleRegistry::getEnvironment(std::string environmentId) {
+  if (!hasEnvironment(environmentId)) {
+    throw std::runtime_error(
+      folly::to<std::string>("Cannot get environment with id = ", environmentId)
+    );
   }
 
-  return std::weak_ptr<BundleExecutionEnvironment>(bundleExecutionEnvironments_[0]);
+  return std::weak_ptr<BundleExecutionEnvironment>(bundleEnvironments_[environmentId]);
 }
 
-bool BundleRegistry::hasExecutionEnvironment() {
-  return bundleExecutionEnvironments_.size() > 0;
+bool BundleRegistry::hasEnvironment(std::string environmentId) {
+  return bundleEnvironments_.find(environmentId) != bundleEnvironments_.end();
 }
 
 } // react
