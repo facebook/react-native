@@ -87,7 +87,7 @@ class IsIPhoneXExample extends React.Component<{}> {
       <View>
         <Text>
           Is this an iPhone X:{' '}
-          {DeviceInfo.isIPhoneX_deprecated
+          {DeviceInfo.getConstants().isIPhoneX_deprecated
             ? 'Yeah!'
             : 'Nope. (Or `isIPhoneX_deprecated` was already removed.)'}
         </Text>

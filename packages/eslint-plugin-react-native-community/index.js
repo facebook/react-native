@@ -5,11 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
 
-'use strict';
-
-import NativeDeviceInfo from './NativeDeviceInfo';
-
-module.exports = NativeDeviceInfo;
+exports.rules = {
+  'no-haste-imports': require('./no-haste-imports'),
+};

@@ -22,6 +22,8 @@ import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ImageSource} from '../../Image/ImageSource';
 import type {ViewProps} from '../View/ViewPropTypes';
 
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+
 type Event = $ReadOnly<{|
   value: Float,
   fromUser?: boolean,
@@ -59,4 +61,4 @@ type Options = {
 
 type SliderType = CodegenNativeComponent<'Slider', NativeProps, Options>;
 
-module.exports = ((require('SliderNativeViewConfig'): any): SliderType);
+module.exports = ((requireNativeComponent('RCTSlider'): any): SliderType);

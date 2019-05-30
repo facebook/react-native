@@ -14,12 +14,9 @@ import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +cropImage: (
-    uri: string,
-    options: Object, // TODO: type this better
-    success: (uri: string) => void,
-    error: (error: string) => void,
-  ) => void;
+  // RCTEventEmitter
+  +addListener: (eventName: string) => void;
+  +removeListeners: (count: number) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('ImageEditingManager');
+export default TurboModuleRegistry.get<Spec>('ModalManager');

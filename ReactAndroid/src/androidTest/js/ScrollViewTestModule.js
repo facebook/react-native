@@ -25,7 +25,7 @@ const {ScrollListener} = NativeModules;
 
 const NUM_ITEMS = 100;
 
-import type {PressEvent} from 'CoreEventTypes';
+import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 // Shared by integration tests for ScrollView and HorizontalScrollView
 

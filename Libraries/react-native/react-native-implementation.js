@@ -10,8 +10,10 @@
 
 'use strict';
 
+/* eslint-disable @react-native-community/no-haste-imports */
+
 const invariant = require('invariant');
-const warnOnce = require('warnOnce');
+const warnOnce = require('../Utilities/warnOnce');
 
 // Export React, plus some native additions.
 module.exports = {
@@ -206,7 +208,7 @@ module.exports = {
     return require('DatePickerAndroid');
   },
   get DeviceInfo() {
-    return require('DeviceInfo');
+    return require('NativeDeviceInfo').default;
   },
   get Dimensions() {
     return require('Dimensions');
@@ -221,6 +223,13 @@ module.exports = {
     return require('I18nManager');
   },
   get ImagePickerIOS() {
+    warnOnce(
+      'imagePickerIOS-moved',
+      'ImagePickerIOS has been extracted from react-native core and will be removed in a future release. ' +
+        "Please upgrade to use either '@react-native-community/react-native-image-picker' or 'expo-image-picker'. " +
+        "If you cannot upgrade to a different library, please install the deprecated '@react-native-community/image-picker-ios' package. " +
+        'See https://github.com/react-native-community/react-native-image-picker-ios',
+    );
     return require('ImagePickerIOS');
   },
   get InteractionManager() {
@@ -335,10 +344,6 @@ module.exports = {
   get ViewPropTypes() {
     return require('DeprecatedViewPropTypes');
   },
-  // TODO(cpojer): Temporary fix for missing Toolbar
-  get ToolbarAndroid() {
-    return require('UnimplementedView');
-  },
 };
 
 if (__DEV__) {
@@ -377,6 +382,32 @@ if (__DEV__) {
         'WebView has been removed from React Native. ' +
           "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
           'See https://github.com/react-native-community/react-native-webview',
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access NetInfo.
+  Object.defineProperty(module.exports, 'NetInfo', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'NetInfo has been removed from React Native. ' +
+          "It can now be installed and imported from 'react-native-netinfo' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-netinfo',
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access CameraRoll.
+  Object.defineProperty(module.exports, 'CameraRoll', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'CameraRoll has been removed from React Native. ' +
+          "It can now be installed and imported from 'react-native-cameraroll' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-cameraroll',
       );
     },
   });

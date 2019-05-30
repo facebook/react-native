@@ -23,11 +23,7 @@ const yargv = yargs.strict().option('t', {
 const argv = yargv.argv;
 const fileList = argv._[0].split('\n');
 
-const CURRENT_VIEW_CONFIG_FILES = [
-  'SliderNativeComponent.js',
-  'ActivityIndicatorViewNativeComponent.js',
-  'PullToRefreshViewNativeComponent.js',
-];
+const CURRENT_VIEW_CONFIG_FILES = [];
 
 generate(
   fileList.filter(fileName =>
@@ -35,6 +31,8 @@ generate(
       fileName.endsWith(supportedFileName),
     ),
   ),
-  // $FlowFixMe Type argv
+  /* $FlowFixMe(>=0.99.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.99 was deployed. To see the error, delete this comment
+   * and run Flow. */
   {test: argv.test, parser: 'flow'},
 );

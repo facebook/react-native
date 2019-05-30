@@ -14,12 +14,11 @@ import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +cropImage: (
-    uri: string,
-    options: Object, // TODO: type this better
-    success: (uri: string) => void,
-    error: (error: string) => void,
-  ) => void;
+  +getConstants: () => {|
+    settings: Object,
+  |};
+  +setValues: (values: Object) => void;
+  +deleteValues: (values: Array<string>) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('ImageEditingManager');
+export default TurboModuleRegistry.getEnforcing<Spec>('SettingsManager');
