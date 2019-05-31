@@ -6,13 +6,10 @@
  */
 package com.facebook.react.modules.blob;
 
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import androidx.annotation.Nullable;
 import android.webkit.MimeTypeMap;
 
 import com.facebook.react.bridge.Arguments;
@@ -40,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import androidx.annotation.Nullable;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -152,6 +150,11 @@ public class BlobModule extends ReactContextBaseJavaModule {
   }
 
   @Override
+  public void initialize() {
+    BlobCollector.install(getReactApplicationContext(), this);
+  }
+
+  @Override
   public String getName() {
     return NAME;
   }
@@ -178,11 +181,15 @@ public class BlobModule extends ReactContextBaseJavaModule {
   }
 
   public void store(byte[] data, String blobId) {
-    mBlobs.put(blobId, data);
+    synchronized (mBlobs) {
+      mBlobs.put(blobId, data);
+    }
   }
 
   public void remove(String blobId) {
-    mBlobs.remove(blobId);
+    synchronized (mBlobs) {
+      mBlobs.remove(blobId);
+    }
   }
 
   public @Nullable byte[] resolve(Uri uri) {
@@ -201,17 +208,19 @@ public class BlobModule extends ReactContextBaseJavaModule {
   }
 
   public @Nullable byte[] resolve(String blobId, int offset, int size) {
-    byte[] data = mBlobs.get(blobId);
-    if (data == null) {
-      return null;
+    synchronized (mBlobs) {
+      byte[] data = mBlobs.get(blobId);
+      if (data == null) {
+        return null;
+      }
+      if (size == -1) {
+        size = data.length - offset;
+      }
+      if (offset > 0 || size != data.length) {
+        data = Arrays.copyOfRange(data, offset, offset + size);
+      }
+      return data;
     }
-    if (size == -1) {
-      size = data.length - offset;
-    }
-    if (offset > 0 || size != data.length) {
-      data = Arrays.copyOfRange(data, offset, offset + size);
-    }
-    return data;
   }
 
   public @Nullable byte[] resolve(ReadableMap blob) {

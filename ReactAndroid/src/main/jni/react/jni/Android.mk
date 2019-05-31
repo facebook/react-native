@@ -68,3 +68,5 @@ include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
 # $(call import-module,jscexecutor)
 
 include $(REACT_SRC_DIR)/jscexecutor/Android.mk
+
+include $(REACT_SRC_DIR)/modules/blob/jni/Android.mk
