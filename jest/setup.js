@@ -65,6 +65,34 @@ jest
     };
     return DataSource;
   })
+  .mock('Animated', () => {
+    const AnimatedImplementation = jest.requireActual('AnimatedImplementation');
+    const oldCreate = AnimatedImplementation.createAnimatedComponent;
+    const Animated = jest.requireActual('Animated');
+     function createAnimatedComponent(
+      Component,
+      defaultProps,
+    ) {
+      const Wrapped = oldCreate(Component, defaultProps);
+      Wrapped.__skipSetNativeProps_FOR_TESTS_ONLY = true;
+      return Wrapped;
+    };
+    const FlatList = createAnimatedComponent(jest.requireActual('FlatList'));
+    const Image = createAnimatedComponent(mockComponent('Image'));
+    const ScrollView = createAnimatedComponent(jest.requireMock('ScrollViewMock'));
+    const SectionList = createAnimatedComponent(jest.requireActual('SectionList'));
+    const Text = createAnimatedComponent(mockComponent('Text', MockNativeMethods));
+    const View = createAnimatedComponent(mockComponent('View', MockNativeMethods));
+    return {
+      ...Animated,
+      FlatList,
+      Image,
+      ScrollView,
+      SectionList,
+      Text,
+      View
+    };
+  })
   .mock('AnimatedImplementation', () => {
     const AnimatedImplementation = jest.requireActual('AnimatedImplementation');
     const oldCreate = AnimatedImplementation.createAnimatedComponent;
