@@ -11,10 +11,9 @@
 'use strict';
 
 import NativeDialogManagerAndroid from '../NativeModules/specs/NativeDialogManagerAndroid';
+const NativeModules = require('../BatchedBridge/NativeModules');
 const Platform = require('../Utilities/Platform');
 import NativePermissionsAndroid from './NativePermissionsAndroid';
-
-import invariant from 'invariant';
 
 import type {
   PermissionStatus,
@@ -91,11 +90,6 @@ class PermissionsAndroid {
       return Promise.resolve(false);
     }
 
-    invariant(
-      NativePermissionsAndroid,
-      'PermissionsAndroid is not installed correctly.',
-    );
-
     return NativePermissionsAndroid.checkPermission(permission);
   }
 
@@ -112,12 +106,6 @@ class PermissionsAndroid {
       );
       return Promise.resolve(false);
     }
-
-    invariant(
-      NativePermissionsAndroid,
-      'PermissionsAndroid is not installed correctly.',
-    );
-
     return NativePermissionsAndroid.checkPermission(permission);
   }
 
@@ -170,11 +158,6 @@ class PermissionsAndroid {
       return Promise.resolve(this.RESULTS.DENIED);
     }
 
-    invariant(
-      NativePermissionsAndroid,
-      'PermissionsAndroid is not installed correctly.',
-    );
-
     if (rationale) {
       const shouldShowRationale = await NativePermissionsAndroid.shouldShowRequestPermissionRationale(
         permission,
@@ -213,11 +196,6 @@ class PermissionsAndroid {
       );
       return Promise.resolve({});
     }
-
-    invariant(
-      NativePermissionsAndroid,
-      'PermissionsAndroid is not installed correctly.',
-    );
 
     return NativePermissionsAndroid.requestMultiplePermissions(permissions);
   }
