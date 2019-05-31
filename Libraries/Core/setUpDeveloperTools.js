@@ -25,4 +25,14 @@ if (__DEV__) {
     const JSInspector = require('../JSInspector/JSInspector');
     JSInspector.registerAgent(require('../JSInspector/NetworkAgent'));
   }
+
+  const logToConsole = require('./Devtools/logToConsole');
+  ['log', 'warn', 'info', 'trace'].forEach(level => {
+    const originalFunction = console[level];
+    // $FlowFixMe Overwrite console methods
+    console[level] = function(...args) {
+      logToConsole(level, args);
+      originalFunction.apply(console, args);
+    };
+  });
 }
