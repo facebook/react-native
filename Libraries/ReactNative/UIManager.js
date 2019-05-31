@@ -100,6 +100,13 @@ const UIManagerJS: UIManagerJSInterface = {
   },
 };
 
+// TODO (T45220498): Remove this.
+// 3rd party libs may be calling `NativeModules.UIManager.getViewManagerConfig()`
+// instead of `UIManager.getViewManagerConfig()` off UIManager.js.
+// This is a workaround for now.
+// $FlowFixMe
+NativeUIManager.getViewManagerConfig = UIManagerJS.getViewManagerConfig;
+
 function lazifyViewManagerConfig(viewName) {
   const viewConfig = getConstants()[viewName];
   if (viewConfig.Manager) {
