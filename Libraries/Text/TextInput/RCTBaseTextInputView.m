@@ -381,7 +381,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
         // Truncate the input string so the result is exactly maxLength
         NSString *limitedString = [text substringToIndex:allowedLength];
         NSMutableAttributedString *newAttributedText = [backedTextInputView.attributedText mutableCopy];
-        [newAttributedText replaceCharactersInRange:range withString:limitedString];
+        // Apply text attributes if original input view doesn't have text.
+        if (backedTextInputView.attributedText.length == 0) {
+          newAttributedText = [[NSMutableAttributedString alloc] initWithString:[self.textAttributes applyTextAttributesToText:limitedString] attributes:self.textAttributes.effectiveTextAttributes];
+        } else {
+          [newAttributedText replaceCharactersInRange:range withString:limitedString];
+        }
         backedTextInputView.attributedText = newAttributedText;
         _predictedText = newAttributedText.string;
 
