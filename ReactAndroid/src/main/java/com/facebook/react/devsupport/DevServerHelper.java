@@ -275,7 +275,7 @@ public class DevServerHelper {
       @Override
       protected void onPostExecute(Boolean result) {
         if (!result) {
-          String message = context.getString(R.string.catalyst_debugjs_nuclide_failure);
+          String message = context.getString(R.string.catalyst_debug_nuclide_error);
           Toast.makeText(context, message, Toast.LENGTH_LONG).show();
         }
       }
