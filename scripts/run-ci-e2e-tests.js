@@ -30,7 +30,10 @@ const SCRIPTS = __dirname;
 const ROOT = path.normalize(path.join(__dirname, '..'));
 const tryExecNTimes = require('./try-n-times');
 
-const TEMP = exec('mktemp -d /tmp/react-native-XXXXXXXX').stdout.trim();
+const REACT_NATIVE_TEMP_DIR = exec(
+  'mktemp -d /tmp/react-native-XXXXXXXX',
+).stdout.trim();
+const REACT_NATIVE_APP_DIR = `${REACT_NATIVE_TEMP_DIR}/template`;
 const numberOfRetries = argv.retries || 1;
 let SERVER_PID;
 let APPIUM_PID;
@@ -41,18 +44,6 @@ function describe(message) {
 }
 
 try {
-  // install CLI
-  const CLI_PACKAGE = 'react-native-cli';
-  if (!argv['skip-cli-install']) {
-    describe('Instal react-native-cli');
-    if (exec(`yarn global add ${CLI_PACKAGE}`).code) {
-      echo('Could not install react-native-cli globally.');
-      echo('Run with --skip-cli-install to skip this step');
-      exitCode = 1;
-      throw Error(exitCode);
-    }
-  }
-
   if (argv.android) {
     describe('Compile Android binaries');
     if (
@@ -91,41 +82,21 @@ try {
     throw Error(exitCode);
   }
 
-  const PACKAGE = path.join(ROOT, 'react-native-*.tgz');
-  cd(TEMP);
+  const REACT_NATIVE_PACKAGE = path.join(ROOT, 'react-native-*.tgz');
 
-  describe('Create EndToEndTest React Native app');
-  if (
-    tryExecNTimes(
-      () => {
-        return exec(
-          `${path.join(
-            ROOT,
-            '/node_modules/.bin/react-native',
-          )} init EndToEndTest --version ${PACKAGE} --npm`,
-        ).code;
-      },
-      numberOfRetries,
-      () => {
-        rm('-rf', 'EndToEndTest');
-        exec('sleep 10s');
-      },
-    )
-  ) {
-    echo('Failed to execute react-native init');
-    echo('Most common reason is npm registry connectivity, try again');
-    exitCode = 1;
-    throw Error(exitCode);
-  }
+  describe('Scaffold a basic React Native app from template');
+  exec(`rsync -a ${ROOT}/template ${REACT_NATIVE_TEMP_DIR}`);
+  cd(REACT_NATIVE_APP_DIR);
 
   const METRO_CONFIG = path.join(ROOT, 'metro.config.js');
   const RN_POLYFILLS = path.join(ROOT, 'rn-get-polyfills.js');
-  cp(METRO_CONFIG, 'EndToEndTest/.');
-  cp(RN_POLYFILLS, 'EndToEndTest/.');
+  cp(METRO_CONFIG, '.');
+  cp(RN_POLYFILLS, '.');
+  mv('_flowconfig', '.flowconfig');
+  mv('_watchmanconfig', '.watchmanconfig');
 
-  cd('EndToEndTest');
   describe('Install React Native package');
-  exec(`npm install ${PACKAGE}`);
+  exec(`npm install ${REACT_NATIVE_PACKAGE}`);
 
   describe('Install node_modules');
   if (
@@ -142,6 +113,7 @@ try {
     exitCode = 1;
     throw Error(exitCode);
   }
+  exec('rm -rf ./node_modules/react-native/template');
 
   if (argv.android) {
     describe('Install end-to-end framework');
@@ -183,7 +155,7 @@ try {
     APPIUM_PID = appiumProcess.pid;
 
     describe('Build the app');
-    if (exec('./node_modules/.bin/react-native run-android').code) {
+    if (exec('react-native run-android').code) {
       echo('could not execute react-native run-android');
       exitCode = 1;
       throw Error(exitCode);
@@ -242,19 +214,19 @@ try {
         () => {
           let destination = 'platform=iOS Simulator,name=iPhone 6s,OS=12.2';
           let sdk = 'iphonesimulator';
-          let scheme = 'EndToEndTest';
+          let scheme = 'HelloWorld';
 
           if (argv.tvos) {
             destination = 'platform=tvOS Simulator,name=Apple TV,OS=11.4';
             sdk = 'appletvsimulator';
-            scheme = 'EndToEndTest-tvOS';
+            scheme = 'HelloWorld-tvOS';
           }
 
           return exec(
             [
               'xcodebuild',
               '-workspace',
-              '"EndToEndTest.xcworkspace"',
+              '"HelloWorld.xcworkspace"',
               '-destination',
               `"${destination}"`,
               '-scheme',
@@ -292,7 +264,7 @@ try {
     describe('Test: Verify packager can generate an Android bundle');
     if (
       exec(
-        './node_modules/.bin/react-native bundle --max-workers 1 --dev true --entry-file index.js --bundle-output android-bundle.js --platform android',
+        'yarn react-native bundle --entry-file index.js --platform android --dev true --bundle-output android-bundle.js --max-workers 1',
       ).code
     ) {
       echo('Could not build Android bundle');
@@ -302,7 +274,7 @@ try {
     describe('Test: Verify packager can generate an iOS bundle');
     if (
       exec(
-        './node_modules/.bin/react-native bundle --max-workers 1 --dev true --entry-file index.js --bundle-output ios-bundle.js --platform ios',
+        'yarn react-native bundle --entry-file index.js --platform ios --dev true --bundle-output ios-bundle.js --max-workers 1',
       ).code
     ) {
       echo('Could not build iOS bundle');
@@ -310,7 +282,7 @@ try {
       throw Error(exitCode);
     }
     describe('Test: Flow check');
-    if (exec(path.join(ROOT, '/node_modules/.bin/flow') + ' check').code) {
+    if (exec(`${ROOT}/node_modules/.bin/flow check`).code) {
       echo('Flow check failed.');
       exitCode = 1;
       throw Error(exitCode);

@@ -59,8 +59,8 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - v2-yarn-cache-{{ arch }}-{{ checksum "package.json" }}
-            - v2-yarn-cache-{{ arch }}
+            - v3-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+            - v3-yarn-cache-{{ arch }}
       - run:
           name: Run Yarn
           command: |
@@ -72,7 +72,7 @@ commands:
       - save_cache:
           paths:
             - ~/.cache/yarn
-          key: v2-yarn-cache-{{ arch }}-{{ checksum "package.json" }}
+          key: v3-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
 
   install_buck_tooling:
     steps:
@@ -433,6 +433,13 @@ jobs:
       # Configure Watchman
       - run: touch .watchmanconfig
 
+      - restore_cache:
+          keys:
+            - v1-cocoapods-{{ checksum "template/ios/Podfile" }}
+            - v1-cocoapods-
+
+      - run: pod setup
+
       - run:
           name: Run Detox iOS End-to-End Tests
           command: yarn run build-ios-e2e && yarn run test-ios-e2e
@@ -448,6 +455,11 @@ jobs:
             node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
           when: always
 
+      - save_cache:
+          paths:
+            - ~/.cocoapods/repos
+          key: v1-cocoapods-{{ checksum "template/ios/Podfile" }}
+
   test_js_e2e:
     executor: node8
     steps:
@@ -455,6 +467,7 @@ jobs:
           checkout_type: node
       - setup_artifacts
       - run_yarn
+      - run: sudo apt-get install rsync
 
       - run:
           name: Run JavaScript End-to-End Tests
@@ -704,10 +717,7 @@ workflows:
             branches:
               only: /^pull\/.*$/
 
-      # Gather coverage on master
+      # Gather coverage
       - js_coverage:
           requires:
             - setup
-          filters:
-            branches:
-              only: master
