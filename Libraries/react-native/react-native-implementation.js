@@ -10,8 +10,6 @@
 
 'use strict';
 
-/* eslint-disable @react-native-community/no-haste-imports */
-
 const invariant = require('invariant');
 const warnOnce = require('../Utilities/warnOnce');
 
@@ -19,16 +17,16 @@ const warnOnce = require('../Utilities/warnOnce');
 module.exports = {
   // Components
   get AccessibilityInfo() {
-    return require('AccessibilityInfo');
+    return require('../Components/AccessibilityInfo/AccessibilityInfo');
   },
   get ActivityIndicator() {
-    return require('ActivityIndicator');
+    return require('../Components/ActivityIndicator/ActivityIndicator');
   },
   get ART() {
-    return require('ReactNativeART');
+    return require('../ART/ReactNativeART');
   },
   get Button() {
-    return require('Button');
+    return require('../Components/Button');
   },
   get CheckBox() {
     warnOnce(
@@ -37,22 +35,22 @@ module.exports = {
         "It can now be installed and imported from '@react-native-community/checkbox' instead of 'react-native'. " +
         'See https://github.com/react-native-community/react-native-checkbox',
     );
-    return require('CheckBox');
+    return require('../Components/CheckBox/CheckBox');
   },
   get DatePickerIOS() {
-    return require('DatePickerIOS');
+    return require('../Components/DatePicker/DatePickerIOS');
   },
   get DrawerLayoutAndroid() {
-    return require('DrawerLayoutAndroid');
+    return require('../Components/DrawerAndroid/DrawerLayoutAndroid');
   },
   get FlatList() {
-    return require('FlatList');
+    return require('../Lists/FlatList');
   },
   get Image() {
-    return require('Image');
+    return require('../Image/Image');
   },
   get ImageBackground() {
-    return require('ImageBackground');
+    return require('../Image/ImageBackground');
   },
   get ImageEditor() {
     warnOnce(
@@ -61,7 +59,7 @@ module.exports = {
         "It can now be installed and imported from '@react-native-community/image-editor' instead of 'react-native'. " +
         'See https://github.com/react-native-community/react-native-image-editor',
     );
-    return require('ImageEditor');
+    return require('../Image/ImageEditor');
   },
   get ImageStore() {
     warnOnce(
@@ -71,13 +69,13 @@ module.exports = {
         "* expo-file-system: `readAsStringAsync(filepath, 'base64')`" +
         "* react-native-fs: `readFile(filepath, 'base64')`",
     );
-    return require('ImageStore');
+    return require('../Image/ImageStore');
   },
   get InputAccessoryView() {
-    return require('InputAccessoryView');
+    return require('../Components/TextInput/InputAccessoryView');
   },
   get KeyboardAvoidingView() {
-    return require('KeyboardAvoidingView');
+    return require('../Components/Keyboard/KeyboardAvoidingView');
   },
   get MaskedViewIOS() {
     warnOnce(
@@ -86,34 +84,34 @@ module.exports = {
         "It can now be installed and imported from '@react-native-community/masked-view' instead of 'react-native'. " +
         'See https://github.com/react-native-community/react-native-masked-view',
     );
-    return require('MaskedViewIOS');
+    return require('../Components/MaskedView/MaskedViewIOS');
   },
   get Modal() {
-    return require('Modal');
+    return require('../Modal/Modal');
   },
   get Picker() {
-    return require('Picker');
+    return require('../Components/Picker/Picker');
   },
   get PickerIOS() {
-    return require('PickerIOS');
+    return require('../Components/Picker/PickerIOS');
   },
   get ProgressBarAndroid() {
-    return require('ProgressBarAndroid');
+    return require('../Components/ProgressBarAndroid/ProgressBarAndroid');
   },
   get ProgressViewIOS() {
-    return require('ProgressViewIOS');
+    return require('../Components/ProgressViewIOS/ProgressViewIOS');
   },
   get SafeAreaView() {
-    return require('SafeAreaView');
+    return require('../Components/SafeAreaView/SafeAreaView');
   },
   get ScrollView() {
-    return require('ScrollView');
+    return require('../Components/ScrollView/ScrollView');
   },
   get SectionList() {
-    return require('SectionList');
+    return require('../Lists/SectionList');
   },
   get SegmentedControlIOS() {
-    return require('SegmentedControlIOS');
+    return require('../Components/SegmentedControlIOS/SegmentedControlIOS');
   },
   get Slider() {
     warnOnce(
@@ -122,40 +120,40 @@ module.exports = {
         "It can now be installed and imported from '@react-native-community/slider' instead of 'react-native'. " +
         'See https://github.com/react-native-community/react-native-slider',
     );
-    return require('Slider');
+    return require('../Components/Slider/Slider');
   },
   get Switch() {
-    return require('Switch');
+    return require('../Components/Switch/Switch');
   },
   get RefreshControl() {
-    return require('RefreshControl');
+    return require('../Components/RefreshControl/RefreshControl');
   },
   get StatusBar() {
-    return require('StatusBar');
+    return require('../Components/StatusBar/StatusBar');
   },
   get Text() {
-    return require('Text');
+    return require('../Text/Text');
   },
   get TextInput() {
-    return require('TextInput');
+    return require('../Components/TextInput/TextInput');
   },
   get Touchable() {
-    return require('Touchable');
+    return require('../Components/Touchable/Touchable');
   },
   get TouchableHighlight() {
-    return require('TouchableHighlight');
+    return require('../Components/Touchable/TouchableHighlight');
   },
   get TouchableNativeFeedback() {
-    return require('TouchableNativeFeedback');
+    return require('../Components/Touchable/TouchableNativeFeedback');
   },
   get TouchableOpacity() {
-    return require('TouchableOpacity');
+    return require('../Components/Touchable/TouchableOpacity');
   },
   get TouchableWithoutFeedback() {
-    return require('TouchableWithoutFeedback');
+    return require('../Components/Touchable/TouchableWithoutFeedback');
   },
   get View() {
-    return require('View');
+    return require('../Components/View/View');
   },
   get ViewPagerAndroid() {
     warnOnce(
@@ -164,30 +162,30 @@ module.exports = {
         "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
         'See https://github.com/react-native-community/react-native-viewpager',
     );
-    return require('ViewPagerAndroid');
+    return require('../Components/ViewPager/ViewPagerAndroid');
   },
   get VirtualizedList() {
-    return require('VirtualizedList');
+    return require('../Lists/VirtualizedList');
   },
   get VirtualizedSectionList() {
-    return require('VirtualizedSectionList');
+    return require('../Lists/VirtualizedSectionList');
   },
 
   // APIs
   get ActionSheetIOS() {
-    return require('ActionSheetIOS');
+    return require('../ActionSheetIOS/ActionSheetIOS');
   },
   get Alert() {
-    return require('Alert');
+    return require('../Alert/Alert');
   },
   get Animated() {
-    return require('Animated');
+    return require('../Animated/src/Animated');
   },
   get AppRegistry() {
-    return require('AppRegistry');
+    return require('../ReactNative/AppRegistry');
   },
   get AppState() {
-    return require('AppState');
+    return require('../AppState/AppState');
   },
   get AsyncStorage() {
     warnOnce(
@@ -196,31 +194,31 @@ module.exports = {
         "It can now be installed and imported from '@react-native-community/async-storage' instead of 'react-native'. " +
         'See https://github.com/react-native-community/react-native-async-storage',
     );
-    return require('AsyncStorage');
+    return require('../Storage/AsyncStorage');
   },
   get BackHandler() {
-    return require('BackHandler');
+    return require('../Utilities/BackHandler');
   },
   get Clipboard() {
-    return require('Clipboard');
+    return require('../Components/Clipboard/Clipboard');
   },
   get DatePickerAndroid() {
-    return require('DatePickerAndroid');
+    return require('../Components/DatePickerAndroid/DatePickerAndroid');
   },
   get DeviceInfo() {
-    return require('NativeDeviceInfo').default;
+    return require('../Utilities/DeviceInfo');
   },
   get Dimensions() {
-    return require('Dimensions');
+    return require('../Utilities/Dimensions');
   },
   get Easing() {
-    return require('Easing');
+    return require('../Animated/src/Easing');
   },
   get findNodeHandle() {
-    return require('ReactNative').findNodeHandle;
+    return require('../Renderer/shims/ReactNative').findNodeHandle;
   },
   get I18nManager() {
-    return require('I18nManager');
+    return require('../ReactNative/I18nManager');
   },
   get ImagePickerIOS() {
     warnOnce(
@@ -230,34 +228,34 @@ module.exports = {
         "If you cannot upgrade to a different library, please install the deprecated '@react-native-community/image-picker-ios' package. " +
         'See https://github.com/react-native-community/react-native-image-picker-ios',
     );
-    return require('ImagePickerIOS');
+    return require('../Image/ImagePickerIOS');
   },
   get InteractionManager() {
-    return require('InteractionManager');
+    return require('../Interaction/InteractionManager');
   },
   get Keyboard() {
-    return require('Keyboard');
+    return require('../Components/Keyboard/Keyboard');
   },
   get LayoutAnimation() {
-    return require('LayoutAnimation');
+    return require('../LayoutAnimation/LayoutAnimation');
   },
   get Linking() {
-    return require('Linking');
+    return require('../Linking/Linking');
   },
   get NativeDialogManagerAndroid() {
-    return require('NativeDialogManagerAndroid').default;
+    return require('../NativeModules/specs/NativeDialogManagerAndroid').default;
   },
   get NativeEventEmitter() {
-    return require('NativeEventEmitter');
+    return require('../EventEmitter/NativeEventEmitter');
   },
   get PanResponder() {
-    return require('PanResponder');
+    return require('../Interaction/PanResponder');
   },
   get PermissionsAndroid() {
-    return require('PermissionsAndroid');
+    return require('../PermissionsAndroid/PermissionsAndroid');
   },
   get PixelRatio() {
-    return require('PixelRatio');
+    return require('../Utilities/PixelRatio');
   },
   get PushNotificationIOS() {
     warnOnce(
@@ -266,83 +264,83 @@ module.exports = {
         "It can now be installed and imported from '@react-native-community/push-notification-ios' instead of 'react-native'. " +
         'See https://github.com/react-native-community/react-native-push-notification-ios',
     );
-    return require('PushNotificationIOS');
+    return require('../PushNotificationIOS/PushNotificationIOS');
   },
   get Settings() {
-    return require('Settings');
+    return require('../Settings/Settings');
   },
   get Share() {
-    return require('Share');
+    return require('../Share/Share');
   },
   get StatusBarIOS() {
-    return require('StatusBarIOS');
+    return require('../Components/StatusBar/StatusBarIOS');
   },
   get StyleSheet() {
-    return require('StyleSheet');
+    return require('../StyleSheet/StyleSheet');
   },
   get Systrace() {
-    return require('Systrace');
+    return require('../Performance/Systrace');
   },
   get TimePickerAndroid() {
-    return require('TimePickerAndroid');
+    return require('../Components/TimePickerAndroid/TimePickerAndroid');
   },
   get ToastAndroid() {
-    return require('ToastAndroid');
+    return require('../Components/ToastAndroid/ToastAndroid');
   },
   get TurboModuleRegistry() {
-    return require('TurboModuleRegistry');
+    return require('../TurboModule/TurboModuleRegistry');
   },
   get TVEventHandler() {
-    return require('TVEventHandler');
+    return require('../Components/AppleTV/TVEventHandler');
   },
   get UIManager() {
-    return require('UIManager');
+    return require('../ReactNative/UIManager');
   },
   get unstable_batchedUpdates() {
-    return require('ReactNative').unstable_batchedUpdates;
+    return require('../Renderer/shims/ReactNative').unstable_batchedUpdates;
   },
   get UTFSequence() {
-    return require('UTFSequence');
+    return require('../UTFSequence');
   },
   get Vibration() {
-    return require('Vibration');
+    return require('../Vibration/Vibration');
   },
   get YellowBox() {
-    return require('YellowBox');
+    return require('../YellowBox/YellowBox');
   },
 
   // Plugins
   get DeviceEventEmitter() {
-    return require('RCTDeviceEventEmitter');
+    return require('../EventEmitter/RCTDeviceEventEmitter');
   },
   get NativeAppEventEmitter() {
-    return require('RCTNativeAppEventEmitter');
+    return require('../EventEmitter/RCTNativeAppEventEmitter');
   },
   get NativeModules() {
-    return require('NativeModules');
+    return require('../BatchedBridge/NativeModules');
   },
   get Platform() {
-    return require('Platform');
+    return require('../Utilities/Platform');
   },
   get processColor() {
-    return require('processColor');
+    return require('../StyleSheet/processColor');
   },
   get requireNativeComponent() {
-    return require('requireNativeComponent');
+    return require('../ReactNative/requireNativeComponent');
   },
 
   // Prop Types
   get ColorPropType() {
-    return require('DeprecatedColorPropType');
+    return require('../DeprecatedPropTypes/DeprecatedColorPropType');
   },
   get EdgeInsetsPropType() {
-    return require('DeprecatedEdgeInsetsPropType');
+    return require('../DeprecatedPropTypes/DeprecatedEdgeInsetsPropType');
   },
   get PointPropType() {
-    return require('DeprecatedPointPropType');
+    return require('../DeprecatedPropTypes/DeprecatedPointPropType');
   },
   get ViewPropTypes() {
-    return require('DeprecatedViewPropTypes');
+    return require('../DeprecatedPropTypes/DeprecatedViewPropTypes');
   },
 };
 
