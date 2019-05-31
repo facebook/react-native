@@ -139,7 +139,7 @@ const AccessibilityInfo = {
   setAccessibilityFocus: function(reactTag: number): void {
     UIManager.sendAccessibilityEvent(
       reactTag,
-      UIManager.getConstants().AccessibilityEventTypes.typeViewFocused,
+      UIManager.AccessibilityEventTypes.typeViewFocused,
     );
   },
 

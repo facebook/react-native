@@ -52,8 +52,8 @@ const UIManagerStatTracker = {
       remove,
     ) {
       incStat('manageChildren', 1);
-      incStat('move', moveFrom.length);
-      incStat('remove', remove.length);
+      incStat('move', Object.keys(moveFrom || []).length);
+      incStat('remove', Object.keys(remove || []).length);
       manageChildrenOrig(tag, moveFrom, moveTo, addTags, addIndices, remove);
     };
   },

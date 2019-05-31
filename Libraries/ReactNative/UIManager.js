@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 'use strict';
@@ -14,94 +14,58 @@ const Platform = require('../Utilities/Platform');
 const UIManagerProperties = require('./UIManagerProperties');
 
 const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
+const invariant = require('invariant');
 
-import NativeUIManager from './NativeUIManager';
-import type {Spec} from './NativeUIManager';
-
+const {UIManager} = NativeModules;
 const viewManagerConfigs = {};
 
-interface UIManagerJSInterface extends Spec {
-  +getViewManagerConfig: (viewManagerName: string) => Object;
-  // The following are not marked read-only due to logic in UIManagerStatTracker.
-  createView: (
-    reactTag: ?number,
-    viewName: string,
-    rootTag: number,
-    props: Object,
-  ) => void;
-  updateView: (reactTag: number, viewName: string, props: Object) => void;
-  manageChildren: (
-    containerTag: ?number,
-    moveFromIndices: Array<number>,
-    moveToIndices: Array<number>,
-    addChildReactTags: Array<number>,
-    addAtIndices: Array<number>,
-    removeAtIndices: Array<number>,
-  ) => void;
-}
+invariant(
+  UIManager,
+  'UIManager is undefined. The native module config is probably incorrect.',
+);
 
 const triedLoadingConfig = new Set();
-
-let NativeUIManagerConstants = {};
-let isNativeUIManagerConstantsSet = false;
-function getConstants(): Object {
-  if (!isNativeUIManagerConstantsSet) {
-    NativeUIManagerConstants = NativeUIManager.getConstants();
-    isNativeUIManagerConstantsSet = true;
-  }
-  return NativeUIManagerConstants;
-}
-
-const UIManagerJS: UIManagerJSInterface = {
-  ...NativeUIManager,
-  getConstants(): Object {
-    return getConstants();
-  },
-  getViewManagerConfig: function(viewManagerName: string) {
-    if (
-      viewManagerConfigs[viewManagerName] === undefined &&
-      NativeUIManager.getConstantsForViewManager
-    ) {
-      try {
-        viewManagerConfigs[
-          viewManagerName
-        ] = NativeUIManager.getConstantsForViewManager(viewManagerName);
-      } catch (e) {
-        viewManagerConfigs[viewManagerName] = null;
-      }
+UIManager.getViewManagerConfig = function(viewManagerName: string) {
+  if (
+    viewManagerConfigs[viewManagerName] === undefined &&
+    UIManager.getConstantsForViewManager
+  ) {
+    try {
+      viewManagerConfigs[
+        viewManagerName
+      ] = UIManager.getConstantsForViewManager(viewManagerName);
+    } catch (e) {
+      viewManagerConfigs[viewManagerName] = null;
     }
+  }
 
-    const config = viewManagerConfigs[viewManagerName];
-    if (config) {
+  const config = viewManagerConfigs[viewManagerName];
+  if (config) {
+    return config;
+  }
+
+  // If we're in the Chrome Debugger, let's not even try calling the sync
+  // method.
+  if (__DEV__) {
+    if (!global.nativeCallSyncHook) {
       return config;
     }
+  }
 
-    // If we're in the Chrome Debugger, let's not even try calling the sync
-    // method.
-    if (__DEV__) {
-      if (!global.nativeCallSyncHook) {
-        return config;
-      }
+  if (UIManager.lazilyLoadView && !triedLoadingConfig.has(viewManagerName)) {
+    const result = UIManager.lazilyLoadView(viewManagerName);
+    triedLoadingConfig.add(viewManagerName);
+    if (result.viewConfig) {
+      UIManager[viewManagerName] = result.viewConfig;
+      lazifyViewManagerConfig(viewManagerName);
     }
+  }
 
-    if (
-      NativeUIManager.lazilyLoadView &&
-      !triedLoadingConfig.has(viewManagerName)
-    ) {
-      const result = NativeUIManager.lazilyLoadView(viewManagerName);
-      triedLoadingConfig.add(viewManagerName);
-      if (result.viewConfig) {
-        getConstants()[viewManagerName] = result.viewConfig;
-        lazifyViewManagerConfig(viewManagerName);
-      }
-    }
-
-    return viewManagerConfigs[viewManagerName];
-  },
+  return viewManagerConfigs[viewManagerName];
 };
 
 function lazifyViewManagerConfig(viewName) {
-  const viewConfig = getConstants()[viewName];
+  const viewConfig = UIManager[viewName];
   if (viewConfig.Manager) {
     viewManagerConfigs[viewName] = viewConfig;
     defineLazyObjectProperty(viewConfig, 'Constants', {
@@ -142,10 +106,10 @@ function lazifyViewManagerConfig(viewName) {
  * namespace instead of UIManager, unlike Android.
  */
 if (Platform.OS === 'ios') {
-  Object.keys(getConstants()).forEach(viewName => {
+  Object.keys(UIManager).forEach(viewName => {
     lazifyViewManagerConfig(viewName);
   });
-} else if (getConstants().ViewManagerNames) {
+} else if (UIManager.ViewManagerNames) {
   // We want to add all the view managers to the UIManager.
   // However, the way things are set up, the list of view managers is not known at compile time.
   // As Prepack runs at compile it, it cannot process this loop.
@@ -156,13 +120,13 @@ if (Platform.OS === 'ios') {
   residual(
     'void',
     (UIManager, defineLazyObjectProperty) => {
-      UIManager.getConstants().ViewManagerNames.forEach(viewManagerName => {
+      UIManager.ViewManagerNames.forEach(viewManagerName => {
         defineLazyObjectProperty(UIManager, viewManagerName, {
           get: () => UIManager.getConstantsForViewManager(viewManagerName),
         });
       });
     },
-    NativeUIManager,
+    UIManager,
     defineLazyObjectProperty,
   );
 
@@ -171,28 +135,27 @@ if (Platform.OS === 'ios') {
   // so that any accesses to unknown properties along the global code will fail
   // when Prepack encounters them.
   if (global.__makePartial) {
-    global.__makePartial(NativeUIManager);
+    global.__makePartial(UIManager);
   }
 }
 
 if (__DEV__) {
-  Object.keys(getConstants()).forEach(viewManagerName => {
+  Object.keys(UIManager).forEach(viewManagerName => {
     if (!UIManagerProperties.includes(viewManagerName)) {
       if (!viewManagerConfigs[viewManagerName]) {
-        viewManagerConfigs[viewManagerName] = getConstants()[viewManagerName];
+        viewManagerConfigs[viewManagerName] = UIManager[viewManagerName];
       }
-      defineLazyObjectProperty(NativeUIManager, viewManagerName, {
+      defineLazyObjectProperty(UIManager, viewManagerName, {
         get: () => {
           console.warn(
             `Accessing view manager configs directly off UIManager via UIManager['${viewManagerName}'] ` +
               `is no longer supported. Use UIManager.getViewManagerConfig('${viewManagerName}') instead.`,
           );
-
-          return UIManagerJS.getViewManagerConfig(viewManagerName);
+          return UIManager.getViewManagerConfig(viewManagerName);
         },
       });
     }
   });
 }
 
-module.exports = UIManagerJS;
+module.exports = UIManager;
