@@ -96,17 +96,18 @@ function attachDefaultEventTypes(viewConfig: any) {
   // This is supported on UIManager platforms (ex: Android),
   // as lazy view managers are not implemented for all platforms.
   // See [UIManager] for details on constants and implementations.
-  if (UIManager.ViewManagerNames || UIManager.LazyViewManagersEnabled) {
+  const constants = UIManager.getConstants();
+  if (constants.ViewManagerNames || constants.LazyViewManagersEnabled) {
     // Lazy view managers enabled.
     viewConfig = merge(viewConfig, UIManager.getDefaultEventTypes());
   } else {
     viewConfig.bubblingEventTypes = merge(
       viewConfig.bubblingEventTypes,
-      UIManager.genericBubblingEventTypes,
+      constants.genericBubblingEventTypes,
     );
     viewConfig.directEventTypes = merge(
       viewConfig.directEventTypes,
-      UIManager.genericDirectEventTypes,
+      constants.genericDirectEventTypes,
     );
   }
 }
