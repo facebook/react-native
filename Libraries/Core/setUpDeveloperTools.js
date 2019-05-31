@@ -9,6 +9,8 @@
  */
 'use strict';
 
+import Platform from '../Utilities/Platform';
+
 /**
  * Sets up developer tools for React Native.
  * You can use this module directly, or just require InitializeCore.
@@ -26,13 +28,15 @@ if (__DEV__) {
     JSInspector.registerAgent(require('../JSInspector/NetworkAgent'));
   }
 
-  const logToConsole = require('./Devtools/logToConsole');
-  ['log', 'warn', 'info', 'trace'].forEach(level => {
-    const originalFunction = console[level];
-    // $FlowFixMe Overwrite console methods
-    console[level] = function(...args) {
-      logToConsole(level, args);
-      originalFunction.apply(console, args);
-    };
-  });
+  if (!Platform.isTesting) {
+    const logToConsole = require('./Devtools/logToConsole');
+    ['log', 'warn', 'info', 'trace'].forEach(level => {
+      const originalFunction = console[level];
+      // $FlowFixMe Overwrite console methods
+      console[level] = function(...args) {
+        logToConsole(level, args);
+        originalFunction.apply(console, args);
+      };
+    });
+  }
 }
