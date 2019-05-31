@@ -38,7 +38,7 @@ class YellowBoxListRow extends React.Component<Props> {
       prevProps.onPress !== nextProps.onPress ||
       prevProps.warnings.length !== nextProps.warnings.length ||
       prevProps.warnings.some(
-        (prevWarning, index) => prevWarning !== nextProps[index],
+        (prevWarning, index) => prevWarning !== nextProps.warnings[index],
       )
     );
   }
