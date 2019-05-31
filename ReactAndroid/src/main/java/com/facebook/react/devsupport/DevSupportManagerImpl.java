@@ -150,39 +150,6 @@ public class DevSupportManagerImpl implements
 
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
 
-  private static class JscProfileTask extends AsyncTask<String, Void, Void> {
-    private static final MediaType JSON =
-      MediaType.parse("application/json; charset=utf-8");
-
-    private final String mSourceUrl;
-
-    private JscProfileTask(String sourceUrl) {
-      mSourceUrl = sourceUrl;
-    }
-
-    @Override
-    protected Void doInBackground(String... jsonData) {
-      try {
-        String jscProfileUrl =
-            Uri.parse(mSourceUrl).buildUpon()
-                .path("/jsc-profile")
-                .query(null)
-                .build()
-                .toString();
-        OkHttpClient client = new OkHttpClient();
-        for (String json: jsonData) {
-          RequestBody body = RequestBody.create(JSON, json);
-          Request request =
-            new Request.Builder().url(jscProfileUrl).post(body).build();
-          client.newCall(request).execute();
-        }
-      } catch (IOException e) {
-        FLog.e(ReactConstants.TAG, "Failed not talk to server", e);
-      }
-      return null;
-    }
-  }
-
   public DevSupportManagerImpl(
     Context applicationContext,
     ReactInstanceManagerDevHelper reactInstanceManagerHelper,
@@ -467,10 +434,8 @@ public class DevSupportManagerImpl implements
           }
         });
     if (mDevSettings.isNuclideJSDebugEnabled()) {
-      // The concatenation is applied directly here because XML isn't emoji-friendly
       String nuclideJsDebugMenuItemTitle =
-          mApplicationContext.getString(R.string.catalyst_debugjs_nuclide)
-              + EMOJI_HUNDRED_POINTS_SYMBOL;
+          mApplicationContext.getString(R.string.catalyst_debugjs_nuclide);
       options.put(
           nuclideJsDebugMenuItemTitle,
           new DevOptionHandler() {
@@ -484,9 +449,6 @@ public class DevSupportManagerImpl implements
         mDevSettings.isRemoteJSDebugEnabled()
             ? mApplicationContext.getString(R.string.catalyst_debugjs_off)
             : mApplicationContext.getString(R.string.catalyst_debugjs);
-    if (mDevSettings.isNuclideJSDebugEnabled()) {
-      remoteJsDebugMenuItemTitle += EMOJI_FACE_WITH_NO_GOOD_GESTURE;
-    }
     options.put(
         remoteJsDebugMenuItemTitle,
         new DevOptionHandler() {
@@ -549,14 +511,6 @@ public class DevSupportManagerImpl implements
           mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
         }
       });
-    options.put(
-        mApplicationContext.getString(R.string.catalyst_poke_sampling_profiler),
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            handlePokeSamplingProfiler();
-          }
-        });
     options.put(
         mApplicationContext.getString(R.string.catalyst_settings), new DevOptionHandler() {
           @Override
@@ -876,25 +830,6 @@ public class DevSupportManagerImpl implements
           responder.error(error.toString());
         }
       });
-  }
-
-  private void handlePokeSamplingProfiler() {
-    try {
-      List<String> pokeResults = JSCSamplingProfiler.poke(60000);
-      for (String result : pokeResults) {
-        Toast.makeText(
-          mCurrentContext,
-          result == null
-            ? "Started JSC Sampling Profiler"
-            : "Stopped JSC Sampling Profiler",
-          Toast.LENGTH_LONG).show();
-        new JscProfileTask(getSourceUrl()).executeOnExecutor(
-            AsyncTask.THREAD_POOL_EXECUTOR,
-            result);
-      }
-    } catch (JSCSamplingProfiler.ProfilerException e) {
-      showNewJavaError(e.getMessage(), e);
-    }
   }
 
   private void updateLastErrorInfo(
