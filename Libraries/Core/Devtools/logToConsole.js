@@ -27,6 +27,13 @@ function logToConsole(
   fetch(getDevServer().url + 'log-to-console', {
     method: 'POST',
     body,
+  }).catch(e => {
+    // ...Oh well!
+    // If metro is running, logs should be sent to metro.
+    // If metro is NOT running, this will throw an exception every time... and
+    //  those exceptions will be caught and logged, which will throw another
+    //  exception, etc, causing infinite exception loop which affects UI perf.
+    // If we swallow silently here, that won't happen.
   });
 }
 
