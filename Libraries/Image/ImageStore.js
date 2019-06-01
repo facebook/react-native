@@ -9,8 +9,7 @@
  */
 'use strict';
 
-const RCTImageStoreManager = require('../BatchedBridge/NativeModules')
-  .ImageStoreManager;
+import NativeImageStore from './NativeImageStore';
 
 const Platform = require('../Utilities/Platform');
 
@@ -31,8 +30,8 @@ class ImageStore {
    * @platform ios
    */
   static hasImageForTag(uri: string, callback: (hasImage: boolean) => void) {
-    if (RCTImageStoreManager.hasImageForTag) {
-      RCTImageStoreManager.hasImageForTag(uri, callback);
+    if (NativeImageStore.hasImageForTag) {
+      NativeImageStore.hasImageForTag(uri, callback);
     } else {
       warnUnimplementedMethod('hasImageForTag');
     }
@@ -47,8 +46,8 @@ class ImageStore {
    * @platform ios
    */
   static removeImageForTag(uri: string) {
-    if (RCTImageStoreManager.removeImageForTag) {
-      RCTImageStoreManager.removeImageForTag(uri);
+    if (NativeImageStore.removeImageForTag) {
+      NativeImageStore.removeImageForTag(uri);
     } else {
       warnUnimplementedMethod('removeImageForTag');
     }
@@ -70,12 +69,8 @@ class ImageStore {
     success: (uri: string) => void,
     failure: (error: any) => void,
   ) {
-    if (RCTImageStoreManager.addImageFromBase64) {
-      RCTImageStoreManager.addImageFromBase64(
-        base64ImageData,
-        success,
-        failure,
-      );
+    if (NativeImageStore.addImageFromBase64) {
+      NativeImageStore.addImageFromBase64(base64ImageData, success, failure);
     } else {
       warnUnimplementedMethod('addImageFromBase64');
     }
@@ -97,8 +92,8 @@ class ImageStore {
     success: (base64ImageData: string) => void,
     failure: (error: any) => void,
   ) {
-    if (RCTImageStoreManager.getBase64ForTag) {
-      RCTImageStoreManager.getBase64ForTag(uri, success, failure);
+    if (NativeImageStore.getBase64ForTag) {
+      NativeImageStore.getBase64ForTag(uri, success, failure);
     } else {
       warnUnimplementedMethod('getBase64ForTag');
     }
