@@ -344,7 +344,7 @@ module.exports = {
   },
   // TODO(cpojer): Temporary fix for missing Toolbar
   get ToolbarAndroid() {
-    return require('UnimplementedView');
+    return require('../Components/UnimplementedViews/UnimplementedView');
   },
 };
 
