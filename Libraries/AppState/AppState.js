@@ -25,7 +25,7 @@ const invariant = require('invariant');
  */
 class AppState extends NativeEventEmitter {
   _eventHandlers: Object;
-  _supportedEvents = ['change', 'memoryWarning', 'focusChanged'];
+  _supportedEvents = ['change', 'memoryWarning', 'blur', 'focus'];
   currentState: ?string;
   isAvailable: boolean;
 
@@ -33,11 +33,10 @@ class AppState extends NativeEventEmitter {
     super(NativeAppState);
 
     this.isAvailable = true;
-    this._eventHandlers = {
-      change: new Map(),
-      memoryWarning: new Map(),
-      focusChanged: new Map(),
-    };
+    this._eventHandlers = this._supportedEvents.reduce((handlers, key) => {
+      handlers[key] = new Map();
+      return handlers;
+    }, {});
 
     this.currentState = NativeAppState.getConstants().initialAppState;
 
@@ -100,11 +99,17 @@ class AppState extends NativeEventEmitter {
         break;
       }
 
-      case 'focusChanged': {
+      case 'blur':
+      case 'focus': {
         this._eventHandlers[type].set(
           handler,
           this.addListener('appStateFocusChange', hasFocus => {
-            handler(hasFocus);
+            if (type === 'blur' && !hasFocus) {
+              handler();
+            }
+            if (type === 'focus' && hasFocus) {
+              handler();
+            }
           }),
         );
       }
