@@ -271,7 +271,7 @@ class Modal extends React.Component<Props> {
   }
 }
 
-const side = I18nManager.isRTL ? 'right' : 'left';
+const side = I18nManager.getConstants().isRTL ? 'right' : 'left';
 const styles = StyleSheet.create({
   modal: {
     position: 'absolute',

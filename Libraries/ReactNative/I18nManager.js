@@ -9,21 +9,26 @@
  */
 'use strict';
 
-type I18nManagerStatus = {
-  isRTL: boolean,
-  doLeftAndRightSwapInRTL: boolean,
-  allowRTL: (allowRTL: boolean) => {},
-  forceRTL: (forceRTL: boolean) => {},
-  swapLeftAndRightInRTL: (flipStyles: boolean) => {},
-};
+import NativeI18nManager from './NativeI18nManager';
 
-const I18nManager: I18nManagerStatus = require('../BatchedBridge/NativeModules')
-  .I18nManager || {
-  isRTL: false,
-  doLeftAndRightSwapInRTL: true,
-  allowRTL: () => {},
-  forceRTL: () => {},
-  swapLeftAndRightInRTL: () => {},
-};
+module.exports = {
+  getConstants: () => {
+    return NativeI18nManager.getConstants();
+  },
 
-module.exports = I18nManager;
+  allowRTL: (shouldAllow: boolean) => {
+    NativeI18nManager.allowRTL(shouldAllow);
+  },
+
+  forceRTL: (shouldForce: boolean) => {
+    NativeI18nManager.forceRTL(shouldForce);
+  },
+
+  swapLeftAndRightInRTL: (flipStyles: boolean) => {
+    NativeI18nManager.swapLeftAndRightInRTL(flipStyles);
+  },
+
+  isRTL: NativeI18nManager.getConstants().isRTL,
+  doLeftAndRightSwapInRTL: NativeI18nManager.getConstants()
+    .doLeftAndRightSwapInRTL,
+};

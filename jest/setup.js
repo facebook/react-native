@@ -312,6 +312,15 @@ jest
       addListener: jest.fn(),
       removeListeners: jest.fn(),
     },
+    I18nManager: {
+      allowRTL: jest.fn(),
+      forceRTL: jest.fn(),
+      swapLeftAndRightInRTL: jest.fn(),
+      getConstants: () => ({
+        isRTL: false,
+        doLeftAndRightSwapInRTL: true,
+      }),
+    },
   }))
   .mock('../Libraries/ReactNative/requireNativeComponent', () => {
     const React = require('react');
