@@ -793,6 +793,8 @@
 		3DFE0D1B1DF8575800459392 /* YGMacros.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77041DF767AF001F9587 /* YGMacros.h */; };
 		3DFE0D1C1DF8575800459392 /* Yoga.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77081DF767AF001F9587 /* Yoga.h */; };
 		3EDCA8A51D3591E700450C31 /* RCTErrorInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */; };
+		3FCC24A822A24FCC0013B22F /* JSCExecutorFactory.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 8507BBBD21EDACC200AEAFCA /* JSCExecutorFactory.h */; };
+		3FCC24A922A24FD90013B22F /* RCTCxxBridgeDelegate.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 134D63C21F1FEC4B008872B5 /* RCTCxxBridgeDelegate.h */; };
 		4F56C93822167A4800DB9F3F /* jsi/jsilib.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F56C93722167A4800DB9F3F /* jsi/jsilib.h */; };
 		4F56C93922167A4D00DB9F3F /* jsi/jsilib.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 4F56C93722167A4800DB9F3F /* jsi/jsilib.h */; };
 		4F56C93A2216A3B700DB9F3F /* jsi/jsilib.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 4F56C93722167A4800DB9F3F /* jsi/jsilib.h */; };
@@ -1344,6 +1346,8 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				3FCC24A922A24FD90013B22F /* RCTCxxBridgeDelegate.h in Copy Headers */,
+				3FCC24A822A24FCC0013B22F /* JSCExecutorFactory.h in Copy Headers */,
 				0EA924D02237686F004AB895 /* RCTSurfacePresenterStub.h in Copy Headers */,
 				591F78DF202ADB97004A668C /* RCTLayout.h in Copy Headers */,
 				59EDBCC31FDF4E55003573DE /* RCTScrollableProtocol.h in Copy Headers */,
