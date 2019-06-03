@@ -263,6 +263,50 @@ Object {
               },
             },
             Object {
+              "name": "color_array_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "name": "ColorPrimitive",
+                  "type": "NativePrimitiveTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "color_array_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "name": "ColorPrimitive",
+                  "type": "NativePrimitiveTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "color_array_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "name": "ColorPrimitive",
+                  "type": "NativePrimitiveTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "color_array_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "name": "ColorPrimitive",
+                  "type": "NativePrimitiveTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
               "name": "point_required",
               "optional": false,
               "typeAnnotation": Object {

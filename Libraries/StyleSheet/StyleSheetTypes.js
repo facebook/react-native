@@ -13,6 +13,7 @@
 const AnimatedNode = require('../Animated/src/nodes/AnimatedNode');
 
 export type ColorValue = null | string;
+export type ColorArrayValue = null | $ReadOnlyArray<ColorValue>;
 export type PointValue = {|
   x: number,
   y: number,

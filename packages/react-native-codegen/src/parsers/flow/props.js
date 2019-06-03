@@ -105,6 +105,14 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
         type: 'NativePrimitiveTypeAnnotation',
         name: 'ColorPrimitive',
       };
+    case 'ColorArrayValue':
+      return {
+        type: 'ArrayTypeAnnotation',
+        elementType: {
+          type: 'NativePrimitiveTypeAnnotation',
+          name: 'ColorPrimitive',
+        },
+      };
     case 'PointValue':
       return {
         type: 'NativePrimitiveTypeAnnotation',

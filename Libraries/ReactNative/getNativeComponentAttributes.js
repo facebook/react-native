@@ -17,6 +17,7 @@ const insetsDiffer = require('../Utilities/differ/insetsDiffer');
 const matricesDiffer = require('../Utilities/differ/matricesDiffer');
 const pointsDiffer = require('../Utilities/differ/pointsDiffer');
 const processColor = require('../StyleSheet/processColor');
+const processColorArray = require('../StyleSheet/processColorArray');
 const resolveAssetSource = require('../Image/resolveAssetSource');
 const sizesDiffer = require('../Utilities/differ/sizesDiffer');
 const invariant = require('invariant');
@@ -180,10 +181,6 @@ function getProcessorForType(typeName: string): ?(nextProp: any) => any {
       return processColorArray;
   }
   return null;
-}
-
-function processColorArray(colors: ?Array<any>): ?Array<?number> {
-  return colors == null ? null : colors.map(processColor);
 }
 
 module.exports = getNativeComponentAttributes;
