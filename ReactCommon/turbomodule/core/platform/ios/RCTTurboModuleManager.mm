@@ -8,6 +8,7 @@
 #import "RCTTurboModuleManager.h"
 
 #import <cassert>
+#import <mutex>
 
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
@@ -45,6 +46,18 @@ static Class getFallbackClassFromName(const char *name)
    */
   std::unordered_map<std::string, id<RCTTurboModule>> _rctTurboModuleCache;
   std::unordered_map<std::string, std::shared_ptr<react::TurboModule>> _turboModuleCache;
+
+  /**
+   * _rctTurboModuleCache can be accessed by muitiple threads at once via
+   * the provideRCTTurboModule method. This can lead to races. Therefore, we
+   * need to protect access to this unordered_map.
+   *
+   * Note:
+   * There's no need to protect access to _turboModuleCache because that cache
+   * is only accessed within provideTurboModule, which is only invoked by the
+   * JS thread.
+   */
+  std::mutex _rctTurboModuleCacheLock;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge delegate:(id<RCTTurboModuleManagerDelegate>)delegate
@@ -198,6 +211,8 @@ static Class getFallbackClassFromName(const char *name)
  */
 - (id<RCTTurboModule>)provideRCTTurboModule:(const char *)moduleName
 {
+  std::lock_guard<std::mutex> guard{_rctTurboModuleCacheLock};
+
   auto rctTurboModuleCacheLookup = _rctTurboModuleCache.find(moduleName);
   if (rctTurboModuleCacheLookup != _rctTurboModuleCache.end()) {
     return rctTurboModuleCacheLookup->second;
