@@ -10,7 +10,6 @@
 
 #include <cxxreact/NativeModule.h>
 #include <folly/dynamic.h>
-#include <folly/Optional.h>
 #include "RAMBundle.h"
 
 #ifndef RN_EXPORT
@@ -58,7 +57,7 @@ public:
    * Sets: nativeRequire (if bundle is RAM), bundleRegistryLoad
    */
   virtual void setupEnvironment(std::function<void(std::string, bool)> loadBundle,
-                                folly::Optional<std::function<RAMBundle::Module(uint32_t)>> getModule) = 0;
+                                std::function<RAMBundle::Module(uint32_t, std::string)> getModule) = 0;
 
   /**
    * Execute an application script bundle in the JS context.

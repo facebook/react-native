@@ -101,14 +101,14 @@ NativeToJsBridge::~NativeToJsBridge() {
 }
 
 void NativeToJsBridge::setupEnvironment(std::function<void(std::string, bool)> loadBundle,
-                                        folly::Optional<std::function<RAMBundle::Module(uint32_t)>> getModule) {
+                                        std::function<RAMBundle::Module(uint32_t, std::string)> getModule) {
   runOnExecutorQueue([this, loadBundle, getModule](JSExecutor* executor) mutable {
     m_executor->setupEnvironment(loadBundle, getModule);
   });
 }
 
 void NativeToJsBridge::setupEnvironmentSync(std::function<void(std::string, bool)> loadBundle,
-                                            folly::Optional<std::function<RAMBundle::Module(uint32_t)>> getModule) {
+                                            std::function<RAMBundle::Module(uint32_t, std::string)> getModule) {
   m_executor->setupEnvironment(loadBundle, getModule);
 }
 

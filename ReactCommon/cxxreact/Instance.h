@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "BundleRegistry.h"
+#include "BundleLoader.h"
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -42,7 +43,9 @@ public:
                         std::shared_ptr<MessageQueueThread> jsQueue,
                         std::shared_ptr<ModuleRegistry> moduleRegistry);
 
-  void loadBundle(std::unique_ptr<const Bundle> bundle, bool loadSynchronously);
+  void runApplication(std::string initialBundleURL,
+                      std::unique_ptr<BundleLoader> bundleLoader,
+                      bool loadSynchronously);
 
   bool supportsProfiling();
   void setGlobalVariable(std::string propName,
@@ -63,8 +66,10 @@ public:
 
 private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);
-  void loadBundleAsync(std::unique_ptr<const Bundle> bundle);
-  void loadBundleSync(std::unique_ptr<const Bundle> bundle);
+  void runApplicationAsync(std::string initialBundleURL,
+                           std::unique_ptr<BundleLoader> bundleLoader);
+  void runApplicationSync(std::string initialBundleURL,
+                          std::unique_ptr<BundleLoader> bundleLoader);
 
   std::shared_ptr<InstanceCallback> callback_;
   std::shared_ptr<ModuleRegistry> moduleRegistry_;

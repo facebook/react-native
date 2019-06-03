@@ -50,7 +50,7 @@ ProxyExecutor::~ProxyExecutor() {
 }
 
 void ProxyExecutor::setupEnvironment(std::function<void(std::string, bool)> loadBundle,
-                                     folly::Optional<std::function<RAMBundle::Module(uint32_t)>> getModule) {
+                                     std::function<RAMBundle::Module(uint32_t, std::string)> getModule) {
   // TODO: what is this ProxyExecutor?
 }
 

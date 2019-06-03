@@ -18,7 +18,7 @@ class FileRAMBundle : public RAMBundle {
   FileRAMBundle() = default;
   FileRAMBundle(
       AAssetManager* assetManager,
-      const std::string& moduleDirectory,
+      const std::string& sourcePath,
       std::unique_ptr<const JSBigString> startupScript);
   ~FileRAMBundle() {}
 
@@ -31,6 +31,7 @@ class FileRAMBundle : public RAMBundle {
  private:
   AAssetManager* assetManager_ = nullptr;
   std::string moduleDirectory_;
+  std::string sourcePath_;
   std::unique_ptr<const JSBigString> startupScript_;
 };
 

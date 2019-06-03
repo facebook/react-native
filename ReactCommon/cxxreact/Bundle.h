@@ -30,7 +30,7 @@ struct FOLLY_PACK_ATTR BundleHeader {
 };
 FOLLY_PACK_POP
 
-enum class BundleType : unsigned int {
+enum class RN_EXPORT BundleType : unsigned int {
   BasicBundle = 0,
   IndexedRAMBundle = 1,
   FileRAMBundle = 2,
@@ -38,24 +38,28 @@ enum class BundleType : unsigned int {
   BCBundle = 4, // NOTE: what is this? is it used anywhere?
 };
 
-class Bundle {
+class RN_EXPORT Bundle {
   public:
     /**
      * Takes the first 8 bytes of a bundle, and returns a tag describing the
      * bundle's format.
      */
-    static RN_EXPORT BundleType parseTypeFromHeader(const BundleHeader& header);
+    static BundleType parseTypeFromHeader(const BundleHeader& header);
     /**
      * Convert an `BundleType` enum into a string, useful for emitting in errors
      * and diagnostic messages.
      */
-    static RN_EXPORT const char* stringForBundleType(const BundleType& type);
+    static const char* stringForBundleType(const BundleType& type);
 
     Bundle() = default;
     Bundle(const Bundle&) = delete;
     Bundle& operator=(const Bundle&) = delete;
     virtual ~Bundle() {};
 
+    /**
+     * URL with filename from where the source code is comming from.
+     * Use it for stack traces.
+     */
     virtual std::string getSourceURL() const = 0;
     virtual BundleType getBundleType() const = 0;
 };

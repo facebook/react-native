@@ -64,10 +64,10 @@ public:
    * Should be called only once per JSExecutor.
    */
   void setupEnvironment(std::function<void(std::string, bool)> loadBundle,
-                        folly::Optional<std::function<RAMBundle::Module(uint32_t)>> getModule);
+                        std::function<RAMBundle::Module(uint32_t, std::string)> getModule);
   
   void setupEnvironmentSync(std::function<void(std::string, bool)> loadBundle,
-                            folly::Optional<std::function<RAMBundle::Module(uint32_t)>> getModule);
+                            std::function<RAMBundle::Module(uint32_t, std::string)> getModule);
 
   /**
    * Starts the JS application.  If bundleRegistry is non-null, then it is

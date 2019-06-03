@@ -52,26 +52,34 @@ void Instance::initializeBridge(
   });
 }
 
-void Instance::loadBundleAsync(std::unique_ptr<const Bundle> bundle) {
+void Instance::runApplicationAsync(std::string initialBundleURL,
+                                   std::unique_ptr<BundleLoader> bundleLoader) {
   callback_->incrementPendingJSCalls();
-  SystraceSection s("Instance::loadBundleAsync", "sourceURL", bundle->getSourceURL());
-  bundleRegistry_->runInPreloadedEnvironment(defaultEnvironmentId_, std::move(bundle));
+  SystraceSection s("Instance::loadBundleAsync", "sourceURL", initialBundleURL);
+  bundleRegistry_->runInPreloadedEnvironment(defaultEnvironmentId_,
+                                             initialBundleURL,
+                                             std::move(bundleLoader));
 }
 
-void Instance::loadBundleSync(std::unique_ptr<const Bundle> bundle) {
+void Instance::runApplicationSync(std::string initialBundleURL,
+                                  std::unique_ptr<BundleLoader> bundleLoader) {
   std::unique_lock<std::mutex> lock(m_syncMutex);
   m_syncCV.wait(lock, [this] { return m_syncReady; });
 
-  SystraceSection s("Instance::loadBundleSync", "sourceURL", bundle->getSourceURL());
-  bundleRegistry_->runInPreloadedEnvironment(defaultEnvironmentId_, std::move(bundle));
+  SystraceSection s("Instance::loadBundleSync", "sourceURL", initialBundleURL);
+  bundleRegistry_->runInPreloadedEnvironment(defaultEnvironmentId_,
+                                             initialBundleURL,
+                                             std::move(bundleLoader));
 }
 
-void Instance::loadBundle(std::unique_ptr<const Bundle> bundle, bool loadSynchronously) {
-  SystraceSection s("Instance::loadBundle", "sourceURL", bundle->getSourceURL());
+void Instance::runApplication(std::string initialBundleURL,
+                              std::unique_ptr<BundleLoader> bundleLoader,
+                              bool loadSynchronously) {
+  SystraceSection s("Instance::loadBundle", "sourceURL", initialBundleURL);
   if (loadSynchronously) {
-    loadBundleSync(std::move(bundle));
+    runApplicationSync(initialBundleURL, std::move(bundleLoader));
   } else {
-    loadBundleAsync(std::move(bundle));
+    runApplicationAsync(initialBundleURL, std::move(bundleLoader));
   }
 }
 

@@ -24,6 +24,10 @@ class RAMBundle : public Bundle {
     RAMBundle& operator=(const RAMBundle&) = delete;
     virtual ~RAMBundle() {};
 
+    /**
+     * Path to a main bundle file (eg: `index.android.bundle`).
+     * For FileRAMBundle sourcePath will be different than sourceURL.
+     */
     virtual std::string getSourcePath() const = 0;
     virtual std::unique_ptr<const JSBigString> getStartupScript() const = 0;
     virtual Module getModule(uint32_t moduleId) const = 0;

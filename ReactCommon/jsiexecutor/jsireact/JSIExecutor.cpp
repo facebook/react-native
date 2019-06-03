@@ -68,7 +68,7 @@ JSIExecutor::JSIExecutor(
 }
 
 void JSIExecutor::setupEnvironment(std::function<void(std::string, bool)> loadBundle,
-                                   folly::Optional<std::function<RAMBundle::Module(uint32_t)>> getModule) {
+                                   std::function<RAMBundle::Module(uint32_t, std::string)> getModule) {
   SystraceSection s("JSIExecutor::setupEnvironment");
 
   runtime_->global().setProperty(
@@ -124,40 +124,44 @@ void JSIExecutor::setupEnvironment(std::function<void(std::string, bool)> loadBu
           throw std::invalid_argument("Got wrong number of args");
         }
 
-        std::string bundlePath = args[0].getString(*runtime_).utf8(*runtime_);
+        std::string bundleName = args[0].getString(*runtime_).utf8(*runtime_);
         bool inCurrentEnvironment = args[1].getBool();
-        loadBundle(bundlePath, inCurrentEnvironment);
+        loadBundle(bundleName, inCurrentEnvironment);
 
         return facebook::jsi::Value();
       }));
   
-  if (getModule) {
-    // Setup nativeRequire since it's running a RAM bundle.
-    runtime_->global().setProperty(
+  runtime_->global().setProperty(
+    *runtime_,
+    "nativeRequire",
+    Function::createFromHostFunction(
       *runtime_,
-      "nativeRequire",
-      Function::createFromHostFunction(
-        *runtime_,
-        PropNameID::forAscii(*runtime_, "nativeRequire"),
-        2,
-        [this, getModule](Runtime& rt,
-               const facebook::jsi::Value&,
-               const facebook::jsi::Value* args,
-               size_t count) {
-          if (count == 0 || count > 2) {
-            throw std::invalid_argument("Got wrong number of args");
-          }
+      PropNameID::forAscii(*runtime_, "nativeRequire"),
+      2,
+      [this, getModule](Runtime& rt,
+              const facebook::jsi::Value&,
+              const facebook::jsi::Value* args,
+              size_t count) {
+        if (count == 0 || count > 2) {
+          throw std::invalid_argument("Got wrong number of args");
+        }
 
-          // NOTE: for backward compatibility we accent 2 arguments
-          // but only use the first one.
-          uint32_t moduleId = folly::to<uint32_t>(args[0].getNumber());
-          auto module = (*getModule)(moduleId);
+        uint32_t moduleId = folly::to<uint32_t>(args[0].getNumber());
+        std::string bundleName;
+        if (args[1].isString()) {
+          bundleName = args[1].getString(*runtime_).utf8(*runtime_);
+        } else if (args[1].isNumber()) {
+          auto segmentId = folly::to<uint32_t>(args[1].getNumber());
+          bundleName = std::string("seg-" + std::to_string(segmentId));
+        } else {
+          throw std::invalid_argument("nativeRequire 2nd argument must be a string or a number");
+        }
+        auto module = getModule(moduleId, bundleName);
 
-          runtime_->evaluateJavaScript(
-              std::make_unique<StringBuffer>(module.code), module.name);
-          return facebook::jsi::Value();
-        }));
-  }
+        runtime_->evaluateJavaScript(
+            std::make_unique<StringBuffer>(module.code), module.name);
+        return facebook::jsi::Value();
+      }));
 
   if (runtimeInstaller_) {
     runtimeInstaller_(*runtime_);

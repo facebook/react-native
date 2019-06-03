@@ -20,11 +20,19 @@ namespace react {
 using asset_ptr =
     std::unique_ptr<AAsset, std::function<decltype(AAsset_close)>>;
 
-static std::string jsModulesDir(const char* entryFile) {
-  std::string dir = dirname(entryFile);
+static std::string jsModulesDir(const char* entryFile, bool namedDir) {
+  std::string baseDir = dirname(entryFile);
+  std::string baseName = basename(entryFile);
+  baseName = namedDir
+    ? baseName.substr(0, baseName.find('.'))
+    : baseName;
+
+  std::string modulesDir = namedDir
+    ? baseName + "-js-modules/"
+    : "js-modules/";
 
   // android's asset manager does not work with paths that start with a dot
-  return dir == "." ? "js-modules/" : dir + "/js-modules/";
+  return baseDir == "." ? modulesDir : baseDir + modulesDir;
 }
 
 static asset_ptr openAsset(
@@ -41,10 +49,16 @@ bool FileRAMBundle::isFileRAMBundle(AAssetManager* assetManager,
     return false;
   }
 
-  auto magicFileName = jsModulesDir(assetName) + UNBUNDLE_FILE_NAM;
+  // Try named JS modules directory first (eg: `index-js-modules`).
+  auto magicFileName = jsModulesDir(assetName, true) + UNBUNDLE_FILE_NAM;
   auto asset = openAsset(assetManager, magicFileName.c_str());
   if (asset == nullptr) {
-    return false;
+    // Try unnamed JS modules directory (`js-modules`).
+    magicFileName = jsModulesDir(assetName, false) + UNBUNDLE_FILE_NAM;
+    asset = openAsset(assetManager, magicFileName.c_str());
+    if (asset == nullptr) {
+      return false;
+    }
   }
 
   magic_number_t fileHeader = 0;
@@ -54,11 +68,22 @@ bool FileRAMBundle::isFileRAMBundle(AAssetManager* assetManager,
 
 FileRAMBundle::FileRAMBundle(
     AAssetManager* assetManager,
-    const std::string& moduleDirectory,
+    const std::string& sourcePath,
     std::unique_ptr<const JSBigString> startupScript)
     : assetManager_(assetManager),
-      moduleDirectory_(jsModulesDir(moduleDirectory.c_str())),
-      startupScript_(std::move(startupScript)) {}
+      sourcePath_(sourcePath),
+      startupScript_(std::move(startupScript)) {
+  auto namedModuleDirectory = jsModulesDir(sourcePath.c_str(), true);
+  auto magicFileName = namedModuleDirectory + UNBUNDLE_FILE_NAM;
+  auto asset = openAsset(assetManager, magicFileName.c_str());
+  if (asset != nullptr) {
+    // Use named JS modules directory (eg: `index-js-modules`).
+    moduleDirectory_ = namedModuleDirectory;
+  } else {
+    // Use unnamed JS modules directory (`js-modules`).
+    moduleDirectory_ = jsModulesDir(sourcePath.c_str(), false);
+  }
+}
 
 std::unique_ptr<const JSBigString> FileRAMBundle::getStartupScript() const {
   // It might be used multiple times, so we don't want to move it, but instead copy it.
@@ -69,7 +94,7 @@ std::unique_ptr<const JSBigString> FileRAMBundle::getStartupScript() const {
 }
 
 std::string FileRAMBundle::getSourcePath() const {
-  return moduleDirectory_;
+  return sourcePath_;
 };
 
 std::string FileRAMBundle::getSourceURL() const {

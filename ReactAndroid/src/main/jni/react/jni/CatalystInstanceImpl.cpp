@@ -12,9 +12,7 @@
 
 #include <cxxreact/CxxNativeModule.h>
 #include <cxxreact/Instance.h>
-#include <cxxreact/IndexedRAMBundle.h>
-#include <cxxreact/BasicBundle.h>
-#include <cxxreact/JSBigString.h>
+#include <cxxreact/BundleLoader.h>
 #include <cxxreact/JSDeltaBundleClient.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/ModuleRegistry.h>
@@ -32,7 +30,7 @@
 #include "JavaScriptExecutorHolder.h"
 #include "JNativeRunnable.h"
 #include "NativeArray.h"
-#include "FileRAMBundle.h"
+#include "AssetBundleLoader.h"
 
 using namespace facebook::jni;
 
@@ -186,26 +184,9 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
     jni::alias_ref<JAssetManager::javaobject> assetManager,
     const std::string& assetURL,
     bool loadSynchronously) {
-  const int kAssetsLength = 9;  // strlen("assets://");
-  auto sourceURL = assetURL.substr(kAssetsLength);
 
-  auto manager = extractAssetManager(assetManager);
-  auto script = loadScriptFromAssets(manager, sourceURL);
-
-  std::unique_ptr<Bundle> bundle;
-  if (FileRAMBundle::isFileRAMBundle(manager, sourceURL.c_str())) {
-    bundle = std::make_unique<FileRAMBundle>(manager,
-                                             sourceURL,
-                                             std::move(script));
-  } else if (IndexedRAMBundle::isIndexedRAMBundle(script.get())) {
-    bundle = std::make_unique<IndexedRAMBundle>(std::move(script),
-                                                sourceURL,
-                                                sourceURL);
-  } else {
-    bundle = std::make_unique<BasicBundle>(std::move(script), sourceURL);
-  }
-
-  instance_->loadBundle(std::move(bundle), loadSynchronously);
+  std::unique_ptr<BundleLoader> bundleLoader = std::make_unique<AssetBundleLoader>(assetManager);
+  instance_->runApplication(assetURL, std::move(bundleLoader), loadSynchronously);
 }
 
 void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
