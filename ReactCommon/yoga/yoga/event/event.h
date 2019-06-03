@@ -71,5 +71,10 @@ struct Event::TypedData<Event::NodeDeallocation> {
   YGConfig* config;
 };
 
+template <>
+struct Event::TypedData<Event::LayoutPassEnd> {
+  void* layoutContext;
+};
+
 } // namespace yoga
 } // namespace facebook
