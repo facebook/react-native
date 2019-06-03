@@ -342,20 +342,20 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
       String scheme = "";
 
       URI requestURI = new URI(uri);
-        switch (requestURI.getScheme()) {
-            case "wss":
-                scheme += "https";
-                break;
-            case "ws":
-                scheme += "http";
-                break;
-            case "http":
-            case "https":
-                scheme += requestURI.getScheme();
-                break;
-            default:
-                break;
-        }
+      switch (requestURI.getScheme()) {
+        case "wss":
+          scheme += "https";
+          break;
+        case "ws":
+          scheme += "http";
+          break;
+        case "http":
+        case "https":
+          scheme += requestURI.getScheme();
+          break;
+        default:
+          break;
+      }
 
       if (requestURI.getPort() != -1) {
         defaultOrigin = String.format(
