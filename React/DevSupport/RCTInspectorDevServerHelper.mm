@@ -34,7 +34,7 @@ static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 {
   NSNumber *inspectorProxyPort = @8081;
   NSString *inspectorProxyPortStr = [[[NSProcessInfo processInfo] environment] objectForKey:@"RCT_METRO_PORT"];
-  if (inspectorProxyPortStr) {
+  if (inspectorProxyPortStr && [inspectorProxyPortStr length] > 0) {
     inspectorProxyPort = [NSNumber numberWithInt:[inspectorProxyPortStr intValue]];
   }
   NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
@@ -49,7 +49,7 @@ static NSURL *getAttachDeviceUrl(NSURL *bundleURL, NSString *title)
 {
   NSNumber *metroBundlerPort = @8081;
   NSString *metroBundlerPortStr = [[[NSProcessInfo processInfo] environment] objectForKey:@"RCT_METRO_PORT"];
-  if (!metroBundlerPortStr) {
+  if (metroBundlerPortStr && [metroBundlerPortStr length] > 0) {
     metroBundlerPort = [NSNumber numberWithInt:[metroBundlerPortStr intValue]];
   }
   NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLHostAllowedCharacterSet];
