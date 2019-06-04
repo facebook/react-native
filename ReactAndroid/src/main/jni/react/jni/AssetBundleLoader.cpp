@@ -12,6 +12,8 @@ AssetBundleLoader::AssetBundleLoader(jni::alias_ref<JAssetManager::javaobject> a
 }
 
 std::unique_ptr<const Bundle> AssetBundleLoader::getBundle(std::string bundleURL) const {
+  const int kAssetsLength = 9;  // strlen("assets://");
+  bundleURL = bundleURL.substr(kAssetsLength);
   std::unique_ptr<const JSBigString> script = loadScriptFromAssets(assetManager_, bundleURL);
 
   std::unique_ptr<Bundle> bundle;
