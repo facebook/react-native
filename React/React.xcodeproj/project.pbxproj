@@ -3979,7 +3979,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "terminal=\"${RCT_TERMINAL-${REACT_TERMINAL-$TERM_PROGRAM}}\"\n\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] && [ \"$CONFIGURATION\" == \"Debug\" ] ; then\n  if nc -w 5 -z localhost 8081 ; then\n    if ! curl -s \"http://localhost:8081/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port 8081 already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  elif [ -z \"$terminal\" ]; then\n    open \"$SRCROOT/../scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  else\n    open -a $terminal \"$SRCROOT/../scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
+			shellScript = "terminal=\"${RCT_TERMINAL-${REACT_TERMINAL-$TERM_PROGRAM}}\"\nport=\"${RCT_METRO_PORT:-8081}\"\n\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] && [ \"$CONFIGURATION\" == \"Debug\" ] ; then\n  if nc -w 5 -z localhost \"${port}\" ; then\n    if ! curl -s \"http://localhost:${port}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${port} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  elif [ -z \"$terminal\" ]; then\n    open \"$SRCROOT/../scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  else\n    open -a $terminal \"$SRCROOT/../scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		142C4F7F1B582EA6001F0B58 /* Include RCTJSCProfiler */ = {
@@ -4099,7 +4099,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "terminal=\"${RCT_TERMINAL-${REACT_TERMINAL-$TERM_PROGRAM}}\"\n\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] && [ \"$CONFIGURATION\" == \"Debug\" ] ; then\n  if nc -w 5 -z localhost 8081 ; then\n    if ! curl -s \"http://localhost:8081/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port 8081 already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  elif [ -z \"$terminal\" ]; then\n    open \"$SRCROOT/../scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  else\n    open -a $terminal \"$SRCROOT/../scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
+			shellScript = "terminal=\"${RCT_TERMINAL-${REACT_TERMINAL-$TERM_PROGRAM}}\"\nport=\"${RCT_METRO_PORT:-8081}\"\n\n\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] && [ \"$CONFIGURATION\" == \"Debug\" ] ; then\n  if nc -w 5 -z localhost \"${port}\" ; then\n    if ! curl -s \"http://localhost:${port}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${port} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  elif [ -z \"$terminal\" ]; then\n    open \"$SRCROOT/../scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  else\n    open -a $terminal \"$SRCROOT/../scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		3D383D3E1EBD27B9005632C8 /* Install Third Party */ = {
