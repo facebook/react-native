@@ -402,6 +402,9 @@ inline void fromRawValue(const RawValue &value, Transform &result) {
   auto configurations = (std::vector<RawValue>)value;
 
   for (const auto &configuration : configurations) {
+    if(!configuration.hasType<better::map<std::string, RawValue>>()){
+      return;
+    }
     auto configurationPair = (better::map<std::string, RawValue>)configuration;
     auto pair = configurationPair.begin();
     auto operation = pair->first;
