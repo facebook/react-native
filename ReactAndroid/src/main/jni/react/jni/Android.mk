@@ -37,10 +37,10 @@ LOCAL_MODULE := reactnativejni
 LOCAL_SRC_FILES := $(wildcard *.cpp)
 
 ifeq ($(APP_OPTIM),debug)
-  # Keep symbols by overriding strip command invoked by ndk-build.
-  # Note that this will take effect to all shared libraries,
-  # i.e. all shared libraries will NOT be stripped
-  # even we only override in this Android.mk
+  # Keep symbols by overriding the strip command invoked by ndk-build.
+  # Note that this will apply to all shared libraries,
+  # i.e. shared libraries will NOT be stripped
+  # even though we override it in this Android.mk
   cmd-strip :=
 endif
 
