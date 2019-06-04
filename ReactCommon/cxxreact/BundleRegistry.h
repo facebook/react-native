@@ -46,6 +46,10 @@ class BundleRegistry {
                                    std::string initialBundleURL,
                                    std::unique_ptr<BundleLoader> bundleLoader);
     /**
+     * Run initial bundle on debugger serviceWorker.
+     */
+    void runInRemoteDebugger(std::string environmentId, std::string sourceURL);
+    /**
      * Dispose all `nativeToJsBridge`s and all `BundleExecutionEnvironment`s.
      */
     void disposeEnvironments();

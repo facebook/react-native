@@ -83,6 +83,12 @@ void Instance::runApplication(std::string initialBundleURL,
   }
 }
 
+void Instance::runApplicationInRemoteDebugger(std::string sourceURL) {
+  callback_->incrementPendingJSCalls();
+  SystraceSection s("Instance::runApplicationInRemoteDebugger", "sourceURL", sourceURL);
+  bundleRegistry_->runInRemoteDebugger(defaultEnvironmentId_, sourceURL);
+}
+
 void Instance::setGlobalVariable(std::string propName,
                                  std::unique_ptr<const JSBigString> jsonValue) {
   if (auto execEnv = bundleRegistry_->getEnvironment(defaultEnvironmentId_).lock()) {

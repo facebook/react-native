@@ -171,8 +171,7 @@ void CatalystInstanceImpl::extendNativeModules(
 }
 
 void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {
-  // TODO: figure out what to do with it
-  // instance_->setSourceURL(sourceURL);
+  instance_->runApplicationInRemoteDebugger(sourceURL);
 }
 
 void CatalystInstanceImpl::jniRegisterSegment(int segmentId, const std::string& path) {
