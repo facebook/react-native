@@ -20,7 +20,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   private final ReactApplicationContext mReactApplicationContext;
 
   public ReactPackageTurboModuleManagerDelegate(ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
-    super(reactApplicationContext);
+    super();
     mReactApplicationContext = reactApplicationContext;
     for (ReactPackage reactPackage : packages) {
       if (reactPackage instanceof TurboReactPackage) {
