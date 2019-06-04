@@ -17,7 +17,6 @@
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/RecoverableError.h>
-// #include <cxxreact/RAMBundleRegistry.h>
 #include <fb/log.h>
 #include <fb/fbjni/ByteBuffer.h>
 #include <folly/dynamic.h>

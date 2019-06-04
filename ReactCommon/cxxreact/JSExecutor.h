@@ -23,7 +23,6 @@ class JSBigString;
 class JSExecutor;
 class MessageQueueThread;
 class ModuleRegistry;
-class RAMBundleRegistry;
 
 // This interface describes the delegate interface required by
 // Executor implementations to call from JS into native code.
@@ -105,12 +104,7 @@ public:
 
   virtual void destroy() {}
   virtual ~JSExecutor() {}
-
   virtual void flush() {}
-
-  static std::string getSyntheticBundlePath(
-      uint32_t bundleId,
-      const std::string& bundlePath);
 };
 
 } }

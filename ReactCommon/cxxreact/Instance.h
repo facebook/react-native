@@ -26,7 +26,6 @@ class JSBigString;
 class JSExecutorFactory;
 class MessageQueueThread;
 class ModuleRegistry;
-// class RAMBundleRegistry;
 
 struct InstanceCallback {
   virtual ~InstanceCallback() {}

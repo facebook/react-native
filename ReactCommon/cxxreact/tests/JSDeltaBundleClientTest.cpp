@@ -65,7 +65,7 @@ TEST(JSDeltaBundleClient, PatchModule) {
   EXPECT_EQ(client.getModule(0).code, "0");
   EXPECT_EQ(client.getModule(1).code, "1");
 
-  ASSERT_THROW(client.getModule(2), JSModulesUnbundle::ModuleNotFound);
+  ASSERT_THROW(client.getModule(2), RAMBundle::ModuleNotFound);
 
   folly::dynamic delta2 = folly::parseJson(R"({
     "base": false,
@@ -83,7 +83,7 @@ TEST(JSDeltaBundleClient, PatchModule) {
 
   EXPECT_EQ(client.getModule(0).code, "0.1");
   EXPECT_EQ(client.getModule(2).code, "2");
-  ASSERT_THROW(client.getModule(1), JSModulesUnbundle::ModuleNotFound);
+  ASSERT_THROW(client.getModule(1), RAMBundle::ModuleNotFound);
 
   folly::dynamic delta3 = folly::parseJson(R"({
     "base": true,
@@ -98,9 +98,9 @@ TEST(JSDeltaBundleClient, PatchModule) {
 
   client.patch(delta3);
 
-  ASSERT_THROW(client.getModule(0), JSModulesUnbundle::ModuleNotFound);
-  ASSERT_THROW(client.getModule(1), JSModulesUnbundle::ModuleNotFound);
-  ASSERT_THROW(client.getModule(2), JSModulesUnbundle::ModuleNotFound);
+  ASSERT_THROW(client.getModule(0), RAMBundle::ModuleNotFound);
+  ASSERT_THROW(client.getModule(1), RAMBundle::ModuleNotFound);
+  ASSERT_THROW(client.getModule(2), RAMBundle::ModuleNotFound);
 
   EXPECT_EQ(client.getModule(3).code, "3");
   EXPECT_EQ(client.getModule(4).code, "4");
@@ -124,8 +124,8 @@ TEST(JSDeltaBundleClient, Clear) {
 
   client.clear();
 
-  ASSERT_THROW(client.getModule(0), JSModulesUnbundle::ModuleNotFound);
-  ASSERT_THROW(client.getModule(1), JSModulesUnbundle::ModuleNotFound);
+  ASSERT_THROW(client.getModule(0), RAMBundle::ModuleNotFound);
+  ASSERT_THROW(client.getModule(1), RAMBundle::ModuleNotFound);
 
   EXPECT_STREQ(client.getStartupCode()->c_str(), "");
 }

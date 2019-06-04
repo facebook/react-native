@@ -25,7 +25,6 @@ struct InstanceCallback;
 class JsToNativeBridge;
 class MessageQueueThread;
 class ModuleRegistry;
-class RAMBundleRegistry;
 
 // This class manages calls from native code to JS.  It also manages
 // executors and their threads.  All functions here can be called from
