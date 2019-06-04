@@ -17,19 +17,19 @@ namespace facebook {
 namespace react {
 
 // TODO: refactor
-// class JSDeltaBundleClient {
-// public:
-//   void patch(const folly::dynamic& delta);
-//   RAMBundle::Module getModule(uint32_t moduleId) const;
-//   std::unique_ptr<const JSBigString> getStartupCode() const;
-//   void clear();
+class JSDeltaBundleClient {
+public:
+  void patch(const folly::dynamic& delta);
+  RAMBundle::Module getModule(uint32_t moduleId) const;
+  std::unique_ptr<const JSBigString> getStartupCode() const;
+  void clear();
 
-// private:
-//   std::unordered_map<uint32_t, std::string> modules_;
-//   std::string startupCode_;
+private:
+  std::unordered_map<uint32_t, std::string> modules_;
+  std::string startupCode_;
 
-//   void patchModules(const folly::dynamic *delta);
-// };
+  void patchModules(const folly::dynamic *delta);
+};
 
 // class JSDeltaBundleClientRAMBundle : public JSModulesUnbundle {
 // public:

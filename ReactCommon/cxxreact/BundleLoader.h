@@ -17,7 +17,14 @@ class RN_EXPORT BundleLoader {
     BundleLoader& operator=(const BundleLoader&) = delete;
     virtual ~BundleLoader() {};
 
-    virtual std::unique_ptr<const Bundle> getBundle(std::string assetURL) const = 0;
+    /**
+     * Get bundle for a given full asset/file URL.
+     */
+    virtual std::unique_ptr<const Bundle> getBundle(std::string bundleURL) const = 0;
+    /**
+     * Get bundle's full asset/file URL from name.
+     */
+    virtual std::string getBundleURLFromName(std::string bundleName) const = 0;
 };
 
 } // react

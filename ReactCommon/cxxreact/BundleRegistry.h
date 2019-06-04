@@ -71,7 +71,7 @@ class BundleRegistry {
     std::function<std::shared_ptr<MessageQueueThread>()> jsQueueFactory_;
 
     std::map<std::string, std::shared_ptr<BundleExecutionEnvironment>> bundleEnvironments_;
-    std::vector<std::shared_ptr<const Bundle>> bundles_;
+    std::map<std::string, std::shared_ptr<const Bundle>> bundles_;
     std::unique_ptr<BundleLoader> bundleLoader_;
 
     /**

@@ -43,11 +43,14 @@ void BundleRegistry::preloadEnvironment(std::string environmentId, std::function
 void BundleRegistry::runInPreloadedEnvironment(std::string environmentId,
                                                std::string initialBundleURL,
                                                std::unique_ptr<BundleLoader> bundleLoader) {
-  bundleLoader_ = std::move(bundleLoader);
-  auto initialBundle = bundleLoader_->getBundle(initialBundleURL);
+  if (!bundleLoader_) {
+    bundleLoader_ = std::move(bundleLoader);
+  }
+ 
   std::shared_ptr<BundleExecutionEnvironment> execEnv = getEnvironment(environmentId).lock();
-  bundles_.push_back(std::move(initialBundle));
-  execEnv->initialBundle = std::weak_ptr<const Bundle>(bundles_.back());
+  auto initialBundle = bundleLoader_->getBundle(initialBundleURL);
+  bundles_[initialBundleURL] = std::move(initialBundle);
+  execEnv->initialBundle = std::weak_ptr<const Bundle>(bundles_[initialBundleURL]);
 
   execEnv->jsQueue->runOnQueueSync([this, execEnv, environmentId]() mutable {
     auto bundle = execEnv->initialBundle.lock();
@@ -128,41 +131,31 @@ std::unique_ptr<const JSBigString> BundleRegistry::getScriptFromBundle(std::shar
 
 BundleRegistry::GetModuleLambda BundleRegistry::makeGetModuleLambda() {
   return [this](uint32_t moduleId, std::string bundleName) {
-    // TODO: get rid of this
-    std::string sourcePath(bundleName + ".android.bundle");
-    std::shared_ptr<const RAMBundle> targetBundle;
-    // TODO: store bundles in a map where bundle name is the key for
-    // easier lookup
-    for (auto bundle : bundles_) {
-      if (bundle->getBundleType() == BundleType::IndexedRAMBundle ||
-          bundle->getBundleType() == BundleType::FileRAMBundle) {
-        std::shared_ptr<const RAMBundle> ramBundle =
-          std::dynamic_pointer_cast<const RAMBundle>(bundle);
-        if (ramBundle->getSourcePath() == sourcePath) {
-          targetBundle = ramBundle;
-          break;
-        }
+    std::string bundleURL = bundleLoader_->getBundleURLFromName(bundleName);
+    std::shared_ptr<const RAMBundle> ramBundle;
+    if (bundles_.find(bundleURL) != bundles_.end()) {
+      ramBundle = std::dynamic_pointer_cast<const RAMBundle>(bundles_[bundleURL]);
+      if (!ramBundle) {
+        throw std::runtime_error("Bundle " +
+                                 bundleURL +
+                                 " is not a RAM bundle - GetModuleLambda cannot be used on it");
       }
+    } else {
+      throw std::runtime_error("Cannot find RAM bundle " + bundleURL);
     }
 
-    if (!targetBundle) {
-      throw std::runtime_error("Cannot find RAM bundle " + sourcePath);
-    }
-
-    return targetBundle->getModule(moduleId);
+    return ramBundle->getModule(moduleId);
   };
 }
 
 BundleRegistry::LoadBundleLambda BundleRegistry::makeLoadBundleLambda(std::string environmentId) {
   return [this, environmentId](std::string bundleName, bool inCurrentEnvironment) mutable {
-    // TODO: move it to instance of `BundleLoader` (eg: `AssetBundleLoader`)
-    // and make `Bundleloader` to accept bundle name not a assetURL/fileURL.
-    std::string assetURL("assets://" + bundleName + ".android.bundle");
     std::shared_ptr<BundleExecutionEnvironment> execEnv = getEnvironment(environmentId).lock();
-    execEnv->jsQueue->runOnQueueSync([this, assetURL, execEnv]() mutable {
-      std::unique_ptr<const Bundle> additionalBundle = bundleLoader_->getBundle(assetURL);
-      bundles_.push_back(std::move(additionalBundle));
-      std::shared_ptr<const Bundle> bundle = bundles_.back();
+    std::string bundleURL = bundleLoader_->getBundleURLFromName(bundleName);
+    execEnv->jsQueue->runOnQueueSync([this, bundleURL, execEnv]() mutable {
+      std::unique_ptr<const Bundle> additionalBundle = bundleLoader_->getBundle(bundleURL);
+      bundles_[bundleURL] = std::move(additionalBundle);
+      std::shared_ptr<const Bundle> bundle = bundles_[bundleURL];
       std::unique_ptr<const JSBigString> script = getScriptFromBundle(bundle);
 
       execEnv->nativeToJsBridge->loadScriptSync(std::move(script),
