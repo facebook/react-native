@@ -16,6 +16,7 @@ import type {SyntheticEvent} from 'CoreEventTypes';
 import type {ImageSource} from 'ImageSource';
 import type {ViewProps} from 'ViewPropTypes';
 import type {NativeComponent} from 'ReactNative';
+import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
 
 type Action = $ReadOnly<{|
   title: string,
@@ -35,7 +36,7 @@ type NativeProps = $ReadOnly<{|
   nativeActions?: Array<Action>,
 |}>;
 
-type ColorValue = null | string;
+type ColorValue = null | string | SemanticOrDynamicColorType;
 
 type ToolbarAndroidProps = $ReadOnly<{|
   ...ViewProps,

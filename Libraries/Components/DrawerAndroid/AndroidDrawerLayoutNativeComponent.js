@@ -16,8 +16,9 @@ import type {NativeComponent} from 'ReactNative';
 import type {SyntheticEvent} from 'CoreEventTypes';
 import type {ViewStyleProp} from 'StyleSheet';
 import type React from 'React';
+import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
 
-type ColorValue = null | string;
+type ColorValue = null | string | SemanticOrDynamicColorType;
 
 type DrawerStates = 'Idle' | 'Dragging' | 'Settling';
 
