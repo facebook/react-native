@@ -401,10 +401,12 @@ inline void fromRawValue(const RawValue &value, Transform &result) {
   auto transformMatrix = Transform{};
   auto configurations = (std::vector<RawValue>)value;
 
+  if (configurations.begin() != configurations.end() &&
+      !(*configurations.begin()).hasType<better::map<std::string, RawValue>>()) {
+    result = transformMatrix;
+    return;
+  }
   for (const auto &configuration : configurations) {
-    if(!configuration.hasType<better::map<std::string, RawValue>>()){
-      return;
-    }
     auto configurationPair = (better::map<std::string, RawValue>)configuration;
     auto pair = configurationPair.begin();
     auto operation = pair->first;
