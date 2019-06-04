@@ -10,6 +10,7 @@
 
 'use strict';
 
+/* $FlowFixMe */
 import type {SchemaType} from '../../../packages/react-native-codegen/src/CodegenSchema.js';
 
 const SwitchSchema: SchemaType = {

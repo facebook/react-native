@@ -25,6 +25,7 @@ if (REACT_NATIVE_CI) {
 function getPlugins() {
   try {
     // @todo do not rely on private files
+    /* $FlowFixMe */
     const findPlugins = require('@react-native-community/cli/build/core/findPlugins')
       .default;
 
