@@ -174,7 +174,12 @@
     baseTextInputView.reactPaddingInsets = paddingInsets;
 
     if (isAttributedTextChanged) {
-      baseTextInputView.attributedText = attributedText;
+      // Don't set `attributedText` if length equal to zero, otherwise it would shrink when attributes contain like `lineHeight`.
+      if (attributedText.length != 0) {
+        baseTextInputView.attributedText = attributedText;
+      } else {
+        baseTextInputView.attributedText = nil;
+      }
     }
   }];
 }
