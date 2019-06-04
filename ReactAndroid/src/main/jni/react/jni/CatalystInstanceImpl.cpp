@@ -101,7 +101,6 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("initializeBridge", CatalystInstanceImpl::initializeBridge),
     makeNativeMethod("jniExtendNativeModules", CatalystInstanceImpl::extendNativeModules),
     makeNativeMethod("jniSetSourceURL", CatalystInstanceImpl::jniSetSourceURL),
-    makeNativeMethod("jniRegisterSegment", CatalystInstanceImpl::jniRegisterSegment),
     makeNativeMethod("jniLoadScriptFromAssets", CatalystInstanceImpl::jniLoadScriptFromAssets),
     makeNativeMethod("jniLoadScriptFromFile", CatalystInstanceImpl::jniLoadScriptFromFile),
     makeNativeMethod("jniLoadScriptFromDeltaBundle", CatalystInstanceImpl::jniLoadScriptFromDeltaBundle),
@@ -172,10 +171,6 @@ void CatalystInstanceImpl::extendNativeModules(
 
 void CatalystInstanceImpl::jniSetSourceURL(const std::string& sourceURL) {
   instance_->runApplicationInRemoteDebugger(sourceURL);
-}
-
-void CatalystInstanceImpl::jniRegisterSegment(int segmentId, const std::string& path) {
-  // TODO: remove or figure out how to port it
 }
 
 void CatalystInstanceImpl::jniLoadScriptFromAssets(

@@ -55,7 +55,7 @@ void BundleRegistry::runInPreloadedEnvironment(std::string environmentId,
   execEnv->jsQueue->runOnQueueSync([this, execEnv, environmentId]() mutable {
     auto bundle = execEnv->initialBundle.lock();
     std::unique_ptr<const JSBigString> script = getScriptFromBundle(bundle);
-    GetModuleLambda getModule = makeGetModuleLambda();
+    GetModuleLambda getModule = makeGetModuleLambda(environmentId);
     LoadBundleLambda loadBundle = makeLoadBundleLambda(environmentId);
 
     evalInitialBundle(execEnv,
@@ -129,19 +129,30 @@ std::unique_ptr<const JSBigString> BundleRegistry::getScriptFromBundle(std::shar
     }
 }
 
-BundleRegistry::GetModuleLambda BundleRegistry::makeGetModuleLambda() {
-  return [this](uint32_t moduleId, std::string bundleName) {
-    std::string bundleURL = bundleLoader_->getBundleURLFromName(bundleName);
-    std::shared_ptr<const RAMBundle> ramBundle;
-    if (bundles_.find(bundleURL) != bundles_.end()) {
-      ramBundle = std::dynamic_pointer_cast<const RAMBundle>(bundles_[bundleURL]);
-      if (!ramBundle) {
-        throw std::runtime_error("Bundle " +
-                                 bundleURL +
-                                 " is not a RAM bundle - GetModuleLambda cannot be used on it");
-      }
+BundleRegistry::GetModuleLambda BundleRegistry::makeGetModuleLambda(std::string environmentId) {
+  return [this, environmentId](uint32_t moduleId, std::string bundleName) mutable {
+     std::shared_ptr<const RAMBundle> ramBundle;
+
+    // Special case for backward-compatibility with Metro: for main/index bundle
+    // 2nd argument of `nativeRequire` is `0`, which gets mapped to `seg-0`. In that
+    // case get module from BEE's `initialBundle`.
+    if (bundleName == "seg-0") {
+      std::shared_ptr<BundleExecutionEnvironment> execEnv = getEnvironment(environmentId).lock();
+      std::shared_ptr<const Bundle> initialBundle = execEnv->initialBundle.lock();
+      ramBundle = std::dynamic_pointer_cast<const RAMBundle>(initialBundle);
     } else {
-      throw std::runtime_error("Cannot find RAM bundle " + bundleURL);
+      std::string bundleURL = bundleLoader_->getBundleURLFromName(bundleName);
+      if (bundles_.find(bundleURL) != bundles_.end()) {
+        ramBundle = std::dynamic_pointer_cast<const RAMBundle>(bundles_[bundleURL]);
+      } else {
+        throw std::runtime_error("Cannot find RAM bundle " + bundleURL);
+      }
+    }
+
+    if (!ramBundle) {
+      throw std::runtime_error("Bundle " +
+                               bundleName +
+                               " is not a RAM bundle - GetModuleLambda cannot be used on it");
     }
 
     return ramBundle->getModule(moduleId);

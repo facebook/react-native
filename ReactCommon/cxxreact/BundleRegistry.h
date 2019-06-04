@@ -97,7 +97,7 @@ class BundleRegistry {
      * Create `getModule` lambda, which should be passed to `JSExecutor` to allow to load module
      * from RAM bundle with `nativeRequire`.
      */
-    GetModuleLambda makeGetModuleLambda();
+    GetModuleLambda makeGetModuleLambda(std::string environmentId);
 };
 
 } // react
