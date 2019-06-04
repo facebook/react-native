@@ -49,7 +49,7 @@ RCT_ENUM_CONVERTER(UIModalPresentationStyle, (@{
 
 @implementation RCTModalHostViewManager
 {
-  NSHashTable *_hostViews;
+  NSPointerArray *_hostViews;
 }
 
 RCT_EXPORT_MODULE()
@@ -59,9 +59,9 @@ RCT_EXPORT_MODULE()
   RCTModalHostView *view = [[RCTModalHostView alloc] initWithBridge:self.bridge];
   view.delegate = self;
   if (!_hostViews) {
-    _hostViews = [NSHashTable weakObjectsHashTable];
+    _hostViews = [NSPointerArray weakObjectsPointerArray];
   }
-  [_hostViews addObject:view];
+  [_hostViews addPointer:(__bridge void *)view];
   return view;
 }
 
@@ -104,7 +104,7 @@ RCT_EXPORT_MODULE()
   for (RCTModalHostView *hostView in _hostViews) {
     [hostView invalidate];
   }
-  [_hostViews removeAllObjects];
+  _hostViews = nil;
 }
 
 RCT_EXPORT_VIEW_PROPERTY(animationType, NSString)
