@@ -17,6 +17,14 @@ LOCAL_SRC_FILES:= \
   folly/container/detail/F14Table.cpp \
   folly/ScopeGuard.cpp \
 
+ifeq ($(APP_OPTIM),debug)
+  LOCAL_SRC_FILES += \
+    folly/lang/Assume.cpp \
+    folly/lang/SafeAssert.cpp \
+    folly/FileUtil.cpp \
+    folly/portability/SysUio.cpp
+endif
+
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
