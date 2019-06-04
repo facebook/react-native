@@ -11,24 +11,42 @@
 
 import NativeI18nManager from './NativeI18nManager';
 
+const i18nConstants = NativeI18nManager
+  ? NativeI18nManager.getConstants()
+  : {
+      isRTL: false,
+      doLeftAndRightSwapInRTL: true,
+    };
+
 module.exports = {
   getConstants: () => {
-    return NativeI18nManager.getConstants();
+    return i18nConstants;
   },
 
   allowRTL: (shouldAllow: boolean) => {
+    if (!NativeI18nManager) {
+      return;
+    }
+
     NativeI18nManager.allowRTL(shouldAllow);
   },
 
   forceRTL: (shouldForce: boolean) => {
+    if (!NativeI18nManager) {
+      return;
+    }
+
     NativeI18nManager.forceRTL(shouldForce);
   },
 
   swapLeftAndRightInRTL: (flipStyles: boolean) => {
+    if (!NativeI18nManager) {
+      return;
+    }
+
     NativeI18nManager.swapLeftAndRightInRTL(flipStyles);
   },
 
-  isRTL: NativeI18nManager.getConstants().isRTL,
-  doLeftAndRightSwapInRTL: NativeI18nManager.getConstants()
-    .doLeftAndRightSwapInRTL,
+  isRTL: i18nConstants.isRTL,
+  doLeftAndRightSwapInRTL: i18nConstants.doLeftAndRightSwapInRTL,
 };
