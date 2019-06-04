@@ -876,6 +876,14 @@ public class UIViewOperationQueue {
     mOperations.add(new SendAccessibilityEvent(tag, eventType));
   }
 
+  public void enqueuePerformAccessibilityAction(int tag, int action) {
+    mOperations.add(new PerformAccessibilityAction(tag, action));
+  }
+
+  public void enqueueAnnounceForAccessibility(int tag, String announcement) {
+    mOperations.add(new AnnounceForAccessibility(tag, announcement));
+  }
+
   public void enqueueLayoutUpdateFinished(ReactShadowNode node, UIImplementation.LayoutUpdateListener listener) {
     mOperations.add(new LayoutUpdateFinishedOperation(node, listener));
   }
