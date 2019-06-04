@@ -103,4 +103,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.99.0
+^0.100.0
