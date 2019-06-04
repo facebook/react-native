@@ -36,7 +36,7 @@ const ArrayPropsNativeComponentViewConfig = {
     disableds: true,
     progress: true,
     radii: true,
-    colors: true,
+    colors: { process: require('processColorArray') },
     srcs: true,
     points: true,
   },

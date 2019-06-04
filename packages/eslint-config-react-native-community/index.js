@@ -22,6 +22,7 @@ module.exports = {
     'react',
     'react-hooks',
     'react-native',
+    '@react-native-community',
     'jest',
   ],
 

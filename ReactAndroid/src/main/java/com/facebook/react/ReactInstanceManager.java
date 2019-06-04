@@ -325,23 +325,17 @@ public class ReactInstanceManager {
   /**
    * Trigger react context initialization asynchronously in a background async task. This enables
    * applications to pre-load the application JS, and execute global code before
-   * {@link ReactRootView} is available and measured. This should only be called the first time the
-   * application is set up, which is enforced to keep developers from accidentally creating their
-   * application multiple times without realizing it.
+   * {@link ReactRootView} is available and measured.
    *
    * Called from UI thread.
    */
   @ThreadConfined(UI)
   public void createReactContextInBackground() {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.createReactContextInBackground()");
-    Assertions.assertCondition(
-        !mHasStartedCreatingInitialContext,
-        "createReactContextInBackground should only be called when creating the react " +
-            "application for the first time. When reloading JS, e.g. from a new file, explicitly" +
-            "use recreateReactContextInBackground");
-
-    mHasStartedCreatingInitialContext = true;
-    recreateReactContextInBackgroundInner();
+    if (!mHasStartedCreatingInitialContext) {
+      mHasStartedCreatingInitialContext = true;
+      recreateReactContextInBackgroundInner();
+    }
   }
 
   /**

@@ -34,6 +34,11 @@ jest
       },
       abortRequest: function() {},
     },
+    PlatformConstants: {
+      getConstants() {
+        return {};
+      },
+    },
   });
 
 const XMLHttpRequest = require('../XMLHttpRequest');

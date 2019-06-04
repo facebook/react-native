@@ -34,15 +34,12 @@ const template = `
 ::_COMPONENT_CONFIG_::
 `;
 
-function getReactDiffProcessValue(prop) {
-  const typeAnnotation = prop.typeAnnotation;
-
+function getReactDiffProcessValue(typeAnnotation) {
   switch (typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
     case 'StringTypeAnnotation':
     case 'Int32TypeAnnotation':
     case 'FloatTypeAnnotation':
-    case 'ArrayTypeAnnotation':
     case 'StringEnumTypeAnnotation':
       return j.literal(true);
     case 'NativePrimitiveTypeAnnotation':
@@ -60,6 +57,25 @@ function getReactDiffProcessValue(prop) {
             `Received unknown native typeAnnotation: "${typeAnnotation.name}"`,
           );
       }
+    case 'ArrayTypeAnnotation':
+      if (typeAnnotation.elementType.type === 'NativePrimitiveTypeAnnotation') {
+        switch (typeAnnotation.elementType.name) {
+          case 'ColorPrimitive':
+            return j.template
+              .expression`{ process: require('processColorArray') }`;
+          case 'ImageSourcePrimitive':
+            return j.literal(true);
+          case 'PointPrimitive':
+            return j.literal(true);
+          default:
+            throw new Error(
+              `Received unknown array native typeAnnotation: "${
+                typeAnnotation.elementType.name
+              }"`,
+            );
+        }
+      }
+      return j.literal(true);
     default:
       (typeAnnotation: empty);
       throw new Error(
@@ -194,7 +210,7 @@ function buildViewConfig(
       return j.property(
         'init',
         j.identifier(schemaProp.name),
-        getReactDiffProcessValue(schemaProp),
+        getReactDiffProcessValue(schemaProp.typeAnnotation),
       );
     }),
     ...getValidAttributesForEvents(componentEvents),
@@ -253,76 +269,82 @@ function buildViewConfig(
 
 module.exports = {
   generate(libraryName: string, schema: SchemaType): FilesOutput {
-    const fileName = `${libraryName}NativeViewConfig.js`;
-    const imports: Set<string> = new Set();
+    try {
+      const fileName = `${libraryName}NativeViewConfig.js`;
+      const imports: Set<string> = new Set();
 
-    imports.add(
-      "const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');",
-    );
-    imports.add(
-      "const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');",
-    );
-
-    const moduleResults = Object.keys(schema.modules)
-      .map(moduleName => {
-        const components = schema.modules[moduleName].components;
-        // No components in this module
-        if (components == null) {
-          return null;
-        }
-
-        return Object.keys(components)
-          .map(componentName => {
-            const component = components[componentName];
-
-            const compatabilityComponentName = `${
-              component.isDeprecatedPaperComponentNameRCT ? 'RCT' : ''
-            }${componentName}`;
-
-            const replacedTemplate = componentTemplate
-              .replace(/::_COMPONENT_NAME_::/g, componentName)
-              .replace(
-                /::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::/g,
-                compatabilityComponentName,
-              )
-              .replace(
-                /::_COMPAT_COMMENT_::/g,
-                component.isDeprecatedPaperComponentNameRCT
-                  ? ' // RCT prefix present for paper support'
-                  : '',
-              );
-
-            const replacedSource: string = j
-              .withParser('flow')(replacedTemplate)
-              .find(j.Identifier, {
-                name: 'VIEW_CONFIG',
-              })
-              .replaceWith(
-                buildViewConfig(
-                  schema,
-                  compatabilityComponentName,
-                  component,
-                  imports,
-                ),
-              )
-              .toSource({quote: 'single', trailingComma: true});
-
-            return replacedSource;
-          })
-          .join('\n\n');
-      })
-      .filter(Boolean)
-      .join('\n\n');
-
-    const replacedTemplate = template
-      .replace(/::_COMPONENT_CONFIG_::/g, moduleResults)
-      .replace(
-        '::_IMPORTS_::',
-        Array.from(imports)
-          .sort()
-          .join('\n'),
+      imports.add(
+        "const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');",
+      );
+      imports.add(
+        "const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');",
       );
 
-    return new Map([[fileName, replacedTemplate]]);
+      const moduleResults = Object.keys(schema.modules)
+        .map(moduleName => {
+          const components = schema.modules[moduleName].components;
+          // No components in this module
+          if (components == null) {
+            return null;
+          }
+
+          return Object.keys(components)
+            .map(componentName => {
+              const component = components[componentName];
+
+              const compatabilityComponentName = `${
+                component.isDeprecatedPaperComponentNameRCT ? 'RCT' : ''
+              }${componentName}`;
+
+              const replacedTemplate = componentTemplate
+                .replace(/::_COMPONENT_NAME_::/g, componentName)
+                .replace(
+                  /::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::/g,
+                  compatabilityComponentName,
+                )
+                .replace(
+                  /::_COMPAT_COMMENT_::/g,
+                  component.isDeprecatedPaperComponentNameRCT
+                    ? ' // RCT prefix present for paper support'
+                    : '',
+                );
+
+              const replacedSource: string = j
+                .withParser('flow')(replacedTemplate)
+                .find(j.Identifier, {
+                  name: 'VIEW_CONFIG',
+                })
+                .replaceWith(
+                  buildViewConfig(
+                    schema,
+                    compatabilityComponentName,
+                    component,
+                    imports,
+                  ),
+                )
+                .toSource({quote: 'single', trailingComma: true});
+
+              return replacedSource;
+            })
+            .join('\n\n');
+        })
+        .filter(Boolean)
+        .join('\n\n');
+
+      const replacedTemplate = template
+        .replace(/::_COMPONENT_CONFIG_::/g, moduleResults)
+        .replace(
+          '::_IMPORTS_::',
+          Array.from(imports)
+            .sort()
+            .join('\n'),
+        );
+
+      return new Map([[fileName, replacedTemplate]]);
+    } catch (error) {
+      console.error(`\nError parsing schema for ${libraryName}\n`);
+      console.error(JSON.stringify(schema));
+      throw error;
+    }
   },
 };

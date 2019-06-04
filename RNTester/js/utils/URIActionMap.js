@@ -12,7 +12,6 @@
 
 const ReactNative = require('react-native');
 const RNTesterActions = require('./RNTesterActions');
-// $FlowFixMe : This is a platform-forked component, and flow seems to only run on iOS?
 const RNTesterList = require('./RNTesterList');
 
 const {Alert} = ReactNative;

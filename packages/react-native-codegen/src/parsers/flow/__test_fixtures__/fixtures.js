@@ -122,7 +122,7 @@ import type {
   CodegenNativeComponent,
 } from 'CodegenFlowtypes';
 
-import type {ColorValue, PointValue} from 'StyleSheetTypes';
+import type {ColorValue, ColorArrayValue, PointValue} from 'StyleSheetTypes';
 import type {ImageSource} from 'ImageSource';
 import type {ViewProps} from 'ViewPropTypes';
 
@@ -170,6 +170,12 @@ type ModuleProps = $ReadOnly<{|
   color_optional_key?: ColorValue,
   color_optional_value: ?ColorValue,
   color_optional_both?: ?ColorValue,
+
+  // ColorArrayValue props
+  color_array_required: ColorArrayValue,
+  color_array_optional_key?: ColorArrayValue,
+  color_array_optional_value: ?ColorArrayValue,
+  color_array_optional_both?: ?ColorArrayValue,
 
   // PointValue props
   point_required: PointValue,

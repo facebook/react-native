@@ -1667,27 +1667,36 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 }
 
-class CellRenderer extends React.Component<
-  {
-    CellRendererComponent?: ?React.ComponentType<any>,
-    ItemSeparatorComponent: ?React.ComponentType<*>,
-    cellKey: string,
-    fillRateHelper: FillRateHelper,
-    horizontal: ?boolean,
-    index: number,
-    inversionStyle: ViewStyleProp,
-    item: Item,
-    onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
-    onUnmount: (cellKey: string) => void,
-    onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
-    parentProps: {
-      getItemLayout?: ?Function,
-      renderItem?: ?RenderItemType<Item>,
-      ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
-    },
-    prevCellKey: ?string,
+type CellRendererProps = {
+  CellRendererComponent?: ?React.ComponentType<any>,
+  ItemSeparatorComponent: ?React.ComponentType<*>,
+  cellKey: string,
+  fillRateHelper: FillRateHelper,
+  horizontal: ?boolean,
+  index: number,
+  inversionStyle: ViewStyleProp,
+  item: Item,
+  onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
+  onUnmount: (cellKey: string) => void,
+  onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
+  parentProps: {
+    getItemLayout?: ?Function,
+    renderItem?: ?RenderItemType<Item>,
+    ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
   },
-  $FlowFixMeState,
+  prevCellKey: ?string,
+};
+
+type CellRendererState = {
+  separatorProps: $ReadOnly<{|
+    highlighted: boolean,
+    leadingItem: ?Item,
+  |}>,
+};
+
+class CellRenderer extends React.Component<
+  CellRendererProps,
+  CellRendererState,
 > {
   state = {
     separatorProps: {
@@ -1701,6 +1710,18 @@ class CellRenderer extends React.Component<
       cellKey: PropTypes.string,
     }),
   };
+
+  static getDerivedStateFromProps(
+    props: CellRendererProps,
+    prevState: CellRendererState,
+  ): ?CellRendererState {
+    return {
+      separatorProps: {
+        ...prevState.separatorProps,
+        leadingItem: props.item,
+      },
+    };
+  }
 
   getChildContext() {
     return {

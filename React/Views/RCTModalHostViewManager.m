@@ -89,7 +89,7 @@ RCT_EXPORT_MODULE()
   if (_dismissalBlock) {
     _dismissalBlock([modalHostView reactViewController], viewController, animated, completionBlock);
   } else {
-    [viewController dismissViewControllerAnimated:animated completion:completionBlock];
+    [viewController.presentingViewController dismissViewControllerAnimated:animated completion:completionBlock];
   }
 }
 

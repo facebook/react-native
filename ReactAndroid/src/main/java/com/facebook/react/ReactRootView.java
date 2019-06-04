@@ -394,9 +394,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         // TODO initialize surface here
       }
 
-      if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
-        mReactInstanceManager.createReactContextInBackground();
-      }
+      mReactInstanceManager.createReactContextInBackground();
 
       attachToReactInstanceManager();
 

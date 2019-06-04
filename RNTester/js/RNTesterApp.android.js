@@ -29,8 +29,6 @@ const {
 const RNTesterActions = require('./utils/RNTesterActions');
 const RNTesterExampleContainer = require('./components/RNTesterExampleContainer');
 const RNTesterExampleList = require('./components/RNTesterExampleList');
-/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found when
- * making Flow check .android.js files. */
 const RNTesterList = require('./utils/RNTesterList');
 const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
 const URIActionMap = require('./utils/URIActionMap');

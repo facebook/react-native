@@ -10,7 +10,7 @@
 
 'use strict';
 
-const NativeModules = require('../BatchedBridge/NativeModules');
+import NativePlatformConstantsIOS from './NativePlatformConstantsIOS';
 
 export type PlatformSelectSpec<D, I> = {
   default?: D,
@@ -20,12 +20,13 @@ export type PlatformSelectSpec<D, I> = {
 const Platform = {
   OS: 'ios',
   get Version() {
-    const constants = NativeModules.PlatformConstants;
-    return constants && constants.osVersion;
+    return NativePlatformConstantsIOS.getConstants().osVersion;
+  },
+  get constants() {
+    return NativePlatformConstantsIOS.getConstants();
   },
   get isPad() {
-    const constants = NativeModules.PlatformConstants;
-    return constants ? constants.interfaceIdiom === 'pad' : false;
+    return NativePlatformConstantsIOS.getConstants().interfaceIdiom === 'pad';
   },
   /**
    * Deprecated, use `isTV` instead.
@@ -34,13 +35,11 @@ const Platform = {
     return Platform.isTV;
   },
   get isTV() {
-    const constants = NativeModules.PlatformConstants;
-    return constants ? constants.interfaceIdiom === 'tv' : false;
+    return NativePlatformConstantsIOS.getConstants().interfaceIdiom === 'tv';
   },
   get isTesting(): boolean {
     if (__DEV__) {
-      const constants = NativeModules.PlatformConstants;
-      return constants && constants.isTesting;
+      return NativePlatformConstantsIOS.getConstants().isTesting;
     }
     return false;
   },

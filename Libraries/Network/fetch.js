@@ -11,7 +11,7 @@
 
 'use strict';
 
-const whatwg = require('../vendor/core/whatwg-fetch');
+const whatwg = require('whatwg-fetch');
 
 if (whatwg && whatwg.fetch) {
   module.exports = whatwg;

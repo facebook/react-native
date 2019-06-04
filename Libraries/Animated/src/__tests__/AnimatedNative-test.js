@@ -24,6 +24,11 @@ jest
   .setMock('react', {Component: class {}})
   .mock('../../../BatchedBridge/NativeModules', () => ({
     NativeAnimatedModule: {},
+    PlatformConstants: {
+      getConstants() {
+        return {};
+      },
+    },
   }))
   .mock('../NativeAnimatedModule')
   .mock('../../../EventEmitter/NativeEventEmitter')
