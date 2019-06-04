@@ -6,11 +6,6 @@
  */
 #include <fb/fbjni.h>
 #include <yoga/YGValue.h>
-#include <yoga/Yoga.h>
-#include <map>
-
-using namespace facebook::jni;
-using namespace std;
 
 struct JYogaNode : public facebook::jni::JavaClass<JYogaNode> {
   static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaNodeJNIBase;";
@@ -32,32 +27,4 @@ struct JYogaLogger : public facebook::jni::JavaClass<JYogaLogger> {
       facebook::jni::alias_ref<JYogaNode>,
       facebook::jni::alias_ref<JYogaLogLevel>,
       jstring);
-};
-
-class PtrJNodeMap {
-  using JNodeArray = JArrayClass<JYogaNode::javaobject>;
-  std::map<YGNodeRef, size_t> ptrsToIdxs_;
-  alias_ref<JNodeArray> javaNodes_;
-
-public:
-  PtrJNodeMap() : ptrsToIdxs_{}, javaNodes_{} {}
-  PtrJNodeMap(
-      alias_ref<JArrayLong> nativePointers,
-      alias_ref<JNodeArray> javaNodes)
-      : javaNodes_{javaNodes} {
-    auto pin = nativePointers->pinCritical();
-    auto ptrs = pin.get();
-    for (size_t i = 0, n = pin.size(); i < n; ++i) {
-      ptrsToIdxs_[(YGNodeRef) ptrs[i]] = i;
-    }
-  }
-
-  local_ref<JYogaNode> ref(YGNodeRef node) {
-    auto idx = ptrsToIdxs_.find(node);
-    if (idx == ptrsToIdxs_.end()) {
-      return local_ref<JYogaNode>{};
-    } else {
-      return javaNodes_->getElement(idx->second);
-    }
-  }
 };

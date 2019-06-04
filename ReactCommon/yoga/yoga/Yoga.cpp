@@ -4093,7 +4093,7 @@ void YGNodeCalculateLayoutWithContext(
   marker = nullptr;
 
 #ifdef YG_ENABLE_EVENTS
-  Event::publish<Event::LayoutPassEnd>(node, {layoutContext});
+  Event::publish<Event::LayoutPassEnd>(node);
 #endif
 
   // We want to get rid off `useLegacyStretchBehaviour` from YGConfig. But we
