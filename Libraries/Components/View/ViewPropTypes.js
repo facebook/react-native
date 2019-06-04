@@ -10,7 +10,12 @@
 
 'use strict';
 
-import type {PressEvent, Layout, LayoutEvent} from 'CoreEventTypes';
+import type {
+  PressEvent,
+  Layout,
+  LayoutEvent,
+  SyntheticEvent,
+} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type React from 'React';
 import type {ViewStyleProp} from 'StyleSheet';
@@ -51,15 +56,15 @@ type DirectEventProps = $ReadOnly<{|
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs accessibility double click gesture.
    */
-  onDoubleClick?: ?Function, // TODO(macOS ISS#2323203)
+  onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs accessibility key down gesture.
    */
-  onKeyDown?: ?Function, // TODO(macOS ISS#2323203)
+  onKeyDown?: ?(event: SyntheticEvent<{key: string}>) => mixed, // TODO(macOS ISS#2323203)
 
-  onMouseEnter?: Function, // [TODO(macOS ISS#2323203)
+  onMouseEnter?: (event: SyntheticEvent<{}>) => mixed, // [TODO(macOS ISS#2323203)
 
   /**
    * Invoked on mount and layout changes with:
@@ -288,7 +293,7 @@ type AndroidViewProps = $ReadOnly<{|
    * @platform android
    */
 
-  onClick?: ?Function, // TODO(android ISS)
+  onClick?: ?(event: PressEvent) => mixed, // TODO(android ISS)
   /**
    * Indicates to accessibility services to treat UI component like a
    * native one. Works for Android only.
@@ -315,7 +320,7 @@ type AndroidViewProps = $ReadOnly<{|
    *
    * @platform android
    */
-  onFocusChange?: ?Function, // TODO(android ISS)
+  onFocusChange?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(android ISS)
 
   /**
    * Controls how view is important for accessibility which is if it
@@ -387,9 +392,9 @@ type IOSViewProps = $ReadOnly<{|
    *
    * @platform ios
    */
-  onAccessibilityAction?: ?Function,
+  onAccessibilityAction?: ?(event: SyntheticEvent<{}>) => mixed,
 
-  onDoubleClick?: ?Function, // TODO(macOS ISS#2323203)
+  onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -397,7 +402,7 @@ type IOSViewProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onaccessibilitytap
    */
-  onAccessibilityTap?: ?Function,
+  onAccessibilityTap?: ?() => void,
 
   /**
    * When `accessible` is `true`, the system will invoke this function when the
@@ -511,42 +516,33 @@ export type ViewProps = $ReadOnly<{|
    */
   removeClippedSubviews?: ?boolean,
 
-  onKeyDown?: ?Function, // TODO(macOS ISS#2323203)
-
-  /**
-   * Fired when a pointing device is moved over the view
-   *
-   * @platform macos
-   */
-  onMouseEnter?: ?Function, // TODO(macOS ISS#2323203)
-
   /**
    * Fired when a pointing device is moved out the view
    *
    * @platform macos
    */
-  onMouseLeave?: ?Function, // TODO(macOS ISS#2323203)
+  onMouseLeave?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * Fired when a dragged element enters a valid drop target
    *
    * @platform macos
    */
-  onDragEnter?: ?Function, // TODO(macOS ISS#2323203)
+  onDragEnter?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * Fired when a dragged element leaves a valid drop target
    *
    * @platform macos
    */
-  onDragLeave?: ?Function, // TODO(macOS ISS#2323203)
+  onDragLeave?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * Fired when an element is dropped on a valid drop target
    *
    * @platform macos
    */
-  onDrop?: ?Function, // TODO(macOS ISS#2323203)
+  onDrop?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * Specifies the Tooltip for the view
@@ -571,7 +567,7 @@ export type ViewProps = $ReadOnly<{|
    * @platform macos
    * @platform ios
    */
-  onFocus?: ?Function, // TODO(macOS ISS#2323203)
+  onFocus?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * Fired when an element loses focus
@@ -579,7 +575,7 @@ export type ViewProps = $ReadOnly<{|
    * @platform macos
    * @platform ios
    */
-  onBlur?: ?Function, // TODO(macOS ISS#2323203)
+  onBlur?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * Enables Dran'n'Drop Support for certain types of dragged types

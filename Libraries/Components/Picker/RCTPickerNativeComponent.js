@@ -14,6 +14,7 @@ const requireNativeComponent = require('requireNativeComponent');
 import type {SyntheticEvent} from 'CoreEventTypes';
 import type {TextStyleProp} from 'StyleSheet';
 import type {NativeComponent} from 'ReactNative';
+import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
 
 type PickerIOSChangeEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -25,7 +26,7 @@ type PickerIOSChangeEvent = SyntheticEvent<
 type RCTPickerIOSItemType = $ReadOnly<{|
   label: ?Label,
   value: ?(number | string),
-  textColor: ?number,
+  textColor: ?(number | SemanticOrDynamicColorType),
 |}>;
 
 type Label = Stringish | number;

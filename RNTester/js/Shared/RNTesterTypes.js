@@ -26,7 +26,7 @@ export type RNTesterProps = $ReadOnly<{|
 
 export type RNTesterExampleModuleItem = $ReadOnly<{|
   title: string,
-  platform?: string,
+  platform?: string | Array<string>,
   description?: string,
   render: () => React.Node,
 |}>;

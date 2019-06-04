@@ -26,7 +26,7 @@ type Options = {
   onDismiss?: ?Function,
 };
 
-type AlertType = $Enum<{
+export type AlertType = $Enum<{
   default: string,
   'plain-text': string,
   'secure-text': string,

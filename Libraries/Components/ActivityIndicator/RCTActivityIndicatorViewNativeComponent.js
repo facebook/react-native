@@ -15,6 +15,7 @@ const requireNativeComponent = require('requireNativeComponent');
 import type {ViewProps} from 'ViewPropTypes';
 import type {ViewStyleProp} from 'StyleSheet';
 import type {NativeComponent} from 'ReactNative';
+import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -38,7 +39,7 @@ type NativeProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/activityindicator.html#color
    */
-  color?: ?string,
+  color?: ?(string | SemanticOrDynamicColorType),
 
   /**
    * Size of the indicator (default is 'small').
