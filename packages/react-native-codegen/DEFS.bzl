@@ -5,6 +5,7 @@ load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
     "APPLE",
+    "CXX",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
@@ -123,7 +124,7 @@ def rn_codegen(
         ],
         fbobjc_compiler_flags = get_apple_compiler_flags(),
         fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
-        platforms = (ANDROID, APPLE),
+        platforms = (ANDROID, APPLE, CXX),
         preprocessor_flags = [
             "-DLOG_TAG=\"ReactNative\"",
             "-DWITH_FBSYSTRACE=1",
@@ -159,7 +160,7 @@ def rn_codegen(
         ],
         contacts = ["oncall+react_native@xmail.facebook.com"],
         apple_sdks = (IOS, MACOSX),
-        platforms = (ANDROID, APPLE),
+        platforms = (ANDROID, APPLE, CXX),
         deps = [
             "fbsource//xplat/third-party/gmock:gtest",
             ":generated_components-{}".format(name),
