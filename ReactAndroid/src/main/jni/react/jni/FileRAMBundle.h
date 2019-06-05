@@ -25,7 +25,7 @@ class FileRAMBundle : public RAMBundle {
   std::string getSourcePath() const override;
   std::string getSourceURL() const override;
   std::unique_ptr<const JSBigString> getStartupScript() const override;
-  Module getModule(uint32_t moduleId) const override;
+  Module getModule(uint32_t moduleId, const char* bundlePrefix) const override;
   BundleType getBundleType() const override;
   
  private:

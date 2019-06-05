@@ -156,7 +156,8 @@ BundleRegistry::GetModuleLambda BundleRegistry::makeGetModuleLambda(std::string 
                                " is not a RAM bundle - GetModuleLambda cannot be used on it");
     }
 
-    return ramBundle->getModule(moduleId);
+    auto bundlePrefix = bundleName == "seg-0" ? nullptr : bundleName.c_str();
+    return ramBundle->getModule(moduleId, bundlePrefix);
   };
 }
 

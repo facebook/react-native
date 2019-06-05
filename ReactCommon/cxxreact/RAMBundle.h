@@ -30,7 +30,7 @@ class RAMBundle : public Bundle {
      */
     virtual std::string getSourcePath() const = 0;
     virtual std::unique_ptr<const JSBigString> getStartupScript() const = 0;
-    virtual Module getModule(uint32_t moduleId) const = 0;
+    virtual Module getModule(uint32_t moduleId, const char* bundlePrefix) const = 0;
 };
 
 } // react

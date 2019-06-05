@@ -105,14 +105,17 @@ BundleType FileRAMBundle::getBundleType() const {
   return BundleType::FileRAMBundle;
 }
 
-FileRAMBundle::Module FileRAMBundle::getModule(uint32_t moduleId) const {
+FileRAMBundle::Module FileRAMBundle::getModule(uint32_t moduleId, const char* bundlePrefix) const {
   // can be nullptr for default constructor.
   FBASSERTMSGF(
       assetManager_ != nullptr,
       "Unbundle has not been initialized with an asset manager");
   auto sourceUrl = folly::to<std::string>(moduleId, ".js");
-
   auto fileName = moduleDirectory_ + sourceUrl;
+  if (bundlePrefix) {
+    sourceUrl = folly::to<std::string>(bundlePrefix, "-", sourceUrl);
+  }
+
   auto asset = openAsset(assetManager_, fileName.c_str(), AASSET_MODE_BUFFER);
 
   const char* buffer = nullptr;
@@ -122,7 +125,7 @@ FileRAMBundle::Module FileRAMBundle::getModule(uint32_t moduleId) const {
   if (buffer == nullptr) {
     throw ModuleNotFound(moduleId);
   }
-  return {sourceUrl, std::string(buffer, AAsset_getLength(asset.get()))};
+  return { sourceUrl, std::string(buffer, AAsset_getLength(asset.get())) };
 }
 
 } // namespace react

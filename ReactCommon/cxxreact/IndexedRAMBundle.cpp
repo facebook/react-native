@@ -95,9 +95,12 @@ std::string IndexedRAMBundle::getSourcePath() const {
   return sourcePath_;
 }
 
-IndexedRAMBundle::Module IndexedRAMBundle::getModule(uint32_t moduleId) const {
+IndexedRAMBundle::Module IndexedRAMBundle::getModule(uint32_t moduleId, const char* bundlePrefix) const {
   Module ret;
   ret.name = folly::to<std::string>(moduleId, ".js");
+  if (bundlePrefix) {
+    ret.name = folly::to<std::string>(bundlePrefix, "-", ret.name);
+  }
   ret.code = getModuleCode(moduleId);
   return ret;
 }

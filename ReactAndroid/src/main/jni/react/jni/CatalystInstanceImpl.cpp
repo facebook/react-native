@@ -177,7 +177,6 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
     jni::alias_ref<JAssetManager::javaobject> assetManager,
     const std::string& assetURL,
     bool loadSynchronously) {
-
   std::unique_ptr<BundleLoader> bundleLoader = std::make_unique<AssetBundleLoader>(assetManager);
   instance_->runApplication(assetURL, std::move(bundleLoader), loadSynchronously);
 }
