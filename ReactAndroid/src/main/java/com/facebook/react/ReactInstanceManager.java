@@ -704,6 +704,15 @@ public class ReactInstanceManager {
   }
 
   @ThreadConfined(UI)
+  public void onWindowFocusChange(boolean hasFocus) {
+    UiThreadUtil.assertOnUiThread();
+    ReactContext currentContext = getCurrentReactContext();
+    if (currentContext != null) {
+      currentContext.onWindowFocusChange(hasFocus);
+    }
+  }
+
+  @ThreadConfined(UI)
   public void showDevOptionsDialog() {
     UiThreadUtil.assertOnUiThread();
     mDevSupportManager.showDevOptionsDialog();
