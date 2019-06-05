@@ -69,7 +69,7 @@ Pod::Spec.new do |s|
     ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags + ' ' + boost_compiler_flags
     ss.source_files         = "fabric/core/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "**/tests/*"
+    ss.exclude_files        = "**/tests/**/*"
     ss.header_dir           = "react/core"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
   end
