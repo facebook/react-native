@@ -946,10 +946,15 @@ var eventTypes = {
       .customBubblingEventTypes,
   customDirectEventTypes =
     ReactNativePrivateInterface.ReactNativeViewConfigRegistry
-      .customDirectEventTypes,
-  ReactNativeBridgeEventPlugin = {
-    eventTypes:
-      ReactNativePrivateInterface.ReactNativeViewConfigRegistry.eventTypes,
+      .customDirectEventTypes;
+injection.injectEventPluginOrder([
+  "ResponderEventPlugin",
+  "ReactNativeBridgeEventPlugin"
+]);
+injection.injectEventPluginsByName({
+  ResponderEventPlugin: ResponderEventPlugin,
+  ReactNativeBridgeEventPlugin: {
+    eventTypes: {},
     extractEvents: function(
       topLevelType,
       targetInst,
@@ -976,14 +981,7 @@ var eventTypes = {
       else return null;
       return topLevelType;
     }
-  };
-injection.injectEventPluginOrder([
-  "ResponderEventPlugin",
-  "ReactNativeBridgeEventPlugin"
-]);
-injection.injectEventPluginsByName({
-  ResponderEventPlugin: ResponderEventPlugin,
-  ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin
+  }
 });
 var instanceCache = {},
   instanceProps = {};

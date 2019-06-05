@@ -2462,11 +2462,9 @@ var customBubblingEventTypes =
 var customDirectEventTypes =
   ReactNativePrivateInterface.ReactNativeViewConfigRegistry
     .customDirectEventTypes;
-var eventTypes$1 =
-  ReactNativePrivateInterface.ReactNativeViewConfigRegistry.eventTypes;
 
 var ReactNativeBridgeEventPlugin = {
-  eventTypes: eventTypes$1,
+  eventTypes: {},
 
   /**
    * @see {EventPluginHub.extractEvents}
