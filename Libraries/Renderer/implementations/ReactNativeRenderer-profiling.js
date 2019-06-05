@@ -11,17 +11,11 @@
  */
 
 "use strict";
-require("InitializeCore");
-var ReactNativeViewConfigRegistry = require("ReactNativeViewConfigRegistry"),
-  UIManager = require("UIManager"),
-  RCTEventEmitter = require("RCTEventEmitter"),
+require("react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore");
+var ReactNativePrivateInterface = require("react-native/Libraries/ReactPrivate/ReactNativePrivateInterface"),
   React = require("react"),
-  deepDiffer = require("deepDiffer"),
-  flattenStyle = require("flattenStyle"),
-  TextInputState = require("TextInputState"),
   Scheduler = require("scheduler"),
-  tracing = require("scheduler/tracing"),
-  ExceptionsManager = require("ExceptionsManager");
+  tracing = require("scheduler/tracing");
 function ReactError(message) {
   message = Error(message);
   message.name = "Invariant Violation";
@@ -618,7 +612,7 @@ function changeResponder(nextResponderInst, blockHostResponder) {
       blockHostResponder
     );
 }
-var eventTypes$1 = {
+var eventTypes = {
     startShouldSetResponder: {
       phasedRegistrationNames: {
         bubbled: "onStartShouldSetResponder",
@@ -681,7 +675,7 @@ var eventTypes$1 = {
     _getResponder: function() {
       return responderInst;
     },
-    eventTypes: eventTypes$1,
+    eventTypes: eventTypes,
     extractEvents: function(
       topLevelType,
       targetInst,
@@ -710,12 +704,12 @@ var eventTypes$1 = {
           isMoveish(topLevelType))
       ) {
         var JSCompiler_temp = isStartish(topLevelType)
-          ? eventTypes$1.startShouldSetResponder
+          ? eventTypes.startShouldSetResponder
           : isMoveish(topLevelType)
-            ? eventTypes$1.moveShouldSetResponder
+            ? eventTypes.moveShouldSetResponder
             : "topSelectionChange" === topLevelType
-              ? eventTypes$1.selectionChangeShouldSetResponder
-              : eventTypes$1.scrollShouldSetResponder;
+              ? eventTypes.selectionChangeShouldSetResponder
+              : eventTypes.scrollShouldSetResponder;
         if (responderInst)
           b: {
             var JSCompiler_temp$jscomp$0 = responderInst;
@@ -801,7 +795,7 @@ var eventTypes$1 = {
         JSCompiler_temp && JSCompiler_temp !== responderInst
           ? ((JSCompiler_temp$jscomp$0 = void 0),
             (targetInst = ResponderSyntheticEvent.getPooled(
-              eventTypes$1.responderGrant,
+              eventTypes.responderGrant,
               JSCompiler_temp,
               nativeEvent,
               nativeEventTarget
@@ -811,7 +805,7 @@ var eventTypes$1 = {
             (depthA = !0 === executeDirectDispatch(targetInst)),
             responderInst
               ? ((tempA = ResponderSyntheticEvent.getPooled(
-                  eventTypes$1.responderTerminationRequest,
+                  eventTypes.responderTerminationRequest,
                   responderInst,
                   nativeEvent,
                   nativeEventTarget
@@ -823,7 +817,7 @@ var eventTypes$1 = {
                 tempA.isPersistent() || tempA.constructor.release(tempA),
                 tempB
                   ? ((tempA = ResponderSyntheticEvent.getPooled(
-                      eventTypes$1.responderTerminate,
+                      eventTypes.responderTerminate,
                       responderInst,
                       nativeEvent,
                       nativeEventTarget
@@ -837,7 +831,7 @@ var eventTypes$1 = {
                     )),
                     changeResponder(JSCompiler_temp, depthA))
                   : ((JSCompiler_temp = ResponderSyntheticEvent.getPooled(
-                      eventTypes$1.responderReject,
+                      eventTypes.responderReject,
                       JSCompiler_temp,
                       nativeEvent,
                       nativeEventTarget
@@ -867,11 +861,11 @@ var eventTypes$1 = {
         ("topTouchEnd" === topLevelType || "topTouchCancel" === topLevelType);
       if (
         (JSCompiler_temp$jscomp$0 = JSCompiler_temp$jscomp$0
-          ? eventTypes$1.responderStart
+          ? eventTypes.responderStart
           : targetInst
-            ? eventTypes$1.responderMove
+            ? eventTypes.responderMove
             : depthA
-              ? eventTypes$1.responderEnd
+              ? eventTypes.responderEnd
               : null)
       )
         (JSCompiler_temp$jscomp$0 = ResponderSyntheticEvent.getPooled(
@@ -925,9 +919,9 @@ var eventTypes$1 = {
         }
       if (
         (topLevelType = JSCompiler_temp$jscomp$0
-          ? eventTypes$1.responderTerminate
+          ? eventTypes.responderTerminate
           : topLevelType
-            ? eventTypes$1.responderRelease
+            ? eventTypes.responderRelease
             : null)
       )
         (nativeEvent = ResponderSyntheticEvent.getPooled(
@@ -949,8 +943,15 @@ var eventTypes$1 = {
       }
     }
   },
+  customBubblingEventTypes =
+    ReactNativePrivateInterface.ReactNativeViewConfigRegistry
+      .customBubblingEventTypes,
+  customDirectEventTypes =
+    ReactNativePrivateInterface.ReactNativeViewConfigRegistry
+      .customDirectEventTypes,
   ReactNativeBridgeEventPlugin = {
-    eventTypes: ReactNativeViewConfigRegistry.eventTypes,
+    eventTypes:
+      ReactNativePrivateInterface.ReactNativeViewConfigRegistry.eventTypes,
     extractEvents: function(
       topLevelType,
       targetInst,
@@ -958,10 +959,8 @@ var eventTypes$1 = {
       nativeEventTarget
     ) {
       if (null == targetInst) return null;
-      var bubbleDispatchConfig =
-          ReactNativeViewConfigRegistry.customBubblingEventTypes[topLevelType],
-        directDispatchConfig =
-          ReactNativeViewConfigRegistry.customDirectEventTypes[topLevelType];
+      var bubbleDispatchConfig = customBubblingEventTypes[topLevelType],
+        directDispatchConfig = customDirectEventTypes[topLevelType];
       if (!bubbleDispatchConfig && !directDispatchConfig)
         throw ReactError(
           'Unsupported top level event type "' + topLevelType + '" dispatched'
@@ -1061,7 +1060,7 @@ function _receiveRootNodeIDEvent(rootNodeID, topLevelType, nativeEventParam) {
     }
   });
 }
-RCTEventEmitter.register({
+ReactNativePrivateInterface.RCTEventEmitter.register({
   receiveEvent: function(rootNodeID, topLevelType, nativeEventParam) {
     _receiveRootNodeIDEvent(rootNodeID, topLevelType, nativeEventParam);
   },
@@ -1111,8 +1110,11 @@ getNodeFromInstance = function(inst) {
 ResponderEventPlugin.injection.injectGlobalResponderHandler({
   onChange: function(from, to, blockNativeResponder) {
     null !== to
-      ? UIManager.setJSResponder(to.stateNode._nativeTag, blockNativeResponder)
-      : UIManager.clearJSResponder();
+      ? ReactNativePrivateInterface.UIManager.setJSResponder(
+          to.stateNode._nativeTag,
+          blockNativeResponder
+        )
+      : ReactNativePrivateInterface.UIManager.clearJSResponder();
   }
 });
 var ReactSharedInternals =
@@ -1376,14 +1378,14 @@ function diffNestedProperty(
   return Array.isArray(prevProp)
     ? diffProperties(
         updatePayload,
-        flattenStyle(prevProp),
+        ReactNativePrivateInterface.flattenStyle(prevProp),
         nextProp,
         validAttributes
       )
     : diffProperties(
         updatePayload,
         prevProp,
-        flattenStyle(nextProp),
+        ReactNativePrivateInterface.flattenStyle(nextProp),
         validAttributes
       );
 }
@@ -1451,7 +1453,7 @@ function diffProperties(updatePayload, prevProps, nextProps, validAttributes) {
         if ("object" !== typeof attributeConfig)
           ("object" !== typeof nextProp ||
             null === nextProp ||
-            deepDiffer(prevProp, nextProp)) &&
+            ReactNativePrivateInterface.deepDiffer(prevProp, nextProp)) &&
             ((updatePayload || (updatePayload = {}))[propKey] = nextProp);
         else if (
           "function" === typeof attributeConfig.diff ||
@@ -1463,7 +1465,7 @@ function diffProperties(updatePayload, prevProps, nextProps, validAttributes) {
               ? attributeConfig.diff(prevProp, nextProp)
               : "object" !== typeof nextProp ||
                 null === nextProp ||
-                deepDiffer(prevProp, nextProp))
+                ReactNativePrivateInterface.deepDiffer(prevProp, nextProp))
           )
             (attributeConfig =
               "function" === typeof attributeConfig.process
@@ -1528,19 +1530,19 @@ var ReactNativeFiberHostComponent = (function() {
     this.viewConfig = viewConfig;
   }
   ReactNativeFiberHostComponent.prototype.blur = function() {
-    TextInputState.blurTextInput(this._nativeTag);
+    ReactNativePrivateInterface.TextInputState.blurTextInput(this._nativeTag);
   };
   ReactNativeFiberHostComponent.prototype.focus = function() {
-    TextInputState.focusTextInput(this._nativeTag);
+    ReactNativePrivateInterface.TextInputState.focusTextInput(this._nativeTag);
   };
   ReactNativeFiberHostComponent.prototype.measure = function(callback) {
-    UIManager.measure(
+    ReactNativePrivateInterface.UIManager.measure(
       this._nativeTag,
       mountSafeCallback_NOT_REALLY_SAFE(this, callback)
     );
   };
   ReactNativeFiberHostComponent.prototype.measureInWindow = function(callback) {
-    UIManager.measureInWindow(
+    ReactNativePrivateInterface.UIManager.measureInWindow(
       this._nativeTag,
       mountSafeCallback_NOT_REALLY_SAFE(this, callback)
     );
@@ -1559,7 +1561,7 @@ var ReactNativeFiberHostComponent = (function() {
           relativeToNativeNode.canonical._nativeTag &&
           (relativeNode = relativeToNativeNode.canonical._nativeTag);
     null != relativeNode &&
-      UIManager.measureLayout(
+      ReactNativePrivateInterface.UIManager.measureLayout(
         this._nativeTag,
         relativeNode,
         mountSafeCallback_NOT_REALLY_SAFE(this, onFail),
@@ -1576,7 +1578,7 @@ var ReactNativeFiberHostComponent = (function() {
       this.viewConfig.validAttributes
     );
     null != nativeProps &&
-      UIManager.updateView(
+      ReactNativePrivateInterface.UIManager.updateView(
         this._nativeTag,
         this.viewConfig.uiViewClassName,
         nativeProps
@@ -1589,7 +1591,9 @@ function shim$1() {
     "The current renderer does not support hydration. This error is likely caused by a bug in React. Please file an issue."
   );
 }
-var UPDATE_SIGNAL = {},
+var getViewConfigForType =
+    ReactNativePrivateInterface.ReactNativeViewConfigRegistry.get,
+  UPDATE_SIGNAL = {},
   nextReactTag = 3;
 function allocateTag() {
   var tag = nextReactTag;
@@ -1612,7 +1616,10 @@ function finalizeInitialChildren(parentInstance) {
   var nativeTags = parentInstance._children.map(function(child) {
     return "number" === typeof child ? child : child._nativeTag;
   });
-  UIManager.setChildren(parentInstance._nativeTag, nativeTags);
+  ReactNativePrivateInterface.UIManager.setChildren(
+    parentInstance._nativeTag,
+    nativeTags
+  );
   return !1;
 }
 var scheduleTimeout = setTimeout,
@@ -4621,14 +4628,14 @@ function completeWork(current, workInProgress, renderExpirationTime) {
       else if (newProps) {
         current = requiredContext(contextStackCursor$1.current);
         var tag = allocateTag(),
-          viewConfig = ReactNativeViewConfigRegistry.get(type),
+          viewConfig = getViewConfigForType(type),
           updatePayload = diffProperties(
             null,
             emptyObject,
             newProps,
             viewConfig.validAttributes
           );
-        UIManager.createView(
+        ReactNativePrivateInterface.UIManager.createView(
           tag,
           viewConfig.uiViewClassName,
           renderExpirationTime,
@@ -4671,9 +4678,12 @@ function completeWork(current, workInProgress, renderExpirationTime) {
             "Text strings must be rendered within a <Text> component."
           );
         renderExpirationTime = allocateTag();
-        UIManager.createView(renderExpirationTime, "RCTRawText", current, {
-          text: newProps
-        });
+        ReactNativePrivateInterface.UIManager.createView(
+          renderExpirationTime,
+          "RCTRawText",
+          current,
+          { text: newProps }
+        );
         instanceCache[renderExpirationTime] = workInProgress;
         workInProgress.stateNode = renderExpirationTime;
       }
@@ -4769,7 +4779,7 @@ function logCapturedError(capturedError) {
       "string" === typeof error
         ? Error(error + "\n\nThis error is located at:" + componentStack)
         : Error("Unspecified error at:" + componentStack);
-  ExceptionsManager.handleException(error, !1);
+  ReactNativePrivateInterface.ExceptionsManager.handleException(error, !1);
 }
 var PossiblyWeakSet$1 = "function" === typeof WeakSet ? WeakSet : Set;
 function logError(boundary, errorInfo) {
@@ -4841,7 +4851,7 @@ function hideOrUnhideAllChildren(finishedWork, isHidden) {
           { style: { display: "none" } },
           viewConfig.validAttributes
         );
-        UIManager.updateView(
+        ReactNativePrivateInterface.UIManager.updateView(
           instance._nativeTag,
           viewConfig.uiViewClassName,
           updatePayload
@@ -4859,7 +4869,7 @@ function hideOrUnhideAllChildren(finishedWork, isHidden) {
           updatePayload,
           viewConfig.validAttributes
         );
-        UIManager.updateView(
+        ReactNativePrivateInterface.UIManager.updateView(
           instance._nativeTag,
           viewConfig.uiViewClassName,
           updatePayload
@@ -5012,7 +5022,7 @@ function commitPlacement(finishedWork) {
             ? (children.splice(index, 1),
               (beforeChild = children.indexOf(beforeChild)),
               children.splice(beforeChild, 0, stateNode),
-              UIManager.manageChildren(
+              ReactNativePrivateInterface.UIManager.manageChildren(
                 parentInstance._nativeTag,
                 [index],
                 [beforeChild],
@@ -5022,7 +5032,7 @@ function commitPlacement(finishedWork) {
               ))
             : ((index = children.indexOf(beforeChild)),
               children.splice(index, 0, stateNode),
-              UIManager.manageChildren(
+              ReactNativePrivateInterface.UIManager.manageChildren(
                 parentInstance._nativeTag,
                 [],
                 [],
@@ -5037,7 +5047,7 @@ function commitPlacement(finishedWork) {
         }
       else
         isContainer
-          ? UIManager.setChildren(parent, [
+          ? ReactNativePrivateInterface.UIManager.setChildren(parent, [
               "number" === typeof stateNode ? stateNode : stateNode._nativeTag
             ])
           : ((parentInstance = parent),
@@ -5048,7 +5058,7 @@ function commitPlacement(finishedWork) {
             0 <= beforeChild
               ? (index.splice(beforeChild, 1),
                 index.push(stateNode),
-                UIManager.manageChildren(
+                ReactNativePrivateInterface.UIManager.manageChildren(
                   parentInstance._nativeTag,
                   [beforeChild],
                   [index.length - 1],
@@ -5057,7 +5067,7 @@ function commitPlacement(finishedWork) {
                   []
                 ))
               : (index.push(stateNode),
-                UIManager.manageChildren(
+                ReactNativePrivateInterface.UIManager.manageChildren(
                   parentInstance._nativeTag,
                   [],
                   [],
@@ -5134,7 +5144,14 @@ function unmountHostComponents(current$$1) {
       if (currentParentIsContainer)
         (root = currentParent),
           recursivelyUncacheFiberNode(node.stateNode),
-          UIManager.manageChildren(root, [], [], [], [], [0]);
+          ReactNativePrivateInterface.UIManager.manageChildren(
+            root,
+            [],
+            [],
+            [],
+            [],
+            [0]
+          );
       else {
         root = currentParent;
         var child = node.stateNode;
@@ -5142,7 +5159,14 @@ function unmountHostComponents(current$$1) {
         node$jscomp$0 = root._children;
         child = node$jscomp$0.indexOf(child);
         node$jscomp$0.splice(child, 1);
-        UIManager.manageChildren(root._nativeTag, [], [], [], [], [child]);
+        ReactNativePrivateInterface.UIManager.manageChildren(
+          root._nativeTag,
+          [],
+          [],
+          [],
+          [],
+          [child]
+        );
       }
     } else if (4 === node.tag) {
       if (null !== node.child) {
@@ -5194,7 +5218,7 @@ function commitWork(current$$1, finishedWork) {
             finishedWork.validAttributes
           )),
           null != newProps &&
-            UIManager.updateView(
+            ReactNativePrivateInterface.UIManager.updateView(
               instance._nativeTag,
               finishedWork.uiViewClassName,
               newProps
@@ -5206,9 +5230,11 @@ function commitWork(current$$1, finishedWork) {
         throw ReactError(
           "This should have a text node initialized. This error is likely caused by a bug in React. Please file an issue."
         );
-      UIManager.updateView(finishedWork.stateNode, "RCTRawText", {
-        text: finishedWork.memoizedProps
-      });
+      ReactNativePrivateInterface.UIManager.updateView(
+        finishedWork.stateNode,
+        "RCTRawText",
+        { text: finishedWork.memoizedProps }
+      );
       break;
     case 20:
       break;
@@ -7137,10 +7163,14 @@ var roots = new Map(),
         }
         _inherits(ReactNativeComponent, _React$Component);
         ReactNativeComponent.prototype.blur = function() {
-          TextInputState.blurTextInput(findNodeHandle(this));
+          ReactNativePrivateInterface.TextInputState.blurTextInput(
+            findNodeHandle(this)
+          );
         };
         ReactNativeComponent.prototype.focus = function() {
-          TextInputState.focusTextInput(findNodeHandle(this));
+          ReactNativePrivateInterface.TextInputState.focusTextInput(
+            findNodeHandle(this)
+          );
         };
         ReactNativeComponent.prototype.measure = function(callback) {
           var maybeInstance = void 0;
@@ -7153,7 +7183,7 @@ var roots = new Map(),
                   maybeInstance.node,
                   mountSafeCallback_NOT_REALLY_SAFE(this, callback)
                 )
-              : UIManager.measure(
+              : ReactNativePrivateInterface.UIManager.measure(
                   findNodeHandle(this),
                   mountSafeCallback_NOT_REALLY_SAFE(this, callback)
                 ));
@@ -7169,7 +7199,7 @@ var roots = new Map(),
                   maybeInstance.node,
                   mountSafeCallback_NOT_REALLY_SAFE(this, callback)
                 )
-              : UIManager.measureInWindow(
+              : ReactNativePrivateInterface.UIManager.measureInWindow(
                   findNodeHandle(this),
                   mountSafeCallback_NOT_REALLY_SAFE(this, callback)
                 ));
@@ -7191,7 +7221,7 @@ var roots = new Map(),
               : relativeToNativeNode._nativeTag &&
                 (maybeInstance = relativeToNativeNode._nativeTag),
             null != maybeInstance &&
-              UIManager.measureLayout(
+              ReactNativePrivateInterface.UIManager.measureLayout(
                 findNodeHandle(this),
                 maybeInstance,
                 mountSafeCallback_NOT_REALLY_SAFE(this, onFail),
@@ -7215,7 +7245,7 @@ var roots = new Map(),
               maybeInstance.validAttributes
             );
             null != nativeProps &&
-              UIManager.updateView(
+              ReactNativePrivateInterface.UIManager.updateView(
                 nativeTag,
                 maybeInstance.uiViewClassName,
                 nativeProps
@@ -7235,7 +7265,7 @@ var roots = new Map(),
           handle.viewConfig.validAttributes
         )),
         null != nativeProps &&
-          UIManager.updateView(
+          ReactNativePrivateInterface.UIManager.updateView(
             handle._nativeTag,
             handle.viewConfig.uiViewClassName,
             nativeProps
@@ -7273,7 +7303,7 @@ var roots = new Map(),
     },
     unmountComponentAtNodeAndRemoveContainer: function(containerTag) {
       ReactNativeRenderer.unmountComponentAtNode(containerTag);
-      UIManager.removeRootView(containerTag);
+      ReactNativePrivateInterface.UIManager.removeRootView(containerTag);
     },
     createPortal: function(children, containerTag) {
       return createPortal(
@@ -7298,7 +7328,7 @@ var roots = new Map(),
                     maybeInstance.node,
                     mountSafeCallback_NOT_REALLY_SAFE(this, callback)
                   )
-                : UIManager.measure(
+                : ReactNativePrivateInterface.UIManager.measure(
                     findNodeHandle(this),
                     mountSafeCallback_NOT_REALLY_SAFE(this, callback)
                   ));
@@ -7314,7 +7344,7 @@ var roots = new Map(),
                     maybeInstance.node,
                     mountSafeCallback_NOT_REALLY_SAFE(this, callback)
                   )
-                : UIManager.measureInWindow(
+                : ReactNativePrivateInterface.UIManager.measureInWindow(
                     findNodeHandle(this),
                     mountSafeCallback_NOT_REALLY_SAFE(this, callback)
                   ));
@@ -7332,7 +7362,7 @@ var roots = new Map(),
                 : relativeToNativeNode._nativeTag &&
                   (maybeInstance = relativeToNativeNode._nativeTag),
               null != maybeInstance &&
-                UIManager.measureLayout(
+                ReactNativePrivateInterface.UIManager.measureLayout(
                   findNodeHandle(this),
                   maybeInstance,
                   mountSafeCallback_NOT_REALLY_SAFE(this, onFail),
@@ -7356,7 +7386,7 @@ var roots = new Map(),
                 maybeInstance.validAttributes
               );
               null != nativeProps &&
-                UIManager.updateView(
+                ReactNativePrivateInterface.UIManager.updateView(
                   nativeTag,
                   maybeInstance.uiViewClassName,
                   nativeProps
@@ -7364,10 +7394,14 @@ var roots = new Map(),
             }
           },
           focus: function() {
-            TextInputState.focusTextInput(findNodeHandle(this));
+            ReactNativePrivateInterface.TextInputState.focusTextInput(
+              findNodeHandle(this)
+            );
           },
           blur: function() {
-            TextInputState.blurTextInput(findNodeHandle(this));
+            ReactNativePrivateInterface.TextInputState.blurTextInput(
+              findNodeHandle(this)
+            );
           }
         };
       })(findNodeHandle, findHostInstance),

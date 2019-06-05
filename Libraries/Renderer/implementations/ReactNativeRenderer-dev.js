@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @noflow
- * @providesModule ReactFabric-dev
+ * @providesModule ReactNativeRenderer-dev
  * @preventMunge
  * @generated
  */
@@ -16,19 +16,12 @@ if (__DEV__) {
   (function() {
 "use strict";
 
-require("InitializeCore");
-var ReactNativeViewConfigRegistry = require("ReactNativeViewConfigRegistry");
-var UIManager = require("UIManager");
+require("react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore");
+var ReactNativePrivateInterface = require("react-native/Libraries/ReactPrivate/ReactNativePrivateInterface");
 var React = require("react");
-var deepDiffer = require("deepDiffer");
-var flattenStyle = require("flattenStyle");
-var deepFreezeAndThrowOnMutationInDev = require("deepFreezeAndThrowOnMutationInDev");
-var TextInputState = require("TextInputState");
-var FabricUIManager = require("FabricUIManager");
 var checkPropTypes = require("prop-types/checkPropTypes");
 var Scheduler = require("scheduler");
 var tracing = require("scheduler/tracing");
-var ExceptionsManager = require("ExceptionsManager");
 
 // Do not require this module directly! Use a normal error constructor with
 // template literal strings. The messages will be converted to ReactError during
@@ -1561,7 +1554,7 @@ function getPooledWarningPropertyDefinition(propName, getVal) {
   return {
     configurable: true,
     set: set,
-    get: get$$1
+    get: get
   };
 
   function set(val) {
@@ -1570,7 +1563,7 @@ function getPooledWarningPropertyDefinition(propName, getVal) {
     return val;
   }
 
-  function get$$1() {
+  function get() {
     var action = isFunction ? "accessing the method" : "accessing the property";
     var result = isFunction
       ? "This is a no-op function"
@@ -1913,7 +1906,7 @@ var changeResponder = function(nextResponderInst, blockHostResponder) {
   }
 };
 
-var eventTypes$1 = {
+var eventTypes = {
   /**
    * On a `touchStart`/`mouseDown`, is it desired that this element become the
    * responder?
@@ -2204,12 +2197,12 @@ function setResponderAndExtractTransfer(
   nativeEventTarget
 ) {
   var shouldSetEventType = isStartish(topLevelType)
-    ? eventTypes$1.startShouldSetResponder
+    ? eventTypes.startShouldSetResponder
     : isMoveish(topLevelType)
-      ? eventTypes$1.moveShouldSetResponder
+      ? eventTypes.moveShouldSetResponder
       : topLevelType === TOP_SELECTION_CHANGE
-        ? eventTypes$1.selectionChangeShouldSetResponder
-        : eventTypes$1.scrollShouldSetResponder;
+        ? eventTypes.selectionChangeShouldSetResponder
+        : eventTypes.scrollShouldSetResponder;
 
   // TODO: stop one short of the current responder.
   var bubbleShouldSetFrom = !responderInst
@@ -2243,7 +2236,7 @@ function setResponderAndExtractTransfer(
   }
   var extracted = void 0;
   var grantEvent = ResponderSyntheticEvent.getPooled(
-    eventTypes$1.responderGrant,
+    eventTypes.responderGrant,
     wantsResponderInst,
     nativeEvent,
     nativeEventTarget
@@ -2254,7 +2247,7 @@ function setResponderAndExtractTransfer(
   var blockHostResponder = executeDirectDispatch(grantEvent) === true;
   if (responderInst) {
     var terminationRequestEvent = ResponderSyntheticEvent.getPooled(
-      eventTypes$1.responderTerminationRequest,
+      eventTypes.responderTerminationRequest,
       responderInst,
       nativeEvent,
       nativeEventTarget
@@ -2271,7 +2264,7 @@ function setResponderAndExtractTransfer(
 
     if (shouldSwitch) {
       var terminateEvent = ResponderSyntheticEvent.getPooled(
-        eventTypes$1.responderTerminate,
+        eventTypes.responderTerminate,
         responderInst,
         nativeEvent,
         nativeEventTarget
@@ -2282,7 +2275,7 @@ function setResponderAndExtractTransfer(
       changeResponder(wantsResponderInst, blockHostResponder);
     } else {
       var rejectEvent = ResponderSyntheticEvent.getPooled(
-        eventTypes$1.responderReject,
+        eventTypes.responderReject,
         wantsResponderInst,
         nativeEvent,
         nativeEventTarget
@@ -2351,7 +2344,7 @@ var ResponderEventPlugin = {
     return responderInst;
   },
 
-  eventTypes: eventTypes$1,
+  eventTypes: eventTypes,
 
   /**
    * We must be resilient to `targetInst` being `null` on `touchMove` or
@@ -2401,11 +2394,11 @@ var ResponderEventPlugin = {
     var isResponderTouchMove = responderInst && isMoveish(topLevelType);
     var isResponderTouchEnd = responderInst && isEndish(topLevelType);
     var incrementalTouch = isResponderTouchStart
-      ? eventTypes$1.responderStart
+      ? eventTypes.responderStart
       : isResponderTouchMove
-        ? eventTypes$1.responderMove
+        ? eventTypes.responderMove
         : isResponderTouchEnd
-          ? eventTypes$1.responderEnd
+          ? eventTypes.responderEnd
           : null;
 
     if (incrementalTouch) {
@@ -2428,9 +2421,9 @@ var ResponderEventPlugin = {
       isEndish(topLevelType) &&
       noResponderTouches(nativeEvent);
     var finalTouch = isResponderTerminate
-      ? eventTypes$1.responderTerminate
+      ? eventTypes.responderTerminate
       : isResponderRelease
-        ? eventTypes$1.responderRelease
+        ? eventTypes.responderRelease
         : null;
     if (finalTouch) {
       var finalEvent = ResponderSyntheticEvent.getPooled(
@@ -2462,8 +2455,18 @@ var ResponderEventPlugin = {
   }
 };
 
+// Module provided by RN:
+var customBubblingEventTypes =
+  ReactNativePrivateInterface.ReactNativeViewConfigRegistry
+    .customBubblingEventTypes;
+var customDirectEventTypes =
+  ReactNativePrivateInterface.ReactNativeViewConfigRegistry
+    .customDirectEventTypes;
+var eventTypes$1 =
+  ReactNativePrivateInterface.ReactNativeViewConfigRegistry.eventTypes;
+
 var ReactNativeBridgeEventPlugin = {
-  eventTypes: ReactNativeViewConfigRegistry.eventTypes,
+  eventTypes: eventTypes$1,
 
   /**
    * @see {EventPluginHub.extractEvents}
@@ -2478,10 +2481,8 @@ var ReactNativeBridgeEventPlugin = {
       // Probably a node belonging to another renderer's tree.
       return null;
     }
-    var bubbleDispatchConfig =
-      ReactNativeViewConfigRegistry.customBubblingEventTypes[topLevelType];
-    var directDispatchConfig =
-      ReactNativeViewConfigRegistry.customDirectEventTypes[topLevelType];
+    var bubbleDispatchConfig = customBubblingEventTypes[topLevelType];
+    var directDispatchConfig = customDirectEventTypes[topLevelType];
     (function() {
       if (!(bubbleDispatchConfig || directDispatchConfig)) {
         throw ReactError(
@@ -2532,12 +2533,27 @@ injection.injectEventPluginsByName({
   ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin
 });
 
-function getInstanceFromInstance(instanceHandle) {
-  return instanceHandle;
+var instanceCache = {};
+var instanceProps = {};
+
+function precacheFiberNode(hostInst, tag) {
+  instanceCache[tag] = hostInst;
+}
+
+function uncacheFiberNode(tag) {
+  delete instanceCache[tag];
+  delete instanceProps[tag];
+}
+
+function getInstanceFromTag(tag) {
+  return instanceCache[tag] || null;
 }
 
 function getTagFromInstance(inst) {
-  var tag = inst.stateNode.canonical._nativeTag;
+  var tag = inst.stateNode._nativeTag;
+  if (tag === undefined) {
+    tag = inst.stateNode.canonical._nativeTag;
+  }
   (function() {
     if (!tag) {
       throw ReactError("All native instances should have a tag.");
@@ -2546,30 +2562,288 @@ function getTagFromInstance(inst) {
   return tag;
 }
 
-function getFiberCurrentPropsFromNode$1(inst) {
-  return inst.canonical.currentProps;
+function getFiberCurrentPropsFromNode$1(stateNode) {
+  return instanceProps[stateNode._nativeTag] || null;
+}
+
+function updateFiberProps(tag, props) {
+  instanceProps[tag] = props;
+}
+
+// Use to restore controlled state after a change event has fired.
+
+var restoreImpl = null;
+var restoreTarget = null;
+var restoreQueue = null;
+
+function restoreStateOfTarget(target) {
+  // We perform this translation at the end of the event loop so that we
+  // always receive the correct fiber here
+  var internalInstance = getInstanceFromNode(target);
+  if (!internalInstance) {
+    // Unmounted
+    return;
+  }
+  (function() {
+    if (!(typeof restoreImpl === "function")) {
+      throw ReactError(
+        "setRestoreImplementation() needs to be called to handle a target for controlled events. This error is likely caused by a bug in React. Please file an issue."
+      );
+    }
+  })();
+  var props = getFiberCurrentPropsFromNode(internalInstance.stateNode);
+  restoreImpl(internalInstance.stateNode, internalInstance.type, props);
+}
+
+function needsStateRestore() {
+  return restoreTarget !== null || restoreQueue !== null;
+}
+
+function restoreStateIfNeeded() {
+  if (!restoreTarget) {
+    return;
+  }
+  var target = restoreTarget;
+  var queuedTargets = restoreQueue;
+  restoreTarget = null;
+  restoreQueue = null;
+
+  restoreStateOfTarget(target);
+  if (queuedTargets) {
+    for (var i = 0; i < queuedTargets.length; i++) {
+      restoreStateOfTarget(queuedTargets[i]);
+    }
+  }
+}
+
+// Used as a way to call batchedUpdates when we don't have a reference to
+// the renderer. Such as when we're dispatching events or if third party
+// libraries need to call batchedUpdates. Eventually, this API will go away when
+// everything is batched by default. We'll then have a similar API to opt-out of
+// scheduled work and instead do synchronous work.
+
+// Defaults
+var _batchedUpdatesImpl = function(fn, bookkeeping) {
+  return fn(bookkeeping);
+};
+var _flushInteractiveUpdatesImpl = function() {};
+
+var isBatching = false;
+function batchedUpdates(fn, bookkeeping) {
+  if (isBatching) {
+    // If we are currently inside another batch, we need to wait until it
+    // fully completes before restoring state.
+    return fn(bookkeeping);
+  }
+  isBatching = true;
+  try {
+    return _batchedUpdatesImpl(fn, bookkeeping);
+  } finally {
+    // Here we wait until all updates have propagated, which is important
+    // when using controlled components within layers:
+    // https://github.com/facebook/react/issues/1698
+    // Then we restore state of any controlled component.
+    isBatching = false;
+    var controlledComponentsHavePendingUpdates = needsStateRestore();
+    if (controlledComponentsHavePendingUpdates) {
+      // If a controlled event was fired, we may need to restore the state of
+      // the DOM node back to the controlled value. This is necessary when React
+      // bails out of the update without touching the DOM.
+      _flushInteractiveUpdatesImpl();
+      restoreStateIfNeeded();
+    }
+  }
+}
+
+function setBatchingImplementation(
+  batchedUpdatesImpl,
+  interactiveUpdatesImpl,
+  flushInteractiveUpdatesImpl
+) {
+  _batchedUpdatesImpl = batchedUpdatesImpl;
+  _flushInteractiveUpdatesImpl = flushInteractiveUpdatesImpl;
+}
+
+/**
+ * Version of `ReactBrowserEventEmitter` that works on the receiving side of a
+ * serialized worker boundary.
+ */
+
+// Shared default empty native event - conserve memory.
+var EMPTY_NATIVE_EVENT = {};
+
+/**
+ * Selects a subsequence of `Touch`es, without destroying `touches`.
+ *
+ * @param {Array<Touch>} touches Deserialized touch objects.
+ * @param {Array<number>} indices Indices by which to pull subsequence.
+ * @return {Array<Touch>} Subsequence of touch objects.
+ */
+var touchSubsequence = function(touches, indices) {
+  var ret = [];
+  for (var i = 0; i < indices.length; i++) {
+    ret.push(touches[indices[i]]);
+  }
+  return ret;
+};
+
+/**
+ * TODO: Pool all of this.
+ *
+ * Destroys `touches` by removing touch objects at indices `indices`. This is
+ * to maintain compatibility with W3C touch "end" events, where the active
+ * touches don't include the set that has just been "ended".
+ *
+ * @param {Array<Touch>} touches Deserialized touch objects.
+ * @param {Array<number>} indices Indices to remove from `touches`.
+ * @return {Array<Touch>} Subsequence of removed touch objects.
+ */
+var removeTouchesAtIndices = function(touches, indices) {
+  var rippedOut = [];
+  // use an unsafe downcast to alias to nullable elements,
+  // so we can delete and then compact.
+  var temp = touches;
+  for (var i = 0; i < indices.length; i++) {
+    var index = indices[i];
+    rippedOut.push(touches[index]);
+    temp[index] = null;
+  }
+  var fillAt = 0;
+  for (var j = 0; j < temp.length; j++) {
+    var cur = temp[j];
+    if (cur !== null) {
+      temp[fillAt++] = cur;
+    }
+  }
+  temp.length = fillAt;
+  return rippedOut;
+};
+
+/**
+ * Internal version of `receiveEvent` in terms of normalized (non-tag)
+ * `rootNodeID`.
+ *
+ * @see receiveEvent.
+ *
+ * @param {rootNodeID} rootNodeID React root node ID that event occurred on.
+ * @param {TopLevelType} topLevelType Top level type of event.
+ * @param {?object} nativeEventParam Object passed from native.
+ */
+function _receiveRootNodeIDEvent(rootNodeID, topLevelType, nativeEventParam) {
+  var nativeEvent = nativeEventParam || EMPTY_NATIVE_EVENT;
+  var inst = getInstanceFromTag(rootNodeID);
+  batchedUpdates(function() {
+    runExtractedPluginEventsInBatch(
+      topLevelType,
+      inst,
+      nativeEvent,
+      nativeEvent.target
+    );
+  });
+  // React Native doesn't use ReactControlledComponent but if it did, here's
+  // where it would do it.
+}
+
+/**
+ * Publicly exposed method on module for native objc to invoke when a top
+ * level event is extracted.
+ * @param {rootNodeID} rootNodeID React root node ID that event occurred on.
+ * @param {TopLevelType} topLevelType Top level type of event.
+ * @param {object} nativeEventParam Object passed from native.
+ */
+function receiveEvent(rootNodeID, topLevelType, nativeEventParam) {
+  _receiveRootNodeIDEvent(rootNodeID, topLevelType, nativeEventParam);
+}
+
+/**
+ * Simple multi-wrapper around `receiveEvent` that is intended to receive an
+ * efficient representation of `Touch` objects, and other information that
+ * can be used to construct W3C compliant `Event` and `Touch` lists.
+ *
+ * This may create dispatch behavior that differs than web touch handling. We
+ * loop through each of the changed touches and receive it as a single event.
+ * So two `touchStart`/`touchMove`s that occur simultaneously are received as
+ * two separate touch event dispatches - when they arguably should be one.
+ *
+ * This implementation reuses the `Touch` objects themselves as the `Event`s
+ * since we dispatch an event for each touch (though that might not be spec
+ * compliant). The main purpose of reusing them is to save allocations.
+ *
+ * TODO: Dispatch multiple changed touches in one event. The bubble path
+ * could be the first common ancestor of all the `changedTouches`.
+ *
+ * One difference between this behavior and W3C spec: cancelled touches will
+ * not appear in `.touches`, or in any future `.touches`, though they may
+ * still be "actively touching the surface".
+ *
+ * Web desktop polyfills only need to construct a fake touch event with
+ * identifier 0, also abandoning traditional click handlers.
+ */
+function receiveTouches(eventTopLevelType, touches, changedIndices) {
+  var changedTouches =
+    eventTopLevelType === "topTouchEnd" ||
+    eventTopLevelType === "topTouchCancel"
+      ? removeTouchesAtIndices(touches, changedIndices)
+      : touchSubsequence(touches, changedIndices);
+
+  for (var jj = 0; jj < changedTouches.length; jj++) {
+    var touch = changedTouches[jj];
+    // Touch objects can fulfill the role of `DOM` `Event` objects if we set
+    // the `changedTouches`/`touches`. This saves allocations.
+    touch.changedTouches = changedTouches;
+    touch.touches = touches;
+    var nativeEvent = touch;
+    var rootNodeID = null;
+    var target = nativeEvent.target;
+    if (target !== null && target !== undefined) {
+      if (target < 1) {
+        {
+          warningWithoutStack$1(
+            false,
+            "A view is reporting that a touch occurred on tag zero."
+          );
+        }
+      } else {
+        rootNodeID = target;
+      }
+    }
+    // $FlowFixMe Shouldn't we *not* call it if rootNodeID is null?
+    _receiveRootNodeIDEvent(rootNodeID, eventTopLevelType, nativeEvent);
+  }
 }
 
 // Module provided by RN:
-var ReactFabricGlobalResponderHandler = {
+var ReactNativeGlobalResponderHandler = {
   onChange: function(from, to, blockNativeResponder) {
     if (to !== null) {
-      var tag = to.stateNode.canonical._nativeTag;
-      UIManager.setJSResponder(tag, blockNativeResponder);
+      var tag = to.stateNode._nativeTag;
+      ReactNativePrivateInterface.UIManager.setJSResponder(
+        tag,
+        blockNativeResponder
+      );
     } else {
-      UIManager.clearJSResponder();
+      ReactNativePrivateInterface.UIManager.clearJSResponder();
     }
   }
 };
 
+// Module provided by RN:
+/**
+ * Register the event emitter with the native bridge
+ */
+ReactNativePrivateInterface.RCTEventEmitter.register({
+  receiveEvent: receiveEvent,
+  receiveTouches: receiveTouches
+});
+
 setComponentTree(
   getFiberCurrentPropsFromNode$1,
-  getInstanceFromInstance,
+  getInstanceFromTag,
   getTagFromInstance
 );
 
 ResponderEventPlugin.injection.injectGlobalResponderHandler(
-  ReactFabricGlobalResponderHandler
+  ReactNativeGlobalResponderHandler
 );
 
 /**
@@ -2588,7 +2862,7 @@ ResponderEventPlugin.injection.injectGlobalResponderHandler(
  * supported we can rename it.
  */
 
-function get$1(key) {
+function get(key) {
   return key._reactInternalFiber;
 }
 
@@ -2855,7 +3129,7 @@ function isMounted(component) {
     }
   }
 
-  var fiber = get$1(component);
+  var fiber = get(component);
   if (!fiber) {
     return false;
   }
@@ -3052,77 +3326,6 @@ function findCurrentHostFiber(parent) {
   return null;
 }
 
-/**
- * In the future, we should cleanup callbacks by cancelling them instead of
- * using this.
- */
-function mountSafeCallback_NOT_REALLY_SAFE(context, callback) {
-  return function() {
-    if (!callback) {
-      return undefined;
-    }
-    // This protects against createClass() components.
-    // We don't know if there is code depending on it.
-    // We intentionally don't use isMounted() because even accessing
-    // isMounted property on a React ES6 class will trigger a warning.
-    if (typeof context.__isMounted === "boolean") {
-      if (!context.__isMounted) {
-        return undefined;
-      }
-    }
-
-    // FIXME: there used to be other branches that protected
-    // against unmounted host components. But RN host components don't
-    // define isMounted() anymore, so those checks didn't do anything.
-
-    // They caused false positive warning noise so we removed them:
-    // https://github.com/facebook/react-native/issues/18868#issuecomment-413579095
-
-    // However, this means that the callback is NOT guaranteed to be safe
-    // for host components. The solution we should implement is to make
-    // UIManager.measure() and similar calls truly cancelable. Then we
-    // can change our own code calling them to cancel when something unmounts.
-
-    return callback.apply(context, arguments);
-  };
-}
-
-function throwOnStylesProp(component, props) {
-  if (props.styles !== undefined) {
-    var owner = component._owner || null;
-    var name = component.constructor.displayName;
-    var msg =
-      "`styles` is not a supported property of `" +
-      name +
-      "`, did " +
-      "you mean `style` (singular)?";
-    if (owner && owner.constructor && owner.constructor.displayName) {
-      msg +=
-        "\n\nCheck the `" +
-        owner.constructor.displayName +
-        "` parent " +
-        " component.";
-    }
-    throw new Error(msg);
-  }
-}
-
-function warnForStyleProps(props, validAttributes) {
-  for (var key in validAttributes.style) {
-    if (!(validAttributes[key] || props[key] === undefined)) {
-      console.error(
-        "You are setting the style `{ " +
-          key +
-          ": ... }` as a prop. You " +
-          "should nest it in a style object. " +
-          "E.g. `{ style: { " +
-          key +
-          ": ... } }`"
-      );
-    }
-  }
-}
-
 // Modules provided by RN:
 var emptyObject = {};
 
@@ -3145,7 +3348,7 @@ function defaultDiffer(prevProp, nextProp) {
     return true;
   } else {
     // For objects and arrays, the default diffing algorithm is a deep compare
-    return deepDiffer(prevProp, nextProp);
+    return ReactNativePrivateInterface.deepDiffer(prevProp, nextProp);
   }
 }
 
@@ -3285,7 +3488,7 @@ function diffNestedProperty(
     return diffProperties(
       updatePayload,
       // $FlowFixMe - We know that this is always an object when the input is.
-      flattenStyle(prevProp),
+      ReactNativePrivateInterface.flattenStyle(prevProp),
       // $FlowFixMe - We know that this isn't an array because of above flow.
       nextProp,
       validAttributes
@@ -3296,7 +3499,7 @@ function diffNestedProperty(
     updatePayload,
     prevProp,
     // $FlowFixMe - We know that this is always an object when the input is.
-    flattenStyle(nextProp),
+    ReactNativePrivateInterface.flattenStyle(nextProp),
     validAttributes
   );
 }
@@ -3557,143 +3760,216 @@ function diff(prevProps, nextProps, validAttributes) {
   );
 }
 
-// Use to restore controlled state after a change event has fired.
+/**
+ * In the future, we should cleanup callbacks by cancelling them instead of
+ * using this.
+ */
+function mountSafeCallback_NOT_REALLY_SAFE(context, callback) {
+  return function() {
+    if (!callback) {
+      return undefined;
+    }
+    // This protects against createClass() components.
+    // We don't know if there is code depending on it.
+    // We intentionally don't use isMounted() because even accessing
+    // isMounted property on a React ES6 class will trigger a warning.
+    if (typeof context.__isMounted === "boolean") {
+      if (!context.__isMounted) {
+        return undefined;
+      }
+    }
 
-var restoreImpl = null;
-var restoreTarget = null;
-var restoreQueue = null;
+    // FIXME: there used to be other branches that protected
+    // against unmounted host components. But RN host components don't
+    // define isMounted() anymore, so those checks didn't do anything.
 
-function restoreStateOfTarget(target) {
-  // We perform this translation at the end of the event loop so that we
-  // always receive the correct fiber here
-  var internalInstance = getInstanceFromNode(target);
-  if (!internalInstance) {
-    // Unmounted
-    return;
+    // They caused false positive warning noise so we removed them:
+    // https://github.com/facebook/react-native/issues/18868#issuecomment-413579095
+
+    // However, this means that the callback is NOT guaranteed to be safe
+    // for host components. The solution we should implement is to make
+    // UIManager.measure() and similar calls truly cancelable. Then we
+    // can change our own code calling them to cancel when something unmounts.
+
+    return callback.apply(context, arguments);
+  };
+}
+
+function throwOnStylesProp(component, props) {
+  if (props.styles !== undefined) {
+    var owner = component._owner || null;
+    var name = component.constructor.displayName;
+    var msg =
+      "`styles` is not a supported property of `" +
+      name +
+      "`, did " +
+      "you mean `style` (singular)?";
+    if (owner && owner.constructor && owner.constructor.displayName) {
+      msg +=
+        "\n\nCheck the `" +
+        owner.constructor.displayName +
+        "` parent " +
+        " component.";
+    }
+    throw new Error(msg);
   }
-  (function() {
-    if (!(typeof restoreImpl === "function")) {
-      throw ReactError(
-        "setRestoreImplementation() needs to be called to handle a target for controlled events. This error is likely caused by a bug in React. Please file an issue."
+}
+
+function warnForStyleProps(props, validAttributes) {
+  for (var key in validAttributes.style) {
+    if (!(validAttributes[key] || props[key] === undefined)) {
+      console.error(
+        "You are setting the style `{ " +
+          key +
+          ": ... }` as a prop. You " +
+          "should nest it in a style object. " +
+          "E.g. `{ style: { " +
+          key +
+          ": ... } }`"
       );
     }
-  })();
-  var props = getFiberCurrentPropsFromNode(internalInstance.stateNode);
-  restoreImpl(internalInstance.stateNode, internalInstance.type, props);
-}
-
-function needsStateRestore() {
-  return restoreTarget !== null || restoreQueue !== null;
-}
-
-function restoreStateIfNeeded() {
-  if (!restoreTarget) {
-    return;
-  }
-  var target = restoreTarget;
-  var queuedTargets = restoreQueue;
-  restoreTarget = null;
-  restoreQueue = null;
-
-  restoreStateOfTarget(target);
-  if (queuedTargets) {
-    for (var i = 0; i < queuedTargets.length; i++) {
-      restoreStateOfTarget(queuedTargets[i]);
-    }
   }
 }
 
-// Used as a way to call batchedUpdates when we don't have a reference to
-// the renderer. Such as when we're dispatching events or if third party
-// libraries need to call batchedUpdates. Eventually, this API will go away when
-// everything is batched by default. We'll then have a similar API to opt-out of
-// scheduled work and instead do synchronous work.
-
-// Defaults
-var _batchedUpdatesImpl = function(fn, bookkeeping) {
-  return fn(bookkeeping);
-};
-var _flushInteractiveUpdatesImpl = function() {};
-
-var isBatching = false;
-function batchedUpdates(fn, bookkeeping) {
-  if (isBatching) {
-    // If we are currently inside another batch, we need to wait until it
-    // fully completes before restoring state.
-    return fn(bookkeeping);
-  }
-  isBatching = true;
-  try {
-    return _batchedUpdatesImpl(fn, bookkeeping);
-  } finally {
-    // Here we wait until all updates have propagated, which is important
-    // when using controlled components within layers:
-    // https://github.com/facebook/react/issues/1698
-    // Then we restore state of any controlled component.
-    isBatching = false;
-    var controlledComponentsHavePendingUpdates = needsStateRestore();
-    if (controlledComponentsHavePendingUpdates) {
-      // If a controlled event was fired, we may need to restore the state of
-      // the DOM node back to the controlled value. This is necessary when React
-      // bails out of the update without touching the DOM.
-      _flushInteractiveUpdatesImpl();
-      restoreStateIfNeeded();
-    }
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
   }
 }
 
-function setBatchingImplementation(
-  batchedUpdatesImpl,
-  interactiveUpdatesImpl,
-  flushInteractiveUpdatesImpl
-) {
-  _batchedUpdatesImpl = batchedUpdatesImpl;
-  _flushInteractiveUpdatesImpl = flushInteractiveUpdatesImpl;
-}
+// Modules provided by RN:
+/**
+ * This component defines the same methods as NativeMethodsMixin but without the
+ * findNodeHandle wrapper. This wrapper is unnecessary for HostComponent views
+ * and would also result in a circular require.js dependency (since
+ * ReactNativeFiber depends on this component and NativeMethodsMixin depends on
+ * ReactNativeFiber).
+ */
 
-function dispatchEvent(target, topLevelType, nativeEvent) {
-  var targetFiber = target;
-  batchedUpdates(function() {
-    runExtractedPluginEventsInBatch(
-      topLevelType,
-      targetFiber,
-      nativeEvent,
-      nativeEvent.target
+var ReactNativeFiberHostComponent = (function() {
+  function ReactNativeFiberHostComponent(tag, viewConfig) {
+    _classCallCheck(this, ReactNativeFiberHostComponent);
+
+    this._nativeTag = tag;
+    this._children = [];
+    this.viewConfig = viewConfig;
+  }
+
+  ReactNativeFiberHostComponent.prototype.blur = function blur() {
+    ReactNativePrivateInterface.TextInputState.blurTextInput(this._nativeTag);
+  };
+
+  ReactNativeFiberHostComponent.prototype.focus = function focus() {
+    ReactNativePrivateInterface.TextInputState.focusTextInput(this._nativeTag);
+  };
+
+  ReactNativeFiberHostComponent.prototype.measure = function measure(callback) {
+    ReactNativePrivateInterface.UIManager.measure(
+      this._nativeTag,
+      mountSafeCallback_NOT_REALLY_SAFE(this, callback)
     );
-  });
-  // React Native doesn't use ReactControlledComponent but if it did, here's
-  // where it would do it.
-}
+  };
 
-// Renderers that don't support mutation
+  ReactNativeFiberHostComponent.prototype.measureInWindow = function measureInWindow(
+    callback
+  ) {
+    ReactNativePrivateInterface.UIManager.measureInWindow(
+      this._nativeTag,
+      mountSafeCallback_NOT_REALLY_SAFE(this, callback)
+    );
+  };
+
+  ReactNativeFiberHostComponent.prototype.measureLayout = function measureLayout(
+    relativeToNativeNode,
+    onSuccess,
+    onFail /* currently unused */
+  ) {
+    var relativeNode = void 0;
+
+    if (typeof relativeToNativeNode === "number") {
+      // Already a node handle
+      relativeNode = relativeToNativeNode;
+    } else if (relativeToNativeNode._nativeTag) {
+      relativeNode = relativeToNativeNode._nativeTag;
+    } else if (
+      relativeToNativeNode.canonical &&
+      relativeToNativeNode.canonical._nativeTag
+    ) {
+      relativeNode = relativeToNativeNode.canonical._nativeTag;
+    }
+
+    if (relativeNode == null) {
+      warningWithoutStack$1(
+        false,
+        "Warning: ref.measureLayout must be called with a node handle or a ref to a native component."
+      );
+
+      return;
+    }
+
+    ReactNativePrivateInterface.UIManager.measureLayout(
+      this._nativeTag,
+      relativeNode,
+      mountSafeCallback_NOT_REALLY_SAFE(this, onFail),
+      mountSafeCallback_NOT_REALLY_SAFE(this, onSuccess)
+    );
+  };
+
+  ReactNativeFiberHostComponent.prototype.setNativeProps = function setNativeProps(
+    nativeProps
+  ) {
+    {
+      if (warnAboutDeprecatedSetNativeProps) {
+        warningWithoutStack$1(
+          false,
+          "Warning: Calling ref.setNativeProps(nativeProps) " +
+            "is deprecated and will be removed in a future release. " +
+            "Use the setNativeProps export from the react-native package instead." +
+            "\n\timport {setNativeProps} from 'react-native';\n\tsetNativeProps(ref, nativeProps);\n"
+        );
+      }
+      warnForStyleProps(nativeProps, this.viewConfig.validAttributes);
+    }
+
+    var updatePayload = create(nativeProps, this.viewConfig.validAttributes);
+
+    // Avoid the overhead of bridge calls if there's no update.
+    // This is an expensive no-op for Android, and causes an unnecessary
+    // view invalidation for certain components (eg RCTTextInput) on iOS.
+    if (updatePayload != null) {
+      ReactNativePrivateInterface.UIManager.updateView(
+        this._nativeTag,
+        this.viewConfig.uiViewClassName,
+        updatePayload
+      );
+    }
+  };
+
+  return ReactNativeFiberHostComponent;
+})();
+
+// Renderers that don't support persistence
 // can re-export everything from this module.
 
 function shim() {
   (function() {
     {
       throw ReactError(
-        "The current renderer does not support mutation. This error is likely caused by a bug in React. Please file an issue."
+        "The current renderer does not support persistence. This error is likely caused by a bug in React. Please file an issue."
       );
     }
   })();
 }
 
-// Mutation (when unsupported)
-var supportsMutation = false;
-var appendChild$1 = shim;
-var appendChildToContainer = shim;
-var commitTextUpdate = shim;
-var commitMount = shim;
-var commitUpdate = shim;
-var insertBefore = shim;
-var insertInContainerBefore = shim;
-var removeChild = shim;
-var removeChildFromContainer = shim;
-var resetTextContent = shim;
-var hideInstance = shim;
-var hideTextInstance = shim;
-var unhideInstance = shim;
-var unhideTextInstance = shim;
+// Persistence (when unsupported)
+var supportsPersistence = false;
+var cloneInstance = shim;
+var createContainerChildSet = shim;
+var appendChildToContainerChildSet = shim;
+var finalizeContainerChildren = shim;
+var replaceContainerChildren = shim;
+var cloneHiddenInstance = shim;
+var cloneHiddenTextInstance = shim;
 
 // Renderers that don't support hydration
 // can re-export everything from this module.
@@ -3735,111 +4011,42 @@ var didNotFindHydratableInstance = shim$1;
 var didNotFindHydratableTextInstance = shim$1;
 var didNotFindHydratableSuspenseInstance = shim$1;
 
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
+// Modules provided by RN:
+var getViewConfigForType =
+  ReactNativePrivateInterface.ReactNativeViewConfigRegistry.get; // Unused
+// Unused
+
+var UPDATE_SIGNAL = {};
+{
+  Object.freeze(UPDATE_SIGNAL);
 }
 
-// Modules provided by RN:
 // Counter for uniquely identifying views.
 // % 10 === 1 means it is a rootTag.
 // % 2 === 0 means it is a Fabric tag.
-// This means that they never overlap.
-var nextReactTag = 2;
-
-// TODO: Remove this conditional once all changes have propagated.
-if (FabricUIManager.registerEventHandler) {
-  /**
-   * Register the event emitter with the native bridge
-   */
-  FabricUIManager.registerEventHandler(dispatchEvent);
+var nextReactTag = 3;
+function allocateTag() {
+  var tag = nextReactTag;
+  if (tag % 10 === 1) {
+    tag += 2;
+  }
+  nextReactTag = tag + 2;
+  return tag;
 }
 
-/**
- * This is used for refs on host components.
- */
+function recursivelyUncacheFiberNode(node) {
+  if (typeof node === "number") {
+    // Leaf node (eg text)
+    uncacheFiberNode(node);
+  } else {
+    uncacheFiberNode(node._nativeTag);
 
-var ReactFabricHostComponent = (function() {
-  function ReactFabricHostComponent(
-    tag,
-    viewConfig,
-    props,
-    internalInstanceHandle
-  ) {
-    _classCallCheck(this, ReactFabricHostComponent);
-
-    this._nativeTag = tag;
-    this.viewConfig = viewConfig;
-    this.currentProps = props;
-    this._internalInstanceHandle = internalInstanceHandle;
+    node._children.forEach(recursivelyUncacheFiberNode);
   }
-
-  ReactFabricHostComponent.prototype.blur = function blur() {
-    TextInputState.blurTextInput(this._nativeTag);
-  };
-
-  ReactFabricHostComponent.prototype.focus = function focus() {
-    TextInputState.focusTextInput(this._nativeTag);
-  };
-
-  ReactFabricHostComponent.prototype.measure = function measure$$1(callback) {
-    FabricUIManager.measure(
-      this._internalInstanceHandle.stateNode.node,
-      mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-    );
-  };
-
-  ReactFabricHostComponent.prototype.measureInWindow = function measureInWindow$$1(
-    callback
-  ) {
-    FabricUIManager.measureInWindow(
-      this._internalInstanceHandle.stateNode.node,
-      mountSafeCallback_NOT_REALLY_SAFE(this, callback)
-    );
-  };
-
-  ReactFabricHostComponent.prototype.measureLayout = function measureLayout$$1(
-    relativeToNativeNode,
-    onSuccess,
-    onFail /* currently unused */
-  ) {
-    if (
-      typeof relativeToNativeNode === "number" ||
-      !(relativeToNativeNode instanceof ReactFabricHostComponent)
-    ) {
-      warningWithoutStack$1(
-        false,
-        "Warning: ref.measureLayout must be called with a ref to a native component."
-      );
-
-      return;
-    }
-
-    FabricUIManager.measureLayout(
-      this._internalInstanceHandle.stateNode.node,
-      relativeToNativeNode._internalInstanceHandle.stateNode.node,
-      mountSafeCallback_NOT_REALLY_SAFE(this, onFail),
-      mountSafeCallback_NOT_REALLY_SAFE(this, onSuccess)
-    );
-  };
-
-  ReactFabricHostComponent.prototype.setNativeProps = function setNativeProps(
-    nativeProps
-  ) {
-    warningWithoutStack$1(
-      false,
-      "Warning: setNativeProps is not currently supported in Fabric"
-    );
-
-    return;
-  };
-
-  return ReactFabricHostComponent;
-})();
+}
 
 function appendInitialChild(parentInstance, child) {
-  FabricUIManager.appendChild(parentInstance.node, child.node);
+  parentInstance._children.push(child);
 }
 
 function createInstance(
@@ -3849,40 +4056,36 @@ function createInstance(
   hostContext,
   internalInstanceHandle
 ) {
-  var tag = nextReactTag;
-  nextReactTag += 2;
-
-  var viewConfig = ReactNativeViewConfigRegistry.get(type);
+  var tag = allocateTag();
+  var viewConfig = getViewConfigForType(type);
 
   {
     for (var key in viewConfig.validAttributes) {
       if (props.hasOwnProperty(key)) {
-        deepFreezeAndThrowOnMutationInDev(props[key]);
+        ReactNativePrivateInterface.deepFreezeAndThrowOnMutationInDev(
+          props[key]
+        );
       }
     }
   }
 
   var updatePayload = create(props, viewConfig.validAttributes);
 
-  var node = FabricUIManager.createNode(
+  ReactNativePrivateInterface.UIManager.createView(
     tag, // reactTag
     viewConfig.uiViewClassName, // viewName
     rootContainerInstance, // rootTag
-    updatePayload, // props
-    internalInstanceHandle // internalInstanceHandle
+    updatePayload // props
   );
 
-  var component = new ReactFabricHostComponent(
-    tag,
-    viewConfig,
-    props,
-    internalInstanceHandle
-  );
+  var component = new ReactNativeFiberHostComponent(tag, viewConfig);
 
-  return {
-    node: node,
-    canonical: component
-  };
+  precacheFiberNode(internalInstanceHandle, tag);
+  updateFiberProps(tag, props);
+
+  // Not sure how to avoid this cast. Flow is okay if the component is defined
+  // in the same file but if it's external it can't see the types.
+  return component;
 }
 
 function createTextInstance(
@@ -3899,20 +4102,18 @@ function createTextInstance(
     }
   })();
 
-  var tag = nextReactTag;
-  nextReactTag += 2;
+  var tag = allocateTag();
 
-  var node = FabricUIManager.createNode(
+  ReactNativePrivateInterface.UIManager.createView(
     tag, // reactTag
     "RCTRawText", // viewName
     rootContainerInstance, // rootTag
-    { text: text }, // props
-    internalInstanceHandle // instance handle
+    { text: text } // props
   );
 
-  return {
-    node: node
-  };
+  precacheFiberNode(internalInstanceHandle, tag);
+
+  return tag;
 }
 
 function finalizeInitialChildren(
@@ -3922,6 +4123,24 @@ function finalizeInitialChildren(
   rootContainerInstance,
   hostContext
 ) {
+  // Don't send a no-op message over the bridge.
+  if (parentInstance._children.length === 0) {
+    return false;
+  }
+
+  // Map from child objects to native tags.
+  // Either way we need to pass a copy of the Array to prevent it from being frozen.
+  var nativeTags = parentInstance._children.map(function(child) {
+    return typeof child === "number"
+      ? child // Leaf node (eg text)
+      : child._nativeTag;
+  });
+
+  ReactNativePrivateInterface.UIManager.setChildren(
+    parentInstance._nativeTag, // containerTag
+    nativeTags // reactTags
+  );
+
   return false;
 }
 
@@ -3956,7 +4175,7 @@ function getChildHostContextForEventTarget(parentHostContext, type) {
 }
 
 function getPublicInstance(instance) {
-  return instance.canonical;
+  return instance;
 }
 
 function prepareForCommit(containerInfo) {
@@ -3971,18 +4190,18 @@ function prepareUpdate(
   rootContainerInstance,
   hostContext
 ) {
-  var viewConfig = instance.canonical.viewConfig;
-  var updatePayload = diff(oldProps, newProps, viewConfig.validAttributes);
-  // TODO: If the event handlers have changed, we need to update the current props
-  // in the commit phase but there is no host config hook to do it yet.
-  // So instead we hack it by updating it in the render phase.
-  instance.canonical.currentProps = newProps;
-  return updatePayload;
+  return UPDATE_SIGNAL;
 }
 
 function resetAfterCommit(containerInfo) {
   // Noop
 }
+
+var isPrimaryRenderer = true;
+
+var scheduleTimeout = setTimeout;
+var cancelTimeout = clearTimeout;
+var noTimeout = -1;
 
 function shouldDeprioritizeSubtree(type, props) {
   return false;
@@ -3998,80 +4217,198 @@ function shouldSetTextContent(type, props) {
   return false;
 }
 
-// The Fabric renderer is secondary to the existing React Native renderer.
-var isPrimaryRenderer = false;
-
-var scheduleTimeout = setTimeout;
-var cancelTimeout = clearTimeout;
-var noTimeout = -1;
-
 // -------------------
-//     Persistence
+//     Mutation
 // -------------------
 
-var supportsPersistence = true;
+var supportsMutation = true;
 
-function cloneInstance(
+function appendChild(parentInstance, child) {
+  var childTag = typeof child === "number" ? child : child._nativeTag;
+  var children = parentInstance._children;
+  var index = children.indexOf(child);
+
+  if (index >= 0) {
+    children.splice(index, 1);
+    children.push(child);
+
+    ReactNativePrivateInterface.UIManager.manageChildren(
+      parentInstance._nativeTag, // containerTag
+      [index], // moveFromIndices
+      [children.length - 1], // moveToIndices
+      [], // addChildReactTags
+      [], // addAtIndices
+      [] // removeAtIndices
+    );
+  } else {
+    children.push(child);
+
+    ReactNativePrivateInterface.UIManager.manageChildren(
+      parentInstance._nativeTag, // containerTag
+      [], // moveFromIndices
+      [], // moveToIndices
+      [childTag], // addChildReactTags
+      [children.length - 1], // addAtIndices
+      [] // removeAtIndices
+    );
+  }
+}
+
+function appendChildToContainer(parentInstance, child) {
+  var childTag = typeof child === "number" ? child : child._nativeTag;
+  ReactNativePrivateInterface.UIManager.setChildren(
+    parentInstance, // containerTag
+    [childTag] // reactTags
+  );
+}
+
+function commitTextUpdate(textInstance, oldText, newText) {
+  ReactNativePrivateInterface.UIManager.updateView(
+    textInstance, // reactTag
+    "RCTRawText", // viewName
+    { text: newText } // props
+  );
+}
+
+function commitUpdate(
   instance,
-  updatePayload,
+  updatePayloadTODO,
   type,
   oldProps,
   newProps,
-  internalInstanceHandle,
-  keepChildren,
-  recyclableInstance
+  internalInstanceHandle
 ) {
-  var node = instance.node;
-  var clone = void 0;
-  if (keepChildren) {
-    if (updatePayload !== null) {
-      clone = FabricUIManager.cloneNodeWithNewProps(node, updatePayload);
-    } else {
-      clone = FabricUIManager.cloneNode(node);
-    }
-  } else {
-    if (updatePayload !== null) {
-      clone = FabricUIManager.cloneNodeWithNewChildrenAndProps(
-        node,
-        updatePayload
-      );
-    } else {
-      clone = FabricUIManager.cloneNodeWithNewChildren(node);
-    }
+  var viewConfig = instance.viewConfig;
+
+  updateFiberProps(instance._nativeTag, newProps);
+
+  var updatePayload = diff(oldProps, newProps, viewConfig.validAttributes);
+
+  // Avoid the overhead of bridge calls if there's no update.
+  // This is an expensive no-op for Android, and causes an unnecessary
+  // view invalidation for certain components (eg RCTTextInput) on iOS.
+  if (updatePayload != null) {
+    ReactNativePrivateInterface.UIManager.updateView(
+      instance._nativeTag, // reactTag
+      viewConfig.uiViewClassName, // viewName
+      updatePayload // props
+    );
   }
-  return {
-    node: clone,
-    canonical: instance.canonical
-  };
 }
 
-function cloneHiddenInstance(instance, type, props, internalInstanceHandle) {
-  var viewConfig = instance.canonical.viewConfig;
-  var node = instance.node;
+function insertBefore(parentInstance, child, beforeChild) {
+  var children = parentInstance._children;
+  var index = children.indexOf(child);
+
+  // Move existing child or add new child?
+  if (index >= 0) {
+    children.splice(index, 1);
+    var beforeChildIndex = children.indexOf(beforeChild);
+    children.splice(beforeChildIndex, 0, child);
+
+    ReactNativePrivateInterface.UIManager.manageChildren(
+      parentInstance._nativeTag, // containerID
+      [index], // moveFromIndices
+      [beforeChildIndex], // moveToIndices
+      [], // addChildReactTags
+      [], // addAtIndices
+      [] // removeAtIndices
+    );
+  } else {
+    var _beforeChildIndex = children.indexOf(beforeChild);
+    children.splice(_beforeChildIndex, 0, child);
+
+    var childTag = typeof child === "number" ? child : child._nativeTag;
+
+    ReactNativePrivateInterface.UIManager.manageChildren(
+      parentInstance._nativeTag, // containerID
+      [], // moveFromIndices
+      [], // moveToIndices
+      [childTag], // addChildReactTags
+      [_beforeChildIndex], // addAtIndices
+      [] // removeAtIndices
+    );
+  }
+}
+
+function insertInContainerBefore(parentInstance, child, beforeChild) {
+  // TODO (bvaughn): Remove this check when...
+  // We create a wrapper object for the container in ReactNative render()
+  // Or we refactor to remove wrapper objects entirely.
+  // For more info on pros/cons see PR #8560 description.
+  (function() {
+    if (!(typeof parentInstance !== "number")) {
+      throw ReactError("Container does not support insertBefore operation");
+    }
+  })();
+}
+
+function removeChild(parentInstance, child) {
+  recursivelyUncacheFiberNode(child);
+  var children = parentInstance._children;
+  var index = children.indexOf(child);
+
+  children.splice(index, 1);
+
+  ReactNativePrivateInterface.UIManager.manageChildren(
+    parentInstance._nativeTag, // containerID
+    [], // moveFromIndices
+    [], // moveToIndices
+    [], // addChildReactTags
+    [], // addAtIndices
+    [index] // removeAtIndices
+  );
+}
+
+function removeChildFromContainer(parentInstance, child) {
+  recursivelyUncacheFiberNode(child);
+  ReactNativePrivateInterface.UIManager.manageChildren(
+    parentInstance, // containerID
+    [], // moveFromIndices
+    [], // moveToIndices
+    [], // addChildReactTags
+    [], // addAtIndices
+    [0] // removeAtIndices
+  );
+}
+
+function resetTextContent(instance) {
+  // Noop
+}
+
+function hideInstance(instance) {
+  var viewConfig = instance.viewConfig;
   var updatePayload = create(
     { style: { display: "none" } },
     viewConfig.validAttributes
   );
-  return {
-    node: FabricUIManager.cloneNodeWithNewProps(node, updatePayload),
-    canonical: instance.canonical
-  };
+  ReactNativePrivateInterface.UIManager.updateView(
+    instance._nativeTag,
+    viewConfig.uiViewClassName,
+    updatePayload
+  );
 }
 
-function cloneHiddenTextInstance(instance, text, internalInstanceHandle) {
+function hideTextInstance(textInstance) {
   throw new Error("Not yet implemented.");
 }
 
-function createContainerChildSet(container) {
-  return FabricUIManager.createChildSet(container);
+function unhideInstance(instance, props) {
+  var viewConfig = instance.viewConfig;
+  var updatePayload = diff(
+    Object.assign({}, props, { style: [props.style, { display: "none" }] }),
+    props,
+    viewConfig.validAttributes
+  );
+  ReactNativePrivateInterface.UIManager.updateView(
+    instance._nativeTag,
+    viewConfig.uiViewClassName,
+    updatePayload
+  );
 }
 
-function appendChildToContainerChildSet(childSet, child) {
-  FabricUIManager.appendChildToSet(childSet, child.node);
-}
-
-function finalizeContainerChildren(container, newChildren) {
-  FabricUIManager.completeRoot(container, newChildren);
+function unhideTextInstance(textInstance, text) {
+  throw new Error("Not yet implemented.");
 }
 
 function mountEventComponent(eventComponentInstance) {
@@ -7565,7 +7902,7 @@ function applyDerivedStateFromProps(
 var classComponentUpdater = {
   isMounted: isMounted,
   enqueueSetState: function(inst, payload, callback) {
-    var fiber = get$1(inst);
+    var fiber = get(inst);
     var currentTime = requestCurrentTime();
     var expirationTime = computeExpirationForFiber(currentTime, fiber);
 
@@ -7583,7 +7920,7 @@ var classComponentUpdater = {
     scheduleWork(fiber, expirationTime);
   },
   enqueueReplaceState: function(inst, payload, callback) {
-    var fiber = get$1(inst);
+    var fiber = get(inst);
     var currentTime = requestCurrentTime();
     var expirationTime = computeExpirationForFiber(currentTime, fiber);
 
@@ -7603,7 +7940,7 @@ var classComponentUpdater = {
     scheduleWork(fiber, expirationTime);
   },
   enqueueForceUpdate: function(inst, callback) {
-    var fiber = get$1(inst);
+    var fiber = get(inst);
     var currentTime = requestCurrentTime();
     var expirationTime = computeExpirationForFiber(currentTime, fiber);
 
@@ -14897,7 +15234,10 @@ function showErrorDialog(capturedError) {
     errorToHandle = new Error("Unspecified error at:" + componentStack);
   }
 
-  ExceptionsManager.handleException(errorToHandle, false);
+  ReactNativePrivateInterface.ExceptionsManager.handleException(
+    errorToHandle,
+    false
+  );
 
   // Return false here to prevent ReactFiberErrorLogger default behavior of
   // logging error details to console.error. Calls to console.error are
@@ -15411,7 +15751,6 @@ function commitLifeCycles(
       if (current$$1 === null && finishedWork.effectTag & Update) {
         var type = finishedWork.type;
         var props = finishedWork.memoizedProps;
-        commitMount(_instance2, type, props, finishedWork);
       }
 
       return;
@@ -15716,6 +16055,7 @@ function emptyPortalContainer(current$$1) {
   var containerInfo = portal.containerInfo;
 
   var emptyChildSet = createContainerChildSet(containerInfo);
+  replaceContainerChildren(containerInfo, emptyChildSet);
 }
 
 function commitContainer(finishedWork) {
@@ -15737,6 +16077,7 @@ function commitContainer(finishedWork) {
       var containerInfo = portalOrRoot.containerInfo,
         _pendingChildren = portalOrRoot.pendingChildren;
 
+      replaceContainerChildren(containerInfo, _pendingChildren);
       return;
     }
     default: {
@@ -15857,8 +16198,6 @@ function commitPlacement(finishedWork) {
   }
   if (parentFiber.effectTag & ContentReset) {
     // Reset the text content of the parent before doing any insertions
-    resetTextContent(parent);
-    // Clear ContentReset from the effect tag
     parentFiber.effectTag &= ~ContentReset;
   }
 
@@ -15879,7 +16218,7 @@ function commitPlacement(finishedWork) {
         if (isContainer) {
           appendChildToContainer(parent, stateNode);
         } else {
-          appendChild$1(parent, stateNode);
+          appendChild(parent, stateNode);
         }
       }
     } else if (node.tag === HostPortal) {
@@ -18559,7 +18898,7 @@ function getContextForSubtree(parentComponent) {
     return emptyContextObject;
   }
 
-  var fiber = get$1(parentComponent);
+  var fiber = get(parentComponent);
   var parentContext = findCurrentUnmaskedContext(fiber);
 
   if (fiber.tag === ClassComponent) {
@@ -18645,7 +18984,7 @@ function updateContainerAtExpirationTime(
 }
 
 function findHostInstance(component) {
-  var fiber = get$1(component);
+  var fiber = get(component);
   if (fiber === undefined) {
     if (typeof component.render === "function") {
       (function() {
@@ -18673,7 +19012,7 @@ function findHostInstance(component) {
 
 function findHostInstanceWithWarning(component, methodName) {
   {
-    var fiber = get$1(component);
+    var fiber = get(component);
     if (fiber === undefined) {
       if (typeof component.render === "function") {
         (function() {
@@ -18958,7 +19297,7 @@ var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
           mountSafeCallback_NOT_REALLY_SAFE(this, callback)
         );
       } else {
-        UIManager.measure(
+        ReactNativePrivateInterface.UIManager.measure(
           findNodeHandle(this),
           mountSafeCallback_NOT_REALLY_SAFE(this, callback)
         );
@@ -19006,7 +19345,7 @@ var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
           mountSafeCallback_NOT_REALLY_SAFE(this, callback)
         );
       } else {
-        UIManager.measureInWindow(
+        ReactNativePrivateInterface.UIManager.measureInWindow(
           findNodeHandle(this),
           mountSafeCallback_NOT_REALLY_SAFE(this, callback)
         );
@@ -19069,7 +19408,7 @@ var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
           return;
         }
 
-        UIManager.measureLayout(
+        ReactNativePrivateInterface.UIManager.measureLayout(
           findNodeHandle(this),
           relativeNode,
           mountSafeCallback_NOT_REALLY_SAFE(this, onFail),
@@ -19141,7 +19480,7 @@ var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
       // This is an expensive no-op for Android, and causes an unnecessary
       // view invalidation for certain components (eg RCTTextInput) on iOS.
       if (updatePayload != null) {
-        UIManager.updateView(
+        ReactNativePrivateInterface.UIManager.updateView(
           nativeTag,
           viewConfig.uiViewClassName,
           updatePayload
@@ -19154,14 +19493,18 @@ var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
      * will depend on the platform and type of view.
      */
     focus: function() {
-      TextInputState.focusTextInput(findNodeHandle(this));
+      ReactNativePrivateInterface.TextInputState.focusTextInput(
+        findNodeHandle(this)
+      );
     },
 
     /**
      * Removes focus from an input or view. This is the opposite of `focus()`.
      */
     blur: function() {
-      TextInputState.blurTextInput(findNodeHandle(this));
+      ReactNativePrivateInterface.TextInputState.blurTextInput(
+        findNodeHandle(this)
+      );
     }
   };
 
@@ -19281,7 +19624,9 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
      * declared in the base class need to be redeclared below.
      */
     ReactNativeComponent.prototype.blur = function blur() {
-      TextInputState.blurTextInput(findNodeHandle(this));
+      ReactNativePrivateInterface.TextInputState.blurTextInput(
+        findNodeHandle(this)
+      );
     };
 
     /**
@@ -19289,7 +19634,9 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
      */
 
     ReactNativeComponent.prototype.focus = function focus() {
-      TextInputState.focusTextInput(findNodeHandle(this));
+      ReactNativePrivateInterface.TextInputState.focusTextInput(
+        findNodeHandle(this)
+      );
     };
 
     /**
@@ -19308,7 +19655,7 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
      * [`onLayout` prop](docs/view.html#onlayout) instead.
      */
 
-    ReactNativeComponent.prototype.measure = function measure$$1(callback) {
+    ReactNativeComponent.prototype.measure = function measure(callback) {
       var maybeInstance = void 0;
 
       // Fiber errors if findNodeHandle is called for an umounted component.
@@ -19334,7 +19681,7 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
           mountSafeCallback_NOT_REALLY_SAFE(this, callback)
         );
       } else {
-        UIManager.measure(
+        ReactNativePrivateInterface.UIManager.measure(
           findNodeHandle(this),
           mountSafeCallback_NOT_REALLY_SAFE(this, callback)
         );
@@ -19355,7 +19702,7 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
      * These values are not available until after natives rendering completes.
      */
 
-    ReactNativeComponent.prototype.measureInWindow = function measureInWindow$$1(
+    ReactNativeComponent.prototype.measureInWindow = function measureInWindow(
       callback
     ) {
       var maybeInstance = void 0;
@@ -19383,7 +19730,7 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
           mountSafeCallback_NOT_REALLY_SAFE(this, callback)
         );
       } else {
-        UIManager.measureInWindow(
+        ReactNativePrivateInterface.UIManager.measureInWindow(
           findNodeHandle(this),
           mountSafeCallback_NOT_REALLY_SAFE(this, callback)
         );
@@ -19397,7 +19744,7 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
      * Obtain a native node handle with `ReactNative.findNodeHandle(component)`.
      */
 
-    ReactNativeComponent.prototype.measureLayout = function measureLayout$$1(
+    ReactNativeComponent.prototype.measureLayout = function measureLayout(
       relativeToNativeNode,
       onSuccess,
       onFail /* currently unused */
@@ -19445,7 +19792,7 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
           return;
         }
 
-        UIManager.measureLayout(
+        ReactNativePrivateInterface.UIManager.measureLayout(
           findNodeHandle(this),
           relativeNode,
           mountSafeCallback_NOT_REALLY_SAFE(this, onFail),
@@ -19516,7 +19863,7 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
       // This is an expensive no-op for Android, and causes an unnecessary
       // view invalidation for certain components (eg RCTTextInput) on iOS.
       if (updatePayload != null) {
-        UIManager.updateView(
+        ReactNativePrivateInterface.UIManager.updateView(
           nativeTag,
           viewConfig.uiViewClassName,
           updatePayload
@@ -19531,12 +19878,6 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
 
   return ReactNativeComponent;
 };
-
-var instanceCache = {};
-
-function getInstanceFromTag(tag) {
-  return instanceCache[tag] || null;
-}
 
 // Module provided by RN:
 var emptyObject$1 = {};
@@ -19602,7 +19943,7 @@ var getInspectorDataForViewTag = void 0;
         getInspectorData: function(findNodeHandle) {
           return {
             measure: function(callback) {
-              return UIManager.measure(
+              return ReactNativePrivateInterface.UIManager.measure(
                 getHostNode(fiber, findNodeHandle),
                 callback
               );
@@ -19645,6 +19986,38 @@ var getInspectorDataForViewTag = void 0;
   };
 }
 
+// Module provided by RN:
+function setNativeProps(handle, nativeProps) {
+  if (handle._nativeTag == null) {
+    !(handle._nativeTag != null)
+      ? warningWithoutStack$1(
+          false,
+          "setNativeProps was called with a ref that isn't a " +
+            "native component. Use React.forwardRef to get access to the underlying native component"
+        )
+      : void 0;
+    return;
+  }
+
+  {
+    warnForStyleProps(nativeProps, handle.viewConfig.validAttributes);
+  }
+
+  var updatePayload = create(nativeProps, handle.viewConfig.validAttributes);
+  // Avoid the overhead of bridge calls if there's no update.
+  // This is an expensive no-op for Android, and causes an unnecessary
+  // view invalidation for certain components (eg RCTTextInput) on iOS.
+  if (updatePayload != null) {
+    ReactNativePrivateInterface.UIManager.updateView(
+      handle._nativeTag,
+      handle.viewConfig.uiViewClassName,
+      updatePayload
+    );
+  }
+}
+
+// TODO: direct imports like some-package/src/* are bad. Fix me.
+// Module provided by RN:
 var ReactCurrentOwner = ReactSharedInternals.ReactCurrentOwner;
 
 function findNodeHandle(componentOrHandle) {
@@ -19690,8 +20063,6 @@ function findNodeHandle(componentOrHandle) {
   if (hostInstance == null) {
     return hostInstance;
   }
-  // TODO: the code is right but the types here are wrong.
-  // https://github.com/facebook/react/pull/12863
   if (hostInstance.canonical) {
     // Fabric
     return hostInstance.canonical._nativeTag;
@@ -19705,21 +20076,23 @@ setBatchingImplementation(
   flushInteractiveUpdates$1
 );
 
+function computeComponentStackForErrorReporting(reactTag) {
+  var fiber = getInstanceFromTag(reactTag);
+  if (!fiber) {
+    return "";
+  }
+  return getStackByFiberInDevAndProd(fiber);
+}
+
 var roots = new Map();
 
-var ReactFabric = {
+var ReactNativeRenderer = {
   NativeComponent: ReactNativeComponent(findNodeHandle, findHostInstance),
 
   findNodeHandle: findNodeHandle,
 
-  setNativeProps: function(handle, nativeProps) {
-    warningWithoutStack$1(
-      false,
-      "Warning: setNativeProps is not currently supported in Fabric"
-    );
+  setNativeProps: setNativeProps,
 
-    return;
-  },
   render: function(element, containerTag, callback) {
     var root = roots.get(containerTag);
 
@@ -19742,6 +20115,12 @@ var ReactFabric = {
       });
     }
   },
+  unmountComponentAtNodeAndRemoveContainer: function(containerTag) {
+    ReactNativeRenderer.unmountComponentAtNode(containerTag);
+
+    // Call back into native to remove all of the subviews from this container
+    ReactNativePrivateInterface.UIManager.removeRootView(containerTag);
+  },
   createPortal: function(children, containerTag) {
     var key =
       arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -19749,31 +20128,36 @@ var ReactFabric = {
     return createPortal(children, containerTag, null, key);
   },
 
+  unstable_batchedUpdates: batchedUpdates,
+
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: {
     // Used as a mixin in many createClass-based components
-    NativeMethodsMixin: NativeMethodsMixin(findNodeHandle, findHostInstance)
+    NativeMethodsMixin: NativeMethodsMixin(findNodeHandle, findHostInstance),
+    computeComponentStackForErrorReporting: computeComponentStackForErrorReporting
   }
 };
 
 injectIntoDevTools({
-  findFiberByHostInstance: getInstanceFromInstance,
+  findFiberByHostInstance: getInstanceFromTag,
   getInspectorDataForViewTag: getInspectorDataForViewTag,
   bundleType: 1,
   version: ReactVersion,
   rendererPackageName: "react-native-renderer"
 });
 
-var ReactFabric$2 = Object.freeze({
-  default: ReactFabric
+var ReactNativeRenderer$2 = Object.freeze({
+  default: ReactNativeRenderer
 });
 
-var ReactFabric$3 = (ReactFabric$2 && ReactFabric) || ReactFabric$2;
+var ReactNativeRenderer$3 =
+  (ReactNativeRenderer$2 && ReactNativeRenderer) || ReactNativeRenderer$2;
 
 // TODO: decide on the top-level export form.
 // This is hacky but makes it work with both Rollup and Jest.
-var fabric = ReactFabric$3.default || ReactFabric$3;
+var reactNativeRenderer =
+  ReactNativeRenderer$3.default || ReactNativeRenderer$3;
 
-module.exports = fabric;
+module.exports = reactNativeRenderer;
 
   })();
 }
