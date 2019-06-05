@@ -67,7 +67,7 @@ JSIExecutor::JSIExecutor(
       *runtime, "__jsiExecutorDescription", runtime->description());
 }
 
-void JSIExecutor::setupEnvironment(std::function<void(std::string, bool)> loadBundle,
+void JSIExecutor::setupEnvironment(std::function<void(std::string, bool, bool)> loadBundle,
                                    std::function<RAMBundle::Module(uint32_t, std::string)> getModule) {
   SystraceSection s("JSIExecutor::setupEnvironment");
 
@@ -115,18 +115,19 @@ void JSIExecutor::setupEnvironment(std::function<void(std::string, bool)> loadBu
     Function::createFromHostFunction(
       *runtime_,
       PropNameID::forAscii(*runtime_, "bundleRegistryLoad"),
-      2,
+      3,
       [this, loadBundle](jsi::Runtime&,
              const jsi::Value&,
              const jsi::Value* args,
              size_t count) {
-        if (count != 2) {
+        if (count != 3) {
           throw std::invalid_argument("Got wrong number of args");
         }
 
         std::string bundleName = args[0].getString(*runtime_).utf8(*runtime_);
+        bool sync = args[1].getBool();
         bool inCurrentEnvironment = args[1].getBool();
-        loadBundle(bundleName, inCurrentEnvironment);
+        loadBundle(bundleName, sync, inCurrentEnvironment);
 
         return facebook::jsi::Value();
       }));

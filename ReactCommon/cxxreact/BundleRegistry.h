@@ -15,7 +15,7 @@ class ModuleRegistry;
 
 class BundleRegistry {
   public:
-    using LoadBundleLambda = std::function<void(std::string bundleName, bool inCurrentEnvironment)>;
+    using LoadBundleLambda = std::function<void(std::string bundleName, bool sync, bool inCurrentEnvironment)>;
     using GetModuleLambda = std::function<RAMBundle::Module(uint32_t moduleId, std::string bundleName)>;
 
     struct BundleExecutionEnvironment {

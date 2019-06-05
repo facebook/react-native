@@ -1,4 +1,5 @@
 #include "BundleRegistry.h"
+#include <folly/dynamic.h>
 
 namespace facebook {
 namespace react {
@@ -160,10 +161,11 @@ BundleRegistry::GetModuleLambda BundleRegistry::makeGetModuleLambda(std::string 
 }
 
 BundleRegistry::LoadBundleLambda BundleRegistry::makeLoadBundleLambda(std::string environmentId) {
-  return [this, environmentId](std::string bundleName, bool inCurrentEnvironment) mutable {
+  return [this, environmentId](std::string bundleName, bool sync, bool inCurrentEnvironment) mutable {
     std::shared_ptr<BundleExecutionEnvironment> execEnv = getEnvironment(environmentId).lock();
     std::string bundleURL = bundleLoader_->getBundleURLFromName(bundleName);
-    execEnv->jsQueue->runOnQueueSync([this, bundleURL, execEnv]() mutable {
+
+    std::function<void()> loadAndEvalBundle = [this, bundleName, bundleURL, execEnv, sync]() mutable {
       std::unique_ptr<const Bundle> additionalBundle = bundleLoader_->getBundle(bundleURL);
       bundles_[bundleURL] = std::move(additionalBundle);
       std::shared_ptr<const Bundle> bundle = bundles_[bundleURL];
@@ -171,7 +173,18 @@ BundleRegistry::LoadBundleLambda BundleRegistry::makeLoadBundleLambda(std::strin
 
       execEnv->nativeToJsBridge->loadScriptSync(std::move(script),
                                                 bundle->getSourceURL());
-    });
+      if (!sync) {
+        execEnv->nativeToJsBridge->callFunction("BundleRegistry",
+                                                "bundleRegistryOnLoad",
+                                                folly::dynamic::array(bundleName));
+      }
+    };
+
+    if (sync) {
+      execEnv->jsQueue->runOnQueueSync(std::move(loadAndEvalBundle));
+    } else {
+      execEnv->jsQueue->runOnQueue(std::move(loadAndEvalBundle));
+    }
   };
 }
 

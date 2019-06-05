@@ -55,7 +55,7 @@ public:
    * Should be called only once per JSContext.
    * Sets: nativeRequire (if bundle is RAM), bundleRegistryLoad
    */
-  virtual void setupEnvironment(std::function<void(std::string, bool)> loadBundle,
+  virtual void setupEnvironment(std::function<void(std::string, bool, bool)> loadBundle,
                                 std::function<RAMBundle::Module(uint32_t, std::string)> getModule) = 0;
 
   /**

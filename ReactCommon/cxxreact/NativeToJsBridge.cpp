@@ -99,14 +99,14 @@ NativeToJsBridge::~NativeToJsBridge() {
     "NativeToJsBridge::destroy() must be called before deallocating the NativeToJsBridge!";
 }
 
-void NativeToJsBridge::setupEnvironment(std::function<void(std::string, bool)> loadBundle,
+void NativeToJsBridge::setupEnvironment(std::function<void(std::string, bool, bool)> loadBundle,
                                         std::function<RAMBundle::Module(uint32_t, std::string)> getModule) {
   runOnExecutorQueue([this, loadBundle, getModule](JSExecutor* executor) mutable {
     m_executor->setupEnvironment(loadBundle, getModule);
   });
 }
 
-void NativeToJsBridge::setupEnvironmentSync(std::function<void(std::string, bool)> loadBundle,
+void NativeToJsBridge::setupEnvironmentSync(std::function<void(std::string, bool, bool)> loadBundle,
                                             std::function<RAMBundle::Module(uint32_t, std::string)> getModule) {
   m_executor->setupEnvironment(loadBundle, getModule);
 }

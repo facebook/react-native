@@ -49,7 +49,7 @@ ProxyExecutor::~ProxyExecutor() {
   m_executor.reset();
 }
 
-void ProxyExecutor::setupEnvironment(std::function<void(std::string, bool)> loadBundle,
+void ProxyExecutor::setupEnvironment(std::function<void(std::string, bool, bool)> loadBundle,
                                      std::function<RAMBundle::Module(uint32_t, std::string)> getModule) {
   // TODO: what is this ProxyExecutor?
 }

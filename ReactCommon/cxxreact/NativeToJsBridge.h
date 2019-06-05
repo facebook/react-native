@@ -62,10 +62,10 @@ public:
    * Prepare JSExecutor environment for evaluating JS.
    * Should be called only once per JSExecutor.
    */
-  void setupEnvironment(std::function<void(std::string, bool)> loadBundle,
+  void setupEnvironment(std::function<void(std::string, bool, bool)> loadBundle,
                         std::function<RAMBundle::Module(uint32_t, std::string)> getModule);
   
-  void setupEnvironmentSync(std::function<void(std::string, bool)> loadBundle,
+  void setupEnvironmentSync(std::function<void(std::string, bool, bool)> loadBundle,
                             std::function<RAMBundle::Module(uint32_t, std::string)> getModule);
 
   /**
