@@ -41,10 +41,11 @@ const API = {
   disableQueue: function(): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     queueConnections = false;
-    while (queue.length) {
-      const args = queue.shift();
+    for (let q = 0, l = queue.length; q < l; q++) {
+      const args = queue[q];
       NativeAnimatedModule.connectAnimatedNodes(args[0], args[1]);
     }
+    queue.length = 0;
   },
   createAnimatedNode: function(tag: ?number, config: AnimatedNodeConfig): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
