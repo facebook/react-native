@@ -152,7 +152,7 @@
     "test-android-unit": "yarn run docker-build-android && yarn run test-android-run-unit",
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
     "build-ios-e2e": "detox build -c ios.sim.release",
-    "test-ios-e2e": "detox test -c ios.sim.release"
+    "test-ios-e2e": "detox test -c ios.sim.release RNTester/e2e"
   },
   "peerDependencies": {
     "react": "16.8.3"
@@ -216,7 +216,7 @@
     "async": "^2.4.0",
     "babel-eslint": "9.0.0",
     "coveralls": "^3.0.2",
-    "detox": "9.0.4",
+    "detox": "12.2.0",
     "eslint": "5.1.0",
     "eslint-config-fb-strict": "22.1.0",
     "eslint-config-fbjs": "2.0.1",
@@ -240,19 +240,19 @@
   "detox": {
     "test-runner": "jest",
     "runner-config": "RNTester/e2e/config.json",
-    "specs": "RNTester/e2e",
+    "specs": "",
     "configurations": {
       "ios.sim.release": {
         "binaryPath": "RNTester/build/Build/Products/Release-iphonesimulator/RNTester.app/",
         "build": "xcodebuild -project RNTester/RNTester.xcodeproj -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath RNTester/build -UseModernBuildSystem=NO -quiet",
         "type": "ios.simulator",
-        "name": "iPhone 8"
+        "name": "iPhone 6s"
       },
       "ios.sim.debug": {
         "binaryPath": "RNTester/build/Build/Products/Debug-iphonesimulator/RNTester.app/",
         "build": "xcodebuild -project RNTester/RNTester.xcodeproj -scheme RNTester -configuration Debug -sdk iphonesimulator -derivedDataPath RNTester/build -UseModernBuildSystem=NO -quiet",
         "type": "ios.simulator",
-        "name": "iPhone 8"
+        "name": "iPhone 6s"
       }
     }
   }
