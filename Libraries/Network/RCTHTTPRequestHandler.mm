@@ -19,7 +19,8 @@
 {
   NSMapTable *_delegates;
   NSURLSession *_session;
-  std::mutex _mutex;
+  std::mutex _delegatesMutex;
+  std::mutex _sessionMutex;
 }
 
 @synthesize bridge = _bridge;
@@ -29,12 +30,12 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  dispatch_async(self->_methodQueue, ^{
-    [self->_session invalidateAndCancel];
-    self->_session = nil;
-  });
+  std::lock_guard<std::mutex> lock(_sessionMutex);
+  [self->_session invalidateAndCancel];
+  self->_session = nil;
 }
 
+// Needs to lock before call this method.
 - (BOOL)isValid
 {
   // if session == nil and delegates != nil, we've been invalidated
@@ -58,6 +59,7 @@ RCT_EXPORT_MODULE()
 - (NSURLSessionDataTask *)sendRequest:(NSURLRequest *)request
                          withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
+  std::lock_guard<std::mutex> sessionLock(_sessionMutex), delegatesLock(_delegatesMutex);
   // Lazy setup
   if (!_session && [self isValid]) {
     // You can override default NSURLSession instance property allowsCellularAccess (default value YES)
@@ -83,19 +85,12 @@ RCT_EXPORT_MODULE()
                                              delegate:self
                                         delegateQueue:callbackQueue];
 
-    std::lock_guard<std::mutex> lock(_mutex);
     _delegates = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
                                            valueOptions:NSPointerFunctionsStrongMemory
                                                capacity:0];
   }
-  __block NSURLSessionDataTask *task = nil;
-  dispatch_sync(self->_methodQueue, ^{
-    task = [self->_session dataTaskWithRequest:request];
-  });
-  {
-    std::lock_guard<std::mutex> lock(_mutex);
-    [_delegates setObject:delegate forKey:task];
-  }
+  NSURLSessionDataTask *task = [_session dataTaskWithRequest:request];
+  [_delegates setObject:delegate forKey:task];
   [task resume];
   return task;
 }
@@ -103,7 +98,7 @@ RCT_EXPORT_MODULE()
 - (void)cancelRequest:(NSURLSessionDataTask *)task
 {
   {
-    std::lock_guard<std::mutex> lock(_mutex);
+    std::lock_guard<std::mutex> lock(_delegatesMutex);
     [_delegates removeObjectForKey:task];
   }
   [task cancel];
@@ -119,7 +114,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 {
   id<RCTURLRequestDelegate> delegate;
   {
-    std::lock_guard<std::mutex> lock(_mutex);
+    std::lock_guard<std::mutex> lock(_delegatesMutex);
     delegate = [_delegates objectForKey:task];
   }
   [delegate URLRequest:task didSendDataWithProgress:totalBytesSent];
@@ -147,7 +142,7 @@ didReceiveResponse:(NSURLResponse *)response
 {
   id<RCTURLRequestDelegate> delegate;
   {
-    std::lock_guard<std::mutex> lock(_mutex);
+    std::lock_guard<std::mutex> lock(_delegatesMutex);
     delegate = [_delegates objectForKey:task];
   }
   [delegate URLRequest:task didReceiveResponse:response];
@@ -160,7 +155,7 @@ didReceiveResponse:(NSURLResponse *)response
 {
   id<RCTURLRequestDelegate> delegate;
   {
-    std::lock_guard<std::mutex> lock(_mutex);
+    std::lock_guard<std::mutex> lock(_delegatesMutex);
     delegate = [_delegates objectForKey:task];
   }
   [delegate URLRequest:task didReceiveData:data];
@@ -170,7 +165,7 @@ didReceiveResponse:(NSURLResponse *)response
 {
   id<RCTURLRequestDelegate> delegate;
   {
-    std::lock_guard<std::mutex> lock(_mutex);
+    std::lock_guard<std::mutex> lock(_delegatesMutex);
     delegate = [_delegates objectForKey:task];
     [_delegates removeObjectForKey:task];
   }
