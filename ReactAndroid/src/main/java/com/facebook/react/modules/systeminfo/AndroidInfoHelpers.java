@@ -25,8 +25,6 @@ public class AndroidInfoHelpers {
 
   public static final String METRO_HOST_PROP_NAME = "metro.host";
 
-  private static final int INSPECTOR_PROXY_PORT = 8081;
-
   private static final String TAG = AndroidInfoHelpers.class.getSimpleName();
 
   private static boolean isRunningOnGenymotion() {
@@ -53,8 +51,8 @@ public class AndroidInfoHelpers {
     return getAdbReverseTcpCommand(getDevServerPort(context));
   }
 
-  public static String getInspectorProxyHost() {
-    return getServerIpAddress(INSPECTOR_PROXY_PORT);
+  public static String getInspectorProxyHost(Context context) {
+    return getServerIpAddress(getInspectorProxyPort(context));
   }
 
   // WARNING(festevezga): This RN helper method has been copied to another FB-only target. Any changes should be applied to both.
@@ -68,6 +66,11 @@ public class AndroidInfoHelpers {
   }
 
   private static Integer getDevServerPort(Context context) {
+    Resources resources = context.getResources();
+    return resources.getInteger(R.integer.react_native_dev_server_port);
+  }
+
+  private static Integer getInspectorProxyPort(Context context) {
     Resources resources = context.getResources();
     return resources.getInteger(R.integer.react_native_dev_server_port);
   }
