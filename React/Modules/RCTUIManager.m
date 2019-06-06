@@ -899,9 +899,12 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
   RCTAssert(addChildReactTags.count == addAtIndices.count, @"there should be at least one React child to add");
 
   // Removes (both permanent and temporary moves) are using "before" indices
+  NSArray<id<RCTComponent>> *permanentlyRemovedChildren =
+  [self _childrenToRemoveFromContainer:container atIndices:removeAtIndices];
+  NSArray<id<RCTComponent>> *temporarilyRemovedChildren =
+  [self _childrenToRemoveFromContainer:container atIndices:moveFromIndices];
+  
   if (removeAtIndices.count > 0) {
-    NSArray<id<RCTComponent>> *permanentlyRemovedChildren =
-    [self _childrenToRemoveFromContainer:container atIndices:removeAtIndices];
     BOOL isUIViewRegistry = ((id)registry == (id)_viewRegistry);
     if (isUIViewRegistry && _layoutAnimationGroup.deletingLayoutAnimation) {
       [self _removeChildren:(NSArray<UIView *> *)permanentlyRemovedChildren
@@ -918,9 +921,6 @@ RCT_EXPORT_METHOD(manageChildren:(nonnull NSNumber *)containerTag
     NSMutableDictionary *destinationsToChildrenToAdd = [NSMutableDictionary dictionary];
     // Removes (both permanent and temporary moves) are using "before" indices
     if (moveFromIndices.count > 0) {
-      NSArray<id<RCTComponent>> *temporarilyRemovedChildren =
-      [self _childrenToRemoveFromContainer:container atIndices:moveFromIndices];
-      
       [self _removeChildren:temporarilyRemovedChildren fromContainer:container];
       
       for (NSInteger index = 0, length = temporarilyRemovedChildren.count; index < length; index++) {
