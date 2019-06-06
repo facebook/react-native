@@ -78,10 +78,8 @@ const UIManagerJS: UIManagerJSInterface = {
 
     // If we're in the Chrome Debugger, let's not even try calling the sync
     // method.
-    if (__DEV__) {
-      if (!global.nativeCallSyncHook) {
-        return config;
-      }
+    if (!global.nativeCallSyncHook) {
+      return config;
     }
 
     if (
@@ -182,7 +180,7 @@ if (Platform.OS === 'ios') {
   }
 }
 
-if (__DEV__) {
+if (!global.nativeCallSyncHook) {
   Object.keys(getConstants()).forEach(viewManagerName => {
     if (!UIManagerProperties.includes(viewManagerName)) {
       if (!viewManagerConfigs[viewManagerName]) {
