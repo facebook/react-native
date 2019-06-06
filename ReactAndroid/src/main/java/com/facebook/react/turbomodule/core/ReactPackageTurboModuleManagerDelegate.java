@@ -2,6 +2,7 @@
 
 package com.facebook.react.turbomodule.core;
 
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.CxxModuleWrapper;
@@ -19,7 +20,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   private final Map<String, TurboModule> mModules = new HashMap<>();
   private final ReactApplicationContext mReactApplicationContext;
 
-  public ReactPackageTurboModuleManagerDelegate(ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
+  protected ReactPackageTurboModuleManagerDelegate(ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
     super();
     mReactApplicationContext = reactApplicationContext;
     for (ReactPackage reactPackage : packages) {
@@ -100,5 +101,28 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     }
 
     return mModules.get(moduleName);
+  }
+
+  public static abstract class Builder {
+    private @Nullable List<ReactPackage> mPackages;
+    private @Nullable ReactApplicationContext mContext;
+
+    public Builder setPackages(List<ReactPackage> packages) {
+      mPackages = new ArrayList<>(packages);
+      return this;
+    }
+
+    public Builder setReactApplicationContext(ReactApplicationContext context) {
+      mContext = context;
+      return this;
+    }
+
+    protected abstract ReactPackageTurboModuleManagerDelegate build(ReactApplicationContext context, List<ReactPackage> packages);
+
+    public ReactPackageTurboModuleManagerDelegate build() {
+      Assertions.assertNotNull(mContext, "The ReactApplicationContext must be provided to create ReactPackageTurboModuleManagerDelegate");
+      Assertions.assertNotNull(mPackages, "A set of ReactPackages must be provided to create ReactPackageTurboModuleManagerDelegate");
+      return build(mContext, mPackages);
+    }
   }
 }
