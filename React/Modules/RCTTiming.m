@@ -178,6 +178,7 @@ RCT_EXPORT_MODULE()
   _bridge = nil;
 }
 
+// Called from main thread
 - (void)appDidMoveToBackground
 {
   [_bridge dispatchBlock:^{
@@ -191,6 +192,7 @@ RCT_EXPORT_MODULE()
   } queue:RCTJSThread];
 }
 
+// Called from main thread
 - (void)appDidMoveToForeground
 {
   [_bridge dispatchBlock:^{
