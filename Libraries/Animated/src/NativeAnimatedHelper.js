@@ -27,11 +27,25 @@ let __nativeAnimationIdCount = 1; /* used for started animations */
 
 let nativeEventEmitter;
 
+let queueConnections = false;
+let queue = [];
+
 /**
  * Simple wrappers around NativeAnimatedModule to provide flow and autocmplete support for
  * the native module methods
  */
 const API = {
+  enableQueue: function(): void {
+    queueConnections = true;
+  },
+  disableQueue: function(): void {
+    invariant(NativeAnimatedModule, 'Native animated module is not available');
+    queueConnections = false;
+    while (queue.length) {
+      const args = queue.shift();
+      NativeAnimatedModule.connectAnimatedNodes(args[0], args[1]);
+    }
+  },
   createAnimatedNode: function(tag: ?number, config: AnimatedNodeConfig): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     NativeAnimatedModule.createAnimatedNode(tag, config);
@@ -46,6 +60,10 @@ const API = {
   },
   connectAnimatedNodes: function(parentTag: ?number, childTag: ?number): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
+    if (queueConnections) {
+      queue.push([parentTag, childTag]);
+      return;
+    }
     NativeAnimatedModule.connectAnimatedNodes(parentTag, childTag);
   },
   disconnectAnimatedNodes: function(
@@ -197,7 +215,7 @@ function addWhitelistedInterpolationParam(param: string): void {
 function validateTransform(
   configs: Array<
     | {type: 'animated', property: string, nodeTag: ?number}
-    | {type: 'static', property: string, value: number},
+    | {type: 'static', property: string, value: number | string},
   >,
 ): void {
   configs.forEach(config => {
@@ -263,7 +281,7 @@ function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
   return config.useNativeDriver || false;
 }
 
-function transformDataType(value: number | string): number {
+function transformDataType(value: number | string): number | string {
   // Change the string type to number type so we can reuse the same logic in
   // iOS and Android platform
   if (typeof value !== 'string') {
@@ -274,8 +292,7 @@ function transformDataType(value: number | string): number {
     const radians = (degrees * Math.PI) / 180.0;
     return radians;
   } else {
-    // Assume radians
-    return parseFloat(value) || 0;
+    return value;
   }
 }
 
