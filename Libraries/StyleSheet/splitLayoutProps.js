@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {DangerouslyImpreciseStyle} from 'StyleSheet';
+import type {DangerouslyImpreciseStyle} from './StyleSheet';
 
 const OUTER_PROPS: $ObjMap<DangerouslyImpreciseStyle, () => boolean> = {
   margin: true,
