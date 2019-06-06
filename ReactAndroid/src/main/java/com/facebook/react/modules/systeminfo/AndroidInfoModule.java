@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +35,7 @@ import static android.content.Context.UI_MODE_SERVICE;
  */
 @ReactModule(name = AndroidInfoModule.NAME)
 @SuppressLint("HardwareIds")
-public class AndroidInfoModule extends ReactContextBaseJavaModule {
+public class AndroidInfoModule extends ReactContextBaseJavaModule implements TurboModule {
   public static final String NAME = "PlatformConstants";
   private static final String IS_TESTING = "IS_TESTING";
 
@@ -88,6 +89,9 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
   public String getAndroidID(){
     return Secure.getString(getReactApplicationContext().getContentResolver(),Secure.ANDROID_ID);
   }
+
+  @Override
+  public void invalidate() {}
 
   private Boolean isRunningScreenshotTest() {
     try {
