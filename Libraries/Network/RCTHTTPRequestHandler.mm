@@ -58,7 +58,7 @@ RCT_EXPORT_MODULE()
 - (NSURLSessionDataTask *)sendRequest:(NSURLRequest *)request
                          withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
-  std::lock_guard<std::mutex> sessionLock(_mutex);
+  std::lock_guard<std::mutex> lock(_mutex);
   // Lazy setup
   if (!_session && [self isValid]) {
     // You can override default NSURLSession instance property allowsCellularAccess (default value YES)
