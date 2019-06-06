@@ -28,7 +28,6 @@ import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.i18nmanager.I18nManagerModule;
 import com.facebook.react.modules.image.ImageLoaderModule;
 import com.facebook.react.modules.intent.IntentModule;
-import com.facebook.react.modules.netinfo.NetInfoModule;
 import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.permissions.PermissionsModule;
 import com.facebook.react.modules.share.ShareModule;
@@ -87,7 +86,6 @@ import javax.inject.Provider;
   IntentModule.class,
   NativeAnimatedModule.class,
   NetworkingModule.class,
-  NetInfoModule.class,
   PermissionsModule.class,
   ShareModule.class,
   StatusBarModule.class,
@@ -249,14 +247,6 @@ public class MainReactPackage extends LazyReactPackage {
               @Override
               public NativeModule get() {
                 return new NetworkingModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            NetInfoModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new NetInfoModule(context);
               }
             }),
         ModuleSpec.nativeModuleSpec(
