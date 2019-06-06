@@ -354,10 +354,15 @@ RCT_EXPORT_METHOD(show)
     return;
   }
 
+  NSString *bridgeDescription = _bridge.bridgeDescription;
+  NSString *description = bridgeDescription.length > 0
+    ? [NSString stringWithFormat:@"Running %@", bridgeDescription]
+    : nil;
+
   // On larger devices we don't have an anchor point for the action sheet
   UIAlertControllerStyle style = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? UIAlertControllerStyleActionSheet : UIAlertControllerStyleAlert;
-  _actionSheet = [UIAlertController alertControllerWithTitle:nil
-                                                     message:nil
+  _actionSheet = [UIAlertController alertControllerWithTitle:@"React Native Debug Menu"
+                                                     message:description
                                               preferredStyle:style];
 
   NSArray<RCTDevMenuItem *> *items = [self _menuItemsToPresent];

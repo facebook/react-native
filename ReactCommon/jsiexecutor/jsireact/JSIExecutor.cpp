@@ -241,7 +241,7 @@ void JSIExecutor::setGlobalVariable(
 }
 
 std::string JSIExecutor::getDescription() {
-  return "JSI " + runtime_->description();
+  return "JSI (" + runtime_->description() + ")";
 }
 
 void *JSIExecutor::getJavaScriptContext() {
