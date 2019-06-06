@@ -59,7 +59,6 @@ import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.text.ReactVirtualTextViewManager;
 import com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageViewManager;
 import com.facebook.react.views.textinput.ReactTextInputManager;
-import com.facebook.react.views.toolbar.ReactToolbarManager;
 import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.react.views.viewpager.ReactViewPagerManager;
 import java.util.ArrayList;
@@ -335,7 +334,6 @@ public class MainReactPackage extends LazyReactPackage {
     viewManagers.add(new ReactScrollViewManager());
     viewManagers.add(new ReactSliderManager());
     viewManagers.add(new ReactSwitchManager());
-    viewManagers.add(new ReactToolbarManager());
     viewManagers.add(new SwipeRefreshLayoutManager());
 
     // Native equivalents
