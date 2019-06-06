@@ -207,6 +207,13 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
   }
 
   @Override
+  public WritableMap copy() {
+    final JavaOnlyMap target = new JavaOnlyMap();
+    target.merge(this);
+    return target;
+  }
+
+  @Override
   public void putArray(@Nonnull String key, @Nullable WritableArray value) {
     mBackingMap.put(key, value);
   }
