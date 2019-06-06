@@ -9,6 +9,7 @@
 
 'use strict';
 
+// TODO: remove this file entirely
 module.exports = {
   getHasteName() {
     return undefined;
