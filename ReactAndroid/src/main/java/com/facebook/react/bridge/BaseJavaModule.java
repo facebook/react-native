@@ -67,4 +67,9 @@ public abstract class BaseJavaModule implements NativeModule {
   public boolean hasConstants() {
     return false;
   }
+
+  // Cleanup Logic for TurboModuels
+  public void invalidate() {
+    // Do nothing
+  }
 }
