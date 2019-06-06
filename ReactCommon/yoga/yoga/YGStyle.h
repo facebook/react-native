@@ -137,13 +137,15 @@ public:
   static constexpr int borderBit =
       paddingBit + facebook::yoga::enums::count<YGEdge>();
   static constexpr int dimensionsBit =
-      borderBit + facebook::yoga::enums::count<YGDimension>();
+      borderBit + facebook::yoga::enums::count<YGEdge>();
   static constexpr int maxDimensionsBit =
       dimensionsBit + facebook::yoga::enums::count<YGDimension>();
   static constexpr int minDimensionsBit =
       maxDimensionsBit + facebook::yoga::enums::count<YGDimension>();
   static constexpr int aspectRatioBit =
       minDimensionsBit + facebook::yoga::enums::count<YGDimension>();
+
+  static constexpr int numStyles = aspectRatioBit + 1;
 
 private:
   std::bitset<aspectRatioBit + 1> assignedProps_;

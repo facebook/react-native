@@ -9,17 +9,18 @@
  */
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const BugReporting = require('BugReporting');
-const NativeModules = require('NativeModules');
-const ReactNative = require('ReactNative');
-const SceneTracker = require('SceneTracker');
+const BatchedBridge = require('../BatchedBridge/BatchedBridge');
+const BugReporting = require('../BugReporting/BugReporting');
+const ReactNative = require('../Renderer/shims/ReactNative');
+const SceneTracker = require('../Utilities/SceneTracker');
 
-const infoLog = require('infoLog');
+const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
-const renderApplication = require('renderApplication');
-const createPerformanceLogger = require('createPerformanceLogger');
-import type {IPerformanceLogger} from 'createPerformanceLogger';
+const renderApplication = require('./renderApplication');
+const createPerformanceLogger = require('../Utilities/createPerformanceLogger');
+import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
+
+import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
 
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
@@ -261,16 +262,22 @@ const AppRegistry = {
     const taskProvider = taskProviders.get(taskKey);
     if (!taskProvider) {
       console.warn(`No task registered for key ${taskKey}`);
-      NativeModules.HeadlessJsTaskSupport.notifyTaskFinished(taskId);
+      if (NativeHeadlessJsTaskSupport) {
+        NativeHeadlessJsTaskSupport.notifyTaskFinished(taskId);
+      }
       return;
     }
     taskProvider()(data)
-      .then(() =>
-        NativeModules.HeadlessJsTaskSupport.notifyTaskFinished(taskId),
-      )
+      .then(() => {
+        if (NativeHeadlessJsTaskSupport) {
+          NativeHeadlessJsTaskSupport.notifyTaskFinished(taskId);
+        }
+      })
       .catch(reason => {
         console.error(reason);
-        NativeModules.HeadlessJsTaskSupport.notifyTaskFinished(taskId);
+        if (NativeHeadlessJsTaskSupport) {
+          NativeHeadlessJsTaskSupport.notifyTaskFinished(taskId);
+        }
       });
   },
 

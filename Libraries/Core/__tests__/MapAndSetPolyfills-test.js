@@ -23,7 +23,7 @@ function cleanup() {
 describe('Map polyfill', () => {
   setup();
 
-  const Map = require('Map');
+  const Map = require('../../vendor/core/Map');
 
   it('is not native', () => {
     const getCode = Function.prototype.toString.call(Map.prototype.get);
@@ -63,7 +63,7 @@ describe('Map polyfill', () => {
 describe('Set polyfill', () => {
   setup();
 
-  const Set = require('Set');
+  const Set = require('../../vendor/core/Set');
 
   it('is not native', () => {
     const addCode = Function.prototype.toString.call(Set.prototype.add);

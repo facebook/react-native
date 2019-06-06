@@ -10,21 +10,20 @@
 
 'use strict';
 
-const Blob = require('Blob');
+const Blob = require('../Blob/Blob');
 const EventTarget = require('event-target-shim');
-const NativeEventEmitter = require('NativeEventEmitter');
-const BlobManager = require('BlobManager');
-const NativeModules = require('NativeModules');
-const Platform = require('Platform');
-const WebSocketEvent = require('WebSocketEvent');
+const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
+const BlobManager = require('../Blob/BlobManager');
+const Platform = require('../Utilities/Platform');
+const WebSocketEvent = require('./WebSocketEvent');
 
 const base64 = require('base64-js');
-const binaryToBase64 = require('binaryToBase64');
+const binaryToBase64 = require('../Utilities/binaryToBase64');
 const invariant = require('invariant');
 
-const {WebSocketModule} = NativeModules;
+import NativeWebSocketModule from './NativeWebSocketModule';
 
-import type EventSubscription from 'EventSubscription';
+import type EventSubscription from '../vendor/emitter/EventSubscription';
 
 type ArrayBufferView =
   | Int8Array
@@ -128,10 +127,10 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
       protocols = null;
     }
 
-    this._eventEmitter = new NativeEventEmitter(WebSocketModule);
+    this._eventEmitter = new NativeEventEmitter(NativeWebSocketModule);
     this._socketId = nextWebSocketId++;
     this._registerEvents();
-    WebSocketModule.connect(url, protocols, {headers}, this._socketId);
+    NativeWebSocketModule.connect(url, protocols, {headers}, this._socketId);
   }
 
   get binaryType(): ?BinaryType {
@@ -180,12 +179,12 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     }
 
     if (typeof data === 'string') {
-      WebSocketModule.send(data, this._socketId);
+      NativeWebSocketModule.send(data, this._socketId);
       return;
     }
 
     if (data instanceof ArrayBuffer || ArrayBuffer.isView(data)) {
-      WebSocketModule.sendBinary(binaryToBase64(data), this._socketId);
+      NativeWebSocketModule.sendBinary(binaryToBase64(data), this._socketId);
       return;
     }
 
@@ -197,18 +196,14 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
       throw new Error('INVALID_STATE_ERR');
     }
 
-    WebSocketModule.ping(this._socketId);
+    NativeWebSocketModule.ping(this._socketId);
   }
 
   _close(code?: number, reason?: string): void {
-    if (Platform.OS === 'android') {
-      // See https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
-      const statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
-      const closeReason = typeof reason === 'string' ? reason : '';
-      WebSocketModule.close(statusCode, closeReason, this._socketId);
-    } else {
-      WebSocketModule.close(this._socketId);
-    }
+    // See https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
+    const statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
+    const closeReason = typeof reason === 'string' ? reason : '';
+    NativeWebSocketModule.close(statusCode, closeReason, this._socketId);
 
     if (BlobManager.isAvailable && this._binaryType === 'blob') {
       BlobManager.removeWebSocketHandler(this._socketId);

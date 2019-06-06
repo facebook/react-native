@@ -9,10 +9,12 @@
  */
 'use strict';
 
-const Platform = require('Platform');
+const Platform = require('./Platform');
 const invariant = require('invariant');
 
 const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
+
+import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 
 /**
  * HMR Client that receives from the server HMR updates and propagates them
@@ -25,7 +27,7 @@ const HMRClient = {
     invariant(host, 'Missing required paramenter `host`');
 
     // Moving to top gives errors due to NativeModules not being initialized
-    const HMRLoadingView = require('HMRLoadingView');
+    const HMRLoadingView = require('./HMRLoadingView');
 
     /* $FlowFixMe(>=0.84.0 site=react_native_fb) This comment suppresses an
      * error found when Flow v0.84 was deployed. To see the error, delete this
@@ -43,7 +45,7 @@ const HMRClient = {
     const hmrClient = new MetroHMRClient(wsUrl);
 
     hmrClient.on('connection-error', e => {
-      let error = `Hot loading isn't working because it cannot connect to the development server.
+      let error = `Hot reloading isn't working because it cannot connect to the development server.
 
 Try the following to fix the issue:
 - Ensure that the packager server is running and available on the same network`;
@@ -68,18 +70,22 @@ Error: ${e.message}`;
     });
 
     hmrClient.on('update-start', () => {
-      HMRLoadingView.showMessage('Hot Loading...');
+      HMRLoadingView.showMessage('Hot Reloading...');
     });
 
     hmrClient.on('update', () => {
-      if (Platform.OS === 'ios') {
-        const RCTRedBox = require('NativeModules').RedBox;
-        RCTRedBox && RCTRedBox.dismiss && RCTRedBox.dismiss();
+      if (
+        Platform.OS === 'ios' &&
+        NativeRedBox != null &&
+        NativeRedBox.dismiss != null
+      ) {
+        NativeRedBox.dismiss();
       } else {
-        const RCTExceptionsManager = require('NativeModules').ExceptionsManager;
-        RCTExceptionsManager &&
-          RCTExceptionsManager.dismissRedbox &&
-          RCTExceptionsManager.dismissRedbox();
+        const NativeExceptionsManager = require('../Core/NativeExceptionsManager')
+          .default;
+        NativeExceptionsManager &&
+          NativeExceptionsManager.dismissRedbox &&
+          NativeExceptionsManager.dismissRedbox();
       }
     });
 

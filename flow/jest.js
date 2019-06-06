@@ -11,7 +11,7 @@
 
 /* eslint-disable lint/no-unclear-flowtypes */
 
-type JestMockFn<TArguments: $ReadOnlyArray<*>, TReturn> = {
+type JestMockFn<TArguments: $ReadOnlyArray<mixed>, TReturn> = {|
   (...args: TArguments): TReturn,
   /**
    * An object for introspecting mock calls
@@ -105,7 +105,7 @@ type JestMockFn<TArguments: $ReadOnlyArray<*>, TReturn> = {
    * Sugar for jest.fn().mockImplementationOnce(() => Promise.reject(value))
    */
   mockRejectedValueOnce(value: TReturn): JestMockFn<TArguments, Promise<any>>,
-};
+|};
 
 type JestAsymmetricEqualityType = {
   /**
@@ -794,7 +794,7 @@ type JestObjectType = {
    * Returns a new, unused mock function. Optionally takes a mock
    * implementation.
    */
-  fn<TArguments: $ReadOnlyArray<*>, TReturn>(
+  fn<TArguments: $ReadOnlyArray<mixed>, TReturn>(
     implementation?: (...args: TArguments) => TReturn,
   ): JestMockFn<TArguments, TReturn>,
   /**

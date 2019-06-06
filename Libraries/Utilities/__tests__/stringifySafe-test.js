@@ -11,7 +11,7 @@
 'use strict';
 
 describe('stringifySafe', () => {
-  const stringifySafe = require('stringifySafe');
+  const stringifySafe = require('../stringifySafe');
 
   it('stringifySafe stringifies undefined values', () => {
     expect(stringifySafe(undefined)).toEqual('undefined');

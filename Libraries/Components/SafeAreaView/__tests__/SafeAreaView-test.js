@@ -11,11 +11,11 @@
 
 'use strict';
 
-const React = require('React');
-const SafeAreaView = require('SafeAreaView');
+const React = require('react');
+const SafeAreaView = require('../SafeAreaView');
 const render = require('../../../../jest/renderer');
-const View = require('View');
-const Text = require('Text');
+const View = require('../../View/View');
+const Text = require('../../../Text/Text');
 
 describe('<SafeAreaView />', () => {
   it('should render as <SafeAreaView> when mocked', () => {
@@ -41,7 +41,7 @@ describe('<SafeAreaView />', () => {
   });
 
   it('should shallow render as <ForwardRef(SafeAreaView)> when not mocked', () => {
-    jest.dontMock('SafeAreaView');
+    jest.dontMock('../SafeAreaView');
 
     const output = render.shallow(
       <SafeAreaView>
@@ -54,7 +54,7 @@ describe('<SafeAreaView />', () => {
   });
 
   it('should render as <SafeAreaView> when not mocked', () => {
-    jest.dontMock('SafeAreaView');
+    jest.dontMock('../SafeAreaView');
 
     const instance = render.create(
       <SafeAreaView>

@@ -10,19 +10,20 @@
 
 'use strict';
 
-const AssetRegistry = require('AssetRegistry');
-const Platform = require('Platform');
-const NativeModules = require('NativeModules');
-const resolveAssetSource = require('../resolveAssetSource');
-
-function expectResolvesAsset(input, expectedSource) {
-  const assetId = AssetRegistry.registerAsset(input);
-  expect(resolveAssetSource(assetId)).toEqual(expectedSource);
-}
-
 describe('resolveAssetSource', () => {
+  let AssetRegistry;
+  let resolveAssetSource;
+  let NativeSourceCode;
+  let Platform;
+
   beforeEach(() => {
     jest.resetModules();
+
+    AssetRegistry = require('../AssetRegistry');
+    resolveAssetSource = require('../resolveAssetSource');
+    NativeSourceCode = require('../../NativeModules/specs/NativeSourceCode')
+      .default;
+    Platform = require('../../Utilities/Platform');
   });
 
   it('returns same source for simple static and network images', () => {
@@ -57,7 +58,9 @@ describe('resolveAssetSource', () => {
 
   describe('bundle was loaded from network (DEV)', () => {
     beforeEach(() => {
-      NativeModules.SourceCode.scriptURL = 'http://10.0.0.1:8081/main.bundle';
+      NativeSourceCode.getConstants = () => ({
+        scriptURL: 'http://10.0.0.1:8081/main.bundle',
+      });
       Platform.OS = 'ios';
     });
 
@@ -112,8 +115,9 @@ describe('resolveAssetSource', () => {
 
   describe('bundle was loaded from file on iOS', () => {
     beforeEach(() => {
-      NativeModules.SourceCode.scriptURL =
-        'file:///Path/To/Sample.app/main.bundle';
+      NativeSourceCode.getConstants = () => ({
+        scriptURL: 'file:///Path/To/Sample.app/main.bundle',
+      });
       Platform.OS = 'ios';
     });
 
@@ -143,8 +147,9 @@ describe('resolveAssetSource', () => {
 
   describe('bundle was loaded from assets on Android', () => {
     beforeEach(() => {
-      NativeModules.SourceCode.scriptURL =
-        'assets://Path/To/Simulator/main.bundle';
+      NativeSourceCode.getConstants = () => ({
+        scriptURL: 'assets://Path/To/Simulator/main.bundle',
+      });
       Platform.OS = 'android';
     });
 
@@ -174,8 +179,9 @@ describe('resolveAssetSource', () => {
 
   describe('bundle was loaded from file on Android', () => {
     beforeEach(() => {
-      NativeModules.SourceCode.scriptURL =
-        'file:///sdcard/Path/To/Simulator/main.bundle';
+      NativeSourceCode.getConstants = () => ({
+        scriptURL: 'file:///sdcard/Path/To/Simulator/main.bundle',
+      });
       Platform.OS = 'android';
     });
 
@@ -206,8 +212,9 @@ describe('resolveAssetSource', () => {
 
   describe('bundle was loaded from raw file on Android', () => {
     beforeEach(() => {
-      NativeModules.SourceCode.scriptURL =
-        '/sdcard/Path/To/Simulator/main.bundle';
+      NativeSourceCode.getConstants = () => ({
+        scriptURL: '/sdcard/Path/To/Simulator/main.bundle',
+      });
       Platform.OS = 'android';
     });
 
@@ -238,8 +245,9 @@ describe('resolveAssetSource', () => {
 
   describe('source resolver can be customized', () => {
     beforeEach(() => {
-      NativeModules.SourceCode.scriptURL =
-        'file:///sdcard/Path/To/Simulator/main.bundle';
+      NativeSourceCode.getConstants = () => ({
+        scriptURL: 'file:///sdcard/Path/To/Simulator/main.bundle',
+      });
       Platform.OS = 'android';
     });
 
@@ -295,9 +303,16 @@ describe('resolveAssetSource', () => {
       );
     });
   });
+
+  function expectResolvesAsset(input, expectedSource) {
+    const assetId = AssetRegistry.registerAsset(input);
+    expect(resolveAssetSource(assetId)).toEqual(expectedSource);
+  }
 });
 
 describe('resolveAssetSource.pickScale', () => {
+  const resolveAssetSource = require('../resolveAssetSource');
+
   it('picks matching scale', () => {
     expect(resolveAssetSource.pickScale([1], 2)).toBe(1);
     expect(resolveAssetSource.pickScale([1, 2, 3], 2)).toBe(2);

@@ -3,6 +3,7 @@ load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
     "APPLE",
+    "CXX",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
@@ -31,19 +32,20 @@ rn_xplat_cxx_library(
     fbandroid_exported_headers = subdir_glob(
         [
             ("", "*.h"),
+            ("platform/cxx", "**/*.h"),
         ],
         prefix = "react/imagemanager",
     ),
     fbandroid_headers = subdir_glob(
         [
             ("", "*.h"),
-            ("platform/android", "**/*.h"),
+            ("platform/cxx", "**/*.h"),
         ],
         prefix = "",
     ),
     fbandroid_srcs = glob(
         [
-            "platform/android/**/*.cpp",
+            "platform/cxx/**/*.cpp",
         ],
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
@@ -82,7 +84,7 @@ rn_xplat_cxx_library(
         ],
     ),
     macosx_tests_override = [],
-    platforms = (ANDROID, APPLE),
+    platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
@@ -114,7 +116,7 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = (ANDROID, APPLE),
+    platforms = (ANDROID, APPLE, CXX),
     deps = [
         "fbsource//xplat/folly:molly",
         "fbsource//xplat/third-party/gmock:gtest",

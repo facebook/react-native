@@ -9,6 +9,7 @@ package com.facebook.react.fabric.mounting;
 import android.view.View;
 import androidx.annotation.UiThread;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import java.util.WeakHashMap;
@@ -26,13 +27,13 @@ public final class ContextBasedViewPool implements ViewFactory {
 
   @UiThread
   void createView(ThemedReactContext context, ReactStylesDiffMap props, String componentName) {
-    getViewPool(context).createView(componentName, props, context);
+    getViewPool(context).createView(componentName, props, null, context);
   }
 
   @UiThread
   @Override
-  public View getOrCreateView(String componentName, ReactStylesDiffMap props, ThemedReactContext context) {
-    return getViewPool(context).getOrCreateView(componentName, props, context);
+  public View getOrCreateView(String componentName, ReactStylesDiffMap props, StateWrapper stateWrapper, ThemedReactContext context) {
+    return getViewPool(context).getOrCreateView(componentName, props, stateWrapper, context);
   }
 
   @UiThread

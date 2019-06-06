@@ -11,7 +11,7 @@
 
 'use strict';
 
-const React = require('React');
+const React = require('react');
 const Picker = require('../Picker');
 
 const render = require('../../../../jest/renderer');
@@ -38,7 +38,7 @@ describe('<Picker />', () => {
   });
 
   it('should shallow render as <Picker> when not mocked', () => {
-    jest.dontMock('Picker');
+    jest.dontMock('../Picker');
 
     const output = render.shallow(
       <Picker selectedValue="foo" onValueChange={jest.fn()}>
@@ -50,7 +50,7 @@ describe('<Picker />', () => {
   });
 
   it('should render as <View> when not mocked', () => {
-    jest.dontMock('Picker');
+    jest.dontMock('../Picker');
 
     const instance = render.create(
       <Picker selectedValue="foo" onValueChange={jest.fn()}>

@@ -199,6 +199,8 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
       sourceURL,
       loadSynchronously);
     return;
+  } else if (Instance::isIndexedRAMBundle(&script)) {
+    instance_->loadRAMBundleFromString(std::move(script), sourceURL);
   } else {
     instance_->loadScriptFromString(std::move(script), sourceURL, loadSynchronously);
   }
@@ -268,7 +270,7 @@ void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
 
 jni::alias_ref<JSCallInvokerHolder::javaobject> CatalystInstanceImpl::getJSCallInvokerHolder() {
   if (!javaInstanceHolder_) {
-    jsCallInvoker_ = std::make_shared<JSCallInvoker>(instance_);
+    jsCallInvoker_ = std::make_shared<BridgeJSCallInvoker>(instance_);
     javaInstanceHolder_ = jni::make_global(JSCallInvokerHolder::newObjectCxxArgs(jsCallInvoker_));
   }
 

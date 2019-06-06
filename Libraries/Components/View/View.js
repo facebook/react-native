@@ -10,10 +10,10 @@
 
 'use strict';
 
-const React = require('React');
-const ViewNativeComponent = require('ViewNativeComponent');
+const React = require('react');
+const ViewNativeComponent = require('./ViewNativeComponent');
 
-import type {ViewProps} from 'ViewPropTypes';
+import type {ViewProps} from './ViewPropTypes';
 
 export type Props = ViewProps;
 

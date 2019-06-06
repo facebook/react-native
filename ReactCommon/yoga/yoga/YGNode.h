@@ -5,12 +5,16 @@
  * file in the root directory of this source tree.
  */
 #pragma once
+#include <cstdint>
 #include <stdio.h>
 #include "CompactValue.h"
 #include "YGConfig.h"
 #include "YGLayout.h"
 #include "YGStyle.h"
+#include "YGMacros.h"
 #include "Yoga-internal.h"
+
+YGConfigRef YGConfigGetDefault();
 
 struct YGNode {
   using MeasureWithContextFn =
@@ -27,6 +31,8 @@ private:
   bool measureUsesContext_ : 1;
   bool baselineUsesContext_ : 1;
   bool printUsesContext_ : 1;
+  bool useWebDefaults_ : 1;
+  uint8_t reserved_ = 0;
   union {
     YGMeasureFunc noContext;
     MeasureWithContextFn withContext;
@@ -56,6 +62,12 @@ private:
   void setMeasureFunc(decltype(measure_));
   void setBaselineFunc(decltype(baseline_));
 
+  void useWebDefaults() {
+    useWebDefaults_ = true;
+    style_.flexDirection() = YGFlexDirectionRow;
+    style_.alignContent() = YGAlignStretch;
+  }
+
   // DANGER DANGER DANGER!
   // If the the node assigned to has children, we'd either have to deallocate
   // them (potentially incorrect) or ignore them (danger of leaks). Only ever
@@ -66,8 +78,8 @@ private:
   using CompactValue = facebook::yoga::detail::CompactValue;
 
 public:
-  YGNode() : YGNode{nullptr} {}
-  explicit YGNode(const YGConfigRef newConfig)
+  YGNode() : YGNode{YGConfigGetDefault()} {}
+  explicit YGNode(const YGConfigRef config)
       : hasNewLayout_{true},
         isReferenceBaseline_{false},
         isDirty_{false},
@@ -75,7 +87,12 @@ public:
         measureUsesContext_{false},
         baselineUsesContext_{false},
         printUsesContext_{false},
-        config_{newConfig} {};
+        useWebDefaults_{config->useWebDefaults},
+        config_{config} {
+    if (useWebDefaults_) {
+      useWebDefaults();
+    }
+  };
   ~YGNode() = default; // cleanup of owner/children relationships in YGNodeFree
 
   YGNode(YGNode&&);
@@ -84,12 +101,18 @@ public:
   // Should we remove this?
   YGNode(const YGNode& node) = default;
 
+  // for RB fabric
+  YGNode(const YGNode& node, YGConfigRef config);
+
   // assignment means potential leaks of existing children, or alternatively
   // freeing unowned memory, double free, or freeing stack memory.
   YGNode& operator=(const YGNode&) = delete;
 
   // Getters
   void* getContext() const { return context_; }
+
+  uint8_t& reserved() { return reserved_; }
+  uint8_t reserved() const { return reserved_; }
 
   void print(void*);
 
@@ -250,7 +273,7 @@ public:
 
   // TODO: rvalue override for setChildren
 
-  void setConfig(YGConfigRef config) { config_ = config; }
+  YG_DEPRECATED void setConfig(YGConfigRef config) { config_ = config; }
 
   void setDirty(bool isDirty);
   void setLayoutLastOwnerDirection(YGDirection direction);
@@ -270,7 +293,6 @@ public:
       const float mainSize,
       const float crossSize,
       const float ownerWidth);
-  void setAndPropogateUseLegacyFlag(bool useLegacyFlag);
   void setLayoutDoesLegacyFlagAffectsLayout(bool doesLegacyFlagAffectsLayout);
   void setLayoutDidUseLegacyFlag(bool didUseLegacyFlag);
   void markDirtyAndPropogateDownwards();

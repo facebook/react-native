@@ -13,9 +13,9 @@
 
 'use strict';
 
-const _shouldPolyfillES6Collection = require('_shouldPolyfillES6Collection');
-const guid = require('guid');
-const toIterator = require('toIterator');
+const _shouldPolyfillES6Collection = require('./_shouldPolyfillES6Collection');
+const guid = require('./guid');
+const toIterator = require('./toIterator');
 
 module.exports = (function(global, undefined) {
   // Since our implementation is spec-compliant for the most part we can safely

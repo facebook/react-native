@@ -10,14 +10,13 @@
 
 'use strict';
 
-const NativeModules = require('NativeModules');
-
-import type {TurboModule} from 'RCTExport';
+import NativeModules from '../BatchedBridge/NativeModules';
+import type {TurboModule} from './RCTExport';
 import invariant from 'invariant';
 
 const turboModuleProxy = global.__turboModuleProxy;
 
-function get<T: TurboModule>(name: string): ?T {
+export function get<T: TurboModule>(name: string): ?T {
   // Backward compatibility layer during migration.
   const legacyModule = NativeModules[name];
   if (legacyModule != null) {
@@ -32,11 +31,12 @@ function get<T: TurboModule>(name: string): ?T {
   return null;
 }
 
-function getEnforcing<T: TurboModule>(name: string): T {
+export function getEnforcing<T: TurboModule>(name: string): T {
   const module = get(name);
-  invariant(module != null, `${name} is not available in this app.`);
+  invariant(
+    module != null,
+    `TurboModuleRegistry.getEnforcing(...): '${name}' could not be found. ` +
+      'Verify that a module by this name is registered in the native binary.',
+  );
   return module;
 }
-
-export {get};
-export {getEnforcing};

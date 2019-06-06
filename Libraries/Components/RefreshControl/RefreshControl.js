@@ -10,20 +10,19 @@
 
 'use strict';
 
-const Platform = require('Platform');
-const React = require('React');
-const {NativeComponent} = require('ReactNative');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
 
-const AndroidSwipeRefreshLayoutNativeComponent = require('AndroidSwipeRefreshLayoutNativeComponent');
-const RCTRefreshControlNativeComponent = require('RCTRefreshControlNativeComponent');
+const AndroidSwipeRefreshLayoutNativeComponent = require('./AndroidSwipeRefreshLayoutNativeComponent');
+const PullToRefreshViewNativeComponent = require('./PullToRefreshViewNativeComponent');
 const nullthrows = require('nullthrows');
 
-import type {ColorValue} from 'StyleSheetTypes';
-import type {ViewProps} from 'ViewPropTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 let RefreshLayoutConsts;
 if (Platform.OS === 'android') {
-  const AndroidSwipeRefreshLayout = require('UIManager').getViewManagerConfig(
+  const AndroidSwipeRefreshLayout = require('../../ReactNative/UIManager').getViewManagerConfig(
     'AndroidSwipeRefreshLayout',
   );
   RefreshLayoutConsts = AndroidSwipeRefreshLayout
@@ -175,7 +174,7 @@ class RefreshControl extends React.Component<RefreshControlProps> {
         ...props
       } = this.props;
       return (
-        <RCTRefreshControlNativeComponent
+        <PullToRefreshViewNativeComponent
           {...props}
           ref={setRef}
           onRefresh={this._onRefresh}

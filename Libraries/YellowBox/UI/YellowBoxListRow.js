@@ -10,16 +10,16 @@
 
 'use strict';
 
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const YellowBoxPressable = require('YellowBoxPressable');
-const View = require('View');
-const YellowBoxCategory = require('YellowBoxCategory');
-const YellowBoxStyle = require('YellowBoxStyle');
-const YellowBoxWarning = require('YellowBoxWarning');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const Text = require('../../Text/Text');
+const YellowBoxPressable = require('./YellowBoxPressable');
+const View = require('../../Components/View/View');
+const YellowBoxCategory = require('../Data/YellowBoxCategory');
+const YellowBoxStyle = require('./YellowBoxStyle');
+const YellowBoxWarning = require('../Data/YellowBoxWarning');
 
-import type {Category} from 'YellowBoxCategory';
+import type {Category} from '../Data/YellowBoxCategory';
 
 type Props = $ReadOnly<{|
   category: Category,
@@ -38,7 +38,7 @@ class YellowBoxListRow extends React.Component<Props> {
       prevProps.onPress !== nextProps.onPress ||
       prevProps.warnings.length !== nextProps.warnings.length ||
       prevProps.warnings.some(
-        (prevWarning, index) => prevWarning !== nextProps[index],
+        (prevWarning, index) => prevWarning !== nextProps.warnings[index],
       )
     );
   }

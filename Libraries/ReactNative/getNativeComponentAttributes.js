@@ -10,15 +10,16 @@
 
 'use strict';
 
-const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-const UIManager = require('UIManager');
+const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+const UIManager = require('./UIManager');
 
-const insetsDiffer = require('insetsDiffer');
-const matricesDiffer = require('matricesDiffer');
-const pointsDiffer = require('pointsDiffer');
-const processColor = require('processColor');
-const resolveAssetSource = require('resolveAssetSource');
-const sizesDiffer = require('sizesDiffer');
+const insetsDiffer = require('../Utilities/differ/insetsDiffer');
+const matricesDiffer = require('../Utilities/differ/matricesDiffer');
+const pointsDiffer = require('../Utilities/differ/pointsDiffer');
+const processColor = require('../StyleSheet/processColor');
+const processColorArray = require('../StyleSheet/processColorArray');
+const resolveAssetSource = require('../Image/resolveAssetSource');
+const sizesDiffer = require('../Utilities/differ/sizesDiffer');
 const invariant = require('invariant');
 const warning = require('fbjs/lib/warning');
 
@@ -96,17 +97,18 @@ function attachDefaultEventTypes(viewConfig: any) {
   // This is supported on UIManager platforms (ex: Android),
   // as lazy view managers are not implemented for all platforms.
   // See [UIManager] for details on constants and implementations.
-  if (UIManager.ViewManagerNames || UIManager.LazyViewManagersEnabled) {
+  const constants = UIManager.getConstants();
+  if (constants.ViewManagerNames || constants.LazyViewManagersEnabled) {
     // Lazy view managers enabled.
     viewConfig = merge(viewConfig, UIManager.getDefaultEventTypes());
   } else {
     viewConfig.bubblingEventTypes = merge(
       viewConfig.bubblingEventTypes,
-      UIManager.genericBubblingEventTypes,
+      constants.genericBubblingEventTypes,
     );
     viewConfig.directEventTypes = merge(
       viewConfig.directEventTypes,
-      UIManager.genericDirectEventTypes,
+      constants.genericDirectEventTypes,
     );
   }
 }
@@ -179,10 +181,6 @@ function getProcessorForType(typeName: string): ?(nextProp: any) => any {
       return processColorArray;
   }
   return null;
-}
-
-function processColorArray(colors: ?Array<any>): ?Array<?number> {
-  return colors == null ? null : colors.map(processColor);
 }
 
 module.exports = getNativeComponentAttributes;

@@ -9,8 +9,8 @@
 
 'use strict';
 
-const React = require('React');
-const Image = require('Image');
+const React = require('react');
+const {Image} = require('react-native');
 
 class ImageOverlayColorTestApp extends React.Component {
   render() {

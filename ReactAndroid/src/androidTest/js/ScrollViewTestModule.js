@@ -10,18 +10,22 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const React = require('React');
-const View = require('View');
-const ScrollView = require('ScrollView');
-const Text = require('Text');
-const StyleSheet = require('StyleSheet');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-const ScrollListener = require('NativeModules').ScrollListener;
+const React = require('react');
+const {
+  NativeModules,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} = require('react-native');
+const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
+
+const {ScrollListener} = NativeModules;
 
 const NUM_ITEMS = 100;
 
-import type {PressEvent} from 'CoreEventTypes';
+import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 // Shared by integration tests for ScrollView and HorizontalScrollView
 

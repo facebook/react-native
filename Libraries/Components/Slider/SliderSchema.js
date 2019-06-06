@@ -18,6 +18,7 @@ const SliderSchema: SchemaType = {
       components: {
         Slider: {
           interfaceOnly: true,
+          isDeprecatedPaperComponentNameRCT: true,
           extendsProps: [
             {
               type: 'ReactNativeBuiltInType',
@@ -51,7 +52,7 @@ const SliderSchema: SchemaType = {
             {
               name: 'onSlidingComplete',
               optional: true,
-              bubblingType: 'bubble',
+              bubblingType: 'direct',
               typeAnnotation: {
                 type: 'EventTypeAnnotation',
                 argument: {

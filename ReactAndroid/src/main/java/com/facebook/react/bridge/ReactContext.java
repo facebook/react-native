@@ -36,6 +36,8 @@ public class ReactContext extends ContextWrapper {
       new CopyOnWriteArraySet<>();
   private final CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners =
       new CopyOnWriteArraySet<>();
+  private final CopyOnWriteArraySet<WindowFocusChangeListener> mWindowFocusEventListeners =
+    new CopyOnWriteArraySet<>();
 
   private LifecycleState mLifecycleState = LifecycleState.BEFORE_CREATE;
 
@@ -65,6 +67,17 @@ public class ReactContext extends ContextWrapper {
     mCatalystInstance = catalystInstance;
 
     ReactQueueConfiguration queueConfig = catalystInstance.getReactQueueConfiguration();
+    initializeMessageQueueThreads(queueConfig);
+  }
+
+  /**
+   * Initialize message queue threads using a ReactQueueConfiguration.
+   * TODO (janzer) T43898341 Make this package instead of public
+   */
+  public void initializeMessageQueueThreads(ReactQueueConfiguration queueConfig) {
+    if (mUiMessageQueueThread != null || mNativeModulesMessageQueueThread != null || mJSMessageQueueThread != null) {
+      throw new IllegalStateException("Message queue threads already initialized");
+    }
     mUiMessageQueueThread = queueConfig.getUIQueueThread();
     mNativeModulesMessageQueueThread = queueConfig.getNativeModulesQueueThread();
     mJSMessageQueueThread = queueConfig.getJSQueueThread();
@@ -136,6 +149,10 @@ public class ReactContext extends ContextWrapper {
     return mCatalystInstance != null && !mCatalystInstance.isDestroyed();
   }
 
+  public boolean hasCatalystInstance() {
+    return mCatalystInstance != null;
+  }
+
   public LifecycleState getLifecycleState() {
     return mLifecycleState;
   }
@@ -179,6 +196,14 @@ public class ReactContext extends ContextWrapper {
 
   public void removeActivityEventListener(ActivityEventListener listener) {
     mActivityEventListeners.remove(listener);
+  }
+
+  public void addWindowFocusChangeListener(WindowFocusChangeListener listener) {
+    mWindowFocusEventListeners.add(listener);
+  }
+
+  public void removeWindowFocusChangeListener(WindowFocusChangeListener listener) {
+    mWindowFocusEventListeners.remove(listener);
   }
 
   /**
@@ -260,6 +285,17 @@ public class ReactContext extends ContextWrapper {
     for (ActivityEventListener listener : mActivityEventListeners) {
       try {
         listener.onActivityResult(activity, requestCode, resultCode, data);
+      } catch (RuntimeException e) {
+        handleException(e);
+      }
+    }
+  }
+
+  public void onWindowFocusChange(boolean hasFocus) {
+    UiThreadUtil.assertOnUiThread();
+    for (WindowFocusChangeListener listener : mWindowFocusEventListeners) {
+      try {
+        listener.onWindowFocusChange(hasFocus);
       } catch (RuntimeException e) {
         handleException(e);
       }

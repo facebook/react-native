@@ -10,7 +10,7 @@
 
 'use strict';
 
-const mixInEventEmitter = require('mixInEventEmitter');
+const mixInEventEmitter = require('../../emitter/mixInEventEmitter');
 
 /**
  * DocumentSelectionState is responsible for maintaining selection information

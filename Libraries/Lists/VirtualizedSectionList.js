@@ -9,15 +9,14 @@
  */
 'use strict';
 
-const Platform = require('Platform');
-const React = require('React');
-const View = require('View');
-const VirtualizedList = require('VirtualizedList');
+const React = require('react');
+const View = require('../Components/View/View');
+const VirtualizedList = require('./VirtualizedList');
 
 const invariant = require('invariant');
 
-import type {ViewToken} from 'ViewabilityHelper';
-import type {Props as VirtualizedListProps} from 'VirtualizedList';
+import type {ViewToken} from './ViewabilityHelper';
+import type {Props as VirtualizedListProps} from './VirtualizedList';
 
 type Item = any;
 
@@ -145,7 +144,7 @@ class VirtualizedSectionList<
     sectionIndex: number,
     viewPosition?: number,
   }) {
-    let index = Platform.OS === 'ios' ? params.itemIndex : params.itemIndex + 1;
+    let index = params.itemIndex;
     for (let i = 0; i < params.sectionIndex; i++) {
       index += this.props.getItemCount(this.props.sections[i].data) + 2;
     }

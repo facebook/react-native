@@ -35,6 +35,7 @@ Size SliderMeasurementsManager::measure(
               jstring,
               ReadableMap::javaobject,
               ReadableMap::javaobject,
+              ReadableMap::javaobject,
               jfloat,
               jfloat,
               jfloat,
@@ -48,6 +49,7 @@ Size SliderMeasurementsManager::measure(
   auto measurement = yogaMeassureToSize(measure(
       fabricUIManager,
       componentName.get(),
+      nullptr,
       nullptr,
       nullptr,
       minimumSize.width,

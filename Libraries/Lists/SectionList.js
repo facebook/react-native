@@ -9,16 +9,16 @@
  */
 'use strict';
 
-const Platform = require('Platform');
-const React = require('React');
-const ScrollView = require('ScrollView');
-const VirtualizedSectionList = require('VirtualizedSectionList');
+const Platform = require('../Utilities/Platform');
+const React = require('react');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const VirtualizedSectionList = require('./VirtualizedSectionList');
 
-import type {ViewToken} from 'ViewabilityHelper';
+import type {ViewToken} from './ViewabilityHelper';
 import type {
   SectionBase as _SectionBase,
   Props as VirtualizedSectionListProps,
-} from 'VirtualizedSectionList';
+} from './VirtualizedSectionList';
 
 type Item = any;
 
@@ -303,9 +303,6 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
 
   render() {
     return (
-      /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.66 was deployed. To see the error delete this
-       * comment and run Flow. */
       <VirtualizedSectionList
         {...this.props}
         ref={this._captureRef}
@@ -317,6 +314,9 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
 
   _wrapperListRef: ?React.ElementRef<typeof VirtualizedSectionList>;
   _captureRef = ref => {
+    /* $FlowFixMe(>=0.99.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.99 was deployed. To see the error, delete this
+     * comment and run Flow. */
     this._wrapperListRef = ref;
   };
 }

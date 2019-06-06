@@ -6,13 +6,9 @@ import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.queue.MessageQueueThread;
-import com.facebook.react.fabric.jsi.Binding;
-import com.facebook.react.fabric.jsi.ComponentFactoryDelegate;
-import com.facebook.react.fabric.jsi.ComponentRegistry;
-import com.facebook.react.fabric.jsi.EventBeatManager;
-import com.facebook.react.fabric.jsi.EventEmitterWrapper;
-import com.facebook.react.fabric.jsi.FabricSoLoader;
-import com.facebook.react.fabric.jsi.StateWrapperImpl;
+import com.facebook.react.fabric.events.EventBeatManager;
+import com.facebook.react.fabric.events.EventEmitterWrapper;
+import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.fabric.mounting.ContextBasedViewPool;
 import com.facebook.react.fabric.mounting.LayoutMetricsConversions;
 import com.facebook.react.fabric.mounting.MountingManager;
@@ -96,6 +92,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   private static void loadClasses() {
     BatchEventDispatchedListener.class.getClass();
     ReactNativeConfig.class.getClass();
+    FabricComponents.class.getClass();
     ViewManagerFactory.class.getClass();
     StateWrapper.class.getClass();
     ViewFactory.class.getClass();
@@ -118,7 +115,6 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     ViewPool.class.getClass();
     Binding.class.getClass();
     ComponentFactoryDelegate.class.getClass();
-    ComponentRegistry.class.getClass();
     EventBeatManager.class.getClass();
     EventEmitterWrapper.class.getClass();
     StateWrapperImpl.class.getClass();

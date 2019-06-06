@@ -45,7 +45,7 @@ struct LayoutMetrics {
                rhs.borderWidth,
                rhs.displayType,
                rhs.layoutDirection,
-               this->pointScaleFactor);
+               rhs.pointScaleFactor);
   }
 
   bool operator!=(const LayoutMetrics &rhs) const {

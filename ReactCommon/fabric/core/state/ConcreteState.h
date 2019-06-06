@@ -27,13 +27,15 @@ class ConcreteState : public State {
   using Shared = std::shared_ptr<const ConcreteState>;
   using Data = DataT;
 
+  explicit ConcreteState(
+      Data &&data,
+      StateCoordinator::Shared const &stateCoordinator)
+      : State(stateCoordinator), data_(std::move(data)) {}
+
+  explicit ConcreteState(Data &&data, State const &other)
+      : State(other), data_(std::move(data)) {}
+
   virtual ~ConcreteState() = default;
-
-  ConcreteState(Data &&data, StateCoordinator::Shared stateCoordinator)
-      : State(std::move(stateCoordinator)), data_(std::move(data)) {}
-
-  ConcreteState(Data &&data, const ConcreteState &other)
-      : State(other.stateCoordinator_), data_(std::move(data)) {}
 
   /*
    * Returns stored data.
@@ -86,6 +88,7 @@ class ConcreteState : public State {
   const folly::dynamic getDynamic() const override {
     return data_.getDynamic();
   }
+
   void updateState(folly::dynamic data) const override {
     updateState(std::move(Data(data)));
   }

@@ -10,14 +10,14 @@
 
 'use strict';
 
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const YellowBoxPressable = require('YellowBoxPressable');
-const YellowBoxStyle = require('YellowBoxStyle');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const Text = require('../../Text/Text');
+const YellowBoxPressable = require('./YellowBoxPressable');
+const YellowBoxStyle = require('./YellowBoxStyle');
 
-import type {PressEvent} from 'CoreEventTypes';
-import type {StackFrame} from 'parseErrorStack';
+import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {StackFrame} from '../../Core/NativeExceptionsManager';
 
 type Props = $ReadOnly<{|
   frame: StackFrame,

@@ -10,16 +10,16 @@
 
 'use strict';
 
-const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
-const PlatformViewPropTypes = require('PlatformViewPropTypes');
+const DeprecatedEdgeInsetsPropType = require('./DeprecatedEdgeInsetsPropType');
+const PlatformViewPropTypes = require('../Components/View/PlatformViewPropTypes');
 const PropTypes = require('prop-types');
-const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
-const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
+const DeprecatedStyleSheetPropType = require('./DeprecatedStyleSheetPropType');
+const DeprecatedViewStylePropTypes = require('./DeprecatedViewStylePropTypes');
 
 const {
   DeprecatedAccessibilityRoles,
   DeprecatedAccessibilityStates,
-} = require('DeprecatedViewAccessibility');
+} = require('./DeprecatedViewAccessibility');
 
 const stylePropType = DeprecatedStyleSheetPropType(
   DeprecatedViewStylePropTypes,
@@ -78,6 +78,7 @@ module.exports = {
   accessibilityStates: PropTypes.arrayOf(
     PropTypes.oneOf(DeprecatedAccessibilityStates),
   ),
+  accessibilityState: PropTypes.object,
   /**
    * Indicates to accessibility services whether the user should be notified
    * when this view changes. Works for Android API >= 19 only.

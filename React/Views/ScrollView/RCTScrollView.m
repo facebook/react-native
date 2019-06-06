@@ -298,7 +298,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)setContentOffset:(CGPoint)contentOffset
 {
   UIView *contentView = [self contentView];
-  if (contentView && _centerContent) {
+  if (contentView && _centerContent && !CGSizeEqualToSize(contentView.frame.size, CGSizeZero)) {
     CGSize subviewSize = contentView.frame.size;
     CGSize scrollViewSize = self.bounds.size;
     if (subviewSize.width <= scrollViewSize.width) {
@@ -706,10 +706,10 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
    * warnings, and behave strangely (ListView works fine however), so don't fix it unless you fix that too!
    *
    * We limit the delta to 17ms so that small throttles intended to enable 60fps updates will not
-   * inadvertantly filter out any scroll events.
+   * inadvertently filter out any scroll events.
    */
   if (_allowNextScrollNoMatterWhat ||
-      (_scrollEventThrottle > 0 && _scrollEventThrottle < MAX(17, now - _lastScrollDispatchTime))) {
+      (_scrollEventThrottle > 0 && _scrollEventThrottle < MAX(0.017, now - _lastScrollDispatchTime))) {
 
     if (_DEPRECATED_sendUpdatedChildFrames) {
       // Calculate changed frames

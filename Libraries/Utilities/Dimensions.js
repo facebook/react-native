@@ -10,9 +10,11 @@
 
 'use strict';
 
-const EventEmitter = require('EventEmitter');
-const Platform = require('Platform');
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const EventEmitter = require('../vendor/emitter/EventEmitter');
+const Platform = require('./Platform');
+const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
+
+import NativeDeviceInfo from './NativeDeviceInfo';
 
 const invariant = require('invariant');
 
@@ -128,8 +130,7 @@ let dims: ?{[key: string]: any} =
   global.nativeExtensions.DeviceInfo.Dimensions;
 let nativeExtensionsEnabled = true;
 if (!dims) {
-  const DeviceInfo = require('DeviceInfo');
-  dims = DeviceInfo.Dimensions;
+  dims = NativeDeviceInfo.getConstants().Dimensions;
   nativeExtensionsEnabled = false;
 }
 

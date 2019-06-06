@@ -9,35 +9,48 @@
  */
 'use strict';
 
-const Batchinator = require('Batchinator');
-const FillRateHelper = require('FillRateHelper');
+const Batchinator = require('../Interaction/Batchinator');
+const FillRateHelper = require('./FillRateHelper');
 const PropTypes = require('prop-types');
-const React = require('React');
-const ReactNative = require('ReactNative');
-const RefreshControl = require('RefreshControl');
-const ScrollView = require('ScrollView');
-const StyleSheet = require('StyleSheet');
-const UIManager = require('UIManager');
-const View = require('View');
-const ViewabilityHelper = require('ViewabilityHelper');
+const React = require('react');
+const ReactNative = require('../Renderer/shims/ReactNative');
+const RefreshControl = require('../Components/RefreshControl/RefreshControl');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const View = require('../Components/View/View');
+const ViewabilityHelper = require('./ViewabilityHelper');
 
-const flattenStyle = require('flattenStyle');
-const infoLog = require('infoLog');
+const flattenStyle = require('../StyleSheet/flattenStyle');
+const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
 const warning = require('fbjs/lib/warning');
 
-const {computeWindowedRenderLimits} = require('VirtualizeUtils');
+const {computeWindowedRenderLimits} = require('./VirtualizeUtils');
 
-import type {ViewStyleProp} from 'StyleSheet';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
   ViewToken,
   ViewabilityConfigCallbackPair,
-} from 'ViewabilityHelper';
+} from './ViewabilityHelper';
 
 type Item = any;
 
-export type renderItemType = (info: any) => ?React.Element<any>;
+export type Separators = {
+  highlight: () => void,
+  unhighlight: () => void,
+  updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+};
+
+export type RenderItemProps<ItemT> = {
+  item: ItemT,
+  index: number,
+  separators: Separators,
+};
+
+export type RenderItemType<ItemT> = (
+  info: RenderItemProps<ItemT>,
+) => React.Node;
 
 type ViewabilityHelperCallbackTuple = {
   viewabilityHelper: ViewabilityHelper,
@@ -48,11 +61,8 @@ type ViewabilityHelperCallbackTuple = {
 };
 
 type RequiredProps = {
-  // TODO: Conflicts with the optional `renderItem` in
-  // `VirtualizedSectionList`'s props.
-  renderItem: $FlowFixMe<renderItemType>,
   /**
-   * The default accessor functions assume this is an Array<{key: string}> but you can override
+   * The default accessor functions assume this is an Array<{key: string} | {id: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
    */
   data?: any,
@@ -66,6 +76,9 @@ type RequiredProps = {
   getItemCount: (data: any) => number,
 };
 type OptionalProps = {
+  // TODO: Conflicts with the optional `renderItem` in
+  // `VirtualizedSectionList`'s props.
+  renderItem?: $FlowFixMe<?RenderItemType<Item>>,
   /**
    * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
    * implementation, but with a significant perf hit.
@@ -111,6 +124,11 @@ type OptionalProps = {
    * or a render function. Defaults to using View.
    */
   CellRendererComponent?: ?React.ComponentType<any>,
+  /**
+   * Each data item is rendered using this element. Can be a React Component Class,
+   * or a render function.
+   */
+  ListItemComponent?: ?React.ComponentType<any>,
   /**
    * Rendered when the list is empty. Can be a React Component Class, a render function, or
    * a rendered element.
@@ -264,7 +282,7 @@ type State = {first: number, last: number};
  *   offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
  *   blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
  *   and we are working on improving it behind the scenes.
- * - By default, the list looks for a `key` prop on each item and uses that for the React key.
+ * - By default, the list looks for a `key` or `id` prop on each item and uses that for the React key.
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  */
@@ -434,6 +452,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     keyExtractor: (item: Item, index: number) => {
       if (item.key != null) {
         return item.key;
+      }
+      if (item.id != null) {
+        return item.id;
       }
       _usedIndexForKey = true;
       if (item.type && item.type.displayName) {
@@ -849,7 +870,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
       if (!this._hasWarned.keys && _usedIndexForKey) {
         console.warn(
-          'VirtualizedList: missing keys for items, make sure to specify a key property on each ' +
+          'VirtualizedList: missing keys for items, make sure to specify a key or id property on each ' +
             'item or provide a custom keyExtractor.',
           _keylessItemComponentName,
         );
@@ -1646,26 +1667,36 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 }
 
-class CellRenderer extends React.Component<
-  {
-    CellRendererComponent?: ?React.ComponentType<any>,
-    ItemSeparatorComponent: ?React.ComponentType<*>,
-    cellKey: string,
-    fillRateHelper: FillRateHelper,
-    horizontal: ?boolean,
-    index: number,
-    inversionStyle: ViewStyleProp,
-    item: Item,
-    onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
-    onUnmount: (cellKey: string) => void,
-    onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
-    parentProps: {
-      getItemLayout?: ?Function,
-      renderItem: renderItemType,
-    },
-    prevCellKey: ?string,
+type CellRendererProps = {
+  CellRendererComponent?: ?React.ComponentType<any>,
+  ItemSeparatorComponent: ?React.ComponentType<*>,
+  cellKey: string,
+  fillRateHelper: FillRateHelper,
+  horizontal: ?boolean,
+  index: number,
+  inversionStyle: ViewStyleProp,
+  item: Item,
+  onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
+  onUnmount: (cellKey: string) => void,
+  onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
+  parentProps: {
+    getItemLayout?: ?Function,
+    renderItem?: ?RenderItemType<Item>,
+    ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
   },
-  $FlowFixMeState,
+  prevCellKey: ?string,
+};
+
+type CellRendererState = {
+  separatorProps: $ReadOnly<{|
+    highlighted: boolean,
+    leadingItem: ?Item,
+  |}>,
+};
+
+class CellRenderer extends React.Component<
+  CellRendererProps,
+  CellRendererState,
 > {
   state = {
     separatorProps: {
@@ -1679,6 +1710,18 @@ class CellRenderer extends React.Component<
       cellKey: PropTypes.string,
     }),
   };
+
+  static getDerivedStateFromProps(
+    props: CellRendererProps,
+    prevState: CellRendererState,
+  ): ?CellRendererState {
+    return {
+      separatorProps: {
+        ...prevState.separatorProps,
+        leadingItem: props.item,
+      },
+    };
+  }
 
   getChildContext() {
     return {
@@ -1722,6 +1765,36 @@ class CellRenderer extends React.Component<
     this.props.onUnmount(this.props.cellKey);
   }
 
+  _renderElement(renderItem, ListItemComponent, item, index) {
+    if (renderItem && ListItemComponent) {
+      console.warn(
+        'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take' +
+          ' precedence over renderItem.',
+      );
+    }
+
+    if (ListItemComponent) {
+      return React.createElement(ListItemComponent, {
+        item,
+        index,
+        separators: this._separators,
+      });
+    }
+
+    if (renderItem) {
+      return renderItem({
+        item,
+        index,
+        separators: this._separators,
+      });
+    }
+
+    invariant(
+      false,
+      'VirtualizedList: Either ListItemComponent or renderItem props are required but none were found.',
+    );
+  }
+
   render() {
     const {
       CellRendererComponent,
@@ -1733,13 +1806,14 @@ class CellRenderer extends React.Component<
       inversionStyle,
       parentProps,
     } = this.props;
-    const {renderItem, getItemLayout} = parentProps;
-    invariant(renderItem, 'no renderItem!');
-    const element = renderItem({
+    const {renderItem, getItemLayout, ListItemComponent} = parentProps;
+    const element = this._renderElement(
+      renderItem,
+      ListItemComponent,
       item,
       index,
-      separators: this._separators,
-    });
+    );
+
     const onLayout =
       /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
        * error found when Flow v0.68 was deployed. To see the error delete this

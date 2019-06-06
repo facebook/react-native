@@ -146,21 +146,27 @@ function generateStructs(componentName: string, component): string {
   const structs: StructsMap = new Map();
 
   component.events.forEach(event => {
-    generateStruct(
-      structs,
-      componentName,
-      [event.name],
-      event.typeAnnotation.argument.properties,
-    );
+    if (event.typeAnnotation.argument) {
+      generateStruct(
+        structs,
+        componentName,
+        [event.name],
+        event.typeAnnotation.argument.properties,
+      );
+    }
   });
 
   return Array.from(structs.values()).join('\n\n');
 }
 
 function generateEvent(componentName: string, event: EventTypeShape): string {
-  const structName = generateStructName(componentName, [event.name]);
+  if (event.typeAnnotation.argument) {
+    const structName = generateStructName(componentName, [event.name]);
 
-  return `void ${event.name}(${structName} value) const;`;
+    return `void ${event.name}(${structName} value) const;`;
+  }
+
+  return `void ${event.name}() const;`;
 }
 function generateEvents(componentName: string, component): string {
   return component.events

@@ -10,10 +10,11 @@
 
 'use strict';
 
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-const infoLog = require('infoLog');
+const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
+const infoLog = require('../Utilities/infoLog');
 
-import type EmitterSubscription from 'EmitterSubscription';
+import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
+import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 
 type ExtraData = {[key: string]: string};
 type SourceCallback = () => string;
@@ -21,7 +22,7 @@ type DebugData = {extras: ExtraData, files: ExtraData};
 
 function defaultExtras() {
   BugReporting.addFileSource('react_hierarchy.txt', () =>
-    require('dumpReactTree')(),
+    require('./dumpReactTree')(),
   );
 }
 
@@ -121,15 +122,15 @@ class BugReporting {
       fileData[key] = callback();
     }
     infoLog('BugReporting extraData:', extraData);
-    const BugReportingNativeModule = require('NativeModules').BugReporting;
+    const BugReportingNativeModule = require('../BatchedBridge/NativeModules')
+      .BugReporting;
     BugReportingNativeModule &&
       BugReportingNativeModule.setExtraData &&
       BugReportingNativeModule.setExtraData(extraData, fileData);
 
-    const RedBoxNativeModule = require('NativeModules').RedBox;
-    RedBoxNativeModule &&
-      RedBoxNativeModule.setExtraData &&
-      RedBoxNativeModule.setExtraData(extraData, 'From BugReporting.js');
+    if (NativeRedBox != null && NativeRedBox.setExtraData != null) {
+      NativeRedBox.setExtraData(extraData, 'From BugReporting.js');
+    }
 
     return {extras: extraData, files: fileData};
   }

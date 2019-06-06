@@ -8,6 +8,7 @@
 #include <fb/fbjni.h>
 #include <folly/Memory.h>
 #include <jsireact/JSCallInvokerHolder.h>
+#include <jsireact/BridgeJSCallInvoker.h>
 
 #include "CxxModuleWrapper.h"
 #include "JavaModuleWrapper.h"
@@ -86,7 +87,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   std::shared_ptr<ModuleRegistry> moduleRegistry_;
   std::shared_ptr<JMessageQueueThread> moduleMessageQueue_;
   jni::global_ref<JSCallInvokerHolder::javaobject> javaInstanceHolder_;
-  std::shared_ptr<JSCallInvoker> jsCallInvoker_;
+  std::shared_ptr<BridgeJSCallInvoker> jsCallInvoker_;
 };
 
 }}

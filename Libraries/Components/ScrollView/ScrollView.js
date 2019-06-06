@@ -10,31 +10,35 @@
 
 'use strict';
 
-const AnimatedImplementation = require('AnimatedImplementation');
-const Platform = require('Platform');
-const React = require('React');
-const ReactNative = require('ReactNative');
-const ScrollResponder = require('ScrollResponder');
-const ScrollViewStickyHeader = require('ScrollViewStickyHeader');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
+const AnimatedImplementation = require('../../Animated/src/AnimatedImplementation');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
+const ReactNative = require('../../Renderer/shims/ReactNative');
+const ScrollResponder = require('../ScrollResponder');
+const ScrollViewStickyHeader = require('./ScrollViewStickyHeader');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const View = require('../View/View');
 
-const dismissKeyboard = require('dismissKeyboard');
-const flattenStyle = require('flattenStyle');
+const dismissKeyboard = require('../../Utilities/dismissKeyboard');
+const flattenStyle = require('../../StyleSheet/flattenStyle');
 const invariant = require('invariant');
-const processDecelerationRate = require('processDecelerationRate');
-const requireNativeComponent = require('requireNativeComponent');
-const resolveAssetSource = require('resolveAssetSource');
+const processDecelerationRate = require('./processDecelerationRate');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+const resolveAssetSource = require('../../Image/resolveAssetSource');
 
-import type {PressEvent, ScrollEvent, LayoutEvent} from 'CoreEventTypes';
-import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
-import type {NativeMethodsMixinType} from 'ReactNativeTypes';
-import type {ViewStyleProp} from 'StyleSheet';
-import type {ViewProps} from 'ViewPropTypes';
-import type {PointProp} from 'PointPropType';
+import type {
+  PressEvent,
+  ScrollEvent,
+  LayoutEvent,
+} from '../../Types/CoreEventTypes';
+import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {NativeMethodsMixinType} from '../../Renderer/shims/ReactNativeTypes';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {PointProp} from '../../StyleSheet/PointPropType';
 
-import type {ColorValue} from 'StyleSheetTypes';
-import type {State as ScrollResponderState} from 'ScrollResponder';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {State as ScrollResponderState} from '../ScrollResponder';
 
 let AndroidScrollView;
 let AndroidHorizontalScrollContentView;
