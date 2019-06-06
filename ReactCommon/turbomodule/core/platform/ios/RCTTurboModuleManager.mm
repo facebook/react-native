@@ -211,37 +211,46 @@ static Class getFallbackClassFromName(const char *name)
  */
 - (id<RCTTurboModule>)provideRCTTurboModule:(const char *)moduleName
 {
-  std::lock_guard<std::mutex> guard{_rctTurboModuleCacheLock};
-
-  auto rctTurboModuleCacheLookup = _rctTurboModuleCache.find(moduleName);
-  if (rctTurboModuleCacheLookup != _rctTurboModuleCache.end()) {
-    return rctTurboModuleCacheLookup->second;
-  }
-
-  /**
-   * Step 2a: Resolve platform-specific class.
-   */
   Class moduleClass;
-  if ([_delegate respondsToSelector:@selector(getModuleClassFromName:)]) {
-    moduleClass = [_delegate getModuleClassFromName:moduleName];
-  }
-
-  if (!moduleClass) {
-    moduleClass = getFallbackClassFromName(moduleName);
-  }
-
-  if (![moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
-    return nil;
-  }
-
-  /**
-   * Step 2b: Ask hosting application/delegate to instantiate this class
-   */
   id<RCTTurboModule> module = nil;
-  if ([_delegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
-    module = [_delegate getModuleInstanceFromClass:moduleClass];
-  } else {
-    module = [moduleClass new];
+
+  {
+    std::unique_lock<std::mutex> lock(_rctTurboModuleCacheLock);
+
+    auto rctTurboModuleCacheLookup = _rctTurboModuleCache.find(moduleName);
+    if (rctTurboModuleCacheLookup != _rctTurboModuleCache.end()) {
+      return rctTurboModuleCacheLookup->second;
+    }
+
+    /**
+     * Step 2a: Resolve platform-specific class.
+     */
+    if ([_delegate respondsToSelector:@selector(getModuleClassFromName:)]) {
+      moduleClass = [_delegate getModuleClassFromName:moduleName];
+    }
+
+    if (!moduleClass) {
+      moduleClass = getFallbackClassFromName(moduleName);
+    }
+
+    if (![moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
+      return nil;
+    }
+
+    /**
+     * Step 2b: Ask hosting application/delegate to instantiate this class
+     */
+    if ([_delegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
+      module = [_delegate getModuleInstanceFromClass:moduleClass];
+    } else {
+      module = [moduleClass new];
+    }
+
+    if ([module respondsToSelector:@selector(setTurboModuleLookupDelegate:)]) {
+      [module setTurboModuleLookupDelegate:self];
+    }
+
+    _rctTurboModuleCache.insert({moduleName, module});
   }
 
   /**
@@ -279,12 +288,6 @@ static Class getFallbackClassFromName(const char *name)
           RCTBridgeModuleNameForClass(module));
     }
   }
-
-  if ([module respondsToSelector:@selector(setTurboModuleLookupDelegate:)]) {
-    [module setTurboModuleLookupDelegate:self];
-  }
-
-  _rctTurboModuleCache.insert({moduleName, module});
 
   /**
    * Broadcast that this TurboModule was created.
@@ -336,6 +339,7 @@ static Class getFallbackClassFromName(const char *name)
 
 - (BOOL)moduleIsInitialized:(const char *)moduleName
 {
+  std::unique_lock<std::mutex> lock(_rctTurboModuleCacheLock);
   return _rctTurboModuleCache.find(std::string(moduleName)) != _rctTurboModuleCache.end();
 }
 
