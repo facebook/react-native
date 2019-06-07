@@ -55,7 +55,7 @@ import com.facebook.react.module.annotations.ReactModule;
 @ReactModule(name = ImageEditingManager.NAME)
 public class ImageEditingManager extends ReactContextBaseJavaModule {
 
-  protected static final String NAME = "ImageEditingManager";
+  public static final String NAME = "ImageEditingManager";
 
   private static final List<String> LOCAL_URI_PREFIXES = Arrays.asList(
       "file://", "content://");

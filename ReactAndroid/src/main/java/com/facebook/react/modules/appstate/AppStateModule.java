@@ -26,7 +26,7 @@ import java.util.Map;
 public class AppStateModule extends ReactContextBaseJavaModule
         implements LifecycleEventListener, WindowFocusChangeListener {
 
-  protected static final String NAME = "AppState";
+  public static final String NAME = "AppState";
 
   public static final String APP_STATE_ACTIVE = "active";
   public static final String APP_STATE_BACKGROUND = "background";
