@@ -368,6 +368,7 @@ static BOOL RCTAnyTouchesChanged(NSSet<UITouch *> *touches)
 {
   self.enabled = NO;
   self.enabled = YES;
+  [self reset];
 }
 
 #pragma mark - UIGestureRecognizerDelegate
