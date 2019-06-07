@@ -21,7 +21,8 @@ struct Event {
     NodeDeallocation,
     NodeLayout,
     LayoutPassStart,
-    LayoutPassEnd
+    LayoutPassEnd,
+    NodeMeasure,
   };
   class Data;
   using Subscriber = void(const YGNode&, Type, Data);
@@ -73,6 +74,11 @@ struct Event::TypedData<Event::NodeDeallocation> {
 
 template <>
 struct Event::TypedData<Event::LayoutPassEnd> {
+  void* layoutContext;
+};
+
+template <>
+struct Event::TypedData<Event::NodeMeasure> {
   void* layoutContext;
 };
 

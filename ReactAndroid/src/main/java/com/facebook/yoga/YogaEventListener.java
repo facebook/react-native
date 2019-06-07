@@ -10,4 +10,6 @@ public interface YogaEventListener {
 
   void onLayoutPassEnd(YogaNode node);
 
+  void onNodeMeasure(YogaNode node);
+
 }
