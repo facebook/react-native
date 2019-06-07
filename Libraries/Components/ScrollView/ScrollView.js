@@ -1128,9 +1128,7 @@ class ScrollView extends React.Component<Props, State> {
         // AndroidSwipeRefreshLayout and use flex: 1 for the ScrollView.
         // Note: we should split props.style on the inner and outer props
         // however, the ScrollView still needs the baseStyle to be scrollable
-
         const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
-
         return React.cloneElement(
           refreshControl,
           {style: [baseStyle, outer]},

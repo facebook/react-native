@@ -12,7 +12,7 @@
 
 import type {DangerouslyImpreciseStyle} from './StyleSheet';
 
-const OUTER_PROPS: $ObjMap<DangerouslyImpreciseStyle, () => boolean> = {
+const OUTER_PROPS = Object.assign(Object.create(null), {
   margin: true,
   marginHorizontal: true,
   marginVertical: true,
@@ -36,7 +36,7 @@ const OUTER_PROPS: $ObjMap<DangerouslyImpreciseStyle, () => boolean> = {
   right: true,
   bottom: true,
   top: true,
-};
+});
 
 function splitLayoutProps(
   props: ?DangerouslyImpreciseStyle,
@@ -49,7 +49,7 @@ function splitLayoutProps(
   if (props) {
     Object.keys(props).forEach(k => {
       const value: $ElementType<DangerouslyImpreciseStyle, typeof k> = props[k];
-      if (OUTER_PROPS[k] === true) {
+      if (OUTER_PROPS[k]) {
         outer[k] = value;
       } else {
         inner[k] = value;

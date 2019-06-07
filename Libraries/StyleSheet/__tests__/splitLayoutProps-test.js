@@ -12,19 +12,33 @@
 
 const splitLayoutProps = require('../splitLayoutProps');
 
-describe('splitLayoutProps', () => {
-  it('should split style object', () => {
-    const style = {width: 10, margin: 20, padding: 30};
-    const {outer, inner} = splitLayoutProps(style);
-    expect(outer.width).toBe(10);
-    expect(outer.margin).toBe(20);
-    expect(inner.padding).toBe(30);
-  });
+test('splits style objects', () => {
+  const style = {width: 10, margin: 20, padding: 30};
+  const {outer, inner} = splitLayoutProps(style);
+  expect(outer).toMatchInlineSnapshot(`
+    Object {
+      "margin": 20,
+      "width": 10,
+    }
+  `);
+  expect(inner).toMatchInlineSnapshot(`
+    Object {
+      "padding": 30,
+    }
+  `);
+});
 
-  it("shouldn't copy values to both returned objects", () => {
-    const style = {marginVertical: 5, paddingHorizontal: 10};
-    const {outer, inner} = splitLayoutProps(style);
-    expect(outer.paddingHorizontal).toBe(undefined);
-    expect(inner.marginVertical).toBe(undefined);
-  });
+test('does not copy values to both returned objects', () => {
+  const style = {marginVertical: 5, paddingHorizontal: 10};
+  const {outer, inner} = splitLayoutProps(style);
+  expect(outer).toMatchInlineSnapshot(`
+    Object {
+      "marginVertical": 5,
+    }
+  `);
+  expect(inner).toMatchInlineSnapshot(`
+    Object {
+      "paddingHorizontal": 10,
+    }
+  `);
 });
