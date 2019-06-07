@@ -25,33 +25,39 @@ function generateViewConfig(filename, code) {
   });
 }
 
+function isCodegenDeclaration(declaration) {
+  if (!declaration) {
+    return false;
+  }
+
+  if (
+    declaration.left &&
+    declaration.left.left &&
+    declaration.left.left.name === 'codegenNativeComponent'
+  ) {
+    return true;
+  } else if (
+    declaration.callee &&
+    declaration.callee.name &&
+    declaration.callee.name === 'codegenNativeComponent'
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 module.exports = function(context) {
   return {
     pre(state) {
       this.code = state.code;
       this.filename = state.opts.filename;
-      this.inserted = false;
     },
     visitor: {
-      TypeAlias(nodePath, state) {
-        if (
-          !this.inserted &&
-          nodePath.node.right &&
-          nodePath.node.right.type === 'GenericTypeAnnotation' &&
-          nodePath.node.right.id.name === 'CodegenNativeComponent'
-        ) {
-          const code = generateViewConfig(this.filename, this.code);
-
-          // Remove the original export
-          nodePath.parentPath.traverse({
-            MemberExpression(exportPath) {
-              if (exportPath.node.property.name === 'exports') {
-                exportPath.parentPath.remove();
-              }
-            },
-          });
-          nodePath.insertAfter(context.parse(code).program.body);
-          this.inserted = true;
+      ExportDefaultDeclaration(nodePath, state) {
+        if (isCodegenDeclaration(nodePath.node.declaration)) {
+          const viewConfig = generateViewConfig(this.filename, this.code);
+          nodePath.replaceWithMultiple(context.parse(viewConfig).program.body);
         }
       },
     },

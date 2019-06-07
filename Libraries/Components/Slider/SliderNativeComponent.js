@@ -15,14 +15,13 @@ import type {
   BubblingEvent,
   DirectEvent,
   WithDefault,
-  CodegenNativeComponent,
 } from '../../Types/CodegenTypes';
+
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ImageSource} from '../../Image/ImageSource';
 import type {ViewProps} from '../View/ViewPropTypes';
-
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
 type Event = $ReadOnly<{|
   value: Float,
@@ -54,11 +53,7 @@ type NativeProps = $ReadOnly<{|
   onSlidingComplete?: ?(event: DirectEvent<Event>) => void,
 |}>;
 
-type Options = {
+module.exports = codegenNativeComponent<NativeProps>('Slider', {
   interfaceOnly: true,
   isDeprecatedPaperComponentNameRCT: true,
-};
-
-type SliderType = CodegenNativeComponent<'Slider', NativeProps, Options>;
-
-module.exports = ((requireNativeComponent('RCTSlider'): any): SliderType);
+});

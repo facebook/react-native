@@ -10,15 +10,12 @@
 
 'use strict';
 
-import type {
-  WithDefault,
-  CodegenNativeComponent,
-} from '../../Types/CodegenTypes';
+import type {WithDefault} from '../../Types/CodegenTypes';
 
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -53,16 +50,6 @@ type NativeProps = $ReadOnly<{|
   size?: ?WithDefault<'small' | 'large', 'small'>,
 |}>;
 
-type Options = {
+export default codegenNativeComponent<NativeProps>('ActivityIndicatorView', {
   isDeprecatedPaperComponentNameRCT: true,
-};
-
-type ActivityIndicatorNativeType = CodegenNativeComponent<
-  'ActivityIndicatorView',
-  NativeProps,
-  Options,
->;
-
-module.exports = ((requireNativeComponent(
-  'RCTActivityIndicatorView',
-): any): ActivityIndicatorNativeType);
+});

@@ -89,7 +89,7 @@ const ::_COMPONENT_NAME_::ViewConfig = VIEW_CONFIG;
 
 registerGeneratedViewConfig('::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::', ::_COMPONENT_NAME_::ViewConfig);
 
-module.exports = '::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::';::_COMPAT_COMMENT_::
+export default '::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::';::_COMPAT_COMMENT_::
 `.trim();
 
 // Replicates the behavior of RCTNormalizeInputEventName in RCTEventDispatcher.m

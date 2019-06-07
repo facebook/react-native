@@ -32,7 +32,7 @@ const ArrayPropsNativeComponentViewConfig = {
 
 registerGeneratedViewConfig('ArrayPropsNativeComponent', ArrayPropsNativeComponentViewConfig);
 
-module.exports = 'ArrayPropsNativeComponent';
+export default 'ArrayPropsNativeComponent';
 ",
 }
 `;
@@ -63,7 +63,7 @@ const BooleanPropNativeComponentViewConfig = {
 
 registerGeneratedViewConfig('BooleanPropNativeComponent', BooleanPropNativeComponentViewConfig);
 
-module.exports = 'BooleanPropNativeComponent';
+export default 'BooleanPropNativeComponent';
 ",
 }
 `;
@@ -94,7 +94,7 @@ const ColorPropNativeComponentViewConfig = {
 
 registerGeneratedViewConfig('ColorPropNativeComponent', ColorPropNativeComponentViewConfig);
 
-module.exports = 'ColorPropNativeComponent';
+export default 'ColorPropNativeComponent';
 ",
 }
 `;
@@ -125,7 +125,7 @@ const EnumPropsNativeComponentViewConfig = {
 
 registerGeneratedViewConfig('EnumPropsNativeComponent', EnumPropsNativeComponentViewConfig);
 
-module.exports = 'EnumPropsNativeComponent';
+export default 'EnumPropsNativeComponent';
 ",
 }
 `;
@@ -166,7 +166,7 @@ const EventsNestedObjectNativeComponentViewConfig = {
 
 registerGeneratedViewConfig('EventsNestedObjectNativeComponent', EventsNestedObjectNativeComponentViewConfig);
 
-module.exports = 'EventsNestedObjectNativeComponent';
+export default 'EventsNestedObjectNativeComponent';
 ",
 }
 `;
@@ -222,7 +222,7 @@ const EventsNativeComponentViewConfig = {
 
 registerGeneratedViewConfig('EventsNativeComponent', EventsNativeComponentViewConfig);
 
-module.exports = 'EventsNativeComponent';
+export default 'EventsNativeComponent';
 ",
 }
 `;
@@ -258,7 +258,7 @@ const FloatPropNativeComponentViewConfig = {
 
 registerGeneratedViewConfig('FloatPropNativeComponent', FloatPropNativeComponentViewConfig);
 
-module.exports = 'FloatPropNativeComponent';
+export default 'FloatPropNativeComponent';
 ",
 }
 `;
@@ -289,7 +289,7 @@ const ImagePropNativeComponentViewConfig = {
 
 registerGeneratedViewConfig('ImagePropNativeComponent', ImagePropNativeComponentViewConfig);
 
-module.exports = 'ImagePropNativeComponent';
+export default 'ImagePropNativeComponent';
 ",
 }
 `;
@@ -322,7 +322,7 @@ const IntegerPropNativeComponentViewConfig = {
 
 registerGeneratedViewConfig('IntegerPropNativeComponent', IntegerPropNativeComponentViewConfig);
 
-module.exports = 'IntegerPropNativeComponent';
+export default 'IntegerPropNativeComponent';
 ",
 }
 `;
@@ -363,7 +363,7 @@ const InterfaceOnlyComponentViewConfig = {
 
 registerGeneratedViewConfig('RCTInterfaceOnlyComponent', InterfaceOnlyComponentViewConfig);
 
-module.exports = 'RCTInterfaceOnlyComponent'; // RCT prefix present for paper support
+export default 'RCTInterfaceOnlyComponent'; // RCT prefix present for paper support
 ",
 }
 `;
@@ -397,7 +397,7 @@ const ImageColorPropNativeComponentViewConfig = {
 
 registerGeneratedViewConfig('ImageColorPropNativeComponent', ImageColorPropNativeComponentViewConfig);
 
-module.exports = 'ImageColorPropNativeComponent';
+export default 'ImageColorPropNativeComponent';
 ",
 }
 `;
@@ -428,7 +428,7 @@ const PointPropNativeComponentViewConfig = {
 
 registerGeneratedViewConfig('PointPropNativeComponent', PointPropNativeComponentViewConfig);
 
-module.exports = 'PointPropNativeComponent';
+export default 'PointPropNativeComponent';
 ",
 }
 `;
@@ -459,7 +459,7 @@ const StringPropComponentViewConfig = {
 
 registerGeneratedViewConfig('StringPropComponent', StringPropComponentViewConfig);
 
-module.exports = 'StringPropComponent';
+export default 'StringPropComponent';
 ",
 }
 `;
@@ -490,7 +490,7 @@ const MultiFile1NativeComponentViewConfig = {
 
 registerGeneratedViewConfig('MultiFile1NativeComponent', MultiFile1NativeComponentViewConfig);
 
-module.exports = 'MultiFile1NativeComponent';
+export default 'MultiFile1NativeComponent';
 
 const MultiFile2NativeComponentViewConfig = {
   uiViewClassName: 'MultiFile2NativeComponent',
@@ -502,7 +502,7 @@ const MultiFile2NativeComponentViewConfig = {
 
 registerGeneratedViewConfig('MultiFile2NativeComponent', MultiFile2NativeComponentViewConfig);
 
-module.exports = 'MultiFile2NativeComponent';
+export default 'MultiFile2NativeComponent';
 ",
 }
 `;
@@ -533,7 +533,7 @@ const MultiComponent1NativeComponentViewConfig = {
 
 registerGeneratedViewConfig('MultiComponent1NativeComponent', MultiComponent1NativeComponentViewConfig);
 
-module.exports = 'MultiComponent1NativeComponent';
+export default 'MultiComponent1NativeComponent';
 
 const MultiComponent2NativeComponentViewConfig = {
   uiViewClassName: 'MultiComponent2NativeComponent',
@@ -545,7 +545,7 @@ const MultiComponent2NativeComponentViewConfig = {
 
 registerGeneratedViewConfig('MultiComponent2NativeComponent', MultiComponent2NativeComponentViewConfig);
 
-module.exports = 'MultiComponent2NativeComponent';
+export default 'MultiComponent2NativeComponent';
 ",
 }
 `;

@@ -15,12 +15,12 @@ import type {OptionsShape} from '../../CodegenSchema.js';
 // $FlowFixMe there's no flowtype for ASTs
 type OptionsAST = Object;
 
-function getOptions(optionsDefinition: OptionsAST): ?OptionsShape {
-  if (!optionsDefinition) {
+function getOptions(optionsExpression: OptionsAST): ?OptionsShape {
+  if (!optionsExpression) {
     return null;
   }
   try {
-    return optionsDefinition.right.properties.reduce((options, prop) => {
+    return optionsExpression.properties.reduce((options, prop) => {
       options[prop.key.name] = prop.value.value;
       return options;
     }, {});

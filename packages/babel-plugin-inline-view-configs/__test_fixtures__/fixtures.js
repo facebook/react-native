@@ -16,13 +16,12 @@ export default 'Not a view config'
 `;
 
 const FULL_NATIVE_COMPONENT = `
-const requireNativeComponent = require('requireNativeComponent');
+const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {
   BubblingEvent,
   DirectEvent,
   WithDefault,
-  CodegenNativeComponent,
 } from 'CodegenFlowtypes';
 
 import type {ViewProps} from 'ViewPropTypes';
@@ -38,14 +37,10 @@ type ModuleProps = $ReadOnly<{|
   onBubblingEventDefinedInlineNull: (event: BubblingEvent<null>) => void,
 |}>;
 
-type Options = {
+export default codegenNativeComponent<ModuleProps>('Module', {
   interfaceOnly: true,
   isDeprecatedPaperComponentNameRCT: true,
-};
-
-type ModuleType = CodegenNativeComponent<'Module', ModuleProps, Options>;
-
-module.exports = ((requireNativeComponent('RCTModule'): any): ModuleType);
+});
 `;
 
 module.exports = {

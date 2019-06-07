@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Babel plugin inline view configs can inline config for FullNativeComponent.js 1`] = `
-"const requireNativeComponent = require('requireNativeComponent');
+"const codegenNativeComponent = require('codegenNativeComponent');
 
-import type { BubblingEvent, DirectEvent, WithDefault, CodegenNativeComponent } from 'CodegenFlowtypes';
+import type { BubblingEvent, DirectEvent, WithDefault } from 'CodegenFlowtypes';
 import type { ViewProps } from 'ViewPropTypes';
 type ModuleProps = $ReadOnly<{| ...ViewProps,
   // Props
@@ -12,11 +12,6 @@ type ModuleProps = $ReadOnly<{| ...ViewProps,
   onDirectEventDefinedInlineNull: (event: DirectEvent<null>) => void,
   onBubblingEventDefinedInlineNull: (event: BubblingEvent<null>) => void,
 |}>;
-type Options = {
-  interfaceOnly: true,
-  isDeprecatedPaperComponentNameRCT: true,
-};
-type ModuleType = CodegenNativeComponent<'Module', ModuleProps, Options>;
 
 const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
@@ -42,7 +37,7 @@ const ModuleViewConfig = {
   }
 };
 registerGeneratedViewConfig('RCTModule', ModuleViewConfig);
-module.exports = 'RCTModule'; // RCT prefix present for paper support"
+export default 'RCTModule'; // RCT prefix present for paper support"
 `;
 
 exports[`Babel plugin inline view configs can inline config for NotANativeComponent.js 1`] = `
