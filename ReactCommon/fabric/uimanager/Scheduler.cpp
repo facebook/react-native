@@ -18,19 +18,11 @@
 namespace facebook {
 namespace react {
 
-Scheduler::Scheduler(
-    ContextContainer::Shared const &contextContainer,
-    ComponentRegistryFactory buildRegistryFunction) {
-  const auto asynchronousEventBeatFactory =
-      contextContainer->getInstance<EventBeatFactory>("asynchronous");
-  const auto synchronousEventBeatFactory =
-      contextContainer->getInstance<EventBeatFactory>("synchronous");
-
-  runtimeExecutor_ =
-      contextContainer->getInstance<RuntimeExecutor>("runtime-executor");
+Scheduler::Scheduler(SchedulerToolbox schedulerToolbox) {
+  runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
 
   reactNativeConfig_ =
-      contextContainer->getInstance<std::shared_ptr<const ReactNativeConfig>>(
+      schedulerToolbox.contextContainer->getInstance<std::shared_ptr<const ReactNativeConfig>>(
           "ReactNativeConfig");
 
   auto uiManager = std::make_unique<UIManager>();
@@ -55,11 +47,11 @@ Scheduler::Scheduler(
   auto eventDispatcher = std::make_shared<EventDispatcher>(
       eventPipe,
       statePipe,
-      synchronousEventBeatFactory,
-      asynchronousEventBeatFactory);
+      schedulerToolbox.synchronousEventBeatFactory,
+      schedulerToolbox.asynchronousEventBeatFactory);
 
-  componentDescriptorRegistry_ =
-      buildRegistryFunction(eventDispatcher, contextContainer);
+  componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
+      eventDispatcher, schedulerToolbox.contextContainer);
 
   rootComponentDescriptor_ =
       std::make_unique<const RootComponentDescriptor>(eventDispatcher);
@@ -72,7 +64,7 @@ Scheduler::Scheduler(
     UIManagerBinding::install(runtime, uiManagerBinding_);
   });
 
-  contextContainer->registerInstance(
+  schedulerToolbox.contextContainer->registerInstance(
       std::weak_ptr<ComponentDescriptorRegistry const>(
           componentDescriptorRegistry_),
       "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE");

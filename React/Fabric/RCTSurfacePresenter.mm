@@ -31,6 +31,7 @@
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
 #import <react/uimanager/ComponentDescriptorFactory.h>
+#import <react/uimanager/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
@@ -203,8 +204,22 @@ using namespace facebook::react;
         createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
   };
 
-  _scheduler = [[RCTScheduler alloc] initWithContextContainer:self.contextContainer
-                                     componentRegistryFactory:componentRegistryFactory];
+  auto runtimeExecutor = [self _runtimeExecutor];
+
+  auto toolbox = SchedulerToolbox{};
+  toolbox.contextContainer = _contextContainer;
+  toolbox.componentRegistryFactory = componentRegistryFactory;
+  toolbox.runtimeExecutor = runtimeExecutor;
+
+  toolbox.synchronousEventBeatFactory = [runtimeExecutor]() {
+    return std::make_unique<MainRunLoopEventBeat>(runtimeExecutor);
+  };
+
+  toolbox.asynchronousEventBeatFactory = [runtimeExecutor]() {
+    return std::make_unique<RuntimeEventBeat>(runtimeExecutor);
+  };
+
+  _scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
   _scheduler.delegate = self;
 
   return _scheduler;
@@ -212,18 +227,8 @@ using namespace facebook::react;
 
 @synthesize contextContainer = _contextContainer;
 
-- (ContextContainer::Shared)contextContainer
+- (RuntimeExecutor)_runtimeExecutor
 {
-  std::lock_guard<std::mutex> lock(_contextContainerMutex);
-
-  if (_contextContainer) {
-    return _contextContainer;
-  }
-
-  _contextContainer = std::make_shared<ContextContainer>();
-
-  _contextContainer->registerInstance(_reactNativeConfig, "ReactNativeConfig");
-
   auto messageQueueThread = _batchedBridge.jsMessageThread;
   if (messageQueueThread) {
     // Make sure initializeBridge completed
@@ -239,20 +244,25 @@ using namespace facebook::react;
     [((RCTCxxBridge *)_batchedBridge) invokeAsync:[runtime, callback = std::move(callback)]() { callback(*runtime); }];
   };
 
-  EventBeatFactory synchronousBeatFactory = [runtimeExecutor]() {
-    return std::make_unique<MainRunLoopEventBeat>(runtimeExecutor);
-  };
+  return runtimeExecutor;
+}
 
-  EventBeatFactory asynchronousBeatFactory = [runtimeExecutor]() {
-    return std::make_unique<RuntimeEventBeat>(runtimeExecutor);
-  };
+- (ContextContainer::Shared)contextContainer
+{
+  std::lock_guard<std::mutex> lock(_contextContainerMutex);
 
-  _contextContainer->registerInstance<EventBeatFactory>(synchronousBeatFactory, "synchronous");
-  _contextContainer->registerInstance<EventBeatFactory>(asynchronousBeatFactory, "asynchronous");
+  if (_contextContainer) {
+    return _contextContainer;
+  }
 
-  _contextContainer->registerInstance(runtimeExecutor, "runtime-executor");
-
+  _contextContainer = std::make_shared<ContextContainer>();
+  // Please do not add stuff here; `SurfacePresenter` must not alter `ContextContainer`.
+  // Those two pieces eventually should be moved out there:
+  // * `RCTImageLoader` should be moved to `RNImageComponentView`.
+  // * `ReactNativeConfig` should be set by outside product code.
+  _contextContainer->registerInstance(_reactNativeConfig, "ReactNativeConfig");
   _contextContainer->registerInstance(wrapManagedObject([_bridge imageLoader]), "RCTImageLoader");
+
   return _contextContainer;
 }
 
@@ -390,7 +400,6 @@ using namespace facebook::react;
   {
     std::lock_guard<std::mutex> lock(_schedulerMutex);
     _scheduler = nil;
-    _contextContainer = nil;
   }
 }
 

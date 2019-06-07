@@ -18,6 +18,7 @@
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/Scheduler.h>
 #include <react/uimanager/SchedulerDelegate.h>
+#include <react/uimanager/SchedulerToolbox.h>
 #include <react/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
 #include <react/utils/TimeUtils.h>
@@ -136,16 +137,15 @@ void Binding::installFabricUIManager(
   std::shared_ptr<const ReactNativeConfig> config =
       std::make_shared<const ReactNativeConfigHolder>(reactNativeConfig);
   contextContainer->registerInstance(config, "ReactNativeConfig");
-  contextContainer->registerInstance<EventBeatFactory>(
-      synchronousBeatFactory, "synchronous");
-  contextContainer->registerInstance<EventBeatFactory>(
-      asynchronousBeatFactory, "asynchronous");
   contextContainer->registerInstance(javaUIManager_, "FabricUIManager");
-  contextContainer->registerInstance(runtimeExecutor, "runtime-executor");
 
-  scheduler_ = std::make_shared<Scheduler>(
-      contextContainer, componentsRegistry->buildRegistryFunction);
-
+  auto toolbox = SchedulerToolbox{};
+  toolbox.contextContainer = contextContainer;
+  toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
+  toolbox.runtimeExecutor = runtimeExecutor;
+  toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
+  toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
+  scheduler_ = std::make_shared<Scheduler>(toolbox);
   scheduler_->setDelegate(this);
 }
 
