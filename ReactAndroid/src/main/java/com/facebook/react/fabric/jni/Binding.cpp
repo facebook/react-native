@@ -136,8 +136,8 @@ void Binding::installFabricUIManager(
 
   std::shared_ptr<const ReactNativeConfig> config =
       std::make_shared<const ReactNativeConfigHolder>(reactNativeConfig);
-  contextContainer->registerInstance(config, "ReactNativeConfig");
-  contextContainer->registerInstance(javaUIManager_, "FabricUIManager");
+  contextContainer->insert("ReactNativeConfig", config);
+  contextContainer->insert("FabricUIManager", javaUIManager_);
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;

@@ -18,7 +18,7 @@ namespace react {
 ImageManager::ImageManager(ContextContainer::Shared const &contextContainer)
 {
   RCTImageLoader *imageLoader =
-      (RCTImageLoader *)unwrapManagedObject(contextContainer->getInstance<std::shared_ptr<void>>("RCTImageLoader"));
+      (RCTImageLoader *)unwrapManagedObject(contextContainer->at<std::shared_ptr<void>>("RCTImageLoader"));
   self_ = (__bridge_retained void *)[[RCTImageManager alloc] initWithImageLoader:imageLoader];
 }
 

@@ -22,8 +22,8 @@ Scheduler::Scheduler(SchedulerToolbox schedulerToolbox) {
   runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
 
   reactNativeConfig_ =
-      schedulerToolbox.contextContainer->getInstance<std::shared_ptr<const ReactNativeConfig>>(
-          "ReactNativeConfig");
+      schedulerToolbox.contextContainer
+          ->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
 
   auto uiManager = std::make_unique<UIManager>();
   auto &uiManagerRef = *uiManager;
@@ -64,10 +64,10 @@ Scheduler::Scheduler(SchedulerToolbox schedulerToolbox) {
     UIManagerBinding::install(runtime, uiManagerBinding_);
   });
 
-  schedulerToolbox.contextContainer->registerInstance(
+  schedulerToolbox.contextContainer->insert(
+      "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE",
       std::weak_ptr<ComponentDescriptorRegistry const>(
-          componentDescriptorRegistry_),
-      "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE");
+          componentDescriptorRegistry_));
 }
 
 Scheduler::~Scheduler() {
