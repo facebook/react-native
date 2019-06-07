@@ -87,12 +87,7 @@ function getReactDiffProcessValue(typeAnnotation) {
 const componentTemplate = `
 const ::_COMPONENT_NAME_::ViewConfig = VIEW_CONFIG;
 
-verifyComponentAttributeEquivalence('::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::', ::_COMPONENT_NAME_::ViewConfig);
-
-ReactNativeViewConfigRegistry.register(
-  '::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::',
-  () => ::_COMPONENT_NAME_::ViewConfig,
-);
+registerGeneratedViewConfig('::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::', ::_COMPONENT_NAME_::ViewConfig);
 
 module.exports = '::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::';::_COMPAT_COMMENT_::
 `.trim();
@@ -159,38 +154,13 @@ function buildViewConfig(
   const componentProps = component.props;
   const componentEvents = component.events;
 
-  let viewAttributes = null;
-  let viewEvents = null;
-  let viewDirectEvents = null;
-
   component.extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
       case 'ReactNativeBuiltInType':
         switch (extendProps.knownTypeName) {
           case 'ReactNativeCoreViewProps':
             imports.add(
-              "const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');",
-            );
-
-            viewAttributes = j.spreadProperty(
-              j.memberExpression(
-                j.identifier('ReactNativeViewViewConfig'),
-                j.identifier('validAttributes'),
-              ),
-            );
-
-            viewEvents = j.spreadProperty(
-              j.memberExpression(
-                j.identifier('ReactNativeViewViewConfig'),
-                j.identifier('bubblingEventTypes'),
-              ),
-            );
-
-            viewDirectEvents = j.spreadProperty(
-              j.memberExpression(
-                j.identifier('ReactNativeViewViewConfig'),
-                j.identifier('directEventTypes'),
-              ),
+              "const registerGeneratedViewConfig = require('registerGeneratedViewConfig');",
             );
 
             return;
@@ -205,7 +175,6 @@ function buildViewConfig(
   });
 
   const validAttributes = j.objectExpression([
-    viewAttributes,
     ...componentProps.map(schemaProp => {
       return j.property(
         'init',
@@ -220,8 +189,6 @@ function buildViewConfig(
     .filter(event => event.bubblingType === 'bubble')
     .map(generateBubblingEventInfo);
 
-  bubblingEventNames.unshift(viewEvents);
-
   const bubblingEvents =
     bubblingEventNames.length > 0
       ? j.property(
@@ -235,8 +202,6 @@ function buildViewConfig(
     .filter(event => event.bubblingType === 'direct')
     .map(generateDirectEventInfo);
 
-  directEventNames.unshift(viewDirectEvents);
-
   const directEvents =
     directEventNames.length > 0
       ? j.property(
@@ -246,19 +211,12 @@ function buildViewConfig(
         )
       : null;
 
-  const commands = j.property(
-    'init',
-    j.identifier('Commands'),
-    j.objectExpression([]),
-  );
-
   const properties = [
     j.property(
       'init',
       j.identifier('uiViewClassName'),
       j.literal(componentName),
     ),
-    commands,
     bubblingEvents,
     directEvents,
     j.property('init', j.identifier('validAttributes'), validAttributes),
@@ -272,13 +230,6 @@ module.exports = {
     try {
       const fileName = `${libraryName}NativeViewConfig.js`;
       const imports: Set<string> = new Set();
-
-      imports.add(
-        "const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');",
-      );
-      imports.add(
-        "const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');",
-      );
 
       const moduleResults = Object.keys(schema.modules)
         .map(moduleName => {
