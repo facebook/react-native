@@ -71,8 +71,7 @@ function getPropProperties(propsTypeName, types) {
   }
 }
 
-function parseFileAst(filename: string) {
-  const contents = fs.readFileSync(filename, 'utf8');
+function processString(contents: string) {
   const ast = flowParser.parse(contents);
 
   const types = getTypes(ast);
@@ -96,10 +95,17 @@ function parseFileAst(filename: string) {
   };
 }
 
-function parse(filename: string): ?SchemaType {
-  return buildSchema(parseFileAst(filename));
+function parseFile(filename: string): ?SchemaType {
+  const contents = fs.readFileSync(filename, 'utf8');
+
+  return buildSchema(processString(contents));
+}
+
+function parseString(contents: string): ?SchemaType {
+  return buildSchema(processString(contents));
 }
 
 module.exports = {
-  parse,
+  parseFile,
+  parseString,
 };

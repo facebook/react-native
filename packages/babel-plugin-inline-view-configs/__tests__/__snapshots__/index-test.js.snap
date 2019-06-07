@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Babel plugin inline view configs can inline config for FullNativeComponent.js 1`] = `
+"const requireNativeComponent = require('requireNativeComponent');
+
+import type { BubblingEvent, DirectEvent, WithDefault, CodegenNativeComponent } from 'CodegenFlowtypes';
+import type { ViewProps } from 'ViewPropTypes';
+type ModuleProps = $ReadOnly<{| ...ViewProps,
+  // Props
+  boolean_default_true_optional_both?: ?WithDefault<boolean, true>,
+  // Events
+  onDirectEventDefinedInlineNull: (event: DirectEvent<null>) => void,
+  onBubblingEventDefinedInlineNull: (event: BubblingEvent<null>) => void,
+|}>;
+type Options = {
+  interfaceOnly: true,
+  isDeprecatedPaperComponentNameRCT: true,
+};
+type ModuleType = CodegenNativeComponent<'Module', ModuleProps, Options>;
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const ModuleViewConfig = {
+  uiViewClassName: 'RCTModule',
+  bubblingEventTypes: {
+    topBubblingEventDefinedInlineNull: {
+      phasedRegistrationNames: {
+        captured: 'onBubblingEventDefinedInlineNullCapture',
+        bubbled: 'onBubblingEventDefinedInlineNull'
+      }
+    }
+  },
+  directEventTypes: {
+    topDirectEventDefinedInlineNull: {
+      registrationName: 'onDirectEventDefinedInlineNull'
+    }
+  },
+  validAttributes: {
+    boolean_default_true_optional_both: true,
+    onDirectEventDefinedInlineNull: true,
+    onBubblingEventDefinedInlineNull: true
+  }
+};
+registerGeneratedViewConfig('RCTModule', ModuleViewConfig);
+module.exports = 'RCTModule'; // RCT prefix present for paper support"
+`;
+
+exports[`Babel plugin inline view configs can inline config for NotANativeComponent.js 1`] = `
+"const requireNativeComponent = require('requireNativeComponent');
+
+export default 'Not a view config';"
+`;

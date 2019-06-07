@@ -33,7 +33,7 @@ function generateFilesWithResults(
   return files.reduce((aggregated, filename) => {
     const schema =
       config.parser === 'flow'
-        ? FlowParser.parse(filename)
+        ? FlowParser.parseFile(filename)
         : SchemaParser.parse(filename);
     if (schema && schema.modules) {
       const libraryName = path
