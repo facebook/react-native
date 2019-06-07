@@ -171,14 +171,14 @@ RCT_EXPORT_MODULE()
   return RCTJSThread;
 }
 
-// Called from JS Thread.
 - (void)invalidate
 {
-  [self stopTimers];
-  _bridge = nil;
+  [_bridge dispatchBlock:^{
+    [self stopTimers];
+    self->_bridge = nil;
+  } queue:RCTJSThread];
 }
 
-// Called from main thread
 - (void)appDidMoveToBackground
 {
   [_bridge dispatchBlock:^{
@@ -192,7 +192,6 @@ RCT_EXPORT_MODULE()
   } queue:RCTJSThread];
 }
 
-// Called from main thread
 - (void)appDidMoveToForeground
 {
   [_bridge dispatchBlock:^{
