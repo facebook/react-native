@@ -1090,44 +1090,44 @@
     "@types/istanbul-lib-coverage" "^2.0.0"
     "@types/yargs" "^12.0.9"
 
-"@react-native-community/cli-platform-android@2.0.0-alpha.20", "@react-native-community/cli-platform-android@^2.0.0-alpha.20":
-  version "2.0.0-alpha.20"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.0.0-alpha.20.tgz#a3b5aceae38bd3c930f0801b721d44551fe98dc2"
-  integrity sha512-Z1eWiK4/oZlKvZTPYnORW6uAZ4rgBFMvswldwdy6r9CnjLTZsgw3aGN6r5TUNSCwbZy4p2l5J1pTELl2Ors24g==
+"@react-native-community/cli-platform-android@2.0.0-rc.0", "@react-native-community/cli-platform-android@^2.0.0-rc.0":
+  version "2.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.0.0-rc.0.tgz#8fcc57a68b3f971d322034c21ba09c580ce5455a"
+  integrity sha512-i9xCMx1AFTscFlEsUJZVn5r6h7ndjvBUUTgLR/4oV639Bcwlci3OvKD1bV5fdp1/L9Mv14iuDo7y1Jv9ubRi5w==
   dependencies:
-    "@react-native-community/cli-tools" "^2.0.0-alpha.20"
+    "@react-native-community/cli-tools" "^2.0.0-rc.0"
     logkitty "^0.4.0"
-    node-fetch "^2.2.0"
     slash "^2.0.0"
     xmldoc "^0.4.0"
 
-"@react-native-community/cli-platform-ios@2.0.0-alpha.20", "@react-native-community/cli-platform-ios@^2.0.0-alpha.20":
-  version "2.0.0-alpha.20"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.0.0-alpha.20.tgz#66eda705b0522b44818806910bbf2b7d47d41b56"
-  integrity sha512-ZDvx2YU/1cFp5/ADbPUwnlvs5D0RIeEZK4Ddskd2Sx7KIq5jLnQbXW+JDOqie5wQgQQ+eCmebCHnCFBWIGXdMQ==
+"@react-native-community/cli-platform-ios@2.0.0-rc.0", "@react-native-community/cli-platform-ios@^2.0.0-rc.0":
+  version "2.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.0.0-rc.0.tgz#00489529d1715c80042a1649b0c6822aa7c785ba"
+  integrity sha512-v1BxVFHrrypI9XVtwtq0FPtZHusvCouPbpX7c4h4SiP66KT/+eAYVuOTpjSN+EMss/WZLeJKIPOiBn2ZohxcwA==
   dependencies:
-    "@react-native-community/cli-tools" "^2.0.0-alpha.20"
+    "@react-native-community/cli-tools" "^2.0.0-rc.0"
     chalk "^1.1.1"
     xcode "^2.0.0"
 
-"@react-native-community/cli-tools@^2.0.0-alpha.20":
-  version "2.0.0-alpha.20"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.0-alpha.20.tgz#7762205a701ffabe6aa0b08d9202dd3d101297d7"
-  integrity sha512-G2VcBUuG/WmtbgHA4wTPkYqhuRhzE9EH8+4/WnCQmxSi7bfIYAzyVxgpBLCGzFv4liPmtoVuhcsapVeAMOdSlQ==
+"@react-native-community/cli-tools@^2.0.0-rc.0":
+  version "2.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.0-rc.0.tgz#82eedb621921b4511a0a98dbc98eedc12bd98b9b"
+  integrity sha512-svdIsrcd905lberrY7jVMrHsoCy5PkVgJeiloMFjV6nPTPaKF7ujw2ftdUp9P66KRb7y/IMT5/4EDtntr8SkGg==
   dependencies:
     chalk "^1.1.1"
     lodash "^4.17.5"
-    mime "^1.3.4"
+    mime "^2.4.1"
+    node-fetch "^2.5.0"
 
-"@react-native-community/cli@2.0.0-alpha.20":
-  version "2.0.0-alpha.20"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.0.0-alpha.20.tgz#611fe4ad483755ae10d3f7f915e1ed527f4a9bf8"
-  integrity sha512-H71a8gYhhI/7F6UzN3vrzQMtl9dmV/iDf55QeRqWEIU1i+SOpXXk5cmcL7hFY4FBUAkjn4o7GAd089RstGIOeA==
+"@react-native-community/cli@2.0.0-rc.0":
+  version "2.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.0.0-rc.0.tgz#fcc7551e93bc5fad456d26396de3b91b20ae7190"
+  integrity sha512-juHl7U3DSYjTexWmTiN54YSK52dM2nz0P2sJipZkJLbYSsSJTtvLiRWIKzaG/1Q03EfPp3DbkYTOXQMEERzQEg==
   dependencies:
     "@hapi/joi" "^15.0.3"
-    "@react-native-community/cli-platform-android" "^2.0.0-alpha.20"
-    "@react-native-community/cli-platform-ios" "^2.0.0-alpha.20"
-    "@react-native-community/cli-tools" "^2.0.0-alpha.20"
+    "@react-native-community/cli-platform-android" "^2.0.0-rc.0"
+    "@react-native-community/cli-platform-ios" "^2.0.0-rc.0"
+    "@react-native-community/cli-tools" "^2.0.0-rc.0"
     chalk "^1.1.1"
     command-exists "^1.2.8"
     commander "^2.19.0"
@@ -1150,7 +1150,6 @@
     minimist "^1.2.0"
     mkdirp "^0.5.1"
     morgan "^1.9.0"
-    node-fetch "^2.2.0"
     node-notifier "^5.2.1"
     open "^6.2.0"
     ora "^3.4.0"
