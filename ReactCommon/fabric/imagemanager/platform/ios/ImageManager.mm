@@ -22,12 +22,14 @@ ImageManager::ImageManager(ContextContainer::Shared const &contextContainer)
   self_ = (__bridge_retained void *)[[RCTImageManager alloc] initWithImageLoader:imageLoader];
 }
 
-ImageManager::~ImageManager() {
+ImageManager::~ImageManager()
+{
   CFRelease(self_);
   self_ = nullptr;
 }
 
-ImageRequest ImageManager::requestImage(const ImageSource &imageSource) const {
+ImageRequest ImageManager::requestImage(const ImageSource &imageSource) const
+{
   RCTImageManager *imageManager = (__bridge RCTImageManager *)self_;
   return [imageManager requestImage:imageSource];
 }

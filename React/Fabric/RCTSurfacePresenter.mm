@@ -7,10 +7,10 @@
 
 #import "RCTSurfacePresenter.h"
 
+#import <cxxreact/MessageQueueThread.h>
+#import <jsi/jsi.h>
 #import <objc/runtime.h>
 #import <mutex>
-#import <jsi/jsi.h>
-#import <cxxreact/MessageQueueThread.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
@@ -36,8 +36,8 @@
 #import <react/utils/ManagedObjectWrapper.h>
 
 #import "MainRunLoopEventBeat.h"
-#import "RuntimeEventBeat.h"
 #import "RCTConversions.h"
+#import "RuntimeEventBeat.h"
 
 using namespace facebook::react;
 
@@ -52,9 +52,10 @@ using namespace facebook::react;
 @implementation RCTSurfacePresenter {
   std::mutex _schedulerMutex;
   std::mutex _contextContainerMutex;
-  RCTScheduler *_Nullable _scheduler; // Thread-safe. Mutation of the instance variable is protected by `_schedulerMutex`.
+  RCTScheduler
+      *_Nullable _scheduler; // Thread-safe. Mutation of the instance variable is protected by `_schedulerMutex`.
   RCTMountingManager *_mountingManager; // Thread-safe.
-  RCTSurfaceRegistry *_surfaceRegistry;  // Thread-safe.
+  RCTSurfaceRegistry *_surfaceRegistry; // Thread-safe.
   RCTBridge *_bridge; // Unsafe. We are moving away from Bridge.
   RCTBridge *_batchedBridge;
   std::shared_ptr<const ReactNativeConfig> _reactNativeConfig;
@@ -123,8 +124,7 @@ using namespace facebook::react;
   [_surfaceRegistry unregisterSurface:surface];
 }
 
-- (void)setProps:(NSDictionary *)props
-         surface:(RCTFabricSurface *)surface
+- (void)setProps:(NSDictionary *)props surface:(RCTFabricSurface *)surface
 {
   // This implementation is suboptimal indeed but still better than nothing for now.
   [self _stopSurface:surface];
@@ -140,32 +140,22 @@ using namespace facebook::react;
                       maximumSize:(CGSize)maximumSize
                           surface:(RCTFabricSurface *)surface
 {
-  LayoutContext layoutContext = {
-    .pointScaleFactor = RCTScreenScale()
-  };
+  LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
 
-  LayoutConstraints layoutConstraints = {
-    .minimumSize = RCTSizeFromCGSize(minimumSize),
-    .maximumSize = RCTSizeFromCGSize(maximumSize)
-  };
+  LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
+                                         .maximumSize = RCTSizeFromCGSize(maximumSize)};
 
   return [self._scheduler measureSurfaceWithLayoutConstraints:layoutConstraints
                                                 layoutContext:layoutContext
                                                     surfaceId:surface.rootTag];
 }
 
-- (void)setMinimumSize:(CGSize)minimumSize
-           maximumSize:(CGSize)maximumSize
-               surface:(RCTFabricSurface *)surface
+- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize surface:(RCTFabricSurface *)surface
 {
-  LayoutContext layoutContext = {
-    .pointScaleFactor = RCTScreenScale()
-  };
+  LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
 
-  LayoutConstraints layoutConstraints = {
-    .minimumSize = RCTSizeFromCGSize(minimumSize),
-    .maximumSize = RCTSizeFromCGSize(maximumSize)
-  };
+  LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
+                                         .maximumSize = RCTSizeFromCGSize(maximumSize)};
 
   [self._scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
                                                   layoutContext:layoutContext
@@ -274,14 +264,10 @@ using namespace facebook::react;
                                                                                tag:surface.rootTag];
   });
 
-  LayoutContext layoutContext = {
-    .pointScaleFactor = RCTScreenScale()
-  };
+  LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
 
-  LayoutConstraints layoutConstraints = {
-    .minimumSize = RCTSizeFromCGSize(surface.minimumSize),
-    .maximumSize = RCTSizeFromCGSize(surface.maximumSize)
-  };
+  LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(surface.minimumSize),
+                                         .maximumSize = RCTSizeFromCGSize(surface.maximumSize)};
 
   [self._scheduler startSurfaceWithSurfaceId:surface.rootTag
                                   moduleName:surface.moduleName
