@@ -22,6 +22,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.devsupport.DevBundlesContainer;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.turbomodule.core.JSCallInvokerHolderImpl;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
@@ -221,9 +222,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   @Override
-  public void loadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously) {
+  public void loadScriptFromFile(String sourceURL, DevBundlesContainer bundlesContainer, boolean loadSynchronously) {
     mSourceURL = sourceURL;
-    jniLoadScriptFromFile(fileName, sourceURL, loadSynchronously);
+    jniLoadScriptFromFile(sourceURL, bundlesContainer, loadSynchronously);
   }
 
   @Override
@@ -235,7 +236,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private native void jniSetSourceURL(String sourceURL);
   private native void jniLoadScriptFromAssets(AssetManager assetManager, String assetURL, boolean loadSynchronously);
-  private native void jniLoadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously);
+  private native void jniLoadScriptFromFile(String sourceURL, DevBundlesContainer bundlesContainer, boolean loadSynchronously);
   private native void jniLoadScriptFromDeltaBundle(String sourceURL, NativeDeltaClient deltaClient, boolean loadSynchronously);
 
   @Override

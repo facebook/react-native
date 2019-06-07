@@ -20,8 +20,10 @@ public interface ReactInstanceManagerDevHelper {
   /** Request react instance recreation with JS debugging enabled. */
   void onReloadWithJSDebugger(JavaJSExecutor.Factory proxyExecutorFactory);
 
-  /** Notify react instance manager about new JS bundle version downloaded from the server. */
-  void onJSBundleLoadedFromServer(@Nullable NativeDeltaClient nativeDeltaClient);
+  /**
+   * Notify react instance manager about new JS bundle version downloaded from the server.
+   */
+  void onJSBundleLoadedFromServer(String sourceURL, DevBundlesContainer bundlesContainer, @Nullable NativeDeltaClient nativeDeltaClient);
 
   /** Request to toggle the react element inspector. */
   void toggleElementInspector();

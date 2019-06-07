@@ -19,6 +19,7 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.devsupport.DevBundlesContainer;
 import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
@@ -96,7 +97,10 @@ public class ReactInstanceManagerBuilder {
       mJSBundleLoader = null;
       return this;
     }
-    return setJSBundleLoader(JSBundleLoader.createFileLoader(jsBundleFile));
+    DevBundlesContainer bundlesContainer = new DevBundlesContainer();
+    // TODO use regex to get bundleName
+    bundlesContainer.pushBundle("index", jsBundleFile, jsBundleFile);
+    return setJSBundleLoader(JSBundleLoader.createFileLoader(jsBundleFile, bundlesContainer));
   }
 
   /**

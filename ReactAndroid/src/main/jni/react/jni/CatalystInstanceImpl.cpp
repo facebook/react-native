@@ -30,6 +30,7 @@
 #include "JNativeRunnable.h"
 #include "NativeArray.h"
 #include "AssetBundleLoader.h"
+#include "FileBundleLoader.h"
 
 using namespace facebook::jni;
 
@@ -181,20 +182,12 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
   instance_->runApplication(assetURL, std::move(bundleLoader), loadSynchronously);
 }
 
-void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
-                                                 const std::string& sourceURL,
-                                                 bool loadSynchronously) {
-  // TODO: implement
-  // if (Instance::isIndexedRAMBundle(fileName.c_str())) {
-  //   instance_->loadRAMBundleFromFile(fileName, sourceURL, loadSynchronously);
-  // } else {
-  //   std::unique_ptr<const JSBigFileString> script;
-  //   RecoverableError::runRethrowingAsRecoverable<std::system_error>(
-  //     [&fileName, &script]() {
-  //       script = JSBigFileString::fromPath(fileName);
-  //     });
-  //   instance_->loadScriptFromString(std::move(script), sourceURL, loadSynchronously);
-  // }
+void CatalystInstanceImpl::jniLoadScriptFromFile(
+    const std::string& sourceURL,
+    jni::alias_ref<JavaDevBundlesContainer::javaobject> bundlesContainer,
+    bool loadSynchronously) {
+  std::unique_ptr<FileBundleLoader> bundleLoader = std::make_unique<FileBundleLoader>(bundlesContainer);
+  instance_->runApplication(sourceURL, std::move(bundleLoader), loadSynchronously);
 }
 
 void CatalystInstanceImpl::jniLoadScriptFromDeltaBundle(
