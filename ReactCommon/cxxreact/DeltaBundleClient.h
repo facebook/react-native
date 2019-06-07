@@ -16,8 +16,7 @@
 namespace facebook {
 namespace react {
 
-// TODO: refactor
-class JSDeltaBundleClient {
+class DeltaBundleClient {
 public:
   void patch(const folly::dynamic& delta);
   RAMBundle::Module getModule(uint32_t moduleId) const;
@@ -30,18 +29,6 @@ private:
 
   void patchModules(const folly::dynamic *delta);
 };
-
-// class JSDeltaBundleClientRAMBundle : public JSModulesUnbundle {
-// public:
-//   JSDeltaBundleClientRAMBundle(
-//     std::shared_ptr<const JSDeltaBundleClient> client) : client_(client) {}
-
-//   RAMBundle::Module getModule(uint32_t moduleId) const override {
-//     return client_->getModule(moduleId);
-//   }
-// private:
-//   const std::shared_ptr<const JSDeltaBundleClient> client_;
-// };
 
 } // namespace react
 } // namespace facebook

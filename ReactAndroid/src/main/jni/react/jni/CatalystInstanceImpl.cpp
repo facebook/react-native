@@ -13,7 +13,7 @@
 #include <cxxreact/CxxNativeModule.h>
 #include <cxxreact/Instance.h>
 #include <cxxreact/BundleLoader.h>
-#include <cxxreact/JSDeltaBundleClient.h>
+#include <cxxreact/DeltaBundleLoader.h>
 #include <cxxreact/MethodCall.h>
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/RecoverableError.h>
@@ -201,13 +201,9 @@ void CatalystInstanceImpl::jniLoadScriptFromDeltaBundle(
     const std::string& sourceURL,
     jni::alias_ref<NativeDeltaClient::jhybridobject> jDeltaClient,
     bool loadSynchronously) {
-  // TODO: implement
-  // auto deltaClient = jDeltaClient->cthis()->getDeltaClient();
-  // auto registry = RAMBundleRegistry::singleBundleRegistry(
-  //   folly::make_unique<JSDeltaBundleClientRAMBundle>(deltaClient));
-
-  // instance_->loadRAMBundle(
-  //   std::move(registry), deltaClient->getStartupCode(), sourceURL, loadSynchronously);
+  auto deltaClient = jDeltaClient->cthis()->getDeltaClient();
+  std::unique_ptr<BundleLoader> bundleLoader = std::make_unique<DeltaBundleLoader>(deltaClient);
+  instance_->runApplication(sourceURL, std::move(bundleLoader), loadSynchronously);
 }
 
 void CatalystInstanceImpl::jniCallJSFunction(std::string module, std::string method, NativeArray* arguments) {

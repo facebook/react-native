@@ -61,10 +61,7 @@ public:
   /**
    * Prepare JSExecutor environment for evaluating JS.
    * Should be called only once per JSExecutor.
-   */
-  void setupEnvironment(std::function<void(std::string, bool, bool)> loadBundle,
-                        std::function<RAMBundle::Module(uint32_t, std::string)> getModule);
-  
+   */  
   void setupEnvironmentSync(std::function<void(std::string, bool, bool)> loadBundle,
                             std::function<RAMBundle::Module(uint32_t, std::string)> getModule);
 
@@ -74,7 +71,8 @@ public:
    * Otherwise, the script is assumed to include all the modules.
    */
   void loadScript(std::unique_ptr<const JSBigString> script,
-                  std::string sourceURL);
+                  std::string sourceURL,
+                  std::function<void()> callback);
   void loadScriptSync(std::unique_ptr<const JSBigString> script,
                       std::string sourceURL);
 

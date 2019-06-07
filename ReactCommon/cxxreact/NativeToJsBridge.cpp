@@ -99,28 +99,28 @@ NativeToJsBridge::~NativeToJsBridge() {
     "NativeToJsBridge::destroy() must be called before deallocating the NativeToJsBridge!";
 }
 
-void NativeToJsBridge::setupEnvironment(std::function<void(std::string, bool, bool)> loadBundle,
-                                        std::function<RAMBundle::Module(uint32_t, std::string)> getModule) {
-  runOnExecutorQueue([this, loadBundle, getModule](JSExecutor* executor) mutable {
-    m_executor->setupEnvironment(loadBundle, getModule);
-  });
-}
-
 void NativeToJsBridge::setupEnvironmentSync(std::function<void(std::string, bool, bool)> loadBundle,
                                             std::function<RAMBundle::Module(uint32_t, std::string)> getModule) {
   m_executor->setupEnvironment(loadBundle, getModule);
 }
 
 void NativeToJsBridge::loadScript(std::unique_ptr<const JSBigString> script,
-                                  std::string sourceURL) {
+                                  std::string sourceURL,
+                                  std::function<void()> callback) {
   runOnExecutorQueue([this,
+                      callback,
                       script=folly::makeMoveWrapper(std::move(script)),
-                      sourceURL=std::move(sourceURL)]
-                    (JSExecutor* executor) mutable {
+                      sourceURL=std::move(sourceURL)](JSExecutor* executor) mutable {
     try {
       m_executor->loadScript(std::move(script.move()), std::move(sourceURL));
+      if (callback) {
+        callback();
+      }
     } catch (...) {
       m_applicationScriptHasFailure = true;
+      if (callback) {
+        callback();
+      }
       throw;
     }
   });

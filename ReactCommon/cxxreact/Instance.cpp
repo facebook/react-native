@@ -58,7 +58,8 @@ void Instance::runApplicationAsync(std::string initialBundleURL,
   SystraceSection s("Instance::loadBundleAsync", "sourceURL", initialBundleURL);
   bundleRegistry_->runInPreloadedEnvironment(defaultEnvironmentId_,
                                              initialBundleURL,
-                                             std::move(bundleLoader));
+                                             std::move(bundleLoader),
+                                             false);
 }
 
 void Instance::runApplicationSync(std::string initialBundleURL,
@@ -69,7 +70,8 @@ void Instance::runApplicationSync(std::string initialBundleURL,
   SystraceSection s("Instance::loadBundleSync", "sourceURL", initialBundleURL);
   bundleRegistry_->runInPreloadedEnvironment(defaultEnvironmentId_,
                                              initialBundleURL,
-                                             std::move(bundleLoader));
+                                             std::move(bundleLoader),
+                                             true);
 }
 
 void Instance::runApplication(std::string initialBundleURL,

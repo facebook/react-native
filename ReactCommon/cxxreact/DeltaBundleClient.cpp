@@ -3,10 +3,9 @@
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
-#include "JSDeltaBundleClient.h"
+#include "DeltaBundleClient.h"
 
 #include <sstream>
-
 #include <folly/Memory.h>
 
 namespace facebook {
@@ -27,7 +26,7 @@ namespace {
   }
 } // namespace
 
-void JSDeltaBundleClient::patchModules(const folly::dynamic *modules) {
+void DeltaBundleClient::patchModules(const folly::dynamic *modules) {
   for (const folly::dynamic pair : *modules) {
     auto id = pair[0].getInt();
     auto module = pair[1];
@@ -35,7 +34,7 @@ void JSDeltaBundleClient::patchModules(const folly::dynamic *modules) {
   }
 }
 
-void JSDeltaBundleClient::patch(const folly::dynamic& delta) {
+void DeltaBundleClient::patch(const folly::dynamic& delta) {
   auto const base = delta.get_ptr("base");
 
   if (base != nullptr && base->asBool()) {
@@ -78,7 +77,7 @@ void JSDeltaBundleClient::patch(const folly::dynamic& delta) {
 
 }
 
-RAMBundle::Module JSDeltaBundleClient::getModule(uint32_t moduleId) const {
+RAMBundle::Module DeltaBundleClient::getModule(uint32_t moduleId) const {
   auto search = modules_.find(moduleId);
   if (search != modules_.end()) {
     return {folly::to<std::string>(search->first, ".js"), search->second};
@@ -87,11 +86,11 @@ RAMBundle::Module JSDeltaBundleClient::getModule(uint32_t moduleId) const {
   throw RAMBundle::ModuleNotFound(moduleId);
 }
 
-std::unique_ptr<const JSBigString> JSDeltaBundleClient::getStartupCode() const {
+std::unique_ptr<const JSBigString> DeltaBundleClient::getStartupCode() const {
   return folly::make_unique<JSBigStdString>(startupCode_);
 }
 
-void JSDeltaBundleClient::clear() {
+void DeltaBundleClient::clear() {
   modules_.clear();
   startupCode_.clear();
 }

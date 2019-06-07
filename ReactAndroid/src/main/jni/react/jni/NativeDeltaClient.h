@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include <cxxreact/JSDeltaBundleClient.h>
+#include <cxxreact/DeltaBundleClient.h>
 #include <fb/fbjni.h>
 #include <fb/fbjni/Hybrid.h>
 #include <fb/fbjni/ReadableByteChannel.h>
@@ -25,7 +25,7 @@ public:
 
   ~NativeDeltaClient() override = default;
 
-  std::shared_ptr<const JSDeltaBundleClient> getDeltaClient() {
+  std::shared_ptr<const DeltaBundleClient> getDeltaClient() {
     return deltaClient_;
   }
 
@@ -33,8 +33,8 @@ private:
   friend HybridBase;
   void jniProcessDelta(jni::alias_ref<jni::JReadableByteChannel> delta);
   void jniReset();
-  const std::shared_ptr<JSDeltaBundleClient> deltaClient_ =
-    std::make_shared<JSDeltaBundleClient>();
+  const std::shared_ptr<DeltaBundleClient> deltaClient_ =
+    std::make_shared<DeltaBundleClient>();
 };
 
 } // namespace react
