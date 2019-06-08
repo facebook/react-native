@@ -26,11 +26,16 @@ import com.facebook.react.testing.rule.ReactNativeTestRule;
 import com.facebook.react.uimanager.PixelUtil;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import javax.inject.Provider;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
+import com.facebook.react.module.annotations.ReactModule;
 
 @RunWith(AndroidJUnit4.class)
 public class ReactRootViewTest {
@@ -42,18 +47,47 @@ public class ReactRootViewTest {
   final StringRecordingModule mRecordingModule = new StringRecordingModule();
   final ReactPackage mReactPackage = new MainReactPackage() {
     @Override
-    public List<ModuleSpec> getNativeModules(ReactApplicationContext context) {
-      List<ModuleSpec> modules = new ArrayList<>(super.getNativeModules(context));
-      modules.add(
-        ModuleSpec.nativeModuleSpec(
-          StringRecordingModule.class,
-          new Provider<NativeModule>() {
-            @Override
-            public NativeModule get() {
-              return mRecordingModule;
-            }
-          }));
-      return modules;
+    public NativeModule getModule(String name, ReactApplicationContext context) {
+      if (name.equals(StringRecordingModule.NAME)) {
+        return mRecordingModule;
+      }
+
+      return super.getModule(name, context);
+    }
+
+    @Override
+    public ReactModuleInfoProvider getReactModuleInfoProvider() {
+      final ReactModuleInfoProvider provider = super.getReactModuleInfoProvider();
+
+      return new ReactModuleInfoProvider() {
+        private Map<String, ReactModuleInfo> mModuleInfos = null;
+
+        @Override
+        public Map<String, ReactModuleInfo> getReactModuleInfos() {
+          if (mModuleInfos != null) {
+            return mModuleInfos;
+          }
+
+          mModuleInfos = new HashMap<>();
+          mModuleInfos.putAll(provider.getReactModuleInfos());
+
+          Class<? extends NativeModule> moduleClass = StringRecordingModule.class;
+          ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
+
+          mModuleInfos.put(
+            reactModule.name(),
+            new ReactModuleInfo(
+              reactModule.name(),
+              moduleClass.getName(),
+              reactModule.canOverrideExistingModule(),
+              reactModule.needsEagerInit(),
+              reactModule.hasConstants(),
+              reactModule.isCxxModule(),
+              false));
+
+          return mModuleInfos;
+        }
+      };
     }
   };
 
