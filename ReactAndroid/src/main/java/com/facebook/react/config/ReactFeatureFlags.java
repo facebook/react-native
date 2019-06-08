@@ -43,4 +43,10 @@ public class ReactFeatureFlags {
    * {@link com.facebook.react.uimanager.NativeViewHierarchyManager dropView}
    */
   public static boolean logDroppedViews = false;
+
+  /*
+   * This feature flag enables extra logging on ReactWebViews.
+   * Default value is false.
+   */
+  public static boolean enableExtraWebViewLogs = false;
 }
