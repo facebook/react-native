@@ -197,7 +197,7 @@ using namespace facebook::react;
   auto runtimeExecutor = [self _runtimeExecutor];
 
   auto toolbox = SchedulerToolbox{};
-  toolbox.contextContainer = _contextContainer;
+  toolbox.contextContainer = self.contextContainer;
   toolbox.componentRegistryFactory = componentRegistryFactory;
   toolbox.runtimeExecutor = runtimeExecutor;
 
