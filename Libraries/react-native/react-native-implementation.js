@@ -332,10 +332,6 @@ module.exports = {
   get ViewPropTypes() {
     return require('../DeprecatedPropTypes/DeprecatedViewPropTypes');
   },
-  // TODO(cpojer): Temporary fix for missing Toolbar
-  get ToolbarAndroid() {
-    return require('../Components/UnimplementedViews/UnimplementedView');
-  },
 };
 
 if (__DEV__) {
