@@ -137,11 +137,6 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     return mOwner;
   }
 
-  @Override
-  public void unsetOwner() {
-    mOwner = null;
-  }
-
   /** @deprecated Use #getOwner() instead. This will be removed in the next version. */
   @Deprecated
   @Nullable

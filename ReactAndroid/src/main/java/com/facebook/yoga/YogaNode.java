@@ -42,8 +42,6 @@ public abstract class YogaNode {
   @Nullable
   public abstract YogaNode getOwner();
 
-  public abstract void unsetOwner();
-
   /** @deprecated Use #getOwner() instead. This will be removed in the next version. */
   @Deprecated
   @Nullable
