@@ -15,8 +15,7 @@ import android.view.KeyEvent;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
-import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.uimanager.RootView;
 import com.facebook.react.modules.core.PermissionListener;
 
 import javax.annotation.Nullable;
@@ -31,10 +30,9 @@ public class ReactActivityDelegate {
   private final @Nullable Activity mActivity;
   private final @Nullable String mMainComponentName;
 
-  private @Nullable ReactRootView mReactRootView;
-  private @Nullable DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable Callback mPermissionsCallback;
+  private ReactDelegate mReactDelegate;
 
   @Deprecated
   public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
@@ -52,7 +50,7 @@ public class ReactActivityDelegate {
   }
 
   protected ReactRootView createRootView() {
-    return new ReactRootView(getContext());
+    return mReactDelegate.createRootView();
   }
 
   /**
@@ -67,7 +65,7 @@ public class ReactActivityDelegate {
   }
 
   public ReactInstanceManager getReactInstanceManager() {
-    return getReactNativeHost().getReactInstanceManager();
+    return mReactDelegate.getReactInstanceManager();
   }
 
   public String getMainComponentName() {
@@ -76,36 +74,23 @@ public class ReactActivityDelegate {
 
   protected void onCreate(Bundle savedInstanceState) {
     String mainComponentName = getMainComponentName();
-    if (mainComponentName != null) {
+    mReactDelegate = new ReactDelegate(getPlainActivity(), getReactNativeHost(), mainComponentName, getLaunchOptions());
+    if (mMainComponentName != null) {
       loadApp(mainComponentName);
     }
-    mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
   }
 
   protected void loadApp(String appKey) {
-    if (mReactRootView != null) {
-      throw new IllegalStateException("Cannot loadApp while app is already running.");
-    }
-    mReactRootView = createRootView();
-    mReactRootView.startReactApplication(
-      getReactNativeHost().getReactInstanceManager(),
-      appKey,
-      getLaunchOptions());
-    getPlainActivity().setContentView(mReactRootView);
+    mReactDelegate.loadApp(appKey);
+    getPlainActivity().setContentView(mReactDelegate.getReactRootView());
   }
 
   protected void onPause() {
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onHostPause(getPlainActivity());
-    }
+    mReactDelegate.onHostPause();
   }
 
   protected void onResume() {
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onHostResume(
-        getPlainActivity(),
-        (DefaultHardwareBackBtnHandler) getPlainActivity());
-    }
+    mReactDelegate.onHostResume();
 
     if (mPermissionsCallback != null) {
       mPermissionsCallback.invoke();
@@ -114,20 +99,11 @@ public class ReactActivityDelegate {
   }
 
   protected void onDestroy() {
-    if (mReactRootView != null) {
-      mReactRootView.unmountReactApplication();
-      mReactRootView = null;
-    }
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onHostDestroy(getPlainActivity());
-    }
+    mReactDelegate.onHostDestroy();
   }
 
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager()
-        .onActivityResult(getPlainActivity(), requestCode, resultCode, data);
-    }
+    mReactDelegate.onActivityResult(requestCode, resultCode, data, true);
   }
 
   public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -141,19 +117,7 @@ public class ReactActivityDelegate {
   }
 
   public boolean onKeyUp(int keyCode, KeyEvent event) {
-    if (getReactNativeHost().hasInstance() && getReactNativeHost().getUseDeveloperSupport()) {
-      if (keyCode == KeyEvent.KEYCODE_MENU) {
-        getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
-        return true;
-      }
-      boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer)
-        .didDoubleTapR(keyCode, getPlainActivity().getCurrentFocus());
-      if (didDoubleTapR) {
-        getReactNativeHost().getReactInstanceManager().getDevSupportManager().handleReloadJS();
-        return true;
-      }
-    }
-    return false;
+    return mReactDelegate.shouldShowDevMenuOrReload(keyCode, event);
   }
 
   public boolean onKeyLongPress(int keyCode, KeyEvent event) {
@@ -167,11 +131,7 @@ public class ReactActivityDelegate {
   }
 
   public boolean onBackPressed() {
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onBackPressed();
-      return true;
-    }
-    return false;
+    return mReactDelegate.onBackPressed();
   }
 
   public boolean onNewIntent(Intent intent) {
