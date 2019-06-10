@@ -3670,7 +3670,7 @@ bool YGLayoutNodeInternal(
     YGMarkerLayoutData& layoutMarkerData,
     void* const layoutContext) {
 #ifdef YG_ENABLE_EVENTS
-  Event::publish<Event::NodeLayout>(node);
+  Event::publish<Event::NodeLayout>(node, {performLayout, layoutContext});
 #endif
   YGLayout* layout = &node->getLayout();
 

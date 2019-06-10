@@ -82,5 +82,11 @@ struct Event::TypedData<Event::NodeMeasure> {
   void* layoutContext;
 };
 
+template <>
+struct Event::TypedData<Event::NodeLayout> {
+  bool performLayout;
+  void* layoutContext;
+};
+
 } // namespace yoga
 } // namespace facebook
