@@ -256,7 +256,7 @@
     "async": "^2.4.0",
     "babel-eslint": "9.0.0",
     "coveralls": "^3.0.2",
-    "detox": "9.0.4",
+    "detox": "12.2.0",
     "eslint": "5.1.0",
     "eslint-config-fb-strict": "22.1.0",
     "eslint-config-fbjs": "2.0.1",

@@ -827,6 +827,7 @@
 		385362722283369800B0989C /* RCTSRWebSocket.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD2C1EA8E3FA008DFB7A /* RCTSRWebSocket.h */; };
 		38536273228336AC00B0989C /* RCTSRWebSocket.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD2C1EA8E3FA008DFB7A /* RCTSRWebSocket.h */; };
 		38B6D1FF228C879400AC0F0E /* RCTWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13C156041AB1A2840079392D /* RCTWebViewManager.m */; };
+		38BF7CDF22AF1B9900240972 /* JSCExecutorFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8507BBBC21EDACC200AEAFCA /* JSCExecutorFactory.mm */; };
 		391E86A41C623EC800009732 /* RCTTouchEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 391E86A21C623EC800009732 /* RCTTouchEvent.m */; };
 		39C50FF92046EACF00CEE534 /* RCTVersion.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 199B8A6E1F44DB16005DEF67 /* RCTVersion.h */; };
 		39C50FFB2046EE3500CEE534 /* RCTVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 39C50FFA2046EE3500CEE534 /* RCTVersion.m */; };
@@ -5868,6 +5869,7 @@
 				189727AC2141CDEA002A4E2A /* RCTConvert+CoreLocation.m in Sources */,
 				1897278D2141CD6A002A4E2A /* RCTDevSettings.mm in Sources */,
 				189727E72141CEBC002A4E2A /* RCTScrollContentView.m in Sources */,
+				38BF7CDF22AF1B9900240972 /* JSCExecutorFactory.mm in Sources */,
 				189727B62141CE20002A4E2A /* RCTModalHostView.m in Sources */,
 				189727772141CD10002A4E2A /* (null) in Sources */,
 				1897279C2141CD9E002A4E2A /* RCTUIManager.m in Sources */,

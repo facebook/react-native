@@ -13,7 +13,7 @@ set -x
 DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
 # Enables iOS devices to get the IP address of the machine running Metro Bundler
-if [[ "$CONFIGURATION" = *Debug* && ! "$PLATFORM_NAME" == *simulator ]]; then
+if [[ "$CONFIGURATION" = *Debug* && ! "$PLATFORM_NAME" == *simulator && ! "$PLATFORM_NAME" == macosx ]]; then
   IP=$(ipconfig getifaddr en0)
   if [ -z "$IP" ]; then
     IP=$(ifconfig | grep 'inet ' | grep -v ' 127.' | cut -d\   -f2  | awk 'NR==1{print $1}')
