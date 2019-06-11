@@ -37,6 +37,7 @@ const ModuleViewConfig = {
   }
 };
 registerGeneratedViewConfig('RCTModule', ModuleViewConfig);
+export const __INTERNAL_VIEW_CONFIG = ModuleViewConfig;
 export default 'RCTModule'; // RCT prefix present for paper support"
 `;
 

@@ -89,6 +89,8 @@ const ::_COMPONENT_NAME_::ViewConfig = VIEW_CONFIG;
 
 registerGeneratedViewConfig('::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::', ::_COMPONENT_NAME_::ViewConfig);
 
+export const __INTERNAL_VIEW_CONFIG = ::_COMPONENT_NAME_::ViewConfig;
+
 export default '::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::';::_COMPAT_COMMENT_::
 `.trim();
 

@@ -12,7 +12,7 @@
 
 const ReactNativeViewConfigRegistry = require('../Renderer/shims/ReactNativeViewConfigRegistry');
 const ReactNativeViewViewConfig = require('../Components/View/ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('./verifyComponentAttributeEquivalence');
+import verifyComponentAttributeEquivalence from './verifyComponentAttributeEquivalence';
 
 type GeneratedViewConfig = {
   uiViewClassName: string,
