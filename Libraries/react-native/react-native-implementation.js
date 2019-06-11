@@ -52,15 +52,6 @@ module.exports = {
   get ImageBackground() {
     return require('../Image/ImageBackground');
   },
-  get ImageEditor() {
-    warnOnce(
-      'image-editor-moved',
-      'Image Editor has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/image-editor' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-image-editor',
-    );
-    return require('../Image/ImageEditor');
-  },
   get InputAccessoryView() {
     return require('../Components/TextInput/InputAccessoryView');
   },
@@ -410,6 +401,19 @@ if (__DEV__) {
           'To get a base64-encoded string from a local image use either of the following third-party libraries:' +
           "* expo-file-system: `readAsStringAsync(filepath, 'base64')`" +
           "* react-native-fs: `readFile(filepath, 'base64')`",
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access ImageEditor.
+  Object.defineProperty(module.exports, 'ImageEditor', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'ImageEditor has been removed from React Native. ' +
+          "It can now be installed and imported from 'react-native-image-editor' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-image-editor',
       );
     },
   });
