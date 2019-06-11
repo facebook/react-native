@@ -30,7 +30,7 @@ export interface Spec extends TurboModule {
   +blur: (reactTag: ?number) => void;
   +findSubviewIn: (
     reactTag: ?number,
-    point: Array<number>,
+    point: [number, number],
     callback: (
       nativeViewTag: number,
       left: number,
