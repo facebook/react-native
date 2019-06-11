@@ -73,6 +73,11 @@ struct Event::TypedData<Event::NodeDeallocation> {
 };
 
 template <>
+struct Event::TypedData<Event::LayoutPassStart> {
+  void* layoutContext;
+};
+
+template <>
 struct Event::TypedData<Event::LayoutPassEnd> {
   void* layoutContext;
 };

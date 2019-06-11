@@ -4013,7 +4013,7 @@ void YGNodeCalculateLayoutWithContext(
     void* layoutContext) {
 
 #ifdef YG_ENABLE_EVENTS
-  Event::publish<Event::LayoutPassStart>(node);
+  Event::publish<Event::LayoutPassStart>(node, {layoutContext});
 #endif
   // unique pointer to allow ending the marker early
   std::unique_ptr<marker::MarkerSection<YGMarkerLayout>> marker{
