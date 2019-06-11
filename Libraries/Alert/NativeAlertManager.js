@@ -13,27 +13,10 @@
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
-export type Buttons = Array<{
-  text?: string,
-  onPress?: ?Function,
-  style?: AlertButtonStyle,
-}>;
-
-export type Options = {
-  cancelable?: ?boolean,
-  onDismiss?: ?() => void,
-};
-
-/* 'default' | plain-text' | 'secure-text' | 'login-password' */
-export type AlertType = string;
-
-/* 'default' | 'cancel' | 'destructive' */
-export type AlertButtonStyle = string;
-
 export type Args = {|
   title?: string,
   message?: string,
-  buttons?: Buttons,
+  buttons?: Object, // TODO: have a better type
   type?: string,
   defaultValue?: string,
   cancelButtonKey?: string,

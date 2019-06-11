@@ -15,7 +15,23 @@ import NativeDialogManagerAndroid, {
   type DialogOptions,
 } from '../NativeModules/specs/NativeDialogManagerAndroid';
 import RCTAlertManager from './RCTAlertManager';
-import {type Buttons, type Options, type AlertType} from './NativeAlertManager';
+
+export type AlertType =
+  | 'default'
+  | 'plain-text'
+  | 'secure-text'
+  | 'login-password';
+export type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
+export type Buttons = Array<{
+  text?: string,
+  onPress?: ?Function,
+  style?: AlertButtonStyle,
+}>;
+
+type Options = {
+  cancelable?: ?boolean,
+  onDismiss?: ?() => void,
+};
 
 /**
  * Launches an alert dialog with the specified title and message.
