@@ -30,6 +30,7 @@ import okio.Buffer;
 import okio.BufferedSource;
 import okio.Okio;
 import okio.Sink;
+import okio.Source;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -107,22 +108,24 @@ public class BundleDownloader {
   public void downloadBundleFromURL(
       final DevBundleDownloadListener callback,
       final File outputFile,
+      final File bundlesContainerFile,
       final String bundleURL,
       final @Nullable BundleInfo bundleInfo,
       final BundleDeltaClient.ClientType clientType) {
     downloadBundleFromURL(
-        callback, outputFile, bundleURL, bundleInfo, clientType, new Request.Builder());
+        callback, outputFile, bundlesContainerFile, bundleURL, bundleInfo, clientType, new Request.Builder());
   }
 
   public void downloadBundleFromURL(
       final DevBundleDownloadListener callback,
       final File outputFile,
+      final File bundlesContainerFile,
       final String bundleURL,
       final @Nullable BundleInfo bundleInfo,
       final BundleDeltaClient.ClientType clientType,
       Request.Builder requestBuilder) {
 
-    mDevBundlesContainer = new DevBundlesContainer();
+    mDevBundlesContainer = new DevBundlesContainer(bundleURL);
     final Request request =
         requestBuilder
             .url(formatBundleUrl(bundleURL, clientType))
@@ -169,19 +172,20 @@ public class BundleDownloader {
             try (Response r = response) {
               if (match.find()) {
                 processMultipartResponse(
-                    url, r, match.group(1), outputFile, bundleInfo, clientType, callback);
+                  url, r, match.group(1), outputFile, bundlesContainerFile, bundleInfo, clientType, callback);
               } else {
                 // In case the server doesn't support multipart/mixed responses, fallback to normal
                 // download.
                 processBundleResult(
-                    url,
-                    r.code(),
-                    r.headers(),
-                    Okio.buffer(r.body().source()),
-                    outputFile,
-                    bundleInfo,
-                    clientType,
-                    callback);
+                  url,
+                  r.code(),
+                  r.headers(),
+                  Okio.buffer(r.body().source()),
+                  outputFile,
+                  bundlesContainerFile,
+                  bundleInfo,
+                  clientType,
+                  callback);
               }
             }
           }
@@ -201,6 +205,7 @@ public class BundleDownloader {
       final Response response,
       String boundary,
       final File outputFile,
+      final File bundlesContainerFile,
       @Nullable final BundleInfo bundleInfo,
       final BundleDeltaClient.ClientType clientType,
       final DevBundleDownloadListener callback)
@@ -231,6 +236,7 @@ public class BundleDownloader {
                       Headers.of(headers),
                       body,
                       outputFile,
+                      bundlesContainerFile,
                       bundleInfo,
                       clientType,
                       callback);
@@ -288,6 +294,7 @@ public class BundleDownloader {
       Headers headers,
       BufferedSource body,
       File outputFile,
+      File bundlesContainerFile,
       BundleInfo bundleInfo,
       BundleDeltaClient.ClientType clientType,
       DevBundleDownloadListener callback)
@@ -335,8 +342,20 @@ public class BundleDownloader {
     }
 
     if (bundleWritten) {
-      // TODO use regexp to get name
-       mDevBundlesContainer.pushBundle("index", url, outputFile.getPath());
+      Pattern bundleNamePattern = Pattern.compile("^https?://[^/]+/([^.]+)");
+      Matcher bundleNameMatcher = bundleNamePattern.matcher(url);
+      String bundleName = "index"; // fallback
+      if (bundleNameMatcher.find()) {
+          bundleName = bundleNameMatcher.group(1);
+      }
+      mDevBundlesContainer.pushBundle(bundleName, url, outputFile.getPath());
+      // We need to save the mDevBundlesContainer in file because it is null
+      // after killing app. App doesn't request for new bundles if has up to date bundle in cache.
+      // In that case we need to read bundles container from file.
+
+      // TODO this code should be moved to place where all bundles are downloaded (multibundle support).
+      JSONObject bundlesContainerJSON = mDevBundlesContainer.toJSON();
+      storeBundlesContainerInFile(bundlesContainerJSON, bundlesContainerFile);
       // If we have received a new bundle from the server, move it to its final destination.
       if (!tmpFile.renameTo(outputFile)) {
         throw new IOException("Couldn't rename " + tmpFile + " to " + outputFile);
@@ -368,10 +387,29 @@ public class BundleDownloader {
     return true;
   }
 
-  private static void populateBundleInfo(
-      String url, Headers headers, BundleDeltaClient.ClientType clientType, BundleInfo bundleInfo) {
-    bundleInfo.mDeltaClientName =
-        clientType == BundleDeltaClient.ClientType.NONE ? null : clientType.name();
+  private boolean storeBundlesContainerInFile(JSONObject body, File outputFile)
+          throws IOException {
+    Sink fileSink = null;
+    try {
+      String jsonString = body.toString();
+      fileSink = Okio.sink(outputFile);
+      Buffer buffer = new Buffer();
+      buffer.writeUtf8(jsonString);
+      BufferedSource source = Okio.buffer((Source) buffer);
+      source.readAll(fileSink);
+    } catch(Throwable e) {
+      throw new IOException("Couldn't save to " + outputFile);
+    } finally {
+      if (fileSink != null) {
+        fileSink.close();
+      }
+    }
+
+    return true;
+  }
+
+  private static void populateBundleInfo(String url, Headers headers, BundleDeltaClient.ClientType clientType, BundleInfo bundleInfo) {
+    bundleInfo.mDeltaClientName = clientType == BundleDeltaClient.ClientType.NONE ? null : clientType.name();
     bundleInfo.mUrl = url;
 
     String filesChangedCountStr = headers.get("X-Metro-Files-Changed-Count");

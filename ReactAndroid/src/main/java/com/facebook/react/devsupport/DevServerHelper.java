@@ -393,22 +393,20 @@ public class DevServerHelper {
   }
 
   public void downloadBundleFromURL(
-      DevBundleDownloadListener callback,
-      File outputFile,
-      String bundleURL,
-      BundleDownloader.BundleInfo bundleInfo) {
-    mBundleDownloader.downloadBundleFromURL(
-        callback, outputFile, bundleURL, bundleInfo, getDeltaClientType());
+    DevBundleDownloadListener callback,
+    File outputFile, File bundlesContainerFile, String bundleURL, BundleDownloader.BundleInfo bundleInfo) {
+    mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundlesContainerFile, bundleURL, bundleInfo, getDeltaClientType());
   }
 
   public void downloadBundleFromURL(
       DevBundleDownloadListener callback,
       File outputFile,
+      File bundlesContainerFile,
       String bundleURL,
       BundleDownloader.BundleInfo bundleInfo,
       Request.Builder requestBuilder) {
     mBundleDownloader.downloadBundleFromURL(
-        callback, outputFile, bundleURL, bundleInfo, getDeltaClientType(), requestBuilder);
+        callback, outputFile, bundlesContainerFile, bundleURL, bundleInfo, getDeltaClientType(), requestBuilder);
   }
 
   private BundleDeltaClient.ClientType getDeltaClientType() {

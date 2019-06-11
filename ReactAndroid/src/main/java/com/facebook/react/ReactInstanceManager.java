@@ -366,8 +366,13 @@ public class ReactInstanceManager {
       final DeveloperSettings devSettings = mDevSupportManager.getDevSettings();
 
       // If remote JS debugging is enabled, load from dev server.
-      if (mDevSupportManager.hasUpToDateJSBundleInCache()
-          && !devSettings.isRemoteJSDebugEnabled()) {
+      if (mDevSupportManager.hasUpToDateJSBundleInCache() &&
+          !devSettings.isRemoteJSDebugEnabled()) {
+        // Read dev bundle container from file
+        if (mDevBundlesContainer == null) {
+          mDevBundlesContainer = mDevSupportManager.getBundlesContainerFromCache();
+          mSourceURL = mDevBundlesContainer.getInitialSourceURL();
+        }
         // If there is a up-to-date bundle downloaded from server,
         // with remote JS debugging disabled, always use that.
         onJSBundleLoadedFromServer(mSourceURL, mDevBundlesContainer, null);

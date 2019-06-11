@@ -9,6 +9,7 @@ package com.facebook.react.devsupport.interfaces;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.devsupport.DevBundlesContainer;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import java.io.File;
 import javax.annotation.Nullable;
@@ -53,6 +54,8 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   String getJSBundleURLForRemoteDebugging();
 
   String getDownloadedJSBundleFile();
+
+  DevBundlesContainer getBundlesContainerFromCache();
 
   boolean hasUpToDateJSBundleInCache();
 

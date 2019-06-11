@@ -27,6 +27,8 @@ import com.facebook.react.uimanager.UIImplementationProvider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 /** Builder class for {@link ReactInstanceManager} */
@@ -97,9 +99,14 @@ public class ReactInstanceManagerBuilder {
       mJSBundleLoader = null;
       return this;
     }
-    DevBundlesContainer bundlesContainer = new DevBundlesContainer();
-    // TODO use regex to get bundleName
-    bundlesContainer.pushBundle("index", jsBundleFile, jsBundleFile);
+    DevBundlesContainer bundlesContainer = new DevBundlesContainer(jsBundleFile);
+    Pattern bundleNamePattern = Pattern.compile("/([^./]+)[^/]+$");
+    Matcher bundleNameMatcher = bundleNamePattern.matcher(jsBundleFile);
+    String bundleName = "index"; // fallback
+    if (bundleNameMatcher.find()) {
+        bundleName = bundleNameMatcher.group(1);
+    }
+    bundlesContainer.pushBundle(bundleName, jsBundleFile, jsBundleFile);
     return setJSBundleLoader(JSBundleLoader.createFileLoader(jsBundleFile, bundlesContainer));
   }
 

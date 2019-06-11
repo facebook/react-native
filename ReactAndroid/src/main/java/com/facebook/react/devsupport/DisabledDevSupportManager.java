@@ -114,7 +114,14 @@ public class DisabledDevSupportManager implements DevSupportManager {
   }
 
   @Override
-  public void reloadSettings() {}
+  public DevBundlesContainer getBundlesContainerFromCache() {
+    return null;
+  }
+
+  @Override
+  public void reloadSettings() {
+
+  }
 
   @Override
   public void handleReloadJS() {}
