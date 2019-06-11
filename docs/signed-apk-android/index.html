@@ -150,7 +150,7 @@ $ ./gradlew bundleRelease
 <span class="hljs-deletion">- def enableSeparateBuildPerCPUArchitecture = false</span>
 <span class="hljs-addition">+ def enableSeparateBuildPerCPUArchitecture = true</span>
 </code></pre>
-<p>Upload both these files to markets which support device targetting, such as <a href="https://developer.android.com/google/play/publishing/multiple-apks.html">Google Play</a> and <a href="https://developer.amazon.com/docs/app-submission/getting-started-with-device-targeting.html">Amazon AppStore</a>, and the users will automatically get the appropriate APK. If you want to upload to other markets, such as <a href="https://www.apkfiles.com/">APKFiles</a>, which do not support multiple APKs for a single app, change the following line as well to create the default universal APK with binaries for both CPUs.</p>
+<p>Upload both these files to markets which support device targeting, such as <a href="https://developer.android.com/google/play/publishing/multiple-apks.html">Google Play</a> and <a href="https://developer.amazon.com/docs/app-submission/getting-started-with-device-targeting.html">Amazon AppStore</a>, and the users will automatically get the appropriate APK. If you want to upload to other markets, such as <a href="https://www.apkfiles.com/">APKFiles</a>, which do not support multiple APKs for a single app, change the following line as well to create the default universal APK with binaries for both CPUs.</p>
 <pre><code class="hljs css language-diff"><span class="hljs-deletion">- universalApk false  // If true, also generate a universal APK</span>
 <span class="hljs-addition">+ universalApk true  // If true, also generate a universal APK</span>
 </code></pre>
