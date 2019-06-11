@@ -10,7 +10,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := reactnative
 
 # Flag to enable V8 in react-native code 
-V8_ENABLED := 1
+# ENGINEUSED := 1
 
 LOCAL_SRC_FILES := \
   CxxNativeModule.cpp \
@@ -45,7 +45,7 @@ LOCAL_V8_FILES := \
     V8Executor.cpp 
 
 LOCAL_SRC_FILES += $(LOCAL_V8_FILES)
-LOCAL_CFLAGS += -DV8_ENABLED=1
+LOCAL_CFLAGS += -DENGINEUSED=1
 LOCAL_STATIC_LIBRARIES := v8helpers
 LOCAL_SHARED_LIBRARIES += libv8 libv8platform libv8base
 

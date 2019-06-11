@@ -18,7 +18,7 @@
 namespace facebook {
 namespace react {
 
-#if (!defined (NOJSC)) && (!V8_ENABLED)
+#if (!defined (NOJSC)) && (!ENGINEUSED)
 namespace JSCNativeHooks {
 
 using Hook = JSValueRef(*)(
@@ -36,7 +36,7 @@ extern RN_EXPORT ConfigurationHook installPerfHooks;
 
 }
 
-#endif // (!defined (NOJSC)) && (!V8_ENABLED)
+#endif // (!defined (NOJSC)) && (!ENGINEUSED)
 
 // Logging levels are aligned with devmain's logging level
 // which are present at %SRCROOT%\liblet\Logging\androidjava\src\com\microsoft\office\loggingapi\Logging.java

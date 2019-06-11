@@ -13,7 +13,7 @@ namespace react {
 #pragma clang diagnostic ignored "-Wglobal-constructors"
 #endif
 
-#if !defined(NOJSC) && (!V8_ENABLED)
+#if !defined(NOJSC) && (!ENGINEUSED)
 namespace JSCNativeHooks {
 
 Hook loggingHook = nullptr;

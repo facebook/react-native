@@ -8,11 +8,11 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 # Flag to enable V8 in react-native code 
-V8_ENABLED := 1
+# ENGINEUSED := 1
 
 LOCAL_MODULE := jscexecutor
 
-ifeq ($(V8_ENABLED), 0)
+ifeq ($(ENGINEUSED), 0)
   LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 endif
 
