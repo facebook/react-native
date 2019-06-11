@@ -53,7 +53,7 @@ type NativeProps = $ReadOnly<{|
   onSlidingComplete?: ?(event: DirectEvent<Event>) => void,
 |}>;
 
-module.exports = codegenNativeComponent<NativeProps>('Slider', {
+export default codegenNativeComponent<NativeProps>('Slider', {
   interfaceOnly: true,
   isDeprecatedPaperComponentNameRCT: true,
 });

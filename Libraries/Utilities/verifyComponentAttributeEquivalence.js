@@ -106,6 +106,10 @@ export function getConfigWithoutViewProps(
   viewConfig: ReactNativeBaseComponentViewConfig<>,
   propName: string,
 ) {
+  if (!viewConfig[propName]) {
+    return {};
+  }
+
   return Object.keys(viewConfig[propName])
     .filter(prop => !ReactNativeViewViewConfig[propName][prop])
     .reduce((obj, prop) => {

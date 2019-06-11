@@ -10,7 +10,7 @@
 
 'use strict';
 
-const SwitchNativeComponent = require('./SwitchNativeComponent');
+import SwitchNativeComponent from './SwitchNativeComponent';
 const AndroidSwitchNativeComponent = require('./AndroidSwitchNativeComponent');
 const Platform = require('../../Utilities/Platform');
 const React = require('react');

@@ -39,6 +39,6 @@ type NativeProps = $ReadOnly<{|
   onChange?: ?(event: BubblingEvent<SwitchChangeEvent>) => mixed,
 |}>;
 
-module.exports = codegenNativeComponent<NativeProps>('Switch', {
+export default codegenNativeComponent<NativeProps>('Switch', {
   isDeprecatedPaperComponentNameRCT: true,
 });
