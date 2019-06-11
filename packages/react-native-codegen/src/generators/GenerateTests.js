@@ -14,9 +14,11 @@ import type {SchemaType} from '../CodegenSchema';
 const {getImports, toSafeCppString} = require('./CppHelpers');
 
 type FilesOutput = Map<string, string>;
+type PropValueType = string | number | boolean;
+
 type TestCase = $ReadOnly<{|
   propName: string,
-  propValue: string | number | boolean,
+  propValue: ?PropValueType,
   testName?: string,
   raw?: boolean,
 |}>;
@@ -59,7 +61,10 @@ function getTestCasesForProp(propName, typeAnnotation) {
   } else if (typeAnnotation.type === 'StringTypeAnnotation') {
     cases.push({
       propName,
-      propValue: typeAnnotation.default || 'foo',
+      propValue:
+        typeAnnotation.default != null && typeAnnotation.default !== ''
+          ? typeAnnotation.default
+          : 'foo',
     });
   } else if (typeAnnotation.type === 'BooleanTypeAnnotation') {
     cases.push({

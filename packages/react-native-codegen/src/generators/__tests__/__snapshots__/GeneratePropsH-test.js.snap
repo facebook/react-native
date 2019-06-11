@@ -452,6 +452,7 @@ class StringPropComponentProps final : public ViewProps {
 #pragma mark - Props
 
   const std::string accessibilityHint{\\"\\"};
+  const std::string accessibilityRole{};
 };
 
 } // namespace react

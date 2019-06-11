@@ -119,7 +119,7 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
         name: 'PointPrimitive',
       };
     case 'Int32':
-      if (defaultValue !== null) {
+      if (defaultValue != null) {
         return {
           type: 'Int32TypeAnnotation',
           default: (defaultValue: number),
@@ -127,7 +127,7 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
       }
       throw new Error(`A default int is required for "${name}"`);
     case 'Float':
-      if (defaultValue !== null) {
+      if (defaultValue != null) {
         return {
           type: 'FloatTypeAnnotation',
           default: (defaultValue: number),
@@ -135,7 +135,7 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
       }
       throw new Error(`A default float is required for "${name}"`);
     case 'BooleanTypeAnnotation':
-      if (defaultValue !== null) {
+      if (defaultValue != null) {
         return {
           type: 'BooleanTypeAnnotation',
           default: (defaultValue: boolean),
@@ -143,13 +143,13 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
       }
       throw new Error(`A default boolean is required for "${name}"`);
     case 'StringTypeAnnotation':
-      if (defaultValue !== null) {
+      if (typeof defaultValue !== 'undefined') {
         return {
           type: 'StringTypeAnnotation',
-          default: (defaultValue: string),
+          default: (defaultValue: string | null),
         };
       }
-      throw new Error(`A default string is required for "${name}"`);
+      throw new Error(`A default string (or null) is required for "${name}"`);
     case 'UnionTypeAnnotation':
       if (defaultValue !== null) {
         return {
@@ -199,6 +199,18 @@ function buildPropSchema(property): ?PropTypeShape {
     }
     type = typeAnnotation.typeParameters.params[0].type;
     defaultValue = typeAnnotation.typeParameters.params[1].value;
+    const defaultValueType = typeAnnotation.typeParameters.params[1].type;
+
+    if (defaultValueType === 'NullLiteralTypeAnnotation') {
+      if (type !== 'StringTypeAnnotation') {
+        throw new Error(
+          `WithDefault can only provide a 'null' default value for string types (see ${name})`,
+        );
+      }
+
+      defaultValue = null;
+    }
+
     typeAnnotation = typeAnnotation.typeParameters.params[0];
   }
 

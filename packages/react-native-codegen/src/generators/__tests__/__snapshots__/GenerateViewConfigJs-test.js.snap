@@ -478,6 +478,7 @@ const StringPropComponentViewConfig = {
 
   validAttributes: {
     accessibilityHint: true,
+    accessibilityRole: true,
   },
 };
 

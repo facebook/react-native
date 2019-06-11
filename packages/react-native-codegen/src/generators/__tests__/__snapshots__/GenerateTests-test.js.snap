@@ -458,6 +458,13 @@ TEST(StringPropComponentProps_accessibilityHint, etc) {
   auto const &rawProps = RawProps(folly::dynamic::object(\\"accessibilityHint\\", \\"foo\\"));
 
   StringPropComponentProps(sourceProps, rawProps);
+}
+
+TEST(StringPropComponentProps_accessibilityRole, etc) {
+  auto const &sourceProps = StringPropComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"accessibilityRole\\", \\"foo\\"));
+
+  StringPropComponentProps(sourceProps, rawProps);
 }",
 }
 `;

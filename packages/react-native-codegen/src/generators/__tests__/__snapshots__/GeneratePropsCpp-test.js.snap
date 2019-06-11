@@ -387,7 +387,8 @@ StringPropComponentProps::StringPropComponentProps(
     const StringPropComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    accessibilityHint(convertRawProp(rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, accessibilityHint))
+    accessibilityHint(convertRawProp(rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, accessibilityHint)),
+    accessibilityRole(convertRawProp(rawProps, \\"accessibilityRole\\", sourceProps.accessibilityRole, accessibilityRole))
       {}
 
 } // namespace react

@@ -140,6 +140,9 @@ function convertDefaultTypeToString(componentName: string, prop): string {
     case 'BooleanTypeAnnotation':
       return String(typeAnnotation.default);
     case 'StringTypeAnnotation':
+      if (typeAnnotation.default == null) {
+        return '';
+      }
       return `"${typeAnnotation.default}"`;
     case 'Int32TypeAnnotation':
       return String(typeAnnotation.default);

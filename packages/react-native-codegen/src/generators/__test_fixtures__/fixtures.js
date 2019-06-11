@@ -110,6 +110,14 @@ const STRING_PROP: SchemaType = {
                 default: '',
               },
             },
+            {
+              name: 'accessibilityRole',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+                default: null,
+              },
+            },
           ],
         },
       },
