@@ -314,9 +314,6 @@ RCT_EXPORT_MODULE()
       UITextField * portTextField = textfields[1];
       UITextField * bundleRootTextField = textfields[2];
       NSString * bundleRoot = bundleRootTextField.text;
-      if(bundleRoot.length == 0){
-        bundleRoot = @"index";
-      }
       if(ipTextField.text.length == 0 && portTextField.text.length == 0) {
         [weakSelf setDefaultJSBundle];
         return;
@@ -331,7 +328,10 @@ RCT_EXPORT_MODULE()
                                                           ipTextField.text, portNumber.intValue];
       __strong RCTBridge *strongBridge = bridge;
       if (strongBridge) {
-        strongBridge.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:bundleRoot fallbackResource:nil];
+        NSURL *bundleURL = bundleRoot.length
+          ? [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:bundleRoot fallbackResource:nil]
+          : [strongBridge.delegate sourceURLForBridge:strongBridge];
+        strongBridge.bundleURL = bundleURL;
         [strongBridge reload];
       }
     }]];
