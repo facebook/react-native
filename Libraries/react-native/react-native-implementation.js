@@ -136,15 +136,6 @@ module.exports = {
   get View() {
     return require('../Components/View/View');
   },
-  get ViewPagerAndroid() {
-    warnOnce(
-      'viewpager-moved',
-      'ViewPagerAndroid has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-viewpager',
-    );
-    return require('../Components/ViewPager/ViewPagerAndroid');
-  },
   get VirtualizedList() {
     return require('../Lists/VirtualizedList');
   },
@@ -414,6 +405,19 @@ if (__DEV__) {
         'ImageEditor has been removed from React Native. ' +
           "It can now be installed and imported from 'react-native-image-editor' instead of 'react-native'. " +
           'See https://github.com/react-native-community/react-native-image-editor',
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access ViewPagerAndroid.
+  Object.defineProperty(module.exports, 'ViewPagerAndroid', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'ViewPagerAndroid has been removed from React Native. ' +
+          "It can now be installed and imported from 'react-native-viewpager' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-viewpager',
       );
     },
   });

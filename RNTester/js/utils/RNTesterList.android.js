@@ -101,10 +101,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     key: 'ViewExample',
     module: require('../examples/View/ViewExample'),
   },
-  {
-    key: 'ViewPagerAndroidExample',
-    module: require('../examples/ViewPagerAndroid/ViewPagerAndroidExample'),
-  },
 ];
 
 const APIExamples: Array<RNTesterExample> = [
