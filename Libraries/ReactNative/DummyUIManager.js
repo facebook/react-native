@@ -11,9 +11,10 @@
 
 module.exports = {
   getViewManagerConfig: (viewManagerName: string) => {
-    throw new Error(
-      'Attempting to get config for view manager ' + viewManagerName,
+    console.warn(
+      'Attempting to get config for view manager: ' + viewManagerName,
     );
+    return null;
   },
   getConstants: () => ({}),
   getConstantsForViewManager: (viewManagerName: string) => {},
