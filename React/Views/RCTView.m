@@ -835,10 +835,12 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
 #endif // ]TODO(macOS ISS#2323203)
   if (RCTRunningInTestEnvironment()) {
     const CGSize size = self.bounds.size;
-    UIGraphicsBeginImageContextWithOptions(size, NO, scale); // TODO(macOS ISS#2323203)
-    [image drawInRect:(CGRect){CGPointZero, size}];
-    image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
+    if (size.width > 0 && size.height > 0) { // TODO(OSS Candidate ISS#2710739)
+      UIGraphicsBeginImageContextWithOptions(size, NO, scale); // TODO(macOS ISS#2323203)
+      [image drawInRect:(CGRect){CGPointZero, size}];
+      image = UIGraphicsGetImageFromCurrentImageContext();
+      UIGraphicsEndImageContext();
+    } // TODO(OSS Candidate ISS#2710739)
     contentsCenter = CGRectMake(0, 0, 1, 1);
   }
 
