@@ -79,10 +79,31 @@ jobs:
           filename: npm
           arguments: 'config set $(publishnpmfeed)/registry/:_authToken $(npmTokenOffice)'
 
-      - task: CmdLine@2
-        displayName: Do Publish
+      - task: Gradle@1
+        displayName: gradlew installArchives
         inputs:
-          script: node .ado/publish.js
+          gradleWrapperFile: gradlew
+          # workingDirectory: src\react-native\
+          options: -Pparam="excludeLibs"
+          tasks: installArchives
+          publishJUnitResults: false
+          #testResultsFiles: '**/TEST-*.xml' # Required when publishJUnitResults == True
+          #testRunTitle: # Optional
+          #codeCoverageToolOption: 'None' # Optional. Options: none, cobertura, jaCoCo
+          #codeCoverageClassFilesDirectories: 'build/classes/main/' # Required when codeCoverageToolOption == False
+          #codeCoverageClassFilter: # Optional
+          #codeCoverageFailIfEmpty: false # Optional
+          #javaHomeOption: 'JDKVersion' # Options: jDKVersion, path
+          #jdkVersionOption: 'default' # Optional. Options: default, 1.11, 1.10, 1.9, 1.8, 1.7, 1.6
+          #jdkDirectory: # Required when javaHomeOption == Path
+          #jdkArchitectureOption: 'x64' # Optional. Options: x86, x64
+          #gradleOptions: '-Xmx1024m' # Optional
+          #sonarQubeRunAnalysis: false
+          #sqGradlePluginVersionChoice: 'specify' # Required when sonarQubeRunAnalysis == True# Options: specify, build
+          #sonarQubeGradlePluginVersion: '2.6.1' # Required when sonarQubeRunAnalysis == True && SqGradlePluginVersionChoice == Specify
+          #checkStyleRunAnalysis: false # Optional
+          #findBugsRunAnalysis: false # Optional
+          #pmdRunAnalysis: false # Optional
 
       - task: CmdLine@1
         displayName: 'npm unauth'
@@ -105,3 +126,20 @@ jobs:
           command: push
           packagesToPush: '$(System.DefaultWorkingDirectory)/OfficeReact.Android*.nupkg'
           publishVstsFeed: '86ec7889-a365-4cd1-90df-6e18cc2ea59f'
+
+      - task: CmdLine@1
+        displayName: 'npm auth'
+        inputs:
+          filename: npm
+          arguments: 'config set $(publishnpmfeed)/registry/:_authToken $(npmTokenOffice)'
+
+      - task: CmdLine@2
+        displayName: Do Publish
+        inputs:
+          script: node .ado/publish.js
+
+      - task: CmdLine@1
+        displayName: 'npm unauth'
+        inputs:
+          filename: npm
+          arguments: 'config set $(publishnpmfeed)/registry/:_authToken XXXXX'
