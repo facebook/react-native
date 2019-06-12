@@ -27,6 +27,7 @@ const ArrayPropsNativeComponentViewConfig = {
     colors: { process: require('processColorArray') },
     srcs: true,
     points: true,
+    sizes: true,
   },
 };
 

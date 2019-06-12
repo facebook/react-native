@@ -242,10 +242,10 @@ type ModuleProps = $ReadOnly<{|
   array_int32_optional_both?: ?$ReadOnlyArray<Int32>,
 
   // String enum props
-  array_enum_required: $ReadOnlyArray<('small' | 'large')>,
-  array_enum_optional_key?: $ReadOnlyArray<('small' | 'large')>,
-  array_enum_optional_value: ?$ReadOnlyArray<('small' | 'large')>,
-  array_enum_optional_both?: ?$ReadOnlyArray<('small' | 'large')>,
+  array_enum_required: WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
+  array_enum_optional_key?: WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
+  array_enum_optional_value: ?WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
+  array_enum_optional_both?: ?WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
 
   // ImageSource props
   array_image_required: $ReadOnlyArray<ImageSource>,

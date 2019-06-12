@@ -407,6 +407,25 @@ const ARRAY_PROPS: SchemaType = {
                 },
               },
             },
+            {
+              name: 'sizes',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'StringEnumTypeAnnotation',
+                  default: 'small',
+                  options: [
+                    {
+                      name: 'small',
+                    },
+                    {
+                      name: 'large',
+                    },
+                  ],
+                },
+              },
+            },
           ],
         },
       },

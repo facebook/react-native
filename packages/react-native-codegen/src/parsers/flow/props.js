@@ -12,7 +12,7 @@
 
 import type {PropTypeShape} from '../../CodegenSchema.js';
 
-function getTypeAnnotationForArray(name, typeAnnotation) {
+function getTypeAnnotationForArray(name, typeAnnotation, defaultValue) {
   if (typeAnnotation.type === 'NullableTypeAnnotation') {
     throw new Error(
       'Nested optionals such as "$ReadOnlyArray<?boolean>" are not supported, please declare optionals at the top level of value definitions as in "?$ReadOnlyArray<boolean>"',
@@ -66,8 +66,12 @@ function getTypeAnnotationForArray(name, typeAnnotation) {
         type: 'StringTypeAnnotation',
       };
     case 'UnionTypeAnnotation':
+      if (defaultValue == null) {
+        throw new Error(`A default array enum value is required for "${name}"`);
+      }
       return {
         type: 'StringEnumTypeAnnotation',
+        default: defaultValue,
         options: typeAnnotation.types.map(option => ({name: option.value})),
       };
     default:
@@ -85,6 +89,7 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
       elementType: getTypeAnnotationForArray(
         name,
         typeAnnotation.typeParameters.params[0],
+        defaultValue,
       ),
     };
   }

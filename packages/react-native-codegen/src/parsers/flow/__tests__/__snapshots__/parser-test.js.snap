@@ -557,6 +557,7 @@ Object {
               "optional": false,
               "typeAnnotation": Object {
                 "elementType": Object {
+                  "default": "small",
                   "options": Array [
                     Object {
                       "name": "small",
@@ -575,6 +576,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "elementType": Object {
+                  "default": "small",
                   "options": Array [
                     Object {
                       "name": "small",
@@ -593,6 +595,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "elementType": Object {
+                  "default": "small",
                   "options": Array [
                     Object {
                       "name": "small",
@@ -611,6 +614,7 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "elementType": Object {
+                  "default": "small",
                   "options": Array [
                     Object {
                       "name": "small",

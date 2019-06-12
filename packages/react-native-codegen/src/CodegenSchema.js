@@ -83,6 +83,7 @@ type PropTypeTypeAnnotation =
           |}>
         | $ReadOnly<{|
             type: 'StringEnumTypeAnnotation',
+            default: string,
             options: $ReadOnlyArray<{|
               name: string,
             |}>,
