@@ -10,7 +10,7 @@
 
 'use strict';
 
-import NativeModules from '../BatchedBridge/NativeModules';
+const NativeModules = require('../BatchedBridge/NativeModules');
 import type {TurboModule} from './RCTExport';
 import invariant from 'invariant';
 
