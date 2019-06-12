@@ -399,6 +399,29 @@ jobs:
             # kill whatever is occupying port 5555 (web socket server)
             lsof -i tcp:5555 | awk 'NR!=1 {print $2}' | xargs kill
 
+      - run:
+          name: Fetch CocoaPods Specs
+          command: |
+            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+
+      - run:
+          name: Generate RNTesterPods workspace using CocoaPods
+          command: cd RNTester && pod install
+
+      - run:
+          name: Build RNTesterPods
+          command: |
+            source ./scripts/.tests.env
+            xcodebuild \
+              -workspace RNTester/RNTesterPods.xcworkspace \
+              -scheme Pods-RNTester \
+              -sdk iphonesimulator \
+              -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
+              -UseModernBuildSystem=NO \
+              build | \
+            xcpretty --report junit --output "$REPORTS_DIR/junit/ios_cocoapod_build/results.xml" && \
+            exit "${PIPESTATUS[0]}"
+
       - store_test_results:
           path: ~/reports/junit
 

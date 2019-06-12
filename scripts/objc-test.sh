@@ -69,6 +69,15 @@ buildProject() {
     build
 }
 
+buildWorkspace() {
+  xcodebuild \
+    -workspace "RNTester/RNTesterPods.xcworkspace" \
+    -scheme "Pods-RNTester" \
+    -sdk "$SDK" \
+    -UseModernBuildSystem="$USE_MODERN_BUILD_SYSTEM" \
+    build
+}
+
 xcprettyFormat() {
   if [ "$CI" ]; then
     # Circle CI expects JUnit reports to be available here
@@ -97,7 +106,6 @@ main() {
   # If first argument is "test", actually start the packager and run tests.
   # Otherwise, just build RNTester and exit
   if [ "$1" = "test" ]; then
-
     # Start the packager
     yarn start --max-workers=1 || echo "Can't start packager automatically" &
     # Start the WebSocket test server
@@ -112,6 +120,13 @@ main() {
     else
       echo 'Warning: xcpretty is not installed. Install xcpretty to generate JUnit reports.'
       runTests
+    fi
+  elif [ "$1" = "pods" ]; then
+    # Build Pods workspace
+    if [ -x "$(command -v xcpretty)" ]; then
+      buildWorkspace | xcprettyFormat && exit "${PIPESTATUS[0]}"
+    else
+      buildWorkspace
     fi
   else
     # Build without running tests.
