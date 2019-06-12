@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <vector>
+#include "../YGEnums.h"
 
 struct YGConfig;
 struct YGNode;
@@ -85,6 +86,12 @@ struct Event::TypedData<Event::LayoutPassEnd> {
 template <>
 struct Event::TypedData<Event::NodeMeasure> {
   void* layoutContext;
+  float width;
+  YGMeasureMode widthMeasureMode;
+  float height;
+  YGMeasureMode heightMeasureMode;
+  float measuredWidth;
+  float measuredHeight;
 };
 
 template <>

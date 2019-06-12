@@ -1636,7 +1636,15 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
         layoutContext);
 
 #ifdef YG_ENABLE_EVENTS
-    Event::publish<Event::NodeMeasure>(node, {layoutContext});
+    Event::publish<Event::NodeMeasure>(
+        node,
+        {layoutContext,
+         innerWidth,
+         widthMeasureMode,
+         innerHeight,
+         heightMeasureMode,
+         measuredSize.width,
+         measuredSize.height});
 #endif
 
     node->setLayoutMeasuredDimension(
