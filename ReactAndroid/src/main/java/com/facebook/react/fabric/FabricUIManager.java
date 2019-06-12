@@ -21,8 +21,6 @@ import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
-import com.facebook.debug.holder.PrinterHolder;
-import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -72,8 +70,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   public static final String TAG = FabricUIManager.class.getSimpleName();
-  public static final boolean DEBUG =
-      PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
+  public static final boolean DEBUG = true;
+//      PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
   private static final int FRAME_TIME_MS = 16;
   private static final int MAX_TIME_IN_FRAME_FOR_NON_BATCHED_OPERATIONS_MS = 8;
   private static final int PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY = 250;
