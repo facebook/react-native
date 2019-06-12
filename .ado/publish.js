@@ -61,8 +61,7 @@ function doPublish() {
 
   if (!onlyTagSource) {
     // -------- Generating Android Artifacts with JavaDoc
-    // -Pparam="excludeLibs" - This argument will not package the DSOs in ReactAndroid aar
-    exec("gradlew -Pparam=\"excludeLibs\" installArchives");
+    exec("gradlew installArchives");
 
     // undo uncommenting javadoc setting
     exec("git checkout ReactAndroid/gradle.properties");
