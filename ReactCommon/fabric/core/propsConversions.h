@@ -8,6 +8,7 @@
 #pragma once
 
 #include <better/optional.h>
+#include <folly/Likely.h>
 #include <folly/dynamic.h>
 #include <react/core/RawProps.h>
 #include <react/graphics/Color.h>
@@ -53,15 +54,15 @@ T convertRawProp(
     U const &defaultValue = U(),
     char const *namePrefix = nullptr,
     char const *nameSuffix = nullptr) {
-  const auto rawValue = rawProps.at(name, namePrefix, nameSuffix);
+  const auto *rawValue = rawProps.at(name, namePrefix, nameSuffix);
 
-  if (!rawValue) {
+  if (LIKELY(rawValue == nullptr)) {
     return sourceValue;
   }
 
   // Special case: `null` always means "the prop was removed, use default
   // value".
-  if (!rawValue->hasValue()) {
+  if (UNLIKELY(!rawValue->hasValue())) {
     return defaultValue;
   }
 
@@ -78,15 +79,15 @@ static better::optional<T> convertRawProp(
     better::optional<T> const &defaultValue = {},
     char const *namePrefix = nullptr,
     char const *nameSuffix = nullptr) {
-  const auto rawValue = rawProps.at(name, namePrefix, nameSuffix);
+  const auto *rawValue = rawProps.at(name, namePrefix, nameSuffix);
 
-  if (!rawValue) {
+  if (LIKELY(rawValue == nullptr)) {
     return sourceValue;
   }
 
   // Special case: `null` always means `the prop was removed, use default
   // value`.
-  if (!rawValue->hasValue()) {
+  if (UNLIKELY(!rawValue->hasValue())) {
     return defaultValue;
   }
 
