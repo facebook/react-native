@@ -68,7 +68,7 @@ public abstract class BaseJavaModule implements NativeModule {
     return false;
   }
 
-  // Cleanup Logic for TurboModuels
+  // Cleanup Logic for TurboModules
   public void invalidate() {
     // Do nothing
   }
