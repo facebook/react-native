@@ -10,7 +10,7 @@
 'use strict';
 
 const Platform = require('Platform');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
 

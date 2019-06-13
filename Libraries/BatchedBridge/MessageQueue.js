@@ -14,7 +14,7 @@ const ErrorUtils = require('ErrorUtils');
 const Systrace = require('Systrace');
 
 const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const stringifySafe = require('stringifySafe');
 
 export type SpyData = {

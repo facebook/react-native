@@ -5,12 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-import type {Layout, LayoutEvent} from 'CoreEventTypes';
+import type {
+  PressEvent,
+  Layout,
+  LayoutEvent,
+  SyntheticEvent,
+} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type React from 'React';
 import type {ViewStyleProp} from 'StyleSheet';
@@ -37,7 +42,7 @@ type DirectEventProps = $ReadOnly<{|
    *
    * @platform ios
    */
-  onAccessibilityAction?: ?Function,
+  onAccessibilityAction?: ?(string) => void,
 
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -45,21 +50,21 @@ type DirectEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onaccessibilitytap
    */
-  onAccessibilityTap?: ?Function,
+  onAccessibilityTap?: ?() => void,
 
   /**
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs accessibility double click gesture.
    */
-  onDoubleClick?: ?Function, // TODO(macOS ISS#2323203)
+  onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs accessibility key down gesture.
    */
-  onKeyDown?: ?Function, // TODO(macOS ISS#2323203)
+  onKeyDown?: ?(event: SyntheticEvent<{key: string}>) => mixed, // TODO(macOS ISS#2323203)
 
-  onMouseEnter?: Function, // [TODO(macOS ISS#2323203)
+  onMouseEnter?: (event: SyntheticEvent<{}>) => mixed, // [TODO(macOS ISS#2323203)
 
   /**
    * Invoked on mount and layout changes with:
@@ -80,18 +85,26 @@ type DirectEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onmagictap
    */
-  onMagicTap?: ?Function,
+  onMagicTap?: ?() => void,
+
+  /**
+   * When `accessible` is `true`, the system will invoke this function when the
+   * user performs the escape gesture.
+   *
+   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityescape
+   */
+  onAccessibilityEscape?: ?() => void,
 |}>;
 
 type TouchEventProps = $ReadOnly<{|
-  onTouchCancel?: ?Function,
-  onTouchCancelCapture?: ?Function,
-  onTouchEnd?: ?Function,
-  onTouchEndCapture?: ?Function,
-  onTouchMove?: ?Function,
-  onTouchMoveCapture?: ?Function,
-  onTouchStart?: ?Function,
-  onTouchStartCapture?: ?Function,
+  onTouchCancel?: ?(e: PressEvent) => void,
+  onTouchCancelCapture?: ?(e: PressEvent) => void,
+  onTouchEnd?: ?(e: PressEvent) => void,
+  onTouchEndCapture?: ?(e: PressEvent) => void,
+  onTouchMove?: ?(e: PressEvent) => void,
+  onTouchMoveCapture?: ?(e: PressEvent) => void,
+  onTouchStart?: ?(e: PressEvent) => void,
+  onTouchStartCapture?: ?(e: PressEvent) => void,
 |}>;
 
 /**
@@ -109,7 +122,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onmoveshouldsetresponder
    */
-  onMoveShouldSetResponder?: ?Function,
+  onMoveShouldSetResponder?: ?(e: PressEvent) => boolean,
 
   /**
    * If a parent `View` wants to prevent a child `View` from becoming responder
@@ -120,7 +133,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onMoveShouldsetrespondercapture
    */
-  onMoveShouldSetResponderCapture?: ?Function,
+  onMoveShouldSetResponderCapture?: ?(e: PressEvent) => boolean,
 
   /**
    * The View is now responding for touch events. This is the time to highlight
@@ -129,9 +142,12 @@ type GestureResponderEventProps = $ReadOnly<{|
    * `View.props.onResponderGrant: (event) => {}`, where `event` is a synthetic
    * touch event as described above.
    *
+   * PanResponder includes a note `// TODO: t7467124 investigate if this can be removed` that
+   * should help fixing this return type.
+   *
    * See http://facebook.github.io/react-native/docs/view.html#onrespondergrant
    */
-  onResponderGrant?: ?Function,
+  onResponderGrant?: ?(e: PressEvent) => void | boolean,
 
   /**
    * The user is moving their finger.
@@ -141,7 +157,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onrespondermove
    */
-  onResponderMove?: ?Function,
+  onResponderMove?: ?(e: PressEvent) => void,
 
   /**
    * Another responder is already active and will not release it to that `View`
@@ -152,7 +168,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onresponderreject
    */
-  onResponderReject?: ?Function,
+  onResponderReject?: ?(e: PressEvent) => void,
 
   /**
    * Fired at the end of the touch.
@@ -162,10 +178,10 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onresponderrelease
    */
-  onResponderRelease?: ?Function,
+  onResponderRelease?: ?(e: PressEvent) => void,
 
-  onResponderStart?: ?Function,
-  onResponderEnd?: ?Function,
+  onResponderStart?: ?(e: PressEvent) => void,
+  onResponderEnd?: ?(e: PressEvent) => void,
 
   /**
    * The responder has been taken from the `View`. Might be taken by other
@@ -178,7 +194,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onresponderterminate
    */
-  onResponderTerminate?: ?Function,
+  onResponderTerminate?: ?(e: PressEvent) => void,
 
   /**
    * Some other `View` wants to become responder and is asking this `View` to
@@ -189,7 +205,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onresponderterminationrequest
    */
-  onResponderTerminationRequest?: ?Function,
+  onResponderTerminationRequest?: ?(e: PressEvent) => boolean,
 
   /**
    * Does this view want to become responder on the start of a touch?
@@ -199,7 +215,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onstartshouldsetresponder
    */
-  onStartShouldSetResponder?: ?Function,
+  onStartShouldSetResponder?: ?(e: PressEvent) => boolean,
 
   /**
    * If a parent `View` wants to prevent a child `View` from becoming responder
@@ -210,12 +226,25 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onstartshouldsetrespondercapture
    */
-  onStartShouldSetResponderCapture?: ?Function,
+  onStartShouldSetResponderCapture?: ?(e: PressEvent) => boolean,
 |}>;
 
+type AndroidDrawableThemeAttr = $ReadOnly<{|
+  type: 'ThemeAttrAndroid',
+  attribute: string,
+|}>;
+
+type AndroidDrawableRipple = $ReadOnly<{|
+  type: 'RippleAndroid',
+  color?: ?number,
+  borderless?: ?boolean,
+|}>;
+
+type AndroidDrawable = AndroidDrawableThemeAttr | AndroidDrawableRipple;
+
 type AndroidViewProps = $ReadOnly<{|
-  nativeBackgroundAndroid?: ?Object,
-  nativeForegroundAndroid?: ?Object,
+  nativeBackgroundAndroid?: ?AndroidDrawable,
+  nativeForegroundAndroid?: ?AndroidDrawable,
 
   /**
    * Whether this `View` should render itself (and all of its children) into a
@@ -264,7 +293,7 @@ type AndroidViewProps = $ReadOnly<{|
    * @platform android
    */
 
-  onClick?: ?Function, // TODO(android ISS)
+  onClick?: ?(event: PressEvent) => mixed, // TODO(android ISS)
   /**
    * Indicates to accessibility services to treat UI component like a
    * native one. Works for Android only.
@@ -291,7 +320,7 @@ type AndroidViewProps = $ReadOnly<{|
    *
    * @platform android
    */
-  onFocusChange?: ?Function, // TODO(android ISS)
+  onFocusChange?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(android ISS)
 
   /**
    * Controls how view is important for accessibility which is if it
@@ -363,9 +392,9 @@ type IOSViewProps = $ReadOnly<{|
    *
    * @platform ios
    */
-  onAccessibilityAction?: ?Function,
+  onAccessibilityAction?: ?(event: SyntheticEvent<{}>) => mixed,
 
-  onDoubleClick?: ?Function, // TODO(macOS ISS#2323203)
+  onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -373,7 +402,7 @@ type IOSViewProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onaccessibilitytap
    */
-  onAccessibilityTap?: ?Function,
+  onAccessibilityTap?: ?() => void,
 
   /**
    * When `accessible` is `true`, the system will invoke this function when the
@@ -487,42 +516,33 @@ export type ViewProps = $ReadOnly<{|
    */
   removeClippedSubviews?: ?boolean,
 
-  onKeyDown?: ?Function, // TODO(macOS ISS#2323203)
-
-  /**
-   * Fired when a pointing device is moved over the view
-   *
-   * @platform macos
-   */
-  onMouseEnter?: ?Function, // TODO(macOS ISS#2323203)
-
   /**
    * Fired when a pointing device is moved out the view
    *
    * @platform macos
    */
-  onMouseLeave?: ?Function, // TODO(macOS ISS#2323203)
+  onMouseLeave?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * Fired when a dragged element enters a valid drop target
    *
    * @platform macos
    */
-  onDragEnter?: ?Function, // TODO(macOS ISS#2323203)
+  onDragEnter?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * Fired when a dragged element leaves a valid drop target
    *
    * @platform macos
    */
-  onDragLeave?: ?Function, // TODO(macOS ISS#2323203)
+  onDragLeave?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * Fired when an element is dropped on a valid drop target
    *
    * @platform macos
    */
-  onDrop?: ?Function, // TODO(macOS ISS#2323203)
+  onDrop?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * Specifies the Tooltip for the view
@@ -547,7 +567,7 @@ export type ViewProps = $ReadOnly<{|
    * @platform macos
    * @platform ios
    */
-  onFocus?: ?Function, // TODO(macOS ISS#2323203)
+  onFocus?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * Fired when an element loses focus
@@ -555,7 +575,7 @@ export type ViewProps = $ReadOnly<{|
    * @platform macos
    * @platform ios
    */
-  onBlur?: ?Function, // TODO(macOS ISS#2323203)
+  onBlur?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
   /**
    * Enables Dran'n'Drop Support for certain types of dragged types

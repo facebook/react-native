@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   list: {
     bottom: 0,
     position: 'absolute',
-    width: Platform.OS === 'win32' ? 270: '100%',
+    width: Platform.OS === 'win32' ? 270 : '100%',
   },
   dismissAll: {
     bottom: Platform.OS === 'win32' ? undefined : '100%',
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
     paddingEnd: 4,
     position: 'absolute',
-    width: Platform.OS === 'win32' ? 350: '100%',
+    width: Platform.OS === 'win32' ? 350 : '100%',
   },
   safeArea: {
     backgroundColor: YellowBoxStyle.getBackgroundColor(0.95),

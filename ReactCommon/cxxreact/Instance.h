@@ -77,6 +77,7 @@ public:
                          std::unique_ptr<const JSBigString> jsonValue);
   virtual void *getJavaScriptContext();
   virtual bool isInspectable();
+  bool isBatchActive();
   virtual void callJSFunction(std::string &&module, std::string &&method,
                       folly::dynamic &&params);
   virtual void callJSCallback(uint64_t callbackId, folly::dynamic &&params);

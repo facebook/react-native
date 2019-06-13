@@ -12,7 +12,6 @@
 const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const DocumentSelectionState = require('DocumentSelectionState');
-const EventEmitter = require('EventEmitter');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const PropTypes = require('prop-types');
@@ -26,8 +25,7 @@ const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
 
 const createReactClass = require('create-react-class');
-const emptyFunction = require('fbjs/lib/emptyFunction');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const requireNativeComponent = require('requireNativeComponent');
 const warning = require('fbjs/lib/warning');
 
@@ -245,6 +243,21 @@ type IOSProps = $ReadOnly<{|
 |}>;
 
 type AndroidProps = $ReadOnly<{|
+  autoCompleteType?: ?(
+    | 'cc-csc'
+    | 'cc-exp'
+    | 'cc-exp-month'
+    | 'cc-exp-year'
+    | 'cc-number'
+    | 'email'
+    | 'name'
+    | 'password'
+    | 'postal-code'
+    | 'street-address'
+    | 'tel'
+    | 'username'
+    | 'off'
+  ),
   returnKeyLabel?: ?string,
   numberOfLines?: ?number,
   disableFullscreenUI?: ?boolean,
@@ -252,6 +265,13 @@ type AndroidProps = $ReadOnly<{|
   underlineColorAndroid?: ?ColorValue,
   inlineImageLeft?: ?string,
   inlineImagePadding?: ?number,
+  importantForAutofill?: ?(
+    | 'auto'
+    | 'no'
+    | 'noExcludeDescendants'
+    | 'yes'
+    | 'yesExcludeDescendants'
+  ),
 |}>;
 
 type Props = $ReadOnly<{|
@@ -268,17 +288,17 @@ type Props = $ReadOnly<{|
   returnKeyType?: ?ReturnKeyType,
   maxLength?: ?number,
   multiline?: ?boolean,
-  onBlur?: ?(e: BlurEvent) => void,
-  onFocus?: ?(e: FocusEvent) => void,
-  onChange?: ?(e: ChangeEvent) => void,
-  onChangeText?: ?(text: string) => void,
-  onContentSizeChange?: ?(e: ContentSizeChangeEvent) => void,
-  onTextInput?: ?(e: TextInputEvent) => void,
-  onEndEditing?: ?(e: EditingEvent) => void,
-  onSelectionChange?: ?(e: SelectionChangeEvent) => void,
-  onSubmitEditing?: ?(e: EditingEvent) => void,
-  onKeyPress?: ?(e: KeyPressEvent) => void,
-  onScroll?: ?(e: ScrollEvent) => void,
+  onBlur?: ?(e: BlurEvent) => mixed,
+  onFocus?: ?(e: FocusEvent) => mixed,
+  onChange?: ?(e: ChangeEvent) => mixed,
+  onChangeText?: ?(text: string) => mixed,
+  onContentSizeChange?: ?(e: ContentSizeChangeEvent) => mixed,
+  onTextInput?: ?(e: TextInputEvent) => mixed,
+  onEndEditing?: ?(e: EditingEvent) => mixed,
+  onSelectionChange?: ?(e: SelectionChangeEvent) => mixed,
+  onSubmitEditing?: ?(e: EditingEvent) => mixed,
+  onKeyPress?: ?(e: KeyPressEvent) => mixed,
+  onScroll?: ?(e: ScrollEvent) => mixed,
   placeholder?: ?Stringish,
   placeholderTextColor?: ?ColorValue,
   secureTextEntry?: ?boolean,
@@ -295,6 +315,8 @@ type Props = $ReadOnly<{|
   caretHidden?: ?boolean,
   contextMenuHidden?: ?boolean,
 |}>;
+
+const emptyFunctionThatReturnsTrue = () => true;
 
 /**
  * A foundational component for inputting text into the app via a
@@ -432,6 +454,45 @@ const TextInput = createReactClass({
       'sentences',
       'words',
       'characters',
+    ]),
+    /**
+     * Determines which content to suggest on auto complete, e.g.`username`.
+     * To disable auto complete, use `off`.
+     *
+     * *Android Only*
+     *
+     * The following values work on Android only:
+     *
+     * - `username`
+     * - `password`
+     * - `email`
+     * - `name`
+     * - `tel`
+     * - `street-address`
+     * - `postal-code`
+     * - `cc-number`
+     * - `cc-csc`
+     * - `cc-exp`
+     * - `cc-exp-month`
+     * - `cc-exp-year`
+     * - `off`
+     *
+     * @platform android
+     */
+    autoCompleteType: PropTypes.oneOf([
+      'cc-csc',
+      'cc-exp',
+      'cc-exp-month',
+      'cc-exp-year',
+      'cc-number',
+      'email',
+      'name',
+      'password',
+      'postal-code',
+      'street-address',
+      'tel',
+      'username',
+      'off',
     ]),
     /**
      * If `false`, disables auto-correct. The default value is `true`.
@@ -804,6 +865,15 @@ const TextInput = createReactClass({
     inlineImagePadding: PropTypes.number,
 
     /**
+     * If `true`, allows TextInput to pass touch events to the parent component.
+     * This allows components such as SwipeableListView to be swipeable from the TextInput on iOS,
+     * as is the case on Android by default.
+     * If `false`, TextInput always asks to handle the input (except when disabled).
+     * @platform ios
+     */
+    rejectResponderTermination: PropTypes.bool,
+
+    /**
      * Determines the types of data converted to clickable URLs in the text input.
      * Only valid if `multiline={true}` and `editable={false}`.
      * By default no data types are detected.
@@ -900,6 +970,7 @@ const TextInput = createReactClass({
   getDefaultProps() {
     return {
       allowFontScaling: true,
+      rejectResponderTermination: true,
       underlineColorAndroid: 'transparent',
     };
   },
@@ -941,24 +1012,8 @@ const TextInput = createReactClass({
       TextInputState.registerInput(tag);
     }
 
-    if (this.context.focusEmitter) {
-      this._focusSubscription = this.context.focusEmitter.addListener(
-        'focus',
-        el => {
-          if (this === el) {
-            this._rafId = requestAnimationFrame(this.focus);
-          } else if (this.isFocused()) {
-            this.blur();
-          }
-        },
-      );
-      if (this.props.autoFocus) {
-        this.context.onFocusRequested(this);
-      }
-    } else {
-      if (this.props.autoFocus) {
-        this._rafId = requestAnimationFrame(this.focus);
-      }
+    if (this.props.autoFocus) {
+      this._rafId = requestAnimationFrame(this.focus);
     }
   },
 
@@ -974,11 +1029,6 @@ const TextInput = createReactClass({
     if (this._rafId != null) {
       cancelAnimationFrame(this._rafId);
     }
-  },
-
-  contextTypes: {
-    onFocusRequested: PropTypes.func,
-    focusEmitter: PropTypes.instanceOf(EventEmitter),
   },
 
   /**
@@ -1052,7 +1102,7 @@ const TextInput = createReactClass({
           onBlur={this._onBlur}
           onChange={this._onChange}
           onSelectionChange={this._onSelectionChange}
-          onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
+          onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
           text={this._getText()}
         />
       );
@@ -1089,7 +1139,7 @@ const TextInput = createReactClass({
           onContentSizeChange={this.props.onContentSizeChange}
           onSelectionChange={this._onSelectionChange}
           onTextInput={this._onTextInput}
-          onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
+          onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
           text={this._getText()}
           dataDetectorTypes={this.props.dataDetectorTypes}
           onScroll={this._onScroll}
@@ -1143,7 +1193,7 @@ const TextInput = createReactClass({
         onContentSizeChange={this.props.onContentSizeChange}
         onSelectionChange={this._onSelectionChange}
         onTextInput={this._onTextInput}
-        onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
+        onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
         text={this._getText()}
         dataDetectorTypes={this.props.dataDetectorTypes}
         onScroll={this._onScroll}
@@ -1154,7 +1204,7 @@ const TextInput = createReactClass({
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
         onPress={this._onPress}
-        rejectResponderTermination={true}
+        rejectResponderTermination={props.rejectResponderTermination}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
@@ -1343,7 +1393,10 @@ const TextInput = createReactClass({
     }
   },
 
-  _onBlur: function(event: Event) {
+  _onBlur: function(event: BlurEvent) {
+    // This is a hack to fix https://fburl.com/toehyir8
+    // @todo(rsnara) Figure out why this is necessary.
+    // this.blur();
     // [TODO(android ISS) removed: this.blur();
     // Set the focused TextInput field info in TextInputState.
     // Delaying this to onBlur native event ensures that -
@@ -1354,9 +1407,6 @@ const TextInput = createReactClass({
       ReactNative.findNodeHandle(this._inputRef),
     ); // ]TODO(android ISS)
 
-    // This is a hack to fix https://fburl.com/toehyir8
-    // @todo(rsnara) Figure out why this is necessary.
-    this.blur();
     if (this.props.onBlur) {
       this.props.onBlur(event);
     }

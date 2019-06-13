@@ -13,7 +13,7 @@
 
 'use strict';
 
-import type {AlertType, AlertButtonStyle} from 'AlertIOS';
+import type {AlertType, AlertButtonStyle} from 'Alert';
 
 var RCTAlertManager = require('NativeModules').AlertManager;
 

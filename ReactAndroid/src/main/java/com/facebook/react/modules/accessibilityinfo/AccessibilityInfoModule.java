@@ -30,7 +30,7 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
 
     public static final String NAME = "AccessibilityInfo";
 
-    @TargetApi(19)
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     private class ReactTouchExplorationStateChangeListener
             implements AccessibilityManager.TouchExplorationStateChangeListener {
 
@@ -51,7 +51,7 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
         Context appContext = context.getApplicationContext();
         mAccessibilityManager = (AccessibilityManager) appContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
         mEnabled = mAccessibilityManager.isTouchExplorationEnabled();
-        if (Build.VERSION.SDK_INT >= 19) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             mTouchExplorationStateChangeListener = new ReactTouchExplorationStateChangeListener();
         }
     }
@@ -76,7 +76,7 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
 
     @Override
     public void onHostResume() {
-        if (Build.VERSION.SDK_INT >= 19) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             mAccessibilityManager.addTouchExplorationStateChangeListener(
                     mTouchExplorationStateChangeListener);
         }
@@ -85,7 +85,7 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
 
     @Override
     public void onHostPause() {
-        if (Build.VERSION.SDK_INT >= 19) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             mAccessibilityManager.removeTouchExplorationStateChangeListener(
                     mTouchExplorationStateChangeListener);
         }

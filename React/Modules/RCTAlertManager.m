@@ -194,7 +194,9 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   }
   [_alertControllers addObject:alertController];
 
-  [presentingController presentViewController:alertController animated:YES completion:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [presentingController presentViewController:alertController animated:YES completion:nil];
+  });
 #else // [TODO(macOS ISS#2323203)
   
   NSAlert *alert = [[NSAlert alloc] init];

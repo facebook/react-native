@@ -35,10 +35,10 @@ const TEMP = exec('mktemp -d /tmp/react-native-XXXXXXXX').stdout.trim();
 // of react-native, we will create a temp file inside the template
 // and check that it exists after `react-native init
 const MARKER_IOS = exec(
-  `mktemp ${ROOT}/local-cli/templates/HelloWorld/ios/HelloWorld/XXXXXXXX`,
+  `mktemp ${ROOT}/template/ios/HelloWorld/XXXXXXXX`,
 ).stdout.trim();
 const MARKER_ANDROID = exec(
-  `mktemp ${ROOT}/local-cli/templates/HelloWorld/android/XXXXXXXX`,
+  `mktemp ${ROOT}/template/android/XXXXXXXX`,
 ).stdout.trim();
 const numberOfRetries = argv.retries || 1;
 let SERVER_PID;

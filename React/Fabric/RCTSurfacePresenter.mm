@@ -26,6 +26,7 @@
 #import <React/RCTUtils.h>
 #import <react/core/LayoutContext.h>
 #import <react/core/LayoutConstraints.h>
+#import <react/components/root/RootShadowNode.h>
 #import <react/imagemanager/ImageManager.h>
 #import <react/uimanager/ContextContainer.h>
 
@@ -44,14 +45,16 @@ using namespace facebook::react;
 
 @implementation RCTSurfacePresenter {
   std::mutex _schedulerMutex;
+  std::mutex _contextContainerMutex;
   RCTScheduler *_Nullable _scheduler; // Thread-safe. Mutation of the instance variable is protected by `_schedulerMutex`.
   RCTMountingManager *_mountingManager; // Thread-safe.
   RCTSurfaceRegistry *_surfaceRegistry;  // Thread-safe.
   RCTBridge *_bridge; // Unsafe. We are moving away from Bridge.
   RCTBridge *_batchedBridge;
+  std::shared_ptr<const ReactNativeConfig> _reactNativeConfig;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
+- (instancetype)initWithBridge:(RCTBridge *)bridge config:(std::shared_ptr<const ReactNativeConfig>)config
 {
   if (self = [super init]) {
     _bridge = bridge;
@@ -61,6 +64,12 @@ using namespace facebook::react;
 
     _mountingManager = [[RCTMountingManager alloc] init];
     _mountingManager.delegate = self;
+
+    if (config != nullptr) {
+      _reactNativeConfig = config;
+    } else {
+      _reactNativeConfig = std::make_shared<const EmptyReactNativeConfig>();
+    }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleBridgeWillReloadNotification:)
@@ -80,11 +89,20 @@ using namespace facebook::react;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (RCTComponentViewFactory *)componentViewFactory
+{
+  return _mountingManager.componentViewRegistry.componentViewFactory;
+}
+
 #pragma mark - Internal Surface-dedicated Interface
 
 - (void)registerSurface:(RCTFabricSurface *)surface
 {
   [_surfaceRegistry registerSurface:surface];
+}
+
+- (void)startSurface:(RCTFabricSurface *)surface
+{
   [self _startSurface:surface];
 }
 
@@ -153,7 +171,25 @@ using namespace facebook::react;
     return _scheduler;
   }
 
-  auto contextContainer = std::make_shared<ContextContainer>();
+  _scheduler = [[RCTScheduler alloc] initWithContextContainer:self.contextContainer];
+  _scheduler.delegate = self;
+
+  return _scheduler;
+}
+
+@synthesize contextContainer = _contextContainer;
+
+- (SharedContextContainer)contextContainer
+{
+  std::lock_guard<std::mutex> lock(_contextContainerMutex);
+
+  if (_contextContainer) {
+    return _contextContainer;
+  }
+
+  _contextContainer = std::make_shared<ContextContainer>();
+
+  _contextContainer->registerInstance(_reactNativeConfig, "ReactNativeConfig");
 
   auto messageQueueThread = _batchedBridge.jsMessageThread;
   auto runtime = (facebook::jsi::Runtime *)((RCTCxxBridge *)_batchedBridge).runtime;
@@ -173,22 +209,19 @@ using namespace facebook::react;
     return std::make_unique<RuntimeEventBeat>(runtimeExecutor);
   };
 
-  contextContainer->registerInstance<EventBeatFactory>(synchronousBeatFactory, "synchronous");
-  contextContainer->registerInstance<EventBeatFactory>(asynchronousBeatFactory, "asynchronous");
+  _contextContainer->registerInstance<EventBeatFactory>(synchronousBeatFactory, "synchronous");
+  _contextContainer->registerInstance<EventBeatFactory>(asynchronousBeatFactory, "asynchronous");
 
-  contextContainer->registerInstance(runtimeExecutor, "runtime-executor");
+  _contextContainer->registerInstance(runtimeExecutor, "runtime-executor");
 
-  contextContainer->registerInstance(std::make_shared<ImageManager>((__bridge void *)[_bridge imageLoader]));
-
-  _scheduler = [[RCTScheduler alloc] initWithContextContainer:contextContainer];
-  _scheduler.delegate = self;
-
-  return _scheduler;
+  _contextContainer->registerInstance(std::make_shared<ImageManager>((__bridge void *)[_bridge imageLoader]), "ImageManager");
+  return _contextContainer;
 }
 
 - (void)_startSurface:(RCTFabricSurface *)surface
 {
-  [_mountingManager.componentViewRegistry dequeueComponentViewWithName:@"Root" tag:surface.rootTag];
+  [_mountingManager.componentViewRegistry dequeueComponentViewWithComponentHandle:RootShadowNode::Handle()
+                                                                              tag:surface.rootTag];
 
   LayoutContext layoutContext = {
     .pointScaleFactor = RCTScreenScale()
@@ -210,8 +243,11 @@ using namespace facebook::react;
 {
   [self._scheduler stopSurfaceWithSurfaceId:surface.rootTag];
 
-  UIView<RCTComponentViewProtocol> *rootView = [_mountingManager.componentViewRegistry componentViewByTag:surface.rootTag];
-  [_mountingManager.componentViewRegistry enqueueComponentViewWithName:@"Root" tag:surface.rootTag componentView:rootView];
+  UIView<RCTComponentViewProtocol> *rootView =
+    [_mountingManager.componentViewRegistry componentViewByTag:surface.rootTag];
+  [_mountingManager.componentViewRegistry enqueueComponentViewWithComponentHandle:RootShadowNode::Handle()
+                                                                              tag:surface.rootTag
+                                                                    componentView:rootView];
 
   [surface _unsetStage:(RCTSurfaceStagePrepared | RCTSurfaceStageMounted)];
 }
@@ -243,9 +279,9 @@ using namespace facebook::react;
                                             rootTag:rootTag];
 }
 
-- (void)schedulerDidRequestPreliminaryViewAllocationWithComponentName:(NSString *)componentName
+- (void)schedulerOptimisticallyCreateComponentViewWithComponentHandle:(ComponentHandle)componentHandle
 {
-  [_mountingManager preliminaryCreateComponentViewWithName:componentName];
+  [_mountingManager optimisticallyCreateComponentViewWithComponentHandle:componentHandle];
 }
 
 #pragma mark - RCTMountingManagerDelegate
@@ -289,6 +325,7 @@ using namespace facebook::react;
   {
     std::lock_guard<std::mutex> lock(_schedulerMutex);
     _scheduler = nil;
+    _contextContainer = nil;
   }
 }
 

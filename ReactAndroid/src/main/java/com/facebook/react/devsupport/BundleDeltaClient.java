@@ -105,6 +105,10 @@ public abstract class BundleDeltaClient {
           mPostCode = jsonReader.nextString().getBytes();
         } else if (name.equals("modules")) {
           numChangedModules += setModules(jsonReader, mModules);
+        } else if (name.equals("added")) {
+          numChangedModules += setModules(jsonReader, mModules);
+        } else if (name.equals("modified")) {
+          numChangedModules += setModules(jsonReader, mModules);
         } else if (name.equals("deleted")) {
           numChangedModules += removeModules(jsonReader, mModules);
         } else {

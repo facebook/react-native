@@ -66,6 +66,7 @@ Pod::Spec.new do |s|
                               "React/Views/RCTSlider*",
                               "React/Views/RCTSwitch*",
                               "React/Views/RCTWebView*"
+    ss.compiler_flags       = folly_compiler_flags
     ss.header_dir           = "React"
     ss.framework            = "JavaScriptCore"
     ss.libraries            = "stdc++"
@@ -116,6 +117,8 @@ Pod::Spec.new do |s|
     ss.dependency             "React/cxxreact"
     ss.dependency             "React/jsi"
     ss.dependency             "Folly", folly_version
+    ss.dependency             "DoubleConversion"
+    ss.dependency             "glog"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/jsiexecutor/jsireact/*.{cpp,h}"
     ss.private_header_files = "ReactCommon/jsiexecutor/jsireact/*.h"
@@ -125,6 +128,8 @@ Pod::Spec.new do |s|
 
   s.subspec "jsi" do |ss|
     ss.dependency             "Folly", folly_version
+    ss.dependency             "DoubleConversion"
+    ss.dependency             "glog"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/jsi/*.{cpp,h}"
     ss.private_header_files = "ReactCommon/jsi/*.h"
@@ -142,6 +147,8 @@ Pod::Spec.new do |s|
     ss.dependency             "React/jsinspector"
     ss.dependency             "boost-for-react-native", "1.63.0"
     ss.dependency             "Folly", folly_version
+    ss.dependency             "DoubleConversion"
+    ss.dependency             "glog"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/cxxreact/*.{cpp,h}"
     ss.exclude_files        = "ReactCommon/cxxreact/SampleCxxModule.*"

@@ -38,7 +38,9 @@ class ParagraphLocalData : public LocalData {
   SharedTextLayoutManager getTextLayoutManager() const;
   void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
 
+#ifdef ANDROID
   folly::dynamic getDynamic() const override;
+#endif
 
 #pragma mark - DebugStringConvertible
 

@@ -30,13 +30,7 @@ type State = {|
   dataSource: SwipeableListViewDataSource,
 |};
 
-class SwipeableListViewSimpleExample extends React.Component<
-  RNTesterProps,
-  State,
-> {
-  static title = '<SwipeableListView>';
-  static description = 'Performant, scrollable, swipeable list of data.';
-
+class SwipeableListViewExample extends React.Component<RNTesterProps, State> {
   state = {
     dataSource: SwipeableListView.getNewDataSource().cloneWithRowsAndSections(
       ...this._genDataSource({}),
@@ -203,4 +197,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = SwipeableListViewSimpleExample;
+exports.title = '<SwipeableListView>';
+exports.description = 'Performant, scrollable, swipeable list of data.';
+exports.examples = [
+  {
+    title: 'Simple swipable list',
+    render: function(): React.Element<typeof SwipeableListViewExample> {
+      return <SwipeableListViewExample />;
+    },
+  },
+];

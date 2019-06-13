@@ -84,13 +84,18 @@ export type TextLayoutEvent = SyntheticEvent<
 
 export type PressEvent = ResponderSyntheticEvent<
   $ReadOnly<{|
+    altKey: ?boolean, // TODO(macOS)
+    button: ?number, // TODO(macOS)
     changedTouches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
+    ctrlKey: ?boolean,
     force: number,
     identifier: number,
     locationX: number,
     locationY: number,
+    metaKey: ?boolean, // TODO(macOS)
     pageX: number,
     pageY: number,
+    shiftKey: ?boolean, // TODO(macOS)
     target: ?number,
     timestamp: number,
     touches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,

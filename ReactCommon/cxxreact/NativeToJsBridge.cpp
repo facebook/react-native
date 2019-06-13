@@ -37,6 +37,10 @@ public:
   std::shared_ptr<ModuleRegistry> getModuleRegistry() override {
     return m_registry;
   }
+  
+  bool isBatchActive() override {
+    return m_batchHadNativeModuleCalls;
+  }
 
   void callNativeModules(
       JSExecutor& /*executor*/, folly::dynamic&& calls, bool isEndOfBatch) override {
@@ -103,6 +107,7 @@ void NativeToJsBridge::loadApplication(
     uint64_t bundleVersion,
     std::string startupScriptSourceURL,
     std::string&& bytecodeFileName) {
+
   runOnExecutorQueue(
       [this,
        bundleRegistryWrap=folly::makeMoveWrapper(std::move(bundleRegistry)),
@@ -234,6 +239,10 @@ void* NativeToJsBridge::getJavaScriptContext() {
 
 bool NativeToJsBridge::isInspectable() {
   return m_executor->isInspectable();
+}
+  
+bool NativeToJsBridge::isBatchActive() {
+  return m_delegate->isBatchActive();
 }
 
 void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {

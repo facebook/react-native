@@ -34,7 +34,6 @@ class TextLayoutManager {
    * Measures `attributedString` using native text rendering infrastructure.
    */
   Size measure(
-      Tag reactTag,
       AttributedString attributedString,
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;

@@ -82,6 +82,16 @@ class ProgressViewExample extends React.Component<Props, State> {
   }
 }
 
+const styles = StyleSheet.create({
+  container: {
+    marginTop: -20,
+    backgroundColor: 'transparent',
+  },
+  progressView: {
+    marginTop: 20,
+  },
+});
+
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = 'ProgressViewIOS';
@@ -94,13 +104,3 @@ exports.examples = [
     },
   },
 ];
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: -20,
-    backgroundColor: 'transparent',
-  },
-  progressView: {
-    marginTop: 20,
-  },
-});

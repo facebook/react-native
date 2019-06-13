@@ -32,7 +32,7 @@ type PickerItemProps = $ReadOnly<{|
    * The value to be passed to picker's `onValueChange` callback when
    * this item is selected. Can be a string or an integer.
    */
-  value?: any,
+  value?: ?(number | string),
 
   /**
    * Color of this item's text.
@@ -63,14 +63,14 @@ type PickerProps = $ReadOnly<{|
   /**
    * Value matching value of one of the items. Can be a string or an integer.
    */
-  selectedValue?: any,
+  selectedValue?: ?(number | string),
 
   /**
    * Callback for when an item is selected. This is called with the following parameters:
    *   - `itemValue`: the `value` prop of the item that was selected
-   *   - `itemPosition`: the index of the selected item in this picker
+   *   - `itemIndex`: the index of the selected item in this picker
    */
-  onValueChange?: ?(newValue: any, newIndex: number) => mixed,
+  onValueChange?: ?(itemValue: string | number, itemIndex: number) => mixed,
 
   /**
    * If set to false, the picker will be disabled, i.e. the user will not be able to make a

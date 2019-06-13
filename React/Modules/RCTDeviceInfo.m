@@ -144,6 +144,11 @@ NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
+  return [self getConstants];
+}
+
+- (NSDictionary<NSString *, id> *)getConstants
+{
   return @{
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     @"Dimensions": RCTExportedDimensions(_bridge),

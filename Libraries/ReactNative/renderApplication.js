@@ -11,10 +11,11 @@
 'use strict';
 
 const AppContainer = require('AppContainer');
+import PerformanceLogger from 'PerformanceLogger';
 const React = require('React');
 const ReactFabricIndicator = require('ReactFabricIndicator');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 // require BackHandler so it sets the default handler that exits the app if no listeners respond
 require('BackHandler');
@@ -53,11 +54,13 @@ function renderApplication<Props: Object>(
     renderable = <ConcurrentMode>{renderable}</ConcurrentMode>;
   }
 
+  PerformanceLogger.startTimespan('renderApplication_React_render');
   if (fabric) {
     require('ReactFabric').render(renderable, rootTag);
   } else {
     require('ReactNative').render(renderable, rootTag);
   }
+  PerformanceLogger.stopTimespan('renderApplication_React_render');
 }
 
 module.exports = renderApplication;

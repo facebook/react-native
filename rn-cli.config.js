@@ -23,34 +23,43 @@ if (
 ) {
   const sdxHelpers = require('../../scripts/metro-resources');
 
-  let config = sdxHelpers.createConfig({
+  module.exports = sdxHelpers.createConfig({
     extraNodeModules: {
       'react-native': __dirname,
     },
-
     roots: [path.resolve(__dirname)],
     projectRoot: __dirname,
 
-    getPolyfills,
+    serializer: {
+      getModulesRunBeforeMainModule: () => [
+        require.resolve('./Libraries/Core/InitializeCore'),
+      ],
+      getPolyfills,
+    },
+    resolver: {
+      hasteImplModulePath: require.resolve('./jest/hasteImpl'),
+    },
+    transformer: {
+      assetRegistryPath: require.resolve('./Libraries/Image/AssetRegistry'),
+    },
   });
-
-  config.resolver.extraNodeModules[
-    'react-native/Libraries/Image/AssetRegistry'
-  ] = path.resolve(__dirname, 'Libraries/Image/AssetRegistry.js');
-  module.exports = config;
 } else {
   module.exports = {
-    getPolyfills,
-
+    extraNodeModules: {
+      'react-native': __dirname,
+    },
+    serializer: {
+      getModulesRunBeforeMainModule: () => [
+        require.resolve('./Libraries/Core/InitializeCore'),
+      ],
+      getPolyfills,
+    },
     resolver: {
-      extraNodeModules: {
-        'react-native': __dirname,
-        'react-native/Libraries/Image/AssetRegistry': path.resolve(
-          __dirname,
-          'Libraries/Image/AssetRegistry',
-        ),
-      },
-      platforms: ['win32', 'macos', 'android', 'uwp', 'windesktop'],
+      hasteImplModulePath: require.resolve('./jest/hasteImpl'),
+      platforms: ['win32', 'ios', 'macos', 'android', 'uwp', 'windesktop'],
+    },
+    transformer: {
+      assetRegistryPath: require.resolve('./Libraries/Image/AssetRegistry'),
     },
   };
 }

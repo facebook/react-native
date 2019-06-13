@@ -28,10 +28,6 @@ const CIRCLE_SIZE = 80;
 type Props = $ReadOnly<{||}>;
 
 class PanResponderExample extends React.Component<Props> {
-  static title = 'PanResponder Sample';
-  static description =
-    'Shows the Use of PanResponder to provide basic gesture handling';
-
   _handleStartShouldSetPanResponder = (
     event: PressEvent,
     gestureState: GestureState,
@@ -141,4 +137,14 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = PanResponderExample;
+exports.title = 'PanResponder Sample';
+exports.description =
+  'Shows the Use of PanResponder to provide basic gesture handling';
+exports.examples = [
+  {
+    title: 'Basic gresture handling',
+    render: function(): React.Element<typeof PanResponderExample> {
+      return <PanResponderExample />;
+    },
+  },
+];

@@ -56,7 +56,6 @@ describe('setAndForwardRef', () => {
     }
   }
 
-  // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
   const TestComponentWithRef = React.forwardRef((props, ref) => (
     <TestComponent {...props} forwardedRef={ref} />
   ));
@@ -86,8 +85,14 @@ describe('setAndForwardRef', () => {
   it('should forward refs (createRef-based)', () => {
     const createdRef = React.createRef<typeof ForwardedComponent>();
 
+    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.89 was deployed. To see the error, delete this
+     * comment and run Flow. */
     ReactTestRenderer.create(<TestComponentWithRef ref={createdRef} />);
 
+    /* $FlowFixMe(>=0.87.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.87 was deployed. To see the error, delete this
+     * comment and run Flow. */
     const val = createdRef.current && createdRef.current.testFunc();
 
     expect(innerFuncCalled).toBe(true);

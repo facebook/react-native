@@ -63,7 +63,7 @@ static TextAttributes convertRawProp(
       defaultTextAttributes.textDecorationColor);
   textAttributes.textDecorationLineType = convertRawProp(
       rawProps,
-      "textDecorationLineType",
+      "textDecorationLine",
       defaultTextAttributes.textDecorationLineType);
   textAttributes.textDecorationLineStyle = convertRawProp(
       rawProps,

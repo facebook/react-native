@@ -481,8 +481,10 @@ BOOL RCTRunningInTestEnvironment(void)
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     NSDictionary *environment = [[NSProcessInfo processInfo] environment];
-    isTestEnvironment = objc_lookUpClass("SenTestCase") || objc_lookUpClass("XCTest") ||
-      [environment[@"IS_TESTING"] boolValue];
+    isTestEnvironment = objc_lookUpClass("SenTestCase") ||
+    objc_lookUpClass("XCTest") ||
+    objc_lookUpClass("SnapshotTestAppDelegate") ||
+    [environment[@"IS_TESTING"] boolValue];
   });
   return isTestEnvironment;
 }
@@ -763,13 +765,15 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
 
   if (!image) {
     // Attempt to load from the file system
-    NSData *fileData;
-    if (imageURL.pathExtension.length == 0) {
-      fileData = [NSData dataWithContentsOfURL:[imageURL URLByAppendingPathExtension:@"png"]];
-    } else {
-      fileData = [NSData dataWithContentsOfURL:imageURL];
+    NSString *filePath = [NSString stringWithUTF8String:[imageURL fileSystemRepresentation]];
+    if (filePath.pathExtension.length == 0) {
+      filePath = [filePath stringByAppendingPathExtension:@"png"];
     }
-    image = UIImageWithData(fileData); // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+    image = [UIImage imageWithContentsOfFile:filePath];
+#else // TODO(macOS ISS#2323203)
+    image = [[NSImage alloc] initWithContentsOfFile:filePath]; // TODO(macOS ISS#2323203)
+#endif // TODO(macOS ISS#2323203)
   }
 
   if (!image && !bundle) {

@@ -16,8 +16,7 @@
 using namespace facebook::react;
 
 TEST(ShadowNodeTest, handleProps) {
-  RawProps raw;
-  raw["nativeID"] = "abc";
+  const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
 
   auto props = std::make_shared<Props>(Props(), raw);
 

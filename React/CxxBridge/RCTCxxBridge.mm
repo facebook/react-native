@@ -33,9 +33,9 @@
 #import <cxxreact/ModuleRegistry.h>
 #import <cxxreact/RAMBundleRegistry.h>
 #import <cxxreact/ReactMarker.h>
-#import <jsi/JSCRuntime.h>
 #import <jsireact/JSIExecutor.h>
 
+#import "JSCExecutorFactory.h"
 #import "NSDataBigString.h"
 #import "RCTMessageThread.h"
 #import "RCTObjcExecutor.h"
@@ -56,7 +56,6 @@ static NSString *const RCTJSThreadName = @"com.facebook.react.JavaScript";
 
 typedef void (^RCTPendingCall)();
 
-using namespace facebook::jsc;
 using namespace facebook::jsi;
 using namespace facebook::react;
 
@@ -153,7 +152,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 @implementation RCTCxxBridge
 {
-  BOOL _wasBatchActive;
   BOOL _didInvalidate;
   BOOL _moduleRegistryCreated;
 
@@ -174,12 +172,20 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   // This is uniquely owned, but weak_ptr is used.
   std::shared_ptr<Instance> _reactInstance;
+
+  // Necessary for searching in TurboModuleRegistry
+  id<RCTTurboModuleLookupDelegate> _turboModuleLookupDelegate;
 }
 
 @synthesize bridgeDescription = _bridgeDescription;
 @synthesize loading = _loading;
 @synthesize performanceLogger = _performanceLogger;
 @synthesize valid = _valid;
+
+- (void) setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate
+{
+  _turboModuleLookupDelegate = turboModuleLookupDelegate;
+}
 
 - (std::shared_ptr<MessageQueueThread>)jsMessageThread
 {
@@ -327,13 +333,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       executorFactory = [cxxDelegate jsExecutorFactoryForBridge:self];
     }
     if (!executorFactory) {
-      executorFactory = std::make_shared<JSIExecutorFactory>(
-          makeJSCRuntime(),
-          [](const std::string &message, unsigned int logLevel) {
-              _RCTLogJavaScriptInternal(
-                  static_cast<RCTLogLevel>(logLevel),
-                  [NSString stringWithUTF8String:message.c_str()]);
-          }, nullptr);
+      executorFactory = std::make_shared<JSCExecutorFactory>(nullptr);
     }
   } else {
     id<RCTJavaScriptExecutor> objcExecutor = [self moduleForClass:self.executorClass];
@@ -447,17 +447,33 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (id)moduleForName:(NSString *)moduleName
 {
-  return _moduleDataByName[moduleName].instance;
+  return [self moduleForName:moduleName lazilyLoadIfNecessary:NO];
 }
 
 - (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
 {
+  if (RCTTurboModuleEnabled() && _turboModuleLookupDelegate) {
+    const char* moduleNameCStr = [moduleName UTF8String];
+    if (lazilyLoad || [_turboModuleLookupDelegate moduleIsInitialized:moduleNameCStr]) {
+      id<RCTTurboModule> module = [_turboModuleLookupDelegate moduleForName:moduleNameCStr warnOnLookupFailure:NO];
+      if (module != nil) {
+        return module;
+      }
+    }
+  }
+
   if (!lazilyLoad) {
-    return [self moduleForName:moduleName];
+    return _moduleDataByName[moduleName].instance;
   }
 
   RCTModuleData *moduleData = _moduleDataByName[moduleName];
   if (moduleData) {
+    if (![moduleData isKindOfClass:[RCTModuleData class]]) {
+      // There is rare race condition where the data stored in the dictionary
+      // may have been deallocated, which means the module instance is no longer
+      // usable.
+      return nil;
+    }
     return moduleData.instance;
   }
 
@@ -476,7 +492,16 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (BOOL)moduleIsInitialized:(Class)moduleClass
 {
-  return _moduleDataByName[RCTBridgeModuleNameForClass(moduleClass)].hasInstance;
+  NSString* moduleName = RCTBridgeModuleNameForClass(moduleClass);
+  if (_moduleDataByName[moduleName].hasInstance) {
+    return YES;
+  }
+
+  if (_turboModuleLookupDelegate) {
+    return [_turboModuleLookupDelegate moduleIsInitialized:[moduleName UTF8String]];
+  }
+
+  return NO;
 }
 
 - (id)moduleForClass:(Class)moduleClass
@@ -560,6 +585,17 @@ struct RCTInstanceCallback : public InstanceCallback {
       [self _buildModuleRegistryUnlocked]);
 
    _moduleRegistryCreated = YES;
+}
+
+- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance;
+{
+  NSString *const moduleName = RCTBridgeModuleNameForClass([instance class]);
+  if (moduleName) {
+    RCTModuleData *const moduleData = _moduleDataByName[moduleName];
+    if (moduleData) {
+      moduleData.instance = instance;
+    }
+  }
 }
 
 - (NSArray<RCTModuleData *> *)registerModulesForClasses:(NSArray<Class> *)moduleClasses
@@ -650,6 +686,16 @@ struct RCTInstanceCallback : public InstanceCallback {
                     moduleClass, moduleName, moduleData.moduleClass);
         continue;
       }
+    }
+
+    if (RCTTurboModuleEnabled() && [module conformsToProtocol:@protocol(RCTTurboModule)]) {
+#if RCT_DEBUG
+      // TODO: don't ask for extra module for when TurboModule is enabled.
+      RCTLogError(@"NativeModule '%@' was marked as TurboModule, but provided as an extra NativeModule "
+                  "by the class '%@', ignoring.",
+                  moduleName, moduleClass);
+#endif
+      continue;
     }
 
     // Instantiate moduleData container
@@ -1346,7 +1392,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (BOOL)isBatchActive
 {
-  return _wasBatchActive;
+  return _reactInstance ? _reactInstance->isBatchActive() : NO;
 }
 
 - (void *)runtime

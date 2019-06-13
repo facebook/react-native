@@ -58,8 +58,6 @@ Local<Value> V8NativeModules::createModule(Isolate *isolate, Local<Context> cont
     return Local<Value>();
   }
 
-  const std::string &json111 = folly::toJson(result->config);
-
   Local<Function> genNativeModuleJS = Local<Function>::New(isolate, m_genNativeModuleJS);
   Local<Integer> moduleId = Integer::NewFromUnsigned(isolate, result->index);
   Local<String> config = toLocalString(isolate, std::move(folly::toJson(result->config)));

@@ -7,6 +7,7 @@
 
 package com.facebook.react.modules.systeminfo;
 
+import android.annotation.SuppressLint;
 import android.app.UiModeManager;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -29,6 +30,7 @@ import static android.content.Context.UI_MODE_SERVICE;
  * Module that exposes Android Constants to JS.
  */
 @ReactModule(name = AndroidInfoModule.NAME)
+@SuppressLint("HardwareIds")
 public class AndroidInfoModule extends ReactContextBaseJavaModule {
   public static final String NAME = "PlatformConstants";
   private static final String IS_TESTING = "IS_TESTING";

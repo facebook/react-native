@@ -274,12 +274,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                              };
 
           #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-            if (@available(iOS 11.0, tvOS 11.0, *)) {
+            if (@available(iOS 11.0, tvOS 12.0, *)) {
               NSDictionary<NSString *, NSString *> * iOS11extras = @{@"username": UITextContentTypeUsername,
                                                                      @"password": UITextContentTypePassword};
-              
+
               NSMutableDictionary<NSString *, NSString *> * iOS11baseMap = [contentTypeMap mutableCopy];
               [iOS11baseMap addEntriesFromDictionary:iOS11extras];
+
               contentTypeMap = [iOS11baseMap copy];
             }
           #endif
@@ -288,9 +289,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
             if (@available(iOS 12.0, tvOS 12.0, *)) {
               NSDictionary<NSString *, NSString *> * iOS12extras = @{@"newPassword": UITextContentTypeNewPassword,
                                                                      @"oneTimeCode": UITextContentTypeOneTimeCode};
-              
+
               NSMutableDictionary<NSString *, NSString *> * iOS12baseMap = [contentTypeMap mutableCopy];
               [iOS12baseMap addEntriesFromDictionary:iOS12extras];
+
               contentTypeMap = [iOS12baseMap copy];
             }
           #endif
@@ -321,6 +323,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 }
 #endif // TODO(macOS ISS#2323203)
+
+- (BOOL)secureTextEntry {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203) // On Mac, this can be achieved by using an NSSecureTextField instead of an NSTextField
+  return self.backedTextInputView.secureTextEntry;
+#else // TODO(macOS ISS#2323203)
+  return NO; // TODO(macOS ISS#2323203)
+#endif // TODO(macOS ISS#2323203)
+}
+
+- (void)setSecureTextEntry:(BOOL)secureTextEntry {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+  UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
+    
+  if (textInputView.secureTextEntry != secureTextEntry) {
+    textInputView.secureTextEntry = secureTextEntry;
+      
+    // Fix #5859, see https://stackoverflow.com/questions/14220187/uitextfield-has-trailing-whitespace-after-securetextentry-toggle/22537788#22537788
+    NSAttributedString *originalText = [textInputView.attributedText copy];
+    self.backedTextInputView.attributedText = [NSAttributedString new];
+    self.backedTextInputView.attributedText = originalText;
+  }
+#endif // TODO(macOS ISS#2323203)
+}
 
 #pragma mark - RCTBackedTextInputDelegate
 

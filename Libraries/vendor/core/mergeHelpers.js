@@ -12,7 +12,7 @@
 
 'use strict';
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 /**
  * Maximum number of levels to traverse. Will catch circular structures.

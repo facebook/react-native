@@ -191,7 +191,7 @@ static UIColor *defaultPlaceholderColor()
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
- // Using `setAttributedString:` while user is typing breaks some internal mechanics
+  // Using `setAttributedString:` while user is typing breaks some internal mechanics
   // when entering complex input languages such as Chinese, Korean or Japanese.
   // see: https://github.com/facebook/react-native/issues/19339
 

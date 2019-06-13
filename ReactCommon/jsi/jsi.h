@@ -1,7 +1,7 @@
 //  Copyright (c) Facebook, Inc. and its affiliates.
 //
 // This source code is licensed under the MIT license found in the
- // LICENSE file in the root directory of this source tree.
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -305,8 +305,7 @@ class PropNameID : public Pointer {
  public:
   using Pointer::Pointer;
 
-  // TODO :: Temporary hack/divergence from Github copy due to a bug in MSVC compiler which is fixed in VS2019.
-  PropNameID(Runtime& runtime, const PropNameID& other)
+  PropNameID(Runtime &runtime, const PropNameID &other)
       : Pointer(runtime.clonePropNameID(other.ptr_)) {}
 
   PropNameID(PropNameID&& other) = default;

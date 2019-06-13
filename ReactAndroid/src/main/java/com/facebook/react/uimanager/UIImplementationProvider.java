@@ -39,4 +39,16 @@ public class UIImplementationProvider {
         eventDispatcher,
         minTimeLeftInFrameForNonBatchedOperationMs);
   }
+
+  UIImplementation createUIImplementation(
+    ReactApplicationContext reactContext,
+    ViewManagerRegistry viewManagerRegistry,
+    EventDispatcher eventDispatcher,
+    int minTimeLeftInFrameForNonBatchedOperationMs) {
+    return new UIImplementation(
+      reactContext,
+      viewManagerRegistry,
+      eventDispatcher,
+      minTimeLeftInFrameForNonBatchedOperationMs);
+  }
 }

@@ -25,7 +25,7 @@ public class Arguments {
       object instanceof Long ||
       object instanceof Byte ||
       object instanceof Short) {
-      return new Double(((Number) object).doubleValue());
+      return ((Number) object).doubleValue();
     } else if (object.getClass().isArray()) {
       return makeNativeArray(object);
     } else if (object instanceof List) {

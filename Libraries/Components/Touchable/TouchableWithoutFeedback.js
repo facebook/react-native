@@ -26,7 +26,7 @@ const {
   DeprecatedAccessibilityTraits,
 } = require('DeprecatedViewAccessibility');
 
-import type {PressEvent} from 'CoreEventTypes';
+import type {SyntheticEvent, LayoutEvent, PressEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {
   AccessibilityComponentType,
@@ -40,17 +40,21 @@ const {DraggedTypes} = require('DraggedType');
 import type {DraggedTypesType} from 'DraggedType';
 // ]TODO(macOS ISS#2323203)
 
+type TargetEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+  |}>,
+>;
+
+type BlurEvent = TargetEvent;
+type FocusEvent = TargetEvent;
+
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 export type Props = $ReadOnly<{|
   accessible?: ?boolean,
   accessibilityComponentType?: ?AccessibilityComponentType,
-  accessibilityLabel?:
-    | null
-    | React$PropType$Primitive<any>
-    | string
-    | Array<any>
-    | any,
+  accessibilityLabel?: ?Stringish,
   accessibilityHint?: ?Stringish,
   accessibilityIgnoresInvertColors?: ?boolean,
   accessibilityRole?: ?AccessibilityRole,
@@ -63,13 +67,13 @@ export type Props = $ReadOnly<{|
   disabled?: ?boolean,
   hitSlop?: ?EdgeInsetsProp,
   nativeID?: ?string,
-  onBlur?: ?Function,
-  onFocus?: ?Function,
-  onLayout?: ?Function,
-  onLongPress?: ?Function,
-  onPress?: ?Function,
-  onPressIn?: ?Function,
-  onPressOut?: ?Function,
+  onBlur?: ?(e: BlurEvent) => void,
+  onFocus?: ?(e: FocusEvent) => void,
+  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLongPress?: ?(event: PressEvent) => mixed,
+  onPress?: ?(event: PressEvent) => mixed,
+  onPressIn?: ?(event: PressEvent) => mixed,
+  onPressOut?: ?(event: PressEvent) => mixed,
   onAccessibilityTap?: ?Function, // TODO(OSS Candidate ISS#2710739)
   acceptsKeyboardFocus?: ?boolean, // [TODO(macOS ISS#2323203)
   onMouseEnter?: ?Function,

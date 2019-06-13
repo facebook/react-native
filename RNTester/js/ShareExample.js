@@ -14,19 +14,10 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {StyleSheet, View, Text, TouchableHighlight, Share} = ReactNative;
 
-exports.framework = 'React';
-exports.title = 'Share';
-exports.description = 'Share data with other Apps.';
-exports.examples = [
-  {
-    title: 'Share Text Content',
-    render() {
-      return <ShareMessageExample />;
-    },
-  },
-];
+type Props = $ReadOnly<{||}>;
+type State = {|result: string|};
 
-class ShareMessageExample extends React.Component<$FlowFixMeProps, any> {
+class ShareMessageExample extends React.Component<Props, State> {
   _shareMessage: Function;
   _shareText: Function;
   _showResult: Function;
@@ -116,3 +107,15 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 });
+
+exports.framework = 'React';
+exports.title = 'Share';
+exports.description = 'Share data with other Apps.';
+exports.examples = [
+  {
+    title: 'Share Text Content',
+    render() {
+      return <ShareMessageExample />;
+    },
+  },
+];

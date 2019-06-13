@@ -10,11 +10,9 @@
 namespace facebook {
 namespace react {
 
-RuntimeEventBeat::RuntimeEventBeat(RuntimeExecutor runtimeExecutor):
-  runtimeExecutor_(std::move(runtimeExecutor)) {
-
-  mainRunLoopObserver_ =
-    CFRunLoopObserverCreateWithHandler(
+RuntimeEventBeat::RuntimeEventBeat(RuntimeExecutor runtimeExecutor) : runtimeExecutor_(std::move(runtimeExecutor))
+{
+  mainRunLoopObserver_ = CFRunLoopObserverCreateWithHandler(
       NULL /* allocator */,
       kCFRunLoopBeforeWaiting /* activities */,
       true /* repeats */,
@@ -23,20 +21,21 @@ RuntimeEventBeat::RuntimeEventBeat(RuntimeExecutor runtimeExecutor):
         // Note: We only `induce` beat here; actual beat will be performed on
         // a different thread.
         this->induce();
-      }
-  );
+      });
 
   assert(mainRunLoopObserver_);
 
   CFRunLoopAddObserver(CFRunLoopGetMain(), mainRunLoopObserver_, kCFRunLoopCommonModes);
 }
 
-RuntimeEventBeat::~RuntimeEventBeat() {
+RuntimeEventBeat::~RuntimeEventBeat()
+{
   CFRunLoopRemoveObserver(CFRunLoopGetMain(), mainRunLoopObserver_, kCFRunLoopCommonModes);
   CFRelease(mainRunLoopObserver_);
 }
 
-void RuntimeEventBeat::induce() const {
+void RuntimeEventBeat::induce() const
+{
   if (!isRequested_ || isBusy_) {
     return;
   }
@@ -49,7 +48,7 @@ void RuntimeEventBeat::induce() const {
   // This trick is quite expensive due to deallocation and messing with atomic
   // counters. Seems we need this only for making hot-reloading mechanism
   // thread-safe. Hence, let's leave it to be DEBUG-only for now.
-  auto wasExecuted = std::shared_ptr<bool>(new bool {false}, [this](bool *wasExecuted) {
+  auto wasExecuted = std::shared_ptr<bool>(new bool{false}, [this](bool *wasExecuted) {
     if (!*wasExecuted && failCallback_) {
       failCallback_();
     }

@@ -255,4 +255,9 @@ public class ReactHorizontalScrollViewManager
   public void setOverflow(ReactHorizontalScrollView view, @Nullable String overflow) {
     view.setOverflow(overflow);
   }
+
+  @ReactProp(name = "persistentScrollbar")
+  public void setPersistentScrollbar(ReactHorizontalScrollView view, boolean value) {
+    view.setScrollbarFadingEnabled(!value);
+  }
 }

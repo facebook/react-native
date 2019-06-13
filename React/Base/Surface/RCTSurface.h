@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Starts or stops the Surface.
- * Those methods are not implemented yet for regular RCTSurface.
+ * Those methods are a no-op for regular RCTSurface (for now), but all call sites must call them appropriately.
  */
 - (BOOL)start;
 - (BOOL)stop;

@@ -36,20 +36,22 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
 
 - (instancetype)init
 {
-  _decodedImageCache = [NSCache new];
+  if (self = [super init]) {
+    _decodedImageCache = [NSCache new];
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  _decodedImageCache.totalCostLimit = 20 * 1024 * 1024; // 20 MB
-  _cacheStaleTimes = [[NSMutableDictionary alloc] init];
+    _decodedImageCache.totalCostLimit = 20 * 1024 * 1024; // 20 MB
+    _cacheStaleTimes = [[NSMutableDictionary alloc] init];
 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(clearCache)
-                                               name:UIApplicationDidReceiveMemoryWarningNotification
-                                             object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(clearCache)
-                                               name:UIApplicationWillResignActiveNotification
-                                             object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(clearCache)
+                                                 name:UIApplicationDidReceiveMemoryWarningNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(clearCache)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
 #endif // TODO(macOS ISS#2323203)
+  }
 
   return self;
 }
@@ -75,8 +77,7 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
   if (!image) {
     return;
   }
-  CGFloat imageScale = UIImageGetScale(image); // TODO(macOS ISS#2323203)
-  CGFloat bytes = image.size.width * image.size.height * imageScale * imageScale * 4; // TODO(macOS ISS#2323203)
+  NSInteger bytes = image.reactDecodedImageBytes; // TODO(macOS ISS#2323203)
   if (bytes <= RCTMaxCachableDecodedImageSizeInBytes) {
     [self->_decodedImageCache setObject:image
                                  forKey:cacheKey
@@ -109,33 +110,49 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
                    size:(CGSize)size
                   scale:(CGFloat)scale
              resizeMode:(RCTResizeMode)resizeMode
-           responseDate:(NSString *)responseDate
-           cacheControl:(NSString *)cacheControl
+               response:(NSURLResponse *)response
 {
-  NSString *cacheKey = RCTCacheKeyForImage(url, size, scale, resizeMode);
-  BOOL shouldCache = YES;
-  NSDate *staleTime;
-  NSArray<NSString *> *components = [cacheControl componentsSeparatedByString:@","];
-  for (NSString *component in components) {
-    if ([component containsString:@"no-cache"] || [component containsString:@"no-store"] || [component hasSuffix:@"max-age=0"]) {
-      shouldCache = NO;
-      break;
-    } else {
-      NSRange range = [component rangeOfString:@"max-age="];
-      if (range.location != NSNotFound) {
-        NSInteger seconds = [[component substringFromIndex:range.location + range.length] integerValue];
-        NSDate *originalDate = [self dateWithHeaderString:responseDate];
-        staleTime = [originalDate dateByAddingTimeInterval:(NSTimeInterval)seconds];
+  if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+    NSString *cacheKey = RCTCacheKeyForImage(url, size, scale, resizeMode);
+    BOOL shouldCache = YES;
+    NSString *responseDate = ((NSHTTPURLResponse *)response).allHeaderFields[@"Date"];
+    NSDate *originalDate = [self dateWithHeaderString:responseDate];
+    NSString *cacheControl = ((NSHTTPURLResponse *)response).allHeaderFields[@"Cache-Control"];
+    NSDate *staleTime;
+    NSArray<NSString *> *components = [cacheControl componentsSeparatedByString:@","];
+    for (NSString *component in components) {
+      if ([component containsString:@"no-cache"] || [component containsString:@"no-store"] || [component hasSuffix:@"max-age=0"]) {
+        shouldCache = NO;
+        break;
+      } else {
+        NSRange range = [component rangeOfString:@"max-age="];
+        if (range.location != NSNotFound) {
+          NSInteger seconds = [[component substringFromIndex:range.location + range.length] integerValue];
+          staleTime = [originalDate dateByAddingTimeInterval:(NSTimeInterval)seconds];
+        }
       }
     }
-  }
-  if (shouldCache) {
-    if (staleTime) {
-      @synchronized(_cacheStaleTimes) {
-        _cacheStaleTimes[cacheKey] = staleTime;
+    if (shouldCache) {
+      if (!staleTime && originalDate) {
+        NSString *expires = ((NSHTTPURLResponse *)response).allHeaderFields[@"Expires"];
+        NSString *lastModified = ((NSHTTPURLResponse *)response).allHeaderFields[@"Last-Modified"];
+        if (expires) {
+          staleTime = [self dateWithHeaderString:expires];
+        } else if (lastModified) {
+          NSDate *lastModifiedDate = [self dateWithHeaderString:lastModified];
+          if (lastModifiedDate) {
+            NSTimeInterval interval = [originalDate timeIntervalSinceDate:lastModifiedDate] / 10;
+            staleTime = [originalDate dateByAddingTimeInterval:interval];
+          }
+        }
       }
+      if (staleTime) {
+        @synchronized(_cacheStaleTimes) {
+          _cacheStaleTimes[cacheKey] = staleTime;
+        }
+      }
+      return [self addImageToCache:image forKey:cacheKey];
     }
-    return [self addImageToCache:image forKey:cacheKey];
   }
 }
 

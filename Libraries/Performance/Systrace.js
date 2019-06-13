@@ -10,7 +10,7 @@
 
 'use strict';
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const TRACE_TAG_REACT_APPS = 1 << 17; // eslint-disable-line no-bitwise
 const TRACE_TAG_JS_VM_CALLS = 1 << 27; // eslint-disable-line no-bitwise

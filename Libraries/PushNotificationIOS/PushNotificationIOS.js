@@ -14,7 +14,7 @@ const NativeEventEmitter = require('NativeEventEmitter');
 const Platform = require('Platform'); // TODO(macOS ISS#2323203)
 const RCTPushNotificationManager = require('NativeModules')
   .PushNotificationManager;
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const PushNotificationEmitter = new NativeEventEmitter(
   RCTPushNotificationManager,

@@ -32,7 +32,7 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
   const std::string nativeId;
 
 #ifdef ANDROID
-  const RawProps rawProps;
+  const folly::dynamic rawProps = folly::dynamic::object();
 #endif
 };
 

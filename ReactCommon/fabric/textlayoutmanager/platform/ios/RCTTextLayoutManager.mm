@@ -106,12 +106,11 @@ static NSLineBreakMode RCTNSLineBreakModeFromWritingDirection(
   return textStorage;
 }
 
-- (SharedShadowNode)
-    getParentShadowNodeWithAttributeString:(AttributedString)attributedString
-                       paragraphAttributes:
-                           (ParagraphAttributes)paragraphAttributes
-                                     frame:(CGRect)frame
-                                   atPoint:(CGPoint)point {
+- (SharedEventEmitter)
+    getEventEmitterWithAttributeString:(AttributedString)attributedString
+                   paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                                 frame:(CGRect)frame
+                               atPoint:(CGPoint)point {
   NSTextStorage *textStorage =
       [self _textStorageAndLayoutManagerWithAttributesString:
                 RCTNSAttributedStringFromAttributedString(attributedString)
@@ -130,12 +129,12 @@ static NSLineBreakMode RCTNSLineBreakModeFromWritingDirection(
   // after (fraction == 1.0) the last character, then the attribute is valid.
   if (textStorage.length > 0 && (fraction > 0 || characterIndex > 0) &&
       (fraction < 1 || characterIndex < textStorage.length - 1)) {
-    RCTSharedShadowNodeWrapper *parentShadowNode =
-        (RCTSharedShadowNodeWrapper *)[textStorage
-                 attribute:RCTAttributedStringParentShadowNode
+    RCTWeakEventEmitterWrapper *eventEmitterWrapper =
+        (RCTWeakEventEmitterWrapper *)[textStorage
+                 attribute:RCTAttributedStringEventEmitterKey
                    atIndex:characterIndex
             effectiveRange:NULL];
-    return parentShadowNode.node;
+    return eventEmitterWrapper.eventEmitter;
   }
 
   return nil;

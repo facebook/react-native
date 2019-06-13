@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <react/core/ReactPrimitives.h>
 #import <React/RCTMountItemProtocol.h>
 #import <React/RCTPrimitives.h>
 
@@ -17,8 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTDeleteMountItem : NSObject <RCTMountItemProtocol>
 
-- (instancetype)initWithComponentName:(NSString *)componentName
-                                  tag:(ReactTag)tag;
+- (instancetype)initWithComponentHandle:(facebook::react::ComponentHandle)componentHandle
+                                    tag:(ReactTag)tag;
 
 @end
 

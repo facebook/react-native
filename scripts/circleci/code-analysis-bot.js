@@ -118,19 +118,17 @@ function getShaFromPullRequest(owner, repo, number, callback) {
   });
 }
 
-function getFilesFromCommit(owner, repo, sha, callback) {
-  octokit.repos.getCommit({owner, repo, sha}, (error, res) => {
-    if (error) {
-      console.error(error);
-      return;
-    }
-    // A merge commit should not have any new changes to report
-    if (res.parents && res.parents.length > 1) {
-      return;
-    }
-
-    callback(res.data.files);
-  });
+function getFilesFromPullRequest(owner, repo, number, callback) {
+  octokit.pullRequests.listFiles(
+    {owner, repo, number, per_page: 100},
+    (error, res) => {
+      if (error) {
+        console.error(error);
+        return;
+      }
+      callback(res.data);
+    },
+  );
 }
 
 /**
@@ -227,7 +225,7 @@ function main(messages, owner, repo, number) {
   }
 
   getShaFromPullRequest(owner, repo, number, sha => {
-    getFilesFromCommit(owner, repo, sha, files => {
+    getFilesFromPullRequest(owner, repo, number, files => {
       let comments = [];
       let convertersUsed = [];
       files.filter(file => messages[file.filename]).forEach(file => {
@@ -256,7 +254,7 @@ function main(messages, owner, repo, number) {
       });
 
       sendReview(owner, repo, number, sha, body, comments);
-    }); // getFilesFromCommit
+    }); // getFilesFromPullRequest
   }); // getShaFromPullRequest
 }
 

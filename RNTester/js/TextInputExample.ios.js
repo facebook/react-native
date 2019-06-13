@@ -212,7 +212,11 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
    * comment and run Flow. */
   constructor(props) {
     super(props);
-    this.state = {text: ''};
+    this.state = {
+      text: '',
+      password: '',
+      isSecureTextEntry: true,
+    };
   }
   render() {
     return (
@@ -225,6 +229,26 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
           value={this.state.text}
         />
         <Text>Current text is: {this.state.text}</Text>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+          }}>
+          <TextInput
+            style={styles.default}
+            defaultValue="cde"
+            onChangeText={text => this.setState({password: text})}
+            secureTextEntry={this.state.isSecureTextEntry}
+            value={this.state.password}
+          />
+          <Switch
+            onValueChange={value => {
+              this.setState({isSecureTextEntry: value});
+            }}
+            style={{marginLeft: 4}}
+            value={this.state.isSecureTextEntry}
+          />
+        </View>
       </View>
     );
   }
@@ -630,7 +654,7 @@ exports.examples = [
           <WithLabel label="singleline">
             <TextInput style={styles.default} value="(value property)">
               (first raw text node)
-              <Text color="red">(internal raw text node)</Text>
+              <Text style={{color: 'red'}}>(internal raw text node)</Text>
               (last raw text node)
             </TextInput>
           </WithLabel>
@@ -640,7 +664,7 @@ exports.examples = [
               multiline={true}
               value="(value property)">
               (first raw text node)
-              <Text color="red">(internal raw text node)</Text>
+              <Text style={{color: 'red'}}>(internal raw text node)</Text>
               (last raw text node)
             </TextInput>
           </WithLabel>
@@ -781,25 +805,25 @@ exports.examples = [
   {
     title: 'Clear button mode',
     render: function() {
-      return (
-        <View>
-          <WithLabel label="never">
-            <TextInput style={styles.default} clearButtonMode="never" />
-          </WithLabel>
-          <WithLabel label="while editing">
-            <TextInput style={styles.default} clearButtonMode="while-editing" />
-          </WithLabel>
-          <WithLabel label="unless editing">
+      const clearButtonModes = [
+        'never',
+        'while-editing',
+        'unless-editing',
+        'always',
+      ];
+      const examples = clearButtonModes.map(mode => {
+        return (
+          <WithLabel label={mode}>
             <TextInput
+              key={mode}
               style={styles.default}
-              clearButtonMode="unless-editing"
+              clearButtonMode={mode}
+              defaultValue={mode}
             />
           </WithLabel>
-          <WithLabel label="always">
-            <TextInput style={styles.default} clearButtonMode="always" />
-          </WithLabel>
-        </View>
-      );
+        );
+      });
+      return <View>{examples}</View>;
     },
   },
   {

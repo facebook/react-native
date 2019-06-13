@@ -2,12 +2,12 @@ aliases:
   # Cache Management
   - &restore-yarn-cache
     keys:
-      - v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}
-      - v1-yarn-cache-{{ arch }}-fixed
+      - v2-yarn-cache-{{ arch }}-{{ checksum "package.json" }}
+      - v2-yarn-cache-{{ arch }}
   - &save-yarn-cache
     paths:
       - ~/.cache/yarn
-    key: v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}
+    key: v2-yarn-cache-{{ arch }}-{{ checksum "package.json" }}
 
   - &restore-node-modules
     keys:
@@ -39,7 +39,9 @@ aliases:
       - v2-gradle-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "ReactAndroid/build.gradle" }}
       # Fallback in case checksum fails
       - v2-gradle-{{ .Branch }}-{{ checksum "build.gradle" }}-
-      - v2-gradle-{{ .Branch }}-fixed
+      - v2-gradle-{{ .Branch }}-
+      # Fallback in case this is a first-time run on a fork
+      - v2-gradle-master-
   - &save-cache-gradle
     paths:
       - ~/.gradle
@@ -55,13 +57,13 @@ aliases:
 
   - &restore-cache-downloads-buck
     keys:
-      - v3-buck-v2018.10.29.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
-      - v3-buck-v2018.10.29.01-fixed
+      - v4-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+      - v4-buck-v2019.01.10.01-
   - &save-cache-downloads-buck
     paths:
       - ~/buck
       - ~/okbuck
-    key: v3-buck-v2018.10.29.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
+    key: v4-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
 
   - &restore-cache-watchman
     keys:
@@ -74,7 +76,7 @@ aliases:
   - &restore-cache-downloads-gradle
     keys:
       - v2-gradle-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
-      - v2-gradle-fixed
+      - v2-gradle-
   - &save-cache-downloads-gradle
     paths:
       - ~/.gradle
@@ -84,7 +86,7 @@ aliases:
 
   - &restore-cache-homebrew
     keys:
-      - v1-homebrew-fixed
+      - v1-homebrew
   - &save-cache-homebrew
     paths:
       - /usr/local/Homebrew
@@ -138,7 +140,7 @@ aliases:
     name: Install BUCK
     command: |
       if [[ ! -e ~/buck ]]; then
-        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.10.29.01 --depth=1
+        git clone https://github.com/facebook/buck.git ~/buck --branch v2019.01.10.01 --depth=1
       fi
       cd ~/buck && ant
       buck --version
@@ -158,13 +160,12 @@ aliases:
       sudo chown ${USER:=$(/usr/bin/id -run)}:$USER /opt/ndk
 
   # CircleCI does not support interpolating env variables in the environment
-  #  https://circleci.com/docs/2.0/env-vars/#interpolating-environment-variables-to-set-other-environment-variables
+  # https://circleci.com/docs/2.0/env-vars/#interpolating-environment-variables-to-set-other-environment-variables
   - &configure-android-path
     name: Configure Environment Variables
     command: |
       echo 'export PATH=${ANDROID_NDK}:~/buck/bin:$PATH' >> $BASH_ENV
       source $BASH_ENV
-
   - &install-android-packages
     name: Install Android SDK Packages
     command: source scripts/android-setup.sh && getAndroidPackages
@@ -206,6 +207,13 @@ aliases:
       ./scripts/circleci/validate_yarn_lockfile.sh
     when: always
 
+  - &js-coverage
+    name: Test coverage
+    command: |
+      yarn test --coverage --maxWorkers=2
+      cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
+    when: always
+
   - &download-dependencies-gradle
     name: Download Dependencies Using Gradle
     command: ./scripts/circleci/gradle_download_deps.sh
@@ -235,7 +243,7 @@ aliases:
 
   - &build-js-bundle
     name: Build JavaScript Bundle
-    command: node local-cli/cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+    command: node cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js --reactNativePath .
 
   - &compile-native-libs
     name: Compile Native Libs for Unit and Integration Tests
@@ -331,7 +339,7 @@ js_defaults: &js_defaults
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-    - image: circleci/android:api-28-node8-alpha
+  - image: circleci/android:api-28-node8-alpha
   resource_class: "large"
   environment:
     - TERM: "dumb"
@@ -407,6 +415,7 @@ jobs:
       - run: *setup-artifacts
       - run: *yarn
       - run: *run-js-tests
+      - run: yarn run format-check
       - store_test_results:
           path: ~/react-native/reports/junit
 
@@ -555,7 +564,7 @@ jobs:
           command: |
             echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
             sudo apt-get install -y shellcheck
-            yarn add @octokit/rest@15.10.0
+            yarn add @octokit/rest@15.18.0
             echo -e "\\x1B[36mAnalyzing shell scripts\\x1B[0m"; \
             GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
             GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
@@ -568,7 +577,7 @@ jobs:
       - run:
           name: Analyze Code
           command: |
-            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.10.0
+            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.18.0
             echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; \
             GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
             GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
@@ -585,9 +594,25 @@ jobs:
             yarn install --non-interactive --cache-folder ~/.cache/yarn
             echo -e "\\x1B[36mAnalyzing pull request\\x1B[0m"; \
             DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" \
-            yarn danger
+            yarn danger ci --use-github-checks
           when: always
       - save-cache: *save-cache-analysis
+
+  # Test Coverage
+  js_coverage:
+    <<: *js_defaults
+    environment:
+      - CI_BRANCH: $CIRCLE_BRANCH
+      - CI_PULL_REQUEST: $CIRCLE_PULL_REQUEST
+      - CI_BUILD_NUMBER: $CIRCLE_BUILD_NUM
+      - CI_BUILD_URL: $CIRCLE_BUILD_URL
+    steps:
+      - checkout
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - run: *js-coverage
+      - store_artifacts:
+          path: ~/react-native/coverage/
 
   # Publishes new version onto npm
   # Only works on stable branches when a properly tagged commit is pushed
@@ -595,15 +620,12 @@ jobs:
     <<: *android_defaults
     steps:
       - checkout
-
-      - restore-cache: *restore-yarn-cache
       - run: *yarn
 
       # Configure Android SDK and related dependencies
       - run: *configure-android-path
       - run: *install-android-build-dependencies
 
-      - restore-cache: *restore-cache-android-packages
       - run: *install-android-packages
 
       # Install Android NDK
@@ -612,16 +634,11 @@ jobs:
       - run: *install-ndk
 
       # Fetch dependencies using Buck
-      - restore-cache: *restore-cache-downloads-buck
       - run: *install-buck
       - run: *download-dependencies-buck
 
       # Fetch dependencies using Gradle
-      - restore-cache: *restore-cache-downloads-gradle
       - run: *download-dependencies-gradle
-
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
 
       - run:
           name: Authenticate with npm
@@ -685,6 +702,8 @@ workflows:
       - test_node10:
           filters: *filter-ignore-gh-pages
 
+  releases:
+    jobs:
       # Only runs on vX.X.X tags if all tests are green
       - publish_npm_package:
           filters:
@@ -695,8 +714,16 @@ workflows:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
+  analysis:
+    jobs:
       # Run code checks on PRs from forks
       - analyze_pr:
           filters:
             branches:
               only: /^pull\/.*$/
+
+      # Gather coverage on master
+      - js_coverage:
+          filters:
+            branches:
+              only: master

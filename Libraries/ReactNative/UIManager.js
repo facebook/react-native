@@ -14,7 +14,7 @@ const Platform = require('Platform');
 const UIManagerProperties = require('UIManagerProperties');
 
 const defineLazyObjectProperty = require('defineLazyObjectProperty');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const {UIManager} = NativeModules;
 const viewManagerConfigs = {};

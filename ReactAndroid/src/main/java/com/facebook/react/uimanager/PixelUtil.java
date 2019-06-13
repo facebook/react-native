@@ -7,6 +7,7 @@
 
 package com.facebook.react.uimanager;
 
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
 /**
@@ -42,10 +43,21 @@ public class PixelUtil {
    * Convert from SP to PX
    */
   public static float toPixelFromSP(float value) {
-    return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_SP,
-        value,
-        DisplayMetricsHolder.getWindowDisplayMetrics());
+    return toPixelFromSP(value, Float.NaN);
+  }
+
+  /**
+   * Convert from SP to PX
+   */
+  public static float toPixelFromSP(float value, float maxFontScale) {
+    DisplayMetrics displayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics();
+    float scaledDensity = displayMetrics.scaledDensity;
+    float currentFontScale = scaledDensity / displayMetrics.density;
+    if (maxFontScale >= 1 && maxFontScale < currentFontScale) {
+      scaledDensity = displayMetrics.density * maxFontScale;
+    }
+
+    return value * scaledDensity;
   }
 
   /**

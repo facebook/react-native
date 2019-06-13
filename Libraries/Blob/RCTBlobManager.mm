@@ -49,6 +49,11 @@ RCT_EXPORT_MODULE(BlobModule)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
+  return [self getConstants];
+}
+
+- (NSDictionary<NSString *, id> *)getConstants
+{
   return @{
     @"BLOB_URI_SCHEME": kBlobURIScheme,
     @"BLOB_URI_HOST": [NSNull null],

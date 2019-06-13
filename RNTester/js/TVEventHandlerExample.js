@@ -15,28 +15,10 @@ const ReactNative = require('react-native');
 
 const {Platform, View, Text, TouchableOpacity, TVEventHandler} = ReactNative;
 
-exports.framework = 'React';
-exports.title = 'TVEventHandler example';
-exports.description = 'iOS alerts and action sheets';
-exports.examples = [
-  {
-    title: 'TVEventHandler',
-    render() {
-      return <TVEventHandlerView />;
-    },
-  },
-];
-
-class TVEventHandlerView extends React.Component<
-  $FlowFixMeProps,
-  {
-    lastEventType: string,
-  },
-> {
-  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.85 was deployed. To see the error, delete this comment
-   * and run Flow. */
-  constructor(props) {
+type Props = $ReadOnly<{||}>;
+type State = {|lastEventType: string|};
+class TVEventHandlerView extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       lastEventType: '',
@@ -92,3 +74,15 @@ class TVEventHandlerView extends React.Component<
     }
   }
 }
+
+exports.framework = 'React';
+exports.title = 'TVEventHandler example';
+exports.description = 'iOS alerts and action sheets';
+exports.examples = [
+  {
+    title: 'TVEventHandler',
+    render() {
+      return <TVEventHandlerView />;
+    },
+  },
+];

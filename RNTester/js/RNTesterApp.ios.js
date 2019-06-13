@@ -10,6 +10,7 @@
 
 'use strict';
 
+require('InitializeCore');
 const AsyncStorage = require('AsyncStorage');
 const BackHandler = require('BackHandler');
 const Linking = require('Linking');
@@ -30,15 +31,22 @@ const {
   Text,
   View,
   SafeAreaView,
+  YellowBox,
 } = ReactNative;
 
-import type {RNTesterExample} from './RNTesterList.ios';
+import type {RNTesterExample} from 'RNTesterTypes';
 import type {RNTesterAction} from './RNTesterActions';
 import type {RNTesterNavigationState} from './RNTesterNavigationReducer';
 
 type Props = {
   exampleFromAppetizeParams: string,
 };
+
+YellowBox.ignoreWarnings([
+  'ListView and SwipeableListView are deprecated',
+  'ListView is deprecated',
+  'Module RCTImagePickerManager requires main queue setup',
+]);
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 

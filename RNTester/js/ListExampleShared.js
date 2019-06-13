@@ -24,7 +24,7 @@ const {
   View,
 } = ReactNative;
 
-type Item = {
+export type Item = {
   title: string,
   text: string,
   key: string,

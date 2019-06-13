@@ -11,9 +11,13 @@
 
 @implementation RCTFabricSurfaceHostingProxyRootView
 
-+ (RCTSurface *)createSurfaceWithBridge:(RCTBridge *)bridge moduleName:(NSString *)moduleName initialProperties:(NSDictionary *)initialProperties
++ (RCTSurface *)createSurfaceWithBridge:(RCTBridge *)bridge
+                             moduleName:(NSString *)moduleName
+                      initialProperties:(NSDictionary *)initialProperties
 {
-  return (RCTSurface *)[[RCTFabricSurface alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
+  return (RCTSurface *)[[RCTFabricSurface alloc] initWithBridge:bridge
+                                                     moduleName:moduleName
+                                              initialProperties:initialProperties];
 }
 
 @end

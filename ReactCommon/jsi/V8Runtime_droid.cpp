@@ -114,7 +114,7 @@ namespace facebook { namespace v8runtime {
       }
 
       if (cacheData->rejected) {
-        int status = remove(cacheFilePath.c_str());
+        remove(cacheFilePath.c_str());
       }
 
       script = maybeScript.ToLocalChecked();

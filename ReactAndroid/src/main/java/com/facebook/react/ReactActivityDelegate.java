@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 
 import com.facebook.infer.annotation.Assertions;
@@ -30,7 +29,6 @@ import javax.annotation.Nullable;
 public class ReactActivityDelegate {
 
   private final @Nullable Activity mActivity;
-  private final @Nullable FragmentActivity mFragmentActivity;
   private final @Nullable String mMainComponentName;
 
   private @Nullable ReactRootView mReactRootView;
@@ -38,18 +36,15 @@ public class ReactActivityDelegate {
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable Callback mPermissionsCallback;
 
+  @Deprecated
   public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
     mActivity = activity;
     mMainComponentName = mainComponentName;
-    mFragmentActivity = null;
   }
 
-  public ReactActivityDelegate(
-    FragmentActivity fragmentActivity,
-    @Nullable String mainComponentName) {
-    mFragmentActivity = fragmentActivity;
+  public ReactActivityDelegate(ReactActivity activity, @Nullable String mainComponentName) {
+    mActivity = activity;
     mMainComponentName = mainComponentName;
-    mActivity = null;
   }
 
   protected @Nullable Bundle getLaunchOptions() {
@@ -206,10 +201,7 @@ public class ReactActivityDelegate {
   }
 
   protected Context getContext() {
-    if (mActivity != null) {
-      return mActivity;
-    }
-    return Assertions.assertNotNull(mFragmentActivity);
+    return Assertions.assertNotNull(mActivity);
   }
 
   protected Activity getPlainActivity() {

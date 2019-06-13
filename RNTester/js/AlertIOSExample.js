@@ -12,63 +12,14 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {StyleSheet, View, Text, TouchableHighlight, AlertIOS} = ReactNative;
+const {StyleSheet, View, Text, TouchableHighlight, Alert} = ReactNative;
 
 const {SimpleAlertExampleBlock} = require('./AlertExample');
 
-exports.framework = 'React';
-exports.title = 'AlertIOS';
-exports.description = 'iOS alerts and action sheets';
-exports.examples = [
-  {
-    title: 'Alerts',
-    render() {
-      return <SimpleAlertExampleBlock />;
-    },
-  },
-  {
-    title: 'Prompt Options',
-    render(): React.Element<any> {
-      return <PromptOptions />;
-    },
-  },
-  {
-    title: 'Prompt Types',
-    render() {
-      return (
-        <View>
-          <TouchableHighlight
-            style={styles.wrapper}
-            onPress={() => AlertIOS.prompt('Plain Text Entry')}>
-            <View style={styles.button}>
-              <Text>plain-text</Text>
-            </View>
-          </TouchableHighlight>
-          <TouchableHighlight
-            style={styles.wrapper}
-            onPress={() =>
-              AlertIOS.prompt('Secure Text', null, null, 'secure-text')
-            }>
-            <View style={styles.button}>
-              <Text>secure-text</Text>
-            </View>
-          </TouchableHighlight>
-          <TouchableHighlight
-            style={styles.wrapper}
-            onPress={() =>
-              AlertIOS.prompt('Login & Password', null, null, 'login-password')
-            }>
-            <View style={styles.button}>
-              <Text>login-password</Text>
-            </View>
-          </TouchableHighlight>
-        </View>
-      );
-    },
-  },
-];
+type Props = $ReadOnly<{||}>;
+type State = {|promptValue: ?string|};
 
-class PromptOptions extends React.Component<$FlowFixMeProps, any> {
+class PromptOptions extends React.Component<Props, State> {
   customButtons: Array<Object>;
 
   constructor(props) {
@@ -103,9 +54,7 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
 
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={() =>
-            AlertIOS.prompt('Type a value', null, this.saveResponse)
-          }>
+          onPress={() => Alert.prompt('Type a value', null, this.saveResponse)}>
           <View style={styles.button}>
             <Text>prompt with title & callback</Text>
           </View>
@@ -114,7 +63,7 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() =>
-            AlertIOS.prompt('Type a value', null, this.customButtons)
+            Alert.prompt('Type a value', null, this.customButtons)
           }>
           <View style={styles.button}>
             <Text>prompt with title & custom buttons</Text>
@@ -124,7 +73,7 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() =>
-            AlertIOS.prompt(
+            Alert.prompt(
               'Type a phone number',
               null,
               null,
@@ -141,7 +90,7 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() =>
-            AlertIOS.prompt(
+            Alert.prompt(
               'Type a value',
               null,
               this.saveResponse,
@@ -157,7 +106,7 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() =>
-            AlertIOS.prompt(
+            Alert.prompt(
               'Type a value',
               null,
               this.customButtons,
@@ -196,3 +145,55 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+exports.framework = 'React';
+exports.title = 'Alert';
+exports.description = 'iOS alerts and action sheets';
+exports.examples = [
+  {
+    title: 'Alerts',
+    render() {
+      return <SimpleAlertExampleBlock />;
+    },
+  },
+  {
+    title: 'Prompt Options',
+    render(): React.Element<any> {
+      return <PromptOptions />;
+    },
+  },
+  {
+    title: 'Prompt Types',
+    render() {
+      return (
+        <View>
+          <TouchableHighlight
+            style={styles.wrapper}
+            onPress={() => Alert.prompt('Plain Text Entry')}>
+            <View style={styles.button}>
+              <Text>plain-text</Text>
+            </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={styles.wrapper}
+            onPress={() =>
+              Alert.prompt('Secure Text', null, null, 'secure-text')
+            }>
+            <View style={styles.button}>
+              <Text>secure-text</Text>
+            </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={styles.wrapper}
+            onPress={() =>
+              Alert.prompt('Login & Password', null, null, 'login-password')
+            }>
+            <View style={styles.button}>
+              <Text>login-password</Text>
+            </View>
+          </TouchableHighlight>
+        </View>
+      );
+    },
+  },
+];

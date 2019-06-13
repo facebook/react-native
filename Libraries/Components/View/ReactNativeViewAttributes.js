@@ -37,6 +37,7 @@ ReactNativeViewAttributes.UIView = {
   onAccessibilityAction: true,
   onAccessibilityTap: true,
   onMagicTap: true,
+  onAccessibilityEscape: true,
   collapsable: true,
   needsOffscreenAlphaCompositing: true,
   onMouseEnter: true, // [TODO(macOS ISS#2323203)

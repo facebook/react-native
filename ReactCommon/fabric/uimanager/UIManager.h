@@ -42,7 +42,7 @@ class UIManager {
   SharedShadowNode cloneNode(
       const SharedShadowNode &shadowNode,
       const SharedShadowNodeSharedList &children = nullptr,
-      const folly::Optional<RawProps> &rawProps = {}) const;
+      const RawProps *rawProps = nullptr) const;
 
   void appendChild(
       const SharedShadowNode &parentShadowNode,
@@ -51,6 +51,10 @@ class UIManager {
   void completeSurface(
       SurfaceId surfaceId,
       const SharedShadowNodeUnsharedList &rootChildren) const;
+
+  void setNativeProps(
+      const SharedShadowNode &shadowNode,
+      const RawProps &rawProps) const;
 
   /*
    * Returns layout metrics of given `shadowNode` relative to

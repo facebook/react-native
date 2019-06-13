@@ -200,7 +200,11 @@ class JSCRuntime : public jsi::Runtime {
 #endif
 };
 
-#if __has_builtin(__builtin_expect)
+#ifndef __has_builtin
+#define __has_builtin(x) 0
+#endif
+
+#if __has_builtin(__builtin_expect) || defined(__GNUC__)
 #define JSC_LIKELY(EXPR) __builtin_expect((bool)(EXPR), true)
 #define JSC_UNLIKELY(EXPR) __builtin_expect((bool)(EXPR), false)
 #else
@@ -234,14 +238,10 @@ class JSCRuntime : public jsi::Runtime {
 // JSStringRef utilities
 namespace {
 std::string JSStringToSTLString(JSStringRef str) {
-  std::string result;
   size_t maxBytes = JSStringGetMaximumUTF8CStringSize(str);
-  result.resize(maxBytes);
-  size_t bytesWritten = JSStringGetUTF8CString(str, &result[0], maxBytes);
-  // JSStringGetUTF8CString writes the null terminator, so we want to resize
-  // to `bytesWritten - 1` so that `result` has the correct length.
-  result.resize(bytesWritten - 1);
-  return result;
+  std::vector<char> buffer(maxBytes);
+  JSStringGetUTF8CString(str, buffer.data(), maxBytes);
+  return std::string(buffer.data());
 }
 
 JSStringRef getLengthString() {
@@ -570,6 +570,8 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
       }
       return rt.valueRef(ret);
     }
+    
+    #define JSC_UNUSED(x) (void) (x);
 
     static bool setProperty(
         JSContextRef ctx,
@@ -577,6 +579,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
         JSStringRef propName,
         JSValueRef value,
         JSValueRef* exception) {
+      JSC_UNUSED(ctx);
       auto proxy = static_cast<HostObjectProxy*>(JSObjectGetPrivate(object));
       auto& rt = proxy->runtime;
       jsi::PropNameID sym = rt.createPropNameID(propName);
@@ -612,6 +615,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
         JSContextRef ctx,
         JSObjectRef object,
         JSPropertyNameAccumulatorRef propertyNames) noexcept {
+      JSC_UNUSED(ctx);
       auto proxy = static_cast<HostObjectProxy*>(JSObjectGetPrivate(object));
       auto& rt = proxy->runtime;
       auto names = proxy->hostObject->getPropertyNames(rt);
@@ -619,6 +623,8 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
         JSPropertyNameAccumulatorAddName(propertyNames, stringRef(name));
       }
     }
+    
+    #undef JSC_UNUSED
 
     static void finalize(JSObjectRef obj) {
       auto hostObject = static_cast<HostObjectProxy*>(JSObjectGetPrivate(obj));
@@ -818,7 +824,7 @@ size_t JSCRuntime::size(const jsi::Array& arr) {
 
 jsi::Value JSCRuntime::getValueAtIndex(const jsi::Array& arr, size_t i) {
   JSValueRef exc = nullptr;
-  auto res = JSObjectGetPropertyAtIndex(ctx_, objectRef(arr), i, &exc);
+  auto res = JSObjectGetPropertyAtIndex(ctx_, objectRef(arr), (int)i, &exc);
   checkException(exc);
   return createValue(res);
 }
@@ -828,7 +834,7 @@ void JSCRuntime::setValueAtIndexImpl(
     size_t i,
     const jsi::Value& value) {
   JSValueRef exc = nullptr;
-  JSObjectSetPropertyAtIndex(ctx_, objectRef(arr), i, valueRef(value), &exc);
+  JSObjectSetPropertyAtIndex(ctx_, objectRef(arr), (int)i, valueRef(value), &exc);
   checkException(exc);
 }
 

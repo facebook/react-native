@@ -13,6 +13,7 @@ const Animated = require('Animated');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
+const Platform = require('Platform');
 const PropTypes = require('prop-types');
 const React = require('React');
 const Touchable = require('Touchable');
@@ -52,9 +53,12 @@ type Props = $ReadOnly<{|
  */
 const TouchableBounce = ((createReactClass({
   displayName: 'TouchableBounce',
-  mixins: [Touchable.Mixin, NativeMethodsMixin],
+  mixins: [Touchable.Mixin.withoutDefaultFocusAndBlur, NativeMethodsMixin],
 
   propTypes: {
+    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.89 was deployed. To see the error, delete this
+     * comment and run Flow. */
     ...TouchableWithoutFeedback.propTypes,
     // The function passed takes a callback to start the animation which should
     // be run after this onPress handler is done. You can use this (for example)
@@ -85,6 +89,9 @@ const TouchableBounce = ((createReactClass({
 
   getInitialState: function(): State {
     return {
+      /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.89 was deployed. To see the error, delete
+       * this comment and run Flow. */
       ...this.touchableGetInitialState(),
       scale: new Animated.Value(1),
     };
@@ -105,13 +112,6 @@ const TouchableBounce = ((createReactClass({
   },
 
   /**
-   * Triggers a bounce animation without invoking any callbacks.
-   */
-  bounce: function() {
-    this.bounceTo(0.93, 0.1, 0, () => this.bounceTo(1, 0.4, 0));
-  },
-
-  /**
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
@@ -123,6 +123,20 @@ const TouchableBounce = ((createReactClass({
   touchableHandleActivePressOut: function(e: PressEvent) {
     this.bounceTo(1, 0.4, 0);
     this.props.onPressOut && this.props.onPressOut(e);
+  },
+
+  touchableHandleFocus: function(e: Event) {
+    if (Platform.isTV) {
+      this.bounceTo(0.93, 0.1, 0);
+    }
+    this.props.onFocus && this.props.onFocus(e);
+  },
+
+  touchableHandleBlur: function(e: Event) {
+    if (Platform.isTV) {
+      this.bounceTo(1, 0.4, 0);
+    }
+    this.props.onBlur && this.props.onBlur(e);
   },
 
   touchableHandlePress: function(e: PressEvent) {
@@ -185,13 +199,31 @@ const TouchableBounce = ((createReactClass({
         nativeID={this.props.nativeID}
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
+        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.89 was deployed. To see the error, delete
+         * this comment and run Flow. */
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={
+          /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.89 was deployed. To see the error,
+           * delete this comment and run Flow. */
           this.touchableHandleResponderTerminationRequest
         }
+        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.89 was deployed. To see the error, delete
+         * this comment and run Flow. */
         onResponderGrant={this.touchableHandleResponderGrant}
+        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.89 was deployed. To see the error, delete
+         * this comment and run Flow. */
         onResponderMove={this.touchableHandleResponderMove}
+        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.89 was deployed. To see the error, delete
+         * this comment and run Flow. */
         onResponderRelease={this.touchableHandleResponderRelease}
+        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.89 was deployed. To see the error, delete
+         * this comment and run Flow. */
         onResponderTerminate={this.touchableHandleResponderTerminate}
         tooltip={this.props.tooltip} // TODO(macOS/win ISS#2323203)
         clickable={

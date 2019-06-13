@@ -107,9 +107,14 @@ RCT_EXTERN void RCTRegisterModule(Class);
 - (RCTModuleData *)moduleDataForName:(NSString *)moduleName;
 
 /**
-* Registers additional classes with the ModuleRegistry.
-*/
+ * Registers additional classes with the ModuleRegistry.
+ */
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)newModules;
+
+/**
+ * Updates the ModuleRegistry with a pre-initialized instance.
+ */
+- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance;
 
 /**
  * Systrace profiler toggling methods exposed for the RCTDevMenu

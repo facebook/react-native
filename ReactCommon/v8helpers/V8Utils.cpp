@@ -120,8 +120,7 @@ void nativeLog(const FunctionCallbackInfo<Value> &args) {
 
 std::pair<Local<Uint32>, Local<Uint32>> parseNativeRequireParameters(const v8::FunctionCallbackInfo<v8::Value> &args) {
     Local<Uint32> moduleId, bundleId;
-    Isolate* isolate = args.GetIsolate();
-    Local<Context> context = isolate->GetCurrentContext();
+
     if (args.Length() == 1) {
         moduleId = Local<Uint32>::Cast(args[0]);
     } else if (args.Length() == 2) {
@@ -129,14 +128,6 @@ std::pair<Local<Uint32>, Local<Uint32>> parseNativeRequireParameters(const v8::F
         bundleId = Local<Uint32>::Cast(args[1]);
     } else {
         throw std::invalid_argument("Got wrong number of args");
-    }
-
-    if (moduleId->Value() < 0) {
-        throw std::invalid_argument(folly::to<std::string>("Received invalid module ID: ", toJsonStdString(context,Local<Object>::Cast(args[0]))));
-    }
-
-    if (bundleId->Value() < 0) {
-        throw std::invalid_argument(folly::to<std::string>("Received invalid bundle ID: ", toJsonStdString(context,Local<Object>::Cast(args[1]))));
     }
 
     return std::make_pair(static_cast<Local<Uint32>>(bundleId), static_cast<Local<Uint32>>(moduleId));

@@ -49,6 +49,8 @@ class ExecutorDelegate {
     JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) = 0;
   virtual MethodCallResult callSerializableNativeHook(
     JSExecutor& executor, unsigned int moduleId, unsigned int methodId, folly::dynamic&& args) = 0;
+
+  virtual bool isBatchActive() = 0;
 };
 
 using NativeExtensionsProvider = std::function<folly::dynamic(const std::string&)>;
@@ -104,8 +106,7 @@ public:
    */
   virtual void invokeCallback(const double callbackId, const folly::dynamic& arguments) = 0;
 
-  virtual void setGlobalVariable(std::string propName,
-                                 std::unique_ptr<const JSBigString> jsonValue) = 0;
+  virtual void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) = 0;
 
   virtual void* getJavaScriptContext() {
     return nullptr;

@@ -118,12 +118,12 @@ public:
   JSBigFileString(int fd, size_t size, off_t offset = 0);
   ~JSBigFileString();
 
-  bool isAscii() const override
-  {
+  bool isAscii() const override {
     return true;
   }
 
-  const char* c_str() const override;
+  const char *c_str() const override;
+
   size_t size() const override;
   int fd() const;
 

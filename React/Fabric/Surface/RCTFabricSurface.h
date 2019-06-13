@@ -84,8 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Sets `minimumSize` and `maximumSize` layout constraints for the Surface.
  */
-- (void)setMinimumSize:(CGSize)minimumSize
-           maximumSize:(CGSize)maximumSize;
+- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize;
 
 /**
  * Previously set `minimumSize` layout constraint.
@@ -110,8 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Measures the Surface with given constraints.
  * This method does not cause any side effects on the surface object.
  */
-- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
-                      maximumSize:(CGSize)maximumSize;
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize;
 
 /**
  * Return the current size of the root view based on (but not clamp by) current

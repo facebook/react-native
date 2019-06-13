@@ -13,6 +13,10 @@
 namespace facebook {
 namespace react {
 
+struct ReadableArray : jni::JavaClass<ReadableArray> {
+  static auto constexpr kJavaDescriptor = "Lcom/facebook/react/bridge/ReadableArray;";
+};
+
 class ReadableNativeArray : public jni::HybridClass<ReadableNativeArray, NativeArray> {
  protected:
   friend HybridBase;

@@ -249,6 +249,8 @@
 		9FCC5E9B2252D123009029D1 /* libRCTLinking-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D429028F1F1CE21600685AE7 /* libRCTLinking-macOS.a */; };
 		9FCC5EAD2252D365009029D1 /* OCMock.framework in Copy Framework */ = {isa = PBXBuildFile; fileRef = 18BFA4931F01C46700969486 /* OCMock.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BC9C03401DC9F1D600B1C635 /* RCTDevMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BC9C033F1DC9F1D600B1C635 /* RCTDevMenuTests.m */; };
+		C60A228221C9726800B820FE /* RCTFormatErrorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C60A228121C9726800B820FE /* RCTFormatErrorTests.m */; };
+		C60A228321C9726800B820FE /* RCTFormatErrorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C60A228121C9726800B820FE /* RCTFormatErrorTests.m */; };
 		C654F0B31EB34A73000B7A9A /* RNTesterTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = C654F0B21EB34A73000B7A9A /* RNTesterTestModule.m */; };
 		C654F17E1EB34D24000B7A9A /* RNTesterTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = C654F0B21EB34A73000B7A9A /* RNTesterTestModule.m */; };
 		D42902901F1CE21600685AE7 /* libRCTLinking-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D429028F1F1CE21600685AE7 /* libRCTLinking-macOS.a */; };
@@ -998,6 +1000,7 @@
 		9F6169A4225FB40C008F89F1 /* libmacOSBuild.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmacOSBuild.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FB7D3EE224AC0DE00F31D11 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		BC9C033F1DC9F1D600B1C635 /* RCTDevMenuTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDevMenuTests.m; sourceTree = "<group>"; };
+		C60A228121C9726800B820FE /* RCTFormatErrorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTFormatErrorTests.m; sourceTree = "<group>"; };
 		C654F0B21EB34A73000B7A9A /* RNTesterTestModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNTesterTestModule.m; sourceTree = "<group>"; };
 		D85B82911AB6D5CE003F4FE2 /* RCTVibration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTVibration.xcodeproj; path = ../Libraries/Vibration/RCTVibration.xcodeproj; sourceTree = "<group>"; };
 		ED2970982150247000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
@@ -1374,6 +1377,7 @@
 				1497CFA71B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m */,
 				1497CFA81B21F5E400C1F8F2 /* RCTFontTests.m */,
 				1497CFA91B21F5E400C1F8F2 /* RCTEventDispatcherTests.m */,
+				C60A228121C9726800B820FE /* RCTFormatErrorTests.m */,
 				1300627E1B59179B0043FE5A /* RCTGzipTests.m */,
 				8385CF051B8747A000C6273E /* RCTImageLoaderHelpers.h */,
 				8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */,
@@ -2741,7 +2745,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n$SRCROOT/../scripts/react-native-xcode.sh RNTester/js/RNTesterApp.ios.js\n";
+			shellScript = "export EXTRA_PACKAGER_ARGS=\"--reactNativePath $SRCROOT/../\"\nexport NODE_BINARY=node\n$SRCROOT/../scripts/react-native-xcode.sh RNTester/js/RNTesterApp.ios.js\n";
 		};
 		64BF1F6D1EF848FB00B83E07 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2754,7 +2758,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n$SRCROOT/../scripts/react-native-xcode.sh RNTester/js/RNTesterApp.macos.js\n";
+			shellScript = "export EXTRA_PACKAGER_ARGS=\"--reactNativePath $SRCROOT/../\"\nexport NODE_BINARY=node\n$SRCROOT/../scripts/react-native-xcode.sh RNTester/js/RNTesterApp.macos.js\n";
 		};
 		68CD48B71D2BCB2C007E06A9 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2768,7 +2772,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n$SRCROOT/../scripts/react-native-xcode.sh RNTester/js/RNTesterApp.ios.js\n";
+			shellScript = "export EXTRA_PACKAGER_ARGS=\"--reactNativePath $SRCROOT/../\"\nexport NODE_BINARY=node\n$SRCROOT/../scripts/react-native-xcode.sh RNTester/js/RNTesterApp.ios.js\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2780,6 +2784,7 @@
 				1497CFB01B21F5E400C1F8F2 /* RCTFontTests.m in Sources */,
 				13BCE84F1C9C209600DD7AAD /* RCTComponentPropsTests.m in Sources */,
 				144D21241B2204C5006DB32B /* RCTImageUtilTests.m in Sources */,
+				C60A228221C9726800B820FE /* RCTFormatErrorTests.m in Sources */,
 				1393D0381B68CD1300E1B601 /* RCTModuleMethodTests.mm in Sources */,
 				1300627F1B59179B0043FE5A /* RCTGzipTests.m in Sources */,
 				1497CFAF1B21F5E400C1F8F2 /* RCTConvert_NSURLTests.m in Sources */,
@@ -2924,6 +2929,7 @@
 				2D4BD8DA1DA2E20D005AC8A8 /* RCTGzipTests.m in Sources */,
 				2D4BD8DB1DA2E20D005AC8A8 /* RCTImageLoaderHelpers.m in Sources */,
 				2D4BD8D71DA2E20D005AC8A8 /* RCTConvert_NSURLTests.m in Sources */,
+				C60A228321C9726800B820FE /* RCTFormatErrorTests.m in Sources */,
 				2D4BD8E21DA2E20D005AC8A8 /* RCTModuleMethodTests.mm in Sources */,
 				2D4BD8DF1DA2E20D005AC8A8 /* RCTMethodArgumentTests.m in Sources */,
 				2D4BD8D31DA2E20D005AC8A8 /* RCTBundleURLProviderTests.m in Sources */,
@@ -3431,6 +3437,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				BUNDLE_CONFIG = "$(SRCROOT)/../rn-cli.config.js";
 				DEVELOPMENT_TEAM = VYK7DLU38Z;
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -3446,6 +3453,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				BUNDLE_CONFIG = "$(SRCROOT)/../rn-cli.config.js";
 				DEVELOPMENT_TEAM = VYK7DLU38Z;
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -3524,6 +3532,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				BUNDLE_CONFIG = "$(SRCROOT)/../rn-cli.config.js";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "-";
@@ -3541,6 +3550,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				BUNDLE_CONFIG = "$(SRCROOT)/../rn-cli.config.js";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "-";
@@ -3692,6 +3702,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				BUNDLE_CONFIG = "$(SRCROOT)/../rn-cli.config.js";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
@@ -3711,6 +3722,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				BUNDLE_CONFIG = "$(SRCROOT)/../rn-cli.config.js";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
