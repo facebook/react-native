@@ -657,20 +657,20 @@ workflows:
       - test_js:
           requires:
             - setup_js
-      - test_js_e2e:
-          requires:
-            - setup_js
-            - test_js
+      # - test_js_e2e:
+      #     requires:
+      #       - setup_js
+      #       - test_js
       - test_android:
           requires:
             - setup_android
       - test_ios:
           requires:
             - setup_ios
-      - test_ios_e2e:
-          requires:
-            - setup_ios
-            - test_js
+      # - test_ios_e2e:
+      #     requires:
+      #       - setup_ios
+      #       - test_js
       - test_js:
           name: test_js_lts
           executor: nodelts
