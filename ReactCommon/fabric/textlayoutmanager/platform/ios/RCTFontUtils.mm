@@ -7,18 +7,18 @@
 
 #import "RCTFontUtils.h"
 
-#import <cmath>
-#import <mutex>
 #import <algorithm>
+#import <cmath>
 #import <limits>
+#import <mutex>
 
-static RCTFontProperties RCTDefaultFontProperties() {
+static RCTFontProperties RCTDefaultFontProperties()
+{
   static RCTFontProperties defaultFontProperties;
   static dispatch_once_t onceToken;
 
   dispatch_once(&onceToken, ^{
-    defaultFontProperties.family =
-        [UIFont systemFontOfSize:defaultFontProperties.size].familyName;
+    defaultFontProperties.family = [UIFont systemFontOfSize:defaultFontProperties.size].familyName;
     defaultFontProperties.size = 14;
     defaultFontProperties.weight = UIFontWeightRegular;
     defaultFontProperties.style = RCTFontStyleNormal;
@@ -30,36 +30,29 @@ static RCTFontProperties RCTDefaultFontProperties() {
 }
 
 static RCTFontProperties RCTResolveFontProperties(
-    RCTFontProperties fontProperties, RCTFontProperties baseFontProperties) {
-  fontProperties.family = fontProperties.family.length
-      ? fontProperties.family
-      : baseFontProperties.family;
-  fontProperties.size = !isnan(fontProperties.size)
-      ? fontProperties.size
-      : baseFontProperties.size;
-  fontProperties.weight = !isnan(fontProperties.weight)
-      ? fontProperties.weight
-      : baseFontProperties.weight;
-  fontProperties.style = fontProperties.style != RCTFontStyleUndefined
-      ? fontProperties.style
-      : baseFontProperties.style;
-  fontProperties.variant = fontProperties.variant != RCTFontVariantUndefined
-      ? fontProperties.variant
-      : baseFontProperties.variant;
+    RCTFontProperties fontProperties,
+    RCTFontProperties baseFontProperties)
+{
+  fontProperties.family = fontProperties.family.length ? fontProperties.family : baseFontProperties.family;
+  fontProperties.size = !isnan(fontProperties.size) ? fontProperties.size : baseFontProperties.size;
+  fontProperties.weight = !isnan(fontProperties.weight) ? fontProperties.weight : baseFontProperties.weight;
+  fontProperties.style =
+      fontProperties.style != RCTFontStyleUndefined ? fontProperties.style : baseFontProperties.style;
+  fontProperties.variant =
+      fontProperties.variant != RCTFontVariantUndefined ? fontProperties.variant : baseFontProperties.variant;
   return fontProperties;
 }
 
-static UIFontWeight RCTGetFontWeight(UIFont *font) {
-  NSDictionary *traits =
-      [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
+static UIFontWeight RCTGetFontWeight(UIFont *font)
+{
+  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
   return [traits[UIFontWeightTrait] doubleValue];
 }
 
-static RCTFontStyle RCTGetFontStyle(UIFont *font) {
-  NSDictionary *traits =
-      [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
-  UIFontDescriptorSymbolicTraits symbolicTraits =
-      [traits[UIFontSymbolicTrait] unsignedIntValue];
+static RCTFontStyle RCTGetFontStyle(UIFont *font)
+{
+  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
+  UIFontDescriptorSymbolicTraits symbolicTraits = [traits[UIFontSymbolicTrait] unsignedIntValue];
   if (symbolicTraits & UIFontDescriptorTraitItalic) {
     return RCTFontStyleItalic;
   }
@@ -67,19 +60,18 @@ static RCTFontStyle RCTGetFontStyle(UIFont *font) {
   return RCTFontStyleNormal;
 }
 
-static NSArray *RCTFontFeatures(RCTFontVariant fontVariant) {
+static NSArray *RCTFontFeatures(RCTFontVariant fontVariant)
+{
   // FIXME:
   return @[];
 }
 
-static UIFont *RCTDefaultFontWithFontProperties(
-    RCTFontProperties fontProperties) {
+static UIFont *RCTDefaultFontWithFontProperties(RCTFontProperties fontProperties)
+{
   static NSCache *fontCache;
   static std::mutex fontCacheMutex;
 
-  NSString *cacheKey = [NSString stringWithFormat:@"%.1f/%.2f",
-                                                  fontProperties.size,
-                                                  fontProperties.weight];
+  NSString *cacheKey = [NSString stringWithFormat:@"%.1f/%.2f", fontProperties.size, fontProperties.weight];
   UIFont *font;
 
   {
@@ -91,21 +83,16 @@ static UIFont *RCTDefaultFontWithFontProperties(
   }
 
   if (!font) {
-    font = [UIFont
-        systemFontOfSize:fontProperties.size
-                  weight:fontProperties.weight];
+    font = [UIFont systemFontOfSize:fontProperties.size weight:fontProperties.weight];
 
     if (fontProperties.variant == RCTFontStyleItalic) {
       UIFontDescriptor *fontDescriptor = [font fontDescriptor];
-      UIFontDescriptorSymbolicTraits symbolicTraits =
-          fontDescriptor.symbolicTraits;
+      UIFontDescriptorSymbolicTraits symbolicTraits = fontDescriptor.symbolicTraits;
 
       symbolicTraits |= UIFontDescriptorTraitItalic;
 
-      fontDescriptor =
-          [fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
-      font = [UIFont fontWithDescriptor:fontDescriptor
-                                   size:fontProperties.size];
+      fontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
+      font = [UIFont fontWithDescriptor:fontDescriptor size:fontProperties.size];
     }
 
     {
@@ -117,21 +104,20 @@ static UIFont *RCTDefaultFontWithFontProperties(
   return font;
 }
 
-UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties) {
+UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
+{
   RCTFontProperties defaultFontProperties = RCTDefaultFontProperties();
   fontProperties = RCTResolveFontProperties(fontProperties, defaultFontProperties);
 
   assert(!isnan(fontProperties.sizeMultiplier));
-  CGFloat effectiveFontSize =
-      fontProperties.sizeMultiplier * fontProperties.size;
+  CGFloat effectiveFontSize = fontProperties.sizeMultiplier * fontProperties.size;
   UIFont *font;
   if ([fontProperties.family isEqualToString:defaultFontProperties.family]) {
     // Handle system font as special case. This ensures that we preserve
     // the specific metrics of the standard system font as closely as possible.
     font = RCTDefaultFontWithFontProperties(fontProperties);
   } else {
-    NSArray<NSString *> *fontNames =
-        [UIFont fontNamesForFamilyName:fontProperties.family];
+    NSArray<NSString *> *fontNames = [UIFont fontNamesForFamilyName:fontProperties.family];
 
     if (fontNames.count == 0) {
       // Gracefully handle being given a font name rather than font family, for
@@ -140,9 +126,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties) {
 
       if (!font) {
         // Failback to system font.
-        font = [UIFont
-            systemFontOfSize:effectiveFontSize
-                      weight:fontProperties.weight];
+        font = [UIFont systemFontOfSize:effectiveFontSize weight:fontProperties.weight];
       }
     } else {
       // Get the closest font that matches the given weight for the fontFamily
@@ -155,8 +139,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties) {
         }
 
         CGFloat testWeight = RCTGetFontWeight(fontMatch);
-        if (ABS(testWeight - fontProperties.weight) <
-            ABS(closestWeight - fontProperties.weight)) {
+        if (ABS(testWeight - fontProperties.weight) < ABS(closestWeight - fontProperties.weight)) {
           font = fontMatch;
           closestWeight = testWeight;
         }
@@ -174,10 +157,8 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties) {
   // Apply font variants to font object.
   if (fontProperties.variant != RCTFontVariantDefault) {
     NSArray *fontFeatures = RCTFontFeatures(fontProperties.variant);
-    UIFontDescriptor *fontDescriptor =
-        [font.fontDescriptor fontDescriptorByAddingAttributes:@{
-          UIFontDescriptorFeatureSettingsAttribute : fontFeatures
-        }];
+    UIFontDescriptor *fontDescriptor = [font.fontDescriptor
+        fontDescriptorByAddingAttributes:@{UIFontDescriptorFeatureSettingsAttribute : fontFeatures}];
     font = [UIFont fontWithDescriptor:fontDescriptor size:effectiveFontSize];
   }
 
