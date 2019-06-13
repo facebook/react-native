@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <folly/Optional.h>
+#include <better/optional.h>
 #include <folly/dynamic.h>
 #include <react/core/RawProps.h>
 #include <react/graphics/Color.h>
@@ -18,12 +18,12 @@ namespace facebook {
 namespace react {
 
 template <typename T>
-void fromRawValue(const RawValue &rawValue, T &result) {
+void fromRawValue(RawValue const &rawValue, T &result) {
   result = (T)rawValue;
 }
 
 template <typename T>
-void fromRawValue(const RawValue &rawValue, std::vector<T> &result) {
+void fromRawValue(RawValue const &rawValue, std::vector<T> &result) {
   if (rawValue.hasType<std::vector<RawValue>>()) {
     auto items = (std::vector<RawValue>)rawValue;
     auto length = items.size();
@@ -47,11 +47,13 @@ void fromRawValue(const RawValue &rawValue, std::vector<T> &result) {
 
 template <typename T, typename U = T>
 T convertRawProp(
-    const RawProps &rawProps,
-    const std::string &name,
-    const T &sourceValue,
-    const U &defaultValue = U()) {
-  const auto rawValue = rawProps.at(name);
+    RawProps const &rawProps,
+    char const *name,
+    T const &sourceValue,
+    U const &defaultValue = U(),
+    char const *namePrefix = nullptr,
+    char const *nameSuffix = nullptr) {
+  const auto rawValue = rawProps.at(name, namePrefix, nameSuffix);
 
   if (!rawValue) {
     return sourceValue;
@@ -69,12 +71,14 @@ T convertRawProp(
 }
 
 template <typename T>
-static folly::Optional<T> convertRawProp(
-    const RawProps &rawProps,
-    const std::string &name,
-    const folly::Optional<T> &sourceValue,
-    const folly::Optional<T> &defaultValue = {}) {
-  const auto rawValue = rawProps.at(name);
+static better::optional<T> convertRawProp(
+    RawProps const &rawProps,
+    char const *name,
+    better::optional<T> const &sourceValue,
+    better::optional<T> const &defaultValue = {},
+    char const *namePrefix = nullptr,
+    char const *nameSuffix = nullptr) {
+  const auto rawValue = rawProps.at(name, namePrefix, nameSuffix);
 
   if (!rawValue) {
     return sourceValue;
@@ -88,7 +92,7 @@ static folly::Optional<T> convertRawProp(
 
   T result;
   fromRawValue(*rawValue, result);
-  return folly::Optional<T>{result};
+  return better::optional<T>{result};
 }
 
 } // namespace react

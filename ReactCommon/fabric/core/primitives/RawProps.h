@@ -107,12 +107,36 @@ class RawProps {
    * Returns a const unowning pointer to `RawValue` of a prop with a given name.
    * Returns `nullptr` if a prop with the given name does not exist.
    */
-  const RawValue *at(std::string const &name) const noexcept {
+  const RawValue *at(char const *name, char const *prefix, char const *suffix)
+      const noexcept {
     if (empty_) {
       return nullptr;
     }
 
-    auto iterator = map_.find(name);
+    char buffer[64];
+    int length = 0;
+
+    // Prefix
+    if (prefix) {
+      int prefixLength = strlen(prefix);
+      memcpy(buffer, prefix, prefixLength);
+      length = prefixLength;
+    }
+
+    // Name
+    int nameLength = strlen(name);
+    memcpy(buffer + length, name, nameLength);
+    length += nameLength;
+
+    // Suffix
+    if (suffix) {
+      int suffixLength = strlen(suffix);
+      memcpy(buffer + length, suffix, suffixLength);
+      length += suffixLength;
+    }
+    buffer[length] = 0;
+
+    auto iterator = map_.find(buffer);
     if (iterator == map_.end()) {
       return nullptr;
     }
