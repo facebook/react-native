@@ -1,9 +1,11 @@
+// @ts-check
 // Used to publish this fork of react-native
 // Publish it as an attached tar asset to the GitHub release for general consumption, since we can't publish this to the npmjs npm feed
 
 const fs = require("fs");
 const path = require("path");
 const execSync = require("child_process").execSync;
+const {pkgJsonPath, publishBranchName, gatherVersionInfo} = require('./versionUtils');
 
 function exec(command) {
   try {
@@ -19,38 +21,11 @@ function exec(command) {
 }
 
 function doPublish() {
-  const publishBranchName = process.env.BUILD_SOURCEBRANCH.match(/refs\/heads\/(.*)/)[1];
   console.log(`Target branch to publish to: ${publishBranchName}`);
 
+  const {releaseVersion, branchVersionSuffix} = gatherVersionInfo()
+
   const tempPublishBranch = `publish-temp-${Date.now()}`;
-
-  const pkgJsonPath = path.resolve(__dirname, "../package.json");
-  let pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf8"));
-
-  let releaseVersion = pkgJson.version;
-
-  console.log(`Using ${`(.*-microsoft)(-${publishBranchName})?\\.([0-9]*)`} to match version`);
-  const branchVersionSuffix = (publishBranchName.match(/(fb.*merge)|(fabric)/) ? `-${publishBranchName}` : '');
-
-  const onlyTagSource = !!branchVersionSuffix;
-
-  versionStringRegEx = new RegExp(`(.*-microsoft)(-${publishBranchName})?\\.([0-9]*)`);
-  const versionGroups = versionStringRegEx.exec(releaseVersion);
-  if (versionGroups) {
-    releaseVersion = versionGroups[1] + branchVersionSuffix + '.' + (parseInt(versionGroups[3]) + 1);
-  } else {
-    if (releaseVersion.indexOf("-") === -1) {
-      releaseVersion = releaseVersion + `-microsoft${branchVersionSuffix}.0`;
-    } else {
-      console.log("Invalid version to publish");
-      exit(1);
-    }
-  }
-
-  pkgJson.version = releaseVersion;
-  fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2));
-  console.log(`Updating package.json to version ${releaseVersion}`);
-
   exec(`git checkout -b ${tempPublishBranch}`);
 
   exec(`git add ${pkgJsonPath}`);
@@ -59,6 +34,7 @@ function doPublish() {
   exec(`git push origin HEAD:${tempPublishBranch} --follow-tags --verbose`);
   exec(`git push origin tag v${releaseVersion}`);
 
+  const onlyTagSource = !!branchVersionSuffix;
   if (!onlyTagSource) {
     // -------- Generating Android Artifacts with JavaDoc
     exec("gradlew installArchives");
