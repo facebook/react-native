@@ -29,25 +29,47 @@ namespace react {
 class RawProps {
  public:
   /*
+   * Creates empty RawProps objects.
+   */
+  RawProps() {
+    empty_ = true;
+  }
+
+  /*
    * Creates an object with given `runtime` and `value`.
    */
-  RawProps(jsi::Runtime &runtime, const jsi::Value &value) noexcept
-      : RawProps(
-            value.isNull() ? folly::dynamic::object()
-                           : jsi::dynamicFromValue(runtime, value)) {}
+  RawProps(jsi::Runtime &runtime, jsi::Value const &value) noexcept {
+    empty_ = value.isNull();
+    if (empty_) {
+      return;
+    }
+
+    auto dynamic = jsi::dynamicFromValue(runtime, value);
+
+    map_ = (better::map<std::string, RawValue>)RawValue(dynamic);
+
+#ifdef ANDROID
+    dynamic_ = dynamic;
+#endif
+  }
 
   /*
    * Creates an object with given `folly::dynamic` object.
-   * Deprecated.
+   * Deprecated. Do not use.
    * We need this temporary, only because we have a callsite that does not have
    * a `jsi::Runtime` behind the data.
    */
-  RawProps(const folly::dynamic &dynamic) noexcept
-      :
+  RawProps(folly::dynamic const &dynamic) noexcept {
+    empty_ = dynamic.isNull();
+    if (empty_) {
+      return;
+    }
+
+    map_ = (better::map<std::string, RawValue>)RawValue(dynamic);
+
 #ifdef ANDROID
-        dynamic_(dynamic),
+    dynamic_ = dynamic;
 #endif
-        map_((better::map<std::string, RawValue>)RawValue(dynamic)) {
   }
 
   /*
@@ -59,8 +81,8 @@ class RawProps {
   /*
    * Not copyable.
    */
-  RawProps(const RawProps &other) noexcept = delete;
-  RawProps &operator=(const RawProps &other) noexcept = delete;
+  RawProps(RawProps const &other) noexcept = delete;
+  RawProps &operator=(RawProps const &other) noexcept = delete;
 
 #ifdef ANDROID
   /*
@@ -69,15 +91,27 @@ class RawProps {
    * will be removed as soon Android implementation does not need it.
    */
   explicit operator folly::dynamic() const noexcept {
-    return dynamic_;
+    return empty_ ? folly::dynamic::object() : dynamic_;
   }
 #endif
+
+  /*
+   * Returns `true` if the object is empty.
+   * Empty `RawProps` does not have any stored data.
+   */
+  bool isEmpty() const noexcept {
+    return empty_;
+  }
 
   /*
    * Returns a const unowning pointer to `RawValue` of a prop with a given name.
    * Returns `nullptr` if a prop with the given name does not exist.
    */
-  const RawValue *at(const std::string &name) const noexcept {
+  const RawValue *at(std::string const &name) const noexcept {
+    if (empty_) {
+      return nullptr;
+    }
+
     auto iterator = map_.find(name);
     if (iterator == map_.end()) {
       return nullptr;
@@ -87,11 +121,12 @@ class RawProps {
   }
 
  private:
+  // When `empty_` is `true` other data members have undefined values.
+  bool empty_;
+  better::map<std::string, RawValue> map_;
 #ifdef ANDROID
-  const folly::dynamic dynamic_;
+  folly::dynamic dynamic_;
 #endif
-
-  const better::map<std::string, RawValue> map_;
 };
 
 } // namespace react

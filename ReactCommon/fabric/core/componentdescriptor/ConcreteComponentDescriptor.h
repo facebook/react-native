@@ -90,6 +90,9 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   virtual SharedProps cloneProps(
       const SharedProps &props,
       const RawProps &rawProps) const override {
+    if (rawProps.isEmpty()) {
+      return props ? props : ShadowNodeT::defaultSharedProps();
+    }
     return ShadowNodeT::Props(rawProps, props);
   };
 
