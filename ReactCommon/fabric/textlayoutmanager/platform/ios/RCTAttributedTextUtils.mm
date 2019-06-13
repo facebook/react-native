@@ -32,6 +32,23 @@ using namespace facebook::react;
 
 @end
 
+inline static UIFontWeight RCTUIFontWeightFromInteger(NSInteger fontWeight) {
+  assert(fontWeight > 50);
+  assert(fontWeight < 950);
+
+  static UIFontWeight weights[] = {/* ~100 */ UIFontWeightUltraLight,
+                                   /* ~200 */ UIFontWeightThin,
+                                   /* ~300 */ UIFontWeightLight,
+                                   /* ~400 */ UIFontWeightRegular,
+                                   /* ~500 */ UIFontWeightMedium,
+                                   /* ~600 */ UIFontWeightSemibold,
+                                   /* ~700 */ UIFontWeightBold,
+                                   /* ~800 */ UIFontWeightHeavy,
+                                   /* ~900 */ UIFontWeightBlack};
+  // The expression is designed to convert something like 760 or 830 to 7.
+  return weights[(fontWeight + 50) / 100 - 1];
+}
+
 inline static UIFont *RCTEffectiveFontFromTextAttributes(
     const TextAttributes &textAttributes) {
   NSString *fontFamily =
@@ -46,9 +63,9 @@ inline static UIFont *RCTEffectiveFontFromTextAttributes(
       : RCTFontStyleUndefined;
   fontProperties.variant = textAttributes.fontVariant.hasValue()
       ? RCTFontVariantFromFontVariant(textAttributes.fontVariant.value())
-      : RCTFontVariantDefault;
+      : RCTFontVariantUndefined;
   fontProperties.weight = textAttributes.fontWeight.hasValue()
-      ? CGFloat(textAttributes.fontWeight.value())
+      ? RCTUIFontWeightFromInteger((NSInteger)textAttributes.fontWeight.value())
       : NAN;
   fontProperties.sizeMultiplier = textAttributes.fontSizeMultiplier;
 
