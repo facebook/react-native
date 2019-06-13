@@ -57,10 +57,10 @@ using namespace facebook::react;
 {
   const auto &paragraphProps = std::static_pointer_cast<const ParagraphProps>(props);
 
-  [super updateProps:props oldProps:oldProps];
-
   assert(paragraphProps);
   _paragraphAttributes = paragraphProps->paragraphAttributes;
+
+  [super updateProps:props oldProps:oldProps];
 }
 
 - (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData

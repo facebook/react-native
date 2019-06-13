@@ -53,8 +53,6 @@ using namespace facebook::react;
   auto const &oldConcreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(_props);
   auto const &newConcreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(props);
 
-  [super updateProps:props oldProps:oldProps];
-
   if (newConcreteProps.refreshing != oldConcreteProps.refreshing) {
     if (newConcreteProps.refreshing) {
       [_refreshControl beginRefreshing];
@@ -76,6 +74,8 @@ using namespace facebook::react;
   if (needsUpdateTitle) {
     [self _updateTitle];
   }
+
+  [super updateProps:props oldProps:oldProps];
 }
 
 #pragma mark -

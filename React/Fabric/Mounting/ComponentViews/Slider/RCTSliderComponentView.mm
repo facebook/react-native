@@ -112,8 +112,6 @@ using namespace facebook::react;
   const auto &oldSliderProps = *std::static_pointer_cast<const SliderProps>(_props);
   const auto &newSliderProps = *std::static_pointer_cast<const SliderProps>(props);
 
-  [super updateProps:props oldProps:oldProps];
-
   // `value`
   if (oldSliderProps.value != newSliderProps.value) {
     _sliderView.value = newSliderProps.value;
@@ -149,6 +147,8 @@ using namespace facebook::react;
   if (oldSliderProps.maximumTrackTintColor != newSliderProps.maximumTrackTintColor) {
     _sliderView.maximumTrackTintColor = [UIColor colorWithCGColor:newSliderProps.maximumTrackTintColor.get()];
   }
+
+  [super updateProps:props oldProps:oldProps];
 }
 
 - (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
