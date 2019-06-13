@@ -375,7 +375,7 @@ make this the default.
 I was surprised at the speed of float and double division, but
 the only case where it actually wins by much and is correct is for
 int16_t.  (float + ceil is faster for the 32-bit case, but is only
-an approximation.)  I ran a similar benchmark setup for ARM and ARM64.
+an approximation.)  I ran a similar benchmark setup for ARM and .
 On ARM the conditional versions win by quite a bit.  32-bit ARM doesn't
 have a native integer divide, so getting the remainder after a division
 (to see if truncation occurred) is more work than preconditioning the

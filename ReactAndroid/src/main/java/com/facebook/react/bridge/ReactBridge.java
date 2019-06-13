@@ -22,7 +22,7 @@ public class ReactBridge {
   // Office implementation of RN can work with two JS Engines: V8 and JSC.
   // There is a compile time flag to decide which one will be used and V8 is the default one.
   // We are exposing an API from ReactBridge so that consumer can choose JSC if required.
-  private static boolean sUseJSC = false;
+  private static boolean sUseJSC = true;
 
   public static void staticInit() {
     if (sDidInit) {

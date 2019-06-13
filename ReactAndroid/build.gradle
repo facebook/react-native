@@ -9,6 +9,10 @@ plugins {
     id("de.undercouch.download")
 }
 
+
+
+
+
 import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.ReplaceTokens
@@ -69,6 +73,10 @@ task prepareHermes() {
     }
 }
 
+
+
+
+
 // For GitHub CI - we use this task
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
     src "https://github.com/react-native-community/boost-for-react-native/releases/download/v${BOOST_VERSION.replace("_", ".")}-0/boost_${BOOST_VERSION}.tar.gz"
@@ -91,6 +99,7 @@ task prepareBoost(dependsOn: createNativeDepsDirectories, type: Copy) {
         }
         file("$thirdPartyNdkDir/boost_tmp/Android.mk").renameTo("$thirdPartyNdkDir/boost/Android.mk")
     }
+
 }
 
 task prepareDoubleConversion(dependsOn: createNativeDepsDirectories, type: Copy) {
@@ -164,6 +173,7 @@ task prepareJSC(dependsOn: createNativeDepsDirectories) {
         }
     }
 }
+
 
 def getNdkBuildName() {
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -259,6 +269,8 @@ task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
     into "$buildDir/react-ndk/exported"
 }
 
+
+
 task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
     from "$buildDir/react-ndk/exported"
     into "src/main/jni/prebuilt/lib"
@@ -331,9 +343,9 @@ dependencies {
     api 'com.google.code.findbugs:jsr305:3.0.2'
     api "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
     api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
-    api 'com.squareup.okio:okio:1.15.0'
-    if (!isV8Enabled()) {
-        api 'org.webkit:android-jsc:r174650'
+    api 'com.squareup.okio:okio:1.15.0'    
+    if(!isV8Enabled()){
+    compile 'org.webkit:android-jsc:r174650'
     }
     testImplementation "junit:junit:${JUNIT_VERSION}"
     testImplementation "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"

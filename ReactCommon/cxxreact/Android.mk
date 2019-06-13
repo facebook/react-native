@@ -44,10 +44,12 @@ LOCAL_V8_FILES := \
     V8NativeModules.cpp \
     V8Executor.cpp 
 
+ifeq ($(ENGINEUSED), 1)
 LOCAL_SRC_FILES += $(LOCAL_V8_FILES)
 LOCAL_CFLAGS += -DENGINEUSED=1
 LOCAL_STATIC_LIBRARIES := v8helpers
 LOCAL_SHARED_LIBRARIES += libv8 libv8platform libv8base
+endif
 
 
 include $(BUILD_STATIC_LIBRARY)
@@ -57,7 +59,9 @@ $(call import-module,folly)
 $(call import-module,glog)
 $(call import-module,jsinspector)
 $(call import-module,privatedata)
+ifeq ($(ENGINEUSED), 1)
 $(call import-module,v8)
 $(call import-module,v8base)
 $(call import-module,v8helpers) 
 $(call import-module,v8platform) 
+endif

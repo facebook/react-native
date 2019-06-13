@@ -39,7 +39,6 @@ LOCAL_MODULE := reactnativejni
 LOCAL_SRC_FILES := \
   CatalystInstanceImpl.cpp \
   CxxModuleWrapper.cpp \
-  InstanceManager.cpp \
   JavaModuleWrapper.cpp \
   JReactMarker.cpp \
   JSLogging.cpp \
@@ -62,10 +61,6 @@ LOCAL_SRC_FILES := \
 LOCAL_V8_FILES := \
   AndroidV8Factory.cpp
 
-LOCAL_JSC_FILES := \
-  AndroidJSCFactory.cpp \
-  JSCPerfLogging.cpp \
-
 LOCAL_HERMES_FILES := \
   DummyHermesFactory.cpp
 
@@ -74,7 +69,6 @@ ifeq ($(ENGINEUSED), 1)
   LOCAL_CFLAGS += -DENGINEUSED=1
 endif
 ifeq ($(ENGINEUSED), 0)
-  # LOCAL_SRC_FILES += $(LOCAL_JSC_FILES)
   LOCAL_CFLAGS += -DENGINEUSED=0
   LOCAL_SHARED_LIBRARIES += libjsc
 endif
@@ -103,7 +97,9 @@ $(call import-module,privatedata)
 $(call import-module,fb)
 $(call import-module,fbgloginit)
 $(call import-module,folly)
+ifeq ($(ENGINEUSED), 2)
 $(call import-module,hermes)
+endif
 ifeq ($(ENGINEUSED), 0)
   $(call import-module,jsc)
 endif
