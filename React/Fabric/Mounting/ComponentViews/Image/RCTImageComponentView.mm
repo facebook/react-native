@@ -52,7 +52,7 @@
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &oldImageProps = *std::static_pointer_cast<const ImageProps>(oldProps ?: _props);
+  const auto &oldImageProps = *std::static_pointer_cast<const ImageProps>(_props);
   const auto &newImageProps = *std::static_pointer_cast<const ImageProps>(props);
 
   [super updateProps:props oldProps:oldProps];

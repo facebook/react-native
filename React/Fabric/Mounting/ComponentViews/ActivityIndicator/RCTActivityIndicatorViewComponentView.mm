@@ -60,7 +60,7 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &oldViewProps = *std::static_pointer_cast<const ActivityIndicatorViewProps>(oldProps ?: _props);
+  const auto &oldViewProps = *std::static_pointer_cast<const ActivityIndicatorViewProps>(_props);
   const auto &newViewProps = *std::static_pointer_cast<const ActivityIndicatorViewProps>(props);
 
   [super updateProps:props oldProps:oldProps];

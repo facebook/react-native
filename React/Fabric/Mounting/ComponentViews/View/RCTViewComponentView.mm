@@ -107,7 +107,7 @@ using namespace facebook::react;
       NSStringFromClass([self class]));
 #endif
 
-  auto const &oldViewProps = *std::static_pointer_cast<ViewProps const>(oldProps ?: _props);
+  auto const &oldViewProps = *std::static_pointer_cast<ViewProps const>(_props);
   auto const &newViewProps = *std::static_pointer_cast<ViewProps const>(props);
 
   _props = std::static_pointer_cast<ViewProps const>(props);

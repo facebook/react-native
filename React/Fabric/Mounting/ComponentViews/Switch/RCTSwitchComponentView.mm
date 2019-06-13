@@ -45,7 +45,7 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &oldSwitchProps = *std::static_pointer_cast<const SwitchProps>(oldProps ?: _props);
+  const auto &oldSwitchProps = *std::static_pointer_cast<const SwitchProps>(_props);
   const auto &newSwitchProps = *std::static_pointer_cast<const SwitchProps>(props);
 
   [super updateProps:props oldProps:oldProps];

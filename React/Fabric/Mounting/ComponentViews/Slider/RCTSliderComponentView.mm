@@ -109,7 +109,7 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &oldSliderProps = *std::static_pointer_cast<const SliderProps>(oldProps ?: _props);
+  const auto &oldSliderProps = *std::static_pointer_cast<const SliderProps>(_props);
   const auto &newSliderProps = *std::static_pointer_cast<const SliderProps>(props);
 
   [super updateProps:props oldProps:oldProps];

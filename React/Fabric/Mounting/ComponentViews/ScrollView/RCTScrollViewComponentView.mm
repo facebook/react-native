@@ -71,7 +71,7 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &oldScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(oldProps ?: _props);
+  const auto &oldScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(_props);
   const auto &newScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(props);
 
   [super updateProps:props oldProps:oldProps];

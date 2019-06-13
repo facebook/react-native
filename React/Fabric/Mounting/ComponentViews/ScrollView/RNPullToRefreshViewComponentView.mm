@@ -50,7 +50,7 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  auto const &oldConcreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(oldProps ?: _props);
+  auto const &oldConcreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(_props);
   auto const &newConcreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(props);
 
   [super updateProps:props oldProps:oldProps];
