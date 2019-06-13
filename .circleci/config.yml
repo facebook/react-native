@@ -429,6 +429,8 @@ jobs:
             - run: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
             - brew_install:
                 package: applesimutils
+            - brew_install:
+                package: watchman
 
       # Configure Watchman
       - run: touch .watchmanconfig
