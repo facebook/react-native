@@ -41,15 +41,6 @@ require('./setUpSegmentFetcher');
 if (__DEV__) {
   require('./checkNativeVersion');
   require('./setUpDeveloperTools');
-
-  // This is used by the require.js polyfill for hot reloading.
-  // TODO(t9759686) Scan polyfills for dependencies, too
-  const reload = require('../NativeModules/specs/NativeDevSettings').default
-    .reload;
-  if (typeof reload !== 'function') {
-    throw new Error('Could not find the reload() implementation.');
-  }
-  (require: any).reload = reload;
 }
 
 const GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');
