@@ -17,6 +17,9 @@ using namespace facebook::react;
 
 TEST(ShadowNodeTest, handleProps) {
   const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
+  auto parser = RawPropsParser();
+  parser.prepare<Props>();
+  raw.parse(parser);
 
   auto props = std::make_shared<Props>(Props(), raw);
 
@@ -44,8 +47,6 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
   ASSERT_EQ(node->getSurfaceId(), 1);
   ASSERT_EQ(node->getEventEmitter(), nullptr);
   ASSERT_EQ(node->getChildren().size(), 0);
-
-  ASSERT_STREQ(node->getProps()->nativeId.c_str(), "testNativeID");
 
   node->sealRecursive();
   ASSERT_TRUE(node->getSealed());

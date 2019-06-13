@@ -41,9 +41,11 @@ using namespace facebook::react;
 
 const testTemplate = `
 TEST(::_COMPONENT_NAME_::_::_TEST_NAME_::, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<::_COMPONENT_NAME_::>();
   auto const &sourceProps = ::_COMPONENT_NAME_::();
   auto const &rawProps = RawProps(folly::dynamic::object("::_PROP_NAME_::", ::_PROP_VALUE_::));
-
+  rawProps.parse(propParser);
   ::_COMPONENT_NAME_::(sourceProps, rawProps);
 }
 `;
@@ -133,7 +135,11 @@ function generateTestsString(name, component) {
 module.exports = {
   generate(libraryName: string, schema: SchemaType): FilesOutput {
     const fileName = 'Tests.cpp';
-    const allImports = new Set(['#include <react/core/propsConversions.h>']);
+    const allImports = new Set([
+      '#include <react/core/propsConversions.h>',
+      '#include <react/core/RawProps.h>',
+      '#include <react/core/RawPropsParser.h>',
+    ]);
 
     const componentTests = Object.keys(schema.modules)
       .map(moduleName => {
