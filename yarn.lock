@@ -970,6 +970,15 @@
     jest-message-util "^24.7.1"
     jest-mock "^24.7.0"
 
+"@jest/fake-timers@^24.8.0":
+  version "24.8.0"
+  resolved "https://registry.yarnpkg.com/@jest/fake-timers/-/fake-timers-24.8.0.tgz#2e5b80a4f78f284bcb4bd5714b8e10dd36a8d3d1"
+  integrity sha512-2M4d5MufVXwi6VzZhJ9f5S/wU4ud2ck0kxPof1Iz3zWx6Y+V2eJrES9jEktB6O3o/oEyk+il/uNu9PvASjWXQw==
+  dependencies:
+    "@jest/types" "^24.8.0"
+    jest-message-util "^24.8.0"
+    jest-mock "^24.8.0"
+
 "@jest/reporters@^24.7.1":
   version "24.7.1"
   resolved "https://registry.yarnpkg.com/@jest/reporters/-/reporters-24.7.1.tgz#38ac0b096cd691bbbe3051ddc25988d42e37773a"
@@ -1014,6 +1023,15 @@
     "@jest/types" "^24.7.0"
     "@types/istanbul-lib-coverage" "^2.0.0"
 
+"@jest/test-result@^24.8.0":
+  version "24.8.0"
+  resolved "https://registry.yarnpkg.com/@jest/test-result/-/test-result-24.8.0.tgz#7675d0aaf9d2484caa65e048d9b467d160f8e9d3"
+  integrity sha512-+YdLlxwizlfqkFDh7Mc7ONPQAhA4YylU1s529vVM1rsf67vGZH/2GGm5uO8QzPeVyaVMobCQ7FTxl38QrKRlng==
+  dependencies:
+    "@jest/console" "^24.7.1"
+    "@jest/types" "^24.8.0"
+    "@types/istanbul-lib-coverage" "^2.0.0"
+
 "@jest/test-sequencer@^24.7.1":
   version "24.7.1"
   resolved "https://registry.yarnpkg.com/@jest/test-sequencer/-/test-sequencer-24.7.1.tgz#9c18e428e1ad945fa74f6233a9d35745ca0e63e0"
@@ -1053,44 +1071,53 @@
     "@types/istanbul-lib-coverage" "^2.0.0"
     "@types/yargs" "^12.0.9"
 
-"@react-native-community/cli-platform-android@2.0.0-rc.1", "@react-native-community/cli-platform-android@^2.0.0-rc.1":
-  version "2.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.0.0-rc.1.tgz#9f14106104b20bd94d05a3ddad79859b566f8996"
-  integrity sha512-gH+ev65wxuO9KQxYTvpRh3PFCVvYwxJdZecFZDknnedIx49eVxro99svO/wcp1OLdtzxV+ErFolpIFn0gSyVFg==
+"@jest/types@^24.8.0":
+  version "24.8.0"
+  resolved "https://registry.yarnpkg.com/@jest/types/-/types-24.8.0.tgz#f31e25948c58f0abd8c845ae26fcea1491dea7ad"
+  integrity sha512-g17UxVr2YfBtaMUxn9u/4+siG1ptg9IGYAYwvpwn61nBg779RXnjE/m7CxYcIzEt0AbHZZAHSEZNhkE2WxURVg==
   dependencies:
-    "@react-native-community/cli-tools" "^2.0.0-rc.1"
+    "@types/istanbul-lib-coverage" "^2.0.0"
+    "@types/istanbul-reports" "^1.1.1"
+    "@types/yargs" "^12.0.9"
+
+"@react-native-community/cli-platform-android@2.0.0-rc.2", "@react-native-community/cli-platform-android@^2.0.0-rc.2":
+  version "2.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.0.0-rc.2.tgz#78eba602aaccde906dbe8d0c48f2497900be3b3f"
+  integrity sha512-pZQ3W8vYqSP2hNTfhhZ2/VU2+7WVXB0dBTPU1wrNtWjxxzCYwpx6l3YM2Bjffwx5yGUJ/FpIrhKXGXZzXdAH9A==
+  dependencies:
+    "@react-native-community/cli-tools" "^2.0.0-rc.2"
     logkitty "^0.4.0"
     slash "^2.0.0"
     xmldoc "^0.4.0"
 
-"@react-native-community/cli-platform-ios@2.0.0-rc.1", "@react-native-community/cli-platform-ios@^2.0.0-rc.1":
-  version "2.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.0.0-rc.1.tgz#832c8c873193b8829249227fa1d1f734e7aa267e"
-  integrity sha512-okioIW81pd5vA1tgdSo8nYGnljqhaV91zprrkko6IhMV4sr/eGlN0D/cyFhUXmnBj6q63+X4Ulr809wqXjJ14w==
+"@react-native-community/cli-platform-ios@2.0.0-rc.2", "@react-native-community/cli-platform-ios@^2.0.0-rc.2":
+  version "2.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.0.0-rc.2.tgz#3c73982363b5a07a5159da9ef04c6f3e45551467"
+  integrity sha512-4ruii2d0ISM0IpzX8o9C/uRdw4UnUDiWDLkLzEObpNjDpOjS3jl+lFJ+S4hW6U/bldl6ahj7CJeMmXiAsTrZWQ==
   dependencies:
-    "@react-native-community/cli-tools" "^2.0.0-rc.1"
+    "@react-native-community/cli-tools" "^2.0.0-rc.2"
     chalk "^1.1.1"
     xcode "^2.0.0"
 
-"@react-native-community/cli-tools@^2.0.0-rc.1":
-  version "2.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.0-rc.1.tgz#a8c3f76e0c33ab689c1c769cbbed83add5c13b11"
-  integrity sha512-ZUc5s/aGdg7d3dT9eMAzKqWd5Lsa42TrsUWjcqaG7WTYUPIUHTWOcpnRLV4B5MUfmEEt3mboOoQZRUcDltz8kA==
+"@react-native-community/cli-tools@^2.0.0-rc.2":
+  version "2.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.0-rc.2.tgz#4308b24de4fe0b4699c2cea687e938e7a8c62c86"
+  integrity sha512-B0l9k43MkLgrnZs+Z7EZ9Xmb4YYi51Ifj/pabM8EklZJPnLzjWdfvuY64NJBQf4prOg2cTXqh8s9iO/jrsgU3Q==
   dependencies:
     chalk "^1.1.1"
     lodash "^4.17.5"
     mime "^2.4.1"
     node-fetch "^2.5.0"
 
-"@react-native-community/cli@2.0.0-rc.1":
-  version "2.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.0.0-rc.1.tgz#05766235131d4940315ae423848f61b302f4192a"
-  integrity sha512-mbU45L511eem67vRynHizKDpDv+Xm4xMwMV9HRbTspFxQyhxQd+A4zyQEWKho+/cXZbVhIh8myc/naQDZkmUxQ==
+"@react-native-community/cli@2.0.0-rc.2":
+  version "2.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.0.0-rc.2.tgz#8bb3c07a58056b0af5474782bedc457184b42595"
+  integrity sha512-G0NrMfJ6bcXfJKLijQmxuTV4S22pXfp8c5XI7L1i+b5Vu34IvR6xvKVPT9leYEEI/bg/ZuyguDZuVecycJb63A==
   dependencies:
     "@hapi/joi" "^15.0.3"
-    "@react-native-community/cli-platform-android" "^2.0.0-rc.1"
-    "@react-native-community/cli-platform-ios" "^2.0.0-rc.1"
-    "@react-native-community/cli-tools" "^2.0.0-rc.1"
+    "@react-native-community/cli-platform-android" "^2.0.0-rc.2"
+    "@react-native-community/cli-platform-ios" "^2.0.0-rc.2"
+    "@react-native-community/cli-tools" "^2.0.0-rc.2"
     chalk "^1.1.1"
     command-exists "^1.2.8"
     commander "^2.19.0"
@@ -1164,10 +1191,30 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/istanbul-lib-coverage@*":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.1.tgz#42995b446db9a48a11a07ec083499a860e9138ff"
+  integrity sha512-hRJD2ahnnpLgsj6KWMYSrmXkM3rm2Dl1qkx6IOFD5FnuNPXJIG5L0dhgKXCYTRMGzU4n0wImQ/xfmRc4POUFlg==
+
 "@types/istanbul-lib-coverage@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.0.tgz#1eb8c033e98cf4e1a4cedcaf8bcafe8cb7591e85"
   integrity sha512-eAtOAFZefEnfJiRFQBGw1eYqa5GTLCZ1y86N0XSI/D6EB+E8z6VPV/UL7Gi5UEclFqoQk+6NRqEDsfmDLXn8sg==
+
+"@types/istanbul-lib-report@*":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@types/istanbul-lib-report/-/istanbul-lib-report-1.1.1.tgz#e5471e7fa33c61358dd38426189c037a58433b8c"
+  integrity sha512-3BUTyMzbZa2DtDI2BkERNC6jJw2Mr2Y0oGI7mRxYNBPxppbtEK1F66u3bKwU2g+wxwWI7PAoRpJnOY1grJqzHg==
+  dependencies:
+    "@types/istanbul-lib-coverage" "*"
+
+"@types/istanbul-reports@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@types/istanbul-reports/-/istanbul-reports-1.1.1.tgz#7a8cbf6a406f36c8add871625b278eaf0b0d255a"
+  integrity sha512-UpYjBi8xefVChsCoBpKShdxTllC9pwISirfoZsUa2AAdQg/Jd2KQGtSbw+ya7GPo7x/wAPlH6JBhKhAsXUEZNA==
+  dependencies:
+    "@types/istanbul-lib-coverage" "*"
+    "@types/istanbul-lib-report" "*"
 
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
@@ -4022,17 +4069,17 @@ jest-get-type@^24.3.0:
   integrity sha512-HYF6pry72YUlVcvUx3sEpMRwXEWGEPlJ0bSPVnB3b3n++j4phUEoSPcS6GC0pPJ9rpyPSe4cb5muFo6D39cXow==
 
 jest-haste-map@^24.7.1:
-  version "24.7.1"
-  resolved "https://registry.yarnpkg.com/jest-haste-map/-/jest-haste-map-24.7.1.tgz#772e215cd84080d4bbcb759cfb668ad649a21471"
-  integrity sha512-g0tWkzjpHD2qa03mTKhlydbmmYiA2KdcJe762SbfFo/7NIMgBWAA0XqQlApPwkWOF7Cxoi/gUqL0i6DIoLpMBw==
+  version "24.8.1"
+  resolved "https://registry.yarnpkg.com/jest-haste-map/-/jest-haste-map-24.8.1.tgz#f39cc1d2b1d907e014165b4bd5a957afcb992982"
+  integrity sha512-SwaxMGVdAZk3ernAx2Uv2sorA7jm3Kx+lR0grp6rMmnY06Kn/urtKx1LPN2mGTea4fCT38impYT28FfcLUhX0g==
   dependencies:
-    "@jest/types" "^24.7.0"
+    "@jest/types" "^24.8.0"
     anymatch "^2.0.0"
     fb-watchman "^2.0.0"
     graceful-fs "^4.1.15"
     invariant "^2.2.4"
     jest-serializer "^24.4.0"
-    jest-util "^24.7.1"
+    jest-util "^24.8.0"
     jest-worker "^24.6.0"
     micromatch "^3.1.10"
     sane "^4.0.3"
@@ -4103,12 +4150,33 @@ jest-message-util@^24.7.1:
     slash "^2.0.0"
     stack-utils "^1.0.1"
 
+jest-message-util@^24.8.0:
+  version "24.8.0"
+  resolved "https://registry.yarnpkg.com/jest-message-util/-/jest-message-util-24.8.0.tgz#0d6891e72a4beacc0292b638685df42e28d6218b"
+  integrity sha512-p2k71rf/b6ns8btdB0uVdljWo9h0ovpnEe05ZKWceQGfXYr4KkzgKo3PBi8wdnd9OtNh46VpNIJynUn/3MKm1g==
+  dependencies:
+    "@babel/code-frame" "^7.0.0"
+    "@jest/test-result" "^24.8.0"
+    "@jest/types" "^24.8.0"
+    "@types/stack-utils" "^1.0.1"
+    chalk "^2.0.1"
+    micromatch "^3.1.10"
+    slash "^2.0.0"
+    stack-utils "^1.0.1"
+
 jest-mock@^24.7.0:
   version "24.7.0"
   resolved "https://registry.yarnpkg.com/jest-mock/-/jest-mock-24.7.0.tgz#e49ce7262c12d7f5897b0d8af77f6db8e538023b"
   integrity sha512-6taW4B4WUcEiT2V9BbOmwyGuwuAFT2G8yghF7nyNW1/2gq5+6aTqSPcS9lS6ArvEkX55vbPAS/Jarx5LSm4Fng==
   dependencies:
     "@jest/types" "^24.7.0"
+
+jest-mock@^24.8.0:
+  version "24.8.0"
+  resolved "https://registry.yarnpkg.com/jest-mock/-/jest-mock-24.8.0.tgz#2f9d14d37699e863f1febf4e4d5a33b7fdbbde56"
+  integrity sha512-6kWugwjGjJw+ZkK4mDa0Df3sDlUTsV47MSrT0nGQ0RBWJbpODDQ8MHDVtGtUYBne3IwZUhtB7elxHspU79WH3A==
+  dependencies:
+    "@jest/types" "^24.8.0"
 
 jest-pnp-resolver@^1.2.1:
   version "1.2.1"
@@ -4227,6 +4295,24 @@ jest-util@^24.7.1:
     "@jest/source-map" "^24.3.0"
     "@jest/test-result" "^24.7.1"
     "@jest/types" "^24.7.0"
+    callsites "^3.0.0"
+    chalk "^2.0.1"
+    graceful-fs "^4.1.15"
+    is-ci "^2.0.0"
+    mkdirp "^0.5.1"
+    slash "^2.0.0"
+    source-map "^0.6.0"
+
+jest-util@^24.8.0:
+  version "24.8.0"
+  resolved "https://registry.yarnpkg.com/jest-util/-/jest-util-24.8.0.tgz#41f0e945da11df44cc76d64ffb915d0716f46cd1"
+  integrity sha512-DYZeE+XyAnbNt0BG1OQqKy/4GVLPtzwGx5tsnDrFcax36rVE3lTA5fbvgmbVPUZf9w77AJ8otqR4VBbfFJkUZA==
+  dependencies:
+    "@jest/console" "^24.7.1"
+    "@jest/fake-timers" "^24.8.0"
+    "@jest/source-map" "^24.3.0"
+    "@jest/test-result" "^24.8.0"
+    "@jest/types" "^24.8.0"
     callsites "^3.0.0"
     chalk "^2.0.1"
     graceful-fs "^4.1.15"
