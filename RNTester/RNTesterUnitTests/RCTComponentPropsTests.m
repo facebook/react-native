@@ -8,7 +8,7 @@
 
 #import <XCTest/XCTest.h>
 
-#import <RCTTest/RCTTestRunner.h>
+#import <React-RCTTest/React/RCTTestRunner.h>
 #import <React/RCTRootShadowView.h>
 #import <React/RCTShadowView.h>
 #import <React/RCTUIManager.h>

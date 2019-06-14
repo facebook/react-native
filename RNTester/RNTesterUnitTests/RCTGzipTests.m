@@ -8,7 +8,7 @@
 
 #import <XCTest/XCTest.h>
 
-#import <RCTTest/RCTTestRunner.h>
+#import <React-RCTTest/React/RCTTestRunner.h>
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
 

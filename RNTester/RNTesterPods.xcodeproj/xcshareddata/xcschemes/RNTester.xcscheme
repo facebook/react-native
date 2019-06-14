@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0940"
+   LastUpgradeVersion = "1020"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "NO"
@@ -14,24 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2D2A28121D9B038B00D4039D"
-               BuildableName = "libReact.a"
-               BlueprintName = "React-tvOS"
-               ReferencedContainer = "container:../React/React.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2DD3238F1DA2DD8A000FE1B8"
-               BuildableName = "RNTester-tvOS.app"
-               BlueprintName = "RNTester-tvOS"
-               ReferencedContainer = "container:RNTester.xcodeproj">
+               BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
+               BuildableName = "RNTester.app"
+               BlueprintName = "RNTester"
+               ReferencedContainer = "container:RNTesterPods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -40,38 +26,45 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      shouldUseLaunchSchemeArgsEnv = "NO">
       <Testables>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2DD323A41DA2DD8B000FE1B8"
-               BuildableName = "RNTester-tvOSUnitTests.xctest"
-               BlueprintName = "RNTester-tvOSUnitTests"
-               ReferencedContainer = "container:RNTester.xcodeproj">
+               BlueprintIdentifier = "E7DB215222B2F332005AC45F"
+               BuildableName = "RNTesterIntegrationTests.xctest"
+               BlueprintName = "RNTesterIntegrationTests"
+               ReferencedContainer = "container:RNTesterPods.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2D4624C11DA2EA6900C74D09"
-               BuildableName = "RNTester-tvOSIntegrationTests.xctest"
-               BlueprintName = "RNTester-tvOSIntegrationTests"
-               ReferencedContainer = "container:RNTester.xcodeproj">
+               BlueprintIdentifier = "E7DB209E22B2BA84005AC45F"
+               BuildableName = "RNTesterUnitTests.xctest"
+               BlueprintName = "RNTesterUnitTests"
+               ReferencedContainer = "container:RNTesterPods.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2DD3238F1DA2DD8A000FE1B8"
-            BuildableName = "RNTester-tvOS.app"
-            BlueprintName = "RNTester-tvOS"
-            ReferencedContainer = "container:RNTester.xcodeproj">
+            BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
+            BuildableName = "RNTester.app"
+            BlueprintName = "RNTester"
+            ReferencedContainer = "container:RNTesterPods.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "CI_USE_PACKAGER"
+            value = "1"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -89,23 +82,12 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2DD3238F1DA2DD8A000FE1B8"
-            BuildableName = "RNTester-tvOS.app"
-            BlueprintName = "RNTester-tvOS"
-            ReferencedContainer = "container:RNTester.xcodeproj">
+            BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
+            BuildableName = "RNTester.app"
+            BlueprintName = "RNTester"
+            ReferencedContainer = "container:RNTesterPods.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "CI_USE_PACKAGER"
-            value = "1"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "RN_BUNDLE_PREFIX"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -119,10 +101,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2DD3238F1DA2DD8A000FE1B8"
-            BuildableName = "RNTester-tvOS.app"
-            BlueprintName = "RNTester-tvOS"
-            ReferencedContainer = "container:RNTester.xcodeproj">
+            BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
+            BuildableName = "RNTester.app"
+            BlueprintName = "RNTester"
+            ReferencedContainer = "container:RNTesterPods.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

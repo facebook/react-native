@@ -8,7 +8,7 @@
 
 #import <XCTest/XCTest.h>
 
-#import <RCTBlob/RCTBlobManager.h>
+#import <React-RCTBlob/React/RCTBlobManager.h>
 
 @interface RCTBlobManagerTests : XCTestCase
 

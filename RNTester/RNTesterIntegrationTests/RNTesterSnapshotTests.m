@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#import <RCTTest/RCTTestRunner.h>
+#import <React-RCTTest/React/RCTTestRunner.h>
 
 @interface RNTesterSnapshotTests : XCTestCase
 {

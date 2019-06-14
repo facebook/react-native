@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0940"
+   LastUpgradeVersion = "1020"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "NO"
@@ -14,38 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "83CBBA2D1A601D0E00E9B192"
-               BuildableName = "libReact.a"
-               BlueprintName = "React"
-               ReferencedContainer = "container:../React/React.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3D13F83D1D6F6AE000E69E0E"
-               BuildableName = "RNTesterBundle.bundle"
-               BlueprintName = "RNTesterBundle"
-               ReferencedContainer = "container:RNTester.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
                BuildableName = "RNTester.app"
                BlueprintName = "RNTester"
-               ReferencedContainer = "container:RNTester.xcodeproj">
+               ReferencedContainer = "container:RNTesterPods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -56,24 +28,10 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "004D289D1AAF61C70097A701"
+               BlueprintIdentifier = "E7DB209E22B2BA84005AC45F"
                BuildableName = "RNTesterUnitTests.xctest"
                BlueprintName = "RNTesterUnitTests"
-               ReferencedContainer = "container:RNTester.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "143BC5941B21E3E100462512"
-               BuildableName = "RNTesterIntegrationTests.xctest"
-               BlueprintName = "RNTesterIntegrationTests"
-               ReferencedContainer = "container:RNTester.xcodeproj">
+               ReferencedContainer = "container:RNTesterPods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -88,20 +46,25 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "004D289D1AAF61C70097A701"
+               BlueprintIdentifier = "E7DB209E22B2BA84005AC45F"
                BuildableName = "RNTesterUnitTests.xctest"
                BlueprintName = "RNTesterUnitTests"
-               ReferencedContainer = "container:RNTester.xcodeproj">
+               ReferencedContainer = "container:RNTesterPods.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "RCTBundleURLProviderTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "143BC5941B21E3E100462512"
-               BuildableName = "RNTesterIntegrationTests.xctest"
-               BlueprintName = "RNTesterIntegrationTests"
-               ReferencedContainer = "container:RNTester.xcodeproj">
+               BlueprintIdentifier = "E7DB217A22B30380005AC45F"
+               BuildableName = "RNTesterBundle.xctest"
+               BlueprintName = "RNTesterBundle"
+               ReferencedContainer = "container:RNTesterPods.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -111,7 +74,7 @@
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "RNTester.app"
             BlueprintName = "RNTester"
-            ReferencedContainer = "container:RNTester.xcodeproj">
+            ReferencedContainer = "container:RNTesterPods.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -127,28 +90,15 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "RNTester.app"
             BlueprintName = "RNTester"
-            ReferencedContainer = "container:RNTester.xcodeproj">
+            ReferencedContainer = "container:RNTesterPods.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "CI_USE_PACKAGER"
-            value = "1"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "RN_BUNDLE_PREFIX"
-            value = ""
-            isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -158,16 +108,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "RNTester.app"
             BlueprintName = "RNTester"
-            ReferencedContainer = "container:RNTester.xcodeproj">
+            ReferencedContainer = "container:RNTesterPods.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

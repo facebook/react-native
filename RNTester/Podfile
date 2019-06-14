@@ -2,7 +2,7 @@ platform :ios, '9.0'
 
 require_relative '../scripts/autolink-ios'
 
-target 'RNTester' do
+def pods()
   # Uncomment for Swift
   # use_frameworks!
 
@@ -20,4 +20,24 @@ target 'RNTester' do
   #
   # To use fabric: add `fabric_enabled` option to the use_react_native method above, like below
   # use_react_native!(path: "..", turbo_modules_enabled: true, fabric_enabled: true)
+end
+
+target 'RNTester' do
+  pods()
+end
+
+target 'RNTesterUnitTests' do
+  pods()
+  pod 'React-RCTTest', :path => "RCTTest"
+end
+
+target 'RNTesterIntegrationTests' do
+  pods()
+  pod 'React-RCTTest', :path => "RCTTest"
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    puts target.name
+  end
 end

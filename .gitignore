@@ -71,6 +71,8 @@ package-lock.json
 RNTester/build
 
 # CocoaPods
+!Podfile.lock
+/RNTester/Pods/
+/RNTester/RNTesterPods.xcworkspace/
 /template/ios/Pods/
 /template/ios/Podfile.lock
-RNTester/RNTesterPods.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist

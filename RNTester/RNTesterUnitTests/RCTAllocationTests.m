@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
 
-#import <RCTTest/RCTTestRunner.h>
+#import <React-RCTTest/React/RCTTestRunner.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTModuleMethod.h>

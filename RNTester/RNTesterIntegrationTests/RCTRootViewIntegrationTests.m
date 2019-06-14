@@ -9,10 +9,10 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#import <RCTTest/RCTTestRunner.h>
-#import <React/RCTEventDispatcher.h>
-#import <React/RCTRootView.h>
-#import <React/RCTRootViewDelegate.h>
+#import <React-RCTTest/React/RCTTestRunner.h>
+#import <React-Core/React/RCTEventDispatcher.h>
+#import <React-Core/React/RCTRootView.h>
+#import <React-Core/React/RCTRootViewDelegate.h>
 
 #define RCT_TEST_DATA_CONFIGURATION_BLOCK(appName, testType, input, block) \
 - (void)DISABLED_test##appName##_##testType##_##input                      \
