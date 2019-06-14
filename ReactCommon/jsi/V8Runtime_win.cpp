@@ -13,7 +13,7 @@ namespace facebook { namespace v8runtime {
     std::abort();
   }
 
-  V8Runtime::V8Runtime(const folly::dynamic& v8Config) : V8Runtime() {
+  V8Runtime::V8Runtime(const folly::dynamic& v8Config, const std::shared_ptr<Logger>& logger) : V8Runtime() {
     // Not to be called on Windows.
     std::abort();
   }
@@ -23,7 +23,7 @@ namespace facebook { namespace v8runtime {
     std::abort();
   }
 
-  std::unique_ptr<jsi::Runtime> makeV8Runtime(const folly::dynamic& v8Config) {
-    return std::make_unique<V8Runtime>(v8Config);
+  std::unique_ptr<jsi::Runtime> makeV8Runtime(const folly::dynamic& v8Config, const std::shared_ptr<Logger>& logger) {
+    return std::make_unique<V8Runtime>(v8Config, logger);
   }
 }} // namespace facebook::v8runtime

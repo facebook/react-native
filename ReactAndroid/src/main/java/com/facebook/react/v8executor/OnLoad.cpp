@@ -13,12 +13,6 @@
 #include <react/jni/ReadableNativeMap.h>
 
 namespace facebook {
-namespace v8runtime {
-      std::unique_ptr<jsi::Runtime> makeV8Runtime();
-} // namespace v8runtime
-} // namespace facebook
-
-namespace facebook {
 namespace react {
 
 namespace {
@@ -32,12 +26,15 @@ public:
   std::unique_ptr<JSExecutor> createJSExecutor(
       std::shared_ptr<ExecutorDelegate> delegate,
       std::shared_ptr<MessageQueueThread> jsQueue) override {
+
+    auto logger = std::make_shared<JSIExecutor::Logger>([](const std::string& message, unsigned int logLevel) {
+                    reactAndroidLoggingHook(message, logLevel);
+    });
+
     return folly::make_unique<JSIExecutor>(
-      facebook::v8runtime::makeV8Runtime(m_v8Config),
+      facebook::v8runtime::makeV8Runtime(m_v8Config, logger),
       delegate,
-      [](const std::string& message, unsigned int logLevel) {
-        reactAndroidLoggingHook(message, logLevel);
-      },
+      *logger,
       JSIExecutor::defaultTimeoutInvoker,
       nullptr);
   }
