@@ -49,6 +49,10 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue) {
         type: 'NativePrimitiveTypeAnnotation',
         name: 'PointPrimitive',
       };
+    case 'Stringish':
+      return {
+        type: 'StringTypeAnnotation',
+      };
     case 'Int32':
       return {
         type: 'Int32TypeAnnotation',
@@ -155,6 +159,14 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
         };
       }
       throw new Error(`A default string (or null) is required for "${name}"`);
+    case 'Stringish':
+      if (typeof defaultValue !== 'undefined') {
+        return {
+          type: 'StringTypeAnnotation',
+          default: (defaultValue: string | null),
+        };
+      }
+      throw new Error(`A default string (or null) is required for "${name}"`);
     case 'UnionTypeAnnotation':
       if (defaultValue !== null) {
         return {
@@ -202,12 +214,18 @@ function buildPropSchema(property): ?PropTypeShape {
         `WithDefault requires two parameters, did you forget to provide a default value for "${name}"?`,
       );
     }
-    type = typeAnnotation.typeParameters.params[0].type;
+
     defaultValue = typeAnnotation.typeParameters.params[1].value;
     const defaultValueType = typeAnnotation.typeParameters.params[1].type;
 
+    typeAnnotation = typeAnnotation.typeParameters.params[0];
+    type =
+      typeAnnotation.type === 'GenericTypeAnnotation'
+        ? typeAnnotation.id.name
+        : typeAnnotation.type;
+
     if (defaultValueType === 'NullLiteralTypeAnnotation') {
-      if (type !== 'StringTypeAnnotation') {
+      if (type !== 'StringTypeAnnotation' && type !== 'Stringish') {
         throw new Error(
           `WithDefault can only provide a 'null' default value for string types (see ${name})`,
         );
@@ -215,12 +233,6 @@ function buildPropSchema(property): ?PropTypeShape {
 
       defaultValue = null;
     }
-
-    typeAnnotation = typeAnnotation.typeParameters.params[0];
-  }
-
-  if (type === 'GenericTypeAnnotation') {
-    type = typeAnnotation.id.name;
   }
 
   return {

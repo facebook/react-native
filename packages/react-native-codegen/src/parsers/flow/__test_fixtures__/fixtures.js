@@ -143,6 +143,18 @@ type ModuleProps = $ReadOnly<{|
   string_null_optional_value: ?WithDefault<string, null>,
   string_null_optional_both?: ?WithDefault<string, null>,
 
+  // Stringish props
+  stringish_required: WithDefault<Stringish, ''>,
+  stringish_optional_key?: WithDefault<Stringish, ''>,
+  stringish_optional_value: ?WithDefault<Stringish, ''>,
+  stringish_optional_both?: ?WithDefault<Stringish, ''>,
+
+  // Stringish props, null default
+  stringish_null_required: WithDefault<Stringish, null>,
+  stringish_null_optional_key?: WithDefault<Stringish, null>,
+  stringish_null_optional_value: ?WithDefault<Stringish, null>,
+  stringish_null_optional_both?: ?WithDefault<Stringish, null>,
+
   // Float props
   float_required: WithDefault<Float, 1.1>,
   float_optional_key?: WithDefault<Float, 1.1>,

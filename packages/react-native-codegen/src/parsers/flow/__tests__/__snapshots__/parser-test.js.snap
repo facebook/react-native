@@ -111,6 +111,70 @@ Object {
               },
             },
             Object {
+              "name": "stringish_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "default": "",
+                "type": "StringTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "stringish_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": "",
+                "type": "StringTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "stringish_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": "",
+                "type": "StringTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "stringish_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": "",
+                "type": "StringTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "stringish_null_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "StringTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "stringish_null_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "StringTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "stringish_null_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "StringTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "stringish_null_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "StringTypeAnnotation",
+              },
+            },
+            Object {
               "name": "float_required",
               "optional": false,
               "typeAnnotation": Object {
