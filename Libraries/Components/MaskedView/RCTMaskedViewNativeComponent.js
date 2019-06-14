@@ -8,17 +8,11 @@
  * @flow
  */
 
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
-
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
 |}>;
 
-type RCTMaskedViewNativeType = Class<NativeComponent<NativeProps>>;
-
-module.exports = ((requireNativeComponent(
-  'RCTMaskedView',
-): any): RCTMaskedViewNativeType);
+export default codegenNativeComponent<NativeProps>('RCTMaskedView');
