@@ -49,4 +49,9 @@ public class ReactFeatureFlags {
    * Default value is false.
    */
   public static boolean enableExtraWebViewLogs = false;
+
+  /*
+   * This feature flag enables logs for Fabric
+   */
+  public static boolean enableFabricLogs = false;
 }
