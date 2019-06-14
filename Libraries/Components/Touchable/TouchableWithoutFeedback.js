@@ -262,8 +262,8 @@ const TouchableWithoutFeedback = ((createReactClass({
     return (React: any).cloneElement(child, {
       ...overrides,
       accessible: this.props.accessible !== false,
-      clickable:
-        this.props.clickable !== false && this.props.onPress !== undefined,
+      focusable:
+        this.props.focusable !== false && this.props.onPress !== undefined,
       onClick: this.touchableHandlePress,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this

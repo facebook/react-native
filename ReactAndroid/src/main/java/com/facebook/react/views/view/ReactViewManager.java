@@ -226,9 +226,9 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     // handled in NativeViewHierarchyOptimizer
   }
 
-  @ReactProp(name = "clickable")
-  public void setClickable(final ReactViewGroup view, boolean clickable) {
-    if (clickable) {
+  @ReactProp(name = "focusable")
+  public void setFocusable(final ReactViewGroup view, boolean focusable) {
+    if (focusable) {
       view.setOnClickListener(
               new View.OnClickListener() {
                 @Override
@@ -245,6 +245,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     else {
       view.setOnClickListener(null);
       view.setClickable(false);
+      // Don't set view.setFocusable(false) because we might still want it to be focusable for accessibiliy reasons
     }
   }
 
