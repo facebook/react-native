@@ -50,6 +50,7 @@ void Binding::startSurface(
     jint surfaceId,
     jni::alias_ref<jstring> moduleName,
     NativeMap *initialProps) {
+  SystraceSection s("FabricUIManagerBinding::startSurface");
   if (scheduler_) {
     scheduler_->startSurface(
         surfaceId, moduleName->toStdString(), initialProps->consume());
@@ -57,6 +58,7 @@ void Binding::startSurface(
 }
 
 void Binding::renderTemplateToSurface(jint surfaceId, jstring uiTemplate) {
+  SystraceSection s("FabricUIManagerBinding::renderTemplateToSurface");
   if (scheduler_) {
     auto env = Environment::current();
     const char *nativeString = env->GetStringUTFChars(uiTemplate, JNI_FALSE);
@@ -100,6 +102,7 @@ void Binding::installFabricUIManager(
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
     ComponentFactoryDelegate *componentsRegistry,
     jni::alias_ref<jobject> reactNativeConfig) {
+  SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
   javaUIManager_ = make_global(javaUIManager);
 
   ContextContainer::Shared contextContainer =
@@ -360,7 +363,7 @@ local_ref<JMountItem::javaobject> createCreateMountItem(
 
 void Binding::schedulerDidFinishTransaction(
     MountingCoordinator::Shared const &mountingCoordinator) {
-  SystraceSection s("FabricUIManager::schedulerDidFinishTransaction");
+  SystraceSection s("FabricUIManagerBinding::schedulerDidFinishTransaction");
 
   auto mountingTransaction = mountingCoordinator->pullTransaction();
 
