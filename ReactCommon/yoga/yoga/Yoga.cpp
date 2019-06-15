@@ -1581,6 +1581,7 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
     const YGMeasureMode heightMeasureMode,
     const float ownerWidth,
     const float ownerHeight,
+    YGMarkerLayoutData& layoutMarkerData,
     void* const layoutContext) {
   YGAssertWithNode(
       node,
@@ -1634,6 +1635,7 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
         innerHeight,
         heightMeasureMode,
         layoutContext);
+    layoutMarkerData.measureCallbacks += 1;
 
 #ifdef YG_ENABLE_EVENTS
     Event::publish<Event::NodeMeasure>(
@@ -2700,6 +2702,7 @@ static void YGNodelayoutImpl(
         heightMeasureMode,
         ownerWidth,
         ownerHeight,
+        layoutMarkerData,
         layoutContext);
     return;
   }
@@ -4101,12 +4104,12 @@ void YGNodeCalculateLayoutWithContext(
 #endif
   }
 
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::LayoutPassEnd>(node, {layoutContext, &marker->data});
+#endif
+
   // end marker here
   marker = nullptr;
-
-#ifdef YG_ENABLE_EVENTS
-  Event::publish<Event::LayoutPassEnd>(node, {layoutContext});
-#endif
 
   // We want to get rid off `useLegacyStretchBehaviour` from YGConfig. But we
   // aren't sure whether client's of yoga have gotten rid off this flag or not.

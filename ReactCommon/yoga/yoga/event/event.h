@@ -9,6 +9,7 @@
 #include <functional>
 #include <vector>
 #include "../YGEnums.h"
+#include "../YGMarker.h"
 
 struct YGConfig;
 struct YGNode;
@@ -81,6 +82,7 @@ struct Event::TypedData<Event::LayoutPassStart> {
 template <>
 struct Event::TypedData<Event::LayoutPassEnd> {
   void* layoutContext;
+  YGMarkerLayoutData* layoutData;
 };
 
 template <>

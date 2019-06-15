@@ -25,6 +25,7 @@ typedef struct {
   int maxMeasureCache;
   int cachedLayouts;
   int cachedMeasures;
+  int measureCallbacks;
 } YGMarkerLayoutData;
 
 typedef struct {
