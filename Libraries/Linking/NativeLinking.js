@@ -10,9 +10,9 @@
 
 'use strict';
 
-import type {TurboModule} from 'RCTExport';
-import * as TurboModuleRegistry from 'TurboModuleRegistry';
-import Platform from 'Platform';
+import type {TurboModule} from '../TurboModule/RCTExport';
+import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
+import Platform from '../Utilities/Platform';
 
 export interface Spec extends TurboModule {
   // Common interface

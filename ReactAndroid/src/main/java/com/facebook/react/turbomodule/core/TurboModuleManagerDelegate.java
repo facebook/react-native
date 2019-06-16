@@ -20,17 +20,11 @@ public abstract class TurboModuleManagerDelegate {
   }
 
   private final HybridData mHybridData;
-  private final ReactApplicationContext mReactApplicationContext;
 
   protected abstract HybridData initHybrid();
 
-  protected TurboModuleManagerDelegate(ReactApplicationContext rac) {
+  protected TurboModuleManagerDelegate() {
     mHybridData = initHybrid();
-    mReactApplicationContext = rac;
-  }
-
-  protected ReactApplicationContext getReactApplicationContext() {
-    return mReactApplicationContext;
   }
 
   /**

@@ -27,7 +27,7 @@ const DebugInstructions = Platform.select({
   ),
   default: () => (
     <Text>
-      Press <Text style={styles.highlight}>menu button</Text> or
+      Press <Text style={styles.highlight}>menu button</Text> or{' '}
       <Text style={styles.highlight}>Shake</Text> your device to open the React
       Native debug menu.
     </Text>

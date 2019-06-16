@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -253,7 +253,13 @@ static YGConfigRef YGConfigClone(const YGConfig& oldConfig) {
 }
 
 static YGNodeRef YGNodeDeepClone(YGNodeRef oldNode) {
-  YGNodeRef node = YGNodeClone(oldNode);
+  auto config = YGConfigClone(*oldNode->getConfig());
+  auto node = new YGNode{*oldNode, config};
+  node->setOwner(nullptr);
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeAllocation>(node, {node->getConfig()});
+#endif
+
   YGVector vec = YGVector();
   vec.reserve(oldNode->getChildren().size());
   YGNodeRef childNode = nullptr;
@@ -263,10 +269,6 @@ static YGNodeRef YGNodeDeepClone(YGNodeRef oldNode) {
     vec.push_back(childNode);
   }
   node->setChildren(vec);
-
-  if (oldNode->getConfig() != nullptr) {
-    node->setConfig(YGConfigClone(*(oldNode->getConfig())));
-  }
 
   return node;
 }
@@ -1579,6 +1581,7 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
     const YGMeasureMode heightMeasureMode,
     const float ownerWidth,
     const float ownerHeight,
+    YGMarkerLayoutData& layoutMarkerData,
     void* const layoutContext) {
   YGAssertWithNode(
       node,
@@ -1632,6 +1635,19 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
         innerHeight,
         heightMeasureMode,
         layoutContext);
+    layoutMarkerData.measureCallbacks += 1;
+
+#ifdef YG_ENABLE_EVENTS
+    Event::publish<Event::NodeMeasure>(
+        node,
+        {layoutContext,
+         innerWidth,
+         widthMeasureMode,
+         innerHeight,
+         heightMeasureMode,
+         measuredSize.width,
+         measuredSize.height});
+#endif
 
     node->setLayoutMeasuredDimension(
         YGNodeBoundAxis(
@@ -2686,6 +2702,7 @@ static void YGNodelayoutImpl(
         heightMeasureMode,
         ownerWidth,
         ownerHeight,
+        layoutMarkerData,
         layoutContext);
     return;
   }
@@ -3664,7 +3681,7 @@ bool YGLayoutNodeInternal(
     YGMarkerLayoutData& layoutMarkerData,
     void* const layoutContext) {
 #ifdef YG_ENABLE_EVENTS
-  Event::publish<Event::NodeLayout>(node);
+  Event::publish<Event::NodeLayout>(node, {performLayout, layoutContext});
 #endif
   YGLayout* layout = &node->getLayout();
 
@@ -3992,6 +4009,13 @@ static void YGRoundToPixelGrid(
   }
 }
 
+static void unsetUseLegacyFlagRecursively(YGNodeRef node) {
+  node->getConfig()->useLegacyStretchBehaviour = false;
+  for (auto child : node->getChildren()) {
+    unsetUseLegacyFlagRecursively(child);
+  }
+}
+
 void YGNodeCalculateLayoutWithContext(
     const YGNodeRef node,
     const float ownerWidth,
@@ -4000,11 +4024,9 @@ void YGNodeCalculateLayoutWithContext(
     void* layoutContext) {
 
 #ifdef YG_ENABLE_EVENTS
-  Event::publish<Event::LayoutPassStart>(node);
+  Event::publish<Event::LayoutPassStart>(node, {layoutContext});
 #endif
-  // unique pointer to allow ending the marker early
-  std::unique_ptr<marker::MarkerSection<YGMarkerLayout>> marker{
-      new marker::MarkerSection<YGMarkerLayout>{node}};
+  marker::MarkerSection<YGMarkerLayout> marker{node};
 
   // Increment the generation count. This will force the recursive routine to
   // visit all dirty nodes at least once. Subsequent visits will be skipped if
@@ -4063,7 +4085,7 @@ void YGNodeCalculateLayoutWithContext(
           true,
           "initial",
           node->getConfig(),
-          marker->data,
+          marker.data,
           layoutContext)) {
     node->setPosition(
         node->getLayout().direction, ownerWidth, ownerHeight, ownerWidth);
@@ -4080,11 +4102,10 @@ void YGNodeCalculateLayoutWithContext(
 #endif
   }
 
-  // end marker here
-  marker = nullptr;
+  marker.end();
 
 #ifdef YG_ENABLE_EVENTS
-  Event::publish<Event::LayoutPassEnd>(node);
+  Event::publish<Event::LayoutPassEnd>(node, {layoutContext, &marker.data});
 #endif
 
   // We want to get rid off `useLegacyStretchBehaviour` from YGConfig. But we
@@ -4096,16 +4117,16 @@ void YGNodeCalculateLayoutWithContext(
   // run experiments.
   if (node->getConfig()->shouldDiffLayoutWithoutLegacyStretchBehaviour &&
       node->didUseLegacyFlag()) {
-    const YGNodeRef originalNode = YGNodeDeepClone(node);
-    originalNode->resolveDimension();
+    const YGNodeRef nodeWithoutLegacyFlag = YGNodeDeepClone(node);
+    nodeWithoutLegacyFlag->resolveDimension();
     // Recursively mark nodes as dirty
-    originalNode->markDirtyAndPropogateDownwards();
+    nodeWithoutLegacyFlag->markDirtyAndPropogateDownwards();
     gCurrentGenerationCount++;
     // Rerun the layout, and calculate the diff
-    originalNode->setAndPropogateUseLegacyFlag(false);
+    unsetUseLegacyFlagRecursively(nodeWithoutLegacyFlag);
     YGMarkerLayoutData layoutMarkerData;
     if (YGLayoutNodeInternal(
-            originalNode,
+            nodeWithoutLegacyFlag,
             width,
             height,
             ownerDirection,
@@ -4115,37 +4136,37 @@ void YGNodeCalculateLayoutWithContext(
             ownerHeight,
             true,
             "initial",
-            originalNode->getConfig(),
+            nodeWithoutLegacyFlag->getConfig(),
             layoutMarkerData,
             layoutContext)) {
-      originalNode->setPosition(
-          originalNode->getLayout().direction,
+      nodeWithoutLegacyFlag->setPosition(
+          nodeWithoutLegacyFlag->getLayout().direction,
           ownerWidth,
           ownerHeight,
           ownerWidth);
       YGRoundToPixelGrid(
-          originalNode,
-          originalNode->getConfig()->pointScaleFactor,
+          nodeWithoutLegacyFlag,
+          nodeWithoutLegacyFlag->getConfig()->pointScaleFactor,
           0.0f,
           0.0f);
 
       // Set whether the two layouts are different or not.
       auto neededLegacyStretchBehaviour =
-          !originalNode->isLayoutTreeEqualToNode(*node);
+          !nodeWithoutLegacyFlag->isLayoutTreeEqualToNode(*node);
       node->setLayoutDoesLegacyFlagAffectsLayout(neededLegacyStretchBehaviour);
 
 #ifdef DEBUG
-      if (originalNode->getConfig()->printTree) {
+      if (nodeWithoutLegacyFlag->getConfig()->printTree) {
         YGNodePrint(
-            originalNode,
+            nodeWithoutLegacyFlag,
             (YGPrintOptions)(
                 YGPrintOptionsLayout | YGPrintOptionsChildren |
                 YGPrintOptionsStyle));
       }
 #endif
     }
-    YGConfigFreeRecursive(originalNode);
-    YGNodeFreeRecursive(originalNode);
+    YGConfigFreeRecursive(nodeWithoutLegacyFlag);
+    YGNodeFreeRecursive(nodeWithoutLegacyFlag);
   }
 }
 

@@ -42,9 +42,7 @@ public class ClipboardModule extends ContextBaseJavaModule {
     try {
       ClipboardManager clipboard = getClipboardService();
       ClipData clipData = clipboard.getPrimaryClip();
-      if (clipData == null) {
-        promise.resolve("");
-      } else if (clipData.getItemCount() >= 1) {
+      if (clipData != null && clipData.getItemCount() >= 1) {
         ClipData.Item firstItem = clipboard.getPrimaryClip().getItemAt(0);
         promise.resolve("" + firstItem.getText());
       } else {

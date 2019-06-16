@@ -11,7 +11,7 @@
 'use strict';
 
 const Platform = require('../../Utilities/Platform');
-const RCTSliderNativeComponent = require('./RCTSliderNativeComponent');
+import SliderNativeComponent from './SliderNativeComponent';
 const React = require('react');
 const ReactNative = require('../../Renderer/shims/ReactNative');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
@@ -197,7 +197,7 @@ type Props = $ReadOnly<{|
  */
 const Slider = (
   props: Props,
-  forwardedRef?: ?React.Ref<typeof RCTSliderNativeComponent>,
+  forwardedRef?: ?React.Ref<typeof SliderNativeComponent>,
 ) => {
   const style = StyleSheet.compose(
     styles.slider,
@@ -227,7 +227,7 @@ const Slider = (
     : null;
 
   return (
-    <RCTSliderNativeComponent
+    <SliderNativeComponent
       {...localProps}
       ref={forwardedRef}
       style={style}

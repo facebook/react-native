@@ -81,7 +81,7 @@ public class DevLoadingViewController {
       return;
     }
 
-    showMessage(context.getString(R.string.catalyst_remotedbg_message));
+    showMessage(context.getString(R.string.catalyst_debug_connecting));
   }
 
   public void updateProgress(final @Nullable String status, final @Nullable Integer done, final @Nullable Integer total) {

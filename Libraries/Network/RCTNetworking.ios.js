@@ -11,8 +11,7 @@
 'use strict';
 
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-const RCTNetworkingNative = require('../BatchedBridge/NativeModules')
-  .Networking;
+import NativeNetworkingIOS from './NativeNetworkingIOS';
 const convertRequestBody = require('./convertRequestBody');
 
 import type {RequestBody} from './convertRequestBody';
@@ -21,7 +20,7 @@ import type {NativeResponseType} from './XMLHttpRequest';
 
 class RCTNetworking extends NativeEventEmitter {
   constructor() {
-    super(RCTNetworkingNative);
+    super(NativeNetworkingIOS);
   }
 
   sendRequest(
@@ -33,11 +32,11 @@ class RCTNetworking extends NativeEventEmitter {
     responseType: NativeResponseType,
     incrementalUpdates: boolean,
     timeout: number,
-    callback: (requestId: number) => any,
+    callback: (requestId: number) => mixed,
     withCredentials: boolean,
   ) {
     const body = convertRequestBody(data);
-    RCTNetworkingNative.sendRequest(
+    NativeNetworkingIOS.sendRequest(
       {
         method,
         url,
@@ -53,11 +52,11 @@ class RCTNetworking extends NativeEventEmitter {
   }
 
   abortRequest(requestId: number) {
-    RCTNetworkingNative.abortRequest(requestId);
+    NativeNetworkingIOS.abortRequest(requestId);
   }
 
-  clearCookies(callback: (result: boolean) => any) {
-    RCTNetworkingNative.clearCookies(callback);
+  clearCookies(callback: (result: boolean) => mixed) {
+    NativeNetworkingIOS.clearCookies(callback);
   }
 }
 

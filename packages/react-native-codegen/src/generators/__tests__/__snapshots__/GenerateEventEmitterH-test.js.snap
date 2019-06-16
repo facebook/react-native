@@ -173,6 +173,8 @@ class EventsNativeComponentEventEmitter : public ViewEventEmitter {
   void onChange(EventsNativeComponentOnChangeStruct value) const;
 
   void onEventDirect(EventsNativeComponentOnEventDirectStruct value) const;
+
+  void onEnd() const;
 };
 
 } // namespace react

@@ -61,6 +61,13 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
     mergeNativeMap((ReadableNativeMap) source);
   }
 
+  @Override
+  public WritableMap copy() {
+    final WritableNativeMap target = new WritableNativeMap();
+    target.merge(this);
+    return target;
+  }
+
   public WritableNativeMap() {
     super(initHybrid());
   }

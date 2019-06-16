@@ -69,6 +69,43 @@ static inline std::string toString(const ::_ENUM_NAME_:: &value) {
 }
 `.trim();
 
+const arrayEnumTemplate = `
+enum class ::_ENUM_NAME_::: uint32_t {
+  ::_VALUES_::
+};
+
+constexpr bool operator&(
+  const enum ::_ENUM_NAME_:: lhs,
+  const enum ::_ENUM_NAME_:: rhs) {
+  return ((uint32_t)lhs & (uint32_t)rhs);
+}
+
+constexpr bool operator|(
+  const enum ::_ENUM_NAME_:: lhs,
+  const enum ::_ENUM_NAME_:: rhs) {
+  return ((uint32_t)lhs | (uint32_t)rhs);
+}
+
+static inline void fromRawValue(const RawValue &value, ::_ENUM_NAME_:: &result) {
+  auto items = std::vector<std::string>{value};
+  for (const auto &item : items) {
+    ::_FROM_CASES_::
+    abort();
+  }
+}
+
+static inline std::string toString(const ::_ENUM_NAME_:: &value) {
+    auto result = std::string{};
+    auto separator = std::string{", "};
+
+    ::_TO_CASES_::
+    if (!result.empty()) {
+      result.erase(result.length() - separator.length());
+    }
+    return result;
+}
+`.trim();
+
 function getClassExtendString(component): string {
   const extendString =
     ' : ' +
@@ -120,6 +157,9 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
           'ArrayTypeAnnotation of type ArrayTypeAnnotation not supported',
         );
       }
+      if (typeAnnotation.elementType.type === 'StringEnumTypeAnnotation') {
+        return getEnumName(componentName, prop.name);
+      }
       const itemAnnotation = getNativeTypeFromAnnotation(componentName, {
         typeAnnotation: typeAnnotation.elementType,
         name: componentName,
@@ -140,6 +180,9 @@ function convertDefaultTypeToString(componentName: string, prop): string {
     case 'BooleanTypeAnnotation':
       return String(typeAnnotation.default);
     case 'StringTypeAnnotation':
+      if (typeAnnotation.default == null) {
+        return '';
+      }
       return `"${typeAnnotation.default}"`;
     case 'Int32TypeAnnotation':
       return String(typeAnnotation.default);
@@ -161,7 +204,19 @@ function convertDefaultTypeToString(componentName: string, prop): string {
           throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');
       }
     case 'ArrayTypeAnnotation': {
-      return '';
+      switch (typeAnnotation.elementType.type) {
+        case 'StringEnumTypeAnnotation':
+          if (typeAnnotation.elementType.default == null) {
+            throw new Error(
+              'A default is required for array StringEnumTypeAnnotation',
+            );
+          }
+          return `${getEnumName(componentName, prop.name)}::${toSafeCppString(
+            typeAnnotation.elementType.default || '',
+          )}`;
+        default:
+          return '';
+      }
     }
     case 'StringEnumTypeAnnotation':
       return `${getEnumName(componentName, prop.name)}::${toSafeCppString(
@@ -182,9 +237,58 @@ function convertValueToEnumOption(value: string): string {
   return toSafeCppString(value);
 }
 
+function generateArrayEnumString(
+  componentName: string,
+  name: string,
+  enumOptions,
+): string {
+  const options = enumOptions.map(option => option.name);
+  const enumName = getEnumName(componentName, name);
+
+  const values = options
+    .map((option, index) => `${toSafeCppString(option)} = 1 << ${index}`)
+    .join(',\n  ');
+
+  const fromCases = options
+    .map(
+      option =>
+        `if (item == "${option}") {
+      result = (${enumName})(result | ${enumName}::${toSafeCppString(option)});
+      continue;
+    }`,
+    )
+    .join('\n    ');
+
+  const toCases = options
+    .map(
+      option =>
+        `if (value & ${enumName}::${toSafeCppString(option)}) {
+      result += "${option}" + separator;
+    }`,
+    )
+    .join('\n' + '    ');
+
+  return arrayEnumTemplate
+    .replace(/::_ENUM_NAME_::/g, enumName)
+    .replace('::_VALUES_::', values)
+    .replace('::_FROM_CASES_::', fromCases)
+    .replace('::_TO_CASES_::', toCases);
+}
+
 function generateEnumString(componentName: string, component): string {
   return component.props
     .map(prop => {
+      if (
+        prop.typeAnnotation.type === 'ArrayTypeAnnotation' &&
+        prop.typeAnnotation.elementType.type === 'StringEnumTypeAnnotation'
+      ) {
+        return generateArrayEnumString(
+          componentName,
+          prop.name,
+          prop.typeAnnotation.elementType.options,
+        );
+      }
+
       if (prop.typeAnnotation.type !== 'StringEnumTypeAnnotation') {
         return;
       }
@@ -282,6 +386,9 @@ function getImports(component): Set<string> {
 
     if (typeAnnotation.type === 'ArrayTypeAnnotation') {
       imports.add('#include <vector>');
+      if (typeAnnotation.elementType.type === 'StringEnumTypeAnnotation') {
+        imports.add('#include <cinttypes>');
+      }
     }
 
     if (

@@ -19,11 +19,13 @@ import com.facebook.react.bridge.ReactMethod;
  */
 public class StringRecordingModule extends BaseJavaModule {
 
+  public static final String NAME = "Recording";
+
   private final List<String> mCalls = new ArrayList<String>();
 
   @Override
   public String getName() {
-    return "Recording";
+    return NAME;
   }
 
   @ReactMethod

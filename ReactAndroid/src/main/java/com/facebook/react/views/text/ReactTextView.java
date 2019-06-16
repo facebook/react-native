@@ -114,6 +114,12 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       return;
     }
 
+    if (!getReactContext().hasCatalystInstance()) {
+      // In bridgeless mode there's no Catalyst instance; in that case, bail.
+      // TODO (T45503888): Figure out how to support nested views from JS or cpp.
+      return;
+    }
+
     UIManagerModule uiManager = getReactContext().getNativeModule(UIManagerModule.class);
 
     Spanned text = (Spanned) getText();

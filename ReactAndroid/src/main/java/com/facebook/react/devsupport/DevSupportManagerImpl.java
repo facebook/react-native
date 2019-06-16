@@ -150,39 +150,6 @@ public class DevSupportManagerImpl implements
 
   private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
 
-  private static class JscProfileTask extends AsyncTask<String, Void, Void> {
-    private static final MediaType JSON =
-      MediaType.parse("application/json; charset=utf-8");
-
-    private final String mSourceUrl;
-
-    private JscProfileTask(String sourceUrl) {
-      mSourceUrl = sourceUrl;
-    }
-
-    @Override
-    protected Void doInBackground(String... jsonData) {
-      try {
-        String jscProfileUrl =
-            Uri.parse(mSourceUrl).buildUpon()
-                .path("/jsc-profile")
-                .query(null)
-                .build()
-                .toString();
-        OkHttpClient client = new OkHttpClient();
-        for (String json: jsonData) {
-          RequestBody body = RequestBody.create(JSON, json);
-          Request request =
-            new Request.Builder().url(jscProfileUrl).post(body).build();
-          client.newCall(request).execute();
-        }
-      } catch (IOException e) {
-        FLog.e(ReactConstants.TAG, "Failed not talk to server", e);
-      }
-      return null;
-    }
-  }
-
   public DevSupportManagerImpl(
     Context applicationContext,
     ReactInstanceManagerDevHelper reactInstanceManagerHelper,
@@ -455,74 +422,48 @@ public class DevSupportManagerImpl implements
     LinkedHashMap<String, DevOptionHandler> options = new LinkedHashMap<>();
     /* register standard options */
     options.put(
-        mApplicationContext.getString(R.string.catalyst_reloadjs),
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            if (!mDevSettings.isJSDevModeEnabled() && mDevSettings.isHotModuleReplacementEnabled()) {
-              Toast.makeText(mApplicationContext, "HMR cannot be enabled when Dev mode is off. Disabling HMR...", Toast.LENGTH_LONG).show();
-              mDevSettings.setHotModuleReplacementEnabled(false);
-            }
-            handleReloadJS();
-          }
-        });
-    if (mDevSettings.isNuclideJSDebugEnabled()) {
-      // The concatenation is applied directly here because XML isn't emoji-friendly
-      String nuclideJsDebugMenuItemTitle =
-          mApplicationContext.getString(R.string.catalyst_debugjs_nuclide)
-              + EMOJI_HUNDRED_POINTS_SYMBOL;
-      options.put(
-          nuclideJsDebugMenuItemTitle,
-          new DevOptionHandler() {
-            @Override
-            public void onOptionSelected() {
-              mDevServerHelper.attachDebugger(mApplicationContext, "ReactNative");
-            }
-          });
-    }
-    String remoteJsDebugMenuItemTitle =
-        mDevSettings.isRemoteJSDebugEnabled()
-            ? mApplicationContext.getString(R.string.catalyst_debugjs_off)
-            : mApplicationContext.getString(R.string.catalyst_debugjs);
-    if (mDevSettings.isNuclideJSDebugEnabled()) {
-      remoteJsDebugMenuItemTitle += EMOJI_FACE_WITH_NO_GOOD_GESTURE;
-    }
-    options.put(
-        remoteJsDebugMenuItemTitle,
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            mDevSettings.setRemoteJSDebugEnabled(!mDevSettings.isRemoteJSDebugEnabled());
-            handleReloadJS();
-          }
-        });
-    options.put(
-      mDevSettings.isReloadOnJSChangeEnabled()
-        ? mApplicationContext.getString(R.string.catalyst_live_reload_off)
-        : mApplicationContext.getString(R.string.catalyst_live_reload),
+      mApplicationContext.getString(R.string.catalyst_reload),
       new DevOptionHandler() {
         @Override
         public void onOptionSelected() {
-          mDevSettings.setReloadOnJSChangeEnabled(!mDevSettings.isReloadOnJSChangeEnabled());
+          if (!mDevSettings.isJSDevModeEnabled() && mDevSettings.isHotModuleReplacementEnabled()) {
+            Toast.makeText(
+              mApplicationContext,
+              mApplicationContext.getString(R.string.catalyst_hot_reloading_auto_disable),
+              Toast.LENGTH_LONG).show();
+            mDevSettings.setHotModuleReplacementEnabled(false);
+          }
+          handleReloadJS();
         }
       });
     options.put(
-            mDevSettings.isHotModuleReplacementEnabled()
-                    ? mApplicationContext.getString(R.string.catalyst_hot_module_replacement_off)
-                    : mApplicationContext.getString(R.string.catalyst_hot_module_replacement),
-            new DevOptionHandler() {
-              @Override
-              public void onOptionSelected() {
-                if (!mDevSettings.isHotModuleReplacementEnabled() && !mDevSettings.isJSDevModeEnabled()) {
-                  Toast.makeText(mApplicationContext, "You're trying to enable HMR while Dev mode is off. Turning both HMR and the Dev mode on...", Toast.LENGTH_LONG).show();
-                  mDevSettings.setJSDevModeEnabled(true);
-                }
-                mDevSettings.setHotModuleReplacementEnabled(!mDevSettings.isHotModuleReplacementEnabled());
-                handleReloadJS();
-              }
-            });
+      mDevSettings.isNuclideJSDebugEnabled()
+        ? mDevSettings.isRemoteJSDebugEnabled()
+          ? mApplicationContext.getString(R.string.catalyst_debug_chrome_stop)
+          : mApplicationContext.getString(R.string.catalyst_debug_chrome)
+        : mDevSettings.isRemoteJSDebugEnabled()
+          ? mApplicationContext.getString(R.string.catalyst_debug_stop)
+          : mApplicationContext.getString(R.string.catalyst_debug),
+      new DevOptionHandler() {
+        @Override
+        public void onOptionSelected() {
+          mDevSettings.setRemoteJSDebugEnabled(!mDevSettings.isRemoteJSDebugEnabled());
+          handleReloadJS();
+        }
+      });
+    if (mDevSettings.isNuclideJSDebugEnabled()) {
+      options.put(
+        mApplicationContext.getString(R.string.catalyst_debug_nuclide),
+        new DevOptionHandler() {
+          @Override
+          public void onOptionSelected() {
+            mDevServerHelper.attachDebugger(mApplicationContext, "ReactNative");
+          }
+        });
+    }
     options.put(
-        mApplicationContext.getString(R.string.catalyst_element_inspector),
+        // NOTE: `isElementInspectorEnabled` is not guaranteed to be accurate.
+        mApplicationContext.getString(R.string.catalyst_inspector),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -531,8 +472,36 @@ public class DevSupportManagerImpl implements
           }
         });
     options.put(
+      mDevSettings.isReloadOnJSChangeEnabled()
+        ? mApplicationContext.getString(R.string.catalyst_reload_on_save_stop)
+        : mApplicationContext.getString(R.string.catalyst_reload_on_save),
+      new DevOptionHandler() {
+        @Override
+        public void onOptionSelected() {
+          mDevSettings.setReloadOnJSChangeEnabled(!mDevSettings.isReloadOnJSChangeEnabled());
+        }
+      });
+    options.put(
+      mDevSettings.isHotModuleReplacementEnabled()
+        ? mApplicationContext.getString(R.string.catalyst_hot_reloading_stop)
+        : mApplicationContext.getString(R.string.catalyst_hot_reloading),
+      new DevOptionHandler() {
+        @Override
+        public void onOptionSelected() {
+        if (!mDevSettings.isHotModuleReplacementEnabled() && !mDevSettings.isJSDevModeEnabled()) {
+          Toast.makeText(
+            mApplicationContext,
+            mApplicationContext.getString(R.string.catalyst_hot_reloading_auto_enable),
+            Toast.LENGTH_LONG).show();
+          mDevSettings.setJSDevModeEnabled(true);
+        }
+        mDevSettings.setHotModuleReplacementEnabled(!mDevSettings.isHotModuleReplacementEnabled());
+        handleReloadJS();
+        }
+      });
+    options.put(
       mDevSettings.isFpsDebugEnabled()
-        ? mApplicationContext.getString(R.string.catalyst_perf_monitor_off)
+        ? mApplicationContext.getString(R.string.catalyst_perf_monitor_stop)
         : mApplicationContext.getString(R.string.catalyst_perf_monitor),
       new DevOptionHandler() {
         @Override
@@ -549,14 +518,6 @@ public class DevSupportManagerImpl implements
           mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
         }
       });
-    options.put(
-        mApplicationContext.getString(R.string.catalyst_poke_sampling_profiler),
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            handlePokeSamplingProfiler();
-          }
-        });
     options.put(
         mApplicationContext.getString(R.string.catalyst_settings), new DevOptionHandler() {
           @Override
@@ -878,25 +839,6 @@ public class DevSupportManagerImpl implements
       });
   }
 
-  private void handlePokeSamplingProfiler() {
-    try {
-      List<String> pokeResults = JSCSamplingProfiler.poke(60000);
-      for (String result : pokeResults) {
-        Toast.makeText(
-          mCurrentContext,
-          result == null
-            ? "Started JSC Sampling Profiler"
-            : "Stopped JSC Sampling Profiler",
-          Toast.LENGTH_LONG).show();
-        new JscProfileTask(getSourceUrl()).executeOnExecutor(
-            AsyncTask.THREAD_POOL_EXECUTOR,
-            result);
-      }
-    } catch (JSCSamplingProfiler.ProfilerException e) {
-      showNewJavaError(e.getMessage(), e);
-    }
-  }
-
   private void updateLastErrorInfo(
       @Nullable final String message,
       final StackFrame[] stack,
@@ -949,10 +891,10 @@ public class DevSupportManagerImpl implements
       public void onFailure(final Throwable cause) {
         mDevLoadingViewController.hide();
         mDevLoadingViewVisible = false;
-        FLog.e(ReactConstants.TAG, "Unable to connect to remote debugger", cause);
+        FLog.e(ReactConstants.TAG, "Failed to connect to debugger!", cause);
         future.setException(
             new IOException(
-                mApplicationContext.getString(R.string.catalyst_remotedbg_error), cause));
+                mApplicationContext.getString(R.string.catalyst_debug_error), cause));
       }
     };
   }
@@ -1016,7 +958,7 @@ public class DevSupportManagerImpl implements
                       showNewJavaError(debugServerException.getMessage(), cause);
                     } else {
                       showNewJavaError(
-                          mApplicationContext.getString(R.string.catalyst_jsload_error),
+                          mApplicationContext.getString(R.string.catalyst_reload_error),
                           cause);
                     }
                   }

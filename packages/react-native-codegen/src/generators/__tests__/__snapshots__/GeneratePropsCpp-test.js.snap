@@ -27,7 +27,8 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     radii(convertRawProp(rawProps, \\"radii\\", sourceProps.radii, radii)),
     colors(convertRawProp(rawProps, \\"colors\\", sourceProps.colors, colors)),
     srcs(convertRawProp(rawProps, \\"srcs\\", sourceProps.srcs, srcs)),
-    points(convertRawProp(rawProps, \\"points\\", sourceProps.points, points))
+    points(convertRawProp(rawProps, \\"points\\", sourceProps.points, points)),
+    sizes(convertRawProp(rawProps, \\"sizes\\", sourceProps.sizes, sizes))
       {}
 
 } // namespace react
@@ -387,7 +388,8 @@ StringPropComponentProps::StringPropComponentProps(
     const StringPropComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    accessibilityHint(convertRawProp(rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, accessibilityHint))
+    accessibilityHint(convertRawProp(rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, accessibilityHint)),
+    accessibilityRole(convertRawProp(rawProps, \\"accessibilityRole\\", sourceProps.accessibilityRole, accessibilityRole))
       {}
 
 } // namespace react

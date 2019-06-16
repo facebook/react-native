@@ -11,8 +11,8 @@
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
 
-#import <React/RCTScrollViewComponentView.h>
 #import <React/RCTConversions.h>
+#import <React/RCTScrollViewComponentView.h>
 
 using namespace facebook::react;
 
@@ -33,7 +33,9 @@ using namespace facebook::react;
     _props = defaultProps;
 
     _refreshControl = [[UIRefreshControl alloc] init];
-    [_refreshControl addTarget:self action:@selector(handleUIControlEventValueChanged) forControlEvents:UIControlEventValueChanged];
+    [_refreshControl addTarget:self
+                        action:@selector(handleUIControlEventValueChanged)
+              forControlEvents:UIControlEventValueChanged];
   }
 
   return self;
@@ -46,12 +48,10 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<PullToRefreshViewComponentDescriptor>();
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  auto const &oldConcreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(oldProps ?: _props);
+  auto const &oldConcreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(_props);
   auto const &newConcreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(props);
-
-  [super updateProps:props oldProps:oldProps];
 
   if (newConcreteProps.refreshing != oldConcreteProps.refreshing) {
     if (newConcreteProps.refreshing) {
@@ -74,6 +74,8 @@ using namespace facebook::react;
   if (needsUpdateTitle) {
     [self _updateTitle];
   }
+
+  [super updateProps:props oldProps:oldProps];
 }
 
 #pragma mark -
@@ -97,7 +99,8 @@ using namespace facebook::react;
     attributes[NSForegroundColorAttributeName] = RCTUIColorFromSharedColor(concreteProps.titleColor);
   }
 
-  _refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:RCTNSStringFromString(concreteProps.title) attributes:attributes];
+  _refreshControl.attributedTitle =
+      [[NSAttributedString alloc] initWithString:RCTNSStringFromString(concreteProps.title) attributes:attributes];
 }
 
 #pragma mark - Attaching & Detaching

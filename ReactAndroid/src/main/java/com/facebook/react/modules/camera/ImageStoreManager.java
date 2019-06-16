@@ -27,9 +27,10 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
 
-@ReactModule(name = "ImageStoreManager")
+@ReactModule(name = ImageStoreManager.NAME)
 public class ImageStoreManager extends ReactContextBaseJavaModule {
 
+  public static final String NAME = "ImageStoreManager";
   private static final int BUFFER_SIZE = 8192;
 
   public ImageStoreManager(ReactApplicationContext reactContext) {
@@ -38,7 +39,7 @@ public class ImageStoreManager extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "ImageStoreManager";
+    return NAME;
   }
 
   /**

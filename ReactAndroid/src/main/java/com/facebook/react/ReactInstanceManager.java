@@ -158,7 +158,7 @@ public class ReactInstanceManager {
   private @Nullable @ThreadConfined(UI) DefaultHardwareBackBtnHandler mDefaultBackButtonImpl;
   private @Nullable Activity mCurrentActivity;
   private final Collection<ReactInstanceEventListener> mReactInstanceEventListeners =
-      Collections.synchronizedSet(new HashSet<ReactInstanceEventListener>());
+      Collections.synchronizedList(new ArrayList<ReactInstanceEventListener>());
   // Identifies whether the instance manager is or soon will be initialized (on background thread)
   private volatile boolean mHasStartedCreatingInitialContext = false;
   // Identifies whether the instance manager destroy function is in process,
@@ -307,6 +307,10 @@ public class ReactInstanceManager {
     return mMemoryPressureRouter;
   }
 
+  public List<ReactPackage> getPackages() {
+    return new ArrayList<>(mPackages);
+  }
+
   private static void initializeSoLoaderIfNecessary(Context applicationContext) {
     // Call SoLoader.initialize here, this is required for apps that does not use exopackage and
     // does not use SoLoader for loading other native code except from the one used by React Native
@@ -321,23 +325,17 @@ public class ReactInstanceManager {
   /**
    * Trigger react context initialization asynchronously in a background async task. This enables
    * applications to pre-load the application JS, and execute global code before
-   * {@link ReactRootView} is available and measured. This should only be called the first time the
-   * application is set up, which is enforced to keep developers from accidentally creating their
-   * application multiple times without realizing it.
+   * {@link ReactRootView} is available and measured.
    *
    * Called from UI thread.
    */
   @ThreadConfined(UI)
   public void createReactContextInBackground() {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.createReactContextInBackground()");
-    Assertions.assertCondition(
-        !mHasStartedCreatingInitialContext,
-        "createReactContextInBackground should only be called when creating the react " +
-            "application for the first time. When reloading JS, e.g. from a new file, explicitly" +
-            "use recreateReactContextInBackground");
-
-    mHasStartedCreatingInitialContext = true;
-    recreateReactContextInBackgroundInner();
+    if (!mHasStartedCreatingInitialContext) {
+      mHasStartedCreatingInitialContext = true;
+      recreateReactContextInBackgroundInner();
+    }
   }
 
   /**
@@ -706,6 +704,15 @@ public class ReactInstanceManager {
   }
 
   @ThreadConfined(UI)
+  public void onWindowFocusChange(boolean hasFocus) {
+    UiThreadUtil.assertOnUiThread();
+    ReactContext currentContext = getCurrentReactContext();
+    if (currentContext != null) {
+      currentContext.onWindowFocusChange(hasFocus);
+    }
+  }
+
+  @ThreadConfined(UI)
   public void showDevOptionsDialog() {
     UiThreadUtil.assertOnUiThread();
     mDevSupportManager.showDevOptionsDialog();
@@ -1046,16 +1053,24 @@ public class ReactInstanceManager {
   private void attachRootViewToInstance(final ReactRoot reactRoot) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
-    UIManager uiManagerModule = UIManagerHelper.getUIManager(mCurrentReactContext, reactRoot.getUIManagerType());
+    UIManager uiManager = UIManagerHelper.getUIManager(mCurrentReactContext, reactRoot.getUIManagerType());
 
     @Nullable Bundle initialProperties = reactRoot.getAppProperties();
-    final int rootTag = uiManagerModule.addRootView(
-      reactRoot.getRootViewGroup(),
-      initialProperties == null ?
+
+    final int rootTag = uiManager.addRootView(
+        reactRoot.getRootViewGroup(),
+        initialProperties == null ?
             new WritableNativeMap() : Arguments.fromBundle(initialProperties),
         reactRoot.getInitialUITemplate());
     reactRoot.setRootViewTag(rootTag);
-    reactRoot.runApplication();
+    if (reactRoot.getUIManagerType() == FABRIC) {
+      // Fabric requires to call updateRootLayoutSpecs before starting JS Application,
+      // this ensures the root will hace the correct pointScaleFactor.
+      uiManager.updateRootLayoutSpecs(rootTag, reactRoot.getWidthMeasureSpec(), reactRoot.getHeightMeasureSpec());
+      reactRoot.setShouldLogContentAppeared(true);
+    } else {
+      reactRoot.runApplication();
+    }
     Systrace.beginAsyncSection(
       TRACE_TAG_REACT_JAVA_BRIDGE,
       "pre_rootView.onAttachedToReactInstance",

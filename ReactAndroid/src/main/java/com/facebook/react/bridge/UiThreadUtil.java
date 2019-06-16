@@ -44,11 +44,18 @@ public class UiThreadUtil {
    * Runs the given {@code Runnable} on the UI thread.
    */
   public static void runOnUiThread(Runnable runnable) {
+    runOnUiThread(runnable, 0);
+  }
+
+  /**
+   * Runs the given {@code Runnable} on the UI thread with the specified delay.
+   */
+  public static void runOnUiThread(Runnable runnable, long delayInMs) {
     synchronized (UiThreadUtil.class) {
       if (sMainHandler == null) {
         sMainHandler = new Handler(Looper.getMainLooper());
       }
     }
-    sMainHandler.post(runnable);
+    sMainHandler.postDelayed(runnable, delayInMs);
   }
 }

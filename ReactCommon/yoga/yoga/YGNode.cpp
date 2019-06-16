@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -537,13 +537,6 @@ bool YGNode::didUseLegacyFlag() {
     }
   }
   return didUseLegacyFlag;
-}
-
-void YGNode::setAndPropogateUseLegacyFlag(bool useLegacyFlag) {
-  config_->useLegacyStretchBehaviour = useLegacyFlag;
-  for_each(children_.begin(), children_.end(), [=](YGNodeRef childNode) {
-    childNode->getConfig()->useLegacyStretchBehaviour = useLegacyFlag;
-  });
 }
 
 void YGNode::setLayoutDoesLegacyFlagAffectsLayout(

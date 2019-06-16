@@ -40,7 +40,7 @@ describe('MessageQueue', function() {
   beforeEach(function() {
     jest.resetModules();
 
-    global.__fbBatchedBridgeConfig = require('MessageQueueTestConfig');
+    global.__fbBatchedBridgeConfig = require('../__mocks__/MessageQueueTestConfig');
     BatchedBridge = require('../BatchedBridge');
     NativeModules = require('../NativeModules');
   });

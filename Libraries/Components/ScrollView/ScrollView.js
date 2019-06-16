@@ -25,6 +25,7 @@ const invariant = require('invariant');
 const processDecelerationRate = require('./processDecelerationRate');
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 const resolveAssetSource = require('../../Image/resolveAssetSource');
+const splitLayoutProps = require('../../StyleSheet/splitLayoutProps');
 
 import type {
   PressEvent,
@@ -1125,15 +1126,15 @@ class ScrollView extends React.Component<Props, State> {
         // On Android wrap the ScrollView with a AndroidSwipeRefreshLayout.
         // Since the ScrollView is wrapped add the style props to the
         // AndroidSwipeRefreshLayout and use flex: 1 for the ScrollView.
-        // Note: we should only apply props.style on the wrapper
+        // Note: we should split props.style on the inner and outer props
         // however, the ScrollView still needs the baseStyle to be scrollable
-
+        const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
         return React.cloneElement(
           refreshControl,
-          {style: props.style},
+          {style: [baseStyle, outer]},
           <ScrollViewClass
             {...props}
-            style={baseStyle}
+            style={[baseStyle, inner]}
             // $FlowFixMe
             ref={this._setScrollViewRef}>
             {contentContainer}

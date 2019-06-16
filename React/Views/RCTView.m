@@ -158,33 +158,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return RCTRecursiveAccessibilityLabel(self);
 }
 
--(void)setAccessibilityActions:(NSArray *)actions
-{
-  if (!actions) {
-    return;
-  }
-  accessibilityActionsNameMap = [[NSMutableDictionary alloc] init];
-  accessibilityActionsLabelMap = [[NSMutableDictionary alloc] init];
-  for (NSDictionary *action in actions) {
-    if (action[@"name"]) {
-      accessibilityActionsNameMap[action[@"name"]] = action;
-    }
-    if (action[@"label"]) {
-      accessibilityActionsLabelMap[action[@"label"]] = action;
-    }
-  }
-  _accessibilityActions = [actions copy];
-}
-
 - (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
   if (!self.accessibilityActions.count) {
     return nil;
   }
 
+  accessibilityActionsNameMap = [[NSMutableDictionary alloc] init];
+  accessibilityActionsLabelMap = [[NSMutableDictionary alloc] init];
   NSMutableArray *actions = [NSMutableArray array];
   for (NSDictionary *action in self.accessibilityActions) {
+    if (action[@"name"]) {
+      accessibilityActionsNameMap[action[@"name"]] = action;
+    }
     if (action[@"label"]) {
+      accessibilityActionsLabelMap[action[@"label"]] = action;
       [actions addObject:[[UIAccessibilityCustomAction alloc] initWithName:action[@"label"]
                                                                     target:self
                                                                   selector:@selector(didActivateAccessibilityCustomAction:)]];
@@ -222,6 +210,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
         return @"0";
       }
     }
+    for (NSString *state in self.accessibilityState) {
+      id val = self.accessibilityState[state];
+      if (!val) {
+        continue;
+      }
+      if ([state isEqualToString:@"checked"] && [val isKindOfClass:[NSNumber class]]) {
+        return [val boolValue] ? @"1" : @"0";
+      }
+    }
   }
   NSMutableArray *valueComponents = [NSMutableArray new];
   static NSDictionary<NSString *, NSString *> *roleDescriptions = nil;
@@ -255,6 +252,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
                           @"busy" : @"busy",
                           @"expanded" : @"expanded",
                           @"collapsed" : @"collapsed",
+                          @"mixed": @"mixed",
                           };
   });
   NSString *roleDescription = self.accessibilityRole ? roleDescriptions[self.accessibilityRole]: nil;
@@ -267,8 +265,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
       [valueComponents addObject:stateDescription];
     }
   }
+  for (NSString *state in self.accessibilityState) {
+    id val = self.accessibilityState[state];
+    if (!val) {
+      continue;
+    }
+    if ([state isEqualToString:@"checked"]) {
+      if ([val isKindOfClass:[NSNumber class]]) {
+        [valueComponents addObject:stateDescriptions[[val boolValue] ? @"checked" : @"unchecked"]];
+      } else if ([val isKindOfClass:[NSString class]] && [val isEqualToString:@"mixed"]) {
+        [valueComponents addObject:stateDescriptions[@"mixed"]];
+      }
+    }
+    if ([state isEqualToString:@"expanded"] && [val isKindOfClass:[NSNumber class]]) {
+      [valueComponents addObject:stateDescriptions[[val boolValue] ? @"expanded" : @"collapsed"]];
+    }
+    if ([state isEqualToString:@"busy"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
+      [valueComponents addObject:stateDescriptions[@"busy"]];
+    }
+  }
   if (valueComponents.count > 0) {
-    return [valueComponents componentsJoinedByString:@",  "];
+    return [valueComponents componentsJoinedByString:@", "];
   }
   return nil;
 }
