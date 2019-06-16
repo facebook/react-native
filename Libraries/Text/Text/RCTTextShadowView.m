@@ -218,7 +218,8 @@
     return cachedTextStorage;
   }
 
-  NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:size];
+  // `[NSLayoutManager usedRectForTextContainer]` not calculated correctly in some cases(For example, https://github.com/facebook/react-native/issues/24970 ), so here we add one point to the height of text conatiner.
+  NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:CGSizeMake(size.width, size.height + 1.0)];
 
   textContainer.lineFragmentPadding = 0.0; // Note, the default value is 5.
   textContainer.lineBreakMode =
@@ -409,8 +410,8 @@ static YGSize RCTTextShadowViewMeasure(YGNodeRef node, float width, YGMeasureMod
   // `double` to `float`, and then rounding them to pixel grid in Yoga.
   CGFloat epsilon = 0.001;
   return (YGSize){
-    ceil(RCTYogaFloatFromCoreGraphicsFloat(size.width + epsilon)),
-    ceil(RCTYogaFloatFromCoreGraphicsFloat(size.height + epsilon))
+    RCTYogaFloatFromCoreGraphicsFloat(size.width + epsilon),
+    RCTYogaFloatFromCoreGraphicsFloat(size.height + epsilon)
   };
 }
 
