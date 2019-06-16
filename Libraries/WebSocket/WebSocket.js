@@ -237,6 +237,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
           return;
         }
         this.readyState = this.OPEN;
+        this.protocol = ev.protocol;
         this.dispatchEvent(new WebSocketEvent('open'));
       }),
       this._eventEmitter.addListener('websocketClosed', ev => {

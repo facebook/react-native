@@ -155,7 +155,8 @@ RCT_EXPORT_METHOD(close:(NSInteger)code reason:(NSString *)reason socketID:(nonn
 - (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
 {
   [self sendEventWithName:@"websocketOpen" body:@{
-    @"id": webSocket.reactTag
+    @"id": webSocket.reactTag,
+    @"protocol": webSocket.protocol ? webSocket.protocol : @""
   }];
 }
 

@@ -144,6 +144,7 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
             mWebSocketConnections.put(id, webSocket);
             WritableMap params = Arguments.createMap();
             params.putInt("id", id);
+            params.putString("protocol", response.header("Sec-WebSocket-Protocol", ""));
             sendEvent("websocketOpen", params);
           }
 
