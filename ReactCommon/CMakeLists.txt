@@ -19,11 +19,11 @@ set(SOURCES
 	yoga/yoga/Utils.cpp
 	yoga/yoga/YGConfig.cpp
 	yoga/yoga/YGEnums.cpp
-	yoga/yoga/YGFloatOptional.cpp
 	yoga/yoga/YGLayout.cpp
 	yoga/yoga/YGNode.cpp
 	yoga/yoga/YGNodePrint.cpp
 	yoga/yoga/YGStyle.cpp
+	yoga/yoga/YGValue.cpp
 	yoga/yoga/Yoga.cpp)
 
 if(WIN32)
