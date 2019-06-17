@@ -33,8 +33,6 @@ LOCAL_STATIC_LIBRARIES := libreactnative
 # LOCAL_SHARED_LIBRARIES variable.
 LOCAL_MODULE := reactnativejni
 
-# Flag to enable V8 in react-native code
-# ENGINEUSED := 1
 
 LOCAL_SRC_FILES := \
   CatalystInstanceImpl.cpp \
@@ -61,21 +59,13 @@ LOCAL_SRC_FILES := \
 LOCAL_V8_FILES := \
   AndroidV8Factory.cpp
 
-LOCAL_HERMES_FILES := \
-  DummyHermesFactory.cpp
-
-ifeq ($(ENGINEUSED), 1)
+ifeq ($(JS_ENGINEUSED), V8)
   LOCAL_SRC_FILES += $(LOCAL_V8_FILES)
-  LOCAL_CFLAGS += -DENGINEUSED=1
 endif
-ifeq ($(ENGINEUSED), 0)
-  LOCAL_CFLAGS += -DENGINEUSED=0
+ifeq ($(JS_ENGINEUSED), JSC)
   LOCAL_SHARED_LIBRARIES += libjsc
 endif
-ifeq ($(ENGINEUSED), 2)
-  LOCAL_SRC_FILES += $(LOCAL_HERMES_FILES)
-  LOCAL_CFLAGS += -DENGINEUSED=2
-endif
+
 # Build the files in this directory as a shared library
 include $(BUILD_SHARED_LIBRARY)
 
@@ -97,10 +87,7 @@ $(call import-module,privatedata)
 $(call import-module,fb)
 $(call import-module,fbgloginit)
 $(call import-module,folly)
-ifeq ($(ENGINEUSED), 2)
-$(call import-module,hermes)
-endif
-ifeq ($(ENGINEUSED), 0)
+ifeq ($(JS_ENGINEUSED), JSC)
   $(call import-module,jsc)
 endif
 $(call import-module,yogajni)
@@ -110,12 +97,9 @@ $(call import-module,jsiexecutor)
 # TODO(ramanpreet):
 #   Why doesn't this import-module call generate a jscexecutor.so file?
 # $(call import-module,jscexecutor)
-ifeq ($(ENGINEUSED), 0)
+ifeq ($(JS_ENGINEUSED), JSC)
 include $(REACT_SRC_DIR)/jscexecutor/Android.mk
 endif
-ifeq ($(ENGINEUSED), 1)
+ifeq ($(JS_ENGINEUSED), V8)
 include $(REACT_SRC_DIR)/v8executor/Android.mk
-endif
-ifeq ($(ENGINEUSED), 2)
-include $(REACT_SRC_DIR)/../hermes/reactexecutor/Android.mk
 endif

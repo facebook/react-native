@@ -33,7 +33,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 LOCAL_CFLAGS := -fexceptions -frtti -O3
 LOCAL_SHARED_LIBRARIES := libfolly_json glog
 
-ifeq ($(ENGINEUSED), 1)
+ifeq ($(JS_ENGINEUSED), V8)
   LOCAL_SRC_FILES += $(LOCAL_V8_FILES)
   LOCAL_SHARED_LIBRARIES += libv8 libv8platform libv8base
 else

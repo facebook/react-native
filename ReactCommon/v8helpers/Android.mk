@@ -13,7 +13,6 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"
 
-LOCAL_CFLAGS += -DENGINEUSED=1
 
 LOCAL_CXXFLAGS += -frtti -fexceptions 
 LOCAL_CFLAGS += -Wall -Werror 
