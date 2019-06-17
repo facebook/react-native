@@ -7,6 +7,8 @@
 package com.facebook.react.uimanager;
 
 import android.content.res.Resources;
+import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
@@ -74,6 +76,7 @@ public class NativeViewHierarchyManager {
   private final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
   private final SparseArray<SparseIntArray> mTagsToPendingIndicesToDelete = new SparseArray<>();
   private final int[] mDroppedViewArray = new int[100];
+  private final RectF mBoundingBox = new RectF();
 
   private boolean mLayoutAnimationEnabled;
   private PopupMenu mPopupMenu;
@@ -649,16 +652,47 @@ public class NativeViewHierarchyManager {
     if (rootView == null) {
       throw new NoSuchNativeViewException("Native view " + tag + " is no longer on screen");
     }
-    rootView.getLocationInWindow(outputBuffer);
+    computeBoundingBox(rootView, outputBuffer);
     int rootX = outputBuffer[0];
     int rootY = outputBuffer[1];
+    computeBoundingBox(v, outputBuffer);
+    outputBuffer[0] -= rootX;
+    outputBuffer[1] -= rootY;
+  }
 
-    v.getLocationInWindow(outputBuffer);
+  void computeBoundingBox(View v, int[] outputBuffer) {
+    mBoundingBox.set(0, 0, v.getWidth(), v.getHeight());
+    mapRectFromViewToWindowCoords(v, mBoundingBox);
 
-    outputBuffer[0] = outputBuffer[0] - rootX;
-    outputBuffer[1] = outputBuffer[1] - rootY;
-    outputBuffer[2] = v.getWidth();
-    outputBuffer[3] = v.getHeight();
+    outputBuffer[0] = (int) mBoundingBox.left;
+    outputBuffer[1] = (int) mBoundingBox.top;
+    outputBuffer[2] = (int) (mBoundingBox.right - mBoundingBox.left);
+    outputBuffer[3] = (int) (mBoundingBox.bottom - mBoundingBox.top);
+  }
+
+  // simplified version of the hidden Android method View.mapRectFromViewToScreenCoords()
+  void mapRectFromViewToWindowCoords(View v, RectF rect) {
+    Matrix m = v.getMatrix();
+    if (!m.isIdentity()) {
+      m.mapRect(rect);
+    }
+
+    rect.offset(v.getLeft(), v.getTop());
+
+    ViewParent parent = v.getParent();
+    while (parent instanceof View) {
+      View parentView = (View) parent;
+
+      rect.offset(-parentView.getScrollX(), -parentView.getScrollY());
+      m = parentView.getMatrix();
+      if (!m.isIdentity()) {
+        m.mapRect(rect);
+      }
+
+      rect.offset(parentView.getLeft(), parentView.getTop());
+
+      parent = parentView.getParent();
+    }
   }
 
   /**
