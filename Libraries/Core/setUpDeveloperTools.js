@@ -49,6 +49,11 @@ if (__DEV__) {
     if (typeof reload !== 'function') {
       throw new Error('Could not find the reload() implementation.');
     }
-    (require: any).reload = reload; // flowlint-line unclear-type: off
+    // flowlint-next-line unclear-type: off
+    (require: any).reload = reload;
+    // flowlint-next-line unclear-type: off
+    (require: any).hot = {
+      Runtime: require('react-refresh/runtime'),
+    };
   }
 }
