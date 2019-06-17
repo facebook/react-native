@@ -57,12 +57,14 @@ function findConfig(ast) {
 }
 
 function getTypes(ast) {
-  return ast.body
-    .filter(node => node.type === 'TypeAlias')
-    .reduce((types, node) => {
+  return ast.body.reduce((types, node) => {
+    if (node.type === 'ExportNamedDeclaration') {
+      types[node.declaration.id.name] = node.declaration;
+    } else if (node.type === 'TypeAlias') {
       types[node.id.name] = node;
-      return types;
-    }, {});
+    }
+    return types;
+  }, {});
 }
 
 function getPropProperties(propsTypeName, types) {

@@ -551,6 +551,45 @@ type ModuleProps = $ReadOnly<{|
 export default codegenNativeComponent<ModuleProps>('Module');
 `;
 
+const PROPS_AND_EVENTS_TYPES_EXPORTED = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {
+  BubblingEvent,
+  DirectEvent,
+} from 'CodegenTypes';
+
+import type {ViewProps} from 'ViewPropTypes';
+
+export type EventInFile = $ReadOnly<{|
+  ${EVENT_DEFINITION}
+|}>;
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  // No props
+
+  // Events defined inline
+  onBubblingEventDefinedInline: (event: BubblingEvent<EventInFile>) => void,
+  onDirectEventDefinedInline: (event: DirectEvent<EventInFile>) => void,
+|}>;
+
+export default codegenNativeComponent<ModuleProps>('Module');
+`;
+
 module.exports = {
   ALL_PROP_TYPES_NO_EVENTS,
   ARRAY_PROP_TYPES_NO_EVENTS,
@@ -559,4 +598,5 @@ module.exports = {
   EVENTS_DEFINED_IN_FILE_WITH_ALL_TYPES,
   EVENTS_DEFINED_AS_NULL_IN_FILE,
   EVENTS_DEFINED_AS_NULL_INLINE,
+  PROPS_AND_EVENTS_TYPES_EXPORTED,
 };
