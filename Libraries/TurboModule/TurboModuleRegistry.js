@@ -17,10 +17,13 @@ import invariant from 'invariant';
 const turboModuleProxy = global.__turboModuleProxy;
 
 export function get<T: TurboModule>(name: string): ?T {
-  // Backward compatibility layer during migration.
-  const legacyModule = NativeModules[name];
-  if (legacyModule != null) {
-    return ((legacyModule: any): T);
+  // Bridgeless mode requires TurboModules
+  if (!global.RN$Bridgeless) {
+    // Backward compatibility layer during migration.
+    const legacyModule = NativeModules[name];
+    if (legacyModule != null) {
+      return ((legacyModule: any): T);
+    }
   }
 
   if (turboModuleProxy != null) {
