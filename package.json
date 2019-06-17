@@ -78,7 +78,7 @@
     "test-ios": "./scripts/objc-test-ios.sh test"
   },
   "peerDependencies": {
-    "react": "16.8.6"
+    "react": ">=16.8.6"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
