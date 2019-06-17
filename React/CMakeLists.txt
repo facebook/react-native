@@ -113,10 +113,6 @@ set(REACT_SRC_HEADERS
   Views/RCTSliderManager.h
   Views/RCTSwitch.h
   Views/RCTSwitchManager.h
-  Views/RCTTabBar.h
-  Views/RCTTabBarItem.h
-  Views/RCTTabBarItemManager.h
-  Views/RCTTabBarManager.h
   Views/RCTTextDecorationLineType.h
   Views/RCTView.h
   Views/RCTViewManager.h
