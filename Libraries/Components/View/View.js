@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ViewNativeComponent = require('./ViewNativeComponent');
+import ViewNativeComponent from './ViewNativeComponent';
 
 import type {ViewProps} from './ViewPropTypes';
 

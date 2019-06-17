@@ -15,7 +15,7 @@ const getNativeComponentAttributes = require('../ReactNative/getNativeComponentA
 import type {ReactNativeBaseComponentViewConfig} from '../Renderer/shims/ReactNativeTypes';
 import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewConfig';
 
-const IGNORED_KEYS = ['transform'];
+const IGNORED_KEYS = ['transform', 'hitSlop'];
 /**
  * The purpose of this function is to validate that the view config that
  * native exposes for a given view manager is the same as the view config
