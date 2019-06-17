@@ -57,6 +57,35 @@ void Binding::startSurface(
   }
 }
 
+void Binding::startSurfaceWithConstraints(
+    jint surfaceId,
+    jni::alias_ref<jstring> moduleName,
+    NativeMap *initialProps,
+    jfloat minWidth,
+    jfloat maxWidth,
+    jfloat minHeight,
+    jfloat maxHeight) {
+  if (scheduler_) {
+    auto minimumSize =
+        Size{minWidth / pointScaleFactor_, minHeight / pointScaleFactor_};
+    auto maximumSize =
+        Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
+
+    LayoutContext context;
+    context.pointScaleFactor = {pointScaleFactor_};
+    LayoutConstraints constraints = {};
+    constraints.minimumSize = minimumSize;
+    constraints.maximumSize = maximumSize;
+
+    scheduler_->startSurface(
+        surfaceId,
+        moduleName->toStdString(),
+        initialProps->consume(),
+        constraints,
+        context);
+  }
+}
+
 void Binding::renderTemplateToSurface(jint surfaceId, jstring uiTemplate) {
   SystraceSection s("FabricUIManagerBinding::renderTemplateToSurface");
   if (scheduler_) {
@@ -571,6 +600,8 @@ void Binding::registerNatives() {
        makeNativeMethod(
            "installFabricUIManager", Binding::installFabricUIManager),
        makeNativeMethod("startSurface", Binding::startSurface),
+       makeNativeMethod(
+           "startSurfaceWithConstraints", Binding::startSurfaceWithConstraints),
        makeNativeMethod(
            "renderTemplateToSurface", Binding::renderTemplateToSurface),
        makeNativeMethod("stopSurface", Binding::stopSurface),

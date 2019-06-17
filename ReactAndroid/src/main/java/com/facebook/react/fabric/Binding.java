@@ -41,6 +41,8 @@ public class Binding {
 
   public native void startSurface(int surfaceId, String moduleName, NativeMap initialProps);
 
+  public native void startSurfaceWithConstraints(int surfaceId, String moduleName, NativeMap initialProps, float minWidth, float maxWidth, float minHeight, float maxHeight);
+
   public native void renderTemplateToSurface(int surfaceId, String uiTemplate);
 
   public native void stopSurface(int surfaceId);

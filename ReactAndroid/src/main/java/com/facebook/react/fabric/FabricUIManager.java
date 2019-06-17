@@ -130,20 +130,30 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public <T extends View> int addRootView(
     final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
-    return addRootView(rootView, ((ReactRoot) rootView).getJSModuleName(), initialProps, initialUITemplate);
-  }
-
-  public <T extends View> int addRootView(
-      final T rootView, final String moduleName, final WritableMap initialProps, final @Nullable String initialUITemplate) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, rootView.getContext());
     mMountingManager.addRootView(rootTag, rootView);
     mReactContextForRootTag.put(rootTag, reactContext);
-    mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
+    mBinding.startSurface(rootTag, ((ReactRoot) rootView).getJSModuleName(), (NativeMap) initialProps);
     if (initialUITemplate != null) {
       mBinding.renderTemplateToSurface(rootTag, initialUITemplate);
     }
+    return rootTag;
+  }
+
+  public <T extends View> int addRootView(
+      final T rootView, final String moduleName, final WritableMap initialProps, int widthMeasureSpec, int heightMeasureSpec) {
+    final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+    ThemedReactContext reactContext =
+        new ThemedReactContext(mReactApplicationContext, rootView.getContext());
+    mMountingManager.addRootView(rootTag, rootView);
+    mReactContextForRootTag.put(rootTag, reactContext);
+    mBinding.startSurfaceWithConstraints(rootTag, moduleName, (NativeMap) initialProps,
+        getMinSize(widthMeasureSpec),
+        getMaxSize(widthMeasureSpec),
+        getMinSize(heightMeasureSpec),
+        getMaxSize(heightMeasureSpec));
     return rootTag;
   }
 

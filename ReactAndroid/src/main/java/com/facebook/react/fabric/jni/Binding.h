@@ -21,7 +21,7 @@ class Instance;
 
 class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
  public:
-  constexpr static const char* const kJavaDescriptor =
+  constexpr static const char *const kJavaDescriptor =
       "Lcom/facebook/react/fabric/Binding;";
 
   static void registerNatives();
@@ -54,6 +54,15 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
       jint surfaceId,
       jni::alias_ref<jstring> moduleName,
       NativeMap *initialProps);
+
+  void startSurfaceWithConstraints(
+      jint surfaceId,
+      jni::alias_ref<jstring> moduleName,
+      NativeMap *initialProps,
+      jfloat minWidth,
+      jfloat maxWidth,
+      jfloat minHeight,
+      jfloat maxHeight);
 
   void renderTemplateToSurface(jint surfaceId, jstring uiTemplate);
 
