@@ -23,6 +23,8 @@
 #include <react/utils/ContextContainer.h>
 #include <react/utils/TimeUtils.h>
 
+#include <Glog/logging.h>
+
 using namespace facebook::jni;
 using namespace facebook::jsi;
 
@@ -46,15 +48,33 @@ jni::local_ref<Binding::jhybriddata> Binding::initHybrid(
   return makeCxxInstance();
 }
 
+// Thread-safe getter
+jni::global_ref<jobject> Binding::getJavaUIManager() {
+  std::lock_guard<std::mutex> uiManagerLock(javaUIManagerMutex_);
+  return javaUIManager_;
+}
+
+// Thread-safe getter
+std::shared_ptr<Scheduler> Binding::getScheduler() {
+  std::lock_guard<std::mutex> lock(schedulerMutex_);
+  return scheduler_;
+}
+
+
 void Binding::startSurface(
     jint surfaceId,
     jni::alias_ref<jstring> moduleName,
     NativeMap *initialProps) {
   SystraceSection s("FabricUIManagerBinding::startSurface");
-  if (scheduler_) {
-    scheduler_->startSurface(
-        surfaceId, moduleName->toStdString(), initialProps->consume());
+
+  std::shared_ptr<Scheduler> scheduler = getScheduler();
+  if (!scheduler) {
+    LOG(ERROR) << "Binding::startSurface: scheduler disappeared";
+    return;
   }
+
+  scheduler->startSurface(
+      surfaceId, moduleName->toStdString(), initialProps->consume());
 }
 
 void Binding::startSurfaceWithConstraints(
@@ -65,41 +85,58 @@ void Binding::startSurfaceWithConstraints(
     jfloat maxWidth,
     jfloat minHeight,
     jfloat maxHeight) {
-  if (scheduler_) {
-    auto minimumSize =
-        Size{minWidth / pointScaleFactor_, minHeight / pointScaleFactor_};
-    auto maximumSize =
-        Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
+  SystraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
 
-    LayoutContext context;
-    context.pointScaleFactor = {pointScaleFactor_};
-    LayoutConstraints constraints = {};
-    constraints.minimumSize = minimumSize;
-    constraints.maximumSize = maximumSize;
-
-    scheduler_->startSurface(
-        surfaceId,
-        moduleName->toStdString(),
-        initialProps->consume(),
-        constraints,
-        context);
+  std::shared_ptr<Scheduler> scheduler = getScheduler();
+  if (!scheduler) {
+    LOG(ERROR) << "Binding::startSurfaceWithConstraints: scheduler disappeared";
+    return;
   }
+
+  auto minimumSize =
+      Size{minWidth / pointScaleFactor_, minHeight / pointScaleFactor_};
+  auto maximumSize =
+      Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
+
+  LayoutContext context;
+  context.pointScaleFactor = {pointScaleFactor_};
+  LayoutConstraints constraints = {};
+  constraints.minimumSize = minimumSize;
+  constraints.maximumSize = maximumSize;
+
+  scheduler->startSurface(
+      surfaceId,
+      moduleName->toStdString(),
+      initialProps->consume(),
+      constraints,
+      context);
 }
 
 void Binding::renderTemplateToSurface(jint surfaceId, jstring uiTemplate) {
   SystraceSection s("FabricUIManagerBinding::renderTemplateToSurface");
-  if (scheduler_) {
-    auto env = Environment::current();
-    const char *nativeString = env->GetStringUTFChars(uiTemplate, JNI_FALSE);
-    scheduler_->renderTemplateToSurface(surfaceId, nativeString);
-    env->ReleaseStringUTFChars(uiTemplate, nativeString);
+
+  std::shared_ptr<Scheduler> scheduler = getScheduler();
+  if (!scheduler) {
+    LOG(ERROR) << "Binding::renderTemplateToSurface: scheduler disappeared";
+    return;
   }
+
+  auto env = Environment::current();
+  const char *nativeString = env->GetStringUTFChars(uiTemplate, JNI_FALSE);
+  scheduler->renderTemplateToSurface(surfaceId, nativeString);
+  env->ReleaseStringUTFChars(uiTemplate, nativeString);
 }
 
 void Binding::stopSurface(jint surfaceId) {
-  if (scheduler_) {
-    scheduler_->stopSurface(surfaceId);
+  SystraceSection s("FabricUIManagerBinding::stopSurface");
+
+  std::shared_ptr<Scheduler> scheduler = getScheduler();
+  if (!scheduler) {
+    LOG(ERROR) << "Binding::stopSurface: scheduler disappeared";
+    return;
   }
+
+  scheduler->stopSurface(surfaceId);
 }
 
 void Binding::setConstraints(
@@ -108,20 +145,26 @@ void Binding::setConstraints(
     jfloat maxWidth,
     jfloat minHeight,
     jfloat maxHeight) {
-  if (scheduler_) {
-    auto minimumSize =
-        Size{minWidth / pointScaleFactor_, minHeight / pointScaleFactor_};
-    auto maximumSize =
-        Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
+  SystraceSection s("FabricUIManagerBinding::setConstraints");
 
-    LayoutContext context;
-    context.pointScaleFactor = {pointScaleFactor_};
-    LayoutConstraints constraints = {};
-    constraints.minimumSize = minimumSize;
-    constraints.maximumSize = maximumSize;
-
-    scheduler_->constraintSurfaceLayout(surfaceId, constraints, context);
+  std::shared_ptr<Scheduler> scheduler = getScheduler();
+  if (!scheduler) {
+    LOG(ERROR) << "Binding::setConstraints: scheduler disappeared";
+    return;
   }
+
+  auto minimumSize =
+      Size{minWidth / pointScaleFactor_, minHeight / pointScaleFactor_};
+  auto maximumSize =
+      Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
+
+  LayoutContext context;
+  context.pointScaleFactor = {pointScaleFactor_};
+  LayoutConstraints constraints = {};
+  constraints.minimumSize = minimumSize;
+  constraints.maximumSize = maximumSize;
+
+  scheduler->constraintSurfaceLayout(surfaceId, constraints, context);
 }
 
 void Binding::installFabricUIManager(
@@ -132,6 +175,12 @@ void Binding::installFabricUIManager(
     ComponentFactoryDelegate *componentsRegistry,
     jni::alias_ref<jobject> reactNativeConfig) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
+
+  // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes at the same time
+  std::lock(schedulerMutex_, javaUIManagerMutex_);
+  std::lock_guard<std::mutex> schedulerLock(schedulerMutex_, std::adopt_lock);
+  std::lock_guard<std::mutex> uiManagerLock(javaUIManagerMutex_, std::adopt_lock);
+
   javaUIManager_ = make_global(javaUIManager);
 
   ContextContainer::Shared contextContainer =
@@ -182,6 +231,11 @@ void Binding::installFabricUIManager(
 }
 
 void Binding::uninstallFabricUIManager() {
+  // Use std::lock and std::adopt_lock to prevent deadlocks by locking mutexes at the same time
+  std::lock(schedulerMutex_, javaUIManagerMutex_);
+  std::lock_guard<std::mutex> schedulerLock(schedulerMutex_, std::adopt_lock);
+  std::lock_guard<std::mutex> uiManagerLock(javaUIManagerMutex_, std::adopt_lock);
+
   scheduler_ = nullptr;
   javaUIManager_ = nullptr;
 }
@@ -393,6 +447,13 @@ local_ref<JMountItem::javaobject> createCreateMountItem(
 void Binding::schedulerDidFinishTransaction(
     MountingCoordinator::Shared const &mountingCoordinator) {
   SystraceSection s("FabricUIManagerBinding::schedulerDidFinishTransaction");
+  long finishTransactionStartTime = getTime();
+
+  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
+  if (!localJavaUIManager) {
+    LOG(ERROR) << "Binding::schedulerDidFinishTransaction: JavaUIManager disappeared";
+    return;
+  }
 
   auto mountingTransaction = mountingCoordinator->pullTransaction();
 
@@ -407,8 +468,6 @@ void Binding::schedulerDidFinishTransaction(
   std::vector<local_ref<jobject>> queue;
   // Upper bound estimation of mount items to be delivered to Java side.
   int size = mutations.size() * 3 + 42;
-
-  long finishTransactionStartTime = getTime();
 
   local_ref<JArrayClass<JMountItem::javaobject>> mountItemsArray =
       JArrayClass<JMountItem::javaobject>::newArray(size);
@@ -430,20 +489,20 @@ void Binding::schedulerDidFinishTransaction(
             deletedViewTags.find(mutation.newChildShadowView.tag) !=
                 deletedViewTags.end()) {
           mountItems[position++] =
-              createCreateMountItem(javaUIManager_, mutation, surfaceId);
+              createCreateMountItem(localJavaUIManager, mutation, surfaceId);
         }
         break;
       }
       case ShadowViewMutation::Remove: {
         if (!isVirtual) {
           mountItems[position++] =
-              createRemoveMountItem(javaUIManager_, mutation);
+              createRemoveMountItem(localJavaUIManager, mutation);
         }
         break;
       }
       case ShadowViewMutation::Delete: {
         mountItems[position++] =
-            createDeleteMountItem(javaUIManager_, mutation);
+            createDeleteMountItem(localJavaUIManager, mutation);
 
         deletedViewTags.insert(mutation.oldChildShadowView.tag);
         break;
@@ -453,21 +512,21 @@ void Binding::schedulerDidFinishTransaction(
           if (mutation.oldChildShadowView.props !=
               mutation.newChildShadowView.props) {
             mountItems[position++] =
-                createUpdatePropsMountItem(javaUIManager_, mutation);
+                createUpdatePropsMountItem(localJavaUIManager, mutation);
           }
           if (mutation.oldChildShadowView.localData !=
               mutation.newChildShadowView.localData) {
             mountItems[position++] =
-                createUpdateLocalData(javaUIManager_, mutation);
+                createUpdateLocalData(localJavaUIManager, mutation);
           }
           if (mutation.oldChildShadowView.state !=
               mutation.newChildShadowView.state) {
             mountItems[position++] =
-                createUpdateStateMountItem(javaUIManager_, mutation);
+                createUpdateStateMountItem(localJavaUIManager, mutation);
           }
 
           auto updateLayoutMountItem =
-              createUpdateLayoutMountItem(javaUIManager_, mutation);
+              createUpdateLayoutMountItem(localJavaUIManager, mutation);
           if (updateLayoutMountItem) {
             mountItems[position++] = updateLayoutMountItem;
           }
@@ -476,7 +535,7 @@ void Binding::schedulerDidFinishTransaction(
         if (mutation.oldChildShadowView.eventEmitter !=
             mutation.newChildShadowView.eventEmitter) {
           auto updateEventEmitterMountItem =
-              createUpdateEventEmitterMountItem(javaUIManager_, mutation);
+              createUpdateEventEmitterMountItem(localJavaUIManager, mutation);
           if (updateEventEmitterMountItem) {
             mountItems[position++] = updateEventEmitterMountItem;
           }
@@ -487,30 +546,30 @@ void Binding::schedulerDidFinishTransaction(
         if (!isVirtual) {
           // Insert item
           mountItems[position++] =
-              createInsertMountItem(javaUIManager_, mutation);
+              createInsertMountItem(localJavaUIManager, mutation);
 
           if (mutation.newChildShadowView.props->revision > 1 ||
               deletedViewTags.find(mutation.newChildShadowView.tag) !=
                   deletedViewTags.end()) {
             mountItems[position++] =
-                createUpdatePropsMountItem(javaUIManager_, mutation);
+                createUpdatePropsMountItem(localJavaUIManager, mutation);
 
             // State
             if (mutation.newChildShadowView.state) {
               mountItems[position++] =
-                  createUpdateStateMountItem(javaUIManager_, mutation);
+                  createUpdateStateMountItem(localJavaUIManager, mutation);
             }
           }
 
           // LocalData
           if (mutation.newChildShadowView.localData) {
             mountItems[position++] =
-                createUpdateLocalData(javaUIManager_, mutation);
+                createUpdateLocalData(localJavaUIManager, mutation);
           }
 
           // Layout
           auto updateLayoutMountItem =
-              createUpdateLayoutMountItem(javaUIManager_, mutation);
+              createUpdateLayoutMountItem(localJavaUIManager, mutation);
           if (updateLayoutMountItem) {
             mountItems[position++] = updateLayoutMountItem;
           }
@@ -518,7 +577,7 @@ void Binding::schedulerDidFinishTransaction(
 
         // EventEmitter
         auto updateEventEmitterMountItem =
-            createUpdateEventEmitterMountItem(javaUIManager_, mutation);
+            createUpdateEventEmitterMountItem(localJavaUIManager, mutation);
         if (updateEventEmitterMountItem) {
           mountItems[position++] = updateEventEmitterMountItem;
         }
@@ -538,7 +597,7 @@ void Binding::schedulerDidFinishTransaction(
               "createBatchMountItem");
 
   auto batch = createMountItemsBatchContainer(
-      javaUIManager_, mountItemsArray.get(), position);
+      localJavaUIManager, mountItemsArray.get(), position);
 
   static auto scheduleMountItems =
       jni::findClassStatic(UIManagerJavaDescriptor)
@@ -548,7 +607,7 @@ void Binding::schedulerDidFinishTransaction(
   long finishTransactionEndTime = getTime();
 
   scheduleMountItems(
-      javaUIManager_,
+      localJavaUIManager,
       batch.get(),
       telemetry.getCommitStartTime(),
       telemetry.getLayoutTime(),
@@ -563,6 +622,13 @@ void Binding::setPixelDensity(float pointScaleFactor) {
 void Binding::schedulerDidRequestPreliminaryViewAllocation(
     const SurfaceId surfaceId,
     const ShadowView &shadowView) {
+
+  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
+  if (!localJavaUIManager) {
+    LOG(ERROR) << "Binding::schedulerDidRequestPreliminaryViewAllocation: JavaUIManager disappeared";
+    return;
+  }
+
   bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
 
   static auto preallocateView =
@@ -584,8 +650,9 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
   local_ref<ReadableMap::javaobject> props = castReadableMap(
       ReadableNativeMap::newObjectCxxArgs(shadowView.props->rawProps));
   auto component = getPlatformComponentName(shadowView);
+
   preallocateView(
-      javaUIManager_,
+      localJavaUIManager,
       surfaceId,
       shadowView.tag,
       component.get(),

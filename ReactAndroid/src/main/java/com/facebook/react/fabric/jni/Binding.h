@@ -27,12 +27,17 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
   static void registerNatives();
 
   jni::global_ref<jobject> javaUIManager_;
+  std::mutex javaUIManagerMutex_;
 
   std::shared_ptr<Scheduler> scheduler_;
+  std::mutex schedulerMutex_;
 
   float pointScaleFactor_ = 1;
 
  private:
+  jni::global_ref<jobject> getJavaUIManager();
+  std::shared_ptr<Scheduler> getScheduler();
+
   void setConstraints(
       jint surfaceId,
       jfloat minWidth,
