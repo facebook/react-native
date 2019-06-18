@@ -149,7 +149,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         new ThemedReactContext(mReactApplicationContext, rootView.getContext());
     mMountingManager.addRootView(rootTag, rootView);
     mReactContextForRootTag.put(rootTag, reactContext);
-    mBinding.startSurfaceWithConstraints(rootTag, moduleName, (NativeMap) initialProps,
+    mBinding.startSurfaceWithConstraints(
+        rootTag,
+        moduleName,
+        (NativeMap) initialProps,
         getMinSize(widthMeasureSpec),
         getMaxSize(widthMeasureSpec),
         getMinSize(heightMeasureSpec),
