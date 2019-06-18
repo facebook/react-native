@@ -511,8 +511,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   @Override
-  public <T extends JSIModule> T getJSIModule(Class<T> jsiModuleInterface) {
-    return mJSIModuleRegistry.getModule(jsiModuleInterface);
+  public JSIModule getJSIModule(JSIModuleType moduleType) {
+    return mJSIModuleRegistry.getModule(moduleType);
   }
 
   private native long getJavaScriptContext();

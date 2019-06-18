@@ -8,12 +8,10 @@
 package com.facebook.react.bridge;
 
 /**
- * Holder class used to register {@link JSIModule} into JSI Bridge.
+ * A list of support JSIModules. These are usually core infra pieces, so there
+ * should be an explicit list.
  */
-public interface JSIModuleSpec<T extends JSIModule> {
-
-  JSIModuleType getJSIModuleType();
-
-  JSIModuleProvider<T> getJSIModuleProvider();
-
+public enum JSIModuleType {
+  TurboModuleManager,
+  UIManager,
 }
