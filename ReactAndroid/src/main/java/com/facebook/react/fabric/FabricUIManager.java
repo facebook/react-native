@@ -418,12 +418,17 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void updateRootLayoutSpecs(
       final int rootTag, final int widthMeasureSpec, final int heightMeasureSpec) {
 
-    mBinding.setConstraints(
-        rootTag,
-        getMinSize(widthMeasureSpec),
-        getMaxSize(widthMeasureSpec),
-        getMinSize(heightMeasureSpec),
-        getMaxSize(heightMeasureSpec));
+    mReactApplicationContext.runOnJSQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        mBinding.setConstraints(
+          rootTag,
+          getMinSize(widthMeasureSpec),
+          getMaxSize(widthMeasureSpec),
+          getMinSize(heightMeasureSpec),
+          getMaxSize(heightMeasureSpec));
+      }
+    });
   }
 
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
