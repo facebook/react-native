@@ -536,8 +536,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
     }
   }
 
-  public void setTurboModuleRegistry(TurboModuleRegistry getter) {
-    mTurboModuleRegistry = getter;
+  public void setTurboModuleManager(JSIModule getter) {
+    mTurboModuleRegistry = (TurboModuleRegistry)getter;
   }
 
   private void decrementPendingJSCalls() {

@@ -52,6 +52,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSIModulePackage;
+import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
@@ -71,6 +72,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.ReactInstanceManagerDevHelper;
 import com.facebook.react.devsupport.RedBoxHandler;
@@ -1006,6 +1008,11 @@ public class ReactInstanceManager {
           Assertions.assertNotNull(reactContext.getCatalystInstance());
 
       catalystInstance.initialize();
+
+      if (ReactFeatureFlags.useTurboModules) {
+        catalystInstance.setTurboModuleManager(catalystInstance.getJSIModule(JSIModuleType.TurboModuleManager));
+      }
+
       mDevSupportManager.onNewReactContextCreated(reactContext);
       mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);
       moveReactContextToCurrentLifecycleState();
@@ -1158,7 +1165,6 @@ public class ReactInstanceManager {
       catalystInstance.addJSIModules(mJSIModulePackage
         .getJSIModules(reactContext, catalystInstance.getJavaScriptContextHolder()));
     }
-
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
     }
@@ -1171,7 +1177,6 @@ public class ReactInstanceManager {
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
     reactContext.initializeWithInstance(catalystInstance);
-
 
     return reactContext;
   }

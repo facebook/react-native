@@ -118,5 +118,5 @@ public interface CatalystInstance
    * to CatalystInstance so that getNativeModule, hasNativeModule, and
    * getNativeModules can also return TurboModules.
    */
-  void setTurboModuleRegistry(TurboModuleRegistry getter);
+  void setTurboModuleManager(JSIModule getter);
 }
