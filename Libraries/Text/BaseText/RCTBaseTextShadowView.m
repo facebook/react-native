@@ -29,10 +29,6 @@ static void RCTInlineViewYogaNodeDirtied(YGNodeRef node)
 }
 
 @implementation RCTBaseTextShadowView
-{
-  NSAttributedString *_Nullable _cachedAttributedText;
-  RCTTextAttributes *_Nullable _cachedTextAttributes;
-}
 
 - (instancetype)init
 {
@@ -86,8 +82,8 @@ static void RCTInlineViewYogaNodeDirtied(YGNodeRef node)
     textAttributes = [self.textAttributes copy];
   }
 
-  if (_cachedAttributedText && [_cachedTextAttributes isEqual:textAttributes]) {
-    return _cachedAttributedText;
+  if (cachedAttributedText && [cachedTextAttributes isEqual:textAttributes]) {
+    return cachedAttributedText;
   }
 
   NSMutableAttributedString *attributedText = [NSMutableAttributedString new];
@@ -133,17 +129,17 @@ static void RCTInlineViewYogaNodeDirtied(YGNodeRef node)
 
   [self clearLayout];
 
-  _cachedAttributedText = [attributedText copy];
-  _cachedTextAttributes = textAttributes;
+  cachedAttributedText = [attributedText copy];
+  cachedTextAttributes = textAttributes;
 
-  return _cachedAttributedText;
+  return cachedAttributedText;
 }
 
 - (void)dirtyLayout
 {
   [super dirtyLayout];
-  _cachedAttributedText = nil;
-  _cachedTextAttributes = nil;
+  cachedAttributedText = nil;
+  cachedTextAttributes = nil;
 }
 
 - (void)didUpdateReactSubviews
