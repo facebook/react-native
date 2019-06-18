@@ -15,8 +15,6 @@
 #import "RCTTextShadowView.h"
 #import "RCTTextRenderer.h"
 
-static const CGFloat RCTTextViewTileSize = 1024;
-
 @interface RCTTextTiledLayer : CATiledLayer
 
 @end
@@ -129,7 +127,10 @@ static const CGFloat RCTTextViewTileSize = 1024;
 
   CALayer *currentLayer;
 
-  if (self.frame.size.width > RCTTextViewTileSize || self.frame.size.height > RCTTextViewTileSize) {
+  CGSize screenSize = RCTScreenSize();
+  CGFloat textViewTileSize =  MAX(screenSize.width, screenSize.height) * 1.5;
+
+  if (self.frame.size.width > textViewTileSize || self.frame.size.height > textViewTileSize) {
     // Cleanup sync layer
     if (_syncLayer != nil) {
       _syncLayer.delegate = nil;
@@ -141,7 +142,7 @@ static const CGFloat RCTTextViewTileSize = 1024;
       RCTTextTiledLayer *layer = [RCTTextTiledLayer layer];
       layer.delegate = _renderer;
       layer.contentsScale = RCTScreenScale();
-      layer.tileSize = CGSizeMake(RCTTextViewTileSize, RCTTextViewTileSize);
+      layer.tileSize = CGSizeMake(textViewTileSize, textViewTileSize);
       _asyncTiledLayer = layer;
       [self.layer addSublayer:layer];
       [layer setNeedsDisplay];

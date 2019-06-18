@@ -9,6 +9,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * Used by text layers to render text. Note that UIKit crashes if this delegate is implemented
+ * directly on a UIView subclass since it already implements it for the view's root
+ * layer. This is why this is implemented in a separate class.
+ */
 @interface RCTTextRenderer : NSObject <CALayerDelegate>
 
 - (void)setTextStorage:(NSTextStorage *)textStorage contentFrame:(CGRect)contentFrame;
