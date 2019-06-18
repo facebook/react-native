@@ -588,6 +588,32 @@ const EVENT_PROPS: SchemaType = {
               },
             },
             {
+              name: 'onOrientationChange',
+              optional: true,
+              bubblingType: 'direct',
+              typeAnnotation: {
+                type: 'EventTypeAnnotation',
+                argument: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      type: 'StringEnumTypeAnnotation',
+                      name: 'orientation',
+                      optional: false,
+                      options: [
+                        {
+                          name: 'landscape',
+                        },
+                        {
+                          name: 'portrait',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+            {
               name: 'onEnd',
               optional: true,
               bubblingType: 'bubble',

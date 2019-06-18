@@ -1163,6 +1163,58 @@ Object {
                       "type": "Int32TypeAnnotation",
                     },
                     Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
                       "name": "object_required",
                       "optional": false,
                       "properties": Array [
@@ -1336,6 +1388,58 @@ Object {
                       "name": "int32_optional_both",
                       "optional": true,
                       "type": "Int32TypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
                     },
                     Object {
                       "name": "object_required",
@@ -1513,6 +1617,58 @@ Object {
                       "type": "Int32TypeAnnotation",
                     },
                     Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
                       "name": "object_required",
                       "optional": false,
                       "properties": Array [
@@ -1686,6 +1842,58 @@ Object {
                       "name": "int32_optional_both",
                       "optional": true,
                       "type": "Int32TypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
                     },
                     Object {
                       "name": "object_required",
@@ -1863,6 +2071,58 @@ Object {
                       "type": "Int32TypeAnnotation",
                     },
                     Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
                       "name": "object_required",
                       "optional": false,
                       "properties": Array [
@@ -2036,6 +2296,58 @@ Object {
                       "name": "int32_optional_both",
                       "optional": true,
                       "type": "Int32TypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
                     },
                     Object {
                       "name": "object_required",
@@ -2213,6 +2525,58 @@ Object {
                       "type": "Int32TypeAnnotation",
                     },
                     Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
                       "name": "object_required",
                       "optional": false,
                       "properties": Array [
@@ -2386,6 +2750,58 @@ Object {
                       "name": "int32_optional_both",
                       "optional": true,
                       "type": "Int32TypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
                     },
                     Object {
                       "name": "object_required",
@@ -2585,6 +3001,58 @@ Object {
                       "type": "Int32TypeAnnotation",
                     },
                     Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
                       "name": "object_required",
                       "optional": false,
                       "properties": Array [
@@ -2758,6 +3226,58 @@ Object {
                       "name": "int32_optional_both",
                       "optional": true,
                       "type": "Int32TypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
                     },
                     Object {
                       "name": "object_required",
@@ -2935,6 +3455,58 @@ Object {
                       "type": "Int32TypeAnnotation",
                     },
                     Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
                       "name": "object_required",
                       "optional": false,
                       "properties": Array [
@@ -3108,6 +3680,58 @@ Object {
                       "name": "int32_optional_both",
                       "optional": true,
                       "type": "Int32TypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
                     },
                     Object {
                       "name": "object_required",
@@ -3285,6 +3909,58 @@ Object {
                       "type": "Int32TypeAnnotation",
                     },
                     Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
                       "name": "object_required",
                       "optional": false,
                       "properties": Array [
@@ -3458,6 +4134,58 @@ Object {
                       "name": "int32_optional_both",
                       "optional": true,
                       "type": "Int32TypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
                     },
                     Object {
                       "name": "object_required",
@@ -3635,6 +4363,58 @@ Object {
                       "type": "Int32TypeAnnotation",
                     },
                     Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
                       "name": "object_required",
                       "optional": false,
                       "properties": Array [
@@ -3808,6 +4588,58 @@ Object {
                       "name": "int32_optional_both",
                       "optional": true,
                       "type": "Int32TypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
                     },
                     Object {
                       "name": "object_required",
@@ -4064,6 +4896,58 @@ Object {
                       "type": "Int32TypeAnnotation",
                     },
                     Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
                       "name": "object_required",
                       "optional": false,
                       "properties": Array [
@@ -4237,6 +5121,58 @@ Object {
                       "name": "int32_optional_both",
                       "optional": true,
                       "type": "Int32TypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_required",
+                      "optional": false,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_key",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_value",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
+                    },
+                    Object {
+                      "name": "enum_optional_both",
+                      "optional": true,
+                      "options": Array [
+                        Object {
+                          "name": "small",
+                        },
+                        Object {
+                          "name": "large",
+                        },
+                      ],
+                      "type": "StringEnumTypeAnnotation",
                     },
                     Object {
                       "name": "object_required",

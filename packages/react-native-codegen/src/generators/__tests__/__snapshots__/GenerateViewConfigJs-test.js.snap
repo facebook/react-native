@@ -221,12 +221,17 @@ const EventsNativeComponentViewConfig = {
     topEventDirect: {
       registrationName: 'onEventDirect',
     },
+
+    topOrientationChange: {
+      registrationName: 'onOrientationChange',
+    },
   },
 
   validAttributes: {
     disabled: true,
     onChange: true,
     onEventDirect: true,
+    onOrientationChange: true,
     onEnd: true,
   },
 };

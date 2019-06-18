@@ -30,6 +30,11 @@ const EVENT_DEFINITION = `
   int32_optional_value: ?Int32,
   int32_optional_both?: ?Int32,
 
+  enum_required: ('small' | 'large'),
+  enum_optional_key?: ('small' | 'large'),
+  enum_optional_value: ?('small' | 'large'),
+  enum_optional_both?: ?('small' | 'large'),
+
   object_required: {
     boolean_required: boolean,
   }

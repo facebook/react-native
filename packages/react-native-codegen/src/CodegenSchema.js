@@ -32,6 +32,14 @@ export type ObjectPropertyType =
       optional: boolean,
     |}>
   | $ReadOnly<{|
+      type: 'StringEnumTypeAnnotation',
+      name: string,
+      optional: boolean,
+      options: $ReadOnlyArray<{|
+        name: string,
+      |}>,
+    |}>
+  | $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
       name: string,
       optional: boolean,

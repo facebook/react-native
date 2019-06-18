@@ -79,6 +79,7 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue) {
         options: typeAnnotation.types.map(option => ({name: option.value})),
       };
     default:
+      (type: empty);
       throw new Error(`Unknown prop type for "${name}"`);
   }
 }
@@ -177,6 +178,7 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
       }
       throw new Error(`A default enum value is required for "${name}"`);
     default:
+      (type: empty);
       throw new Error(`Unknown prop type for "${name}"`);
   }
 }
