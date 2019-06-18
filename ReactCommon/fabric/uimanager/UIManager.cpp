@@ -10,7 +10,7 @@ namespace react {
 
 SharedShadowNode UIManager::createNode(
     Tag tag,
-    const ComponentName &name,
+    std::string const &name,
     SurfaceId surfaceId,
     const RawProps &rawProps,
     SharedEventTarget eventTarget) const {

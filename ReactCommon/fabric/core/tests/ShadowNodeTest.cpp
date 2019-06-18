@@ -42,7 +42,7 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
       componentDescriptor);
 
   ASSERT_FALSE(node->getSealed());
-  ASSERT_STREQ(node->getComponentName().c_str(), "Test");
+  ASSERT_STREQ(node->getComponentName(), "Test");
   ASSERT_EQ(node->getTag(), 9);
   ASSERT_EQ(node->getSurfaceId(), 1);
   ASSERT_EQ(node->getEventEmitter(), nullptr);
@@ -66,7 +66,7 @@ TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
       componentDescriptor);
   auto node2 = std::make_shared<TestShadowNode>(*node, ShadowNodeFragment{});
 
-  ASSERT_STREQ(node->getComponentName().c_str(), "Test");
+  ASSERT_STREQ(node->getComponentName(), "Test");
   ASSERT_EQ(node->getTag(), 9);
   ASSERT_EQ(node->getSurfaceId(), 1);
   ASSERT_EQ(node->getEventEmitter(), nullptr);
