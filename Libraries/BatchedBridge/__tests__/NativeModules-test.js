@@ -14,6 +14,8 @@ jest.unmock('../NativeModules');
 
 let BatchedBridge;
 let NativeModules;
+let fs;
+let parseErrorStack;
 
 const MODULE_IDS = 0;
 const METHOD_IDS = 1;
@@ -43,6 +45,8 @@ describe('MessageQueue', function() {
     global.__fbBatchedBridgeConfig = require('../__mocks__/MessageQueueTestConfig');
     BatchedBridge = require('../BatchedBridge');
     NativeModules = require('../NativeModules');
+    fs = require('fs');
+    parseErrorStack = require('../../Core/Devtools/parseErrorStack');
   });
 
   it('should generate native modules', () => {
@@ -163,6 +167,11 @@ describe('MessageQueue', function() {
     }).toThrow();
     await expect(promise1).rejects.toBeInstanceOf(Error);
     await expect(promise1).rejects.toMatchObject({message: 'firstFailure'});
+    // Check that we get a useful stack trace from failures.
+    const error = await promise1.catch(x => x);
+    expect(getLineFromFrame(parseErrorStack(error)[0])).toContain(
+      'NativeModules.RemoteModule1.promiseReturningMethod(',
+    );
 
     // Handle the second remote invocation by signaling success.
     BatchedBridge.__invokeCallback(secondSuccCBID, ['secondSucc']);
@@ -173,3 +182,21 @@ describe('MessageQueue', function() {
     await promise2;
   });
 });
+
+const linesByFile = new Map();
+
+function getLineFromFrame({lineNumber /* 1-based */, file}) {
+  const cleanedFile = cleanFileName(file);
+  const lines =
+    linesByFile.get(cleanedFile) ||
+    fs.readFileSync(cleanedFile, 'utf8').split('\n');
+  if (!linesByFile.has(cleanedFile)) {
+    linesByFile.set(cleanedFile, lines);
+  }
+  return (lines[lineNumber - 1] || '').trim();
+}
+
+// Works around a parseErrorStack bug involving `new X` stack frames.
+function cleanFileName(file) {
+  return file.replace(/^.+? \((?=\/)/, '');
+}
