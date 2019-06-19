@@ -16,12 +16,12 @@ const invariant = require('invariant');
 
 import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
 
-type ModuleConfig = [
+export type ModuleConfig = [
   string /* name */,
   ?Object /* constants */,
-  Array<string> /* functions */,
-  Array<number> /* promise method IDs */,
-  Array<number> /* sync method IDs */,
+  ?$ReadOnlyArray<string> /* functions */,
+  ?$ReadOnlyArray<number> /* promise method IDs */,
+  ?$ReadOnlyArray<number> /* sync method IDs */,
 ];
 
 export type MethodType = 'async' | 'promise' | 'sync';
@@ -143,7 +143,7 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
   return fn;
 }
 
-function arrayContains<T>(array: Array<T>, value: T): boolean {
+function arrayContains<T>(array: $ReadOnlyArray<T>, value: T): boolean {
   return array.indexOf(value) !== -1;
 }
 
