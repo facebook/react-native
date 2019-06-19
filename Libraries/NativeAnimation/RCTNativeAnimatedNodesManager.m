@@ -32,7 +32,7 @@
 // To make things simpler just get rid of the parts we change in the event names we use here.
 // This is a lot easier than trying to denormalize because there would be multiple possible
 // denormalized forms for a single input.
-NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
+static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
 {
   if ([eventName hasPrefix:@"on"]) {
     return [eventName substringFromIndex:2];
