@@ -28,21 +28,6 @@
 #import "RCTValueAnimatedNode.h"
 #import "RCTTrackingAnimatedNode.h"
 
-// We do some normalizing of the event names in RCTEventDispatcher#RCTNormalizeInputEventName.
-// To make things simpler just get rid of the parts we change in the event names we use here.
-// This is a lot easier than trying to denormalize because there would be multiple possible
-// denormalized forms for a single input.
-NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
-{
-  if ([eventName hasPrefix:@"on"]) {
-    return [eventName substringFromIndex:2];
-  }
-  if ([eventName hasPrefix:@"top"]) {
-    return [eventName substringFromIndex:3];
-  }
-  return eventName;
-}
-
 @implementation RCTNativeAnimatedNodesManager
 {
   __weak RCTBridge *_bridge;
@@ -336,7 +321,7 @@ NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   RCTEventAnimation *driver =
     [[RCTEventAnimation alloc] initWithEventPath:eventPath valueNode:(RCTValueAnimatedNode *)node];
 
-  NSString *key = [NSString stringWithFormat:@"%@%@", viewTag, RCTNormalizeAnimatedEventName(eventName)];
+  NSString *key = [NSString stringWithFormat:@"%@%@", viewTag, eventName];
   if (_eventDrivers[key] != nil) {
     [_eventDrivers[key] addObject:driver];
   } else {
@@ -350,7 +335,7 @@ NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
                           eventName:(nonnull NSString *)eventName
                     animatedNodeTag:(nonnull NSNumber *)animatedNodeTag
 {
-  NSString *key = [NSString stringWithFormat:@"%@%@", viewTag, RCTNormalizeAnimatedEventName(eventName)];
+  NSString *key = [NSString stringWithFormat:@"%@%@", viewTag, eventName];
   if (_eventDrivers[key] != nil) {
     if (_eventDrivers[key].count == 1) {
       [_eventDrivers removeObjectForKey:key];
@@ -372,7 +357,7 @@ NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
     return;
   }
 
-  NSString *key = [NSString stringWithFormat:@"%@%@", event.viewTag, RCTNormalizeAnimatedEventName(event.eventName)];
+  NSString *key = [NSString stringWithFormat:@"%@%@", event.viewTag, event.eventName];
   NSMutableArray<RCTEventAnimation *> *driversForKey = _eventDrivers[key];
   if (driversForKey) {
     for (RCTEventAnimation *driver in driversForKey) {

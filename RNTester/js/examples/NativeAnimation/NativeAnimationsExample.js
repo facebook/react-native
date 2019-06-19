@@ -221,7 +221,7 @@ class InternalSettings extends React.Component<
 
 class EventExample extends React.Component<{}, $FlowFixMeState> {
   state = {
-    anim: new Animated.Value(0),
+    scrollX: new Animated.Value(0),
   };
 
   render() {
@@ -233,7 +233,7 @@ class EventExample extends React.Component<{}, $FlowFixMeState> {
             {
               transform: [
                 {
-                  rotate: this.state.anim.interpolate({
+                  rotate: this.state.scrollX.interpolate({
                     inputRange: [0, 1],
                     outputRange: ['0deg', '1deg'],
                   }),
@@ -246,7 +246,7 @@ class EventExample extends React.Component<{}, $FlowFixMeState> {
           horizontal
           style={{height: 100, marginTop: 16}}
           onScroll={Animated.event(
-            [{nativeEvent: {contentOffset: {x: this.state.anim}}}],
+            [{nativeEvent: {contentOffset: {x: this.state.scrollX}}}],
             {useNativeDriver: true},
           )}>
           <View
@@ -259,13 +259,6 @@ class EventExample extends React.Component<{}, $FlowFixMeState> {
             <Text>Scroll me sideways!</Text>
           </View>
         </Animated.ScrollView>
-        <AnimatedSlider
-          maximumValue={200}
-          onValueChange={Animated.event(
-            [{nativeEvent: {value: this.state.anim}}],
-            {useNativeDriver: true},
-          )}
-        />
       </View>
     );
   }
