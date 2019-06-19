@@ -1896,186 +1896,6 @@ function inferPriorityFromExpirationTime(currentTime, expirationTime) {
         ? 97
         : 95;
 }
-function FiberNode(tag, pendingProps, key, mode) {
-  this.tag = tag;
-  this.key = key;
-  this.sibling = this.child = this.return = this.stateNode = this.type = this.elementType = null;
-  this.index = 0;
-  this.ref = null;
-  this.pendingProps = pendingProps;
-  this.contextDependencies = this.memoizedState = this.updateQueue = this.memoizedProps = null;
-  this.mode = mode;
-  this.effectTag = 0;
-  this.lastEffect = this.firstEffect = this.nextEffect = null;
-  this.childExpirationTime = this.expirationTime = 0;
-  this.alternate = null;
-}
-function createFiber(tag, pendingProps, key, mode) {
-  return new FiberNode(tag, pendingProps, key, mode);
-}
-function shouldConstruct(Component) {
-  Component = Component.prototype;
-  return !(!Component || !Component.isReactComponent);
-}
-function resolveLazyComponentTag(Component) {
-  if ("function" === typeof Component)
-    return shouldConstruct(Component) ? 1 : 0;
-  if (void 0 !== Component && null !== Component) {
-    Component = Component.$$typeof;
-    if (Component === REACT_FORWARD_REF_TYPE) return 11;
-    if (Component === REACT_MEMO_TYPE) return 14;
-  }
-  return 2;
-}
-function createWorkInProgress(current, pendingProps) {
-  var workInProgress = current.alternate;
-  null === workInProgress
-    ? ((workInProgress = createFiber(
-        current.tag,
-        pendingProps,
-        current.key,
-        current.mode
-      )),
-      (workInProgress.elementType = current.elementType),
-      (workInProgress.type = current.type),
-      (workInProgress.stateNode = current.stateNode),
-      (workInProgress.alternate = current),
-      (current.alternate = workInProgress))
-    : ((workInProgress.pendingProps = pendingProps),
-      (workInProgress.effectTag = 0),
-      (workInProgress.nextEffect = null),
-      (workInProgress.firstEffect = null),
-      (workInProgress.lastEffect = null));
-  workInProgress.childExpirationTime = current.childExpirationTime;
-  workInProgress.expirationTime = current.expirationTime;
-  workInProgress.child = current.child;
-  workInProgress.memoizedProps = current.memoizedProps;
-  workInProgress.memoizedState = current.memoizedState;
-  workInProgress.updateQueue = current.updateQueue;
-  workInProgress.contextDependencies = current.contextDependencies;
-  workInProgress.sibling = current.sibling;
-  workInProgress.index = current.index;
-  workInProgress.ref = current.ref;
-  return workInProgress;
-}
-function createFiberFromTypeAndProps(
-  type,
-  key,
-  pendingProps,
-  owner,
-  mode,
-  expirationTime
-) {
-  var fiberTag = 2;
-  owner = type;
-  if ("function" === typeof type) shouldConstruct(type) && (fiberTag = 1);
-  else if ("string" === typeof type) fiberTag = 5;
-  else
-    a: switch (type) {
-      case REACT_FRAGMENT_TYPE:
-        return createFiberFromFragment(
-          pendingProps.children,
-          mode,
-          expirationTime,
-          key
-        );
-      case REACT_CONCURRENT_MODE_TYPE:
-        return createFiberFromMode(pendingProps, mode | 3, expirationTime, key);
-      case REACT_STRICT_MODE_TYPE:
-        return createFiberFromMode(pendingProps, mode | 2, expirationTime, key);
-      case REACT_PROFILER_TYPE:
-        return (
-          (type = createFiber(12, pendingProps, key, mode | 4)),
-          (type.elementType = REACT_PROFILER_TYPE),
-          (type.type = REACT_PROFILER_TYPE),
-          (type.expirationTime = expirationTime),
-          type
-        );
-      case REACT_SUSPENSE_TYPE:
-        return (
-          (type = createFiber(13, pendingProps, key, mode)),
-          (type.elementType = REACT_SUSPENSE_TYPE),
-          (type.type = REACT_SUSPENSE_TYPE),
-          (type.expirationTime = expirationTime),
-          type
-        );
-      default:
-        if ("object" === typeof type && null !== type)
-          switch (type.$$typeof) {
-            case REACT_PROVIDER_TYPE:
-              fiberTag = 10;
-              break a;
-            case REACT_CONTEXT_TYPE:
-              fiberTag = 9;
-              break a;
-            case REACT_FORWARD_REF_TYPE:
-              fiberTag = 11;
-              break a;
-            case REACT_MEMO_TYPE:
-              fiberTag = 14;
-              break a;
-            case REACT_LAZY_TYPE:
-              fiberTag = 16;
-              owner = null;
-              break a;
-          }
-        throw ReactError(
-          "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: " +
-            (null == type ? type : typeof type) +
-            "."
-        );
-    }
-  key = createFiber(fiberTag, pendingProps, key, mode);
-  key.elementType = type;
-  key.type = owner;
-  key.expirationTime = expirationTime;
-  return key;
-}
-function createFiberFromFragment(elements, mode, expirationTime, key) {
-  elements = createFiber(7, elements, key, mode);
-  elements.expirationTime = expirationTime;
-  return elements;
-}
-function createFiberFromMode(pendingProps, mode, expirationTime, key) {
-  pendingProps = createFiber(8, pendingProps, key, mode);
-  mode = 0 === (mode & 1) ? REACT_STRICT_MODE_TYPE : REACT_CONCURRENT_MODE_TYPE;
-  pendingProps.elementType = mode;
-  pendingProps.type = mode;
-  pendingProps.expirationTime = expirationTime;
-  return pendingProps;
-}
-function createFiberFromText(content, mode, expirationTime) {
-  content = createFiber(6, content, null, mode);
-  content.expirationTime = expirationTime;
-  return content;
-}
-function createFiberFromPortal(portal, mode, expirationTime) {
-  mode = createFiber(
-    4,
-    null !== portal.children ? portal.children : [],
-    portal.key,
-    mode
-  );
-  mode.expirationTime = expirationTime;
-  mode.stateNode = {
-    containerInfo: portal.containerInfo,
-    pendingChildren: null,
-    implementation: portal.implementation
-  };
-  return mode;
-}
-function FiberRootNode(containerInfo, hydrate) {
-  this.current = null;
-  this.containerInfo = containerInfo;
-  this.pingCache = this.pendingChildren = null;
-  this.pendingCommitExpirationTime = 0;
-  this.finishedWork = null;
-  this.timeoutHandle = -1;
-  this.pendingContext = this.context = null;
-  this.hydrate = hydrate;
-  this.callbackNode = this.firstBatch = null;
-  this.pingTime = this.lastPendingTime = this.firstPendingTime = this.callbackExpirationTime = 0;
-}
 function is(x, y) {
   return (x === y && (0 !== x || 1 / x === 1 / y)) || (x !== x && y !== y);
 }
@@ -6281,7 +6101,7 @@ beginWork$$1 = function(current$$1, workInProgress, renderExpirationTime) {
   workInProgress.expirationTime = 0;
   switch (workInProgress.tag) {
     case 2:
-      updateExpirationTime = workInProgress.elementType;
+      updateExpirationTime = workInProgress.type;
       null !== current$$1 &&
         ((current$$1.alternate = null),
         (workInProgress.alternate = null),
@@ -6767,6 +6587,186 @@ beginWork$$1 = function(current$$1, workInProgress, renderExpirationTime) {
     "Unknown unit of work tag. This error is likely caused by a bug in React. Please file an issue."
   );
 };
+function FiberNode(tag, pendingProps, key, mode) {
+  this.tag = tag;
+  this.key = key;
+  this.sibling = this.child = this.return = this.stateNode = this.type = this.elementType = null;
+  this.index = 0;
+  this.ref = null;
+  this.pendingProps = pendingProps;
+  this.contextDependencies = this.memoizedState = this.updateQueue = this.memoizedProps = null;
+  this.mode = mode;
+  this.effectTag = 0;
+  this.lastEffect = this.firstEffect = this.nextEffect = null;
+  this.childExpirationTime = this.expirationTime = 0;
+  this.alternate = null;
+}
+function createFiber(tag, pendingProps, key, mode) {
+  return new FiberNode(tag, pendingProps, key, mode);
+}
+function shouldConstruct(Component) {
+  Component = Component.prototype;
+  return !(!Component || !Component.isReactComponent);
+}
+function resolveLazyComponentTag(Component) {
+  if ("function" === typeof Component)
+    return shouldConstruct(Component) ? 1 : 0;
+  if (void 0 !== Component && null !== Component) {
+    Component = Component.$$typeof;
+    if (Component === REACT_FORWARD_REF_TYPE) return 11;
+    if (Component === REACT_MEMO_TYPE) return 14;
+  }
+  return 2;
+}
+function createWorkInProgress(current, pendingProps) {
+  var workInProgress = current.alternate;
+  null === workInProgress
+    ? ((workInProgress = createFiber(
+        current.tag,
+        pendingProps,
+        current.key,
+        current.mode
+      )),
+      (workInProgress.elementType = current.elementType),
+      (workInProgress.type = current.type),
+      (workInProgress.stateNode = current.stateNode),
+      (workInProgress.alternate = current),
+      (current.alternate = workInProgress))
+    : ((workInProgress.pendingProps = pendingProps),
+      (workInProgress.effectTag = 0),
+      (workInProgress.nextEffect = null),
+      (workInProgress.firstEffect = null),
+      (workInProgress.lastEffect = null));
+  workInProgress.childExpirationTime = current.childExpirationTime;
+  workInProgress.expirationTime = current.expirationTime;
+  workInProgress.child = current.child;
+  workInProgress.memoizedProps = current.memoizedProps;
+  workInProgress.memoizedState = current.memoizedState;
+  workInProgress.updateQueue = current.updateQueue;
+  workInProgress.contextDependencies = current.contextDependencies;
+  workInProgress.sibling = current.sibling;
+  workInProgress.index = current.index;
+  workInProgress.ref = current.ref;
+  return workInProgress;
+}
+function createFiberFromTypeAndProps(
+  type,
+  key,
+  pendingProps,
+  owner,
+  mode,
+  expirationTime
+) {
+  var fiberTag = 2;
+  owner = type;
+  if ("function" === typeof type) shouldConstruct(type) && (fiberTag = 1);
+  else if ("string" === typeof type) fiberTag = 5;
+  else
+    a: switch (type) {
+      case REACT_FRAGMENT_TYPE:
+        return createFiberFromFragment(
+          pendingProps.children,
+          mode,
+          expirationTime,
+          key
+        );
+      case REACT_CONCURRENT_MODE_TYPE:
+        return createFiberFromMode(pendingProps, mode | 3, expirationTime, key);
+      case REACT_STRICT_MODE_TYPE:
+        return createFiberFromMode(pendingProps, mode | 2, expirationTime, key);
+      case REACT_PROFILER_TYPE:
+        return (
+          (type = createFiber(12, pendingProps, key, mode | 4)),
+          (type.elementType = REACT_PROFILER_TYPE),
+          (type.type = REACT_PROFILER_TYPE),
+          (type.expirationTime = expirationTime),
+          type
+        );
+      case REACT_SUSPENSE_TYPE:
+        return (
+          (type = createFiber(13, pendingProps, key, mode)),
+          (type.elementType = REACT_SUSPENSE_TYPE),
+          (type.type = REACT_SUSPENSE_TYPE),
+          (type.expirationTime = expirationTime),
+          type
+        );
+      default:
+        if ("object" === typeof type && null !== type)
+          switch (type.$$typeof) {
+            case REACT_PROVIDER_TYPE:
+              fiberTag = 10;
+              break a;
+            case REACT_CONTEXT_TYPE:
+              fiberTag = 9;
+              break a;
+            case REACT_FORWARD_REF_TYPE:
+              fiberTag = 11;
+              break a;
+            case REACT_MEMO_TYPE:
+              fiberTag = 14;
+              break a;
+            case REACT_LAZY_TYPE:
+              fiberTag = 16;
+              owner = null;
+              break a;
+          }
+        throw ReactError(
+          "Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: " +
+            (null == type ? type : typeof type) +
+            "."
+        );
+    }
+  key = createFiber(fiberTag, pendingProps, key, mode);
+  key.elementType = type;
+  key.type = owner;
+  key.expirationTime = expirationTime;
+  return key;
+}
+function createFiberFromFragment(elements, mode, expirationTime, key) {
+  elements = createFiber(7, elements, key, mode);
+  elements.expirationTime = expirationTime;
+  return elements;
+}
+function createFiberFromMode(pendingProps, mode, expirationTime, key) {
+  pendingProps = createFiber(8, pendingProps, key, mode);
+  mode = 0 === (mode & 1) ? REACT_STRICT_MODE_TYPE : REACT_CONCURRENT_MODE_TYPE;
+  pendingProps.elementType = mode;
+  pendingProps.type = mode;
+  pendingProps.expirationTime = expirationTime;
+  return pendingProps;
+}
+function createFiberFromText(content, mode, expirationTime) {
+  content = createFiber(6, content, null, mode);
+  content.expirationTime = expirationTime;
+  return content;
+}
+function createFiberFromPortal(portal, mode, expirationTime) {
+  mode = createFiber(
+    4,
+    null !== portal.children ? portal.children : [],
+    portal.key,
+    mode
+  );
+  mode.expirationTime = expirationTime;
+  mode.stateNode = {
+    containerInfo: portal.containerInfo,
+    pendingChildren: null,
+    implementation: portal.implementation
+  };
+  return mode;
+}
+function FiberRootNode(containerInfo, hydrate) {
+  this.current = null;
+  this.containerInfo = containerInfo;
+  this.pingCache = this.pendingChildren = null;
+  this.pendingCommitExpirationTime = 0;
+  this.finishedWork = null;
+  this.timeoutHandle = -1;
+  this.pendingContext = this.context = null;
+  this.hydrate = hydrate;
+  this.callbackNode = this.firstBatch = null;
+  this.pingTime = this.lastPendingTime = this.firstPendingTime = this.callbackExpirationTime = 0;
+}
 function findHostInstance(component) {
   var fiber = component._reactInternalFiber;
   if (void 0 === fiber) {
@@ -7174,6 +7174,8 @@ var roots = new Map(),
   var findFiberByHostInstance = devToolsConfig.findFiberByHostInstance;
   return injectInternals(
     Object.assign({}, devToolsConfig, {
+      findHostInstancesForHotUpdate: null,
+      scheduleHotUpdate: null,
       overrideHookState: null,
       overrideProps: null,
       setSuspenseHandler: null,
