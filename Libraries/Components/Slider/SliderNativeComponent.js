@@ -55,5 +55,5 @@ type NativeProps = $ReadOnly<{|
 
 export default codegenNativeComponent<NativeProps>('Slider', {
   interfaceOnly: true,
-  isDeprecatedPaperComponentNameRCT: true,
+  paperComponentName: 'RCTSlider',
 });

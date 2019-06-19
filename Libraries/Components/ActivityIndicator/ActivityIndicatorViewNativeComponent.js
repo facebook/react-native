@@ -51,5 +51,5 @@ type NativeProps = $ReadOnly<{|
 |}>;
 
 export default codegenNativeComponent<NativeProps>('ActivityIndicatorView', {
-  isDeprecatedPaperComponentNameRCT: true,
+  paperComponentName: 'RCTActivityIndicatorView',
 });

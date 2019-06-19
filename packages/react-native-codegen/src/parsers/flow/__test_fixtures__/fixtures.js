@@ -97,7 +97,33 @@ type ModuleProps = $ReadOnly<{|
 
 export default codegenNativeComponent<ModuleProps>('Module', {
   interfaceOnly: true,
-  isDeprecatedPaperComponentNameRCT: true,
+  paperComponentName: 'RCTModule',
+});
+`;
+
+const NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {ViewProps} from 'ViewPropTypes';
+
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+|}>;
+
+export default codegenNativeComponent<ModuleProps>('Module', {
+  deprecatedViewConfigName: 'DeprecateModuleName',
 });
 `;
 
@@ -599,6 +625,7 @@ module.exports = {
   ALL_PROP_TYPES_NO_EVENTS,
   ARRAY_PROP_TYPES_NO_EVENTS,
   ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS,
+  NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION,
   EVENTS_DEFINED_INLINE_WITH_ALL_TYPES,
   EVENTS_DEFINED_IN_FILE_WITH_ALL_TYPES,
   EVENTS_DEFINED_AS_NULL_IN_FILE,

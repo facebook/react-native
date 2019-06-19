@@ -18,7 +18,7 @@ const INTERFACE_ONLY: SchemaType = {
       components: {
         InterfaceOnlyComponent: {
           interfaceOnly: true,
-          isDeprecatedPaperComponentNameRCT: true,
+          paperComponentName: 'RCTInterfaceOnlyComponent',
           extendsProps: [
             {
               type: 'ReactNativeBuiltInType',

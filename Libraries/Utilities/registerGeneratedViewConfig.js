@@ -44,7 +44,7 @@ function registerGeneratedViewConfig(
   viewConfig: GeneratedViewConfig,
 ) {
   const mergedViewConfig = {
-    uiViewClassName: viewConfig.uiViewClassName,
+    uiViewClassName: componentName,
     Commands: {},
     bubblingEventTypes: {
       ...ReactNativeViewViewConfig.bubblingEventTypes,

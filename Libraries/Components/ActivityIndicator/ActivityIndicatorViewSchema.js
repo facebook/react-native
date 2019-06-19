@@ -17,7 +17,7 @@ const SwitchSchema: SchemaType = {
     ActivityIndicatorSchema: {
       components: {
         ActivityIndicatorView: {
-          isDeprecatedPaperComponentNameRCT: true,
+          paperComponentName: 'RCTActivityIndicatorView',
           extendsProps: [
             {
               type: 'ReactNativeBuiltInType',

@@ -87,11 +87,23 @@ function getReactDiffProcessValue(typeAnnotation) {
 const componentTemplate = `
 const ::_COMPONENT_NAME_::ViewConfig = VIEW_CONFIG;
 
-registerGeneratedViewConfig('::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::', ::_COMPONENT_NAME_::ViewConfig);
+let nativeComponentName = '::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::';
+::_DEPRECATION_CHECK_::
+registerGeneratedViewConfig(nativeComponentName, ::_COMPONENT_NAME_::ViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = ::_COMPONENT_NAME_::ViewConfig;
 
-export default '::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::';::_COMPAT_COMMENT_::
+export default nativeComponentName;
+`.trim();
+
+const deprecatedComponentTemplate = `
+if (UIManager.getViewManagerConfig('::_COMPONENT_NAME_::')) {
+  nativeComponentName = '::_COMPONENT_NAME_::';
+} else if (UIManager.getViewManagerConfig('::_COMPONENT_NAME_DEPRECATED_::')){
+  nativeComponentName = '::_COMPONENT_NAME_DEPRECATED_::';
+} else {
+  throw new Error('Failed to find native component for either "::_COMPONENT_NAME_::" or "::_COMPONENT_NAME_DEPRECATED_::"')
+}
 `.trim();
 
 // Replicates the behavior of RCTNormalizeInputEventName in RCTEventDispatcher.m
@@ -245,22 +257,30 @@ module.exports = {
             .map(componentName => {
               const component = components[componentName];
 
-              const compatabilityComponentName = `${
-                component.isDeprecatedPaperComponentNameRCT ? 'RCT' : ''
-              }${componentName}`;
+              const paperComponentName = component.paperComponentName
+                ? component.paperComponentName
+                : componentName;
+
+              if (component.paperComponentNameDeprecated) {
+                imports.add('const {UIManager} = require("react-native")');
+              }
+
+              const deprecatedCheckBlock = component.paperComponentNameDeprecated
+                ? deprecatedComponentTemplate
+                    .replace(/::_COMPONENT_NAME_::/g, componentName)
+                    .replace(
+                      /::_COMPONENT_NAME_DEPRECATED_::/g,
+                      component.paperComponentNameDeprecated || '',
+                    )
+                : '';
 
               const replacedTemplate = componentTemplate
                 .replace(/::_COMPONENT_NAME_::/g, componentName)
                 .replace(
                   /::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::/g,
-                  compatabilityComponentName,
+                  paperComponentName,
                 )
-                .replace(
-                  /::_COMPAT_COMMENT_::/g,
-                  component.isDeprecatedPaperComponentNameRCT
-                    ? ' // RCT prefix present for paper support'
-                    : '',
-                );
+                .replace(/::_DEPRECATION_CHECK_::/, deprecatedCheckBlock);
 
               const replacedSource: string = j
                 .withParser('flow')(replacedTemplate)
@@ -270,7 +290,7 @@ module.exports = {
                 .replaceWith(
                   buildViewConfig(
                     schema,
-                    compatabilityComponentName,
+                    paperComponentName,
                     component,
                     imports,
                   ),

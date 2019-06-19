@@ -39,7 +39,7 @@ type ModuleProps = $ReadOnly<{|
 
 export default codegenNativeComponent<ModuleProps>('Module', {
   interfaceOnly: true,
-  isDeprecatedPaperComponentNameRCT: true,
+  paperComponentName: 'RCTModule',
 });
 `;
 

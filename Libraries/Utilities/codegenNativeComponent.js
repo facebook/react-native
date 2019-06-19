@@ -13,20 +13,37 @@
 
 import type {NativeComponent} from '../../Libraries/Renderer/shims/ReactNative';
 import requireNativeComponent from '../../Libraries/ReactNative/requireNativeComponent';
+import {UIManager} from 'react-native';
 
 // TODO: import from CodegenSchema once workspaces are enabled
 type Options = $ReadOnly<{|
   interfaceOnly?: boolean,
-  isDeprecatedPaperComponentNameRCT?: boolean,
+  paperComponentName?: string,
+  paperComponentNameDeprecated?: string,
 |}>;
 
 function codegenNativeComponent<Props>(
   componentName: string,
   options?: Options,
 ): Class<NativeComponent<Props>> {
-  let componentNameInUse = componentName;
-  if (options && options.isDeprecatedPaperComponentNameRCT === true) {
-    componentNameInUse = `RCT${componentName}`;
+  let componentNameInUse =
+    options && options.paperComponentName
+      ? options.paperComponentName
+      : componentName;
+
+  if (options != null && options.paperComponentNameDeprecated != null) {
+    if (UIManager.getViewManagerConfig(componentName)) {
+      componentNameInUse = componentName;
+    } else if (
+      options.paperComponentNameDeprecated != null &&
+      UIManager.getViewManagerConfig(options.paperComponentNameDeprecated)
+    ) {
+      componentNameInUse = options.paperComponentNameDeprecated;
+    } else {
+      throw new Error(
+        'Failed to find native component for either "::_COMPONENT_NAME_::" or "::_COMPONENT_NAME_DEPRECATED_::"',
+      );
+    }
   }
 
   // If this function is run at runtime then that means the view configs were not

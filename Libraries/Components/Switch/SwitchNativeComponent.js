@@ -40,5 +40,5 @@ type NativeProps = $ReadOnly<{|
 |}>;
 
 export default codegenNativeComponent<NativeProps>('Switch', {
-  isDeprecatedPaperComponentNameRCT: true,
+  paperComponentName: 'RCTSwitch',
 });

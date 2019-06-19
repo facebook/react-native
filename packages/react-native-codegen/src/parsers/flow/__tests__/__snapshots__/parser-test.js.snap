@@ -4744,6 +4744,28 @@ Object {
 }
 `;
 
+exports[`RN Codegen Flow Parser can generate fixture NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION 1`] = `
+Object {
+  "modules": Object {
+    "Module": Object {
+      "components": Object {
+        "Module": Object {
+          "deprecatedViewConfigName": "DeprecateModuleName",
+          "events": Array [],
+          "extendsProps": Array [
+            Object {
+              "knownTypeName": "ReactNativeCoreViewProps",
+              "type": "ReactNativeBuiltInType",
+            },
+          ],
+          "props": Array [],
+        },
+      },
+    },
+  },
+}
+`;
+
 exports[`RN Codegen Flow Parser can generate fixture ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS 1`] = `
 Object {
   "modules": Object {
@@ -4783,7 +4805,7 @@ Object {
             },
           ],
           "interfaceOnly": true,
-          "isDeprecatedPaperComponentNameRCT": true,
+          "paperComponentName": "RCTModule",
           "props": Array [
             Object {
               "name": "boolean_default_true_optional_both",

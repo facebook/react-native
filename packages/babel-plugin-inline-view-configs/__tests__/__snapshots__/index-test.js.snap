@@ -36,9 +36,10 @@ const ModuleViewConfig = {
     onBubblingEventDefinedInlineNull: true
   }
 };
-registerGeneratedViewConfig('RCTModule', ModuleViewConfig);
+let nativeComponentName = 'RCTModule';
+registerGeneratedViewConfig(nativeComponentName, ModuleViewConfig);
 export const __INTERNAL_VIEW_CONFIG = ModuleViewConfig;
-export default 'RCTModule'; // RCT prefix present for paper support"
+export default nativeComponentName;"
 `;
 
 exports[`Babel plugin inline view configs can inline config for NotANativeComponent.js 1`] = `

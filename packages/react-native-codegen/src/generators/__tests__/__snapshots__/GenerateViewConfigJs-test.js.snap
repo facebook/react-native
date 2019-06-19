@@ -31,11 +31,13 @@ const ArrayPropsNativeComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('ArrayPropsNativeComponent', ArrayPropsNativeComponentViewConfig);
+let nativeComponentName = 'ArrayPropsNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, ArrayPropsNativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = ArrayPropsNativeComponentViewConfig;
 
-export default 'ArrayPropsNativeComponent';
+export default nativeComponentName;
 ",
 }
 `;
@@ -64,11 +66,13 @@ const BooleanPropNativeComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('BooleanPropNativeComponent', BooleanPropNativeComponentViewConfig);
+let nativeComponentName = 'BooleanPropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, BooleanPropNativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = BooleanPropNativeComponentViewConfig;
 
-export default 'BooleanPropNativeComponent';
+export default nativeComponentName;
 ",
 }
 `;
@@ -97,11 +101,13 @@ const ColorPropNativeComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('ColorPropNativeComponent', ColorPropNativeComponentViewConfig);
+let nativeComponentName = 'ColorPropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, ColorPropNativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = ColorPropNativeComponentViewConfig;
 
-export default 'ColorPropNativeComponent';
+export default nativeComponentName;
 ",
 }
 `;
@@ -130,11 +136,13 @@ const EnumPropsNativeComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('EnumPropsNativeComponent', EnumPropsNativeComponentViewConfig);
+let nativeComponentName = 'EnumPropsNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, EnumPropsNativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = EnumPropsNativeComponentViewConfig;
 
-export default 'EnumPropsNativeComponent';
+export default nativeComponentName;
 ",
 }
 `;
@@ -173,11 +181,13 @@ const EventsNestedObjectNativeComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('EventsNestedObjectNativeComponent', EventsNestedObjectNativeComponentViewConfig);
+let nativeComponentName = 'EventsNestedObjectNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, EventsNestedObjectNativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = EventsNestedObjectNativeComponentViewConfig;
 
-export default 'EventsNestedObjectNativeComponent';
+export default nativeComponentName;
 ",
 }
 `;
@@ -236,11 +246,13 @@ const EventsNativeComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('EventsNativeComponent', EventsNativeComponentViewConfig);
+let nativeComponentName = 'EventsNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, EventsNativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = EventsNativeComponentViewConfig;
 
-export default 'EventsNativeComponent';
+export default nativeComponentName;
 ",
 }
 `;
@@ -274,11 +286,13 @@ const FloatPropNativeComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('FloatPropNativeComponent', FloatPropNativeComponentViewConfig);
+let nativeComponentName = 'FloatPropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, FloatPropNativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = FloatPropNativeComponentViewConfig;
 
-export default 'FloatPropNativeComponent';
+export default nativeComponentName;
 ",
 }
 `;
@@ -307,11 +321,13 @@ const ImagePropNativeComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('ImagePropNativeComponent', ImagePropNativeComponentViewConfig);
+let nativeComponentName = 'ImagePropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, ImagePropNativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = ImagePropNativeComponentViewConfig;
 
-export default 'ImagePropNativeComponent';
+export default nativeComponentName;
 ",
 }
 `;
@@ -342,11 +358,13 @@ const IntegerPropNativeComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('IntegerPropNativeComponent', IntegerPropNativeComponentViewConfig);
+let nativeComponentName = 'IntegerPropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, IntegerPropNativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = IntegerPropNativeComponentViewConfig;
 
-export default 'IntegerPropNativeComponent';
+export default nativeComponentName;
 ",
 }
 `;
@@ -385,11 +403,13 @@ const InterfaceOnlyComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('RCTInterfaceOnlyComponent', InterfaceOnlyComponentViewConfig);
+let nativeComponentName = 'RCTInterfaceOnlyComponent';
+
+registerGeneratedViewConfig(nativeComponentName, InterfaceOnlyComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = InterfaceOnlyComponentViewConfig;
 
-export default 'RCTInterfaceOnlyComponent'; // RCT prefix present for paper support
+export default nativeComponentName;
 ",
 }
 `;
@@ -421,11 +441,13 @@ const ImageColorPropNativeComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('ImageColorPropNativeComponent', ImageColorPropNativeComponentViewConfig);
+let nativeComponentName = 'ImageColorPropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, ImageColorPropNativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = ImageColorPropNativeComponentViewConfig;
 
-export default 'ImageColorPropNativeComponent';
+export default nativeComponentName;
 ",
 }
 `;
@@ -454,11 +476,13 @@ const PointPropNativeComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('PointPropNativeComponent', PointPropNativeComponentViewConfig);
+let nativeComponentName = 'PointPropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, PointPropNativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = PointPropNativeComponentViewConfig;
 
-export default 'PointPropNativeComponent';
+export default nativeComponentName;
 ",
 }
 `;
@@ -488,11 +512,13 @@ const StringPropComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('StringPropComponent', StringPropComponentViewConfig);
+let nativeComponentName = 'StringPropComponent';
+
+registerGeneratedViewConfig(nativeComponentName, StringPropComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = StringPropComponentViewConfig;
 
-export default 'StringPropComponent';
+export default nativeComponentName;
 ",
 }
 `;
@@ -521,11 +547,13 @@ const MultiFile1NativeComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('MultiFile1NativeComponent', MultiFile1NativeComponentViewConfig);
+let nativeComponentName = 'MultiFile1NativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, MultiFile1NativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = MultiFile1NativeComponentViewConfig;
 
-export default 'MultiFile1NativeComponent';
+export default nativeComponentName;
 
 const MultiFile2NativeComponentViewConfig = {
   uiViewClassName: 'MultiFile2NativeComponent',
@@ -535,11 +563,13 @@ const MultiFile2NativeComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('MultiFile2NativeComponent', MultiFile2NativeComponentViewConfig);
+let nativeComponentName = 'MultiFile2NativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, MultiFile2NativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = MultiFile2NativeComponentViewConfig;
 
-export default 'MultiFile2NativeComponent';
+export default nativeComponentName;
 ",
 }
 `;
@@ -568,11 +598,13 @@ const MultiComponent1NativeComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('MultiComponent1NativeComponent', MultiComponent1NativeComponentViewConfig);
+let nativeComponentName = 'MultiComponent1NativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, MultiComponent1NativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = MultiComponent1NativeComponentViewConfig;
 
-export default 'MultiComponent1NativeComponent';
+export default nativeComponentName;
 
 const MultiComponent2NativeComponentViewConfig = {
   uiViewClassName: 'MultiComponent2NativeComponent',
@@ -582,11 +614,52 @@ const MultiComponent2NativeComponentViewConfig = {
   },
 };
 
-registerGeneratedViewConfig('MultiComponent2NativeComponent', MultiComponent2NativeComponentViewConfig);
+let nativeComponentName = 'MultiComponent2NativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, MultiComponent2NativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = MultiComponent2NativeComponentViewConfig;
 
-export default 'MultiComponent2NativeComponent';
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture with a deprecated view config name 1`] = `
+Map {
+  "DEPRECATED_VIEW_CONFIG_NAMENativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const {UIManager} = require(\\"react-native\\")
+
+const NativeComponentNameViewConfig = {
+  uiViewClassName: 'NativeComponentName',
+  validAttributes: {},
+};
+
+let nativeComponentName = 'NativeComponentName';
+if (UIManager.getViewManagerConfig('NativeComponentName')) {
+  nativeComponentName = 'NativeComponentName';
+} else if (UIManager.getViewManagerConfig('DeprecatedNativeComponentName')){
+  nativeComponentName = 'DeprecatedNativeComponentName';
+} else {
+  throw new Error('Failed to find native component for either \\"NativeComponentName\\" or \\"DeprecatedNativeComponentName\\"')
+}
+registerGeneratedViewConfig(nativeComponentName, NativeComponentNameViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = NativeComponentNameViewConfig;
+
+export default nativeComponentName;
 ",
 }
 `;

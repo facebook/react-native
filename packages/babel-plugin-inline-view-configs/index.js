@@ -18,7 +18,6 @@ function generateViewConfig(filename, code) {
   const libraryName = path
     .basename(filename)
     .replace(/NativeComponent\.js$/, '');
-
   return RNCodegen.generateViewConfig({
     schema,
     libraryName,

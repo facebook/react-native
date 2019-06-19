@@ -19,8 +19,9 @@ function getOptions(optionsExpression: OptionsAST): ?OptionsShape {
   if (!optionsExpression) {
     return null;
   }
+  let foundOptions;
   try {
-    return optionsExpression.properties.reduce((options, prop) => {
+    foundOptions = optionsExpression.properties.reduce((options, prop) => {
       options[prop.key.name] = prop.value.value;
       return options;
     }, {});
@@ -29,6 +30,17 @@ function getOptions(optionsExpression: OptionsAST): ?OptionsShape {
       'Failed to parse codegen options, please check that they are defined correctly',
     );
   }
+
+  if (
+    foundOptions.paperComponentName &&
+    foundOptions.paperComponentNameDeprecated
+  ) {
+    throw new Error(
+      'Failed to parse codegen options, cannot use both paperComponentName and paperComponentNameDeprecated',
+    );
+  }
+
+  return foundOptions;
 }
 
 module.exports = {

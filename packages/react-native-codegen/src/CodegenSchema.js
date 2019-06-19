@@ -123,7 +123,14 @@ export type EventTypeShape = $ReadOnly<{|
 
 export type OptionsShape = $ReadOnly<{|
   interfaceOnly?: boolean,
-  isDeprecatedPaperComponentNameRCT?: boolean,
+
+  // Use for components with no current paper rename in progress
+  // Does not check for new name
+  paperComponentName?: string,
+
+  // Use for components currently being renamed in paper
+  // Will use new name if it is available and fallback to this name
+  paperComponentNameDeprecated?: string,
 |}>;
 
 export type ExtendsPropsShape = $ReadOnly<{|
