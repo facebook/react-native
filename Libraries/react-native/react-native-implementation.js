@@ -23,6 +23,12 @@ module.exports = {
     return require('../Components/ActivityIndicator/ActivityIndicator');
   },
   get ART() {
+    warnOnce(
+      'art-moved',
+      'React Native Art has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/art' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/art',
+    );
     return require('../ART/ReactNativeART');
   },
   get Button() {
