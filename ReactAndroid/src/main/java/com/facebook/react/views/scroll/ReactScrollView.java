@@ -14,6 +14,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import androidx.core.view.ViewCompat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -298,6 +299,16 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     }
 
     return super.onTouchEvent(ev);
+  }
+
+  @Override
+  public boolean executeKeyEvent(KeyEvent event) {
+    int eventKeyCode = event.getKeyCode();
+    if (!mScrollEnabled && (eventKeyCode == KeyEvent.KEYCODE_DPAD_UP ||
+      eventKeyCode == KeyEvent.KEYCODE_DPAD_DOWN)) {
+      return false;
+    }
+    return super.executeKeyEvent(event);
   }
 
   @Override
