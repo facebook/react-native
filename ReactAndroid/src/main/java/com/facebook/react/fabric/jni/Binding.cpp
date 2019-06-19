@@ -73,8 +73,10 @@ void Binding::startSurface(
     return;
   }
 
+  LayoutContext context;
+  context.pointScaleFactor = pointScaleFactor_;
   scheduler->startSurface(
-      surfaceId, moduleName->toStdString(), initialProps->consume());
+      surfaceId, moduleName->toStdString(), initialProps->consume(), {}, context);
 }
 
 void Binding::startSurfaceWithConstraints(
