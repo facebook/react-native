@@ -100,7 +100,7 @@ public class ReactActivityDelegate implements LifecycleObserver {
     }
   }
 
-  @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+  @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
   protected void onResume() {
     if (getReactNativeHost().hasInstance()) {
       getReactNativeHost().getReactInstanceManager().onHostResume(
