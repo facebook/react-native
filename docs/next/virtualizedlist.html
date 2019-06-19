@@ -92,15 +92,20 @@
 <li><a href="/react-native/docs/next/virtualizedlist#initialscrollindex"><code>initialScrollIndex</code></a></li>
 <li><a href="/react-native/docs/next/virtualizedlist#inverted"><code>inverted</code></a></li>
 <li><a href="/react-native/docs/next/virtualizedlist#cellrenderercomponent"><code>CellRendererComponent</code></a></li>
+<li><a href="/react-native/docs/next/virtualizedlist#listKey"><code>listKey</code></a></li>
 <li><a href="/react-native/docs/next/virtualizedlist#listemptycomponent"><code>ListEmptyComponent</code></a></li>
+<li><a href="/react-native/docs/next/virtualizedlist#ListItemComponent"><code>ListItemComponent</code></a></li>
 <li><a href="/react-native/docs/next/virtualizedlist#listfootercomponent"><code>ListFooterComponent</code></a></li>
+<li><a href="/react-native/docs/next/virtualizedlist#ListFooterComponentStyle"><code>ListFooterComponentStyle</code></a></li>
 <li><a href="/react-native/docs/next/virtualizedlist#listheadercomponent"><code>ListHeaderComponent</code></a></li>
+<li><a href="/react-native/docs/next/virtualizedlist#ListHeaderComponentStyle"><code>ListHeaderComponentStyle</code></a></li>
 <li><a href="/react-native/docs/next/virtualizedlist#onendreached"><code>onEndReached</code></a></li>
 <li><a href="/react-native/docs/next/virtualizedlist#onlayout"><code>onLayout</code></a></li>
 <li><a href="/react-native/docs/next/virtualizedlist#onrefresh"><code>onRefresh</code></a></li>
 <li><a href="/react-native/docs/next/virtualizedlist#onscrolltoindexfailed"><code>onScrollToIndexFailed</code></a></li>
 <li><a href="/react-native/docs/next/virtualizedlist#onviewableitemschanged"><code>onViewableItemsChanged</code></a></li>
 <li><a href="/react-native/docs/next/virtualizedlist#refreshing"><code>refreshing</code></a></li>
+<li><a href="/react-native/docs/next/virtualizedlist#refreshControl"><code>refreshControl</code></a></li>
 <li><a href="/react-native/docs/next/virtualizedlist#removeclippedsubviews"><code>removeClippedSubviews</code></a></li>
 <li><a href="/react-native/docs/next/virtualizedlist#renderscrollcomponent"><code>renderScrollComponent</code></a></li>
 <li><a href="/react-native/docs/next/virtualizedlist#viewabilityconfig"><code>viewabilityConfig</code></a></li>
@@ -114,6 +119,7 @@
 <li><a href="/react-native/docs/next/virtualizedlist#windowsize"><code>windowSize</code></a></li>
 <li><a href="/react-native/docs/next/virtualizedlist#disablevirtualization"><code>disableVirtualization</code></a></li>
 <li><a href="/react-native/docs/next/virtualizedlist#progressviewoffset"><code>progressViewOffset</code></a></li>
+<li><a href="/react-native/docs/next/virtualizedlist#persistentScrollbar"><code>persistentScrollbar</code></a></li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h3>
 <ul>
@@ -247,6 +253,17 @@
 </tbody>
 </table>
 <hr>
+<h3><a class="anchor" aria-hidden="true" id="listkey"></a><a href="#listkey" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>listKey</code></h3>
+<p>A unique identifier for this list. If there are multiple VirtualizedLists at the same level of nesting within another VirtualizedList, this key is necessary for virtualization to work properly.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>string</td><td>True</td></tr>
+</tbody>
+</table>
+<hr>
 <h3><a class="anchor" aria-hidden="true" id="listemptycomponent"></a><a href="#listemptycomponent" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ListEmptyComponent</code></h3>
 <p>Rendered when the list is empty. Can be a React Component Class, a render function, or a rendered element.</p>
 <table>
@@ -255,6 +272,17 @@
 </thead>
 <tbody>
 <tr><td>component, function, element</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="listitemcomponent"></a><a href="#listitemcomponent" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ListItemComponent</code></h3>
+<p>Each data item is rendered using this element. Can be a React Component Class, or a render function</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>component, function</td><td>No</td></tr>
 </tbody>
 </table>
 <hr>
@@ -269,6 +297,17 @@
 </tbody>
 </table>
 <hr>
+<h3><a class="anchor" aria-hidden="true" id="listfootercomponentstyle"></a><a href="#listfootercomponentstyle" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ListFooterComponentStyle</code></h3>
+<p>Styling for internal View for ListFooterComponent</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>ViewStyleProp</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
 <h3><a class="anchor" aria-hidden="true" id="listheadercomponent"></a><a href="#listheadercomponent" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ListHeaderComponent</code></h3>
 <p>Rendered at the top of all the items. Can be a React Component Class, a render function, or a rendered element.</p>
 <table>
@@ -277,6 +316,17 @@
 </thead>
 <tbody>
 <tr><td>component, function, element</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="listheadercomponentstyle"></a><a href="#listheadercomponentstyle" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>ListHeaderComponentStyle</code></h3>
+<p>Styling for internal View for ListHeaderComponent</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>ViewStyleProp</td><td>No</td></tr>
 </tbody>
 </table>
 <hr>
@@ -344,6 +394,17 @@
 </thead>
 <tbody>
 <tr><td>boolean</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="refreshcontrol"></a><a href="#refreshcontrol" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>refreshControl</code></h3>
+<p>A custom refresh control element. When set, it overrides the default <RefreshControl> component built internally. The onRefresh and refreshing props are also ignored. Only works for vertical VirtualizedList.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>element</td><td>No</td></tr>
 </tbody>
 </table>
 <hr>
@@ -497,6 +558,16 @@
 </thead>
 <tbody>
 <tr><td></td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="persistentscrollbar"></a><a href="#persistentscrollbar" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>persistentScrollbar</code></h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td></tr>
 </tbody>
 </table>
 <hr>
