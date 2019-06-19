@@ -18,21 +18,25 @@ export type PlatformSelectSpec<A, D> = {
 };
 
 const Platform = {
+  __constants: null,
   OS: 'android',
   get Version() {
-    return NativePlatformConstantsAndroid.getConstants().Version;
+    return this.constants.Version;
   },
   get constants() {
-    return NativePlatformConstantsAndroid.getConstants();
+    if (this.__constants == null) {
+      this.__constants = NativePlatformConstantsAndroid.getConstants();
+    }
+    return this.__constants;
   },
   get isTesting(): boolean {
     if (__DEV__) {
-      return NativePlatformConstantsAndroid.getConstants().isTesting;
+      return this.constants.isTesting;
     }
     return false;
   },
   get isTV(): boolean {
-    return NativePlatformConstantsAndroid.getConstants().uiMode === 'tv';
+    return this.constants.uiMode === 'tv';
   },
   select: <A, D>(spec: PlatformSelectSpec<A, D>): A | D =>
     'android' in spec ? spec.android : spec.default,

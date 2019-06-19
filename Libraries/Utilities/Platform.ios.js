@@ -18,15 +18,19 @@ export type PlatformSelectSpec<D, I> = {
 };
 
 const Platform = {
+  __constants: null,
   OS: 'ios',
   get Version() {
-    return NativePlatformConstantsIOS.getConstants().osVersion;
+    return this.constants.osVersion;
   },
   get constants() {
-    return NativePlatformConstantsIOS.getConstants();
+    if (this.__constants == null) {
+      this.__constants = NativePlatformConstantsIOS.getConstants();
+    }
+    return this.__constants;
   },
   get isPad() {
-    return NativePlatformConstantsIOS.getConstants().interfaceIdiom === 'pad';
+    return this.constants.interfaceIdiom === 'pad';
   },
   /**
    * Deprecated, use `isTV` instead.
@@ -35,11 +39,11 @@ const Platform = {
     return Platform.isTV;
   },
   get isTV() {
-    return NativePlatformConstantsIOS.getConstants().interfaceIdiom === 'tv';
+    return this.constants.interfaceIdiom === 'tv';
   },
   get isTesting(): boolean {
     if (__DEV__) {
-      return NativePlatformConstantsIOS.getConstants().isTesting;
+      return this.constants.isTesting;
     }
     return false;
   },
