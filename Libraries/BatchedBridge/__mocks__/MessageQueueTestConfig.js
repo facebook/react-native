@@ -18,16 +18,16 @@ const remoteModulesConfig: $ReadOnlyArray<ModuleConfig> = [
   [
     'RemoteModule1',
     null,
-    ['remoteMethod', 'promiseMethod', 'promiseReturningMethod'],
+    ['remoteMethod', 'promiseMethod', 'promiseReturningMethod', 'syncMethod'],
     [2 /* promiseReturningMethod */],
-    null,
+    [3 /* syncMethod */],
   ],
   [
     'RemoteModule2',
     null,
-    ['remoteMethod', 'promiseMethod', 'promiseReturningMethod'],
+    ['remoteMethod', 'promiseMethod', 'promiseReturningMethod', 'syncMethod'],
     [2 /* promiseReturningMethod */],
-    null,
+    [3 /* syncMethod */],
   ],
 ];
 

@@ -181,6 +181,53 @@ describe('MessageQueue', function() {
     }).toThrow();
     await promise2;
   });
+
+  describe('sync methods', () => {
+    afterEach(function() {
+      delete global.nativeCallSyncHook;
+    });
+
+    it('throwing an exception', function() {
+      global.nativeCallSyncHook = jest.fn(() => {
+        throw new Error('firstFailure');
+      });
+
+      let error;
+      try {
+        NativeModules.RemoteModule1.syncMethod('paloAlto', 'menloPark');
+      } catch (e) {
+        error = e;
+      }
+
+      expect(global.nativeCallSyncHook).toBeCalledTimes(1);
+      expect(global.nativeCallSyncHook).toBeCalledWith(
+        0, // `RemoteModule1`
+        3, // `syncMethod`
+        ['paloAlto', 'menloPark'],
+      );
+      expect(error).toBeInstanceOf(Error);
+      expect(error).toMatchObject({
+        message: 'firstFailure',
+      });
+    });
+
+    it('returning a value', function() {
+      global.nativeCallSyncHook = jest.fn(() => {
+        return 'secondSucc';
+      });
+
+      const result = NativeModules.RemoteModule2.syncMethod('mac', 'windows');
+
+      expect(global.nativeCallSyncHook).toBeCalledTimes(1);
+      expect(global.nativeCallSyncHook).toBeCalledWith(
+        1, // `RemoteModule2`
+        3, // `syncMethod`
+        ['mac', 'windows'],
+      );
+
+      expect(result).toBe('secondSucc');
+    });
+  });
 });
 
 const linesByFile = new Map();
