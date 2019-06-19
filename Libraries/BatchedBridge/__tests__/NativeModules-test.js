@@ -211,6 +211,36 @@ describe('MessageQueue', function() {
       });
     });
 
+    it('throwing a "native" exception gets framesToPop = 2', function() {
+      global.nativeCallSyncHook = () => {
+        throw new Error('Exception in HostFunction: foo');
+      };
+      let error;
+      try {
+        NativeModules.RemoteModule1.syncMethod('paloAlto', 'menloPark');
+      } catch (e) {
+        error = e;
+      }
+      // We can't test this behaviour with `getLineFromFrame` because our mock
+      // function adds an extra frame, so check `framesToPop` directly instead.
+      expect(error.framesToPop).toBe(2);
+    });
+
+    it('throwing a "native" exception preserves framesToPop if set', function() {
+      global.nativeCallSyncHook = () => {
+        const e = new Error('Exception in HostFunction: foo');
+        e.framesToPop = 42;
+        throw e;
+      };
+      let error;
+      try {
+        NativeModules.RemoteModule1.syncMethod('paloAlto', 'menloPark');
+      } catch (e) {
+        error = e;
+      }
+      expect(error.framesToPop).toBe(42);
+    });
+
     it('returning a value', function() {
       global.nativeCallSyncHook = jest.fn(() => {
         return 'secondSucc';

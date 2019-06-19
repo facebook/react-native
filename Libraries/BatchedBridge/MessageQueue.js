@@ -182,7 +182,19 @@ class MessageQueue {
       );
     }
     this.processCallbacks(moduleID, methodID, params, onFail, onSucc);
-    return global.nativeCallSyncHook(moduleID, methodID, params);
+    try {
+      return global.nativeCallSyncHook(moduleID, methodID, params);
+    } catch (e) {
+      if (
+        typeof e === 'object' &&
+        e != null &&
+        typeof e.framesToPop === 'undefined' &&
+        /^Exception in HostFunction: /.test(e.message)
+      ) {
+        e.framesToPop = 2;
+      }
+      throw e;
+    }
   }
 
   processCallbacks(
