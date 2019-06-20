@@ -8,24 +8,27 @@
 package com.facebook.react.views.picker;
 
 import android.content.Context;
-import androidx.appcompat.widget.AppCompatSpinner;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
+
+import androidx.appcompat.widget.AppCompatSpinner;
 
 import com.facebook.react.common.annotations.VisibleForTesting;
+
+import java.util.List;
 
 import javax.annotation.Nullable;
 
 public class ReactPicker extends AppCompatSpinner {
 
   private int mMode = Spinner.MODE_DIALOG;
-  private @Nullable Integer mPrimaryColor;
   private @Nullable OnSelectListener mOnSelectListener;
-  private @Nullable SpinnerAdapter mStagedAdapter;
+  private @Nullable List<ReactPickerItem> mItems;
+  private @Nullable List<ReactPickerItem> mStagedItems;
   private @Nullable Integer mStagedSelection;
+  private @Nullable Integer mStagedPrimaryTextColor;
 
   private final OnItemSelectedListener mItemSelectedListener = new OnItemSelectedListener() {
     @Override
@@ -113,8 +116,8 @@ public class ReactPicker extends AppCompatSpinner {
     return mOnSelectListener;
   }
 
-  /* package */ void setStagedAdapter(final SpinnerAdapter adapter) {
-   mStagedAdapter = adapter;
+  /* package */ void setStagedItems(final @Nullable List<ReactPickerItem> items) {
+   mStagedItems = items;
   }
 
   /**
@@ -125,6 +128,10 @@ public class ReactPicker extends AppCompatSpinner {
     mStagedSelection = selection;
   }
 
+  /* package */ void setStagedPrimaryTextColor(@Nullable Integer primaryColor) {
+    mStagedPrimaryTextColor = primaryColor;
+  }
+
   /**
    * Used to commit staged data into ReactPicker view.
    * During this period, we will disable {@link OnSelectListener#onItemSelected(int)} temporarily,
@@ -133,14 +140,19 @@ public class ReactPicker extends AppCompatSpinner {
   /* package */ void commitStagedData() {
     setOnItemSelectedListener(null);
 
+    ReactPickerAdapter adapter = (ReactPickerAdapter) getAdapter();
     final int origSelection = getSelectedItemPosition();
-    if (mStagedAdapter != null && mStagedAdapter != getAdapter()) {
-      setAdapter(mStagedAdapter);
-      // After setAdapter(), Spinner will reset selection and cause unnecessary onValueChange event.
-      // Explicitly setup selection again to prevent this.
-      // Ref: https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/widget/AbsSpinner.java#123
-      setSelection(origSelection, false);
-      mStagedAdapter = null;
+    if (mStagedItems != null && mStagedItems != mItems) {
+      mItems = mStagedItems;
+      mStagedItems = null;
+      if (adapter == null) {
+        adapter = new ReactPickerAdapter(getContext(), mItems);
+        setAdapter(adapter);
+      } else {
+        adapter.clear();
+        adapter.addAll(mItems);
+        adapter.notifyDataSetChanged();
+      }
     }
 
     if (mStagedSelection != null && mStagedSelection != origSelection) {
@@ -148,15 +160,14 @@ public class ReactPicker extends AppCompatSpinner {
       mStagedSelection = null;
     }
 
+    if (mStagedPrimaryTextColor != null &&
+        adapter != null &&
+        mStagedPrimaryTextColor != adapter.getPrimaryTextColor()) {
+      adapter.setPrimaryTextColor(mStagedPrimaryTextColor);
+      mStagedPrimaryTextColor = null;
+    }
+
     setOnItemSelectedListener(mItemSelectedListener);
-  }
-
-  public @Nullable Integer getPrimaryColor() {
-    return mPrimaryColor;
-  }
-
-  public void setPrimaryColor(@Nullable Integer primaryColor) {
-    mPrimaryColor = primaryColor;
   }
 
   @VisibleForTesting
