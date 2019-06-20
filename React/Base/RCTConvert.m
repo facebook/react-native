@@ -588,11 +588,7 @@ RCT_ARRAY_CONVERTER(UIColor)
  * This macro is used for creating converter functions for directly
  * representable json array values that require no conversion.
  */
-#if RCT_DEBUG
-#define RCT_JSON_ARRAY_CONVERTER_NAMED(type, name) RCT_ARRAY_CONVERTER_NAMED(type, name)
-#else
 #define RCT_JSON_ARRAY_CONVERTER_NAMED(type, name) + (NSArray *)name##Array:(id)json { return json; }
-#endif
 #define RCT_JSON_ARRAY_CONVERTER(type) RCT_JSON_ARRAY_CONVERTER_NAMED(type, type)
 
 RCT_JSON_ARRAY_CONVERTER(NSArray)
