@@ -53,7 +53,10 @@
 - (BOOL)isNodeManagedByFabric:(nonnull NSNumber *)tag
 {
   RCTAnimatedNode *node = _animationNodes[tag];
-  return [node isManagedByFabric];
+  if (node) {
+    return [node isManagedByFabric];
+  }
+  return false;
 }
 
 #pragma mark -- Graph

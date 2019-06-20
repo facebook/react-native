@@ -87,10 +87,14 @@ RCT_EXPORT_METHOD(startAnimatingNode:(nonnull NSNumber *)animationId
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager startAnimatingNode:animationId nodeTag:nodeTag config:config endCallback:callBack];
   }];
-  if ([_nodesManager isNodeManagedByFabric:nodeTag]) {
-    _animIdIsManagedByFabric[animationId] = @YES;
-    [self flushOperationQueues];
-  }
+  __weak RCTNativeAnimatedModule *weakSelf = self;
+  RCTExecuteOnMainQueue(^{
+      __strong RCTNativeAnimatedModule *strongSelf = weakSelf;
+      if (strongSelf && [strongSelf->_nodesManager isNodeManagedByFabric:nodeTag]) {
+          strongSelf->_animIdIsManagedByFabric[animationId] = @YES;
+          [strongSelf flushOperationQueues];
+      }
+  });
 }
 
 RCT_EXPORT_METHOD(stopAnimation:(nonnull NSNumber *)animationId)
