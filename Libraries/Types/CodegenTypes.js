@@ -28,4 +28,4 @@ export type Int32 = number;
 //  but that is currently not supported in the codegen since we require a default
 //
 // eslint-disable-next-line no-unused-vars
-export type WithDefault<Type: number | boolean | string, Value: Type> = Type;
+export type WithDefault<Type: number | boolean | string, Value: ?Type> = Type;
