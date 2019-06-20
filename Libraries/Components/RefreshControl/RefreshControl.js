@@ -13,7 +13,7 @@
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 
-const AndroidSwipeRefreshLayoutNativeComponent = require('./AndroidSwipeRefreshLayoutNativeComponent');
+import AndroidSwipeRefreshLayoutNativeComponent from './AndroidSwipeRefreshLayoutNativeComponent';
 const PullToRefreshViewNativeComponent = require('./PullToRefreshViewNativeComponent');
 const nullthrows = require('nullthrows');
 
