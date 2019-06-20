@@ -9,6 +9,7 @@
  */
 
 'use strict';
+import ReactNativeViewViewConfigAndroid from './ReactNativeViewViewConfigAndroid';
 
 const ReactNativeViewConfig = {
   uiViewClassName: 'RCTView',
@@ -17,6 +18,7 @@ const ReactNativeViewConfig = {
   Commands: {},
   Constants: {},
   bubblingEventTypes: {
+    ...ReactNativeViewViewConfigAndroid.bubblingEventTypes,
     topBlur: {
       phasedRegistrationNames: {
         bubbled: 'onBlur',
@@ -85,6 +87,7 @@ const ReactNativeViewConfig = {
     },
   },
   directEventTypes: {
+    ...ReactNativeViewViewConfigAndroid.directEventTypes,
     topAccessibilityAction: {
       registrationName: 'onAccessibilityAction',
     },
@@ -110,6 +113,7 @@ const ReactNativeViewConfig = {
     },
   },
   validAttributes: {
+    ...ReactNativeViewViewConfigAndroid.validAttributes,
     accessibilityActions: true,
     accessibilityElementsHidden: true,
     accessibilityHint: true,
