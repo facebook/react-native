@@ -23,7 +23,7 @@ static void __makeVersion()
                   RCTVersionMajor: @(0),
                   RCTVersionMinor: @(60),
                   RCTVersionPatch: @(0),
-                  RCTVersionPrerelease: @"rc.1",
+                  RCTVersionPrerelease: @"rc.2",
                   };
 }
 
