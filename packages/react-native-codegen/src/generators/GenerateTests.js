@@ -14,9 +14,11 @@ import type {SchemaType} from '../CodegenSchema';
 const {getImports, toSafeCppString} = require('./CppHelpers');
 
 type FilesOutput = Map<string, string>;
+type PropValueType = string | number | boolean;
+
 type TestCase = $ReadOnly<{|
   propName: string,
-  propValue: string | number | boolean,
+  propValue: ?PropValueType,
   testName?: string,
   raw?: boolean,
 |}>;
@@ -39,9 +41,11 @@ using namespace facebook::react;
 
 const testTemplate = `
 TEST(::_COMPONENT_NAME_::_::_TEST_NAME_::, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<::_COMPONENT_NAME_::>();
   auto const &sourceProps = ::_COMPONENT_NAME_::();
   auto const &rawProps = RawProps(folly::dynamic::object("::_PROP_NAME_::", ::_PROP_VALUE_::));
-
+  rawProps.parse(propParser);
   ::_COMPONENT_NAME_::(sourceProps, rawProps);
 }
 `;
@@ -59,7 +63,10 @@ function getTestCasesForProp(propName, typeAnnotation) {
   } else if (typeAnnotation.type === 'StringTypeAnnotation') {
     cases.push({
       propName,
-      propValue: typeAnnotation.default || 'foo',
+      propValue:
+        typeAnnotation.default != null && typeAnnotation.default !== ''
+          ? typeAnnotation.default
+          : 'foo',
     });
   } else if (typeAnnotation.type === 'BooleanTypeAnnotation') {
     cases.push({
@@ -128,7 +135,11 @@ function generateTestsString(name, component) {
 module.exports = {
   generate(libraryName: string, schema: SchemaType): FilesOutput {
     const fileName = 'Tests.cpp';
-    const allImports = new Set(['#include <react/core/propsConversions.h>']);
+    const allImports = new Set([
+      '#include <react/core/propsConversions.h>',
+      '#include <react/core/RawProps.h>',
+      '#include <react/core/RawPropsParser.h>',
+    ]);
 
     const componentTests = Object.keys(schema.modules)
       .map(moduleName => {

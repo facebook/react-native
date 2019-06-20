@@ -284,12 +284,12 @@ static void calculateShadowViewMutations(
       createMutations.end(),
       std::back_inserter(mutations));
   std::move(
-      downwardMutations.begin(),
-      downwardMutations.end(),
-      std::back_inserter(mutations));
-  std::move(
       insertMutations.begin(),
       insertMutations.end(),
+      std::back_inserter(mutations));
+  std::move(
+      downwardMutations.begin(),
+      downwardMutations.end(),
       std::back_inserter(mutations));
 }
 

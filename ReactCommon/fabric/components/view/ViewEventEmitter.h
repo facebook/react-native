@@ -10,6 +10,7 @@
 
 #include <react/core/LayoutMetrics.h>
 #include <react/core/ReactPrimitives.h>
+
 #include "TouchEventEmitter.h"
 
 namespace facebook {

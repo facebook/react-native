@@ -394,15 +394,28 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         // TODO initialize surface here
       }
 
-      if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
-        mReactInstanceManager.createReactContextInBackground();
-      }
+      mReactInstanceManager.createReactContextInBackground();
 
       attachToReactInstanceManager();
 
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
+  }
+
+  @Override
+  public int getWidthMeasureSpec() {
+    return mWidthMeasureSpec;
+  }
+
+  @Override
+  public int getHeightMeasureSpec() {
+    return mHeightMeasureSpec;
+  }
+
+  @Override
+  public void setShouldLogContentAppeared(boolean shouldLogContentAppeared) {
+    mShouldLogContentAppeared = shouldLogContentAppeared;
   }
 
   private void updateRootLayoutSpecs(final int widthMeasureSpec, final int heightMeasureSpec) {
@@ -461,7 +474,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     mRootViewEventListener = eventListener;
   }
 
-  /* package */ String getJSModuleName() {
+  @Override
+  public String getJSModuleName() {
     return Assertions.assertNotNull(mJSModuleName);
   }
 
@@ -506,11 +520,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         if (mUseSurface) {
           // TODO call surface's runApplication
         } else {
-
-          boolean isFabric = getUIManagerType() == FABRIC;
-          // Fabric requires to call updateRootLayoutSpecs before starting JS Application,
-          // this ensures the root will hace the correct pointScaleFactor.
-          if (mWasMeasured || isFabric) {
+          if (mWasMeasured) {
             updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
           }
 
@@ -519,9 +529,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           @Nullable Bundle appProperties = getAppProperties();
           if (appProperties != null) {
             appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
-          }
-          if (isFabric) {
-            appParams.putBoolean("fabric", true);
           }
 
           mShouldLogContentAppeared = true;

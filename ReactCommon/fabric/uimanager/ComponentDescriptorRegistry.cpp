@@ -34,7 +34,8 @@ void ComponentDescriptorRegistry::add(
       sharedComponentDescriptor;
   _registryByName[componentDescriptorProvider.name] = sharedComponentDescriptor;
 
-  if (componentDescriptorProvider.name == "UnimplementedNativeView") {
+  if (strcmp(componentDescriptorProvider.name, "UnimplementedNativeView") ==
+      0) {
     auto *self = const_cast<ComponentDescriptorRegistry *>(this);
     self->setFallbackComponentDescriptor(sharedComponentDescriptor);
   }
@@ -64,7 +65,7 @@ void ComponentDescriptorRegistry::registerComponentDescriptor(
   _registryByName[componentName] = componentDescriptor;
 }
 
-static ComponentName componentNameByReactViewName(ComponentName viewName) {
+static std::string componentNameByReactViewName(std::string viewName) {
   // We need this function only for the transition period;
   // eventually, all names will be unified.
 
@@ -114,7 +115,7 @@ static ComponentName componentNameByReactViewName(ComponentName viewName) {
 }
 
 ComponentDescriptor const &ComponentDescriptorRegistry::at(
-    ComponentName const &componentName) const {
+    std::string const &componentName) const {
   std::shared_lock<better::shared_mutex> lock(mutex_);
 
   auto unifiedComponentName = componentNameByReactViewName(componentName);
@@ -140,7 +141,7 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
 
 SharedShadowNode ComponentDescriptorRegistry::createNode(
     Tag tag,
-    ComponentName const &viewName,
+    std::string const &viewName,
     SurfaceId surfaceId,
     folly::dynamic const &props,
     SharedEventTarget const &eventTarget) const {

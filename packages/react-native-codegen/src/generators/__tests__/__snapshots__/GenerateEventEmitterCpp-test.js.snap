@@ -165,6 +165,13 @@ void EventsNativeComponentEventEmitter::onEventDirect(EventsNativeComponentOnEve
     return payload;
   });
 }
+void EventsNativeComponentEventEmitter::onOrientationChange(EventsNativeComponentOnOrientationChangeStruct event) const {
+  dispatchEvent(\\"orientationChange\\", [event=std::move(event)](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
+    payload.setProperty(runtime, \\"orientation\\", toString(event.orientation));
+    return payload;
+  });
+}
 void EventsNativeComponentEventEmitter::onEnd() const {
   dispatchEvent(\\"end\\");
 }

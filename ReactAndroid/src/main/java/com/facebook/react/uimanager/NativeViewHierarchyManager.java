@@ -183,7 +183,7 @@ public class NativeViewHierarchyManager {
       //
       // This code is going to be executed ONLY when there is a change in the size of the Root
       // View defined in the js side. Changes in the layout of inner views will not trigger an update
-      // on the layour of the Root View.
+      // on the layout of the Root View.
       ViewParent parent = viewToUpdate.getParent();
       if (parent instanceof RootView) {
         parent.requestLayout();
@@ -444,7 +444,7 @@ public class NativeViewHierarchyManager {
             arrayContains(tagsToDelete, viewToRemove.getId())) {
           // The view will be removed and dropped by the 'delete' layout animation
           // instead, so do nothing
-        } else if (viewToManage != null) {
+        } else {
           viewManager.removeViewAt(viewToManage, normalizedIndexToRemove);
         }
 

@@ -465,9 +465,7 @@ public class ReactViewGroup extends ViewGroup implements
     mDrawingOrderHelper.handleRemoveView(getChildAt(index));
     setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
 
-    if (getChildAt(index) != null) {
-      super.removeViewAt(index);
-    }
+    super.removeViewAt(index);
   }
 
   @Override

@@ -10,16 +10,12 @@
 
 'use strict';
 
-import type {
-  BubblingEvent,
-  WithDefault,
-  CodegenNativeComponent,
-} from '../../Types/CodegenTypes';
-
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
-
+import type {BubblingEvent, WithDefault} from '../../Types/CodegenTypes';
+import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
+
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -48,13 +44,10 @@ type NativeProps = $ReadOnly<{|
   refreshing: WithDefault<boolean, false>,
 |}>;
 
-type PullToRefreshViewType = CodegenNativeComponent<
-  'PullToRefreshView',
-  NativeProps,
->;
-
-// TODO: Switch this over to require('./PullToRefreshNativeViewConfig')
+// TODO: Switch this over to CodegenNativeComponent
 // once the native components are renamed in paper and fabric
+type PullToRefreshViewType = Class<NativeComponent<NativeProps>>;
+
 module.exports = ((requireNativeComponent(
   'RCTRefreshControl',
 ): any): PullToRefreshViewType);

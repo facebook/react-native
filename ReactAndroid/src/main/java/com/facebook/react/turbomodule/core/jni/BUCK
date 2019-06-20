@@ -28,6 +28,7 @@ rn_xplat_cxx_library(
     ],
     deps = [
         react_native_target("jni/react/jni:jni"),
+        FBJNI_TARGET,
     ],
     exported_deps = [
         "fbsource//xplat/jsi:jsi",

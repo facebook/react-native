@@ -24,4 +24,5 @@ public interface WritableMap extends ReadableMap {
   void putMap(@Nonnull String key, @Nullable WritableMap value);
 
   void merge(@Nonnull ReadableMap source);
+  WritableMap copy();
 }

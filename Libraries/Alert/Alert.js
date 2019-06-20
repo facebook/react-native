@@ -10,14 +10,18 @@
 
 'use strict';
 
-import NativeModules from '../BatchedBridge/NativeModules';
 import Platform from '../Utilities/Platform';
-import DialogManagerAndroid, {
+import NativeDialogManagerAndroid, {
   type DialogOptions,
 } from '../NativeModules/specs/NativeDialogManagerAndroid';
+import RCTAlertManager from './RCTAlertManager';
 
-const RCTAlertManager = NativeModules.AlertManager;
-
+export type AlertType =
+  | 'default'
+  | 'plain-text'
+  | 'secure-text'
+  | 'login-password';
+export type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
 export type Buttons = Array<{
   text?: string,
   onPress?: ?Function,
@@ -26,21 +30,8 @@ export type Buttons = Array<{
 
 type Options = {
   cancelable?: ?boolean,
-  onDismiss?: ?Function,
+  onDismiss?: ?() => void,
 };
-
-type AlertType = $Keys<{
-  default: string,
-  'plain-text': string,
-  'secure-text': string,
-  'login-password': string,
-}>;
-
-export type AlertButtonStyle = $Keys<{
-  default: string,
-  cancel: string,
-  destructive: string,
-}>;
 
 /**
  * Launches an alert dialog with the specified title and message.
@@ -57,10 +48,10 @@ class Alert {
     if (Platform.OS === 'ios') {
       Alert.prompt(title, message, buttons, 'default');
     } else if (Platform.OS === 'android') {
-      if (!DialogManagerAndroid) {
+      if (!NativeDialogManagerAndroid) {
         return;
       }
-      const constants = DialogManagerAndroid.getConstants();
+      const constants = NativeDialogManagerAndroid.getConstants();
 
       const config: DialogOptions = {
         title: title || '',
@@ -73,9 +64,10 @@ class Alert {
       }
       // At most three buttons (neutral, negative, positive). Ignore rest.
       // The text 'OK' should be probably localized. iOS Alert does that in native.
+      const defaultPositiveText = 'OK';
       const validButtons: Buttons = buttons
         ? buttons.slice(0, 3)
-        : [{text: 'OK'}];
+        : [{text: defaultPositiveText}];
       const buttonPositive = validButtons.pop();
       const buttonNegative = validButtons.pop();
       const buttonNeutral = validButtons.pop();
@@ -87,7 +79,7 @@ class Alert {
         config.buttonNegative = buttonNegative.text || '';
       }
       if (buttonPositive) {
-        config.buttonPositive = buttonPositive.text || '';
+        config.buttonPositive = buttonPositive.text || defaultPositiveText;
       }
 
       const onAction = (action, buttonKey) => {
@@ -104,7 +96,7 @@ class Alert {
         }
       };
       const onError = errorMessage => console.warn(errorMessage);
-      DialogManagerAndroid.showAlert(config, onError, onAction);
+      NativeDialogManagerAndroid.showAlert(config, onError, onAction);
     }
   }
 
@@ -130,7 +122,7 @@ class Alert {
           {
             title: title || '',
             type: 'plain-text',
-            defaultValue: message,
+            defaultValue: message || '',
           },
           (id, value) => {
             callback(value);

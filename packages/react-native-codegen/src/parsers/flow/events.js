@@ -50,8 +50,16 @@ function getPropertyType(name, optional, typeAnnotation) {
         optional,
         properties: typeAnnotation.properties.map(buildPropertiesForEvent),
       };
+    case 'UnionTypeAnnotation':
+      return {
+        type: 'StringEnumTypeAnnotation',
+        name,
+        optional,
+        options: typeAnnotation.types.map(option => ({name: option.value})),
+      };
     default:
-      throw new Error(`Unable to determine type for "${name}"`);
+      (type: empty);
+      throw new Error(`Unable to determine event type for "${name}"`);
   }
 }
 

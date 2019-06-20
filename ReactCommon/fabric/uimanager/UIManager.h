@@ -36,7 +36,7 @@ class UIManager {
 
   SharedShadowNode createNode(
       Tag tag,
-      const std::string &name,
+      std::string const &componentName,
       SurfaceId surfaceId,
       const RawProps &props,
       SharedEventTarget eventTarget) const;

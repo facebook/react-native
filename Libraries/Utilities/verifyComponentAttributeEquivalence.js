@@ -13,6 +13,7 @@
 const getNativeComponentAttributes = require('../ReactNative/getNativeComponentAttributes');
 
 import type {ReactNativeBaseComponentViewConfig} from '../Renderer/shims/ReactNativeTypes';
+import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewConfig';
 
 const IGNORED_KEYS = ['transform'];
 /**
@@ -42,7 +43,7 @@ function verifyComponentAttributeEquivalence(
   componentName: string,
   config: ReactNativeBaseComponentViewConfig<>,
 ) {
-  if (__DEV__) {
+  if (__DEV__ && !global.RN$Bridgeless) {
     const nativeAttributes = getNativeComponentAttributes(componentName);
 
     ['validAttributes', 'bubblingEventTypes', 'directEventTypes'].forEach(
@@ -63,7 +64,7 @@ function verifyComponentAttributeEquivalence(
   }
 }
 
-function lefthandObjectDiff(leftObj: Object, rightObj: Object) {
+export function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {
   const differentKeys = {};
 
   function compare(leftItem, rightItem, key) {
@@ -101,4 +102,33 @@ function lefthandObjectDiff(leftObj: Object, rightObj: Object) {
   return differentKeys;
 }
 
-module.exports = verifyComponentAttributeEquivalence;
+export function getConfigWithoutViewProps(
+  viewConfig: ReactNativeBaseComponentViewConfig<>,
+  propName: string,
+) {
+  if (!viewConfig[propName]) {
+    return {};
+  }
+
+  return Object.keys(viewConfig[propName])
+    .filter(prop => !ReactNativeViewViewConfig[propName][prop])
+    .reduce((obj, prop) => {
+      obj[prop] = viewConfig[propName][prop];
+      return obj;
+    }, {});
+}
+
+export function stringifyViewConfig(viewConfig: any) {
+  return JSON.stringify(
+    viewConfig,
+    (key, val) => {
+      if (typeof val === 'function') {
+        return `ƒ ${val.name}`;
+      }
+      return val;
+    },
+    2,
+  );
+}
+
+export default verifyComponentAttributeEquivalence;

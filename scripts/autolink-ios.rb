@@ -15,7 +15,6 @@ def use_react_native! (options={})
   # The Pods which should be included in all projects
   pod 'React', :path => "#{prefix}/"
   pod 'React-Core', :path => "#{prefix}/React"
-  pod 'React-fishhook', :path => "#{prefix}/Libraries/fishhook"
   pod 'React-RCTActionSheet', :path => "#{prefix}/Libraries/ActionSheetIOS"
   pod 'React-RCTAnimation', :path => "#{prefix}/Libraries/NativeAnimation"
   pod 'React-RCTBlob', :path => "#{prefix}/Libraries/Blob"

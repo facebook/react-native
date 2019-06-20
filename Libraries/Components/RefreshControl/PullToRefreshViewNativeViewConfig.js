@@ -10,17 +10,12 @@
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const registerGeneratedViewConfig = require('../../Utilities/registerGeneratedViewConfig');
 
 const PullToRefreshViewViewConfig = {
   uiViewClassName: 'PullToRefreshView',
-  Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-
     topRefresh: {
       phasedRegistrationNames: {
         captured: 'onRefreshCapture',
@@ -29,25 +24,15 @@ const PullToRefreshViewViewConfig = {
     },
   },
 
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
-
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
-    tintColor: { process: require('processColor') },
-    titleColor: { process: require('processColor') },
+    tintColor: { process: require('../../StyleSheet/processColor') },
+    titleColor: { process: require('../../StyleSheet/processColor') },
     title: true,
     refreshing: true,
     onRefresh: true,
   },
 };
 
-verifyComponentAttributeEquivalence('PullToRefreshView', PullToRefreshViewViewConfig);
-
-ReactNativeViewConfigRegistry.register(
-  'PullToRefreshView',
-  () => PullToRefreshViewViewConfig,
-);
+registerGeneratedViewConfig('PullToRefreshView', PullToRefreshViewViewConfig);
 
 module.exports = 'PullToRefreshView';

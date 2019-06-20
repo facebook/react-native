@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -74,34 +74,6 @@ const short int LAYOUT_PADDING_START_INDEX = 10;
 const short int LAYOUT_BORDER_START_INDEX = 14;
 
 bool useBatchingForLayoutOutputs;
-
-class PtrJNodeMap {
-  using JNodeArray = JArrayClass<JYogaNode::javaobject>;
-  std::map<YGNodeRef, size_t> ptrsToIdxs_;
-  alias_ref<JNodeArray> javaNodes_;
-
-public:
-  PtrJNodeMap() : ptrsToIdxs_{}, javaNodes_{} {}
-  PtrJNodeMap(
-      alias_ref<JArrayLong> nativePointers,
-      alias_ref<JNodeArray> javaNodes)
-      : javaNodes_{javaNodes} {
-    auto pin = nativePointers->pinCritical();
-    auto ptrs = pin.get();
-    for (size_t i = 0, n = pin.size(); i < n; ++i) {
-      ptrsToIdxs_[(YGNodeRef) ptrs[i]] = i;
-    }
-  }
-
-  local_ref<JYogaNode> ref(YGNodeRef node) {
-    auto idx = ptrsToIdxs_.find(node);
-    if (idx == ptrsToIdxs_.end()) {
-      return local_ref<JYogaNode>{};
-    } else {
-      return javaNodes_->getElement(idx->second);
-    }
-  }
-};
 
 namespace {
 

@@ -12,7 +12,7 @@
 
 import type {PropTypeShape} from '../../CodegenSchema.js';
 
-function getTypeAnnotationForArray(name, typeAnnotation) {
+function getTypeAnnotationForArray(name, typeAnnotation, defaultValue) {
   if (typeAnnotation.type === 'NullableTypeAnnotation') {
     throw new Error(
       'Nested optionals such as "$ReadOnlyArray<?boolean>" are not supported, please declare optionals at the top level of value definitions as in "?$ReadOnlyArray<boolean>"',
@@ -49,6 +49,10 @@ function getTypeAnnotationForArray(name, typeAnnotation) {
         type: 'NativePrimitiveTypeAnnotation',
         name: 'PointPrimitive',
       };
+    case 'Stringish':
+      return {
+        type: 'StringTypeAnnotation',
+      };
     case 'Int32':
       return {
         type: 'Int32TypeAnnotation',
@@ -66,11 +70,16 @@ function getTypeAnnotationForArray(name, typeAnnotation) {
         type: 'StringTypeAnnotation',
       };
     case 'UnionTypeAnnotation':
+      if (defaultValue == null) {
+        throw new Error(`A default array enum value is required for "${name}"`);
+      }
       return {
         type: 'StringEnumTypeAnnotation',
+        default: defaultValue,
         options: typeAnnotation.types.map(option => ({name: option.value})),
       };
     default:
+      (type: empty);
       throw new Error(`Unknown prop type for "${name}"`);
   }
 }
@@ -85,6 +94,7 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
       elementType: getTypeAnnotationForArray(
         name,
         typeAnnotation.typeParameters.params[0],
+        defaultValue,
       ),
     };
   }
@@ -105,13 +115,21 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
         type: 'NativePrimitiveTypeAnnotation',
         name: 'ColorPrimitive',
       };
+    case 'ColorArrayValue':
+      return {
+        type: 'ArrayTypeAnnotation',
+        elementType: {
+          type: 'NativePrimitiveTypeAnnotation',
+          name: 'ColorPrimitive',
+        },
+      };
     case 'PointValue':
       return {
         type: 'NativePrimitiveTypeAnnotation',
         name: 'PointPrimitive',
       };
     case 'Int32':
-      if (defaultValue !== null) {
+      if (defaultValue != null) {
         return {
           type: 'Int32TypeAnnotation',
           default: (defaultValue: number),
@@ -119,7 +137,7 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
       }
       throw new Error(`A default int is required for "${name}"`);
     case 'Float':
-      if (defaultValue !== null) {
+      if (defaultValue != null) {
         return {
           type: 'FloatTypeAnnotation',
           default: (defaultValue: number),
@@ -127,7 +145,7 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
       }
       throw new Error(`A default float is required for "${name}"`);
     case 'BooleanTypeAnnotation':
-      if (defaultValue !== null) {
+      if (defaultValue != null) {
         return {
           type: 'BooleanTypeAnnotation',
           default: (defaultValue: boolean),
@@ -135,13 +153,21 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
       }
       throw new Error(`A default boolean is required for "${name}"`);
     case 'StringTypeAnnotation':
-      if (defaultValue !== null) {
+      if (typeof defaultValue !== 'undefined') {
         return {
           type: 'StringTypeAnnotation',
-          default: (defaultValue: string),
+          default: (defaultValue: string | null),
         };
       }
-      throw new Error(`A default string is required for "${name}"`);
+      throw new Error(`A default string (or null) is required for "${name}"`);
+    case 'Stringish':
+      if (typeof defaultValue !== 'undefined') {
+        return {
+          type: 'StringTypeAnnotation',
+          default: (defaultValue: string | null),
+        };
+      }
+      throw new Error(`A default string (or null) is required for "${name}"`);
     case 'UnionTypeAnnotation':
       if (defaultValue !== null) {
         return {
@@ -152,6 +178,7 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
       }
       throw new Error(`A default enum value is required for "${name}"`);
     default:
+      (type: empty);
       throw new Error(`Unknown prop type for "${name}"`);
   }
 }
@@ -189,13 +216,25 @@ function buildPropSchema(property): ?PropTypeShape {
         `WithDefault requires two parameters, did you forget to provide a default value for "${name}"?`,
       );
     }
-    type = typeAnnotation.typeParameters.params[0].type;
-    defaultValue = typeAnnotation.typeParameters.params[1].value;
-    typeAnnotation = typeAnnotation.typeParameters.params[0];
-  }
 
-  if (type === 'GenericTypeAnnotation') {
-    type = typeAnnotation.id.name;
+    defaultValue = typeAnnotation.typeParameters.params[1].value;
+    const defaultValueType = typeAnnotation.typeParameters.params[1].type;
+
+    typeAnnotation = typeAnnotation.typeParameters.params[0];
+    type =
+      typeAnnotation.type === 'GenericTypeAnnotation'
+        ? typeAnnotation.id.name
+        : typeAnnotation.type;
+
+    if (defaultValueType === 'NullLiteralTypeAnnotation') {
+      if (type !== 'StringTypeAnnotation' && type !== 'Stringish') {
+        throw new Error(
+          `WithDefault can only provide a 'null' default value for string types (see ${name})`,
+        );
+      }
+
+      defaultValue = null;
+    }
   }
 
   return {

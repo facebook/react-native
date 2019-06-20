@@ -103,7 +103,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     WritableMap toResponseData(ResponseBody body) throws IOException;
   }
 
-  protected static final String NAME = "Networking";
+  public static final String NAME = "Networking";
 
   private static final String TAG = "NetworkingModule";
   private static final String CONTENT_ENCODING_HEADER_NAME = "content-encoding";

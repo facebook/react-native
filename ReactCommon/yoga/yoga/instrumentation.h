@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -19,11 +19,13 @@ private:
 
 public:
   MarkerSection(YGNodeRef node) : MarkerSection{node, node->getConfig()} {}
-  ~MarkerSection() {
+  void end() {
     if (endMarker_) {
       endMarker_(MarkerType, node_, markerData(&data), userData_);
+      endMarker_ = nullptr;
     }
   }
+  ~MarkerSection() { end(); }
 
   typename Data::type data = {};
 

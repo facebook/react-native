@@ -100,6 +100,14 @@ const ReactNativeViewConfig = {
     topMagicTap: {
       registrationName: 'onMagicTap',
     },
+    // Events for react-native-gesture-handler (T45765076)
+    // Remove once this library can handle JS View Configs
+    onGestureHandlerEvent: {
+      registrationName: 'onGestureHandlerEvent',
+    },
+    onGestureHandlerStateChange: {
+      registrationName: 'onGestureHandlerStateChange',
+    },
   },
   validAttributes: {
     accessibilityActions: true,

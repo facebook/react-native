@@ -13,7 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const RCTBaseTextShadowViewEmbeddedShadowViewAttributeName;
 
-@interface RCTBaseTextShadowView : RCTShadowView
+@interface RCTBaseTextShadowView : RCTShadowView {
+  @protected NSAttributedString *_Nullable cachedAttributedText;
+  @protected RCTTextAttributes *_Nullable cachedTextAttributes;
+}
 
 @property (nonatomic, strong) RCTTextAttributes *textAttributes;
 

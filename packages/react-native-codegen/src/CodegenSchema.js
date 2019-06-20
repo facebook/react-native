@@ -32,6 +32,14 @@ export type ObjectPropertyType =
       optional: boolean,
     |}>
   | $ReadOnly<{|
+      type: 'StringEnumTypeAnnotation',
+      name: string,
+      optional: boolean,
+      options: $ReadOnlyArray<{|
+        name: string,
+      |}>,
+    |}>
+  | $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
       name: string,
       optional: boolean,
@@ -45,7 +53,7 @@ type PropTypeTypeAnnotation =
     |}>
   | $ReadOnly<{|
       type: 'StringTypeAnnotation',
-      default: string,
+      default: string | null,
     |}>
   | $ReadOnly<{|
       type: 'FloatTypeAnnotation',
@@ -83,6 +91,7 @@ type PropTypeTypeAnnotation =
           |}>
         | $ReadOnly<{|
             type: 'StringEnumTypeAnnotation',
+            default: string,
             options: $ReadOnlyArray<{|
               name: string,
             |}>,
@@ -114,7 +123,14 @@ export type EventTypeShape = $ReadOnly<{|
 
 export type OptionsShape = $ReadOnly<{|
   interfaceOnly?: boolean,
-  isDeprecatedPaperComponentNameRCT?: boolean,
+
+  // Use for components with no current paper rename in progress
+  // Does not check for new name
+  paperComponentName?: string,
+
+  // Use for components currently being renamed in paper
+  // Will use new name if it is available and fallback to this name
+  paperComponentNameDeprecated?: string,
 |}>;
 
 export type ExtendsPropsShape = $ReadOnly<{|

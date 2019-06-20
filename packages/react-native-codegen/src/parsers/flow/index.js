@@ -20,19 +20,24 @@ const {getProps} = require('./props');
 const {getOptions} = require('./options');
 const {getExtendsProps} = require('./extends');
 
-function findConfig(types) {
+function findConfig(ast) {
   const foundConfigs = [];
 
-  Object.keys(types).forEach(key => {
+  const allExports = ast.body.filter(
+    node => node.type === 'ExportDefaultDeclaration',
+  );
+
+  allExports.forEach(statement => {
     try {
-      const type = types[key];
-      if (type.right.id.name === 'CodegenNativeComponent') {
-        const params = type.right.typeParameters.params;
+      if (statement.declaration.callee.name === 'codegenNativeComponent') {
+        const typeArgumentParams = statement.declaration.typeArguments.params;
+        const funcArgumentParams = statement.declaration.arguments;
+
         const nativeComponentType = {};
-        nativeComponentType.componentName = params[0].value;
-        nativeComponentType.propsTypeName = params[1].id.name;
-        if (params.length > 2) {
-          nativeComponentType.optionsTypeName = params[2].id.name;
+        nativeComponentType.propsTypeName = typeArgumentParams[0].id.name;
+        nativeComponentType.componentName = funcArgumentParams[0].value;
+        if (funcArgumentParams.length > 1) {
+          nativeComponentType.optionsExpression = funcArgumentParams[1];
         }
         foundConfigs.push(nativeComponentType);
       }
@@ -52,12 +57,14 @@ function findConfig(types) {
 }
 
 function getTypes(ast) {
-  return ast.body
-    .filter(node => node.type === 'TypeAlias')
-    .reduce((types, node) => {
+  return ast.body.reduce((types, node) => {
+    if (node.type === 'ExportNamedDeclaration') {
+      types[node.declaration.id.name] = node.declaration;
+    } else if (node.type === 'TypeAlias') {
       types[node.id.name] = node;
-      return types;
-    }, {});
+    }
+    return types;
+  }, {});
 }
 
 function getPropProperties(propsTypeName, types) {
@@ -71,17 +78,16 @@ function getPropProperties(propsTypeName, types) {
   }
 }
 
-function parseFileAst(filename: string) {
-  const contents = fs.readFileSync(filename, 'utf8');
+function processString(contents: string) {
   const ast = flowParser.parse(contents);
 
   const types = getTypes(ast);
-  const {componentName, propsTypeName, optionsTypeName} = findConfig(types);
+  const {componentName, propsTypeName, optionsExpression} = findConfig(ast);
 
   const propProperties = getPropProperties(propsTypeName, types);
 
   const extendsProps = getExtendsProps(propProperties);
-  const options = getOptions(types[optionsTypeName]);
+  const options = getOptions(optionsExpression);
 
   const props = getProps(propProperties);
   const events = getEvents(propProperties, types);
@@ -96,10 +102,17 @@ function parseFileAst(filename: string) {
   };
 }
 
-function parse(filename: string): ?SchemaType {
-  return buildSchema(parseFileAst(filename));
+function parseFile(filename: string): ?SchemaType {
+  const contents = fs.readFileSync(filename, 'utf8');
+
+  return buildSchema(processString(contents));
+}
+
+function parseString(contents: string): ?SchemaType {
+  return buildSchema(processString(contents));
 }
 
 module.exports = {
-  parse,
+  parseFile,
+  parseString,
 };

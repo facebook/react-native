@@ -15,8 +15,9 @@ import type {
   BubblingEvent,
   DirectEvent,
   WithDefault,
-  CodegenNativeComponent,
 } from '../../Types/CodegenTypes';
+
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ImageSource} from '../../Image/ImageSource';
@@ -52,11 +53,7 @@ type NativeProps = $ReadOnly<{|
   onSlidingComplete?: ?(event: DirectEvent<Event>) => void,
 |}>;
 
-type Options = {
+export default codegenNativeComponent<NativeProps>('Slider', {
   interfaceOnly: true,
-  isDeprecatedPaperComponentNameRCT: true,
-};
-
-type SliderType = CodegenNativeComponent<'Slider', NativeProps, Options>;
-
-module.exports = ((require('SliderNativeViewConfig'): any): SliderType);
+  paperComponentName: 'RCTSlider',
+});

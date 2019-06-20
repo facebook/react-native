@@ -80,9 +80,7 @@ public:
       std::shared_ptr<ExecutorDelegate> delegate,
       std::shared_ptr<MessageQueueThread> jsQueue) override {
     auto ret = factory_->createJSExecutor(delegate, jsQueue);
-    bridge_.bridgeDescription =
-      [NSString stringWithFormat:@"RCTCxxBridge %s",
-                ret->getDescription().c_str()];
+    bridge_.bridgeDescription = @(ret->getDescription().c_str());
     return ret;
   }
 

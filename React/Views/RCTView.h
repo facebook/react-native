@@ -23,7 +23,6 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 /**
  * Accessibility event handlers
  */
-@property (nonatomic, copy) NSArray <NSDictionary *> *accessibilityActions;
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityAction;
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityTap;
 @property (nonatomic, copy) RCTDirectEventBlock onMagicTap;

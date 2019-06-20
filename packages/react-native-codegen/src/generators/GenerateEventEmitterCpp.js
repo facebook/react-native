@@ -70,6 +70,15 @@ function generateSetter(variableName, propertyName, propertyParts) {
   return `${variableName}.setProperty(runtime, "${propertyName}", ${eventChain}`;
 }
 
+function generateEnumSetter(variableName, propertyName, propertyParts) {
+  const trailingPeriod = propertyParts.length === 0 ? '' : '.';
+  const eventChain = `event.${propertyParts.join(
+    '.',
+  )}${trailingPeriod}${propertyName})`;
+
+  return `${variableName}.setProperty(runtime, "${propertyName}", toString(${eventChain});`;
+}
+
 function generateSetters(
   parentPropertyName: string,
   properties: $ReadOnlyArray<ObjectPropertyType>,
@@ -83,6 +92,12 @@ function generateSetters(
         case 'Int32TypeAnnotation':
         case 'FloatTypeAnnotation':
           return generateSetter(
+            parentPropertyName,
+            eventProperty.name,
+            propertyParts,
+          );
+        case 'StringEnumTypeAnnotation':
+          return generateEnumSetter(
             parentPropertyName,
             eventProperty.name,
             propertyParts,

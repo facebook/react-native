@@ -2,6 +2,7 @@ load("@fbsource//tools/build_defs:default_platform_defs.bzl", "ANDROID", "APPLE"
 load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("@fbsource//tools/build_defs:fb_xplat_cxx_binary.bzl", "fb_xplat_cxx_binary")
 load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "rn_xplat_cxx_library")
+load("@fbsource//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
 load("@fbsource//xplat/js/react-native-github/packages/react-native-codegen:DEFS.bzl", "rn_codegen_test")
 
 fb_native.sh_binary(
@@ -172,4 +173,26 @@ rn_xplat_cxx_library(
         ":generated_components-TWO_COMPONENTS_DIFFERENT_FILES",
         ":generated_components-TWO_COMPONENTS_SAME_FILE",
     ],
+)
+
+yarn_workspace(
+    name = "yarn-workspace",
+    srcs = glob(
+        ["**/*.js"],
+        exclude = [
+            "**/__fixtures__/**",
+            "**/__flowtests__/**",
+            "**/__mocks__/**",
+            "**/__server_snapshot_tests__/**",
+            "**/__tests__/**",
+            "**/node_modules/**",
+            "**/node_modules/.bin/**",
+            "**/.*",
+            "**/.*/**",
+            "**/.*/.*",
+            "**/*.xcodeproj/**",
+            "**/*.xcworkspace/**",
+        ],
+    ),
+    visibility = ["PUBLIC"],
 )

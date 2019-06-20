@@ -166,6 +166,22 @@ struct EventsNativeComponentOnEventDirectStruct {
   bool value;
 };
 
+enum class EventsNativeComponentOnOrientationChangeOrientationStruct {
+  Landscape,
+  Portrait
+};
+
+inline char const *toString(const EventsNativeComponentOnOrientationChangeOrientationStruct value) {
+  switch (value) {
+    case EventsNativeComponentOnOrientationChangeOrientationStruct::Landscape: return \\"landscape\\";
+    case EventsNativeComponentOnOrientationChangeOrientationStruct::Portrait: return \\"portrait\\";
+  }
+}
+
+struct EventsNativeComponentOnOrientationChangeStruct {
+  EventsNativeComponentOnOrientationChangeOrientationStruct orientation;
+};
+
 class EventsNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -173,6 +189,8 @@ class EventsNativeComponentEventEmitter : public ViewEventEmitter {
   void onChange(EventsNativeComponentOnChangeStruct value) const;
 
   void onEventDirect(EventsNativeComponentOnEventDirectStruct value) const;
+
+  void onOrientationChange(EventsNativeComponentOnOrientationChangeStruct value) const;
 
   void onEnd() const;
 };

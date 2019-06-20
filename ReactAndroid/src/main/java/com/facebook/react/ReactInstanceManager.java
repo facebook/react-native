@@ -52,6 +52,7 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSIModulePackage;
+import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
@@ -71,6 +72,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.ReactInstanceManagerDevHelper;
 import com.facebook.react.devsupport.RedBoxHandler;
@@ -158,7 +160,7 @@ public class ReactInstanceManager {
   private @Nullable @ThreadConfined(UI) DefaultHardwareBackBtnHandler mDefaultBackButtonImpl;
   private @Nullable Activity mCurrentActivity;
   private final Collection<ReactInstanceEventListener> mReactInstanceEventListeners =
-      Collections.synchronizedSet(new HashSet<ReactInstanceEventListener>());
+      Collections.synchronizedList(new ArrayList<ReactInstanceEventListener>());
   // Identifies whether the instance manager is or soon will be initialized (on background thread)
   private volatile boolean mHasStartedCreatingInitialContext = false;
   // Identifies whether the instance manager destroy function is in process,
@@ -325,23 +327,17 @@ public class ReactInstanceManager {
   /**
    * Trigger react context initialization asynchronously in a background async task. This enables
    * applications to pre-load the application JS, and execute global code before
-   * {@link ReactRootView} is available and measured. This should only be called the first time the
-   * application is set up, which is enforced to keep developers from accidentally creating their
-   * application multiple times without realizing it.
+   * {@link ReactRootView} is available and measured.
    *
    * Called from UI thread.
    */
   @ThreadConfined(UI)
   public void createReactContextInBackground() {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.createReactContextInBackground()");
-    Assertions.assertCondition(
-        !mHasStartedCreatingInitialContext,
-        "createReactContextInBackground should only be called when creating the react " +
-            "application for the first time. When reloading JS, e.g. from a new file, explicitly" +
-            "use recreateReactContextInBackground");
-
-    mHasStartedCreatingInitialContext = true;
-    recreateReactContextInBackgroundInner();
+    if (!mHasStartedCreatingInitialContext) {
+      mHasStartedCreatingInitialContext = true;
+      recreateReactContextInBackgroundInner();
+    }
   }
 
   /**
@@ -710,6 +706,15 @@ public class ReactInstanceManager {
   }
 
   @ThreadConfined(UI)
+  public void onWindowFocusChange(boolean hasFocus) {
+    UiThreadUtil.assertOnUiThread();
+    ReactContext currentContext = getCurrentReactContext();
+    if (currentContext != null) {
+      currentContext.onWindowFocusChange(hasFocus);
+    }
+  }
+
+  @ThreadConfined(UI)
   public void showDevOptionsDialog() {
     UiThreadUtil.assertOnUiThread();
     mDevSupportManager.showDevOptionsDialog();
@@ -1003,6 +1008,11 @@ public class ReactInstanceManager {
           Assertions.assertNotNull(reactContext.getCatalystInstance());
 
       catalystInstance.initialize();
+
+      if (ReactFeatureFlags.useTurboModules) {
+        catalystInstance.setTurboModuleManager(catalystInstance.getJSIModule(JSIModuleType.TurboModuleManager));
+      }
+
       mDevSupportManager.onNewReactContextCreated(reactContext);
       mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);
       moveReactContextToCurrentLifecycleState();
@@ -1050,16 +1060,24 @@ public class ReactInstanceManager {
   private void attachRootViewToInstance(final ReactRoot reactRoot) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
-    UIManager uiManagerModule = UIManagerHelper.getUIManager(mCurrentReactContext, reactRoot.getUIManagerType());
+    UIManager uiManager = UIManagerHelper.getUIManager(mCurrentReactContext, reactRoot.getUIManagerType());
 
     @Nullable Bundle initialProperties = reactRoot.getAppProperties();
-    final int rootTag = uiManagerModule.addRootView(
-      reactRoot.getRootViewGroup(),
-      initialProperties == null ?
+
+    final int rootTag = uiManager.addRootView(
+        reactRoot.getRootViewGroup(),
+        initialProperties == null ?
             new WritableNativeMap() : Arguments.fromBundle(initialProperties),
         reactRoot.getInitialUITemplate());
     reactRoot.setRootViewTag(rootTag);
-    reactRoot.runApplication();
+    if (reactRoot.getUIManagerType() == FABRIC) {
+      // Fabric requires to call updateRootLayoutSpecs before starting JS Application,
+      // this ensures the root will hace the correct pointScaleFactor.
+      uiManager.updateRootLayoutSpecs(rootTag, reactRoot.getWidthMeasureSpec(), reactRoot.getHeightMeasureSpec());
+      reactRoot.setShouldLogContentAppeared(true);
+    } else {
+      reactRoot.runApplication();
+    }
     Systrace.beginAsyncSection(
       TRACE_TAG_REACT_JAVA_BRIDGE,
       "pre_rootView.onAttachedToReactInstance",
@@ -1147,7 +1165,6 @@ public class ReactInstanceManager {
       catalystInstance.addJSIModules(mJSIModulePackage
         .getJSIModules(reactContext, catalystInstance.getJavaScriptContextHolder()));
     }
-
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
     }
@@ -1160,7 +1177,6 @@ public class ReactInstanceManager {
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
     reactContext.initializeWithInstance(catalystInstance);
-
 
     return reactContext;
   }

@@ -35,10 +35,10 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.fabric.jsi.Binding;
-import com.facebook.react.fabric.jsi.EventBeatManager;
-import com.facebook.react.fabric.jsi.EventEmitterWrapper;
-import com.facebook.react.fabric.jsi.FabricSoLoader;
+import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.fabric.events.EventBeatManager;
+import com.facebook.react.fabric.events.EventEmitterWrapper;
+import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.CreateMountItem;
@@ -54,6 +54,7 @@ import com.facebook.react.fabric.mounting.mountitems.UpdateLocalDataMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateStateMountItem;
 import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -72,7 +73,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   public static final String TAG = FabricUIManager.class.getSimpleName();
-  public static final boolean DEBUG =
+  public static final boolean DEBUG = ReactFeatureFlags.enableFabricLogs ||
       PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
   private static final int FRAME_TIME_MS = 16;
   private static final int MAX_TIME_IN_FRAME_FOR_NON_BATCHED_OPERATIONS_MS = 8;
@@ -129,20 +130,33 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public <T extends View> int addRootView(
     final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
-    return addRootView(rootView, null, initialProps, initialUITemplate);
-  }
-
-  public <T extends View> int addRootView(
-      final T rootView, final @Nullable String moduleName, final WritableMap initialProps, final @Nullable String initialUITemplate) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, rootView.getContext());
     mMountingManager.addRootView(rootTag, rootView);
     mReactContextForRootTag.put(rootTag, reactContext);
-    mBinding.startSurface(rootTag, moduleName == null ? "" : moduleName, (NativeMap) initialProps);
+    mBinding.startSurface(rootTag, ((ReactRoot) rootView).getJSModuleName(), (NativeMap) initialProps);
     if (initialUITemplate != null) {
       mBinding.renderTemplateToSurface(rootTag, initialUITemplate);
     }
+    return rootTag;
+  }
+
+  public <T extends View> int addRootView(
+      final T rootView, final String moduleName, final WritableMap initialProps, int widthMeasureSpec, int heightMeasureSpec) {
+    final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+    ThemedReactContext reactContext =
+        new ThemedReactContext(mReactApplicationContext, rootView.getContext());
+    mMountingManager.addRootView(rootTag, rootView);
+    mReactContextForRootTag.put(rootTag, reactContext);
+    mBinding.startSurfaceWithConstraints(
+        rootTag,
+        moduleName,
+        (NativeMap) initialProps,
+        getMinSize(widthMeasureSpec),
+        getMaxSize(widthMeasureSpec),
+        getMinSize(heightMeasureSpec),
+        getMaxSize(heightMeasureSpec));
     return rootTag;
   }
 
@@ -407,12 +421,17 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void updateRootLayoutSpecs(
       final int rootTag, final int widthMeasureSpec, final int heightMeasureSpec) {
 
-    mBinding.setConstraints(
-        rootTag,
-        getMinSize(widthMeasureSpec),
-        getMaxSize(widthMeasureSpec),
-        getMinSize(heightMeasureSpec),
-        getMaxSize(heightMeasureSpec));
+    mReactApplicationContext.runOnJSQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        mBinding.setConstraints(
+          rootTag,
+          getMinSize(widthMeasureSpec),
+          getMaxSize(widthMeasureSpec),
+          getMinSize(heightMeasureSpec),
+          getMaxSize(heightMeasureSpec));
+      }
+    });
   }
 
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {

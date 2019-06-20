@@ -1,0 +1,16 @@
+{
+  "version": "0.0.1",
+  "name": "babel-plugin-inline-view-configs",
+  "description": "Babel plugin to inline view configs for React Native",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:facebook/react-native.git"
+  },
+  "dependencies": {
+    "react-native-codegen": "*"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0"
+  },
+  "license": "MIT"
+}

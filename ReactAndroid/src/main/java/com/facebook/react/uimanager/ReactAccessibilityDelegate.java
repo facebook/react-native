@@ -183,7 +183,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       ReactContext reactContext = (ReactContext)host.getContext();
       reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
           host.getId(),
-          "performAction",
+          "topAccessibilityAction",
           event);
       return true;
     }

@@ -26,13 +26,6 @@ export type Int32 = number;
 //
 // TODO: (rickhanlonii) T44881457 If a default is provided, it should always be optional
 //  but that is currently not supported in the codegen since we require a default
-// eslint-disable-next-line no-unused-vars
-export type WithDefault<Type: number | boolean | string, Value: Type> = Type;
-
-// We're not using ComponentName or Options in JS
-// We only use these types to codegen native code
 //
 // eslint-disable-next-line no-unused-vars
-export type CodegenNativeComponent<ComponentName, Props, Options = {}> = Class<
-  NativeComponent<Props>,
->;
+export type WithDefault<Type: number | boolean | string, Value: Type> = Type;
