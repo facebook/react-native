@@ -18419,9 +18419,19 @@ function finishPendingInteractions(root, committedExpirationTime) {
   }
 }
 
+// Resolves type to a family.
+
+// Used by React Refresh runtime through DevTools Global Hook.
+
 var resolveFamily = null;
 // $FlowFixMe Flow gets confused by a WeakSet feature check below.
 var failedBoundaries = null;
+
+var setRefreshHandler = function(handler) {
+  {
+    resolveFamily = handler;
+  }
+};
 
 function resolveFunctionForHotReloading(type) {
   {
@@ -18558,7 +18568,7 @@ function isCompatibleFamilyForHotReloading(fiber, element) {
 function markFailedErrorBoundaryForHotReloading(fiber) {
   {
     if (resolveFamily === null) {
-      // Not hot reloading.
+      // Hot reloading is disabled.
       return;
     }
     if (typeof WeakSet !== "function") {
@@ -18571,13 +18581,14 @@ function markFailedErrorBoundaryForHotReloading(fiber) {
   }
 }
 
-function scheduleHotUpdate(root, hotUpdate) {
+var scheduleRefresh = function(root, update) {
   {
-    // TODO: warn if its identity changes over time?
-    resolveFamily = hotUpdate.resolveFamily;
-
-    var _staleFamilies = hotUpdate.staleFamilies,
-      _updatedFamilies = hotUpdate.updatedFamilies;
+    if (resolveFamily === null) {
+      // Hot reloading is disabled.
+      return;
+    }
+    var _staleFamilies = update.staleFamilies,
+      _updatedFamilies = update.updatedFamilies;
 
     flushPassiveEffects();
     flushSync(function() {
@@ -18588,7 +18599,7 @@ function scheduleHotUpdate(root, hotUpdate) {
       );
     });
   }
-}
+};
 
 function scheduleFibersWithFamiliesRecursively(
   fiber,
@@ -18664,7 +18675,7 @@ function scheduleFibersWithFamiliesRecursively(
   }
 }
 
-function findHostInstancesForHotUpdate(root, families) {
+var findHostInstancesForRefresh = function(root, families) {
   {
     var hostInstances = new Set();
     var types = new Set(
@@ -18679,7 +18690,7 @@ function findHostInstancesForHotUpdate(root, families) {
     );
     return hostInstances;
   }
-}
+};
 
 function findHostInstancesForMatchingFibersRecursively(
   fiber,
@@ -19749,8 +19760,6 @@ function injectIntoDevTools(devToolsConfig) {
 
   return injectInternals(
     Object.assign({}, devToolsConfig, {
-      findHostInstancesForHotUpdate: findHostInstancesForHotUpdate,
-      scheduleHotUpdate: scheduleHotUpdate,
       overrideHookState: overrideHookState,
       overrideProps: overrideProps,
       setSuspenseHandler: setSuspenseHandler,
@@ -19769,7 +19778,12 @@ function injectIntoDevTools(devToolsConfig) {
           return null;
         }
         return findFiberByHostInstance(instance);
-      }
+      },
+
+      // React Refresh
+      findHostInstancesForRefresh: findHostInstancesForRefresh,
+      scheduleRefresh: scheduleRefresh,
+      setRefreshHandler: setRefreshHandler
     })
   );
 }

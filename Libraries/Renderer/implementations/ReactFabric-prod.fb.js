@@ -6944,8 +6944,6 @@ var roots = new Map(),
   var findFiberByHostInstance = devToolsConfig.findFiberByHostInstance;
   return injectInternals(
     Object.assign({}, devToolsConfig, {
-      findHostInstancesForHotUpdate: null,
-      scheduleHotUpdate: null,
       overrideHookState: null,
       overrideProps: null,
       setSuspenseHandler: null,
@@ -6959,7 +6957,10 @@ var roots = new Map(),
         return findFiberByHostInstance
           ? findFiberByHostInstance(instance)
           : null;
-      }
+      },
+      findHostInstancesForRefresh: null,
+      scheduleRefresh: null,
+      setRefreshHandler: null
     })
   );
 })({
