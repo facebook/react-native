@@ -231,15 +231,15 @@ class TextExample extends React.Component<{}> {
         </RNTesterBlock>
         <RNTesterBlock title="Font Weight">
           <Text style={{fontWeight: 'bold'}}>Move fast and be bold</Text>
-          <Text style={{fontWeight: 'normal'}}>Move fast and be bold</Text>
+          <Text style={{fontWeight: 'normal'}}>Move fast and be normal</Text>
         </RNTesterBlock>
         <RNTesterBlock title="Font Style">
-          <Text style={{fontStyle: 'italic'}}>Move fast and be bold</Text>
-          <Text style={{fontStyle: 'normal'}}>Move fast and be bold</Text>
+          <Text style={{fontStyle: 'italic'}}>Move fast and be italic</Text>
+          <Text style={{fontStyle: 'normal'}}>Move fast and be normal</Text>
         </RNTesterBlock>
         <RNTesterBlock title="Font Style and Weight">
           <Text style={{fontStyle: 'italic', fontWeight: 'bold'}}>
-            Move fast and be bold
+            Move fast and be both bold and italic
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Text Decoration">
