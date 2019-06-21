@@ -66,7 +66,6 @@ using namespace facebook::react;
 - (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
 {
   _paragraphLocalData = std::static_pointer_cast<const ParagraphLocalData>(localData);
-  assert(_paragraphLocalData);
   [self setNeedsDisplay];
 }
 
