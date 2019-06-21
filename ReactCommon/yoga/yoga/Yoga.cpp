@@ -10,6 +10,7 @@
 #include <string.h>
 #include <algorithm>
 #include <memory>
+#include <chrono>
 #include "Utils.h"
 #include "YGNode.h"
 #include "YGNodePrint.h"
@@ -29,6 +30,8 @@ __forceinline const float fmaxf(const float a, const float b) {
 
 using namespace facebook::yoga;
 using detail::Log;
+using std::chrono::duration_cast;
+using std::chrono::steady_clock;
 
 #ifdef ANDROID
 static int YGAndroidLog(
@@ -1626,6 +1629,10 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
             ownerWidth),
         YGDimensionHeight);
   } else {
+#ifdef YG_ENABLE_EVENTS
+    auto start = steady_clock::now();
+#endif
+
     // Measure the text under the current constraints.
     const YGSize measuredSize = marker::MarkerSection<YGMarkerMeasure>::wrap(
         node,
@@ -1635,9 +1642,14 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
         innerHeight,
         heightMeasureMode,
         layoutContext);
+
     layoutMarkerData.measureCallbacks += 1;
 
 #ifdef YG_ENABLE_EVENTS
+    auto end = steady_clock::now();
+    auto measureCallbackDuration =
+        duration_cast<std::chrono::duration<float, std::milli>>(end - start);
+
     Event::publish<Event::NodeMeasure>(
         node,
         {layoutContext,
@@ -1646,7 +1658,8 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
          innerHeight,
          heightMeasureMode,
          measuredSize.width,
-         measuredSize.height});
+         measuredSize.height,
+         measureCallbackDuration.count()});
 #endif
 
     node->setLayoutMeasuredDimension(

@@ -94,6 +94,7 @@ struct Event::TypedData<Event::NodeMeasure> {
   YGMeasureMode heightMeasureMode;
   float measuredWidth;
   float measuredHeight;
+  float measureCallbackDuration;
 };
 
 template <>
