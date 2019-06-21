@@ -331,12 +331,21 @@ jest
   .mock('../Libraries/ReactNative/requireNativeComponent', () => {
     const React = require('react');
 
-    return viewName =>
-      class extends React.Component {
+    return viewName => {
+      const Component = class extends React.Component {
         render() {
           return React.createElement(viewName, this.props, this.props.children);
         }
       };
+
+      if (viewName === 'RCTView') {
+        Component.displayName = 'View';
+      } else {
+        Component.displayName = viewName;
+      }
+
+      return Component;
+    };
   })
   .mock(
     '../Libraries/Utilities/verifyComponentAttributeEquivalence',
