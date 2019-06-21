@@ -8,6 +8,7 @@
 #import "RCTTurboModuleManager.h"
 
 #import <cassert>
+#import <mutex>
 
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
@@ -45,6 +46,18 @@ static Class getFallbackClassFromName(const char *name)
    */
   std::unordered_map<std::string, id<RCTTurboModule>> _rctTurboModuleCache;
   std::unordered_map<std::string, std::shared_ptr<react::TurboModule>> _turboModuleCache;
+
+  /**
+   * _rctTurboModuleCache can be accessed by muitiple threads at once via
+   * the provideRCTTurboModule method. This can lead to races. Therefore, we
+   * need to protect access to this unordered_map.
+   *
+   * Note:
+   * There's no need to protect access to _turboModuleCache because that cache
+   * is only accessed within provideTurboModule, which is only invoked by the
+   * JS thread.
+   */
+  std::mutex _rctTurboModuleCacheLock;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge delegate:(id<RCTTurboModuleManagerDelegate>)delegate
@@ -198,35 +211,46 @@ static Class getFallbackClassFromName(const char *name)
  */
 - (id<RCTTurboModule>)provideRCTTurboModule:(const char *)moduleName
 {
-  auto rctTurboModuleCacheLookup = _rctTurboModuleCache.find(moduleName);
-  if (rctTurboModuleCacheLookup != _rctTurboModuleCache.end()) {
-    return rctTurboModuleCacheLookup->second;
-  }
-
-  /**
-   * Step 2a: Resolve platform-specific class.
-   */
   Class moduleClass;
-  if ([_delegate respondsToSelector:@selector(getModuleClassFromName:)]) {
-    moduleClass = [_delegate getModuleClassFromName:moduleName];
-  }
-
-  if (!moduleClass) {
-    moduleClass = getFallbackClassFromName(moduleName);
-  }
-
-  if (![moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
-    return nil;
-  }
-
-  /**
-   * Step 2b: Ask hosting application/delegate to instantiate this class
-   */
   id<RCTTurboModule> module = nil;
-  if ([_delegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
-    module = [_delegate getModuleInstanceFromClass:moduleClass];
-  } else {
-    module = [moduleClass new];
+
+  {
+    std::unique_lock<std::mutex> lock(_rctTurboModuleCacheLock);
+
+    auto rctTurboModuleCacheLookup = _rctTurboModuleCache.find(moduleName);
+    if (rctTurboModuleCacheLookup != _rctTurboModuleCache.end()) {
+      return rctTurboModuleCacheLookup->second;
+    }
+
+    /**
+     * Step 2a: Resolve platform-specific class.
+     */
+    if ([_delegate respondsToSelector:@selector(getModuleClassFromName:)]) {
+      moduleClass = [_delegate getModuleClassFromName:moduleName];
+    }
+
+    if (!moduleClass) {
+      moduleClass = getFallbackClassFromName(moduleName);
+    }
+
+    if (![moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
+      return nil;
+    }
+
+    /**
+     * Step 2b: Ask hosting application/delegate to instantiate this class
+     */
+    if ([_delegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
+      module = [_delegate getModuleInstanceFromClass:moduleClass];
+    } else {
+      module = [moduleClass new];
+    }
+
+    if ([module respondsToSelector:@selector(setTurboModuleLookupDelegate:)]) {
+      [module setTurboModuleLookupDelegate:self];
+    }
+
+    _rctTurboModuleCache.insert({moduleName, module});
   }
 
   /**
@@ -265,11 +289,29 @@ static Class getFallbackClassFromName(const char *name)
     }
   }
 
-  if ([module respondsToSelector:@selector(setTurboModuleLookupDelegate:)]) {
-    [module setTurboModuleLookupDelegate:self];
+  /**
+   * Some modules need their own queues, but don't provide any, so we need to create it for them.
+   * These modules typically have the following:
+   *   `@synthesize methodQueue = _methodQueue`
+   */
+  if ([module respondsToSelector:@selector(methodQueue)]) {
+    dispatch_queue_t methodQueue = [module performSelector:@selector(methodQueue)];
+    if (!methodQueue) {
+      NSString *moduleClassName = NSStringFromClass(module.class);
+      NSString *queueName = [NSString stringWithFormat:@"com.facebook.react.%@Queue", moduleClassName];
+      methodQueue = dispatch_queue_create(queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+      @try {
+        [(id)module setValue:methodQueue forKey:@"methodQueue"];
+      } @catch (NSException *exception) {
+        RCTLogError(
+            @"TM: %@ is returning nil for its methodQueue, which is not "
+             "permitted. You must either return a pre-initialized "
+             "queue, or @synthesize the methodQueue to let the bridge "
+             "create a queue for you.",
+            moduleClassName);
+      }
+    }
   }
-
-  _rctTurboModuleCache.insert({moduleName, module});
 
   /**
    * Broadcast that this TurboModule was created.
@@ -321,6 +363,7 @@ static Class getFallbackClassFromName(const char *name)
 
 - (BOOL)moduleIsInitialized:(const char *)moduleName
 {
+  std::unique_lock<std::mutex> lock(_rctTurboModuleCacheLock);
   return _rctTurboModuleCache.find(std::string(moduleName)) != _rctTurboModuleCache.end();
 }
 

@@ -39,7 +39,13 @@ void TurboModuleBinding::install(
 }
 
 void TurboModuleBinding::invalidate() const {
-  LongLivedObjectCollection::get().clear();
+  // TODO (T45804587): Revisit this invalidation logic.
+  // The issue was that Promise resolve/reject functions that are invoked in
+  // some distance future might end up accessing PromiseWrapper that was already
+  // destroyed, if the binding invalidation removed it from the
+  // LongLivedObjectCollection.
+
+  // LongLivedObjectCollection::get().clear();
 }
 
 std::shared_ptr<TurboModule> TurboModuleBinding::getModule(const std::string &name) {

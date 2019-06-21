@@ -42,13 +42,12 @@ public class VibrationModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void vibrateByPattern(ReadableArray pattern, int repeat) {
-    long[] patternLong = new long[pattern.size()];
-    for (int i = 0; i < pattern.size(); i++) {
-      patternLong[i] = pattern.getInt(i);
-    }
-
     Vibrator v = (Vibrator) getReactApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
     if (v != null) {
+      long[] patternLong = new long[pattern.size()];
+      for (int i = 0; i < pattern.size(); i++) {
+        patternLong[i] = pattern.getInt(i);
+      } 
       v.vibrate(patternLong, repeat);
     }
   }

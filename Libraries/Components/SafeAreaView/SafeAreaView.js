@@ -44,7 +44,8 @@ if (Platform.OS === 'android') {
   SafeAreaViewRef.displayName = 'SafeAreaView';
   exported = ((SafeAreaViewRef: any): Class<React.Component<Props>>);
 } else {
-  const RCTSafeAreaViewNativeComponent = require('./RCTSafeAreaViewNativeComponent');
+  const RCTSafeAreaViewNativeComponent = require('./RCTSafeAreaViewNativeComponent')
+    .default;
 
   const SafeAreaView = (
     props: Props,

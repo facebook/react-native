@@ -19,6 +19,7 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 
 /**
@@ -26,7 +27,7 @@ import com.facebook.react.uimanager.DisplayMetricsHolder;
  */
 @ReactModule(name = DeviceInfoModule.NAME)
 public class DeviceInfoModule extends BaseJavaModule implements
-    LifecycleEventListener {
+    LifecycleEventListener, TurboModule {
 
   public static final String NAME = "DeviceInfo";
 
@@ -89,4 +90,7 @@ public class DeviceInfoModule extends BaseJavaModule implements
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
         .emit("didUpdateDimensions", DisplayMetricsHolder.getDisplayMetricsNativeMap(mFontScale));
   }
+
+  @Override
+  public void invalidate() {}
 }

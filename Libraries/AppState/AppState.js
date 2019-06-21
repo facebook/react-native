@@ -12,8 +12,7 @@
 
 const EventEmitter = require('../vendor/emitter/EventEmitter');
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-const NativeModules = require('../BatchedBridge/NativeModules');
-const RCTAppState = NativeModules.AppState;
+import NativeAppState from './NativeAppState';
 
 const logError = require('../Utilities/logError');
 const invariant = require('invariant');
@@ -26,19 +25,20 @@ const invariant = require('invariant');
  */
 class AppState extends NativeEventEmitter {
   _eventHandlers: Object;
+  _supportedEvents = ['change', 'memoryWarning', 'blur', 'focus'];
   currentState: ?string;
   isAvailable: boolean;
 
   constructor() {
-    super(RCTAppState);
+    super(NativeAppState);
 
     this.isAvailable = true;
-    this._eventHandlers = {
-      change: new Map(),
-      memoryWarning: new Map(),
-    };
+    this._eventHandlers = this._supportedEvents.reduce((handlers, key) => {
+      handlers[key] = new Map();
+      return handlers;
+    }, {});
 
-    this.currentState = RCTAppState.initialAppState;
+    this.currentState = NativeAppState.getConstants().initialAppState;
 
     let eventUpdated = false;
 
@@ -54,7 +54,7 @@ class AppState extends NativeEventEmitter {
     // TODO: see above - this request just populates the value of `currentState`
     // when the module is first initialized. Would be better to get rid of the
     // prop and expose `getCurrentAppState` method directly.
-    RCTAppState.getCurrentAppState(appStateData => {
+    NativeAppState.getCurrentAppState(appStateData => {
       // It's possible that the state will have changed here & listeners need to be notified
       if (!eventUpdated && this.currentState !== appStateData.app_state) {
         this.currentState = appStateData.app_state;
@@ -76,22 +76,43 @@ class AppState extends NativeEventEmitter {
    */
   addEventListener(type: string, handler: Function) {
     invariant(
-      ['change', 'memoryWarning'].indexOf(type) !== -1,
+      this._supportedEvents.indexOf(type) !== -1,
       'Trying to subscribe to unknown event: "%s"',
       type,
     );
-    if (type === 'change') {
-      this._eventHandlers[type].set(
-        handler,
-        this.addListener('appStateDidChange', appStateData => {
-          handler(appStateData.app_state);
-        }),
-      );
-    } else if (type === 'memoryWarning') {
-      this._eventHandlers[type].set(
-        handler,
-        this.addListener('memoryWarning', handler),
-      );
+
+    switch (type) {
+      case 'change': {
+        this._eventHandlers[type].set(
+          handler,
+          this.addListener('appStateDidChange', appStateData => {
+            handler(appStateData.app_state);
+          }),
+        );
+        break;
+      }
+      case 'memoryWarning': {
+        this._eventHandlers[type].set(
+          handler,
+          this.addListener('memoryWarning', handler),
+        );
+        break;
+      }
+
+      case 'blur':
+      case 'focus': {
+        this._eventHandlers[type].set(
+          handler,
+          this.addListener('appStateFocusChange', hasFocus => {
+            if (type === 'blur' && !hasFocus) {
+              handler();
+            }
+            if (type === 'focus' && hasFocus) {
+              handler();
+            }
+          }),
+        );
+      }
     }
   }
 
@@ -102,7 +123,7 @@ class AppState extends NativeEventEmitter {
    */
   removeEventListener(type: string, handler: Function) {
     invariant(
-      ['change', 'memoryWarning'].indexOf(type) !== -1,
+      this._supportedEvents.indexOf(type) !== -1,
       'Trying to remove listener for unknown event: "%s"',
       type,
     );
@@ -152,7 +173,7 @@ class MissingNativeAppStateShim extends EventEmitter {
 // This module depends on the native `RCTAppState` module. If you don't include it,
 // `AppState.isAvailable` will return `false`, and any method calls will throw.
 // We reassign the class variable to keep the autodoc generator happy.
-if (RCTAppState) {
+if (NativeAppState) {
   AppState = new AppState();
 } else {
   AppState = new MissingNativeAppStateShim();

@@ -42,6 +42,7 @@ const inspect = (function() {
   function inspect(obj, opts) {
     var ctx = {
       seen: [],
+      formatValueCalls: 0,
       stylize: stylizeNoColor,
     };
     return formatValue(ctx, obj, opts.depth);
@@ -62,6 +63,13 @@ const inspect = (function() {
   }
 
   function formatValue(ctx, value, recurseTimes) {
+    ctx.formatValueCalls++;
+    if (ctx.formatValueCalls > 200) {
+      return `[TOO BIG formatValueCalls ${
+        ctx.formatValueCalls
+      } exceeded limit of 200]`;
+    }
+
     // Primitive types cannot have properties
     var primitive = formatPrimitive(ctx, value);
     if (primitive) {

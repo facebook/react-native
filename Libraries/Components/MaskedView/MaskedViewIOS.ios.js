@@ -11,7 +11,7 @@
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
-const RCTMaskedViewNativeComponent = require('./RCTMaskedViewNativeComponent');
+import RCTMaskedViewNativeComponent from './RCTMaskedViewNativeComponent';
 
 import type {ViewProps} from '../View/ViewPropTypes';
 

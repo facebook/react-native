@@ -157,11 +157,11 @@ class AnimatedNode {
     );
     if (this.__nativeTag == null) {
       const nativeTag: ?number = NativeAnimatedHelper.generateNewNodeTag();
+      this.__nativeTag = nativeTag;
       NativeAnimatedHelper.API.createAnimatedNode(
         nativeTag,
         this.__getNativeConfig(),
       );
-      this.__nativeTag = nativeTag;
       this.__shouldUpdateListenersForNewNativeTag = true;
     }
     return this.__nativeTag;

@@ -58,6 +58,8 @@
     "flow-check-ios": "flow check",
     "flow-check-android": "flow check --flowconfig-name .flowconfig.android",
     "lint": "eslint .",
+    "lint-ci": "./scripts/circleci/analyze_code.sh && yarn shellcheck",
+    "shellcheck": "./scripts/circleci/analyze_scripts.sh",
     "clang-format": "clang-format -i --glob=*/**/*.{h,cpp,m,mm}",
     "format": "npm run prettier && npm run clang-format",
     "prettier": "prettier --write \"./**/*.{js,md,yml}\"",
@@ -72,16 +74,17 @@
     "test-android-unit": "yarn run docker-build-android && yarn run test-android-run-unit",
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
     "build-ios-e2e": "detox build -c ios.sim.release",
-    "test-ios-e2e": "detox test -c ios.sim.release RNTester/e2e"
+    "test-ios-e2e": "detox test -c ios.sim.release RNTester/e2e",
+    "test-ios": "./scripts/objc-test-ios.sh test"
   },
   "peerDependencies": {
     "react": "16.8.6"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "@react-native-community/cli": "2.0.0-alpha.20",
-    "@react-native-community/cli-platform-android": "2.0.0-alpha.20",
-    "@react-native-community/cli-platform-ios": "2.0.0-alpha.20",
+    "@react-native-community/cli": "2.0.0-rc.2",
+    "@react-native-community/cli-platform-android": "2.0.0-rc.2",
+    "@react-native-community/cli-platform-ios": "2.0.0-rc.2",
     "abort-controller": "^3.0.0",
     "art": "^0.10.0",
     "base64-js": "^1.1.2",
@@ -100,12 +103,16 @@
     "promise": "^7.1.1",
     "prop-types": "^15.7.2",
     "react-devtools-core": "^3.6.0",
+    "react-refresh": "0.0.7",
     "regenerator-runtime": "^0.13.2",
-    "stacktrace-parser": "^0.1.3"
+    "scheduler": "0.14.0",
+    "stacktrace-parser": "^0.1.3",
+    "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/generator": "^7.0.0",
+    "@react-native-community/eslint-plugin": "1.0.0",
     "@reactions/component": "^2.0.2",
     "async": "^2.4.0",
     "babel-eslint": "10.0.1",
@@ -125,7 +132,7 @@
     "eslint-plugin-react-hooks": "^1.5.1",
     "eslint-plugin-react-native": "3.6.0",
     "eslint-plugin-relay": "1.3.0",
-    "flow-bin": "^0.98.0",
+    "flow-bin": "^0.101.0",
     "flow-remove-types": "1.2.3",
     "jest": "^24.7.1",
     "jest-junit": "^6.3.0",
@@ -134,7 +141,6 @@
     "prettier": "1.17.0",
     "react": "16.8.6",
     "react-test-renderer": "16.8.6",
-    "scheduler": "0.14.0",
     "shelljs": "^0.7.8",
     "ws": "^6.1.4",
     "yargs": "^9.0.0"

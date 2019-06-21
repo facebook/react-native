@@ -16,23 +16,19 @@
 namespace facebook {
 namespace react {
 
-class RootProps;
-
-using SharedRootProps = std::shared_ptr<const RootProps>;
-
 class RootProps final : public ViewProps {
  public:
   RootProps() = default;
-  RootProps(const RootProps &sourceProps, const RawProps &rawProps);
+  RootProps(RootProps const &sourceProps, RawProps const &rawProps);
   RootProps(
-      const RootProps &sourceProps,
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext);
+      RootProps const &sourceProps,
+      LayoutConstraints const &layoutConstraints,
+      LayoutContext const &layoutContext);
 
 #pragma mark - Props
 
-  const LayoutConstraints layoutConstraints{};
-  const LayoutContext layoutContext{};
+  LayoutConstraints const layoutConstraints{};
+  LayoutContext const layoutContext{};
 };
 
 } // namespace react

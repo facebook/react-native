@@ -7,6 +7,7 @@
 package com.facebook.react.fabric;
 
 import static com.facebook.infer.annotation.ThreadConfined.UI;
+import static com.facebook.react.fabric.FabricComponents.getFabricComponentName;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMaxSize;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMinSize;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getYogaMeasureMode;
@@ -15,10 +16,10 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.annotation.SuppressLint;
 import android.os.SystemClock;
+import android.view.View;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
-import android.view.View;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
@@ -34,13 +35,13 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.fabric.jsi.Binding;
-import com.facebook.react.fabric.jsi.EventBeatManager;
-import com.facebook.react.fabric.jsi.EventEmitterWrapper;
-import com.facebook.react.fabric.jsi.FabricSoLoader;
-import com.facebook.react.fabric.mounting.mountitems.CreateMountItem;
+import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.fabric.events.EventBeatManager;
+import com.facebook.react.fabric.events.EventEmitterWrapper;
+import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
+import com.facebook.react.fabric.mounting.mountitems.CreateMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DeleteMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
@@ -53,6 +54,7 @@ import com.facebook.react.fabric.mounting.mountitems.UpdateLocalDataMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateStateMountItem;
 import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -71,29 +73,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   public static final String TAG = FabricUIManager.class.getSimpleName();
-  public static final boolean DEBUG =
+  public static final boolean DEBUG = ReactFeatureFlags.enableFabricLogs ||
       PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
-  private static final Map<String, String> sComponentNames = new HashMap<>();
   private static final int FRAME_TIME_MS = 16;
   private static final int MAX_TIME_IN_FRAME_FOR_NON_BATCHED_OPERATIONS_MS = 8;
   private static final int PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY = 250;
 
   static {
     FabricSoLoader.staticInit();
-
-    // TODO T31905686: unify component names between JS - Android - iOS - C++
-    sComponentNames.put("View", "RCTView");
-    sComponentNames.put("Image", "RCTImageView");
-    sComponentNames.put("ScrollView", "RCTScrollView");
-    sComponentNames.put("Slider", "RCTSlider");
-    sComponentNames.put("ModalHostView", "RCTModalHostView");
-    sComponentNames.put("Paragraph", "RCTText");
-    sComponentNames.put("Text", "RCText");
-    sComponentNames.put("RawText", "RCTRawText");
-    sComponentNames.put("ActivityIndicatorView", "AndroidProgressBar");
-    sComponentNames.put("ShimmeringView", "RKShimmeringView");
-    sComponentNames.put("TemplateView", "RCTTemplateView");
-    sComponentNames.put("AxialGradientView", "RCTAxialGradientView");
   }
 
   private Binding mBinding;
@@ -142,21 +129,40 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @Override
   public <T extends View> int addRootView(
-      final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
+    final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, rootView.getContext());
     mMountingManager.addRootView(rootTag, rootView);
     mReactContextForRootTag.put(rootTag, reactContext);
-    mBinding.startSurface(rootTag, (NativeMap) initialProps);
+    mBinding.startSurface(rootTag, ((ReactRoot) rootView).getJSModuleName(), (NativeMap) initialProps);
     if (initialUITemplate != null) {
       mBinding.renderTemplateToSurface(rootTag, initialUITemplate);
     }
     return rootTag;
   }
 
+  public <T extends View> int addRootView(
+      final T rootView, final String moduleName, final WritableMap initialProps, int widthMeasureSpec, int heightMeasureSpec) {
+    final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+    ThemedReactContext reactContext =
+        new ThemedReactContext(mReactApplicationContext, rootView.getContext());
+    mMountingManager.addRootView(rootTag, rootView);
+    mReactContextForRootTag.put(rootTag, reactContext);
+    mBinding.startSurfaceWithConstraints(
+        rootTag,
+        moduleName,
+        (NativeMap) initialProps,
+        getMinSize(widthMeasureSpec),
+        getMaxSize(widthMeasureSpec),
+        getMinSize(heightMeasureSpec),
+        getMaxSize(heightMeasureSpec));
+    return rootTag;
+  }
+
   /** Method called when an event has been dispatched on the C++ side. */
   @DoNotStrip
+  @SuppressWarnings("unused")
   public void onRequestEventBeat() {
     mEventDispatcher.dispatchAllEvents();
   }
@@ -183,14 +189,16 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @DoNotStrip
+  @SuppressWarnings("unused")
   private void preallocateView(
       int rootTag,
       int reactTag,
       final String componentName,
       @Nullable ReadableMap props,
+      Object stateWrapper,
       boolean isLayoutable) {
     ThemedReactContext context = mReactContextForRootTag.get(rootTag);
-    String component = getComponent(componentName);
+    String component = getFabricComponentName(componentName);
     synchronized (mPreMountItemsLock) {
       mPreMountItems.add(
           new PreAllocateViewMountItem(
@@ -199,20 +207,16 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
               reactTag,
               component,
               props,
+              (StateWrapper) stateWrapper,
               isLayoutable));
     }
-  }
-
-  private String getComponent(String componentName) {
-    String component = sComponentNames.get(componentName);
-    return component != null ? component : componentName;
   }
 
   @DoNotStrip
   @SuppressWarnings("unused")
   private MountItem createMountItem(
     String componentName, int reactRootTag, int reactTag, boolean isLayoutable) {
-    String component = getComponent(componentName);
+    String component = getFabricComponentName(componentName);
     ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
     if (reactContext == null) {
       throw new IllegalArgumentException("Unable to find ReactContext for root: " + reactRootTag);
@@ -417,12 +421,17 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void updateRootLayoutSpecs(
       final int rootTag, final int widthMeasureSpec, final int heightMeasureSpec) {
 
-    mBinding.setConstraints(
-        rootTag,
-        getMinSize(widthMeasureSpec),
-        getMaxSize(widthMeasureSpec),
-        getMinSize(heightMeasureSpec),
-        getMaxSize(heightMeasureSpec));
+    mReactApplicationContext.runOnJSQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        mBinding.setConstraints(
+          rootTag,
+          getMinSize(widthMeasureSpec),
+          getMaxSize(widthMeasureSpec),
+          getMinSize(heightMeasureSpec),
+          getMaxSize(heightMeasureSpec));
+      }
+    });
   }
 
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {

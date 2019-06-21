@@ -18,7 +18,7 @@ const INTERFACE_ONLY: SchemaType = {
       components: {
         InterfaceOnlyComponent: {
           interfaceOnly: true,
-          isDeprecatedPaperComponentNameRCT: true,
+          paperComponentName: 'RCTInterfaceOnlyComponent',
           extendsProps: [
             {
               type: 'ReactNativeBuiltInType',
@@ -108,6 +108,14 @@ const STRING_PROP: SchemaType = {
               typeAnnotation: {
                 type: 'StringTypeAnnotation',
                 default: '',
+              },
+            },
+            {
+              name: 'accessibilityRole',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+                default: null,
               },
             },
           ],
@@ -399,6 +407,25 @@ const ARRAY_PROPS: SchemaType = {
                 },
               },
             },
+            {
+              name: 'sizes',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'StringEnumTypeAnnotation',
+                  default: 'small',
+                  options: [
+                    {
+                      name: 'small',
+                    },
+                    {
+                      name: 'large',
+                    },
+                  ],
+                },
+              },
+            },
           ],
         },
       },
@@ -558,6 +585,40 @@ const EVENT_PROPS: SchemaType = {
                     },
                   ],
                 },
+              },
+            },
+            {
+              name: 'onOrientationChange',
+              optional: true,
+              bubblingType: 'direct',
+              typeAnnotation: {
+                type: 'EventTypeAnnotation',
+                argument: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      type: 'StringEnumTypeAnnotation',
+                      name: 'orientation',
+                      optional: false,
+                      options: [
+                        {
+                          name: 'landscape',
+                        },
+                        {
+                          name: 'portrait',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              name: 'onEnd',
+              optional: true,
+              bubblingType: 'bubble',
+              typeAnnotation: {
+                type: 'EventTypeAnnotation',
               },
             },
           ],

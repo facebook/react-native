@@ -12,10 +12,9 @@
 
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
-const {NativeComponent} = require('../../Renderer/shims/ReactNative');
 
-const AndroidSwipeRefreshLayoutNativeComponent = require('./AndroidSwipeRefreshLayoutNativeComponent');
-const RCTRefreshControlNativeComponent = require('./RCTRefreshControlNativeComponent');
+import AndroidSwipeRefreshLayoutNativeComponent from './AndroidSwipeRefreshLayoutNativeComponent';
+import PullToRefreshViewNativeComponent from './PullToRefreshViewNativeComponent';
 const nullthrows = require('nullthrows');
 
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
@@ -175,7 +174,7 @@ class RefreshControl extends React.Component<RefreshControlProps> {
         ...props
       } = this.props;
       return (
-        <RCTRefreshControlNativeComponent
+        <PullToRefreshViewNativeComponent
           {...props}
           ref={setRef}
           onRefresh={this._onRefresh}

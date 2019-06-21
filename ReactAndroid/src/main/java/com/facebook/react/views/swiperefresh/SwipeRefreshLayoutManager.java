@@ -12,7 +12,9 @@ import static com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager.RE
 import android.graphics.Color;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -66,9 +68,27 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
     view.setProgressBackgroundColorSchemeColor(color);
   }
 
-  @ReactProp(name = "size", defaultInt = SwipeRefreshLayout.DEFAULT)
-  public void setSize(ReactSwipeRefreshLayout view, int size) {
-    view.setSize(size);
+  // This prop temporarily takes both 0 and 1 as well as 'default' and 'large'.
+  // 0 and 1 are deprecated and will be removed in a future release.
+  // See T46143833
+  @ReactProp(name = "size")
+  public void setSize(ReactSwipeRefreshLayout view, Dynamic size) {
+    if (size.isNull()) {
+      view.setSize(SwipeRefreshLayout.DEFAULT);
+    } else if (size.getType() == ReadableType.Number) {
+      view.setSize(size.asInt());
+    } else if (size.getType() == ReadableType.String) {
+      final String sizeStr = size.asString();
+      if (sizeStr.equals("default")) {
+        view.setSize(SwipeRefreshLayout.DEFAULT);
+      } else if (sizeStr.equals("large")) {
+        view.setSize(SwipeRefreshLayout.LARGE);
+      } else {
+        throw new IllegalArgumentException("Size must be 'default' or 'large', received: " + sizeStr);
+      }
+    } else {
+      throw new IllegalArgumentException("Size must be 'default' or 'large'");
+    }
   }
 
   @ReactProp(name = "refreshing")

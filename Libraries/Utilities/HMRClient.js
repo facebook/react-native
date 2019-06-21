@@ -14,6 +14,8 @@ const invariant = require('invariant');
 
 const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
 
+import NativeRedBox from '../NativeModules/specs/NativeRedBox';
+
 /**
  * HMR Client that receives from the server HMR updates and propagates them
  * runtime to reflects those changes.
@@ -43,7 +45,7 @@ const HMRClient = {
     const hmrClient = new MetroHMRClient(wsUrl);
 
     hmrClient.on('connection-error', e => {
-      let error = `Hot loading isn't working because it cannot connect to the development server.
+      let error = `Hot reloading isn't working because it cannot connect to the development server.
 
 Try the following to fix the issue:
 - Ensure that the packager server is running and available on the same network`;
@@ -67,25 +69,38 @@ Error: ${e.message}`;
       throw new Error(error);
     });
 
+    let enableLoadingView = false;
+    hmrClient.on('connection-done', () => {
+      // Don't show the loading view during the initial update.
+      enableLoadingView = true;
+    });
+
     hmrClient.on('update-start', () => {
-      HMRLoadingView.showMessage('Hot Loading...');
+      if (enableLoadingView) {
+        HMRLoadingView.showMessage('Hot Reloading...');
+      }
     });
 
     hmrClient.on('update', () => {
-      if (Platform.OS === 'ios') {
-        const RCTRedBox = require('../BatchedBridge/NativeModules').RedBox;
-        RCTRedBox && RCTRedBox.dismiss && RCTRedBox.dismiss();
+      if (
+        Platform.OS === 'ios' &&
+        NativeRedBox != null &&
+        NativeRedBox.dismiss != null
+      ) {
+        NativeRedBox.dismiss();
       } else {
-        const RCTExceptionsManager = require('../BatchedBridge/NativeModules')
-          .ExceptionsManager;
-        RCTExceptionsManager &&
-          RCTExceptionsManager.dismissRedbox &&
-          RCTExceptionsManager.dismissRedbox();
+        const NativeExceptionsManager = require('../Core/NativeExceptionsManager')
+          .default;
+        NativeExceptionsManager &&
+          NativeExceptionsManager.dismissRedbox &&
+          NativeExceptionsManager.dismissRedbox();
       }
     });
 
     hmrClient.on('update-done', () => {
-      HMRLoadingView.hide();
+      if (enableLoadingView) {
+        HMRLoadingView.hide();
+      }
     });
 
     hmrClient.on('error', data => {

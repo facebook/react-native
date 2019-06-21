@@ -58,15 +58,7 @@ void EventDispatcher::dispatchStateUpdate(
 
 const EventQueue &EventDispatcher::getEventQueue(EventPriority priority) const {
 #ifdef REACT_FABRIC_SYNC_EVENT_DISPATCHING_DISABLED
-  // Synchronous dispatch works, but JavaScript interop layer does not have
-  // proper synchonization yet and it crashes.
-  if (priority == EventPriority::SynchronousUnbatched) {
-    priority = EventPriority::AsynchronousUnbatched;
-  }
-
-  if (priority == EventPriority::SynchronousBatched) {
-    priority = EventPriority::AsynchronousBatched;
-  }
+  priority = EventPriority::AsynchronousBatched;
 #endif
 
   return *eventQueues_[(int)priority];

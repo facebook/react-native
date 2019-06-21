@@ -311,6 +311,7 @@ const TouchableOpacity = ((createReactClass({
         accessibilityHint={this.props.accessibilityHint}
         accessibilityRole={this.props.accessibilityRole}
         accessibilityStates={this.props.accessibilityStates}
+        accessibilityState={this.props.accessibilityState}
         style={[this.props.style, {opacity: this.state.anim}]}
         nativeID={this.props.nativeID}
         testID={this.props.testID}
@@ -324,8 +325,8 @@ const TouchableOpacity = ((createReactClass({
         hasTVPreferredFocus={this.props.hasTVPreferredFocus}
         tvParallaxProperties={this.props.tvParallaxProperties}
         hitSlop={this.props.hitSlop}
-        clickable={
-          this.props.clickable !== false && this.props.onPress !== undefined
+        focusable={
+          this.props.focusable !== false && this.props.onPress !== undefined
         }
         onClick={this.touchableHandlePress}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}

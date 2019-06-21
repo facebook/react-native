@@ -48,7 +48,7 @@ import okio.ByteString;
 @ReactModule(name = BlobModule.NAME)
 public class BlobModule extends ReactContextBaseJavaModule {
 
-  protected static final String NAME = "BlobModule";
+  public static final String NAME = "BlobModule";
 
   private final Map<String, byte[]> mBlobs = new HashMap<>();
 

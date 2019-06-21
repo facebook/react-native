@@ -69,7 +69,8 @@ function resolveBoxStyle(
 
     const styleForEnd = style[prefix + 'End'];
     if (styleForEnd != null) {
-      if (I18nManager.isRTL && I18nManager.doLeftAndRightSwapInRTL) {
+      const constants = I18nManager.getConstants();
+      if (constants.isRTL && constants.doLeftAndRightSwapInRTL) {
         result.left = styleForEnd;
       } else {
         result.right = styleForEnd;
@@ -78,7 +79,8 @@ function resolveBoxStyle(
     }
     const styleForStart = style[prefix + 'Start'];
     if (styleForStart != null) {
-      if (I18nManager.isRTL && I18nManager.doLeftAndRightSwapInRTL) {
+      const constants = I18nManager.getConstants();
+      if (constants.isRTL && constants.doLeftAndRightSwapInRTL) {
         result.right = styleForStart;
       } else {
         result.left = styleForStart;

@@ -35,7 +35,7 @@ void MountingTelemetry::willLayout() {
 void MountingTelemetry::didLayout() {
   assert(layoutStartTime_ != kUndefinedTime);
   assert(layoutEndTime_ == kUndefinedTime);
-  layoutEndTime_ -= getTime();
+  layoutEndTime_ = getTime();
 }
 
 int64_t MountingTelemetry::getCommitTime() const {
@@ -47,7 +47,7 @@ int64_t MountingTelemetry::getCommitTime() const {
 int64_t MountingTelemetry::getLayoutTime() const {
   assert(layoutStartTime_ != kUndefinedTime);
   assert(layoutEndTime_ != kUndefinedTime);
-  return layoutEndTime_ - layoutEndTime_;
+  return layoutEndTime_ - layoutStartTime_;
 }
 
 int64_t MountingTelemetry::getCommitStartTime() const {

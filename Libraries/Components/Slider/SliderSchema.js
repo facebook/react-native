@@ -18,6 +18,7 @@ const SliderSchema: SchemaType = {
       components: {
         Slider: {
           interfaceOnly: true,
+          paperComponentName: 'RCTSlider',
           extendsProps: [
             {
               type: 'ReactNativeBuiltInType',

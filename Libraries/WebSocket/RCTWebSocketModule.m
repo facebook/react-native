@@ -112,9 +112,9 @@ RCT_EXPORT_METHOD(ping:(nonnull NSNumber *)socketID)
   [_sockets[socketID] sendPing:NULL];
 }
 
-RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(close:(NSInteger)code reason:(NSString *)reason socketID:(nonnull NSNumber *)socketID)
 {
-  [_sockets[socketID] close];
+  [_sockets[socketID] closeWithCode:code reason:reason];
   [_sockets removeObjectForKey:socketID];
 }
 
@@ -155,7 +155,8 @@ RCT_EXPORT_METHOD(close:(nonnull NSNumber *)socketID)
 - (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
 {
   [self sendEventWithName:@"websocketOpen" body:@{
-    @"id": webSocket.reactTag
+    @"id": webSocket.reactTag,
+    @"protocol": webSocket.protocol ? webSocket.protocol : @""
   }];
 }
 

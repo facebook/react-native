@@ -41,7 +41,7 @@ using ComponentHandle = int64_t;
  * String identifier for components used for addressing them from
  * JavaScript side.
  */
-using ComponentName = std::string;
+using ComponentName = char const *;
 
 } // namespace react
 } // namespace facebook

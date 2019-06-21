@@ -144,6 +144,7 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
             mWebSocketConnections.put(id, webSocket);
             WritableMap params = Arguments.createMap();
             params.putInt("id", id);
+            params.putString("protocol", response.header("Sec-WebSocket-Protocol", ""));
             sendEvent("websocketOpen", params);
           }
 
@@ -342,12 +343,19 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
       String scheme = "";
 
       URI requestURI = new URI(uri);
-      if (requestURI.getScheme().equals("wss")) {
-        scheme += "https";
-      } else if (requestURI.getScheme().equals("ws")) {
-        scheme += "http";
-      } else if (requestURI.getScheme().equals("http") || requestURI.getScheme().equals("https")) {
-        scheme += requestURI.getScheme();
+      switch (requestURI.getScheme()) {
+        case "wss":
+          scheme += "https";
+          break;
+        case "ws":
+          scheme += "http";
+          break;
+        case "http":
+        case "https":
+          scheme += requestURI.getScheme();
+          break;
+        default:
+          break;
       }
 
       if (requestURI.getPort() != -1) {

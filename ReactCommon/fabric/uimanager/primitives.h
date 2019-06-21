@@ -83,7 +83,7 @@ inline static SurfaceId surfaceIdFromValue(
   return (SurfaceId)value.getNumber();
 }
 
-inline static ComponentName componentNameFromValue(
+inline static std::string componentNameFromValue(
     jsi::Runtime &runtime,
     const jsi::Value &value) {
   return value.getString(runtime).utf8(runtime);

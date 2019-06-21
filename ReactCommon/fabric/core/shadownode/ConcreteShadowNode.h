@@ -22,7 +22,7 @@ namespace react {
  * with many handy features.
  */
 template <
-    const char *concreteComponentName,
+    ComponentName concreteComponentName,
     typename PropsT,
     typename EventEmitterT = EventEmitter,
     typename StateDataT = StateData>

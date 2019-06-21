@@ -7,13 +7,12 @@ target 'RNTester' do
   # use_frameworks!
 
   project 'RNTesterPods.xcodeproj'
-  
+
   # Enable TurboModule
   use_react_native!(path: "..", turbo_modules_enabled: true)
   pod 'React-turbomodule-samples', :path => '../ReactCommon/turbomodule/samples'
 
   # Additional Pods which aren't included in the default Podfile
-  pod 'React-RCTCameraRoll', :path => '../Libraries/CameraRoll'
   pod 'React-ART', :path => '../Libraries/ART'
   pod 'React-RCTPushNotification', :path => '../Libraries/PushNotificationIOS'
 

@@ -55,6 +55,12 @@ void ::_CLASSNAME_::EventEmitter::::_EVENT_NAME_::(::_STRUCT_NAME_:: event) cons
 }
 `.trim();
 
+const basicComponentTemplate = `
+void ::_CLASSNAME_::EventEmitter::::_EVENT_NAME_::() const {
+  dispatchEvent("::_DISPATCH_EVENT_NAME_::");
+}
+`.trim();
+
 function generateSetter(variableName, propertyName, propertyParts) {
   const trailingPeriod = propertyParts.length === 0 ? '' : '.';
   const eventChain = `event.${propertyParts.join(
@@ -62,6 +68,15 @@ function generateSetter(variableName, propertyName, propertyParts) {
   )}${trailingPeriod}${propertyName});`;
 
   return `${variableName}.setProperty(runtime, "${propertyName}", ${eventChain}`;
+}
+
+function generateEnumSetter(variableName, propertyName, propertyParts) {
+  const trailingPeriod = propertyParts.length === 0 ? '' : '.';
+  const eventChain = `event.${propertyParts.join(
+    '.',
+  )}${trailingPeriod}${propertyName})`;
+
+  return `${variableName}.setProperty(runtime, "${propertyName}", toString(${eventChain});`;
 }
 
 function generateSetters(
@@ -77,6 +92,12 @@ function generateSetters(
         case 'Int32TypeAnnotation':
         case 'FloatTypeAnnotation':
           return generateSetter(
+            parentPropertyName,
+            eventProperty.name,
+            propertyParts,
+          );
+        case 'StringEnumTypeAnnotation':
+          return generateEnumSetter(
             parentPropertyName,
             eventProperty.name,
             propertyParts,
@@ -106,16 +127,6 @@ function generateSetters(
 }
 
 function generateEvent(componentName: string, event): string {
-  const implementation = `
-    auto payload = jsi::Object(runtime);
-    ${generateSetters('payload', event.typeAnnotation.argument.properties, [])}
-    return payload;
-  `.trim();
-
-  if (!event.name.startsWith('on')) {
-    throw new Error('Expected the event name to start with `on`');
-  }
-
   // This is a gross hack necessary because native code is sending
   // events named things like topChange to JS which is then converted back to
   // call the onChange prop. We should be consistent throughout the system.
@@ -126,15 +137,32 @@ function generateEvent(componentName: string, event): string {
     3,
   )}`;
 
-  return componentTemplate
+  if (event.typeAnnotation.argument) {
+    const implementation = `
+    auto payload = jsi::Object(runtime);
+    ${generateSetters('payload', event.typeAnnotation.argument.properties, [])}
+    return payload;
+  `.trim();
+
+    if (!event.name.startsWith('on')) {
+      throw new Error('Expected the event name to start with `on`');
+    }
+
+    return componentTemplate
+      .replace(/::_CLASSNAME_::/g, componentName)
+      .replace(/::_EVENT_NAME_::/g, event.name)
+      .replace(/::_DISPATCH_EVENT_NAME_::/g, dispatchEventName)
+      .replace(
+        '::_STRUCT_NAME_::',
+        generateStructName(componentName, [event.name]),
+      )
+      .replace('::_IMPLEMENTATION_::', implementation);
+  }
+
+  return basicComponentTemplate
     .replace(/::_CLASSNAME_::/g, componentName)
     .replace(/::_EVENT_NAME_::/g, event.name)
-    .replace(/::_DISPATCH_EVENT_NAME_::/g, dispatchEventName)
-    .replace(
-      '::_STRUCT_NAME_::',
-      generateStructName(componentName, [event.name]),
-    )
-    .replace('::_IMPLEMENTATION_::', implementation);
+    .replace(/::_DISPATCH_EVENT_NAME_::/g, dispatchEventName);
 }
 
 module.exports = {

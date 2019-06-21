@@ -8,7 +8,6 @@
 #import "RCTScrollViewComponentView.h"
 
 #import <React/RCTAssert.h>
-#import <React/RNGenericDelegateSplitter.h>
 
 #import <react/components/scrollview/ScrollViewComponentDescriptor.h>
 #import <react/components/scrollview/ScrollViewEventEmitter.h>
@@ -28,11 +27,16 @@ using namespace facebook::react;
 @end
 
 @implementation RCTScrollViewComponentView {
-  RCTEnhancedScrollView *_Nonnull _scrollView;
-  UIView *_Nonnull _contentView;
   ScrollViewShadowNode::ConcreteState::Shared _state;
   CGSize _contentSize;
-  RNGenericDelegateSplitter<id<UIScrollViewDelegate>> *_scrollViewDelegateSplitter;
+}
+
++ (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view
+{
+  do {
+    view = view.superview;
+  } while (view != nil && ![view isKindOfClass:[RCTScrollViewComponentView class]]);
+  return (RCTScrollViewComponentView *)view;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -44,9 +48,10 @@ using namespace facebook::react;
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delaysContentTouches = NO;
-    _contentView = [[UIView alloc] initWithFrame:_scrollView.bounds];
-    [_scrollView addSubview:_contentView];
     [self addSubview:_scrollView];
+
+    _containerView = [[UIView alloc] initWithFrame:CGRectZero];
+    [_scrollView addSubview:_containerView];
 
     _scrollViewDelegateSplitter = [[RNGenericDelegateSplitter alloc] initWithDelegateUpdateBlock:^(id delegate) {
       self->_scrollView.delegate = delegate;
@@ -65,12 +70,10 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>();
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &oldScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(oldProps ?: _props);
+  const auto &oldScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(_props);
   const auto &newScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(props);
-
-  [super updateProps:props oldProps:oldProps];
 
 #define REMAP_PROP(reactName, localName, target)                      \
   if (oldScrollViewProps.reactName != newScrollViewProps.reactName) { \
@@ -79,7 +82,8 @@ using namespace facebook::react;
 
 #define REMAP_VIEW_PROP(reactName, localName) REMAP_PROP(reactName, localName, self)
 #define MAP_VIEW_PROP(name) REMAP_VIEW_PROP(name, name)
-#define REMAP_SCROLL_VIEW_PROP(reactName, localName) REMAP_PROP(reactName, localName, _scrollView)
+#define REMAP_SCROLL_VIEW_PROP(reactName, localName) \
+  REMAP_PROP(reactName, localName, ((RCTEnhancedScrollView *)_scrollView))
 #define MAP_SCROLL_VIEW_PROP(name) REMAP_SCROLL_VIEW_PROP(name, name)
 
   // FIXME: Commented props are not supported yet.
@@ -108,9 +112,11 @@ using namespace facebook::react;
   // MAP_SCROLL_VIEW_PROP(scrollIndicatorInsets);
   // MAP_SCROLL_VIEW_PROP(snapToInterval);
   // MAP_SCROLL_VIEW_PROP(snapToAlignment);
+
+  [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateState:(State::Shared)state oldState:(State::Shared)oldState
+- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
   assert(std::dynamic_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state));
   _state = std::static_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state);
@@ -122,18 +128,18 @@ using namespace facebook::react;
   }
 
   _contentSize = contentSize;
-  _contentView.frame = CGRect{CGPointZero, contentSize};
+  _containerView.frame = CGRect{CGPointZero, contentSize};
   _scrollView.contentSize = contentSize;
 }
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  [_contentView insertSubview:childComponentView atIndex:index];
+  [_containerView insertSubview:childComponentView atIndex:index];
 }
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  RCTAssert(childComponentView.superview == _contentView, @"Attempt to unmount improperly mounted component view.");
+  RCTAssert(childComponentView.superview == _containerView, @"Attempt to unmount improperly mounted component view.");
   [childComponentView removeFromSuperview];
 }
 
@@ -210,6 +216,45 @@ using namespace facebook::react;
 {
   std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
   [self _updateStateWithContentOffset];
+}
+
+@end
+
+@implementation RCTScrollViewComponentView (ScrollableProtocol)
+
+- (CGSize)contentSize
+{
+  return _contentSize;
+}
+
+- (void)scrollToOffset:(CGPoint)offset
+{
+  [self scrollToOffset:offset animated:YES];
+}
+
+- (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
+{
+  [self.scrollView setContentOffset:offset animated:animated];
+}
+
+- (void)scrollToEnd:(BOOL)animated
+{
+  // Not implemented.
+}
+
+- (void)zoomToRect:(CGRect)rect animated:(BOOL)animated
+{
+  // Not implemented.
+}
+
+- (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
+{
+  [self.scrollViewDelegateSplitter addDelegate:scrollListener];
+}
+
+- (void)removeScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
+{
+  [self.scrollViewDelegateSplitter removeDelegate:scrollListener];
 }
 
 @end
