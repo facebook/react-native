@@ -69,8 +69,16 @@ Error: ${e.message}`;
       throw new Error(error);
     });
 
+    let enableLoadingView = false;
+    hmrClient.on('connection-done', () => {
+      // Don't show the loading view during the initial update.
+      enableLoadingView = true;
+    });
+
     hmrClient.on('update-start', () => {
-      HMRLoadingView.showMessage('Hot Reloading...');
+      if (enableLoadingView) {
+        HMRLoadingView.showMessage('Hot Reloading...');
+      }
     });
 
     hmrClient.on('update', () => {
@@ -90,7 +98,9 @@ Error: ${e.message}`;
     });
 
     hmrClient.on('update-done', () => {
-      HMRLoadingView.hide();
+      if (enableLoadingView) {
+        HMRLoadingView.hide();
+      }
     });
 
     hmrClient.on('error', data => {
