@@ -42,18 +42,6 @@ if (__DEV__) {
       });
     }
 
-    // This is used by the require.js polyfill for hot reloading.
-    // TODO(t9759686) Scan polyfills for dependencies, too
-    const reload = require('../NativeModules/specs/NativeDevSettings').default
-      .reload;
-    if (typeof reload !== 'function') {
-      throw new Error('Could not find the reload() implementation.');
-    }
-    // flowlint-next-line unclear-type: off
-    (require: any).reload = reload;
-    // flowlint-next-line unclear-type: off
-    (require: any).hot = {
-      Runtime: require('react-refresh/runtime'),
-    };
+    require('./setUpReactRefresh');
   }
 }
