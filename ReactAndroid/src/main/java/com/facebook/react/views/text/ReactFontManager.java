@@ -69,7 +69,7 @@ public class ReactFontManager {
       AssetManager assetManager) {
     if(mCustomTypefaceCache.containsKey(fontFamilyName)) {
       Typeface typeface = mCustomTypefaceCache.get(fontFamilyName);
-      if (weight >= 100 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && weight >= 100 && weight <= 1000) {
         return Typeface.create(typeface, weight, (style & Typeface.ITALIC) != 0);
       }
       return Typeface.create(typeface, style);
