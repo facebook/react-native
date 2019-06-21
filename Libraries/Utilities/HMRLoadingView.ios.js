@@ -18,8 +18,9 @@ class HMRLoadingView {
     if (NativeDevLoadingView != null) {
       NativeDevLoadingView.showMessage(
         message,
-        processColor('#000000'),
-        processColor('#aaaaaa'),
+        // Use same colors as iOS "Personal Hotspot" bar.
+        processColor('#ffffff'),
+        processColor('#2584e8'),
       );
     }
   }
