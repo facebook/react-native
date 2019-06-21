@@ -18,6 +18,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
@@ -282,8 +284,44 @@ public class ReactViewGroup extends ViewGroup
     }
   }
 
+  public float[] getBorderRadius() {
+    final float borderRadius = mReactBackgroundDrawable.getFullBorderRadius();
+    float topLeftBorderRadius =
+            mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
+                    borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_LEFT);
+    float topRightBorderRadius =
+            mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
+                    borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.TOP_RIGHT);
+    float bottomLeftBorderRadius =
+            mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
+                    borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_LEFT);
+    float bottomRightBorderRadius =
+            mReactBackgroundDrawable.getBorderRadiusOrDefaultTo(
+                    borderRadius, ReactViewBackgroundDrawable.BorderRadiusLocation.BOTTOM_RIGHT);
+
+    return new float[] {
+            topLeftBorderRadius,
+            topLeftBorderRadius,
+            topRightBorderRadius,
+            topRightBorderRadius,
+            bottomRightBorderRadius,
+            bottomRightBorderRadius,
+            bottomLeftBorderRadius,
+            bottomLeftBorderRadius
+    };
+  }
+
   public void setBorderStyle(@Nullable String style) {
     getOrCreateReactViewBackground().setBorderStyle(style);
+  }
+
+  public Drawable getBorderRadiusMask() {
+    RoundRectShape r = new RoundRectShape(getBorderRadius(), null, null);
+
+    ShapeDrawable shapeDrawable = new ShapeDrawable(r);
+    shapeDrawable.getPaint().setColor(Color.WHITE);
+
+    return shapeDrawable;
   }
 
   @Override

@@ -52,6 +52,9 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   private static final int CMD_SET_PRESSED = 2;
   private static final String HOTSPOT_UPDATE_KEY = "hotspotUpdate";
 
+  private ReadableMap mBg = null;
+  private ReadableMap mFg = null;
+
   @ReactProp(name = "accessible")
   public void setAccessible(ReactViewGroup view, boolean accessible) {
     view.setFocusable(accessible);
@@ -118,6 +121,14 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     } else {
       view.setBorderRadius(borderRadius, index - 1);
     }
+
+    if (mBg != null) {
+      setNativeBackground(view, mBg);
+    }
+
+    if (mFg != null) {
+      setNativeForeground(view, mFg);
+    }
   }
 
   @ReactProp(name = "borderStyle")
@@ -158,19 +169,21 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
 
   @ReactProp(name = "nativeBackgroundAndroid")
   public void setNativeBackground(ReactViewGroup view, @Nullable ReadableMap bg) {
+    mBg = bg;
     view.setTranslucentBackgroundDrawable(
         bg == null
             ? null
-            : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), bg));
+            : ReactDrawableHelper.createDrawableFromJSDescription(view, bg));
   }
 
   @TargetApi(Build.VERSION_CODES.M)
   @ReactProp(name = "nativeForegroundAndroid")
   public void setNativeForeground(ReactViewGroup view, @Nullable ReadableMap fg) {
+    mFg = fg;
     view.setForeground(
         fg == null
             ? null
-            : ReactDrawableHelper.createDrawableFromJSDescription(view.getContext(), fg));
+            : ReactDrawableHelper.createDrawableFromJSDescription(view, fg));
   }
 
   @ReactProp(
