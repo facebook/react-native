@@ -189,6 +189,42 @@ class TextExample extends React.Component<{}> {
                 }}>
                 Srisakdi Bold
               </Text>
+              <Text
+                style={{
+                  fontFamily: 'Rubik',
+                  fontWeight: 'normal',
+                }}>
+                Rubik Regular
+              </Text>
+              <Text
+                style={{
+                  fontFamily: 'Rubik',
+                  fontWeight: '300',
+                }}>
+                Rubik Light
+              </Text>
+              <Text
+                style={{
+                  fontFamily: 'Rubik',
+                  fontWeight: '700',
+                }}>
+                Rubik Bold
+              </Text>
+              <Text
+                style={{
+                  fontFamily: 'Rubik',
+                  fontWeight: '500',
+                }}>
+                Rubik Medium
+              </Text>
+              <Text
+                style={{
+                  fontFamily: 'Rubik',
+                  fontStyle: 'italic',
+                  fontWeight: '500',
+                }}>
+                Rubik Medium Italic
+              </Text>
             </View>
           </View>
         </RNTesterBlock>
