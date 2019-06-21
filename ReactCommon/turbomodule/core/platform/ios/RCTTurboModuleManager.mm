@@ -7,6 +7,7 @@
 
 #import "RCTTurboModuleManager.h"
 
+#import <atomic>
 #import <cassert>
 #import <mutex>
 
@@ -58,6 +59,7 @@ static Class getFallbackClassFromName(const char *name)
    * JS thread.
    */
   std::mutex _rctTurboModuleCacheLock;
+  std::atomic<bool> _invalidating;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge delegate:(id<RCTTurboModuleManagerDelegate>)delegate
@@ -66,10 +68,15 @@ static Class getFallbackClassFromName(const char *name)
     _jsInvoker = std::make_shared<react::BridgeJSCallInvoker>(bridge.reactInstance);
     _delegate = delegate;
     _bridge = bridge;
+    _invalidating = false;
 
     // Necessary to allow NativeModules to lookup TurboModules
     [bridge setRCTTurboModuleLookupDelegate:self];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(bridgeWillInvalidateModules:)
+                                                 name:RCTBridgeWillInvalidateModulesNotification
+                                               object:_bridge.parentBridge];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeDidInvalidateModules:)
                                                  name:RCTBridgeDidInvalidateModulesNotification
@@ -222,6 +229,11 @@ static Class getFallbackClassFromName(const char *name)
       return rctTurboModuleCacheLookup->second;
     }
 
+    if (_invalidating) {
+      // Don't allow creating new instances while invalidating.
+      return nil;
+    }
+
     /**
      * Step 2a: Resolve platform-specific class.
      */
@@ -369,17 +381,32 @@ static Class getFallbackClassFromName(const char *name)
 
 #pragma mark Invalidation logic
 
-- (void)bridgeDidInvalidateModules:(NSNotification *)notification
+- (void)bridgeWillInvalidateModules:(NSNotification *)notification
 {
-  // Rely on this notification to invalidate all known TurboModule ObjC instances, synchronously.
   RCTBridge *bridge = notification.userInfo[@"bridge"];
   if (bridge != _bridge) {
     return;
   }
 
+  _invalidating = true;
+}
+
+- (void)bridgeDidInvalidateModules:(NSNotification *)notification
+{
+  RCTBridge *bridge = notification.userInfo[@"bridge"];
+  if (bridge != _bridge) {
+    return;
+  }
+
+  std::unordered_map<std::string, id<RCTTurboModule>> rctCacheCopy;
+  {
+    std::unique_lock<std::mutex> lock(_rctTurboModuleCacheLock);
+    rctCacheCopy.insert(_rctTurboModuleCache.begin(), _rctTurboModuleCache.end());
+  }
+
   // Backward-compatibility: RCTInvalidating handling.
   dispatch_group_t moduleInvalidationGroup = dispatch_group_create();
-  for (const auto &p : _rctTurboModuleCache) {
+  for (const auto &p : rctCacheCopy) {
     id<RCTTurboModule> module = p.second;
     if ([module respondsToSelector:@selector(invalidate)]) {
       if ([module respondsToSelector:@selector(methodQueue)]) {
@@ -400,10 +427,14 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   if (dispatch_group_wait(moduleInvalidationGroup, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC))) {
-    RCTLogError(@"Timed out waiting for modules to be invalidated");
+    RCTLogError(@"TurboModuleManager: Timed out waiting for modules to be invalidated");
   }
 
-  _rctTurboModuleCache.clear();
+  {
+    std::unique_lock<std::mutex> lock(_rctTurboModuleCacheLock);
+    _rctTurboModuleCache.clear();
+  }
+
   _turboModuleCache.clear();
 
   _binding->invalidate();

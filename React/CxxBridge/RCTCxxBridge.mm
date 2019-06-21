@@ -1077,6 +1077,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     }
 
     // Invalidate modules
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillInvalidateModulesNotification
+                                                        object:self->_parentBridge
+                                                      userInfo:@{@"bridge": self}];
+
     // We're on the JS thread (which we'll be suspending soon), so no new calls will be made to native modules after
     // this completes. We must ensure all previous calls were dispatched before deallocating the instance (and module
     // wrappers) or we may have invalid pointers still in flight.
@@ -1098,13 +1103,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
       [moduleData invalidate];
     }
 
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeDidInvalidateModulesNotification
-                                                        object:self->_parentBridge
-                                                      userInfo:@{@"bridge": self}];
-
     if (dispatch_group_wait(moduleInvalidation, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC))) {
       RCTLogError(@"Timed out waiting for modules to be invalidated");
     }
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeDidInvalidateModulesNotification
+                                                        object:self->_parentBridge
+                                                      userInfo:@{@"bridge": self}];
 
     self->_reactInstance.reset();
     self->_jsMessageThread.reset();
