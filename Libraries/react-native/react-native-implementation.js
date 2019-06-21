@@ -251,9 +251,9 @@ module.exports = {
     return require('../Share/Share');
   },
   get StatusBarIOS() {
-     warnOnce(
+    warnOnce(
       'StatusBarIOS-merged',
-      'StatusBarIOS has been merged with StatusBar and will be removed in a future release. Use StatusBar for mutating the status bar'
+      'StatusBarIOS has been merged with StatusBar and will be removed in a future release. Use StatusBar for mutating the status bar',
     );
     return require('../Components/StatusBar/StatusBarIOS');
   },
