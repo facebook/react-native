@@ -378,11 +378,29 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   // Backward-compatibility: RCTInvalidating handling.
+  dispatch_group_t moduleInvalidationGroup = dispatch_group_create();
   for (const auto &p : _rctTurboModuleCache) {
     id<RCTTurboModule> module = p.second;
     if ([module respondsToSelector:@selector(invalidate)]) {
+      if ([module respondsToSelector:@selector(methodQueue)]) {
+        dispatch_queue_t methodQueue = [module performSelector:@selector(methodQueue)];
+        if (methodQueue) {
+          dispatch_group_enter(moduleInvalidationGroup);
+          [bridge
+              dispatchBlock:^{
+                [((id<RCTInvalidating>)module) invalidate];
+                dispatch_group_leave(moduleInvalidationGroup);
+              }
+                      queue:methodQueue];
+          continue;
+        }
+      }
       [((id<RCTInvalidating>)module) invalidate];
     }
+  }
+
+  if (dispatch_group_wait(moduleInvalidationGroup, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC))) {
+    RCTLogError(@"Timed out waiting for modules to be invalidated");
   }
 
   _rctTurboModuleCache.clear();
