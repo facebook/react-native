@@ -51,7 +51,6 @@ public class MountingManager {
     mViewFactory = new ViewManagerFactory(viewManagerRegistry);
   }
 
-  @UiThread
   public void addRootView(int reactRootTag, View rootView) {
     if (rootView.getId() != View.NO_ID) {
       throw new IllegalViewOperationException(
