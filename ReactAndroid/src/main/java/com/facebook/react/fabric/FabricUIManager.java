@@ -131,11 +131,16 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public <T extends View> int addRootView(
     final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+    //TODO T31905686: Refactor both addRootView methods into one method
     ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, rootView.getContext());
     mMountingManager.addRootView(rootTag, rootView);
     mReactContextForRootTag.put(rootTag, reactContext);
-    mBinding.startSurface(rootTag, ((ReactRoot) rootView).getJSModuleName(), (NativeMap) initialProps);
+    String moduleName = ((ReactRoot) rootView).getJSModuleName();
+    if (DEBUG) {
+      FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
+    }
+    mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
     if (initialUITemplate != null) {
       mBinding.renderTemplateToSurface(rootTag, initialUITemplate);
     }
@@ -147,6 +152,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, rootView.getContext());
+    if (DEBUG) {
+      FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
+    }
     mMountingManager.addRootView(rootTag, rootView);
     mReactContextForRootTag.put(rootTag, reactContext);
     mBinding.startSurfaceWithConstraints(
@@ -172,6 +180,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // TODO T31905686: integrate with the unmounting of Fabric React Renderer.
     mMountingManager.removeRootView(reactRootTag);
     mReactContextForRootTag.remove(reactRootTag);
+    if (DEBUG) {
+      FLog.d(TAG, "Removing surface for reactTag: ", reactRootTag);
+    }
   }
 
   @Override
@@ -182,6 +193,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @Override
   public void onCatalystInstanceDestroy() {
+    if (DEBUG) {
+      FLog.d(TAG, "Destroying Catalyst Instance" );
+    }
     mEventDispatcher.removeBatchEventDispatchedListener(mEventBeatManager);
     mEventDispatcher.unregisterEventEmitter(FABRIC);
     mBinding.unregister();
@@ -420,6 +434,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public void updateRootLayoutSpecs(
       final int rootTag, final int widthMeasureSpec, final int heightMeasureSpec) {
+
+    if (DEBUG) {
+      FLog.d(TAG, "Updating Root Layout Specs");
+    }
 
     mReactApplicationContext.runOnJSQueueThread(new Runnable() {
       @Override
