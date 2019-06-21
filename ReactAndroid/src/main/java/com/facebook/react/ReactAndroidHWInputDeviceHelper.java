@@ -58,8 +58,8 @@ public class ReactAndroidHWInputDeviceHelper {
   public void handleKeyEvent(KeyEvent ev) {
     int eventKeyCode = ev.getKeyCode();
     int eventKeyAction = ev.getAction();
-    if (eventKeyAction == KeyEvent.ACTION_UP && KEY_EVENTS_ACTIONS.containsKey(eventKeyCode)) {
-      dispatchEvent(KEY_EVENTS_ACTIONS.get(eventKeyCode), mLastFocusedViewId);
+    if ((eventKeyAction == KeyEvent.ACTION_UP || eventKeyAction == KeyEvent.ACTION_DOWN) && KEY_EVENTS_ACTIONS.containsKey(eventKeyCode)) {
+      dispatchEvent(KEY_EVENTS_ACTIONS.get(eventKeyCode), mLastFocusedViewId, eventKeyAction);
     }
   }
 
@@ -88,8 +88,13 @@ public class ReactAndroidHWInputDeviceHelper {
   }
 
   private void dispatchEvent(String eventType, int targetViewId) {
+    dispatchEvent(eventType, targetViewId, -1);
+  }
+
+  private void dispatchEvent(String eventType, int targetViewId, int eventKeyAction) {
     WritableMap event = new WritableNativeMap();
     event.putString("eventType", eventType);
+    event.putInt("eventKeyAction", eventKeyAction);
     if (targetViewId != View.NO_ID) {
       event.putInt("tag", targetViewId);
     }
