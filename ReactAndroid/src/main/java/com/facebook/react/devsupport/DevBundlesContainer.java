@@ -82,7 +82,7 @@ public class DevBundlesContainer {
   public String getNameBySourceURL(String sourceURL) {
     for (String key : bundleNameMapping.keySet()) {
        BundleURLs tmp = bundleNameMapping.get(key);
-       if(tmp.sourceURL.equals(sourceURL)) {
+       if(tmp.sourceURL.equals(sourceURL.split("\\?")[0])) {
          return key;
        }
     }
@@ -102,7 +102,7 @@ public class DevBundlesContainer {
   public String getFileURLBySourceURL(String sourceURL) {
     for (String key : bundleNameMapping.keySet()) {
        BundleURLs tmp = bundleNameMapping.get(key);
-       if(tmp.sourceURL.equals(sourceURL)) {
+       if(tmp.sourceURL.startsWith(sourceURL.split("\\?")[0])) {
          return tmp.fileURL;
        }
     }

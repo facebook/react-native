@@ -503,6 +503,7 @@ public class BundleDownloader {
     File tmpFile = new File(outputFile.getPath() + ".tmp");
 
     boolean bundleWritten;
+    boolean pushBundleNameToContainer = false;
     NativeDeltaClient nativeDeltaClient = null;
 
     if (BundleDeltaClient.isDeltaUrl(url)) {
@@ -512,17 +513,22 @@ public class BundleDownloader {
       Pair<Boolean, NativeDeltaClient> result = deltaClient.processDelta(headers, body, tmpFile);
       bundleWritten = result.first;
       nativeDeltaClient = result.second;
+      // Always push bundle name, regardless if it was written or not.
+      // If `bundleWritten` is `false` it means that the previously stored
+      // bundle is still valid, so we can safely add to `DevBundlesContainer`.
+      pushBundleNameToContainer = true;
     } else {
       mBundleDeltaClient = null;
       bundleWritten = storePlainJSInFile(body, tmpFile);
+      pushBundleNameToContainer = bundleWritten;
+    }
+
+    if (pushBundleNameToContainer && mDevBundlesContainer != null) {
+      String bundleName = getBundleNameFromURL(url);
+      mDevBundlesContainer.pushBundle(bundleName, url, outputFile.getPath());
     }
 
     if (bundleWritten) {
-      String bundleName = getBundleNameFromURL(url); // fallback
-
-      if(mDevBundlesContainer != null) {
-        mDevBundlesContainer.pushBundle(bundleName, url, outputFile.getPath());
-      }
       if (!tmpFile.renameTo(outputFile)) {
         throw new IOException("Couldn't rename " + tmpFile + " to " + outputFile);
       }
