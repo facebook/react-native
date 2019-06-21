@@ -10,8 +10,6 @@
 
 'use strict';
 
-const ViewNativeComponent = require('./ViewNativeComponent');
-
 import type {ViewProps} from './ViewPropTypes';
 
 export type Props = ViewProps;
@@ -23,4 +21,4 @@ export type Props = ViewProps;
  *
  * @see http://facebook.github.io/react-native/docs/view.html
  */
-module.exports = ((ViewNativeComponent: $FlowFixMe): typeof ViewNativeComponent);
+module.exports = require('./ViewNativeComponent').default;

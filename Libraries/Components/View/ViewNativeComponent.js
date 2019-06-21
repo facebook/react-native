@@ -18,6 +18,6 @@ import type {ViewProps} from './ViewPropTypes';
 
 type ViewNativeComponentType = Class<ReactNative.NativeComponent<ViewProps>>;
 
-const NativeViewComponent = requireNativeComponent('RCTView');
-
-module.exports = ((NativeViewComponent: any): ViewNativeComponentType);
+export default ((requireNativeComponent(
+  'RCTView',
+): any): ViewNativeComponentType);
