@@ -181,14 +181,6 @@ class TextExample extends React.Component<{}> {
               <Text style={{fontFamily: 'notoserif', fontStyle: 'italic'}}>
                 NotoSerif Italic (Missing Font file)
               </Text>
-              <Text style={{fontFamily: 'Srisakdi'}}>Srisakdi Regular</Text>
-              <Text
-                style={{
-                  fontFamily: 'Srisakdi',
-                  fontWeight: 'bold',
-                }}>
-                Srisakdi Bold
-              </Text>
               <Text
                 style={{
                   fontFamily: 'Rubik',
