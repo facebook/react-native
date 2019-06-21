@@ -14,7 +14,7 @@ const Platform = require('../../Utilities/Platform');
 const React = require('react');
 
 import AndroidSwipeRefreshLayoutNativeComponent from './AndroidSwipeRefreshLayoutNativeComponent';
-const PullToRefreshViewNativeComponent = require('./PullToRefreshViewNativeComponent');
+import PullToRefreshViewNativeComponent from './PullToRefreshViewNativeComponent';
 const nullthrows = require('nullthrows');
 
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
