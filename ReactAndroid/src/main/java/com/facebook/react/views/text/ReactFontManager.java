@@ -13,6 +13,7 @@ import java.util.Map;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
@@ -55,20 +56,29 @@ public class ReactFontManager {
   }
 
   public @Nullable Typeface getTypeface(
+    String fontFamilyName,
+    int style,
+    AssetManager assetManager) {
+    return getTypeface(fontFamilyName, style, 0, assetManager);
+  }
+
+  public @Nullable Typeface getTypeface(
       String fontFamilyName,
       int style,
+      int weight,
       AssetManager assetManager) {
+    if(mCustomTypefaceCache.containsKey(fontFamilyName)) {
+      Typeface typeface = mCustomTypefaceCache.get(fontFamilyName);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && weight >= 100 && weight <= 1000) {
+        return Typeface.create(typeface, weight, (style & Typeface.ITALIC) != 0);
+      }
+      return Typeface.create(typeface, style);
+    }
+
     FontFamily fontFamily = mFontCache.get(fontFamilyName);
     if (fontFamily == null) {
       fontFamily = new FontFamily();
       mFontCache.put(fontFamilyName, fontFamily);
-    }
-
-    if(mCustomTypefaceCache.containsKey(fontFamilyName)) {
-      return Typeface.create(
-        mCustomTypefaceCache.get(fontFamilyName),
-        style
-      );
     }
 
     Typeface typeface = fontFamily.getTypeface(style);

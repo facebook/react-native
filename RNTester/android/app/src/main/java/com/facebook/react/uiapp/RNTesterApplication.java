@@ -47,7 +47,7 @@ public class RNTesterApplication extends Application implements ReactApplication
 
   @Override
   public void onCreate() {
-    ReactFontManager.getInstance().addCustomFont(this, "Srisakdi", R.font.srisakdi);
+    ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik);
     super.onCreate();
   }
 
