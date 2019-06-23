@@ -10,19 +10,21 @@
 
 'use strict';
 
-const requireNativeComponent = require('../ReactNative/requireNativeComponent');
+import codegenNativeComponent from '../Utilities/codegenNativeComponent';
+import type {
+  WithDefault,
+  BubblingEvent,
+  DirectEvent,
+  Int32,
+} from '../Types/CodegenTypes';
 
 import type {ViewProps} from '../Components/View/ViewPropTypes';
-import type {SyntheticEvent} from '../Types/CoreEventTypes';
-import type {NativeComponent} from '../Renderer/shims/ReactNative';
 
-type OrientationChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
-    orientation: 'portrait' | 'landscape',
-  |}>,
->;
+type OrientationChangeEvent = $ReadOnly<{|
+  orientation: 'portrait' | 'landscape',
+|}>;
 
-type ModalNativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
   /**
@@ -30,19 +32,17 @@ type ModalNativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#animationtype
    */
-  animationType?: ?('none' | 'slide' | 'fade'),
+  animationType?: ?WithDefault<'none' | 'slide' | 'fade', 'none'>,
 
   /**
    * The `presentationStyle` prop controls how the modal appears.
    *
    * See https://facebook.github.io/react-native/docs/modal.html#presentationstyle
    */
-  presentationStyle?: ?(
-    | 'fullScreen'
-    | 'pageSheet'
-    | 'formSheet'
-    | 'overFullScreen'
-  ),
+  presentationStyle?: ?WithDefault<
+    'fullScreen' | 'pageSheet' | 'formSheet' | 'overFullScreen',
+    'fullScreen',
+  >,
 
   /**
    * The `transparent` prop determines whether your modal will fill the
@@ -50,7 +50,7 @@ type ModalNativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#transparent
    */
-  transparent?: ?boolean,
+  transparent?: ?WithDefault<boolean, false>,
 
   /**
    * The `hardwareAccelerated` prop controls whether to force hardware
@@ -58,14 +58,14 @@ type ModalNativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#hardwareaccelerated
    */
-  hardwareAccelerated?: ?boolean,
+  hardwareAccelerated?: ?WithDefault<boolean, false>,
 
   /**
    * The `visible` prop determines whether your modal is visible.
    *
    * See https://facebook.github.io/react-native/docs/modal.html#visible
    */
-  visible?: ?boolean,
+  visible?: ?WithDefault<boolean, false>,
 
   /**
    * The `onRequestClose` callback is called when the user taps the hardware
@@ -75,7 +75,7 @@ type ModalNativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onrequestclose
    */
-  onRequestClose?: ?(event?: SyntheticEvent<null>) => mixed,
+  onRequestClose?: ?(event?: DirectEvent<null>) => mixed,
 
   /**
    * The `onShow` prop allows passing a function that will be called once the
@@ -83,7 +83,7 @@ type ModalNativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onshow
    */
-  onShow?: ?(event?: SyntheticEvent<null>) => mixed,
+  onShow?: ?(event?: DirectEvent<null>) => mixed,
 
   /**
    * The `onDismiss` prop allows passing a function that will be called once
@@ -91,24 +91,27 @@ type ModalNativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#ondismiss
    */
-  onDismiss?: ?() => mixed,
+  onDismiss?: ?(event?: BubblingEvent<null>) => mixed,
 
   /**
    * Deprecated. Use the `animationType` prop instead.
    */
-  animated?: ?boolean,
+  animated?: ?WithDefault<boolean, false>,
 
   /**
    * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
    *
    * See https://facebook.github.io/react-native/docs/modal.html#supportedorientations
    */
-  supportedOrientations?: ?$ReadOnlyArray<
-    | 'portrait'
-    | 'portrait-upside-down'
-    | 'landscape'
-    | 'landscape-left'
-    | 'landscape-right',
+  supportedOrientations?: ?WithDefault<
+    $ReadOnlyArray<
+      | 'portrait'
+      | 'portrait-upside-down'
+      | 'landscape'
+      | 'landscape-left'
+      | 'landscape-right',
+    >,
+    'portrait',
   >,
 
   /**
@@ -116,16 +119,15 @@ type ModalNativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onorientationchange
    */
-  onOrientationChange?: ?(event: OrientationChangeEvent) => mixed,
+  onOrientationChange?: ?(event: DirectEvent<OrientationChangeEvent>) => mixed,
 
   /**
    * The `identifier` is the unique number for identifying Modal components.
    */
-  identifier?: ?number,
+  identifier?: ?WithDefault<Int32, 0>,
 |}>;
 
-type RCTModalHostViewNativeType = Class<NativeComponent<ModalNativeProps>>;
-
-module.exports = ((requireNativeComponent(
-  'RCTModalHostView',
-): any): RCTModalHostViewNativeType);
+export default codegenNativeComponent<NativeProps>('ModalHostView', {
+  interfaceOnly: true,
+  paperComponentName: 'RCTModalHostView',
+});

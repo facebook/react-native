@@ -17,6 +17,7 @@ const ModalSchema: SchemaType = {
       components: {
         ModalHostView: {
           interfaceOnly: true,
+          paperComponentName: 'RCTModalHostView',
           extendsProps: [
             {
               type: 'ReactNativeBuiltInType',
@@ -39,7 +40,7 @@ const ModalSchema: SchemaType = {
             {
               name: 'onShow',
               optional: true,
-              bubblingType: 'bubble',
+              bubblingType: 'direct',
               typeAnnotation: {
                 type: 'EventTypeAnnotation',
                 argument: {
@@ -63,12 +64,26 @@ const ModalSchema: SchemaType = {
             {
               name: 'onOrientationChange',
               optional: true,
-              bubblingType: 'bubble',
+              bubblingType: 'direct',
               typeAnnotation: {
                 type: 'EventTypeAnnotation',
                 argument: {
                   type: 'ObjectTypeAnnotation',
-                  properties: [],
+                  properties: [
+                    {
+                      type: 'StringEnumTypeAnnotation',
+                      name: 'orientation',
+                      optional: false,
+                      options: [
+                        {
+                          name: 'portrait',
+                        },
+                        {
+                          name: 'landscape',
+                        },
+                      ],
+                    },
+                  ],
                 },
               },
             },
@@ -136,32 +151,43 @@ const ModalSchema: SchemaType = {
               optional: true,
               typeAnnotation: {
                 type: 'BooleanTypeAnnotation',
-                default: true,
+                default: false,
+              },
+            },
+            {
+              name: 'animated',
+              optional: true,
+              typeAnnotation: {
+                type: 'BooleanTypeAnnotation',
+                default: false,
               },
             },
             {
               name: 'supportedOrientations',
               optional: true,
               typeAnnotation: {
-                type: 'StringEnumTypeAnnotation',
-                default: 'portrait',
-                options: [
-                  {
-                    name: 'portrait',
-                  },
-                  {
-                    name: 'portrait-upside-down',
-                  },
-                  {
-                    name: 'landscape',
-                  },
-                  {
-                    name: 'landscape-left',
-                  },
-                  {
-                    name: 'landscape-right',
-                  },
-                ],
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'StringEnumTypeAnnotation',
+                  default: 'portrait',
+                  options: [
+                    {
+                      name: 'portrait',
+                    },
+                    {
+                      name: 'portrait-upside-down',
+                    },
+                    {
+                      name: 'landscape',
+                    },
+                    {
+                      name: 'landscape-left',
+                    },
+                    {
+                      name: 'landscape-right',
+                    },
+                  ],
+                },
               },
             },
             {
