@@ -29,7 +29,7 @@ void State::commit(const ShadowNode &shadowNode) const {
   stateCoordinator_->setTarget(StateTarget{shadowNode});
 }
 
-const State::Shared &State::getCommitedState() const {
+State::Shared State::getCommitedState() const {
   return stateCoordinator_->getTarget().getShadowNode().getState();
 }
 
