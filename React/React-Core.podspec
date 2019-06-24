@@ -49,6 +49,8 @@ Pod::Spec.new do |s|
 
   s.dependency "Folly", folly_version
   s.dependency "React-cxxreact", version
+  s.dependency "React-jsi", version
   s.dependency "React-jsiexecutor", version
   s.dependency "yoga", "#{version}.React"
+  s.dependency "glog"
 end
