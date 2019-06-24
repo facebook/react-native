@@ -139,7 +139,7 @@ Error: ${e.message}`;
     });
 
     // This is intentionally called lazily, as these values change.
-    function shouldProvideVisualFeedback() {
+    function isFastRefreshActive() {
       return (
         // Until we get "connection-done", messages aren't real edits.
         didFinishInitialUpdate &&
@@ -151,27 +151,31 @@ Error: ${e.message}`;
       );
     }
 
+    function dismissRedbox() {
+      if (
+        Platform.OS === 'ios' &&
+        NativeRedBox != null &&
+        NativeRedBox.dismiss != null
+      ) {
+        NativeRedBox.dismiss();
+      } else {
+        const NativeExceptionsManager = require('../Core/NativeExceptionsManager')
+          .default;
+        NativeExceptionsManager &&
+          NativeExceptionsManager.dismissRedbox &&
+          NativeExceptionsManager.dismissRedbox();
+      }
+    }
+
     hmrClient.on('update-start', () => {
-      if (shouldProvideVisualFeedback()) {
+      if (isFastRefreshActive()) {
         HMRLoadingView.showMessage('Refreshing...');
       }
     });
 
     hmrClient.on('update', () => {
-      if (shouldProvideVisualFeedback()) {
-        if (
-          Platform.OS === 'ios' &&
-          NativeRedBox != null &&
-          NativeRedBox.dismiss != null
-        ) {
-          NativeRedBox.dismiss();
-        } else {
-          const NativeExceptionsManager = require('../Core/NativeExceptionsManager')
-            .default;
-          NativeExceptionsManager &&
-            NativeExceptionsManager.dismissRedbox &&
-            NativeExceptionsManager.dismissRedbox();
-        }
+      if (isFastRefreshActive()) {
+        dismissRedbox();
       }
     });
 
@@ -192,7 +196,10 @@ Error: ${e.message}`;
         setHMRUnavailableReason(
           'The Metro server and the client are out of sync. Fast Refresh will be disabled until you reload the application.',
         );
-      } else {
+      } else if (isFastRefreshActive()) {
+        // Even if there is already a redbox, syntax errors are more important.
+        // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
+        dismissRedbox();
         throw new Error(`${data.type} ${data.message}`);
       }
     });
