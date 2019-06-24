@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
 /**
  * View manager for {@link ReactScrollView} components.
  *
- * <p>Note that {@link ReactScrollView} and {@link ReactScrollView} are exposed to JS
+ * <p>Note that {@link ReactScrollView} and {@link ReactHorizontalScrollView} are exposed to JS
  * as a single ScrollView component, configured via the {@code horizontal} boolean property.
  */
 @ReactModule(name = ReactScrollViewManager.REACT_CLASS)
