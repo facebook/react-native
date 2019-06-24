@@ -10,7 +10,7 @@
 #import <react/debug/SystraceSection.h>
 #import <react/utils/SharedFunction.h>
 
-#import <React/RCTImageLoader.h>
+#import <RCTImage/RCTImageLoader.h>
 #import <react/imagemanager/ImageResponse.h>
 #import <react/imagemanager/ImageResponseObserver.h>
 

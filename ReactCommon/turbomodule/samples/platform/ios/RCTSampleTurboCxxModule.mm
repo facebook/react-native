@@ -8,7 +8,7 @@
 #import "RCTSampleTurboCxxModule.h"
 
 #import <cxxreact/CxxModule.h>
-#import <jsireact/SampleTurboCxxModule.h>
+#import "SampleTurboCxxModule.h"
 #import "SampleTurboCxxModuleLegacyImpl.h"
 
 using namespace facebook;

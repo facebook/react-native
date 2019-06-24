@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "**/*.{h,m}"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
-  s.header_dir             = "React"
+  s.header_dir             = "ART"
 
   s.dependency "React-Core", version
 end

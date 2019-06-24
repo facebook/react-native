@@ -12,9 +12,9 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
-#import <React/RCTImageLoader.h>
+#import "RCTImageLoader.h"
 #import <React/RCTLog.h>
-#import <React/RCTNetworking.h>
+#import <RCTNetwork/RCTNetworking.h>
 #import <React/RCTUtils.h>
 
 #import "RCTImageCache.h"

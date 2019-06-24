@@ -13,8 +13,8 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTModuleMethod.h>
 #import <cxxreact/MessageQueueThread.h>
-#import <jsireact/JSCallInvoker.h>
-#import <jsireact/TurboModule.h>
+#import <jscallinvoker/JSCallInvoker.h>
+#import "TurboModule.h"
 #import <unordered_map>
 #import <string>
 

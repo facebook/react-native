@@ -7,7 +7,7 @@
 
 #import "SampleTurboCxxModule.h"
 
-#import <jsireact/TurboModuleUtils.h>
+#import <turbomodule/TurboModuleUtils.h>
 
 using namespace facebook;
 

@@ -8,7 +8,7 @@
 #pragma once
 
 #import <React/RCTCxxModule.h>
-#import <jsireact/RCTTurboModule.h>
+#import <turbomodule/RCTTurboModule.h>
 
 /**
  * Sample backward-compatible RCTCxxModule-based module.

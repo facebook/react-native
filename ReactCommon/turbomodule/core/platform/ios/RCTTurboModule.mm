@@ -16,10 +16,10 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTModuleMethod.h>
 #import <React/RCTUtils.h>
-#import <jsireact/JSCallInvoker.h>
-#import <jsireact/LongLivedObject.h>
-#import <jsireact/TurboModule.h>
-#import <jsireact/TurboModuleUtils.h>
+#import <jscallinvoker/JSCallInvoker.h>
+#import "LongLivedObject.h"
+#import "TurboModule.h"
+#import "TurboModuleUtils.h"
 #import <React/RCTCxxConvert.h>
 #import <React/RCTManagedPointer.h>
 

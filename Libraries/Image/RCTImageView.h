@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 #import <React/RCTView.h>
-#import <React/RCTResizeMode.h>
+#import "RCTResizeMode.h"
 
 @class RCTBridge;
 @class RCTImageSource;

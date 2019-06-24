@@ -12,8 +12,8 @@
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
-#import <React/RCTNetworkTask.h>
-#import <React/RCTNetworking.h>
+#import "RCTNetworkTask.h"
+#import "RCTNetworking.h"
 #import <React/RCTUtils.h>
 
 #import "RCTHTTPRequestHandler.h"

@@ -17,9 +17,9 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
-#import <React/RCTPackagerClient.h>
-#import <React/RCTReconnectingWebSocket.h>
-#import <React/RCTSRWebSocket.h>
+#import "RCTPackagerClient.h"
+#import <RCTWebSocket/RCTReconnectingWebSocket.h>
+#import <RCTWebSocket/RCTSRWebSocket.h>
 #import <React/RCTUtils.h>
 
 #if RCT_DEV

@@ -8,7 +8,7 @@
 #import "RCTPackagerClient.h"
 
 #import <React/RCTLog.h>
-#import <React/RCTReconnectingWebSocket.h>
+#import <RCTWebSocket/RCTReconnectingWebSocket.h>
 #import <React/RCTUtils.h>
 
 #if RCT_DEV // Only supported in dev mode

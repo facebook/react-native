@@ -32,8 +32,8 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "*.{cpp,h}"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.header_dir             = "jsireact"
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\" \"$(PODS_ROOT)/DoubleConversion\"" }
+  s.header_dir             = "turbomodule"
   s.xcconfig               = { "OTHER_CFLAGS" => "$(inherited) -DRN_TURBO_MODULE_ENABLED" }
 
   s.dependency "React-Core", version
@@ -44,6 +44,5 @@ Pod::Spec.new do |s|
 
   s.subspec "core-ios" do |ss|
     ss.source_files   = "platform/ios/*.{mm,cpp,h}"
-    ss.header_dir     = "jsireact"
   end
 end

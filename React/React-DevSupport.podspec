@@ -28,8 +28,9 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "DevSupport/*",
                              "Inspector/*"
-  s.header_dir             = "React"
+  s.header_dir             = "DevSupport"
 
   s.dependency "React-Core", version
+  s.dependency "React-jsinspector", version
   s.dependency "React-RCTWebSocket", version
 end

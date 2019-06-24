@@ -11,7 +11,7 @@
 
 #include <jsi/jsi.h>
 
-#include <jsireact/JSCallInvoker.h>
+#include <jscallinvoker/JSCallInvoker.h>
 
 using namespace facebook;
 

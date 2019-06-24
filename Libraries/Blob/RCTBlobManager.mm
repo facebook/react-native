@@ -10,9 +10,9 @@
 #import <mutex>
 
 #import <React/RCTConvert.h>
-#import <React/RCTNetworking.h>
+#import <RCTNetwork/RCTNetworking.h>
 #import <React/RCTUtils.h>
-#import <React/RCTWebSocketModule.h>
+#import <RCTWebSocket/RCTWebSocketModule.h>
 #import "RCTBlobCollector.h"
 
 static NSString *const kBlobURIScheme = @"blob";

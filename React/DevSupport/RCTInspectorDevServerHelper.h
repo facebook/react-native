@@ -7,7 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTDefines.h>
-#import <React/RCTInspectorPackagerConnection.h>
+#import "RCTInspectorPackagerConnection.h"
 
 #if RCT_DEV
 

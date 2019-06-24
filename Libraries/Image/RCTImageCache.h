@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import <React/RCTImageLoader.h>
+#import "RCTImageLoader.h"
 
 @interface RCTImageCache : NSObject <RCTImageCache>
 @end
