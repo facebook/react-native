@@ -43,6 +43,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [super setDatePickerMode:datePickerMode];
   // We need to set minuteInterval after setting datePickerMode, otherwise minuteInterval is invalid in time mode.
   self.minuteInterval = _reactMinuteInterval;
+
+  // Workaround for iOS bug where the first UIControlEventValueChanged doesn't fire in countdown mode.
+  if (datePickerMode == UIDatePickerModeCountDownTimer) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      self.countDownDuration = self.countDownDuration;
+    });
+  }
 }
 
 - (void)setMinuteInterval:(NSInteger)minuteInterval
