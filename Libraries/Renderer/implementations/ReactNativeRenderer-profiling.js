@@ -1774,7 +1774,12 @@ function injectInternals(internals) {
   try {
     var rendererID = hook.inject(internals);
     onCommitFiberRoot = catchErrors(function(root) {
-      return hook.onCommitFiberRoot(rendererID, root);
+      hook.onCommitFiberRoot(
+        rendererID,
+        root,
+        void 0,
+        64 === (root.current.effectTag & 64)
+      );
     });
     onCommitFiberUnmount = catchErrors(function(fiber) {
       return hook.onCommitFiberUnmount(rendererID, fiber);
@@ -7430,6 +7435,7 @@ var roots = new Map(),
       },
       findHostInstancesForRefresh: null,
       scheduleRefresh: null,
+      scheduleRoot: null,
       setRefreshHandler: null
     })
   );

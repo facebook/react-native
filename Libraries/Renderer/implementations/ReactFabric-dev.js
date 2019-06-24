@@ -5070,7 +5070,8 @@ function injectInternals(internals) {
     var rendererID = hook.inject(internals);
     // We have successfully injected, so now it is safe to set up hooks.
     onCommitFiberRoot = catchErrors(function(root) {
-      return hook.onCommitFiberRoot(rendererID, root);
+      var didError = (root.current.effectTag & DidCapture) === DidCapture;
+      hook.onCommitFiberRoot(rendererID, root, undefined, didError);
     });
     onCommitFiberUnmount = catchErrors(function(fiber) {
       return hook.onCommitFiberUnmount(rendererID, fiber);
@@ -18283,6 +18284,19 @@ var scheduleRefresh = function(root, update) {
   }
 };
 
+var scheduleRoot = function(root, element) {
+  {
+    if (root.context !== emptyContextObject) {
+      // Super edge case: root has a legacy _renderSubtree context
+      // but we don't know the parentComponent so we can't pass it.
+      // Just ignore. We'll delete this with _renderSubtree code path later.
+      return;
+    }
+    flushPassiveEffects();
+    updateContainerAtExpirationTime(element, root, null, Sync, null);
+  }
+};
+
 function scheduleFibersWithFamiliesRecursively(
   fiber,
   updatedFamilies,
@@ -19465,6 +19479,7 @@ function injectIntoDevTools(devToolsConfig) {
       // React Refresh
       findHostInstancesForRefresh: findHostInstancesForRefresh,
       scheduleRefresh: scheduleRefresh,
+      scheduleRoot: scheduleRoot,
       setRefreshHandler: setRefreshHandler
     })
   );
