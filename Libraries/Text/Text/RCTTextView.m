@@ -13,15 +13,36 @@
 #import <React/UIView+React.h>
 
 #import "RCTTextShadowView.h"
+#import "RCTTextRenderer.h"
+
+@interface RCTTextTiledLayer : CATiledLayer
+
+@end
+
+@implementation RCTTextTiledLayer
+
++ (CFTimeInterval)fadeDuration
+{
+  return 0.05;
+}
+
+@end
 
 @implementation RCTTextView
 {
-  CAShapeLayer *_highlightLayer;
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
 
   NSArray<UIView *> *_Nullable _descendantViews;
   NSTextStorage *_Nullable _textStorage;
   CGRect _contentFrame;
+  RCTTextRenderer *_renderer;
+  // For small amount of text avoid the overhead of CATiledLayer and
+  // make render text synchronously. For large amount of text, use
+  // CATiledLayer to chunk text rendering and avoid linear memory
+  // usage.
+  CALayer *_Nullable _syncLayer;
+  RCTTextTiledLayer *_Nullable _asyncTiledLayer;
+  CAShapeLayer *_highlightLayer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -31,6 +52,7 @@
     self.accessibilityTraits |= UIAccessibilityTraitStaticText;
     self.opaque = NO;
     self.contentMode = UIViewContentModeRedraw;
+    _renderer = [RCTTextRenderer new];
   }
   return self;
 }
@@ -65,6 +87,7 @@
   // This disables the frame animation, without affecting opacity, etc.
   [UIView performWithoutAnimation:^{
     [super reactSetFrame:frame];
+    [self configureLayer];
   }];
 }
 
@@ -91,55 +114,101 @@
     [self addSubview:view];
   }
 
-  [self setNeedsDisplay];
+  [_renderer setTextStorage:textStorage contentFrame:contentFrame];
+  [self configureLayer];
+  [self setCurrentLayerNeedsDisplay];
 }
 
-- (void)drawRect:(CGRect)rect
+- (void)configureLayer
 {
   if (!_textStorage) {
     return;
   }
 
+  CALayer *currentLayer;
+
+  CGSize screenSize = RCTScreenSize();
+  CGFloat textViewTileSize =  MAX(screenSize.width, screenSize.height) * 1.5;
+
+  if (self.frame.size.width > textViewTileSize || self.frame.size.height > textViewTileSize) {
+    // Cleanup sync layer
+    if (_syncLayer != nil) {
+      _syncLayer.delegate = nil;
+      [_syncLayer removeFromSuperlayer];
+      _syncLayer = nil;
+    }
+
+    if (_asyncTiledLayer == nil) {
+      RCTTextTiledLayer *layer = [RCTTextTiledLayer layer];
+      layer.delegate = _renderer;
+      layer.contentsScale = RCTScreenScale();
+      layer.tileSize = CGSizeMake(textViewTileSize, textViewTileSize);
+      _asyncTiledLayer = layer;
+      [self.layer addSublayer:layer];
+      [layer setNeedsDisplay];
+    }
+    _asyncTiledLayer.frame = self.bounds;
+    currentLayer = _asyncTiledLayer;
+  } else {
+    // Cleanup async tiled layer
+    if (_asyncTiledLayer != nil) {
+      _asyncTiledLayer.delegate = nil;
+      [_asyncTiledLayer removeFromSuperlayer];
+      _asyncTiledLayer = nil;
+    }
+
+    if (_syncLayer == nil) {
+      CALayer *layer = [CALayer layer];
+      layer.delegate = _renderer;
+      layer.contentsScale = RCTScreenScale();
+      _syncLayer = layer;
+      [self.layer addSublayer:layer];
+      [layer setNeedsDisplay];
+    }
+    _syncLayer.frame = self.bounds;
+    currentLayer = _syncLayer;
+  }
 
   NSLayoutManager *layoutManager = _textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
-
-  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
-  [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:_contentFrame.origin];
-  [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
+  NSRange glyphRange =
+    [layoutManager glyphRangeForTextContainer:textContainer];
 
   __block UIBezierPath *highlightPath = nil;
   NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange
                                                      actualGlyphRange:NULL];
+
   [_textStorage enumerateAttribute:RCTTextAttributesIsHighlightedAttributeName
                            inRange:characterRange
                            options:0
                         usingBlock:
-    ^(NSNumber *value, NSRange range, __unused BOOL *stop) {
-      if (!value.boolValue) {
-        return;
-      }
+   ^(NSNumber *value, NSRange range, __unused BOOL *stop) {
+     if (!value.boolValue) {
+       return;
+     }
 
-      [layoutManager enumerateEnclosingRectsForGlyphRange:range
-                                 withinSelectedGlyphRange:range
-                                          inTextContainer:textContainer
-                                               usingBlock:
-        ^(CGRect enclosingRect, __unused BOOL *anotherStop) {
-          UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) cornerRadius:2];
-          if (highlightPath) {
-            [highlightPath appendPath:path];
-          } else {
-            highlightPath = path;
-          }
+     [layoutManager enumerateEnclosingRectsForGlyphRange:range
+                                withinSelectedGlyphRange:range
+                                         inTextContainer:textContainer
+                                              usingBlock:
+      ^(CGRect enclosingRect, __unused BOOL *anotherStop) {
+        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) cornerRadius:2];
+        if (highlightPath) {
+          [highlightPath appendPath:path];
+        } else {
+          highlightPath = path;
         }
+      }
       ];
-  }];
+   }];
 
   if (highlightPath) {
     if (!_highlightLayer) {
       _highlightLayer = [CAShapeLayer layer];
       _highlightLayer.fillColor = [UIColor colorWithWhite:0 alpha:0.25].CGColor;
-      [self.layer addSublayer:_highlightLayer];
+    }
+    if (![currentLayer.sublayers containsObject:_highlightLayer]) {
+      [currentLayer addSublayer:_highlightLayer];
     }
     _highlightLayer.position = _contentFrame.origin;
     _highlightLayer.path = highlightPath.CGPath;
@@ -149,6 +218,15 @@
   }
 }
 
+- (void)setCurrentLayerNeedsDisplay
+{
+  if (_asyncTiledLayer != nil) {
+    [_asyncTiledLayer setNeedsDisplay];
+  } else if (_syncLayer != nil) {
+    [_syncLayer setNeedsDisplay];
+  }
+  [_highlightLayer setNeedsDisplay];
+}
 
 - (NSNumber *)reactTagAtPoint:(CGPoint)point
 {
@@ -174,14 +252,18 @@
 {
   [super didMoveToWindow];
 
+  // When an `RCTText` instance moves offscreen (possibly due to parent clipping),
+  // we unset the layer's contents until it comes onscreen again.
   if (!self.window) {
-    self.layer.contents = nil;
-    if (_highlightLayer) {
-      [_highlightLayer removeFromSuperlayer];
-      _highlightLayer = nil;
-    }
+    [_syncLayer removeFromSuperlayer];
+    _syncLayer = nil;
+    [_asyncTiledLayer removeFromSuperlayer];
+    _asyncTiledLayer = nil;
+    [_highlightLayer removeFromSuperlayer];
+    _highlightLayer = nil;
   } else if (_textStorage) {
-    [self setNeedsDisplay];
+    [self configureLayer];
+    [self setCurrentLayerNeedsDisplay];
   }
 }
 
