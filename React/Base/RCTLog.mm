@@ -7,7 +7,6 @@
 
 #import "RCTLog.h"
 
-#include <asl.h>
 #include <cxxabi.h>
 
 #import "RCTAssert.h"
