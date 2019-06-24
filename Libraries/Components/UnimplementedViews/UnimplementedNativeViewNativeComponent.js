@@ -21,7 +21,5 @@ type NativeProps = $ReadOnly<{|
 |}>;
 
 // NOTE: This compoenent is not implemented in paper
-// Do not include in paper builds
-module.exports = codegenNativeComponent<NativeProps>(
-  './UnimplementedNativeViewNativeViewConfig',
-);
+// Do not require this file in paper builds
+export default codegenNativeComponent<NativeProps>('UnimplementedNativeView');
