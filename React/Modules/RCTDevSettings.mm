@@ -18,7 +18,9 @@
 
 static NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
 static NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
-static NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
+// This option is no longer exposed in the dev menu UI.
+// It was renamed in D15958697 so it doesn't get stuck with no way to turn it off:
+static NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled_LEGACY";
 static NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
 static NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
 static NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";

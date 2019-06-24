@@ -249,10 +249,19 @@ RCT_EXPORT_MODULE()
   }
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-    return devSettings.isElementInspectorShown ? @"Disable Inspector" : @"Enable Inspector";
+    return devSettings.isElementInspectorShown ? @"Hide Inspector" : @"Show Inspector";
   } handler:^{
     [devSettings toggleElementInspector];
   }]];
+
+  if (devSettings.isHotLoadingAvailable) {
+    [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
+      // Previously known as "Hot Reloading". We won't use this term anymore.
+      return devSettings.isHotLoadingEnabled ? @"Disable Fast Refresh" : @"Enable Fast Refresh";
+    } handler:^{
+      devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled;
+    }]];
+  }
 
   if (devSettings.isLiveReloadAvailable) {
     [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
@@ -278,19 +287,17 @@ RCT_EXPORT_MODULE()
       }
     }]];
 
-    [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      return devSettings.isLiveReloadEnabled ? @"Disable Reload-on-Save" : @"Enable Reload-on-Save";
-    } handler:^{
-      devSettings.isLiveReloadEnabled = !devSettings.isLiveReloadEnabled;
-    }]];
-  }
-
-  if (devSettings.isHotLoadingAvailable) {
-    [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      return devSettings.isHotLoadingEnabled ? @"Disable Hot Reloading" : @"Enable Hot Reloading";
-    } handler:^{
-      devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled;
-    }]];
+    // "Live reload" which refreshes on every edit was removed in favor of "Fast Refresh".
+    // While native code for "Live reload" is still there, please don't add the option back.
+    //
+    // If for some reason you really need a full reload on every edit,
+    // you can put this into your application entry point as an escape hatch:
+    //
+    // if (__DEV__) {
+    //   require.Refresh.forceFullRefresh = true;
+    // }
+    //
+    // See D15958697 for more context.
   }
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{

@@ -46,7 +46,7 @@ const HMRClient = {
     const modules = (require: any).getModules();
     if (_hmrClient.outdatedModules.size > 0) {
       let message =
-        "You've changed these files before turning on Hot Reloading: ";
+        "You've changed these files before turning on Fast Refresh: ";
       message +=
         Array.from(_hmrClient.outdatedModules)
           .map(id => {
@@ -72,7 +72,7 @@ const HMRClient = {
     _hmrClient.shouldApplyUpdates = false;
   },
 
-  // Called once by the bridge on startup, even if hot reloading is off.
+  // Called once by the bridge on startup, even if Fast Refresh is off.
   // It creates the HMR client but doesn't actually set up the socket yet.
   setup(
     platform: string,
@@ -106,7 +106,7 @@ const HMRClient = {
     _hmrClient = hmrClient;
 
     hmrClient.on('connection-error', e => {
-      let error = `Hot reloading isn't working because it cannot connect to the development server.
+      let error = `Fast Refresh isn't working because it cannot connect to the development server.
 
 Try the following to fix the issue:
 - Ensure that the packager server is running and available on the same network`;
@@ -151,7 +151,7 @@ Error: ${e.message}`;
 
     hmrClient.on('update-start', () => {
       if (shouldProvideVisualFeedback()) {
-        HMRLoadingView.showMessage('Hot Reloading...');
+        HMRLoadingView.showMessage('Refreshing...');
       }
     });
 
@@ -182,13 +182,15 @@ Error: ${e.message}`;
 
       if (data.type === 'GraphNotFoundError') {
         hmrClient.disable();
+        // TODO: this shouldn't be a redbox.
         setHMRUnavailableReason(
-          'The packager server has restarted since the last Hot update. Hot Reloading will be disabled until you reload the application.',
+          'The packager server has restarted since the last edit. Fast Refresh will be disabled until you reload the application.',
         );
       } else if (data.type === 'RevisionNotFoundError') {
         hmrClient.disable();
+        // TODO: this shouldn't be a redbox.
         setHMRUnavailableReason(
-          'The packager server and the client are out of sync. Hot Reloading will be disabled until you reload the application.',
+          'The packager server and the client are out of sync. Fast Refresh will be disabled until you reload the application.',
         );
       } else {
         throw new Error(`${data.type} ${data.message}`);
@@ -197,8 +199,9 @@ Error: ${e.message}`;
 
     hmrClient.on('close', data => {
       HMRLoadingView.hide();
+      // TODO: this shouldn't be a redbox.
       setHMRUnavailableReason(
-        'Disconnected from the packager server. Hot Reloading will be disabled until you reload the application.',
+        'Disconnected from the packager server. Fast Refresh will be disabled until you reload the application.',
       );
     });
 

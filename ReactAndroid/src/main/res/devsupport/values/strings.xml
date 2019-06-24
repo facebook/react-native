@@ -10,12 +10,10 @@
   <string name="catalyst_debug_chrome_stop" project="catalyst" translatable="false">Stop Chrome Debugging</string>
   <string name="catalyst_debug_nuclide" project="catalyst" translatable="false">Debug with Nuclide</string>
   <string name="catalyst_debug_nuclide_error" project="catalyst" translatable="false">Failed to communicate with the bundler to enabling debugging with Nuclide.</string>
-  <string name="catalyst_reload_on_save" project="catalyst" translatable="false">Enable Reload-on-Save</string>
-  <string name="catalyst_reload_on_save_stop" project="catalyst" translatable="false">Disable Reload-on-Save</string>
-  <string name="catalyst_hot_reloading" project="catalyst" translatable="false">Enable Hot Reloading</string>
-  <string name="catalyst_hot_reloading_stop" project="catalyst" translatable="false">Disable Hot Reloading</string>
-  <string name="catalyst_hot_reloading_auto_disable" project="catalyst" translatable="false">Disabling hot reloading because it requires a development bundle.</string>
-  <string name="catalyst_hot_reloading_auto_enable" project="catalyst" translatable="false">Switching to development bundle in order to enable hot reloading.</string>
+  <string name="catalyst_hot_reloading" project="catalyst" translatable="false">Enable Fast Refresh</string>
+  <string name="catalyst_hot_reloading_stop" project="catalyst" translatable="false">Disable Fast Refresh</string>
+  <string name="catalyst_hot_reloading_auto_disable" project="catalyst" translatable="false">Disabling Fast Refresh because it requires a development bundle.</string>
+  <string name="catalyst_hot_reloading_auto_enable" project="catalyst" translatable="false">Switching to development bundle in order to enable Fast Refresh.</string>
   <string name="catalyst_inspector" project="catalyst" translatable="false">Toggle Inspector</string>
   <string name="catalyst_perf_monitor" project="catalyst" translatable="false">Show Perf Monitor</string>
   <string name="catalyst_perf_monitor_stop" project="catalyst" translatable="false">Hide Perf Monitor</string>
