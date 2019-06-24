@@ -75,7 +75,7 @@ function getClassExtendString(component): string {
         }
       })
       .join(', ') +
-    ',';
+    `${component.props.length > 0 ? ',' : ''}`;
 
   return extendString;
 }

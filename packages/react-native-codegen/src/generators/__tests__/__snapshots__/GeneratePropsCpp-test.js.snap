@@ -339,6 +339,35 @@ ImageColorPropNativeComponentProps::ImageColorPropNativeComponentProps(
 }
 `;
 
+exports[`GeneratePropsCpp can generate fixture NO_PROPS_NO_EVENTS 1`] = `
+Map {
+  "Props.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/NO_PROPS_NO_EVENTS/Props.h>
+#include <react/core/propsConversions.h>
+
+namespace facebook {
+namespace react {
+
+NoPropsNoEventsComponentProps::NoPropsNoEventsComponentProps(
+    const NoPropsNoEventsComponentProps &sourceProps,
+    const RawProps &rawProps): ViewProps(sourceProps, rawProps)
+
+    
+      {}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GeneratePropsCpp can generate fixture POINT_PROP 1`] = `
 Map {
   "Props.cpp" => "

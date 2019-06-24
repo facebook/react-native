@@ -12,6 +12,25 @@
 
 import type {SchemaType} from '../../CodegenSchema.js';
 
+const NO_PROPS_NO_EVENTS: SchemaType = {
+  modules: {
+    NoPropsNoEvents: {
+      components: {
+        NoPropsNoEventsComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [],
+        },
+      },
+    },
+  },
+};
+
 const INTERFACE_ONLY: SchemaType = {
   modules: {
     Switch: {
@@ -810,6 +829,7 @@ const TWO_COMPONENTS_DIFFERENT_FILES: SchemaType = {
 };
 
 module.exports = {
+  NO_PROPS_NO_EVENTS,
   INTERFACE_ONLY,
   BOOLEAN_PROP,
   STRING_PROP,

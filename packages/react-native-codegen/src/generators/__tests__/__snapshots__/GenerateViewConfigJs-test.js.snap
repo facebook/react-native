@@ -452,6 +452,38 @@ export default nativeComponentName;
 }
 `;
 
+exports[`GenerateViewConfigJs can generate fixture NO_PROPS_NO_EVENTS 1`] = `
+Map {
+  "NO_PROPS_NO_EVENTSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const NoPropsNoEventsComponentViewConfig = {
+  uiViewClassName: 'NoPropsNoEventsComponent',
+  validAttributes: {},
+};
+
+let nativeComponentName = 'NoPropsNoEventsComponent';
+
+registerGeneratedViewConfig(nativeComponentName, NoPropsNoEventsComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = NoPropsNoEventsComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
 exports[`GenerateViewConfigJs can generate fixture POINT_PROP 1`] = `
 Map {
   "POINT_PROPNativeViewConfig.js" => "
