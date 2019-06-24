@@ -17,6 +17,13 @@ struct YGNode;
 namespace facebook {
 namespace yoga {
 
+enum LayoutType : int {
+  kLayout = 0,
+  kMeasure = 1,
+  kCachedLayout = 2,
+  kCachedMeasure = 3
+};
+
 struct Event {
   enum Type {
     NodeAllocation,
@@ -99,7 +106,7 @@ struct Event::TypedData<Event::NodeMeasure> {
 
 template <>
 struct Event::TypedData<Event::NodeLayout> {
-  bool performLayout;
+  LayoutType layoutType;
   void* layoutContext;
 };
 

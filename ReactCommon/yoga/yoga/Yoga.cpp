@@ -3928,7 +3928,16 @@ bool YGLayoutNodeInternal(
   layout->generationCount = gCurrentGenerationCount;
 
 #ifdef YG_ENABLE_EVENTS
-  Event::publish<Event::NodeLayout>(node, {performLayout, layoutContext});
+  LayoutType layoutType;
+  if (performLayout) {
+    layoutType = !needToVisitNode && cachedResults == &layout->cachedLayout
+        ? LayoutType::kCachedLayout
+        : LayoutType::kLayout;
+  } else {
+    layoutType = cachedResults != nullptr ? LayoutType::kCachedMeasure
+                                          : LayoutType::kMeasure;
+  }
+  Event::publish<Event::NodeLayout>(node, {layoutType, layoutContext});
 #endif
 
   return (needToVisitNode || cachedResults == nullptr);
