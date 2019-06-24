@@ -3693,9 +3693,6 @@ bool YGLayoutNodeInternal(
     const YGConfigRef config,
     YGMarkerLayoutData& layoutMarkerData,
     void* const layoutContext) {
-#ifdef YG_ENABLE_EVENTS
-  Event::publish<Event::NodeLayout>(node, {performLayout, layoutContext});
-#endif
   YGLayout* layout = &node->getLayout();
 
   gDepth++;
@@ -3929,6 +3926,11 @@ bool YGLayoutNodeInternal(
 
   gDepth--;
   layout->generationCount = gCurrentGenerationCount;
+
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeLayout>(node, {performLayout, layoutContext});
+#endif
+
   return (needToVisitNode || cachedResults == nullptr);
 }
 
