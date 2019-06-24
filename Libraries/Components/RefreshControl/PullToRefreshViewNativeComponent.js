@@ -43,6 +43,6 @@ type NativeProps = $ReadOnly<{|
   refreshing: WithDefault<boolean, false>,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('PullToRefresh', {
+export default codegenNativeComponent<NativeProps>('PullToRefreshView', {
   paperComponentName: 'RCTRefreshControl',
 });
