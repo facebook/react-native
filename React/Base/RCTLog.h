@@ -71,8 +71,6 @@ typedef void (^RCTLogFunction)(
  * particular data from the log, just pass nil or zero for the argument.
  */
 RCT_EXTERN NSString *RCTFormatLog(
-  NSDate *timestamp,
-  RCTLogLevel level,
   NSString *fileName,
   NSNumber *lineNumber,
   NSString *message
