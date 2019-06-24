@@ -25,7 +25,7 @@ import type {ViewProps} from '../View/ViewPropTypes';
 
 type Event = $ReadOnly<{|
   value: Float,
-  fromUser?: boolean,
+  fromUser: boolean,
 |}>;
 
 type NativeProps = $ReadOnly<{|
