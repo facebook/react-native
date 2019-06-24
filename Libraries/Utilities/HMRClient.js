@@ -130,20 +130,33 @@ Error: ${e.message}`;
       throw new Error(error);
     });
 
-    let enableLoadingView = false;
+    let didFinishInitialUpdate = false;
     hmrClient.on('connection-done', () => {
       // Don't show the loading view during the initial update.
-      enableLoadingView = true;
+      didFinishInitialUpdate = true;
     });
 
+    // This is intentionally called lazily, as these values change.
+    function shouldProvideVisualFeedback() {
+      return (
+        // Until we get "connection-done", messages aren't real edits.
+        didFinishInitialUpdate &&
+        // If HMR is disabled by the user, we're ignoring updates.
+        hmrClient.shouldApplyUpdates &&
+        // If full refresh is forced, there's no need to flash the indicator.
+        // It will be refreshed in a few milliseconds anyway.
+        !(require: any).Refresh.forceFullRefresh
+      );
+    }
+
     hmrClient.on('update-start', () => {
-      if (hmrClient.shouldApplyUpdates && enableLoadingView) {
+      if (shouldProvideVisualFeedback()) {
         HMRLoadingView.showMessage('Hot Reloading...');
       }
     });
 
     hmrClient.on('update', () => {
-      if (hmrClient.shouldApplyUpdates) {
+      if (shouldProvideVisualFeedback()) {
         if (
           Platform.OS === 'ios' &&
           NativeRedBox != null &&
@@ -161,9 +174,7 @@ Error: ${e.message}`;
     });
 
     hmrClient.on('update-done', () => {
-      if (hmrClient.shouldApplyUpdates && enableLoadingView) {
-        HMRLoadingView.hide();
-      }
+      HMRLoadingView.hide();
     });
 
     hmrClient.on('error', data => {

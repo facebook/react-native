@@ -17,22 +17,35 @@ if (__DEV__) {
     throw new Error('Could not find the reload() implementation.');
   }
 
-  if ((module: any).hot) {
-    // This needs to run before the renderer initializes.
-    const ReactRefreshRuntime = require('react-refresh/runtime');
-    ReactRefreshRuntime.injectIntoGlobalHook(global);
+  // This needs to run before the renderer initializes.
+  const ReactRefreshRuntime = require('react-refresh/runtime');
+  ReactRefreshRuntime.injectIntoGlobalHook(global);
 
-    (require: any).Refresh = {
-      // Full Refresh
-      performFullRefresh() {
+  const Refresh = {
+    // This can be set from the app as a workaround
+    // if you really want a full reload on every change:
+    // if (__DEV__) require.Refresh.forceFullRefresh = true;
+    forceFullRefresh: false,
+
+    performFullRefresh() {
+      NativeDevSettings.reload();
+    },
+
+    createSignatureFunctionForTransform:
+      ReactRefreshRuntime.createSignatureFunctionForTransform,
+
+    isLikelyComponentType: ReactRefreshRuntime.isLikelyComponentType,
+
+    register: ReactRefreshRuntime.register,
+
+    performReactRefresh() {
+      if (Refresh.forceFullRefresh) {
         NativeDevSettings.reload();
-      },
-      // React Refresh
-      createSignatureFunctionForTransform:
-        ReactRefreshRuntime.createSignatureFunctionForTransform,
-      isLikelyComponentType: ReactRefreshRuntime.isLikelyComponentType,
-      register: ReactRefreshRuntime.register,
-      performReactRefresh: ReactRefreshRuntime.performReactRefresh,
-    };
-  }
+      } else {
+        ReactRefreshRuntime.performReactRefresh();
+      }
+    },
+  };
+
+  (require: any).Refresh = Refresh;
 }
