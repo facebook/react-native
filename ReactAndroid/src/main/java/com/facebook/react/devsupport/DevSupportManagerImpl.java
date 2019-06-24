@@ -488,15 +488,23 @@ public class DevSupportManagerImpl implements
       new DevOptionHandler() {
         @Override
         public void onOptionSelected() {
-        if (!mDevSettings.isHotModuleReplacementEnabled() && !mDevSettings.isJSDevModeEnabled()) {
-          Toast.makeText(
-            mApplicationContext,
-            mApplicationContext.getString(R.string.catalyst_hot_reloading_auto_enable),
-            Toast.LENGTH_LONG).show();
-          mDevSettings.setJSDevModeEnabled(true);
-        }
-        mDevSettings.setHotModuleReplacementEnabled(!mDevSettings.isHotModuleReplacementEnabled());
-        handleReloadJS();
+          boolean nextEnabled = !mDevSettings.isHotModuleReplacementEnabled();
+          mDevSettings.setHotModuleReplacementEnabled(nextEnabled);
+          if (mCurrentContext != null) {
+            if (nextEnabled) {
+              mCurrentContext.getJSModule(HMRClient.class).enable();
+            } else {
+              mCurrentContext.getJSModule(HMRClient.class).disable();
+            }
+          }
+          if (nextEnabled && !mDevSettings.isJSDevModeEnabled()) {
+            Toast.makeText(
+              mApplicationContext,
+              mApplicationContext.getString(R.string.catalyst_hot_reloading_auto_enable),
+              Toast.LENGTH_LONG).show();
+            mDevSettings.setJSDevModeEnabled(true);
+            handleReloadJS();
+          }
         }
       });
     options.put(
@@ -692,13 +700,15 @@ public class DevSupportManagerImpl implements
       mDebugOverlayController = new DebugOverlayController(reactContext);
     }
 
-    if (mDevSettings.isHotModuleReplacementEnabled() && mCurrentContext != null) {
+    if (mCurrentContext != null) {
       try {
         URL sourceUrl = new URL(getSourceUrl());
         String path = sourceUrl.getPath().substring(1); // strip initial slash in path
         String host = sourceUrl.getHost();
         int port = sourceUrl.getPort();
-        mCurrentContext.getJSModule(HMRClient.class).enable("android", path, host, port);
+        mCurrentContext
+            .getJSModule(HMRClient.class)
+            .setup("android", path, host, port, mDevSettings.isHotModuleReplacementEnabled());
       } catch (MalformedURLException e) {
         showNewJavaError(e.getMessage(), e);
       }

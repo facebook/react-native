@@ -327,7 +327,22 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 {
   if (self.isHotLoadingEnabled != enabled) {
     [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingHotLoadingEnabled];
-    [_bridge reload];
+    if (_isJSLoaded) {
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      if (enabled) {
+        [_bridge enqueueJSCall:@"HMRClient"
+                        method:@"enable"
+                        args:@[]
+                        completion:NULL];
+      } else {
+        [_bridge enqueueJSCall:@"HMRClient"
+                        method:@"disable"
+                        args:@[]
+                        completion:NULL];
+      }
+  #pragma clang diagnostic pop
+    }
   }
 }
 

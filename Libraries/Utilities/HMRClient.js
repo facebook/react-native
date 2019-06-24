@@ -16,22 +16,82 @@ const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
 
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 
+let _didSetupSocket = false;
+let _hmrClient = null;
+let _hmrUnavailableReason: string | null = null;
+
 /**
  * HMR Client that receives from the server HMR updates and propagates them
  * runtime to reflects those changes.
  */
 const HMRClient = {
-  enable(platform: string, bundleEntry: string, host: string, port: number) {
+  enable() {
+    if (_hmrUnavailableReason !== null) {
+      // If HMR became unavailable while you weren't using it,
+      // explain why when you try to turn it on.
+      throw new Error(_hmrUnavailableReason);
+    }
+
+    invariant(_hmrClient, 'Expected HMRClient.setup() call at startup.');
+    _hmrClient.shouldApplyUpdates = true;
+
+    // We connect lazily. This only ever must run once.
+    if (!_didSetupSocket) {
+      _didSetupSocket = true;
+      _hmrClient.enable();
+    }
+
+    // Intentionally reading it outside the condition
+    // so that it's less likely we'd break it later.
+    const modules = (require: any).getModules();
+    if (_hmrClient.outdatedModules.size > 0) {
+      let message =
+        "You've changed these files before turning on Hot Reloading: ";
+      message +=
+        Array.from(_hmrClient.outdatedModules)
+          .map(id => {
+            const mod = modules[id];
+            return getShortModuleName(mod.verboseName);
+          })
+          .join(', ') + '.';
+      message +=
+        "\n\nThese pending changes won't be reflected unless you save them again " +
+        'or perform a full reload.';
+      console.warn(message);
+      // Don't warn about the same modules twice.
+      _hmrClient.outdatedModules.clear();
+    }
+  },
+
+  disable() {
+    invariant(_hmrClient, 'Expected HMRClient.setup() call at startup.');
+    // Note: we don't actually tear down the connection.
+    // We just tell the client to ignore updates.
+    // This lets us avoid reasonining about complex race conditions
+    // if the user toggles the setting on and off.
+    _hmrClient.shouldApplyUpdates = false;
+  },
+
+  // Called once by the bridge on startup, even if hot reloading is off.
+  // It creates the HMR client but doesn't actually set up the socket yet.
+  setup(
+    platform: string,
+    bundleEntry: string,
+    host: string,
+    port: number | string,
+    isEnabled: boolean,
+  ) {
     invariant(platform, 'Missing required parameter `platform`');
     invariant(bundleEntry, 'Missing required paramenter `bundleEntry`');
     invariant(host, 'Missing required paramenter `host`');
-
+    invariant(!_hmrClient, 'Cannot initialize hmrClient twice');
     // Moving to top gives errors due to NativeModules not being initialized
     const HMRLoadingView = require('./HMRLoadingView');
 
     /* $FlowFixMe(>=0.84.0 site=react_native_fb) This comment suppresses an
      * error found when Flow v0.84 was deployed. To see the error, delete this
      * comment and run Flow. */
+
     const wsHostPort = port !== null && port !== '' ? `${host}:${port}` : host;
 
     bundleEntry = bundleEntry.replace(/\.(bundle|delta)/, '.js');
@@ -43,6 +103,7 @@ const HMRClient = {
       `bundleEntry=${bundleEntry}`;
 
     const hmrClient = new MetroHMRClient(wsUrl);
+    _hmrClient = hmrClient;
 
     hmrClient.on('connection-error', e => {
       let error = `Hot reloading isn't working because it cannot connect to the development server.
@@ -76,29 +137,31 @@ Error: ${e.message}`;
     });
 
     hmrClient.on('update-start', () => {
-      if (enableLoadingView) {
+      if (hmrClient.shouldApplyUpdates && enableLoadingView) {
         HMRLoadingView.showMessage('Hot Reloading...');
       }
     });
 
     hmrClient.on('update', () => {
-      if (
-        Platform.OS === 'ios' &&
-        NativeRedBox != null &&
-        NativeRedBox.dismiss != null
-      ) {
-        NativeRedBox.dismiss();
-      } else {
-        const NativeExceptionsManager = require('../Core/NativeExceptionsManager')
-          .default;
-        NativeExceptionsManager &&
-          NativeExceptionsManager.dismissRedbox &&
-          NativeExceptionsManager.dismissRedbox();
+      if (hmrClient.shouldApplyUpdates) {
+        if (
+          Platform.OS === 'ios' &&
+          NativeRedBox != null &&
+          NativeRedBox.dismiss != null
+        ) {
+          NativeRedBox.dismiss();
+        } else {
+          const NativeExceptionsManager = require('../Core/NativeExceptionsManager')
+            .default;
+          NativeExceptionsManager &&
+            NativeExceptionsManager.dismissRedbox &&
+            NativeExceptionsManager.dismissRedbox();
+        }
       }
     });
 
     hmrClient.on('update-done', () => {
-      if (enableLoadingView) {
+      if (hmrClient.shouldApplyUpdates && enableLoadingView) {
         HMRLoadingView.hide();
       }
     });
@@ -108,12 +171,12 @@ Error: ${e.message}`;
 
       if (data.type === 'GraphNotFoundError') {
         hmrClient.disable();
-        throw new Error(
+        setHMRUnavailableReason(
           'The packager server has restarted since the last Hot update. Hot Reloading will be disabled until you reload the application.',
         );
       } else if (data.type === 'RevisionNotFoundError') {
         hmrClient.disable();
-        throw new Error(
+        setHMRUnavailableReason(
           'The packager server and the client are out of sync. Hot Reloading will be disabled until you reload the application.',
         );
       } else {
@@ -123,13 +186,46 @@ Error: ${e.message}`;
 
     hmrClient.on('close', data => {
       HMRLoadingView.hide();
-      throw new Error(
+      setHMRUnavailableReason(
         'Disconnected from the packager server. Hot Reloading will be disabled until you reload the application.',
       );
     });
 
-    hmrClient.enable();
+    if (isEnabled) {
+      HMRClient.enable();
+    } else {
+      HMRClient.disable();
+    }
   },
 };
+
+function setHMRUnavailableReason(reason) {
+  invariant(_hmrClient, 'Expected HMRClient.setup() call at startup.');
+
+  _hmrUnavailableReason = reason;
+  if (_hmrClient.shouldApplyUpdates) {
+    // If HMR is currently enabled, show the error right away.
+    // Otherwise, it will be shown when you try to enable it.
+    throw new Error(reason);
+  }
+}
+
+// Returns the filename without the folder path.
+// If file is called index.js, it does include the parent folder though.
+function getShortModuleName(fullName) {
+  const BEFORE_SLASH_RE = /^(.*)[\\\/]/;
+  let shortName = fullName.replace(BEFORE_SLASH_RE, '');
+  if (/^index\./.test(shortName)) {
+    const match = fullName.match(BEFORE_SLASH_RE);
+    if (match) {
+      const pathBeforeSlash = match[1];
+      if (pathBeforeSlash) {
+        const folderName = pathBeforeSlash.replace(BEFORE_SLASH_RE, '');
+        return folderName + '/' + shortName;
+      }
+    }
+  }
+  return shortName;
+}
 
 module.exports = HMRClient;
