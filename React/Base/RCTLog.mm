@@ -53,7 +53,7 @@ RCTLogFunction RCTDefaultLogFunction = ^(
   NSString *message
 )
 {
-  NSString *log = RCTFormatLog([NSDate date], level, fileName, lineNumber, message);
+  NSString *log = RCTFormatLog(fileName, lineNumber, message);
   fprintf(stderr, "%s\n", log.UTF8String);
   fflush(stderr);
 
@@ -145,28 +145,16 @@ void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix)
 }
 
 NSString *RCTFormatLog(
-  NSDate *timestamp,
-  RCTLogLevel level,
   NSString *fileName,
   NSNumber *lineNumber,
   NSString *message
 )
 {
   NSMutableString *log = [NSMutableString new];
-  if (timestamp) {
-    static NSDateFormatter *formatter;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      formatter = [NSDateFormatter new];
-      formatter.dateFormat = formatter.dateFormat = @"yyyy-MM-dd HH:mm:ss.SSS ";
-    });
-    [log appendString:[formatter stringFromDate:timestamp]];
-  }
-  if (level) {
-    [log appendFormat:@"[%s]", RCTLogLevels[level]];
-  }
 
-  [log appendFormat:@"[tid:%@]", RCTCurrentThreadName()];
+  if ([RCTCurrentThreadName() isEqualToString:@"com.facebook.react.JavaScript"]) {
+    [log appendFormat:@"[JS]"];
+  }
 
   if (fileName) {
     fileName = fileName.lastPathComponent;
