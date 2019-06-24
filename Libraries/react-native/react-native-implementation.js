@@ -44,6 +44,12 @@ module.exports = {
     return require('../Components/CheckBox/CheckBox');
   },
   get DatePickerIOS() {
+    warnOnce(
+      'DatePickerIOS-merged',
+      'DatePickerIOS has been merged with DatePickerAndroid and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-datetimepicker',
+    );
     return require('../Components/DatePicker/DatePickerIOS');
   },
   get DrawerLayoutAndroid() {
@@ -181,6 +187,12 @@ module.exports = {
     return require('../Components/Clipboard/Clipboard');
   },
   get DatePickerAndroid() {
+    warnOnce(
+      'DatePickerAndroid-merged',
+      'DatePickerAndroid has been merged with DatePickerIOS and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-datetimepicker',
+    );
     return require('../Components/DatePickerAndroid/DatePickerAndroid');
   },
   get DeviceInfo() {
