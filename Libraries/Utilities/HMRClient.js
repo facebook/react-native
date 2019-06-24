@@ -29,6 +29,8 @@ const HMRClient = {
     if (_hmrUnavailableReason !== null) {
       // If HMR became unavailable while you weren't using it,
       // explain why when you try to turn it on.
+      // This is an error (and not a warning) because it is shown
+      // in response to a direct user action.
       throw new Error(_hmrUnavailableReason);
     }
 
@@ -109,11 +111,11 @@ const HMRClient = {
       let error = `Fast Refresh isn't working because it cannot connect to the development server.
 
 Try the following to fix the issue:
-- Ensure that the packager server is running and available on the same network`;
+- Ensure that the Metro Server is running and available on the same network`;
 
       if (Platform.OS === 'ios') {
         error += `
-- Ensure that the Packager server URL is correctly set in AppDelegate`;
+- Ensure that the Metro server URL is correctly set in AppDelegate`;
       } else {
         error += `
 - Ensure that your device/emulator is connected to your machine and has USB debugging enabled - run 'adb devices' to see a list of connected devices
@@ -182,15 +184,13 @@ Error: ${e.message}`;
 
       if (data.type === 'GraphNotFoundError') {
         hmrClient.disable();
-        // TODO: this shouldn't be a redbox.
         setHMRUnavailableReason(
-          'The packager server has restarted since the last edit. Fast Refresh will be disabled until you reload the application.',
+          'The Metro server has restarted since the last edit. Fast Refresh will be disabled until you reload the application.',
         );
       } else if (data.type === 'RevisionNotFoundError') {
         hmrClient.disable();
-        // TODO: this shouldn't be a redbox.
         setHMRUnavailableReason(
-          'The packager server and the client are out of sync. Fast Refresh will be disabled until you reload the application.',
+          'The Metro server and the client are out of sync. Fast Refresh will be disabled until you reload the application.',
         );
       } else {
         throw new Error(`${data.type} ${data.message}`);
@@ -199,9 +199,8 @@ Error: ${e.message}`;
 
     hmrClient.on('close', data => {
       HMRLoadingView.hide();
-      // TODO: this shouldn't be a redbox.
       setHMRUnavailableReason(
-        'Disconnected from the packager server. Fast Refresh will be disabled until you reload the application.',
+        'Disconnected from the Metro server. Fast Refresh will be disabled until you reload the application.',
       );
     });
 
@@ -218,9 +217,9 @@ function setHMRUnavailableReason(reason) {
 
   _hmrUnavailableReason = reason;
   if (_hmrClient.shouldApplyUpdates) {
-    // If HMR is currently enabled, show the error right away.
-    // Otherwise, it will be shown when you try to enable it.
-    throw new Error(reason);
+    // If HMR is currently enabled, show a warning.
+    console.warn(reason);
+    // (Not using the `warning` module to prevent a Buck cycle.)
   }
 }
 
