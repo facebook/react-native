@@ -73,7 +73,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
     if (mAnimating) {
       mProgressBar.setVisibility(View.VISIBLE);
     } else {
-      mProgressBar.setVisibility(View.GONE);
+      mProgressBar.setVisibility(View.INVISIBLE);
     }
   }
 
