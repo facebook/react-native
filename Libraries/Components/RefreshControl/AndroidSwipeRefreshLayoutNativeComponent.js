@@ -64,9 +64,4 @@ type NativeProps = $ReadOnly<{|
   refreshing: WithDefault<boolean, false>,
 |}>;
 
-export default codegenNativeComponent<NativeProps>(
-  'AndroidSwipeRefreshLayout',
-  {
-    interfaceOnly: true,
-  },
-);
+export default codegenNativeComponent<NativeProps>('AndroidSwipeRefreshLayout');
