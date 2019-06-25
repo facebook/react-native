@@ -322,6 +322,9 @@ module.exports = {
   get requireNativeComponent() {
     return require('../ReactNative/requireNativeComponent');
   },
+  get unstable_RootTagContext() {
+    return require('../ReactNative/RootTagContext');
+  },
 
   // Prop Types
   get ColorPropType() {
