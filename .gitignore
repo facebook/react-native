@@ -70,6 +70,10 @@ package-lock.json
 /ReactCommon/**/*.xcodeproj
 RNTester/build
 
+# Libs that shouldn't have Xcode project
+/Libraries/FBLazyVector/**/*.xcodeproj
+/Libraries/RCTRequired/**/*.xcodeproj
+
 # CocoaPods
 /template/ios/Pods/
 /template/ios/Podfile.lock
