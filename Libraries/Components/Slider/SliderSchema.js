@@ -210,6 +210,7 @@ const SliderSchema: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },

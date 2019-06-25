@@ -34,6 +34,7 @@ const UnimplementedNativeViewSchema: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },

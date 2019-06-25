@@ -10,6 +10,26 @@
 
 'use strict';
 
+export type FunctionTypeAnnotation = $ReadOnly<{|
+  type: 'FunctionTypeAnnotation',
+  params: $ReadOnlyArray<FunctionTypeParamAnnotation>,
+|}>;
+
+export type FunctionTypeParamAnnotation = $ReadOnly<{|
+  name: string,
+  typeAnnotation: TypeAnnotation,
+|}>;
+
+export type TypeAnnotation = BooleanTypeAnnotation | Int32TypeAnnotation;
+
+export type BooleanTypeAnnotation = $ReadOnly<{|
+  type: 'BooleanTypeAnnotation',
+|}>;
+
+export type Int32TypeAnnotation = $ReadOnly<{|
+  type: 'Int32TypeAnnotation',
+|}>;
+
 export type ObjectPropertyType =
   | $ReadOnly<{|
       type: 'BooleanTypeAnnotation',
@@ -121,6 +141,12 @@ export type EventTypeShape = $ReadOnly<{|
   |}>,
 |}>;
 
+export type CommandTypeShape = $ReadOnly<{|
+  name: string,
+  optional: boolean,
+  typeAnnotation: FunctionTypeAnnotation,
+|}>;
+
 export type OptionsShape = $ReadOnly<{|
   interfaceOnly?: boolean,
 
@@ -143,6 +169,7 @@ export type ComponentShape = $ReadOnly<{|
   extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
   events: $ReadOnlyArray<EventTypeShape>,
   props: $ReadOnlyArray<PropTypeShape>,
+  commands: $ReadOnlyArray<CommandTypeShape>,
 |}>;
 
 export type SchemaType = $ReadOnly<{|

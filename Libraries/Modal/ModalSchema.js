@@ -199,6 +199,7 @@ const ModalSchema: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },

@@ -89,6 +89,7 @@ const AndroidSwipeRefreshLayoutSchema: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },

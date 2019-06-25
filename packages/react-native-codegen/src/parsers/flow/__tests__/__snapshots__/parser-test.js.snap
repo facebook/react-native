@@ -1,11 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_INLINE 1`] = `"codegenNativeCommands doesn't support inline definitions. Specify a file local type alias"`;
+
+exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_MULTIPLE_TIMES 1`] = `"codegenNativeCommands may only be called once in a file"`;
+
+exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITHOUT_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.Ref<>"`;
+
 exports[`RN Codegen Flow Parser can generate fixture ALL_PROP_TYPES_NO_EVENTS 1`] = `
 Object {
   "modules": Object {
     "Module": Object {
       "components": Object {
         "Module": Object {
+          "commands": Array [],
           "events": Array [],
           "extendsProps": Array [
             Object {
@@ -448,6 +455,7 @@ Object {
     "Module": Object {
       "components": Object {
         "Module": Object {
+          "commands": Array [],
           "events": Array [],
           "extendsProps": Array [
             Object {
@@ -832,12 +840,78 @@ Object {
 }
 `;
 
+exports[`RN Codegen Flow Parser can generate fixture COMMANDS_DEFINED_WITH_ALL_TYPES 1`] = `
+Object {
+  "modules": Object {
+    "Module": Object {
+      "components": Object {
+        "Module": Object {
+          "commands": Array [
+            Object {
+              "name": "hotspotUpdate",
+              "optional": false,
+              "typeAnnotation": Object {
+                "params": Array [
+                  Object {
+                    "name": "x",
+                    "typeAnnotation": Object {
+                      "type": "Int32TypeAnnotation",
+                    },
+                  },
+                  Object {
+                    "name": "y",
+                    "typeAnnotation": Object {
+                      "type": "Int32TypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "scrollTo",
+              "optional": false,
+              "typeAnnotation": Object {
+                "params": Array [
+                  Object {
+                    "name": "y",
+                    "typeAnnotation": Object {
+                      "type": "Int32TypeAnnotation",
+                    },
+                  },
+                  Object {
+                    "name": "animated",
+                    "typeAnnotation": Object {
+                      "type": "BooleanTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+          "events": Array [],
+          "extendsProps": Array [
+            Object {
+              "knownTypeName": "ReactNativeCoreViewProps",
+              "type": "ReactNativeBuiltInType",
+            },
+          ],
+          "props": Array [],
+        },
+      },
+    },
+  },
+}
+`;
+
 exports[`RN Codegen Flow Parser can generate fixture EVENTS_DEFINED_AS_NULL_IN_FILE 1`] = `
 Object {
   "modules": Object {
     "Module": Object {
       "components": Object {
         "Module": Object {
+          "commands": Array [],
           "events": Array [
             Object {
               "bubblingType": "direct",
@@ -956,6 +1030,7 @@ Object {
     "Module": Object {
       "components": Object {
         "Module": Object {
+          "commands": Array [],
           "events": Array [
             Object {
               "bubblingType": "direct",
@@ -1074,6 +1149,7 @@ Object {
     "Module": Object {
       "components": Object {
         "Module": Object {
+          "commands": Array [],
           "events": Array [
             Object {
               "bubblingType": "direct",
@@ -2912,6 +2988,7 @@ Object {
     "Module": Object {
       "components": Object {
         "Module": Object {
+          "commands": Array [],
           "events": Array [
             Object {
               "bubblingType": "direct",
@@ -4750,6 +4827,7 @@ Object {
     "Module": Object {
       "components": Object {
         "Module": Object {
+          "commands": Array [],
           "deprecatedViewConfigName": "DeprecateModuleName",
           "events": Array [],
           "extendsProps": Array [
@@ -4772,6 +4850,7 @@ Object {
     "Module": Object {
       "components": Object {
         "Module": Object {
+          "commands": Array [],
           "events": Array [
             Object {
               "bubblingType": "direct",
@@ -4829,6 +4908,7 @@ Object {
     "Module": Object {
       "components": Object {
         "Module": Object {
+          "commands": Array [],
           "events": Array [
             Object {
               "bubblingType": "bubble",
