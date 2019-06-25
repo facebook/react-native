@@ -148,6 +148,20 @@ public class MountingManager {
     viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
   }
 
+  public void receiveCommand(int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
+    ViewState viewState = getViewState(reactTag);
+
+    if (viewState.mViewManager == null) {
+      throw new IllegalStateException("Unable to find viewState manager for tag " + reactTag);
+    }
+
+    if (viewState.mView == null) {
+      throw new IllegalStateException("Unable to find viewState view for tag " + reactTag);
+    }
+
+    viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
+  }
+
   @SuppressWarnings("unchecked") // prevents unchecked conversion warn of the <ViewGroup> type
   private static ViewGroupManager<ViewGroup> getViewGroupManager(ViewState viewState) {
     if (viewState.mViewManager == null) {

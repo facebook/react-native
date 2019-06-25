@@ -289,25 +289,51 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   public void receiveCommand(ReactViewGroup root, int commandId, @Nullable ReadableArray args) {
     switch (commandId) {
       case CMD_HOTSPOT_UPDATE: {
-        if (args == null || args.size() != 2) {
-          throw new JSApplicationIllegalArgumentException(
-              "Illegal number of arguments for 'updateHotspot' command");
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          float x = PixelUtil.toPixelFromDIP(args.getDouble(0));
-          float y = PixelUtil.toPixelFromDIP(args.getDouble(1));
-          root.drawableHotspotChanged(x, y);
-        }
+        handleHotspotUpdate(root, args);
         break;
       }
       case CMD_SET_PRESSED: {
-        if (args == null || args.size() != 1) {
-          throw new JSApplicationIllegalArgumentException(
-              "Illegal number of arguments for 'setPressed' command");
-        }
-        root.setPressed(args.getBoolean(0));
+        handleSetPressed(root, args);
         break;
       }
+    }
+  }
+
+  @Override
+  public void receiveCommand(ReactViewGroup root, String commandId, @Nullable ReadableArray args) {
+    switch (commandId) {
+      case "hotspotUpdate": {
+        handleHotspotUpdate(root, args);
+        break;
+      }
+      case "setPressed": {
+        handleSetPressed(root, args);
+        break;
+      }
+    }
+  }
+
+  private void handleSetPressed(
+      ReactViewGroup root,
+      @Nullable ReadableArray args) {
+    if (args == null || args.size() != 1) {
+      throw new JSApplicationIllegalArgumentException(
+          "Illegal number of arguments for 'setPressed' command");
+    }
+    root.setPressed(args.getBoolean(0));
+  }
+
+  private void handleHotspotUpdate(
+      ReactViewGroup root,
+      @Nullable ReadableArray args) {
+    if (args == null || args.size() != 2) {
+      throw new JSApplicationIllegalArgumentException(
+          "Illegal number of arguments for 'updateHotspot' command");
+    }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      float x = PixelUtil.toPixelFromDIP(args.getDouble(0));
+      float y = PixelUtil.toPixelFromDIP(args.getDouble(1));
+      root.drawableHotspotChanged(x, y);
     }
   }
 

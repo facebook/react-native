@@ -44,6 +44,7 @@ import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.CreateMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DeleteMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
+import com.facebook.react.fabric.mounting.mountitems.DispatchStringCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
@@ -483,6 +484,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final int reactTag, final int commandId, @Nullable final ReadableArray commandArgs) {
     synchronized (mMountItemsLock) {
       mMountItems.add(new DispatchCommandMountItem(reactTag, commandId, commandArgs));
+    }
+  }
+
+  @Override
+  public void dispatchCommand(
+    final int reactTag, final String commandId, @Nullable final ReadableArray commandArgs) {
+    synchronized (mMountItemsLock) {
+      mMountItems.add(new DispatchStringCommandMountItem(reactTag, commandId, commandArgs));
     }
   }
 
