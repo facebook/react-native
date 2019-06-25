@@ -18,6 +18,7 @@
 #import <React/RCTComponentViewRegistry.h>
 #import <React/RCTFabricSurface.h>
 #import <React/RCTFollyConvert.h>
+#import <RCTImage/RCTImageLoader.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTMountingManagerDelegate.h>
 #import <React/RCTScheduler.h>
@@ -25,12 +26,6 @@
 #import <React/RCTSurfaceView+Internal.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUtils.h>
-
-#if __has_include(<React/RCTImageLoader.h>)
-#import <React/RCTImageLoader.h>
-#else
-#import <RCTImage/RCTImageLoader.h>
-#endif
 
 #import <react/components/root/RootShadowNode.h>
 #import <react/core/LayoutConstraints.h>

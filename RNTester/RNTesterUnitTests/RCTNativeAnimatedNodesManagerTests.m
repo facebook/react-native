@@ -10,15 +10,9 @@
 
 #import <OCMock/OCMock.h>
 
-#import <React/RCTUIManager.h>
-
-#if __has_include(<React/RCTValueAnimatedNode.h>)
-#import <React/RCTNativeAnimatedNodesManager.h>
-#import <React/RCTValueAnimatedNode.h>
-#else
 #import <RCTAnimation/RCTNativeAnimatedNodesManager.h>
 #import <RCTAnimation/RCTValueAnimatedNode.h>
-#endif
+#import <React/RCTUIManager.h>
 
 static const NSTimeInterval FRAME_LENGTH = 1.0 / 60.0;
 

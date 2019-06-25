@@ -7,13 +7,8 @@
 
 #include "ImageManager.h"
 
-#import <react/utils/ManagedObjectWrapper.h>
-
-#if __has_include(<React/RCTImageLoader.h>)
-#import <React/RCTImageLoader.h>
-#else
 #import <RCTImage/RCTImageLoader.h>
-#endif
+#import <react/utils/ManagedObjectWrapper.h>
 
 #import "RCTImageManager.h"
 

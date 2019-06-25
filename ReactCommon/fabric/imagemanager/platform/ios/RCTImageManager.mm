@@ -10,14 +10,9 @@
 #import <react/debug/SystraceSection.h>
 #import <react/utils/SharedFunction.h>
 
+#import <RCTImage/RCTImageLoader.h>
 #import <react/imagemanager/ImageResponse.h>
 #import <react/imagemanager/ImageResponseObserver.h>
-
-#if __has_include(<React/RCTImageLoader.h>)
-#import <React/RCTImageLoader.h>
-#else
-#import <RCTImage/RCTImageLoader.h>
-#endif
 
 #import "RCTImagePrimitivesConversions.h"
 
