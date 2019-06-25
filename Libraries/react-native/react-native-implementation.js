@@ -168,6 +168,9 @@ module.exports = {
   get AppRegistry() {
     return require('../ReactNative/AppRegistry');
   },
+  get BundleRegistry() {
+    return require('../ReactNative/BundleRegistry').default;
+  },
   get AppState() {
     return require('../AppState/AppState');
   },
