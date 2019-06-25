@@ -1,10 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Babel plugin inline view configs can inline config for FullNativeComponent.js 1`] = `
-"const codegenNativeComponent = require('codegenNativeComponent');
+"// @flow
+const codegenNativeCommands = require('codegenNativeCommands');
 
-import type { BubblingEvent, DirectEvent, WithDefault } from 'CodegenFlowtypes';
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type { Int32, BubblingEvent, DirectEvent, WithDefault } from 'CodegenFlowtypes';
 import type { ViewProps } from 'ViewPropTypes';
+interface NativeCommands {
+  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void,
+  +scrollTo: (viewRef: React.Ref<'RCTView'>, y: Int32, animated: boolean) => void,
+}
 type ModuleProps = $ReadOnly<{| ...ViewProps,
   // Props
   boolean_default_true_optional_both?: ?WithDefault<boolean, true>,
@@ -12,8 +19,17 @@ type ModuleProps = $ReadOnly<{| ...ViewProps,
   onDirectEventDefinedInlineNull: (event: DirectEvent<null>) => void,
   onBubblingEventDefinedInlineNull: (event: BubblingEvent<null>) => void,
 |}>;
+export const Commands = codegenNativeCommands<NativeCommands>();
 
 const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const {
+  UIManager
+} = require(\\"react-native\\");
+
+const {
+  findNodeHandle
+} = require(\\"react-native\\");
 
 const ModuleViewConfig = {
   uiViewClassName: 'RCTModule',
@@ -39,7 +55,17 @@ const ModuleViewConfig = {
 let nativeComponentName = 'RCTModule';
 registerGeneratedViewConfig(nativeComponentName, ModuleViewConfig);
 export const __INTERNAL_VIEW_CONFIG = ModuleViewConfig;
-export default nativeComponentName;"
+export default nativeComponentName;
+export const Commands = {
+  hotspotUpdate(ref, x, y) {
+    UIManager.dispatchViewCommand(findNodeHandle(ref), UIManager.getViewManagerConfig(\\"RCTModule\\").Commands.hotspotUpdate, [x, y]);
+  },
+
+  scrollTo(ref, y, animated) {
+    UIManager.dispatchViewCommand(findNodeHandle(ref), UIManager.getViewManagerConfig(\\"RCTModule\\").Commands.scrollTo, [y, animated]);
+  }
+
+};"
 `;
 
 exports[`Babel plugin inline view configs can inline config for NotANativeComponent.js 1`] = `

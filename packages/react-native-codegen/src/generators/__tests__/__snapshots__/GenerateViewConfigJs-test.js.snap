@@ -112,6 +112,58 @@ export default nativeComponentName;
 }
 `;
 
+exports[`GenerateViewConfigJs can generate fixture COMMANDS 1`] = `
+Map {
+  "COMMANDSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const {UIManager} = require(\\"react-native\\")
+const {findNodeHandle} = require(\\"react-native\\")
+
+const CommandNativeComponentViewConfig = {
+  uiViewClassName: 'CommandNativeComponent',
+  validAttributes: {},
+};
+
+let nativeComponentName = 'CommandNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, CommandNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = CommandNativeComponentViewConfig;
+
+export default nativeComponentName;
+
+export const Commands = {
+    hotspotUpdate(ref, x, y) {
+        UIManager.dispatchViewCommand(
+          findNodeHandle(ref),
+          UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.hotspotUpdate,
+          [x, y]
+        );
+    },
+
+    scrollTo(ref, y, animated) {
+        UIManager.dispatchViewCommand(
+          findNodeHandle(ref),
+          UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.scrollTo,
+          [y, animated]
+        );
+    }
+};
+",
+}
+`;
+
 exports[`GenerateViewConfigJs can generate fixture ENUM_PROP 1`] = `
 Map {
   "ENUM_PROPNativeViewConfig.js" => "

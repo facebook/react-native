@@ -16,15 +16,24 @@ export default 'Not a view config'
 `;
 
 const FULL_NATIVE_COMPONENT = `
+// @flow
+
+const codegenNativeCommands = require('codegenNativeCommands');
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {
+  Int32,
   BubblingEvent,
   DirectEvent,
   WithDefault,
 } from 'CodegenFlowtypes';
 
 import type {ViewProps} from 'ViewPropTypes';
+
+interface NativeCommands {
+  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+  +scrollTo: (viewRef: React.Ref<'RCTView'>, y: Int32, animated: boolean) => void;
+}
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -36,6 +45,8 @@ type ModuleProps = $ReadOnly<{|
   onDirectEventDefinedInlineNull: (event: DirectEvent<null>) => void,
   onBubblingEventDefinedInlineNull: (event: BubblingEvent<null>) => void,
 |}>;
+
+export const Commands = codegenNativeCommands<NativeCommands>();
 
 export default codegenNativeComponent<ModuleProps>('Module', {
   interfaceOnly: true,

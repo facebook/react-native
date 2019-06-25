@@ -846,6 +846,69 @@ const TWO_COMPONENTS_DIFFERENT_FILES: SchemaType = {
   },
 };
 
+const COMMANDS: SchemaType = {
+  modules: {
+    Switch: {
+      components: {
+        CommandNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [],
+          commands: [
+            {
+              name: 'hotspotUpdate',
+              optional: false,
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                params: [
+                  {
+                    name: 'x',
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                    },
+                  },
+                  {
+                    name: 'y',
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              name: 'scrollTo',
+              optional: false,
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                params: [
+                  {
+                    name: 'y',
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                    },
+                  },
+                  {
+                    name: 'animated',
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+};
+
 module.exports = {
   NO_PROPS_NO_EVENTS,
   INTERFACE_ONLY,
@@ -863,4 +926,5 @@ module.exports = {
   EVENT_NESTED_OBJECT_PROPS,
   TWO_COMPONENTS_SAME_FILE,
   TWO_COMPONENTS_DIFFERENT_FILES,
+  COMMANDS,
 };
