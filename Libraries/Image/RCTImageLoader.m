@@ -14,8 +14,13 @@
 #import <React/RCTDefines.h>
 #import "RCTImageLoader.h"
 #import <React/RCTLog.h>
-#import <RCTNetwork/RCTNetworking.h>
 #import <React/RCTUtils.h>
+
+#if __has_include(<React/RCTNetworking.h>)
+#import <React/RCTNetworking.h>
+#else
+#import <RCTNetwork/RCTNetworking.h>
+#endif
 
 #import "RCTImageCache.h"
 #import "RCTImageUtils.h"

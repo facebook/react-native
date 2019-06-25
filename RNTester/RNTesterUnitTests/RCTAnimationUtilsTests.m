@@ -8,7 +8,11 @@
 
 #import <XCTest/XCTest.h>
 
+#if __has_include(<React/RCTAnimationUtils.h>)
 #import <RCTAnimation/RCTAnimationUtils.h>
+#else
+#import <RCTAnimation/RCTAnimationUtils.h>
+#endif
 
 @interface RCTAnimationUtilsTests : XCTestCase
 

@@ -12,9 +12,14 @@
 #import <ImageIO/ImageIO.h>
 
 #import <React/RCTConvert.h>
-#import <RCTNetwork/RCTNetworking.h>
 #import <React/RCTUtils.h>
 #import "RCTResizeMode.h"
+
+#if __has_include(<React/RCTNetworking.h>)
+#import <React/RCTNetworking.h>
+#else
+#import <RCTNetwork/RCTNetworking.h>
+#endif
 
 #import "RCTImageUtils.h"
 

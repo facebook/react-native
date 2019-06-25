@@ -7,8 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import <RCTImage/RCTImageLoader.h>
 #import <react/imagemanager/primitives.h>
+
+#if __has_include(<React/RCTImageLoader.h>)
+#import <React/RCTImageLoader.h>
+#else
+#import <RCTImage/RCTImageLoader.h>
+#endif
 
 using namespace facebook::react;
 
