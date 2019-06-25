@@ -477,9 +477,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @Override
-  public void onHostDestroy() {}
-
-  @Override
   public void dispatchCommand(
       final int reactTag, final int commandId, @Nullable final ReadableArray commandArgs) {
     synchronized (mMountItemsLock) {

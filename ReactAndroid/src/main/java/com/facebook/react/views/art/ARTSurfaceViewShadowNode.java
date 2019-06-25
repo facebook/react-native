@@ -133,12 +133,6 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
   }
 
   @Override
-  public void onHostPause() {}
-
-  @Override
-  public void onHostDestroy() {}
-
-  @Override
   public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
     mSurface = new Surface(surface);
     drawOutput(false);

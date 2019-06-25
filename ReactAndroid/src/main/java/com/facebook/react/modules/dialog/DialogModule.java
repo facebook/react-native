@@ -167,10 +167,6 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
   }
 
   @Override
-  public void onHostDestroy() {
-  }
-
-  @Override
   public void onHostResume() {
     mIsInForeground = true;
     // Check if a dialog has been created while the host was paused, so that we can show it now.

@@ -73,12 +73,6 @@ public class AppStateModule extends ReactContextBaseJavaModule
   }
 
   @Override
-  public void onHostDestroy() {
-    // do not set state to destroyed, do not send an event. By the current implementation, the
-    // catalyst instance is going to be immediately dropped, and all JS calls with it.
-  }
-
-  @Override
   public void onWindowFocusChange(boolean hasFocus) {
     getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class)
       .emit("appStateFocusChange", hasFocus);

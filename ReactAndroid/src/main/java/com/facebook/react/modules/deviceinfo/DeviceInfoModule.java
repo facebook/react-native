@@ -73,14 +73,6 @@ public class DeviceInfoModule extends BaseJavaModule implements
     }
   }
 
-  @Override
-  public void onHostPause() {
-  }
-
-  @Override
-  public void onHostDestroy() {
-  }
-
   public void emitUpdateDimensionsEvent() {
     if (mReactApplicationContext == null) {
       return;

@@ -280,14 +280,6 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
   }
 
   @Override
-  public void onHostResume() {
-  }
-
-  @Override
-  public void onHostPause() {
-  }
-
-  @Override
   public void onHostDestroy() {
     // cancel all requests
     synchronized (mEnqueuedRequestMonitor) {

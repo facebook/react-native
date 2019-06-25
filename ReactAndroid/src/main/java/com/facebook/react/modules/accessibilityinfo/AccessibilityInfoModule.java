@@ -168,10 +168,6 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
         getReactApplicationContext().removeLifecycleEventListener(this);
     }
 
-    @Override
-    public void onHostDestroy() {
-    }
-
     @ReactMethod
     public void announceForAccessibility(String message) {
         if (mAccessibilityManager == null || !mAccessibilityManager.isEnabled()) {

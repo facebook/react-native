@@ -176,11 +176,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   }
 
   @Override
-  public void onHostPause() {
-    // do nothing
-  }
-
-  @Override
   public void onHostDestroy() {
     // Drop the instance if the host is destroyed which will dismiss the dialog
     onDropInstance();
