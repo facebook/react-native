@@ -78,6 +78,9 @@ def react_native_target(path):
 def react_native_xplat_target(path):
     return "//ReactCommon/" + path
 
+def react_native_xplat_target_apple(path):
+    return react_native_xplat_target(path) + "Apple"
+
 # Example: react_native_tests_target('java/com/facebook/react/modules:modules')
 def react_native_tests_target(path):
     return "//ReactAndroid/src/test/" + path
