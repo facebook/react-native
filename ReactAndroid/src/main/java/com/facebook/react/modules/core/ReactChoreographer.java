@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
+import javax.annotation.concurrent.GuardedBy;
 
 /**
  * A simple wrapper around Choreographer that allows us to control the order certain callbacks
@@ -78,8 +79,9 @@ public class ReactChoreographer {
   // This needs to be volatile due to double checked locking issue - https://fburl.com/z409owpf
   private @Nullable volatile ChoreographerCompat mChoreographer;
   private final ReactChoreographerDispatcher mReactChoreographerDispatcher;
-  private final ArrayDeque<ChoreographerCompat.FrameCallback>[] mCallbackQueues;
   private final Object mCallbackQueuesLock = new Object();
+  @GuardedBy("mCallbackQueuesLock")
+  private final ArrayDeque<ChoreographerCompat.FrameCallback>[] mCallbackQueues;
 
   private int mTotalCallbacks = 0;
   private boolean mHasPostedCallback = false;
@@ -116,7 +118,11 @@ public class ReactChoreographer {
     }
   }
 
-  public void postFrameCallbackOnChoreographer() {
+  /**
+   * This method writes on mHasPostedCallback and it should be called from another method that
+   * has the lock mCallbackQueuesLock
+   */
+  private void postFrameCallbackOnChoreographer() {
     mChoreographer.postFrameCallback(mReactChoreographerDispatcher);
     mHasPostedCallback = true;
   }
@@ -150,6 +156,10 @@ public class ReactChoreographer {
     }
   }
 
+  /**
+   * This method reads and writes on mHasPostedCallback and it should be called from another method
+   * that already has the lock mCallbackQueuesLock.
+   */
   private void maybeRemoveFrameCallback() {
     Assertions.assertCondition(mTotalCallbacks >= 0);
     if (mTotalCallbacks == 0 && mHasPostedCallback) {
