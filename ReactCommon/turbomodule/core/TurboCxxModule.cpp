@@ -68,7 +68,7 @@ jsi::Value TurboCxxModule::get(jsi::Runtime& runtime, const jsi::PropNameID& pro
     }
   }
 
-  throw std::runtime_error("Function '" + propNameUtf8 + "' cannot be found on cxxmodule: " + name_);
+  return jsi::Value::undefined();
 }
 
 jsi::Value TurboCxxModule::invokeMethod(

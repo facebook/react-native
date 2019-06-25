@@ -27,7 +27,8 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     radii(convertRawProp(rawProps, \\"radii\\", sourceProps.radii, radii)),
     colors(convertRawProp(rawProps, \\"colors\\", sourceProps.colors, colors)),
     srcs(convertRawProp(rawProps, \\"srcs\\", sourceProps.srcs, srcs)),
-    points(convertRawProp(rawProps, \\"points\\", sourceProps.points, points))
+    points(convertRawProp(rawProps, \\"points\\", sourceProps.points, points)),
+    sizes(convertRawProp(rawProps, \\"sizes\\", sourceProps.sizes, sizes))
       {}
 
 } // namespace react
@@ -86,6 +87,35 @@ ColorPropNativeComponentProps::ColorPropNativeComponentProps(
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
     tintColor(convertRawProp(rawProps, \\"tintColor\\", sourceProps.tintColor, tintColor))
+      {}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsCpp can generate fixture COMMANDS 1`] = `
+Map {
+  "Props.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/COMMANDS/Props.h>
+#include <react/core/propsConversions.h>
+
+namespace facebook {
+namespace react {
+
+CommandNativeComponentProps::CommandNativeComponentProps(
+    const CommandNativeComponentProps &sourceProps,
+    const RawProps &rawProps): ViewProps(sourceProps, rawProps)
+
+    
       {}
 
 } // namespace react
@@ -338,6 +368,35 @@ ImageColorPropNativeComponentProps::ImageColorPropNativeComponentProps(
 }
 `;
 
+exports[`GeneratePropsCpp can generate fixture NO_PROPS_NO_EVENTS 1`] = `
+Map {
+  "Props.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/NO_PROPS_NO_EVENTS/Props.h>
+#include <react/core/propsConversions.h>
+
+namespace facebook {
+namespace react {
+
+NoPropsNoEventsComponentProps::NoPropsNoEventsComponentProps(
+    const NoPropsNoEventsComponentProps &sourceProps,
+    const RawProps &rawProps): ViewProps(sourceProps, rawProps)
+
+    
+      {}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GeneratePropsCpp can generate fixture POINT_PROP 1`] = `
 Map {
   "Props.cpp" => "
@@ -387,7 +446,8 @@ StringPropComponentProps::StringPropComponentProps(
     const StringPropComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    accessibilityHint(convertRawProp(rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, accessibilityHint))
+    accessibilityHint(convertRawProp(rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, accessibilityHint)),
+    accessibilityRole(convertRawProp(rawProps, \\"accessibilityRole\\", sourceProps.accessibilityRole, accessibilityRole))
       {}
 
 } // namespace react

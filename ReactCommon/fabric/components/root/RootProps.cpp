@@ -14,7 +14,7 @@ namespace facebook {
 namespace react {
 
 static YGStyle yogaStyleFromLayoutConstraints(
-    const LayoutConstraints &layoutConstraints) {
+    LayoutConstraints const &layoutConstraints) {
   auto yogaStyle = YGStyle{};
   yogaStyle.minDimensions()[YGDimensionWidth] =
       yogaStyleValueFromFloat(layoutConstraints.minimumSize.width);
@@ -32,15 +32,13 @@ static YGStyle yogaStyleFromLayoutConstraints(
   return yogaStyle;
 }
 
-RootProps::RootProps(const RootProps &sourceProps, const RawProps &rawProps) {
-  // `RootProps` cannot be constructed from `RawProps`.
-  assert(false);
-}
+RootProps::RootProps(RootProps const &sourceProps, RawProps const &rawProps)
+    : ViewProps(sourceProps, rawProps) {}
 
 RootProps::RootProps(
-    const RootProps &sourceProps,
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext)
+    RootProps const &sourceProps,
+    LayoutConstraints const &layoutConstraints,
+    LayoutContext const &layoutContext)
     : ViewProps(yogaStyleFromLayoutConstraints(layoutConstraints)),
       layoutConstraints(layoutConstraints),
       layoutContext(layoutContext){};

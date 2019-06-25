@@ -66,7 +66,7 @@ public interface CatalystInstance
   <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface);
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
   NativeModule getNativeModule(String moduleName);
-  <T extends JSIModule> T getJSIModule(Class<T> jsiModuleInterface);
+  JSIModule getJSIModule(JSIModuleType moduleType);
   Collection<NativeModule> getNativeModules();
 
   /**
@@ -118,5 +118,5 @@ public interface CatalystInstance
    * to CatalystInstance so that getNativeModule, hasNativeModule, and
    * getNativeModules can also return TurboModules.
    */
-  void setTurboModuleRegistry(TurboModuleRegistry getter);
+  void setTurboModuleManager(JSIModule getter);
 }

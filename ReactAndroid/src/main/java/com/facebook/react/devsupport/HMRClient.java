@@ -25,6 +25,18 @@ public interface HMRClient extends JavaScriptModule {
    * @param bundleEntry The path to the bundle entry file (e.g. index.ios.bundle).
    * @param host The host that the HMRClient should communicate with.
    * @param port The port that the HMRClient should communicate with on the host.
+   * @param isEnabled Whether HMR is enabled initially.
    */
-  void enable(String platform, String bundleEntry, String host, int port);
+  void setup(String platform, String bundleEntry, String host, int port, boolean isEnabled);
+
+  /**
+   * Sets up a connection to the packager when called the first time.
+   * Ensures code updates received from the packager are applied.
+   */
+  void enable();
+
+  /**
+   * Turns off the HMR client so it doesn't process updates from the packager.
+   */
+  void disable();
 }

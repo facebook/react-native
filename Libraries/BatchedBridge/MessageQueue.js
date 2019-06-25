@@ -49,7 +49,7 @@ class MessageQueue {
 
   _debugInfo: {[number]: [number, number]};
   _remoteModuleTable: {[number]: string};
-  _remoteMethodTable: {[number]: string[]};
+  _remoteMethodTable: {[number]: $ReadOnlyArray<string>};
 
   __spy: ?(data: SpyData) => void;
 
@@ -182,7 +182,19 @@ class MessageQueue {
       );
     }
     this.processCallbacks(moduleID, methodID, params, onFail, onSucc);
-    return global.nativeCallSyncHook(moduleID, methodID, params);
+    try {
+      return global.nativeCallSyncHook(moduleID, methodID, params);
+    } catch (e) {
+      if (
+        typeof e === 'object' &&
+        e != null &&
+        typeof e.framesToPop === 'undefined' &&
+        /^Exception in HostFunction: /.test(e.message)
+      ) {
+        e.framesToPop = 2;
+      }
+      throw e;
+    }
   }
 
   processCallbacks(
@@ -317,10 +329,14 @@ class MessageQueue {
     }
   }
 
-  createDebugLookup(moduleID: number, name: string, methods: string[]) {
+  createDebugLookup(
+    moduleID: number,
+    name: string,
+    methods: ?$ReadOnlyArray<string>,
+  ) {
     if (__DEV__) {
       this._remoteModuleTable[moduleID] = name;
-      this._remoteMethodTable[moduleID] = methods;
+      this._remoteMethodTable[moduleID] = methods || [];
     }
   }
 

@@ -115,7 +115,7 @@ class ShadowNode : public virtual Sealable,
    * Returns a momentary value of currently committed state associated with a
    * family of nodes which this node belongs to.
    */
-  const State::Shared &getCommitedState() const;
+  State::Shared getCommitedState() const;
 
   /*
    * Returns a local data associated with the node.

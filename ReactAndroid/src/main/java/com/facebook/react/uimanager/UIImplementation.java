@@ -748,6 +748,11 @@ public class UIImplementation {
     mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
   }
 
+  public void dispatchViewManagerCommand(int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
+    assertViewExists(reactTag, "dispatchViewManagerCommand");
+    mOperationsQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
+  }
+
   /**
    * Show a PopupMenu.
    *

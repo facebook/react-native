@@ -55,8 +55,6 @@ const ComponentExamples: Array<RNTesterExample> = [
   },
   {
     key: 'ProgressBarAndroidExample',
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
     module: require('../examples/ProgressBarAndroid/ProgressBarAndroidExample'),
   },
   {
@@ -66,6 +64,10 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'ScrollViewSimpleExample',
     module: require('../examples/ScrollView/ScrollViewSimpleExample'),
+  },
+  {
+    key: 'ScrollViewAnimatedExample',
+    module: require('../examples/ScrollView/ScrollViewAnimatedExample'),
   },
   {
     key: 'SectionListExample',
@@ -85,14 +87,10 @@ const ComponentExamples: Array<RNTesterExample> = [
   },
   {
     key: 'TextExample',
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
     module: require('../examples/Text/TextExample'),
   },
   {
     key: 'TextInputExample',
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
     module: require('../examples/TextInput/TextInputExample'),
   },
   {
@@ -103,12 +101,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     key: 'ViewExample',
     module: require('../examples/View/ViewExample'),
   },
-  {
-    key: 'ViewPagerAndroidExample',
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
-    module: require('../examples/ViewPagerAndroid/ViewPagerAndroidExample'),
-  },
 ];
 
 const APIExamples: Array<RNTesterExample> = [
@@ -118,8 +110,6 @@ const APIExamples: Array<RNTesterExample> = [
   },
   {
     key: 'AccessibilityAndroidExample',
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
     module: require('../examples/Accessibility/AccessibilityAndroidExample'),
   },
   {
@@ -184,8 +174,6 @@ const APIExamples: Array<RNTesterExample> = [
   },
   {
     key: 'PermissionsExampleAndroid',
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
     module: require('../examples/PermissionsAndroid/PermissionsExample'),
   },
   {
@@ -210,8 +198,6 @@ const APIExamples: Array<RNTesterExample> = [
   },
   {
     key: 'ToastAndroidExample',
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
     module: require('../examples/ToastAndroid/ToastAndroidExample'),
   },
   {

@@ -10,13 +10,12 @@
 
 'use strict';
 
-import type {
-  WithDefault,
-  CodegenNativeComponent,
-} from '../../Types/CodegenTypes';
+import type {WithDefault} from '../../Types/CodegenTypes';
 
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
+
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -51,14 +50,6 @@ type NativeProps = $ReadOnly<{|
   size?: ?WithDefault<'small' | 'large', 'small'>,
 |}>;
 
-type Options = {
-  isDeprecatedPaperComponentNameRCT: true,
-};
-
-type ActivityIndicatorNativeType = CodegenNativeComponent<
-  'ActivityIndicatorView',
-  NativeProps,
-  Options,
->;
-
-module.exports = ((require('./ActivityIndicatorViewNativeViewConfig'): any): ActivityIndicatorNativeType);
+export default codegenNativeComponent<NativeProps>('ActivityIndicatorView', {
+  paperComponentName: 'RCTActivityIndicatorView',
+});

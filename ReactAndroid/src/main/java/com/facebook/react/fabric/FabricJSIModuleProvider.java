@@ -18,6 +18,7 @@ import com.facebook.react.fabric.mounting.ViewPool;
 import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DeleteMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
+import com.facebook.react.fabric.mounting.mountitems.DispatchStringCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
@@ -102,6 +103,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     BatchMountItem.class.getClass();
     DeleteMountItem.class.getClass();
     DispatchCommandMountItem.class.getClass();
+    DispatchStringCommandMountItem.class.getClass();
     InsertMountItem.class.getClass();
     MountItem.class.getClass();
     RemoveMountItem.class.getClass();

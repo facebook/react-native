@@ -173,6 +173,18 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
   }
 
   /**
+   * Subclasses may use this method to receive events/commands directly from JS through the
+   * {@link UIManager}. Good example of such a command would be {@code scrollTo} request with
+   * coordinates for a {@link ScrollView} instance.
+   *
+   * @param root View instance that should receive the command
+   * @param commandId code of the command
+   * @param args optional arguments for the command
+   */
+  public void receiveCommand(@Nonnull T root, String commandId, @Nullable ReadableArray args) {
+  }
+
+  /**
    * Subclasses of {@link ViewManager} that expect to receive commands through
    * {@link UIManagerModule#dispatchViewManagerCommand} should override this method returning the
    * map between names of the commands and IDs that are then used in {@link #receiveCommand} method

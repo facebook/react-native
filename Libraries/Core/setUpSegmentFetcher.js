@@ -9,13 +9,20 @@
  */
 'use strict';
 
+export type FetchSegmentFunction = typeof __fetchSegment;
+export type GetSegmentFunction = typeof __getSegment;
+
 /**
  * Set up SegmentFetcher.
  * You can use this module directly, or just require InitializeCore.
  */
-global.__fetchSegment = function(
+
+function __fetchSegment(
   segmentId: number,
-  options: {|+otaBuildNumber: ?string|},
+  options: {|
+    +otaBuildNumber: ?string,
+    +requestedModuleName?: ?string,
+  |},
   callback: (?Error) => void,
 ) {
   const SegmentFetcher = require('./SegmentFetcher/NativeSegmentFetcher')
@@ -33,4 +40,38 @@ global.__fetchSegment = function(
       callback(null);
     },
   );
-};
+}
+
+global.__fetchSegment = __fetchSegment;
+
+function __getSegment(
+  segmentId: number,
+  options: {|
+    +otaBuildNumber: ?string,
+    +requestedModuleName?: ?string,
+  |},
+  callback: (?Error, ?string) => void,
+) {
+  const SegmentFetcher = require('./SegmentFetcher/NativeSegmentFetcher')
+    .default;
+
+  if (!SegmentFetcher.getSegment) {
+    throw new Error('SegmentFetcher.getSegment must be defined');
+  }
+
+  SegmentFetcher.getSegment(
+    segmentId,
+    options,
+    (errorObject: ?{message: string, code: string}, path: ?string) => {
+      if (errorObject) {
+        const error = new Error(errorObject.message);
+        (error: any).code = errorObject.code; // flowlint-line unclear-type: off
+        callback(error);
+      }
+
+      callback(null, path);
+    },
+  );
+}
+
+global.__getSegment = __getSegment;

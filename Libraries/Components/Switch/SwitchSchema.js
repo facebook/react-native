@@ -85,6 +85,7 @@ const SwitchSchema: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },

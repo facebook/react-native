@@ -40,6 +40,7 @@ describe('SchemaValidator', () => {
               ],
               events: [],
               props: [simpleProp],
+              commands: [],
             },
           },
         },
@@ -54,28 +55,7 @@ describe('SchemaValidator', () => {
               ],
               events: [],
               props: [simpleProp],
-            },
-          },
-        },
-      },
-    };
-
-    expect(schemaValidator.getErrors(fixture)).toMatchSnapshot();
-  });
-  it('fails on components with no props', () => {
-    const fixture: SchemaType = {
-      modules: {
-        Switch: {
-          components: {
-            BooleanPropNativeComponent: {
-              extendsProps: [
-                {
-                  type: 'ReactNativeBuiltInType',
-                  knownTypeName: 'ReactNativeCoreViewProps',
-                },
-              ],
-              events: [],
-              props: [],
+              commands: [],
             },
           },
         },

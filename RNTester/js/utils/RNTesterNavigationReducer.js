@@ -10,7 +10,6 @@
 
 'use strict';
 
-// $FlowFixMe : This is a platform-forked component, and flow seems to only run on iOS?
 const RNTesterList = require('./RNTesterList');
 
 export type RNTesterNavigationState = {

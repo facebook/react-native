@@ -71,6 +71,7 @@ const PullToRefreshViewSchema: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },

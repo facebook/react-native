@@ -70,6 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Enforcing `call super` semantic for overridden methods from `RCTComponentViewProtocol`.
+ * The methods update the instance variables.
  */
 - (void)updateProps:(facebook::react::Props::Shared const &)props
            oldProps:(facebook::react::Props::Shared const &)oldProps NS_REQUIRES_SUPER;

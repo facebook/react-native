@@ -36,6 +36,8 @@ public class ReactContext extends ContextWrapper {
       new CopyOnWriteArraySet<>();
   private final CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners =
       new CopyOnWriteArraySet<>();
+  private final CopyOnWriteArraySet<WindowFocusChangeListener> mWindowFocusEventListeners =
+    new CopyOnWriteArraySet<>();
 
   private LifecycleState mLifecycleState = LifecycleState.BEFORE_CREATE;
 
@@ -196,6 +198,14 @@ public class ReactContext extends ContextWrapper {
     mActivityEventListeners.remove(listener);
   }
 
+  public void addWindowFocusChangeListener(WindowFocusChangeListener listener) {
+    mWindowFocusEventListeners.add(listener);
+  }
+
+  public void removeWindowFocusChangeListener(WindowFocusChangeListener listener) {
+    mWindowFocusEventListeners.remove(listener);
+  }
+
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onResume}
    */
@@ -275,6 +285,17 @@ public class ReactContext extends ContextWrapper {
     for (ActivityEventListener listener : mActivityEventListeners) {
       try {
         listener.onActivityResult(activity, requestCode, resultCode, data);
+      } catch (RuntimeException e) {
+        handleException(e);
+      }
+    }
+  }
+
+  public void onWindowFocusChange(boolean hasFocus) {
+    UiThreadUtil.assertOnUiThread();
+    for (WindowFocusChangeListener listener : mWindowFocusEventListeners) {
+      try {
+        listener.onWindowFocusChange(hasFocus);
       } catch (RuntimeException e) {
         handleException(e);
       }

@@ -28,10 +28,12 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
@@ -640,13 +642,34 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     checkPasswordType(view);
   }
 
+  // This prop temporarily takes both numbers and strings.
+  // Number values are deprecated and will be removed in a future release.
+  // See T46146267
   @ReactProp(name = "autoCapitalize")
-  public void setAutoCapitalize(ReactEditText view, int autoCapitalize) {
+  public void setAutoCapitalize(ReactEditText view, Dynamic autoCapitalize) {
+    int autoCapitalizeValue = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
+
+    if (autoCapitalize.getType() == ReadableType.Number) {
+      autoCapitalizeValue = autoCapitalize.asInt();
+    } else if (autoCapitalize.getType() == ReadableType.String) {
+      final String autoCapitalizeStr = autoCapitalize.asString();
+
+      if (autoCapitalizeStr.equals("none")) {
+        autoCapitalizeValue = 0;
+      } else if (autoCapitalizeStr.equals("characters")) {
+        autoCapitalizeValue = InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS;
+      } else if (autoCapitalizeStr.equals("words")) {
+        autoCapitalizeValue = InputType.TYPE_TEXT_FLAG_CAP_WORDS;
+      } else if (autoCapitalizeStr.equals("sentences")) {
+        autoCapitalizeValue = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
+      }
+    }
+
     updateStagedInputTypeFlag(
         view,
         InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_CAP_WORDS |
             InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS,
-        autoCapitalize);
+      autoCapitalizeValue);
   }
 
   @ReactProp(name = "keyboardType")

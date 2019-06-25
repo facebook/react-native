@@ -17,6 +17,9 @@ using namespace facebook::react;
 
 TEST(ShadowNodeTest, handleProps) {
   const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
+  auto parser = RawPropsParser();
+  parser.prepare<Props>();
+  raw.parse(parser);
 
   auto props = std::make_shared<Props>(Props(), raw);
 
@@ -39,13 +42,11 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
       componentDescriptor);
 
   ASSERT_FALSE(node->getSealed());
-  ASSERT_STREQ(node->getComponentName().c_str(), "Test");
+  ASSERT_STREQ(node->getComponentName(), "Test");
   ASSERT_EQ(node->getTag(), 9);
   ASSERT_EQ(node->getSurfaceId(), 1);
   ASSERT_EQ(node->getEventEmitter(), nullptr);
   ASSERT_EQ(node->getChildren().size(), 0);
-
-  ASSERT_STREQ(node->getProps()->nativeId.c_str(), "testNativeID");
 
   node->sealRecursive();
   ASSERT_TRUE(node->getSealed());
@@ -65,7 +66,7 @@ TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
       componentDescriptor);
   auto node2 = std::make_shared<TestShadowNode>(*node, ShadowNodeFragment{});
 
-  ASSERT_STREQ(node->getComponentName().c_str(), "Test");
+  ASSERT_STREQ(node->getComponentName(), "Test");
   ASSERT_EQ(node->getTag(), 9);
   ASSERT_EQ(node->getSurfaceId(), 1);
   ASSERT_EQ(node->getEventEmitter(), nullptr);

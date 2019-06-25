@@ -10,9 +10,6 @@
 
 'use strict';
 
-const React = require('react');
-const ViewNativeComponent = require('./ViewNativeComponent');
-
 import type {ViewProps} from './ViewPropTypes';
 
 export type Props = ViewProps;
@@ -24,19 +21,4 @@ export type Props = ViewProps;
  *
  * @see http://facebook.github.io/react-native/docs/view.html
  */
-
-let ViewToExport = ViewNativeComponent;
-if (__DEV__) {
-  if (!global.__RCTProfileIsProfiling) {
-    const View = (
-      props: Props,
-      forwardedRef: React.Ref<typeof ViewNativeComponent>,
-    ) => {
-      return <ViewNativeComponent {...props} ref={forwardedRef} />;
-    };
-    ViewToExport = React.forwardRef(View);
-    ViewToExport.displayName = 'View';
-  }
-}
-
-module.exports = ((ViewToExport: $FlowFixMe): typeof ViewNativeComponent);
+module.exports = require('./ViewNativeComponent').default;

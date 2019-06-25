@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -25,6 +25,7 @@ typedef struct {
   int maxMeasureCache;
   int cachedLayouts;
   int cachedMeasures;
+  int measureCallbacks;
 } YGMarkerLayoutData;
 
 typedef struct {

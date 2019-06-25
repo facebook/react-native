@@ -12,7 +12,7 @@
 
 const React = require('react');
 
-const ProgressBarAndroidNativeComponent = require('./ProgressBarAndroidNativeComponent');
+import ProgressBarAndroidNativeComponent from './ProgressBarAndroidNativeComponent';
 
 import type {ViewProps} from '../View/ViewPropTypes';
 

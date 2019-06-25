@@ -46,14 +46,25 @@ void UIManagerBinding::startSurface(
   parameters["initialProps"] = initalProps;
   parameters["fabric"] = true;
 
-  auto module = getModule(runtime, "AppRegistry");
-  auto method = module.getPropertyAsFunction(runtime, "runApplication");
+  if (runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
+    auto registry =
+        runtime.global().getPropertyAsObject(runtime, "RN$SurfaceRegistry");
+    auto method = registry.getPropertyAsFunction(runtime, "renderSurface");
 
-  method.callWithThis(
-      runtime,
-      module,
-      {jsi::String::createFromUtf8(runtime, moduleName),
-       jsi::valueFromDynamic(runtime, parameters)});
+    method.call(
+        runtime,
+        {jsi::String::createFromUtf8(runtime, moduleName),
+         jsi::valueFromDynamic(runtime, parameters)});
+  } else {
+    auto module = getModule(runtime, "AppRegistry");
+    auto method = module.getPropertyAsFunction(runtime, "runApplication");
+
+    method.callWithThis(
+        runtime,
+        module,
+        {jsi::String::createFromUtf8(runtime, moduleName),
+         jsi::valueFromDynamic(runtime, parameters)});
+  }
 }
 
 void UIManagerBinding::stopSurface(jsi::Runtime &runtime, SurfaceId surfaceId)

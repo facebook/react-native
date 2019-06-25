@@ -99,6 +99,39 @@ using ColorPropNativeComponentShadowNode = ConcreteViewShadowNode<
 }
 `;
 
+exports[`GenerateShadowNodeH can generate fixture COMMANDS 1`] = `
+Map {
+  "ShadowNodes.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/COMMANDS/Props.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+
+namespace facebook {
+namespace react {
+
+extern const char CommandNativeComponentComponentName[];
+
+/*
+ * \`ShadowNode\` for <CommandNativeComponent> component.
+ */
+using CommandNativeComponentShadowNode = ConcreteViewShadowNode<
+    CommandNativeComponentComponentName,
+    CommandNativeComponentProps>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateShadowNodeH can generate fixture ENUM_PROP 1`] = `
 Map {
   "ShadowNodes.h" => "
@@ -353,6 +386,39 @@ extern const char ImageColorPropNativeComponentComponentName[];
 using ImageColorPropNativeComponentShadowNode = ConcreteViewShadowNode<
     ImageColorPropNativeComponentComponentName,
     ImageColorPropNativeComponentProps>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeH can generate fixture NO_PROPS_NO_EVENTS 1`] = `
+Map {
+  "ShadowNodes.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/NO_PROPS_NO_EVENTS/Props.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+
+namespace facebook {
+namespace react {
+
+extern const char NoPropsNoEventsComponentComponentName[];
+
+/*
+ * \`ShadowNode\` for <NoPropsNoEventsComponent> component.
+ */
+using NoPropsNoEventsComponentShadowNode = ConcreteViewShadowNode<
+    NoPropsNoEventsComponentComponentName,
+    NoPropsNoEventsComponentProps>;
 
 } // namespace react
 } // namespace facebook

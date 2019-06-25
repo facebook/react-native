@@ -32,11 +32,23 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * Dispatches the commandId received by parameter to the view associated with the reactTag.
    * The command will be processed in the UIThread.
    *
+   * Receiving commands as ints is deprecated and will be removed in a future release.
+   *
    * @param reactTag {@link int} that identifies the view that will receive this command
    * @param commandId {@link int} command id
    * @param commandArgs {@link ReadableArray} parameters associated with the command
    */
   void dispatchCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs);
+
+  /**
+   * Dispatches the commandId received by parameter to the view associated with the reactTag.
+   * The command will be processed in the UIThread.
+   *
+   * @param reactTag {@link int} that identifies the view that will receive this command
+   * @param commandId {@link String} command id
+   * @param commandArgs {@link ReadableArray} parameters associated with the command
+   */
+  void dispatchCommand(int reactTag, String commandId, @Nullable ReadableArray commandArgs);
 
   void setJSResponder(int reactTag, boolean blockNativeResponder);
 

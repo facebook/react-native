@@ -107,10 +107,8 @@ using namespace facebook::react;
       NSStringFromClass([self class]));
 #endif
 
-  auto const &oldViewProps = *std::static_pointer_cast<ViewProps const>(oldProps ?: _props);
+  auto const &oldViewProps = *std::static_pointer_cast<ViewProps const>(_props);
   auto const &newViewProps = *std::static_pointer_cast<ViewProps const>(props);
-
-  _props = std::static_pointer_cast<ViewProps const>(props);
 
   BOOL needsInvalidateLayer = NO;
 
@@ -122,7 +120,7 @@ using namespace facebook::react;
 
   // `backgroundColor`
   if (oldViewProps.backgroundColor != newViewProps.backgroundColor) {
-    _backgroundColor = RCTUIColorFromSharedColor(newViewProps.backgroundColor);
+    self.backgroundColor = RCTUIColorFromSharedColor(newViewProps.backgroundColor);
     needsInvalidateLayer = YES;
   }
 
@@ -241,6 +239,8 @@ using namespace facebook::react;
   }
 
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
+
+  _props = std::static_pointer_cast<ViewProps const>(props);
 }
 
 - (void)updateEventEmitter:(EventEmitter::Shared const &)eventEmitter

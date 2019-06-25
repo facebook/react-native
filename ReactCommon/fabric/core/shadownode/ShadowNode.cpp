@@ -120,7 +120,7 @@ const State::Shared &ShadowNode::getState() const {
   return state_;
 }
 
-const State::Shared &ShadowNode::getCommitedState() const {
+State::Shared ShadowNode::getCommitedState() const {
   return state_ ? state_->getCommitedState()
                 : ShadowNodeFragment::statePlaceholder();
 }

@@ -14,7 +14,10 @@ const FlowParser = require('../../parsers/flow');
 
 function parseFiles(files: Array<string>) {
   files.forEach(filename => {
-    console.log(filename, JSON.stringify(FlowParser.parse(filename), null, 2));
+    console.log(
+      filename,
+      JSON.stringify(FlowParser.parseFile(filename), null, 2),
+    );
   });
 }
 

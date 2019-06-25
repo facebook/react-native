@@ -12,6 +12,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JavaScriptContextHolder;
+import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.turbomodule.core.interfaces.JSCallInvokerHolder;
@@ -53,6 +54,12 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       final TurboModule turboModule = mTurbomoduleManagerDelegate.getModule(name);
 
       if (turboModule != null) {
+        /**
+         * TurboModuleManager is initialized after ReactApplicationContext has been setup.
+         * Therefore, it's safe to call initialize on the TurboModule.
+         */
+        ((NativeModule)turboModule).initialize();
+
         mTurboModules.put(name, turboModule);
       }
     }

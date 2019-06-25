@@ -12,8 +12,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.View;
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
@@ -60,12 +62,30 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     return new ReactDrawerLayout(context);
   }
 
-  @ReactProp(name = "drawerPosition", defaultInt = Gravity.START)
-  public void setDrawerPosition(ReactDrawerLayout view, int drawerPosition) {
-    if (Gravity.START == drawerPosition || Gravity.END == drawerPosition) {
-      view.setDrawerPosition(drawerPosition);
+  @ReactProp(name = "drawerPosition")
+  public void setDrawerPosition(ReactDrawerLayout view, Dynamic drawerPosition) {
+    if (drawerPosition.isNull()) {
+      view.setDrawerPosition(Gravity.START);
+    } else if (drawerPosition.getType() == ReadableType.Number) {
+      final int drawerPositionNum = drawerPosition.asInt();
+
+      if (Gravity.START == drawerPositionNum || Gravity.END == drawerPositionNum) {
+        view.setDrawerPosition(drawerPositionNum);
+      } else {
+        throw new JSApplicationIllegalArgumentException("Unknown drawerPosition " + drawerPositionNum);
+      }
+    } else if (drawerPosition.getType() == ReadableType.String) {
+      final String drawerPositionStr = drawerPosition.asString();
+
+      if (drawerPositionStr.equals("left")) {
+        view.setDrawerPosition(Gravity.START);
+      } else if (drawerPositionStr.equals("right")) {
+        view.setDrawerPosition(Gravity.END);
+      } else {
+        throw new JSApplicationIllegalArgumentException("drawerPosition must be 'left' or 'right', received" + drawerPositionStr);
+      }
     } else {
-      throw new JSApplicationIllegalArgumentException("Unknown drawerPosition " + drawerPosition);
+      throw new JSApplicationIllegalArgumentException("drawerPosition must be a string or int");
     }
   }
 

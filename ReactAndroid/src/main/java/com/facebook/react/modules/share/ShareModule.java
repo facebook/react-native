@@ -22,9 +22,10 @@ import com.facebook.react.module.annotations.ReactModule;
 /**
  * Intent module. Launch other activities or open URLs.
  */
-@ReactModule(name = "ShareModule")
+@ReactModule(name = ShareModule.NAME)
 public class ShareModule extends ReactContextBaseJavaModule {
 
+  public static final String NAME = "ShareModule";
   /* package */ static final String ACTION_SHARED = "sharedAction";
   /* package */ static final String ERROR_INVALID_CONTENT = "E_INVALID_CONTENT";
   /* package */ static final String ERROR_UNABLE_TO_OPEN_DIALOG = "E_UNABLE_TO_OPEN_DIALOG";
@@ -35,7 +36,7 @@ public class ShareModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "ShareModule";
+    return NAME;
   }
 
   /**

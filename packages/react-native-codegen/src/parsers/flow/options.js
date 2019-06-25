@@ -15,12 +15,13 @@ import type {OptionsShape} from '../../CodegenSchema.js';
 // $FlowFixMe there's no flowtype for ASTs
 type OptionsAST = Object;
 
-function getOptions(optionsDefinition: OptionsAST): ?OptionsShape {
-  if (!optionsDefinition) {
+function getOptions(optionsExpression: OptionsAST): ?OptionsShape {
+  if (!optionsExpression) {
     return null;
   }
+  let foundOptions;
   try {
-    return optionsDefinition.right.properties.reduce((options, prop) => {
+    foundOptions = optionsExpression.properties.reduce((options, prop) => {
       options[prop.key.name] = prop.value.value;
       return options;
     }, {});
@@ -29,6 +30,17 @@ function getOptions(optionsDefinition: OptionsAST): ?OptionsShape {
       'Failed to parse codegen options, please check that they are defined correctly',
     );
   }
+
+  if (
+    foundOptions.paperComponentName &&
+    foundOptions.paperComponentNameDeprecated
+  ) {
+    throw new Error(
+      'Failed to parse codegen options, cannot use both paperComponentName and paperComponentNameDeprecated',
+    );
+  }
+
+  return foundOptions;
 }
 
 module.exports = {

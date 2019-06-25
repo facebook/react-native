@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -10,6 +10,7 @@
 #include <string.h>
 #include <algorithm>
 #include <memory>
+#include <chrono>
 #include "Utils.h"
 #include "YGNode.h"
 #include "YGNodePrint.h"
@@ -29,6 +30,8 @@ __forceinline const float fmaxf(const float a, const float b) {
 
 using namespace facebook::yoga;
 using detail::Log;
+using std::chrono::duration_cast;
+using std::chrono::steady_clock;
 
 #ifdef ANDROID
 static int YGAndroidLog(
@@ -253,7 +256,13 @@ static YGConfigRef YGConfigClone(const YGConfig& oldConfig) {
 }
 
 static YGNodeRef YGNodeDeepClone(YGNodeRef oldNode) {
-  YGNodeRef node = YGNodeClone(oldNode);
+  auto config = YGConfigClone(*oldNode->getConfig());
+  auto node = new YGNode{*oldNode, config};
+  node->setOwner(nullptr);
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeAllocation>(node, {node->getConfig()});
+#endif
+
   YGVector vec = YGVector();
   vec.reserve(oldNode->getChildren().size());
   YGNodeRef childNode = nullptr;
@@ -263,10 +272,6 @@ static YGNodeRef YGNodeDeepClone(YGNodeRef oldNode) {
     vec.push_back(childNode);
   }
   node->setChildren(vec);
-
-  if (oldNode->getConfig() != nullptr) {
-    node->setConfig(YGConfigClone(*(oldNode->getConfig())));
-  }
 
   return node;
 }
@@ -1579,6 +1584,7 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
     const YGMeasureMode heightMeasureMode,
     const float ownerWidth,
     const float ownerHeight,
+    YGMarkerLayoutData& layoutMarkerData,
     void* const layoutContext) {
   YGAssertWithNode(
       node,
@@ -1623,6 +1629,10 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
             ownerWidth),
         YGDimensionHeight);
   } else {
+#ifdef YG_ENABLE_EVENTS
+    auto start = steady_clock::now();
+#endif
+
     // Measure the text under the current constraints.
     const YGSize measuredSize = marker::MarkerSection<YGMarkerMeasure>::wrap(
         node,
@@ -1632,6 +1642,25 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
         innerHeight,
         heightMeasureMode,
         layoutContext);
+
+    layoutMarkerData.measureCallbacks += 1;
+
+#ifdef YG_ENABLE_EVENTS
+    auto end = steady_clock::now();
+    auto measureCallbackDuration =
+        duration_cast<std::chrono::duration<float, std::milli>>(end - start);
+
+    Event::publish<Event::NodeMeasure>(
+        node,
+        {layoutContext,
+         innerWidth,
+         widthMeasureMode,
+         innerHeight,
+         heightMeasureMode,
+         measuredSize.width,
+         measuredSize.height,
+         measureCallbackDuration.count()});
+#endif
 
     node->setLayoutMeasuredDimension(
         YGNodeBoundAxis(
@@ -2686,6 +2715,7 @@ static void YGNodelayoutImpl(
         heightMeasureMode,
         ownerWidth,
         ownerHeight,
+        layoutMarkerData,
         layoutContext);
     return;
   }
@@ -2859,8 +2889,11 @@ static void YGNodelayoutImpl(
         availableInnerMainDim = maxInnerMainDim;
       } else {
         if (!node->getConfig()->useLegacyStretchBehaviour &&
-            (collectedFlexItemsValues.totalFlexGrowFactors == 0 ||
-             node->resolveFlexGrow() == 0)) {
+            ((YGFloatIsUndefined(
+                  collectedFlexItemsValues.totalFlexGrowFactors) &&
+              collectedFlexItemsValues.totalFlexGrowFactors == 0) ||
+             (YGFloatIsUndefined(node->resolveFlexGrow()) &&
+              node->resolveFlexGrow() == 0))) {
           // If we don't have any children to flex or we can't flex the node
           // itself, space we've used is all space we need. Root node also
           // should be shrunk to minimum
@@ -3660,9 +3693,6 @@ bool YGLayoutNodeInternal(
     const YGConfigRef config,
     YGMarkerLayoutData& layoutMarkerData,
     void* const layoutContext) {
-#ifdef YG_ENABLE_EVENTS
-  Event::publish<Event::NodeLayout>(node);
-#endif
   YGLayout* layout = &node->getLayout();
 
   gDepth++;
@@ -3896,6 +3926,20 @@ bool YGLayoutNodeInternal(
 
   gDepth--;
   layout->generationCount = gCurrentGenerationCount;
+
+#ifdef YG_ENABLE_EVENTS
+  LayoutType layoutType;
+  if (performLayout) {
+    layoutType = !needToVisitNode && cachedResults == &layout->cachedLayout
+        ? LayoutType::kCachedLayout
+        : LayoutType::kLayout;
+  } else {
+    layoutType = cachedResults != nullptr ? LayoutType::kCachedMeasure
+                                          : LayoutType::kMeasure;
+  }
+  Event::publish<Event::NodeLayout>(node, {layoutType, layoutContext});
+#endif
+
   return (needToVisitNode || cachedResults == nullptr);
 }
 
@@ -4004,11 +4048,9 @@ void YGNodeCalculateLayoutWithContext(
     void* layoutContext) {
 
 #ifdef YG_ENABLE_EVENTS
-  Event::publish<Event::LayoutPassStart>(node);
+  Event::publish<Event::LayoutPassStart>(node, {layoutContext});
 #endif
-  // unique pointer to allow ending the marker early
-  std::unique_ptr<marker::MarkerSection<YGMarkerLayout>> marker{
-      new marker::MarkerSection<YGMarkerLayout>{node}};
+  marker::MarkerSection<YGMarkerLayout> marker{node};
 
   // Increment the generation count. This will force the recursive routine to
   // visit all dirty nodes at least once. Subsequent visits will be skipped if
@@ -4067,7 +4109,7 @@ void YGNodeCalculateLayoutWithContext(
           true,
           "initial",
           node->getConfig(),
-          marker->data,
+          marker.data,
           layoutContext)) {
     node->setPosition(
         node->getLayout().direction, ownerWidth, ownerHeight, ownerWidth);
@@ -4084,11 +4126,10 @@ void YGNodeCalculateLayoutWithContext(
 #endif
   }
 
-  // end marker here
-  marker = nullptr;
+  marker.end();
 
 #ifdef YG_ENABLE_EVENTS
-  Event::publish<Event::LayoutPassEnd>(node);
+  Event::publish<Event::LayoutPassEnd>(node, {layoutContext, &marker.data});
 #endif
 
   // We want to get rid off `useLegacyStretchBehaviour` from YGConfig. But we

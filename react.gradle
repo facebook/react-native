@@ -15,6 +15,22 @@ def reactRoot = file(config.root ?: "../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
 
+def reactNativeDevServerPort() {
+    def value = project.getProperties().get("reactNativeDevServerPort")
+    return value != null ? value : "8081"
+}
+
+def reactNativeInspectorProxyPort() {
+    def value = project.getProperties().get("reactNativeInspectorProxyPort")
+    return value != null ? value : reactNativeDevServerPort()
+}
+
+android {
+    buildTypes.all {
+        resValue "integer", "react_native_dev_server_port", reactNativeDevServerPort()
+        resValue "integer", "react_native_inspector_proxy_port", reactNativeInspectorProxyPort()
+    }
+}
 
 afterEvaluate {
     def isAndroidLibrary = plugins.hasPlugin("com.android.library")
@@ -46,33 +62,6 @@ afterEvaluate {
                 jsBundleDir.mkdirs()
                 resourcesDir.deleteDir()
                 resourcesDir.mkdirs()
-            }
-
-
-            // If there are flavors, remember the current flavor for use in the resource path we move from
-            def flavorPathSegment = ""
-            android.productFlavors.all { flavor ->
-                if (targetName.toLowerCase().contains(flavor.name)) {
-                    flavorPathSegment = flavor.name + "/"
-                }
-            }
-
-            // Address issue #22234 by moving generated resources into build dir so they are in one spot, not duplicated
-            doLast {
-                def moveFunc = { resSuffix ->
-                    File originalDir = file("$buildDir/generated/res/react/${flavorPathSegment}release/${resSuffix}")
-                    if (originalDir.exists()) {
-                        File destDir = file("$buildDir/../src/main/res/${resSuffix}")
-                        ant.move(file: originalDir, tofile: destDir);
-                    }
-                }
-                moveFunc.curry("drawable-ldpi").call()
-                moveFunc.curry("drawable-mdpi").call()
-                moveFunc.curry("drawable-hdpi").call()
-                moveFunc.curry("drawable-xhdpi").call()
-                moveFunc.curry("drawable-xxhdpi").call()
-                moveFunc.curry("drawable-xxxhdpi").call()
-                moveFunc.curry("raw").call()
             }
 
             // Set up inputs and outputs so gradle can cache the result

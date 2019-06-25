@@ -10,7 +10,6 @@
 
 'use strict';
 
-import type {NativeComponent} from '../Renderer/shims/ReactNative';
 import type {SyntheticEvent} from './CoreEventTypes';
 
 // Event types
@@ -21,18 +20,12 @@ export type DirectEvent<T> = SyntheticEvent<T>;
 export type Float = number;
 export type Int32 = number;
 
+type DefaultTypes = number | boolean | string | $ReadOnlyArray<string>;
 // Default handling, ignore the unused value
 // we're only using it for type checking
 //
 // TODO: (rickhanlonii) T44881457 If a default is provided, it should always be optional
 //  but that is currently not supported in the codegen since we require a default
-// eslint-disable-next-line no-unused-vars
-export type WithDefault<Type: number | boolean | string, Value: Type> = Type;
-
-// We're not using ComponentName or Options in JS
-// We only use these types to codegen native code
 //
 // eslint-disable-next-line no-unused-vars
-export type CodegenNativeComponent<ComponentName, Props, Options = {}> = Class<
-  NativeComponent<Props>,
->;
+export type WithDefault<Type: DefaultTypes, Value: ?Type | string> = Type;

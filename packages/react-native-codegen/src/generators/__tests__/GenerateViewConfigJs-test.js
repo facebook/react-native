@@ -24,4 +24,29 @@ describe('GenerateViewConfigJs', () => {
         expect(generator.generate(fixtureName, fixture)).toMatchSnapshot();
       });
     });
+
+  it('can generate fixture with a deprecated view config name', () => {
+    expect(
+      generator.generate('DEPRECATED_VIEW_CONFIG_NAME', {
+        modules: {
+          Component: {
+            components: {
+              NativeComponentName: {
+                paperComponentNameDeprecated: 'DeprecatedNativeComponentName',
+                extendsProps: [
+                  {
+                    type: 'ReactNativeBuiltInType',
+                    knownTypeName: 'ReactNativeCoreViewProps',
+                  },
+                ],
+                events: [],
+                props: [],
+                commands: [],
+              },
+            },
+          },
+        },
+      }),
+    ).toMatchSnapshot();
+  });
 });

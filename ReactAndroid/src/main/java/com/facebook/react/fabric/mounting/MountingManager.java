@@ -51,7 +51,6 @@ public class MountingManager {
     mViewFactory = new ViewManagerFactory(viewManagerRegistry);
   }
 
-  @UiThread
   public void addRootView(int reactRootTag, View rootView) {
     if (rootView.getId() != View.NO_ID) {
       throw new IllegalViewOperationException(
@@ -136,6 +135,20 @@ public class MountingManager {
   }
 
   public void receiveCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
+    ViewState viewState = getViewState(reactTag);
+
+    if (viewState.mViewManager == null) {
+      throw new IllegalStateException("Unable to find viewState manager for tag " + reactTag);
+    }
+
+    if (viewState.mView == null) {
+      throw new IllegalStateException("Unable to find viewState view for tag " + reactTag);
+    }
+
+    viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
+  }
+
+  public void receiveCommand(int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
     ViewState viewState = getViewState(reactTag);
 
     if (viewState.mViewManager == null) {

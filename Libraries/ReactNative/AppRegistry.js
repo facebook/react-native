@@ -21,6 +21,7 @@ const createPerformanceLogger = require('../Utilities/createPerformanceLogger');
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
 import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
+import HeadlessJsTaskError from './HeadlessJsTaskError';
 
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
@@ -275,8 +276,18 @@ const AppRegistry = {
       })
       .catch(reason => {
         console.error(reason);
-        if (NativeHeadlessJsTaskSupport) {
-          NativeHeadlessJsTaskSupport.notifyTaskFinished(taskId);
+
+        if (
+          NativeHeadlessJsTaskSupport &&
+          reason instanceof HeadlessJsTaskError
+        ) {
+          NativeHeadlessJsTaskSupport.notifyTaskRetry(taskId).then(
+            retryPosted => {
+              if (!retryPosted) {
+                NativeHeadlessJsTaskSupport.notifyTaskFinished(taskId);
+              }
+            },
+          );
         }
       });
   },

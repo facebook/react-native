@@ -118,25 +118,6 @@ NSString *const RCTContentDidAppearNotification;
 @property (nonatomic, strong, nullable) UIView *loadingView;
 
 /**
- * Calling this will result in emitting a "touches cancelled" event to js,
- * which effectively cancels all js "gesture recognizers" such as touchable components
- * (unless they explicitely ignore cancellation events, but no one should do that).
- *
- * This API is exposed for integration purposes where you embed RN rootView
- * in a native view with a native gesture recognizer,
- * whose activation should prevent any in-flight js "gesture recognizer" from activating.
- *
- * An example would be RN rootView embedded in an UIScrollView.
- * When you touch down on a touchable component and drag your finger up,
- * you don't want any touch to be registered as soon as the UIScrollView starts scrolling.
- *
- * Note that this doesn't help with tapping on a touchable element that is being scrolled,
- * unless you can call cancelTouches exactly between "touches began" and "touches ended" events.
- * This is a reason why this API may be soon removed in favor of a better solution.
- */
-- (void)cancelTouches;
-
-/**
  * When set, any touches on the RCTRootView that are not matched up to any of the child
  * views will be passed to siblings of the RCTRootView. See -[UIView hitTest:withEvent:]
  * for details on iOS hit testing.
@@ -167,6 +148,14 @@ NSString *const RCTContentDidAppearNotification;
  */
 @property (readonly, nonatomic, assign) CGSize intrinsicSize
 __deprecated_msg("Use `intrinsicContentSize` instead.");
+
+/**
+ * This methods is deprecated and will be removed soon.
+ * To interrupt a React Native gesture recognizer, use the standard
+ * `UIGestureRecognizer` negotiation process.
+ * See `UIGestureRecognizerDelegate` for more details.
+ */
+- (void)cancelTouches;
 
 @end
 

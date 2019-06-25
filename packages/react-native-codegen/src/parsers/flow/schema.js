@@ -13,6 +13,7 @@
 import type {
   EventTypeShape,
   PropTypeShape,
+  CommandTypeShape,
   ExtendsPropsShape,
   SchemaType,
   OptionsShape,
@@ -24,6 +25,7 @@ type SchemaBuilderConfig = $ReadOnly<{|
   extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
   events: $ReadOnlyArray<EventTypeShape>,
   props: $ReadOnlyArray<PropTypeShape>,
+  commands: $ReadOnlyArray<CommandTypeShape>,
   options?: ?OptionsShape,
 |}>;
 
@@ -34,6 +36,7 @@ function buildSchema({
   events,
   props,
   options,
+  commands,
 }: SchemaBuilderConfig): SchemaType {
   return {
     modules: {
@@ -44,6 +47,7 @@ function buildSchema({
             extendsProps,
             events,
             props,
+            commands,
           },
         },
       },

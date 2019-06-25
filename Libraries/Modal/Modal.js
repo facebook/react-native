@@ -13,18 +13,17 @@
 const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-const NativeModules = require('../BatchedBridge/NativeModules');
+import NativeModalManager from './NativeModalManager';
 const Platform = require('../Utilities/Platform');
 const React = require('react');
 const PropTypes = require('prop-types');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 
-const RCTModalHostView = require('./RCTModalHostViewNativeComponent');
-
+import RCTModalHostView from './RCTModalHostViewNativeComponent';
 const ModalEventEmitter =
-  Platform.OS === 'ios' && NativeModules.ModalManager
-    ? new NativeEventEmitter(NativeModules.ModalManager)
+  Platform.OS === 'ios' && NativeModalManager != null
+    ? new NativeEventEmitter(NativeModalManager)
     : null;
 
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
@@ -272,7 +271,7 @@ class Modal extends React.Component<Props> {
   }
 }
 
-const side = I18nManager.isRTL ? 'right' : 'left';
+const side = I18nManager.getConstants().isRTL ? 'right' : 'left';
 const styles = StyleSheet.create({
   modal: {
     position: 'absolute',

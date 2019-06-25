@@ -460,6 +460,29 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
        */
       if (objCArgType[0] == _C_ID) {
         id objCArg = [NSNumber numberWithDouble:v];
+        NSString *methodNameNSString = @(methodName.c_str());
+
+        /**
+         * Convert numbers using RCTConvert if possible.
+         */
+        NSString *argumentType = getArgumentTypeName(methodNameNSString, i);
+        if (argumentType != nil) {
+          NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
+          SEL rctConvertSelector = NSSelectorFromString(rctConvertMethodName);
+
+          if ([RCTConvert respondsToSelector:rctConvertSelector]) {
+            // Message dispatch logic from old infra
+            id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
+            id convertedObjCArg = convert([RCTConvert class], rctConvertSelector, objCArg);
+
+            [inv setArgument:(void *)&convertedObjCArg atIndex:i + 2];
+            if (convertedObjCArg) {
+              [retainedObjectsForInvocation addObject:convertedObjCArg];
+            }
+            continue;
+          }
+        }
+
         [inv setArgument:(void *)&objCArg atIndex:i + 2];
         [retainedObjectsForInvocation addObject:objCArg];
       } else {
@@ -486,7 +509,7 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
           NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
           SEL rctConvertSelector = NSSelectorFromString(rctConvertMethodName);
 
-          if ([RCTConvert respondsToSelector: rctConvertSelector]) {
+          if ([RCTConvert respondsToSelector:rctConvertSelector]) {
             // Message dispatch logic from old infra
             id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
             id convertedObjCArg = convert([RCTConvert class], rctConvertSelector, objCArg);

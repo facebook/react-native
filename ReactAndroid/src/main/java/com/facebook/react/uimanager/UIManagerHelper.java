@@ -12,6 +12,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 import static com.facebook.react.uimanager.common.ViewUtil.getUIManagerType;
 
 import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.uimanager.common.UIManagerType;
@@ -34,7 +35,7 @@ public class UIManagerHelper {
   public static UIManager getUIManager(ReactContext context, @UIManagerType int uiManagerType) {
     CatalystInstance catalystInstance = context.getCatalystInstance();
     return uiManagerType == FABRIC ?
-      catalystInstance.getJSIModule(UIManager.class) :
+      (UIManager)catalystInstance.getJSIModule(JSIModuleType.UIManager) :
       catalystInstance.getNativeModule(UIManagerModule.class);
   }
 

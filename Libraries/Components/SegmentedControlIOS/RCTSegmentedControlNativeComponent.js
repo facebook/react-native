@@ -9,59 +9,30 @@
  */
 'use strict';
 
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
-
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
+import type {BubblingEvent, WithDefault, Int32} from '../../Types/CodegenTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 
-type Event = SyntheticEvent<
+export type OnChangeEvent = BubblingEvent<
   $ReadOnly<{|
-    value: number,
-    selectedSegmentIndex: number,
+    value: Int32,
+    selectedSegmentIndex: Int32,
   |}>,
 >;
 
-type SegmentedControlIOSProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{|
   ...ViewProps,
-  /**
-   * The labels for the control's segment buttons, in order.
-   */
+
+  // Props
   values?: $ReadOnlyArray<string>,
-  /**
-   * The index in `props.values` of the segment to be (pre)selected.
-   */
-  selectedIndex?: ?number,
-  /**
-   * Callback that is called when the user taps a segment;
-   * passes the segment's value as an argument
-   */
-  onValueChange?: ?(value: number) => mixed,
-  /**
-   * Callback that is called when the user taps a segment;
-   * passes the event as an argument
-   */
-  onChange?: ?(event: Event) => mixed,
-  /**
-   * If false the user won't be able to interact with the control.
-   * Default value is true.
-   */
-  enabled?: boolean,
-  /**
-   * Accent color of the control.
-   */
-  tintColor?: ?string,
-  /**
-   * If true, then selecting a segment won't persist visually.
-   * The `onValueChange` callback will still work as expected.
-   */
-  momentary?: ?boolean,
+  selectedIndex?: ?WithDefault<Int32, 0>,
+  enabled?: ?WithDefault<boolean, true>,
+  tintColor?: ?ColorValue,
+  momentary?: ?WithDefault<boolean, false>,
+
+  // Events
+  onChange?: ?(event: OnChangeEvent) => mixed,
 |}>;
 
-type NativeSegmentedControlIOS = Class<
-  NativeComponent<SegmentedControlIOSProps>,
->;
-
-module.exports = ((requireNativeComponent(
-  'RCTSegmentedControl',
-): any): NativeSegmentedControlIOS);
+export default codegenNativeComponent<NativeProps>('RCTSegmentedControl');

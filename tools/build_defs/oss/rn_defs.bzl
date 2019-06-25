@@ -156,6 +156,17 @@ def rn_android_resource(*args, **kwargs):
 def rn_android_prebuilt_aar(*args, **kwargs):
     native.android_prebuilt_aar(*args, **kwargs)
 
+def rn_apple_library(*args, **kwargs):
+    kwargs.setdefault("link_whole", True)
+    kwargs.setdefault("enable_exceptions", True)
+    native.apple_library(*args, **kwargs)
+
+def rn_plugin_apple_library(**kwargs):
+    kwargs.setdefault("link_whole", True)
+
+    # This just an alias to apple_library for now.
+    native.apple_library(**kwargs)
+
 def rn_java_library(*args, **kwargs):
     native.java_library(*args, **kwargs)
 
@@ -295,6 +306,9 @@ def _single_subdir_glob(dirpath, glob_pattern, exclude = None, prefix = None):
         results[key] = f
 
     return results
+
+def fb_apple_library(*args, **kwargs):
+    native.apple_library(*args, **kwargs)
 
 def oss_cxx_library(**kwargs):
     cxx_library(**kwargs)

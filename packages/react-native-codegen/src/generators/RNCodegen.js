@@ -118,4 +118,18 @@ module.exports = {
 
     return writeMapToFiles(filesToUpdate, outputDirectory);
   },
+  generateViewConfig({libraryName, schema}: Options): string {
+    schemaValidator.validate(schema);
+
+    const result = generateViewConfigJs
+      .generate(libraryName, schema)
+      .values()
+      .next();
+
+    if (typeof result.value !== 'string') {
+      throw new Error(`Failed to generate view config for ${libraryName}`);
+    }
+
+    return result.value;
+  },
 };

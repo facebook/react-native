@@ -14,42 +14,30 @@ Map {
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
 const ArrayPropsNativeComponentViewConfig = {
   uiViewClassName: 'ArrayPropsNativeComponent',
-  Commands: {},
-
-  bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-  },
-
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
 
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     names: true,
     disableds: true,
     progress: true,
     radii: true,
-    colors: true,
+    colors: { process: require('processColorArray') },
     srcs: true,
     points: true,
+    sizes: true,
   },
 };
 
-verifyComponentAttributeEquivalence('ArrayPropsNativeComponent', ArrayPropsNativeComponentViewConfig);
+let nativeComponentName = 'ArrayPropsNativeComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'ArrayPropsNativeComponent',
-  () => ArrayPropsNativeComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, ArrayPropsNativeComponentViewConfig);
 
-module.exports = 'ArrayPropsNativeComponent';
+export const __INTERNAL_VIEW_CONFIG = ArrayPropsNativeComponentViewConfig;
+
+export default nativeComponentName;
 ",
 }
 `;
@@ -68,36 +56,23 @@ Map {
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
 const BooleanPropNativeComponentViewConfig = {
   uiViewClassName: 'BooleanPropNativeComponent',
-  Commands: {},
-
-  bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-  },
-
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
 
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     disabled: true,
   },
 };
 
-verifyComponentAttributeEquivalence('BooleanPropNativeComponent', BooleanPropNativeComponentViewConfig);
+let nativeComponentName = 'BooleanPropNativeComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'BooleanPropNativeComponent',
-  () => BooleanPropNativeComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, BooleanPropNativeComponentViewConfig);
 
-module.exports = 'BooleanPropNativeComponent';
+export const __INTERNAL_VIEW_CONFIG = BooleanPropNativeComponentViewConfig;
+
+export default nativeComponentName;
 ",
 }
 `;
@@ -116,36 +91,75 @@ Map {
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
 const ColorPropNativeComponentViewConfig = {
   uiViewClassName: 'ColorPropNativeComponent',
-  Commands: {},
-
-  bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-  },
-
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
 
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     tintColor: { process: require('processColor') },
   },
 };
 
-verifyComponentAttributeEquivalence('ColorPropNativeComponent', ColorPropNativeComponentViewConfig);
+let nativeComponentName = 'ColorPropNativeComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'ColorPropNativeComponent',
-  () => ColorPropNativeComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, ColorPropNativeComponentViewConfig);
 
-module.exports = 'ColorPropNativeComponent';
+export const __INTERNAL_VIEW_CONFIG = ColorPropNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture COMMANDS 1`] = `
+Map {
+  "COMMANDSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const {UIManager} = require(\\"react-native\\")
+const {findNodeHandle} = require(\\"react-native\\")
+
+const CommandNativeComponentViewConfig = {
+  uiViewClassName: 'CommandNativeComponent',
+  validAttributes: {},
+};
+
+let nativeComponentName = 'CommandNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, CommandNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = CommandNativeComponentViewConfig;
+
+export default nativeComponentName;
+
+export const Commands = {
+    hotspotUpdate(ref, x, y) {
+        UIManager.dispatchViewCommand(
+          findNodeHandle(ref),
+          UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.hotspotUpdate,
+          [x, y]
+        );
+    },
+
+    scrollTo(ref, y, animated) {
+        UIManager.dispatchViewCommand(
+          findNodeHandle(ref),
+          UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.scrollTo,
+          [y, animated]
+        );
+    }
+};
 ",
 }
 `;
@@ -164,36 +178,23 @@ Map {
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
 const EnumPropsNativeComponentViewConfig = {
   uiViewClassName: 'EnumPropsNativeComponent',
-  Commands: {},
-
-  bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-  },
-
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
 
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     alignment: true,
   },
 };
 
-verifyComponentAttributeEquivalence('EnumPropsNativeComponent', EnumPropsNativeComponentViewConfig);
+let nativeComponentName = 'EnumPropsNativeComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'EnumPropsNativeComponent',
-  () => EnumPropsNativeComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, EnumPropsNativeComponentViewConfig);
 
-module.exports = 'EnumPropsNativeComponent';
+export const __INTERNAL_VIEW_CONFIG = EnumPropsNativeComponentViewConfig;
+
+export default nativeComponentName;
 ",
 }
 `;
@@ -212,17 +213,12 @@ Map {
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
 const EventsNestedObjectNativeComponentViewConfig = {
   uiViewClassName: 'EventsNestedObjectNativeComponent',
-  Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-
     topChange: {
       phasedRegistrationNames: {
         captured: 'onChangeCapture',
@@ -231,25 +227,19 @@ const EventsNestedObjectNativeComponentViewConfig = {
     },
   },
 
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
-
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     disabled: true,
     onChange: true,
   },
 };
 
-verifyComponentAttributeEquivalence('EventsNestedObjectNativeComponent', EventsNestedObjectNativeComponentViewConfig);
+let nativeComponentName = 'EventsNestedObjectNativeComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'EventsNestedObjectNativeComponent',
-  () => EventsNestedObjectNativeComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, EventsNestedObjectNativeComponentViewConfig);
 
-module.exports = 'EventsNestedObjectNativeComponent';
+export const __INTERNAL_VIEW_CONFIG = EventsNestedObjectNativeComponentViewConfig;
+
+export default nativeComponentName;
 ",
 }
 `;
@@ -268,17 +258,12 @@ Map {
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
 const EventsNativeComponentViewConfig = {
   uiViewClassName: 'EventsNativeComponent',
-  Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-
     topChange: {
       phasedRegistrationNames: {
         captured: 'onChangeCapture',
@@ -295,30 +280,31 @@ const EventsNativeComponentViewConfig = {
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-
     topEventDirect: {
       registrationName: 'onEventDirect',
+    },
+
+    topOrientationChange: {
+      registrationName: 'onOrientationChange',
     },
   },
 
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     disabled: true,
     onChange: true,
     onEventDirect: true,
+    onOrientationChange: true,
     onEnd: true,
   },
 };
 
-verifyComponentAttributeEquivalence('EventsNativeComponent', EventsNativeComponentViewConfig);
+let nativeComponentName = 'EventsNativeComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'EventsNativeComponent',
-  () => EventsNativeComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, EventsNativeComponentViewConfig);
 
-module.exports = 'EventsNativeComponent';
+export const __INTERNAL_VIEW_CONFIG = EventsNativeComponentViewConfig;
+
+export default nativeComponentName;
 ",
 }
 `;
@@ -337,24 +323,12 @@ Map {
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
 const FloatPropNativeComponentViewConfig = {
   uiViewClassName: 'FloatPropNativeComponent',
-  Commands: {},
-
-  bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-  },
-
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
 
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     blurRadius: true,
     blurRadius2: true,
     blurRadius3: true,
@@ -364,14 +338,13 @@ const FloatPropNativeComponentViewConfig = {
   },
 };
 
-verifyComponentAttributeEquivalence('FloatPropNativeComponent', FloatPropNativeComponentViewConfig);
+let nativeComponentName = 'FloatPropNativeComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'FloatPropNativeComponent',
-  () => FloatPropNativeComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, FloatPropNativeComponentViewConfig);
 
-module.exports = 'FloatPropNativeComponent';
+export const __INTERNAL_VIEW_CONFIG = FloatPropNativeComponentViewConfig;
+
+export default nativeComponentName;
 ",
 }
 `;
@@ -390,36 +363,23 @@ Map {
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
 const ImagePropNativeComponentViewConfig = {
   uiViewClassName: 'ImagePropNativeComponent',
-  Commands: {},
-
-  bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-  },
-
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
 
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     thumbImage: { process: require('resolveAssetSource') },
   },
 };
 
-verifyComponentAttributeEquivalence('ImagePropNativeComponent', ImagePropNativeComponentViewConfig);
+let nativeComponentName = 'ImagePropNativeComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'ImagePropNativeComponent',
-  () => ImagePropNativeComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, ImagePropNativeComponentViewConfig);
 
-module.exports = 'ImagePropNativeComponent';
+export const __INTERNAL_VIEW_CONFIG = ImagePropNativeComponentViewConfig;
+
+export default nativeComponentName;
 ",
 }
 `;
@@ -438,38 +398,25 @@ Map {
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
 const IntegerPropNativeComponentViewConfig = {
   uiViewClassName: 'IntegerPropNativeComponent',
-  Commands: {},
-
-  bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-  },
-
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
 
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     progress1: true,
     progress2: true,
     progress3: true,
   },
 };
 
-verifyComponentAttributeEquivalence('IntegerPropNativeComponent', IntegerPropNativeComponentViewConfig);
+let nativeComponentName = 'IntegerPropNativeComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'IntegerPropNativeComponent',
-  () => IntegerPropNativeComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, IntegerPropNativeComponentViewConfig);
 
-module.exports = 'IntegerPropNativeComponent';
+export const __INTERNAL_VIEW_CONFIG = IntegerPropNativeComponentViewConfig;
+
+export default nativeComponentName;
 ",
 }
 `;
@@ -488,17 +435,12 @@ Map {
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
 const InterfaceOnlyComponentViewConfig = {
   uiViewClassName: 'RCTInterfaceOnlyComponent',
-  Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-
     topChange: {
       phasedRegistrationNames: {
         captured: 'onChangeCapture',
@@ -507,25 +449,19 @@ const InterfaceOnlyComponentViewConfig = {
     },
   },
 
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
-
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     accessibilityHint: true,
     onChange: true,
   },
 };
 
-verifyComponentAttributeEquivalence('RCTInterfaceOnlyComponent', InterfaceOnlyComponentViewConfig);
+let nativeComponentName = 'RCTInterfaceOnlyComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'RCTInterfaceOnlyComponent',
-  () => InterfaceOnlyComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, InterfaceOnlyComponentViewConfig);
 
-module.exports = 'RCTInterfaceOnlyComponent'; // RCT prefix present for paper support
+export const __INTERNAL_VIEW_CONFIG = InterfaceOnlyComponentViewConfig;
+
+export default nativeComponentName;
 ",
 }
 `;
@@ -544,24 +480,12 @@ Map {
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
 const ImageColorPropNativeComponentViewConfig = {
   uiViewClassName: 'ImageColorPropNativeComponent',
-  Commands: {},
-
-  bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-  },
-
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
 
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     thumbImage: { process: require('resolveAssetSource') },
     color: { process: require('processColor') },
     thumbTintColor: { process: require('processColor') },
@@ -569,14 +493,45 @@ const ImageColorPropNativeComponentViewConfig = {
   },
 };
 
-verifyComponentAttributeEquivalence('ImageColorPropNativeComponent', ImageColorPropNativeComponentViewConfig);
+let nativeComponentName = 'ImageColorPropNativeComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'ImageColorPropNativeComponent',
-  () => ImageColorPropNativeComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, ImageColorPropNativeComponentViewConfig);
 
-module.exports = 'ImageColorPropNativeComponent';
+export const __INTERNAL_VIEW_CONFIG = ImageColorPropNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture NO_PROPS_NO_EVENTS 1`] = `
+Map {
+  "NO_PROPS_NO_EVENTSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const NoPropsNoEventsComponentViewConfig = {
+  uiViewClassName: 'NoPropsNoEventsComponent',
+  validAttributes: {},
+};
+
+let nativeComponentName = 'NoPropsNoEventsComponent';
+
+registerGeneratedViewConfig(nativeComponentName, NoPropsNoEventsComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = NoPropsNoEventsComponentViewConfig;
+
+export default nativeComponentName;
 ",
 }
 `;
@@ -595,36 +550,23 @@ Map {
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
 const PointPropNativeComponentViewConfig = {
   uiViewClassName: 'PointPropNativeComponent',
-  Commands: {},
-
-  bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-  },
-
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
 
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     startPoint: { diff: require('pointsDiffer') },
   },
 };
 
-verifyComponentAttributeEquivalence('PointPropNativeComponent', PointPropNativeComponentViewConfig);
+let nativeComponentName = 'PointPropNativeComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'PointPropNativeComponent',
-  () => PointPropNativeComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, PointPropNativeComponentViewConfig);
 
-module.exports = 'PointPropNativeComponent';
+export const __INTERNAL_VIEW_CONFIG = PointPropNativeComponentViewConfig;
+
+export default nativeComponentName;
 ",
 }
 `;
@@ -643,36 +585,24 @@ Map {
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
 const StringPropComponentViewConfig = {
   uiViewClassName: 'StringPropComponent',
-  Commands: {},
-
-  bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-  },
-
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
 
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     accessibilityHint: true,
+    accessibilityRole: true,
   },
 };
 
-verifyComponentAttributeEquivalence('StringPropComponent', StringPropComponentViewConfig);
+let nativeComponentName = 'StringPropComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'StringPropComponent',
-  () => StringPropComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, StringPropComponentViewConfig);
 
-module.exports = 'StringPropComponent';
+export const __INTERNAL_VIEW_CONFIG = StringPropComponentViewConfig;
+
+export default nativeComponentName;
 ",
 }
 `;
@@ -691,63 +621,39 @@ Map {
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
 const MultiFile1NativeComponentViewConfig = {
   uiViewClassName: 'MultiFile1NativeComponent',
-  Commands: {},
-
-  bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-  },
-
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
 
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     disabled: true,
   },
 };
 
-verifyComponentAttributeEquivalence('MultiFile1NativeComponent', MultiFile1NativeComponentViewConfig);
+let nativeComponentName = 'MultiFile1NativeComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'MultiFile1NativeComponent',
-  () => MultiFile1NativeComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, MultiFile1NativeComponentViewConfig);
 
-module.exports = 'MultiFile1NativeComponent';
+export const __INTERNAL_VIEW_CONFIG = MultiFile1NativeComponentViewConfig;
+
+export default nativeComponentName;
 
 const MultiFile2NativeComponentViewConfig = {
   uiViewClassName: 'MultiFile2NativeComponent',
-  Commands: {},
-
-  bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-  },
-
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
 
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     disabled: true,
   },
 };
 
-verifyComponentAttributeEquivalence('MultiFile2NativeComponent', MultiFile2NativeComponentViewConfig);
+let nativeComponentName = 'MultiFile2NativeComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'MultiFile2NativeComponent',
-  () => MultiFile2NativeComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, MultiFile2NativeComponentViewConfig);
 
-module.exports = 'MultiFile2NativeComponent';
+export const __INTERNAL_VIEW_CONFIG = MultiFile2NativeComponentViewConfig;
+
+export default nativeComponentName;
 ",
 }
 `;
@@ -766,63 +672,78 @@ Map {
 
 'use strict';
 
-const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
-const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
-const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
 const MultiComponent1NativeComponentViewConfig = {
   uiViewClassName: 'MultiComponent1NativeComponent',
-  Commands: {},
-
-  bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-  },
-
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
 
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     disabled: true,
   },
 };
 
-verifyComponentAttributeEquivalence('MultiComponent1NativeComponent', MultiComponent1NativeComponentViewConfig);
+let nativeComponentName = 'MultiComponent1NativeComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'MultiComponent1NativeComponent',
-  () => MultiComponent1NativeComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, MultiComponent1NativeComponentViewConfig);
 
-module.exports = 'MultiComponent1NativeComponent';
+export const __INTERNAL_VIEW_CONFIG = MultiComponent1NativeComponentViewConfig;
+
+export default nativeComponentName;
 
 const MultiComponent2NativeComponentViewConfig = {
   uiViewClassName: 'MultiComponent2NativeComponent',
-  Commands: {},
-
-  bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes,
-  },
-
-  directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes,
-  },
 
   validAttributes: {
-    ...ReactNativeViewViewConfig.validAttributes,
     disabled: true,
   },
 };
 
-verifyComponentAttributeEquivalence('MultiComponent2NativeComponent', MultiComponent2NativeComponentViewConfig);
+let nativeComponentName = 'MultiComponent2NativeComponent';
 
-ReactNativeViewConfigRegistry.register(
-  'MultiComponent2NativeComponent',
-  () => MultiComponent2NativeComponentViewConfig,
-);
+registerGeneratedViewConfig(nativeComponentName, MultiComponent2NativeComponentViewConfig);
 
-module.exports = 'MultiComponent2NativeComponent';
+export const __INTERNAL_VIEW_CONFIG = MultiComponent2NativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture with a deprecated view config name 1`] = `
+Map {
+  "DEPRECATED_VIEW_CONFIG_NAMENativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+const {UIManager} = require(\\"react-native\\")
+
+const NativeComponentNameViewConfig = {
+  uiViewClassName: 'NativeComponentName',
+  validAttributes: {},
+};
+
+let nativeComponentName = 'NativeComponentName';
+if (UIManager.getViewManagerConfig('NativeComponentName')) {
+  nativeComponentName = 'NativeComponentName';
+} else if (UIManager.getViewManagerConfig('DeprecatedNativeComponentName')){
+  nativeComponentName = 'DeprecatedNativeComponentName';
+} else {
+  throw new Error('Failed to find native component for either \\"NativeComponentName\\" or \\"DeprecatedNativeComponentName\\"')
+}
+registerGeneratedViewConfig(nativeComponentName, NativeComponentNameViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = NativeComponentNameViewConfig;
+
+export default nativeComponentName;
 ",
 }
 `;

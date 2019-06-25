@@ -12,7 +12,7 @@
 
 const nullthrows = require('nullthrows');
 
-const {getCppTypeForAnnotation} = require('./CppHelpers.js');
+const {getCppTypeForAnnotation, toSafeCppString} = require('./CppHelpers.js');
 const {generateStructName} = require('./EventEmitterHelpers.js');
 
 import type {
@@ -67,6 +67,16 @@ struct ::_STRUCT_NAME_:: {
 };
 `.trim();
 
+const enumTemplate = `enum class ::_ENUM_NAME_:: {
+  ::_VALUES_::
+};
+
+inline char const *toString(const ::_ENUM_NAME_:: value) {
+  switch (value) {
+    ::_TO_CASES_::
+  }
+}`.trim();
+
 function getNativeTypeFromAnnotation(
   componentName: string,
   eventProperty: ObjectPropertyType,
@@ -80,6 +90,11 @@ function getNativeTypeFromAnnotation(
     case 'Int32TypeAnnotation':
     case 'FloatTypeAnnotation':
       return getCppTypeForAnnotation(type);
+    case 'StringEnumTypeAnnotation':
+      return generateStructName(
+        componentName,
+        nameParts.concat([eventProperty.name]),
+      );
     case 'ObjectTypeAnnotation':
       return generateStructName(
         componentName,
@@ -89,6 +104,29 @@ function getNativeTypeFromAnnotation(
       (type: empty);
       throw new Error(`Receieved invalid event property type ${type}`);
   }
+}
+function generateEnum(structs, componentName, options, nameParts) {
+  const structName = generateStructName(componentName, nameParts);
+  const fields = options
+    .map((option, index) => `${toSafeCppString(option.name)}`)
+    .join(',\n  ');
+
+  const toCases = options
+    .map(
+      option =>
+        `case ${structName}::${toSafeCppString(option.name)}: return "${
+          option.name
+        }";`,
+    )
+    .join('\n' + '    ');
+
+  structs.set(
+    structName,
+    enumTemplate
+      .replace(/::_ENUM_NAME_::/g, structName)
+      .replace('::_VALUES_::', fields)
+      .replace('::_TO_CASES_::', toCases),
+  );
 }
 
 function generateStruct(
@@ -124,6 +162,14 @@ function generateStruct(
           componentName,
           nameParts.concat([name]),
           nullthrows(property.properties),
+        );
+        return;
+      case 'StringEnumTypeAnnotation':
+        generateEnum(
+          structs,
+          componentName,
+          property.options,
+          nameParts.concat([name]),
         );
         return;
       default:
