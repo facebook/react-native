@@ -1009,9 +1009,6 @@ public class ReactInstanceManager {
 
       catalystInstance.initialize();
 
-      if (ReactFeatureFlags.useTurboModules) {
-        catalystInstance.setTurboModuleManager(catalystInstance.getJSIModule(JSIModuleType.TurboModuleManager));
-      }
 
       mDevSupportManager.onNewReactContextCreated(reactContext);
       mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);
@@ -1177,6 +1174,10 @@ public class ReactInstanceManager {
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
     reactContext.initializeWithInstance(catalystInstance);
+
+    if (ReactFeatureFlags.useTurboModules && mJSIModulePackage != null) {
+      catalystInstance.setTurboModuleManager(catalystInstance.getJSIModule(JSIModuleType.TurboModuleManager));
+    }
 
     return reactContext;
   }
