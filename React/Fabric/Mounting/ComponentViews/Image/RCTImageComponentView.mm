@@ -78,7 +78,13 @@
 {
   SharedImageLocalData previousData = _imageLocalData;
   _imageLocalData = std::static_pointer_cast<const ImageLocalData>(localData);
-  assert(_imageLocalData);
+
+  if (!_imageLocalData) {
+    // This might happen in very rare cases (e.g. inside a subtree inside a node with `display: none`).
+    // That's quite normal.
+    return;
+  }
+
   bool havePreviousData = previousData != nullptr;
 
   if (!havePreviousData || _imageLocalData->getImageSource() != previousData->getImageSource()) {
