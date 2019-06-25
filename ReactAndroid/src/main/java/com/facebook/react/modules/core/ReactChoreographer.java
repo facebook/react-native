@@ -167,10 +167,16 @@ public class ReactChoreographer {
       synchronized (mCallbackQueuesLock) {
         mHasPostedCallback = false;
         for (int i = 0; i < mCallbackQueues.length; i++) {
-          int initialLength = mCallbackQueues[i].size();
+          ArrayDeque<ChoreographerCompat.FrameCallback> callbackQueue = mCallbackQueues[i];
+          int initialLength = callbackQueue.size();
           for (int callback = 0; callback < initialLength; callback++) {
-            mCallbackQueues[i].removeFirst().doFrame(frameTimeNanos);
-            mTotalCallbacks--;
+            ChoreographerCompat.FrameCallback frameCallback = callbackQueue.pollFirst();
+            if (frameCallback != null) {
+              frameCallback.doFrame(frameTimeNanos);
+              mTotalCallbacks--;
+            } else {
+              FLog.e(ReactConstants.TAG, "Tried to execute non-existent frame callback");
+            }
           }
         }
         maybeRemoveFrameCallback();
