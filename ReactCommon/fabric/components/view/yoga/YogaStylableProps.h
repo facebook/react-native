@@ -38,7 +38,7 @@ class YogaStylableProps {
 #pragma mark - DebugStringConvertible (Partial)
 
  public:
-  SharedDebugStringConvertibleList getDebugProps() const;
+  virtual SharedDebugStringConvertibleList getDebugProps() const;
 
 #endif
 };
