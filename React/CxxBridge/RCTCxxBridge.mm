@@ -231,8 +231,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 
     registerPerformanceLoggerHooks(_performanceLogger);
 
-    RCTLogInfo(@"Initializing %@ (parent: %@, executor: %@)", self, bridge, [self executorClass]);
-
     /**
      * Set Initial State
      */
