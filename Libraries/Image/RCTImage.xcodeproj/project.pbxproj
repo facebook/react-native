@@ -13,6 +13,8 @@
 		139A38841C4D587C00862840 /* RCTResizeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 139A38831C4D587C00862840 /* RCTResizeMode.m */; };
 		13EF7F7F1BC825B1003F47DD /* RCTLocalAssetImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 13EF7F7E1BC825B1003F47DD /* RCTLocalAssetImageLoader.m */; };
 		143879381AAD32A300F088A5 /* RCTImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 143879371AAD32A300F088A5 /* RCTImageLoader.m */; };
+		1ADE600C22C26D790062EAE9 /* RCTResizeMode.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D5FA63E1DE4B44A0058FD77 /* RCTResizeMode.h */; };
+		1ADE601022C26DB60062EAE9 /* RCTResizeMode.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D5FA63E1DE4B44A0058FD77 /* RCTResizeMode.h */; };
 		2D3B5F1A1D9B0D0400451313 /* RCTImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CCD34C261D4B8FE900268922 /* RCTImageCache.m */; };
 		2D3B5F1B1D9B0D0700451313 /* RCTImageBlurUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = EEF314711C9B0DD30049118E /* RCTImageBlurUtils.m */; };
 		2D3B5F1C1D9B0D1300451313 /* RCTResizeMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 139A38831C4D587C00862840 /* RCTResizeMode.m */; };
@@ -70,6 +72,7 @@
 			dstPath = include/RCTImage;
 			dstSubfolderSpec = 16;
 			files = (
+				1ADE600C22C26D790062EAE9 /* RCTResizeMode.h in Copy Headers */,
 				3D302E181DF8228100D6DDAE /* RCTImageUtils.h in Copy Headers */,
 			);
 			name = "Copy Headers";
@@ -81,6 +84,7 @@
 			dstPath = include/RCTImage;
 			dstSubfolderSpec = 16;
 			files = (
+				1ADE601022C26DB60062EAE9 /* RCTResizeMode.h in Copy Headers */,
 				3D302F211DF8269200D6DDAE /* RCTImageUtils.h in Copy Headers */,
 			);
 			name = "Copy Headers";
