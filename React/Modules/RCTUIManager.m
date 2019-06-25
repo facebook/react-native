@@ -1060,7 +1060,7 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
 }
 
 RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
-                  commandID:(NSInteger)commandID
+                  commandID:(id /*(NSString or NSNumber) */)commandID
                   commandArgs:(NSArray<id> *)commandArgs)
 {
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
@@ -1086,7 +1086,19 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
 
   Class managerClass = componentData.managerClass;
   RCTModuleData *moduleData = [_bridge moduleDataForName:RCTBridgeModuleNameForClass(managerClass)];
-  id<RCTBridgeMethod> method = moduleData.methods[commandID];
+
+  id<RCTBridgeMethod> method;
+  if ([commandID isKindOfClass:[NSNumber class]]) {
+    method = moduleData.methods[[commandID intValue]];
+  } else if([commandID isKindOfClass:[NSString class]]) {
+    method = moduleData.methodsByName[commandID];
+    if (method == nil) {
+      RCTLogError(@"No command found with name \"%@\"", commandID);
+    }
+  } else {
+    RCTLogError(@"dispatchViewManagerCommand must be called with a string or integer command");
+    return;
+  }
 
   NSArray *args = [@[reactTag] arrayByAddingObjectsFromArray:commandArgs];
   [method invokeWithBridge:_bridge module:componentData.manager arguments:args];
