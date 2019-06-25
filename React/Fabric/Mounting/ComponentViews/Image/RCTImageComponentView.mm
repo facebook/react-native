@@ -125,6 +125,13 @@
 
 - (void)didReceiveImage:(UIImage *)image fromObserver:(void *)observer
 {
+  if (!_eventEmitter) {
+    // Notifications are delivered asynchronously and might arrive after the view is already recycled.
+    // In the future, we should incorporate an `EventEmitter` into a separate object owned by `ImageRequest` or `State`.
+    // See for more info: T46311063.
+    return;
+  }
+
   std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onLoad();
 
   const auto &imageProps = *std::static_pointer_cast<const ImageProps>(_props);
@@ -153,11 +160,19 @@
 
 - (void)didReceiveProgress:(float)progress fromObserver:(void *)observer
 {
+  if (!_eventEmitter) {
+    return;
+  }
+
   std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onProgress(progress);
 }
 
 - (void)didReceiveFailureFromObserver:(void *)observer
 {
+  if (!_eventEmitter) {
+    return;
+  }
+
   std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onError();
 }
 
