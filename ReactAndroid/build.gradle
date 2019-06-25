@@ -20,7 +20,6 @@ import org.apache.tools.ant.filters.ReplaceTokens
 // We then copy both the downloaded code and our custom makefiles and headers into third-party-ndk.
 // After that we build native code from src/main/jni with module path pointing at third-party-ndk.
 
-
 def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
@@ -47,14 +46,12 @@ def V8Path = 'packages/Office.Google_V8.Android.7.0.276.32-v1'
 
 def hasBoostNuget = file(BoostNugetPath).exists()
 
+// Set the value of JSEngineUsed as 'V8' or 'JSC' to enable the respective engine
+def JSEngineUsed = 'V8'
+
 task createNativeDepsDirectories {
     downloadsDir.mkdirs()
     thirdPartyNdkDir.mkdirs()
-}
-
-// On Native side, V8_ENABLED flag is used
-def isV8Enabled() {
-    return true;
 }
 
 // For GitHub CI - we use this task
@@ -146,26 +143,23 @@ task downloadJSC(dependsOn: createNativeDepsDirectories, type: Download) {
 }
 
 // Create Android.mk library module based on jsc from npm
-task prepareJSC(dependsOn: isV8Enabled() ? [] : [downloadJSC]) {
-    if (isV8Enabled()) {
-        return;
-    }
-    doLast {
-        def jscTar = tarTree(downloadJSC.dest)
-        def jscAAR = jscTar.matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
-        def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
+task prepareJSC(dependsOn: JSEngineUsed=='V8' ? [] : [downloadJSC]) {
+    if (JSEngineUsed=='JSC'){
+        doLast {
+            def jscTar = tarTree(downloadJSC.dest)
+            def jscAAR = jscTar.matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
+            def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
 
-        def headerFiles = jscTar.matching({ it.include "**/include/*.h" })
+            def headerFiles = jscTar.matching({ it.include "**/include/*.h" })
 
-        copy {
-            from(soFiles)
-            from(headerFiles)
-            from("src/main/jni/third-party/jsc/Android.mk")
-
-            filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
-
-            includeEmptyDirs(false)
-            into("$thirdPartyNdkDir/jsc")
+            copy {
+                from(soFiles)
+                from(headerFiles)
+                from("src/main/jni/third-party/jsc/Android.mk")
+                filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
+                includeEmptyDirs(false)
+                into("$thirdPartyNdkDir/jsc")
+            }
         }
     }
 }
@@ -241,8 +235,9 @@ task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConvers
             "V8_NUGET_DIR=$projectDir/$V8Path",
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
-            "-C", file("src/main/jni/react/jni").absolutePath,
-            "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
+            "JS_ENGINE=$JSEngineUsed",
+            '-C', file("src/main/jni/react/jni").absolutePath,
+            '--jobs', project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
     )
 }
 
@@ -303,6 +298,7 @@ android {
         }
 
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
+        buildConfigField("String", "JS_ENGINE_USED", "\"$JSEngineUsed\"")
         buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
         testApplicationId("com.facebook.react.tests.gradle")
         testInstrumentationRunner("android.support.test.runner.AndroidJUnitRunner")
@@ -355,6 +351,9 @@ dependencies {
     api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
     api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
     api("com.squareup.okio:okio:1.15.0")
+    if(JSEngineUsed=='JSC'){
+        compile 'org.webkit:android-jsc:r174650'
+    }
 
     testImplementation("junit:junit:${JUNIT_VERSION}")
     testImplementation("org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}")

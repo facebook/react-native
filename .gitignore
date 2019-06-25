@@ -77,3 +77,6 @@ RNTester/build
 
 
 *.nupkg
+
+#vscode
+.vscode/*
