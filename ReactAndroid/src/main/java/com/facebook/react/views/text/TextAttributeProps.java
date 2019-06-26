@@ -306,10 +306,10 @@ public class TextAttributeProps {
     mIsUnderlineTextDecorationSet = false;
     mIsLineThroughTextDecorationSet = false;
     if (textDecorationLineString != null) {
-      for (String textDecorationLineSubString : textDecorationLineString.split(" ")) {
+      for (String textDecorationLineSubString : textDecorationLineString.split("-")) {
         if ("underline".equals(textDecorationLineSubString)) {
           mIsUnderlineTextDecorationSet = true;
-        } else if ("line-through".equals(textDecorationLineSubString)) {
+        } else if ("strikethrough".equals(textDecorationLineSubString)) {
           mIsLineThroughTextDecorationSet = true;
         }
       }
