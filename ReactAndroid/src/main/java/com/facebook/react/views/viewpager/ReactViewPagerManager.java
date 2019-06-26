@@ -95,6 +95,30 @@ public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
   }
 
   @Override
+  public void receiveCommand(
+      ReactViewPager viewPager,
+      String commandType,
+      @Nullable ReadableArray args) {
+    Assertions.assertNotNull(viewPager);
+    Assertions.assertNotNull(args);
+    switch (commandType) {
+      case "setPage": {
+        viewPager.setCurrentItemFromJs(args.getInt(0), true);
+        return;
+      }
+      case "setPageWithoutAnimation": {
+        viewPager.setCurrentItemFromJs(args.getInt(0), false);
+        return;
+      }
+      default:
+        throw new IllegalArgumentException(String.format(
+            "Unsupported command %d received by %s.",
+            commandType,
+            getClass().getSimpleName()));
+    }
+  }
+
+  @Override
   public void addView(ReactViewPager parent, View child, int index) {
     parent.addViewToAdapter(child, index);
   }
