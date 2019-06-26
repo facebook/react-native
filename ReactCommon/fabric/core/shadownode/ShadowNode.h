@@ -112,10 +112,13 @@ class ShadowNode : public virtual Sealable,
   const State::Shared &getState() const;
 
   /*
-   * Returns a momentary value of currently committed state associated with a
-   * family of nodes which this node belongs to.
+   * Returns a momentary value of the most recently created or committed state
+   * associated with a family of nodes which this node belongs to.
+   * Sequential calls might return different values.
+   * The method may return null pointer in case if the particular `ShadowNode`
+   * does not use `State`.
    */
-  State::Shared getCommitedState() const;
+  State::Shared getMostRecentState() const;
 
   /*
    * Returns a local data associated with the node.
