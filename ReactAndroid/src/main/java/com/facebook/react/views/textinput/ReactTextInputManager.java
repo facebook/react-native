@@ -188,6 +188,23 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   @Override
+  public void receiveCommand(
+      ReactEditText reactEditText,
+      String commandId,
+      @Nullable ReadableArray args) {
+    switch (commandId) {
+      case "focus":
+      case "focusTextInput":
+        reactEditText.requestFocusFromJS();
+        break;
+      case "blur":
+      case "blurTextInput":
+        reactEditText.clearFocusFromJS();
+        break;
+    }
+  }
+
+  @Override
   public void updateExtraData(ReactEditText view, Object extraData) {
     if (extraData instanceof ReactTextUpdate) {
       ReactTextUpdate update = (ReactTextUpdate) extraData;
