@@ -154,6 +154,21 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
   }
 
   @Override
+  public void receiveCommand(
+      ReactDrawerLayout root,
+      String commandId,
+      @Nullable ReadableArray args) {
+    switch (commandId) {
+      case "openDrawer":
+        root.openDrawer();
+        break;
+      case "closeDrawer":
+        root.closeDrawer();
+        break;
+    }
+  }
+
+  @Override
   public @Nullable Map getExportedViewConstants() {
     return MapBuilder.of(
         "DrawerPosition",
