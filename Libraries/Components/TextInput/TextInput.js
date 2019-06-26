@@ -208,6 +208,8 @@ export type TextContentType =
   | 'newPassword'
   | 'oneTimeCode';
 
+type PasswordRules = string;
+
 type IOSProps = $ReadOnly<{|
   spellCheck?: ?boolean,
   keyboardAppearance?: ?('default' | 'light' | 'dark'),
@@ -220,6 +222,7 @@ type IOSProps = $ReadOnly<{|
     | $ReadOnlyArray<DataDetectorTypesType>,
   inputAccessoryViewID?: ?string,
   textContentType?: ?TextContentType,
+  PasswordRules?: ?PasswordRules,
   scrollEnabled?: ?boolean,
 |}>;
 
