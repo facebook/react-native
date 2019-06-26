@@ -1,8 +1,14 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "fb_apple_library", "react_native_xplat_target_apple")
+load("//tools/build_defs/oss:rn_defs.bzl", "fb_apple_library", "react_native_xplat_target_apple", "subdir_glob")
 
 fb_apple_library(
-    name = "FBReactNativeSpec",
-    autoglob = True,
+    name = "FBReactNativeSpecApple",
+    srcs = glob(["FBReactNativeSpec/**/*.mm"]),
+    exported_headers = subdir_glob(
+        [
+            ("FBReactNativeSpec", "*.h"),
+        ],
+        prefix = "FBReactNativeSpec",
+    ),
     contacts = ["oncall+react_native@xmail.facebook.com"],
     frameworks = [
         "Foundation",
