@@ -42,6 +42,8 @@ APPLE = ""
 
 YOGA_TARGET = "//ReactAndroid/src/main/java/com/facebook:yoga"
 
+YOGA_CXX_TARGET = "//ReactCommon/yoga:yoga"
+
 FBGLOGINIT_TARGET = "//ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit"
 
 FBJNI_TARGET = "//ReactAndroid/src/main/jni/first-party/fb:jni"
