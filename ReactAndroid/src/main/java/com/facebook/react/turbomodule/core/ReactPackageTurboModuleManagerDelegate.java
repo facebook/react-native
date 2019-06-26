@@ -3,6 +3,7 @@
 package com.facebook.react.turbomodule.core;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.CxxModuleWrapper;
@@ -32,6 +33,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
 
   @Nullable
   @Override
+  @DoNotStrip
   public TurboModule getModule(String moduleName) {
     TurboModule module = resolveModule(moduleName);
     if (module == null) {
