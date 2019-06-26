@@ -186,6 +186,14 @@ public class ReactScrollViewManager
   }
 
   @Override
+  public void receiveCommand(
+      ReactScrollView scrollView,
+      String commandId,
+      @Nullable ReadableArray args) {
+    ReactScrollViewCommandHelper.receiveCommand(this, scrollView, commandId, args);
+  }
+
+  @Override
   public void flashScrollIndicators(ReactScrollView scrollView) {
     scrollView.flashScrollIndicators();
   }

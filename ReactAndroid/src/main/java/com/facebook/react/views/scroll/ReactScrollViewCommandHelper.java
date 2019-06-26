@@ -71,15 +71,11 @@ public class ReactScrollViewCommandHelper {
     Assertions.assertNotNull(args);
     switch (commandType) {
       case COMMAND_SCROLL_TO: {
-        int destX = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(0)));
-        int destY = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(1)));
-        boolean animated = args.getBoolean(2);
-        viewManager.scrollTo(scrollView, new ScrollToCommandData(destX, destY, animated));
+        scrollTo(viewManager, scrollView, args);
         return;
       }
       case COMMAND_SCROLL_TO_END: {
-        boolean animated = args.getBoolean(0);
-        viewManager.scrollToEnd(scrollView, new ScrollToEndCommandData(animated));
+        scrollToEnd(viewManager, scrollView, args);
         return;
       }
       case COMMAND_FLASH_SCROLL_INDICATORS:
@@ -92,5 +88,50 @@ public class ReactScrollViewCommandHelper {
             commandType,
             viewManager.getClass().getSimpleName()));
     }
+  }
+
+  public static <T> void receiveCommand(
+      ScrollCommandHandler<T> viewManager,
+      T scrollView,
+      String commandType,
+      @Nullable ReadableArray args) {
+    Assertions.assertNotNull(viewManager);
+    Assertions.assertNotNull(scrollView);
+    Assertions.assertNotNull(args);
+    switch (commandType) {
+      case "scrollTo": {
+        scrollTo(viewManager, scrollView, args);
+        return;
+      }
+      case "scrollToEnd": {
+        scrollToEnd(viewManager, scrollView, args);
+        return;
+      }
+      case "flashScrollIndicators":
+        viewManager.flashScrollIndicators(scrollView);
+        return;
+
+      default:
+        throw new IllegalArgumentException(String.format(
+            "Unsupported command %s received by %s.",
+            commandType,
+            viewManager.getClass().getSimpleName()));
+    }
+  }
+
+  private static <T> void scrollTo(
+      ScrollCommandHandler<T> viewManager,
+      T scrollView, @Nullable ReadableArray args) {
+    int destX = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(0)));
+    int destY = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(1)));
+    boolean animated = args.getBoolean(2);
+    viewManager.scrollTo(scrollView, new ScrollToCommandData(destX, destY, animated));
+  }
+
+  private static <T> void scrollToEnd(
+      ScrollCommandHandler<T> viewManager,
+      T scrollView, @Nullable ReadableArray args) {
+    boolean animated = args.getBoolean(0);
+    viewManager.scrollToEnd(scrollView, new ScrollToEndCommandData(animated));
   }
 }
