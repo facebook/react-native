@@ -18,6 +18,7 @@ import android.hardware.SensorManager;
 import androidx.core.view.ViewCompat;
 import androidx.core.text.TextUtilsCompat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.FocusFinder;
 import android.view.MotionEvent;
 import android.view.View;
@@ -409,6 +410,16 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     }
 
     return super.onTouchEvent(ev);
+  }
+
+  @Override
+  public boolean executeKeyEvent(KeyEvent event) {
+    int eventKeyCode = event.getKeyCode();
+    if (!mScrollEnabled && (eventKeyCode == KeyEvent.KEYCODE_DPAD_LEFT ||
+      eventKeyCode == KeyEvent.KEYCODE_DPAD_RIGHT)) {
+      return false;
+    }
+    return super.executeKeyEvent(event);
   }
 
   @Override
