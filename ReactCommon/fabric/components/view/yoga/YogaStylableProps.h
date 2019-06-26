@@ -19,7 +19,7 @@ class YogaStylableProps;
 
 typedef std::shared_ptr<const YogaStylableProps> SharedYogaStylableProps;
 
-class YogaStylableProps {
+class YogaStylableProps : public virtual DebugStringConvertible {
  public:
   YogaStylableProps() = default;
   YogaStylableProps(const YGStyle &yogaStyle);
@@ -38,7 +38,8 @@ class YogaStylableProps {
 #pragma mark - DebugStringConvertible (Partial)
 
  public:
-  virtual SharedDebugStringConvertibleList getDebugProps() const;
+  virtual ~YogaStylableProps() = default;
+  SharedDebugStringConvertibleList getDebugProps() const override;
 
 #endif
 };
