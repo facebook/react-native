@@ -1641,9 +1641,6 @@ namespace JS {
        callback:(RCTResponseSenderBlock)callback;
 - (void)measureInWindow:(NSNumber *)reactTag
                callback:(RCTResponseSenderBlock)callback;
-- (void)viewIsDescendantOf:(NSNumber *)reactTag
-          ancestorReactTag:(NSNumber *)ancestorReactTag
-                  callback:(RCTResponseSenderBlock)callback;
 - (void)measureLayout:(NSNumber *)reactTag
      ancestorReactTag:(NSNumber *)ancestorReactTag
         errorCallback:(RCTResponseSenderBlock)errorCallback
