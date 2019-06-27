@@ -97,45 +97,6 @@ function findConfig(ast) {
   };
 }
 
-// function findCommands(ast) {
-//   const foundCommands = [];
-//
-//   const allExports = ast.body.filter(
-//     node => node.type === 'ExportNamedDeclaration',
-//   );
-//
-//   allExports.forEach(statement => {
-//     let calleeName;
-//     try {
-//       calleeName = statement.declaration.declarations[0].init.callee.name;
-//     } catch (e) {
-//       // Not a function call
-//       return;
-//     }
-//
-//     if (calleeName !== 'codegenNativeCommands') {
-//       return;
-//     }
-//
-//     const typeArgumentParam =
-//       statement.declaration.declarations[0].init.typeArguments.params[0];
-//
-//     if (typeArgumentParam.type !== 'GenericTypeAnnotation') {
-//       throw new Error(
-//         "codegenNativeCommands doesn't support inline definitions. Specify a file local type alias",
-//       );
-//     }
-//
-//     foundCommands.push(typeArgumentParam.id.name);
-//   });
-//
-//   if (foundCommands.length > 1) {
-//     throw new Error('codegenNativeCommands may only be called once in a file');
-//   }
-//
-//   return foundCommands[0];
-// }
-
 function getTypes(ast) {
   return ast.body.reduce((types, node) => {
     if (node.type === 'ExportNamedDeclaration') {
@@ -197,7 +158,6 @@ function processString(contents: string) {
     commandTypeName,
     optionsExpression,
   } = findConfig(ast);
-  // const commandsTypeName = findCommands(ast);
 
   const propProperties = getPropProperties(propsTypeName, types);
   const commandProperties = getCommandProperties(commandTypeName, types);
