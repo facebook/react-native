@@ -36,6 +36,8 @@ if (__DEV__) {
 
     isLikelyComponentType: ReactRefreshRuntime.isLikelyComponentType,
 
+    getFamilyByType: ReactRefreshRuntime.getFamilyByType,
+
     register: ReactRefreshRuntime.register,
 
     performReactRefresh() {
