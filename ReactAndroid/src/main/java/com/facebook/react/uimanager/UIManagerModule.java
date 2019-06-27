@@ -629,13 +629,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
         callback);
   }
 
-  /** Check if the first shadow node is the descendant of the second shadow node */
-  @ReactMethod
-  public void viewIsDescendantOf(
-      final int reactTag, final int ancestorReactTag, final Callback callback) {
-    mUIImplementation.viewIsDescendantOf(reactTag, ancestorReactTag, callback);
-  }
-
   @Override
   @ReactMethod
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
