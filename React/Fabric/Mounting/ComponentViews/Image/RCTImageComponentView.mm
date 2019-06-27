@@ -76,8 +76,14 @@
 
 - (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
 {
-  SharedImageLocalData previousData = _imageLocalData;
-  _imageLocalData = std::static_pointer_cast<const ImageLocalData>(localData);
+  auto imageLocalData = std::static_pointer_cast<const ImageLocalData>(localData);
+
+  // This call (setting `coordinator`) must be unconditional (at the same block as setting `LocalData`)
+  // because the setter stores a raw pointer to object that `LocalData` owns.
+  self.coordinator = imageLocalData ? &imageLocalData->getImageRequest().getObserverCoordinator() : nullptr;
+
+  auto previousData = _imageLocalData;
+  _imageLocalData = imageLocalData;
 
   if (!_imageLocalData) {
     // This might happen in very rare cases (e.g. inside a subtree inside a node with `display: none`).
@@ -88,8 +94,6 @@
   bool havePreviousData = previousData != nullptr;
 
   if (!havePreviousData || _imageLocalData->getImageSource() != previousData->getImageSource()) {
-    self.coordinator = &_imageLocalData->getImageRequest().getObserverCoordinator();
-
     // Loading actually starts a little before this, but this is the first time we know
     // the image is loading and can fire an event from this component
     std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onLoadStart();
