@@ -260,6 +260,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   #endif
 }
 
+
+- (void)setPasswordRules:(NSString *)descriptor
+{
+  #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_12_0
+    if (@available(iOS 12.0, *)) {
+      self.backedTextInputView.passwordRules = [UITextInputPasswordRules passwordRulesWithDescriptor:descriptor];
+    }
+  #endif
+}
+
 - (UIKeyboardType)keyboardType
 {
   return self.backedTextInputView.keyboardType;
