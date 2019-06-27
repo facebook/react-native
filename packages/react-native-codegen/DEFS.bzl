@@ -14,19 +14,6 @@ load(
     "rn_xplat_cxx_library",
 )
 
-def rn_codegen_test(
-        fixture_name = ""):
-    copy_schema_name = "copy_schema-{}".format(fixture_name)
-
-    fb_native.genrule(
-        name = copy_schema_name,
-        srcs = [],
-        cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:copy_fixture_schema) {} $OUT".format(fixture_name),
-        out = "schema-{}.json".format(fixture_name),
-    )
-
-    rn_codegen(fixture_name, ":{}".format(copy_schema_name))
-
 def rn_codegen(
         name = "",
         schema_target = ""):

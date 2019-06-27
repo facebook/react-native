@@ -11,14 +11,22 @@
 'use strict';
 import type {SchemaType} from '../../CodegenSchema.js';
 
-const SchemaParser = require('../../parsers/schema');
+const FlowParser = require('../../parsers/flow');
+const fs = require('fs');
 
 function combineSchemas(files: Array<string>): SchemaType {
   return files.reduce(
     (merged, filename) => {
-      const schema = SchemaParser.parse(filename);
-      if (schema && schema.modules) {
-        merged.modules = {...merged.modules, ...schema.modules};
+      const contents = fs.readFileSync(filename, 'utf8');
+      if (
+        contents &&
+        /export\s+default\s+codegenNativeComponent</.test(contents)
+      ) {
+        const schema = FlowParser.parseFile(filename);
+
+        if (schema && schema.modules) {
+          merged.modules = {...merged.modules, ...schema.modules};
+        }
       }
       return merged;
     },
