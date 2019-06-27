@@ -276,6 +276,12 @@ module.exports = {
     return require('../Performance/Systrace');
   },
   get TimePickerAndroid() {
+    warnOnce(
+      'TimePickerAndroid-merged',
+      'TimePickerAndroid has been merged with DatePickerIOS and DatePickerAndroid and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-datetimepicker',
+    );
     return require('../Components/TimePickerAndroid/TimePickerAndroid');
   },
   get ToastAndroid() {
