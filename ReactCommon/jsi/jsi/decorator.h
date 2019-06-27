@@ -334,8 +334,7 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   }
 
   bool createSnapshotToFile(const std::string& path, bool compact) override {
-    return const_cast<Plain&>(plain()).instrumentation().createSnapshotToFile(
-        path, compact);
+    return plain().instrumentation().createSnapshotToFile(path, compact);
   }
 
   void writeBridgeTrafficTraceToFile(
