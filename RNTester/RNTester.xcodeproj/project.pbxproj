@@ -111,9 +111,6 @@
 		3D56F9F11D6F6E9B00F53A06 /* RNTesterBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3D13F83E1D6F6AE000E69E0E /* RNTesterBundle.bundle */; };
 		3DB99D0C1BA0340600302749 /* RNTesterIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DB99D0B1BA0340600302749 /* RNTesterIntegrationTests.m */; };
 		3DD981D61D33C6FB007DC7BE /* RNTesterUnitTestsBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = 3DD981D51D33C6FB007DC7BE /* RNTesterUnitTestsBundle.js */; };
-		3FCC247D22A2333F0013B22F /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C60EB582264416A0018C04F /* AppDelegate.mm */; };
-		3FCC24AA22A25DF80013B22F /* RCTNativeSampleTurboModuleSpec.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C2B71152267DB1A0066069E /* RCTNativeSampleTurboModuleSpec.mm */; };
-		3FCC24AB22A25DFF0013B22F /* RCTSampleTurboModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C2B711A2267DB1A0066069E /* RCTSampleTurboModule.mm */; };
 		52C11BBB1EEACA7100C1A058 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5281CA511EEAC9A700AC40CD /* libRCTBlob.a */; };
 		52C11BE11EEACA7800C1A058 /* libRCTBlob-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5281CA531EEAC9A700AC40CD /* libRCTBlob-tvOS.a */; };
 		5C2B71672267DB1A0066069E /* RCTNativeSampleTurboModuleSpec.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C2B71152267DB1A0066069E /* RCTNativeSampleTurboModuleSpec.mm */; };
@@ -1745,11 +1742,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3FCC24AB22A25DFF0013B22F /* RCTSampleTurboModule.mm in Sources */,
 				2DD323DC1DA2DDBF000FE1B8 /* FlexibleSizeExampleView.m in Sources */,
 				2DD323DD1DA2DDBF000FE1B8 /* UpdatePropertiesExampleView.m in Sources */,
-				3FCC247D22A2333F0013B22F /* AppDelegate.mm in Sources */,
-				3FCC24AA22A25DF80013B22F /* RCTNativeSampleTurboModuleSpec.mm in Sources */,
 				2DD323E01DA2DDBF000FE1B8 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2001,11 +1995,6 @@
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_NO_COMMON_BLOCKS = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../third-party/boost_1_63_0",
-					"$(SRCROOT)/../third-party/folly-2018.10.22.00",
-					"$(SRCROOT)/../third-party/glog-0.3.5/src",
-				);
 				INFOPLIST_FILE = "RNTester-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.RNTester-tvOS";
@@ -2026,11 +2015,6 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../third-party/boost_1_63_0",
-					"$(SRCROOT)/../third-party/folly-2018.10.22.00",
-					"$(SRCROOT)/../third-party/glog-0.3.5/src",
-				);
 				INFOPLIST_FILE = "RNTester-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.RNTester-tvOS";

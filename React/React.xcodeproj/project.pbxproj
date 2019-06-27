@@ -1001,6 +1001,9 @@
 		66CD94B71F1045E700CB3C7C /* RCTMaskedViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 66CD94B01F1045E700CB3C7C /* RCTMaskedViewManager.m */; };
 		66CD94B81F1045E700CB3C7C /* RCTMaskedViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 66CD94B01F1045E700CB3C7C /* RCTMaskedViewManager.m */; };
 		68EFE4EE1CF6EB3900A1DE13 /* RCTBundleURLProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */; };
+		6E0C2F36229872CD000E3701 /* RCTCxxConvert.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = C60128A91F3D1258009DF9FF /* RCTCxxConvert.h */; };
+		6E0C2F37229872E8000E3701 /* RCTManagedPointer.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = C654505D1F3BD9280090799B /* RCTManagedPointer.h */; };
+		6E0C2F3A2298731F000E3701 /* RCTCxxModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13134C801E296B2A00B9F3CB /* RCTCxxModule.h */; };
 		830A229E1A66C68A008503DA /* RCTRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 830A229D1A66C68A008503DA /* RCTRootView.m */; };
 		83281384217EB70900574D55 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281383217EB70800574D55 /* MallocImpl.cpp */; };
 		83281385217EB71200574D55 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281383217EB70800574D55 /* MallocImpl.cpp */; };
@@ -1544,7 +1547,10 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				6E0C2F3A2298731F000E3701 /* RCTCxxModule.h in Copy Headers */,
+				6E0C2F37229872E8000E3701 /* RCTManagedPointer.h in Copy Headers */,
 				5C60EB5A226442950018C04F /* RCTCxxBridgeDelegate.h in Copy Headers */,
+				6E0C2F36229872CD000E3701 /* RCTCxxConvert.h in Copy Headers */,
 				5C60EB57226441470018C04F /* JSCExecutorFactory.h in Copy Headers */,
 				589515E12231ADE00036BDE0 /* RCTSurfacePresenterStub.h in Copy Headers */,
 				39C50FF92046EACF00CEE534 /* RCTVersion.h in Copy Headers */,
