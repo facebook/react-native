@@ -16,6 +16,8 @@ const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
 
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 
+import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
+
 let _didSetupSocket = false;
 let _hmrClient = null;
 let _hmrUnavailableReason: string | null = null;
@@ -196,7 +198,11 @@ Error: ${e.message}`;
         // Even if there is already a redbox, syntax errors are more important.
         // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
         dismissRedbox();
-        throw new Error(`${data.type} ${data.message}`);
+        const error: ExtendedError = new Error(`${data.type} ${data.message}`);
+        // Symbolicating compile errors is wasted effort
+        // because the stack trace is meaningless:
+        error.preventSymbolication = true;
+        throw error;
       }
     });
 
