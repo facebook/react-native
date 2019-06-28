@@ -509,7 +509,7 @@ export type Props = $ReadOnly<{|
   /**
    * A React Component that will be used to render sticky headers.
    * To be used together with `stickyHeaderIndices` or with `SectionList`, defaults to `ScrollViewStickyHeader`.
-   * You may need to set this if your sticky header implementes custom transforms (eg. translation),
+   * You may need to set this if your sticky header uses custom transforms (eg. translation),
    * for example when you want your list to have an animated hidable header.
    */
   StickyHeaderComponent: StickyHeaderComponentType,
