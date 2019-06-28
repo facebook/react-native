@@ -2,6 +2,7 @@
 
 exports[`VirtualizedList handles nested lists 1`] = `
 <RCTScrollView
+  StickyHeaderComponent={[MockFunction]}
   data={
     Array [
       Object {
@@ -91,6 +92,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
       style={null}
     >
       <RCTScrollView
+        StickyHeaderComponent={[MockFunction]}
         data={
           Array [
             Object {
@@ -162,6 +164,7 @@ exports[`VirtualizedList handles nested lists 1`] = `
 exports[`VirtualizedList handles separators correctly 1`] = `
 <RCTScrollView
   ItemSeparatorComponent={[Function]}
+  StickyHeaderComponent={[MockFunction]}
   data={
     Array [
       Object {
@@ -243,6 +246,7 @@ exports[`VirtualizedList handles separators correctly 1`] = `
 exports[`VirtualizedList handles separators correctly 2`] = `
 <RCTScrollView
   ItemSeparatorComponent={[Function]}
+  StickyHeaderComponent={[MockFunction]}
   data={
     Array [
       Object {
@@ -324,6 +328,7 @@ exports[`VirtualizedList handles separators correctly 2`] = `
 exports[`VirtualizedList handles separators correctly 3`] = `
 <RCTScrollView
   ItemSeparatorComponent={[Function]}
+  StickyHeaderComponent={[MockFunction]}
   data={
     Array [
       Object {
@@ -409,6 +414,7 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
   ListEmptyComponent={[Function]}
   ListFooterComponent={[Function]}
   ListHeaderComponent={[Function]}
+  StickyHeaderComponent={[MockFunction]}
   data={
     Array [
       Object {
@@ -611,6 +617,7 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
 
 exports[`VirtualizedList renders empty list 1`] = `
 <RCTScrollView
+  StickyHeaderComponent={[MockFunction]}
   data={Array []}
   disableVirtualization={false}
   getItem={[Function]}
@@ -641,6 +648,7 @@ exports[`VirtualizedList renders empty list with empty component 1`] = `
   ListEmptyComponent={[Function]}
   ListFooterComponent={[Function]}
   ListHeaderComponent={[Function]}
+  StickyHeaderComponent={[MockFunction]}
   data={Array []}
   disableVirtualization={false}
   getItem={[Function]}
@@ -681,6 +689,7 @@ exports[`VirtualizedList renders empty list with empty component 1`] = `
 exports[`VirtualizedList renders list with empty component 1`] = `
 <RCTScrollView
   ListEmptyComponent={[Function]}
+  StickyHeaderComponent={[MockFunction]}
   data={
     Array [
       Object {
@@ -723,6 +732,7 @@ exports[`VirtualizedList renders list with empty component 1`] = `
 
 exports[`VirtualizedList renders null list 1`] = `
 <RCTScrollView
+  StickyHeaderComponent={[MockFunction]}
   disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
@@ -749,6 +759,7 @@ exports[`VirtualizedList renders null list 1`] = `
 
 exports[`VirtualizedList renders simple list 1`] = `
 <RCTScrollView
+  StickyHeaderComponent={[MockFunction]}
   data={
     Array [
       Object {
@@ -814,6 +825,7 @@ exports[`VirtualizedList renders simple list 1`] = `
 exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
 <RCTScrollView
   ListItemComponent={[Function]}
+  StickyHeaderComponent={[MockFunction]}
   data={
     Array [
       Object {
@@ -877,6 +889,7 @@ exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
 
 exports[`VirtualizedList test getItem functionality where data is not an Array 1`] = `
 <RCTScrollView
+  StickyHeaderComponent={[MockFunction]}
   data={
     Map {
       "id_0" => Object {
@@ -920,6 +933,7 @@ exports[`VirtualizedList test getItem functionality where data is not an Array 1
 exports[`VirtualizedList warns if both renderItem or ListItemComponent are specified. Uses ListItemComponent 1`] = `
 <RCTScrollView
   ListItemComponent={[Function]}
+  StickyHeaderComponent={[MockFunction]}
   data={
     Array [
       Object {
