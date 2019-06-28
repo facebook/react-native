@@ -37,6 +37,7 @@ import type {NativeMethodsMixinType} from '../../Renderer/shims/ReactNativeTypes
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {PointProp} from '../../StyleSheet/PointPropType';
+import type {ScrolViewStickyHeaderProps} from './ScrollViewStickyHeader';
 
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {State as ScrollResponderState} from '../ScrollResponder';
@@ -353,6 +354,10 @@ type VRProps = $ReadOnly<{|
   scrollBarThumbImage?: ?($ReadOnly<{||}> | number), // Opaque type returned by import IMAGE from './image.jpg'
 |}>;
 
+type StickyHeaderComponentType = React.ComponentType<ScrolViewStickyHeaderProps> & {
+  setNextHeaderY: number => void,
+};
+
 export type Props = $ReadOnly<{|
   ...ViewProps,
   ...TouchableProps,
@@ -502,6 +507,13 @@ export type Props = $ReadOnly<{|
    */
   stickyHeaderIndices?: ?$ReadOnlyArray<number>,
   /**
+   * A React Component that will be used to render sticky headers.
+   * To be used together with `stickyHeaderIndices` or with `SectionList`, defaults to `ScrollViewStickyHeader`.
+   * You may need to set this if your sticky header implementes custom transforms (eg. translation),
+   * for example when you want your list to have an animated hidable header.
+   */
+  StickyHeaderComponent: StickyHeaderComponentType,
+  /**
    * When set, causes the scroll view to stop at multiples of the value of
    * `snapToInterval`. This can be used for paginating through children
    * that have lengths smaller than the scroll view. Typically used in
@@ -623,6 +635,10 @@ class ScrollView extends React.Component<Props, State> {
    */
   _scrollResponder: typeof ScrollResponder.Mixin = createScrollResponder(this);
 
+  static defaultProps = {
+    StickyHeaderComponent: ScrollViewStickyHeader,
+  };
+
   constructor(props: Props) {
     super(props);
 
@@ -665,7 +681,7 @@ class ScrollView extends React.Component<Props, State> {
     0,
   );
   _scrollAnimatedValueAttachment: ?{detach: () => void} = null;
-  _stickyHeaderRefs: Map<number, ScrollViewStickyHeader> = new Map();
+  _stickyHeaderRefs: Map<string, StickyHeaderComponentType> = new Map();
   _headerLayoutYs: Map<string, number> = new Map();
 
   state = {
@@ -835,7 +851,7 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
-  _setStickyHeaderRef(key, ref) {
+  _setStickyHeaderRef(key: string, ref: ?StickyHeaderComponentType) {
     if (ref) {
       this._stickyHeaderRefs.set(key, ref);
     } else {
@@ -863,7 +879,9 @@ class ScrollView extends React.Component<Props, State> {
       const previousHeader = this._stickyHeaderRefs.get(
         this._getKeyForIndex(previousHeaderIndex, childArray),
       );
-      previousHeader && previousHeader.setNextHeaderY(layoutY);
+      previousHeader &&
+        previousHeader.setNextHeaderY &&
+        previousHeader.setNextHeaderY(layoutY);
     }
   }
 
@@ -980,9 +998,11 @@ class ScrollView extends React.Component<Props, State> {
         if (indexOfIndex > -1) {
           const key = child.key;
           const nextIndex = stickyHeaderIndices[indexOfIndex + 1];
+          const {StickyHeaderComponent} = this.props;
           return (
-            <ScrollViewStickyHeader
+            <StickyHeaderComponent
               key={key}
+              // $FlowFixMe - inexact mixed is incompatible with exact React.Element
               ref={ref => this._setStickyHeaderRef(key, ref)}
               nextHeaderLayoutY={this._headerLayoutYs.get(
                 this._getKeyForIndex(nextIndex, childArray),
@@ -992,7 +1012,7 @@ class ScrollView extends React.Component<Props, State> {
               inverted={this.props.invertStickyHeaders}
               scrollViewHeight={this.state.layoutHeight}>
               {child}
-            </ScrollViewStickyHeader>
+            </StickyHeaderComponent>
           );
         } else {
           return child;
