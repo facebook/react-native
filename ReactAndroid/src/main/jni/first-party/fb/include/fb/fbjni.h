@@ -9,14 +9,14 @@
 
 #include <jni.h>
 
-#include <fb/Environment.h>
 #include <fb/ALog.h>
+#include <fb/Environment.h>
 #include <fb/fbjni/Common.h>
+#include <fb/fbjni/CoreClasses.h>
 #include <fb/fbjni/Exceptions.h>
+#include <fb/fbjni/Hybrid.h>
+#include <fb/fbjni/Iterator.h>
+#include <fb/fbjni/Meta.h>
 #include <fb/fbjni/ReferenceAllocators.h>
 #include <fb/fbjni/References.h>
-#include <fb/fbjni/Meta.h>
-#include <fb/fbjni/CoreClasses.h>
-#include <fb/fbjni/Iterator.h>
-#include <fb/fbjni/Hybrid.h>
 #include <fb/fbjni/Registration.h>

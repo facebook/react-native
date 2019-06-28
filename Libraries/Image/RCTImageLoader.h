@@ -24,10 +24,7 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
  */
 @protocol RCTImageCache <NSObject>
 
-- (UIImage *)imageForUrl:(NSString *)url
-                    size:(CGSize)size
-                   scale:(CGFloat)scale
-              resizeMode:(RCTResizeMode)resizeMode;
+- (UIImage *)imageForUrl:(NSString *)url size:(CGSize)size scale:(CGFloat)scale resizeMode:(RCTResizeMode)resizeMode;
 
 - (void)addImageToCache:(UIImage *)image
                     URL:(NSString *)url
@@ -55,7 +52,8 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 @property (nonatomic, copy) CAKeyframeAnimation *reactKeyframeAnimation;
 
 /**
- * Memory bytes of the image with the default calculation of static image or GIF. Custom calculations of decoded bytes can be assigned manually.
+ * Memory bytes of the image with the default calculation of static image or GIF. Custom calculations of decoded bytes
+ * can be assigned manually.
  */
 @property (nonatomic, assign) NSInteger reactDecodedImageBytes;
 
@@ -91,8 +89,8 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 - (instancetype)init;
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate
-                              loadersProvider:(NSArray<id<RCTImageURLLoader>> * (^)(void))getLoaders
-                             decodersProvider:(NSArray<id<RCTImageDataDecoder>> * (^)(void))getDecoders;
+                         loadersProvider:(NSArray<id<RCTImageURLLoader>> * (^)(void))getLoaders
+                        decodersProvider:(NSArray<id<RCTImageDataDecoder>> * (^)(void))getDecoders;
 
 /**
  * Loads the specified image at the highest available resolution.
@@ -138,7 +136,7 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
  * the information, and won't decode the image if it doesn't have to.
  */
 - (RCTImageLoaderCancellationBlock)getImageSizeForURLRequest:(NSURLRequest *)imageURLRequest
-                                                       block:(void(^)(NSError *error, CGSize size))completionBlock;
+                                                       block:(void (^)(NSError *error, CGSize size))completionBlock;
 /**
  * Determines whether given image URLs are cached locally. The `requests` array is expected
  * to contain objects convertible to NSURLRequest. The return value maps URLs to strings:

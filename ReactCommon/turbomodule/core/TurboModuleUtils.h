@@ -32,15 +32,19 @@ struct Promise {
   jsi::Function reject_;
 };
 
-using PromiseSetupFunctionType = std::function<void(jsi::Runtime &rt, std::shared_ptr<Promise>)>;
-jsi::Value createPromiseAsJSIValue(jsi::Runtime &rt, const PromiseSetupFunctionType func);
+using PromiseSetupFunctionType =
+    std::function<void(jsi::Runtime &rt, std::shared_ptr<Promise>)>;
+jsi::Value createPromiseAsJSIValue(
+    jsi::Runtime &rt,
+    const PromiseSetupFunctionType func);
 
 // Helper for passing jsi::Function arg to other methods.
 struct CallbackWrapper {
-  CallbackWrapper(jsi::Function callback, jsi::Runtime &runtime, std::shared_ptr<react::JSCallInvoker> jsInvoker)
-  : callback(std::move(callback)),
-    runtime(runtime),
-    jsInvoker(jsInvoker) {}
+  CallbackWrapper(
+      jsi::Function callback,
+      jsi::Runtime &runtime,
+      std::shared_ptr<react::JSCallInvoker> jsInvoker)
+      : callback(std::move(callback)), runtime(runtime), jsInvoker(jsInvoker) {}
   jsi::Function callback;
   jsi::Runtime &runtime;
   std::shared_ptr<react::JSCallInvoker> jsInvoker;

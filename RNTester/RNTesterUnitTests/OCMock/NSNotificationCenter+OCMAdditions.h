@@ -18,9 +18,10 @@
 
 @class OCObserverMockObject;
 
+@interface NSNotificationCenter (OCMAdditions)
 
-@interface NSNotificationCenter(OCMAdditions)
-
-- (void)addMockObserver:(OCObserverMockObject *)notificationObserver name:(NSString *)notificationName object:(id)notificationSender;
+- (void)addMockObserver:(OCObserverMockObject *)notificationObserver
+                   name:(NSString *)notificationName
+                 object:(id)notificationSender;
 
 @end

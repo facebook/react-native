@@ -39,7 +39,7 @@ class PtrJNodeMap {
   std::map<YGNodeRef, size_t> ptrsToIdxs_;
   alias_ref<JNodeArray> javaNodes_;
 
-public:
+ public:
   PtrJNodeMap() : ptrsToIdxs_{}, javaNodes_{} {}
   PtrJNodeMap(
       alias_ref<JArrayLong> nativePointers,
@@ -48,7 +48,7 @@ public:
     auto pin = nativePointers->pinCritical();
     auto ptrs = pin.get();
     for (size_t i = 0, n = pin.size(); i < n; ++i) {
-      ptrsToIdxs_[(YGNodeRef) ptrs[i]] = i;
+      ptrsToIdxs_[(YGNodeRef)ptrs[i]] = i;
     }
   }
 

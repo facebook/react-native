@@ -36,7 +36,7 @@ extern NSString *const FBReferenceImageFilePathKey;
 /**
  Record snapshots.
  **/
-@property(readwrite, nonatomic, assign) BOOL recordMode;
+@property (readwrite, nonatomic, assign) BOOL recordMode;
 
 /**
  @param testClass The subclass of FBSnapshotTestCase that is using this controller.
@@ -56,7 +56,8 @@ extern NSString *const FBReferenceImageFilePathKey;
  @param view The view to snapshot.
  @param selector selector
  @param identifier An optional identifier, used is there are muliptle snapshot tests in a given -test method.
- @param errorPtr An error to log in an XCTAssert() macro if the method fails (missing reference image, images differ, etc).
+ @param errorPtr An error to log in an XCTAssert() macro if the method fails (missing reference image, images differ,
+ etc).
  @returns YES if the comparison (or saving of the reference image) succeeded.
  */
 - (BOOL)compareSnapshotOfView:(UIView *)view
@@ -76,9 +77,7 @@ extern NSString *const FBReferenceImageFilePathKey;
  @param error An error, if this methods returns nil, the error will be something useful.
  @returns An image.
  */
-- (UIImage *)referenceImageForSelector:(SEL)selector
-                            identifier:(NSString *)identifier
-                                 error:(NSError **)error;
+- (UIImage *)referenceImageForSelector:(SEL)selector identifier:(NSString *)identifier error:(NSError **)error;
 
 /**
  Saves a reference image.
@@ -99,9 +98,7 @@ extern NSString *const FBReferenceImageFilePathKey;
  @param errorPtr An error that indicates why the comparison failed if it does.
  @returns YES if the comparison succeeded and the images are the same.
  */
-- (BOOL)compareReferenceImage:(UIImage *)referenceImage
-                      toImage:(UIImage *)image
-                        error:(NSError **)errorPtr;
+- (BOOL)compareReferenceImage:(UIImage *)referenceImage toImage:(UIImage *)image error:(NSError **)errorPtr;
 
 /**
  Saves the reference image and the test image to `failedOutputDirectory`.

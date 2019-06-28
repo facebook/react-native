@@ -12,7 +12,7 @@
 namespace facebook {
 namespace jni {
 
-template<typename T, typename Enable = void>
+template <typename T, typename Enable = void>
 class JObjectWrapper;
 
 namespace detail {
@@ -31,7 +31,7 @@ struct JavaObjectType;
 
 template <typename T>
 struct ReprAccess;
-}
+} // namespace detail
 
 // Given T, either a jobject-like type or a JavaClass-derived type, ReprType<T>
 // is the corresponding JavaClass-derived type and JniType<T> is the
@@ -42,24 +42,25 @@ using ReprType = typename detail::RefReprType<T>::type;
 template <typename T>
 using JniType = typename detail::JavaObjectType<T>::type;
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 class base_owned_ref;
 
-template<typename T, typename Alloc>
+template <typename T, typename Alloc>
 class basic_strong_ref;
 
-template<typename T>
+template <typename T>
 class weak_ref;
 
-template<typename T>
+template <typename T>
 class alias_ref;
 
 /// A smart unique reference owning a local JNI reference
-template<typename T>
+template <typename T>
 using local_ref = basic_strong_ref<T, LocalReferenceAllocator>;
 
 /// A smart unique reference owning a global JNI reference
-template<typename T>
+template <typename T>
 using global_ref = basic_strong_ref<T, GlobalReferenceAllocator>;
 
-}} // namespace facebook::jni
+} // namespace jni
+} // namespace facebook

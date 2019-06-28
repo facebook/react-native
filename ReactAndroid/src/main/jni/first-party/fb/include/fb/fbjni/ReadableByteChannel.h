@@ -14,10 +14,12 @@ namespace facebook {
 namespace jni {
 
 class JReadableByteChannel : public JavaClass<JReadableByteChannel> {
-public:
-  static constexpr const char* kJavaDescriptor = "Ljava/nio/channels/ReadableByteChannel;";
+ public:
+  static constexpr const char *kJavaDescriptor =
+      "Ljava/nio/channels/ReadableByteChannel;";
 
   int read(alias_ref<JByteBuffer> dest) const;
 };
 
-}}
+} // namespace jni
+} // namespace facebook

@@ -12,8 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const RCTAttributedStringIsHighlightedAttributeName =
-    @"IsHighlighted";
+NSString *const RCTAttributedStringIsHighlightedAttributeName = @"IsHighlighted";
 NSString *const RCTAttributedStringEventEmitterKey = @"EventEmitter";
 
 /**
@@ -23,7 +22,7 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(
     const facebook::react::AttributedString &attributedString);
 
 @interface RCTWeakEventEmitterWrapper : NSObject
-@property(nonatomic, assign) facebook::react::SharedEventEmitter eventEmitter;
+@property (nonatomic, assign) facebook::react::SharedEventEmitter eventEmitter;
 @end
 
 NS_ASSUME_NONNULL_END

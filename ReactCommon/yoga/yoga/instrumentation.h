@@ -14,10 +14,10 @@ namespace marker {
 
 template <YGMarker MarkerType>
 class MarkerSection {
-private:
+ private:
   using Data = detail::MarkerData<MarkerType>;
 
-public:
+ public:
   MarkerSection(YGNodeRef node) : MarkerSection{node, node->getConfig()} {}
   void end() {
     if (endMarker_) {
@@ -25,27 +25,27 @@ public:
       endMarker_ = nullptr;
     }
   }
-  ~MarkerSection() { end(); }
+  ~MarkerSection() {
+    end();
+  }
 
   typename Data::type data = {};
 
   template <typename Ret, typename... Args>
-  static Ret wrap(
-      YGNodeRef node,
-      Ret (YGNode::*method)(Args...),
-      Args... args) {
+  static Ret
+  wrap(YGNodeRef node, Ret (YGNode::*method)(Args...), Args... args) {
     MarkerSection<MarkerType> section{node};
     return (node->*method)(std::forward<Args>(args)...);
   }
 
-private:
+ private:
   decltype(YGMarkerCallbacks{}.endMarker) endMarker_;
   YGNodeRef node_;
-  void* userData_;
+  void *userData_;
 
   MarkerSection(YGNodeRef node, YGConfigRef config)
       : MarkerSection{node, config ? &config->markerCallbacks : nullptr} {}
-  MarkerSection(YGNodeRef node, YGMarkerCallbacks* callbacks)
+  MarkerSection(YGNodeRef node, YGMarkerCallbacks *callbacks)
       : endMarker_{callbacks ? callbacks->endMarker : nullptr},
         node_{node},
         userData_{
@@ -53,7 +53,7 @@ private:
                 ? callbacks->startMarker(MarkerType, node, markerData(&data))
                 : nullptr} {}
 
-  static YGMarkerData markerData(typename Data::type* d) {
+  static YGMarkerData markerData(typename Data::type *d) {
     YGMarkerData markerData = {};
     Data::get(markerData) = d;
     return markerData;

@@ -15,19 +15,21 @@ namespace jni {
 
 class AContext : public JavaClass<AContext> {
  public:
-  static constexpr const char* kJavaDescriptor = "Landroid/content/Context;";
+  static constexpr const char *kJavaDescriptor = "Landroid/content/Context;";
 
   // Define a method that calls into the represented Java class
   local_ref<JFile::javaobject> getCacheDir() {
-    static auto method = getClass()->getMethod<JFile::javaobject()>("getCacheDir");
+    static auto method =
+        getClass()->getMethod<JFile::javaobject()>("getCacheDir");
     return method(self());
   }
 
   local_ref<JFile::javaobject> getFilesDir() {
-    static auto method = getClass()->getMethod<JFile::javaobject()>("getFilesDir");
+    static auto method =
+        getClass()->getMethod<JFile::javaobject()>("getFilesDir");
     return method(self());
   }
 };
 
-}
-}
+} // namespace jni
+} // namespace facebook

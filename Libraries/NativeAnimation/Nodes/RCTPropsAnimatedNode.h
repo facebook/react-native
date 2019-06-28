@@ -12,9 +12,7 @@
 
 @interface RCTPropsAnimatedNode : RCTAnimatedNode
 
-- (void)connectToView:(NSNumber *)viewTag
-             viewName:(NSString *)viewName
-               bridge:(RCTBridge *)bridge;
+- (void)connectToView:(NSNumber *)viewTag viewName:(NSString *)viewName bridge:(RCTBridge *)bridge;
 
 - (void)disconnectFromView:(NSNumber *)viewTag;
 

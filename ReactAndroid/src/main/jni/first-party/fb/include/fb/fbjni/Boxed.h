@@ -20,29 +20,28 @@ struct JPrimitive : JavaClass<T> {
   static local_ref<javaobject> valueOf(jprim val) {
     static auto cls = javaClassStatic();
     static auto method =
-      cls->template getStaticMethod<javaobject(jprim)>("valueOf");
+        cls->template getStaticMethod<javaobject(jprim)>("valueOf");
     return method(cls, val);
   }
   jprim value() const {
     static auto method =
-      javaClassStatic()->template getMethod<jprim()>(T::kValueMethod);
+        javaClassStatic()->template getMethod<jprim()>(T::kValueMethod);
     return method(this->self());
   }
 };
 
 } // namespace detail
 
-
-#define DEFINE_BOXED_PRIMITIVE(LITTLE, BIG)                          \
-  struct J ## BIG : detail::JPrimitive<J ## BIG, j ## LITTLE> {      \
-    static auto constexpr kJavaDescriptor = "Ljava/lang/" #BIG ";";  \
-    static auto constexpr kValueMethod = #LITTLE "Value";            \
-    j ## LITTLE LITTLE ## Value() const {                            \
-      return value();                                                \
-    }                                                                \
-  };                                                                 \
-  inline local_ref<jobject> autobox(j ## LITTLE val) {               \
-    return J ## BIG::valueOf(val);                                   \
+#define DEFINE_BOXED_PRIMITIVE(LITTLE, BIG)                         \
+  struct J##BIG : detail::JPrimitive<J##BIG, j##LITTLE> {           \
+    static auto constexpr kJavaDescriptor = "Ljava/lang/" #BIG ";"; \
+    static auto constexpr kValueMethod = #LITTLE "Value";           \
+    j##LITTLE LITTLE##Value() const {                               \
+      return value();                                               \
+    }                                                               \
+  };                                                                \
+  inline local_ref<jobject> autobox(j##LITTLE val) {                \
+    return J##BIG::valueOf(val);                                    \
   }
 
 DEFINE_BOXED_PRIMITIVE(boolean, Boolean)
@@ -64,4 +63,5 @@ inline local_ref<jobject> autobox(alias_ref<jobject> val) {
   return make_local(val);
 }
 
-}}
+} // namespace jni
+} // namespace facebook

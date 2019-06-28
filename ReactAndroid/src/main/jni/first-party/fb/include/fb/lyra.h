@@ -17,21 +17,25 @@ namespace lyra {
 
 constexpr size_t kDefaultLimit = 64;
 
-using InstructionPointer = const void*;
+using InstructionPointer = const void *;
 
 class FBEXPORT StackTraceElement {
  public:
-  StackTraceElement(InstructionPointer absoluteProgramCounter,
-                    InstructionPointer libraryBase,
-                    InstructionPointer functionAddress, std::string libraryName,
-                    std::string functionName)
+  StackTraceElement(
+      InstructionPointer absoluteProgramCounter,
+      InstructionPointer libraryBase,
+      InstructionPointer functionAddress,
+      std::string libraryName,
+      std::string functionName)
       : absoluteProgramCounter_{absoluteProgramCounter},
         libraryBase_{libraryBase},
         functionAddress_{functionAddress},
         libraryName_{std::move(libraryName)},
         functionName_{std::move(functionName)} {}
 
-  InstructionPointer libraryBase() const noexcept { return libraryBase_; }
+  InstructionPointer libraryBase() const noexcept {
+    return libraryBase_;
+  }
 
   InstructionPointer functionAddress() const noexcept {
     return functionAddress_;
@@ -41,18 +45,22 @@ class FBEXPORT StackTraceElement {
     return absoluteProgramCounter_;
   }
 
-  const std::string& libraryName() const noexcept { return libraryName_; }
+  const std::string &libraryName() const noexcept {
+    return libraryName_;
+  }
 
-  const std::string& functionName() const noexcept { return functionName_; }
+  const std::string &functionName() const noexcept {
+    return functionName_;
+  }
 
   /**
    * The offset of the program counter to the base of the library (i.e. the
    * address that addr2line takes as input>
    */
   std::ptrdiff_t libraryOffset() const noexcept {
-    auto absoluteLibrary = static_cast<const char*>(libraryBase_);
+    auto absoluteLibrary = static_cast<const char *>(libraryBase_);
     auto absoluteabsoluteProgramCounter =
-        static_cast<const char*>(absoluteProgramCounter_);
+        static_cast<const char *>(absoluteProgramCounter_);
     return absoluteabsoluteProgramCounter - absoluteLibrary;
   }
 
@@ -60,9 +68,9 @@ class FBEXPORT StackTraceElement {
    * The offset within the current function
    */
   int functionOffset() const noexcept {
-    auto absoluteSymbol = static_cast<const char*>(functionAddress_);
+    auto absoluteSymbol = static_cast<const char *>(functionAddress_);
     auto absoluteabsoluteProgramCounter =
-        static_cast<const char*>(absoluteProgramCounter_);
+        static_cast<const char *>(absoluteProgramCounter_);
     return absoluteabsoluteProgramCounter - absoluteSymbol;
   }
 
@@ -90,8 +98,9 @@ class FBEXPORT StackTraceElement {
  *
  * @param skip The number of frames to skip before capturing the trace
  */
-FBEXPORT void getStackTrace(std::vector<InstructionPointer>& stackTrace,
-                            size_t skip = 0);
+FBEXPORT void getStackTrace(
+    std::vector<InstructionPointer> &stackTrace,
+    size_t skip = 0);
 
 /**
  * Creates a vector and populates it with the current stack trace
@@ -124,8 +133,9 @@ FBEXPORT inline std::vector<InstructionPointer> getStackTrace(
  *
  * @param stackTrace The input stack trace
  */
-FBEXPORT void getStackTraceSymbols(std::vector<StackTraceElement>& symbols,
-                                   const std::vector<InstructionPointer>& trace);
+FBEXPORT void getStackTraceSymbols(
+    std::vector<StackTraceElement> &symbols,
+    const std::vector<InstructionPointer> &trace);
 
 /**
  * Symbolicates a stack trace into a new vector
@@ -133,12 +143,11 @@ FBEXPORT void getStackTraceSymbols(std::vector<StackTraceElement>& symbols,
  * @param stackTrace The input stack trace
  */
 FBEXPORT inline std::vector<StackTraceElement> getStackTraceSymbols(
-    const std::vector<InstructionPointer>& trace) {
+    const std::vector<InstructionPointer> &trace) {
   auto symbols = std::vector<StackTraceElement>{};
   getStackTraceSymbols(symbols, trace);
   return symbols;
 }
-
 
 /**
  * Captures and symbolicates a stack trace
@@ -160,12 +169,15 @@ FBEXPORT inline std::vector<StackTraceElement> getStackTraceSymbols(
 /**
  * Formatting a stack trace element
  */
-FBEXPORT std::ostream& operator<<(std::ostream& out, const StackTraceElement& elm);
+FBEXPORT std::ostream &operator<<(
+    std::ostream &out,
+    const StackTraceElement &elm);
 
 /**
  * Formatting a stack trace
  */
-FBEXPORT std::ostream& operator<<(std::ostream& out,
-                                  const std::vector<StackTraceElement>& trace);
-}
-}
+FBEXPORT std::ostream &operator<<(
+    std::ostream &out,
+    const std::vector<StackTraceElement> &trace);
+} // namespace lyra
+} // namespace facebook

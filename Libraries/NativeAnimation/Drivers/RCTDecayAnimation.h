@@ -7,6 +7,6 @@
 
 #import "RCTAnimationDriver.h"
 
-@interface RCTDecayAnimation : NSObject<RCTAnimationDriver>
+@interface RCTDecayAnimation : NSObject <RCTAnimationDriver>
 
 @end

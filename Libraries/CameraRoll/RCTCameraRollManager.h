@@ -16,7 +16,6 @@
 
 @end
 
-
 @interface RCTCameraRollManager : NSObject <RCTBridgeModule>
 
 @end

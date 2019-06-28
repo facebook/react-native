@@ -24,7 +24,6 @@ namespace react {
  */
 class ImageRequest final {
  public:
-
   /*
    * The default constructor
    */

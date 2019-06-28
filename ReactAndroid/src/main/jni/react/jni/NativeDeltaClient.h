@@ -16,10 +16,9 @@ namespace facebook {
 namespace react {
 
 class NativeDeltaClient : public jni::HybridClass<NativeDeltaClient> {
-
-public:
+ public:
   static constexpr auto kJavaDescriptor =
-    "Lcom/facebook/react/bridge/NativeDeltaClient;";
+      "Lcom/facebook/react/bridge/NativeDeltaClient;";
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
   static void registerNatives();
 
@@ -29,12 +28,12 @@ public:
     return deltaClient_;
   }
 
-private:
+ private:
   friend HybridBase;
   void jniProcessDelta(jni::alias_ref<jni::JReadableByteChannel> delta);
   void jniReset();
   const std::shared_ptr<JSDeltaBundleClient> deltaClient_ =
-    std::make_shared<JSDeltaBundleClient>();
+      std::make_shared<JSDeltaBundleClient>();
 };
 
 } // namespace react

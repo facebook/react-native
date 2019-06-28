@@ -20,16 +20,16 @@ class Instance;
 
 class EventBeatManager : public jni::HybridClass<EventBeatManager> {
  public:
-  constexpr static const char* const kJavaDescriptor =
+  constexpr static const char *const kJavaDescriptor =
       "Lcom/facebook/react/fabric/events/EventBeatManager;";
 
   static void registerNatives();
 
   void setRuntimeExecutor(RuntimeExecutor runtimeExecutor);
 
-  void registerEventBeat(EventBeat* eventBeat) const;
+  void registerEventBeat(EventBeat *eventBeat) const;
 
-  void unregisterEventBeat(EventBeat* eventBeat) const;
+  void unregisterEventBeat(EventBeat *eventBeat) const;
 
   void beat();
 
@@ -40,7 +40,7 @@ class EventBeatManager : public jni::HybridClass<EventBeatManager> {
 
   jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject_;
 
-  mutable std::unordered_set<const EventBeat*>
+  mutable std::unordered_set<const EventBeat *>
       registeredEventBeats_{}; // Protected by `mutex_`
 
   mutable std::mutex mutex_;

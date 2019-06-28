@@ -170,35 +170,32 @@ RCT_EXTERN NSArray *RCTConvertArrayValue(SEL, id);
  * avoid repeating the same boilerplate for every error message.
  */
 #define RCTLogConvertError(json, typeName) \
-RCTLogError(@"JSON value '%@' of type %@ cannot be converted to %@", \
-json, [json classForCoder], typeName)
+  RCTLogError(@"JSON value '%@' of type %@ cannot be converted to %@", json, [json classForCoder], typeName)
 
 /**
  * This macro is used for creating simple converter functions that just call
  * the specified getter method on the json value.
  */
-#define RCT_CONVERTER(type, name, getter) \
-RCT_CUSTOM_CONVERTER(type, name, [json getter])
+#define RCT_CONVERTER(type, name, getter) RCT_CUSTOM_CONVERTER(type, name, [json getter])
 
 /**
  * This macro is used for creating converter functions with arbitrary logic.
  */
 #define RCT_CUSTOM_CONVERTER(type, name, code) \
-+ (type)name:(id)json RCT_DYNAMIC              \
-{                                              \
-  if (!RCT_DEBUG) {                            \
-    return code;                               \
-  } else {                                     \
-    @try {                                     \
+  +(type)name : (id)json RCT_DYNAMIC           \
+  {                                            \
+    if (!RCT_DEBUG) {                          \
       return code;                             \
+    } else {                                   \
+      @try {                                   \
+        return code;                           \
+      } @catch (__unused NSException * e) {    \
+        RCTLogConvertError(json, @ #type);     \
+        json = nil;                            \
+        return code;                           \
+      }                                        \
     }                                          \
-    @catch (__unused NSException *e) {         \
-      RCTLogConvertError(json, @#type);        \
-      json = nil;                              \
-      return code;                             \
-    }                                          \
-  }                                            \
-}
+  }
 
 /**
  * This macro is similar to RCT_CONVERTER, but specifically geared towards
@@ -206,7 +203,7 @@ RCT_CUSTOM_CONVERTER(type, name, [json getter])
  * detailed error reporting if an invalid value is passed in.
  */
 #define RCT_NUMBER_CONVERTER(type, getter) \
-RCT_CUSTOM_CONVERTER(type, type, [RCT_DEBUG ? [self NSNumber:json] : json getter])
+  RCT_CUSTOM_CONVERTER(type, type, [RCT_DEBUG ? [self NSNumber:json] : json getter])
 
 /**
  * When using RCT_ENUM_CONVERTER in ObjC, the compiler is OK with us returning
@@ -222,41 +219,41 @@ RCT_CUSTOM_CONVERTER(type, type, [RCT_DEBUG ? [self NSNumber:json] : json getter
 /**
  * This macro is used for creating converters for enum types.
  */
-#define RCT_ENUM_CONVERTER(type, values, default, getter) \
-+ (type)type:(id)json RCT_DYNAMIC                         \
-{                                                         \
-  static NSDictionary *mapping;                           \
-  static dispatch_once_t onceToken;                       \
-  dispatch_once(&onceToken, ^{                            \
-    mapping = values;                                     \
-  });                                                     \
-  return _RCT_CAST(type, [RCTConvertEnumValue(#type, mapping, @(default), json) getter]); \
-}
+#define RCT_ENUM_CONVERTER(type, values, default, getter)                                   \
+  +(type)type : (id)json RCT_DYNAMIC                                                        \
+  {                                                                                         \
+    static NSDictionary *mapping;                                                           \
+    static dispatch_once_t onceToken;                                                       \
+    dispatch_once(&onceToken, ^{                                                            \
+      mapping = values;                                                                     \
+    });                                                                                     \
+    return _RCT_CAST(type, [RCTConvertEnumValue(#type, mapping, @(default), json) getter]); \
+  }
 
 /**
  * This macro is used for creating converters for enum types for
  * multiple enum values combined with | operator
  */
-#define RCT_MULTI_ENUM_CONVERTER(type, values, default, getter) \
-+ (type)type:(id)json RCT_DYNAMIC                         \
-{                                                         \
-  static NSDictionary *mapping;                           \
-  static dispatch_once_t onceToken;                       \
-  dispatch_once(&onceToken, ^{                            \
-    mapping = values;                                     \
-  });                                                     \
-  return _RCT_CAST(type, [RCTConvertMultiEnumValue(#type, mapping, @(default), json) getter]); \
-}
+#define RCT_MULTI_ENUM_CONVERTER(type, values, default, getter)                                  \
+  +(type)type : (id)json RCT_DYNAMIC                                                             \
+  {                                                                                              \
+    static NSDictionary *mapping;                                                                \
+    static dispatch_once_t onceToken;                                                            \
+    dispatch_once(&onceToken, ^{                                                                 \
+      mapping = values;                                                                          \
+    });                                                                                          \
+    return _RCT_CAST(type, [RCTConvertMultiEnumValue(#type, mapping, @(default), json) getter]); \
+  }
 
 /**
  * This macro is used for creating explicitly-named converter functions
  * for typed arrays.
  */
-#define RCT_ARRAY_CONVERTER_NAMED(type, name)          \
-+ (NSArray<type *> *)name##Array:(id)json RCT_DYNAMIC  \
-{                                                      \
-  return RCTConvertArrayValue(@selector(name:), json); \
-}
+#define RCT_ARRAY_CONVERTER_NAMED(type, name)            \
+  +(NSArray<type *> *)name##Array : (id)json RCT_DYNAMIC \
+  {                                                      \
+    return RCTConvertArrayValue(@selector(name:), json); \
+  }
 
 /**
  * This macro is used for creating converter functions for typed arrays.

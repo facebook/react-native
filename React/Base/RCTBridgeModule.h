@@ -68,21 +68,32 @@ RCT_EXTERN_C_END
  * will be used as the JS module name. If omitted, the JS module name will
  * match the Objective-C class name.
  */
-#define RCT_EXPORT_MODULE(js_name) \
-RCT_EXTERN void RCTRegisterModule(Class); \
-+ (NSString *)moduleName { return @#js_name; } \
-+ (void)load { RCTRegisterModule(self); }
+#define RCT_EXPORT_MODULE(js_name)          \
+  RCT_EXTERN void RCTRegisterModule(Class); \
+  +(NSString *)moduleName                   \
+  {                                         \
+    return @ #js_name;                      \
+  }                                         \
+  +(void)load                               \
+  {                                         \
+    RCTRegisterModule(self);                \
+  }
 
 /**
  * Same as RCT_EXPORT_MODULE, but uses __attribute__((constructor)) for module
  * registration. Useful for registering swift classes that forbids use of load
  * Used in RCT_EXTERN_REMAP_MODULE
  */
-#define RCT_EXPORT_MODULE_NO_LOAD(js_name, objc_name) \
-RCT_EXTERN void RCTRegisterModule(Class); \
-+ (NSString *)moduleName { return @#js_name; } \
-__attribute__((constructor)) static void \
-RCT_CONCAT(initialize_, objc_name)() { RCTRegisterModule([objc_name class]); }
+#define RCT_EXPORT_MODULE_NO_LOAD(js_name, objc_name)                           \
+  RCT_EXTERN void RCTRegisterModule(Class);                                     \
+  +(NSString *)moduleName                                                       \
+  {                                                                             \
+    return @ #js_name;                                                          \
+  }                                                                             \
+  __attribute__((constructor)) static void RCT_CONCAT(initialize_, objc_name)() \
+  {                                                                             \
+    RCTRegisterModule([objc_name class]);                                       \
+  }
 
 /**
  * To improve startup performance users may want to generate their module lists
@@ -92,7 +103,10 @@ RCT_CONCAT(initialize_, objc_name)() { RCTRegisterModule([objc_name class]); }
  *
  */
 #define RCT_EXPORT_PRE_REGISTERED_MODULE(js_name) \
-+ (NSString *)moduleName { return @#js_name; }
+  +(NSString *)moduleName                         \
+  {                                               \
+    return @ #js_name;                            \
+  }
 
 // Implemented by RCT_EXPORT_MODULE
 + (NSString *)moduleName;
@@ -171,8 +185,7 @@ RCT_CONCAT(initialize_, objc_name)() { RCTRegisterModule([objc_name class]); }
  * native method implementation calls the respective block.
  *
  */
-#define RCT_EXPORT_METHOD(method) \
-  RCT_REMAP_METHOD(, method)
+#define RCT_EXPORT_METHOD(method) RCT_REMAP_METHOD(, method)
 
 /**
  * Same as RCT_EXPORT_METHOD but the method is called from JS
@@ -190,12 +203,10 @@ RCT_CONCAT(initialize_, objc_name)() { RCTRegisterModule([objc_name class]); }
  * Calling these methods when running under the websocket executor
  * is currently not supported.
  */
-#define RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(method) \
-  RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(id, method)
+#define RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(method) RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(id, method)
 
 #define RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(returnType, method) \
   RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(, returnType, method)
-
 
 /**
  * Similar to RCT_EXPORT_METHOD but lets you set the JS name of the exported
@@ -205,9 +216,9 @@ RCT_CONCAT(initialize_, objc_name)() { RCTRegisterModule([objc_name class]); }
  *   executeQuery:(NSString *)query parameters:(NSDictionary *)parameters)
  * { ... }
  */
-#define RCT_REMAP_METHOD(js_name, method) \
+#define RCT_REMAP_METHOD(js_name, method)       \
   _RCT_EXTERN_REMAP_METHOD(js_name, method, NO) \
-  - (void)method RCT_DYNAMIC;
+  -(void)method RCT_DYNAMIC;
 
 /**
  * Similar to RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD but lets you set
@@ -218,8 +229,8 @@ RCT_CONCAT(initialize_, objc_name)() { RCTRegisterModule([objc_name class]); }
  * { ... }
  */
 #define RCT_REMAP_BLOCKING_SYNCHRONOUS_METHOD(js_name, returnType, method) \
-  _RCT_EXTERN_REMAP_METHOD(js_name, method, YES) \
-  - (returnType)method RCT_DYNAMIC;
+  _RCT_EXTERN_REMAP_METHOD(js_name, method, YES)                           \
+  -(returnType)method RCT_DYNAMIC;
 
 /**
  * Use this macro in a private Objective-C implementation file to automatically
@@ -249,42 +260,40 @@ RCT_CONCAT(initialize_, objc_name)() { RCTRegisterModule([objc_name class]); }
  * This will now expose MyModule and the method to JavaScript via
  * `NativeModules.MyModule.doSomething`
  */
-#define RCT_EXTERN_MODULE(objc_name, objc_supername) \
-  RCT_EXTERN_REMAP_MODULE(, objc_name, objc_supername)
+#define RCT_EXTERN_MODULE(objc_name, objc_supername) RCT_EXTERN_REMAP_MODULE(, objc_name, objc_supername)
 
 /**
  * Like RCT_EXTERN_MODULE, but allows setting a custom JavaScript name.
  */
 #define RCT_EXTERN_REMAP_MODULE(js_name, objc_name, objc_supername) \
-  objc_name : objc_supername \
-  @end \
-  @interface objc_name (RCTExternModule) <RCTBridgeModule> \
-  @end \
-  @implementation objc_name (RCTExternModule) \
+  objc_name:                                                        \
+  objc_supername @                                                  \
+  end @interface objc_name(RCTExternModule)<RCTBridgeModule>        \
+  @end                                                              \
+  @implementation objc_name (RCTExternModule)                       \
   RCT_EXPORT_MODULE_NO_LOAD(js_name, objc_name)
 
 /**
  * Use this macro in accordance with RCT_EXTERN_MODULE to export methods
  * of an external module.
  */
-#define RCT_EXTERN_METHOD(method) \
-  _RCT_EXTERN_REMAP_METHOD(, method, NO)
+#define RCT_EXTERN_METHOD(method) _RCT_EXTERN_REMAP_METHOD(, method, NO)
 
 /**
  * Use this macro in accordance with RCT_EXTERN_MODULE to export methods
  * of an external module that should be invoked synchronously.
  */
-#define RCT_EXTERN__BLOCKING_SYNCHRONOUS_METHOD(method) \
-  _RCT_EXTERN_REMAP_METHOD(, method, YES)
+#define RCT_EXTERN__BLOCKING_SYNCHRONOUS_METHOD(method) _RCT_EXTERN_REMAP_METHOD(, method, YES)
 
 /**
  * Like RCT_EXTERN_REMAP_METHOD, but allows setting a custom JavaScript name
  * and also whether this method is synchronous.
  */
-#define _RCT_EXTERN_REMAP_METHOD(js_name, method, is_blocking_synchronous_method) \
-  + (const RCTMethodInfo *)RCT_CONCAT(__rct_export__, RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
-    static RCTMethodInfo config = {#js_name, #method, is_blocking_synchronous_method}; \
-    return &config; \
+#define _RCT_EXTERN_REMAP_METHOD(js_name, method, is_blocking_synchronous_method)                            \
+  +(const RCTMethodInfo *)RCT_CONCAT(__rct_export__, RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) \
+  {                                                                                                          \
+    static RCTMethodInfo config = {#js_name, #method, is_blocking_synchronous_method};                       \
+    return &config;                                                                                          \
   }
 
 /**
@@ -337,21 +346,21 @@ RCT_CONCAT(initialize_, objc_name)() { RCTRegisterModule([objc_name class]); }
  * A protocol that allows TurboModules to do lookup on other TurboModules.
  * Calling these methods may cause a module to be synchronously instantiated.
  */
- @protocol RCTTurboModuleLookupDelegate <NSObject>
- - (id)moduleForName:(const char *)moduleName;
+@protocol RCTTurboModuleLookupDelegate <NSObject>
+- (id)moduleForName:(const char *)moduleName;
 
- /**
-  * Rationale:
-  * When TurboModules lookup other modules by name, we first check the TurboModule
-  * registry to see if a TurboModule exists with the respective name. In this case,
-  * we don't want a RedBox to be raised if the TurboModule isn't found.
-  *
-  * This method is deprecated and will be deleted after the migration from
-  * TurboModules to TurboModules is complete.
-  */
- - (id)moduleForName:(const char *)moduleName warnOnLookupFailure:(BOOL)warnOnLookupFailure;
- - (BOOL)moduleIsInitialized:(const char *)moduleName;
- @end
+/**
+ * Rationale:
+ * When TurboModules lookup other modules by name, we first check the TurboModule
+ * registry to see if a TurboModule exists with the respective name. In this case,
+ * we don't want a RedBox to be raised if the TurboModule isn't found.
+ *
+ * This method is deprecated and will be deleted after the migration from
+ * TurboModules to TurboModules is complete.
+ */
+- (id)moduleForName:(const char *)moduleName warnOnLookupFailure:(BOOL)warnOnLookupFailure;
+- (BOOL)moduleIsInitialized:(const char *)moduleName;
+@end
 
 /**
  * Experimental.

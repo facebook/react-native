@@ -53,18 +53,18 @@ class Instrumentation {
   /// \param compact Whether the JSON should be compact or pretty
   ///
   /// \return true iff the heap capture succeeded
-  virtual bool createSnapshotToFile(const std::string& path, bool compact) = 0;
+  virtual bool createSnapshotToFile(const std::string &path, bool compact) = 0;
 
   /// Write a trace of bridge traffic to the given file name.
   virtual void writeBridgeTrafficTraceToFile(
-      const std::string& fileName) const = 0;
+      const std::string &fileName) const = 0;
 
   /// Write basic block profile trace to the given file name.
   virtual void writeBasicBlockProfileTraceToFile(
-      const std::string& fileName) const = 0;
+      const std::string &fileName) const = 0;
 
   /// Dump external profiler symbols to the given file name.
-  virtual void dumpProfilerSymbolsToFile(const std::string& fileName) const = 0;
+  virtual void dumpProfilerSymbolsToFile(const std::string &fileName) const = 0;
 };
 
 } // namespace jsi

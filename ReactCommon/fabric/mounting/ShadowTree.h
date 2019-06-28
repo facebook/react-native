@@ -5,7 +5,6 @@
 
 #pragma once
 
-
 #include <better/mutex.h>
 #include <memory>
 

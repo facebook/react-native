@@ -6,24 +6,23 @@
  */
 
 #pragma once
-#include <atomic>
+#include <fb/RefPtr.h>
 #include <fb/assert.h>
 #include <fb/noncopyable.h>
 #include <fb/nonmovable.h>
-#include <fb/RefPtr.h>
+#include <atomic>
 
 namespace facebook {
 
 class Countable : public noncopyable, public nonmovable {
-public:
+ public:
   // RefPtr expects refcount to start at 0
   Countable() : m_refcount(0) {}
-  virtual ~Countable()
-  {
+  virtual ~Countable() {
     FBASSERT(m_refcount == 0);
   }
 
-private:
+ private:
   void ref() {
     ++m_refcount;
   }
@@ -38,8 +37,9 @@ private:
     return m_refcount == 1;
   }
 
-  template <typename T> friend class RefPtr;
+  template <typename T>
+  friend class RefPtr;
   std::atomic<int> m_refcount;
 };
 
-}
+} // namespace facebook

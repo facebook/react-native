@@ -20,8 +20,8 @@ namespace jni {
  *
  * alias_ref<JIterator<jstring>::javaobject> my_iter = ...;
  *
- * In the simplest case, it can be used just as alias_ref<JIterator<>::javaobject>,
- * for example in a method declaration.
+ * In the simplest case, it can be used just as
+ * alias_ref<JIterator<>::javaobject>, for example in a method declaration.
  */
 template <typename E = jobject>
 struct JIterator : JavaClass<JIterator<E>> {
@@ -52,7 +52,8 @@ struct JIterator : JavaClass<JIterator<E>> {
    *
    * std::vector<std::string> vs;
    * std::transform(jiter->begin(), jiter->end(), std::back_inserter(vs),
-   *                [](const local_ref<jstring>& elem) { return elem->toStdString(); });
+   *                [](const local_ref<jstring>& elem) { return
+   * elem->toStdString(); });
    *
    * The iterator is a InputIterator.
    */
@@ -111,7 +112,7 @@ struct JSet : JavaClass<JSet<E>, JCollection<E>> {
  * for example in a method declaration.
  */
 template <typename K = jobject, typename V = jobject>
-struct JMap : JavaClass<JMap<K,V>> {
+struct JMap : JavaClass<JMap<K, V>> {
   constexpr static auto kJavaDescriptor = "Ljava/util/Map;";
 
   struct Iterator;
@@ -138,7 +139,7 @@ struct JMap : JavaClass<JMap<K,V>> {
   Iterator end() const;
 };
 
-}
-}
+} // namespace jni
+} // namespace facebook
 
 #include "Iterator-inl.h"

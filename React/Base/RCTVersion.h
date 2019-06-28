@@ -5,12 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 #import <Foundation/Foundation.h>
 
-extern NSString* const RCTVersionMajor;
-extern NSString* const RCTVersionMinor;
-extern NSString* const RCTVersionPatch;
-extern NSString* const RCTVersionPrerelease;
+extern NSString *const RCTVersionMajor;
+extern NSString *const RCTVersionMinor;
+extern NSString *const RCTVersionPatch;
+extern NSString *const RCTVersionPrerelease;
 
-extern NSDictionary* RCTGetReactNativeVersion(void);
+extern NSDictionary *RCTGetReactNativeVersion(void);

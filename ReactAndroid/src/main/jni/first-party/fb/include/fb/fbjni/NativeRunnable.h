@@ -24,12 +24,13 @@ struct JNativeRunnable : public HybridClass<JNativeRunnable, JRunnable> {
  public:
   static auto constexpr kJavaDescriptor = "Lcom/facebook/jni/NativeRunnable;";
 
-  JNativeRunnable(std::function<void()>&& runnable) : runnable_(std::move(runnable)) {}
+  JNativeRunnable(std::function<void()> &&runnable)
+      : runnable_(std::move(runnable)) {}
 
   static void OnLoad() {
     registerHybrid({
         makeNativeMethod("run", JNativeRunnable::run),
-      });
+    });
   }
 
   void run() {
@@ -39,7 +40,6 @@ struct JNativeRunnable : public HybridClass<JNativeRunnable, JRunnable> {
  private:
   std::function<void()> runnable_;
 };
-
 
 } // namespace jni
 } // namespace facebook

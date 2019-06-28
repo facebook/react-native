@@ -12,8 +12,8 @@
 
 using namespace facebook::react;
 
-inline static RCTResizeMode RCTResizeModeFromImageResizeMode(
-    ImageResizeMode imageResizeMode) {
+inline static RCTResizeMode RCTResizeModeFromImageResizeMode(ImageResizeMode imageResizeMode)
+{
   switch (imageResizeMode) {
     case ImageResizeMode::Cover:
       return RCTResizeModeCover;
@@ -28,7 +28,8 @@ inline static RCTResizeMode RCTResizeModeFromImageResizeMode(
   }
 }
 
-inline std::string toString(const ImageResizeMode &value) {
+inline std::string toString(const ImageResizeMode &value)
+{
   switch (value) {
     case ImageResizeMode::Cover:
       return "cover";
@@ -43,17 +44,15 @@ inline std::string toString(const ImageResizeMode &value) {
   }
 }
 
-inline static NSURL *NSURLFromImageSource(const ImageSource &imageSource) {
+inline static NSURL *NSURLFromImageSource(const ImageSource &imageSource)
+{
   // `NSURL` has a history of crashing with bad input, so let's be safe.
   @try {
-    NSString *urlString = [NSString stringWithCString:imageSource.uri.c_str()
-                                             encoding:NSASCIIStringEncoding];
+    NSString *urlString = [NSString stringWithCString:imageSource.uri.c_str() encoding:NSASCIIStringEncoding];
 
     if (!imageSource.bundle.empty()) {
-      NSString *bundle = [NSString stringWithCString:imageSource.bundle.c_str()
-                                            encoding:NSASCIIStringEncoding];
-      urlString =
-          [NSString stringWithFormat:@"%@.bundle/%@", bundle, urlString];
+      NSString *bundle = [NSString stringWithCString:imageSource.bundle.c_str() encoding:NSASCIIStringEncoding];
+      urlString = [NSString stringWithFormat:@"%@.bundle/%@", bundle, urlString];
     }
 
     NSURL *url = [[NSURL alloc] initWithString:urlString];
@@ -65,8 +64,7 @@ inline static NSURL *NSURLFromImageSource(const ImageSource &imageSource) {
 
     if ([urlString rangeOfString:@":"].location != NSNotFound) {
       // The URL has a scheme.
-      urlString = [urlString
-          stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+      urlString = [urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
       url = [NSURL URLWithString:urlString];
       return url;
     }
@@ -80,8 +78,7 @@ inline static NSURL *NSURLFromImageSource(const ImageSource &imageSource) {
     } else {
       if (![urlString isAbsolutePath]) {
         // Assume it's a resource path.
-        urlString = [[[NSBundle mainBundle] resourcePath]
-            stringByAppendingPathComponent:urlString];
+        urlString = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:urlString];
       }
     }
 
@@ -93,8 +90,8 @@ inline static NSURL *NSURLFromImageSource(const ImageSource &imageSource) {
   }
 }
 
-inline static NSURLRequest *NSURLRequestFromImageSource(
-    const ImageSource &imageSource) {
+inline static NSURLRequest *NSURLRequestFromImageSource(const ImageSource &imageSource)
+{
   NSURL *url = NSURLFromImageSource(imageSource);
 
   if (!url) {

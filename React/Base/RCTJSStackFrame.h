@@ -14,7 +14,10 @@
 @property (nonatomic, readonly) NSInteger lineNumber;
 @property (nonatomic, readonly) NSInteger column;
 
-- (instancetype)initWithMethodName:(NSString *)methodName file:(NSString *)file lineNumber:(NSInteger)lineNumber column:(NSInteger)column;
+- (instancetype)initWithMethodName:(NSString *)methodName
+                              file:(NSString *)file
+                        lineNumber:(NSInteger)lineNumber
+                            column:(NSInteger)column;
 - (NSDictionary *)toDictionary;
 
 + (instancetype)stackFrameWithLine:(NSString *)line;

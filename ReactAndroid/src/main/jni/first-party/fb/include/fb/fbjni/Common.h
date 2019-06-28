@@ -16,25 +16,25 @@
 
 #include <jni.h>
 
-#include <fb/visibility.h>
 #include <fb/Environment.h>
+#include <fb/visibility.h>
 
 #ifdef FBJNI_DEBUG_REFS
-# ifdef __ANDROID__
-#  include <android/log.h>
-# else
-#  include <cstdio>
-# endif
+#ifdef __ANDROID__
+#include <android/log.h>
+#else
+#include <cstdio>
+#endif
 #endif
 
-// If a pending JNI Java exception is found, wraps it in a JniException object and throws it as
-// a C++ exception.
+// If a pending JNI Java exception is found, wraps it in a JniException object
+// and throws it as a C++ exception.
 #define FACEBOOK_JNI_THROW_PENDING_EXCEPTION() \
   ::facebook::jni::throwPendingJniExceptionAsCppException()
 
-// If the condition is true, throws a JniException object, which wraps the pending JNI Java
-// exception if any. If no pending exception is found, throws a JniException object that wraps a
-// RuntimeException throwable. 
+// If the condition is true, throws a JniException object, which wraps the
+// pending JNI Java exception if any. If no pending exception is found, throws a
+// JniException object that wraps a RuntimeException throwable. 
 #define FACEBOOK_JNI_THROW_EXCEPTION_IF(CONDITION) \
   ::facebook::jni::throwCppExceptionIf(CONDITION)
 
@@ -47,13 +47,16 @@ FBEXPORT void throwPendingJniExceptionAsCppException();
 FBEXPORT void throwCppExceptionIf(bool condition);
 
 [[noreturn]] FBEXPORT void throwNewJavaException(jthrowable);
-[[noreturn]] FBEXPORT void throwNewJavaException(const char* throwableName, const char* msg);
-template<typename... Args>
-[[noreturn]] void throwNewJavaException(const char* throwableName, const char* fmt, Args... args);
-
+[[noreturn]] FBEXPORT void throwNewJavaException(
+    const char *throwableName,
+    const char *msg);
+template <typename... Args>
+[[noreturn]] void
+throwNewJavaException(const char *throwableName, const char *fmt, Args... args);
 
 /**
- * This needs to be called at library load time, typically in your JNI_OnLoad method.
+ * This needs to be called at library load time, typically in your JNI_OnLoad
+ * method.
  *
  * The intended use is to return the result of initialize() directly
  * from JNI_OnLoad and to do nothing else there. Library specific
@@ -66,7 +69,7 @@ template<typename... Args>
  * unhelpful way (typically a segfault) while trying to handle an exception
  * which occurs later.
  */
-FBEXPORT jint initialize(JavaVM*, std::function<void()>&&) noexcept;
+FBEXPORT jint initialize(JavaVM *, std::function<void()> &&) noexcept;
 
 namespace internal {
 
@@ -75,30 +78,32 @@ namespace internal {
  *
  * @pre The current thread must be attached to the VM
  */
-inline JNIEnv* getEnv() noexcept {
+inline JNIEnv *getEnv() noexcept {
   // TODO(T6594868) Benchmark against raw JNI access
   return Environment::current();
 }
 
-// Define to get extremely verbose logging of references and to enable reference stats
+// Define to get extremely verbose logging of references and to enable reference
+// stats
 #ifdef FBJNI_DEBUG_REFS
-template<typename... Args>
-inline void dbglog(const char* msg, Args... args) {
-# ifdef __ANDROID__
+template <typename... Args>
+inline void dbglog(const char *msg, Args... args) {
+#ifdef __ANDROID__
   __android_log_print(ANDROID_LOG_VERBOSE, "fbjni_dbg", msg, args...);
-# else
+#else
   std::fprintf(stderr, msg, args...);
-# endif
+#endif
 }
 
 #else
 
-template<typename... Args>
-inline void dbglog(const char*, Args...) {
-}
+template <typename... Args>
+inline void dbglog(const char *, Args...) {}
 
 #endif
 
-}}}
+} // namespace internal
+} // namespace jni
+} // namespace facebook
 
 /// @endcond

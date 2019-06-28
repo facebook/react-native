@@ -10,25 +10,26 @@
 namespace facebook {
 namespace jni {
 
-template<typename F>
+template <typename F>
 class JMethod;
-template<typename F>
+template <typename F>
 class JStaticMethod;
-template<typename F>
+template <typename F>
 class JNonvirtualMethod;
-template<typename F>
+template <typename F>
 struct JConstructor;
-template<typename F>
+template <typename F>
 class JField;
-template<typename F>
+template <typename F>
 class JStaticField;
 
 /// Type traits for Java types (currently providing Java type descriptors)
-template<typename T>
+template <typename T>
 struct jtype_traits;
 
 /// Type traits for Java methods (currently providing Java type descriptors)
-template<typename F>
+template <typename F>
 struct jmethod_traits;
 
-}}
+} // namespace jni
+} // namespace facebook

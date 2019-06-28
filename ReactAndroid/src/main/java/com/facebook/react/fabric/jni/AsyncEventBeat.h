@@ -17,7 +17,7 @@ namespace {
 
 class AsyncEventBeat : public EventBeat {
  private:
-  EventBeatManager* eventBeatManager_;
+  EventBeatManager *eventBeatManager_;
   RuntimeExecutor runtimeExecutor_;
   jni::global_ref<jobject> javaUIManager_;
 
@@ -25,12 +25,12 @@ class AsyncEventBeat : public EventBeat {
   friend class EventBeatManager;
 
   AsyncEventBeat(
-      EventBeatManager* eventBeatManager,
+      EventBeatManager *eventBeatManager,
       RuntimeExecutor runtimeExecutor,
-      jni::global_ref<jobject> javaUIManager) :
-      eventBeatManager_(eventBeatManager),
-      runtimeExecutor_(std::move(runtimeExecutor)),
-      javaUIManager_(javaUIManager) {
+      jni::global_ref<jobject> javaUIManager)
+      : eventBeatManager_(eventBeatManager),
+        runtimeExecutor_(std::move(runtimeExecutor)),
+        javaUIManager_(javaUIManager) {
     eventBeatManager->registerEventBeat(this);
   }
 
@@ -39,9 +39,7 @@ class AsyncEventBeat : public EventBeat {
   }
 
   void induce() const override {
-    runtimeExecutor_([=](jsi::Runtime &runtime) {
-      this->beat(runtime);
-    });
+    runtimeExecutor_([=](jsi::Runtime &runtime) { this->beat(runtime); });
   }
 
   void request() const override {

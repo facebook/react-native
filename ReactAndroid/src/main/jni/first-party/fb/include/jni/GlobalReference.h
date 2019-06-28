@@ -14,34 +14,36 @@
 
 #include <fb/Environment.h>
 
-namespace facebook { namespace jni {
+namespace facebook {
+namespace jni {
 
-template<typename T>
+template <typename T>
 class GlobalReference {
-  static_assert(std::is_convertible<T, jobject>::value,
-                "GlobalReference<T> instantiated with type that is not "
-                "convertible to jobject");
+  static_assert(
+      std::is_convertible<T, jobject>::value,
+      "GlobalReference<T> instantiated with type that is not "
+      "convertible to jobject");
 
  public:
-  explicit GlobalReference(T globalReference) :
-    reference_(globalReference? Environment::current()->NewGlobalRef(globalReference) : nullptr) {
-  }
+  explicit GlobalReference(T globalReference)
+      : reference_(
+            globalReference
+                ? Environment::current()->NewGlobalRef(globalReference)
+                : nullptr) {}
 
   ~GlobalReference() {
     reset();
   }
 
-  GlobalReference() :
-    reference_(nullptr) {
-  }
+  GlobalReference() : reference_(nullptr) {}
 
   // enable move constructor and assignment
-  GlobalReference(GlobalReference&& rhs) :
-    reference_(std::move(rhs.reference_)) {
+  GlobalReference(GlobalReference &&rhs)
+      : reference_(std::move(rhs.reference_)) {
     rhs.reference_ = nullptr;
   }
 
-  GlobalReference& operator=(GlobalReference&& rhs) {
+  GlobalReference &operator=(GlobalReference &&rhs) {
     if (this != &rhs) {
       reset();
       reference_ = std::move(rhs.reference_);
@@ -50,12 +52,11 @@ class GlobalReference {
     return *this;
   }
 
-  GlobalReference(const GlobalReference<T>& rhs) :
-    reference_{} {
+  GlobalReference(const GlobalReference<T> &rhs) : reference_{} {
     reset(rhs.get());
   }
 
-  GlobalReference& operator=(const GlobalReference<T>& rhs) {
+  GlobalReference &operator=(const GlobalReference<T> &rhs) {
     if (this == &rhs) {
       return *this;
     }
@@ -86,4 +87,5 @@ class GlobalReference {
   jobject reference_;
 };
 
-}}
+} // namespace jni
+} // namespace facebook

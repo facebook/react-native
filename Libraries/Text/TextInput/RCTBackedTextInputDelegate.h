@@ -16,13 +16,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)textInputShouldBeginEditing; // Return `NO` to disallow editing.
 - (void)textInputDidBeginEditing;
 
-- (BOOL)textInputShouldEndEditing; // Return `YES` to allow editing to stop and to resign first responder status. `NO` to disallow the editing session to end.
-- (void)textInputDidEndEditing; // May be called if forced even if `textInputShouldEndEditing` returns `NO` (e.g. view removed from window) or `[textInput endEditing:YES]` called.
+- (BOOL)textInputShouldEndEditing; // Return `YES` to allow editing to stop and to resign first responder status. `NO`
+                                   // to disallow the editing session to end.
+- (void)textInputDidEndEditing; // May be called if forced even if `textInputShouldEndEditing` returns `NO` (e.g. view
+                                // removed from window) or `[textInput endEditing:YES]` called.
 
 - (BOOL)textInputShouldReturn; // May be called right before `textInputShouldEndEditing` if "Return" button was pressed.
 - (void)textInputDidReturn;
 
-- (BOOL)textInputShouldChangeTextInRange:(NSRange)range replacementText:(NSString *)string; // Return NO to not change text.
+- (BOOL)textInputShouldChangeTextInRange:(NSRange)range
+                         replacementText:(NSString *)string; // Return NO to not change text.
 - (void)textInputDidChange;
 
 - (void)textInputDidChangeSelection;

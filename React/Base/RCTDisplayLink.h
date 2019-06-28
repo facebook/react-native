@@ -14,8 +14,7 @@
 
 - (instancetype)init;
 - (void)invalidate;
-- (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module
-                       withModuleData:(RCTModuleData *)moduleData;
+- (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module withModuleData:(RCTModuleData *)moduleData;
 - (void)addToRunLoop:(NSRunLoop *)runLoop;
 
 @end

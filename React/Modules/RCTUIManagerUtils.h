@@ -95,8 +95,9 @@ RCT_EXTERN void RCTUnsafeExecuteOnUIManagerQueueSync(dispatch_block_t block);
 /**
  * Convenience macro for asserting that we're running on UIManager queue.
  */
-#define RCTAssertUIManagerQueue() RCTAssert(RCTIsUIManagerQueue() || RCTIsPseudoUIManagerQueue(), \
-@"This function must be called on the UIManager queue")
+#define RCTAssertUIManagerQueue() \
+  RCTAssert(                      \
+      RCTIsUIManagerQueue() || RCTIsPseudoUIManagerQueue(), @"This function must be called on the UIManager queue")
 
 /**
  * Returns new unique root view tag.

@@ -14,15 +14,14 @@ namespace jni {
 
 class JFile : public JavaClass<JFile> {
  public:
-  static constexpr const char* kJavaDescriptor = "Ljava/io/File;";
+  static constexpr const char *kJavaDescriptor = "Ljava/io/File;";
 
   // Define a method that calls into the represented Java class
   std::string getAbsolutePath() {
     static auto method = getClass()->getMethod<jstring()>("getAbsolutePath");
     return method(self())->toStdString();
   }
-
 };
 
-}
-}
+} // namespace jni
+} // namespace facebook

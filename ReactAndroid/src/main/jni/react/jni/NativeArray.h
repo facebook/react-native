@@ -15,7 +15,8 @@ namespace react {
 
 class NativeArray : public jni::HybridClass<NativeArray> {
  public:
-  static constexpr const char* kJavaDescriptor = "Lcom/facebook/react/bridge/NativeArray;";
+  static constexpr const char *kJavaDescriptor =
+      "Lcom/facebook/react/bridge/NativeArray;";
 
   jni::local_ref<jstring> toString();
 
@@ -35,4 +36,5 @@ class NativeArray : public jni::HybridClass<NativeArray> {
   explicit NativeArray(folly::dynamic array);
 };
 
-}}
+} // namespace react
+} // namespace facebook

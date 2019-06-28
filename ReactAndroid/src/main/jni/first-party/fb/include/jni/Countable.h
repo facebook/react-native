@@ -16,19 +16,22 @@
 namespace facebook {
 namespace jni {
 
-FBEXPORT const RefPtr<Countable>& countableFromJava(JNIEnv* env, jobject obj);
+FBEXPORT const RefPtr<Countable> &countableFromJava(JNIEnv *env, jobject obj);
 
-template <typename T> RefPtr<T> extractRefPtr(JNIEnv* env, jobject obj) {
+template <typename T>
+RefPtr<T> extractRefPtr(JNIEnv *env, jobject obj) {
   return static_cast<RefPtr<T>>(countableFromJava(env, obj));
 }
 
-template <typename T> RefPtr<T> extractPossiblyNullRefPtr(JNIEnv* env, jobject obj) {
+template <typename T>
+RefPtr<T> extractPossiblyNullRefPtr(JNIEnv *env, jobject obj) {
   return obj ? extractRefPtr<T>(env, obj) : nullptr;
 }
 
-FBEXPORT void setCountableForJava(JNIEnv* env, jobject obj, RefPtr<Countable>&& countable);
+FBEXPORT void
+setCountableForJava(JNIEnv *env, jobject obj, RefPtr<Countable> &&countable);
 
-void CountableOnLoad(JNIEnv* env);
+void CountableOnLoad(JNIEnv *env);
 
-} }
-
+} // namespace jni
+} // namespace facebook

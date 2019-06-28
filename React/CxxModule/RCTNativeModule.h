@@ -18,13 +18,16 @@ class RCTNativeModule : public NativeModule {
   std::string getName() override;
   std::vector<MethodDescriptor> getMethods() override;
   folly::dynamic getConstants() override;
-  void invoke(unsigned int methodId, folly::dynamic &&params, int callId) override;
-  MethodCallResult callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic &&params) override;
+  void invoke(unsigned int methodId, folly::dynamic &&params, int callId)
+      override;
+  MethodCallResult callSerializableNativeHook(
+      unsigned int reactMethodId,
+      folly::dynamic &&params) override;
 
  private:
   __weak RCTBridge *m_bridge;
   RCTModuleData *m_moduleData;
 };
 
-}
-}
+} // namespace react
+} // namespace facebook

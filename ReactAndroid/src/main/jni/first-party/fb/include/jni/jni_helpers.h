@@ -22,7 +22,11 @@ namespace facebook {
  * @param ... sprintf-style args
  * @return 0 on success; a negative value on failure
  */
-FBEXPORT jint throwException(JNIEnv* pEnv, const char* szClassName, const char* szFmt, va_list va_args);
+FBEXPORT jint throwException(
+    JNIEnv *pEnv,
+    const char *szClassName,
+    const char *szFmt,
+    va_list va_args);
 
 /**
  * Instructs the JNI environment to throw a NoClassDefFoundError.
@@ -32,7 +36,7 @@ FBEXPORT jint throwException(JNIEnv* pEnv, const char* szClassName, const char* 
  * @param ... sprintf-style args
  * @return 0 on success; a negative value on failure
  */
-FBEXPORT jint throwNoClassDefError(JNIEnv* pEnv, const char* szFmt, ...);
+FBEXPORT jint throwNoClassDefError(JNIEnv *pEnv, const char *szFmt, ...);
 
 /**
  * Instructs the JNI environment to throw a RuntimeException.
@@ -42,7 +46,7 @@ FBEXPORT jint throwNoClassDefError(JNIEnv* pEnv, const char* szFmt, ...);
  * @param ... sprintf-style args
  * @return 0 on success; a negative value on failure
  */
-FBEXPORT jint throwRuntimeException(JNIEnv* pEnv, const char* szFmt, ...);
+FBEXPORT jint throwRuntimeException(JNIEnv *pEnv, const char *szFmt, ...);
 
 /**
  * Instructs the JNI environment to throw a IllegalArgumentException.
@@ -52,7 +56,8 @@ FBEXPORT jint throwRuntimeException(JNIEnv* pEnv, const char* szFmt, ...);
  * @param ... sprintf-style args
  * @return 0 on success; a negative value on failure
  */
-FBEXPORT jint throwIllegalArgumentException(JNIEnv* pEnv, const char* szFmt, ...);
+FBEXPORT jint
+throwIllegalArgumentException(JNIEnv *pEnv, const char *szFmt, ...);
 
 /**
  * Instructs the JNI environment to throw a IllegalStateException.
@@ -62,7 +67,7 @@ FBEXPORT jint throwIllegalArgumentException(JNIEnv* pEnv, const char* szFmt, ...
  * @param ... sprintf-style args
  * @return 0 on success; a negative value on failure
  */
-FBEXPORT jint throwIllegalStateException(JNIEnv* pEnv, const char* szFmt, ...);
+FBEXPORT jint throwIllegalStateException(JNIEnv *pEnv, const char *szFmt, ...);
 
 /**
  * Instructs the JNI environment to throw an IOException.
@@ -72,7 +77,7 @@ FBEXPORT jint throwIllegalStateException(JNIEnv* pEnv, const char* szFmt, ...);
  * @param ... sprintf-style args
  * @return 0 on success; a negative value on failure
  */
-FBEXPORT jint throwIOException(JNIEnv* pEnv, const char* szFmt, ...);
+FBEXPORT jint throwIOException(JNIEnv *pEnv, const char *szFmt, ...);
 
 /**
  * Instructs the JNI environment to throw an AssertionError.
@@ -82,7 +87,7 @@ FBEXPORT jint throwIOException(JNIEnv* pEnv, const char* szFmt, ...);
  * @param ... sprintf-style args
  * @return 0 on success; a negative value on failure
  */
-FBEXPORT jint throwAssertionError(JNIEnv* pEnv, const char* szFmt, ...);
+FBEXPORT jint throwAssertionError(JNIEnv *pEnv, const char *szFmt, ...);
 
 /**
  * Instructs the JNI environment to throw an OutOfMemoryError.
@@ -92,46 +97,52 @@ FBEXPORT jint throwAssertionError(JNIEnv* pEnv, const char* szFmt, ...);
  * @param ... sprintf-style args
  * @return 0 on success; a negative value on failure
  */
-FBEXPORT jint throwOutOfMemoryError(JNIEnv* pEnv, const char* szFmt, ...);
+FBEXPORT jint throwOutOfMemoryError(JNIEnv *pEnv, const char *szFmt, ...);
 
 /**
- * Finds the specified class. If it's not found, instructs the JNI environment to throw an
- * exception.
+ * Finds the specified class. If it's not found, instructs the JNI environment
+ * to throw an exception.
  *
  * @param pEnv JNI environment
- * @param szClassName the classname to find in JNI format (e.g. "java/lang/String")
- * @return the class or NULL if not found (in which case a pending exception will be queued). This
- *     returns a global reference (JNIEnv::NewGlobalRef).
+ * @param szClassName the classname to find in JNI format (e.g.
+ * "java/lang/String")
+ * @return the class or NULL if not found (in which case a pending exception
+ * will be queued). This returns a global reference (JNIEnv::NewGlobalRef).
  */
-FBEXPORT jclass findClassOrThrow(JNIEnv *pEnv, const char* szClassName);
+FBEXPORT jclass findClassOrThrow(JNIEnv *pEnv, const char *szClassName);
 
 /**
- * Finds the specified field of the specified class. If it's not found, instructs the JNI
- * environment to throw an exception.
+ * Finds the specified field of the specified class. If it's not found,
+ * instructs the JNI environment to throw an exception.
  *
  * @param pEnv JNI environment
  * @param clazz the class to lookup the field in
  * @param szFieldName the name of the field to find
  * @param szSig the signature of the field
- * @return the field or NULL if not found (in which case a pending exception will be queued)
+ * @return the field or NULL if not found (in which case a pending exception
+ * will be queued)
  */
-FBEXPORT jfieldID getFieldIdOrThrow(JNIEnv* pEnv, jclass clazz, const char* szFieldName, const char* szSig);
+FBEXPORT jfieldID getFieldIdOrThrow(
+    JNIEnv *pEnv,
+    jclass clazz,
+    const char *szFieldName,
+    const char *szSig);
 
 /**
- * Finds the specified method of the specified class. If it's not found, instructs the JNI
- * environment to throw an exception.
+ * Finds the specified method of the specified class. If it's not found,
+ * instructs the JNI environment to throw an exception.
  *
  * @param pEnv JNI environment
  * @param clazz the class to lookup the method in
  * @param szMethodName the name of the method to find
  * @param szSig the signature of the method
- * @return the method or NULL if not found (in which case a pending exception will be queued)
+ * @return the method or NULL if not found (in which case a pending exception
+ * will be queued)
  */
 FBEXPORT jmethodID getMethodIdOrThrow(
-    JNIEnv* pEnv,
+    JNIEnv *pEnv,
     jclass clazz,
-    const char* szMethodName,
-    const char* szSig);
+    const char *szMethodName,
+    const char *szSig);
 
 } // namespace facebook
-

@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <pthread.h>
 #include <errno.h>
+#include <pthread.h>
 
 #include <fb/assert.h>
 
@@ -32,25 +32,21 @@ namespace facebook {
  * So, syntax-wise it's similar to pointers. T can be primitive types, and if
  * it's a class, there has to be a default constructor.
  */
-template<typename T>
+template <typename T>
 class ThreadLocal {
-public:
+ public:
   /**
    * Constructor that has to be called from a thread-neutral place.
    */
-  ThreadLocal() :
-    m_key(0),
-    m_cleanup(OnThreadExit) {
+  ThreadLocal() : m_key(0), m_cleanup(OnThreadExit) {
     initialize();
   }
 
   /**
    * As above but with a custom cleanup function
    */
-  typedef void (*CleanupFunction)(void* obj);
-  explicit ThreadLocal(CleanupFunction cleanup) :
-    m_key(0),
-    m_cleanup(cleanup) {
+  typedef void (*CleanupFunction)(void *obj);
+  explicit ThreadLocal(CleanupFunction cleanup) : m_key(0), m_cleanup(cleanup) {
     FBASSERT(cleanup);
     initialize();
   }
@@ -67,17 +63,17 @@ public:
   }
 
   T *get() const {
-    return (T*)pthread_getspecific(m_key);
+    return (T *)pthread_getspecific(m_key);
   }
 
-  T* release() {
-    T* obj = get();
+  T *release() {
+    T *obj = get();
     pthread_setspecific(m_key, NULL);
     return obj;
   }
 
-  void reset(T* other = NULL) {
-    T* old = (T*)pthread_getspecific(m_key);
+  void reset(T *other = NULL) {
+    T *old = (T *)pthread_getspecific(m_key);
     if (old != other) {
       FBASSERT(m_cleanup);
       m_cleanup(old);
@@ -85,27 +81,27 @@ public:
     }
   }
 
-private:
+ private:
   void initialize() {
     int ret = pthread_key_create(&m_key, m_cleanup);
     if (ret != 0) {
       const char *msg = "(unknown error)";
       switch (ret) {
-      case EAGAIN:
-        msg = "PTHREAD_KEYS_MAX (1024) is exceeded";
-        break;
-      case ENOMEM:
-        msg = "Out-of-memory";
-        break;
+        case EAGAIN:
+          msg = "PTHREAD_KEYS_MAX (1024) is exceeded";
+          break;
+        case ENOMEM:
+          msg = "Out-of-memory";
+          break;
       }
-      (void) msg;
+      (void)msg;
       FBASSERTMSGF(0, "pthread_key_create failed: %d %s", ret, msg);
     }
   }
 
   static void OnThreadExit(void *obj) {
     if (NULL != obj) {
-      delete (T*)obj;
+      delete (T *)obj;
     }
   }
 
@@ -113,4 +109,4 @@ private:
   CleanupFunction m_cleanup;
 };
 
-}
+} // namespace facebook

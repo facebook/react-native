@@ -16,8 +16,8 @@ namespace facebook {
 namespace jni {
 
 class JBuffer : public JavaClass<JBuffer> {
-public:
-  static constexpr const char* kJavaDescriptor = "Ljava/nio/Buffer;";
+ public:
+  static constexpr const char *kJavaDescriptor = "Ljava/nio/Buffer;";
 
   void rewind() const;
 };
@@ -26,14 +26,15 @@ public:
 // class provides much more user-friendly access.
 class FBEXPORT JByteBuffer : public JavaClass<JByteBuffer, JBuffer> {
  public:
-  static constexpr const char* kJavaDescriptor = "Ljava/nio/ByteBuffer;";
+  static constexpr const char *kJavaDescriptor = "Ljava/nio/ByteBuffer;";
 
-  static local_ref<JByteBuffer> wrapBytes(uint8_t* data, size_t size);
+  static local_ref<JByteBuffer> wrapBytes(uint8_t *data, size_t size);
 
   bool isDirect() const;
 
-  uint8_t* getDirectBytes() const;
+  uint8_t *getDirectBytes() const;
   size_t getDirectSize() const;
 };
 
-}}
+} // namespace jni
+} // namespace facebook

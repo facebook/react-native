@@ -9,12 +9,11 @@
 
 #import <React/RCTSurfaceStage.h>
 
-@interface RCTSurfaceHostingComponentState: NSObject
+@interface RCTSurfaceHostingComponentState : NSObject
 
 @property (nonatomic, readonly, assign) CGSize intrinsicSize;
 @property (nonatomic, readonly, assign) RCTSurfaceStage stage;
 
-+ (instancetype)newWithStage:(RCTSurfaceStage)stage
-               intrinsicSize:(CGSize)intrinsicSize;
++ (instancetype)newWithStage:(RCTSurfaceStage)stage intrinsicSize:(CGSize)intrinsicSize;
 
 @end

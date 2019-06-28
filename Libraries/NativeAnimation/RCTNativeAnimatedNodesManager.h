@@ -23,14 +23,11 @@
 
 // graph
 
-- (void)createAnimatedNode:(nonnull NSNumber *)tag
-                    config:(NSDictionary<NSString *, id> *__nonnull)config;
+- (void)createAnimatedNode:(nonnull NSNumber *)tag config:(NSDictionary<NSString *, id> *__nonnull)config;
 
-- (void)connectAnimatedNodes:(nonnull NSNumber *)parentTag
-                    childTag:(nonnull NSNumber *)childTag;
+- (void)connectAnimatedNodes:(nonnull NSNumber *)parentTag childTag:(nonnull NSNumber *)childTag;
 
-- (void)disconnectAnimatedNodes:(nonnull NSNumber *)parentTag
-                       childTag:(nonnull NSNumber *)childTag;
+- (void)disconnectAnimatedNodes:(nonnull NSNumber *)parentTag childTag:(nonnull NSNumber *)childTag;
 
 - (void)connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag
                           viewTag:(nonnull NSNumber *)viewTag
@@ -38,18 +35,15 @@
 
 - (void)restoreDefaultValues:(nonnull NSNumber *)nodeTag;
 
-- (void)disconnectAnimatedNodeFromView:(nonnull NSNumber *)nodeTag
-                               viewTag:(nonnull NSNumber *)viewTag;
+- (void)disconnectAnimatedNodeFromView:(nonnull NSNumber *)nodeTag viewTag:(nonnull NSNumber *)viewTag;
 
 - (void)dropAnimatedNode:(nonnull NSNumber *)tag;
 
 // mutations
 
-- (void)setAnimatedNodeValue:(nonnull NSNumber *)nodeTag
-                       value:(nonnull NSNumber *)value;
+- (void)setAnimatedNodeValue:(nonnull NSNumber *)nodeTag value:(nonnull NSNumber *)value;
 
-- (void)setAnimatedNodeOffset:(nonnull NSNumber *)nodeTag
-                       offset:(nonnull NSNumber *)offset;
+- (void)setAnimatedNodeOffset:(nonnull NSNumber *)nodeTag offset:(nonnull NSNumber *)offset;
 
 - (void)flattenAnimatedNodeOffset:(nonnull NSNumber *)nodeTag;
 

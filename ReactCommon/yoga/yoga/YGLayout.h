@@ -28,7 +28,7 @@ struct YGLayout {
   // Instead of recomputing the entire layout every single time, we cache some
   // information to break early when nothing changed
   uint32_t generationCount = 0;
-  YGDirection lastOwnerDirection = (YGDirection) -1;
+  YGDirection lastOwnerDirection = (YGDirection)-1;
 
   uint32_t nextCachedMeasurementsIndex = 0;
   std::array<YGCachedMeasurement, YG_MAX_CACHED_RESULT_COUNT>
@@ -44,5 +44,7 @@ struct YGLayout {
         hadOverflow(false) {}
 
   bool operator==(YGLayout layout) const;
-  bool operator!=(YGLayout layout) const { return !(*this == layout); }
+  bool operator!=(YGLayout layout) const {
+    return !(*this == layout);
+  }
 };

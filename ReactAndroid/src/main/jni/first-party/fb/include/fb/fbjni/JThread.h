@@ -15,7 +15,7 @@ namespace jni {
 
 class JThread : public JavaClass<JThread> {
  public:
-  static constexpr const char* kJavaDescriptor = "Ljava/lang/Thread;";
+  static constexpr const char *kJavaDescriptor = "Ljava/lang/Thread;";
 
   void start() {
     static auto method = javaClassStatic()->getMethod<void()>("start");
@@ -27,11 +27,11 @@ class JThread : public JavaClass<JThread> {
     method(self());
   }
 
-  static local_ref<JThread> create(std::function<void()>&& runnable) {
+  static local_ref<JThread> create(std::function<void()> &&runnable) {
     auto jrunnable = JNativeRunnable::newObjectCxxArgs(std::move(runnable));
     return newInstance(static_ref_cast<JRunnable::javaobject>(jrunnable));
   }
 };
 
-}
-}
+} // namespace jni
+} // namespace facebook

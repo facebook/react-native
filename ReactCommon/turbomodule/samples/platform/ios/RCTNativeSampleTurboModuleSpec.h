@@ -34,13 +34,9 @@
 - (NSString *)getString:(NSString *)arg;
 - (NSArray<id<NSObject>> *)getArray:(NSArray *)arg;
 - (NSDictionary *)getObject:(NSDictionary *)arg;
-- (NSDictionary *)getValue:(double)x
-                         y:(NSString *)y
-                         z:(NSDictionary *)z;
+- (NSDictionary *)getValue:(double)x y:(NSString *)y z:(NSDictionary *)z;
 - (void)getValueWithCallback:(RCTResponseSenderBlock)callback;
-- (void)getValueWithPromise:(BOOL)error
-                    resolve:(RCTPromiseResolveBlock)resolve
-                     reject:(RCTPromiseRejectBlock)reject;
+- (void)getValueWithPromise:(BOOL)error resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 - (NSDictionary *)constantsToExport;
 - (NSDictionary *)getConstants;
 
@@ -55,7 +51,7 @@ namespace react {
  * The iOS TurboModule impl specific to SampleTurboModule.
  */
 class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
-public:
+ public:
   NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
 };
 

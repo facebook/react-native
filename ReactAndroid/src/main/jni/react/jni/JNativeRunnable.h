@@ -15,7 +15,7 @@ namespace facebook {
 namespace react {
 
 class Runnable : public JavaClass<Runnable> {
-public:
+ public:
   static constexpr auto kJavaDescriptor = "Ljava/lang/Runnable;";
 };
 
@@ -23,8 +23,9 @@ public:
  * The c++ interface for the Java NativeRunnable class
  */
 class JNativeRunnable : public HybridClass<JNativeRunnable, Runnable> {
-public:
-  static auto constexpr kJavaDescriptor = "Lcom/facebook/react/bridge/queue/NativeRunnable;";
+ public:
+  static auto constexpr kJavaDescriptor =
+      "Lcom/facebook/react/bridge/queue/NativeRunnable;";
 
   void run() {
     m_runnable();
@@ -35,7 +36,8 @@ public:
         makeNativeMethod("run", JNativeRunnable::run),
     });
   }
-private:
+
+ private:
   friend HybridBase;
 
   JNativeRunnable(std::function<void()> runnable)
@@ -44,4 +46,5 @@ private:
   std::function<void()> m_runnable;
 };
 
-} }
+} // namespace react
+} // namespace facebook

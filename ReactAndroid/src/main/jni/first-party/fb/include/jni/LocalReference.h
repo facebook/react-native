@@ -17,19 +17,21 @@
 namespace facebook {
 namespace jni {
 
-template<class T>
+template <class T>
 struct LocalReferenceDeleter {
-  static_assert(std::is_convertible<T, jobject>::value,
-    "LocalReferenceDeleter<T> instantiated with type that is not convertible to jobject");
+  static_assert(
+      std::is_convertible<T, jobject>::value,
+      "LocalReferenceDeleter<T> instantiated with type that is not convertible to jobject");
   void operator()(T localReference) {
     if (localReference != nullptr) {
       Environment::current()->DeleteLocalRef(localReference);
     }
-  } 
- };
+  }
+};
 
-template<class T>
-using LocalReference =
-  std::unique_ptr<typename std::remove_pointer<T>::type, LocalReferenceDeleter<T>>;
+template <class T>
+using LocalReference = std::
+    unique_ptr<typename std::remove_pointer<T>::type, LocalReferenceDeleter<T>>;
 
-} }
+} // namespace jni
+} // namespace facebook

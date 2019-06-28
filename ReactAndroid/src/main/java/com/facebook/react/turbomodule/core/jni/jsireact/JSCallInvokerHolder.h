@@ -14,8 +14,7 @@
 namespace facebook {
 namespace react {
 
-class JSCallInvokerHolder
-    : public jni::HybridClass<JSCallInvokerHolder> {
+class JSCallInvokerHolder : public jni::HybridClass<JSCallInvokerHolder> {
  public:
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/turbomodule/core/JSCallInvokerHolderImpl;";

@@ -6,9 +6,9 @@
  */
 #pragma once
 
-#include <react/graphics/Geometry.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/debug/DebugStringConvertible.h>
+#include <react/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {

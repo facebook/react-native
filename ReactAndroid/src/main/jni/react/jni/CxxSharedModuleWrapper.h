@@ -12,7 +12,7 @@
 namespace facebook {
 namespace react {
 
-class CxxSharedModuleWrapper: public CxxModuleWrapperBase {
+class CxxSharedModuleWrapper : public CxxModuleWrapperBase {
  public:
   std::string getName() override {
     return shared_->getName();
@@ -25,12 +25,13 @@ class CxxSharedModuleWrapper: public CxxModuleWrapperBase {
     return std::make_unique<xplat::module::SharedProxyCxxModule>(shared_);
   }
 
-protected:
-  explicit CxxSharedModuleWrapper(std::unique_ptr<xplat::module::CxxModule> module)
-    : shared_(std::move(module)) {}
+ protected:
+  explicit CxxSharedModuleWrapper(
+      std::unique_ptr<xplat::module::CxxModule> module)
+      : shared_(std::move(module)) {}
 
   std::shared_ptr<xplat::module::CxxModule> shared_;
 };
 
-}
-}
+} // namespace react
+} // namespace facebook

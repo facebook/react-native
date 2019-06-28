@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBackedTextInputViewProtocol.h"
 #import "RCTBackedTextInputDelegate.h"
+#import "RCTBackedTextInputViewProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

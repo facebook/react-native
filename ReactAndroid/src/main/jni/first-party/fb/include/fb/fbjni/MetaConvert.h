@@ -20,12 +20,12 @@ namespace detail {
 // released. This is done by returning a holder which autoconverts to
 // jstring.
 template <typename T>
-inline T callToJni(T&& t) {
+inline T callToJni(T &&t) {
   return t;
 }
 
 template <typename T>
-inline JniType<T> callToJni(local_ref<T>&& sref) {
+inline JniType<T> callToJni(local_ref<T> &&sref) {
   return sref.get();
 }
 
@@ -51,7 +51,7 @@ struct Convert<void> {
 };
 
 // jboolean is an unsigned char, not a bool. Allow it to work either way.
-template<>
+template <>
 struct Convert<bool> {
   typedef jboolean jniType;
   static bool fromJni(jniType t) {
@@ -98,7 +98,7 @@ template <typename T>
 struct Convert<global_ref<T>> {
   typedef JniType<T> jniType;
   // No automatic synthesis of global_ref
-  static jniType toJniRet(global_ref<jniType>&& t) {
+  static jniType toJniRet(global_ref<jniType> &&t) {
     // If this gets called, ownership the global_ref was passed in here.  (It's
     // probably a copy of a persistent global_ref made when a function was
     // declared to return a global_ref, but it could moved out or otherwise not
@@ -108,7 +108,7 @@ struct Convert<global_ref<T>> {
     auto ret = make_local(t);
     return ret.release();
   }
-  static jniType toJniRet(const global_ref<jniType>& t) {
+  static jniType toJniRet(const global_ref<jniType> &t) {
     // If this gets called, the function was declared to return const&.  We
     // have a ref to a global_ref whose lifetime will exceed this call, so we
     // can just get the underlying jobject and return it to java without
@@ -120,11 +120,13 @@ struct Convert<global_ref<T>> {
   }
 };
 
-template <typename T> struct jni_sig_from_cxx_t;
+template <typename T>
+struct jni_sig_from_cxx_t;
 template <typename R, typename... Args>
 struct jni_sig_from_cxx_t<R(Args...)> {
   using JniRet = typename Convert<typename std::decay<R>::type>::jniType;
-  using JniSig = JniRet(typename Convert<typename std::decay<Args>::type>::jniType...);
+  using JniSig =
+      JniRet(typename Convert<typename std::decay<Args>::type>::jniType...);
 };
 
 template <typename T>
@@ -133,7 +135,8 @@ using jni_sig_from_cxx = typename jni_sig_from_cxx_t<T>::JniSig;
 } // namespace detail
 
 template <typename R, typename... Args>
-struct jmethod_traits_from_cxx<R(Args...)> : jmethod_traits<detail::jni_sig_from_cxx<R(Args...)>> {
-};
+struct jmethod_traits_from_cxx<R(Args...)>
+    : jmethod_traits<detail::jni_sig_from_cxx<R(Args...)>> {};
 
-}}
+} // namespace jni
+} // namespace facebook

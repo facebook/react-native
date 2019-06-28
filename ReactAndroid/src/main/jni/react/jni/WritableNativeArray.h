@@ -17,12 +17,14 @@ namespace react {
 struct WritableNativeMap;
 
 struct WritableArray : jni::JavaClass<WritableArray> {
-  static auto constexpr kJavaDescriptor = "Lcom/facebook/react/bridge/WritableArray;";
+  static auto constexpr kJavaDescriptor =
+      "Lcom/facebook/react/bridge/WritableArray;";
 };
 
 struct WritableNativeArray
     : public jni::HybridClass<WritableNativeArray, ReadableNativeArray> {
-  static constexpr const char* kJavaDescriptor = "Lcom/facebook/react/bridge/WritableNativeArray;";
+  static constexpr const char *kJavaDescriptor =
+      "Lcom/facebook/react/bridge/WritableNativeArray;";
 
   WritableNativeArray();
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
@@ -32,11 +34,11 @@ struct WritableNativeArray
   void pushDouble(jdouble value);
   void pushInt(jint value);
   void pushString(jstring value);
-  void pushNativeArray(WritableNativeArray* otherArray);
-  void pushNativeMap(WritableNativeMap* map);
+  void pushNativeArray(WritableNativeArray *otherArray);
+  void pushNativeMap(WritableNativeMap *map);
 
   static void registerNatives();
 };
 
-}
-}
+} // namespace react
+} // namespace facebook

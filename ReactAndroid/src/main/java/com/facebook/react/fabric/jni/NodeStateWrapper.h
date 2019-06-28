@@ -13,7 +13,7 @@ namespace react {
 
 class NodeStateWrapper : public jni::HybridClass<NodeStateWrapper> {
  public:
-  constexpr static const char* const kJavaDescriptor =
+  constexpr static const char *const kJavaDescriptor =
       "Lcom/facebook/react/fabric/NodeStateWrapper;";
 
   NodeStateWrapper() {}
@@ -21,9 +21,10 @@ class NodeStateWrapper : public jni::HybridClass<NodeStateWrapper> {
   static void registerNatives();
 
   jni::local_ref<ReadableNativeMap::jhybridobject> getState();
-  void updateState(ReadableNativeMap* map);
+  void updateState(ReadableNativeMap *map);
 
-  const State* state_;
+  const State *state_;
+
  private:
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 };

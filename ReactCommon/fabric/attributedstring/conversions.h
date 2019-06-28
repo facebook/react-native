@@ -276,15 +276,16 @@ inline void fromRawValue(
     result = TextDecorationLineType::Underline;
     return;
   }
-    
+
   // TODO: remove "line-through" after deprecation
   if (string == "strikethrough" || string == "line-through") {
     result = TextDecorationLineType::Strikethrough;
     return;
   }
-    
+
   // TODO: remove "underline line-through" after "line-through" deprecation
-  if (string == "underline-strikethrough" || string == "underline line-through") {
+  if (string == "underline-strikethrough" ||
+      string == "underline line-through") {
     result = TextDecorationLineType::UnderlineStrikethrough;
     return;
   }

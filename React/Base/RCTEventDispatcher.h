@@ -9,8 +9,7 @@
 
 #import <React/RCTBridge.h>
 
-typedef NS_ENUM(NSInteger, RCTTextEventType)
-{
+typedef NS_ENUM(NSInteger, RCTTextEventType) {
   RCTTextEventTypeFocus,
   RCTTextEventTypeBlur,
   RCTTextEventTypeChange,
@@ -70,7 +69,6 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 
 @end
 
-
 /**
  * This class wraps the -[RCTBridge enqueueJSCall:args:] method, and
  * provides some convenience methods for generating event calls.
@@ -80,14 +78,12 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 /**
  * Deprecated, do not use.
  */
-- (void)sendAppEventWithName:(NSString *)name body:(id)body
-__deprecated_msg("Subclass RCTEventEmitter instead");
+- (void)sendAppEventWithName:(NSString *)name body:(id)body __deprecated_msg("Subclass RCTEventEmitter instead");
 
 /**
  * Deprecated, do not use.
  */
-- (void)sendDeviceEventWithName:(NSString *)name body:(id)body
-__deprecated_msg("Subclass RCTEventEmitter instead");
+- (void)sendDeviceEventWithName:(NSString *)name body:(id)body __deprecated_msg("Subclass RCTEventEmitter instead");
 
 /**
  * Send a text input/focus event. For internal use only.

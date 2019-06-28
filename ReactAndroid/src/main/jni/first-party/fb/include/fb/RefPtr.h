@@ -6,8 +6,8 @@
  */
 
 #pragma once
-#include <utility>
 #include <fb/assert.h>
+#include <utility>
 
 namespace facebook {
 
@@ -41,19 +41,13 @@ namespace facebook {
 //
 template <class T>
 class RefPtr {
-public:
-  constexpr RefPtr() :
-    m_ptr(nullptr)
-  {}
+ public:
+  constexpr RefPtr() : m_ptr(nullptr) {}
 
   // Allow implicit construction from a pointer only from nullptr
-  constexpr RefPtr(std::nullptr_t ptr) :
-    m_ptr(nullptr)
-  {}
+  constexpr RefPtr(std::nullptr_t ptr) : m_ptr(nullptr) {}
 
-  RefPtr(const RefPtr<T>& ref) :
-    m_ptr(ref.m_ptr)
-  {
+  RefPtr(const RefPtr<T> &ref) : m_ptr(ref.m_ptr) {
     refIfNecessary(m_ptr);
   }
 
@@ -61,15 +55,15 @@ public:
   // unless you use static_cast (which will end up invoking the explicit
   // operator below).
   template <typename U>
-  RefPtr(const RefPtr<U>& ref, typename std::enable_if<std::is_base_of<T,U>::value, U>::type* = nullptr) :
-    m_ptr(ref.get())
-  {
+  RefPtr(
+      const RefPtr<U> &ref,
+      typename std::enable_if<std::is_base_of<T, U>::value, U>::type * =
+          nullptr)
+      : m_ptr(ref.get()) {
     refIfNecessary(m_ptr);
   }
 
-  RefPtr(RefPtr<T>&& ref) :
-    m_ptr(nullptr)
-  {
+  RefPtr(RefPtr<T> &&ref) : m_ptr(nullptr) {
     *this = std::move(ref);
   }
 
@@ -77,9 +71,11 @@ public:
   // unless you use static_cast (which will end up invoking the explicit
   // operator below).
   template <typename U>
-  RefPtr(RefPtr<U>&& ref, typename std::enable_if<std::is_base_of<T,U>::value, U>::type* = nullptr) :
-    m_ptr(nullptr)
-  {
+  RefPtr(
+      RefPtr<U> &&ref,
+      typename std::enable_if<std::is_base_of<T, U>::value, U>::type * =
+          nullptr)
+      : m_ptr(nullptr) {
     *this = std::move(ref);
   }
 
@@ -88,7 +84,7 @@ public:
     m_ptr = nullptr;
   }
 
-  RefPtr<T>& operator=(const RefPtr<T>& ref) {
+  RefPtr<T> &operator=(const RefPtr<T> &ref) {
     if (m_ptr != ref.m_ptr) {
       unrefIfNecessary(m_ptr);
       m_ptr = ref.m_ptr;
@@ -99,7 +95,7 @@ public:
 
   // The STL assumes rvalue references are unique and for simplicity's sake, we
   // make the same assumption here, that &ref != this.
-  RefPtr<T>& operator=(RefPtr<T>&& ref) {
+  RefPtr<T> &operator=(RefPtr<T> &&ref) {
     unrefIfNecessary(m_ptr);
     m_ptr = ref.m_ptr;
     ref.m_ptr = nullptr;
@@ -107,7 +103,7 @@ public:
   }
 
   template <typename U>
-  RefPtr<T>& operator=(RefPtr<U>&& ref) {
+  RefPtr<T> &operator=(RefPtr<U> &&ref) {
     unrefIfNecessary(m_ptr);
     m_ptr = ref.m_ptr;
     ref.m_ptr = nullptr;
@@ -119,20 +115,20 @@ public:
     m_ptr = nullptr;
   }
 
-  T* get() const {
+  T *get() const {
     return m_ptr;
   }
 
-  T* operator->() const {
+  T *operator->() const {
     return m_ptr;
   }
 
-  T& operator*() const {
+  T &operator*() const {
     return *m_ptr;
   }
 
   template <typename U>
-  explicit operator RefPtr<U> () const;
+  explicit operator RefPtr<U>() const;
 
   explicit operator bool() const {
     return m_ptr ? true : false;
@@ -145,128 +141,128 @@ public:
 
   // Creates a strong reference from a raw pointer, assuming that is already
   // referenced from some other RefPtr. This should be used sparingly.
-  static inline RefPtr<T> assumeAlreadyReffed(T* ptr) {
+  static inline RefPtr<T> assumeAlreadyReffed(T *ptr) {
     return RefPtr<T>(ptr, ConstructionMode::External);
   }
 
   // Creates a strong reference from a raw pointer, assuming that it points to a
   // freshly-created object. See the documentation for RefPtr for usage.
-  static inline RefPtr<T> adoptRef(T* ptr) {
+  static inline RefPtr<T> adoptRef(T *ptr) {
     return RefPtr<T>(ptr, ConstructionMode::Adopted);
   }
 
-private:
-  enum class ConstructionMode {
-    Adopted,
-    External
-  };
+ private:
+  enum class ConstructionMode { Adopted, External };
 
-  RefPtr(T* ptr, ConstructionMode mode) :
-    m_ptr(ptr)
-  {
-    FBASSERTMSGF(ptr, "Got null pointer in %s construction mode", mode == ConstructionMode::Adopted ? "adopted" : "external");
+  RefPtr(T *ptr, ConstructionMode mode) : m_ptr(ptr) {
+    FBASSERTMSGF(
+        ptr,
+        "Got null pointer in %s construction mode",
+        mode == ConstructionMode::Adopted ? "adopted" : "external");
     ptr->ref();
     if (mode == ConstructionMode::Adopted) {
       FBASSERT(ptr->hasOnlyOneRef());
     }
   }
 
-  static inline void refIfNecessary(T* ptr) {
+  static inline void refIfNecessary(T *ptr) {
     if (ptr) {
       ptr->ref();
     }
   }
-  static inline void unrefIfNecessary(T* ptr) {
+  static inline void unrefIfNecessary(T *ptr) {
     if (ptr) {
       ptr->unref();
     }
   }
 
-  template <typename U> friend class RefPtr;
+  template <typename U>
+  friend class RefPtr;
 
-  T* m_ptr;
+  T *m_ptr;
 };
 
 // Creates a strong reference from a raw pointer, assuming that is already
 // referenced from some other RefPtr and that it is non-null. This should be
 // used sparingly.
 template <typename T>
-static inline RefPtr<T> assumeAlreadyReffed(T* ptr) {
+static inline RefPtr<T> assumeAlreadyReffed(T *ptr) {
   return RefPtr<T>::assumeAlreadyReffed(ptr);
 }
 
 // As above, but tolerant of nullptr.
 template <typename T>
-static inline RefPtr<T> assumeAlreadyReffedOrNull(T* ptr) {
+static inline RefPtr<T> assumeAlreadyReffedOrNull(T *ptr) {
   return ptr ? RefPtr<T>::assumeAlreadyReffed(ptr) : nullptr;
 }
 
 // Creates a strong reference from a raw pointer, assuming that it points to a
 // freshly-created object. See the documentation for RefPtr for usage.
 template <typename T>
-static inline RefPtr<T> adoptRef(T* ptr) {
+static inline RefPtr<T> adoptRef(T *ptr) {
   return RefPtr<T>::adoptRef(ptr);
 }
 
-template <typename T, typename ...Args>
-static inline RefPtr<T> createNew(Args&&... arguments) {
+template <typename T, typename... Args>
+static inline RefPtr<T> createNew(Args &&... arguments) {
   return RefPtr<T>::adoptRef(new T(std::forward<Args>(arguments)...));
 }
 
-template <typename T> template <typename U>
+template <typename T>
+template <typename U>
 RefPtr<T>::operator RefPtr<U>() const {
   static_assert(std::is_base_of<T, U>::value, "Invalid static cast");
-  return assumeAlreadyReffedOrNull<U>(static_cast<U*>(m_ptr));
+  return assumeAlreadyReffedOrNull<U>(static_cast<U *>(m_ptr));
 }
 
 template <typename T, typename U>
-inline bool operator==(const RefPtr<T>& a, const RefPtr<U>& b) {
+inline bool operator==(const RefPtr<T> &a, const RefPtr<U> &b) {
   return a.get() == b.get();
 }
 
 template <typename T, typename U>
-inline bool operator!=(const RefPtr<T>& a, const RefPtr<U>& b) {
+inline bool operator!=(const RefPtr<T> &a, const RefPtr<U> &b) {
   return a.get() != b.get();
 }
 
 template <typename T, typename U>
-inline bool operator==(const RefPtr<T>& ref, U* ptr) {
+inline bool operator==(const RefPtr<T> &ref, U *ptr) {
   return ref.get() == ptr;
 }
 
 template <typename T, typename U>
-inline bool operator!=(const RefPtr<T>& ref, U* ptr) {
+inline bool operator!=(const RefPtr<T> &ref, U *ptr) {
   return ref.get() != ptr;
 }
 
 template <typename T, typename U>
-inline bool operator==(U* ptr, const RefPtr<T>& ref) {
+inline bool operator==(U *ptr, const RefPtr<T> &ref) {
   return ref.get() == ptr;
 }
 
 template <typename T, typename U>
-inline bool operator!=(U* ptr, const RefPtr<T>& ref) {
+inline bool operator!=(U *ptr, const RefPtr<T> &ref) {
   return ref.get() != ptr;
 }
 
 template <typename T>
-inline bool operator==(const RefPtr<T>& ref, std::nullptr_t ptr) {
+inline bool operator==(const RefPtr<T> &ref, std::nullptr_t ptr) {
   return ref.get() == ptr;
 }
 
 template <typename T>
-inline bool operator!=(const RefPtr<T>& ref, std::nullptr_t ptr) {
+inline bool operator!=(const RefPtr<T> &ref, std::nullptr_t ptr) {
   return ref.get() != ptr;
 }
 
 template <typename T>
-inline bool operator==(std::nullptr_t ptr, const RefPtr<T>& ref) {
+inline bool operator==(std::nullptr_t ptr, const RefPtr<T> &ref) {
   return ref.get() == ptr;
 }
 
 template <typename T>
-inline bool operator!=(std::nullptr_t ptr, const RefPtr<T>& ref) {
+inline bool operator!=(std::nullptr_t ptr, const RefPtr<T> &ref) {
   return ref.get() != ptr;
 }
 
-}
+} // namespace facebook

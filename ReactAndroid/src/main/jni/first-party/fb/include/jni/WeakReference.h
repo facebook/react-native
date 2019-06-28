@@ -6,18 +6,17 @@
  */
 
 #pragma once
-#include <string>
-#include <jni.h>
-#include <fb/noncopyable.h>
 #include <fb/Countable.h>
+#include <fb/noncopyable.h>
 #include <fb/visibility.h>
-
+#include <jni.h>
+#include <string>
 
 namespace facebook {
 namespace jni {
 
 class FBEXPORT WeakReference : public Countable {
-public:
+ public:
   typedef RefPtr<WeakReference> Ptr;
   WeakReference(jobject strongRef);
   ~WeakReference();
@@ -25,29 +24,29 @@ public:
     return m_weakReference;
   }
 
-private:
+ private:
   jweak m_weakReference;
 };
 
 // This class is intended to take a weak reference and turn it into a strong
 // local reference. Consequently, it should only be allocated on the stack.
 class FBEXPORT ResolvedWeakReference : public noncopyable {
-public:
+ public:
   ResolvedWeakReference(jobject weakRef);
-  ResolvedWeakReference(const RefPtr<WeakReference>& weakRef);
+  ResolvedWeakReference(const RefPtr<WeakReference> &weakRef);
   ~ResolvedWeakReference();
 
-  operator jobject () {
+  operator jobject() {
     return m_strongReference;
   }
 
-  explicit operator bool () {
+  explicit operator bool() {
     return m_strongReference != nullptr;
   }
 
-private:
+ private:
   jobject m_strongReference;
 };
 
-} }
-
+} // namespace jni
+} // namespace facebook

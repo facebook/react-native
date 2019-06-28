@@ -13,4 +13,5 @@ namespace facebook {
 namespace jni {
 
 void FBEXPORT installTerminateHandler();
-}};
+}
+}; // namespace facebook
