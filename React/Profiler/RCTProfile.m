@@ -777,7 +777,7 @@ void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *data)
             [alertController addAction:[UIAlertAction actionWithTitle:@"OK"
                                                       style:UIAlertActionStyleCancel
                                                       handler:nil]];
-            [RCTPresentedViewController() presentViewController:alertController animated:YES completion:nil];
+            [RCTPresentedViewController(nil) presentViewController:alertController animated:YES completion:nil];
          });
 #endif
        }

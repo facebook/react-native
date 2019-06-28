@@ -73,7 +73,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
     destructiveButtonIndices = @[destructiveButtonIndex];
   }
 
-  UIViewController *controller = RCTPresentedViewController();
+  UIViewController *controller = RCTPresentedViewController(nil);
 
   if (controller == nil) {
     RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
@@ -162,7 +162,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
     shareController.excludedActivityTypes = excludedActivityTypes;
   }
 
-  UIViewController *controller = RCTPresentedViewController();
+  UIViewController *controller = RCTPresentedViewController(nil);
   shareController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
     if (activityError) {
       failureCallback(activityError);

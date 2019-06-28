@@ -225,7 +225,7 @@ RCT_EXPORT_MODULE()
         [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action){
           [weakAlertController dismissViewControllerAnimated:YES completion:nil];
         }]];
-        [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
+        [RCTPresentedViewController(nil) presentViewController:alertController animated:YES completion:NULL];
       }]];
     } else {
       [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
@@ -242,7 +242,7 @@ RCT_EXPORT_MODULE()
     if (devSettings.isNuclideDebuggingAvailable && !devSettings.isDebuggingRemotely) {
       [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Debug with Nuclide" handler:^{
   #if RCT_ENABLE_INSPECTOR
-        [RCTInspectorDevServerHelper attachDebugger:@"ReactNative" withBundleURL:bridge.bundleURL withView: RCTPresentedViewController()];
+        [RCTInspectorDevServerHelper attachDebugger:@"ReactNative" withBundleURL:bridge.bundleURL withView: RCTPresentedViewController(nil)];
   #endif
       }]];
     }
@@ -281,7 +281,7 @@ RCT_EXPORT_MODULE()
          [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action){
           [weakAlertController dismissViewControllerAnimated:YES completion:nil];
         }]];
-        [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
+        [RCTPresentedViewController(nil) presentViewController:alertController animated:YES completion:NULL];
       } else {
         devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
       }
@@ -348,7 +348,7 @@ RCT_EXPORT_MODULE()
     [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(__unused UIAlertAction *action) {
       return;
     }]];
-    [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
+    [RCTPresentedViewController(nil) presentViewController:alertController animated:YES completion:NULL];
   }]];
 
   [items addObjectsFromArray:_extraMenuItems];
@@ -384,7 +384,7 @@ RCT_EXPORT_METHOD(show)
                                                  handler:[self alertActionHandlerForDevItem:nil]]];
 
   _presentedItems = items;
-  [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
+  [RCTPresentedViewController(nil) presentViewController:_actionSheet animated:YES completion:nil];
 }
 
 - (RCTDevMenuAlertActionHandler)alertActionHandlerForDevItem:(RCTDevMenuItem *__nullable)item

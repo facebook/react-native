@@ -499,13 +499,14 @@ UIWindow *__nullable RCTKeyWindow(void)
   return RCTSharedApplication().keyWindow;
 }
 
-UIViewController *__nullable RCTPresentedViewController(void)
+UIViewController *__nullable RCTPresentedViewController(UIWindow* _Nullable window)
 {
   if (RCTRunningInAppExtension()) {
     return nil;
   }
 
-  UIViewController *controller = RCTKeyWindow().rootViewController;
+  UIWindow *keyWindow = window ?: RCTKeyWindow();
+  UIViewController *controller = keyWindow.rootViewController;
   UIViewController *presentedController = controller.presentedViewController;
   while (presentedController && ![presentedController isBeingDismissed]) {
     controller = presentedController;

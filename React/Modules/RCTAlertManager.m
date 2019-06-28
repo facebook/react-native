@@ -90,7 +90,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     }
   }
 
-  UIViewController *presentingController = RCTPresentedViewController();
+  UIViewController *presentingController = RCTPresentedViewController(nil);
   if (presentingController == nil) {
     RCTLogError(@"Tried to display alert view but there is no application window. args: %@", args);
     return;
