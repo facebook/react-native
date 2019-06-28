@@ -1188,7 +1188,7 @@
 						CreatedOnToolsVersion = 6.1.1;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = 3BNF2P698M;
+						DevelopmentTeam = VYK7DLU38Z;
 					};
 					143BC5941B21E3E100462512 = {
 						CreatedOnToolsVersion = 6.3.2;
@@ -1205,7 +1205,7 @@
 					};
 					3D13F83D1D6F6AE000E69E0E = {
 						CreatedOnToolsVersion = 7.3.1;
-						DevelopmentTeam = 3BNF2P698M;
+						DevelopmentTeam = VYK7DLU38Z;
 					};
 				};
 			};
@@ -1870,7 +1870,7 @@
 				CODE_SIGN_ENTITLEMENTS = RNTester/RNTester.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				DERIVE_UIKITFORMAC_PRODUCT_BUNDLE_IDENTIFIER = YES;
-				DEVELOPMENT_TEAM = 3BNF2P698M;
+				DEVELOPMENT_TEAM = VYK7DLU38Z;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"RN_BUNDLE_PREFIX=$(RN_BUNDLE_PREFIX)",
 					"DEBUG=1",
@@ -1904,7 +1904,7 @@
 				CODE_SIGN_ENTITLEMENTS = RNTester/RNTester.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				DERIVE_UIKITFORMAC_PRODUCT_BUNDLE_IDENTIFIER = YES;
-				DEVELOPMENT_TEAM = 3BNF2P698M;
+				DEVELOPMENT_TEAM = VYK7DLU38Z;
 				GCC_PREPROCESSOR_DEFINITIONS = "RN_BUNDLE_PREFIX=$(RN_BUNDLE_PREFIX)";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../third-party/boost_1_63_0",
@@ -2141,7 +2141,7 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 3BNF2P698M;
+				DEVELOPMENT_TEAM = VYK7DLU38Z;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = RNTester/RNTesterBundle/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterBundle;
@@ -2158,7 +2158,7 @@
 				CLANG_ANALYZER_NONNULL = YES;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 3BNF2P698M;
+				DEVELOPMENT_TEAM = VYK7DLU38Z;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = RNTester/RNTesterBundle/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterBundle;
