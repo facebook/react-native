@@ -105,7 +105,7 @@ RCT_EXPORT_METHOD(getHeight:(RCTResponseSenderBlock)callback)
 
 RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
                   animated:(BOOL)animated
-                  rootTag:(nonnull NSNumber *)rootTag)
+                  rootTag:(nonnull __unused NSNumber *)rootTag)
 {
   if (RCTViewControllerBasedStatusBarAppearance()) {
     RCTLogError(@"RCTStatusBarManager module requires that the \
@@ -113,20 +113,7 @@ RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
     return;
   }
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* __IPHONE_13_0 */
-  if (@available(iOS 13.0, *)) {
-    UIView *rootView = [self.bridge.uiManager viewForReactTag:rootTag];
-    UIWindowScene *windowScene = rootView.window.windowScene;
-
-    if (windowScene) {
-//      windowScene.statusBarManager.statusBarStyle = statusBarStyle
-    } else {
-      RCTLogWarn(@"RCTStatusBarManager setStyle called on a RCTRootView that's not attached to a window scene");
-    }
-
-    return;
-  }
-#endif
+  // TODO: Add proper support for UIScenes (this requires view controller based status bar management)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -137,13 +124,15 @@ RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
 
 RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
                   withAnimation:(UIStatusBarAnimation)animation
-                  rootTag:(nonnull NSNumber *)rootTag)
+                  rootTag:(nonnull __unused NSNumber *)rootTag)
 {
   if (RCTViewControllerBasedStatusBarAppearance()) {
     RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
     return;
   }
+
+  // TODO: Add proper support for UIScenes (this requires view controller based status bar management)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"

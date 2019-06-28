@@ -256,7 +256,6 @@ class StatusBar extends React.Component<Props> {
    * @param hidden Hide the status bar.
    * @param animation Optional animation when
    *    changing the status bar hidden property.
-   * @param rootTag Optional reactTag of your app's root view (only necessary to support multiple windows on iOS 13+)
    */
   static setHidden(
     hidden: boolean,
@@ -276,7 +275,6 @@ class StatusBar extends React.Component<Props> {
    * Set the status bar style
    * @param style Status bar style to set
    * @param animated Animate the style change.
-   * @param rootTag Optional reactTag of your app's root view (only necessary to support multiple windows on iOS 13+)
    */
   static setBarStyle(
     style: StatusBarStyle,
@@ -343,7 +341,6 @@ class StatusBar extends React.Component<Props> {
    * The return value should be passed to `popStackEntry` when complete.
    *
    * @param props Object containing the StatusBar props to use in the stack entry.
-   * @param rootTag Optional reactTag of your app's root view (only necessary to support multiple windows on iOS 13+)
    */
   static pushStackEntry(props: any, rootTag?: number) {
     const entry = createStackEntry(props);
@@ -356,7 +353,6 @@ class StatusBar extends React.Component<Props> {
    * Pop a StatusBar entry from the stack.
    *
    * @param entry Entry returned from `pushStackEntry`.
-   * @param rootTag Optional reactTag of your app's root view (only necessary to support multiple windows on iOS 13+)
    */
   static popStackEntry(entry: any, rootTag?: number) {
     const index = StatusBar._propsStack.indexOf(entry);
@@ -371,7 +367,6 @@ class StatusBar extends React.Component<Props> {
    *
    * @param entry Entry returned from `pushStackEntry` to replace.
    * @param props Object containing the StatusBar props to use in the replacement stack entry.
-   * @param rootTag Optional reactTag of your app's root view (only necessary to support multiple windows on iOS 13+)
    */
   static replaceStackEntry(entry: any, props: any, rootTag?: number) {
     const newEntry = createStackEntry(props);
