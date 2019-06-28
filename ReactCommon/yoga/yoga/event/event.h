@@ -102,7 +102,6 @@ struct Event::TypedData<Event::MeasureCallbackEnd> {
   YGMeasureMode heightMeasureMode;
   float measuredWidth;
   float measuredHeight;
-  float measureCallbackDuration;
 };
 
 template <>
