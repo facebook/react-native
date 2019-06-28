@@ -46,6 +46,7 @@ const ActionSheetIOS = {
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
       +tintColor?: number | string,
+      +rootTag?: number,
     |},
     callback: (buttonIndex: number) => void,
   ) {

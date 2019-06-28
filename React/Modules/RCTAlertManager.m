@@ -8,6 +8,7 @@
 #import "RCTAlertManager.h"
 
 #import "RCTAssert.h"
+#import "RCTUIManager.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
@@ -31,6 +32,8 @@ RCT_ENUM_CONVERTER(RCTAlertViewStyle, (@{
 {
   NSHashTable *_alertControllers;
 }
+
+@synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE()
 
@@ -71,6 +74,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   NSString *cancelButtonKey = [RCTConvert NSString:args[@"cancelButtonKey"]];
   NSString *destructiveButtonKey = [RCTConvert NSString:args[@"destructiveButtonKey"]];
   UIKeyboardType keyboardType = [RCTConvert UIKeyboardType:args[@"keyboardType"]];
+  NSNumber *rootTag = args[@"rootTag"] ? [RCTConvert NSNumber:args[@"rootTag"]] : @-1;
 
   if (!title && !message) {
     RCTLogError(@"Must specify either an alert title, or message, or both");
@@ -88,12 +92,6 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
       ];
       cancelButtonKey = @"1";
     }
-  }
-
-  UIViewController *presentingController = RCTPresentedViewController(nil);
-  if (presentingController == nil) {
-    RCTLogError(@"Tried to display alert view but there is no application window. args: %@", args);
-    return;
   }
 
   UIAlertController *alertController = [UIAlertController
@@ -178,6 +176,14 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   [_alertControllers addObject:alertController];
 
   dispatch_async(dispatch_get_main_queue(), ^{
+    UIView *rootView = [self.bridge.uiManager viewForReactTag:rootTag];
+    UIViewController *presentingController = RCTPresentedViewController(rootView.window);
+
+    if (presentingController == nil) {
+      RCTLogError(@"Tried to display alert view but there is no application window. args: %@", args);
+      return;
+    }
+
     [presentingController presentViewController:alertController animated:YES completion:nil];
   });
 }
