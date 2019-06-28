@@ -34,7 +34,7 @@ executors:
   reactnativeios:
     <<: *defaults
     macos:
-      xcode: "10.2.0"
+      xcode: "10.2.1"
 
 # -------------------------
 #        COMMANDS
@@ -116,6 +116,21 @@ commands:
             - /usr/local/Homebrew
             - ~/Library/Caches/Homebrew
           key: v1-brew
+
+  with_pods_cache_span:
+    parameters:
+      steps:
+        type: steps
+    steps:
+      - restore_cache:
+          keys:
+            - v1-pods-{{ checksum "RNTester/Podfile.lock" }}
+            - v1-pods-
+      - steps: << parameters.steps >>
+      - save_cache:
+          paths:
+            - RNTester/Pods
+          key: v1-pods-{{ checksum "RNTester/Podfile.lock" }}
 
   download_gradle_dependencies:
     steps:
@@ -294,17 +309,23 @@ jobs:
       - setup_artifacts
       - run_yarn
 
+      - run: |
+          cd RNTester
+          bundle check || bundle install
       - run:
-          name: Print Xcode environment
-          command: xcodebuild -version
-
-      - run:
-          name: List available devices
-          command: instruments -s devices
-
-      - run:
-          name: Boot iOS Simulator
+          name: Boot iPhone Simulator
           command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
+
+      - run:
+          name: Fetch CocoaPods Specs
+          command: |
+            curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+
+      - with_pods_cache_span:
+          steps:
+            - run:
+                name: Generate RNTesterPods Workspace
+                command: cd RNTester && pod install --verbose
 
       - with_brew_cache_span:
           steps:
@@ -312,93 +333,7 @@ jobs:
                 package: watchman
       - run: touch .watchmanconfig
 
-      - run:
-          name: Start Metro packager
-          command: yarn start --max-workers=1 || echo "Can't start packager automatically"
-          background: true
-
-      - run:
-          name: Start WebSocket test server
-          command: open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
-          background: true
-
-      - run:
-          name: Verify RNTester can be built
-          command: |
-            source ./scripts/.tests.env
-            xcodebuild \
-              -project RNTester/RNTester.xcodeproj \
-              -scheme RNTester \
-              -sdk iphonesimulator \
-              -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
-              -UseModernBuildSystem=NO \
-              build | \
-            xcpretty --report junit --output "$REPORTS_DIR/junit/ios_buiild/results.xml" && \
-            exit "${PIPESTATUS[0]}"
-
-      - run:
-          name: Wait for Metro packager
-          command: |
-            max_attempts=60
-            attempt_num=1
-            until curl -s http://localhost:8081/status | grep "packager-status:running" -q; do
-              if (( attempt_num == max_attempts )); then
-                echo "Packager did not respond in time. No more attempts left."
-                exit 1
-              else
-                (( attempt_num++ ))
-                echo "Packager did not respond. Retrying for attempt number $attempt_num..."
-                sleep 1
-              fi
-            done
-            echo "Packager is ready!"
-
-      - run:
-          name: Preload the RNTesterApp bundles
-          command: |
-            curl --silent 'http://localhost:8081/RNTester/js/RNTesterApp.ios.bundle?platform=ios&dev=true' --output /dev/null
-            curl --silent 'http://localhost:8081/RNTester/js/RNTesterApp.ios.bundle?platform=ios&dev=true&minify=false' --output /dev/null
-            curl --silent 'http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=ios&dev=true' --output /dev/null
-            curl --silent 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' --output /dev/null
-
-      - run:
-          name: Run RNTester Unit Tests
-          command: |
-            source ./scripts/.tests.env
-            xcodebuild \
-              -project RNTester/RNTester.xcodeproj \
-              -scheme RNTester \
-              -sdk iphonesimulator \
-              -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
-              -UseModernBuildSystem=NO \
-              -only-testing:RNTesterUnitTests \
-              build test | \
-            xcpretty --report junit --output "$REPORTS_DIR/junit/ios_unit_tests/results.xml" && \
-            exit "${PIPESTATUS[0]}"
-
-      - run:
-          name: Run RNTester Integration Tests
-          command: |
-            source ./scripts/.tests.env
-            xcodebuild \
-              -project RNTester/RNTester.xcodeproj \
-              -scheme RNTester \
-              -sdk iphonesimulator \
-              -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
-              -UseModernBuildSystem=NO \
-              -only-testing:RNTesterIntegrationTests \
-              build test | \
-            xcpretty --report junit --output "$REPORTS_DIR/junit/ios_integration_tests/results.xml" && \
-            exit "${PIPESTATUS[0]}"
-
-      - run:
-          name: Stop Metro packager and WebSocket test server
-          command: |
-            # kill whatever is occupying port 8081 (packager)
-            lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
-            # kill whatever is occupying port 5555 (web socket server)
-            lsof -i tcp:5555 | awk 'NR!=1 {print $2}' | xargs kill
-
+      - run: yarn test-ios
       - store_test_results:
           path: ~/reports/junit
 
@@ -431,7 +366,6 @@ jobs:
                 package: applesimutils
             - brew_install:
                 package: watchman
-
       # Configure Watchman
       - run: touch .watchmanconfig
 
