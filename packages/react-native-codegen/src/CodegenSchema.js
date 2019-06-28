@@ -132,6 +132,7 @@ export type EventTypeShape = $ReadOnly<{|
   name: string,
   bubblingType: 'direct' | 'bubble',
   optional: boolean,
+  paperTopLevelNameDeprecated?: string,
   typeAnnotation: $ReadOnly<{|
     type: 'EventTypeAnnotation',
     argument?: $ReadOnly<{|

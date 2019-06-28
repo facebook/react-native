@@ -303,6 +303,38 @@ class EventsNativeComponentProps final : public ViewProps {
 }
 `;
 
+exports[`GeneratePropsH can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class InterfaceOnlyComponentProps final : public ViewProps {
+ public:
+  InterfaceOnlyComponentProps() = default;
+  InterfaceOnlyComponentProps(const InterfaceOnlyComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GeneratePropsH can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "Props.h" => "

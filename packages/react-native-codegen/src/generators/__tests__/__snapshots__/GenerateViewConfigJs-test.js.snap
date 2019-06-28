@@ -309,6 +309,68 @@ export default nativeComponentName;
 }
 `;
 
+exports[`GenerateViewConfigJs can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
+Map {
+  "EVENTS_WITH_PAPER_NAMENativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const InterfaceOnlyComponentViewConfig = {
+  uiViewClassName: 'RCTInterfaceOnlyComponent',
+
+  bubblingEventTypes: {
+    paperChange: {
+      phasedRegistrationNames: {
+        captured: 'onChangeCapture',
+        bubbled: 'onChange',
+      },
+    },
+
+    topChange: {
+      phasedRegistrationNames: {
+        captured: 'onChangeCapture',
+        bubbled: 'onChange',
+      },
+    },
+  },
+
+  directEventTypes: {
+    paperDirectChange: {
+      registrationName: 'onDire tChange',
+    },
+
+    topDire tChange: {
+      registrationName: 'onDire tChange',
+    },
+  },
+
+  validAttributes: {
+    onChange: true,
+    onDire tChange: true,
+  },
+};
+
+let nativeComponentName = 'RCTInterfaceOnlyComponent';
+
+registerGeneratedViewConfig(nativeComponentName, InterfaceOnlyComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = InterfaceOnlyComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
 exports[`GenerateViewConfigJs can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "FLOAT_PROPSNativeViewConfig.js" => "

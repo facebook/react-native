@@ -44,8 +44,14 @@ type NativeProps = $ReadOnly<{|
   // Events
   onChange?: ?(event: BubblingEvent<OnChangeEvent>) => void,
   onEventDirect?: ?(event: DirectEvent<OnEventDirect>) => void,
+  onEventDirectWithPaperName?: ?(
+    event: DirectEvent<OnEventDirect, 'paperDirectName'>,
+  ) => void,
   onOrientationChange?: ?(event: DirectEvent<OnOrientationChangeEvent>) => void,
   onEnd?: ?(event: BubblingEvent<null>) => void,
+  onEventBubblingWithPaperName?: ?(
+    event: BubblingEvent<null, 'paperBubblingName'>,
+  ) => void,
 |}>;
 
 export default codegenNativeComponent<NativeProps>('EventPropsNativeComponent');

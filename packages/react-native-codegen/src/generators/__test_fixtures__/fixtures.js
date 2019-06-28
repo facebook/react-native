@@ -82,6 +82,67 @@ const INTERFACE_ONLY: SchemaType = {
   },
 };
 
+const EVENTS_WITH_PAPER_NAME: SchemaType = {
+  modules: {
+    Switch: {
+      components: {
+        InterfaceOnlyComponent: {
+          interfaceOnly: true,
+          paperComponentName: 'RCTInterfaceOnlyComponent',
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [
+            {
+              name: 'onChange',
+              paperTopLevelNameDeprecated: 'paperChange',
+              optional: true,
+              bubblingType: 'bubble',
+              typeAnnotation: {
+                type: 'EventTypeAnnotation',
+                argument: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      type: 'BooleanTypeAnnotation',
+                      name: 'value',
+                      optional: false,
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              name: 'onDire tChange',
+              paperTopLevelNameDeprecated: 'paperDirectChange',
+              optional: true,
+              bubblingType: 'direct',
+              typeAnnotation: {
+                type: 'EventTypeAnnotation',
+                argument: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      type: 'BooleanTypeAnnotation',
+                      name: 'value',
+                      optional: false,
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          props: [],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
 const BOOLEAN_PROP: SchemaType = {
   modules: {
     Switch: {
@@ -923,6 +984,7 @@ module.exports = {
   MULTI_NATIVE_PROP,
   ENUM_PROP,
   EVENT_PROPS,
+  EVENTS_WITH_PAPER_NAME,
   EVENT_NESTED_OBJECT_PROPS,
   TWO_COMPONENTS_SAME_FILE,
   TWO_COMPONENTS_DIFFERENT_FILES,
