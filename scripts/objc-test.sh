@@ -4,11 +4,12 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 #
-# Script used to run iOS tests.
-# If no arguments are passed to the script, it will only compile
+# Script used to run iOS and tvOS tests.
+# Environment variables are used to configure what test to run.
+# If not arguments are passed to the script, it will only compile
 # the RNTester.
 # If the script is called with a single argument "test", we'll
-# run the RNTester unit and integration tests
+# also run the RNTester integration test (needs JS and packager).
 # ./objc-test.sh test
 
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
@@ -50,20 +51,22 @@ waitForPackager() {
 }
 
 runTests() {
-  # shellcheck disable=SC1091
-  source "./scripts/.tests.env"
-  xcodebuild build test \
-    -workspace RNTester/RNTesterPods.xcworkspace \
-    -scheme RNTester \
-    -sdk iphonesimulator \
-    -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS"
+  xcodebuild \
+    -project "RNTester/RNTester.xcodeproj" \
+    -scheme "$SCHEME" \
+    -sdk "$SDK" \
+    -destination "$DESTINATION" \
+    -UseModernBuildSystem="$USE_MODERN_BUILD_SYSTEM" \
+    build test
 }
 
 buildProject() {
-  xcodebuild build \
-    -workspace RNTester/RNTesterPods.xcworkspace \
-    -scheme RNTester \
-    -sdk iphonesimulator
+  xcodebuild \
+    -project "RNTester/RNTester.xcodeproj" \
+    -scheme "$SCHEME" \
+    -sdk "$SDK" \
+    -UseModernBuildSystem="$USE_MODERN_BUILD_SYSTEM" \
+    build
 }
 
 xcprettyFormat() {

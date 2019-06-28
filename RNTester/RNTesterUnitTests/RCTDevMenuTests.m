@@ -8,11 +8,7 @@
 
 #import <XCTest/XCTest.h>
 
-#if (defined(COCOAPODS))
-#import <React-RCTTest/React/RCTTestRunner.h>
-#else
 #import <RCTTest/RCTTestRunner.h>
-#endif
 #import <React/RCTBridge.h>
 #import <React/RCTDevMenu.h>
 

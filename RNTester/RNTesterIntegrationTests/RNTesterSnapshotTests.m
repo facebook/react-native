@@ -9,11 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#if (defined(COCOAPODS))
-#import <React-RCTTest/React/RCTTestRunner.h>
-#else
 #import <RCTTest/RCTTestRunner.h>
-#endif
 
 @interface RNTesterSnapshotTests : XCTestCase
 {

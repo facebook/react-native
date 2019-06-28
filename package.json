@@ -75,7 +75,7 @@
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
     "build-ios-e2e": "detox build -c ios.sim.release",
     "test-ios-e2e": "detox test -c ios.sim.release RNTester/e2e",
-    "test-ios": "./scripts/objc-test.sh test"
+    "test-ios": "./scripts/objc-test-ios.sh test"
   },
   "peerDependencies": {
     "react": "16.8.6"
