@@ -31,7 +31,8 @@ struct Event {
     NodeLayout,
     LayoutPassStart,
     LayoutPassEnd,
-    NodeMeasure,
+    MeasureCallbackStart,
+    MeasureCallbackEnd,
   };
   class Data;
   using Subscriber = void(const YGNode&, Type, Data);
@@ -93,7 +94,7 @@ struct Event::TypedData<Event::LayoutPassEnd> {
 };
 
 template <>
-struct Event::TypedData<Event::NodeMeasure> {
+struct Event::TypedData<Event::MeasureCallbackEnd> {
   void* layoutContext;
   float width;
   YGMeasureMode widthMeasureMode;

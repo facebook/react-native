@@ -1642,6 +1642,7 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
   } else {
 #ifdef YG_ENABLE_EVENTS
     auto start = steady_clock::now();
+    Event::publish<Event::MeasureCallbackStart>(node);
 #endif
 
     // Measure the text under the current constraints.
@@ -1661,7 +1662,7 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
     auto measureCallbackDuration =
         duration_cast<std::chrono::duration<float, std::milli>>(end - start);
 
-    Event::publish<Event::NodeMeasure>(
+    Event::publish<Event::MeasureCallbackEnd>(
         node,
         {layoutContext,
          innerWidth,
