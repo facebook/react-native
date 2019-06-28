@@ -12,6 +12,7 @@
 
 const React = require('react');
 const Platform = require('../../Utilities/Platform');
+const RootTagContext = require('../../ReactNative/RootTagContext');
 
 const processColor = require('../../StyleSheet/processColor');
 
@@ -255,12 +256,17 @@ class StatusBar extends React.Component<Props> {
    * @param hidden Hide the status bar.
    * @param animation Optional animation when
    *    changing the status bar hidden property.
+   * @param rootTag Optional reactTag of your app's root view (only necessary to support multiple windows on iOS 13+)
    */
-  static setHidden(hidden: boolean, animation?: StatusBarAnimation) {
+  static setHidden(
+    hidden: boolean,
+    animation?: StatusBarAnimation,
+    rootTag?: number,
+  ) {
     animation = animation || 'none';
     StatusBar._defaultProps.hidden.value = hidden;
     if (Platform.OS === 'ios') {
-      StatusBarManager.setHidden(hidden, animation);
+      StatusBarManager.setHidden(hidden, animation, rootTag ?? -1);
     } else if (Platform.OS === 'android') {
       StatusBarManager.setHidden(hidden);
     }
@@ -270,12 +276,17 @@ class StatusBar extends React.Component<Props> {
    * Set the status bar style
    * @param style Status bar style to set
    * @param animated Animate the style change.
+   * @param rootTag Optional reactTag of your app's root view (only necessary to support multiple windows on iOS 13+)
    */
-  static setBarStyle(style: StatusBarStyle, animated?: boolean) {
+  static setBarStyle(
+    style: StatusBarStyle,
+    animated?: boolean,
+    rootTag?: number,
+  ) {
     animated = animated || false;
     StatusBar._defaultProps.barStyle.value = style;
     if (Platform.OS === 'ios') {
-      StatusBarManager.setStyle(style, animated);
+      StatusBarManager.setStyle(style, animated, rootTag ?? -1);
     } else if (Platform.OS === 'android') {
       StatusBarManager.setStyle(style);
     }
@@ -284,6 +295,7 @@ class StatusBar extends React.Component<Props> {
   /**
    * Control the visibility of the network activity indicator
    * @param visible Show the indicator.
+   * @platform ios
    */
   static setNetworkActivityIndicatorVisible(visible: boolean) {
     if (Platform.OS !== 'ios') {
@@ -300,6 +312,7 @@ class StatusBar extends React.Component<Props> {
    * Set the background color for the status bar
    * @param color Background color.
    * @param animated Animate the style change.
+   * @platform android
    */
   static setBackgroundColor(color: string, animated?: boolean) {
     if (Platform.OS !== 'android') {
@@ -314,6 +327,7 @@ class StatusBar extends React.Component<Props> {
   /**
    * Control the translucency of the status bar
    * @param translucent Set as translucent.
+   * @platform android
    */
   static setTranslucent(translucent: boolean) {
     if (Platform.OS !== 'android') {
@@ -329,11 +343,12 @@ class StatusBar extends React.Component<Props> {
    * The return value should be passed to `popStackEntry` when complete.
    *
    * @param props Object containing the StatusBar props to use in the stack entry.
+   * @param rootTag Optional reactTag of your app's root view (only necessary to support multiple windows on iOS 13+)
    */
-  static pushStackEntry(props: any) {
+  static pushStackEntry(props: any, rootTag?: number) {
     const entry = createStackEntry(props);
     StatusBar._propsStack.push(entry);
-    StatusBar._updatePropsStack();
+    StatusBar._updatePropsStack(rootTag);
     return entry;
   }
 
@@ -341,13 +356,14 @@ class StatusBar extends React.Component<Props> {
    * Pop a StatusBar entry from the stack.
    *
    * @param entry Entry returned from `pushStackEntry`.
+   * @param rootTag Optional reactTag of your app's root view (only necessary to support multiple windows on iOS 13+)
    */
-  static popStackEntry(entry: any) {
+  static popStackEntry(entry: any, rootTag?: number) {
     const index = StatusBar._propsStack.indexOf(entry);
     if (index !== -1) {
       StatusBar._propsStack.splice(index, 1);
     }
-    StatusBar._updatePropsStack();
+    StatusBar._updatePropsStack(rootTag);
   }
 
   /**
@@ -355,14 +371,15 @@ class StatusBar extends React.Component<Props> {
    *
    * @param entry Entry returned from `pushStackEntry` to replace.
    * @param props Object containing the StatusBar props to use in the replacement stack entry.
+   * @param rootTag Optional reactTag of your app's root view (only necessary to support multiple windows on iOS 13+)
    */
-  static replaceStackEntry(entry: any, props: any) {
+  static replaceStackEntry(entry: any, props: any, rootTag?: number) {
     const newEntry = createStackEntry(props);
     const index = StatusBar._propsStack.indexOf(entry);
     if (index !== -1) {
       StatusBar._propsStack[index] = newEntry;
     }
-    StatusBar._updatePropsStack();
+    StatusBar._updatePropsStack(rootTag);
     return newEntry;
   }
 
@@ -371,6 +388,8 @@ class StatusBar extends React.Component<Props> {
     showHideTransition: 'fade',
   };
 
+  static contextType = RootTagContext;
+
   _stackEntry = null;
 
   componentDidMount() {
@@ -378,26 +397,27 @@ class StatusBar extends React.Component<Props> {
     // and always update the native status bar with the props from the top of then
     // stack. This allows having multiple StatusBar components and the one that is
     // added last or is deeper in the view hierachy will have priority.
-    this._stackEntry = StatusBar.pushStackEntry(this.props);
+    this._stackEntry = StatusBar.pushStackEntry(this.props, this.context);
   }
 
   componentWillUnmount() {
     // When a StatusBar is unmounted, remove itself from the stack and update
     // the native bar with the next props.
-    StatusBar.popStackEntry(this._stackEntry);
+    StatusBar.popStackEntry(this._stackEntry, this.context);
   }
 
   componentDidUpdate() {
     this._stackEntry = StatusBar.replaceStackEntry(
       this._stackEntry,
       this.props,
+      this.context,
     );
   }
 
   /**
    * Updates the native status bar with the props from the stack.
    */
-  static _updatePropsStack = () => {
+  static _updatePropsStack = (rootTag?: number) => {
     // Send the update to the native module only once at the end of the frame.
     clearImmediate(StatusBar._updateImmediate);
     StatusBar._updateImmediate = setImmediate(() => {
@@ -416,6 +436,7 @@ class StatusBar extends React.Component<Props> {
           StatusBarManager.setStyle(
             mergedProps.barStyle.value,
             mergedProps.barStyle.animated || false,
+            rootTag ?? -1,
           );
         }
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
@@ -424,6 +445,7 @@ class StatusBar extends React.Component<Props> {
             mergedProps.hidden.animated
               ? mergedProps.hidden.transition
               : 'none',
+            rootTag ?? -1,
           );
         }
 

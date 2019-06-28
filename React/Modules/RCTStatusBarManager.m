@@ -10,6 +10,8 @@
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
+#import "RCTUIManager.h"
+#import "RCTBridge.h"
 
 #if !TARGET_OS_TV
 @implementation RCTConvert (UIStatusBar)
@@ -102,38 +104,61 @@ RCT_EXPORT_METHOD(getHeight:(RCTResponseSenderBlock)callback)
 }
 
 RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
-                  animated:(BOOL)animated)
+                  animated:(BOOL)animated
+                  rootTag:(nonnull NSNumber *)rootTag)
 {
   if (RCTViewControllerBasedStatusBarAppearance()) {
     RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
-  } else {
+    return;
+  }
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* __IPHONE_13_0 */
+  if (@available(iOS 13.0, *)) {
+    UIView *rootView = [self.bridge.uiManager viewForReactTag:rootTag];
+    UIWindowScene *windowScene = rootView.window.windowScene;
+
+    if (windowScene) {
+//      windowScene.statusBarManager.statusBarStyle = statusBarStyle
+    } else {
+      RCTLogWarn(@"RCTStatusBarManager setStyle called on a RCTRootView that's not attached to a window scene");
+    }
+
+    return;
+  }
+#endif
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [RCTSharedApplication() setStatusBarStyle:statusBarStyle
-                                     animated:animated];
-  }
+  [RCTSharedApplication() setStatusBarStyle:statusBarStyle
+                                   animated:animated];
 #pragma clang diagnostic pop
 }
 
 RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
-                  withAnimation:(UIStatusBarAnimation)animation)
+                  withAnimation:(UIStatusBarAnimation)animation
+                  rootTag:(nonnull NSNumber *)rootTag)
 {
   if (RCTViewControllerBasedStatusBarAppearance()) {
     RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
-  } else {
+    return;
+  }
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [RCTSharedApplication() setStatusBarHidden:hidden
-                                 withAnimation:animation];
+  [RCTSharedApplication() setStatusBarHidden:hidden
+                               withAnimation:animation];
 #pragma clang diagnostic pop
-  }
+
 }
 
 RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   RCTSharedApplication().networkActivityIndicatorVisible = visible;
+#pragma clang diagnostic pop
 }
 
 #endif //TARGET_OS_TV
