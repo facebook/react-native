@@ -5,12 +5,14 @@
 
 #import "RCTInspectorPackagerConnection.h"
 
-#if RCT_DEV
+#if RCT_DEV && !TARGET_OS_UIKITFORMAC
 
 #import "RCTDefines.h"
 #import "RCTInspector.h"
 #import "RCTLog.h"
+
 #import "RCTSRWebSocket.h"
+
 #import "RCTUtils.h"
 
 // This is a port of the Android impl, at

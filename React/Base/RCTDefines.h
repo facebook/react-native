@@ -55,7 +55,7 @@
 #endif
 
 #ifndef ENABLE_PACKAGER_CONNECTION
-#if RCT_DEV && __has_include(<React/RCTPackagerConnection.h>)
+#if RCT_DEV && __has_include(<React/RCTPackagerConnection.h>) && !TARGET_OS_UIKITFORMAC
 #define ENABLE_PACKAGER_CONNECTION 1
 #else
 #define ENABLE_PACKAGER_CONNECTION 0

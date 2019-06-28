@@ -5,7 +5,7 @@
 
 #import "RCTInspectorDevServerHelper.h"
 
-#if RCT_DEV
+#if RCT_DEV && !TARGET_OS_UIKITFORMAC
 
 #import <UIKit/UIKit.h>
 #import <React/RCTLog.h>

@@ -19,10 +19,12 @@
 #import <React/RCTLog.h>
 #import <React/RCTPackagerClient.h>
 #import <React/RCTReconnectingWebSocket.h>
-#import <React/RCTSRWebSocket.h>
 #import <React/RCTUtils.h>
 
-#if RCT_DEV
+#if RCT_DEV && !TARGET_OS_UIKITFORMAC
+
+#import <React/RCTSRWebSocket.h>
+
 @interface RCTPackagerConnection () <RCTReconnectingWebSocketDelegate>
 @end
 
