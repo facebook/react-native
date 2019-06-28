@@ -128,10 +128,10 @@ function getValidAttributesForEvents(events) {
   });
 }
 
-function generateBubblingEventInfo(event) {
+function generateBubblingEventInfo(event, nameOveride) {
   return j.property(
     'init',
-    j.identifier(normalizeInputEventName(event.name)),
+    j.identifier(nameOveride || normalizeInputEventName(event.name)),
     j.objectExpression([
       j.property(
         'init',
@@ -149,10 +149,10 @@ function generateBubblingEventInfo(event) {
   );
 }
 
-function generateDirectEventInfo(event) {
+function generateDirectEventInfo(event, nameOveride) {
   return j.property(
     'init',
-    j.identifier(normalizeInputEventName(event.name)),
+    j.identifier(nameOveride || normalizeInputEventName(event.name)),
     j.objectExpression([
       j.property(
         'init',
@@ -205,7 +205,18 @@ function buildViewConfig(
 
   const bubblingEventNames = component.events
     .filter(event => event.bubblingType === 'bubble')
-    .map(generateBubblingEventInfo);
+    .reduce((bubblingEvents, event) => {
+      // We add in the deprecated paper name so that it is in the view config.
+      // This means either the old event name or the new event name can fire
+      // and be sent to the listener until the old top level name is removed.
+      if (event.paperTopLevelNameDeprecated) {
+        bubblingEvents.push(
+          generateBubblingEventInfo(event, event.paperTopLevelNameDeprecated),
+        );
+      }
+      bubblingEvents.push(generateBubblingEventInfo(event));
+      return bubblingEvents;
+    }, []);
 
   const bubblingEvents =
     bubblingEventNames.length > 0
@@ -218,7 +229,18 @@ function buildViewConfig(
 
   const directEventNames = component.events
     .filter(event => event.bubblingType === 'direct')
-    .map(generateDirectEventInfo);
+    .reduce((directEvents, event) => {
+      // We add in the deprecated paper name so that it is in the view config.
+      // This means either the old event name or the new event name can fire
+      // and be sent to the listener until the old top level name is removed.
+      if (event.paperTopLevelNameDeprecated) {
+        directEvents.push(
+          generateDirectEventInfo(event, event.paperTopLevelNameDeprecated),
+        );
+      }
+      directEvents.push(generateDirectEventInfo(event));
+      return directEvents;
+    }, []);
 
   const directEvents =
     directEventNames.length > 0

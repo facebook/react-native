@@ -235,6 +235,32 @@ EventsNativeComponentEventEmitter>;
 }
 `;
 
+exports[`GenerateShadowNodeH can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
+Map {
+  "ShadowNodes.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/EVENTS_WITH_PAPER_NAME/Props.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateShadowNodeH can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "ShadowNodes.h" => "
