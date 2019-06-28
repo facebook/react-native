@@ -9,6 +9,9 @@
 
 using namespace facebook;
 
+const std::array<float, 2> kYGDefaultDimensionValues = {
+    {YGUndefined, YGUndefined}};
+
 bool YGLayout::operator==(YGLayout layout) const {
   bool isEqual = YGFloatArrayEqual(position, layout.position) &&
       YGFloatArrayEqual(dimensions, layout.dimensions) &&

@@ -8,8 +8,7 @@
 #include "YGFloatOptional.h"
 #include "Yoga-internal.h"
 
-constexpr std::array<float, 2> kYGDefaultDimensionValues = {
-    {YGUndefined, YGUndefined}};
+extern const std::array<float, 2> kYGDefaultDimensionValues;
 
 struct YGLayout {
   std::array<float, 4> position = {};
