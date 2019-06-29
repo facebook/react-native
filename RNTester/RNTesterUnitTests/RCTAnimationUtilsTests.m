@@ -8,7 +8,11 @@
 
 #import <XCTest/XCTest.h>
 
+#if (defined(COCOAPODS))
+#import <React-RCTAnimation/React/RCTAnimationUtils.h>
+#else
 #import <RCTAnimation/RCTAnimationUtils.h>
+#endif
 
 @interface RCTAnimationUtilsTests : XCTestCase
 
