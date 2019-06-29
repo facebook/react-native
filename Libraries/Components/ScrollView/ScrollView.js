@@ -573,6 +573,10 @@ function createScrollResponder(
   return scrollResponder;
 }
 
+type ContextType = {||} | null;
+const Context = React.createContext<ContextType>(null);
+const standardContext: ContextType = Object.freeze({}); // not null with option value to add more info in the future
+
 /**
  * Component that wraps platform ScrollView while providing
  * integration with touch locking "responder" system.
@@ -609,6 +613,7 @@ function createScrollResponder(
  * supports out of the box.
  */
 class ScrollView extends React.Component<Props, State> {
+  static Context = Context;
   /**
    * Part 1: Removing ScrollResponder.Mixin:
    *
@@ -999,6 +1004,9 @@ class ScrollView extends React.Component<Props, State> {
         }
       });
     }
+    children = (
+      <Context.Provider value={standardContext}>{children}</Context.Provider>
+    );
 
     const hasStickyHeaders =
       Array.isArray(stickyHeaderIndices) && stickyHeaderIndices.length > 0;
