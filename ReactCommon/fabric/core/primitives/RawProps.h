@@ -117,6 +117,12 @@ class RawProps final {
   folly::dynamic dynamic_;
 
   /*
+   * The index of a prop value that was evaluated on the previous iterations of
+   * calling `at()`.
+   */
+  mutable int keyIndexCursor_{0};
+
+  /*
    * Parsed artefacts:
    * To be used by `RawPropParser`.
    */
