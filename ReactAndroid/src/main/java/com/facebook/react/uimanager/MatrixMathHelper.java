@@ -23,6 +23,20 @@ public class MatrixMathHelper {
     double[] skew = new double[3];
     double[] translation = new double[3];
     double[] rotationDegrees = new double[3];
+
+    private static void resetArray(double []arr) {
+      for (int i = 0; i < arr.length; i++) {
+        arr[i] = 0;
+      }
+    }
+
+    public void reset() {
+      MatrixDecompositionContext.resetArray(perspective);
+      MatrixDecompositionContext.resetArray(scale);
+      MatrixDecompositionContext.resetArray(skew);
+      MatrixDecompositionContext.resetArray(translation);
+      MatrixDecompositionContext.resetArray(rotationDegrees);
+    }
   }
 
   private static boolean isZero(double d) {
