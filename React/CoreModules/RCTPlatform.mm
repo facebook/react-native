@@ -9,8 +9,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTUtils.h>
 #import <React/RCTVersion.h>
+
+using namespace facebook::react;
 
 static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
   switch(idiom) {
@@ -27,6 +30,9 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
   }
 }
 
+@interface RCTPlatform () <NativePlatformConstantsIOSSpec>
+@end
+
 @implementation RCTPlatform
 
 RCT_EXPORT_MODULE(PlatformConstants)
@@ -36,11 +42,13 @@ RCT_EXPORT_MODULE(PlatformConstants)
   return YES;
 }
 
+// TODO: Use the generated struct return type.
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
   return [self getConstants];
 }
 
+// TODO: Use the generated struct return type.
 - (NSDictionary<NSString *, id> *)getConstants
 {
   UIDevice *device = [UIDevice currentDevice];
@@ -52,6 +60,11 @@ RCT_EXPORT_MODULE(PlatformConstants)
     @"isTesting": @(RCTRunningInTestEnvironment()),
     @"reactNativeVersion": RCTGetReactNativeVersion(),
   };
+}
+
+- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<JSCallInvoker>)jsInvoker
+{
+  return std::make_shared<NativePlatformConstantsIOSSpecJSI>(self, jsInvoker);
 }
 
 @end
