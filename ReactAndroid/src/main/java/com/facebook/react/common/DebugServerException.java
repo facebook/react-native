@@ -69,7 +69,7 @@ public class DebugServerException extends RuntimeException {
       JSONObject jsonObject = new JSONObject(str);
       String fullFileName = jsonObject.getString("filename");
       return new DebugServerException(
-          jsonObject.getString("description"),
+          jsonObject.getString("message"),
           shortenFileName(fullFileName),
           jsonObject.getInt("lineNumber"),
           jsonObject.getInt("column"));
