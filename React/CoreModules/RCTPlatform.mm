@@ -9,8 +9,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "RCTUtils.h"
-#import "RCTVersion.h"
+#import <React/RCTUtils.h>
+#import <React/RCTVersion.h>
 
 static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
   switch(idiom) {

@@ -1,0 +1,56 @@
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_debug_preprocessor_flags", "get_fbobjc_enable_exception_lang_compiler_flags_DEPRECATED")
+load("//tools/build_defs/oss:rn_defs.bzl", "rn_debug_flags", "rn_apple_library", "subdir_glob")
+
+rn_apple_library(
+    name = "CoreModulesApple",
+    srcs = glob(
+        [
+            "**/*.m",
+            "**/*.mm",
+        ],
+    ),
+    headers = glob(
+        [
+            "**/*.h",
+        ],
+    ),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            (
+                "",
+                "*.h",
+            ),
+        ],
+        prefix = "React",
+    ),
+    compiler_flags = [
+        "-Wno-error=unguarded-availability-new",
+        "-Wno-unknown-warning-option",
+    ],
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    exported_linker_flags = [
+        "-weak_framework",
+        "UserNotifications",
+        "-weak_framework",
+        "WebKit",
+    ],
+    exported_preprocessor_flags = rn_debug_flags(),
+    frameworks = [
+        "Foundation",
+        "UIKit",
+    ],
+    labels = ["depslint_never_add"],
+    lang_compiler_flags = get_fbobjc_enable_exception_lang_compiler_flags_DEPRECATED(),
+    link_whole = True,
+    platform_preprocessor_flags = [(
+        "linux",
+        ["-D PIC_MODIFIER=@PLT"],
+    )],
+    preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_debug_flags(),
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        "fbsource//xplat/js/react-native-github:ReactInternalApple",
+        "fbsource//xplat/js/react-native-github/Libraries/FBReactNativeSpec:FBReactNativeSpecApple",
+    ],
+)

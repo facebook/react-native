@@ -100,6 +100,12 @@ def react_native_dep(path):
 def react_native_xplat_dep(path):
     return "//ReactCommon/" + path
 
+def rn_debug_flags():
+    return []
+
+def rn_feature_flags():
+    return []
+
 # React property preprocessor
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
     if react_native_target(
