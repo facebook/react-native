@@ -32,7 +32,6 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     SoLoader.loadLibrary("turbomodulejsijni");
   }
 
-  private final ReactApplicationContext mReactApplicationContext;
   private final TurboModuleManagerDelegate mTurbomoduleManagerDelegate;
 
   private final Map<String, TurboModule> mTurboModules = new HashMap<>();
@@ -41,9 +40,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   @SuppressWarnings("unused")
   private final HybridData mHybridData;
 
-  public TurboModuleManager(
-      ReactApplicationContext reactApplicationContext, JavaScriptContextHolder jsContext, TurboModuleManagerDelegate tmmDelegate, JSCallInvokerHolder instanceHolder) {
-    mReactApplicationContext = reactApplicationContext;
+  public TurboModuleManager(JavaScriptContextHolder jsContext, TurboModuleManagerDelegate tmmDelegate, JSCallInvokerHolder instanceHolder) {
     mHybridData = initHybrid(jsContext.get(), (JSCallInvokerHolderImpl) instanceHolder, tmmDelegate);
     mTurbomoduleManagerDelegate = tmmDelegate;
   }
