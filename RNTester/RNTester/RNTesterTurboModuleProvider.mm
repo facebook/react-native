@@ -18,6 +18,10 @@
 namespace facebook {
 namespace react {
 
+Class RNTesterTurboModuleClassProvider(const char *name) {
+  return nil;
+}
+
 std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name, std::shared_ptr<JSCallInvoker> jsInvoker) {
   if (name == "SampleTurboCxxModule") {
     return std::make_shared<SampleTurboCxxModule>(jsInvoker);

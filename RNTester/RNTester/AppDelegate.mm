@@ -132,17 +132,22 @@
 
 #ifdef RN_TURBO_MODULE_ENABLED
 
+- (Class)getModuleClassFromName:(const char *)name
+{
+  return facebook::react::RNTesterTurboModuleClassProvider(name);
+}
+
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
 {
-  return RNTesterTurboModuleProvider(name, jsInvoker);
+  return facebook::react::RNTesterTurboModuleProvider(name, jsInvoker);
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                        instance:(id<RCTTurboModule>)instance
                                                       jsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
 {
-  return RNTesterTurboModuleProvider(name, instance, jsInvoker);
+  return facebook::react::RNTesterTurboModuleProvider(name, instance, jsInvoker);
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass

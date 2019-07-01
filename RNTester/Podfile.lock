@@ -1,6 +1,13 @@
 PODS:
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
+  - FBLazyVector (1000.0.0)
+  - FBReactNativeSpec (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - React-Core (= 1000.0.0)
+    - React-turbomodule-core (= 1000.0.0)
+    - React-TypeSafety (= 1000.0.0)
   - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
@@ -11,6 +18,7 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
+  - RCTRequired (1000.0.0)
   - React (1000.0.0):
     - React-Core (= 1000.0.0)
     - React-DevSupport (= 1000.0.0)
@@ -31,6 +39,10 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
     - yoga (= 1000.0.0.React)
+  - React-CoreModules (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly (= 2018.10.22.00)
+    - React-Core (= 1000.0.0)
   - React-cxxreact (1000.0.0):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
@@ -114,15 +126,24 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-turbomodule-core (= 1000.0.0)
+  - React-TypeSafety (1000.0.0):
+    - FBLazyVector (= 1000.0.0)
+    - Folly (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - React-Core (= 1000.0.0)
   - yoga (1000.0.0.React)
 
 DEPENDENCIES:
   - DoubleConversion (from `../third-party-podspecs/DoubleConversion.podspec`)
+  - FBLazyVector (from `../Libraries/FBLazyVector`)
+  - FBReactNativeSpec (from `../Libraries/FBReactNativeSpec`)
   - Folly (from `../third-party-podspecs/Folly.podspec`)
   - glog (from `../third-party-podspecs/glog.podspec`)
+  - RCTRequired (from `../Libraries/RCTRequired`)
   - React (from `../`)
   - React-ART (from `../Libraries/ART`)
   - React-Core (from `../React`)
+  - React-CoreModules (from `../React/CoreModules`)
   - React-cxxreact (from `../ReactCommon/cxxreact`)
   - React-DevSupport (from `../React`)
   - React-jscallinvoker (from `../ReactCommon/jscallinvoker`)
@@ -143,6 +164,7 @@ DEPENDENCIES:
   - React-RCTWebSocket (from `../Libraries/WebSocket`)
   - React-turbomodule-core (from `../ReactCommon/turbomodule/core`)
   - React-turbomodule-samples (from `../ReactCommon/turbomodule/samples`)
+  - React-TypeSafety (from `../Libraries/TypeSafety`)
   - yoga (from `../ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -152,16 +174,24 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   DoubleConversion:
     :podspec: "../third-party-podspecs/DoubleConversion.podspec"
+  FBLazyVector:
+    :path: "../Libraries/FBLazyVector"
+  FBReactNativeSpec:
+    :path: "../Libraries/FBReactNativeSpec"
   Folly:
     :podspec: "../third-party-podspecs/Folly.podspec"
   glog:
     :podspec: "../third-party-podspecs/glog.podspec"
+  RCTRequired:
+    :path: "../Libraries/RCTRequired"
   React:
     :path: "../"
   React-ART:
     :path: "../Libraries/ART"
   React-Core:
     :path: "../React"
+  React-CoreModules:
+    :path: "../React/CoreModules"
   React-cxxreact:
     :path: "../ReactCommon/cxxreact"
   React-DevSupport:
@@ -202,17 +232,23 @@ EXTERNAL SOURCES:
     :path: "../ReactCommon/turbomodule/core"
   React-turbomodule-samples:
     :path: "../ReactCommon/turbomodule/samples"
+  React-TypeSafety:
+    :path: "../Libraries/TypeSafety"
   yoga:
     :path: "../ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
+  FBLazyVector: 34431b7e61740bed29b082ff81500b0ffafaffa0
+  FBReactNativeSpec: 82b0e4bdc0cb0b1b6990b5bbbc85b4b161a6a276
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
+  RCTRequired: 33f3b89d2d82ef01c02b9b4f8146c43762e509d8
   React: 7c652b87c228731c51ab5764de68b6c17e6342be
   React-ART: 28f8815acbbc4816cec14866b59911a83eb780ed
-  React-Core: 85bf24f380e5228013f5f75d7c1b6338a003a2b2
+  React-Core: 26b00da6b066d0d426a558d13c76240038aa7dc5
+  React-CoreModules: 04ea22808b22232b251d462f3309ab1150e3b7dd
   React-cxxreact: 7e670bad16eb78fa889573d931c12bb1003a3598
   React-DevSupport: f34768e3aad3e59ee9800c752a78bc6cb24d0f75
   React-jscallinvoker: a477dfe11b3ebe31ee9575057ebfb57a963db636
@@ -233,6 +269,7 @@ SPEC CHECKSUMS:
   React-RCTWebSocket: cb5317e9a4adc37191660f819fb21d63433584ef
   React-turbomodule-core: 0a6e91fe8e28bbf119fe31132ecb27a4f42ea551
   React-turbomodule-samples: b28927d482d6fcfc3cbe2fd25f304799d2ff9bb7
+  React-TypeSafety: 1de5a1034398108f4ca866b68489734f8dbb4c44
   yoga: 542cb34fe3bca476487e08eb516dd640ea996a65
 
 PODFILE CHECKSUM: bdc86d3bfde60c2637cfa8c4ed81afeaa2aaf6a3
