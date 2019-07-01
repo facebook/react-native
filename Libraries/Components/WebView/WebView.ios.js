@@ -496,7 +496,9 @@ class WebView extends React.Component {
       );
       shouldStart = shouldStart && passesWhitelist;
       if (!passesWhitelist) {
-         Linking.openURL(url).catch(err => this.props.onError && this.props.onError(err));
+        Linking.openURL(url).catch(
+          err => this.props.onError && this.props.onError(err),
+        );
       }
       if (this.props.onShouldStartLoadWithRequest) {
         shouldStart =
