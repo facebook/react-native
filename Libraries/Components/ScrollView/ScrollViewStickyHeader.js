@@ -18,7 +18,7 @@ import type {LayoutEvent} from '../../Types/CoreEventTypes';
 
 const AnimatedView = AnimatedImplementation.createAnimatedComponent(View);
 
-type Props = {
+export type Props = {
   children?: React.Element<any>,
   nextHeaderLayoutY: ?number,
   onLayout: (event: LayoutEvent) => void,
