@@ -1158,9 +1158,16 @@ public class ReactInstanceManager {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_END);
     }
+
+    reactContext.initializeWithInstance(catalystInstance);
+
     if (mJSIModulePackage != null) {
       catalystInstance.addJSIModules(mJSIModulePackage
         .getJSIModules(reactContext, catalystInstance.getJavaScriptContextHolder()));
+
+      if (ReactFeatureFlags.useTurboModules) {
+        catalystInstance.setTurboModuleManager(catalystInstance.getJSIModule(JSIModuleType.TurboModuleManager));
+      }
     }
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
@@ -1172,12 +1179,6 @@ public class ReactInstanceManager {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "runJSBundle");
     catalystInstance.runJSBundle();
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-
-    reactContext.initializeWithInstance(catalystInstance);
-
-    if (ReactFeatureFlags.useTurboModules && mJSIModulePackage != null) {
-      catalystInstance.setTurboModuleManager(catalystInstance.getJSIModule(JSIModuleType.TurboModuleManager));
-    }
 
     return reactContext;
   }
