@@ -102,7 +102,7 @@
     AppState<span class="token punctuation">.</span><span class="token function">removeEventListener</span><span class="token punctuation">(</span><span class="token string">'change'</span><span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_handleAppStateChange<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 
-  <span class="token function-variable function">_handleAppStateChange</span> <span class="token operator">=</span> <span class="token punctuation">(</span>nextAppState<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token function-variable function">_handleAppStateChange</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">nextAppState</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
     <span class="token keyword">if</span> <span class="token punctuation">(</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>appState<span class="token punctuation">.</span><span class="token function">match</span><span class="token punctuation">(</span><span class="token regex">/inactive|background/</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span>
       nextAppState <span class="token operator">===</span> <span class="token string">'active'</span>

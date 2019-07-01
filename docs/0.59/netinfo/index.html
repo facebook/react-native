@@ -78,7 +78,7 @@
 <p><strong>Deprecated.</strong> Use <a href="https://github.com/react-native-community/react-native-netinfo">react-native-community/react-native-netinfo</a> instead.</p>
 </blockquote>
 <p>NetInfo exposes info about online/offline status</p>
-<pre><code class="hljs css language-javascript">NetInfo<span class="token punctuation">.</span><span class="token function">getConnectionInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span>connectionInfo<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+<pre><code class="hljs css language-javascript">NetInfo<span class="token punctuation">.</span><span class="token function">getConnectionInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">connectionInfo</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>
     <span class="token string">'Initial, type: '</span> <span class="token operator">+</span>
       connectionInfo<span class="token punctuation">.</span>type <span class="token operator">+</span>
@@ -86,7 +86,7 @@
       connectionInfo<span class="token punctuation">.</span>effectiveType<span class="token punctuation">,</span>
   <span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token keyword">function</span> <span class="token function">handleFirstConnectivityChange</span><span class="token punctuation">(</span>connectionInfo<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<span class="token keyword">function</span> <span class="token function">handleFirstConnectivityChange</span><span class="token punctuation">(</span><span class="token parameter">connectionInfo</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>
     <span class="token string">'First change, type: '</span> <span class="token operator">+</span>
       connectionInfo<span class="token punctuation">.</span>type <span class="token operator">+</span>

@@ -74,7 +74,7 @@
 <p>If the toolbar has an only child, it will be displayed between the title and actions.</p>
 <p>Although the Toolbar supports remote images for the logo, navigation and action icons, this should only be used in DEV mode where <code>require('./some_icon.png')</code> translates into a packager URL. In release mode you should always use a drawable resource for these icons. Using <code>require('./some_icon.png')</code> will do this automatically for you, so as long as you don't explicitly use e.g. <code>{uri: 'http://...'}</code>, you will be good.</p>
 <p>Example:</p>
-<pre><code class="hljs css language-javascript">render<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<pre><code class="hljs css language-javascript"><span class="token function-variable function">render</span><span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span>
     <span class="token operator">&lt;</span>ToolbarAndroid
       logo<span class="token operator">=</span><span class="token punctuation">{</span><span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./app_logo.png'</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
@@ -83,7 +83,7 @@
       onActionSelected<span class="token operator">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>onActionSelected<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">></span>
   <span class="token punctuation">)</span>
 <span class="token punctuation">}</span><span class="token punctuation">,</span>
-onActionSelected<span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span>position<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<span class="token function-variable function">onActionSelected</span><span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">position</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">if</span> <span class="token punctuation">(</span>position <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// index of 'Settings'</span>
     <span class="token function">showSettings</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>

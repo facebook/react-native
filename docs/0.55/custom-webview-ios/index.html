@@ -139,7 +139,7 @@ RCT_EXPORT_VIEW_PROPERTY(finalUrl, <span class="hljs-built_in">NSString</span>)
   <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       <span class="token operator">&lt;</span>WebView
-        <span class="token punctuation">{</span><span class="token operator">...</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">}</span>
+        <span class="token punctuation">{</span><span class="token operator">...</span>this<span class="token punctuation">.</span>props<span class="token punctuation">}</span>
         nativeConfig<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
           component<span class="token punctuation">:</span> RCTCustomWebView<span class="token punctuation">,</span>
           viewManager<span class="token punctuation">:</span> CustomWebViewManager<span class="token punctuation">,</span>
@@ -169,7 +169,7 @@ RCT_EXPORT_VIEW_PROPERTY(finalUrl, <span class="hljs-built_in">NSString</span>)
     finalUrl<span class="token punctuation">:</span> <span class="token string">'about:blank'</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  <span class="token function-variable function">_onNavigationCompleted</span> <span class="token operator">=</span> <span class="token punctuation">(</span>event<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token function-variable function">_onNavigationCompleted</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
     <span class="token keyword">const</span> <span class="token punctuation">{</span>onNavigationCompleted<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">;</span>
     onNavigationCompleted <span class="token operator">&amp;&amp;</span> <span class="token function">onNavigationCompleted</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
@@ -177,7 +177,7 @@ RCT_EXPORT_VIEW_PROPERTY(finalUrl, <span class="hljs-built_in">NSString</span>)
   <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       <span class="token operator">&lt;</span>WebView
-        <span class="token punctuation">{</span><span class="token operator">...</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">}</span>
+        <span class="token punctuation">{</span><span class="token operator">...</span>this<span class="token punctuation">.</span>props<span class="token punctuation">}</span>
         nativeConfig<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
           component<span class="token punctuation">:</span> RCTCustomWebView<span class="token punctuation">,</span>
           props<span class="token punctuation">:</span> <span class="token punctuation">{</span>

@@ -36,12 +36,12 @@
   <span class="token punctuation">[</span>
     <span class="token punctuation">{</span>
       text<span class="token punctuation">:</span> <span class="token string">'Cancel'</span><span class="token punctuation">,</span>
-      onPress<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Cancel Pressed'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token function-variable function">onPress</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Cancel Pressed'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
       style<span class="token punctuation">:</span> <span class="token string">'cancel'</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
     <span class="token punctuation">{</span>
       text<span class="token punctuation">:</span> <span class="token string">'Install'</span><span class="token punctuation">,</span>
-      onPress<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Install Pressed'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token function-variable function">onPress</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Install Pressed'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
 <span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -53,12 +53,12 @@
   <span class="token punctuation">[</span>
     <span class="token punctuation">{</span>
       text<span class="token punctuation">:</span> <span class="token string">'Cancel'</span><span class="token punctuation">,</span>
-      onPress<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Cancel Pressed'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token function-variable function">onPress</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Cancel Pressed'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
       style<span class="token punctuation">:</span> <span class="token string">'cancel'</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
     <span class="token punctuation">{</span>
       text<span class="token punctuation">:</span> <span class="token string">'OK'</span><span class="token punctuation">,</span>
-      onPress<span class="token punctuation">:</span> <span class="token punctuation">(</span>password<span class="token punctuation">)</span> <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'OK Pressed, password: '</span> <span class="token operator">+</span> password<span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token function-variable function">onPress</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token parameter">password</span><span class="token punctuation">)</span> <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'OK Pressed, password: '</span> <span class="token operator">+</span> password<span class="token punctuation">)</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token string">'secure-text'</span><span class="token punctuation">,</span>
@@ -68,7 +68,7 @@
 <pre><code class="hljs css language-javascript">AlertIOS<span class="token punctuation">.</span><span class="token function">prompt</span><span class="token punctuation">(</span>
   <span class="token string">'Update username'</span><span class="token punctuation">,</span>
   <span class="token keyword">null</span><span class="token punctuation">,</span>
-  <span class="token punctuation">(</span>text<span class="token punctuation">)</span> <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Your username is '</span> <span class="token operator">+</span> text<span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">(</span><span class="token parameter">text</span><span class="token punctuation">)</span> <span class="token operator">=></span> console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Your username is '</span> <span class="token operator">+</span> text<span class="token punctuation">)</span><span class="token punctuation">,</span>
   <span class="token keyword">null</span><span class="token punctuation">,</span>
   <span class="token string">'default'</span><span class="token punctuation">,</span>
 <span class="token punctuation">)</span><span class="token punctuation">;</span>

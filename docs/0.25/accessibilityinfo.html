@@ -26,7 +26,7 @@
       <span class="token string">'change'</span><span class="token punctuation">,</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span>_handleScreenReaderToggled<span class="token punctuation">,</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-    AccessibilityInfo<span class="token punctuation">.</span><span class="token function">fetch</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">done</span><span class="token punctuation">(</span><span class="token punctuation">(</span>isEnabled<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    AccessibilityInfo<span class="token punctuation">.</span><span class="token function">fetch</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">done</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">isEnabled</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
         screenReaderEnabled<span class="token punctuation">:</span> isEnabled<span class="token punctuation">,</span>
       <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -40,7 +40,7 @@
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 
-  <span class="token function-variable function">_handleScreenReaderToggled</span> <span class="token operator">=</span> <span class="token punctuation">(</span>isEnabled<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token function-variable function">_handleScreenReaderToggled</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">isEnabled</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
     <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
       screenReaderEnabled<span class="token punctuation">:</span> isEnabled<span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
