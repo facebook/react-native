@@ -12,8 +12,8 @@
 
 import type {
   Float,
-  BubblingEvent,
-  DirectEvent,
+  BubblingEventHandler,
+  DirectEventHandler,
   WithDefault,
 } from '../../Types/CodegenTypes';
 
@@ -25,7 +25,7 @@ import type {ViewProps} from '../View/ViewPropTypes';
 
 type Event = $ReadOnly<{|
   value: Float,
-  fromUser: boolean,
+  fromUser?: boolean,
 |}>;
 
 type NativeProps = $ReadOnly<{|
@@ -48,11 +48,9 @@ type NativeProps = $ReadOnly<{|
   value: ?WithDefault<Float, 0>,
 
   // Events
-  onChange?: ?(event: BubblingEvent<Event>) => void,
-  onValueChange?: ?(event: BubblingEvent<Event, 'paperValueChange'>) => void,
-  onSlidingComplete?: ?(
-    event: DirectEvent<Event, 'paperSlidingComplete'>,
-  ) => void,
+  onChange?: ?BubblingEventHandler<Event>,
+  onValueChange?: ?BubblingEventHandler<Event, 'paperValueChange'>,
+  onSlidingComplete?: ?DirectEventHandler<Event, 'paperSlidingComplete'>,
 |}>;
 
 export default codegenNativeComponent<NativeProps>('Slider', {

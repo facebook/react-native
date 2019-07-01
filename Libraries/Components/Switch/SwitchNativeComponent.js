@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {BubblingEvent, WithDefault} from '../../Types/CodegenTypes';
+import type {BubblingEventHandler, WithDefault} from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
@@ -36,7 +36,7 @@ type NativeProps = $ReadOnly<{|
   trackColorForTrue?: ?ColorValue,
 
   // Events
-  onChange?: ?(event: BubblingEvent<SwitchChangeEvent>) => mixed,
+  onChange?: ?BubblingEventHandler<SwitchChangeEvent>,
 |}>;
 
 export default codegenNativeComponent<NativeProps>('Switch', {

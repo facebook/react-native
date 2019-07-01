@@ -13,8 +13,8 @@
 import type {
   Int32,
   Float,
-  BubblingEvent,
-  DirectEvent,
+  BubblingEventHandler,
+  DirectEventHandler,
   WithDefault,
 } from '../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
@@ -42,16 +42,21 @@ type NativeProps = $ReadOnly<{|
   disabled?: WithDefault<boolean, false>,
 
   // Events
-  onChange?: ?(event: BubblingEvent<OnChangeEvent>) => void,
-  onEventDirect?: ?(event: DirectEvent<OnEventDirect>) => void,
-  onEventDirectWithPaperName?: ?(
-    event: DirectEvent<OnEventDirect, 'paperDirectName'>,
-  ) => void,
-  onOrientationChange?: ?(event: DirectEvent<OnOrientationChangeEvent>) => void,
-  onEnd?: ?(event: BubblingEvent<null>) => void,
-  onEventBubblingWithPaperName?: ?(
-    event: BubblingEvent<null, 'paperBubblingName'>,
-  ) => void,
+  onChange?: ?BubblingEventHandler<OnChangeEvent, 'paperDirectName'>,
+  onEventDirect?: ?DirectEventHandler<OnEventDirect>,
+  onEventDirectWithPaperName?: ?DirectEventHandler<
+    OnEventDirect,
+    'paperDirectName',
+  >,
+  onOrientationChange?: ?DirectEventHandler<
+    OnOrientationChangeEvent,
+    'paperBubblingName',
+  >,
+  onEnd?: ?BubblingEventHandler<null>,
+  onEventBubblingWithPaperName?: ?BubblingEventHandler<
+    null,
+    'paperBubblingName',
+  >,
 |}>;
 
 export default codegenNativeComponent<NativeProps>('EventPropsNativeComponent');

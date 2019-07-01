@@ -13,8 +13,8 @@
 import codegenNativeComponent from '../Utilities/codegenNativeComponent';
 import type {
   WithDefault,
-  BubblingEvent,
-  DirectEvent,
+  BubblingEventHandler,
+  DirectEventHandler,
   Int32,
 } from '../Types/CodegenTypes';
 
@@ -75,7 +75,7 @@ type NativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onrequestclose
    */
-  onRequestClose?: ?(event?: DirectEvent<null>) => mixed,
+  onRequestClose?: ?DirectEventHandler<null>,
 
   /**
    * The `onShow` prop allows passing a function that will be called once the
@@ -83,7 +83,7 @@ type NativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onshow
    */
-  onShow?: ?(event?: DirectEvent<null>) => mixed,
+  onShow?: ?DirectEventHandler<null>,
 
   /**
    * The `onDismiss` prop allows passing a function that will be called once
@@ -91,7 +91,7 @@ type NativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#ondismiss
    */
-  onDismiss?: ?(event?: BubblingEvent<null>) => mixed,
+  onDismiss?: ?BubblingEventHandler<null>,
 
   /**
    * Deprecated. Use the `animationType` prop instead.
@@ -119,7 +119,7 @@ type NativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onorientationchange
    */
-  onOrientationChange?: ?(event: DirectEvent<OrientationChangeEvent>) => mixed,
+  onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
 
   /**
    * The `identifier` is the unique number for identifying Modal components.

@@ -12,7 +12,7 @@
 
 import type {
   Int32,
-  BubblingEvent,
+  BubblingEventHandler,
   WithDefault,
 } from '../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
@@ -35,7 +35,7 @@ type NativeProps = $ReadOnly<{|
   disabled?: WithDefault<boolean, false>,
 
   // Events
-  onChange?: ?(event: BubblingEvent<OnChangeEvent>) => void,
+  onChange?: ?BubblingEventHandler<OnChangeEvent>,
 |}>;
 
 export default codegenNativeComponent<NativeProps>(

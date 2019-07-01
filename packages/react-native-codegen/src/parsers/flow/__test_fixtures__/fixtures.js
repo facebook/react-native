@@ -78,8 +78,8 @@ const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS = `
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {
-  BubblingEvent,
-  DirectEvent,
+  BubblingEventHandler,
+  DirectEventHandler,
   WithDefault,
 } from 'CodegenTypes';
 
@@ -92,8 +92,8 @@ type ModuleProps = $ReadOnly<{|
   boolean_default_true_optional_both?: ?WithDefault<boolean, true>,
 
   // Events
-  onDirectEventDefinedInlineNull: (event: DirectEvent<null>) => void,
-  onBubblingEventDefinedInlineNull: (event: BubblingEvent<null>) => void,
+  onDirectEventDefinedInlineNull: DirectEventHandler<null>,
+  onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
 |}>;
 
 export default codegenNativeComponent<ModuleProps>('Module', {
@@ -331,8 +331,8 @@ const codegenNativeComponent = require('codegenNativeComponent');
 import type {
   Int32,
   Float,
-  BubblingEvent,
-  DirectEvent,
+  BubblingEventHandler,
+  DirectEventHandler,
 } from 'CodegenTypes';
 
 import type {ViewProps} from 'ViewPropTypes';
@@ -342,226 +342,77 @@ type ModuleProps = $ReadOnly<{|
   // No Props
 
   // Events
-  onDirectEventDefinedInline: (
-    event: DirectEvent<
+  onDirectEventDefinedInline:
+    DirectEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
     >,
-  ) => void,
 
-  onDirectEventDefinedInlineOptionalKey?: (
-    event: DirectEvent<
+  onDirectEventDefinedInlineOptionalKey?:
+    DirectEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
     >,
-  ) => void,
 
-  onDirectEventDefinedInlineOptionalValue: ?(
-    event: DirectEvent<
+  onDirectEventDefinedInlineOptionalValue: ?
+    DirectEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
     >,
-  ) => void,
 
-  onDirectEventDefinedInlineOptionalBoth?: ?(
-    event: DirectEvent<
+  onDirectEventDefinedInlineOptionalBoth?: ?
+    DirectEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
     >,
-  ) => void,
 
-  onDirectEventDefinedInlineWithPaperName?: ?(
-    event: DirectEvent<
+  onDirectEventDefinedInlineWithPaperName?: ?
+    DirectEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
       'paperDirectEventDefinedInlineWithPaperName',
     >,
-  ) => void,
 
-  onBubblingEventDefinedInline: (
-    event: BubblingEvent<
+  onBubblingEventDefinedInline:
+    BubblingEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
     >,
-  ) => void,
 
-  onBubblingEventDefinedInlineOptionalKey?: (
-    event: BubblingEvent<
+  onBubblingEventDefinedInlineOptionalKey?:
+    BubblingEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
     >,
-  ) => void,
 
-  onBubblingEventDefinedInlineOptionalValue: ?(
-    event: BubblingEvent<
+  onBubblingEventDefinedInlineOptionalValue: ?
+    BubblingEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
     >,
-  ) => void,
 
-  onBubblingEventDefinedInlineOptionalBoth?: ?(
-    event: BubblingEvent<
+  onBubblingEventDefinedInlineOptionalBoth?: ?
+    BubblingEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
     >,
-  ) => void,
 
-  onBubblingEventDefinedInlineWithPaperName?: ?(
-    event: BubblingEvent<
+  onBubblingEventDefinedInlineWithPaperName?: ?
+    BubblingEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
+      'paperBubblingEventDefinedInlineWithPaperName'
     >,
-    'paperBubblingEventDefinedInlineWithPaperName',
-  ) => void,
-|}>;
-
-export default codegenNativeComponent<ModuleProps>('Module');
-`;
-
-const EVENTS_DEFINED_IN_FILE_WITH_ALL_TYPES = `
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @format
- * @flow
- */
-
-'use strict';
-
-const codegenNativeComponent = require('codegenNativeComponent');
-
-import type {Float, Int32, BubblingEvent, DirectEvent} from 'CodegenTypes';
-
-import type {ViewProps} from 'ViewPropTypes';
-
-type EventInFile = $ReadOnly<{|
-  ${EVENT_DEFINITION}
-|}>;
-
-type DirectEventInFile = DirectEvent<EventInFile>;
-type BubblingEventInFile = BubblingEvent<EventInFile>;
-
-type DirectEventInFileWithPaperName = DirectEvent<
-  EventInFile,
-  'paperDirectEventInFileWithPaperName',
->;
-type BubblingEventInFileWithPaperName = BubblingEvent<
-  EventInFile,
-  'paperBubblingEventInFileWithPaperName',
->;
-
-type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
-
-  // No props
-
-  // Events
-  // Events defined elsewhere in file
-
-  onDirectEventDefinedInFile: (event: DirectEventInFile) => void,
-  onDirectEventDefinedInFileOptionalKey?: (event: DirectEventInFile) => void,
-  onDirectEventDefinedInFileOptionalValue: ?(event: DirectEventInFile) => void,
-  onDirectEventDefinedInFileOptionalBoth?: ?(event: DirectEventInFile) => void,
-  onDirectEventDefinedInFileWithPaperName?: ?(
-    event: DirectEventInFileWithPaperName,
-  ) => void,
-
-  onBubblingEventDefinedInFile: (event: BubblingEventInFile) => void,
-  onBubblingEventDefinedInFileOptionalKey?: (
-    event: BubblingEventInFile,
-  ) => void,
-  onBubblingEventDefinedInFileOptionalValue: ?(
-    event: BubblingEventInFile,
-  ) => void,
-  onBubblingEventDefinedInFileOptionalBoth?: ?(
-    event: BubblingEventInFile,
-  ) => void,
-  onBubblingEventDefinedInFileWithPaperName?: ?(
-    event: BubblingEventInFileWithPaperName,
-  ) => void,
-|}>;
-
-export default codegenNativeComponent<ModuleProps>('Module');
-`;
-
-const EVENTS_DEFINED_AS_NULL_IN_FILE = `
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @format
- * @flow
- */
-
-'use strict';
-
-import type {BubblingEvent, DirectEvent} from 'CodegenTypes';
-import type {ViewProps} from 'ViewPropTypes';
-
-const codegenNativeComponent = require('codegenNativeComponent');
-
-type DirectEventDefinedInFileNull = DirectEvent<null>;
-type BubblingEventDefinedInFileNull = BubblingEvent<null>;
-
-type DirectEventDefinedInFileNullWithPaperName = DirectEvent<
-  null,
-  'paperDirectEventDefinedInFileNullWithPaperName',
->;
-type BubblingEventDefinedInFileNullWithPaperName = DirectEvent<
-  null,
-  'paperBubblingEventDefinedInFileNullWithPaperName',
->;
-
-type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
-
-  // No props
-
-  // Events defined elsewhere in file
-  onDirectEventDefinedInFileNull: (event: DirectEventDefinedInFileNull) => void,
-  onDirectEventDefinedInFileNullOptionalKey?: (
-    event: DirectEventDefinedInFileNull,
-  ) => void,
-  onDirectEventDefinedInFileNullOptionalValue: ?(
-    event: DirectEventDefinedInFileNull,
-  ) => void,
-  onDirectEventDefinedInFileNullOptionalBoth?: ?(
-    event: DirectEventDefinedInFileNull,
-  ) => void,
-  onDirectEventDefinedInFileNullWithPaperName?: ?(
-    event: DirectEventDefinedInFileNullWithPaperName,
-  ) => void,
-
-  onBubblingEventDefinedInFileNull: (
-    event: BubblingEventDefinedInFileNull,
-  ) => void,
-  onBubblingEventDefinedInFileNullOptionalKey?: (
-    event: BubblingEventDefinedInFileNull,
-  ) => void,
-  onBubblingEventDefinedInFileNullOptionalValue: ?(
-    event: BubblingEventDefinedInFileNull,
-  ) => void,
-  onBubblingEventDefinedInFileNullOptionalBoth?: ?(
-    event: BubblingEventDefinedInFileNull,
-  ) => void,
-  onBubblingEventDefinedInFileNullOptionalBoth?: ?(
-    event: BubblingEventDefinedInFileNullWithPaperName,
-  ) => void,
 |}>;
 
 export default codegenNativeComponent<ModuleProps>('Module');
@@ -581,7 +432,13 @@ const EVENTS_DEFINED_AS_NULL_INLINE = `
 
 'use strict';
 
-import type {BubblingEvent, DirectEvent} from 'CodegenTypes';
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {
+  BubblingEventHandler,
+  DirectEventHandler,
+} from 'CodegenTypese';
+
 import type {ViewProps} from 'ViewPropTypes';
 
 const codegenNativeComponent = require('codegenNativeComponent');
@@ -592,36 +449,25 @@ type ModuleProps = $ReadOnly<{|
   // No props
 
   // Events defined inline
-  onDirectEventDefinedInlineNull: (event: DirectEvent<null>) => void,
-  onDirectEventDefinedInlineNullOptionalKey?: (
-    event: DirectEvent<null>,
-  ) => void,
-  onDirectEventDefinedInlineNullOptionalValue: ?(
-    event: DirectEvent<null>,
-  ) => void,
-  onDirectEventDefinedInlineNullOptionalBoth?: ?(
-    event: DirectEvent<null>,
-  ) => void,
-  onDirectEventDefinedInlineNullWithPaperName?: ?(
-    event: DirectEvent<null, 'paperDirectEventDefinedInlineNullWithPaperName'>,
-  ) => void,
+  onDirectEventDefinedInlineNull:DirectEventHandler<null>,
+  onDirectEventDefinedInlineNullOptionalKey?: DirectEventHandler<null>,
+  onDirectEventDefinedInlineNullOptionalValue: ?DirectEventHandler<null>,
+  onDirectEventDefinedInlineNullOptionalBoth?: DirectEventHandler<null>,
+  onDirectEventDefinedInlineNullWithPaperName?: ?
+    DirectEventHandler<
+      null,
+      'paperDirectEventDefinedInlineNullWithPaperName',
+    >,
 
-  onBubblingEventDefinedInlineNull: (event: BubblingEvent<null>) => void,
-  onBubblingEventDefinedInlineNullOptionalKey?: (
-    event: BubblingEvent<null>,
-  ) => void,
-  onBubblingEventDefinedInlineNullOptionalValue: ?(
-    event: BubblingEvent<null>,
-  ) => void,
-  onBubblingEventDefinedInlineNullOptionalBoth?: ?(
-    event: BubblingEvent<null>,
-  ) => void,
-  onBubblingEventDefinedInlineNullWithPaperName?: ?(
-    event: BubblingEvent<
+  onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
+  onBubblingEventDefinedInlineNullOptionalKey?: BubblingEventHandler<null>,
+  onBubblingEventDefinedInlineNullOptionalValue: ?BubblingEventHandler<null>,
+  onBubblingEventDefinedInlineNullOptionalBoth?: ?BubblingEventHandler<null>,
+  onBubblingEventDefinedInlineNullWithPaperName?: ?
+    BubblingEventHandler<
       null,
       'paperBubblingEventDefinedInlineNullWithPaperName',
     >,
-  ) => void,
 |}>;
 
 export default codegenNativeComponent<ModuleProps>('Module');
@@ -640,7 +486,11 @@ const PROPS_AND_EVENTS_TYPES_EXPORTED = `
 
 'use strict';
 
-import type {BubblingEvent, DirectEvent} from 'CodegenTypes';
+import type {
+  BubblingEventHandler,
+  DirectEventHandler,
+} from 'CodegenTypes';
+
 import type {ViewProps} from 'ViewPropTypes';
 
 const codegenNativeComponent = require('codegenNativeComponent');
@@ -655,21 +505,10 @@ export type ModuleProps = $ReadOnly<{|
   // No props
 
   // Events defined inline
-  onBubblingEventDefinedInline: (event: BubblingEvent<EventInFile>) => void,
-  onBubblingEventDefinedInlineWithPaperName: (
-    event: BubblingEvent<
-      EventInFile,
-      'paperBubblingEventDefinedInlineWithPaperName',
-    >,
-  ) => void,
-
-  onDirectEventDefinedInline: (event: DirectEvent<EventInFile>) => void,
-  onDirectEventDefinedInlineWithPaperName: (
-    event: DirectEvent<
-      EventInFile,
-      'paperDirectEventDefinedInlineWithPaperName',
-    >,
-  ) => void,
+  onBubblingEventDefinedInline: BubblingEventHandler<EventInFile>,
+  onBubblingEventDefinedInlineWithPaperName: BubblingEventHandler<EventInFile, 'paperBubblingEventDefinedInlineWithPaperName'>,
+  onDirectEventDefinedInline: DirectEventHandler<EventInFile>,
+  onDirectEventDefinedInlineWithPaperName: DirectEventHandler<EventInFile, 'paperDirectEventDefinedInlineWithPaperName'>,
 |}>;
 
 export default codegenNativeComponent<ModuleProps>('Module');
@@ -693,8 +532,8 @@ const codegenNativeCommands = require('codegenNativeCommands');
 
 import type {
   Int32,
-  BubblingEvent,
-  DirectEvent,
+  BubblingEventHandler,
+  DirectEventHandler,
 } from 'CodegenTypes';
 
 import type {ViewProps} from 'ViewPropTypes';
@@ -720,8 +559,6 @@ module.exports = {
   ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS,
   NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION,
   EVENTS_DEFINED_INLINE_WITH_ALL_TYPES,
-  EVENTS_DEFINED_IN_FILE_WITH_ALL_TYPES,
-  EVENTS_DEFINED_AS_NULL_IN_FILE,
   EVENTS_DEFINED_AS_NULL_INLINE,
   PROPS_AND_EVENTS_TYPES_EXPORTED,
   COMMANDS_DEFINED_WITH_ALL_TYPES,

@@ -23,8 +23,8 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {
   Int32,
-  BubblingEvent,
-  DirectEvent,
+  BubblingEventHandler,
+  DirectEventHandler,
   WithDefault,
 } from 'CodegenFlowtypes';
 
@@ -42,8 +42,8 @@ type ModuleProps = $ReadOnly<{|
   boolean_default_true_optional_both?: ?WithDefault<boolean, true>,
 
   // Events
-  onDirectEventDefinedInlineNull: (event: DirectEvent<null>) => void,
-  onBubblingEventDefinedInlineNull: (event: BubblingEvent<null>) => void,
+  onDirectEventDefinedInlineNull: DirectEventHandler<null>,
+  onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
 |}>;
 
 export const Commands = codegenNativeCommands<NativeCommands>();

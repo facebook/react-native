@@ -12,7 +12,11 @@
 
 import {requireNativeComponent} from 'react-native';
 
-import type {DirectEvent, Int32, WithDefault} from '../../Types/CodegenTypes';
+import type {
+  DirectEventHandler,
+  Int32,
+  WithDefault,
+} from '../../Types/CodegenTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {NativeComponent} from '../../Renderer/shims/ReactNative';
@@ -39,7 +43,7 @@ type NativeProps = $ReadOnly<{|
   selected: WithDefault<Int32, 0>,
 
   // Events
-  onSelect?: (event: DirectEvent<PickerItemSelectEvent>) => void,
+  onSelect?: DirectEventHandler<PickerItemSelectEvent>,
 |}>;
 
 type ReactPicker = Class<NativeComponent<NativeProps>>;

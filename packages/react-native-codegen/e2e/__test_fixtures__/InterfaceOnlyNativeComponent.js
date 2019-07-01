@@ -11,7 +11,7 @@
 'use strict';
 
 import type {
-  BubblingEvent,
+  BubblingEventHandler,
   WithDefault,
 } from '../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
@@ -24,7 +24,7 @@ type NativeProps = $ReadOnly<{|
   accessibilityHint?: WithDefault<string, ''>,
 
   // Events
-  onChange?: ?(event: BubblingEvent<$ReadOnly<{|value: boolean|}>>) => void,
+  onChange?: ?BubblingEventHandler<$ReadOnly<{|value: boolean|}>>,
 |}>;
 
 export default codegenNativeComponent<NativeProps>(

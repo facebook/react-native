@@ -15,6 +15,7 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import type {OnChangeEvent} from './RCTSegmentedControlNativeComponent';
 import type {ViewProps} from '../View/ViewPropTypes';
 import RCTSegmentedControlNativeComponent from './RCTSegmentedControlNativeComponent';
+import type {SyntheticEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 type SegmentedControlIOSProps = $ReadOnly<{|
   ...ViewProps,
@@ -42,7 +43,7 @@ type SegmentedControlIOSProps = $ReadOnly<{|
   /**
    * Callback that is called when the user taps a segment
    */
-  onChange?: ?(event: OnChangeEvent) => mixed,
+  onChange?: ?(event: SyntheticEvent<OnChangeEvent>) => mixed,
   /**
    * Callback that is called when the user taps a segment;
    * passes the segment's value as an argument
@@ -82,7 +83,7 @@ class SegmentedControlIOS extends React.Component<Props> {
     enabled: true,
   };
 
-  _onChange = (event: OnChangeEvent) => {
+  _onChange = (event: SyntheticEvent<OnChangeEvent>) => {
     this.props.onChange && this.props.onChange(event);
     this.props.onValueChange &&
       this.props.onValueChange(event.nativeEvent.value);

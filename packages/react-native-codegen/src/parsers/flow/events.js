@@ -76,8 +76,8 @@ function findEventArgumentsAndType(
       paperTopLevelNameDeprecated: paperName,
       bubblingType,
     };
-  } else if (name === 'BubblingEvent' || name === 'DirectEvent') {
-    const eventType = name === 'BubblingEvent' ? 'bubble' : 'direct';
+  } else if (name === 'BubblingEventHandler' || name === 'DirectEventHandler') {
+    const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
     const paperTopLevelNameDeprecated =
       typeAnnotation.typeParameters.params.length > 1
         ? typeAnnotation.typeParameters.params[1].value
@@ -146,7 +146,11 @@ function buildEventSchema(
       ? property.value.typeAnnotation
       : property.value;
 
-  if (typeAnnotation.type !== 'FunctionTypeAnnotation') {
+  if (
+    typeAnnotation.type !== 'GenericTypeAnnotation' ||
+    (typeAnnotation.id.name !== 'BubblingEventHandler' &&
+      typeAnnotation.id.name !== 'DirectEventHandler')
+  ) {
     return null;
   }
 
@@ -154,7 +158,7 @@ function buildEventSchema(
     argumentProps,
     bubblingType,
     paperTopLevelNameDeprecated,
-  } = findEventArgumentsAndType(typeAnnotation.params[0].typeAnnotation, types);
+  } = findEventArgumentsAndType(typeAnnotation, types);
 
   if (bubblingType && argumentProps) {
     if (paperTopLevelNameDeprecated != null) {

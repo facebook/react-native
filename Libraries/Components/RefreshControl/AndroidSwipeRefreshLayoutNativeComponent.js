@@ -13,7 +13,7 @@
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 
 import type {
-  DirectEvent,
+  DirectEventHandler,
   Float,
   Int32,
   WithDefault,
@@ -56,7 +56,7 @@ type NativeProps = $ReadOnly<{|
   /**
    * Called when the view starts refreshing.
    */
-  onRefresh?: ?(event: DirectEvent<null>) => mixed,
+  onRefresh?: ?DirectEventHandler<null>,
 
   /**
    * Whether the view should be indicating an active refresh.

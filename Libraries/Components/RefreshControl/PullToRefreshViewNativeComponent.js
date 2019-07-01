@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {DirectEvent, WithDefault} from '../../Types/CodegenTypes';
+import type {DirectEventHandler, WithDefault} from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
@@ -35,7 +35,7 @@ type NativeProps = $ReadOnly<{|
   /**
    * Called when the view starts refreshing.
    */
-  onRefresh?: ?(event: DirectEvent<null>) => mixed,
+  onRefresh?: ?DirectEventHandler<null>,
 
   /**
    * Whether the view should be indicating an active refresh.

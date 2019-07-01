@@ -14,14 +14,15 @@ import type {SyntheticEvent} from './CoreEventTypes';
 
 // Event types
 // We're not using the PaperName, it is only used to codegen view config settings
-export type BubblingEvent<
+
+export type BubblingEventHandler<
   T,
   PaperName: string | empty = empty, // eslint-disable-line no-unused-vars
-> = SyntheticEvent<T>;
-export type DirectEvent<
+> = (event: SyntheticEvent<T>) => mixed;
+export type DirectEventHandler<
   T,
   PaperName: string | empty = empty, // eslint-disable-line no-unused-vars
-> = SyntheticEvent<T>;
+> = (event: SyntheticEvent<T>) => mixed;
 
 // Prop types
 export type Float = number;

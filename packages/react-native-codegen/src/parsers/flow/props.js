@@ -194,7 +194,11 @@ function buildPropSchema(property): ?PropTypeShape {
       : property.value;
 
   let type = typeAnnotation.type;
-  if (type === 'FunctionTypeAnnotation') {
+  if (
+    type === 'GenericTypeAnnotation' &&
+    (typeAnnotation.id.name === 'DirectEventHandler' ||
+      typeAnnotation.id.name === 'BubblingEventHandler')
+  ) {
     return null;
   }
 
