@@ -40,7 +40,7 @@ type NativeProps = $ReadOnly<{|
   enabled?: ?WithDefault<boolean, true>,
   items: $ReadOnlyArray<PickerItem>,
   prompt?: ?WithDefault<string, ''>,
-  selected: WithDefault<Int32, 0>,
+  selected: Int32,
 
   // Events
   onSelect?: DirectEventHandler<PickerItemSelectEvent>,

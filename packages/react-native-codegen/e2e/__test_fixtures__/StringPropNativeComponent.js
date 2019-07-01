@@ -19,7 +19,7 @@ type NativeProps = $ReadOnly<{|
 
   // Props
   accessibilityHint?: WithDefault<string, ''>,
-  accessibilityRole?: WithDefault<string, null>,
+  accessibilityRole?: string,
 |}>;
 
 export default codegenNativeComponent<NativeProps>('StringPropNativeComponent');

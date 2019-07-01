@@ -129,29 +129,20 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
         name: 'PointPrimitive',
       };
     case 'Int32':
-      if (defaultValue != null) {
-        return {
-          type: 'Int32TypeAnnotation',
-          default: (defaultValue: number),
-        };
-      }
-      throw new Error(`A default int is required for "${name}"`);
+      return {
+        type: 'Int32TypeAnnotation',
+        default: ((defaultValue ? defaultValue : 0): number),
+      };
     case 'Float':
-      if (defaultValue != null) {
-        return {
-          type: 'FloatTypeAnnotation',
-          default: (defaultValue: number),
-        };
-      }
-      throw new Error(`A default float is required for "${name}"`);
+      return {
+        type: 'FloatTypeAnnotation',
+        default: ((defaultValue ? defaultValue : 0): number),
+      };
     case 'BooleanTypeAnnotation':
-      if (defaultValue != null) {
-        return {
-          type: 'BooleanTypeAnnotation',
-          default: (defaultValue: boolean),
-        };
-      }
-      throw new Error(`A default boolean is required for "${name}"`);
+      return {
+        type: 'BooleanTypeAnnotation',
+        default: ((defaultValue == null ? false : defaultValue): boolean),
+      };
     case 'StringTypeAnnotation':
       if (typeof defaultValue !== 'undefined') {
         return {

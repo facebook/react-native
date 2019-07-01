@@ -61,7 +61,7 @@ type NativeProps = $ReadOnly<{|
   /**
    * Whether the view should be indicating an active refresh.
    */
-  refreshing: WithDefault<boolean, false>,
+  refreshing: boolean,
 |}>;
 
 export default codegenNativeComponent<NativeProps>('AndroidSwipeRefreshLayout');

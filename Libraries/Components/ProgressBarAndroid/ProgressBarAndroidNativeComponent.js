@@ -22,7 +22,7 @@ type NativeProps = $ReadOnly<{|
   //Props
   styleAttr?: string,
   typeAttr?: string,
-  indeterminate: WithDefault<boolean, true>,
+  indeterminate: boolean,
   progress?: WithDefault<Float, 0>,
   animating?: ?WithDefault<boolean, true>,
   color?: ?ColorValue,
