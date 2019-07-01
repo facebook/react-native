@@ -8,12 +8,9 @@
 #include "YGFloatOptional.h"
 #include "Yoga-internal.h"
 
-constexpr std::array<float, 2> kYGDefaultDimensionValues = {
-    {YGUndefined, YGUndefined}};
-
 struct YGLayout {
   std::array<float, 4> position = {};
-  std::array<float, 2> dimensions = kYGDefaultDimensionValues;
+  std::array<float, 2> dimensions = {{YGUndefined, YGUndefined}};
   std::array<float, 4> margin = {};
   std::array<float, 4> border = {};
   std::array<float, 4> padding = {};
@@ -33,7 +30,7 @@ struct YGLayout {
   uint32_t nextCachedMeasurementsIndex = 0;
   std::array<YGCachedMeasurement, YG_MAX_CACHED_RESULT_COUNT>
       cachedMeasurements = {};
-  std::array<float, 2> measuredDimensions = kYGDefaultDimensionValues;
+  std::array<float, 2> measuredDimensions = {{YGUndefined, YGUndefined}};
 
   YGCachedMeasurement cachedLayout = YGCachedMeasurement();
 
