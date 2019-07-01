@@ -36,6 +36,7 @@
     "Libraries",
     "LICENSE",
     "packager",
+    "react-native.config.js",
     "react.gradle",
     "React.podspec",
     "React",
