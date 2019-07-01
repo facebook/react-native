@@ -37,7 +37,7 @@ import type {NativeMethodsMixinType} from '../../Renderer/shims/ReactNativeTypes
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {PointProp} from '../../StyleSheet/PointPropType';
-import type {ScrolViewStickyHeaderProps} from './ScrollViewStickyHeader';
+import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
 
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {State as ScrollResponderState} from '../ScrollResponder';
@@ -354,7 +354,7 @@ type VRProps = $ReadOnly<{|
   scrollBarThumbImage?: ?($ReadOnly<{||}> | number), // Opaque type returned by import IMAGE from './image.jpg'
 |}>;
 
-type StickyHeaderComponentType = React.ComponentType<ScrolViewStickyHeaderProps> & {
+type StickyHeaderComponentType = React.ComponentType<ScrollViewStickyHeaderProps> & {
   setNextHeaderY: number => void,
 };
 

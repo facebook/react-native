@@ -18,7 +18,7 @@ import type {LayoutEvent} from '../../Types/CoreEventTypes';
 
 const AnimatedView = AnimatedImplementation.createAnimatedComponent(View);
 
-export type ScrolViewStickyHeaderProps = {
+export type Props = {
   children?: React.Element<any>,
   nextHeaderLayoutY: ?number,
   onLayout: (event: LayoutEvent) => void,
@@ -37,10 +37,7 @@ type State = {
   nextHeaderLayoutY: ?number,
 };
 
-class ScrollViewStickyHeader extends React.Component<
-  ScrolViewStickyHeaderProps,
-  State,
-> {
+class ScrollViewStickyHeader extends React.Component<Props, State> {
   state = {
     measured: false,
     layoutY: 0,
