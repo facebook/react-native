@@ -316,6 +316,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   private static void setTransformProperty(@Nonnull View view, ReadableArray transforms) {
+    sMatrixDecompositionContext.reset();
     TransformHelper.processTransform(transforms, sTransformDecompositionArray);
     MatrixMathHelper.decomposeMatrix(sTransformDecompositionArray, sMatrixDecompositionContext);
     view.setTranslationX(
