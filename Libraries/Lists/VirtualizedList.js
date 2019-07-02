@@ -96,6 +96,10 @@ type OptionalProps = {
    * `data` prop, stick it here and treat it immutably.
    */
   extraData?: any,
+  /**
+   * `flattenParentProps` will not send this.props in parentProps to CellRenderer
+   */
+  flattenParentProps?: ?boolean,
   getItemLayout?: (
     data: any,
     index: number,
@@ -694,6 +698,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       renderItem,
       extraData,
       debug,
+      ListItemComponent,
+      flattenParentProps,
     } = this.props;
     const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
     const end = getItemCount(data) - 1;
@@ -721,6 +727,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           onUpdateSeparators={this._onUpdateSeparators}
           onLayout={this._onCellLayout}
           onUnmount={this._onCellUnmount}
+          {...flattenParentProps && {
+            flatParentProps: true,
+            getItemLayout,
+            renderItem,
+            ListItemComponent,
+            debug,
+          }}
+          {...!flattenParentProps && {
+            flatParentProps: false,
+            parentProps: this.props,
+          }}
           getItemLayout={getItemLayout}
           renderItem={renderItem}
           extraData={extraData}
@@ -1674,7 +1691,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 }
 
-type CellRendererProps = {
+type CellRendererBaseProps = {
   CellRendererComponent?: ?React.ComponentType<any>,
   ItemSeparatorComponent: ?React.ComponentType<*>,
   cellKey: string,
@@ -1687,12 +1704,27 @@ type CellRendererProps = {
   onUnmount: (cellKey: string) => void,
   onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
   prevCellKey: ?string,
-  getItemLayout?: ?Function,
-  renderItem: renderItemType,
-  ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  debug: ?boolean,
-  prevCellKey: ?string,
 };
+
+type FlattenedParentProps = CellRendererBaseProps & {
+  flatParentProps: true,
+  getItemLayout?: $PropertyType<OptionalProps, 'getItemLayout'>,
+  renderItem?: $PropertyType<OptionalProps, 'renderItem'>,
+  ListItemComponent: $PropertyType<OptionalProps, 'ListItemComponent'>,
+  debug: ?boolean,
+};
+
+type UnFlattenedParentProps = CellRendererBaseProps & {
+  flatParentProps?: false,
+  parentProps: {
+    getItemLayout?: $PropertyType<OptionalProps, 'getItemLayout'>,
+    renderItem?: $PropertyType<OptionalProps, 'renderItem'>,
+    ListItemComponent?: $PropertyType<OptionalProps, 'ListItemComponent'>,
+    debug: ?boolean,
+  },
+};
+
+type CellRendererProps = FlattenedParentProps | UnFlattenedParentProps;
 
 type CellRendererState = {
   separatorProps: $ReadOnly<{|
@@ -1810,16 +1842,30 @@ class CellRenderer extends React.Component<
     const {
       CellRendererComponent,
       ItemSeparatorComponent,
-      ListItemComponent,
       fillRateHelper,
       horizontal,
       item,
       index,
       inversionStyle,
-      renderItem,
-      getItemLayout,
-      debug,
+      flatParentProps,
     } = this.props;
+
+    let ListItemComponent: $PropertyType<OptionalProps, 'ListEmptyComponent'>;
+    let renderItem: $PropertyType<OptionalProps, 'renderItem'>;
+    let debug: $PropertyType<OptionalProps, 'debug'>;
+    let getItemLayout: $PropertyType<OptionalProps, 'getItemLayout'>;
+    if (this.props.flatParentProps === true) {
+      ListItemComponent = this.props.ListItemComponent;
+      renderItem = this.props.renderItem;
+      debug = this.props.debug;
+      getItemLayout = this.props.getItemLayout;
+    } else {
+      const parentProps = this.props.parentProps;
+      ListItemComponent = parentProps.ListItemComponent;
+      renderItem = parentProps.renderItem;
+      debug = parentProps.debug;
+      getItemLayout = parentProps.getItemLayout;
+    }
 
     const element = this._renderElement(
       renderItem,
@@ -1829,9 +1875,6 @@ class CellRenderer extends React.Component<
     );
 
     const onLayout =
-      /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.68 was deployed. To see the error delete this
-       * comment and run Flow. */
       getItemLayout && !debug && !fillRateHelper.enabled()
         ? undefined
         : this._onLayout;
