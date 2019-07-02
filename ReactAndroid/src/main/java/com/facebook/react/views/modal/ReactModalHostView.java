@@ -19,14 +19,19 @@ import android.view.ViewStructure;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
+import androidx.annotation.UiThread;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.JSTouchDispatcher;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.common.ContextUtils;
@@ -287,6 +292,11 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     }
   }
 
+  @UiThread
+  public void updateState(StateWrapper stateWrapper, int width, int height) {
+    mHostView.updateState(stateWrapper, width, height);
+  }
+
   /**
    * Returns the view that will be the root view of the dialog. We are wrapping this in a
    * FrameLayout because this is the system's way of notifying us that the dialog size has changed.
@@ -346,6 +356,8 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     private int viewWidth;
     private int viewHeight;
 
+    private @Nullable StateWrapper mStateWrapper;
+
     private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
 
     public DialogRootViewGroup(Context context) {
@@ -364,19 +376,34 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       if (getChildCount() > 0) {
         hasAdjustedSize = false;
         final int viewTag = getChildAt(0).getId();
-        ReactContext reactContext = getReactContext();
-        reactContext.runOnNativeModulesQueueThread(
-            new GuardedRunnable(reactContext) {
-              @Override
-              public void runGuarded() {
-                (getReactContext())
-                    .getNativeModule(UIManagerModule.class)
-                    .updateNodeSize(viewTag, viewWidth, viewHeight);
-              }
-            });
+        if (mStateWrapper != null) {
+          // This will only be called under Fabric
+          updateState(mStateWrapper, viewWidth, viewHeight);
+        } else {
+          // TODO: T44725185 remove after full migration to Fabric
+          ReactContext reactContext = getReactContext();
+          reactContext.runOnNativeModulesQueueThread(
+              new GuardedRunnable(reactContext) {
+                @Override
+                public void runGuarded() {
+                  (getReactContext())
+                      .getNativeModule(UIManagerModule.class)
+                      .updateNodeSize(viewTag, viewWidth, viewHeight);
+                }
+              });
+        }
       } else {
         hasAdjustedSize = true;
       }
+    }
+
+    @UiThread
+    public void updateState(StateWrapper stateWrapper, int width, int height) {
+      mStateWrapper = stateWrapper;
+      WritableMap map = new WritableNativeMap();
+      map.putDouble("screenWidth", PixelUtil.toDIPFromPixel(width));
+      map.putDouble("screenHeight", PixelUtil.toDIPFromPixel(height));
+      stateWrapper.updateState(map);
     }
 
     @Override

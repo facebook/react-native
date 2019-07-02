@@ -8,12 +8,9 @@ package com.facebook.react.views.modal;
 
 import android.content.DialogInterface;
 import android.graphics.Point;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.LayoutShadowNode;
-import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -106,9 +103,6 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
   @Override
   public void updateState(ReactModalHostView view, StateWrapper stateWrapper) {
     Point modalSize = ModalHostHelper.getModalHostSize(view.getContext());
-    WritableMap map = new WritableNativeMap();
-    map.putDouble("screenWidth", PixelUtil.toDIPFromPixel(modalSize.x));
-    map.putDouble("screenHeight", PixelUtil.toDIPFromPixel(modalSize.y));
-    stateWrapper.updateState(map);
+    view.updateState(stateWrapper, modalSize.x, modalSize.y);
   }
 }
