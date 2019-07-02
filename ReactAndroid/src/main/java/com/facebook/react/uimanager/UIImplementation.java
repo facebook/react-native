@@ -930,6 +930,7 @@ public class UIImplementation {
       boolean frameDidChange = cssNode.dispatchUpdates(
           absoluteX,
           absoluteY,
+          resolveViewManager(cssNode.getViewClass()),
           mOperationsQueue,
           mNativeViewHierarchyOptimizer);
 
