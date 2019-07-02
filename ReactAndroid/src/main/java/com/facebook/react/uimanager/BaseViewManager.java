@@ -22,6 +22,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -66,7 +67,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       new MatrixMathHelper.MatrixDecompositionContext();
   private static double[] sTransformDecompositionArray = new double[16];
 
-  public static final HashMap<String, Integer> sStateDescription = new HashMap<String, Integer>();
+  public static final Map<String, Integer> sStateDescription = new HashMap<>();
 
   static {
     sStateDescription.put("busy", R.string.state_busy_description);
@@ -112,7 +113,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     int integerZIndex = Math.round(zIndex);
     ViewGroupManager.setViewZIndex(view, integerZIndex);
     ViewParent parent = view.getParent();
-    if (parent != null && parent instanceof ReactZIndexedViewGroup) {
+    if (parent instanceof ReactZIndexedViewGroup) {
       ((ReactZIndexedViewGroup) parent).updateDrawingOrder();
     }
   }
@@ -169,9 +170,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         if (sStateDescription.containsKey(state)) {
           shouldUpdateContentDescription = true;
         }
-        if (state.equals("selected")) {
+        if ("selected".equals(state)) {
           view.setSelected(true);
-        } else if (state.equals("disabled")) {
+        } else if ("disabled".equals(state)) {
           view.setEnabled(false);
         }
       }
@@ -213,7 +214,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         (ReadableArray) view.getTag(R.id.accessibility_states);
     final ReadableMap accessibilityState = (ReadableMap) view.getTag(R.id.accessibility_state);
     final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
-    final ArrayList<String> contentDescription = new ArrayList<String>();
+    final List<String> contentDescription = new ArrayList<>();
     if (accessibilityLabel != null) {
       contentDescription.add(accessibilityLabel);
     }

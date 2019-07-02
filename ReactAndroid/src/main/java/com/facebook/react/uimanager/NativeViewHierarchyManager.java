@@ -32,8 +32,6 @@ import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -74,7 +72,7 @@ public class NativeViewHierarchyManager {
   private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
   private final RootViewManager mRootViewManager;
   private final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
-  private final Map<Integer, SparseIntArray> mTagsToPendingIndicesToDelete = new HashMap<>();
+  private final SparseArray<SparseIntArray> mTagsToPendingIndicesToDelete = new SparseArray<>();
   private final int[] mDroppedViewArray = new int[100];
 
   private boolean mLayoutAnimationEnabled;

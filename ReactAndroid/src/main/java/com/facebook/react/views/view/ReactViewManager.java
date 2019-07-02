@@ -10,6 +10,8 @@ import android.annotation.TargetApi;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -30,7 +32,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.yoga.YogaConstants;
 import java.util.Locale;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /** View manager for AndroidViews (plain React Views). */
 @ReactModule(name = ReactViewManager.REACT_CLASS)
@@ -49,6 +50,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   };
   private static final int CMD_HOTSPOT_UPDATE = 1;
   private static final int CMD_SET_PRESSED = 2;
+  private static final String HOTSPOT_UPDATE_KEY = "hotspotUpdate";
 
   @ReactProp(name = "accessible")
   public void setAccessible(ReactViewGroup view, boolean accessible) {
@@ -267,12 +269,12 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   }
 
   @Override
-  public void setOpacity(ReactViewGroup view, float opacity) {
+  public void setOpacity(@NonNull ReactViewGroup view, float opacity) {
     view.setOpacityIfPossible(opacity);
   }
 
   @Override
-  public void setTransform(ReactViewGroup view, ReadableArray matrix) {
+  public void setTransform(@NonNull ReactViewGroup view, @Nullable ReadableArray matrix) {
     super.setTransform(view, matrix);
     view.setBackfaceVisibilityDependantOpacity();
   }
@@ -289,7 +291,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
 
   @Override
   public Map<String, Integer> getCommandsMap() {
-    return MapBuilder.of("hotspotUpdate", CMD_HOTSPOT_UPDATE, "setPressed", CMD_SET_PRESSED);
+    return MapBuilder.of(HOTSPOT_UPDATE_KEY, CMD_HOTSPOT_UPDATE, "setPressed", CMD_SET_PRESSED);
   }
 
   @Override
@@ -311,7 +313,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   @Override
   public void receiveCommand(ReactViewGroup root, String commandId, @Nullable ReadableArray args) {
     switch (commandId) {
-      case "hotspotUpdate":
+      case HOTSPOT_UPDATE_KEY:
         {
           handleHotspotUpdate(root, args);
           break;
