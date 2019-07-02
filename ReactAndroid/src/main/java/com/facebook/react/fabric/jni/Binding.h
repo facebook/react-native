@@ -32,6 +32,8 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
   std::shared_ptr<Scheduler> scheduler_;
   std::mutex schedulerMutex_;
 
+  std::mutex commitMutex_;
+
   float pointScaleFactor_ = 1;
 
  private:
