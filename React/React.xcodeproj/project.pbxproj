@@ -155,7 +155,6 @@
 		1821ACEA21E7D94A00B151F7 /* RCTDynamicColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 1821ACE621E7D86A00B151F7 /* RCTDynamicColor.m */; };
 		18316E1D1EF9EBA9003DADF3 /* RCTBridge+Private.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 14A43DB81C1F849600794BC8 /* RCTBridge+Private.h */; };
 		184808C121658FF200C3C43F /* YGConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE2080020772F7C009A43B3 /* YGConfig.cpp */; };
-		184808C221658FFE00C3C43F /* YGConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE2080020772F7C009A43B3 /* YGConfig.cpp */; };
 		184808C32165902400C3C43F /* JSExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E223624320875A8000108244 /* JSExecutor.cpp */; };
 		184808C42165902500C3C43F /* JSExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E223624320875A8000108244 /* JSExecutor.cpp */; };
 		184808C52165903A00C3C43F /* ReactMarker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13DA8A302097A90B00276ED4 /* ReactMarker.cpp */; };
@@ -6080,7 +6079,6 @@
 				53756E3B2004FFFA00FBBD99 /* Utils.cpp in Sources */,
 				53438962203905BB008E0CB3 /* YGLayout.cpp in Sources */,
 				5376C5E41FC6DDBC0083513D /* YGNodePrint.cpp in Sources */,
-				184808C221658FFE00C3C43F /* YGConfig.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
