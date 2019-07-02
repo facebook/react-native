@@ -23,5 +23,5 @@ public interface OnInterceptTouchEventListener {
    * @return Return true to steal motion event from the children and have the dispatched to this
    *     view, or return false to allow motion event to be delivered to children view
    */
-  public boolean onInterceptTouchEvent(ViewGroup v, MotionEvent event);
+  boolean onInterceptTouchEvent(ViewGroup v, MotionEvent event);
 }

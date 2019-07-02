@@ -20,5 +20,6 @@ public interface ReactHitSlopView {
    *
    * @return A {@link Rect} representing how far to extend the touch area in each direction.
    */
-  public @Nullable Rect getHitSlopRect();
+  @Nullable
+  Rect getHitSlopRect();
 }

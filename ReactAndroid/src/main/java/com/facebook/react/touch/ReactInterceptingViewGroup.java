@@ -6,6 +6,8 @@
  */
 package com.facebook.react.touch;
 
+import android.view.ViewGroup;
+
 /**
  * This interface should be implemented by all {@link ViewGroup} subviews that can be instantiating
  * by {@link NativeViewHierarchyManager}. It is used to configure onInterceptTouch event listener
@@ -25,5 +27,5 @@ public interface ReactInterceptingViewGroup {
    * @param listener A callback that {@link ViewGroup} should delegate calls for {@link
    *     ViewGroup#onInterceptTouchEvent} to
    */
-  public void setOnInterceptTouchEventListener(OnInterceptTouchEventListener listener);
+  void setOnInterceptTouchEventListener(OnInterceptTouchEventListener listener);
 }
