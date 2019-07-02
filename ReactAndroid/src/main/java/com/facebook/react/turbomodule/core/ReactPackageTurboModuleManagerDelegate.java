@@ -34,7 +34,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
 
   @Nullable
   @Override
-  @DoNotStrip
   public TurboModule getModule(String moduleName) {
     TurboModule module = resolveModule(moduleName);
     if (module == null) {
@@ -50,6 +49,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
 
   @Nullable
   @Override
+  @DoNotStrip
   public CxxModuleWrapper getLegacyCxxModule(String moduleName) {
     TurboModule module = resolveModule(moduleName);
     if (module == null) {
