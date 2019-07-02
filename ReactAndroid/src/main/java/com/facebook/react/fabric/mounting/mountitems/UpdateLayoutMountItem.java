@@ -6,6 +6,9 @@
  */
 package com.facebook.react.fabric.mounting.mountitems;
 
+import android.annotation.TargetApi;
+import android.os.Build;
+import android.util.LayoutDirection;
 import com.facebook.react.fabric.mounting.MountingManager;
 
 public class UpdateLayoutMountItem implements MountItem {
@@ -15,13 +18,30 @@ public class UpdateLayoutMountItem implements MountItem {
   private final int mY;
   private final int mWidth;
   private final int mHeight;
+  private final int mLayoutDirection;
 
-  public UpdateLayoutMountItem(int reactTag, int x, int y, int width, int height) {
+  public UpdateLayoutMountItem(
+      int reactTag, int x, int y, int width, int height, int layoutDirection) {
     mReactTag = reactTag;
     mX = x;
     mY = y;
     mWidth = width;
     mHeight = height;
+    mLayoutDirection = convertLayoutDirection(layoutDirection);
+  }
+
+  @TargetApi(Build.VERSION_CODES.KITKAT)
+  private int convertLayoutDirection(int layoutDirection) {
+    switch (layoutDirection) {
+      case 0:
+        return LayoutDirection.INHERIT;
+      case 1:
+        return LayoutDirection.LTR;
+      case 2:
+        return LayoutDirection.RTL;
+      default:
+        throw new IllegalArgumentException("Unsupported layout direction: " + layoutDirection);
+    }
   }
 
   @Override
@@ -45,6 +65,10 @@ public class UpdateLayoutMountItem implements MountItem {
     return mWidth;
   }
 
+  public int getLayoutDirection() {
+    return mLayoutDirection;
+  }
+
   @Override
   public String toString() {
     return "UpdateLayoutMountItem ["
@@ -56,6 +80,8 @@ public class UpdateLayoutMountItem implements MountItem {
         + " - height: "
         + mHeight
         + " - width: "
-        + mWidth;
+        + mWidth
+        + " - layoutDirection: "
+        + +mLayoutDirection;
   }
 }

@@ -265,8 +265,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @DoNotStrip
   @SuppressWarnings("unused")
-  private MountItem updateLayoutMountItem(int reactTag, int x, int y, int width, int height) {
-    return new UpdateLayoutMountItem(reactTag, x, y, width, height);
+  private MountItem updateLayoutMountItem(
+      int reactTag, int x, int y, int width, int height, int layoutDirection) {
+    return new UpdateLayoutMountItem(reactTag, x, y, width, height, layoutDirection);
   }
 
   @DoNotStrip

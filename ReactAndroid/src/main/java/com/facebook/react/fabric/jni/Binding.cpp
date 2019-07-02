@@ -12,6 +12,7 @@
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
 #include <react/components/scrollview/ScrollViewProps.h>
+#include <react/core/conversions.h>
 #include <react/core/EventBeat.h>
 #include <react/core/EventEmitter.h>
 #include <react/debug/SystraceSection.h>
@@ -315,7 +316,7 @@ local_ref<JMountItem::javaobject> createUpdateLayoutMountItem(
       oldChildShadowView.layoutMetrics != newChildShadowView.layoutMetrics) {
     static auto updateLayoutInstruction =
         jni::findClassStatic(UIManagerJavaDescriptor)
-            ->getMethod<alias_ref<JMountItem>(jint, jint, jint, jint, jint)>(
+            ->getMethod<alias_ref<JMountItem>(jint, jint, jint, jint, jint, jint)>(
                 "updateLayoutMountItem");
     auto layoutMetrics = newChildShadowView.layoutMetrics;
     auto pointScaleFactor = layoutMetrics.pointScaleFactor;
@@ -325,8 +326,9 @@ local_ref<JMountItem::javaobject> createUpdateLayoutMountItem(
     int y = round(frame.origin.y * pointScaleFactor);
     int w = round(frame.size.width * pointScaleFactor);
     int h = round(frame.size.height * pointScaleFactor);
+    auto layoutDirection = toInt(newChildShadowView.layoutMetrics.layoutDirection);
     return updateLayoutInstruction(
-        javaUIManager, newChildShadowView.tag, x, y, w, h);
+        javaUIManager, newChildShadowView.tag, x, y, w, h, layoutDirection);
   }
 
   return nullptr;
