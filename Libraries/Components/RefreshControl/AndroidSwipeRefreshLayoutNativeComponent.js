@@ -27,7 +27,7 @@ type NativeProps = $ReadOnly<{|
   /**
    * Whether the pull to refresh functionality is enabled.
    */
-  enabled?: ?WithDefault<boolean, false>,
+  enabled?: WithDefault<boolean, false>,
   /**
    * The colors (at least one) that will be used to draw the refresh indicator.
    */
@@ -45,13 +45,13 @@ type NativeProps = $ReadOnly<{|
    * Also, 1 isn't actually a safe default. We are able to set this here
    * because native code isn't currently consuming the generated artifact.
    * This will end up being
-   * size?: ?WithDefault<'default' | 'large', 'default'>,
+   * size?: WithDefault<'default' | 'large', 'default'>,
    */
-  size?: ?WithDefault<Int32, 1>,
+  size?: WithDefault<Int32, 1>,
   /**
    * Progress view top offset
    */
-  progressViewOffset?: ?WithDefault<Float, 0>,
+  progressViewOffset?: WithDefault<Float, 0>,
 
   /**
    * Called when the view starts refreshing.

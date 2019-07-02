@@ -28,10 +28,10 @@ type NativeProps = $ReadOnly<{|
 
   // Props
   values?: $ReadOnlyArray<string>,
-  selectedIndex?: ?WithDefault<Int32, 0>,
-  enabled?: ?WithDefault<boolean, true>,
+  selectedIndex?: WithDefault<Int32, 0>,
+  enabled?: WithDefault<boolean, true>,
   tintColor?: ?ColorValue,
-  momentary?: ?WithDefault<boolean, false>,
+  momentary?: WithDefault<boolean, false>,
 
   // Events
   onChange?: ?BubblingEventHandler<OnChangeEvent>,

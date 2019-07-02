@@ -17,7 +17,7 @@ import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
-  name?: ?WithDefault<string, ''>,
+  name?: WithDefault<string, ''>,
 |}>;
 
 // NOTE: This compoenent is not implemented in paper

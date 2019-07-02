@@ -89,7 +89,7 @@ type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 
   // Props
-  boolean_default_true_optional_both?: ?WithDefault<boolean, true>,
+  boolean_default_true_optional_both?: WithDefault<boolean, true>,
 
   // Events
   onDirectEventDefinedInlineNull: DirectEventHandler<null>,
@@ -160,48 +160,47 @@ type ModuleProps = $ReadOnly<{|
   // Boolean props
   boolean_required: boolean,
   boolean_optional_key?: WithDefault<boolean, true>,
-  boolean_optional_value: ?WithDefault<boolean, true>,
-  boolean_optional_both?: ?WithDefault<boolean, true>,
+  boolean_optional_value: WithDefault<boolean, true>,
+  boolean_optional_both?: WithDefault<boolean, true>,
 
   // String props
   string_required: string,
   string_optional_key?: WithDefault<string, ''>,
-  string_optional_value: ?WithDefault<string, ''>,
-  string_optional_both?: ?WithDefault<string, ''>,
+  string_optional_value: WithDefault<string, ''>,
+  string_optional_both?: WithDefault<string, ''>,
 
   // String props, null default
   string_null_optional_key?: WithDefault<string, null>,
-  string_null_optional_value: ?WithDefault<string, null>,
-  string_null_optional_both?: ?WithDefault<string, null>,
+  string_null_optional_value: WithDefault<string, null>,
+  string_null_optional_both?: WithDefault<string, null>,
 
   // Stringish props
   stringish_required: Stringish,
   stringish_optional_key?: WithDefault<Stringish, ''>,
-  stringish_optional_value: ?WithDefault<Stringish, ''>,
-  stringish_optional_both?: ?WithDefault<Stringish, ''>,
+  stringish_optional_value: WithDefault<Stringish, ''>,
+  stringish_optional_both?: WithDefault<Stringish, ''>,
 
   // Stringish props, null default
   stringish_null_optional_key?: WithDefault<Stringish, null>,
-  stringish_null_optional_value: ?WithDefault<Stringish, null>,
-  stringish_null_optional_both?: ?WithDefault<Stringish, null>,
+  stringish_null_optional_value: WithDefault<Stringish, null>,
+  stringish_null_optional_both?: WithDefault<Stringish, null>,
 
   // Float props
   float_required: Float,
   float_optional_key?: WithDefault<Float, 1.1>,
-  float_optional_value: ?WithDefault<Float, 1.1>,
-  float_optional_both?: ?WithDefault<Float, 1.1>,
+  float_optional_value: WithDefault<Float, 1.1>,
+  float_optional_both?: WithDefault<Float, 1.1>,
 
   // Int32 props
   int32_required: Int32,
   int32_optional_key?: WithDefault<Int32, 1>,
-  int32_optional_value: ?WithDefault<Int32, 1>,
-  int32_optional_both?: ?WithDefault<Int32, 1>,
+  int32_optional_value: WithDefault<Int32, 1>,
+  int32_optional_both?: WithDefault<Int32, 1>,
 
   // String enum props
-  enum_required: WithDefault<('small' | 'large'), 'small'>,
   enum_optional_key?: WithDefault<('small' | 'large'), 'small'>,
-  enum_optional_value: ?WithDefault<('small' | 'large'), 'small'>,
-  enum_optional_both?: ?WithDefault<('small' | 'large'), 'small'>,
+  enum_optional_value: WithDefault<('small' | 'large'), 'small'>,
+  enum_optional_both?: WithDefault<('small' | 'large'), 'small'>,
 
   // ImageSource props
   image_required: ImageSource,
@@ -284,10 +283,9 @@ type ModuleProps = $ReadOnly<{|
   array_int32_optional_both?: ?$ReadOnlyArray<Int32>,
 
   // String enum props
-  array_enum_required: WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
   array_enum_optional_key?: WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
-  array_enum_optional_value: ?WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
-  array_enum_optional_both?: ?WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
+  array_enum_optional_value: WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
+  array_enum_optional_both?: WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
 
   // ImageSource props
   array_image_required: $ReadOnlyArray<ImageSource>,

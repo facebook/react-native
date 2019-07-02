@@ -36,4 +36,4 @@ type DefaultTypes = number | boolean | string | $ReadOnlyArray<string>;
 //  but that is currently not supported in the codegen since we require a default
 //
 // eslint-disable-next-line no-unused-vars
-export type WithDefault<Type: DefaultTypes, Value: ?Type | string> = Type;
+export type WithDefault<Type: DefaultTypes, Value: ?Type | string> = ?Type;

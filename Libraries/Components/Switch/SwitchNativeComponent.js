@@ -24,8 +24,8 @@ type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
   // Props
-  disabled?: ?WithDefault<boolean, false>,
-  value?: ?WithDefault<boolean, false>,
+  disabled?: WithDefault<boolean, false>,
+  value?: WithDefault<boolean, false>,
   tintColor?: ?ColorValue,
   onTintColor?: ?ColorValue,
   thumbTintColor?: ?ColorValue,

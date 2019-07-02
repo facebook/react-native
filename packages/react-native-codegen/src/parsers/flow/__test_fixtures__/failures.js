@@ -122,9 +122,40 @@ export const Commands = codegenNativeCommands<NativeCommands>();
 
 export default codegenNativeComponent<ModuleProps>('Module');
 `;
+const NULLABLE_WITH_DEFAULT = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {
+  WithDefault,
+  Float,
+} from 'CodegenTypes';
+
+import type {ViewProps} from 'ViewPropTypes';
+
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  nullable_with_default: ?WithDefault<Float, 1.0>,
+|}>;
+
+export default codegenNativeComponent<ModuleProps>('Module');
+`;
 
 module.exports = {
   COMMANDS_DEFINED_INLINE,
   COMMANDS_DEFINED_MULTIPLE_TIMES,
   COMMANDS_DEFINED_WITHOUT_REF,
+  NULLABLE_WITH_DEFAULT,
 };

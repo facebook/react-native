@@ -176,13 +176,26 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
 
 function buildPropSchema(property): ?PropTypeShape {
   const name = property.key.name;
-  const optional =
-    property.value.type === 'NullableTypeAnnotation' || property.optional;
 
+  const {value} = property;
   let typeAnnotation =
-    property.value.type === 'NullableTypeAnnotation'
-      ? property.value.typeAnnotation
-      : property.value;
+    value.type === 'NullableTypeAnnotation' ? value.typeAnnotation : value;
+
+  const optional =
+    value.type === 'NullableTypeAnnotation' ||
+    property.optional ||
+    (value.type === 'GenericTypeAnnotation' &&
+      typeAnnotation.id.name === 'WithDefault');
+
+  if (
+    value.type === 'NullableTypeAnnotation' &&
+    (typeAnnotation.type === 'GenericTypeAnnotation' &&
+      typeAnnotation.id.name === 'WithDefault')
+  ) {
+    throw new Error(
+      'WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it.',
+    );
+  }
 
   let type = typeAnnotation.type;
   if (

@@ -30,7 +30,7 @@ type NativeProps = $ReadOnly<{|
   /**
    * The title displayed under the refresh indicator.
    */
-  title?: ?WithDefault<string, null>,
+  title?: WithDefault<string, null>,
 
   /**
    * Called when the view starts refreshing.

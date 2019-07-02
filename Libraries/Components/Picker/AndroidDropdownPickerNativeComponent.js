@@ -37,9 +37,9 @@ type NativeProps = $ReadOnly<{|
 
   // Props
   color?: ?ColorValue,
-  enabled?: ?WithDefault<boolean, true>,
+  enabled?: WithDefault<boolean, true>,
   items: $ReadOnlyArray<PickerItem>,
-  prompt?: ?WithDefault<string, ''>,
+  prompt?: WithDefault<string, ''>,
   selected: Int32,
 
   // Events

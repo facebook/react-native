@@ -25,14 +25,14 @@ type NativeProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/activityindicator.html#hideswhenstopped
    */
-  hidesWhenStopped?: ?WithDefault<boolean, false>,
+  hidesWhenStopped?: WithDefault<boolean, false>,
 
   /**
    * Whether to show the indicator (true, the default) or hide it (false).
    *
    * See http://facebook.github.io/react-native/docs/activityindicator.html#animating
    */
-  animating?: ?WithDefault<boolean, false>,
+  animating?: WithDefault<boolean, false>,
 
   /**
    * The foreground color of the spinner (default is gray).
@@ -47,7 +47,7 @@ type NativeProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/activityindicator.html#size
    */
-  size?: ?WithDefault<'small' | 'large', 'small'>,
+  size?: WithDefault<'small' | 'large', 'small'>,
 |}>;
 
 export default codegenNativeComponent<NativeProps>('ActivityIndicatorView', {

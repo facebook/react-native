@@ -39,7 +39,7 @@ type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 
   // Props
-  boolean_default_true_optional_both?: ?WithDefault<boolean, true>,
+  boolean_default_true_optional_both?: WithDefault<boolean, true>,
 
   // Events
   onDirectEventDefinedInlineNull: DirectEventHandler<null>,

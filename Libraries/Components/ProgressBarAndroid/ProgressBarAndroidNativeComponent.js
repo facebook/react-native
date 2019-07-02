@@ -24,9 +24,9 @@ type NativeProps = $ReadOnly<{|
   typeAttr?: string,
   indeterminate: boolean,
   progress?: WithDefault<Float, 0>,
-  animating?: ?WithDefault<boolean, true>,
+  animating?: WithDefault<boolean, true>,
   color?: ?ColorValue,
-  testID?: ?WithDefault<string, ''>,
+  testID?: WithDefault<string, ''>,
 |}>;
 
 export default codegenNativeComponent<NativeProps>('AndroidProgressBar');

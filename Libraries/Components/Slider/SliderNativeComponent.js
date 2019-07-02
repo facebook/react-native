@@ -32,20 +32,20 @@ type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
   // Props
-  disabled?: ?WithDefault<boolean, false>,
-  enabled?: ?WithDefault<boolean, false>,
+  disabled?: WithDefault<boolean, false>,
+  enabled?: WithDefault<boolean, false>,
   maximumTrackImage?: ?ImageSource,
   maximumTrackTintColor?: ?ColorValue,
-  maximumValue?: ?WithDefault<Float, 1>,
+  maximumValue?: WithDefault<Float, 1>,
   minimumTrackImage?: ?ImageSource,
   minimumTrackTintColor?: ?ColorValue,
-  minimumValue?: ?WithDefault<Float, 0>,
-  step?: ?WithDefault<Float, 0>,
-  testID?: ?WithDefault<string, ''>,
+  minimumValue?: WithDefault<Float, 0>,
+  step?: WithDefault<Float, 0>,
+  testID?: WithDefault<string, ''>,
   thumbImage?: ?ImageSource,
   thumbTintColor?: ?ColorValue,
   trackImage?: ?ImageSource,
-  value: ?WithDefault<Float, 0>,
+  value: WithDefault<Float, 0>,
 
   // Events
   onChange?: ?BubblingEventHandler<Event>,

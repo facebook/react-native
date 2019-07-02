@@ -6,6 +6,8 @@ exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_MULTIP
 
 exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITHOUT_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.Ref<>"`;
 
+exports[`RN Codegen Flow Parser Fails with error message NULLABLE_WITH_DEFAULT 1`] = `"WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it."`;
+
 exports[`RN Codegen Flow Parser can generate fixture ALL_PROP_TYPES_NO_EVENTS 1`] = `
 Object {
   "modules": Object {
@@ -227,22 +229,6 @@ Object {
               "typeAnnotation": Object {
                 "default": 1,
                 "type": "Int32TypeAnnotation",
-              },
-            },
-            Object {
-              "name": "enum_required",
-              "optional": false,
-              "typeAnnotation": Object {
-                "default": "small",
-                "options": Array [
-                  Object {
-                    "name": "small",
-                  },
-                  Object {
-                    "name": "large",
-                  },
-                ],
-                "type": "StringEnumTypeAnnotation",
               },
             },
             Object {
@@ -604,25 +590,6 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "type": "Int32TypeAnnotation",
-                },
-                "type": "ArrayTypeAnnotation",
-              },
-            },
-            Object {
-              "name": "array_enum_required",
-              "optional": false,
-              "typeAnnotation": Object {
-                "elementType": Object {
-                  "default": "small",
-                  "options": Array [
-                    Object {
-                      "name": "small",
-                    },
-                    Object {
-                      "name": "large",
-                    },
-                  ],
-                  "type": "StringEnumTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
