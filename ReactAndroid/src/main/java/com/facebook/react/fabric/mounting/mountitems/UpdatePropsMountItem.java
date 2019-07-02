@@ -6,8 +6,8 @@
  */
 package com.facebook.react.fabric.mounting.mountitems;
 
-import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.fabric.mounting.MountingManager;
 
 public class UpdatePropsMountItem implements MountItem {
 

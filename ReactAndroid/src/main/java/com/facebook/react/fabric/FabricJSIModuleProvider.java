@@ -41,20 +41,19 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   private final ReactNativeConfig mConfig;
 
   public FabricJSIModuleProvider(
-        ReactApplicationContext reactApplicationContext,
-        JavaScriptContextHolder jsContext,
-        ComponentFactoryDelegate componentFactoryDelegate,
-        ReactNativeConfig config) {
-      mReactApplicationContext = reactApplicationContext;
-      mJSContext = jsContext;
-      mComponentFactoryDelegate = componentFactoryDelegate;
-      mConfig = config;
-    }
+      ReactApplicationContext reactApplicationContext,
+      JavaScriptContextHolder jsContext,
+      ComponentFactoryDelegate componentFactoryDelegate,
+      ReactNativeConfig config) {
+    mReactApplicationContext = reactApplicationContext;
+    mJSContext = jsContext;
+    mComponentFactoryDelegate = componentFactoryDelegate;
+    mConfig = config;
+  }
 
   @Override
   public UIManager get() {
-    final EventBeatManager eventBeatManager =
-        new EventBeatManager(mReactApplicationContext);
+    final EventBeatManager eventBeatManager = new EventBeatManager(mReactApplicationContext);
     final FabricUIManager uiManager = createUIManager(eventBeatManager);
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.registerBinding");
@@ -66,8 +65,13 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
             .getCatalystInstance()
             .getReactQueueConfiguration()
             .getJSQueueThread();
-    binding.register(mJSContext, uiManager, eventBeatManager, jsMessageQueueThread,
-      mComponentFactoryDelegate, mConfig);
+    binding.register(
+        mJSContext,
+        uiManager,
+        eventBeatManager,
+        jsMessageQueueThread,
+        mComponentFactoryDelegate,
+        mConfig);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return uiManager;
   }

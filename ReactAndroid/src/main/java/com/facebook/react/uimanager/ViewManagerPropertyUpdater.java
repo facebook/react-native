@@ -5,17 +5,11 @@
 
 package com.facebook.react.uimanager;
 
+import android.view.View;
+import com.facebook.common.logging.FLog;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import android.view.View;
-
-import com.facebook.common.logging.FLog;
-import com.facebook.react.bridge.Dynamic;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
 public class ViewManagerPropertyUpdater {
   public interface Settable {

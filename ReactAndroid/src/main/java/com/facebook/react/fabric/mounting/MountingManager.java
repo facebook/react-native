@@ -204,7 +204,9 @@ public class MountingManager {
 
     if (isLayoutable) {
       viewManager = mViewManagerRegistry.get(componentName);
-      view = mViewFactory.getOrCreateView(componentName, propsDiffMap, stateWrapper, themedReactContext);
+      view =
+          mViewFactory.getOrCreateView(
+              componentName, propsDiffMap, stateWrapper, themedReactContext);
       view.setId(reactTag);
       if (stateWrapper != null) {
         viewManager.updateState(view, stateWrapper);

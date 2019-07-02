@@ -1,29 +1,26 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.tests;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import android.graphics.Color;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
-
 import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.testing.ReactInstanceSpecForTest;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.JavaScriptModule;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.testing.ReactAppInstrumentationTestCase;
+import com.facebook.react.testing.ReactInstanceSpecForTest;
 import com.facebook.react.views.picker.ReactDialogPickerManager;
 import com.facebook.react.views.picker.ReactDropdownPickerManager;
 import com.facebook.react.views.picker.ReactPicker;
 import com.facebook.react.views.picker.ReactPickerManager;
-import com.facebook.react.testing.ReactAppInstrumentationTestCase;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Integration test for {@link ReactDialogPickerManager} and {@link ReactDropdownPickerManager}
@@ -34,7 +31,9 @@ public class ReactPickerTestCase extends ReactAppInstrumentationTestCase {
 
   private static interface PickerAndroidTestModule extends JavaScriptModule {
     public void selectItem(int position);
+
     public void setMode(String mode);
+
     public void setPrimaryColor(String color);
   }
 
@@ -66,8 +65,7 @@ public class ReactPickerTestCase extends ReactAppInstrumentationTestCase {
   @Override
   protected ReactInstanceSpecForTest createReactInstanceSpecForTest() {
     mRecordingModule = new PickerAndroidRecordingModule();
-    return super.createReactInstanceSpecForTest()
-      .addNativeModule(mRecordingModule);
+    return super.createReactInstanceSpecForTest().addNativeModule(mRecordingModule);
   }
 
   public void testBasicProperties() {
@@ -88,29 +86,22 @@ public class ReactPickerTestCase extends ReactAppInstrumentationTestCase {
     assertEquals(Color.GREEN, ((TextView) adapter.getView(1, null, null)).getCurrentTextColor());
     assertEquals(Color.BLUE, ((TextView) adapter.getView(2, null, null)).getCurrentTextColor());
     assertEquals(
-        Color.RED,
-        ((TextView) adapter.getDropDownView(0, null, null)).getCurrentTextColor());
+        Color.RED, ((TextView) adapter.getDropDownView(0, null, null)).getCurrentTextColor());
     assertEquals(
-        Color.GREEN,
-        ((TextView) adapter.getDropDownView(1, null, null)).getCurrentTextColor());
+        Color.GREEN, ((TextView) adapter.getDropDownView(1, null, null)).getCurrentTextColor());
     assertEquals(
-        Color.BLUE,
-        ((TextView) adapter.getDropDownView(2, null, null)).getCurrentTextColor());
+        Color.BLUE, ((TextView) adapter.getDropDownView(2, null, null)).getCurrentTextColor());
     getTestModule().setPrimaryColor("black");
     waitForBridgeAndUIIdle();
     assertEquals(Color.BLACK, ((TextView) adapter.getView(0, null, null)).getCurrentTextColor());
     assertEquals(Color.BLACK, ((TextView) adapter.getView(1, null, null)).getCurrentTextColor());
     assertEquals(Color.BLACK, ((TextView) adapter.getView(2, null, null)).getCurrentTextColor());
     assertEquals(
-        Color.RED,
-        ((TextView) adapter.getDropDownView(0, null, null)).getCurrentTextColor());
+        Color.RED, ((TextView) adapter.getDropDownView(0, null, null)).getCurrentTextColor());
     assertEquals(
-        Color.GREEN,
-        ((TextView) adapter.getDropDownView(1, null, null)).getCurrentTextColor());
+        Color.GREEN, ((TextView) adapter.getDropDownView(1, null, null)).getCurrentTextColor());
     assertEquals(
-        Color.BLUE,
-        ((TextView) adapter.getDropDownView(2, null, null)).getCurrentTextColor());
-
+        Color.BLUE, ((TextView) adapter.getDropDownView(2, null, null)).getCurrentTextColor());
   }
 
   public void testDropdownPicker() {
@@ -176,9 +167,8 @@ public class ReactPickerTestCase extends ReactAppInstrumentationTestCase {
     updateFirstSpinnerAndCheckLastSpinnerMatches(2);
   }
 
-  private void updateFirstSpinnerAndCheckLastSpinnerMatches(
-    final int indexToSelect
-  ) throws Throwable {
+  private void updateFirstSpinnerAndCheckLastSpinnerMatches(final int indexToSelect)
+      throws Throwable {
     // The last spinner has the same selected value as the first one.
     // Test that user selection is propagated correctly to JS, to setState, and to Spinners.
     runTestOnUiThread(
@@ -194,13 +184,12 @@ public class ReactPickerTestCase extends ReactAppInstrumentationTestCase {
 
     ReactPicker spinnerInSync = getViewAtPath(0, 3);
     assertEquals(
-      "Picker selection was not updated correctly via setState.",
-      indexToSelect,
-      spinnerInSync.getSelectedItemPosition());
+        "Picker selection was not updated correctly via setState.",
+        indexToSelect,
+        spinnerInSync.getSelectedItemPosition());
   }
 
   private PickerAndroidTestModule getTestModule() {
     return getReactContext().getCatalystInstance().getJSModule(PickerAndroidTestModule.class);
   }
-
 }

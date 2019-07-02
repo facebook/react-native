@@ -1,16 +1,15 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.drawer;
 
 import android.os.Build;
-import androidx.drawerlayout.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.View;
+import androidx.drawerlayout.widget.DrawerLayout;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -33,9 +32,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import javax.annotation.Nullable;
 
-/**
- * View Manager for {@link ReactDrawerLayout} components.
- */
+/** View Manager for {@link ReactDrawerLayout} components. */
 @ReactModule(name = ReactDrawerLayoutManager.REACT_CLASS)
 public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout> {
 
@@ -53,8 +50,7 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
   protected void addEventEmitters(ThemedReactContext reactContext, ReactDrawerLayout view) {
     view.setDrawerListener(
         new DrawerEventEmitter(
-            view,
-            reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()));
+            view, reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()));
   }
 
   @Override
@@ -72,7 +68,8 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
       if (Gravity.START == drawerPositionNum || Gravity.END == drawerPositionNum) {
         view.setDrawerPosition(drawerPositionNum);
       } else {
-        throw new JSApplicationIllegalArgumentException("Unknown drawerPosition " + drawerPositionNum);
+        throw new JSApplicationIllegalArgumentException(
+            "Unknown drawerPosition " + drawerPositionNum);
       }
     } else if (drawerPosition.getType() == ReadableType.String) {
       final String drawerPositionStr = drawerPosition.asString();
@@ -82,7 +79,8 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
       } else if (drawerPositionStr.equals("right")) {
         view.setDrawerPosition(Gravity.END);
       } else {
-        throw new JSApplicationIllegalArgumentException("drawerPosition must be 'left' or 'right', received" + drawerPositionStr);
+        throw new JSApplicationIllegalArgumentException(
+            "drawerPosition must be 'left' or 'right', received" + drawerPositionStr);
       }
     } else {
       throw new JSApplicationIllegalArgumentException("drawerPosition must be a string or int");
@@ -91,8 +89,10 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
 
   @ReactProp(name = "drawerWidth", defaultFloat = Float.NaN)
   public void getDrawerWidth(ReactDrawerLayout view, float width) {
-    int widthInPx = Float.isNaN(width) ?
-        ReactDrawerLayout.DEFAULT_DRAWER_WIDTH : Math.round(PixelUtil.toPixelFromDIP(width));
+    int widthInPx =
+        Float.isNaN(width)
+            ? ReactDrawerLayout.DEFAULT_DRAWER_WIDTH
+            : Math.round(PixelUtil.toPixelFromDIP(width));
     view.setDrawerWidth(widthInPx);
   }
 
@@ -139,10 +139,7 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
   }
 
   @Override
-  public void receiveCommand(
-      ReactDrawerLayout root,
-      int commandId,
-      @Nullable ReadableArray args) {
+  public void receiveCommand(ReactDrawerLayout root, int commandId, @Nullable ReadableArray args) {
     switch (commandId) {
       case OPEN_DRAWER:
         root.openDrawer();
@@ -155,9 +152,7 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
 
   @Override
   public void receiveCommand(
-      ReactDrawerLayout root,
-      String commandId,
-      @Nullable ReadableArray args) {
+      ReactDrawerLayout root, String commandId, @Nullable ReadableArray args) {
     switch (commandId) {
       case "openDrawer":
         root.openDrawer();
@@ -171,8 +166,7 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
   @Override
   public @Nullable Map getExportedViewConstants() {
     return MapBuilder.of(
-        "DrawerPosition",
-        MapBuilder.of("Left", Gravity.START, "Right", Gravity.END));
+        "DrawerPosition", MapBuilder.of("Left", Gravity.START, "Right", Gravity.END));
   }
 
   @Override
@@ -181,20 +175,19 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
         DrawerSlideEvent.EVENT_NAME, MapBuilder.of("registrationName", "onDrawerSlide"),
         DrawerOpenedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onDrawerOpen"),
         DrawerClosedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onDrawerClose"),
-        DrawerStateChangedEvent.EVENT_NAME, MapBuilder.of(
-            "registrationName", "onDrawerStateChanged"));
+        DrawerStateChangedEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onDrawerStateChanged"));
   }
 
   /**
-   * This method is overridden because of two reasons:
-   * 1. A drawer must have exactly two children
-   * 2. The second child that is added, is the navigationView, which gets panned from the side.
+   * This method is overridden because of two reasons: 1. A drawer must have exactly two children 2.
+   * The second child that is added, is the navigationView, which gets panned from the side.
    */
   @Override
   public void addView(ReactDrawerLayout parent, View child, int index) {
     if (getChildCount(parent) >= 2) {
-      throw new
-          JSApplicationIllegalArgumentException("The Drawer cannot have more than two children");
+      throw new JSApplicationIllegalArgumentException(
+          "The Drawer cannot have more than two children");
     }
     if (index != 0 && index != 1) {
       throw new JSApplicationIllegalArgumentException(
@@ -216,26 +209,22 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
 
     @Override
     public void onDrawerSlide(View view, float v) {
-      mEventDispatcher.dispatchEvent(
-          new DrawerSlideEvent(mDrawerLayout.getId(), v));
+      mEventDispatcher.dispatchEvent(new DrawerSlideEvent(mDrawerLayout.getId(), v));
     }
 
     @Override
     public void onDrawerOpened(View view) {
-      mEventDispatcher.dispatchEvent(
-        new DrawerOpenedEvent(mDrawerLayout.getId()));
+      mEventDispatcher.dispatchEvent(new DrawerOpenedEvent(mDrawerLayout.getId()));
     }
 
     @Override
     public void onDrawerClosed(View view) {
-      mEventDispatcher.dispatchEvent(
-          new DrawerClosedEvent(mDrawerLayout.getId()));
+      mEventDispatcher.dispatchEvent(new DrawerClosedEvent(mDrawerLayout.getId()));
     }
 
     @Override
     public void onDrawerStateChanged(int i) {
-      mEventDispatcher.dispatchEvent(
-          new DrawerStateChangedEvent(mDrawerLayout.getId(), i));
+      mEventDispatcher.dispatchEvent(new DrawerStateChangedEvent(mDrawerLayout.getId(), i));
     }
   }
 }

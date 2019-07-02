@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.websocket;
 
 import com.facebook.common.logging.FLog;
@@ -40,7 +39,8 @@ import okio.ByteString;
 
 @ReactModule(name = WebSocketModule.NAME, hasConstants = false)
 public final class WebSocketModule extends ReactContextBaseJavaModule {
-  public static final String NAME="WebSocketModule";
+  public static final String NAME = "WebSocketModule";
+
   public interface ContentHandler {
     void onMessage(String text, WritableMap params);
 
@@ -61,8 +61,8 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
 
   private void sendEvent(String eventName, WritableMap params) {
     mReactContext
-      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-      .emit(eventName, params);
+        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+        .emit(eventName, params);
   }
 
   @Override
@@ -80,15 +80,16 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void connect(
-    final String url,
-    @Nullable final ReadableArray protocols,
-    @Nullable final ReadableMap options,
-    final int id) {
-    OkHttpClient client = new OkHttpClient.Builder()
-      .connectTimeout(10, TimeUnit.SECONDS)
-      .writeTimeout(10, TimeUnit.SECONDS)
-      .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
-      .build();
+      final String url,
+      @Nullable final ReadableArray protocols,
+      @Nullable final ReadableMap options,
+      final int id) {
+    OkHttpClient client =
+        new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
+            .build();
 
     Request.Builder builder = new Request.Builder().tag(id).url(url);
 
@@ -97,7 +98,9 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
       builder.addHeader("Cookie", cookie);
     }
 
-    if (options != null && options.hasKey("headers") && options.getType("headers").equals(ReadableType.Map)) {
+    if (options != null
+        && options.hasKey("headers")
+        && options.getType("headers").equals(ReadableType.Map)) {
 
       ReadableMap headers = options.getMap("headers");
       ReadableMapKeySetIterator iterator = headers.keySetIterator();
@@ -111,9 +114,7 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
         if (ReadableType.String.equals(headers.getType(key))) {
           builder.addHeader(key, headers.getString(key));
         } else {
-          FLog.w(
-            ReactConstants.TAG,
-            "Ignoring: requested " + key + ", value not a string");
+          FLog.w(ReactConstants.TAG, "Ignoring: requested " + key + ", value not a string");
         }
       }
     } else {
@@ -218,10 +219,7 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
       mWebSocketConnections.remove(id);
       mContentHandlers.remove(id);
     } catch (Exception e) {
-      FLog.e(
-        ReactConstants.TAG,
-        "Could not close WebSocket connection for id " + id,
-        e);
+      FLog.e(ReactConstants.TAG, "Could not close WebSocket connection for id " + id, e);
     }
   }
 
@@ -359,11 +357,8 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
       }
 
       if (requestURI.getPort() != -1) {
-        defaultOrigin = String.format(
-          "%s://%s:%s",
-          scheme,
-          requestURI.getHost(),
-          requestURI.getPort());
+        defaultOrigin =
+            String.format("%s://%s:%s", scheme, requestURI.getHost(), requestURI.getPort());
       } else {
         defaultOrigin = String.format("%s://%s", scheme, requestURI.getHost());
       }

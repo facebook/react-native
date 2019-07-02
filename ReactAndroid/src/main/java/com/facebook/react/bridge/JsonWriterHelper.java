@@ -1,19 +1,16 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Helper for generating JSON for lists and maps.
- */
+/** Helper for generating JSON for lists and maps. */
 class JsonWriterHelper {
   public static void value(JsonWriter writer, Object value) throws IOException {
     if (value instanceof Map) {

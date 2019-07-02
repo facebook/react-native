@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.devsupport;
 
 import android.annotation.SuppressLint;
@@ -22,9 +21,8 @@ import com.facebook.react.packagerconnection.PackagerConnectionSettings;
  * this class implements an external interface {@link DeveloperSettings}.
  */
 @VisibleForTesting
-public class DevInternalSettings implements
-    DeveloperSettings,
-    SharedPreferences.OnSharedPreferenceChangeListener {
+public class DevInternalSettings
+    implements DeveloperSettings, SharedPreferences.OnSharedPreferenceChangeListener {
 
   private static final String PREFS_FPS_DEBUG_KEY = "fps_debug";
   private static final String PREFS_JS_DEV_MODE_DEBUG_KEY = "js_dev_mode_debug";
@@ -45,21 +43,16 @@ public class DevInternalSettings implements
   private final boolean mSupportsNativeDeltaClients;
 
   public static DevInternalSettings withoutNativeDeltaClient(
-      Context applicationContext,
-      Listener listener) {
+      Context applicationContext, Listener listener) {
     return new DevInternalSettings(applicationContext, listener, false);
   }
 
-  public DevInternalSettings(
-      Context applicationContext,
-      Listener listener) {
+  public DevInternalSettings(Context applicationContext, Listener listener) {
     this(applicationContext, listener, true);
   }
 
   private DevInternalSettings(
-      Context applicationContext,
-      Listener listener,
-      boolean supportsNativeDeltaClients) {
+      Context applicationContext, Listener listener, boolean supportsNativeDeltaClients) {
     mListener = listener;
     mPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     mPreferences.registerOnSharedPreferenceChangeListener(this);
@@ -148,7 +141,8 @@ public class DevInternalSettings implements
 
   @SuppressLint("SharedPreferencesUse")
   public boolean isBundleDeltasCppEnabled() {
-    return mSupportsNativeDeltaClients && mPreferences.getBoolean(PREFS_JS_BUNDLE_DELTAS_CPP_KEY, false);
+    return mSupportsNativeDeltaClients
+        && mPreferences.getBoolean(PREFS_JS_BUNDLE_DELTAS_CPP_KEY, false);
   }
 
   @SuppressLint("SharedPreferencesUse")

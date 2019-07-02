@@ -9,12 +9,7 @@ import android.graphics.Color;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewParent;
-
 import androidx.core.view.ViewCompat;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import com.facebook.react.R;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
@@ -22,14 +17,13 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -88,7 +82,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String STATE_BUSY = "busy";
   private static final String STATE_EXPANDED = "expanded";
   private static final String STATE_MIXED = "mixed";
- 
+
   @ReactProp(name = PROP_BACKGROUND_COLOR, defaultInt = Color.TRANSPARENT, customType = "Color")
   public void setBackgroundColor(@Nonnull T view, int backgroundColor) {
     view.setBackgroundColor(backgroundColor);
@@ -203,8 +197,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     final ReadableMapKeySetIterator i = accessibilityState.keySetIterator();
     while (i.hasNextKey()) {
       final String state = i.nextKey();
-      if (state.equals(STATE_BUSY) || state.equals(STATE_EXPANDED) ||
-          (state.equals(STATE_CHECKED) && accessibilityState.getType(STATE_CHECKED) == ReadableType.String)) {
+      if (state.equals(STATE_BUSY)
+          || state.equals(STATE_EXPANDED)
+          || (state.equals(STATE_CHECKED)
+              && accessibilityState.getType(STATE_CHECKED) == ReadableType.String)) {
         updateViewContentDescription(view);
         break;
       }
@@ -213,7 +209,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   private void updateViewContentDescription(@Nonnull T view) {
     final String accessibilityLabel = (String) view.getTag(R.id.accessibility_label);
-    final ReadableArray accessibilityStates = (ReadableArray) view.getTag(R.id.accessibility_states);
+    final ReadableArray accessibilityStates =
+        (ReadableArray) view.getTag(R.id.accessibility_states);
     final ReadableMap accessibilityState = (ReadableMap) view.getTag(R.id.accessibility_state);
     final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
     final ArrayList<String> contentDescription = new ArrayList<String>();
@@ -233,12 +230,21 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       while (i.hasNextKey()) {
         final String state = i.nextKey();
         final Dynamic value = accessibilityState.getDynamic(state);
-        if (state.equals(STATE_CHECKED) && value.getType() == ReadableType.String && value.asString().equals(STATE_MIXED)) {
+        if (state.equals(STATE_CHECKED)
+            && value.getType() == ReadableType.String
+            && value.asString().equals(STATE_MIXED)) {
           contentDescription.add(view.getContext().getString(R.string.state_mixed_description));
-        } else if (state.equals(STATE_BUSY) && value.getType() == ReadableType.Boolean && value.asBoolean()) {
+        } else if (state.equals(STATE_BUSY)
+            && value.getType() == ReadableType.Boolean
+            && value.asBoolean()) {
           contentDescription.add(view.getContext().getString(R.string.state_busy_description));
         } else if (state.equals(STATE_EXPANDED) && value.getType() == ReadableType.Boolean) {
-          contentDescription.add(view.getContext().getString(value.asBoolean() ? R.string.state_expanded_description : R.string.state_collapsed_description));
+          contentDescription.add(
+              view.getContext()
+                  .getString(
+                      value.asBoolean()
+                          ? R.string.state_expanded_description
+                          : R.string.state_collapsed_description));
         }
       }
     }

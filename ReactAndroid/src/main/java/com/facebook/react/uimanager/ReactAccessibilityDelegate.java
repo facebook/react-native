@@ -5,22 +5,17 @@
 
 package com.facebook.react.uimanager;
 
-import android.os.Bundle;
 import android.content.Context;
+import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.URLSpan;
+import android.util.Log;
+import android.view.View;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionItemInfoCompat;
-import android.text.SpannableString;
-import android.text.style.URLSpan;
-import androidx.core.view.AccessibilityDelegateCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionItemInfoCompat;
-import android.util.Log;
-import android.view.View;
-
+import com.facebook.react.R;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
@@ -30,43 +25,61 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.facebook.react.R;
-
 import java.util.HashMap;
-import java.util.Locale;
 import javax.annotation.Nullable;
 
 /**
- * Utility class that handles the addition of a "role" for accessibility to
- * either a View or AccessibilityNodeInfo.
+ * Utility class that handles the addition of a "role" for accessibility to either a View or
+ * AccessibilityNodeInfo.
  */
-
 public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
 
   private static final String TAG = "ReactAccessibilityDelegate";
   private static int sCounter = 0x3f000000;
 
-  public static final HashMap<String, Integer> sActionIdMap= new HashMap<>();
+  public static final HashMap<String, Integer> sActionIdMap = new HashMap<>();
+
   static {
     sActionIdMap.put("activate", AccessibilityActionCompat.ACTION_CLICK.getId());
     sActionIdMap.put("longpress", AccessibilityActionCompat.ACTION_LONG_CLICK.getId());
     sActionIdMap.put("increment", AccessibilityActionCompat.ACTION_SCROLL_FORWARD.getId());
-    sActionIdMap.put("decrement", AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId());      
+    sActionIdMap.put("decrement", AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId());
   }
 
   /**
-   * These roles are defined by Google's TalkBack screen reader, and this list
-   * should be kept up to date with their implementation. Details can be seen in
-   * their source code here:
+   * These roles are defined by Google's TalkBack screen reader, and this list should be kept up to
+   * date with their implementation. Details can be seen in their source code here:
    *
-   * <p>
-   * https://github.com/google/talkback/blob/master/utils/src/main/java/Role.java
+   * <p>https://github.com/google/talkback/blob/master/utils/src/main/java/Role.java
    */
-
   public enum AccessibilityRole {
-    NONE, BUTTON, LINK, SEARCH, IMAGE, IMAGEBUTTON, KEYBOARDKEY, TEXT, ADJUSTABLE, SUMMARY, HEADER, ALERT, CHECKBOX,
-    COMBOBOX, MENU, MENUBAR, MENUITEM, PROGRESSBAR, RADIO, RADIOGROUP, SCROLLBAR, SPINBUTTON,
-    SWITCH, TAB, TABLIST, TIMER, TOOLBAR;
+    NONE,
+    BUTTON,
+    LINK,
+    SEARCH,
+    IMAGE,
+    IMAGEBUTTON,
+    KEYBOARDKEY,
+    TEXT,
+    ADJUSTABLE,
+    SUMMARY,
+    HEADER,
+    ALERT,
+    CHECKBOX,
+    COMBOBOX,
+    MENU,
+    MENUBAR,
+    MENUITEM,
+    PROGRESSBAR,
+    RADIO,
+    RADIOGROUP,
+    SCROLLBAR,
+    SPINBUTTON,
+    SWITCH,
+    TAB,
+    TABLIST,
+    TIMER,
+    TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
       switch (role) {
@@ -140,13 +153,15 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
-    final AccessibilityRole accessibilityRole = (AccessibilityRole) host.getTag(R.id.accessibility_role);
+    final AccessibilityRole accessibilityRole =
+        (AccessibilityRole) host.getTag(R.id.accessibility_role);
     if (accessibilityRole != null) {
       setRole(info, accessibilityRole, host.getContext());
     }
 
     // states are changable.
-    final ReadableArray accessibilityStates = (ReadableArray) host.getTag(R.id.accessibility_states);
+    final ReadableArray accessibilityStates =
+        (ReadableArray) host.getTag(R.id.accessibility_states);
     final ReadableMap accessibilityState = (ReadableMap) host.getTag(R.id.accessibility_state);
     if (accessibilityStates != null) {
       setStates(info, accessibilityStates, host.getContext());
@@ -154,7 +169,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     if (accessibilityState != null) {
       setState(info, accessibilityState, host.getContext());
     }
-    final ReadableArray accessibilityActions = (ReadableArray) host.getTag(R.id.accessibility_actions);
+    final ReadableArray accessibilityActions =
+        (ReadableArray) host.getTag(R.id.accessibility_actions);
     if (accessibilityActions != null) {
       for (int i = 0; i < accessibilityActions.size(); i++) {
         final ReadableMap action = accessibilityActions.getMap(i);
@@ -169,7 +185,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
           sCounter++;
         }
         mAccessibilityActionsMap.put(actionId, action.getString("name"));
-        final AccessibilityActionCompat accessibilityAction = new AccessibilityActionCompat(actionId, actionLabel);
+        final AccessibilityActionCompat accessibilityAction =
+            new AccessibilityActionCompat(actionId, actionLabel);
         info.addAction(accessibilityAction);
       }
     }
@@ -180,17 +197,17 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     if (mAccessibilityActionsMap.containsKey(action)) {
       final WritableMap event = Arguments.createMap();
       event.putString("actionName", mAccessibilityActionsMap.get(action));
-      ReactContext reactContext = (ReactContext)host.getContext();
-      reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
-          host.getId(),
-          "topAccessibilityAction",
-          event);
+      ReactContext reactContext = (ReactContext) host.getContext();
+      reactContext
+          .getJSModule(RCTEventEmitter.class)
+          .receiveEvent(host.getId(), "topAccessibilityAction", event);
       return true;
     }
     return super.performAccessibilityAction(host, action, args);
   }
 
-  private static void setStates(AccessibilityNodeInfoCompat info, ReadableArray accessibilityStates, Context context) {
+  private static void setStates(
+      AccessibilityNodeInfoCompat info, ReadableArray accessibilityStates, Context context) {
     for (int i = 0; i < accessibilityStates.size(); i++) {
       String state = accessibilityStates.getString(i);
       switch (state) {
@@ -217,8 +234,9 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       }
     }
   }
-  
-  private static void setState(AccessibilityNodeInfoCompat info, ReadableMap accessibilityState, Context context) {
+
+  private static void setState(
+      AccessibilityNodeInfoCompat info, ReadableMap accessibilityState, Context context) {
     Log.d(TAG, "setState " + accessibilityState);
     final ReadableMapKeySetIterator i = accessibilityState.keySetIterator();
     while (i.hasNextKey()) {
@@ -233,19 +251,20 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         info.setCheckable(true);
         info.setChecked(boolValue);
         if (info.getClassName().equals(AccessibilityRole.getValue(AccessibilityRole.SWITCH))) {
-          info.setText(context.getString(boolValue ? R.string.state_on_description : R.string.state_off_description));
+          info.setText(
+              context.getString(
+                  boolValue ? R.string.state_on_description : R.string.state_off_description));
         }
       }
     }
   }
 
-  /**
-   * Strings for setting the Role Description in english
-   */
+  /** Strings for setting the Role Description in english */
 
   // TODO: Eventually support for other languages on talkback
 
-  public static void setRole(AccessibilityNodeInfoCompat nodeInfo, AccessibilityRole role, final Context context) {
+  public static void setRole(
+      AccessibilityNodeInfoCompat nodeInfo, AccessibilityRole role, final Context context) {
     if (role == null) {
       role = AccessibilityRole.NONE;
     }
@@ -276,7 +295,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     } else if (role.equals(AccessibilityRole.HEADER)) {
       nodeInfo.setRoleDescription(context.getString(R.string.header_description));
       final AccessibilityNodeInfoCompat.CollectionItemInfoCompat itemInfo =
-        AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(0, 1, 0, 1, true);
+          AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(0, 1, 0, 1, true);
       nodeInfo.setCollectionItemInfo(itemInfo);
     } else if (role.equals(AccessibilityRole.ALERT)) {
       nodeInfo.setRoleDescription(context.getString(R.string.alert_description));
@@ -312,10 +331,10 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     // problems,
     // so leave it alone.
     if (!ViewCompat.hasAccessibilityDelegate(view)
-        && (view.getTag(R.id.accessibility_role) != null ||
-          view.getTag(R.id.accessibility_states) != null ||
-          view.getTag(R.id.accessibility_state) != null ||
-          view.getTag(R.id.accessibility_actions) != null)) {
+        && (view.getTag(R.id.accessibility_role) != null
+            || view.getTag(R.id.accessibility_states) != null
+            || view.getTag(R.id.accessibility_state) != null
+            || view.getTag(R.id.accessibility_actions) != null)) {
       ViewCompat.setAccessibilityDelegate(view, new ReactAccessibilityDelegate());
     }
   }

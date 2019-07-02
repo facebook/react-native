@@ -1,29 +1,27 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
  * Java {@link ArrayList} backed implementation of {@link ReadableArray} and {@link WritableArray}
  * Instances of this class SHOULD NOT be used for communication between java and JS, use instances
- * of {@link WritableNativeArray} created via {@link Arguments#createArray} or just
- * {@link ReadableArray} interface if you want your "native" module method to take an array from JS
- * as an argument.
+ * of {@link WritableNativeArray} created via {@link Arguments#createArray} or just {@link
+ * ReadableArray} interface if you want your "native" module method to take an array from JS as an
+ * argument.
  *
- * Main purpose for this class is to be used in java-only unit tests, but could also be used outside
- * of tests in the code that operates only in java and needs to communicate with RN modules via
- * their JS-exposed API.
+ * <p>Main purpose for this class is to be used in java-only unit tests, but could also be used
+ * outside of tests in the code that operates only in java and needs to communicate with RN modules
+ * via their JS-exposed API.
  */
 public class JavaOnlyArray implements ReadableArray, WritableArray {
 
@@ -130,9 +128,7 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
       return ReadableType.Null;
     } else if (object instanceof Boolean) {
       return ReadableType.Boolean;
-    } else if (object instanceof Double ||
-        object instanceof Float ||
-        object instanceof Integer) {
+    } else if (object instanceof Double || object instanceof Float || object instanceof Integer) {
       return ReadableType.Number;
     } else if (object instanceof String) {
       return ReadableType.String;

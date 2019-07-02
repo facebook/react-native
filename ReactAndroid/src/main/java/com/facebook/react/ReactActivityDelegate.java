@@ -12,12 +12,9 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.uimanager.RootView;
 import com.facebook.react.modules.core.PermissionListener;
-
 import javax.annotation.Nullable;
 
 /**
@@ -54,11 +51,11 @@ public class ReactActivityDelegate {
   }
 
   /**
-   * Get the {@link ReactNativeHost} used by this app. By default, assumes
-   * {@link Activity#getApplication()} is an instance of {@link ReactApplication} and calls
-   * {@link ReactApplication#getReactNativeHost()}. Override this method if your application class
-   * does not implement {@code ReactApplication} or you simply have a different mechanism for
-   * storing a {@code ReactNativeHost}, e.g. as a static field somewhere.
+   * Get the {@link ReactNativeHost} used by this app. By default, assumes {@link
+   * Activity#getApplication()} is an instance of {@link ReactApplication} and calls {@link
+   * ReactApplication#getReactNativeHost()}. Override this method if your application class does not
+   * implement {@code ReactApplication} or you simply have a different mechanism for storing a
+   * {@code ReactNativeHost}, e.g. as a static field somewhere.
    */
   protected ReactNativeHost getReactNativeHost() {
     return ((ReactApplication) getPlainActivity().getApplication()).getReactNativeHost();
@@ -74,7 +71,9 @@ public class ReactActivityDelegate {
 
   protected void onCreate(Bundle savedInstanceState) {
     String mainComponentName = getMainComponentName();
-    mReactDelegate = new ReactDelegate(getPlainActivity(), getReactNativeHost(), mainComponentName, getLaunchOptions());
+    mReactDelegate =
+        new ReactDelegate(
+            getPlainActivity(), getReactNativeHost(), mainComponentName, getLaunchOptions());
     if (mMainComponentName != null) {
       loadApp(mainComponentName);
     }
@@ -108,8 +107,8 @@ public class ReactActivityDelegate {
 
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     if (getReactNativeHost().hasInstance()
-      && getReactNativeHost().getUseDeveloperSupport()
-      && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+        && getReactNativeHost().getUseDeveloperSupport()
+        && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
       event.startTracking();
       return true;
     }
@@ -150,25 +149,24 @@ public class ReactActivityDelegate {
 
   @TargetApi(Build.VERSION_CODES.M)
   public void requestPermissions(
-    String[] permissions,
-    int requestCode,
-    PermissionListener listener) {
+      String[] permissions, int requestCode, PermissionListener listener) {
     mPermissionListener = listener;
     getPlainActivity().requestPermissions(permissions, requestCode);
   }
 
   public void onRequestPermissionsResult(
-    final int requestCode,
-    final String[] permissions,
-    final int[] grantResults) {
-    mPermissionsCallback = new Callback() {
-      @Override
-      public void invoke(Object... args) {
-        if (mPermissionListener != null && mPermissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
-          mPermissionListener = null;
-        }
-      }
-    };
+      final int requestCode, final String[] permissions, final int[] grantResults) {
+    mPermissionsCallback =
+        new Callback() {
+          @Override
+          public void invoke(Object... args) {
+            if (mPermissionListener != null
+                && mPermissionListener.onRequestPermissionsResult(
+                    requestCode, permissions, grantResults)) {
+              mPermissionListener = null;
+            }
+          }
+        };
   }
 
   protected Context getContext() {

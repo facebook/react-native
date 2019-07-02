@@ -12,8 +12,7 @@ import android.os.AsyncTask;
  * throws handled by the {@link com.facebook.react.bridge.NativeModuleCallExceptionHandler}
  * registered if the app is in dev mode.
  */
-public abstract class GuardedResultAsyncTask<Result>
-    extends AsyncTask<Void, Void, Result> {
+public abstract class GuardedResultAsyncTask<Result> extends AsyncTask<Void, Void, Result> {
 
   private final ReactContext mReactContext;
 
@@ -41,6 +40,6 @@ public abstract class GuardedResultAsyncTask<Result>
   }
 
   protected abstract Result doInBackgroundGuarded();
-  protected abstract void onPostExecuteGuarded(Result result);
 
+  protected abstract void onPostExecuteGuarded(Result result);
 }

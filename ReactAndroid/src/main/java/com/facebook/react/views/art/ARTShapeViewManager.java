@@ -7,9 +7,7 @@ package com.facebook.react.views.art;
 
 import com.facebook.react.module.annotations.ReactModule;
 
-/**
- * ViewManager for shadowed ART shape views.
- */
+/** ViewManager for shadowed ART shape views. */
 @ReactModule(name = ARTRenderableViewManager.CLASS_SHAPE)
 public class ARTShapeViewManager extends ARTRenderableViewManager {
 

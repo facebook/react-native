@@ -4,7 +4,6 @@ package com.facebook.react.fabric;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.soloader.SoLoader;
 
 @DoNotStrip
 public class ComponentFactoryDelegate {
@@ -13,8 +12,7 @@ public class ComponentFactoryDelegate {
     FabricSoLoader.staticInit();
   }
 
-  @DoNotStrip
-  private final HybridData mHybridData;
+  @DoNotStrip private final HybridData mHybridData;
 
   @DoNotStrip
   private static native HybridData initHybrid();
@@ -22,5 +20,4 @@ public class ComponentFactoryDelegate {
   public ComponentFactoryDelegate() {
     mHybridData = initHybrid();
   }
-
 }

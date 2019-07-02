@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.progressbar;
 
 import android.util.SparseIntArray;
@@ -22,9 +21,9 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 /**
- * Node responsible for holding the style of the ProgressBar, see under
- * {@link android.R.attr.progressBarStyle} for possible styles. ReactProgressBarViewManager
- * manages how this style is applied to the ProgressBar.
+ * Node responsible for holding the style of the ProgressBar, see under {@link
+ * android.R.attr.progressBarStyle} for possible styles. ReactProgressBarViewManager manages how
+ * this style is applied to the ProgressBar.
  */
 public class ProgressBarShadowNode extends LayoutShadowNode implements YogaMeasureFunction {
 
@@ -63,10 +62,11 @@ public class ProgressBarShadowNode extends LayoutShadowNode implements YogaMeasu
       YogaMeasureMode heightMode) {
     final int style = ReactProgressBarViewManager.getStyleFromString(getStyle());
     if (!mMeasured.contains(style)) {
-      ProgressBar progressBar = ReactProgressBarViewManager.createProgressBar(getThemedContext(), style);
-      final int spec = View.MeasureSpec.makeMeasureSpec(
-          ViewGroup.LayoutParams.WRAP_CONTENT,
-          View.MeasureSpec.UNSPECIFIED);
+      ProgressBar progressBar =
+          ReactProgressBarViewManager.createProgressBar(getThemedContext(), style);
+      final int spec =
+          View.MeasureSpec.makeMeasureSpec(
+              ViewGroup.LayoutParams.WRAP_CONTENT, View.MeasureSpec.UNSPECIFIED);
       progressBar.measure(spec, spec);
       mHeight.put(style, progressBar.getMeasuredHeight());
       mWidth.put(style, progressBar.getMeasuredWidth());

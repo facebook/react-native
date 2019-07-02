@@ -1,13 +1,10 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.testing.network;
-
-import javax.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -20,6 +17,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import javax.annotation.Nullable;
 
 /**
  * Mock Networking module that records last request received by {@link #sendRequest} method and
@@ -70,10 +68,7 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
   }
 
   private void fireReactCallback(
-      Callback callback,
-      int status,
-      @Nullable String headers,
-      @Nullable String body) {
+      Callback callback, int status, @Nullable String headers, @Nullable String body) {
     callback.invoke(status, headers, body);
   }
 

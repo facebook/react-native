@@ -1,18 +1,18 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.shell;
 
-import com.facebook.react.LazyReactPackage;
+import com.facebook.react.TurboReactPackage;
 import com.facebook.react.animated.NativeAnimatedModule;
-import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
+import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.modules.accessibilityinfo.AccessibilityInfoModule;
 import com.facebook.react.modules.appstate.AppStateModule;
@@ -61,56 +61,46 @@ import com.facebook.react.views.textinput.ReactTextInputManager;
 import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.react.views.viewpager.ReactViewPagerManager;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import javax.annotation.Nullable;
-import javax.inject.Provider;
-import com.facebook.react.TurboReactPackage;
-import com.facebook.react.ViewManagerOnDemandReactPackage;
-import java.util.Map;
-import com.facebook.react.module.model.ReactModuleInfo;
-import com.facebook.react.module.annotations.ReactModule;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
 
-/**
- * Package defining basic modules and view managers.
- */
-@ReactModuleList(nativeModules = {
-  AccessibilityInfoModule.class,
-  AppStateModule.class,
-  BlobModule.class,
-  FileReaderModule.class,
-  AsyncStorageModule.class,
-  CameraRollManager.class,
-  ClipboardModule.class,
-  DatePickerDialogModule.class,
-  DialogModule.class,
-  FrescoModule.class,
-  I18nManagerModule.class,
-  ImageEditingManager.class,
-  ImageLoaderModule.class,
-  ImageStoreManager.class,
-  IntentModule.class,
-  NativeAnimatedModule.class,
-  NetworkingModule.class,
-  PermissionsModule.class,
-  ShareModule.class,
-  StatusBarModule.class,
-  TimePickerDialogModule.class,
-  ToastModule.class,
-  VibrationModule.class,
-  WebSocketModule.class,
-})
+/** Package defining basic modules and view managers. */
+@ReactModuleList(
+    nativeModules = {
+      AccessibilityInfoModule.class,
+      AppStateModule.class,
+      BlobModule.class,
+      FileReaderModule.class,
+      AsyncStorageModule.class,
+      CameraRollManager.class,
+      ClipboardModule.class,
+      DatePickerDialogModule.class,
+      DialogModule.class,
+      FrescoModule.class,
+      I18nManagerModule.class,
+      ImageEditingManager.class,
+      ImageLoaderModule.class,
+      ImageStoreManager.class,
+      IntentModule.class,
+      NativeAnimatedModule.class,
+      NetworkingModule.class,
+      PermissionsModule.class,
+      ShareModule.class,
+      StatusBarModule.class,
+      TimePickerDialogModule.class,
+      ToastModule.class,
+      VibrationModule.class,
+      WebSocketModule.class,
+    })
 public class MainReactPackage extends TurboReactPackage {
 
   private MainPackageConfig mConfig;
 
-  public MainReactPackage() {
-  }
+  public MainReactPackage() {}
 
-  /**
-   * Create a new package with configuration
-   */
+  /** Create a new package with configuration */
   public MainReactPackage(MainPackageConfig config) {
     mConfig = config;
   }
@@ -137,8 +127,7 @@ public class MainReactPackage extends TurboReactPackage {
       case DialogModule.NAME:
         return new DialogModule(context);
       case FrescoModule.NAME:
-        return new FrescoModule(
-              context, true, mConfig != null ? mConfig.getFrescoConfig() : null);
+        return new FrescoModule(context, true, mConfig != null ? mConfig.getFrescoConfig() : null);
       case I18nManagerModule.NAME:
         return new I18nManagerModule(context);
       case ImageEditingManager.NAME:

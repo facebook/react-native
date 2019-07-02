@@ -163,7 +163,7 @@ import javax.annotation.Nullable;
     @Override
     protected Object getValueOrDefault(Object value) {
       // All numbers from JS are Doubles which can't be simply cast to Integer
-      return value == null ? mDefaultValue : (Integer) ((Double)value).intValue();
+      return value == null ? mDefaultValue : (Integer) ((Double) value).intValue();
     }
   }
 
@@ -220,7 +220,7 @@ import javax.annotation.Nullable;
     @Override
     protected Object getValueOrDefault(Object value) {
       // All numbers from JS are Doubles which can't be simply cast to Float
-      return value == null ? mDefaultValue : (Float) ((Double)value).floatValue();
+      return value == null ? mDefaultValue : (Float) ((Double) value).floatValue();
     }
   }
 

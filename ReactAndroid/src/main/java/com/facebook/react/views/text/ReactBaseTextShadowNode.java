@@ -1,8 +1,8 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.views.text;
 
@@ -14,7 +14,6 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.view.Gravity;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
@@ -25,11 +24,9 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaUnit;
 import com.facebook.yoga.YogaValue;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -112,10 +109,16 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (child instanceof ReactRawTextShadowNode) {
         sb.append(
             TextTransform.apply(
-                ((ReactRawTextShadowNode) child).getText(),
-                textAttributes.getTextTransform()));
+                ((ReactRawTextShadowNode) child).getText(), textAttributes.getTextTransform()));
       } else if (child instanceof ReactBaseTextShadowNode) {
-        buildSpannedFromShadowNode((ReactBaseTextShadowNode) child, sb, ops, textAttributes, supportsInlineViews, inlineViews, sb.length());
+        buildSpannedFromShadowNode(
+            (ReactBaseTextShadowNode) child,
+            sb,
+            ops,
+            textAttributes,
+            supportsInlineViews,
+            inlineViews,
+            sb.length());
       } else if (child instanceof ReactTextInlineImageShadowNode) {
         // We make the image take up 1 character in the span and put a corresponding character into
         // the text so that the image doesn't run over any following text.
@@ -131,12 +134,14 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
         YogaValue heightValue = child.getStyleHeight();
 
         if (widthValue.unit != YogaUnit.POINT || heightValue.unit != YogaUnit.POINT) {
-          throw new IllegalViewOperationException("Views nested within a <Text> must have a width and height");
+          throw new IllegalViewOperationException(
+              "Views nested within a <Text> must have a width and height");
         }
         float width = widthValue.value;
         float height = heightValue.value;
 
-        // We make the inline view take up 1 character in the span and put a corresponding character into
+        // We make the inline view take up 1 character in the span and put a corresponding character
+        // into
         // the text so that the inline view doesn't run over any following text.
         sb.append(INLINE_VIEW_PLACEHOLDER);
         ops.add(
@@ -154,7 +159,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     int end = sb.length();
     if (end >= start) {
       if (textShadowNode.mIsColorSet) {
-        ops.add(new SetSpanOperation(start, end, new ReactForegroundColorSpan(textShadowNode.mColor)));
+        ops.add(
+            new SetSpanOperation(start, end, new ReactForegroundColorSpan(textShadowNode.mColor)));
       }
       if (textShadowNode.mIsBackgroundColorSet) {
         ops.add(
@@ -164,17 +170,18 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         float effectiveLetterSpacing = textAttributes.getEffectiveLetterSpacing();
         if (!Float.isNaN(effectiveLetterSpacing)
-            && (parentTextAttributes == null || parentTextAttributes.getEffectiveLetterSpacing() != effectiveLetterSpacing)) {
-          ops.add(new SetSpanOperation(
-            start,
-            end,
-            new CustomLetterSpacingSpan(effectiveLetterSpacing)));
+            && (parentTextAttributes == null
+                || parentTextAttributes.getEffectiveLetterSpacing() != effectiveLetterSpacing)) {
+          ops.add(
+              new SetSpanOperation(
+                  start, end, new CustomLetterSpacingSpan(effectiveLetterSpacing)));
         }
       }
       int effectiveFontSize = textAttributes.getEffectiveFontSize();
-      if (// `getEffectiveFontSize` always returns a value so don't need to check for anything like
-          // `Float.NaN`.
-          parentTextAttributes == null || parentTextAttributes.getEffectiveFontSize() != effectiveFontSize) {
+      if ( // `getEffectiveFontSize` always returns a value so don't need to check for anything like
+      // `Float.NaN`.
+      parentTextAttributes == null
+          || parentTextAttributes.getEffectiveFontSize() != effectiveFontSize) {
         ops.add(new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(effectiveFontSize)));
       }
       if (textShadowNode.mFontStyle != UNSET
@@ -196,14 +203,10 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (textShadowNode.mIsLineThroughTextDecorationSet) {
         ops.add(new SetSpanOperation(start, end, new ReactStrikethroughSpan()));
       }
-      if (
-        (
-          textShadowNode.mTextShadowOffsetDx != 0 ||
-          textShadowNode.mTextShadowOffsetDy != 0 ||
-          textShadowNode.mTextShadowRadius != 0
-        ) &&
-        Color.alpha(textShadowNode.mTextShadowColor) != 0
-      ) {
+      if ((textShadowNode.mTextShadowOffsetDx != 0
+              || textShadowNode.mTextShadowOffsetDy != 0
+              || textShadowNode.mTextShadowRadius != 0)
+          && Color.alpha(textShadowNode.mTextShadowColor) != 0) {
         ops.add(
             new SetSpanOperation(
                 start,
@@ -216,10 +219,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       }
       float effectiveLineHeight = textAttributes.getEffectiveLineHeight();
       if (!Float.isNaN(effectiveLineHeight)
-          && (parentTextAttributes == null || parentTextAttributes.getEffectiveLineHeight() != effectiveLineHeight)) {
-        ops.add(
-            new SetSpanOperation(
-                start, end, new CustomLineHeightSpan(effectiveLineHeight)));
+          && (parentTextAttributes == null
+              || parentTextAttributes.getEffectiveLineHeight() != effectiveLineHeight)) {
+        ops.add(new SetSpanOperation(start, end, new CustomLineHeightSpan(effectiveLineHeight)));
       }
       ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textShadowNode.getReactTag())));
     }
@@ -242,7 +244,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     // up-to-bottom, otherwise all the spannables that are withing the region for which one may set
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
-    Map<Integer, ReactShadowNode> inlineViews = supportsInlineViews ? new HashMap<Integer, ReactShadowNode>() : null;
+    Map<Integer, ReactShadowNode> inlineViews =
+        supportsInlineViews ? new HashMap<Integer, ReactShadowNode>() : null;
 
     if (text != null) {
       // Handle text that is provided via a prop (e.g. the `value` and `defaultValue` props on
@@ -264,7 +267,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (isInlineImage || op.what instanceof TextInlineViewPlaceholderSpan) {
         int height;
         if (isInlineImage) {
-          height = ((TextInlineImageSpan)op.what).getHeight();
+          height = ((TextInlineImageSpan) op.what).getHeight();
           textShadowNode.mContainsImages = true;
         } else {
           TextInlineViewPlaceholderSpan placeholder = (TextInlineViewPlaceholderSpan) op.what;
@@ -279,7 +282,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
           childNode.setLayoutParent(textShadowNode);
         }
 
-        if (Float.isNaN(heightOfTallestInlineViewOrImage) || height > heightOfTallestInlineViewOrImage) {
+        if (Float.isNaN(heightOfTallestInlineViewOrImage)
+            || height > heightOfTallestInlineViewOrImage) {
           heightOfTallestInlineViewOrImage = height;
         }
       }
@@ -290,7 +294,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       priority++;
     }
 
-    textShadowNode.mTextAttributes.setHeightOfTallestInlineViewOrImage(heightOfTallestInlineViewOrImage);
+    textShadowNode.mTextAttributes.setHeightOfTallestInlineViewOrImage(
+        heightOfTallestInlineViewOrImage);
 
     return sb;
   }
@@ -299,8 +304,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
    * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
    * return the weight.
    *
-   * This code is duplicated in ReactTextInputManager
-   * TODO: Factor into a common place they can both use
+   * <p>This code is duplicated in ReactTextInputManager TODO: Factor into a common place they can
+   * both use
    */
   private static int parseNumericFontWeight(String fontWeightString) {
     // This should be much faster than using regex to verify input and Integer.parseInt
@@ -324,7 +329,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected int mTextBreakStrategy =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
   protected int mJustificationMode =
-          (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
+      (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
   protected TextTransform mTextTransform = TextTransform.UNSET;
 
   protected float mTextShadowOffsetDx = 0;
@@ -337,8 +342,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected boolean mIncludeFontPadding = true;
 
   /**
-   * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}.
-   * mFontWeight can be {@link Typeface#NORMAL} or {@link Typeface#BOLD}.
+   * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}. mFontWeight can be {@link
+   * Typeface#NORMAL} or {@link Typeface#BOLD}.
    */
   protected int mFontStyle = UNSET;
 
@@ -346,19 +351,18 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   /**
    * NB: If a font family is used that does not have a style in a certain Android version (ie.
    * monospace bold pre Android 5.0), that style (ie. bold) will not be inherited by nested Text
-   * nodes. To retain that style, you have to add it to those nodes explicitly.
-   * Example, Android 4.4:
-   * <Text style={{fontFamily="serif" fontWeight="bold"}}>Bold Text</Text>
-   *   <Text style={{fontFamily="sans-serif"}}>Bold Text</Text>
-   *     <Text style={{fontFamily="serif}}>Bold Text</Text>
+   * nodes. To retain that style, you have to add it to those nodes explicitly. Example, Android
+   * 4.4: <Text style={{fontFamily="serif" fontWeight="bold"}}>Bold Text</Text> <Text
+   * style={{fontFamily="sans-serif"}}>Bold Text</Text> <Text style={{fontFamily="serif}}>Bold
+   * Text</Text>
    *
-   * <Text style={{fontFamily="monospace" fontWeight="bold"}}>Not Bold Text</Text>
-   *   <Text style={{fontFamily="sans-serif"}}>Not Bold Text</Text>
-   *     <Text style={{fontFamily="serif}}>Not Bold Text</Text>
+   * <p><Text style={{fontFamily="monospace" fontWeight="bold"}}>Not Bold Text</Text> <Text
+   * style={{fontFamily="sans-serif"}}>Not Bold Text</Text> <Text style={{fontFamily="serif}}>Not
+   * Bold Text</Text>
    *
-   * <Text style={{fontFamily="monospace" fontWeight="bold"}}>Not Bold Text</Text>
-   *   <Text style={{fontFamily="sans-serif" fontWeight="bold"}}>Bold Text</Text>
-   *     <Text style={{fontFamily="serif}}>Bold Text</Text>
+   * <p><Text style={{fontFamily="monospace" fontWeight="bold"}}>Not Bold Text</Text> <Text
+   * style={{fontFamily="sans-serif" fontWeight="bold"}}>Bold Text</Text> <Text
+   * style={{fontFamily="serif}}>Bold Text</Text>
    */
   protected @Nullable String mFontFamily = null;
 
@@ -439,7 +443,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       } else {
         throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
       }
-
     }
     markUpdated();
   }
@@ -481,9 +484,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   }
 
   /**
-  /* This code is duplicated in ReactTextInputManager
-  /* TODO: Factor into a common place they can both use
-  */
+   * /* This code is duplicated in ReactTextInputManager /* TODO: Factor into a common place they
+   * can both use
+   */
   @ReactProp(name = ViewProps.FONT_WEIGHT)
   public void setFontWeight(@Nullable String fontWeightString) {
     int fontWeightNumeric =
@@ -500,9 +503,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   }
 
   /**
-  /* This code is duplicated in ReactTextInputManager
-  /* TODO: Factor into a common place they can both use
-  */
+   * /* This code is duplicated in ReactTextInputManager /* TODO: Factor into a common place they
+   * can both use
+   */
   @ReactProp(name = ViewProps.FONT_STYLE)
   public void setFontStyle(@Nullable String fontStyleString) {
     int fontStyle = UNSET;

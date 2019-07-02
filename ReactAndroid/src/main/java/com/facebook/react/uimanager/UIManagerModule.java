@@ -38,7 +38,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
@@ -243,8 +242,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   /**
-   * This method is intended to reuse the {@link ViewManagerRegistry} with FabricUIManager.
-   * Do not use this method as this will be removed in the near future.
+   * This method is intended to reuse the {@link ViewManagerRegistry} with FabricUIManager. Do not
+   * use this method as this will be removed in the near future.
    */
   @Deprecated
   public ViewManagerRegistry getViewManagerRegistry_DO_NOT_USE() {
@@ -377,22 +376,22 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     return mUIImplementation.getProfiledBatchPerfCounters();
   }
 
-  public <T extends View> int addRootView(
-      final T rootView) {
-        return addRootView(rootView, null, null);
-      }
+  public <T extends View> int addRootView(final T rootView) {
+    return addRootView(rootView, null, null);
+  }
 
   /**
    * Used by native animated module to bypass the process of updating the values through the shadow
    * view hierarchy. This method will directly update native views, which means that updates for
-   * layout-related propertied won't be handled properly.
-   * Make sure you know what you're doing before calling this method :)
+   * layout-related propertied won't be handled properly. Make sure you know what you're doing
+   * before calling this method :)
    */
   @Override
   public void synchronouslyUpdateViewOnUIThread(int tag, ReadableMap props) {
     int uiManagerType = ViewUtil.getUIManagerType(tag);
     if (uiManagerType == FABRIC) {
-      UIManager fabricUIManager = UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
+      UIManager fabricUIManager =
+          UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
       fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
     } else {
       mUIImplementation.synchronouslyUpdateViewOnUIThread(tag, new ReactStylesDiffMap(props));
@@ -475,7 +474,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
     int uiManagerType = ViewUtil.getUIManagerType(tag);
     if (uiManagerType == FABRIC) {
-      UIManager fabricUIManager = UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
+      UIManager fabricUIManager =
+          UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
       fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
     } else {
       mUIImplementation.updateView(tag, className, props);
@@ -646,16 +646,17 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       int reactTag, Dynamic commandId, @Nullable ReadableArray commandArgs) {
     // TODO: this is a temporary approach to support ViewManagerCommands in Fabric until
     // the dispatchViewManagerCommand() method is supported by Fabric JS API.
-    if(commandId.getType() == ReadableType.Number) {
+    if (commandId.getType() == ReadableType.Number) {
       final int commandIdNum = commandId.asInt();
-      UIManagerHelper.getUIManager(getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag))
+      UIManagerHelper.getUIManager(
+              getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag))
           .dispatchCommand(reactTag, commandIdNum, commandArgs);
     } else if (commandId.getType() == ReadableType.String) {
       final String commandIdStr = commandId.asString();
-      UIManagerHelper.getUIManager(getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag))
+      UIManagerHelper.getUIManager(
+              getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag))
           .dispatchCommand(reactTag, commandIdStr, commandArgs);
     }
-
   }
 
   @Override
@@ -870,6 +871,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   public View resolveView(int tag) {
     UiThreadUtil.assertOnUiThread();
-    return mUIImplementation.getUIViewOperationQueue().getNativeViewHierarchyManager().resolveView(tag);
+    return mUIImplementation
+        .getUIViewOperationQueue()
+        .getNativeViewHierarchyManager()
+        .resolveView(tag);
   }
 }

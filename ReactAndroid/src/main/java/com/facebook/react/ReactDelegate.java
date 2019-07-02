@@ -1,21 +1,18 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
-
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
-
 import javax.annotation.Nullable;
 
 /**
@@ -27,19 +24,19 @@ public class ReactDelegate {
   private final Activity mActivity;
   private ReactRootView mReactRootView;
 
-  @Nullable
-  private final String mMainComponentName;
+  @Nullable private final String mMainComponentName;
 
-  @Nullable
-  private Bundle mLaunchOptions;
+  @Nullable private Bundle mLaunchOptions;
 
-  @Nullable
-  private DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
+  @Nullable private DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
 
   private ReactNativeHost mReactNativeHost;
 
-
-  public ReactDelegate(Activity activity, ReactNativeHost reactNativeHost, @Nullable String appKey, @Nullable Bundle launchOptions) {
+  public ReactDelegate(
+      Activity activity,
+      ReactNativeHost reactNativeHost,
+      @Nullable String appKey,
+      @Nullable Bundle launchOptions) {
     mActivity = activity;
     mMainComponentName = appKey;
     mLaunchOptions = launchOptions;
@@ -50,9 +47,12 @@ public class ReactDelegate {
   public void onHostResume() {
     if (getReactNativeHost().hasInstance()) {
       if (mActivity instanceof DefaultHardwareBackBtnHandler) {
-        getReactNativeHost().getReactInstanceManager().onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
+        getReactNativeHost()
+            .getReactInstanceManager()
+            .onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
       } else {
-        throw new ClassCastException("Host Activity does not implement DefaultHardwareBackBtnHandler");
+        throw new ClassCastException(
+            "Host Activity does not implement DefaultHardwareBackBtnHandler");
       }
     }
   }
@@ -81,9 +81,12 @@ public class ReactDelegate {
     return false;
   }
 
-  public void onActivityResult(int requestCode, int resultCode, Intent data, boolean shouldForwardToReactInstance) {
+  public void onActivityResult(
+      int requestCode, int resultCode, Intent data, boolean shouldForwardToReactInstance) {
     if (getReactNativeHost().hasInstance() && shouldForwardToReactInstance) {
-      getReactNativeHost().getReactInstanceManager().onActivityResult(mActivity, requestCode, resultCode, data);
+      getReactNativeHost()
+          .getReactInstanceManager()
+          .onActivityResult(mActivity, requestCode, resultCode, data);
     }
   }
 
@@ -97,26 +100,23 @@ public class ReactDelegate {
     }
     mReactRootView = createRootView();
     mReactRootView.startReactApplication(
-      getReactNativeHost().getReactInstanceManager(),
-      appKey,
-      mLaunchOptions);
-
+        getReactNativeHost().getReactInstanceManager(), appKey, mLaunchOptions);
   }
 
   public ReactRootView getReactRootView() {
     return mReactRootView;
   }
 
-
   protected ReactRootView createRootView() {
     return new ReactRootView(mActivity);
   }
 
   /**
-   * Handles delegating the {@link Activity#onKeyUp(int, KeyEvent)} method to determine whether
-   * the application should show the developer menu or should reload the React Application.
+   * Handles delegating the {@link Activity#onKeyUp(int, KeyEvent)} method to determine whether the
+   * application should show the developer menu or should reload the React Application.
    *
-   * @return true if we consume the event and either shoed the develop menu or reloaded the application.
+   * @return true if we consume the event and either shoed the develop menu or reloaded the
+   *     application.
    */
   public boolean shouldShowDevMenuOrReload(int keyCode, KeyEvent event) {
     if (getReactNativeHost().hasInstance() && getReactNativeHost().getUseDeveloperSupport()) {
@@ -124,7 +124,9 @@ public class ReactDelegate {
         getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
         return true;
       }
-      boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer).didDoubleTapR(keyCode, mActivity.getCurrentFocus());
+      boolean didDoubleTapR =
+          Assertions.assertNotNull(mDoubleTapReloadRecognizer)
+              .didDoubleTapR(keyCode, mActivity.getCurrentFocus());
       if (didDoubleTapR) {
         getReactNativeHost().getReactInstanceManager().getDevSupportManager().handleReloadJS();
         return true;
@@ -133,9 +135,7 @@ public class ReactDelegate {
     return false;
   }
 
-  /**
-   * Get the {@link ReactNativeHost} used by this app.
-   */
+  /** Get the {@link ReactNativeHost} used by this app. */
   private ReactNativeHost getReactNativeHost() {
     return mReactNativeHost;
   }
@@ -143,5 +143,4 @@ public class ReactDelegate {
   public ReactInstanceManager getReactInstanceManager() {
     return getReactNativeHost().getReactInstanceManager();
   }
-
 }

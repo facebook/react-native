@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.art;
 
 import android.graphics.Canvas;
@@ -47,7 +46,7 @@ public abstract class ARTVirtualNode extends ReactShadowNodeImpl {
   /**
    * Sets up the transform matrix on the canvas before an element is drawn.
    *
-   * NB: for perf reasons this does not apply opacity, as that would mean creating a new canvas
+   * <p>NB: for perf reasons this does not apply opacity, as that would mean creating a new canvas
    * layer (which allocates an offscreen bitmap) and having it composited afterwards. Instead, the
    * drawing code should apply opacity recursively.
    *
@@ -61,8 +60,8 @@ public abstract class ARTVirtualNode extends ReactShadowNodeImpl {
   }
 
   /**
-   * Restore the canvas after an element was drawn. This is always called in mirror with
-   * {@link #saveAndSetupCanvas}.
+   * Restore the canvas after an element was drawn. This is always called in mirror with {@link
+   * #saveAndSetupCanvas}.
    *
    * @param canvas the canvas to restore
    */

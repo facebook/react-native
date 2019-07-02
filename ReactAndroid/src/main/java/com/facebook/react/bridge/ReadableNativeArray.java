@@ -1,19 +1,16 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.config.ReactFeatureFlags;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -31,11 +28,12 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
     super(hybridData);
   }
 
-  //WriteOnce but not in the constructor fields
+  // WriteOnce but not in the constructor fields
   private @Nullable Object[] mLocalArray;
   private @Nullable ReadableType[] mLocalTypeArray;
 
   private static int jniPassCounter = 0;
+
   public static int getJNIPassCounter() {
     return jniPassCounter;
   }
@@ -53,6 +51,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
     }
     return mLocalArray;
   }
+
   private native Object[] importArray();
 
   private ReadableType[] getLocalTypeArray() {
@@ -69,6 +68,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
     }
     return mLocalTypeArray;
   }
+
   private native Object[] importTypeArray();
 
   @Override

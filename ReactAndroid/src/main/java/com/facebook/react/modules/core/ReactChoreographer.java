@@ -1,53 +1,42 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.core;
-
-import com.facebook.react.bridge.UiThreadUtil;
-import java.util.ArrayDeque;
-import javax.annotation.Nullable;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
+import java.util.ArrayDeque;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * A simple wrapper around Choreographer that allows us to control the order certain callbacks
- * are executed within a given frame. The main difference is that we enforce this is accessed from
- * the UI thread: this is because this ordering cannot be guaranteed across multiple threads.
+ * A simple wrapper around Choreographer that allows us to control the order certain callbacks are
+ * executed within a given frame. The main difference is that we enforce this is accessed from the
+ * UI thread: this is because this ordering cannot be guaranteed across multiple threads.
  */
 public class ReactChoreographer {
 
   public enum CallbackType {
 
-    /**
-     * For use by perf markers that need to happen immediately after draw
-     */
+    /** For use by perf markers that need to happen immediately after draw */
     PERF_MARKERS(0),
 
-    /**
-     * For use by {@link com.facebook.react.uimanager.UIManagerModule}
-     */
+    /** For use by {@link com.facebook.react.uimanager.UIManagerModule} */
     DISPATCH_UI(1),
 
-    /**
-     * For use by {@link com.facebook.react.animated.NativeAnimatedModule}
-     */
+    /** For use by {@link com.facebook.react.animated.NativeAnimatedModule} */
     NATIVE_ANIMATED_MODULE(2),
 
-    /**
-     * Events that make JS do things.
-     */
+    /** Events that make JS do things. */
     TIMERS_EVENTS(3),
 
     /**
-     * Event used to trigger the idle callback. Called after all UI work has been
-     * dispatched to JS.
+     * Event used to trigger the idle callback. Called after all UI work has been dispatched to JS.
      */
     IDLE_EVENT(4),
     ;
@@ -80,6 +69,7 @@ public class ReactChoreographer {
   private @Nullable volatile ChoreographerCompat mChoreographer;
   private final ReactChoreographerDispatcher mReactChoreographerDispatcher;
   private final Object mCallbackQueuesLock = new Object();
+
   @GuardedBy("mCallbackQueuesLock")
   private final ArrayDeque<ChoreographerCompat.FrameCallback>[] mCallbackQueues;
 
@@ -96,8 +86,7 @@ public class ReactChoreographer {
   }
 
   public void postFrameCallback(
-    CallbackType type,
-    ChoreographerCompat.FrameCallback frameCallback) {
+      CallbackType type, ChoreographerCompat.FrameCallback frameCallback) {
     synchronized (mCallbackQueuesLock) {
       mCallbackQueues[type.getOrder()].addLast(frameCallback);
       mTotalCallbacks++;
@@ -119,8 +108,8 @@ public class ReactChoreographer {
   }
 
   /**
-   * This method writes on mHasPostedCallback and it should be called from another method that
-   * has the lock mCallbackQueuesLock
+   * This method writes on mHasPostedCallback and it should be called from another method that has
+   * the lock mCallbackQueuesLock
    */
   private void postFrameCallbackOnChoreographer() {
     mChoreographer.postFrameCallback(mReactChoreographerDispatcher);
@@ -128,24 +117,24 @@ public class ReactChoreographer {
   }
 
   public void initializeChoreographer(@Nullable final Runnable runnable) {
-    UiThreadUtil.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        synchronized (ReactChoreographer.class) {
-          if (mChoreographer == null) {
-            mChoreographer = ChoreographerCompat.getInstance();
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            synchronized (ReactChoreographer.class) {
+              if (mChoreographer == null) {
+                mChoreographer = ChoreographerCompat.getInstance();
+              }
+            }
+            if (runnable != null) {
+              runnable.run();
+            }
           }
-        }
-        if (runnable != null) {
-          runnable.run();
-        }
-      }
-    });
+        });
   }
 
   public void removeFrameCallback(
-    CallbackType type,
-    ChoreographerCompat.FrameCallback frameCallback) {
+      CallbackType type, ChoreographerCompat.FrameCallback frameCallback) {
     synchronized (mCallbackQueuesLock) {
       if (mCallbackQueues[type.getOrder()].removeFirstOccurrence(frameCallback)) {
         mTotalCallbacks--;

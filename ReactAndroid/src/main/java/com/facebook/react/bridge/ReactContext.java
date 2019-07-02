@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
 import android.app.Activity;
@@ -22,22 +21,22 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import javax.annotation.Nullable;
 
 /**
- * Abstract ContextWrapper for Android application or activity {@link Context} and
- * {@link CatalystInstance}
+ * Abstract ContextWrapper for Android application or activity {@link Context} and {@link
+ * CatalystInstance}
  */
 public class ReactContext extends ContextWrapper {
 
   private static final String EARLY_JS_ACCESS_EXCEPTION_MESSAGE =
-    "Tried to access a JS module before the React instance was fully set up. Calls to " +
-      "ReactContext#getJSModule should only happen once initialize() has been called on your " +
-      "native module.";
+      "Tried to access a JS module before the React instance was fully set up. Calls to "
+          + "ReactContext#getJSModule should only happen once initialize() has been called on your "
+          + "native module.";
 
   private final CopyOnWriteArraySet<LifecycleEventListener> mLifecycleEventListeners =
       new CopyOnWriteArraySet<>();
   private final CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners =
       new CopyOnWriteArraySet<>();
   private final CopyOnWriteArraySet<WindowFocusChangeListener> mWindowFocusEventListeners =
-    new CopyOnWriteArraySet<>();
+      new CopyOnWriteArraySet<>();
 
   private LifecycleState mLifecycleState = LifecycleState.BEFORE_CREATE;
 
@@ -53,9 +52,7 @@ public class ReactContext extends ContextWrapper {
     super(base);
   }
 
-  /**
-   * Set and initialize CatalystInstance for this Context. This should be called exactly once.
-   */
+  /** Set and initialize CatalystInstance for this Context. This should be called exactly once. */
   public void initializeWithInstance(CatalystInstance catalystInstance) {
     if (catalystInstance == null) {
       throw new IllegalArgumentException("CatalystInstance cannot be null.");
@@ -71,11 +68,13 @@ public class ReactContext extends ContextWrapper {
   }
 
   /**
-   * Initialize message queue threads using a ReactQueueConfiguration.
-   * TODO (janzer) T43898341 Make this package instead of public
+   * Initialize message queue threads using a ReactQueueConfiguration. TODO (janzer) T43898341 Make
+   * this package instead of public
    */
   public void initializeMessageQueueThreads(ReactQueueConfiguration queueConfig) {
-    if (mUiMessageQueueThread != null || mNativeModulesMessageQueueThread != null || mJSMessageQueueThread != null) {
+    if (mUiMessageQueueThread != null
+        || mNativeModulesMessageQueueThread != null
+        || mJSMessageQueueThread != null) {
       throw new IllegalStateException("Message queue threads already initialized");
     }
     mUiMessageQueueThread = queueConfig.getUIQueueThread();
@@ -125,18 +124,16 @@ public class ReactContext extends ContextWrapper {
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
       throw new RuntimeException(
-        "Trying to call native module before CatalystInstance has been set!");
+          "Trying to call native module before CatalystInstance has been set!");
     }
     return mCatalystInstance.hasNativeModule(nativeModuleInterface);
   }
 
-  /**
-   * @return the instance of the specified module interface associated with this ReactContext.
-   */
+  /** @return the instance of the specified module interface associated with this ReactContext. */
   public <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     if (mCatalystInstance == null) {
       throw new RuntimeException(
-        "Trying to call native module before CatalystInstance has been set!");
+          "Trying to call native module before CatalystInstance has been set!");
     }
     return mCatalystInstance.getNativeModule(nativeModuleInterface);
   }
@@ -206,9 +203,7 @@ public class ReactContext extends ContextWrapper {
     mWindowFocusEventListeners.remove(listener);
   }
 
-  /**
-   * Should be called by the hosting Fragment in {@link Fragment#onResume}
-   */
+  /** Should be called by the hosting Fragment in {@link Fragment#onResume} */
   public void onHostResume(@Nullable Activity activity) {
     mLifecycleState = LifecycleState.RESUMED;
     mCurrentActivity = new WeakReference(activity);
@@ -235,9 +230,7 @@ public class ReactContext extends ContextWrapper {
     }
   }
 
-  /**
-   * Should be called by the hosting Fragment in {@link Fragment#onPause}
-   */
+  /** Should be called by the hosting Fragment in {@link Fragment#onPause} */
   public void onHostPause() {
     mLifecycleState = LifecycleState.BEFORE_RESUME;
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_START);
@@ -251,9 +244,7 @@ public class ReactContext extends ContextWrapper {
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_END);
   }
 
-  /**
-   * Should be called by the hosting Fragment in {@link Fragment#onDestroy}
-   */
+  /** Should be called by the hosting Fragment in {@link Fragment#onDestroy} */
   public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_CREATE;
@@ -267,9 +258,7 @@ public class ReactContext extends ContextWrapper {
     mCurrentActivity = null;
   }
 
-  /**
-   * Destroy this instance, making it unusable.
-   */
+  /** Destroy this instance, making it unusable. */
   public void destroy() {
     UiThreadUtil.assertOnUiThread();
 
@@ -278,9 +267,7 @@ public class ReactContext extends ContextWrapper {
     }
   }
 
-  /**
-   * Should be called by the hosting Fragment in {@link Fragment#onActivityResult}
-   */
+  /** Should be called by the hosting Fragment in {@link Fragment#onActivityResult} */
   public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
     for (ActivityEventListener listener : mActivityEventListeners) {
       try {
@@ -343,14 +330,14 @@ public class ReactContext extends ContextWrapper {
   }
 
   /**
-   * Passes the given exception to the current
-   * {@link com.facebook.react.bridge.NativeModuleCallExceptionHandler} if one exists, rethrowing
+   * Passes the given exception to the current {@link
+   * com.facebook.react.bridge.NativeModuleCallExceptionHandler} if one exists, rethrowing
    * otherwise.
    */
   public void handleException(Exception e) {
-    if (mCatalystInstance != null &&
-        !mCatalystInstance.isDestroyed() &&
-        mNativeModuleCallExceptionHandler != null) {
+    if (mCatalystInstance != null
+        && !mCatalystInstance.isDestroyed()
+        && mNativeModuleCallExceptionHandler != null) {
       mNativeModuleCallExceptionHandler.handleException(e);
     } else {
       throw new RuntimeException(e);
@@ -363,8 +350,8 @@ public class ReactContext extends ContextWrapper {
 
   /**
    * Same as {@link Activity#startActivityForResult(Intent, int)}, this just redirects the call to
-   * the current activity. Returns whether the activity was started, as this might fail if this
-   * was called before the context is in the right state.
+   * the current activity. Returns whether the activity was started, as this might fail if this was
+   * called before the context is in the right state.
    */
   public boolean startActivityForResult(Intent intent, int code, Bundle bundle) {
     Activity activity = getCurrentActivity();
@@ -394,5 +381,4 @@ public class ReactContext extends ContextWrapper {
   public JavaScriptContextHolder getJavaScriptContextHolder() {
     return mCatalystInstance.getJavaScriptContextHolder();
   }
-
 }

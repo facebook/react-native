@@ -8,8 +8,8 @@ package com.facebook.react.views.view;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import androidx.core.view.ViewCompat;
 import android.view.View;
+import androidx.core.view.ViewCompat;
 import javax.annotation.Nullable;
 
 /** Class that manages the background for views and borders. */

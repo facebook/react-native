@@ -9,7 +9,6 @@ package com.facebook.react.views.text;
 import android.content.Context;
 import android.text.Layout;
 import android.text.Spannable;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -19,7 +18,6 @@ import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
-
 import javax.annotation.Nullable;
 
 /**
@@ -100,8 +98,7 @@ public class ReactTextViewManager
         textViewProps.getBottomPadding(),
         textViewProps.getTextAlign(),
         textBreakStrategy,
-        justificationMode
-      );
+        justificationMode);
   }
 
   @Override

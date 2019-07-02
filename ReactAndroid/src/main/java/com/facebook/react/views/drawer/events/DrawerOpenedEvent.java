@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.drawer.events;
 
 import com.facebook.react.bridge.Arguments;
@@ -34,5 +33,4 @@ public class DrawerOpenedEvent extends Event<DrawerOpenedEvent> {
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), Arguments.createMap());
   }
-
 }

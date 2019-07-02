@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.text;
 
 import android.graphics.Canvas;
@@ -39,8 +38,7 @@ public class TextInlineViewPlaceholderSpan extends ReplacementSpan implements Re
   }
 
   @Override
-  public int getSize(
-      Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
+  public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
     // NOTE: This getSize code is copied from DynamicDrawableSpan and modified to not use a Drawable
 
     if (fm != null) {
@@ -56,6 +54,13 @@ public class TextInlineViewPlaceholderSpan extends ReplacementSpan implements Re
 
   @Override
   public void draw(
-      Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
-  }
+      Canvas canvas,
+      CharSequence text,
+      int start,
+      int end,
+      float x,
+      int top,
+      int y,
+      int bottom,
+      Paint paint) {}
 }

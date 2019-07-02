@@ -9,7 +9,6 @@ package com.facebook.react.bridge;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 

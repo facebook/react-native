@@ -74,8 +74,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   public static final String TAG = FabricUIManager.class.getSimpleName();
-  public static final boolean DEBUG = ReactFeatureFlags.enableFabricLogs ||
-      PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
+  public static final boolean DEBUG =
+      ReactFeatureFlags.enableFabricLogs
+          || PrinterHolder.getPrinter()
+              .shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
   private static final int FRAME_TIME_MS = 16;
   private static final int MAX_TIME_IN_FRAME_FOR_NON_BATCHED_OPERATIONS_MS = 8;
   private static final int PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY = 250;
@@ -130,9 +132,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @Override
   public <T extends View> int addRootView(
-    final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
+      final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
-    //TODO T31905686: Refactor both addRootView methods into one method
+    // TODO T31905686: Refactor both addRootView methods into one method
     ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, rootView.getContext());
     mMountingManager.addRootView(rootTag, rootView);
@@ -149,7 +151,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   public <T extends View> int addRootView(
-      final T rootView, final String moduleName, final WritableMap initialProps, int widthMeasureSpec, int heightMeasureSpec) {
+      final T rootView,
+      final String moduleName,
+      final WritableMap initialProps,
+      int widthMeasureSpec,
+      int heightMeasureSpec) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, rootView.getContext());
@@ -195,7 +201,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public void onCatalystInstanceDestroy() {
     if (DEBUG) {
-      FLog.d(TAG, "Destroying Catalyst Instance" );
+      FLog.d(TAG, "Destroying Catalyst Instance");
     }
     mEventDispatcher.removeBatchEventDispatchedListener(mEventBeatManager);
     mEventDispatcher.unregisterEventEmitter(FABRIC);
@@ -230,7 +236,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @DoNotStrip
   @SuppressWarnings("unused")
   private MountItem createMountItem(
-    String componentName, int reactRootTag, int reactTag, boolean isLayoutable) {
+      String componentName, int reactRootTag, int reactTag, boolean isLayoutable) {
     String component = getFabricComponentName(componentName);
     ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
     if (reactContext == null) {
@@ -440,17 +446,18 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       FLog.d(TAG, "Updating Root Layout Specs");
     }
 
-    mReactApplicationContext.runOnJSQueueThread(new Runnable() {
-      @Override
-      public void run() {
-        mBinding.setConstraints(
-          rootTag,
-          getMinSize(widthMeasureSpec),
-          getMaxSize(widthMeasureSpec),
-          getMinSize(heightMeasureSpec),
-          getMaxSize(heightMeasureSpec));
-      }
-    });
+    mReactApplicationContext.runOnJSQueueThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            mBinding.setConstraints(
+                rootTag,
+                getMinSize(widthMeasureSpec),
+                getMaxSize(widthMeasureSpec),
+                getMinSize(heightMeasureSpec),
+                getMaxSize(heightMeasureSpec));
+          }
+        });
   }
 
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
@@ -489,7 +496,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @Override
   public void dispatchCommand(
-    final int reactTag, final String commandId, @Nullable final ReadableArray commandArgs) {
+      final int reactTag, final String commandId, @Nullable final ReadableArray commandArgs) {
     synchronized (mMountItemsLock) {
       mMountItems.add(new DispatchStringCommandMountItem(reactTag, commandId, commandArgs));
     }

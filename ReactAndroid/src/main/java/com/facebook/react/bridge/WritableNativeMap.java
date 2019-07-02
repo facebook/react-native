@@ -1,25 +1,21 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
 import androidx.annotation.NonNull;
-
-import com.facebook.jni.HybridData;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Implementation of a write-only map stored in native memory. Use
- * {@link Arguments#createMap()} if you need to stub out creating this class in a test.
- * TODO(5815532): Check if consumed on read
+ * Implementation of a write-only map stored in native memory. Use {@link Arguments#createMap()} if
+ * you need to stub out creating this class in a test. TODO(5815532): Check if consumed on read
  */
 @DoNotStrip
 public class WritableNativeMap extends ReadableNativeMap implements WritableMap {
@@ -29,12 +25,16 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
 
   @Override
   public native void putBoolean(@Nonnull String key, boolean value);
+
   @Override
   public native void putDouble(@Nonnull String key, double value);
+
   @Override
   public native void putInt(@Nonnull String key, int value);
+
   @Override
   public native void putString(@Nonnull String key, @Nullable String value);
+
   @Override
   public native void putNull(@NonNull String key);
 
@@ -75,6 +75,8 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
   private static native HybridData initHybrid();
 
   private native void putNativeMap(String key, WritableNativeMap value);
+
   private native void putNativeArray(String key, WritableNativeArray value);
+
   private native void mergeNativeMap(ReadableNativeMap source);
 }

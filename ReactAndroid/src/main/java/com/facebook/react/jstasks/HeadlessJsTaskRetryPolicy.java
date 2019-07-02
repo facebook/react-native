@@ -4,13 +4,12 @@ import javax.annotation.CheckReturnValue;
 
 public interface HeadlessJsTaskRetryPolicy {
 
-    boolean canRetry();
+  boolean canRetry();
 
-    int getDelay();
+  int getDelay();
 
-    @CheckReturnValue
-    HeadlessJsTaskRetryPolicy update();
+  @CheckReturnValue
+  HeadlessJsTaskRetryPolicy update();
 
-    HeadlessJsTaskRetryPolicy copy();
-
+  HeadlessJsTaskRetryPolicy copy();
 }

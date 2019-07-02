@@ -12,21 +12,22 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
-import java.util.List;
 
 public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModuleManagerDelegate {
   private final List<TurboReactPackage> mPackages = new ArrayList<>();
   private final Map<String, TurboModule> mModules = new HashMap<>();
   private final ReactApplicationContext mReactApplicationContext;
 
-  protected ReactPackageTurboModuleManagerDelegate(ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
+  protected ReactPackageTurboModuleManagerDelegate(
+      ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
     super();
     mReactApplicationContext = reactApplicationContext;
     for (ReactPackage reactPackage : packages) {
       if (reactPackage instanceof TurboReactPackage) {
-        mPackages.add((TurboReactPackage)reactPackage);
+        mPackages.add((TurboReactPackage) reactPackage);
       }
     }
   }
@@ -44,7 +45,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       return null;
     }
 
-
     return module;
   }
 
@@ -60,8 +60,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       return null;
     }
 
-
-    return (CxxModuleWrapper)module;
+    return (CxxModuleWrapper) module;
   }
 
   private TurboModule resolveModule(String moduleName) {
@@ -79,25 +78,23 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         }
       } catch (IllegalArgumentException ex) {
         /**
-         * TurboReactPackages can throw an IllegalArgumentException when a module
-         * isn't found. If this happens, it's safe to ignore the exception because
-         * a later TurboReactPackage could provide the module.
+         * TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
+         * this happens, it's safe to ignore the exception because a later TurboReactPackage could
+         * provide the module.
          */
       }
     }
 
     if (resolvedModule instanceof TurboModule) {
-      mModules.put(moduleName, (TurboModule)resolvedModule);
+      mModules.put(moduleName, (TurboModule) resolvedModule);
     } else {
       /**
-       * 1. The list of TurboReactPackages doesn't change.
-       * 2. TurboReactPackage.getModule is deterministic. Therefore, any two
-       * invocations of TurboReactPackage.getModule will return the same result
-       * given that they're provided the same arguments.
+       * 1. The list of TurboReactPackages doesn't change. 2. TurboReactPackage.getModule is
+       * deterministic. Therefore, any two invocations of TurboReactPackage.getModule will return
+       * the same result given that they're provided the same arguments.
        *
-       * Hence, if module lookup fails once, we know it'll fail every time.
-       * Therefore, we can write null to the mModules Map and avoid doing this
-       * extra work.
+       * <p>Hence, if module lookup fails once, we know it'll fail every time. Therefore, we can
+       * write null to the mModules Map and avoid doing this extra work.
        */
       mModules.put(moduleName, null);
     }
@@ -105,7 +102,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     return mModules.get(moduleName);
   }
 
-  public static abstract class Builder {
+  public abstract static class Builder {
     private @Nullable List<ReactPackage> mPackages;
     private @Nullable ReactApplicationContext mContext;
 
@@ -119,11 +116,16 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       return this;
     }
 
-    protected abstract ReactPackageTurboModuleManagerDelegate build(ReactApplicationContext context, List<ReactPackage> packages);
+    protected abstract ReactPackageTurboModuleManagerDelegate build(
+        ReactApplicationContext context, List<ReactPackage> packages);
 
     public ReactPackageTurboModuleManagerDelegate build() {
-      Assertions.assertNotNull(mContext, "The ReactApplicationContext must be provided to create ReactPackageTurboModuleManagerDelegate");
-      Assertions.assertNotNull(mPackages, "A set of ReactPackages must be provided to create ReactPackageTurboModuleManagerDelegate");
+      Assertions.assertNotNull(
+          mContext,
+          "The ReactApplicationContext must be provided to create ReactPackageTurboModuleManagerDelegate");
+      Assertions.assertNotNull(
+          mPackages,
+          "A set of ReactPackages must be provided to create ReactPackageTurboModuleManagerDelegate");
       return build(mContext, mPackages);
     }
   }

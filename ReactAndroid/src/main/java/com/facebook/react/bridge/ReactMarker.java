@@ -5,16 +5,14 @@
 
 package com.facebook.react.bridge;
 
-import java.util.List;
+import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
-
+import java.util.List;
 import javax.annotation.Nullable;
 
-import com.facebook.proguard.annotations.DoNotStrip;
-
 /**
- * Static class that allows markers to be placed in React code and responded to in a
- * configurable way
+ * Static class that allows markers to be placed in React code and responded to in a configurable
+ * way
  */
 @DoNotStrip
 public class ReactMarker {
@@ -30,7 +28,7 @@ public class ReactMarker {
 
   @DoNotStrip
   public static void addListener(MarkerListener listener) {
-    synchronized(sListeners) {
+    synchronized (sListeners) {
       if (!sListeners.contains(listener)) {
         sListeners.add(listener);
       }
@@ -39,14 +37,14 @@ public class ReactMarker {
 
   @DoNotStrip
   public static void removeListener(MarkerListener listener) {
-    synchronized(sListeners) {
+    synchronized (sListeners) {
       sListeners.remove(listener);
     }
   }
 
   @DoNotStrip
   public static void clearMarkerListeners() {
-    synchronized(sListeners) {
+    synchronized (sListeners) {
       sListeners.clear();
     }
   }
@@ -89,7 +87,7 @@ public class ReactMarker {
 
   @DoNotStrip
   public static void logMarker(ReactMarkerConstants name, @Nullable String tag, int instanceKey) {
-    synchronized(sListeners) {
+    synchronized (sListeners) {
       for (MarkerListener listener : sListeners) {
         listener.logMarker(name, tag, instanceKey);
       }

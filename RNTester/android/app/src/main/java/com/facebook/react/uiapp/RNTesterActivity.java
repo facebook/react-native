@@ -1,18 +1,14 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uiapp;
 
 import android.os.Bundle;
-
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
-
 import javax.annotation.Nullable;
 
 public class RNTesterActivity extends ReactActivity {
@@ -31,10 +27,11 @@ public class RNTesterActivity extends ReactActivity {
       // Get remote param before calling super which uses it
       Bundle bundle = mActivity.getIntent().getExtras();
       if (bundle != null && bundle.containsKey(PARAM_ROUTE)) {
-        String routeUri = new StringBuilder("rntester://example/")
-          .append(bundle.getString(PARAM_ROUTE))
-          .append("Example")
-          .toString();
+        String routeUri =
+            new StringBuilder("rntester://example/")
+                .append(bundle.getString(PARAM_ROUTE))
+                .append("Example")
+                .toString();
         mInitialProps = new Bundle();
         mInitialProps.putString("exampleFromAppetizeParams", routeUri);
       }

@@ -1,22 +1,19 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.packagerconnection;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-
-import javax.annotation.Nullable;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
+import javax.annotation.Nullable;
 
 public class PackagerConnectionSettings {
   private static final String TAG = PackagerConnectionSettings.class.getSimpleName();
@@ -45,9 +42,11 @@ public class PackagerConnectionSettings {
 
     if (host.equals(AndroidInfoHelpers.DEVICE_LOCALHOST)) {
       FLog.w(
-        TAG,
-        "You seem to be running on device. Run '" + AndroidInfoHelpers.getAdbReverseTcpCommand(mAppContext) + "' " +
-          "to forward the debug server's port to the device.");
+          TAG,
+          "You seem to be running on device. Run '"
+              + AndroidInfoHelpers.getAdbReverseTcpCommand(mAppContext)
+              + "' "
+              + "to forward the debug server's port to the device.");
     }
 
     return host;

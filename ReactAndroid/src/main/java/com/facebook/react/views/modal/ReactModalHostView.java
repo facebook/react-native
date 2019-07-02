@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.modal;
 
 import android.annotation.TargetApi;
@@ -38,14 +37,13 @@ import javax.annotation.Nullable;
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
  *
- * It does a number of things:
- *  1. It creates a Dialog.  We use this Dialog to actually display the Modal in the window.
- *  2. It creates a DialogRootViewGroup.  This view is the view that is displayed by the Dialog. To
- *     display a view within a Dialog, that view must have its parent set to the window the Dialog
- *     creates.  Because of this, we can not use the ReactModalHostView since it sits in the
- *     normal React view hierarchy.  We do however want all of the layout magic to happen as if the
- *     DialogRootViewGroup were part of the hierarchy.  Therefore, we forward all view changes
- *     around addition and removal of views to the DialogRootViewGroup.
+ * <p>It does a number of things: 1. It creates a Dialog. We use this Dialog to actually display the
+ * Modal in the window. 2. It creates a DialogRootViewGroup. This view is the view that is displayed
+ * by the Dialog. To display a view within a Dialog, that view must have its parent set to the
+ * window the Dialog creates. Because of this, we can not use the ReactModalHostView since it sits
+ * in the normal React view hierarchy. We do however want all of the layout magic to happen as if
+ * the DialogRootViewGroup were part of the hierarchy. Therefore, we forward all view changes around
+ * addition and removal of views to the DialogRootViewGroup.
  */
 public class ReactModalHostView extends ViewGroup implements LifecycleEventListener {
 
@@ -133,7 +131,8 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   private void dismiss() {
     if (mDialog != null) {
       if (mDialog.isShowing()) {
-        Activity dialogContext = ContextUtils.findContextOfType(mDialog.getContext(), Activity.class);
+        Activity dialogContext =
+            ContextUtils.findContextOfType(mDialog.getContext(), Activity.class);
         if (dialogContext == null || !dialogContext.isFinishing()) {
           mDialog.dismiss();
         }
@@ -196,10 +195,10 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   }
 
   /**
-   * showOrUpdate will display the Dialog.  It is called by the manager once all properties are set
-   * because we need to know all of them before creating the Dialog.  It is also smart during
-   * updates if the changed properties can be applied directly to the Dialog or require the
-   * recreation of a new Dialog.
+   * showOrUpdate will display the Dialog. It is called by the manager once all properties are set
+   * because we need to know all of them before creating the Dialog. It is also smart during updates
+   * if the changed properties can be applied directly to the Dialog or require the recreation of a
+   * new Dialog.
    */
   protected void showOrUpdate() {
     // If the existing Dialog is currently up, we may need to redraw it or we may be able to update
@@ -224,39 +223,48 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     Activity currentActivity = getCurrentActivity();
     Context context = currentActivity == null ? getContext() : currentActivity;
     mDialog = new Dialog(context, theme);
-    mDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+    mDialog
+        .getWindow()
+        .setFlags(
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
 
     mDialog.setContentView(getContentView());
     updateProperties();
 
     mDialog.setOnShowListener(mOnShowListener);
     mDialog.setOnKeyListener(
-      new DialogInterface.OnKeyListener() {
-        @Override
-        public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-          if (event.getAction() == KeyEvent.ACTION_UP) {
-            // We need to stop the BACK button from closing the dialog by default so we capture that
-            // event and instead inform JS so that it can make the decision as to whether or not to
-            // allow the back button to close the dialog.  If it chooses to, it can just set visible
-            // to false on the Modal and the Modal will go away
-            if (keyCode == KeyEvent.KEYCODE_BACK) {
-              Assertions.assertNotNull(
-                mOnRequestCloseListener,
-                "setOnRequestCloseListener must be called by the manager");
-              mOnRequestCloseListener.onRequestClose(dialog);
-              return true;
-            } else {
-              // We redirect the rest of the key events to the current activity, since the activity
-              // expects to receive those events and react to them, ie. in the case of the dev menu
-              Activity currentActivity = ((ReactContext) getContext()).getCurrentActivity();
-              if (currentActivity != null) {
-                return currentActivity.onKeyUp(keyCode, event);
+        new DialogInterface.OnKeyListener() {
+          @Override
+          public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+            if (event.getAction() == KeyEvent.ACTION_UP) {
+              // We need to stop the BACK button from closing the dialog by default so we capture
+              // that
+              // event and instead inform JS so that it can make the decision as to whether or not
+              // to
+              // allow the back button to close the dialog.  If it chooses to, it can just set
+              // visible
+              // to false on the Modal and the Modal will go away
+              if (keyCode == KeyEvent.KEYCODE_BACK) {
+                Assertions.assertNotNull(
+                    mOnRequestCloseListener,
+                    "setOnRequestCloseListener must be called by the manager");
+                mOnRequestCloseListener.onRequestClose(dialog);
+                return true;
+              } else {
+                // We redirect the rest of the key events to the current activity, since the
+                // activity
+                // expects to receive those events and react to them, ie. in the case of the dev
+                // menu
+                Activity currentActivity = ((ReactContext) getContext()).getCurrentActivity();
+                if (currentActivity != null) {
+                  return currentActivity.onKeyUp(keyCode, event);
+                }
               }
             }
+            return false;
           }
-          return false;
-        }
-      });
+        });
 
     mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     if (mHardwareAccelerated) {
@@ -264,10 +272,12 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     }
     if (currentActivity != null && !currentActivity.isFinishing()) {
       mDialog.show();
-      if (context instanceof Activity){
-        mDialog.getWindow().getDecorView().setSystemUiVisibility(
-          ((Activity)context).getWindow().getDecorView().getSystemUiVisibility()
-        );
+      if (context instanceof Activity) {
+        mDialog
+            .getWindow()
+            .getDecorView()
+            .setSystemUiVisibility(
+                ((Activity) context).getWindow().getDecorView().getSystemUiVisibility());
       }
       mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
     }
@@ -276,8 +286,8 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   /**
    * Returns the view that will be the root view of the dialog. We are wrapping this in a
    * FrameLayout because this is the system's way of notifying us that the dialog size has changed.
-   * This has the pleasant side-effect of us not having to preface all Modals with
-   * "top: statusBarHeight", since that margin will be included in the FrameLayout.
+   * This has the pleasant side-effect of us not having to preface all Modals with "top:
+   * statusBarHeight", since that margin will be included in the FrameLayout.
    */
   private View getContentView() {
     FrameLayout frameLayout = new FrameLayout(getContext());
@@ -297,8 +307,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     Activity currentActivity = getCurrentActivity();
     if (currentActivity != null) {
       int activityWindowFlags = currentActivity.getWindow().getAttributes().flags;
-      if ((activityWindowFlags
-          & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0) {
+      if ((activityWindowFlags & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0) {
         mDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
       } else {
         mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -309,20 +318,22 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
       mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
     } else {
       mDialog.getWindow().setDimAmount(0.5f);
-      mDialog.getWindow().setFlags(
-          WindowManager.LayoutParams.FLAG_DIM_BEHIND,
-          WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+      mDialog
+          .getWindow()
+          .setFlags(
+              WindowManager.LayoutParams.FLAG_DIM_BEHIND,
+              WindowManager.LayoutParams.FLAG_DIM_BEHIND);
     }
   }
 
   /**
-   * DialogRootViewGroup is the ViewGroup which contains all the children of a Modal.  It gets all
-   * child information forwarded from ReactModalHostView and uses that to create children.  It is
-   * also responsible for acting as a RootView and handling touch events.  It does this the same
-   * way as ReactRootView.
+   * DialogRootViewGroup is the ViewGroup which contains all the children of a Modal. It gets all
+   * child information forwarded from ReactModalHostView and uses that to create children. It is
+   * also responsible for acting as a RootView and handling touch events. It does this the same way
+   * as ReactRootView.
    *
-   * To get layout to work properly, we need to layout all the elements within the Modal as if they
-   * can fill the entire window.  To do that, we need to explicitly set the styleWidth and
+   * <p>To get layout to work properly, we need to layout all the elements within the Modal as if
+   * they can fill the entire window. To do that, we need to explicitly set the styleWidth and
    * styleHeight on the LayoutShadowNode to be the window size. This is done through the
    * UIManagerModule, and will then cause the children to layout as if they can fill the window.
    */
@@ -351,13 +362,14 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
         final int viewTag = getChildAt(0).getId();
         ReactContext reactContext = getReactContext();
         reactContext.runOnNativeModulesQueueThread(
-          new GuardedRunnable(reactContext) {
-            @Override
-            public void runGuarded() {
-              (getReactContext()).getNativeModule(UIManagerModule.class)
-                .updateNodeSize(viewTag, viewWidth, viewHeight);
-            }
-          });
+            new GuardedRunnable(reactContext) {
+              @Override
+              public void runGuarded() {
+                (getReactContext())
+                    .getNativeModule(UIManagerModule.class)
+                    .updateNodeSize(viewTag, viewWidth, viewHeight);
+              }
+            });
       } else {
         hasAdjustedSize = true;
       }

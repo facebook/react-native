@@ -37,11 +37,12 @@ import javax.annotation.Nullable;
    */
   abstract @Nullable Animation createAnimationImpl(View view, int x, int y, int width, int height);
 
-  private static final Map<InterpolatorType, BaseInterpolator> INTERPOLATOR = MapBuilder.of(
-      InterpolatorType.LINEAR, new LinearInterpolator(),
-      InterpolatorType.EASE_IN, new AccelerateInterpolator(),
-      InterpolatorType.EASE_OUT, new DecelerateInterpolator(),
-      InterpolatorType.EASE_IN_EASE_OUT, new AccelerateDecelerateInterpolator());
+  private static final Map<InterpolatorType, BaseInterpolator> INTERPOLATOR =
+      MapBuilder.of(
+          InterpolatorType.LINEAR, new LinearInterpolator(),
+          InterpolatorType.EASE_IN, new AccelerateInterpolator(),
+          InterpolatorType.EASE_OUT, new DecelerateInterpolator(),
+          InterpolatorType.EASE_IN_EASE_OUT, new AccelerateDecelerateInterpolator());
 
   private @Nullable Interpolator mInterpolator;
   private int mDelayMs;
@@ -57,8 +58,10 @@ import javax.annotation.Nullable;
   }
 
   public void initializeFromConfig(ReadableMap data, int globalDuration) {
-    mAnimatedProperty = data.hasKey("property") ?
-        AnimatedPropertyType.fromString(data.getString("property")) : null;
+    mAnimatedProperty =
+        data.hasKey("property")
+            ? AnimatedPropertyType.fromString(data.getString("property"))
+            : null;
     mDurationMs = data.hasKey("duration") ? data.getInt("duration") : globalDuration;
     mDelayMs = data.hasKey("delay") ? data.getInt("delay") : 0;
     if (!data.hasKey("type")) {
@@ -81,12 +84,7 @@ import javax.annotation.Nullable;
    * @param width the new width value for the view
    * @param height the new height value for the view
    */
-   public final @Nullable Animation createAnimation(
-       View view,
-       int x,
-       int y,
-       int width,
-       int height) {
+  public final @Nullable Animation createAnimation(View view, int x, int y, int width, int height) {
     if (!isValid()) {
       return null;
     }
@@ -101,12 +99,13 @@ import javax.annotation.Nullable;
   }
 
   private static Interpolator getInterpolator(InterpolatorType type, ReadableMap params) {
-     Interpolator interpolator;
-     if (type.equals(InterpolatorType.SPRING)) {
-       interpolator = new SimpleSpringInterpolator(SimpleSpringInterpolator.getSpringDamping(params));
-     } else {
-       interpolator = INTERPOLATOR.get(type);
-     }
+    Interpolator interpolator;
+    if (type.equals(InterpolatorType.SPRING)) {
+      interpolator =
+          new SimpleSpringInterpolator(SimpleSpringInterpolator.getSpringDamping(params));
+    } else {
+      interpolator = INTERPOLATOR.get(type);
+    }
     if (interpolator == null) {
       throw new IllegalArgumentException("Missing interpolator for type : " + type);
     }
