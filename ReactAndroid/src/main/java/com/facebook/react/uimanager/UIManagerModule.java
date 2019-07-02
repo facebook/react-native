@@ -659,6 +659,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
   }
 
+  /** Deprecated, use {@link #dispatchCommand(int, String, ReadableArray)} instead. */
+  @Deprecated
   @Override
   public void dispatchCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     mUIImplementation.dispatchViewManagerCommand(reactTag, commandId, commandArgs);

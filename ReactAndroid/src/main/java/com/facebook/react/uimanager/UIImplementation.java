@@ -689,6 +689,7 @@ public class UIImplementation {
     mOperationsQueue.enqueueClearJSResponder();
   }
 
+  @Deprecated
   public void dispatchViewManagerCommand(
       int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     assertViewExists(reactTag, "dispatchViewManagerCommand");

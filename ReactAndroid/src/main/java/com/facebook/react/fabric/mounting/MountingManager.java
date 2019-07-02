@@ -134,6 +134,7 @@ public class MountingManager {
     return viewState;
   }
 
+  @Deprecated
   public void receiveCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     ViewState viewState = getViewState(reactTag);
 

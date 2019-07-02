@@ -159,10 +159,13 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * UIManager}. Good example of such a command would be {@code scrollTo} request with coordinates
    * for a {@link ScrollView} instance.
    *
+   * <p>This method is deprecated use {@link #receiveCommand(View, String, ReadableArray)} instead.
+   *
    * @param root View instance that should receive the command
    * @param commandId code of the command
    * @param args optional arguments for the command
    */
+  @Deprecated
   public void receiveCommand(@Nonnull T root, int commandId, @Nullable ReadableArray args) {}
 
   /**

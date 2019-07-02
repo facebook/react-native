@@ -261,6 +261,7 @@ public class UIViewOperationQueue {
     }
   }
 
+  @Deprecated
   private final class DispatchCommandOperation extends ViewOperation {
 
     private final int mCommand;
@@ -613,6 +614,7 @@ public class UIViewOperationQueue {
     mOperations.add(new ChangeJSResponderOperation(0, 0, true /*clearResponder*/, false));
   }
 
+  @Deprecated
   public void enqueueDispatchCommand(
       int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     mOperations.add(new DispatchCommandOperation(reactTag, commandId, commandArgs));

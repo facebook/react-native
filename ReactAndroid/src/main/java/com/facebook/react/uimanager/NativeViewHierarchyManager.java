@@ -737,6 +737,7 @@ public class NativeViewHierarchyManager {
     mLayoutAnimator.reset();
   }
 
+  @Deprecated
   public synchronized void dispatchCommand(
       int reactTag, int commandId, @Nullable ReadableArray args) {
     UiThreadUtil.assertOnUiThread();

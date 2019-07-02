@@ -480,6 +480,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public void onHostDestroy() {}
 
+  @Deprecated
   @Override
   public void dispatchCommand(
       final int reactTag, final int commandId, @Nullable final ReadableArray commandArgs) {
