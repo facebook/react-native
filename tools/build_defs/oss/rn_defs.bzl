@@ -331,3 +331,8 @@ def jni_instrumentation_test_lib(**_kwargs):
 def fb_xplat_cxx_test(**_kwargs):
     """A noop stub for OSS build."""
     pass
+
+# iOS Plugin support.
+def react_module_plugin_providers():
+    # Noop for now
+    return []
