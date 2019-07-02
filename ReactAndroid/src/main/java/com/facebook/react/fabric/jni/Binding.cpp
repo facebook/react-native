@@ -596,6 +596,11 @@ void Binding::schedulerDidFinishTransaction(
     }
   }
 
+  if (position <= 0) {
+    // If there are no mountItems to be sent to the platform, then it is not necessary to even call.
+    return;
+  }
+
   static auto createMountItemsBatchContainer =
       jni::findClassStatic(UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(
