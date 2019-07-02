@@ -1669,6 +1669,16 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
       : YGFloatMax(
             0, availableHeight - marginAxisColumn - paddingAndBorderAxisColumn);
 
+  // Measure the text under the current constraints.
+  const YGSize measuredSize = marker::MarkerSection<YGMarkerMeasure>::wrap(
+      node,
+      node->getMeasure(),
+      node,
+      innerWidth,
+      widthMeasureMode,
+      innerHeight,
+      heightMeasureMode);
+
   if (widthMeasureMode == YGMeasureModeExactly &&
       heightMeasureMode == YGMeasureModeExactly) {
     // Don't bother sizing the text if both dimensions are already defined.
@@ -1689,16 +1699,6 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
             ownerWidth),
         YGDimensionHeight);
   } else {
-    // Measure the text under the current constraints.
-    const YGSize measuredSize = marker::MarkerSection<YGMarkerMeasure>::wrap(
-        node,
-        node->getMeasure(),
-        node,
-        innerWidth,
-        widthMeasureMode,
-        innerHeight,
-        heightMeasureMode);
-
     node->setLayoutMeasuredDimension(
         YGNodeBoundAxis(
             node,
