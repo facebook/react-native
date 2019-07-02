@@ -58,9 +58,32 @@ export type AccessibilityRole =
   | 'adjustable'
   | 'imagebutton'
   | 'header'
-  | 'summary';
+  | 'summary'
+  | 'alert'
+  | 'checkbox'
+  | 'combobox'
+  | 'menu'
+  | 'menubar'
+  | 'menuitem'
+  | 'progressbar'
+  | 'radio'
+  | 'radiogroup'
+  | 'scrollbar'
+  | 'spinbutton'
+  | 'switch'
+  | 'tab'
+  | 'tablist'
+  | 'timer'
+  | 'toolbar';
 
-export type AccessibilityState = 'selected' | 'disabled';
+export type AccessibilityState =
+  | 'selected'
+  | 'disabled'
+  | 'checked'
+  | 'unchecked'
+  | 'busy'
+  | 'expanded'
+  | 'collapsed';
 
 export type AccessibilityStates =
   | AccessibilityState
@@ -106,6 +129,30 @@ module.exports = {
     'imagebutton',
     'header',
     'summary',
+    'alert',
+    'checkbox',
+    'combobox',
+    'menu',
+    'menubar',
+    'menuitem',
+    'progressbar',
+    'radio',
+    'radiogroup',
+    'scrollbar',
+    'spinbutton',
+    'switch',
+    'tab',
+    'tablist',
+    'timer',
+    'toolbar',
   ],
-  AccessibilityStates: ['selected', 'disabled'],
+  AccessibilityStates: [
+    'selected',
+    'disabled',
+    'checked',
+    'unchecked',
+    'busy',
+    'expanded',
+    'collapsed',
+  ],
 };
