@@ -608,7 +608,7 @@ void Binding::schedulerDidFinishTransaction(
   static auto scheduleMountItems =
       jni::findClassStatic(UIManagerJavaDescriptor)
           ->getMethod<void(JMountItem::javaobject, jlong, jlong, jlong, jlong)>(
-              "scheduleMountItems");
+              "scheduleMountItem");
 
   long finishTransactionEndTime = getTime();
 

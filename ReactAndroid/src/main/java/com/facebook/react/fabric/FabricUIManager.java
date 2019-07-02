@@ -328,7 +328,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props) {
     long time = SystemClock.uptimeMillis();
     try {
-      scheduleMountItems(updatePropsMountItem(reactTag, props), time, 0, time, time);
+      scheduleMountItem(updatePropsMountItem(reactTag, props), time, 0, time, time);
     } catch (Exception ex) {
       // ignore exceptions for now
       // TODO T42943890: Fix animations in Fabric and remove this try/catch
@@ -341,8 +341,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    */
   @DoNotStrip
   @SuppressWarnings("unused")
-  private void scheduleMountItems(
-      final MountItem mountItems,
+  private void scheduleMountItem(
+      final MountItem mountItem,
       long commitStartTime,
       long layoutTime,
       long finishTransactionStartTime,
@@ -355,7 +355,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mFinishTransactionTime = SystemClock.uptimeMillis() - finishTransactionStartTime;
     mDispatchViewUpdatesTime = SystemClock.uptimeMillis();
     synchronized (mMountItemsLock) {
-      mMountItems.add(mountItems);
+      mMountItems.add(mountItem);
     }
 
     if (UiThreadUtil.isOnUiThread()) {
