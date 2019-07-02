@@ -130,9 +130,13 @@ public class CatalystMultitouchHandlingTestCase extends ReactAppInstrumentationT
    * This method "replay" multi-touch gesture recorded with modified TouchesHelper class that
    * generated this piece of code (see https://phabricator.fb.com/P19756940). This is not intended
    * to be copied/reused and once we need to have more multitouch gestures in instrumentation tests
-   * we should either: - implement nice generator similar to {@link SingleTouchGestureGenerator} -
-   * implement gesture recorded that will record touch data using arbitrary format and then read
-   * this recorded touch sequence during tests instead of generating code like this
+   * we should either:
+   *
+   * <ul>
+   *   <li>implement nice generator similar to {@link SingleTouchGestureGenerator}
+   *   <li>implement gesture recorded that will record touch data using arbitrary format and then
+   *       read this recorded touch sequence during tests instead of generating code like this
+   * </ul>
    */
   private void generateRecordedPinchTouchEvents() {
     // START OF GENERATED CODE

@@ -34,14 +34,19 @@ import javax.annotation.Nullable;
  * operations (such as interpolation, addition, etc) and connection are used to describe how change
  * of the value in one node can affect other nodes.
  *
- * <p>Few examples of the nodes that can be created on the JS side: - Animated.Value is a simplest
- * type of node with a numeric value which can be driven by an animation engine (spring, decay, etc)
- * or by calling setValue on it directly from JS - Animated.add is a type of node that may have two
- * or more input nodes. It outputs the sum of all the input node values - interpolate - is actually
- * a method you can call on any node and it creates a new node that takes the parent node as an
- * input and outputs its interpolated value (e.g. if you have value that can animate from 0 to 1 you
- * can create interpolated node and set output range to be 0 to 100 and when the input node changes
- * the output of interpolated node will multiply the values by 100)
+ * <p>Few examples of the nodes that can be created on the JS side:
+ *
+ * <ul>
+ *   <li>Animated.Value is a simplest type of node with a numeric value which can be driven by an
+ *       animation engine (spring, decay, etc) or by calling setValue on it directly from JS
+ *   <li>Animated.add is a type of node that may have two or more input nodes. It outputs the sum of
+ *       all the input node values
+ *   <li>interpolate - is actually a method you can call on any node and it creates a new node that
+ *       takes the parent node as an input and outputs its interpolated value (e.g. if you have
+ *       value that can animate from 0 to 1 you can create interpolated node and set output range to
+ *       be 0 to 100 and when the input node changes the output of interpolated node will multiply
+ *       the values by 100)
+ * </ul>
  *
  * <p>You can mix and chain nodes however you like and this way create nodes graph with connections
  * between them.

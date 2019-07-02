@@ -20,9 +20,15 @@ import javax.annotation.Nullable;
  * <p>Each annotated method should return {@code void} and take exactly two arguments: first being a
  * view instance to be updated and second a value that should be set.
  *
- * <p>Allowed types of values are: - primitives (int, boolean, double, float) - {@link String} -
- * {@link Boolean} - {@link com.facebook.react.bridge.ReadableArray} - {@link
- * com.facebook.react.bridge.ReadableMap}
+ * <p>Allowed types of values are:
+ *
+ * <ul>
+ *   <li>primitives (int, boolean, double, float)
+ *   <li>{@link String}
+ *   <li>{@link Boolean}
+ *   <li>{@link com.facebook.react.bridge.ReadableArray}
+ *   <li>{@link com.facebook.react.bridge.ReadableMap}
+ * </ul>
  *
  * <p>When property gets removed from the corresponding component in React, annotated setter will be
  * called with {@code null} in case of non-primitive value type or with a default value in case when

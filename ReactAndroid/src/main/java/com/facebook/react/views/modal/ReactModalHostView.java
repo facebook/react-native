@@ -37,13 +37,17 @@ import javax.annotation.Nullable;
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
  *
- * <p>It does a number of things: 1. It creates a Dialog. We use this Dialog to actually display the
- * Modal in the window. 2. It creates a DialogRootViewGroup. This view is the view that is displayed
- * by the Dialog. To display a view within a Dialog, that view must have its parent set to the
- * window the Dialog creates. Because of this, we can not use the ReactModalHostView since it sits
- * in the normal React view hierarchy. We do however want all of the layout magic to happen as if
- * the DialogRootViewGroup were part of the hierarchy. Therefore, we forward all view changes around
- * addition and removal of views to the DialogRootViewGroup.
+ * <p>It does a number of things:
+ *
+ * <ol>
+ *   <li>It creates a Dialog. We use this Dialog to actually display the Modal in the window.
+ *   <li>It creates a DialogRootViewGroup. This view is the view that is displayed by the Dialog. To
+ *       display a view within a Dialog, that view must have its parent set to the window the Dialog
+ *       creates. Because of this, we can not use the ReactModalHostView since it sits in the normal
+ *       React view hierarchy. We do however want all of the layout magic to happen as if the
+ *       DialogRootViewGroup were part of the hierarchy. Therefore, we forward all view changes
+ *       around addition and removal of views to the DialogRootViewGroup.
+ * </ol>
  */
 public class ReactModalHostView extends ViewGroup implements LifecycleEventListener {
 

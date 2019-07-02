@@ -15,10 +15,14 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
  * Event emitted by {@link ReactViewPager} when user scrolls between pages (or when animating
  * between pages).
  *
- * <p>Additional data provided by this event: - position - index of first page from the left that is
- * currently visible - offset - value from range [0,1) describing stage between page transitions.
- * Value x means that (1 - x) fraction of the page at "position" index is visible, and x fraction of
- * the next page is visible.
+ * <p>Additional data provided by this event:
+ *
+ * <ul>
+ *   <li>position - index of first page from the left that is currently visible
+ *   <li>offset - value from range [0,1) describing stage between page transitions. Value x means
+ *       that (1 - x) fraction of the page at "position" index is visible, and x fraction of the
+ *       next page is visible.
+ * </ul>
  */
 /* package */ class PageScrollEvent extends Event<PageScrollEvent> {
 

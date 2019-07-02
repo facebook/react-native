@@ -14,7 +14,11 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 /**
  * Event emitted by {@link ReactViewPager} when user scrolling state changed.
  *
- * <p>Additional data provided by this event: - pageScrollState - {Idle,Dragging,Settling}
+ * <p>Additional data provided by this event:
+ *
+ * <ul>
+ *   <li>pageScrollState - {Idle,Dragging,Settling}
+ * </ul>
  */
 class PageScrollStateChangedEvent extends Event<PageScrollStateChangedEvent> {
 

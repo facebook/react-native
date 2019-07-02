@@ -20,11 +20,16 @@ import javax.annotation.Nullable;
  * occurs.
  *
  * <p>Native methods can be exposed to JS with {@link ReactMethod} annotation. Those methods may
- * only use limited number of types for their arguments: 1/ primitives (boolean, int, float, double
- * 2/ {@link String} mapped from JS string 3/ {@link ReadableArray} mapped from JS Array 4/ {@link
- * ReadableMap} mapped from JS Object 5/ {@link Callback} mapped from js function and can be used
- * only as a last parameter or in the case when it express success & error callback pair as two last
- * arguments respectively.
+ * only use limited number of types for their arguments:
+ *
+ * <ol>
+ *   <li>primitives (boolean, int, float, double
+ *   <li>{@link String} mapped from JS string
+ *   <li>{@link ReadableArray} mapped from JS Array
+ *   <li>{@link ReadableMap} mapped from JS Object
+ *   <li>{@link Callback} mapped from js function and can be used only as a last parameter or in the
+ *       case when it express success & error callback pair as two last arguments respectively.
+ * </ol>
  *
  * <p>All methods exposed as native to JS with {@link ReactMethod} annotation must return {@code
  * void}.

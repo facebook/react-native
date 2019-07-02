@@ -17,9 +17,13 @@ import javax.annotation.Nullable;
  * app outside of this catalyst instance still in a good state to allow reloading and restarting
  * this catalyst instance?
  *
- * <p>Examples where this class is appropriate to throw: - JS tries to update a view with a tag that
- * hasn't been created yet - JS tries to show a static image that isn't in resources - JS tries to
- * use an unsupported view class
+ * <p>Examples where this class is appropriate to throw:
+ *
+ * <ul>
+ *   <li>JS tries to update a view with a tag that hasn't been created yet
+ *   <li>JS tries to show a static image that isn't in resources
+ *   <li>JS tries to use an unsupported view class
+ * </ul>
  *
  * <p>Examples where this class **isn't** appropriate to throw: - Failed to write to localStorage
  * because disk is full - Assertions about internal state (e.g. that

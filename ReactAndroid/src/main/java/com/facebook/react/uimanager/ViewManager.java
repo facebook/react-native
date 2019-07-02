@@ -193,8 +193,18 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * native views. This should return bubbling directly-dispatched event types and specify what
    * names should be used to subscribe to either form (bubbling/capturing).
    *
-   * <p>Returned map should be of the form: { "onTwirl": { "phasedRegistrationNames": { "bubbled":
-   * "onTwirl", "captured": "onTwirlCaptured" } } }
+   * <p>Returned map should be of the form:
+   *
+   * <pre>
+   * {
+   *   "onTwirl": {
+   *     "phasedRegistrationNames": {
+   *       "bubbled": "onTwirl",
+   *       "captured": "onTwirlCaptured"
+   *     }
+   *   }
+   * }
+   * </pre>
    */
   public @Nullable Map<String, Object> getExportedCustomBubblingEventTypeConstants() {
     return null;
@@ -204,7 +214,15 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * Returns a map of config data passed to JS that defines eligible events that can be placed on
    * native views. This should return non-bubbling directly-dispatched event types.
    *
-   * <p>Returned map should be of the form: { "onTwirl": { "registrationName": "onTwirl" } }
+   * <p>Returned map should be of the form:
+   *
+   * <pre>
+   * {
+   *   "onTwirl": {
+   *     "registrationName": "onTwirl"
+   *   }
+   * }
+   * </pre>
    */
   public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
     return null;

@@ -33,9 +33,12 @@ public class I18nUtil {
   }
 
   /**
-   * Check if the device is currently running on an RTL locale. This only happens when the app: - is
-   * forcing RTL layout, regardless of the active language (for development purpose) - allows RTL
-   * layout when using RTL locale
+   * Check if the device is currently running on an RTL locale. This only happens when the app:
+   *
+   * <ul>
+   *   <li>is forcing RTL layout, regardless of the active language (for development purpose)
+   *   <li>allows RTL layout when using RTL locale
+   * </ul>
    */
   public boolean isRTL(Context context) {
     if (isRTLForced(context)) {

@@ -38,10 +38,14 @@ import javax.annotation.Nullable;
  * <p>Keep in mind that all JS remote method calls and script load calls are asynchronous and you
  * should not expect them to return results immediately.
  *
- * <p>In order to write catalyst integration: 1) Make {@link ReactIntegrationTestCase} a base class
- * of your test case 2) Use {@link ReactTestHelper#catalystInstanceBuilder()} instead of {@link
- * com.facebook.react.bridge.CatalystInstanceImpl.Builder} to build catalyst instance for testing
- * purposes
+ * <p>In order to write catalyst integration:
+ *
+ * <ol>
+ *   <li>Make {@link ReactIntegrationTestCase} a base class of your test case
+ *   <li>Use {@link ReactTestHelper#catalystInstanceBuilder()} instead of {@link
+ *       com.facebook.react.bridge.CatalystInstanceImpl.Builder} to build catalyst instance for
+ *       testing purposes
+ * </ol>
  */
 public abstract class ReactIntegrationTestCase extends AndroidTestCase {
 

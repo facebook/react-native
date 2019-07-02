@@ -61,12 +61,15 @@ public class DidJSUpdateUiDuringFrameDetector
    * <p>There are two 'success' cases that will cause {@link #getDidJSHitFrameAndCleanup} to return
    * true for a given frame:
    *
-   * <p>1) UIManagerModule finished dispatching a batched UI update on the UI thread during the
-   * frame. This means that during the next hierarchy traversal, new UI will be drawn if needed
-   * (good). 2) The bridge ended the frame idle (meaning there were no JS nor native module calls
-   * still in flight) AND there was no UiManagerModule update enqueued that didn't also finish. NB:
-   * if there was one enqueued that actually finished, we'd have case 1), so effectively we just
-   * look for whether one was enqueued.
+   * <ol>
+   *   <li>UIManagerModule finished dispatching a batched UI update on the UI thread during the
+   *       frame. This means that during the next hierarchy traversal, new UI will be drawn if
+   *       needed (good).
+   *   <li>The bridge ended the frame idle (meaning there were no JS nor native module calls still
+   *       in flight) AND there was no UiManagerModule update enqueued that didn't also finish. NB:
+   *       if there was one enqueued that actually finished, we'd have case 1), so effectively we
+   *       just look for whether one was enqueued.
+   * </ol>
    *
    * <p>NB: This call can only be called once for a given frame time range because it cleans up
    * events it recorded for that frame.

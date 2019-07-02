@@ -40,8 +40,15 @@ import javax.annotation.concurrent.NotThreadSafe;
 /**
  * Delegate of {@link UIManagerModule} that owns the native view hierarchy and mapping between
  * native view names used in JS and corresponding instances of {@link ViewManager}. The {@link
- * UIManagerModule} communicates with this class by it's public interface methods: - {@link
- * #updateProperties} - {@link #updateLayout} - {@link #createView} - {@link #manageChildren}
+ * UIManagerModule} communicates with this class by it's public interface methods:
+ *
+ * <ul>
+ *   <li>{@link #updateProperties}
+ *   <li>{@link #updateLayout}
+ *   <li>{@link #createView}
+ *   <li>{@link #manageChildren}
+ * </ul>
+ *
  * executing all the scheduled UI operations at the end of JS batch.
  *
  * <p>NB: All native view management methods listed above must be called from the UI thread.
