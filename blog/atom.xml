@@ -2,11 +2,23 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/react-native/blog</id>
     <title>React Native Blog</title>
-    <updated>2019-06-12T06:00:00Z</updated>
+    <updated>2019-07-03T06:00:00Z</updated>
     <generator>Feed for Node.js</generator>
     <link rel="alternate" href="https://facebook.github.io/react-native/blog"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
+    <entry>
+        <title type="html"><![CDATA[Announcing React Native 0.60]]></title>
+        <id>https://facebook.github.io/react-native/blog/2019/07/03/version-60.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2019/07/03/version-60.html">
+        </link>
+        <updated>2019-07-03T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>After months of hard work from hundreds of contributors, the React Native Core team is proud to announce the release of version 0.60. This release handles significant migrations for both Android and iOS platforms, and many issues are resolved too. Th...</p>]]></summary>
+        <author>
+            <name>Ryan Turner</name>
+            <uri>https://twitter.com/turnrye</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[React Native Open Source Update June 2019]]></title>
         <id>https://facebook.github.io/react-native/blog/2019/06/12/react-native-open-source-update.html</id>
@@ -272,6 +284,18 @@
         </author>
     </entry>
     <entry>
+        <title type="html"><![CDATA[Introducing Create React Native App]]></title>
+        <id>https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html">
+        </link>
+        <updated>2017-03-13T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>Today we’re announcing <a href="https://github.com/react-community/create-react-native-app">Create React Native App</a>: a new tool that makes it significantly easier to get started with a React Native project! It’s heavily inspired by the design of <a href="https://github.com/facebookincubator/create-react-app">Create React App</a> and is the product of a collaboration between <a href="https://code.facebook.com">Facebook</a> a...</p>]]></summary>
+        <author>
+            <name>Adam Perry</name>
+            <uri>https://github.com/dikaiosune</uri>
+        </author>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[idx: The Existential Function]]></title>
         <id>https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html</id>
         <link href="https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html">
@@ -293,18 +317,6 @@
         <author>
             <name>Spencer Ahrens</name>
             <uri>https://github.com/sahrens</uri>
-        </author>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Introducing Create React Native App]]></title>
-        <id>https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html">
-        </link>
-        <updated>2017-03-13T06:00:00Z</updated>
-        <summary type="html"><![CDATA[<p>Today we’re announcing <a href="https://github.com/react-community/create-react-native-app">Create React Native App</a>: a new tool that makes it significantly easier to get started with a React Native project! It’s heavily inspired by the design of <a href="https://github.com/facebookincubator/create-react-app">Create React App</a> and is the product of a collaboration between <a href="https://code.facebook.com">Facebook</a> a...</p>]]></summary>
-        <author>
-            <name>Adam Perry</name>
-            <uri>https://github.com/dikaiosune</uri>
         </author>
     </entry>
     <entry>
