@@ -121,11 +121,13 @@
         [dismissButton setTitle:dismissText forState:UIControlStateNormal];
         [dismissButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5]
                             forState:UIControlStateNormal];
+        [dismissButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.8]
+                          forState:UIControlStateFocused];
         [dismissButton setTitleColor:[UIColor whiteColor]
                             forState:UIControlStateHighlighted];
         [dismissButton addTarget:self
                           action:@selector(dismiss)
-                forControlEvents:UIControlEventTouchUpInside];
+                forControlEvents:UIControlEventPrimaryActionTriggered];
 
         UIButton *reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
         reloadButton.accessibilityIdentifier = @"redbox-reload";
@@ -133,11 +135,13 @@
         [reloadButton setTitle:reloadText forState:UIControlStateNormal];
         [reloadButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5]
                            forState:UIControlStateNormal];
+        [reloadButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.8]
+                          forState:UIControlStateFocused];
         [reloadButton setTitleColor:[UIColor whiteColor]
                             forState:UIControlStateHighlighted];
         [reloadButton addTarget:self
                           action:@selector(reload)
-                forControlEvents:UIControlEventTouchUpInside];
+                forControlEvents:UIControlEventPrimaryActionTriggered];
 
         UIStackView *buttonStackView = [UIStackView new];
         buttonStackView.axis = UILayoutConstraintAxisHorizontal;

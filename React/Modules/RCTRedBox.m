@@ -94,7 +94,8 @@
         [dismissButton setTitle:dismissText forState:UIControlStateNormal];
         [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [dismissButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
-        [dismissButton addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
+        [dismissButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.8] forState:UIControlStateFocused];
+        [dismissButton addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventPrimaryActionTriggered];
 
         UIButton *reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
         reloadButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
@@ -106,7 +107,8 @@
         [reloadButton setTitle:reloadText forState:UIControlStateNormal];
         [reloadButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [reloadButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
-        [reloadButton addTarget:self action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
+        [reloadButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.8] forState:UIControlStateFocused];
+        [reloadButton addTarget:self action:@selector(reload) forControlEvents:UIControlEventPrimaryActionTriggered];
 
         UIButton *copyButton = [UIButton buttonWithType:UIButtonTypeCustom];
         copyButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
@@ -118,7 +120,8 @@
         [copyButton setTitle:copyText forState:UIControlStateNormal];
         [copyButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [copyButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
-        [copyButton addTarget:self action:@selector(copyStack) forControlEvents:UIControlEventTouchUpInside];
+        [copyButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.8] forState:UIControlStateFocused];
+        [copyButton addTarget:self action:@selector(copyStack) forControlEvents:UIControlEventPrimaryActionTriggered];
 
         UIButton *extraButton = [UIButton buttonWithType:UIButtonTypeCustom];
         extraButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
@@ -130,7 +133,8 @@
         [extraButton setTitle:extraText forState:UIControlStateNormal];
         [extraButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [extraButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
-        [extraButton addTarget:self action:@selector(showExtraDataViewController) forControlEvents:UIControlEventTouchUpInside];
+        [extraButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.8] forState:UIControlStateFocused];
+        [extraButton addTarget:self action:@selector(showExtraDataViewController) forControlEvents:UIControlEventPrimaryActionTriggered];
 
         CGFloat buttonWidth = self.bounds.size.width / 4;
         CGFloat bottomButtonHeight = self.bounds.size.height - buttonHeight - [self bottomSafeViewHeight];
