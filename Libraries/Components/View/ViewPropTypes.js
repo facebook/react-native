@@ -19,6 +19,7 @@ import type {
   AccessibilityRole,
   AccessibilityStates,
   AccessibilityState,
+  AccessibilityValueDescription,
   AccessibilityActionEvent,
   AccessibilityActionInfo,
 } from './ViewAccessibility';
@@ -415,6 +416,7 @@ export type ViewProps = $ReadOnly<{|
    */
   accessibilityStates?: ?AccessibilityStates,
   accessibilityState?: ?AccessibilityState,
+  accessibilityValueDescription?: ?AccessibilityValueDescription,
 
   /**
    * Provides an array of custom actions available for accessibility.

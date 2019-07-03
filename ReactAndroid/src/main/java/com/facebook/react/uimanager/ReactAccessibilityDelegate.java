@@ -7,15 +7,19 @@ package com.facebook.react.uimanager;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.SpannableString;
 import android.text.style.URLSpan;
-import android.util.Log;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.Nullable;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityEventCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.RangeInfoCompat;
 import com.facebook.react.R;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Dynamic;
@@ -36,6 +40,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
 
   private static final String TAG = "ReactAccessibilityDelegate";
   private static int sCounter = 0x3f000000;
+  private static final int TIMEOUT_SEND_ACCESSIBILITY_EVENT = 200;
+  private static final int SEND_EVENT = 1;
 
   public static final HashMap<String, Integer> sActionIdMap = new HashMap<>();
 
@@ -44,6 +50,23 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     sActionIdMap.put("longpress", AccessibilityActionCompat.ACTION_LONG_CLICK.getId());
     sActionIdMap.put("increment", AccessibilityActionCompat.ACTION_SCROLL_FORWARD.getId());
     sActionIdMap.put("decrement", AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId());
+  }
+
+  private Handler mHandler;
+
+  /**
+   * Schedule a command for sending an accessibility event.
+   * </br>
+   * Note: A command is used to ensure that accessibility events
+   *       are sent at most one in a given time frame to save
+   *       system resources while the progress changes quickly.
+   */
+  private void scheduleAccessibilityEventSender(View host) {
+    if (mHandler.hasMessages(SEND_EVENT, host)) {
+      mHandler.removeMessages(SEND_EVENT, host);
+    }
+    Message msg = mHandler.obtainMessage(SEND_EVENT, host);
+    mHandler.sendMessageDelayed(msg, TIMEOUT_SEND_ACCESSIBILITY_EVENT);
   }
 
   /**
@@ -148,6 +171,13 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
   public ReactAccessibilityDelegate() {
     super();
     mAccessibilityActionsMap = new HashMap<Integer, String>();
+    mHandler = new Handler() {
+      @Override
+      public void handleMessage(Message msg) {
+        View host = (View) msg.obj;
+        host.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_SELECTED);
+      }
+    };
   }
 
   @Override
@@ -190,6 +220,53 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         info.addAction(accessibilityAction);
       }
     }
+
+    // Process accessibilityValueDescription
+
+    final ReadableMap accessibilityValueDescription = (ReadableMap) host.getTag(R.id.accessibility_value_description);
+    if (accessibilityValueDescription != null && accessibilityValueDescription.hasKey("minimum")
+        && accessibilityValueDescription.hasKey("current") && accessibilityValueDescription.hasKey("maximum")) {
+      final Dynamic minimum = accessibilityValueDescription.getDynamic("minimum");
+      final Dynamic current = accessibilityValueDescription.getDynamic("current");
+      final Dynamic maximum = accessibilityValueDescription.getDynamic("maximum");
+      if (minimum != null && minimum.getType() == ReadableType.Number &&
+          current != null && current.getType() == ReadableType.Number &&
+          maximum != null && maximum.getType() == ReadableType.Number) {
+        final int min = minimum.asInt();
+        final int cur = current.asInt();
+        final int max = maximum.asInt();
+        if (max > min &&
+            cur >= min && max >= cur) {
+          info.setRangeInfo(RangeInfoCompat.obtain(RangeInfoCompat.RANGE_TYPE_INT, min, max, cur));
+        }
+      }
+    }
+  }
+
+  @Override
+  public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
+      super.onInitializeAccessibilityEvent(host, event);
+      // Set item count and current item index on accessibility events for adjustable
+      // in order to make Talkback announce the value of the adjustable
+      final ReadableMap accessibilityValueDescription = (ReadableMap) host.getTag(R.id.accessibility_value_description);
+      if (accessibilityValueDescription != null && accessibilityValueDescription.hasKey("minimum")
+      && accessibilityValueDescription.hasKey("current") && accessibilityValueDescription.hasKey("maximum")) {
+        final Dynamic minimum = accessibilityValueDescription.getDynamic("minimum");
+        final Dynamic current = accessibilityValueDescription.getDynamic("current");
+        final Dynamic maximum = accessibilityValueDescription.getDynamic("maximum");
+        if (minimum != null && minimum.getType() == ReadableType.Number &&
+            current != null && current.getType() == ReadableType.Number &&
+            maximum != null && maximum.getType() == ReadableType.Number) {
+          final int min = minimum.asInt();
+          final int cur = current.asInt();
+          final int max = maximum.asInt();
+          if (max > min &&
+              cur >= min && max >= cur) {
+              event.setItemCount(max - min);
+              event.setCurrentItemIndex(cur);
+          }
+        }
+      }
   }
 
   @Override
@@ -201,6 +278,19 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       reactContext
           .getJSModule(RCTEventEmitter.class)
           .receiveEvent(host.getId(), "topAccessibilityAction", event);
+
+      // In order to make Talkback announce the change of the adjustable's value,
+      // schedule to send a TYPE_VIEW_SELECTED event after performing the scroll actions.
+      final AccessibilityRole accessibilityRole = (AccessibilityRole) host.getTag(R.id.accessibility_role);
+      final ReadableMap accessibilityValueDescription = (ReadableMap) host.getTag(R.id.accessibility_value_description);
+      if (accessibilityRole == AccessibilityRole.ADJUSTABLE
+          && (action == AccessibilityActionCompat.ACTION_SCROLL_FORWARD.getId()
+          || action == AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId())) {
+          if (accessibilityValueDescription != null && !accessibilityValueDescription.hasKey("text")) {
+            scheduleAccessibilityEventSender(host);
+          }
+          return super.performAccessibilityAction(host, action, args);
+      }
       return true;
     }
     return super.performAccessibilityAction(host, action, args);
@@ -237,7 +327,6 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
 
   private static void setState(
       AccessibilityNodeInfoCompat info, ReadableMap accessibilityState, Context context) {
-    Log.d(TAG, "setState " + accessibilityState);
     final ReadableMapKeySetIterator i = accessibilityState.keySetIterator();
     while (i.hasNextKey()) {
       final String state = i.nextKey();

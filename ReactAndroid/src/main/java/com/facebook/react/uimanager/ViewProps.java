@@ -142,6 +142,7 @@ public class ViewProps {
   public static final String ACCESSIBILITY_STATES = "accessibilityStates";
   public static final String ACCESSIBILITY_STATE = "accessibilityState";
   public static final String ACCESSIBILITY_ACTIONS = "accessibilityActions";
+  public static final String ACCESSIBILITY_VALUE_DESCRIPTION = "accessibilityValueDescription";
   public static final String IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
 
   // DEPRECATED

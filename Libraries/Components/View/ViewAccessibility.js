@@ -74,3 +74,25 @@ export type AccessibilityState = {
   busy?: boolean,
   expanded?: boolean,
 };
+
+export type AccessibilityValueDescription = {
+  /**
+   * The minimum value of this component's range. (should be an integer)
+   */
+  minimum?: number,
+
+  /**
+   * The current value of this component's range. (should be an integer)
+   */
+  current?: number,
+
+  /**
+   * The maximum value of this component's range. (should be an integer)
+   */
+  maximum?: number,
+
+  /**
+   * A textual description of this component's value. (will override minimum, current, and maximum if set)
+   */
+  text?: string,
+};

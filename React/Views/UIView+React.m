@@ -337,8 +337,17 @@
   objc_setAssociatedObject(self, @selector(accessibilityState), accessibilityState, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-#pragma mark - Debug
+- (NSDictionary<NSString *, id> *)accessibilityValueDescription
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
 
+- (void)setAccessibilityValueDescription:(NSDictionary<NSString *, id> *)accessibilityValueDescription
+{
+  objc_setAssociatedObject(self, @selector(accessibilityValueDescription), accessibilityValueDescription, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+#pragma mark - Debug
 - (void)react_addRecursiveDescriptionToString:(NSMutableString *)string atLevel:(NSUInteger)level
 {
   for (NSUInteger i = 0; i < level; i++) {
