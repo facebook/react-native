@@ -9,12 +9,13 @@
  */
 'use strict';
 
+// $FlowFixMe
 import EventEmitter from '../vendor/emitter/EventEmitter';
 import BatchedBridge from '../BatchedBridge/BatchedBridge';
 
 class BundleRegistry extends EventEmitter {
   _loadStartTimestamp: {[bundleName: string]: number} = {};
-  _print = () => {};
+  _print: (...args: mixed[]) => void = () => {};
 
   constructor() {
     super();
@@ -26,7 +27,7 @@ class BundleRegistry extends EventEmitter {
   }
 
   enableLogging() {
-    this._print = (...args: any[]) => {
+    this._print = (...args: mixed[]) => {
       console.log('BundleRegistry:', ...args);
     };
   }
@@ -41,10 +42,9 @@ class BundleRegistry extends EventEmitter {
       bundleName,
       loadStartTimestamp: this._loadStartTimestamp[bundleName],
     });
-    this._loadStartTimestamp[bundleName] = undefined;
   }
 
-  loadBundle(bundleName: string, synchronously = false) {
+  loadBundle(bundleName: string, synchronously?: boolean = false) {
     this._loadStartTimestamp[bundleName] = Date.now();
     const isBundleLoaded = this.isBundleLoaded(bundleName);
 
