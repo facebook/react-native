@@ -12,7 +12,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 public class DrawerClosedEvent extends Event<DrawerClosedEvent> {
 
-  public static final String EVENT_NAME = "topDrawerClosed";
+  public static final String EVENT_NAME = "topDrawerClose";
 
   public DrawerClosedEvent(int viewId) {
     super(viewId);

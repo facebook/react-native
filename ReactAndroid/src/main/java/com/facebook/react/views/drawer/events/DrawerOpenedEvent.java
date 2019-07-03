@@ -12,7 +12,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 public class DrawerOpenedEvent extends Event<DrawerOpenedEvent> {
 
-  public static final String EVENT_NAME = "topDrawerOpened";
+  public static final String EVENT_NAME = "topDrawerOpen";
 
   public DrawerOpenedEvent(int viewId) {
     super(viewId);
