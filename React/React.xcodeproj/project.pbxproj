@@ -123,15 +123,12 @@
 		13F8875A1E2971D400C3C7A1 /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13F887541E2971C500C3C7A1 /* Unicode.cpp */; };
 		13F8876E1E29726200C3C7A1 /* CxxNativeModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0A81E03699D0018521A /* CxxNativeModule.cpp */; };
 		13F887701E29726200C3C7A1 /* Instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0AE1E03699D0018521A /* Instance.cpp */; };
-		13F887711E29726200C3C7A1 /* JSBundleType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */; };
-		13F8877B1E29726200C3C7A1 /* JSIndexedRAMBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0C61E03699D0018521A /* JSIndexedRAMBundle.cpp */; };
 		13F8877C1E29726200C3C7A1 /* MethodCall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0CA1E03699D0018521A /* MethodCall.cpp */; };
 		13F8877D1E29726200C3C7A1 /* ModuleRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0CC1E03699D0018521A /* ModuleRegistry.cpp */; };
 		13F8877E1E29726200C3C7A1 /* NativeToJsBridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0CF1E03699D0018521A /* NativeToJsBridge.cpp */; };
 		13F887801E29726200C3C7A1 /* SampleCxxModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0D31E03699D0018521A /* SampleCxxModule.cpp */; };
 		13F887821E29726300C3C7A1 /* CxxNativeModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0A81E03699D0018521A /* CxxNativeModule.cpp */; };
 		13F887841E29726300C3C7A1 /* Instance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0AE1E03699D0018521A /* Instance.cpp */; };
-		13F8878E1E29726300C3C7A1 /* JSIndexedRAMBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0C61E03699D0018521A /* JSIndexedRAMBundle.cpp */; };
 		13F8878F1E29726300C3C7A1 /* MethodCall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0CA1E03699D0018521A /* MethodCall.cpp */; };
 		13F887901E29726300C3C7A1 /* ModuleRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0CC1E03699D0018521A /* ModuleRegistry.cpp */; };
 		13F887911E29726300C3C7A1 /* NativeToJsBridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0CF1E03699D0018521A /* NativeToJsBridge.cpp */; };
@@ -172,7 +169,6 @@
 		27595AA91E575C7800CCE2B1 /* Instance.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0AF1E03699D0018521A /* Instance.h */; };
 		27595AAA1E575C7800CCE2B1 /* JsArgumentHelpers-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B01E03699D0018521A /* JsArgumentHelpers-inl.h */; };
 		27595AAB1E575C7800CCE2B1 /* JsArgumentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B11E03699D0018521A /* JsArgumentHelpers.h */; };
-		27595AB51E575C7800CCE2B1 /* JSIndexedRAMBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C71E03699D0018521A /* JSIndexedRAMBundle.h */; };
 		27595AB61E575C7800CCE2B1 /* MessageQueueThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C91E03699D0018521A /* MessageQueueThread.h */; };
 		27595AB71E575C7800CCE2B1 /* MethodCall.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CB1E03699D0018521A /* MethodCall.h */; };
 		27595AB81E575C7800CCE2B1 /* ModuleRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CD1E03699D0018521A /* ModuleRegistry.h */; };
@@ -186,7 +182,6 @@
 		27595AC41E575C7800CCE2B1 /* Instance.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0AF1E03699D0018521A /* Instance.h */; };
 		27595AC51E575C7800CCE2B1 /* JsArgumentHelpers-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B01E03699D0018521A /* JsArgumentHelpers-inl.h */; };
 		27595AC61E575C7800CCE2B1 /* JsArgumentHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B11E03699D0018521A /* JsArgumentHelpers.h */; };
-		27595AD01E575C7800CCE2B1 /* JSIndexedRAMBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C71E03699D0018521A /* JSIndexedRAMBundle.h */; };
 		27595AD11E575C7800CCE2B1 /* MessageQueueThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C91E03699D0018521A /* MessageQueueThread.h */; };
 		27595AD21E575C7800CCE2B1 /* MethodCall.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CB1E03699D0018521A /* MethodCall.h */; };
 		27595AD31E575C7800CCE2B1 /* ModuleRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CD1E03699D0018521A /* ModuleRegistry.h */; };
@@ -374,7 +369,6 @@
 		3D302F9A1DF828F800D6DDAE /* RCTViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E0674D1A70F44B002CDEE1 /* RCTViewManager.h */; };
 		3D302F9D1DF828F800D6DDAE /* RCTWrapperViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 13B080231A694A8400A75B9A /* RCTWrapperViewController.h */; };
 		3D302F9F1DF828F800D6DDAE /* UIView+React.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E067531A70F44B002CDEE1 /* UIView+React.h */; };
-		3D3030221DF8294C00D6DDAE /* JSBundleType.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */; };
 		3D37B5821D522B190042D5B5 /* RCTFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3D37B5811D522B190042D5B5 /* RCTFont.mm */; };
 		3D383D1F1EBD27A8005632C8 /* RCTBridge+Private.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 14A43DB81C1F849600794BC8 /* RCTBridge+Private.h */; };
 		3D383D201EBD27AF005632C8 /* RCTBridge+Private.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 14A43DB81C1F849600794BC8 /* RCTBridge+Private.h */; };
@@ -422,11 +416,8 @@
 		3D383D6F1EBD2940005632C8 /* libthird-party.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139D7ECE1E25DB7D00323FB7 /* libthird-party.a */; };
 		3D383D721EBD2949005632C8 /* libthird-party.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D383D3C1EBD27B6005632C8 /* libthird-party.a */; };
 		3D3CD9411DE5FC5300167DC4 /* libcxxreact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3CD9251DE5FBEC00167DC4 /* libcxxreact.a */; };
-		3D3CD9451DE5FC7100167DC4 /* JSBundleType.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */; };
 		3D74547C1E54758900E74ADD /* JSBigString.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7454781E54757500E74ADD /* JSBigString.h */; };
 		3D74547D1E54758900E74ADD /* JSBigString.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7454781E54757500E74ADD /* JSBigString.h */; };
-		3D74547E1E54759A00E74ADD /* JSModulesUnbundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C81E03699D0018521A /* JSModulesUnbundle.h */; };
-		3D74547F1E54759E00E74ADD /* JSModulesUnbundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C81E03699D0018521A /* JSModulesUnbundle.h */; };
 		3D7454801E5475AF00E74ADD /* RecoverableError.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7454791E54757500E74ADD /* RecoverableError.h */; };
 		3D7454811E5475AF00E74ADD /* RecoverableError.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7454791E54757500E74ADD /* RecoverableError.h */; };
 		3D7749441DC1065C007EC8D8 /* RCTPlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7749431DC1065C007EC8D8 /* RCTPlatform.m */; };
@@ -449,7 +440,6 @@
 		3D7BFD311EA8E41F008DFB7A /* RCTPackagerClient.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD0B1EA8E351008DFB7A /* RCTPackagerClient.h */; };
 		3D7BFD331EA8E433008DFB7A /* RCTPackagerClient.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD0B1EA8E351008DFB7A /* RCTPackagerClient.h */; };
 		3D7BFD351EA8E43F008DFB7A /* RCTDevSettings.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130E3D861E6A082100ACE484 /* RCTDevSettings.h */; };
-		3D80D9181DF6F7A80028D040 /* JSBundleType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */; };
 		3D80D91B1DF6F8200028D040 /* RCTPlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D7749431DC1065C007EC8D8 /* RCTPlatform.m */; };
 		3D80D91F1DF6FA890028D040 /* RCTImageLoader.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D1FA0831DE4F3A000E03CC6 /* RCTImageLoader.h */; };
 		3D80D9201DF6FA890028D040 /* RCTImageStoreManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D1FA0841DE4F3A000E03CC6 /* RCTImageStoreManager.h */; };
@@ -651,9 +641,6 @@
 		3DA981A61E5B0E34004F2374 /* JsArgumentHelpers-inl.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B01E03699D0018521A /* JsArgumentHelpers-inl.h */; };
 		3DA981A71E5B0E34004F2374 /* JsArgumentHelpers.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B11E03699D0018521A /* JsArgumentHelpers.h */; };
 		3DA981A81E5B0E34004F2374 /* JSBigString.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7454781E54757500E74ADD /* JSBigString.h */; };
-		3DA981A91E5B0E34004F2374 /* JSBundleType.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */; };
-		3DA981B31E5B0E34004F2374 /* JSIndexedRAMBundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C71E03699D0018521A /* JSIndexedRAMBundle.h */; };
-		3DA981B41E5B0E34004F2374 /* JSModulesUnbundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C81E03699D0018521A /* JSModulesUnbundle.h */; };
 		3DA981B51E5B0E34004F2374 /* MessageQueueThread.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C91E03699D0018521A /* MessageQueueThread.h */; };
 		3DA981B61E5B0E34004F2374 /* MethodCall.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CB1E03699D0018521A /* MethodCall.h */; };
 		3DA981B71E5B0E34004F2374 /* ModuleRegistry.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CD1E03699D0018521A /* ModuleRegistry.h */; };
@@ -760,9 +747,6 @@
 		3DA982411E5B1053004F2374 /* JsArgumentHelpers-inl.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B01E03699D0018521A /* JsArgumentHelpers-inl.h */; };
 		3DA982421E5B1053004F2374 /* JsArgumentHelpers.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0B11E03699D0018521A /* JsArgumentHelpers.h */; };
 		3DA982431E5B1053004F2374 /* JSBigString.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7454781E54757500E74ADD /* JSBigString.h */; };
-		3DA982441E5B1053004F2374 /* JSBundleType.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */; };
-		3DA9824E1E5B1053004F2374 /* JSIndexedRAMBundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C71E03699D0018521A /* JSIndexedRAMBundle.h */; };
-		3DA9824F1E5B1053004F2374 /* JSModulesUnbundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C81E03699D0018521A /* JSModulesUnbundle.h */; };
 		3DA982501E5B1053004F2374 /* MessageQueueThread.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0C91E03699D0018521A /* MessageQueueThread.h */; };
 		3DA982511E5B1053004F2374 /* MethodCall.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CB1E03699D0018521A /* MethodCall.h */; };
 		3DA982521E5B1053004F2374 /* ModuleRegistry.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0CD1E03699D0018521A /* ModuleRegistry.h */; };
@@ -892,7 +876,6 @@
 		597633371F4E021D005BE8A4 /* RCTShadowView+Internal.m in Sources */ = {isa = PBXBuildFile; fileRef = 597633341F4E021D005BE8A4 /* RCTShadowView+Internal.m */; };
 		597633381F4E021D005BE8A4 /* RCTShadowView+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 597633351F4E021D005BE8A4 /* RCTShadowView+Internal.h */; };
 		597633391F4E021D005BE8A4 /* RCTShadowView+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 597633351F4E021D005BE8A4 /* RCTShadowView+Internal.h */; };
-		598FD1921F816A2A006C54CB /* RAMBundleRegistry.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = C6D380181F71D75B00621378 /* RAMBundleRegistry.h */; };
 		598FD1951F817335006C54CB /* RCTModalManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 91076A881F743AB00081B4FA /* RCTModalManager.h */; };
 		598FD1961F817335006C54CB /* RCTModalManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 91076A871F743AB00081B4FA /* RCTModalManager.m */; };
 		598FD1971F817336006C54CB /* RCTModalManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 91076A881F743AB00081B4FA /* RCTModalManager.h */; };
@@ -1003,6 +986,60 @@
 		6E0C2F36229872CD000E3701 /* RCTCxxConvert.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = C60128A91F3D1258009DF9FF /* RCTCxxConvert.h */; };
 		6E0C2F37229872E8000E3701 /* RCTManagedPointer.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = C654505D1F3BD9280090799B /* RCTManagedPointer.h */; };
 		6E0C2F3A2298731F000E3701 /* RCTCxxModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13134C801E296B2A00B9F3CB /* RCTCxxModule.h */; };
+		690D491922B79FFB0039D9D6 /* RCTDevBundleLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 690D491822B79FFB0039D9D6 /* RCTDevBundleLoader.h */; };
+		690D491A22B79FFB0039D9D6 /* RCTDevBundleLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 690D491822B79FFB0039D9D6 /* RCTDevBundleLoader.h */; };
+		690D491C22B7A0560039D9D6 /* RCTDevBundleLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 690D491B22B7A0560039D9D6 /* RCTDevBundleLoader.mm */; };
+		690D491D22B7A0560039D9D6 /* RCTDevBundleLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 690D491B22B7A0560039D9D6 /* RCTDevBundleLoader.mm */; };
+		691083B622BA8DAA00CBA067 /* RCTDevBundlesDownloader.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 6917608922B8DE2B00B35BC7 /* RCTDevBundlesDownloader.h */; };
+		6917608A22B8DE2B00B35BC7 /* RCTDevBundlesDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 6917608922B8DE2B00B35BC7 /* RCTDevBundlesDownloader.h */; };
+		6917608B22B8DE2B00B35BC7 /* RCTDevBundlesDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 6917608922B8DE2B00B35BC7 /* RCTDevBundlesDownloader.h */; };
+		6917608D22B8EA5900B35BC7 /* RCTDevBundlesDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 6917608C22B8EA5900B35BC7 /* RCTDevBundlesDownloader.m */; };
+		6917608E22B8EA5900B35BC7 /* RCTDevBundlesDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = 6917608C22B8EA5900B35BC7 /* RCTDevBundlesDownloader.m */; };
+		697ACDB122B2B303003C13DF /* BasicBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697ACDA022B2A3D7003C13DF /* BasicBundle.cpp */; };
+		697ACDB222B2B309003C13DF /* BasicBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9322B2A3D6003C13DF /* BasicBundle.h */; };
+		697ACDB322B2B31C003C13DF /* Bundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697ACD9622B2A3D6003C13DF /* Bundle.cpp */; };
+		697ACDB422B2B31C003C13DF /* Bundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9822B2A3D6003C13DF /* Bundle.h */; };
+		697ACDB522B2B31C003C13DF /* BundleLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9422B2A3D6003C13DF /* BundleLoader.h */; };
+		697ACDB622B2B31C003C13DF /* BundleRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697ACD9122B2A3D6003C13DF /* BundleRegistry.cpp */; };
+		697ACDB722B2B31C003C13DF /* BundleRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9522B2A3D6003C13DF /* BundleRegistry.h */; };
+		697ACDB822B2B31C003C13DF /* DeltaBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697ACD9F22B2A3D7003C13DF /* DeltaBundle.cpp */; };
+		697ACDB922B2B31C003C13DF /* DeltaBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9B22B2A3D6003C13DF /* DeltaBundle.h */; };
+		697ACDBA22B2B31C003C13DF /* DeltaBundleClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697ACD9222B2A3D6003C13DF /* DeltaBundleClient.cpp */; };
+		697ACDBB22B2B31C003C13DF /* DeltaBundleClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9722B2A3D6003C13DF /* DeltaBundleClient.h */; };
+		697ACDBC22B2B31C003C13DF /* DeltaBundleLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697ACD9D22B2A3D7003C13DF /* DeltaBundleLoader.cpp */; };
+		697ACDBD22B2B31C003C13DF /* DeltaBundleLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9C22B2A3D6003C13DF /* DeltaBundleLoader.h */; };
+		697ACDBE22B2B31C003C13DF /* IndexedRAMBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697ACD9E22B2A3D7003C13DF /* IndexedRAMBundle.cpp */; };
+		697ACDBF22B2B31C003C13DF /* IndexedRAMBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9922B2A3D6003C13DF /* IndexedRAMBundle.h */; };
+		697ACDC022B2B31E003C13DF /* Bundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697ACD9622B2A3D6003C13DF /* Bundle.cpp */; };
+		697ACDC122B2B31E003C13DF /* Bundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9822B2A3D6003C13DF /* Bundle.h */; };
+		697ACDC222B2B31E003C13DF /* BundleLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9422B2A3D6003C13DF /* BundleLoader.h */; };
+		697ACDC322B2B31E003C13DF /* BundleRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697ACD9122B2A3D6003C13DF /* BundleRegistry.cpp */; };
+		697ACDC422B2B31E003C13DF /* BundleRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9522B2A3D6003C13DF /* BundleRegistry.h */; };
+		697ACDC522B2B31E003C13DF /* DeltaBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697ACD9F22B2A3D7003C13DF /* DeltaBundle.cpp */; };
+		697ACDC622B2B31E003C13DF /* DeltaBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9B22B2A3D6003C13DF /* DeltaBundle.h */; };
+		697ACDC722B2B31E003C13DF /* DeltaBundleClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697ACD9222B2A3D6003C13DF /* DeltaBundleClient.cpp */; };
+		697ACDC822B2B31E003C13DF /* DeltaBundleClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9722B2A3D6003C13DF /* DeltaBundleClient.h */; };
+		697ACDC922B2B31E003C13DF /* DeltaBundleLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697ACD9D22B2A3D7003C13DF /* DeltaBundleLoader.cpp */; };
+		697ACDCA22B2B31E003C13DF /* DeltaBundleLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9C22B2A3D6003C13DF /* DeltaBundleLoader.h */; };
+		697ACDCB22B2B31E003C13DF /* IndexedRAMBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697ACD9E22B2A3D7003C13DF /* IndexedRAMBundle.cpp */; };
+		697ACDCC22B2B31E003C13DF /* IndexedRAMBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9922B2A3D6003C13DF /* IndexedRAMBundle.h */; };
+		697ACDCD22B2B322003C13DF /* RAMBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9A22B2A3D6003C13DF /* RAMBundle.h */; };
+		697ACDCE22B2B322003C13DF /* RAMBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9A22B2A3D6003C13DF /* RAMBundle.h */; };
+		697ACDCF22B2B32B003C13DF /* BasicBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697ACDA022B2A3D7003C13DF /* BasicBundle.cpp */; };
+		697ACDD022B2B32E003C13DF /* BasicBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9322B2A3D6003C13DF /* BasicBundle.h */; };
+		697ACDD222B2B40D003C13DF /* BasicBundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9322B2A3D6003C13DF /* BasicBundle.h */; };
+		697ACDD422B2B40D003C13DF /* Bundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9822B2A3D6003C13DF /* Bundle.h */; };
+		697ACDD522B2B40D003C13DF /* BundleLoader.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9422B2A3D6003C13DF /* BundleLoader.h */; };
+		697ACDD722B2B40D003C13DF /* BundleRegistry.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9522B2A3D6003C13DF /* BundleRegistry.h */; };
+		697ACDD922B2B40D003C13DF /* DeltaBundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9B22B2A3D6003C13DF /* DeltaBundle.h */; };
+		697ACDDB22B2B40D003C13DF /* DeltaBundleClient.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9722B2A3D6003C13DF /* DeltaBundleClient.h */; };
+		697ACDDD22B2B40D003C13DF /* DeltaBundleLoader.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9C22B2A3D6003C13DF /* DeltaBundleLoader.h */; };
+		697ACDDF22B2B40D003C13DF /* IndexedRAMBundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9922B2A3D6003C13DF /* IndexedRAMBundle.h */; };
+		697ACDE022B2B40D003C13DF /* RAMBundle.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 697ACD9A22B2A3D6003C13DF /* RAMBundle.h */; };
+		699C526722B4F1E4000608CC /* RCTFileBundleLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACDED22B395E9003C13DF /* RCTFileBundleLoader.h */; };
+		699C526822B4F24C000608CC /* RCTFileBundleLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 697ACDED22B395E9003C13DF /* RCTFileBundleLoader.h */; };
+		69CF112222B53DCB000075E3 /* RCTFileBundleLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 69CF112122B53DCB000075E3 /* RCTFileBundleLoader.mm */; };
+		69CF112322B53DCB000075E3 /* RCTFileBundleLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 69CF112122B53DCB000075E3 /* RCTFileBundleLoader.mm */; };
 		830A229E1A66C68A008503DA /* RCTRootView.m in Sources */ = {isa = PBXBuildFile; fileRef = 830A229D1A66C68A008503DA /* RCTRootView.m */; };
 		83281384217EB70900574D55 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281383217EB70800574D55 /* MallocImpl.cpp */; };
 		83281385217EB71200574D55 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 83281383217EB70800574D55 /* MallocImpl.cpp */; };
@@ -1075,7 +1112,6 @@
 		B233E6EA1D2D845D00BC68BA /* RCTI18nManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */; };
 		B95154321D1B34B200FE7B80 /* RCTActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B95154311D1B34B200FE7B80 /* RCTActivityIndicatorView.m */; };
 		BA0501AD2109DCF200A6BBC4 /* ReactMarker.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13DA8A2F2097A90A00276ED4 /* ReactMarker.h */; };
-		BA0501AE2109DD0600A6BBC4 /* JSExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E223624320875A8000108244 /* JSExecutor.cpp */; };
 		BA0501B02109DD1800A6BBC4 /* YGConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE2080020772F7C009A43B3 /* YGConfig.cpp */; };
 		C60128AB1F3D1258009DF9FF /* RCTCxxConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = C60128A91F3D1258009DF9FF /* RCTCxxConvert.h */; };
 		C60128AC1F3D1258009DF9FF /* RCTCxxConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = C60128A91F3D1258009DF9FF /* RCTCxxConvert.h */; };
@@ -1087,17 +1123,10 @@
 		C60669371F3CCF1B00E67165 /* RCTManagedPointer.mm in Sources */ = {isa = PBXBuildFile; fileRef = C60669351F3CCF1B00E67165 /* RCTManagedPointer.mm */; };
 		C654505E1F3BD9280090799B /* RCTManagedPointer.h in Headers */ = {isa = PBXBuildFile; fileRef = C654505D1F3BD9280090799B /* RCTManagedPointer.h */; };
 		C654505F1F3BD9280090799B /* RCTManagedPointer.h in Headers */ = {isa = PBXBuildFile; fileRef = C654505D1F3BD9280090799B /* RCTManagedPointer.h */; };
-		C669D8981F72E3DE006748EB /* RAMBundleRegistry.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = C6D380181F71D75B00621378 /* RAMBundleRegistry.h */; };
-		C6D3801A1F71D76100621378 /* RAMBundleRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = C6D380181F71D75B00621378 /* RAMBundleRegistry.h */; };
-		C6D3801B1F71D76200621378 /* RAMBundleRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = C6D380181F71D75B00621378 /* RAMBundleRegistry.h */; };
-		C6D3801C1F71D76700621378 /* RAMBundleRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6D380191F71D75B00621378 /* RAMBundleRegistry.cpp */; };
-		C6D3801D1F71D76800621378 /* RAMBundleRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6D380191F71D75B00621378 /* RAMBundleRegistry.cpp */; };
 		CF2731C01E7B8DE40044CA4F /* RCTDeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CF2731BE1E7B8DE40044CA4F /* RCTDeviceInfo.h */; };
 		CF2731C11E7B8DE40044CA4F /* RCTDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CF2731BF1E7B8DE40044CA4F /* RCTDeviceInfo.m */; };
 		CF2731C21E7B8DEF0044CA4F /* RCTDeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CF2731BE1E7B8DE40044CA4F /* RCTDeviceInfo.h */; };
 		CF2731C31E7B8DF30044CA4F /* RCTDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CF2731BF1E7B8DE40044CA4F /* RCTDeviceInfo.m */; };
-		E223624420875A8000108244 /* JSExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E223624320875A8000108244 /* JSExecutor.cpp */; };
-		E7711C7A2238455400FCF26D /* RCTSurfacePresenterStub.h in Headers */ = {isa = PBXBuildFile; fileRef = 589515DF2231AD9C0036BDE0 /* RCTSurfacePresenterStub.h */; };
 		E9B20B7B1B500126007A2DA7 /* RCTAccessibilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9B20B7A1B500126007A2DA7 /* RCTAccessibilityManager.m */; };
 		EBF21BBC1FC498270052F4D5 /* InspectorInterfaces.h in Headers */ = {isa = PBXBuildFile; fileRef = EBF21BBA1FC498270052F4D5 /* InspectorInterfaces.h */; };
 		EBF21BBE1FC498630052F4D5 /* InspectorInterfaces.h in Headers */ = {isa = PBXBuildFile; fileRef = EBF21BBA1FC498270052F4D5 /* InspectorInterfaces.h */; };
@@ -1498,7 +1527,6 @@
 			dstSubfolderSpec = 16;
 			files = (
 				BA0501AD2109DCF200A6BBC4 /* ReactMarker.h in Copy Headers */,
-				598FD1921F816A2A006C54CB /* RAMBundleRegistry.h in Copy Headers */,
 				3DA9823B1E5B1053004F2374 /* CxxModule.h in Copy Headers */,
 				3DA9823C1E5B1053004F2374 /* CxxNativeModule.h in Copy Headers */,
 				3DA9823D1E5B1053004F2374 /* JSExecutor.h in Copy Headers */,
@@ -1506,9 +1534,6 @@
 				3DA982411E5B1053004F2374 /* JsArgumentHelpers-inl.h in Copy Headers */,
 				3DA982421E5B1053004F2374 /* JsArgumentHelpers.h in Copy Headers */,
 				3DA982431E5B1053004F2374 /* JSBigString.h in Copy Headers */,
-				3DA982441E5B1053004F2374 /* JSBundleType.h in Copy Headers */,
-				3DA9824E1E5B1053004F2374 /* JSIndexedRAMBundle.h in Copy Headers */,
-				3DA9824F1E5B1053004F2374 /* JSModulesUnbundle.h in Copy Headers */,
 				3DA982501E5B1053004F2374 /* MessageQueueThread.h in Copy Headers */,
 				3DA982511E5B1053004F2374 /* MethodCall.h in Copy Headers */,
 				3DA982521E5B1053004F2374 /* ModuleRegistry.h in Copy Headers */,
@@ -1552,6 +1577,7 @@
 				6E0C2F36229872CD000E3701 /* RCTCxxConvert.h in Copy Headers */,
 				5C60EB57226441470018C04F /* JSCExecutorFactory.h in Copy Headers */,
 				589515E12231ADE00036BDE0 /* RCTSurfacePresenterStub.h in Copy Headers */,
+				691083B622BA8DAA00CBA067 /* RCTDevBundlesDownloader.h in Copy Headers */,
 				39C50FF92046EACF00CEE534 /* RCTVersion.h in Copy Headers */,
 				591F78DE202ADB8F004A668C /* RCTLayout.h in Copy Headers */,
 				59EDBCBD1FDF4E43003573DE /* RCTScrollableProtocol.h in Copy Headers */,
@@ -1696,8 +1722,16 @@
 			dstPath = include/cxxreact;
 			dstSubfolderSpec = 16;
 			files = (
+				697ACDD222B2B40D003C13DF /* BasicBundle.h in Copy Headers */,
+				697ACDD422B2B40D003C13DF /* Bundle.h in Copy Headers */,
+				697ACDD522B2B40D003C13DF /* BundleLoader.h in Copy Headers */,
+				697ACDD722B2B40D003C13DF /* BundleRegistry.h in Copy Headers */,
+				697ACDD922B2B40D003C13DF /* DeltaBundle.h in Copy Headers */,
+				697ACDDB22B2B40D003C13DF /* DeltaBundleClient.h in Copy Headers */,
+				697ACDDD22B2B40D003C13DF /* DeltaBundleLoader.h in Copy Headers */,
+				697ACDDF22B2B40D003C13DF /* IndexedRAMBundle.h in Copy Headers */,
+				697ACDE022B2B40D003C13DF /* RAMBundle.h in Copy Headers */,
 				133EA4E52098F6E30035B1D8 /* ReactMarker.h in Copy Headers */,
-				C669D8981F72E3DE006748EB /* RAMBundleRegistry.h in Copy Headers */,
 				3DA981A01E5B0E34004F2374 /* CxxModule.h in Copy Headers */,
 				3DA981A11E5B0E34004F2374 /* CxxNativeModule.h in Copy Headers */,
 				3DA981A21E5B0E34004F2374 /* JSExecutor.h in Copy Headers */,
@@ -1705,9 +1739,6 @@
 				3DA981A61E5B0E34004F2374 /* JsArgumentHelpers-inl.h in Copy Headers */,
 				3DA981A71E5B0E34004F2374 /* JsArgumentHelpers.h in Copy Headers */,
 				3DA981A81E5B0E34004F2374 /* JSBigString.h in Copy Headers */,
-				3DA981A91E5B0E34004F2374 /* JSBundleType.h in Copy Headers */,
-				3DA981B31E5B0E34004F2374 /* JSIndexedRAMBundle.h in Copy Headers */,
-				3DA981B41E5B0E34004F2374 /* JSModulesUnbundle.h in Copy Headers */,
 				3DA981B51E5B0E34004F2374 /* MessageQueueThread.h in Copy Headers */,
 				3DA981B61E5B0E34004F2374 /* MethodCall.h in Copy Headers */,
 				3DA981B71E5B0E34004F2374 /* ModuleRegistry.h in Copy Headers */,
@@ -2018,7 +2049,6 @@
 		3D383D621EBD27B9005632C8 /* libdouble-conversion.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libdouble-conversion.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D3C059A1DE3340900C268FA /* libyoga.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libyoga.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D3C06751DE3340C00C268FA /* libyoga.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libyoga.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSBundleType.h; sourceTree = "<group>"; };
 		3D3CD9251DE5FBEC00167DC4 /* libcxxreact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcxxreact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D3CD9321DE5FBEE00167DC4 /* libcxxreact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcxxreact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D7454781E54757500E74ADD /* JSBigString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSBigString.h; sourceTree = "<group>"; };
@@ -2042,9 +2072,6 @@
 		3D92B0AF1E03699D0018521A /* Instance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Instance.h; sourceTree = "<group>"; };
 		3D92B0B01E03699D0018521A /* JsArgumentHelpers-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JsArgumentHelpers-inl.h"; sourceTree = "<group>"; };
 		3D92B0B11E03699D0018521A /* JsArgumentHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsArgumentHelpers.h; sourceTree = "<group>"; };
-		3D92B0C61E03699D0018521A /* JSIndexedRAMBundle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSIndexedRAMBundle.cpp; sourceTree = "<group>"; };
-		3D92B0C71E03699D0018521A /* JSIndexedRAMBundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSIndexedRAMBundle.h; sourceTree = "<group>"; };
-		3D92B0C81E03699D0018521A /* JSModulesUnbundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSModulesUnbundle.h; sourceTree = "<group>"; };
 		3D92B0C91E03699D0018521A /* MessageQueueThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageQueueThread.h; sourceTree = "<group>"; };
 		3D92B0CA1E03699D0018521A /* MethodCall.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MethodCall.cpp; sourceTree = "<group>"; };
 		3D92B0CB1E03699D0018521A /* MethodCall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MethodCall.h; sourceTree = "<group>"; };
@@ -2151,6 +2178,28 @@
 		66CD94B01F1045E700CB3C7C /* RCTMaskedViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTMaskedViewManager.m; sourceTree = "<group>"; };
 		68EFE4EC1CF6EB3000A1DE13 /* RCTBundleURLProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBundleURLProvider.h; sourceTree = "<group>"; };
 		68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBundleURLProvider.m; sourceTree = "<group>"; };
+		690D491822B79FFB0039D9D6 /* RCTDevBundleLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTDevBundleLoader.h; sourceTree = "<group>"; };
+		690D491B22B7A0560039D9D6 /* RCTDevBundleLoader.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTDevBundleLoader.mm; sourceTree = "<group>"; };
+		6917608922B8DE2B00B35BC7 /* RCTDevBundlesDownloader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTDevBundlesDownloader.h; sourceTree = "<group>"; };
+		6917608C22B8EA5900B35BC7 /* RCTDevBundlesDownloader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTDevBundlesDownloader.m; sourceTree = "<group>"; };
+		697ACD9122B2A3D6003C13DF /* BundleRegistry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BundleRegistry.cpp; sourceTree = "<group>"; };
+		697ACD9222B2A3D6003C13DF /* DeltaBundleClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeltaBundleClient.cpp; sourceTree = "<group>"; };
+		697ACD9322B2A3D6003C13DF /* BasicBundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BasicBundle.h; sourceTree = "<group>"; };
+		697ACD9422B2A3D6003C13DF /* BundleLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BundleLoader.h; sourceTree = "<group>"; };
+		697ACD9522B2A3D6003C13DF /* BundleRegistry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BundleRegistry.h; sourceTree = "<group>"; };
+		697ACD9622B2A3D6003C13DF /* Bundle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bundle.cpp; sourceTree = "<group>"; };
+		697ACD9722B2A3D6003C13DF /* DeltaBundleClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeltaBundleClient.h; sourceTree = "<group>"; };
+		697ACD9822B2A3D6003C13DF /* Bundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bundle.h; sourceTree = "<group>"; };
+		697ACD9922B2A3D6003C13DF /* IndexedRAMBundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IndexedRAMBundle.h; sourceTree = "<group>"; };
+		697ACD9A22B2A3D6003C13DF /* RAMBundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RAMBundle.h; sourceTree = "<group>"; };
+		697ACD9B22B2A3D6003C13DF /* DeltaBundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeltaBundle.h; sourceTree = "<group>"; };
+		697ACD9C22B2A3D6003C13DF /* DeltaBundleLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeltaBundleLoader.h; sourceTree = "<group>"; };
+		697ACD9D22B2A3D7003C13DF /* DeltaBundleLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeltaBundleLoader.cpp; sourceTree = "<group>"; };
+		697ACD9E22B2A3D7003C13DF /* IndexedRAMBundle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IndexedRAMBundle.cpp; sourceTree = "<group>"; };
+		697ACD9F22B2A3D7003C13DF /* DeltaBundle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeltaBundle.cpp; sourceTree = "<group>"; };
+		697ACDA022B2A3D7003C13DF /* BasicBundle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BasicBundle.cpp; sourceTree = "<group>"; };
+		697ACDED22B395E9003C13DF /* RCTFileBundleLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTFileBundleLoader.h; sourceTree = "<group>"; };
+		69CF112122B53DCB000075E3 /* RCTFileBundleLoader.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTFileBundleLoader.mm; sourceTree = "<group>"; };
 		6A15FB0C1BDF663500531DFB /* RCTRootViewInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootViewInternal.h; sourceTree = "<group>"; };
 		830213F31A654E0800B993E6 /* RCTBridgeModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTBridgeModule.h; sourceTree = "<group>"; };
 		830A229C1A66C68A008503DA /* RCTRootView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootView.h; sourceTree = "<group>"; };
@@ -2200,7 +2249,6 @@
 		AC6B69E121B1467C00B2B68A /* YGValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGValue.cpp; sourceTree = "<group>"; };
 		AC6B69E221B1467C00B2B68A /* YGValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGValue.h; sourceTree = "<group>"; };
 		AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTJavaScriptLoader.mm; sourceTree = "<group>"; };
-		AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSBundleType.cpp; sourceTree = "<group>"; };
 		AC8360CC21B0256A00FC46B9 /* YGMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGMarker.h; sourceTree = "<group>"; };
 		AC90463D21C91CC2005B24B3 /* CompactValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompactValue.h; sourceTree = "<group>"; };
 		ACC75C53221AA188002F24E8 /* log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = log.cpp; sourceTree = "<group>"; };
@@ -2215,11 +2263,8 @@
 		C606692D1F3CC60500E67165 /* RCTModuleMethod.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTModuleMethod.mm; sourceTree = "<group>"; };
 		C60669351F3CCF1B00E67165 /* RCTManagedPointer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTManagedPointer.mm; sourceTree = "<group>"; };
 		C654505D1F3BD9280090799B /* RCTManagedPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTManagedPointer.h; sourceTree = "<group>"; };
-		C6D380181F71D75B00621378 /* RAMBundleRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RAMBundleRegistry.h; sourceTree = "<group>"; };
-		C6D380191F71D75B00621378 /* RAMBundleRegistry.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RAMBundleRegistry.cpp; sourceTree = "<group>"; };
 		CF2731BE1E7B8DE40044CA4F /* RCTDeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDeviceInfo.h; sourceTree = "<group>"; };
 		CF2731BF1E7B8DE40044CA4F /* RCTDeviceInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDeviceInfo.m; sourceTree = "<group>"; };
-		E223624320875A8000108244 /* JSExecutor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSExecutor.cpp; sourceTree = "<group>"; };
 		E3BBC8EB1ADE6F47001BBD81 /* RCTTextDecorationLineType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTTextDecorationLineType.h; sourceTree = "<group>"; };
 		E9B20B791B500126007A2DA7 /* RCTAccessibilityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAccessibilityManager.h; sourceTree = "<group>"; };
 		E9B20B7A1B500126007A2DA7 /* RCTAccessibilityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAccessibilityManager.m; sourceTree = "<group>"; };
@@ -2245,8 +2290,6 @@
 		EDEBC6E1214B3F6800DD5AC8 /* jsi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = jsi.h; path = jsi/jsi.h; sourceTree = "<group>"; };
 		EDEBC73B214B45A300DD5AC8 /* libjsiexecutor.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libjsiexecutor.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		EDEBC740214B463000DD5AC8 /* BUCK */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BUCK; sourceTree = "<group>"; };
-		EDEBC750214B47E100DD5AC8 /* JSDeltaBundleClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSDeltaBundleClient.cpp; sourceTree = "<group>"; };
-		EDEBC751214B47E100DD5AC8 /* JSDeltaBundleClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSDeltaBundleClient.h; sourceTree = "<group>"; };
 		EDEBC752214B47E100DD5AC8 /* SharedProxyCxxModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedProxyCxxModule.h; sourceTree = "<group>"; };
 		EDEBC757214C284000DD5AC8 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F1EFDA4E201F660F00EE6E4C /* RCTUIUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIUtils.m; sourceTree = "<group>"; };
@@ -2916,7 +2959,13 @@
 				83CBBA4C1A601E3B00E9B192 /* RCTInvalidating.h */,
 				83CBBA631A601ECA00E9B192 /* RCTJavaScriptExecutor.h */,
 				14200DA81AC179B3008EE6BA /* RCTJavaScriptLoader.h */,
+				6917608922B8DE2B00B35BC7 /* RCTDevBundlesDownloader.h */,
+				6917608C22B8EA5900B35BC7 /* RCTDevBundlesDownloader.m */,
 				AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */,
+				697ACDED22B395E9003C13DF /* RCTFileBundleLoader.h */,
+				690D491822B79FFB0039D9D6 /* RCTDevBundleLoader.h */,
+				69CF112122B53DCB000075E3 /* RCTFileBundleLoader.mm */,
+				690D491B22B7A0560039D9D6 /* RCTDevBundleLoader.mm */,
 				008341F51D1DB34400876D9A /* RCTJSStackFrame.h */,
 				008341F41D1DB34400876D9A /* RCTJSStackFrame.m */,
 				13A1F71C1A75392D00D3D453 /* RCTKeyCommands.h */,
@@ -2968,12 +3017,25 @@
 		AC70D2EA1DE489FC002E6351 /* cxxreact */ = {
 			isa = PBXGroup;
 			children = (
-				EDEBC750214B47E100DD5AC8 /* JSDeltaBundleClient.cpp */,
-				EDEBC751214B47E100DD5AC8 /* JSDeltaBundleClient.h */,
+				697ACDA022B2A3D7003C13DF /* BasicBundle.cpp */,
+				697ACD9322B2A3D6003C13DF /* BasicBundle.h */,
+				697ACD9622B2A3D6003C13DF /* Bundle.cpp */,
+				697ACD9822B2A3D6003C13DF /* Bundle.h */,
+				697ACD9422B2A3D6003C13DF /* BundleLoader.h */,
+				697ACD9122B2A3D6003C13DF /* BundleRegistry.cpp */,
+				697ACD9522B2A3D6003C13DF /* BundleRegistry.h */,
+				697ACD9F22B2A3D7003C13DF /* DeltaBundle.cpp */,
+				697ACD9B22B2A3D6003C13DF /* DeltaBundle.h */,
+				697ACD9222B2A3D6003C13DF /* DeltaBundleClient.cpp */,
+				697ACD9722B2A3D6003C13DF /* DeltaBundleClient.h */,
+				697ACD9D22B2A3D7003C13DF /* DeltaBundleLoader.cpp */,
+				697ACD9C22B2A3D6003C13DF /* DeltaBundleLoader.h */,
+				697ACD9E22B2A3D7003C13DF /* IndexedRAMBundle.cpp */,
+				697ACD9922B2A3D6003C13DF /* IndexedRAMBundle.h */,
+				697ACD9A22B2A3D6003C13DF /* RAMBundle.h */,
 				EDEBC752214B47E100DD5AC8 /* SharedProxyCxxModule.h */,
 				13DA8A302097A90B00276ED4 /* ReactMarker.cpp */,
 				13DA8A2F2097A90A00276ED4 /* ReactMarker.h */,
-				E223624320875A8000108244 /* JSExecutor.cpp */,
 				3D92B0A71E03699D0018521A /* CxxModule.h */,
 				3D92B0A81E03699D0018521A /* CxxNativeModule.cpp */,
 				3D92B0A91E03699D0018521A /* CxxNativeModule.h */,
@@ -2983,12 +3045,7 @@
 				3D92B0B11E03699D0018521A /* JsArgumentHelpers.h */,
 				27B958731E57587D0096647A /* JSBigString.cpp */,
 				3D7454781E54757500E74ADD /* JSBigString.h */,
-				AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */,
-				3D3CD8F51DE5FB2300167DC4 /* JSBundleType.h */,
 				3D92B0AB1E03699D0018521A /* JSExecutor.h */,
-				3D92B0C61E03699D0018521A /* JSIndexedRAMBundle.cpp */,
-				3D92B0C71E03699D0018521A /* JSIndexedRAMBundle.h */,
-				3D92B0C81E03699D0018521A /* JSModulesUnbundle.h */,
 				3D92B0C91E03699D0018521A /* MessageQueueThread.h */,
 				3D92B0CA1E03699D0018521A /* MethodCall.cpp */,
 				3D92B0CB1E03699D0018521A /* MethodCall.h */,
@@ -2997,8 +3054,6 @@
 				3D92B0CE1E03699D0018521A /* NativeModule.h */,
 				3D92B0CF1E03699D0018521A /* NativeToJsBridge.cpp */,
 				3D92B0D01E03699D0018521A /* NativeToJsBridge.h */,
-				C6D380191F71D75B00621378 /* RAMBundleRegistry.cpp */,
-				C6D380181F71D75B00621378 /* RAMBundleRegistry.h */,
 				3D7454791E54757500E74ADD /* RecoverableError.h */,
 				3D92B0D31E03699D0018521A /* SampleCxxModule.cpp */,
 				3D92B0D41E03699D0018521A /* SampleCxxModule.h */,
@@ -3103,6 +3158,7 @@
 				3D302F251DF828F800D6DDAE /* RCTImageStoreManager.h in Headers */,
 				C60128AC1F3D1258009DF9FF /* RCTCxxConvert.h in Headers */,
 				3D302F261DF828F800D6DDAE /* RCTResizeMode.h in Headers */,
+				690D491A22B79FFB0039D9D6 /* RCTDevBundleLoader.h in Headers */,
 				3D302F271DF828F800D6DDAE /* RCTLinkingManager.h in Headers */,
 				3D7BFD161EA8E351008DFB7A /* RCTPackagerClient.h in Headers */,
 				3D302F281DF828F800D6DDAE /* RCTNetworking.h in Headers */,
@@ -3154,6 +3210,7 @@
 				3D302F491DF828F800D6DDAE /* RCTRootViewDelegate.h in Headers */,
 				3D302F4A1DF828F800D6DDAE /* RCTRootViewInternal.h in Headers */,
 				3D302F4B1DF828F800D6DDAE /* RCTTouchEvent.h in Headers */,
+				6917608B22B8DE2B00B35BC7 /* RCTDevBundlesDownloader.h in Headers */,
 				591F78DD202ADB22004A668C /* RCTLayout.h in Headers */,
 				59D031F21F8353D3008361F0 /* RCTSafeAreaView.h in Headers */,
 				3D302F4C1DF828F800D6DDAE /* RCTTouchHandler.h in Headers */,
@@ -3192,6 +3249,7 @@
 				3D302F681DF828F800D6DDAE /* RCTMacros.h in Headers */,
 				3D302F691DF828F800D6DDAE /* RCTProfile.h in Headers */,
 				3D302F6A1DF828F800D6DDAE /* RCTActivityIndicatorView.h in Headers */,
+				699C526822B4F24C000608CC /* RCTFileBundleLoader.h in Headers */,
 				3D302F6B1DF828F800D6DDAE /* RCTActivityIndicatorViewManager.h in Headers */,
 				3D7BFD301EA8E3FA008DFB7A /* RCTSRWebSocket.h in Headers */,
 				59EDBCA81FDF4E0C003573DE /* RCTScrollableProtocol.h in Headers */,
@@ -3274,23 +3332,28 @@
 			buildActionMask = 2147483647;
 			files = (
 				13DA8A322097A90B00276ED4 /* ReactMarker.h in Headers */,
-				3D74547E1E54759A00E74ADD /* JSModulesUnbundle.h in Headers */,
-				C6D3801B1F71D76200621378 /* RAMBundleRegistry.h in Headers */,
+				697ACDC822B2B31E003C13DF /* DeltaBundleClient.h in Headers */,
 				27595AD51E575C7800CCE2B1 /* NativeToJsBridge.h in Headers */,
 				27595AC41E575C7800CCE2B1 /* Instance.h in Headers */,
 				27595AD11E575C7800CCE2B1 /* MessageQueueThread.h in Headers */,
+				697ACDD022B2B32E003C13DF /* BasicBundle.h in Headers */,
 				3D7454811E5475AF00E74ADD /* RecoverableError.h in Headers */,
+				697ACDC122B2B31E003C13DF /* Bundle.h in Headers */,
 				27595AC51E575C7800CCE2B1 /* JsArgumentHelpers-inl.h in Headers */,
+				697ACDC222B2B31E003C13DF /* BundleLoader.h in Headers */,
 				27595AD81E575C7800CCE2B1 /* SystraceSection.h in Headers */,
+				697ACDCA22B2B31E003C13DF /* DeltaBundleLoader.h in Headers */,
+				697ACDCE22B2B322003C13DF /* RAMBundle.h in Headers */,
 				27595AC61E575C7800CCE2B1 /* JsArgumentHelpers.h in Headers */,
 				27595AD71E575C7800CCE2B1 /* SampleCxxModule.h in Headers */,
+				697ACDCC22B2B31E003C13DF /* IndexedRAMBundle.h in Headers */,
 				27595AD21E575C7800CCE2B1 /* MethodCall.h in Headers */,
-				3D3030221DF8294C00D6DDAE /* JSBundleType.h in Headers */,
 				3D74547D1E54758900E74ADD /* JSBigString.h in Headers */,
+				697ACDC422B2B31E003C13DF /* BundleRegistry.h in Headers */,
 				27595ABF1E575C7800CCE2B1 /* CxxModule.h in Headers */,
+				697ACDC622B2B31E003C13DF /* DeltaBundle.h in Headers */,
 				27595AD41E575C7800CCE2B1 /* NativeModule.h in Headers */,
 				27595AC01E575C7800CCE2B1 /* CxxNativeModule.h in Headers */,
-				27595AD01E575C7800CCE2B1 /* JSIndexedRAMBundle.h in Headers */,
 				27595AD31E575C7800CCE2B1 /* ModuleRegistry.h in Headers */,
 				27595AC11E575C7800CCE2B1 /* JSExecutor.h in Headers */,
 			);
@@ -3341,8 +3404,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				13DA8A312097A90B00276ED4 /* ReactMarker.h in Headers */,
-				3D74547F1E54759E00E74ADD /* JSModulesUnbundle.h in Headers */,
-				C6D3801A1F71D76100621378 /* RAMBundleRegistry.h in Headers */,
 				27595ABA1E575C7800CCE2B1 /* NativeToJsBridge.h in Headers */,
 				27595AA91E575C7800CCE2B1 /* Instance.h in Headers */,
 				27595AB61E575C7800CCE2B1 /* MessageQueueThread.h in Headers */,
@@ -3351,15 +3412,22 @@
 				27595ABD1E575C7800CCE2B1 /* SystraceSection.h in Headers */,
 				27595AAB1E575C7800CCE2B1 /* JsArgumentHelpers.h in Headers */,
 				27595ABC1E575C7800CCE2B1 /* SampleCxxModule.h in Headers */,
+				697ACDB222B2B309003C13DF /* BasicBundle.h in Headers */,
+				697ACDB922B2B31C003C13DF /* DeltaBundle.h in Headers */,
+				697ACDBF22B2B31C003C13DF /* IndexedRAMBundle.h in Headers */,
 				27595AB71E575C7800CCE2B1 /* MethodCall.h in Headers */,
 				3D74547C1E54758900E74ADD /* JSBigString.h in Headers */,
+				697ACDB522B2B31C003C13DF /* BundleLoader.h in Headers */,
+				697ACDB722B2B31C003C13DF /* BundleRegistry.h in Headers */,
 				27595AA41E575C7800CCE2B1 /* CxxModule.h in Headers */,
 				27595AB91E575C7800CCE2B1 /* NativeModule.h in Headers */,
-				3D3CD9451DE5FC7100167DC4 /* JSBundleType.h in Headers */,
+				697ACDBD22B2B31C003C13DF /* DeltaBundleLoader.h in Headers */,
+				697ACDB422B2B31C003C13DF /* Bundle.h in Headers */,
 				27595AA51E575C7800CCE2B1 /* CxxNativeModule.h in Headers */,
-				27595AB51E575C7800CCE2B1 /* JSIndexedRAMBundle.h in Headers */,
 				27595AB81E575C7800CCE2B1 /* ModuleRegistry.h in Headers */,
+				697ACDBB22B2B31C003C13DF /* DeltaBundleClient.h in Headers */,
 				27595AA61E575C7800CCE2B1 /* JSExecutor.h in Headers */,
+				697ACDCD22B2B322003C13DF /* RAMBundle.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3397,6 +3465,7 @@
 				3D80DA291DF820620028D040 /* RCTDisplayLink.h in Headers */,
 				597633381F4E021D005BE8A4 /* RCTShadowView+Internal.h in Headers */,
 				3D80DA2A1DF820620028D040 /* RCTErrorCustomizer.h in Headers */,
+				690D491922B79FFB0039D9D6 /* RCTDevBundleLoader.h in Headers */,
 				3D80DA2B1DF820620028D040 /* RCTErrorInfo.h in Headers */,
 				1384E2081E806D4E00545659 /* RCTNativeModule.h in Headers */,
 				3D7BFD2D1EA8E3FA008DFB7A /* RCTReconnectingWebSocket.h in Headers */,
@@ -3413,6 +3482,7 @@
 				3D80DA321DF820620028D040 /* RCTJSStackFrame.h in Headers */,
 				130443DC1E401AF400D93A67 /* RCTConvert+Transform.h in Headers */,
 				3D80DA331DF820620028D040 /* RCTKeyCommands.h in Headers */,
+				6917608A22B8DE2B00B35BC7 /* RCTDevBundlesDownloader.h in Headers */,
 				3D80DA341DF820620028D040 /* RCTLog.h in Headers */,
 				3D80DA351DF820620028D040 /* RCTModuleData.h in Headers */,
 				3D80DA361DF820620028D040 /* RCTModuleMethod.h in Headers */,
@@ -3482,6 +3552,7 @@
 				59EDBCAD1FDF4E0C003573DE /* RCTScrollContentView.h in Headers */,
 				59EDBCA71FDF4E0C003573DE /* RCTScrollableProtocol.h in Headers */,
 				591F78DC202ADB22004A668C /* RCTLayout.h in Headers */,
+				699C526722B4F1E4000608CC /* RCTFileBundleLoader.h in Headers */,
 				5CE2080320772F7D009A43B3 /* YGConfig.h in Headers */,
 				3D80DA631DF820620028D040 /* RCTBorderDrawing.h in Headers */,
 				3D80DA641DF820620028D040 /* RCTBorderStyle.h in Headers */,
@@ -4185,6 +4256,7 @@
 				2D3B5EAE1D9B08F800451313 /* RCTEventEmitter.m in Sources */,
 				2D3B5ECA1D9B095F00451313 /* RCTComponentData.m in Sources */,
 				2D3B5EA31D9B08BE00451313 /* RCTParserUtils.m in Sources */,
+				690D491D22B7A0560039D9D6 /* RCTDevBundleLoader.mm in Sources */,
 				59500D461F71C63F00B122B7 /* RCTUIManagerUtils.m in Sources */,
 				599FAA4D1FB274980058CCF6 /* RCTSurfaceView.mm in Sources */,
 				2D3B5EA01D9B08B200451313 /* RCTLog.mm in Sources */,
@@ -4247,6 +4319,7 @@
 				59D031F01F8353D3008361F0 /* RCTSafeAreaShadowView.m in Sources */,
 				5925356B20084D0600DD584B /* RCTSurfaceSizeMeasureMode.mm in Sources */,
 				3D05745A1DE5FFF500184BB4 /* RCTJavaScriptLoader.mm in Sources */,
+				69CF112322B53DCB000075E3 /* RCTFileBundleLoader.mm in Sources */,
 				2D3B5EA41D9B08C200451313 /* RCTPerformanceLogger.m in Sources */,
 				3DCE53251FEAB1E000613583 /* RCTShadowView.m in Sources */,
 				2D3B5E9E1D9B08AD00451313 /* RCTJSStackFrame.m in Sources */,
@@ -4270,6 +4343,7 @@
 				59EDBCBC1FDF4E0C003573DE /* RCTScrollViewManager.m in Sources */,
 				59EDBCB01FDF4E0C003573DE /* RCTScrollContentView.m in Sources */,
 				2D3B5EF01D9B09E300451313 /* RCTWrapperViewController.m in Sources */,
+				6917608E22B8EA5900B35BC7 /* RCTDevBundlesDownloader.m in Sources */,
 				2D3B5EB01D9B08FE00451313 /* RCTAlertManager.m in Sources */,
 				13134C9B1E296B2A00B9F3CB /* RCTCxxMethod.mm in Sources */,
 				2D3B5E9C1D9B08A300451313 /* RCTImageSource.m in Sources */,
@@ -4380,17 +4454,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				697ACDB822B2B31C003C13DF /* DeltaBundle.cpp in Sources */,
+				697ACDBC22B2B31C003C13DF /* DeltaBundleLoader.cpp in Sources */,
 				3DC159E51E83E1E9007B1282 /* JSBigString.cpp in Sources */,
-				13F8877B1E29726200C3C7A1 /* JSIndexedRAMBundle.cpp in Sources */,
+				697ACDB622B2B31C003C13DF /* BundleRegistry.cpp in Sources */,
 				13F8877D1E29726200C3C7A1 /* ModuleRegistry.cpp in Sources */,
-				C6D3801C1F71D76700621378 /* RAMBundleRegistry.cpp in Sources */,
 				13F8876E1E29726200C3C7A1 /* CxxNativeModule.cpp in Sources */,
+				697ACDB122B2B303003C13DF /* BasicBundle.cpp in Sources */,
 				13DA8A332097A90B00276ED4 /* ReactMarker.cpp in Sources */,
-				13F887711E29726200C3C7A1 /* JSBundleType.cpp in Sources */,
+				697ACDB322B2B31C003C13DF /* Bundle.cpp in Sources */,
+				697ACDBA22B2B31C003C13DF /* DeltaBundleClient.cpp in Sources */,
 				13F8877C1E29726200C3C7A1 /* MethodCall.cpp in Sources */,
 				13F887701E29726200C3C7A1 /* Instance.cpp in Sources */,
 				13F8877E1E29726200C3C7A1 /* NativeToJsBridge.cpp in Sources */,
 				13F887801E29726200C3C7A1 /* SampleCxxModule.cpp in Sources */,
+				697ACDBE22B2B31C003C13DF /* IndexedRAMBundle.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4398,17 +4476,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BA0501AE2109DD0600A6BBC4 /* JSExecutor.cpp in Sources */,
+				697ACDCF22B2B32B003C13DF /* BasicBundle.cpp in Sources */,
 				3DC159E61E83E1FA007B1282 /* JSBigString.cpp in Sources */,
-				13F8878E1E29726300C3C7A1 /* JSIndexedRAMBundle.cpp in Sources */,
+				697ACDC722B2B31E003C13DF /* DeltaBundleClient.cpp in Sources */,
 				13F887901E29726300C3C7A1 /* ModuleRegistry.cpp in Sources */,
-				C6D3801D1F71D76800621378 /* RAMBundleRegistry.cpp in Sources */,
+				697ACDC922B2B31E003C13DF /* DeltaBundleLoader.cpp in Sources */,
+				697ACDC322B2B31E003C13DF /* BundleRegistry.cpp in Sources */,
+				697ACDC022B2B31E003C13DF /* Bundle.cpp in Sources */,
 				13DA8A342097A90B00276ED4 /* ReactMarker.cpp in Sources */,
+				697ACDC522B2B31E003C13DF /* DeltaBundle.cpp in Sources */,
 				13F887841E29726300C3C7A1 /* Instance.cpp in Sources */,
-				3D80D9181DF6F7A80028D040 /* JSBundleType.cpp in Sources */,
 				13F8878F1E29726300C3C7A1 /* MethodCall.cpp in Sources */,
 				13F887911E29726300C3C7A1 /* NativeToJsBridge.cpp in Sources */,
 				13F887821E29726300C3C7A1 /* CxxNativeModule.cpp in Sources */,
+				697ACDCB22B2B31E003C13DF /* IndexedRAMBundle.cpp in Sources */,
 				13F887931E29726300C3C7A1 /* SampleCxxModule.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4418,7 +4499,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				13134C9A1E296B2A00B9F3CB /* RCTCxxMethod.mm in Sources */,
-				E223624420875A8000108244 /* JSExecutor.cpp in Sources */,
 				59500D451F71C63F00B122B7 /* RCTUIManagerUtils.m in Sources */,
 				597633361F4E021D005BE8A4 /* RCTShadowView+Internal.m in Sources */,
 				13723B501A82FD3C00F88898 /* RCTStatusBarManager.m in Sources */,
@@ -4504,6 +4584,7 @@
 				142014191B32094000CC17BA /* RCTPerformanceLogger.m in Sources */,
 				83CBBA981A6020BB00E9B192 /* RCTTouchHandler.m in Sources */,
 				3EDCA8A51D3591E700450C31 /* RCTErrorInfo.m in Sources */,
+				69CF112222B53DCB000075E3 /* RCTFileBundleLoader.mm in Sources */,
 				83CBBA521A601E3B00E9B192 /* RCTLog.mm in Sources */,
 				13A6E20E1C19AA0C00845B82 /* RCTParserUtils.m in Sources */,
 				59D031F71F8353D3008361F0 /* RCTSafeAreaViewLocalData.m in Sources */,
@@ -4511,6 +4592,7 @@
 				3D7749441DC1065C007EC8D8 /* RCTPlatform.m in Sources */,
 				59EDBCAF1FDF4E0C003573DE /* RCTScrollContentView.m in Sources */,
 				13D9FEEE1CDCD93000158BD7 /* RCTKeyboardObserver.m in Sources */,
+				6917608D22B8EA5900B35BC7 /* RCTDevBundlesDownloader.m in Sources */,
 				B233E6EA1D2D845D00BC68BA /* RCTI18nManager.m in Sources */,
 				3D7BFD1F1EA8E351008DFB7A /* RCTPackagerConnection.mm in Sources */,
 				13456E931ADAD2DE009F94A7 /* RCTConvert+CoreLocation.m in Sources */,
@@ -4533,6 +4615,7 @@
 				657734911EE8354A00A0E9EA /* RCTInspectorPackagerConnection.m in Sources */,
 				68EFE4EE1CF6EB3900A1DE13 /* RCTBundleURLProvider.m in Sources */,
 				B95154321D1B34B200FE7B80 /* RCTActivityIndicatorView.m in Sources */,
+				690D491C22B7A0560039D9D6 /* RCTDevBundleLoader.mm in Sources */,
 				5960C1BB1F0804A00066FD5B /* RCTLayoutAnimationGroup.m in Sources */,
 				13F17A851B8493E5007D4C75 /* RCTRedBox.m in Sources */,
 				59D031F31F8353D3008361F0 /* RCTSafeAreaView.m in Sources */,

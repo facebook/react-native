@@ -104,6 +104,12 @@ RCT_EXTERN NSString *const RCTBridgeDidInvalidateModulesNotification;
 RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey;
 
 /**
+* Key for the bundles' RCTSource object in the RCTBridgeDidDownloadScriptNotification
+* userInfo dictionary.
+*/
+RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotificationBundlesKey;
+
+/**
  * Key for the bridge description (NSString_ in the
  * RCTBridgeDidDownloadScriptNotification userInfo dictionary.
  */
@@ -169,13 +175,6 @@ RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
  */
 - (void)enqueueJSCall:(NSString *)moduleDotMethod args:(NSArray *)args;
 - (void)enqueueJSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion;
-
-/**
- * This method registers the file path of an additional JS segment by its ID.
- *
- * @experimental
- */
-- (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path;
 
 /**
  * Retrieve a bridge module instance by name or class. Note that modules are

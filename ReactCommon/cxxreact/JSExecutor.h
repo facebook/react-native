@@ -19,7 +19,6 @@
 namespace facebook {
 namespace react {
 
-class JSBigString;
 class JSExecutor;
 class MessageQueueThread;
 class ModuleRegistry;

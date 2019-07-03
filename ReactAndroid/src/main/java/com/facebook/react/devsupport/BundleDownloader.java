@@ -38,7 +38,7 @@ import org.json.JSONObject;
 public class BundleDownloader {
   private static final String TAG = "BundleDownloader";
 
-  // Should be kept in sync with constants in RCTJavaScriptLoader.h
+  // Should be kept in sync with constants in RCTDevBundlesDownloader.h
   private static final int FILES_CHANGED_COUNT_NOT_BUILT_BY_BUNDLER = -2;
 
   private final OkHttpClient mClient;

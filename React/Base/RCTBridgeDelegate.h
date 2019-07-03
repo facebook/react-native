@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTJavaScriptLoader.h>
+#import <React/RCTDevBundlesDownloader.h>
 
 @class RCTBridge;
 @protocol RCTBridgeModule;
@@ -62,15 +62,15 @@
  * to handle loading the JS yourself, you can do so by implementing this method.
  */
 - (void)loadSourceForBridge:(RCTBridge *)bridge
-                 onProgress:(RCTSourceLoadProgressBlock)onProgress
-                 onComplete:(RCTSourceLoadBlock)loadCallback;
+                 onProgress:(RCTDevBundlesProgressBlock)onProgress
+                 onComplete:(RCTDevBundlesLoadBlock)loadCallback;
 
 /**
  * Similar to loadSourceForBridge:onProgress:onComplete: but without progress
  * reporting.
  */
 - (void)loadSourceForBridge:(RCTBridge *)bridge
-                  withBlock:(RCTSourceLoadBlock)loadCallback;
+                  withBlock:(RCTDevBundlesLoadBlock)loadCallback;
 
 /**
  * Retrieve the list of lazy-native-modules names for the given bridge.

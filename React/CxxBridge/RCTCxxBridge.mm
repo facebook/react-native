@@ -18,7 +18,6 @@
 #import <React/RCTCxxUtils.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTDisplayLink.h>
-#import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
@@ -26,12 +25,16 @@
 #import <React/RCTRedBox.h>
 #import <React/RCTUtils.h>
 #import <React/RCTFollyConvert.h>
+#import <React/RCTFileBundleLoader.h>
+#import <React/RCTDevBundlesDownloader.h>
+#import <React/RCTDevBundleLoader.h>
 #import <cxxreact/CxxNativeModule.h>
 #import <cxxreact/Instance.h>
-#import <cxxreact/JSBundleType.h>
-#import <cxxreact/JSIndexedRAMBundle.h>
+#import <cxxreact/Bundle.h>
+#import <cxxreact/BundleLoader.h>
+#import <cxxreact/IndexedRAMBundle.h>
 #import <cxxreact/ModuleRegistry.h>
-#import <cxxreact/RAMBundleRegistry.h>
+#import <cxxreact/BundleRegistry.h>
 #import <cxxreact/ReactMarker.h>
 #import <jsireact/JSIExecutor.h>
 
@@ -39,6 +42,7 @@
 #import "NSDataBigString.h"
 #import "RCTMessageThread.h"
 #import "RCTObjcExecutor.h"
+
 
 #ifdef WITH_FBSYSTRACE
 #import <React/RCTFBSystrace.h>
@@ -89,25 +93,6 @@ private:
   std::shared_ptr<JSExecutorFactory> factory_;
 };
 
-}
-
-static bool isRAMBundle(NSData *script) {
-  BundleHeader header;
-  [script getBytes:&header length:sizeof(header)];
-  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
-}
-
-static void notifyAboutModuleSetup(RCTPerformanceLogger *performanceLogger, const char *tag) {
-  NSString *moduleName = [[NSString alloc] initWithUTF8String:tag];
-  if (moduleName) {
-    int64_t setupTime = [performanceLogger durationForTag:RCTPLNativeModuleSetup];
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidSetupModuleNotification
-                                                        object:nil
-                                                      userInfo:@{
-                                                                 RCTDidSetupModuleNotificationModuleNameKey: moduleName,
-                                                                 RCTDidSetupModuleNotificationSetupTimeKey: @(setupTime)
-                                                                 }];
-  }
 }
 
 static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger) {
@@ -365,35 +350,42 @@ struct RCTInstanceCallback : public InstanceCallback {
   }];
 
   // Load the source asynchronously, then store it for later execution.
-  dispatch_group_enter(prepareBridge);
-  __block NSData *sourceCode;
-  [self loadSource:^(NSError *error, RCTSource *source) {
-    if (error) {
-      [weakSelf handleError:error];
-    }
-
-    sourceCode = source.data;
-    dispatch_group_leave(prepareBridge);
-  } onProgress:^(RCTLoadingProgress *progressData) {
-#if RCT_DEV && __has_include(<React/RCTDevLoadingView.h>)
-    // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
-    RCTDevLoadingView *loadingView = [weakSelf moduleForName:RCTBridgeModuleNameForClass([RCTDevLoadingView class])
-                                       lazilyLoadIfNecessary:NO];
-    [loadingView updateProgress:progressData];
-#endif
-  }];
-
-  // Wait for both the modules and source code to have finished loading
-  dispatch_group_notify(prepareBridge, dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
-    RCTCxxBridge *strongSelf = weakSelf;
-    if (sourceCode && strongSelf.loading) {
-      [strongSelf executeSourceCode:sourceCode sync:NO];
-    }
-  });
+  if(!self.bundleURL.fileURL) {
+    dispatch_group_enter(prepareBridge);
+    __block NSDictionary *bundlesContainer;
+    [self loadSource:^(NSError *error, NSDictionary *bundles) {
+      if (error) {
+        [weakSelf handleError:error];
+      }
+      bundlesContainer = bundles;
+      dispatch_group_leave(prepareBridge);
+    } onProgress:^(RCTDevBundleLoadingProgress *progressData) {
+  #if RCT_DEV && __has_include("RCTDevLoadingView.h")
+      // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
+      RCTDevLoadingView *loadingView = [weakSelf moduleForName:RCTBridgeModuleNameForClass([RCTDevLoadingView class])
+                                         lazilyLoadIfNecessary:NO];
+      [loadingView updateProgress:progressData];
+  #endif
+    }];
+    // Wait for both the modules and source code to have finished loading
+    dispatch_group_notify(prepareBridge, dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
+      RCTCxxBridge *strongSelf = weakSelf;
+      if (bundlesContainer && strongSelf.loading) {
+        [strongSelf executeSourceCode:bundlesContainer sync:NO];
+      }
+    });
+  } else {
+    dispatch_group_notify(prepareBridge, dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
+      RCTCxxBridge *strongSelf = weakSelf;
+      if (strongSelf.loading) {
+        [strongSelf executeFileSourceCode:NO];
+      }
+    });
+  }
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
 
-- (void)loadSource:(RCTSourceLoadBlock)_onSourceLoad onProgress:(RCTSourceLoadProgressBlock)onProgress
+- (void)loadSource:(RCTDevBundlesLoadBlock)_onSourceLoad onProgress:(RCTDevBundlesProgressBlock)onProgress
 {
   NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
   [center postNotificationName:RCTBridgeWillDownloadScriptNotification object:_parentBridge];
@@ -404,20 +396,31 @@ struct RCTInstanceCallback : public InstanceCallback {
   (void)cookie;
 
   RCTPerformanceLogger *performanceLogger = _performanceLogger;
-  RCTSourceLoadBlock onSourceLoad = ^(NSError *error, RCTSource *source) {
+  
+  RCTDevBundlesLoadBlock onSourceLoad = ^(NSError *error, NSDictionary *bundlesContainer) {
     RCTProfileEndAsyncEvent(0, @"native", cookie, @"JavaScript download", @"JS async");
     [performanceLogger markStopForTag:RCTPLScriptDownload];
-    [performanceLogger setValue:source.length forTag:RCTPLBundleSize];
-
+    
+    __block NSUInteger bundleSize = 0;
+    [bundlesContainer enumerateKeysAndObjectsUsingBlock:^(id key, RCTDevBundleSource *value, BOOL* stop) {
+      bundleSize += value.length;
+    }];
+    [performanceLogger setValue:bundleSize forTag:RCTPLBundleSize];
+    
     NSDictionary *userInfo = @{
-      RCTBridgeDidDownloadScriptNotificationSourceKey: source ?: [NSNull null],
+      // Pass bundle source only if single bundle is preset.
+      RCTBridgeDidDownloadScriptNotificationSourceKey: [bundlesContainer count] == 1
+        ? [bundlesContainer allValues][0]
+        : [NSNull null],
+      RCTBridgeDidDownloadScriptNotificationBundlesKey: bundlesContainer ?: [NSNull null],
       RCTBridgeDidDownloadScriptNotificationBridgeDescriptionKey: self->_bridgeDescription ?: [NSNull null],
     };
 
     [center postNotificationName:RCTBridgeDidDownloadScriptNotification object:self->_parentBridge userInfo:userInfo];
 
-    _onSourceLoad(error, source);
+    _onSourceLoad(error, bundlesContainer);
   };
+
 
   if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:onProgress:onComplete:)]) {
     [self.delegate loadSourceForBridge:_parentBridge onProgress:onProgress onComplete:onSourceLoad];
@@ -428,13 +431,12 @@ struct RCTInstanceCallback : public InstanceCallback {
                                          "server or have included a .jsbundle file in your application bundle.");
     onSourceLoad(error, nil);
   } else {
-    __weak RCTCxxBridge *weakSelf = self;
-    [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:^(NSError *error, RCTSource *source) {
+    [RCTDevBundlesDownloader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:^(NSError *error, NSDictionary *bundles) {
       if (error) {
         [weakSelf handleError:error];
         return;
       }
-      onSourceLoad(error, source);
+      onSourceLoad(error, bundles);
     }];
   }
 }
@@ -880,22 +882,56 @@ struct RCTInstanceCallback : public InstanceCallback {
   [_displayLink registerModuleForFrameUpdates:module withModuleData:moduleData];
 }
 
-- (void)executeSourceCode:(NSData *)sourceCode sync:(BOOL)sync
+- (void)executeSourceCode:(NSDictionary *)bundles sync:(BOOL)sync
+{
+  dispatch_block_t completion = [self getCompletionHandler];
+  
+  if (sync) {
+    [self executeApplicationScriptSync:bundles];
+    completion();
+  } else {
+    [self enqueueApplicationScript:bundles onComplete:completion];
+  }
+}
+
+- (void)executeFileSourceCode:(BOOL)sync
 {
   // This will get called from whatever thread was actually executing JS.
-  dispatch_block_t completion = ^{
+  dispatch_block_t completion = [self getCompletionHandler];
+
+  if (sync) {
+    [self executeApplicationFileScriptSync:self.bundleURL];
+    completion();
+  } else {
+    [self enqueueApplicationFileScript:self.bundleURL onComplete:completion];
+  }
+
+#if RCT_DEV
+  if (self.devSettings.isHotLoadingAvailable && self.devSettings.isHotLoadingEnabled) {
+    NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
+    NSString *host = self.bundleURL.host;
+    NSNumber *port = self.bundleURL.port;
+    [self enqueueJSCall:@"HMRClient"
+                 method:@"enable"
+                   args:@[@"ios", path, host, RCTNullIfNil(port)]
+             completion:NULL];  }
+#endif
+}
+
+- (dispatch_block_t)getCompletionHandler {
+  return ^{
     // Log start up metrics early before processing any other js calls
     [self logStartupFinish];
     // Flush pending calls immediately so we preserve ordering
     [self _flushPendingCalls];
-
+    
     // Perform the state update and notification on the main thread, so we can't run into
     // timing issues with RCTRootView
     dispatch_async(dispatch_get_main_queue(), ^{
       [[NSNotificationCenter defaultCenter]
        postNotificationName:RCTJavaScriptDidLoadNotification
        object:self->_parentBridge userInfo:@{@"bridge": self}];
-
+      
       // Starting the display link is not critical to startup, so do it last
       [self ensureOnJavaScriptThread:^{
         // Register the display link to start sending js calls after everything is setup
@@ -903,26 +939,6 @@ struct RCTInstanceCallback : public InstanceCallback {
       }];
     });
   };
-
-  if (sync) {
-    [self executeApplicationScriptSync:sourceCode url:self.bundleURL];
-    completion();
-  } else {
-    [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:completion];
-  }
-
-#if RCT_DEV
-  if (self.devSettings.isHotLoadingAvailable) {
-    NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
-    NSString *host = self.bundleURL.host;
-    NSNumber *port = self.bundleURL.port;
-    BOOL isHotLoadingEnabled = self.devSettings.isHotLoadingEnabled;
-    [self enqueueJSCall:@"HMRClient"
-                 method:@"setup"
-                   args:@[@"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled)]
-             completion:NULL];
-  }
-#endif
 }
 
 - (void)handleError:(NSError *)error
@@ -1286,13 +1302,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 }
 
-- (void)enqueueApplicationScript:(NSData *)script
-                             url:(NSURL *)url
+- (void)enqueueApplicationScript:(NSDictionary *)bundles
                       onComplete:(dispatch_block_t)onComplete
 {
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge enqueueApplicationScript]", nil);
 
-  [self executeApplicationScript:script url:url async:YES];
+  [self executeApplicationScript:bundles async:YES];
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 
@@ -1303,46 +1318,60 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   }
 }
 
-- (void)executeApplicationScriptSync:(NSData *)script url:(NSURL *)url
+- (void)executeApplicationScriptSync:(NSDictionary *)bundles
 {
-  [self executeApplicationScript:script url:url async:NO];
+  [self executeApplicationScript:bundles async:NO];
 }
 
-- (void)executeApplicationScript:(NSData *)script
-                             url:(NSURL *)url
+- (void)executeApplicationScript:(NSDictionary *)bundles
+                           async:(BOOL)async
+{
+  [self _tryAndHandleError:^{
+    NSString *sourceUrlStr = deriveSourceURL(self.bundleURL);
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:RCTJavaScriptWillStartExecutingNotification
+      object:self->_parentBridge userInfo:@{@"bridge": self}];
+    
+    std::unique_ptr<RCTDevBundleLoader> loader = std::make_unique<RCTDevBundleLoader>(bundles);
+    self->_reactInstance->runApplication(std::string([sourceUrlStr UTF8String]), std::move(loader), !async);
+  }];
+}
+
+- (void)enqueueApplicationFileScript:(NSURL *)url
+                      onComplete:(dispatch_block_t)onComplete
+{
+  RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTCxxBridge enqueueApplicationFileScript]", nil);
+  
+  [self executeApplicationFileScript:url async:YES];
+  
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  
+  // Assumes that onComplete can be called when the next block on the JS thread is scheduled
+  if (onComplete) {
+    RCTAssert(_jsMessageThread != nullptr, @"Cannot invoke completion without jsMessageThread");
+    _jsMessageThread->runOnQueue(onComplete);
+  }
+}
+
+
+- (void)executeApplicationFileScriptSync:(NSURL *)url
+{
+  [self executeApplicationFileScript:url async:NO];
+}
+
+- (void)executeApplicationFileScript:(NSURL *)url
                            async:(BOOL)async
 {
   [self _tryAndHandleError:^{
     NSString *sourceUrlStr = deriveSourceURL(url);
     [[NSNotificationCenter defaultCenter]
-      postNotificationName:RCTJavaScriptWillStartExecutingNotification
-      object:self->_parentBridge userInfo:@{@"bridge": self}];
-    if (isRAMBundle(script)) {
-      [self->_performanceLogger markStartForTag:RCTPLRAMBundleLoad];
-      auto ramBundle = std::make_unique<JSIndexedRAMBundle>(sourceUrlStr.UTF8String);
-      std::unique_ptr<const JSBigString> scriptStr = ramBundle->getStartupCode();
-      [self->_performanceLogger markStopForTag:RCTPLRAMBundleLoad];
-      [self->_performanceLogger setValue:scriptStr->size() forTag:RCTPLRAMStartupCodeSize];
-      if (self->_reactInstance) {
-        auto registry = RAMBundleRegistry::multipleBundlesRegistry(std::move(ramBundle), JSIndexedRAMBundle::buildFactory());
-        self->_reactInstance->loadRAMBundle(std::move(registry), std::move(scriptStr),
-                                            sourceUrlStr.UTF8String, !async);
-      }
-    } else if (self->_reactInstance) {
-      self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
-                                                 sourceUrlStr.UTF8String, !async);
-    } else {
-      std::string methodName = async ? "loadApplicationScript" : "loadApplicationScriptSync";
-      throw std::logic_error("Attempt to call " + methodName + ": on uninitialized bridge");
-    }
-  }];
-}
+     postNotificationName:RCTJavaScriptWillStartExecutingNotification
+     object:self->_parentBridge userInfo:@{@"bridge": self}];
 
-- (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
-{
-  if (_reactInstance) {
-    _reactInstance->registerBundle(static_cast<uint32_t>(segmentId), path.UTF8String);
-  }
+    std::unique_ptr<RCTFileBundleLoader> loader
+      = std::make_unique<RCTFileBundleLoader>(self->_performanceLogger);
+    self->_reactInstance->runApplication(std::string([sourceUrlStr UTF8String]), std::move(loader), !async);
+  }];
 }
 
 #pragma mark - Payload Processing

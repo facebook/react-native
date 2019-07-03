@@ -17,7 +17,7 @@
 #import <cxxreact/JSExecutor.h>
 #import <cxxreact/MessageQueueThread.h>
 #import <cxxreact/ModuleRegistry.h>
-#import <cxxreact/RAMBundleRegistry.h>
+#import <cxxreact/BundleRegistry.h>
 #import <folly/json.h>
 
 namespace facebook {
@@ -74,7 +74,7 @@ public:
       std::make_unique<JSBigStdString>(folly::toJson(config)));
   }
 
-  void loadApplicationScript(
+  void loadScript(
       std::unique_ptr<const JSBigString> script,
       std::string sourceURL) override {
     RCTProfileBeginFlowEvent();
@@ -92,14 +92,11 @@ public:
         [m_jse flushedQueue:m_jsCallback];
       }];
   }
-
-  void setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) override {
-    RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
-  }
-
-  void registerBundle(uint32_t __unused bundleId, const std::string __unused &bundlePath) override {
-    RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
-  }
+  
+  void setupEnvironment(std::function<void(std::string, bool, bool)> loadBundle,
+                        std::function<RAMBundle::Module(uint32_t, std::string)> getModule) override {
+    
+  };
 
   void callFunction(const std::string &module, const std::string &method,
                     const folly::dynamic &arguments) override {

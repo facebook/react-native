@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Bundle.h"
-#include "JSBigString.h"
 
 namespace facebook {
 namespace react {
