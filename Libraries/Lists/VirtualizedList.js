@@ -738,10 +738,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             flatParentProps: false,
             parentProps: this.props,
           }}
-          getItemLayout={getItemLayout}
-          renderItem={renderItem}
           extraData={extraData}
-          debug={debug}
           ref={ref => {
             this._cellRefs[key] = ref;
           }}
