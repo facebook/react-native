@@ -179,17 +179,7 @@ const AppRegistry = {
    */
   runApplication(appKey: string, appParameters: any): void {
     const msg =
-      'Running application "' +
-      appKey +
-      '" with appParams: ' +
-      JSON.stringify(appParameters) +
-      '. ' +
-      '__DEV__ === ' +
-      String(__DEV__) +
-      ', development-level warning are ' +
-      (__DEV__ ? 'ON' : 'OFF') +
-      ', performance optimizations are ' +
-      (__DEV__ ? 'OFF' : 'ON');
+      'Running "' + appKey + '" with ' + JSON.stringify(appParameters);
     infoLog(msg);
     BugReporting.addSource(
       'AppRegistry.runApplication' + runCount++,
@@ -197,18 +187,10 @@ const AppRegistry = {
     );
     invariant(
       runnables[appKey] && runnables[appKey].run,
-      'Application ' +
-        appKey +
-        ' has not been registered.\n\n' +
-        "Hint: This error often happens when you're running the packager " +
-        '(local dev server) from a wrong folder. For example you have ' +
-        'multiple apps and the packager is still running for the app you ' +
-        'were working on before.\nIf this is the case, simply kill the old ' +
-        'packager instance (e.g. close the packager terminal window) ' +
-        'and start the packager in the correct app folder (e.g. cd into app ' +
-        "folder and run 'npm start').\n\n" +
-        'This error can also happen due to a require() error during ' +
-        'initialization or failure to call AppRegistry.registerComponent.\n\n',
+      `"${appKey}" has not been registered. This can happen if:\n` +
+        '* Metro (the local dev server) is run from the wrong folder. ' +
+        'Check if Metro is running, stop it and restart it in the current project.\n' +
+        "* A module failed to load due to an error and `AppRegistry.registerComponent` wasn't called.",
     );
 
     SceneTracker.setActiveScene({name: appKey});
