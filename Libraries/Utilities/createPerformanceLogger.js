@@ -67,7 +67,7 @@ function createPerformanceLogger(): IPerformanceLogger {
 
     addTimespan(key: string, lengthInMs: number, description?: string) {
       if (this._timespans[key]) {
-        if (__DEV__) {
+        if (PRINT_TO_CONSOLE && __DEV__) {
           infoLog(
             'PerformanceLogger: Attempting to add a timespan that already exists ',
             key,
@@ -84,7 +84,7 @@ function createPerformanceLogger(): IPerformanceLogger {
 
     startTimespan(key: string, description?: string) {
       if (this._timespans[key]) {
-        if (__DEV__) {
+        if (PRINT_TO_CONSOLE && __DEV__) {
           infoLog(
             'PerformanceLogger: Attempting to start a timespan that already exists ',
             key,
@@ -106,7 +106,7 @@ function createPerformanceLogger(): IPerformanceLogger {
     stopTimespan(key: string) {
       const timespan = this._timespans[key];
       if (!timespan || !timespan.startTime) {
-        if (__DEV__) {
+        if (PRINT_TO_CONSOLE && __DEV__) {
           infoLog(
             'PerformanceLogger: Attempting to end a timespan that has not started ',
             key,
@@ -115,7 +115,7 @@ function createPerformanceLogger(): IPerformanceLogger {
         return;
       }
       if (timespan.endTime) {
-        if (__DEV__) {
+        if (PRINT_TO_CONSOLE && __DEV__) {
           infoLog(
             'PerformanceLogger: Attempting to end a timespan that has already ended ',
             key,
@@ -203,7 +203,7 @@ function createPerformanceLogger(): IPerformanceLogger {
 
     setExtra(key: string, value: any) {
       if (this._extras[key]) {
-        if (__DEV__) {
+        if (PRINT_TO_CONSOLE && __DEV__) {
           infoLog(
             'PerformanceLogger: Attempting to set an extra that already exists ',
             {key, currentValue: this._extras[key], attemptedValue: value},
@@ -230,7 +230,7 @@ function createPerformanceLogger(): IPerformanceLogger {
 
     markPoint(key: string, timestamp?: number) {
       if (this._points[key]) {
-        if (__DEV__) {
+        if (PRINT_TO_CONSOLE && __DEV__) {
           infoLog(
             'PerformanceLogger: Attempting to mark a point that has been already logged ',
             key,
