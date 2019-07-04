@@ -108,7 +108,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                       .setLineSpacing(0.f, 1.f)
                       .setIncludePad(mIncludeFontPadding)
                       .setBreakStrategy(mTextBreakStrategy)
-                      .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
+                      .setHyphenationFrequency(mHyphenationFrequency);
 
               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 builder.setJustificationMode(mJustificationMode);
@@ -146,7 +146,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                       .setLineSpacing(0.f, 1.f)
                       .setIncludePad(mIncludeFontPadding)
                       .setBreakStrategy(mTextBreakStrategy)
-                      .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
+                      .setHyphenationFrequency(mHyphenationFrequency);
 
               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 builder.setUseLineSpacingFromFallbacks(true);
