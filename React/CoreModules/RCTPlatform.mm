@@ -5,10 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import "RCTPlatform.h"
+
 #import <UIKit/UIKit.h>
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
-#import <React/RCTPlatform.h>
 #import <React/RCTUtils.h>
 #import <React/RCTVersion.h>
 
