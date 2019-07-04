@@ -18,9 +18,9 @@ import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 
 import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
 
-let _didSetupSocket = false;
-let _hmrClient = null;
-let _hmrUnavailableReason: string | null = null;
+let didSetupSocket = false;
+let hmrClient = null;
+let hmrUnavailableReason: string | null = null;
 
 /**
  * HMR Client that receives from the server HMR updates and propagates them
@@ -28,31 +28,31 @@ let _hmrUnavailableReason: string | null = null;
  */
 const HMRClient = {
   enable() {
-    if (_hmrUnavailableReason !== null) {
+    if (hmrUnavailableReason !== null) {
       // If HMR became unavailable while you weren't using it,
       // explain why when you try to turn it on.
       // This is an error (and not a warning) because it is shown
       // in response to a direct user action.
-      throw new Error(_hmrUnavailableReason);
+      throw new Error(hmrUnavailableReason);
     }
 
-    invariant(_hmrClient, 'Expected HMRClient.setup() call at startup.');
-    _hmrClient.shouldApplyUpdates = true;
+    invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
+    hmrClient.shouldApplyUpdates = true;
 
     // We connect lazily. This only ever must run once.
-    if (!_didSetupSocket) {
-      _didSetupSocket = true;
-      _hmrClient.enable();
+    if (!didSetupSocket) {
+      didSetupSocket = true;
+      hmrClient.enable();
     }
 
     // Intentionally reading it outside the condition
     // so that it's less likely we'd break it later.
     const modules = (require: any).getModules();
-    if (_hmrClient.outdatedModules.size > 0) {
+    if (hmrClient.outdatedModules.size > 0) {
       let message =
         "You've changed these files before turning on Fast Refresh: ";
       message +=
-        Array.from(_hmrClient.outdatedModules)
+        Array.from(hmrClient.outdatedModules)
           .map(id => {
             const mod = modules[id];
             return getShortModuleName(mod.verboseName);
@@ -63,17 +63,17 @@ const HMRClient = {
         'or perform a full reload.';
       console.warn(message);
       // Don't warn about the same modules twice.
-      _hmrClient.outdatedModules.clear();
+      hmrClient.outdatedModules.clear();
     }
   },
 
   disable() {
-    invariant(_hmrClient, 'Expected HMRClient.setup() call at startup.');
+    invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
     // Note: we don't actually tear down the connection.
     // We just tell the client to ignore updates.
     // This lets us avoid reasonining about complex race conditions
     // if the user toggles the setting on and off.
-    _hmrClient.shouldApplyUpdates = false;
+    hmrClient.shouldApplyUpdates = false;
   },
 
   // Called once by the bridge on startup, even if Fast Refresh is off.
@@ -88,7 +88,7 @@ const HMRClient = {
     invariant(platform, 'Missing required parameter `platform`');
     invariant(bundleEntry, 'Missing required paramenter `bundleEntry`');
     invariant(host, 'Missing required paramenter `host`');
-    invariant(!_hmrClient, 'Cannot initialize hmrClient twice');
+    invariant(!hmrClient, 'Cannot initialize hmrClient twice');
     // Moving to top gives errors due to NativeModules not being initialized
     const HMRLoadingView = require('./HMRLoadingView');
 
@@ -102,10 +102,10 @@ const HMRClient = {
       `platform=${platform}&` +
       `bundleEntry=${bundleEntry}`;
 
-    const hmrClient = new MetroHMRClient(wsUrl);
-    _hmrClient = hmrClient;
+    const client = new MetroHMRClient(wsUrl);
+    hmrClient = client;
 
-    hmrClient.on('connection-error', e => {
+    client.on('connection-error', e => {
       let error = `Fast Refresh isn't working because it cannot connect to the development server.
 
 Try the following to fix the issue:
@@ -131,7 +131,7 @@ Error: ${e.message}`;
     });
 
     let didFinishInitialUpdate = false;
-    hmrClient.on('connection-done', () => {
+    client.on('connection-done', () => {
       // Don't show the loading view during the initial update.
       didFinishInitialUpdate = true;
     });
@@ -142,7 +142,7 @@ Error: ${e.message}`;
         // Until we get "connection-done", messages aren't real edits.
         didFinishInitialUpdate &&
         // If HMR is disabled by the user, we're ignoring updates.
-        hmrClient.shouldApplyUpdates &&
+        client.shouldApplyUpdates &&
         // If full refresh is forced, there's no need to flash the indicator.
         // It will be refreshed in a few milliseconds anyway.
         !(require: any).Refresh.forceFullRefresh
@@ -165,32 +165,32 @@ Error: ${e.message}`;
       }
     }
 
-    hmrClient.on('update-start', () => {
+    client.on('update-start', () => {
       if (isFastRefreshActive()) {
         HMRLoadingView.showMessage('Refreshing...');
       }
     });
 
-    hmrClient.on('update', () => {
+    client.on('update', () => {
       if (isFastRefreshActive()) {
         dismissRedbox();
       }
     });
 
-    hmrClient.on('update-done', () => {
+    client.on('update-done', () => {
       HMRLoadingView.hide();
     });
 
-    hmrClient.on('error', data => {
+    client.on('error', data => {
       HMRLoadingView.hide();
 
       if (data.type === 'GraphNotFoundError') {
-        hmrClient.disable();
+        client.disable();
         setHMRUnavailableReason(
           'The Metro server has restarted since the last edit. Fast Refresh will be disabled until you reload the application.',
         );
       } else if (data.type === 'RevisionNotFoundError') {
-        hmrClient.disable();
+        client.disable();
         setHMRUnavailableReason(
           'The Metro server and the client are out of sync. Fast Refresh will be disabled until you reload the application.',
         );
@@ -206,7 +206,7 @@ Error: ${e.message}`;
       }
     });
 
-    hmrClient.on('close', data => {
+    client.on('close', data => {
       HMRLoadingView.hide();
       setHMRUnavailableReason(
         'Disconnected from the Metro server. Fast Refresh will be disabled until you reload the application.',
@@ -222,10 +222,10 @@ Error: ${e.message}`;
 };
 
 function setHMRUnavailableReason(reason) {
-  invariant(_hmrClient, 'Expected HMRClient.setup() call at startup.');
+  invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
 
-  _hmrUnavailableReason = reason;
-  if (_hmrClient.shouldApplyUpdates) {
+  hmrUnavailableReason = reason;
+  if (hmrClient.shouldApplyUpdates) {
     // If HMR is currently enabled, show a warning.
     console.warn(reason);
     // (Not using the `warning` module to prevent a Buck cycle.)
