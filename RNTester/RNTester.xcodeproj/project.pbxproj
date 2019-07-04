@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -537,6 +537,7 @@
 		6862DFCD2229DFCB00684E03 /* Screenshot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Screenshot.h; sourceTree = "<group>"; };
 		6862DFCE2229DFCC00684E03 /* Screenshot.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Screenshot.m; sourceTree = "<group>"; };
 		68FF44371CF6111500720EFD /* RCTBundleURLProviderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBundleURLProviderTests.m; sourceTree = "<group>"; };
+		6E00598822C62D9E0037EC55 /* RNTester.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RNTester.entitlements; path = RNTester/RNTester.entitlements; sourceTree = "<group>"; };
 		83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerScenarioTests.m; sourceTree = "<group>"; };
 		8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderTests.m; sourceTree = "<group>"; };
 		8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderHelpers.m; sourceTree = "<group>"; };
@@ -727,6 +728,7 @@
 		13B07FAE1A68108700A75B9A /* RNTester */ = {
 			isa = PBXGroup;
 			children = (
+				6E00598822C62D9E0037EC55 /* RNTester.entitlements */,
 				2DDEF00F1F84BF7B00DBDF73 /* Images.xcassets */,
 				272E6B3A1BEA846C001FCF37 /* NativeExampleViews */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -1203,11 +1205,12 @@
 					};
 					3D13F83D1D6F6AE000E69E0E = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = VYK7DLU38Z;
 					};
 				};
 			};
 			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "RNTester" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -1822,7 +1825,11 @@
 				);
 				INFOPLIST_FILE = RNTesterUnitTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/RNTesterUnitTests",
@@ -1841,7 +1848,11 @@
 				);
 				INFOPLIST_FILE = RNTesterUnitTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/RNTesterUnitTests",
@@ -1856,6 +1867,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_CONFIG = "$(SRCROOT)/../metro.config.js";
+				CODE_SIGN_ENTITLEMENTS = RNTester/RNTester.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				DERIVE_UIKITFORMAC_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = VYK7DLU38Z;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"RN_BUNDLE_PREFIX=$(RN_BUNDLE_PREFIX)",
@@ -1869,11 +1883,15 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = RNTester;
 				RN_BUNDLE_PREFIX = "";
+				SUPPORTS_UIKITFORMAC = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1883,6 +1901,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_CONFIG = "$(SRCROOT)/../metro.config.js";
+				CODE_SIGN_ENTITLEMENTS = RNTester/RNTester.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				DERIVE_UIKITFORMAC_PRODUCT_BUNDLE_IDENTIFIER = YES;
 				DEVELOPMENT_TEAM = VYK7DLU38Z;
 				GCC_PREPROCESSOR_DEFINITIONS = "RN_BUNDLE_PREFIX=$(RN_BUNDLE_PREFIX)";
 				HEADER_SEARCH_PATHS = (
@@ -1892,10 +1913,14 @@
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = RNTester;
+				SUPPORTS_UIKITFORMAC = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1912,7 +1937,11 @@
 				);
 				INFOPLIST_FILE = RNTesterIntegrationTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.React.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RNTester.app/RNTester";
@@ -1928,7 +1957,11 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = RNTesterIntegrationTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.React.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RNTester.app/RNTester";
@@ -1949,7 +1982,11 @@
 					"FB_REFERENCE_IMAGE_DIR=\"\\\"$(SOURCE_ROOT)/$(PROJECT_NAME)IntegrationTests/ReferenceImages\\\"\"",
 				);
 				INFOPLIST_FILE = RNTesterIntegrationTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/RNTesterUnitTests",
@@ -1973,7 +2010,11 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = RNTesterIntegrationTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/RNTesterUnitTests",
@@ -1996,7 +2037,10 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = "RNTester-tvOS/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.RNTester-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
@@ -2016,7 +2060,10 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = "RNTester-tvOS/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.RNTester-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
@@ -2039,7 +2086,11 @@
 					"$(SRCROOT)/RNTesterUnitTests/**",
 				);
 				INFOPLIST_FILE = RNTesterUnitTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/RNTesterUnitTests",
@@ -2067,7 +2118,11 @@
 					"$(SRCROOT)/RNTesterUnitTests/**",
 				);
 				INFOPLIST_FILE = RNTesterUnitTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/RNTesterUnitTests",
@@ -2084,12 +2139,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = VYK7DLU38Z;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = RNTester/RNTesterBundle/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterBundle;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Debug;
@@ -2098,12 +2156,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = VYK7DLU38Z;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = RNTester/RNTesterBundle/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterBundle;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Release;

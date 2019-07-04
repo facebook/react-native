@@ -5,7 +5,7 @@
 
 #import "RCTInspector.h"
 
-#if RCT_DEV
+#if RCT_DEV && !TARGET_OS_UIKITFORMAC
 
 #include <jsinspector/InspectorInterfaces.h>
 

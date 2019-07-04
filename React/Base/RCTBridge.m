@@ -286,7 +286,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)reload
 {
-  #if RCT_ENABLE_INSPECTOR
+  #if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC
   // Disable debugger to resume the JsVM & avoid thread locks while reloading
   [RCTInspectorDevServerHelper disableDebugger];
   #endif

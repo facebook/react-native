@@ -43,7 +43,6 @@
 				3C86DF7A1ADF695F0047B81A /* RCTWebSocketModule.h */,
 				3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */,
 				3C86DF471ADF2C930047B81A /* Products */,
-				13526A501F362F7F0008EF00 /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -67,12 +66,10 @@
 			buildConfigurationList = 2D2A28901D9B049200D4039D /* Build configuration list for PBXNativeTarget "RCTWebSocket-tvOS" */;
 			buildPhases = (
 				2D2A28841D9B049200D4039D /* Sources */,
-				2DC5E5151F3A6C39000EE84B /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				3DBE0D111F3B184D0099AA32 /* PBXTargetDependency */,
 			);
 			name = "RCTWebSocket-tvOS";
 			productName = "RCTWebSocket-tvOS";
@@ -84,12 +81,10 @@
 			buildConfigurationList = 3C86DF5A1ADF2C930047B81A /* Build configuration list for PBXNativeTarget "RCTWebSocket" */;
 			buildPhases = (
 				3C86DF421ADF2C930047B81A /* Sources */,
-				13526A4F1F362F770008EF00 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				3DBE0D0F1F3B18490099AA32 /* PBXTargetDependency */,
 			);
 			name = RCTWebSocket;
 			productName = WebSocket;
@@ -119,6 +114,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 3C86DF3D1ADF2C930047B81A;
@@ -313,6 +309,7 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_UIKITFORMAC = NO;
 			};
 			name = Debug;
 		};
@@ -324,56 +321,7 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
-		3DBE0CFE1F3B181A0099AA32 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				EXECUTABLE_PREFIX = lib;
-				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		3DBE0CFF1F3B181A0099AA32 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				EXECUTABLE_PREFIX = lib;
-				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
-		3DBE0D0B1F3B181C0099AA32 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_SUSPICIOUS_MOVES = YES;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_TESTABILITY = YES;
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = appletvos;
-				TVOS_DEPLOYMENT_TARGET = 9.2;
-			};
-			name = Debug;
-		};
-		3DBE0D0C1F3B181C0099AA32 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_SUSPICIOUS_MOVES = YES;
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = appletvos;
-				TVOS_DEPLOYMENT_TARGET = 9.2;
+				SUPPORTS_UIKITFORMAC = NO;
 			};
 			name = Release;
 		};

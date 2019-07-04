@@ -18,7 +18,7 @@
 
 #import <cxxreact/JSExecutor.h>
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
 #import <React/RCTPushNotificationManager.h>
 #endif
 
@@ -160,7 +160,7 @@
 
 # pragma mark - Push Notifications
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
 
 // Required to register for notifications
 - (void)application:(__unused UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
