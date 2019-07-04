@@ -169,10 +169,14 @@ void Instance::handleMemoryPressure(int pressureLevel) {
 }
 
 void Instance::invokeAsync(std::function<void()>&& func) {
-  nativeToJsBridge_->runOnExecutorQueue([func=std::move(func)](JSExecutor *executor) {
-    func();
-    executor->flush();
-  });
+  if (auto execEnv = bundleRegistry_->getEnvironment(defaultEnvironmentId_).lock()) {
+    execEnv->nativeToJsBridge->runOnExecutorQueue([func=std::move(func)](JSExecutor *executor) {
+      func();
+      executor->flush();
+    });
+  } else {
+    throw std::runtime_error("BundleEnvironment pointer is invalid");
+  }
 }
 
 } // namespace react

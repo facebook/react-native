@@ -95,6 +95,19 @@ private:
 
 }
 
+static void notifyAboutModuleSetup(RCTPerformanceLogger *performanceLogger, const char *tag) {
+  NSString *moduleName = [[NSString alloc] initWithUTF8String:tag];
+  if (moduleName) {
+    int64_t setupTime = [performanceLogger durationForTag:RCTPLNativeModuleSetup];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidSetupModuleNotification
+                                                        object:nil
+                                                      userInfo:@{
+                                                                 RCTDidSetupModuleNotificationModuleNameKey: moduleName,
+                                                                 RCTDidSetupModuleNotificationSetupTimeKey: @(setupTime)
+                                                                 }];
+  }
+}
+
 static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger) {
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
   ReactMarker::logTaggedMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *__unused tag) {
@@ -431,6 +444,7 @@ struct RCTInstanceCallback : public InstanceCallback {
                                          "server or have included a .jsbundle file in your application bundle.");
     onSourceLoad(error, nil);
   } else {
+    __weak RCTCxxBridge *weakSelf = self;
     [RCTDevBundlesDownloader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:^(NSError *error, NSDictionary *bundles) {
       if (error) {
         [weakSelf handleError:error];

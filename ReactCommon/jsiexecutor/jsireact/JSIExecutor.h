@@ -112,7 +112,6 @@ class JSIExecutor : public JSExecutor {
   std::shared_ptr<ExecutorDelegate> delegate_;
   JSINativeModules nativeModules_;
   std::once_flag bindFlag_;
-  Logger logger_;
   JSIScopedTimeoutInvoker scopedTimeoutInvoker_;
   RuntimeInstaller runtimeInstaller_;
 
