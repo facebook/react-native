@@ -61,13 +61,6 @@ type NativeProps = $ReadOnly<{|
   hardwareAccelerated?: WithDefault<boolean, false>,
 
   /**
-   * The `visible` prop determines whether your modal is visible.
-   *
-   * See https://facebook.github.io/react-native/docs/modal.html#visible
-   */
-  visible?: WithDefault<boolean, false>,
-
-  /**
    * The `onRequestClose` callback is called when the user taps the hardware
    * back button on Android or the menu button on Apple TV.
    *
