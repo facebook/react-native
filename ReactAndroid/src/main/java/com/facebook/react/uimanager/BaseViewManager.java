@@ -38,6 +38,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_TRANSFORM = "transform";
   private static final String PROP_ELEVATION = "elevation";
   private static final String PROP_Z_INDEX = "zIndex";
+  private static final String PROP_MIN_WIDTH = ViewProps.MIN_WIDTH;
+  private static final String PROP_MIN_HEIGHT = ViewProps.MIN_HEIGHT;
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
   private static final String PROP_ACCESSIBILITY_HINT = "accessibilityHint";
@@ -116,6 +118,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     if (parent instanceof ReactZIndexedViewGroup) {
       ((ReactZIndexedViewGroup) parent).updateDrawingOrder();
     }
+  }
+
+  @ReactProp(name = PROP_MIN_WIDTH)
+  public void setMinWidth(@Nonnull T view, int minWidth) {
+    view.setMinimumWidth((int) PixelUtil.toPixelFromDIP(minWidth));
+  }
+
+  @ReactProp(name = PROP_MIN_HEIGHT)
+  public void setMinHeight(@Nonnull T view, int minHeight) {
+    view.setMinimumHeight((int) PixelUtil.toPixelFromDIP(minHeight));
   }
 
   @ReactProp(name = PROP_RENDER_TO_HARDWARE_TEXTURE)
