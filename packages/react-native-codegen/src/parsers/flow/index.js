@@ -11,6 +11,7 @@
 'use strict';
 
 import type {SchemaType} from '../../CodegenSchema.js';
+import type {SchemaBuilderConfig} from './schema.js';
 // $FlowFixMe there's no flowtype flow-parser
 const flowParser = require('flow-parser');
 const fs = require('fs');
@@ -20,8 +21,9 @@ const {getEvents} = require('./events');
 const {getProps} = require('./props');
 const {getOptions} = require('./options');
 const {getExtendsProps} = require('./extends');
+const {getMethods} = require('./methods');
 
-function findConfig(ast) {
+function findComponentConfig(ast) {
   const foundConfigs = [];
 
   const defaultExports = ast.body.filter(
@@ -148,36 +150,99 @@ function getCommandProperties(commandTypeName, types) {
   }
 }
 
-function processString(contents: string) {
+function getConfigType(ast): 'module' | 'component' {
+  const defaultExports = ast.body.filter(
+    node => node.type === 'ExportDefaultDeclaration',
+  );
+  if (defaultExports.length !== 1) {
+    throw new Error('File should contain only one default export.');
+  }
+  if (defaultExports[0].declaration && defaultExports[0].declaration.callee) {
+    const statement = defaultExports[0].declaration.callee;
+    if (statement.name === 'codegenNativeComponent') {
+      return 'component';
+    }
+    if (statement.object && statement.object.name === 'TurboModuleRegistry') {
+      return 'module';
+    }
+  }
+  throw new Error(
+    `Default export for module specified incorrectly. It should containts
+    either "TurboModuleRegistry.getEnforcing" or "codegenNativeComponent".`,
+  );
+}
+
+function getModuleProperties(types, interfaceName) {
+  if (types[interfaceName] && types[interfaceName].body) {
+    return types[interfaceName].body.properties;
+  }
+  throw new Error(
+    `Interface properties for "${interfaceName} has been specified incorrectly."`,
+  );
+}
+
+function findModuleConfig(
+  ast,
+): $ReadOnly<{|moduleName: string, interfaceName: string|}> {
+  const defaultExport = ast.body.filter(
+    node => node.type === 'ExportDefaultDeclaration',
+  )[0];
+  try {
+    const interfaceName =
+      defaultExport.declaration.typeArguments.params[0].id.name;
+
+    const moduleName = defaultExport.declaration.arguments[0].value;
+    return {interfaceName, moduleName};
+  } catch (e) {
+    throw new Error(
+      `Default export for module specified incorrectly. It should containts
+      either "TurboModuleRegistry.getEnforcing" or "codegenNativeComponent".`,
+    );
+  }
+}
+
+function processString(contents: string): SchemaBuilderConfig {
   const ast = flowParser.parse(contents);
 
   const types = getTypes(ast);
-  const {
-    componentName,
-    propsTypeName,
-    commandTypeName,
-    optionsExpression,
-  } = findConfig(ast);
 
-  const propProperties = getPropProperties(propsTypeName, types);
-  const commandProperties = getCommandProperties(commandTypeName, types);
+  const configType = getConfigType(ast);
 
-  const extendsProps = getExtendsProps(propProperties);
-  const options = getOptions(optionsExpression);
+  if (configType === 'component') {
+    const {
+      componentName,
+      propsTypeName,
+      commandTypeName,
+      optionsExpression,
+    } = findComponentConfig(ast);
 
-  const props = getProps(propProperties);
-  const events = getEvents(propProperties, types);
-  const commands = getCommands(commandProperties);
+    const propProperties = getPropProperties(propsTypeName, types);
+    const commandProperties = getCommandProperties(commandTypeName, types);
 
-  return {
-    filename: componentName,
-    componentName,
-    options,
-    extendsProps,
-    events,
-    props,
-    commands,
-  };
+    const extendsProps = getExtendsProps(propProperties);
+    const options = getOptions(optionsExpression);
+
+    const props = getProps(propProperties);
+    const events = getEvents(propProperties, types);
+    const commands = getCommands(commandProperties);
+
+    return {
+      configType,
+      filename: componentName,
+      componentName,
+      options,
+      extendsProps,
+      events,
+      props,
+      commands,
+    };
+  } else {
+    const {interfaceName, moduleName} = findModuleConfig(ast);
+
+    const moduleProperties = getModuleProperties(types, interfaceName);
+    const properties = getMethods(moduleProperties);
+    return {configType, properties, filename: moduleName, moduleName};
+  }
 }
 
 function parseFile(filename: string): ?SchemaType {

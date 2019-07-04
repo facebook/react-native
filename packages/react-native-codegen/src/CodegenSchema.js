@@ -128,6 +128,12 @@ export type PropTypeShape = $ReadOnly<{|
   typeAnnotation: PropTypeTypeAnnotation,
 |}>;
 
+export type MethodTypeShape = $ReadOnly<{||}>;
+
+export type NativeModuleShape = $ReadOnly<{|
+  properties: $ReadOnlyArray<MethodTypeShape>,
+|}>;
+
 export type EventTypeShape = $ReadOnly<{|
   name: string,
   bubblingType: 'direct' | 'bubble',
@@ -178,6 +184,9 @@ export type SchemaType = $ReadOnly<{|
     [module: string]: $ReadOnly<{|
       components?: $ReadOnly<{
         [component: string]: ComponentShape,
+      }>,
+      nativeModules?: $ReadOnly<{
+        [nativeModule: string]: NativeModuleShape,
       }>,
     |}>,
   }>,

@@ -6,7 +6,11 @@ exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_MULTIP
 
 exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITHOUT_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.Ref<>"`;
 
+exports[`RN Codegen Flow Parser Fails with error message INCORRECT_NATIVE_MODULES 1`] = `"Interface properties for \\"SpecWithTypo has been specified incorrectly.\\""`;
+
 exports[`RN Codegen Flow Parser Fails with error message NULLABLE_WITH_DEFAULT 1`] = `"WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it."`;
+
+exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT 1`] = `"File should contain only one default export."`;
 
 exports[`RN Codegen Flow Parser can generate fixture ALL_PROP_TYPES_NO_EVENTS 1`] = `
 Object {
@@ -849,6 +853,20 @@ Object {
             },
           ],
           "props": Array [],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture EMPTY_NATIVE_MODULE 1`] = `
+Object {
+  "modules": Object {
+    "SampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "properties": Array [],
         },
       },
     },

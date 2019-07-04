@@ -19,7 +19,11 @@ import type {
   OptionsShape,
 } from '../../CodegenSchema.js';
 
-type SchemaBuilderConfig = $ReadOnly<{|
+export type SchemaBuilderConfig =
+  | $ReadOnly<{|configType: 'module', ...NativeModuleSchemaBuilderConfig|}>
+  | $ReadOnly<{|configType: 'component', ...ComponentSchemaBuilderConfig|}>;
+
+type ComponentSchemaBuilderConfig = $ReadOnly<{|
   filename: string,
   componentName: string,
   extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
@@ -29,7 +33,26 @@ type SchemaBuilderConfig = $ReadOnly<{|
   options?: ?OptionsShape,
 |}>;
 
-function buildSchema({
+type NativeModuleSchemaBuilderConfig = $ReadOnly<{|
+  filename: string,
+  moduleName: string,
+  properties: $ReadOnlyArray<{||}>,
+|}>;
+
+function buildSchema(schemaInput: SchemaBuilderConfig): SchemaType {
+  if (schemaInput.configType === 'component') {
+    const {configType, ...componentSchemaInput} = schemaInput;
+    return buildComponentSchema(componentSchemaInput);
+  } else if (schemaInput.configType === 'module') {
+    const {configType, ...moduleSchemaInput} = schemaInput;
+    return buildNativeModuleSchema(moduleSchemaInput);
+  }
+  throw new Error(
+    'Expected schema type of module or component, received wrong schema type',
+  );
+}
+
+function buildComponentSchema({
   filename,
   componentName,
   extendsProps,
@@ -37,7 +60,7 @@ function buildSchema({
   props,
   options,
   commands,
-}: SchemaBuilderConfig): SchemaType {
+}: ComponentSchemaBuilderConfig): SchemaType {
   return {
     modules: {
       [filename]: {
@@ -48,6 +71,24 @@ function buildSchema({
             events,
             props,
             commands,
+          },
+        },
+      },
+    },
+  };
+}
+
+function buildNativeModuleSchema({
+  filename,
+  moduleName,
+  properties,
+}: NativeModuleSchemaBuilderConfig): SchemaType {
+  return {
+    modules: {
+      [filename]: {
+        nativeModules: {
+          [moduleName]: {
+            properties,
           },
         },
       },

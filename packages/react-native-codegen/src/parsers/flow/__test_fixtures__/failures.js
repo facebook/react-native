@@ -10,6 +10,52 @@
 
 'use strict';
 
+const INCORRECT_NATIVE_MODULES = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface SpecWithoutTypo extends TurboModule {
+  // no methods
+}
+
+export default TurboModuleRegistry.getEnforcing<SpecWithTypo>('SampleTurboModule');
+
+`;
+
+const TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+
+export default TurboModuleRegistry.getEnforcing<Spec1>('SampleTurboModule1');
+export default TurboModuleRegistry.getEnforcing<Spec2>('SampleTurboModule2');
+
+`;
+
 const COMMANDS_DEFINED_INLINE = `
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -154,6 +200,8 @@ export default codegenNativeComponent<ModuleProps>('Module');
 `;
 
 module.exports = {
+  TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT,
+  INCORRECT_NATIVE_MODULES,
   COMMANDS_DEFINED_INLINE,
   COMMANDS_DEFINED_MULTIPLE_TIMES,
   COMMANDS_DEFINED_WITHOUT_REF,
