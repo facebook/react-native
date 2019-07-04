@@ -12,7 +12,7 @@
 
 #else
 
-//OSS-compatibility layer: manually define these for github.
+// OSS-compatibility layer: manually define these for github.
 
 #import <Foundation/Foundation.h>
 
@@ -22,6 +22,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+// RCTTurboModuleManagerDelegate should call this to resolve module classes.
+Class RCTCoreModulesClassProvider(const char *name);
 
 // NOTE: Sync these with FB internal version.
 
