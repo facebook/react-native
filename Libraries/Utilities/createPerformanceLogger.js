@@ -187,9 +187,11 @@ function createPerformanceLogger(): IPerformanceLogger {
     },
 
     logTimespans() {
-      for (const key in this._timespans) {
-        if (this._timespans[key].totalTime) {
-          infoLog(key + ': ' + this._timespans[key].totalTime + 'ms');
+      if (PRINT_TO_CONSOLE) {
+        for (const key in this._timespans) {
+          if (this._timespans[key].totalTime) {
+            infoLog(key + ': ' + this._timespans[key].totalTime + 'ms');
+          }
         }
       }
     },
@@ -225,7 +227,9 @@ function createPerformanceLogger(): IPerformanceLogger {
     },
 
     logExtras() {
-      infoLog(this._extras);
+      if (PRINT_TO_CONSOLE) {
+        infoLog(this._extras);
+      }
     },
 
     markPoint(key: string, timestamp?: number) {
@@ -246,8 +250,10 @@ function createPerformanceLogger(): IPerformanceLogger {
     },
 
     logPoints() {
-      for (const key in this._points) {
-        infoLog(key + ': ' + this._points[key] + 'ms');
+      if (PRINT_TO_CONSOLE) {
+        for (const key in this._points) {
+          infoLog(key + ': ' + this._points[key] + 'ms');
+        }
       }
     },
 
