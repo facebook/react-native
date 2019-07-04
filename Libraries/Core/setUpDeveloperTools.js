@@ -32,7 +32,16 @@ if (__DEV__) {
 
     if (!Platform.isTesting) {
       const logToConsole = require('./Devtools/logToConsole');
-      ['log', 'warn', 'info', 'trace'].forEach(level => {
+      [
+        'trace',
+        'info',
+        'warn',
+        'log',
+        'group',
+        'groupCollapsed',
+        'groupEnd',
+        'debug',
+      ].forEach(level => {
         const originalFunction = console[level];
         // $FlowFixMe Overwrite console methods
         console[level] = function(...args) {

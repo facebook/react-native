@@ -15,7 +15,15 @@ const getDevServer = require('./getDevServer');
 let ID = 0;
 
 function logToConsole(
-  level: 'trace' | 'info' | 'warn' | 'log',
+  level:
+    | 'trace'
+    | 'info'
+    | 'warn'
+    | 'log'
+    | 'group'
+    | 'groupCollapsed'
+    | 'groupEnd'
+    | 'debug',
   data: Array<mixed>,
 ) {
   let body;
