@@ -18,6 +18,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.util.Pair;
+import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -457,6 +458,41 @@ public class DevSupportManagerImpl
             }
           });
     }
+    options.put(
+        mApplicationContext.getString(R.string.catalyst_change_bundle_location),
+        new DevOptionHandler() {
+          @Override
+          public void onOptionSelected() {
+            Activity context = mReactInstanceManagerHelper.getCurrentActivity();
+            if (context == null || context.isFinishing()) {
+              FLog.e(
+                  ReactConstants.TAG,
+                  "Unable to launch change bundle location because react activity is not available");
+              return;
+            }
+
+            final EditText input = new EditText(context);
+            input.setHint("localhost:8081");
+
+            AlertDialog bundleLocationDialog =
+                new AlertDialog.Builder(context)
+                    .setTitle(
+                        mApplicationContext.getString(R.string.catalyst_change_bundle_location))
+                    .setView(input)
+                    .setPositiveButton(
+                        android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                          @Override
+                          public void onClick(DialogInterface dialog, int which) {
+                            String host = input.getText().toString();
+                            mDevSettings.getPackagerConnectionSettings().setDebugServerHost(host);
+                            handleReloadJS();
+                          }
+                        })
+                    .create();
+            bundleLocationDialog.show();
+          }
+        });
     options.put(
         // NOTE: `isElementInspectorEnabled` is not guaranteed to be accurate.
         mApplicationContext.getString(R.string.catalyst_inspector),

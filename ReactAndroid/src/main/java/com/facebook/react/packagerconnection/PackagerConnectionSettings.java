@@ -52,6 +52,10 @@ public class PackagerConnectionSettings {
     return host;
   }
 
+  public void setDebugServerHost(String host) {
+    mPreferences.edit().putString(PREFS_DEBUG_SERVER_HOST_KEY, host).apply();
+  }
+
   public String getInspectorServerHost() {
     return AndroidInfoHelpers.getInspectorProxyHost(mAppContext);
   }

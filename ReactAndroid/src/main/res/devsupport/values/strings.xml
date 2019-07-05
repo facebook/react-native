@@ -2,6 +2,7 @@
 <resources>
   <string name="catalyst_reload" project="catalyst" translatable="false">Reload</string>
   <string name="catalyst_reload_error" project="catalyst" translatable="false">Failed to load bundle. Try restarting the bundler or reconnecting your device.</string>
+  <string name="catalyst_change_bundle_location" project="catalyst" translatable="false">Change Bundle Location</string>
   <string name="catalyst_debug" project="catalyst" translatable="false">Debug</string>
   <string name="catalyst_debug_stop" project="catalyst" translatable="false">Stop Debugging</string>
   <string name="catalyst_debug_connecting" project="catalyst" translatable="false">Connecting to debugger...</string>
