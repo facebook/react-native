@@ -10,17 +10,19 @@
 
 'use strict';
 
-export type FunctionTypeAnnotation = $ReadOnly<{|
+export type CommandsFunctionTypeAnnotation = $ReadOnly<{|
   type: 'FunctionTypeAnnotation',
-  params: $ReadOnlyArray<FunctionTypeParamAnnotation>,
+  params: $ReadOnlyArray<CommandsFunctionTypeParamAnnotation>,
 |}>;
 
-export type FunctionTypeParamAnnotation = $ReadOnly<{|
+export type CommandsFunctionTypeParamAnnotation = $ReadOnly<{|
   name: string,
-  typeAnnotation: TypeAnnotation,
+  typeAnnotation: CommandsTypeAnnotation,
 |}>;
 
-export type TypeAnnotation = BooleanTypeAnnotation | Int32TypeAnnotation;
+export type CommandsTypeAnnotation =
+  | BooleanTypeAnnotation
+  | Int32TypeAnnotation;
 
 export type BooleanTypeAnnotation = $ReadOnly<{|
   type: 'BooleanTypeAnnotation',
@@ -128,7 +130,27 @@ export type PropTypeShape = $ReadOnly<{|
   typeAnnotation: PropTypeTypeAnnotation,
 |}>;
 
-export type MethodTypeShape = $ReadOnly<{||}>;
+export type FunctionTypeAnnotationParamTypeAnnotation = $ReadOnly<{|
+  type:
+    | 'StringTypeAnnotation'
+    | 'NumberTypeAnnotation'
+    | 'BooleanTypeAnnotation',
+|}>;
+
+export type FunctionTypeAnnotationParam = $ReadOnly<{|
+  name: string,
+  typeAnnotation: FunctionTypeAnnotationParamTypeAnnotation,
+|}>;
+
+export type FunctionTypeAnnotation = $ReadOnly<{|
+  type: 'FunctionTypeAnnotation',
+  params: $ReadOnlyArray<FunctionTypeAnnotationParam>,
+|}>;
+
+export type MethodTypeShape = $ReadOnly<{|
+  name: string,
+  typeAnnotation: FunctionTypeAnnotation,
+|}>;
 
 export type NativeModuleShape = $ReadOnly<{|
   properties: $ReadOnlyArray<MethodTypeShape>,
@@ -151,7 +173,7 @@ export type EventTypeShape = $ReadOnly<{|
 export type CommandTypeShape = $ReadOnly<{|
   name: string,
   optional: boolean,
-  typeAnnotation: FunctionTypeAnnotation,
+  typeAnnotation: CommandsFunctionTypeAnnotation,
 |}>;
 
 export type OptionsShape = $ReadOnly<{|

@@ -8,6 +8,10 @@ exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITHOU
 
 exports[`RN Codegen Flow Parser Fails with error message INCORRECT_NATIVE_MODULES 1`] = `"Interface properties for \\"SpecWithTypo has been specified incorrectly.\\""`;
 
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_EXISTING_TYPE 1`] = `"Unsupported param type for method \\"getString\\", param \\"arg\\". Found GenericTypeAnnotation"`;
+
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_ONLY_METHODS 1`] = `"Only methods are supported as module properties. Found BooleanTypeAnnotation in sampleBool"`;
+
 exports[`RN Codegen Flow Parser Fails with error message NULLABLE_WITH_DEFAULT 1`] = `"WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it."`;
 
 exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT 1`] = `"File should contain only one default export."`;
@@ -3307,6 +3311,63 @@ Object {
             },
           ],
           "props": Array [],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PARAM_TYPES 1`] = `
+Object {
+  "modules": Object {
+    "SampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "properties": Array [
+            Object {
+              "name": "passBool",
+              "typeAnnotation": Object {
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "typeAnnotation": Object {
+                      "type": "BooleanTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "passNumber",
+              "typeAnnotation": Object {
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "typeAnnotation": Object {
+                      "type": "NumberTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "passString",
+              "typeAnnotation": Object {
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "typeAnnotation": Object {
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
         },
       },
     },

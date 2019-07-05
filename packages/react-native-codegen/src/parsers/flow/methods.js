@@ -10,17 +10,77 @@
 
 'use strict';
 
-import type {MethodTypeShape} from '../../CodegenSchema.js';
+import type {
+  MethodTypeShape,
+  FunctionTypeAnnotationParam,
+  FunctionTypeAnnotationParamTypeAnnotation,
+} from '../../CodegenSchema.js';
 
-function buildMethodSchema(property) {
-  return undefined;
+function wrapPrimitiveIntoTypeAnnotation(
+  methodName: string,
+  type:
+    | 'BooleanTypeAnnotation'
+    | 'NumberTypeAnnotation'
+    | 'StringTypeAnnotation',
+  paramName: string,
+): FunctionTypeAnnotationParamTypeAnnotation {
+  switch (type) {
+    case 'BooleanTypeAnnotation':
+    case 'NumberTypeAnnotation':
+    case 'StringTypeAnnotation':
+      return {
+        type,
+      };
+    default:
+      (type: empty);
+      throw new Error(
+        `Unsupported param type for method "${methodName}", param "${paramName}". Found ${type}`,
+      );
+  }
+}
+
+function getTypeAnnotationForParam(
+  name: string,
+  param,
+): FunctionTypeAnnotationParam {
+  const type = param.typeAnnotation.type;
+  const paramName = param.name.name;
+  // TODO handle more types
+  const typeAnnotation = wrapPrimitiveIntoTypeAnnotation(name, type, paramName);
+  return {
+    name: paramName,
+    typeAnnotation,
+  };
+}
+
+function buildMethodSchema(property: MethodAST): MethodTypeShape {
+  const name: string = property.key.name;
+  const value = property.value;
+  if (value.type !== 'FunctionTypeAnnotation') {
+    throw new Error(
+      `Only methods are supported as module properties. Found ${
+        value.type
+      } in ${property.key.name}`,
+    );
+  }
+
+  const params = value.params.map(param =>
+    getTypeAnnotationForParam(name, param),
+  );
+  return {
+    name,
+    typeAnnotation: {
+      type: 'FunctionTypeAnnotation',
+      params,
+    },
+  };
 }
 
 // $FlowFixMe there's no flowtype for ASTs
-type PropAST = Object;
+type MethodAST = Object;
 
 function getMethods(
-  typeDefinition: $ReadOnlyArray<PropAST>,
+  typeDefinition: $ReadOnlyArray<MethodAST>,
 ): $ReadOnlyArray<MethodTypeShape> {
   return typeDefinition
     .filter(property => property.type === 'ObjectTypeProperty')

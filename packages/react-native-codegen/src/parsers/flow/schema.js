@@ -17,6 +17,7 @@ import type {
   ExtendsPropsShape,
   SchemaType,
   OptionsShape,
+  MethodTypeShape,
 } from '../../CodegenSchema.js';
 
 export type SchemaBuilderConfig =
@@ -36,7 +37,7 @@ type ComponentSchemaBuilderConfig = $ReadOnly<{|
 type NativeModuleSchemaBuilderConfig = $ReadOnly<{|
   filename: string,
   moduleName: string,
-  properties: $ReadOnlyArray<{||}>,
+  properties: $ReadOnlyArray<MethodTypeShape>,
 |}>;
 
 function buildSchema(schemaInput: SchemaBuilderConfig): SchemaType {
