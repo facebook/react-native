@@ -8,7 +8,9 @@ exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITHOU
 
 exports[`RN Codegen Flow Parser Fails with error message INCORRECT_NATIVE_MODULES 1`] = `"Interface properties for \\"SpecWithTypo has been specified incorrectly.\\""`;
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_EXISTING_TYPE 1`] = `"Unsupported param type for method \\"getString\\", param \\"arg\\". Found GenericTypeAnnotation"`;
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_EXISTING_TYPE_AS_PARAM 1`] = `"Unsupported param type for method \\"getString\\", param \\"arg\\". Found GenericTypeAnnotation"`;
+
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_EXISTING_TYPE_AS_RETURN 1`] = `"Unsupported param type for method \\"getString\\", param \\"arg\\". Found GenericTypeAnnotation"`;
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_ONLY_METHODS 1`] = `"Only methods are supported as module properties. Found BooleanTypeAnnotation in sampleBool"`;
 
@@ -3336,6 +3338,9 @@ Object {
                     },
                   },
                 ],
+                "returnTypeAnnotation": Object {
+                  "type": "VoidTypeAnnotation",
+                },
                 "type": "FunctionTypeAnnotation",
               },
             },
@@ -3350,6 +3355,9 @@ Object {
                     },
                   },
                 ],
+                "returnTypeAnnotation": Object {
+                  "type": "VoidTypeAnnotation",
+                },
                 "type": "FunctionTypeAnnotation",
               },
             },
@@ -3364,6 +3372,9 @@ Object {
                     },
                   },
                 ],
+                "returnTypeAnnotation": Object {
+                  "type": "VoidTypeAnnotation",
+                },
                 "type": "FunctionTypeAnnotation",
               },
             },

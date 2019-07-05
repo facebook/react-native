@@ -14,6 +14,7 @@ import type {
   MethodTypeShape,
   FunctionTypeAnnotationParam,
   FunctionTypeAnnotationParamTypeAnnotation,
+  FunctionTypeAnnotationReturn,
 } from '../../CodegenSchema.js';
 
 function wrapPrimitiveIntoTypeAnnotation(
@@ -53,6 +54,25 @@ function getTypeAnnotationForParam(
   };
 }
 
+function getReturnTypeAnnotation(
+  methodName: string,
+  type,
+): FunctionTypeAnnotationReturn {
+  switch (type) {
+    case 'BooleanTypeAnnotation':
+    case 'NumberTypeAnnotation':
+    case 'StringTypeAnnotation':
+    case 'VoidTypeAnnotation':
+      return {
+        type,
+      };
+    default:
+      (type: empty);
+      throw new Error(
+        `Unsupported return type for method "${methodName}", Found ${type}`,
+      );
+  }
+}
 function buildMethodSchema(property: MethodAST): MethodTypeShape {
   const name: string = property.key.name;
   const value = property.value;
@@ -67,10 +87,16 @@ function buildMethodSchema(property: MethodAST): MethodTypeShape {
   const params = value.params.map(param =>
     getTypeAnnotationForParam(name, param),
   );
+
+  const returnTypeAnnotation = getReturnTypeAnnotation(
+    name,
+    value.returnType.type,
+  );
   return {
     name,
     typeAnnotation: {
       type: 'FunctionTypeAnnotation',
+      returnTypeAnnotation,
       params,
     },
   };
