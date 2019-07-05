@@ -198,7 +198,7 @@ static NSURL *getBundleURLFromName(NSString *bundleName) {
 }
 
 static NSString *getBundleNameFromURL(NSURL *url) {
-  NSString *bundleFilename = url.pathComponents[1];
+  NSString *bundleFilename = [url.pathComponents lastObject];
   NSString *bundleName = [bundleFilename
                           substringToIndex:[bundleFilename rangeOfString:@"."].location];
   return bundleName;

@@ -373,12 +373,12 @@ struct RCTInstanceCallback : public InstanceCallback {
       bundlesContainer = bundles;
       dispatch_group_leave(prepareBridge);
     } onProgress:^(RCTDevBundleLoadingProgress *progressData) {
-  #if RCT_DEV && __has_include("RCTDevLoadingView.h")
+#if RCT_DEV && __has_include("<React/RCTDevLoadingView.h>")
       // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
       RCTDevLoadingView *loadingView = [weakSelf moduleForName:RCTBridgeModuleNameForClass([RCTDevLoadingView class])
                                          lazilyLoadIfNecessary:NO];
       [loadingView updateProgress:progressData];
-  #endif
+#endif
     }];
     // Wait for both the modules and source code to have finished loading
     dispatch_group_notify(prepareBridge, dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
