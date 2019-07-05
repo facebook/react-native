@@ -1849,10 +1849,10 @@ class CellRenderer extends React.Component<
     );
     const cellStyle = inversionStyle
       ? horizontal
-        ? [{flexDirection: 'row-reverse'}, inversionStyle]
-        : [{flexDirection: 'column-reverse'}, inversionStyle]
+        ? [styles.rowReverse, inversionStyle]
+        : [styles.columnReverse, inversionStyle]
       : horizontal
-      ? [{flexDirection: 'row'}, inversionStyle]
+      ? [styles.row, inversionStyle]
       : inversionStyle;
     if (!CellRendererComponent) {
       return (
@@ -1906,6 +1906,15 @@ const styles = StyleSheet.create({
   },
   horizontallyInverted: {
     transform: [{scaleX: -1}],
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  columnReverse: {
+    flexDirection: 'column-reverse',
   },
   debug: {
     flex: 1,
