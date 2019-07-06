@@ -36,6 +36,7 @@ public class DevInternalSettings
   private static final String PREFS_INSPECTOR_DEBUG_KEY = "inspector_debug";
   private static final String PREFS_HOT_MODULE_REPLACEMENT_KEY = "hot_module_replacement";
   private static final String PREFS_REMOTE_JS_DEBUG_KEY = "remote_js_debug";
+  private static final String PREFS_SAMPLING_PROFILER_ENABLED = "sampling_profiler_enabled";
 
   private final SharedPreferences mPreferences;
   private final Listener mListener;

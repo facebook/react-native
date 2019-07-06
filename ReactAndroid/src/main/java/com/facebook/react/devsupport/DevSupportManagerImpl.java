@@ -95,6 +95,9 @@ public class DevSupportManagerImpl
   private static final int JSEXCEPTION_ERROR_COOKIE = -1;
   private static final String JS_BUNDLE_FILE_NAME = "ReactNativeDevBundle.js";
   private static final String RELOAD_APP_ACTION_SUFFIX = ".RELOAD_APP_ACTION";
+  private static final String ENABLE_SAMPLING_PROFILER = ".ENABLE_SAMPLING_PROFILER";
+  private static final String DISABLE_SAMPLING_PROFILER = ".DISABLE_SAMPLING_PROFILER";
+  private boolean mIsSamplingProfilerEnabled = false;
 
   private enum ErrorType {
     JS,
@@ -543,6 +546,24 @@ public class DevSupportManagerImpl
             }
           }
         });
+    options.put(
+        mIsSamplingProfilerEnabled
+            ? mApplicationContext.getString(R.string.catalyst_sample_profiler_disable)
+            : mApplicationContext.getString(R.string.catalyst_sample_profiler_enable),
+        new DevOptionHandler() {
+          @Override
+          public void onOptionSelected() {
+            Intent intent =
+                new Intent(
+                    mApplicationContext.getPackageName()
+                        + (mIsSamplingProfilerEnabled
+                            ? DISABLE_SAMPLING_PROFILER
+                            : ENABLE_SAMPLING_PROFILER));
+            mApplicationContext.sendBroadcast(intent);
+            mIsSamplingProfilerEnabled = !mIsSamplingProfilerEnabled;
+          }
+        });
+
     options.put(
         mDevSettings.isFpsDebugEnabled()
             ? mApplicationContext.getString(R.string.catalyst_perf_monitor_stop)
