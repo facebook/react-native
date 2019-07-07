@@ -22,11 +22,23 @@ let didSetupSocket = false;
 let hmrClient = null;
 let hmrUnavailableReason: string | null = null;
 
+export type HMRClientNativeInterface = {|
+  enable(): void,
+  disable(): void,
+  setup(
+    platform: string,
+    bundleEntry: string,
+    host: string,
+    port: number | string,
+    isEnabled: boolean,
+  ): void,
+|};
+
 /**
  * HMR Client that receives from the server HMR updates and propagates them
  * runtime to reflects those changes.
  */
-const HMRClient = {
+const HMRClient: HMRClientNativeInterface = {
   enable() {
     if (hmrUnavailableReason !== null) {
       // If HMR became unavailable while you weren't using it,
