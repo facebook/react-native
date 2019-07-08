@@ -269,6 +269,34 @@ export interface Spec extends TurboModule {
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NATIVE_MODULE_WITH_CALLBACK = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  // Exported methods.
+  +getValueWithCallback: (
+    callback: (value: string, arr: Array<Array<string>>) => void,
+  ) => void;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
 `;
 
 const EVENT_DEFINITION = `
@@ -820,6 +848,7 @@ module.exports = {
   NATIVE_MODULE_WITH_COMPLEX_ARRAY,
   NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS,
   NATIVE_MODULE_WITH_BASIC_PARAM_TYPES,
+  NATIVE_MODULE_WITH_CALLBACK,
   EMPTY_NATIVE_MODULE,
   ALL_PROP_TYPES_NO_EVENTS,
   ARRAY_PROP_TYPES_NO_EVENTS,

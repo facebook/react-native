@@ -174,7 +174,7 @@ function getTypeAnnotationForParam(
       );
     }
   }
-  if (param.typeAnnotation.type === 'ObjectTypeAnnotation') {
+  if (typeAnnotation.type === 'ObjectTypeAnnotation') {
     return {
       nullable,
       name: paramName,
@@ -186,6 +186,25 @@ function getTypeAnnotationForParam(
           paramName,
           types,
         ),
+      },
+    };
+  }
+  if (typeAnnotation.type === 'FunctionTypeAnnotation') {
+    const params = typeAnnotation.params.map(callbackParam =>
+      getTypeAnnotationForParam(name, callbackParam, types),
+    );
+    const returnTypeAnnotation = getReturnTypeAnnotation(
+      name,
+      typeAnnotation.returnType,
+      types,
+    );
+    return {
+      name: paramName,
+      nullable,
+      typeAnnotation: {
+        type: 'FunctionTypeAnnotation',
+        params,
+        returnTypeAnnotation,
       },
     };
   }
@@ -230,7 +249,7 @@ function getReturnTypeAnnotation(
     ) {
       return {
         type: 'PromiseTypeAnnotation',
-        resolvingType: getReturnTypeAnnotation(
+        resolvedType: getReturnTypeAnnotation(
           methodName,
           typeAnnotation.typeParameters.params[0],
           types,

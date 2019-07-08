@@ -3482,6 +3482,65 @@ Object {
 }
 `;
 
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_CALLBACK 1`] = `
+Object {
+  "modules": Object {
+    "SampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "properties": Array [
+            Object {
+              "name": "getValueWithCallback",
+              "typeAnnotation": Object {
+                "optional": false,
+                "params": Array [
+                  Object {
+                    "name": "callback",
+                    "nullable": false,
+                    "typeAnnotation": Object {
+                      "params": Array [
+                        Object {
+                          "name": "value",
+                          "nullable": false,
+                          "typeAnnotation": Object {
+                            "type": "StringTypeAnnotation",
+                          },
+                        },
+                        Object {
+                          "name": "arr",
+                          "nullable": false,
+                          "typeAnnotation": Object {
+                            "elementType": Object {
+                              "elementType": Object {
+                                "type": "StringTypeAnnotation",
+                              },
+                              "type": "ArrayTypeAnnotation",
+                            },
+                            "type": "ArrayTypeAnnotation",
+                          },
+                        },
+                      ],
+                      "returnTypeAnnotation": Object {
+                        "type": "VoidTypeAnnotation",
+                      },
+                      "type": "FunctionTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "type": "VoidTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_ARRAY 1`] = `
 Object {
   "modules": Object {
@@ -3734,7 +3793,7 @@ Object {
                 "optional": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
-                  "resolvingType": Object {
+                  "resolvedType": Object {
                     "type": "StringTypeAnnotation",
                   },
                   "type": "PromiseTypeAnnotation",
@@ -3748,7 +3807,7 @@ Object {
                 "optional": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
-                  "resolvingType": Object {
+                  "resolvedType": Object {
                     "type": "StringTypeAnnotation",
                   },
                   "type": "PromiseTypeAnnotation",
