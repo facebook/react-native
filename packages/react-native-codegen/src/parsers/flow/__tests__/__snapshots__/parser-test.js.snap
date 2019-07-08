@@ -8,6 +8,10 @@ exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITHOU
 
 exports[`RN Codegen Flow Parser Fails with error message INCORRECT_NATIVE_MODULES 1`] = `"Interface properties for \\"SpecWithTypo has been specified incorrectly.\\""`;
 
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULE_NULLABLE_BOOLEAN 1`] = `"Booleans and numbers cannot be nullable for param \\"a in method \\"getSth\\"."`;
+
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULE_NULLABLE_NUMBER 1`] = `"Booleans and numbers cannot be nullable for param \\"a in method \\"getSth\\"."`;
+
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT 1`] = `"Unsupported return type for getString: expected to find annotation for type of array contents"`;
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM 1`] = `"Unsupported type for getString, param: \\"arg\\": expected to find annotation for type of array contents"`;
@@ -3340,6 +3344,7 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
+                    "nullable": false,
                     "typeAnnotation": Object {
                       "elementType": Object {
                         "type": "StringTypeAnnotation",
@@ -3379,6 +3384,7 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
+                    "nullable": false,
                     "typeAnnotation": Object {
                       "elementType": Object {
                         "type": "StringTypeAnnotation",
@@ -3418,6 +3424,7 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
+                    "nullable": false,
                     "typeAnnotation": Object {
                       "type": "BooleanTypeAnnotation",
                     },
@@ -3436,6 +3443,7 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
+                    "nullable": false,
                     "typeAnnotation": Object {
                       "type": "NumberTypeAnnotation",
                     },
@@ -3454,6 +3462,7 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
+                    "nullable": false,
                     "typeAnnotation": Object {
                       "type": "StringTypeAnnotation",
                     },
@@ -3487,6 +3496,7 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
+                    "nullable": false,
                     "typeAnnotation": Object {
                       "elementType": Object {
                         "elementType": Object {
@@ -3544,6 +3554,7 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
+                    "nullable": false,
                     "typeAnnotation": Object {
                       "properties": Array [
                         Object {
@@ -3594,6 +3605,7 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
+                    "nullable": false,
                     "typeAnnotation": Object {
                       "properties": Array [
                         Object {
@@ -3620,6 +3632,7 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
+                    "nullable": false,
                     "typeAnnotation": Object {
                       "properties": Array [
                         Object {
@@ -3662,6 +3675,40 @@ Object {
                     "type": "ObjectTypeAnnotation",
                   },
                   "type": "ArrayTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NULLABLE_PARAM 1`] = `
+Object {
+  "modules": Object {
+    "SampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "properties": Array [
+            Object {
+              "name": "voidFunc",
+              "typeAnnotation": Object {
+                "optional": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "nullable": true,
+                    "typeAnnotation": Object {
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "type": "VoidTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
               },
@@ -3731,6 +3778,7 @@ Object {
                 "params": Array [
                   Object {
                     "name": "o",
+                    "nullable": false,
                     "typeAnnotation": Object {
                       "type": "ObjectWithoutPropertiesTypeAnnotation",
                     },
@@ -3764,6 +3812,7 @@ Object {
                 "params": Array [
                   Object {
                     "name": "arg",
+                    "nullable": false,
                     "typeAnnotation": Object {
                       "type": "NumberTypeAnnotation",
                     },

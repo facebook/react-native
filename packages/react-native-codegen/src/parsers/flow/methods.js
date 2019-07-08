@@ -123,16 +123,24 @@ function getElementTypeForArrayOrObject(
 
 function getTypeAnnotationForParam(
   name: string,
-  param,
+  paramAnnotation,
   types: $ReadOnlyArray<TypesAST>,
 ): FunctionTypeAnnotationParam {
+  let param = paramAnnotation;
+  let paramName = param.name.name;
+  let nullable = false;
+  if (param.typeAnnotation.type === 'NullableTypeAnnotation') {
+    nullable = true;
+    param = paramAnnotation.typeAnnotation;
+  }
+
   const typeAnnotation = getValueFromTypes(param.typeAnnotation, types);
-  const paramName = param.name.name;
   if (
     param.typeAnnotation.type === 'GenericTypeAnnotation' &&
     param.typeAnnotation.id.name === 'Object'
   ) {
     return {
+      nullable,
       name: paramName,
       typeAnnotation: {
         type: 'ObjectWithoutPropertiesTypeAnnotation',
@@ -149,6 +157,7 @@ function getTypeAnnotationForParam(
     ) {
       return {
         name: paramName,
+        nullable,
         typeAnnotation: {
           type: 'ArrayTypeAnnotation',
           elementType: getElementTypeForArrayOrObject(
@@ -167,6 +176,7 @@ function getTypeAnnotationForParam(
   }
   if (param.typeAnnotation.type === 'ObjectTypeAnnotation') {
     return {
+      nullable,
       name: paramName,
       typeAnnotation: {
         type: 'ObjectTypeAnnotation',
@@ -180,7 +190,17 @@ function getTypeAnnotationForParam(
     };
   }
   const type = typeAnnotation.type;
+
+  if (
+    nullable &&
+    (type === 'NumberTypeAnnotation' || type === 'BooleanTypeAnnotation')
+  ) {
+    throw new Error(
+      `Booleans and numbers cannot be nullable for param "${paramName} in method "${name}".`,
+    );
+  }
   return {
+    nullable,
     name: paramName,
     typeAnnotation: wrapPrimitiveIntoTypeAnnotation(name, type, paramName),
   };

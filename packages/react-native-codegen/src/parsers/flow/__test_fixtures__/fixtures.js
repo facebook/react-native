@@ -147,6 +147,31 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
+const NATIVE_MODULE_WITH_NULLABLE_PARAM = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  // Exported methods.
+  +voidFunc: (arg: ?string) => void;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
 const NATIVE_MODULE_WITH_BASIC_ARRAY = `
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -790,6 +815,7 @@ module.exports = {
   NATIVE_MODULE_WITH_PROMISE,
   NATIVE_MODULE_WITH_COMPLEX_OBJECTS,
   NATIVE_MODULE_WITH_SIMPLE_OBJECT,
+  NATIVE_MODULE_WITH_NULLABLE_PARAM,
   NATIVE_MODULE_WITH_BASIC_ARRAY,
   NATIVE_MODULE_WITH_COMPLEX_ARRAY,
   NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS,

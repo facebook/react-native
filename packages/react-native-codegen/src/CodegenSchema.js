@@ -178,6 +178,7 @@ export type FunctionTypeAnnotationReturn =
     |}>;
 
 export type FunctionTypeAnnotationParam = $ReadOnly<{|
+  nullable: boolean,
   name: string,
   typeAnnotation: FunctionTypeAnnotationParamTypeAnnotation,
 |}>;
