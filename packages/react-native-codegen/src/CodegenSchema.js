@@ -150,10 +150,15 @@ export type FunctionTypeAnnotationParamTypeAnnotation =
     |}>
   | $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
-      properties: $ReadOnlyArray<{||}>,
+      properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,
     |}>;
 
 export type FunctionTypeAnnotationReturnArrayElementType = FunctionTypeAnnotationParamTypeAnnotation;
+
+export type ObjectParamTypeAnnotation = $ReadOnly<{|
+  name: string,
+  typeAnnotation: FunctionTypeAnnotationParamTypeAnnotation,
+|}>;
 
 export type FunctionTypeAnnotationReturn =
   | $ReadOnly<{|
@@ -169,7 +174,7 @@ export type FunctionTypeAnnotationReturn =
     |}>
   | $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
-      properties: $ReadOnlyArray<{||}>,
+      properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,
     |}>;
 
 export type FunctionTypeAnnotationParam = $ReadOnly<{|

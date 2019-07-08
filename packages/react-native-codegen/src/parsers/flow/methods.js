@@ -16,6 +16,7 @@ import type {
   FunctionTypeAnnotationReturn,
   PrimitiveTypeAnnotation,
   FunctionTypeAnnotationParamTypeAnnotation,
+  ObjectParamTypeAnnotation,
 } from '../../CodegenSchema.js';
 
 function getValueFromTypes(value, types) {
@@ -48,7 +49,24 @@ function wrapPrimitiveIntoTypeAnnotation(
   }
 }
 
-function getElementTypeForArray(
+function getObjectProperties(
+  name: string,
+  objectParam,
+  paramName: string,
+  types: $ReadOnlyArray<TypesAST>,
+): $ReadOnlyArray<ObjectParamTypeAnnotation> {
+  return objectParam.properties.map(objectTypeProperty => ({
+    name: objectTypeProperty.key.name,
+    typeAnnotation: getElementTypeForArrayOrObject(
+      name,
+      objectTypeProperty.value,
+      paramName,
+      types,
+    ),
+  }));
+}
+
+function getElementTypeForArrayOrObject(
   name,
   arrayParam,
   paramName,
@@ -65,7 +83,7 @@ function getElementTypeForArray(
     ) {
       return {
         type: 'ArrayTypeAnnotation',
-        elementType: getElementTypeForArray(
+        elementType: getElementTypeForArrayOrObject(
           name,
           typeAnnotation.typeParameters.params[0],
           'returning value',
@@ -78,7 +96,6 @@ function getElementTypeForArray(
       );
     }
   }
-
   if (
     typeAnnotation.type === 'GenericTypeAnnotation' &&
     typeAnnotation.id.name === 'Object'
@@ -88,7 +105,14 @@ function getElementTypeForArray(
     };
   }
 
+  if (typeAnnotation.type === 'ObjectTypeAnnotation') {
+    return {
+      type: 'ObjectTypeAnnotation',
+      properties: getObjectProperties(name, arrayParam, paramName, types),
+    };
+  }
   const type = typeAnnotation.type;
+
   if (type === 'AnyTypeAnnotation') {
     return {
       type,
@@ -127,7 +151,7 @@ function getTypeAnnotationForParam(
         name: paramName,
         typeAnnotation: {
           type: 'ArrayTypeAnnotation',
-          elementType: getElementTypeForArray(
+          elementType: getElementTypeForArrayOrObject(
             name,
             typeAnnotation.typeParameters.params[0],
             paramName,
@@ -140,6 +164,20 @@ function getTypeAnnotationForParam(
         `Unsupported type for ${name}, param: "${paramName}": expected to find annotation for type of array contents`,
       );
     }
+  }
+  if (param.typeAnnotation.type === 'ObjectTypeAnnotation') {
+    return {
+      name: paramName,
+      typeAnnotation: {
+        type: 'ObjectTypeAnnotation',
+        properties: getObjectProperties(
+          name,
+          param.typeAnnotation,
+          paramName,
+          types,
+        ),
+      },
+    };
   }
   const type = typeAnnotation.type;
   return {
@@ -194,7 +232,7 @@ function getReturnTypeAnnotation(
     ) {
       return {
         type: 'ArrayTypeAnnotation',
-        elementType: getElementTypeForArray(
+        elementType: getElementTypeForArrayOrObject(
           methodName,
           typeAnnotation.typeParameters.params[0],
           'returning value',
@@ -206,6 +244,18 @@ function getReturnTypeAnnotation(
         `Unsupported return type for ${methodName}: expected to find annotation for type of array contents`,
       );
     }
+  }
+
+  if (returnType.type === 'ObjectTypeAnnotation') {
+    return {
+      type: 'ObjectTypeAnnotation',
+      properties: getObjectProperties(
+        methodName,
+        returnType,
+        'returning value',
+        types,
+      ),
+    };
   }
   const type = typeAnnotation.type;
   switch (type) {
