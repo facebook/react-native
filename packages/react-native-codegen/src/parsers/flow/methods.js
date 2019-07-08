@@ -131,16 +131,42 @@ function getReturnTypeAnnotation(
   returnType,
   types: $ReadOnlyArray<TypesAST>,
 ): FunctionTypeAnnotationReturn {
+  const typeAnnotation = getValueFromTypes(returnType, types);
   if (
-    returnType.type === 'GenericTypeAnnotation' &&
-    returnType.id.name === 'Array'
+    typeAnnotation.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.id.name === 'Promise'
   ) {
-    if (returnType.typeParameters && returnType.typeParameters.params[0]) {
+    if (
+      typeAnnotation.typeParameters &&
+      typeAnnotation.typeParameters.params[0]
+    ) {
+      return {
+        type: 'PromiseTypeAnnotation',
+        resolvingType: getReturnTypeAnnotation(
+          methodName,
+          typeAnnotation.typeParameters.params[0],
+          types,
+        ),
+      };
+    } else {
+      throw new Error(
+        `Unsupported return promise type for ${methodName}: expected to find annotation for type of promise content`,
+      );
+    }
+  }
+  if (
+    typeAnnotation.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.id.name === 'Array'
+  ) {
+    if (
+      typeAnnotation.typeParameters &&
+      typeAnnotation.typeParameters.params[0]
+    ) {
       return {
         type: 'ArrayTypeAnnotation',
         elementType: getElementTypeForArray(
           methodName,
-          returnType.typeParameters.params[0],
+          typeAnnotation.typeParameters.params[0],
           'returning value',
           types,
         ),
@@ -151,7 +177,7 @@ function getReturnTypeAnnotation(
       );
     }
   }
-  const type = returnType.type;
+  const type = typeAnnotation.type;
   switch (type) {
     case 'BooleanTypeAnnotation':
     case 'NumberTypeAnnotation':

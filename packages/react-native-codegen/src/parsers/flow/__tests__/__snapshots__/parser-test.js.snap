@@ -18,6 +18,8 @@ exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_ONLY_METHODS 1`] = `"Only methods are supported as module properties. Found BooleanTypeAnnotation in sampleBool"`;
 
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE 1`] = `"Unsupported return promise type for getBool: expected to find annotation for type of promise content"`;
+
 exports[`RN Codegen Flow Parser Fails with error message NULLABLE_WITH_DEFAULT 1`] = `"WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it."`;
 
 exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT 1`] = `"File should contain only one default export."`;
@@ -3510,6 +3512,47 @@ Object {
                     "type": "ArrayTypeAnnotation",
                   },
                   "type": "ArrayTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 1`] = `
+Object {
+  "modules": Object {
+    "SampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "properties": Array [
+            Object {
+              "name": "getValueWithPromise",
+              "typeAnnotation": Object {
+                "params": Array [],
+                "returnTypeAnnotation": Object {
+                  "resolvingType": Object {
+                    "type": "StringTypeAnnotation",
+                  },
+                  "type": "PromiseTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "getValueWithPromiseDefinedSomewhereElse",
+              "typeAnnotation": Object {
+                "params": Array [],
+                "returnTypeAnnotation": Object {
+                  "resolvingType": Object {
+                    "type": "StringTypeAnnotation",
+                  },
+                  "type": "PromiseTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
               },

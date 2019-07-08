@@ -157,6 +157,10 @@ export type FunctionTypeAnnotationReturn =
   | $ReadOnly<{|
       type: 'ArrayTypeAnnotation',
       elementType: FunctionTypeAnnotationReturnArrayElementType,
+    |}>
+  | $ReadOnly<{|
+      type: 'PromiseTypeAnnotation',
+      resolvingType: FunctionTypeAnnotationReturn,
     |}>;
 
 export type FunctionTypeAnnotationParam = $ReadOnly<{|
