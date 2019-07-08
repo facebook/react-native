@@ -42,13 +42,13 @@ import type {SyntheticEvent} from '../Types/CoreEventTypes';
 // destroyed before the callback is fired.
 let uniqueModalIdentifier = 0;
 
-type ModalOrientationChangeEvent = SyntheticEvent<
+export type ModalOrientationChangeEvent = SyntheticEvent<
   $ReadOnly<{|
     orientation: 'portrait' | 'landscape',
   |}>,
 >;
 
-type ModalProps = $ReadOnly<{|
+export type ModalProps = $ReadOnly<{|
   ...ViewProps,
 
   /**
