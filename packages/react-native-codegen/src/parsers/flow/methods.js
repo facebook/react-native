@@ -13,8 +13,9 @@
 import type {
   MethodTypeShape,
   FunctionTypeAnnotationParam,
-  FunctionTypeAnnotationParamTypeAnnotation,
   FunctionTypeAnnotationReturn,
+  PrimitiveTypeAnnotation,
+  FunctionTypeAnnotationParamTypeAnnotation,
 } from '../../CodegenSchema.js';
 
 function getValueFromTypes(value, types) {
@@ -31,7 +32,7 @@ function wrapPrimitiveIntoTypeAnnotation(
     | 'NumberTypeAnnotation'
     | 'StringTypeAnnotation',
   paramName: string,
-): FunctionTypeAnnotationParamTypeAnnotation {
+): PrimitiveTypeAnnotation {
   switch (type) {
     case 'BooleanTypeAnnotation':
     case 'NumberTypeAnnotation':
@@ -47,23 +48,110 @@ function wrapPrimitiveIntoTypeAnnotation(
   }
 }
 
+function getElementTypeForArray(
+  name,
+  arrayParam,
+  paramName,
+  types: $ReadOnlyArray<TypesAST>,
+): FunctionTypeAnnotationParamTypeAnnotation {
+  const typeAnnotation = getValueFromTypes(arrayParam, types);
+  if (
+    typeAnnotation.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.id.name === 'Array'
+  ) {
+    if (
+      typeAnnotation.typeParameters &&
+      typeAnnotation.typeParameters.params[0]
+    ) {
+      return {
+        type: 'ArrayTypeAnnotation',
+        elementType: getElementTypeForArray(
+          name,
+          typeAnnotation.typeParameters.params[0],
+          'returning value',
+          types,
+        ),
+      };
+    } else {
+      throw new Error(
+        `Unsupported type for ${name}, param: "${paramName}": expected to find annotation for type of nested array contents`,
+      );
+    }
+  }
+  const type = typeAnnotation.type;
+  if (type === 'AnyTypeAnnotation') {
+    return {
+      type,
+    };
+  }
+  return wrapPrimitiveIntoTypeAnnotation(name, type, paramName);
+}
+
 function getTypeAnnotationForParam(
   name: string,
   param,
   types: $ReadOnlyArray<TypesAST>,
 ): FunctionTypeAnnotationParam {
-  const type = getValueFromTypes(param.typeAnnotation, types).type;
+  const typeAnnotation = getValueFromTypes(param.typeAnnotation, types);
   const paramName = param.name.name;
-  const typeAnnotation = wrapPrimitiveIntoTypeAnnotation(name, type, paramName);
+  if (
+    typeAnnotation.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.id.name === 'Array'
+  ) {
+    if (
+      typeAnnotation.typeParameters &&
+      typeAnnotation.typeParameters.params[0]
+    ) {
+      return {
+        name: paramName,
+        typeAnnotation: {
+          type: 'ArrayTypeAnnotation',
+          elementType: getElementTypeForArray(
+            name,
+            typeAnnotation.typeParameters.params[0],
+            paramName,
+            types,
+          ),
+        },
+      };
+    } else {
+      throw new Error(
+        `Unsupported type for ${name}, param: "${paramName}": expected to find annotation for type of array contents`,
+      );
+    }
+  }
+  const type = typeAnnotation.type;
   return {
     name: paramName,
-    typeAnnotation,
+    typeAnnotation: wrapPrimitiveIntoTypeAnnotation(name, type, paramName),
   };
 }
 function getReturnTypeAnnotation(
   methodName: string,
-  type,
+  returnType,
+  types: $ReadOnlyArray<TypesAST>,
 ): FunctionTypeAnnotationReturn {
+  if (
+    returnType.type === 'GenericTypeAnnotation' &&
+    returnType.id.name === 'Array'
+  ) {
+    if (returnType.typeParameters && returnType.typeParameters.params[0]) {
+      return {
+        type: 'ArrayTypeAnnotation',
+        elementType: getElementTypeForArray(
+          methodName,
+          returnType.typeParameters.params[0],
+          'returning value',
+          types,
+        ),
+      };
+    } else {
+      throw new Error(
+        `Unsupported return type for ${methodName}: expected to find annotation for type of array contents`,
+      );
+    }
+  }
+  const type = returnType.type;
   switch (type) {
     case 'BooleanTypeAnnotation':
     case 'NumberTypeAnnotation':
@@ -99,7 +187,8 @@ function buildMethodSchema(
 
   const returnTypeAnnotation = getReturnTypeAnnotation(
     name,
-    getValueFromTypes(value.returnType, types).type,
+    getValueFromTypes(value.returnType, types),
+    types,
   );
   return {
     name,

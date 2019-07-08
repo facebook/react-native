@@ -91,6 +91,80 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
+const NATIVE_MODULE_WITH_BASIC_ARRAY = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  +getArray: (arg: Array<string>) => Array<string>;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export type SomeString = string;
+
+export interface Spec extends TurboModule {
+  +getArray: (arg: Array<SomeString>) => Array<string>;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NATIVE_MODULE_WITH_COMPLEX_ARRAY = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  +getArray: (arg: Array<Array<Array<Array<Array<any>>>>>) => Array<Array<Array<string>>>;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
 const EVENT_DEFINITION = `
   boolean_required: boolean,
   boolean_optional_key?: boolean,
@@ -632,6 +706,9 @@ export default codegenNativeComponent<ModuleProps>('Module');
 
 module.exports = {
   NATIVE_MODULE_WITH_WITH_ALIASES,
+  NATIVE_MODULE_WITH_BASIC_ARRAY,
+  NATIVE_MODULE_WITH_COMPLEX_ARRAY,
+  NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS,
   NATIVE_MODULE_WITH_BASIC_PARAM_TYPES,
   EMPTY_NATIVE_MODULE,
   ALL_PROP_TYPES_NO_EVENTS,

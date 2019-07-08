@@ -8,6 +8,10 @@ exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITHOU
 
 exports[`RN Codegen Flow Parser Fails with error message INCORRECT_NATIVE_MODULES 1`] = `"Interface properties for \\"SpecWithTypo has been specified incorrectly.\\""`;
 
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT 1`] = `"Unsupported return type for getString: expected to find annotation for type of array contents"`;
+
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM 1`] = `"Unsupported type for getString, param: \\"arg\\": expected to find annotation for type of array contents"`;
+
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_EXISTING_TYPE_AS_PARAM 1`] = `"Unsupported param type for method \\"getString\\", param \\"arg\\". Found GenericTypeAnnotation"`;
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_EXISTING_TYPE_AS_RETURN 1`] = `"Unsupported param type for method \\"getString\\", param \\"arg\\". Found GenericTypeAnnotation"`;
@@ -3320,6 +3324,82 @@ Object {
 }
 `;
 
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS 1`] = `
+Object {
+  "modules": Object {
+    "SampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "properties": Array [
+            Object {
+              "name": "getArray",
+              "typeAnnotation": Object {
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "typeAnnotation": Object {
+                      "elementType": Object {
+                        "type": "StringTypeAnnotation",
+                      },
+                      "type": "ArrayTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "elementType": Object {
+                    "type": "StringTypeAnnotation",
+                  },
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_ARRAY 1`] = `
+Object {
+  "modules": Object {
+    "SampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "properties": Array [
+            Object {
+              "name": "getArray",
+              "typeAnnotation": Object {
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "typeAnnotation": Object {
+                      "elementType": Object {
+                        "type": "StringTypeAnnotation",
+                      },
+                      "type": "ArrayTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "elementType": Object {
+                    "type": "StringTypeAnnotation",
+                  },
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PARAM_TYPES 1`] = `
 Object {
   "modules": Object {
@@ -3374,6 +3454,62 @@ Object {
                 ],
                 "returnTypeAnnotation": Object {
                   "type": "VoidTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_ARRAY 1`] = `
+Object {
+  "modules": Object {
+    "SampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "properties": Array [
+            Object {
+              "name": "getArray",
+              "typeAnnotation": Object {
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "typeAnnotation": Object {
+                      "elementType": Object {
+                        "elementType": Object {
+                          "elementType": Object {
+                            "elementType": Object {
+                              "elementType": Object {
+                                "type": "AnyTypeAnnotation",
+                              },
+                              "type": "ArrayTypeAnnotation",
+                            },
+                            "type": "ArrayTypeAnnotation",
+                          },
+                          "type": "ArrayTypeAnnotation",
+                        },
+                        "type": "ArrayTypeAnnotation",
+                      },
+                      "type": "ArrayTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "elementType": Object {
+                    "elementType": Object {
+                      "elementType": Object {
+                        "type": "StringTypeAnnotation",
+                      },
+                      "type": "ArrayTypeAnnotation",
+                    },
+                    "type": "ArrayTypeAnnotation",
+                  },
+                  "type": "ArrayTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
               },

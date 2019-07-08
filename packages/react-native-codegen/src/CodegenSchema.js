@@ -130,20 +130,34 @@ export type PropTypeShape = $ReadOnly<{|
   typeAnnotation: PropTypeTypeAnnotation,
 |}>;
 
-export type FunctionTypeAnnotationParamTypeAnnotation = $ReadOnly<{|
-  type:
-    | 'StringTypeAnnotation'
-    | 'NumberTypeAnnotation'
-    | 'BooleanTypeAnnotation',
+export type PrimitiveTypeAnnotationType =
+  | 'StringTypeAnnotation'
+  | 'NumberTypeAnnotation'
+  | 'BooleanTypeAnnotation';
+
+export type PrimitiveTypeAnnotation = $ReadOnly<{|
+  type: PrimitiveTypeAnnotationType,
 |}>;
 
-export type FunctionTypeAnnotationReturn = $ReadOnly<{|
-  type:
-    | 'StringTypeAnnotation'
-    | 'NumberTypeAnnotation'
-    | 'BooleanTypeAnnotation'
-    | 'VoidTypeAnnotation',
-|}>;
+export type FunctionTypeAnnotationParamTypeAnnotation =
+  | $ReadOnly<{|
+      type: 'AnyTypeAnnotation' | PrimitiveTypeAnnotationType,
+    |}>
+  | $ReadOnly<{|
+      type: 'ArrayTypeAnnotation',
+      elementType: FunctionTypeAnnotationParamTypeAnnotation,
+    |}>;
+
+export type FunctionTypeAnnotationReturnArrayElementType = FunctionTypeAnnotationParamTypeAnnotation;
+
+export type FunctionTypeAnnotationReturn =
+  | $ReadOnly<{|
+      type: PrimitiveTypeAnnotationType | 'VoidTypeAnnotation',
+    |}>
+  | $ReadOnly<{|
+      type: 'ArrayTypeAnnotation',
+      elementType: FunctionTypeAnnotationReturnArrayElementType,
+    |}>;
 
 export type FunctionTypeAnnotationParam = $ReadOnly<{|
   name: string,
