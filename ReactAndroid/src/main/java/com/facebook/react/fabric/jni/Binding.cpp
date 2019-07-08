@@ -559,12 +559,12 @@ void Binding::schedulerDidFinishTransaction(
                   deletedViewTags.end()) {
             mountItems[position++] =
                 createUpdatePropsMountItem(localJavaUIManager, mutation);
+          }
 
-            // State
-            if (mutation.newChildShadowView.state) {
-              mountItems[position++] =
-                  createUpdateStateMountItem(localJavaUIManager, mutation);
-            }
+          // State
+          if (mutation.newChildShadowView.state) {
+            mountItems[position++] =
+                createUpdateStateMountItem(localJavaUIManager, mutation);
           }
 
           // LocalData
