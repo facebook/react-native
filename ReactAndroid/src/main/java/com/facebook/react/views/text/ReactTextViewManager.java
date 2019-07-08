@@ -15,6 +15,7 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.IViewManagerWithChildren;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
@@ -72,9 +73,9 @@ public class ReactTextViewManager
   }
 
   @Override
-  public Object updateLocalData(
-      ReactTextView view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
-    ReadableMap attributedString = localData.getMap("attributedString");
+  public Object updateState(
+      ReactTextView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
+    ReadableMap attributedString = stateWrapper.getState().getMap("attributedString");
 
     Spannable spanned =
         TextLayoutManager.getOrCreateSpannableForText(view.getContext(), attributedString);
