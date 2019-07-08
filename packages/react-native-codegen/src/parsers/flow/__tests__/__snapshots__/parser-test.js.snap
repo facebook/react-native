@@ -3386,6 +3386,48 @@ Object {
 }
 `;
 
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_WITH_ALIASES 1`] = `
+Object {
+  "modules": Object {
+    "SampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "properties": Array [
+            Object {
+              "name": "getNumber",
+              "typeAnnotation": Object {
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "typeAnnotation": Object {
+                      "type": "NumberTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "type": "VoidTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "getVoid",
+              "typeAnnotation": Object {
+                "params": Array [],
+                "returnTypeAnnotation": Object {
+                  "type": "VoidTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
 exports[`RN Codegen Flow Parser can generate fixture NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION 1`] = `
 Object {
   "modules": Object {

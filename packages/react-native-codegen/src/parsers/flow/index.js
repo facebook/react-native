@@ -240,7 +240,7 @@ function processString(contents: string): SchemaBuilderConfig {
     const {interfaceName, moduleName} = findModuleConfig(ast);
 
     const moduleProperties = getModuleProperties(types, interfaceName);
-    const properties = getMethods(moduleProperties);
+    const properties = getMethods(moduleProperties, types);
     return {configType, properties, filename: moduleName, moduleName};
   }
 }

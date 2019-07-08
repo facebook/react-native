@@ -17,6 +17,13 @@ import type {
   FunctionTypeAnnotationReturn,
 } from '../../CodegenSchema.js';
 
+function getValueFromTypes(value, types) {
+  if (value.type === 'GenericTypeAnnotation' && types[value.id.name]) {
+    return getValueFromTypes(types[value.id.name].right, types);
+  }
+  return value;
+}
+
 function wrapPrimitiveIntoTypeAnnotation(
   methodName: string,
   type:
@@ -43,17 +50,16 @@ function wrapPrimitiveIntoTypeAnnotation(
 function getTypeAnnotationForParam(
   name: string,
   param,
+  types: $ReadOnlyArray<TypesAST>,
 ): FunctionTypeAnnotationParam {
-  const type = param.typeAnnotation.type;
+  const type = getValueFromTypes(param.typeAnnotation, types).type;
   const paramName = param.name.name;
-  // TODO handle more types
   const typeAnnotation = wrapPrimitiveIntoTypeAnnotation(name, type, paramName);
   return {
     name: paramName,
     typeAnnotation,
   };
 }
-
 function getReturnTypeAnnotation(
   methodName: string,
   type,
@@ -73,9 +79,13 @@ function getReturnTypeAnnotation(
       );
   }
 }
-function buildMethodSchema(property: MethodAST): MethodTypeShape {
+
+function buildMethodSchema(
+  property: MethodAST,
+  types: $ReadOnlyArray<TypesAST>,
+): MethodTypeShape {
   const name: string = property.key.name;
-  const value = property.value;
+  const value = getValueFromTypes(property.value, types);
   if (value.type !== 'FunctionTypeAnnotation') {
     throw new Error(
       `Only methods are supported as module properties. Found ${
@@ -83,14 +93,13 @@ function buildMethodSchema(property: MethodAST): MethodTypeShape {
       } in ${property.key.name}`,
     );
   }
-
   const params = value.params.map(param =>
-    getTypeAnnotationForParam(name, param),
+    getTypeAnnotationForParam(name, param, types),
   );
 
   const returnTypeAnnotation = getReturnTypeAnnotation(
     name,
-    value.returnType.type,
+    getValueFromTypes(value.returnType, types).type,
   );
   return {
     name,
@@ -104,13 +113,16 @@ function buildMethodSchema(property: MethodAST): MethodTypeShape {
 
 // $FlowFixMe there's no flowtype for ASTs
 type MethodAST = Object;
+// $FlowFixMe there's no flowtype for ASTs
+type TypesAST = Object;
 
 function getMethods(
   typeDefinition: $ReadOnlyArray<MethodAST>,
+  types: $ReadOnlyArray<TypesAST>,
 ): $ReadOnlyArray<MethodTypeShape> {
   return typeDefinition
     .filter(property => property.type === 'ObjectTypeProperty')
-    .map(buildMethodSchema)
+    .map(property => buildMethodSchema(property, types))
     .filter(Boolean);
 }
 
