@@ -21,7 +21,7 @@ public interface WritableArray extends ReadableArray {
 
   void pushString(@Nullable String value);
 
-  void pushArray(@Nullable WritableArray array);
+  void pushArray(@Nullable ReadableArray array);
 
-  void pushMap(@Nullable WritableMap map);
+  void pushMap(@Nullable ReadableMap map);
 }

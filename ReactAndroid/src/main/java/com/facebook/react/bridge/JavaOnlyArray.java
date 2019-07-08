@@ -101,8 +101,8 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
   }
 
   @Override
-  public JavaOnlyArray getArray(int index) {
-    return (JavaOnlyArray) mBackingList.get(index);
+  public ReadableArray getArray(int index) {
+    return (ReadableArray) mBackingList.get(index);
   }
 
   @Override
@@ -111,8 +111,8 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
   }
 
   @Override
-  public JavaOnlyMap getMap(int index) {
-    return (JavaOnlyMap) mBackingList.get(index);
+  public ReadableMap getMap(int index) {
+    return (ReadableMap) mBackingList.get(index);
   }
 
   @Override
@@ -161,12 +161,12 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
   }
 
   @Override
-  public void pushArray(@Nullable WritableArray array) {
+  public void pushArray(@Nullable ReadableArray array) {
     mBackingList.add(array);
   }
 
   @Override
-  public void pushMap(@Nullable WritableMap map) {
+  public void pushMap(@Nullable ReadableMap map) {
     mBackingList.add(map);
   }
 

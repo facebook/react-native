@@ -40,7 +40,7 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
 
   // Note: this consumes the map so do not reuse it.
   @Override
-  public void putMap(@Nonnull String key, @Nullable WritableMap value) {
+  public void putMap(@Nonnull String key, @Nullable ReadableMap value) {
     Assertions.assertCondition(
         value == null || value instanceof WritableNativeMap, "Illegal type provided");
     putNativeMap(key, (WritableNativeMap) value);
@@ -48,7 +48,7 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
 
   // Note: this consumes the map so do not reuse it.
   @Override
-  public void putArray(@Nonnull String key, @Nullable WritableArray value) {
+  public void putArray(@Nonnull String key, @Nullable ReadableArray value) {
     Assertions.assertCondition(
         value == null || value instanceof WritableNativeArray, "Illegal type provided");
     putNativeArray(key, (WritableNativeArray) value);

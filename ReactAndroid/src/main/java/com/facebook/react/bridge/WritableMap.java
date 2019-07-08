@@ -22,9 +22,9 @@ public interface WritableMap extends ReadableMap {
 
   void putString(@Nonnull String key, @Nullable String value);
 
-  void putArray(@Nonnull String key, @Nullable WritableArray value);
+  void putArray(@Nonnull String key, @Nullable ReadableArray value);
 
-  void putMap(@Nonnull String key, @Nullable WritableMap value);
+  void putMap(@Nonnull String key, @Nullable ReadableMap value);
 
   void merge(@Nonnull ReadableMap source);
 
