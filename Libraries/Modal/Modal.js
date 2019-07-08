@@ -42,13 +42,13 @@ import type {SyntheticEvent} from '../Types/CoreEventTypes';
 // destroyed before the callback is fired.
 let uniqueModalIdentifier = 0;
 
-type OrientationChangeEvent = SyntheticEvent<
+type ModalOrientationChangeEvent = SyntheticEvent<
   $ReadOnly<{|
     orientation: 'portrait' | 'landscape',
   |}>,
 >;
 
-type Props = $ReadOnly<{|
+type ModalProps = $ReadOnly<{|
   ...ViewProps,
 
   /**
@@ -142,10 +142,10 @@ type Props = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onorientationchange
    */
-  onOrientationChange?: ?(event: OrientationChangeEvent) => mixed,
+  onOrientationChange?: ?(event: ModalOrientationChangeEvent) => mixed,
 |}>;
 
-class Modal extends React.Component<Props> {
+class Modal extends React.Component<ModalProps> {
   static defaultProps = {
     visible: true,
     hardwareAccelerated: false,
@@ -158,7 +158,7 @@ class Modal extends React.Component<Props> {
   _identifier: number;
   _eventSubscription: ?EmitterSubscription;
 
-  constructor(props: Props) {
+  constructor(props: ModalProps) {
     super(props);
     Modal._confirmProps(props);
     this._identifier = uniqueModalIdentifier++;
@@ -195,11 +195,11 @@ class Modal extends React.Component<Props> {
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: Props) {
+  UNSAFE_componentWillReceiveProps(nextProps: ModalProps) {
     Modal._confirmProps(nextProps);
   }
 
-  static _confirmProps(props: Props) {
+  static _confirmProps(props: ModalProps) {
     if (
       props.presentationStyle &&
       props.presentationStyle !== 'overFullScreen' &&
