@@ -6,7 +6,7 @@
  */
 #pragma once
 
-#include <ostream>
+#include <iosfwd>
 #include <string>
 
 #include <jsi/jsi.h>
