@@ -222,6 +222,7 @@ function buildMethodSchema(
       type: 'FunctionTypeAnnotation',
       returnTypeAnnotation,
       params,
+      optional: property.optional,
     },
   };
 }

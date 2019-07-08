@@ -51,7 +51,7 @@ import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +passBool: (arg: boolean) => void;
+  +passBool?: (arg: boolean) => void;
   +passNumber: (arg: number) => void;
   +passString: (arg: string) => void;
 }

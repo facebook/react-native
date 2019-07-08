@@ -3336,6 +3336,7 @@ Object {
             Object {
               "name": "getArray",
               "typeAnnotation": Object {
+                "optional": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -3374,6 +3375,7 @@ Object {
             Object {
               "name": "getArray",
               "typeAnnotation": Object {
+                "optional": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -3412,6 +3414,7 @@ Object {
             Object {
               "name": "passBool",
               "typeAnnotation": Object {
+                "optional": true,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -3429,6 +3432,7 @@ Object {
             Object {
               "name": "passNumber",
               "typeAnnotation": Object {
+                "optional": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -3446,6 +3450,7 @@ Object {
             Object {
               "name": "passString",
               "typeAnnotation": Object {
+                "optional": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -3478,6 +3483,7 @@ Object {
             Object {
               "name": "getArray",
               "typeAnnotation": Object {
+                "optional": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -3575,6 +3581,7 @@ Object {
             Object {
               "name": "getNumber",
               "typeAnnotation": Object {
+                "optional": false,
                 "params": Array [
                   Object {
                     "name": "arg",
@@ -3592,6 +3599,7 @@ Object {
             Object {
               "name": "getVoid",
               "typeAnnotation": Object {
+                "optional": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
                   "type": "VoidTypeAnnotation",

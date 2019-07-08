@@ -172,6 +172,7 @@ export type FunctionTypeAnnotation = $ReadOnly<{|
   type: 'FunctionTypeAnnotation',
   params: $ReadOnlyArray<FunctionTypeAnnotationParam>,
   returnTypeAnnotation: FunctionTypeAnnotationReturn,
+  optional: boolean,
 |}>;
 
 export type MethodTypeShape = $ReadOnly<{|
