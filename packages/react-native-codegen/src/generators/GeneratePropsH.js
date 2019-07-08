@@ -17,8 +17,6 @@ import type {PropTypeShape, SchemaType} from '../CodegenSchema';
 // File path -> contents
 type FilesOutput = Map<string, string>;
 
-type TypeAnnotation = $PropertyType<PropTypeShape, 'typeAnnotation'>;
-
 const template = `
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -70,23 +68,31 @@ static inline std::string toString(const ::_ENUM_NAME_:: &value) {
 `.trim();
 
 const arrayEnumTemplate = `
-enum class ::_ENUM_NAME_::: uint32_t {
+using ::_ENUM_MASK_:: = uint32_t;
+
+enum class ::_ENUM_NAME_::: ::_ENUM_MASK_:: {
   ::_VALUES_::
 };
 
 constexpr bool operator&(
-  const enum ::_ENUM_NAME_:: lhs,
-  const enum ::_ENUM_NAME_:: rhs) {
-  return ((uint32_t)lhs & (uint32_t)rhs);
+  ::_ENUM_MASK_:: const lhs,
+  enum ::_ENUM_NAME_:: const rhs) {
+  return lhs & static_cast<::_ENUM_MASK_::>(rhs);
 }
 
-constexpr bool operator|(
-  const enum ::_ENUM_NAME_:: lhs,
-  const enum ::_ENUM_NAME_:: rhs) {
-  return ((uint32_t)lhs | (uint32_t)rhs);
+constexpr ::_ENUM_MASK_:: operator|(
+  ::_ENUM_MASK_:: const lhs,
+  enum ::_ENUM_NAME_:: const rhs) {
+  return lhs | static_cast<::_ENUM_MASK_::>(rhs);
 }
 
-static inline void fromRawValue(const RawValue &value, ::_ENUM_NAME_:: &result) {
+constexpr void operator|=(
+  ::_ENUM_MASK_:: &lhs,
+  enum ::_ENUM_NAME_:: const rhs) {
+  lhs = lhs | static_cast<::_ENUM_MASK_::>(rhs);
+}
+
+static inline void fromRawValue(const RawValue &value, ::_ENUM_MASK_:: &result) {
   auto items = std::vector<std::string>{value};
   for (const auto &item : items) {
     ::_FROM_CASES_::
@@ -94,7 +100,7 @@ static inline void fromRawValue(const RawValue &value, ::_ENUM_NAME_:: &result) 
   }
 }
 
-static inline std::string toString(const ::_ENUM_NAME_:: &value) {
+static inline std::string toString(const ::_ENUM_MASK_:: &value) {
     auto result = std::string{};
     auto separator = std::string{", "};
 
@@ -158,7 +164,8 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
         );
       }
       if (typeAnnotation.elementType.type === 'StringEnumTypeAnnotation') {
-        return getEnumName(componentName, prop.name);
+        const enumName = getEnumName(componentName, prop.name);
+        return getEnumMaskName(enumName);
       }
       const itemAnnotation = getNativeTypeFromAnnotation(componentName, {
         typeAnnotation: typeAnnotation.elementType,
@@ -211,9 +218,12 @@ function convertDefaultTypeToString(componentName: string, prop): string {
               'A default is required for array StringEnumTypeAnnotation',
             );
           }
-          return `${getEnumName(componentName, prop.name)}::${toSafeCppString(
+          const enumName = getEnumName(componentName, prop.name);
+          const enumMaskName = getEnumMaskName(enumName);
+          const defaultValue = `${enumName}::${toSafeCppString(
             typeAnnotation.elementType.default || '',
           )}`;
+          return `static_cast<${enumMaskName}>(${defaultValue})`;
         default:
           return '';
       }
@@ -231,6 +241,10 @@ function convertDefaultTypeToString(componentName: string, prop): string {
 function getEnumName(componentName, propName): string {
   const uppercasedPropName = toSafeCppString(propName);
   return `${componentName}${uppercasedPropName}`;
+}
+
+function getEnumMaskName(enumName: string): string {
+  return `${enumName}Mask`;
 }
 
 function convertValueToEnumOption(value: string): string {
@@ -253,7 +267,7 @@ function generateArrayEnumString(
     .map(
       option =>
         `if (item == "${option}") {
-      result = (${enumName})(result | ${enumName}::${toSafeCppString(option)});
+      result |= ${enumName}::${toSafeCppString(option)};
       continue;
     }`,
     )
@@ -270,6 +284,7 @@ function generateArrayEnumString(
 
   return arrayEnumTemplate
     .replace(/::_ENUM_NAME_::/g, enumName)
+    .replace(/::_ENUM_MASK_::/g, getEnumMaskName(enumName))
     .replace('::_VALUES_::', values)
     .replace('::_FROM_CASES_::', fromCases)
     .replace('::_TO_CASES_::', toCases);

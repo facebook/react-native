@@ -21,39 +21,47 @@ Map {
 namespace facebook {
 namespace react {
 
-enum class ArrayPropsNativeComponentSizes: uint32_t {
+using ArrayPropsNativeComponentSizesMask = uint32_t;
+
+enum class ArrayPropsNativeComponentSizes: ArrayPropsNativeComponentSizesMask {
   Small = 1 << 0,
   Large = 1 << 1
 };
 
 constexpr bool operator&(
-  const enum ArrayPropsNativeComponentSizes lhs,
-  const enum ArrayPropsNativeComponentSizes rhs) {
-  return ((uint32_t)lhs & (uint32_t)rhs);
+  ArrayPropsNativeComponentSizesMask const lhs,
+  enum ArrayPropsNativeComponentSizes const rhs) {
+  return lhs & static_cast<ArrayPropsNativeComponentSizesMask>(rhs);
 }
 
-constexpr bool operator|(
-  const enum ArrayPropsNativeComponentSizes lhs,
-  const enum ArrayPropsNativeComponentSizes rhs) {
-  return ((uint32_t)lhs | (uint32_t)rhs);
+constexpr ArrayPropsNativeComponentSizesMask operator|(
+  ArrayPropsNativeComponentSizesMask const lhs,
+  enum ArrayPropsNativeComponentSizes const rhs) {
+  return lhs | static_cast<ArrayPropsNativeComponentSizesMask>(rhs);
 }
 
-static inline void fromRawValue(const RawValue &value, ArrayPropsNativeComponentSizes &result) {
+constexpr void operator|=(
+  ArrayPropsNativeComponentSizesMask &lhs,
+  enum ArrayPropsNativeComponentSizes const rhs) {
+  lhs = lhs | static_cast<ArrayPropsNativeComponentSizesMask>(rhs);
+}
+
+static inline void fromRawValue(const RawValue &value, ArrayPropsNativeComponentSizesMask &result) {
   auto items = std::vector<std::string>{value};
   for (const auto &item : items) {
     if (item == \\"small\\") {
-      result = (ArrayPropsNativeComponentSizes)(result | ArrayPropsNativeComponentSizes::Small);
+      result |= ArrayPropsNativeComponentSizes::Small;
       continue;
     }
     if (item == \\"large\\") {
-      result = (ArrayPropsNativeComponentSizes)(result | ArrayPropsNativeComponentSizes::Large);
+      result |= ArrayPropsNativeComponentSizes::Large;
       continue;
     }
     abort();
   }
 }
 
-static inline std::string toString(const ArrayPropsNativeComponentSizes &value) {
+static inline std::string toString(const ArrayPropsNativeComponentSizesMask &value) {
     auto result = std::string{};
     auto separator = std::string{\\", \\"};
 
@@ -83,7 +91,7 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
   const std::vector<SharedColor> colors{};
   const std::vector<ImageSource> srcs{};
   const std::vector<Point> points{};
-  const ArrayPropsNativeComponentSizes sizes{ArrayPropsNativeComponentSizes::Small};
+  const ArrayPropsNativeComponentSizesMask sizes{static_cast<ArrayPropsNativeComponentSizesMask>(ArrayPropsNativeComponentSizes::Small)};
 };
 
 } // namespace react
