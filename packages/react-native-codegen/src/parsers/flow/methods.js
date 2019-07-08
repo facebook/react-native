@@ -78,6 +78,16 @@ function getElementTypeForArray(
       );
     }
   }
+
+  if (
+    typeAnnotation.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.id.name === 'Object'
+  ) {
+    return {
+      type: 'ObjectWithoutPropertiesTypeAnnotation',
+    };
+  }
+
   const type = typeAnnotation.type;
   if (type === 'AnyTypeAnnotation') {
     return {
@@ -94,6 +104,17 @@ function getTypeAnnotationForParam(
 ): FunctionTypeAnnotationParam {
   const typeAnnotation = getValueFromTypes(param.typeAnnotation, types);
   const paramName = param.name.name;
+  if (
+    param.typeAnnotation.type === 'GenericTypeAnnotation' &&
+    param.typeAnnotation.id.name === 'Object'
+  ) {
+    return {
+      name: paramName,
+      typeAnnotation: {
+        type: 'ObjectWithoutPropertiesTypeAnnotation',
+      },
+    };
+  }
   if (
     typeAnnotation.type === 'GenericTypeAnnotation' &&
     typeAnnotation.id.name === 'Array'
@@ -126,12 +147,21 @@ function getTypeAnnotationForParam(
     typeAnnotation: wrapPrimitiveIntoTypeAnnotation(name, type, paramName),
   };
 }
+
 function getReturnTypeAnnotation(
   methodName: string,
   returnType,
   types: $ReadOnlyArray<TypesAST>,
 ): FunctionTypeAnnotationReturn {
   const typeAnnotation = getValueFromTypes(returnType, types);
+  if (
+    typeAnnotation.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.id.name === 'Object'
+  ) {
+    return {
+      type: 'ObjectWithoutPropertiesTypeAnnotation',
+    };
+  }
   if (
     typeAnnotation.type === 'GenericTypeAnnotation' &&
     typeAnnotation.id.name === 'Promise'

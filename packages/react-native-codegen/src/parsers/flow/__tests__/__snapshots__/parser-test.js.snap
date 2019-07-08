@@ -3540,6 +3540,7 @@ Object {
             Object {
               "name": "getValueWithPromise",
               "typeAnnotation": Object {
+                "optional": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
                   "resolvingType": Object {
@@ -3553,12 +3554,46 @@ Object {
             Object {
               "name": "getValueWithPromiseDefinedSomewhereElse",
               "typeAnnotation": Object {
+                "optional": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
                   "resolvingType": Object {
                     "type": "StringTypeAnnotation",
                   },
                   "type": "PromiseTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_SIMPLE_OBJECT 1`] = `
+Object {
+  "modules": Object {
+    "SampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "properties": Array [
+            Object {
+              "name": "getObject",
+              "typeAnnotation": Object {
+                "optional": false,
+                "params": Array [
+                  Object {
+                    "name": "o",
+                    "typeAnnotation": Object {
+                      "type": "ObjectWithoutPropertiesTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "type": "ObjectWithoutPropertiesTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
               },
