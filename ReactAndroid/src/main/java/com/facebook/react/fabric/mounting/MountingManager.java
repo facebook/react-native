@@ -210,7 +210,7 @@ public class MountingManager {
               componentName, propsDiffMap, stateWrapper, themedReactContext);
       view.setId(reactTag);
       if (stateWrapper != null) {
-        viewManager.updateState(view, stateWrapper);
+        viewManager.updateState(view, propsDiffMap, stateWrapper);
       }
     }
 
@@ -325,7 +325,11 @@ public class MountingManager {
     if (viewManager == null) {
       throw new IllegalStateException("Unable to find ViewManager for tag: " + reactTag);
     }
-    viewManager.updateState(viewState.mView, stateWrapper);
+    Object extraData =
+        viewManager.updateState(viewState.mView, viewState.mCurrentProps, stateWrapper);
+    if (extraData != null) {
+      viewManager.updateExtraData(viewState.mView, extraData);
+    }
   }
 
   @UiThread

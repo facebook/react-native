@@ -252,7 +252,10 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * Subclasses can implement this method to receive state updates shared between all instances of
    * this component type.
    */
-  public void updateState(@Nonnull T view, StateWrapper stateWrapper) {}
+  public @Nullable Object updateState(
+      @Nonnull T view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
+    return null;
+  }
 
   public long measure(
       Context context,

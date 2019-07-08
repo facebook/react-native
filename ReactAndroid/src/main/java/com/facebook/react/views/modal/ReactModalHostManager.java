@@ -11,6 +11,7 @@ import android.graphics.Point;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -101,8 +102,10 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
   }
 
   @Override
-  public void updateState(ReactModalHostView view, StateWrapper stateWrapper) {
+  public Object updateState(
+      ReactModalHostView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     Point modalSize = ModalHostHelper.getModalHostSize(view.getContext());
     view.updateState(stateWrapper, modalSize.x, modalSize.y);
+    return null;
   }
 }
