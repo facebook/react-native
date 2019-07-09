@@ -188,6 +188,15 @@ function buildPropSchema(property): ?PropTypeShape {
       typeAnnotation.id.name === 'WithDefault');
 
   if (
+    !property.optional &&
+    value.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.id.name === 'WithDefault'
+  ) {
+    throw new Error(
+      `key ${name} must be optional if used with WithDefault<> annotation`,
+    );
+  }
+  if (
     value.type === 'NullableTypeAnnotation' &&
     (typeAnnotation.type === 'GenericTypeAnnotation' &&
       typeAnnotation.id.name === 'WithDefault')

@@ -45,7 +45,7 @@ type NativeProps = $ReadOnly<{|
   thumbImage?: ?ImageSource,
   thumbTintColor?: ?ColorValue,
   trackImage?: ?ImageSource,
-  value: WithDefault<Float, 0>,
+  value?: WithDefault<Float, 0>,
 
   // Events
   onChange?: ?BubblingEventHandler<Event>,

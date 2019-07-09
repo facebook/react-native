@@ -396,7 +396,39 @@ export type ModuleProps = $ReadOnly<{|
 export default codegenNativeComponent<ModuleProps>('Module');
 `;
 
+const NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {
+  WithDefault,
+  Float,
+} from 'CodegenTypes';
+
+import type {ViewProps} from 'ViewPropTypes';
+
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  required_key_with_default: WithDefault<Float, 1.0>,
+|}>;
+
+export default codegenNativeComponent<ModuleProps>('Module');
+`;
+
 module.exports = {
+  NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE,
   NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE,
   NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM,
   NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT,
