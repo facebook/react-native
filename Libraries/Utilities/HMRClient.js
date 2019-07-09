@@ -101,20 +101,14 @@ const HMRClient: HMRClientNativeInterface = {
     invariant(bundleEntry, 'Missing required paramenter `bundleEntry`');
     invariant(host, 'Missing required paramenter `host`');
     invariant(!hmrClient, 'Cannot initialize hmrClient twice');
+
     // Moving to top gives errors due to NativeModules not being initialized
     const HMRLoadingView = require('./HMRLoadingView');
 
-    const wsHostPort = port !== null && port !== '' ? `${host}:${port}` : host;
-
-    bundleEntry = bundleEntry.replace(/\.(bundle|delta)/, '.js');
-
-    // Build the websocket url
-    const wsUrl =
-      `ws://${wsHostPort}/hot?` +
-      `platform=${platform}&` +
-      `bundleEntry=${bundleEntry}`;
-
-    const client = new MetroHMRClient(wsUrl);
+    const wsHost = port !== null && port !== '' ? `${host}:${port}` : host;
+    const client = new MetroHMRClient(
+      `ws://${wsHost}/hot?bundleEntry=${bundleEntry}&platform=${platform}`,
+    );
     hmrClient = client;
 
     client.on('connection-error', e => {
