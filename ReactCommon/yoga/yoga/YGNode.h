@@ -18,7 +18,7 @@ private:
   bool hasNewLayout_ : 1;
   bool isReferenceBaseline_ : 1;
   bool isDirty_ : 1;
-  YGNodeType nodeType_ : 1;
+  YGNodeType nodeType_ = {};
   YGMeasureFunc measure_ = nullptr;
   YGBaselineFunc baseline_ = nullptr;
   YGDirtiedFunc dirtied_ = nullptr;
