@@ -26,6 +26,7 @@ public abstract class ReactNativeHost {
 
   private final Application mApplication;
   private @Nullable ReactInstanceManager mReactInstanceManager;
+  private @Nullable ReactPerformanceLogger mReactPerformanceLogger;
 
   protected ReactNativeHost(Application application) {
     mApplication = application;
@@ -34,11 +35,21 @@ public abstract class ReactNativeHost {
   /** Get the current {@link ReactInstanceManager} instance, or create one. */
   public ReactInstanceManager getReactInstanceManager() {
     if (mReactInstanceManager == null) {
+      // Ensure {@link ReactPerformanceLogger} exists before we create {@link ReactInstanceManager}.
+      getReactPerformanceLogger();
       ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_START);
       mReactInstanceManager = createReactInstanceManager();
       ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_END);
     }
     return mReactInstanceManager;
+  }
+
+  /** Get the current {@link ReactPerformanceLogger} instance, or create one. */
+  public ReactPerformanceLogger getReactPerformanceLogger() {
+    if (mReactPerformanceLogger == null) {
+      mReactPerformanceLogger = new ReactPerformanceLogger();
+    }
+    return mReactPerformanceLogger;
   }
 
   /**
@@ -57,6 +68,10 @@ public abstract class ReactNativeHost {
     if (mReactInstanceManager != null) {
       mReactInstanceManager.destroy();
       mReactInstanceManager = null;
+    }
+    if (mReactPerformanceLogger != null) {
+      mReactPerformanceLogger.release();
+      mReactPerformanceLogger = null;
     }
   }
 
