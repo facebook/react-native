@@ -17,6 +17,7 @@ import NativeModalManager from './NativeModalManager';
 const Platform = require('../Utilities/Platform');
 const React = require('react');
 const PropTypes = require('prop-types');
+const ScrollView = require('../Components/ScrollView/ScrollView');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 
@@ -258,7 +259,11 @@ class Modal extends React.Component<Props> {
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
         onOrientationChange={this.props.onOrientationChange}>
-        <View style={[styles.container, containerStyles]}>{innerChildren}</View>
+        <ScrollView.Context.Provider value={null}>
+          <View style={[styles.container, containerStyles]}>
+            {innerChildren}
+          </View>
+        </ScrollView.Context.Provider>
       </RCTModalHostView>
     );
   }
