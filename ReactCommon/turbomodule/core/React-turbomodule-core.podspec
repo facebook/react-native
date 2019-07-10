@@ -36,7 +36,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\" \"$(PODS_ROOT)/DoubleConversion\"" }
   s.xcconfig               = { "OTHER_CFLAGS" => "$(inherited) -DRN_TURBO_MODULE_ENABLED" }
 
-  s.dependency "React-Core", version
+  s.dependency "React-Core/CxxBridge", version
   s.dependency "React-cxxreact", version
   s.dependency "React-jsi", version
   s.dependency "Folly", folly_version
