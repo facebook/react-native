@@ -18,11 +18,11 @@ import type {SyntheticEvent} from './CoreEventTypes';
 export type BubblingEventHandler<
   T,
   PaperName: string | empty = empty, // eslint-disable-line no-unused-vars
-> = (event: SyntheticEvent<T>) => mixed;
+> = (event: SyntheticEvent<T>) => void | Promise<void>;
 export type DirectEventHandler<
   T,
   PaperName: string | empty = empty, // eslint-disable-line no-unused-vars
-> = (event: SyntheticEvent<T>) => mixed;
+> = (event: SyntheticEvent<T>) => void | Promise<void>;
 
 // Prop types
 export type Float = number;

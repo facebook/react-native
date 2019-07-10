@@ -29,7 +29,7 @@ const ModalEventEmitter =
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {SyntheticEvent} from '../Types/CoreEventTypes';
-
+import type {DirectEventHandler} from '../Types/CodegenTypes';
 /**
  * The Modal component is a simple way to present content above an enclosing view.
  *
@@ -42,11 +42,9 @@ import type {SyntheticEvent} from '../Types/CoreEventTypes';
 // destroyed before the callback is fired.
 let uniqueModalIdentifier = 0;
 
-export type OrientationChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
-    orientation: 'portrait' | 'landscape',
-  |}>,
->;
+type OrientationChangeEvent = $ReadOnly<{|
+  orientation: 'portrait' | 'landscape',
+|}>;
 
 export type Props = $ReadOnly<{|
   ...ViewProps,
@@ -101,7 +99,7 @@ export type Props = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onrequestclose
    */
-  onRequestClose?: ?(event?: SyntheticEvent<null>) => mixed,
+  onRequestClose?: ?DirectEventHandler<null>,
 
   /**
    * The `onShow` prop allows passing a function that will be called once the
@@ -109,7 +107,7 @@ export type Props = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onshow
    */
-  onShow?: ?(event?: SyntheticEvent<null>) => mixed,
+  onShow?: ?DirectEventHandler<null>,
 
   /**
    * The `onDismiss` prop allows passing a function that will be called once
@@ -142,7 +140,7 @@ export type Props = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onorientationchange
    */
-  onOrientationChange?: ?(event: OrientationChangeEvent) => mixed,
+  onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
 |}>;
 
 class Modal extends React.Component<Props> {
