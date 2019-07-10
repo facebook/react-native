@@ -997,12 +997,18 @@ static inline YGAlign YGNodeAlignItem(const YGNode* node, const YGNode* child) {
 
 static float YGBaseline(const YGNodeRef node, void* layoutContext) {
   if (node->hasBaselineFunc()) {
+
+    Event::publish<Event::NodeBaselineStart>(node);
+
     const float baseline = marker::MarkerSection<YGMarkerBaselineFn>::wrap(
         node,
         &YGNode::baseline,
         node->getLayout().measuredDimensions[YGDimensionWidth],
         node->getLayout().measuredDimensions[YGDimensionHeight],
         layoutContext);
+
+    Event::publish<Event::NodeBaselineEnd>(node);
+
     YGAssertWithNode(
         node,
         !YGFloatIsUndefined(baseline),
