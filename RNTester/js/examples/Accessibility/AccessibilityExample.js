@@ -481,7 +481,7 @@ class AccessibilityActionsExample extends React.Component {
         </RNTesterBlock>
 
         <RNTesterBlock title="Button with custom accessibility actions">
-          <TouchableWithoutFeedback 
+          <TouchableWithoutFeedback
             accessible={true}
             accessibilityActions={[
               {name: 'cut', label: 'cut label'},
@@ -503,12 +503,11 @@ class AccessibilityActionsExample extends React.Component {
             }}
             onPress={() => Alert.alert('Button has been pressed!')}
             accessibilityRole="button">
-            <View >
+            <View>
               <Text>Click me</Text>
             </View>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
-
       </View>
     );
   }
