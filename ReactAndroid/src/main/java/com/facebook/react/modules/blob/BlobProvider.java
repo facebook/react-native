@@ -85,10 +85,8 @@ public final class BlobProvider extends ContentProvider {
     ParcelFileDescriptor readSide = pipe[0];
     ParcelFileDescriptor writeSide = pipe[1];
 
-    OutputStream outputStream = new ParcelFileDescriptor.AutoCloseOutputStream(writeSide);
-    try {
+    try (OutputStream outputStream = new ParcelFileDescriptor.AutoCloseOutputStream(writeSide)) {
       outputStream.write(data);
-      outputStream.close();
     } catch (IOException exception) {
       return null;
     }
