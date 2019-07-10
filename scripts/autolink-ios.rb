@@ -6,9 +6,6 @@ def use_react_native! (options={})
   # Include Fabric dependencies
   fabric_enabled = options[:fabric_enabled] ||= false
 
-  # Include Turbo Modules dependencies
-  turbo_modules_enabled = options[:turbo_modules_enabled] ||= false
-
   # Include DevSupport dependency
   production = options[:production] ||= false
 

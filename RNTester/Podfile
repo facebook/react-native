@@ -9,7 +9,7 @@ def pods()
   project 'RNTesterPods.xcodeproj'
 
   # Enable TurboModule
-  use_react_native!(path: "..", turbo_modules_enabled: true)
+  use_react_native!(path: "..")
   pod 'React-turbomodule-samples', :path => '../ReactCommon/turbomodule/samples'
 
   # Additional Pods which aren't included in the default Podfile
@@ -19,7 +19,7 @@ def pods()
   # Additional Pods which are classed as unstable
   #
   # To use fabric: add `fabric_enabled` option to the use_react_native method above, like below
-  # use_react_native!(path: "..", turbo_modules_enabled: true, fabric_enabled: true)
+  # use_react_native!(path: "..", fabric_enabled: true)
 end
 
 target 'RNTester' do
