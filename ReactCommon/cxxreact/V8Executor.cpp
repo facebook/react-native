@@ -212,6 +212,23 @@ Isolate *V8Executor::GetIsolate() {
   return isolate;
 }
 
+/*
+* This below function used incase user set the enviorment variable
+*  to enable cache insted of enable from C++ reacthost instance.
+*/
+void V8Executor::TrySetJSEConfigFromEnv(){
+  const char* localPath = getenv("V8_JSCACHE_PATH");
+  if (localPath != NULL) {
+    if ( m_jseConfigParams == nullptr ){
+      LOGV("V8Executor.setCacheFromEnv V8_JSCACHE_PATH: %s", localPath);
+      m_jseConfigParams = std::make_unique<facebook::react::JSEConfigParams>();
+      m_jseConfigParams->cachePath = std::string(localPath);
+      m_jseConfigParams->cacheType = CachingType::FullCachingWithNoLazy;
+      m_jseConfigParams->loggingLevel = 50; // deafult logging 10 = Logging::LoggingLevel::ERROR
+    }
+  }
+}
+
 bool V8Executor::IsCacheEnabled() {
   if (m_jseConfigParams == nullptr || (m_jseConfigParams->cacheType == CachingType::NoCaching) || (m_jseConfigParams->cachePath.empty())) {
     return false;
@@ -247,6 +264,9 @@ V8Executor::V8Executor(std::shared_ptr<ExecutorDelegate> delegate,
   m_jscConfig(jscConfig),
   m_jseConfigParams(std::move(jseConfigParams)) {
   LOGV("V8Executor::V8Executor entry");
+  if ( m_jseConfigParams == nullptr ){
+    TrySetJSEConfigFromEnv();
+  }
   m_jseLocalPath = "";
   if (m_jseConfigParams != nullptr) {
     Logging::setLevel(Logging::forValue(m_jseConfigParams->loggingLevel));
@@ -449,7 +469,7 @@ Local<Script> V8Executor::createAndGetScript(const Local<String> &scriptData, co
 
   if (cacheData != nullptr) {
     //SystraceSection s("V8Executor::LoadScript Compile, cached");
-    LOGV("V8Executor::createAndGetScript cached");
+    LOGV("V8Executor::createAndGetScript cached path :%s", fullPath.c_str());
 
     option = ScriptCompiler::kConsumeCodeCache;
     auto maybeScript = ScriptCompiler::Compile(context, &source, option);

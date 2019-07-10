@@ -154,6 +154,8 @@ private:
   void nativeFlushQueueImmediate(const FunctionCallbackInfo<Value> &args);
   void nativeCallSyncHook(const FunctionCallbackInfo<Value> &args);
 
+  void TrySetJSEConfigFromEnv();
+
   Isolate *m_isolate = nullptr; // shared on global
   std::string m_jseLocalPath;
   std::shared_ptr<JSEConfigParams> m_jseConfigParams;
