@@ -36,7 +36,24 @@ PODS:
     - React-Core (= 1000.0.0)
   - React-Core (1000.0.0):
     - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - yoga (= 1000.0.0.React)
+  - React-Core/CxxBridge (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - yoga (= 1000.0.0.React)
+  - React-Core/Default (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
     - yoga (= 1000.0.0.React)
   - React-CoreModules (1000.0.0):
@@ -102,18 +119,19 @@ PODS:
     - React-Core (= 1000.0.0)
   - React-turbomodule-core (1000.0.0):
     - Folly (= 2018.10.22.00)
-    - React-Core (= 1000.0.0)
+    - React-Core/CxxBridge (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jscallinvoker (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-turbomodule-core/core-ios (= 1000.0.0)
   - React-turbomodule-core/core-ios (1000.0.0):
     - Folly (= 2018.10.22.00)
-    - React-Core (= 1000.0.0)
+    - React-Core/CxxBridge (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jscallinvoker (= 1000.0.0)
     - React-jsi (= 1000.0.0)
   - React-turbomodule-samples (1000.0.0):
+    - DoubleConversion
     - Folly (= 2018.10.22.00)
     - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
@@ -121,6 +139,7 @@ PODS:
     - React-turbomodule-core (= 1000.0.0)
     - React-turbomodule-samples/samples-ios (= 1000.0.0)
   - React-turbomodule-samples/samples-ios (1000.0.0):
+    - DoubleConversion
     - Folly (= 2018.10.22.00)
     - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
@@ -247,13 +266,13 @@ SPEC CHECKSUMS:
   RCTRequired: 33f3b89d2d82ef01c02b9b4f8146c43762e509d8
   React: 7c652b87c228731c51ab5764de68b6c17e6342be
   React-ART: 28f8815acbbc4816cec14866b59911a83eb780ed
-  React-Core: 26b00da6b066d0d426a558d13c76240038aa7dc5
+  React-Core: b85f6553c4b2a31e7d71234c28b51bb928a00cbd
   React-CoreModules: 04ea22808b22232b251d462f3309ab1150e3b7dd
-  React-cxxreact: 7e670bad16eb78fa889573d931c12bb1003a3598
+  React-cxxreact: 7c4242192149ce0205b53efaa03e3bf86ba4337c
   React-DevSupport: f34768e3aad3e59ee9800c752a78bc6cb24d0f75
-  React-jscallinvoker: a477dfe11b3ebe31ee9575057ebfb57a963db636
-  React-jsi: 93638e9b97e1373ae1d8c40f0571c0a2814ef900
-  React-jsiexecutor: ee776181a1ba315dbae9500c4dba5cb94ea3c5d2
+  React-jscallinvoker: e730f2eca4cb27830af459c0a9af00ac6691bf4c
+  React-jsi: 98d1f9d8a79d2720ba6a44c2d928a77f315b7e4f
+  React-jsiexecutor: c0ab8c80a6e88380d63f583690a50d4a723b47b5
   React-jsinspector: ea0a218071a11c3687cef2480580180caa6a64c0
   React-RCTActionSheet: caf6532394bdbbe0fc0ec2363c84f26bcfcdd36a
   React-RCTAnimation: b324c6eb699637c735650c6180e13d003eeb0e56
@@ -267,10 +286,10 @@ SPEC CHECKSUMS:
   React-RCTText: 469ec754592c92fc639825e558908c2f0e783e2c
   React-RCTVibration: ade3c169b54f3bc16c9a9918e17e48ef66aee6ba
   React-RCTWebSocket: cb5317e9a4adc37191660f819fb21d63433584ef
-  React-turbomodule-core: 0a6e91fe8e28bbf119fe31132ecb27a4f42ea551
-  React-turbomodule-samples: b28927d482d6fcfc3cbe2fd25f304799d2ff9bb7
+  React-turbomodule-core: 5cce62fb65bd0b19f249bc1c4c54b82b3cf9a749
+  React-turbomodule-samples: ef5c144b510530cb108d4bdb8615dc3943a802fd
   React-TypeSafety: 1de5a1034398108f4ca866b68489734f8dbb4c44
-  yoga: 542cb34fe3bca476487e08eb516dd640ea996a65
+  yoga: b72aa5b3708cc93c5897f8297122d6eba1331e07
 
 PODFILE CHECKSUM: bdc86d3bfde60c2637cfa8c4ed81afeaa2aaf6a3
 

@@ -42,14 +42,27 @@ Pod::Spec.new do |s|
                              "Views/RCTRefreshControl*",
                              "Views/RCTSlider*",
                              "Views/RCTSwitch*",
+  s.private_header_files   = "Cxx*/*.h"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "React"
   s.framework              = "JavaScriptCore"
   s.library                = "stdc++"
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
+  s.default_subspec         = "Default"
+
+  s.subspec "Default" do |ss|
+    # no-op
+  end
+
+  s.subspec "CxxBridge" do |ss|
+    # Make the C++ headers visible if they are needed
+    ss.public_header_files   = "**/*.{h}"
+  end
 
   s.dependency "Folly", folly_version
   s.dependency "React-cxxreact", version
+  s.dependency "React-jsi", version
   s.dependency "React-jsiexecutor", version
   s.dependency "yoga", "#{version}.React"
+  s.dependency "glog"
 end
