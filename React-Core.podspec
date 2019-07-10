@@ -6,7 +6,7 @@
 
 require "json"
 
-package = JSON.parse(File.read(File.join(__dir__, "..", "package.json")))
+package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 version = package['version']
 
 source = { :git => 'https://github.com/facebook/react-native.git' }
@@ -30,19 +30,6 @@ Pod::Spec.new do |s|
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.source                 = source
-  s.source_files           = "**/*.{c,h,m,mm,S,cpp}"
-  s.exclude_files          = "CoreModules/**/*",
-                             "DevSupport/**/*",
-                             "Fabric/**/*",
-                             "Inspector/**/*"
-  s.ios.exclude_files      = "**/RCTTV*.*"
-  s.tvos.exclude_files     = "Modules/RCTClipboard*",
-                             "Views/RCTDatePicker*",
-                             "Views/RCTPicker*",
-                             "Views/RCTRefreshControl*",
-                             "Views/RCTSlider*",
-                             "Views/RCTSwitch*",
-  s.private_header_files   = "Cxx*/*.h"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "React"
   s.framework              = "JavaScriptCore"
@@ -51,12 +38,24 @@ Pod::Spec.new do |s|
   s.default_subspec         = "Default"
 
   s.subspec "Default" do |ss|
-    # no-op
+    ss.source_files           = "React/**/*.{c,h,m,mm,S,cpp}"
+    ss.exclude_files          = "React/CoreModules/**/*",
+                                "React/DevSupport/**/*",
+                                "React/Fabric/**/*",
+                                "React/Inspector/**/*"
+    ss.ios.exclude_files      = "React/**/RCTTV*.*"
+    ss.tvos.exclude_files     = "React/Modules/RCTClipboard*",
+                                "React/Views/RCTDatePicker*",
+                                "React/Views/RCTPicker*",
+                                "React/Views/RCTRefreshControl*",
+                                "React/Views/RCTSlider*",
+                                "React/Views/RCTSwitch*",
+    ss.private_header_files   = "React/Cxx*/*.h"
   end
 
   s.subspec "CxxBridge" do |ss|
     # Make the C++ headers visible if they are needed
-    ss.public_header_files   = "**/*.{h}"
+    ss.public_header_files   = "React/**/*.{h}"
   end
 
   s.dependency "Folly", folly_version
