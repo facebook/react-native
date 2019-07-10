@@ -18,6 +18,7 @@ import com.facebook.react.fabric.mounting.ViewPool;
 import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DeleteMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
+import com.facebook.react.fabric.mounting.mountitems.DispatchStringCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
@@ -40,20 +41,19 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   private final ReactNativeConfig mConfig;
 
   public FabricJSIModuleProvider(
-        ReactApplicationContext reactApplicationContext,
-        JavaScriptContextHolder jsContext,
-        ComponentFactoryDelegate componentFactoryDelegate,
-        ReactNativeConfig config) {
-      mReactApplicationContext = reactApplicationContext;
-      mJSContext = jsContext;
-      mComponentFactoryDelegate = componentFactoryDelegate;
-      mConfig = config;
-    }
+      ReactApplicationContext reactApplicationContext,
+      JavaScriptContextHolder jsContext,
+      ComponentFactoryDelegate componentFactoryDelegate,
+      ReactNativeConfig config) {
+    mReactApplicationContext = reactApplicationContext;
+    mJSContext = jsContext;
+    mComponentFactoryDelegate = componentFactoryDelegate;
+    mConfig = config;
+  }
 
   @Override
   public UIManager get() {
-    final EventBeatManager eventBeatManager =
-        new EventBeatManager(mReactApplicationContext);
+    final EventBeatManager eventBeatManager = new EventBeatManager(mReactApplicationContext);
     final FabricUIManager uiManager = createUIManager(eventBeatManager);
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.registerBinding");
@@ -65,8 +65,13 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
             .getCatalystInstance()
             .getReactQueueConfiguration()
             .getJSQueueThread();
-    binding.register(mJSContext, uiManager, eventBeatManager, jsMessageQueueThread,
-      mComponentFactoryDelegate, mConfig);
+    binding.register(
+        mJSContext,
+        uiManager,
+        eventBeatManager,
+        jsMessageQueueThread,
+        mComponentFactoryDelegate,
+        mConfig);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return uiManager;
   }
@@ -102,6 +107,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     BatchMountItem.class.getClass();
     DeleteMountItem.class.getClass();
     DispatchCommandMountItem.class.getClass();
+    DispatchStringCommandMountItem.class.getClass();
     InsertMountItem.class.getClass();
     MountItem.class.getClass();
     RemoveMountItem.class.getClass();

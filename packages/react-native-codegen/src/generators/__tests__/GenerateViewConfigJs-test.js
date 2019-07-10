@@ -41,6 +41,7 @@ describe('GenerateViewConfigJs', () => {
                 ],
                 events: [],
                 props: [],
+                commands: [],
               },
             },
           },

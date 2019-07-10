@@ -10,6 +10,28 @@
 
 'use strict';
 
+export type CommandsFunctionTypeAnnotation = $ReadOnly<{|
+  type: 'FunctionTypeAnnotation',
+  params: $ReadOnlyArray<CommandsFunctionTypeParamAnnotation>,
+|}>;
+
+export type CommandsFunctionTypeParamAnnotation = $ReadOnly<{|
+  name: string,
+  typeAnnotation: CommandsTypeAnnotation,
+|}>;
+
+export type CommandsTypeAnnotation =
+  | BooleanTypeAnnotation
+  | Int32TypeAnnotation;
+
+export type BooleanTypeAnnotation = $ReadOnly<{|
+  type: 'BooleanTypeAnnotation',
+|}>;
+
+export type Int32TypeAnnotation = $ReadOnly<{|
+  type: 'Int32TypeAnnotation',
+|}>;
+
 export type ObjectPropertyType =
   | $ReadOnly<{|
       type: 'BooleanTypeAnnotation',
@@ -108,10 +130,85 @@ export type PropTypeShape = $ReadOnly<{|
   typeAnnotation: PropTypeTypeAnnotation,
 |}>;
 
+export type PrimitiveTypeAnnotationType =
+  | 'StringTypeAnnotation'
+  | 'NumberTypeAnnotation'
+  | 'BooleanTypeAnnotation'
+  | 'ObjectWithoutPropertiesTypeAnnotation';
+
+export type PrimitiveTypeAnnotation = $ReadOnly<{|
+  type: PrimitiveTypeAnnotationType,
+|}>;
+
+export type FunctionTypeAnnotationParamTypeAnnotation =
+  | $ReadOnly<{|
+      type: 'AnyTypeAnnotation' | PrimitiveTypeAnnotationType,
+    |}>
+  | $ReadOnly<{|
+      type: 'ArrayTypeAnnotation',
+      elementType: FunctionTypeAnnotationParamTypeAnnotation,
+    |}>
+  | $ReadOnly<{|
+      type: 'ObjectTypeAnnotation',
+      properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,
+    |}>
+  | $ReadOnly<{|
+      type: 'FunctionTypeAnnotation',
+      params: $ReadOnlyArray<FunctionTypeAnnotationParam>,
+      returnTypeAnnotation: FunctionTypeAnnotationReturn,
+    |}>;
+
+export type FunctionTypeAnnotationReturnArrayElementType = FunctionTypeAnnotationParamTypeAnnotation;
+
+export type ObjectParamTypeAnnotation = $ReadOnly<{|
+  name: string,
+  typeAnnotation: FunctionTypeAnnotationParamTypeAnnotation,
+|}>;
+
+export type FunctionTypeAnnotationReturn =
+  | $ReadOnly<{|
+      type: PrimitiveTypeAnnotationType | 'VoidTypeAnnotation',
+    |}>
+  | $ReadOnly<{|
+      type: 'ArrayTypeAnnotation',
+      elementType: FunctionTypeAnnotationReturnArrayElementType,
+    |}>
+  | $ReadOnly<{|
+      type: 'PromiseTypeAnnotation',
+      resolvedType: FunctionTypeAnnotationReturn,
+    |}>
+  | $ReadOnly<{|
+      type: 'ObjectTypeAnnotation',
+      properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,
+    |}>;
+
+export type FunctionTypeAnnotationParam = $ReadOnly<{|
+  nullable: boolean,
+  name: string,
+  typeAnnotation: FunctionTypeAnnotationParamTypeAnnotation,
+|}>;
+
+export type FunctionTypeAnnotation = $ReadOnly<{|
+  type: 'FunctionTypeAnnotation',
+  params: $ReadOnlyArray<FunctionTypeAnnotationParam>,
+  returnTypeAnnotation: FunctionTypeAnnotationReturn,
+  optional: boolean,
+|}>;
+
+export type MethodTypeShape = $ReadOnly<{|
+  name: string,
+  typeAnnotation: FunctionTypeAnnotation,
+|}>;
+
+export type NativeModuleShape = $ReadOnly<{|
+  properties: $ReadOnlyArray<MethodTypeShape>,
+|}>;
+
 export type EventTypeShape = $ReadOnly<{|
   name: string,
   bubblingType: 'direct' | 'bubble',
   optional: boolean,
+  paperTopLevelNameDeprecated?: string,
   typeAnnotation: $ReadOnly<{|
     type: 'EventTypeAnnotation',
     argument?: $ReadOnly<{|
@@ -119,6 +216,12 @@ export type EventTypeShape = $ReadOnly<{|
       properties: $ReadOnlyArray<ObjectPropertyType>,
     |}>,
   |}>,
+|}>;
+
+export type CommandTypeShape = $ReadOnly<{|
+  name: string,
+  optional: boolean,
+  typeAnnotation: CommandsFunctionTypeAnnotation,
 |}>;
 
 export type OptionsShape = $ReadOnly<{|
@@ -143,6 +246,7 @@ export type ComponentShape = $ReadOnly<{|
   extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
   events: $ReadOnlyArray<EventTypeShape>,
   props: $ReadOnlyArray<PropTypeShape>,
+  commands: $ReadOnlyArray<CommandTypeShape>,
 |}>;
 
 export type SchemaType = $ReadOnly<{|
@@ -150,6 +254,9 @@ export type SchemaType = $ReadOnly<{|
     [module: string]: $ReadOnly<{|
       components?: $ReadOnly<{
         [component: string]: ComponentShape,
+      }>,
+      nativeModules?: $ReadOnly<{
+        [nativeModule: string]: NativeModuleShape,
       }>,
     |}>,
   }>,

@@ -49,7 +49,8 @@ public class PreAllocateViewMountItem implements MountItem {
     if (DEBUG) {
       FLog.d(TAG, "Executing pre-allocation of: " + toString());
     }
-    mountingManager.preallocateView(mContext, mComponent, mReactTag, mProps, mStateWrapper, mIsLayoutable);
+    mountingManager.preallocateView(
+        mContext, mComponent, mReactTag, mProps, mStateWrapper, mIsLayoutable);
   }
 
   @Override

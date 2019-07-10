@@ -63,30 +63,54 @@ function getPropertyType(name, optional, typeAnnotation) {
   }
 }
 
-function findEventArgumentsAndType(typeAnnotation, types, bubblingType) {
+function findEventArgumentsAndType(
+  typeAnnotation,
+  types,
+  bubblingType,
+  paperName,
+) {
   const name = typeAnnotation.id.name;
   if (name === '$ReadOnly') {
     return {
       argumentProps: typeAnnotation.typeParameters.params[0].properties,
+      paperTopLevelNameDeprecated: paperName,
       bubblingType,
     };
-  } else if (name === 'BubblingEvent' || name === 'DirectEvent') {
-    const eventType = name === 'BubblingEvent' ? 'bubble' : 'direct';
+  } else if (name === 'BubblingEventHandler' || name === 'DirectEventHandler') {
+    const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
+    const paperTopLevelNameDeprecated =
+      typeAnnotation.typeParameters.params.length > 1
+        ? typeAnnotation.typeParameters.params[1].value
+        : null;
     if (
       typeAnnotation.typeParameters.params[0].type ===
       'NullLiteralTypeAnnotation'
     ) {
-      return {argumentProps: [], bubblingType: eventType};
+      return {
+        argumentProps: [],
+        bubblingType: eventType,
+        paperTopLevelNameDeprecated,
+      };
     }
     return findEventArgumentsAndType(
       typeAnnotation.typeParameters.params[0],
       types,
       eventType,
+      paperTopLevelNameDeprecated,
     );
   } else if (types[name]) {
-    return findEventArgumentsAndType(types[name].right, types, bubblingType);
+    return findEventArgumentsAndType(
+      types[name].right,
+      types,
+      bubblingType,
+      paperName,
+    );
   } else {
-    return {argumentProps: null, bubblingType: null};
+    return {
+      argumentProps: null,
+      bubblingType: null,
+      paperTopLevelNameDeprecated: null,
+    };
   }
 }
 
@@ -122,16 +146,34 @@ function buildEventSchema(
       ? property.value.typeAnnotation
       : property.value;
 
-  if (typeAnnotation.type !== 'FunctionTypeAnnotation') {
+  if (
+    typeAnnotation.type !== 'GenericTypeAnnotation' ||
+    (typeAnnotation.id.name !== 'BubblingEventHandler' &&
+      typeAnnotation.id.name !== 'DirectEventHandler')
+  ) {
     return null;
   }
 
-  const {argumentProps, bubblingType} = findEventArgumentsAndType(
-    typeAnnotation.params[0].typeAnnotation,
-    types,
-  );
+  const {
+    argumentProps,
+    bubblingType,
+    paperTopLevelNameDeprecated,
+  } = findEventArgumentsAndType(typeAnnotation, types);
 
   if (bubblingType && argumentProps) {
+    if (paperTopLevelNameDeprecated != null) {
+      return {
+        name,
+        optional,
+        bubblingType,
+        paperTopLevelNameDeprecated,
+        typeAnnotation: {
+          type: 'EventTypeAnnotation',
+          argument: getEventArgument(argumentProps, name),
+        },
+      };
+    }
+
     return {
       name,
       optional,

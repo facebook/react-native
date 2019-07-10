@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager.events;
 
 import static com.facebook.react.uimanager.events.TouchesHelper.TARGET_KEY;
@@ -43,9 +42,7 @@ public class ReactEventEmitter implements RCTEventEmitter {
 
   @Override
   public void receiveTouches(
-    String eventName,
-    WritableArray touches,
-    WritableArray changedIndices) {
+      String eventName, WritableArray touches, WritableArray changedIndices) {
 
     Assertions.assertCondition(touches.size() > 0);
 

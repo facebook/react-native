@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.appstate;
 
 import com.facebook.react.bridge.Arguments;
@@ -18,13 +17,12 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
-
 import java.util.HashMap;
 import java.util.Map;
 
 @ReactModule(name = AppStateModule.NAME)
 public class AppStateModule extends ReactContextBaseJavaModule
-        implements LifecycleEventListener, WindowFocusChangeListener {
+    implements LifecycleEventListener, WindowFocusChangeListener {
 
   public static final String NAME = "AppState";
 
@@ -39,8 +37,10 @@ public class AppStateModule extends ReactContextBaseJavaModule
     super(reactContext);
     reactContext.addLifecycleEventListener(this);
     reactContext.addWindowFocusChangeListener(this);
-    mAppState = (reactContext.getLifecycleState() == LifecycleState.RESUMED ?
-            APP_STATE_ACTIVE : APP_STATE_BACKGROUND);
+    mAppState =
+        (reactContext.getLifecycleState() == LifecycleState.RESUMED
+            ? APP_STATE_ACTIVE
+            : APP_STATE_BACKGROUND);
   }
 
   @Override
@@ -80,8 +80,9 @@ public class AppStateModule extends ReactContextBaseJavaModule
 
   @Override
   public void onWindowFocusChange(boolean hasFocus) {
-    getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class)
-      .emit("appStateFocusChange", hasFocus);
+    getReactApplicationContext()
+        .getJSModule(RCTDeviceEventEmitter.class)
+        .emit("appStateFocusChange", hasFocus);
   }
 
   private WritableMap createAppStateEventMap() {
@@ -91,7 +92,8 @@ public class AppStateModule extends ReactContextBaseJavaModule
   }
 
   private void sendAppStateChangeEvent() {
-    getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class)
-            .emit("appStateDidChange", createAppStateEventMap());
+    getReactApplicationContext()
+        .getJSModule(RCTDeviceEventEmitter.class)
+        .emit("appStateDidChange", createAppStateEventMap());
   }
 }

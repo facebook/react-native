@@ -69,8 +69,6 @@ class RawPropsParser final {
   mutable better::small_vector<RawPropsKey, kNumberOfPropsPerComponentSoftCap>
       keys_{};
   mutable RawPropsKeyMap nameToIndex_{};
-
-  mutable int keyIndex_{0};
   mutable int size_{0};
   mutable bool ready_{false};
 };

@@ -12,6 +12,7 @@
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
 #include <react/components/scrollview/ScrollViewProps.h>
+#include <react/core/conversions.h>
 #include <react/core/EventBeat.h>
 #include <react/core/EventEmitter.h>
 #include <react/debug/SystraceSection.h>
@@ -315,7 +316,7 @@ local_ref<JMountItem::javaobject> createUpdateLayoutMountItem(
       oldChildShadowView.layoutMetrics != newChildShadowView.layoutMetrics) {
     static auto updateLayoutInstruction =
         jni::findClassStatic(UIManagerJavaDescriptor)
-            ->getMethod<alias_ref<JMountItem>(jint, jint, jint, jint, jint)>(
+            ->getMethod<alias_ref<JMountItem>(jint, jint, jint, jint, jint, jint)>(
                 "updateLayoutMountItem");
     auto layoutMetrics = newChildShadowView.layoutMetrics;
     auto pointScaleFactor = layoutMetrics.pointScaleFactor;
@@ -325,8 +326,9 @@ local_ref<JMountItem::javaobject> createUpdateLayoutMountItem(
     int y = round(frame.origin.y * pointScaleFactor);
     int w = round(frame.size.width * pointScaleFactor);
     int h = round(frame.size.height * pointScaleFactor);
+    auto layoutDirection = toInt(newChildShadowView.layoutMetrics.layoutDirection);
     return updateLayoutInstruction(
-        javaUIManager, newChildShadowView.tag, x, y, w, h);
+        javaUIManager, newChildShadowView.tag, x, y, w, h, layoutDirection);
   }
 
   return nullptr;
@@ -448,6 +450,8 @@ local_ref<JMountItem::javaobject> createCreateMountItem(
 
 void Binding::schedulerDidFinishTransaction(
     MountingCoordinator::Shared const &mountingCoordinator) {
+  std::lock_guard<std::mutex> lock(commitMutex_);
+
   SystraceSection s("FabricUIManagerBinding::schedulerDidFinishTransaction");
   long finishTransactionStartTime = getTime();
 
@@ -555,12 +559,12 @@ void Binding::schedulerDidFinishTransaction(
                   deletedViewTags.end()) {
             mountItems[position++] =
                 createUpdatePropsMountItem(localJavaUIManager, mutation);
+          }
 
-            // State
-            if (mutation.newChildShadowView.state) {
-              mountItems[position++] =
-                  createUpdateStateMountItem(localJavaUIManager, mutation);
-            }
+          // State
+          if (mutation.newChildShadowView.state) {
+            mountItems[position++] =
+                createUpdateStateMountItem(localJavaUIManager, mutation);
           }
 
           // LocalData
@@ -592,6 +596,11 @@ void Binding::schedulerDidFinishTransaction(
     }
   }
 
+  if (position <= 0) {
+    // If there are no mountItems to be sent to the platform, then it is not necessary to even call.
+    return;
+  }
+
   static auto createMountItemsBatchContainer =
       jni::findClassStatic(UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(
@@ -604,7 +613,7 @@ void Binding::schedulerDidFinishTransaction(
   static auto scheduleMountItems =
       jni::findClassStatic(UIManagerJavaDescriptor)
           ->getMethod<void(JMountItem::javaobject, jlong, jlong, jlong, jlong)>(
-              "scheduleMountItems");
+              "scheduleMountItem");
 
   long finishTransactionEndTime = getTime();
 

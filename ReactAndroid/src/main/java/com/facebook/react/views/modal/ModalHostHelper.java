@@ -11,12 +11,9 @@ import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.view.Display;
 import android.view.WindowManager;
-
 import com.facebook.infer.annotation.Assertions;
 
-/**
- * Helper class for Modals.
- */
+/** Helper class for Modals. */
 /*package*/ class ModalHostHelper {
 
   private static final Point MIN_POINT = new Point();
@@ -24,13 +21,11 @@ import com.facebook.infer.annotation.Assertions;
   private static final Point SIZE_POINT = new Point();
 
   /**
-   * To get the size of the screen, we use information from the WindowManager and
-   * default Display. We don't use DisplayMetricsHolder, or Display#getSize() because
-   * they return values that include the status bar. We only want the values of what
-   * will actually be shown on screen.
-   * We use Display#getSize() to determine if the screen is in portrait or landscape.
-   * We don't use getRotation because the 'natural' rotation will be portrait on phones
-   * and landscape on tablets.
+   * To get the size of the screen, we use information from the WindowManager and default Display.
+   * We don't use DisplayMetricsHolder, or Display#getSize() because they return values that include
+   * the status bar. We only want the values of what will actually be shown on screen. We use
+   * Display#getSize() to determine if the screen is in portrait or landscape. We don't use
+   * getRotation because the 'natural' rotation will be portrait on phones and landscape on tablets.
    * This should only be called on the native modules/shadow nodes thread.
    */
   public static Point getModalHostSize(Context context) {
@@ -52,7 +47,7 @@ import com.facebook.infer.annotation.Assertions;
     int statusBarId = resources.getIdentifier("status_bar_height", "dimen", "android");
     int statusBarHeight = 0;
     if (windowFullscreen && statusBarId > 0) {
-        statusBarHeight = (int) resources.getDimension(statusBarId);
+      statusBarHeight = (int) resources.getDimension(statusBarId);
     }
 
     if (SIZE_POINT.x < SIZE_POINT.y) {

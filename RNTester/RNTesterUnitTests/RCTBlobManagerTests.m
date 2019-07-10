@@ -8,7 +8,11 @@
 
 #import <XCTest/XCTest.h>
 
+#if (defined(COCOAPODS))
+#import <React-RCTBlob/React/RCTBlobManager.h>
+#else
 #import <RCTBlob/RCTBlobManager.h>
+#endif
 
 @interface RCTBlobManagerTests : XCTestCase
 

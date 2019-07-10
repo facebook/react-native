@@ -2,17 +2,14 @@ package com.facebook.react.views.picker;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nullable;
 
 /* package */
 class ReactPickerItem {
   public final String label;
-  @Nullable
-  public final Integer color;
+  @Nullable public final Integer color;
 
   public ReactPickerItem(final ReadableMap jsMapData) {
     label = jsMapData.getString("label");

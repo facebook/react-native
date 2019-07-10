@@ -34,6 +34,10 @@ const template = `
 ::_COMPONENT_CONFIG_::
 `;
 
+// We use this to add to a set. Need to make sure we aren't importing
+// this multiple times.
+const UIMANAGER_IMPORT = 'const {UIManager} = require("react-native")';
+
 function getReactDiffProcessValue(typeAnnotation) {
   switch (typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
@@ -124,10 +128,10 @@ function getValidAttributesForEvents(events) {
   });
 }
 
-function generateBubblingEventInfo(event) {
+function generateBubblingEventInfo(event, nameOveride) {
   return j.property(
     'init',
-    j.identifier(normalizeInputEventName(event.name)),
+    j.identifier(nameOveride || normalizeInputEventName(event.name)),
     j.objectExpression([
       j.property(
         'init',
@@ -145,10 +149,10 @@ function generateBubblingEventInfo(event) {
   );
 }
 
-function generateDirectEventInfo(event) {
+function generateDirectEventInfo(event, nameOveride) {
   return j.property(
     'init',
-    j.identifier(normalizeInputEventName(event.name)),
+    j.identifier(nameOveride || normalizeInputEventName(event.name)),
     j.objectExpression([
       j.property(
         'init',
@@ -201,7 +205,18 @@ function buildViewConfig(
 
   const bubblingEventNames = component.events
     .filter(event => event.bubblingType === 'bubble')
-    .map(generateBubblingEventInfo);
+    .reduce((bubblingEvents, event) => {
+      // We add in the deprecated paper name so that it is in the view config.
+      // This means either the old event name or the new event name can fire
+      // and be sent to the listener until the old top level name is removed.
+      if (event.paperTopLevelNameDeprecated) {
+        bubblingEvents.push(
+          generateBubblingEventInfo(event, event.paperTopLevelNameDeprecated),
+        );
+      }
+      bubblingEvents.push(generateBubblingEventInfo(event));
+      return bubblingEvents;
+    }, []);
 
   const bubblingEvents =
     bubblingEventNames.length > 0
@@ -214,7 +229,18 @@ function buildViewConfig(
 
   const directEventNames = component.events
     .filter(event => event.bubblingType === 'direct')
-    .map(generateDirectEventInfo);
+    .reduce((directEvents, event) => {
+      // We add in the deprecated paper name so that it is in the view config.
+      // This means either the old event name or the new event name can fire
+      // and be sent to the listener until the old top level name is removed.
+      if (event.paperTopLevelNameDeprecated) {
+        directEvents.push(
+          generateDirectEventInfo(event, event.paperTopLevelNameDeprecated),
+        );
+      }
+      directEvents.push(generateDirectEventInfo(event));
+      return directEvents;
+    }, []);
 
   const directEvents =
     directEventNames.length > 0
@@ -237,6 +263,69 @@ function buildViewConfig(
   ].filter(Boolean);
 
   return j.objectExpression(properties);
+}
+
+function buildCommands(
+  schema: SchemaType,
+  componentName: string,
+  component,
+  imports,
+) {
+  const commands = component.commands;
+
+  if (commands.length === 0) {
+    return null;
+  }
+
+  imports.add(UIMANAGER_IMPORT);
+  imports.add('const {findNodeHandle} = require("react-native")');
+
+  const properties = commands.map(command => {
+    const commandName = command.name;
+    const params = command.typeAnnotation.params;
+
+    const componentNameLiteral = j.literal(componentName);
+    const commandNameIdentifier = j.identifier(commandName);
+    const arrayParams = j.arrayExpression(
+      params.map(param => {
+        return j.identifier(param.name);
+      }),
+    );
+
+    const expression = j.template.expression`
+      UIManager.dispatchViewCommand(
+        findNodeHandle(ref),
+        UIManager.getViewManagerConfig(${componentNameLiteral}).Commands.${commandNameIdentifier},
+        ${arrayParams}
+      )
+      `;
+
+    const functionParams = params.map(param => {
+      return j.identifier(param.name);
+    });
+
+    const property = j.property(
+      'init',
+      commandNameIdentifier,
+      j.functionExpression(
+        null,
+        [j.identifier('ref'), ...functionParams],
+        j.blockStatement([j.expressionStatement(expression)]),
+      ),
+    );
+    property.method = true;
+
+    return property;
+  });
+
+  return j.exportNamedDeclaration(
+    j.variableDeclaration('const', [
+      j.variableDeclarator(
+        j.identifier('Commands'),
+        j.objectExpression(properties),
+      ),
+    ]),
+  );
 }
 
 module.exports = {
@@ -262,7 +351,7 @@ module.exports = {
                 : componentName;
 
               if (component.paperComponentNameDeprecated) {
-                imports.add('const {UIManager} = require("react-native")');
+                imports.add(UIMANAGER_IMPORT);
               }
 
               const deprecatedCheckBlock = component.paperComponentNameDeprecated
@@ -282,8 +371,9 @@ module.exports = {
                 )
                 .replace(/::_DEPRECATION_CHECK_::/, deprecatedCheckBlock);
 
-              const replacedSource: string = j
-                .withParser('flow')(replacedTemplate)
+              const replacedSourceRoot = j.withParser('flow')(replacedTemplate);
+
+              replacedSourceRoot
                 .find(j.Identifier, {
                   name: 'VIEW_CONFIG',
                 })
@@ -294,8 +384,24 @@ module.exports = {
                     component,
                     imports,
                   ),
-                )
-                .toSource({quote: 'single', trailingComma: true});
+                );
+
+              const commands = buildCommands(
+                schema,
+                paperComponentName,
+                component,
+                imports,
+              );
+              if (commands) {
+                replacedSourceRoot
+                  .find(j.ExportDefaultDeclaration)
+                  .insertAfter(j(commands).toSource());
+              }
+
+              const replacedSource: string = replacedSourceRoot.toSource({
+                quote: 'single',
+                trailingComma: true,
+              });
 
               return replacedSource;
             })

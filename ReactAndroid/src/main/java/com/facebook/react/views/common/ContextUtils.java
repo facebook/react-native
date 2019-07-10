@@ -1,8 +1,8 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.views.common;
 
@@ -25,7 +25,7 @@ public class ContextUtils {
    * @return the first context which is an instance of the specified class, or null if none exists
    */
   public static @Nullable <T> T findContextOfType(
-    @Nullable Context context, Class<? extends T> clazz) {
+      @Nullable Context context, Class<? extends T> clazz) {
     while (!(clazz.isInstance(context))) {
       if (context instanceof ContextWrapper) {
         Context baseContext = ((ContextWrapper) context).getBaseContext();

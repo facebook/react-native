@@ -13,8 +13,8 @@
 import codegenNativeComponent from '../Utilities/codegenNativeComponent';
 import type {
   WithDefault,
-  BubblingEvent,
-  DirectEvent,
+  BubblingEventHandler,
+  DirectEventHandler,
   Int32,
 } from '../Types/CodegenTypes';
 
@@ -32,14 +32,14 @@ type NativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#animationtype
    */
-  animationType?: ?WithDefault<'none' | 'slide' | 'fade', 'none'>,
+  animationType?: WithDefault<'none' | 'slide' | 'fade', 'none'>,
 
   /**
    * The `presentationStyle` prop controls how the modal appears.
    *
    * See https://facebook.github.io/react-native/docs/modal.html#presentationstyle
    */
-  presentationStyle?: ?WithDefault<
+  presentationStyle?: WithDefault<
     'fullScreen' | 'pageSheet' | 'formSheet' | 'overFullScreen',
     'fullScreen',
   >,
@@ -50,7 +50,7 @@ type NativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#transparent
    */
-  transparent?: ?WithDefault<boolean, false>,
+  transparent?: WithDefault<boolean, false>,
 
   /**
    * The `hardwareAccelerated` prop controls whether to force hardware
@@ -58,14 +58,7 @@ type NativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#hardwareaccelerated
    */
-  hardwareAccelerated?: ?WithDefault<boolean, false>,
-
-  /**
-   * The `visible` prop determines whether your modal is visible.
-   *
-   * See https://facebook.github.io/react-native/docs/modal.html#visible
-   */
-  visible?: ?WithDefault<boolean, false>,
+  hardwareAccelerated?: WithDefault<boolean, false>,
 
   /**
    * The `onRequestClose` callback is called when the user taps the hardware
@@ -75,7 +68,7 @@ type NativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onrequestclose
    */
-  onRequestClose?: ?(event?: DirectEvent<null>) => mixed,
+  onRequestClose?: ?DirectEventHandler<null>,
 
   /**
    * The `onShow` prop allows passing a function that will be called once the
@@ -83,7 +76,7 @@ type NativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onshow
    */
-  onShow?: ?(event?: DirectEvent<null>) => mixed,
+  onShow?: ?DirectEventHandler<null>,
 
   /**
    * The `onDismiss` prop allows passing a function that will be called once
@@ -91,19 +84,19 @@ type NativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#ondismiss
    */
-  onDismiss?: ?(event?: BubblingEvent<null>) => mixed,
+  onDismiss?: ?BubblingEventHandler<null>,
 
   /**
    * Deprecated. Use the `animationType` prop instead.
    */
-  animated?: ?WithDefault<boolean, false>,
+  animated?: WithDefault<boolean, false>,
 
   /**
    * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
    *
    * See https://facebook.github.io/react-native/docs/modal.html#supportedorientations
    */
-  supportedOrientations?: ?WithDefault<
+  supportedOrientations?: WithDefault<
     $ReadOnlyArray<
       | 'portrait'
       | 'portrait-upside-down'
@@ -119,12 +112,12 @@ type NativeProps = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onorientationchange
    */
-  onOrientationChange?: ?(event: DirectEvent<OrientationChangeEvent>) => mixed,
+  onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
 
   /**
    * The `identifier` is the unique number for identifying Modal components.
    */
-  identifier?: ?WithDefault<Int32, 0>,
+  identifier?: WithDefault<Int32, 0>,
 |}>;
 
 export default codegenNativeComponent<NativeProps>('ModalHostView', {

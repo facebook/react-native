@@ -8,7 +8,11 @@
 
 #import <XCTest/XCTest.h>
 
+#if (defined(COCOAPODS))
+#import <React-RCTTest/React/RCTTestRunner.h>
+#else
 #import <RCTTest/RCTTestRunner.h>
+#endif
 #import <React/RCTRootShadowView.h>
 #import <React/RCTShadowView.h>
 #import <React/RCTUIManager.h>

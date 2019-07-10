@@ -11,7 +11,11 @@
 #import <UIKit/UIView.h>
 #import <XCTest/XCTest.h>
 
+#if (defined(COCOAPODS))
+#import <React-RCTImage/React/RCTImageUtils.h>
+#else
 #import <RCTImage/RCTImageUtils.h>
+#endif
 
 #define RCTAssertEqualPoints(a, b) { \
 XCTAssertEqual(a.x, b.x); \

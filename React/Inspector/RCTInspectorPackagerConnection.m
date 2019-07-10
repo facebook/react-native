@@ -5,7 +5,7 @@
 
 #import "RCTInspectorPackagerConnection.h"
 
-#if RCT_DEV
+#if RCT_DEV && !TARGET_OS_UIKITFORMAC
 
 #import "RCTDefines.h"
 #import "RCTInspector.h"

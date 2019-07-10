@@ -72,6 +72,30 @@ namespace react {
 }
 `;
 
+exports[`GenerateEventEmitterH can generate fixture COMMANDS 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateEventEmitterH can generate fixture ENUM_PROP 1`] = `
 Map {
   "EventEmitters.h" => "
@@ -193,6 +217,45 @@ class EventsNativeComponentEventEmitter : public ViewEventEmitter {
   void onOrientationChange(EventsNativeComponentOnOrientationChangeStruct value) const;
 
   void onEnd() const;
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+struct InterfaceOnlyComponentOnChangeStruct {
+  bool value;
+};
+
+struct InterfaceOnlyComponentOnDire tChangeStruct {
+  bool value;
+};
+
+class InterfaceOnlyComponentEventEmitter : public ViewEventEmitter {
+ public:
+  using ViewEventEmitter::ViewEventEmitter;
+
+  void onChange(InterfaceOnlyComponentOnChangeStruct value) const;
+
+  void onDire tChange(InterfaceOnlyComponentOnDire tChangeStruct value) const;
 };
 
 } // namespace react

@@ -25,6 +25,7 @@ const NO_PROPS_NO_EVENTS: SchemaType = {
           ],
           events: [],
           props: [],
+          commands: [],
         },
       },
     },
@@ -74,6 +75,68 @@ const INTERFACE_ONLY: SchemaType = {
               },
             },
           ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const EVENTS_WITH_PAPER_NAME: SchemaType = {
+  modules: {
+    Switch: {
+      components: {
+        InterfaceOnlyComponent: {
+          interfaceOnly: true,
+          paperComponentName: 'RCTInterfaceOnlyComponent',
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [
+            {
+              name: 'onChange',
+              paperTopLevelNameDeprecated: 'paperChange',
+              optional: true,
+              bubblingType: 'bubble',
+              typeAnnotation: {
+                type: 'EventTypeAnnotation',
+                argument: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      type: 'BooleanTypeAnnotation',
+                      name: 'value',
+                      optional: false,
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              name: 'onDire tChange',
+              paperTopLevelNameDeprecated: 'paperDirectChange',
+              optional: true,
+              bubblingType: 'direct',
+              typeAnnotation: {
+                type: 'EventTypeAnnotation',
+                argument: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      type: 'BooleanTypeAnnotation',
+                      name: 'value',
+                      optional: false,
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          props: [],
+          commands: [],
         },
       },
     },
@@ -102,6 +165,7 @@ const BOOLEAN_PROP: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },
@@ -138,6 +202,7 @@ const STRING_PROP: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },
@@ -182,6 +247,7 @@ const INTEGER_PROPS: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },
@@ -250,6 +316,7 @@ const FLOAT_PROPS: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },
@@ -278,6 +345,7 @@ const COLOR_PROP: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },
@@ -306,6 +374,7 @@ const IMAGE_PROP: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },
@@ -334,6 +403,7 @@ const POINT_PROP: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },
@@ -446,6 +516,7 @@ const ARRAY_PROPS: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },
@@ -498,6 +569,7 @@ const MULTI_NATIVE_PROP: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },
@@ -537,6 +609,7 @@ const ENUM_PROP: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },
@@ -651,6 +724,7 @@ const EVENT_PROPS: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },
@@ -722,6 +796,7 @@ const EVENT_NESTED_OBJECT_PROPS: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },
@@ -750,6 +825,7 @@ const TWO_COMPONENTS_SAME_FILE: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
 
         MultiComponent2NativeComponent: {
@@ -770,6 +846,7 @@ const TWO_COMPONENTS_SAME_FILE: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },
@@ -798,6 +875,7 @@ const TWO_COMPONENTS_DIFFERENT_FILES: SchemaType = {
               },
             },
           ],
+          commands: [],
         },
       },
     },
@@ -822,6 +900,70 @@ const TWO_COMPONENTS_DIFFERENT_FILES: SchemaType = {
               },
             },
           ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const COMMANDS: SchemaType = {
+  modules: {
+    Switch: {
+      components: {
+        CommandNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [],
+          commands: [
+            {
+              name: 'hotspotUpdate',
+              optional: false,
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                params: [
+                  {
+                    name: 'x',
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                    },
+                  },
+                  {
+                    name: 'y',
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              name: 'scrollTo',
+              optional: false,
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                params: [
+                  {
+                    name: 'y',
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                    },
+                  },
+                  {
+                    name: 'animated',
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                    },
+                  },
+                ],
+              },
+            },
+          ],
         },
       },
     },
@@ -842,7 +984,9 @@ module.exports = {
   MULTI_NATIVE_PROP,
   ENUM_PROP,
   EVENT_PROPS,
+  EVENTS_WITH_PAPER_NAME,
   EVENT_NESTED_OBJECT_PROPS,
   TWO_COMPONENTS_SAME_FILE,
   TWO_COMPONENTS_DIFFERENT_FILES,
+  COMMANDS,
 };

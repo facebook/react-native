@@ -14,6 +14,11 @@ namespace facebook {
 namespace react {
 
 /**
+ * Provide the TurboModule class for the given name.
+ */
+Class RNTesterTurboModuleClassProvider(const char *name);
+
+/**
  * Provide a pure C++ instance of a TurboModule, specific to this app.
  */
 std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name, std::shared_ptr<JSCallInvoker> jsInvoker);

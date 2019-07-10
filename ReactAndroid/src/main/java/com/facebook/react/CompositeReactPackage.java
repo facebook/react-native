@@ -20,7 +20,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
-import com.facebook.react.TurboReactPackage;
 
 /**
  * {@code CompositeReactPackage} allows to create a single package composed of views and modules
@@ -50,14 +49,14 @@ public class CompositeReactPackage implements ViewManagerOnDemandReactPackage, R
     final Map<String, NativeModule> moduleMap = new HashMap<>();
     for (ReactPackage reactPackage : mChildReactPackages) {
       /**
-       * For now, we eagerly initialize the NativeModules inside TurboReactPackages.
-       * Ultimately, we should turn CompositeReactPackage into a TurboReactPackage
-       * and remove this eager initialization.
+       * For now, we eagerly initialize the NativeModules inside TurboReactPackages. Ultimately, we
+       * should turn CompositeReactPackage into a TurboReactPackage and remove this eager
+       * initialization.
        *
-       * TODO: T45627020
+       * <p>TODO: T45627020
        */
       if (reactPackage instanceof TurboReactPackage) {
-        TurboReactPackage turboReactPackage = (TurboReactPackage)reactPackage;
+        TurboReactPackage turboReactPackage = (TurboReactPackage) reactPackage;
         ReactModuleInfoProvider moduleInfoProvider = turboReactPackage.getReactModuleInfoProvider();
         Map<String, ReactModuleInfo> moduleInfos = moduleInfoProvider.getReactModuleInfos();
 

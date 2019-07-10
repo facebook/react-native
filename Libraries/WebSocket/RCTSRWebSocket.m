@@ -14,6 +14,8 @@
 //   limitations under the License.
 //
 
+#if !TARGET_OS_UIKITFORMAC
+
 #import "RCTSRWebSocket.h"
 
 #import <Availability.h>
@@ -1635,3 +1637,5 @@ static NSRunLoop *networkRunLoop = nil;
 }
 
 @end
+
+#endif

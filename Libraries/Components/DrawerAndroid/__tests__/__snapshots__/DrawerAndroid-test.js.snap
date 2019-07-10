@@ -9,7 +9,6 @@ exports[`<DrawerLayoutAndroid /> should render as <DrawerLayoutAndroid> when moc
   onDrawerOpen={[Function]}
   onDrawerSlide={[Function]}
   onDrawerStateChanged={[Function]}
-  renderNavigationView={[Function]}
   style={
     Array [
       Object {
@@ -62,7 +61,6 @@ exports[`<DrawerLayoutAndroid /> should render as <DrawerLayoutAndroid> when not
   onDrawerOpen={[Function]}
   onDrawerSlide={[Function]}
   onDrawerStateChanged={[Function]}
-  renderNavigationView={[Function]}
   style={
     Array [
       Object {

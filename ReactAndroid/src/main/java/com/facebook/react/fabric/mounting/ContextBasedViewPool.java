@@ -24,7 +24,6 @@ public final class ContextBasedViewPool implements ViewFactory {
     mViewManagerRegistry = viewManagerRegistry;
   }
 
-
   @UiThread
   void createView(ThemedReactContext context, ReactStylesDiffMap props, String componentName) {
     getViewPool(context).createView(componentName, props, null, context);
@@ -32,7 +31,11 @@ public final class ContextBasedViewPool implements ViewFactory {
 
   @UiThread
   @Override
-  public View getOrCreateView(String componentName, ReactStylesDiffMap props, StateWrapper stateWrapper, ThemedReactContext context) {
+  public View getOrCreateView(
+      String componentName,
+      ReactStylesDiffMap props,
+      StateWrapper stateWrapper,
+      ThemedReactContext context) {
     return getViewPool(context).getOrCreateView(componentName, props, stateWrapper, context);
   }
 

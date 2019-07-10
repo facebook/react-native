@@ -45,6 +45,9 @@ function reportException(e: ExtendedError, isFatal: boolean) {
       );
     }
     if (__DEV__) {
+      if (e.preventSymbolication === true) {
+        return;
+      }
       const symbolicateStackTrace = require('./Devtools/symbolicateStackTrace');
       symbolicateStackTrace(stack)
         .then(prettyStack => {

@@ -1736,7 +1736,12 @@ function injectInternals(internals) {
   try {
     var rendererID = hook.inject(internals);
     onCommitFiberRoot = catchErrors(function(root) {
-      return hook.onCommitFiberRoot(rendererID, root);
+      hook.onCommitFiberRoot(
+        rendererID,
+        root,
+        void 0,
+        64 === (root.current.effectTag & 64)
+      );
     });
     onCommitFiberUnmount = catchErrors(function(fiber) {
       return hook.onCommitFiberUnmount(rendererID, fiber);
@@ -4604,9 +4609,10 @@ function createClassErrorUpdate(fiber, errorInfo, expirationTime) {
   expirationTime.tag = 3;
   var getDerivedStateFromError = fiber.type.getDerivedStateFromError;
   if ("function" === typeof getDerivedStateFromError) {
-    var error$jscomp$0 = errorInfo.value;
+    var error = errorInfo.value;
     expirationTime.payload = function() {
-      return getDerivedStateFromError(error$jscomp$0);
+      logError(fiber, errorInfo);
+      return getDerivedStateFromError(error);
     };
   }
   var inst = fiber.stateNode;
@@ -4616,11 +4622,10 @@ function createClassErrorUpdate(fiber, errorInfo, expirationTime) {
       "function" !== typeof getDerivedStateFromError &&
         (null === legacyErrorBoundariesThatAlreadyFailed
           ? (legacyErrorBoundariesThatAlreadyFailed = new Set([this]))
-          : legacyErrorBoundariesThatAlreadyFailed.add(this));
-      var error = errorInfo.value,
-        stack = errorInfo.stack;
-      logError(fiber, errorInfo);
-      this.componentDidCatch(error, {
+          : legacyErrorBoundariesThatAlreadyFailed.add(this),
+        logError(fiber, errorInfo));
+      var stack = errorInfo.stack;
+      this.componentDidCatch(errorInfo.value, {
         componentStack: null !== stack ? stack : ""
       });
     });
@@ -6960,6 +6965,7 @@ var roots = new Map(),
       },
       findHostInstancesForRefresh: null,
       scheduleRefresh: null,
+      scheduleRoot: null,
       setRefreshHandler: null
     })
   );

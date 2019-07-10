@@ -9,6 +9,296 @@
  */
 
 'use strict';
+
+const EMPTY_NATIVE_MODULE = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  // mo methods
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NATIVE_MODULE_WITH_COMPLEX_OBJECTS = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export type String = string
+
+export interface Spec extends TurboModule {
+  // Exported methods.
+  +getObject: (arg: {|const1: {|const1: boolean|}|}) => {|
+    const1: {|const1: boolean|},
+  |};
+  +getObject2: (arg: { a: String }) => Object;
+  +getObjectInArray: (arg: {const1: {|const1: boolean|}}) => Array<{|
+    const1: {const1: boolean},
+  |}>;
+}
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NATIVE_MODULE_WITH_BASIC_PARAM_TYPES = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  +passBool?: (arg: boolean) => void;
+  +passNumber: (arg: number) => void;
+  +passString: (arg: string) => void;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NATIVE_MODULE_WITH_WITH_ALIASES = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+type NumNum = number;
+export type Num = (arg: NumNum) => void;
+type Num2 = Num;
+export type Void = void
+
+export interface Spec extends TurboModule {
+  // Exported methods.
+  +getNumber: Num2;
+  +getVoid: () => Void;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NATIVE_MODULE_WITH_SIMPLE_OBJECT = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  +getObject(o : Object) => Object,
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NATIVE_MODULE_WITH_NULLABLE_PARAM = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  // Exported methods.
+  +voidFunc: (arg: ?string) => void;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NATIVE_MODULE_WITH_BASIC_ARRAY = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  +getArray: (arg: Array<string>) => Array<string>;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export type SomeString = string;
+
+export interface Spec extends TurboModule {
+  +getArray: (arg: Array<SomeString>) => Array<string>;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NATIVE_MODULE_WITH_COMPLEX_ARRAY = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  +getArray: (arg: Array<Array<Array<Array<Array<any>>>>>) => Array<Array<Array<string>>>;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NATIVE_MODULE_WITH_PROMISE = `/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export type String = string
+
+export interface Spec extends TurboModule {
+  +getValueWithPromise: () => Promise<string>;
+  +getValueWithPromiseDefinedSomewhereElse: () => Promise<String>;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NATIVE_MODULE_WITH_CALLBACK = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  // Exported methods.
+  +getValueWithCallback: (
+    callback: (value: string, arr: Array<Array<string>>) => void,
+  ) => void;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
 const EVENT_DEFINITION = `
   boolean_required: boolean,
   boolean_optional_key?: boolean,
@@ -77,8 +367,8 @@ const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS = `
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {
-  BubblingEvent,
-  DirectEvent,
+  BubblingEventHandler,
+  DirectEventHandler,
   WithDefault,
 } from 'CodegenTypes';
 
@@ -88,11 +378,11 @@ type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 
   // Props
-  boolean_default_true_optional_both?: ?WithDefault<boolean, true>,
+  boolean_default_true_optional_both?: WithDefault<boolean, true>,
 
   // Events
-  onDirectEventDefinedInlineNull: (event: DirectEvent<null>) => void,
-  onBubblingEventDefinedInlineNull: (event: BubblingEvent<null>) => void,
+  onDirectEventDefinedInlineNull: DirectEventHandler<null>,
+  onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
 |}>;
 
 export default codegenNativeComponent<ModuleProps>('Module', {
@@ -157,52 +447,41 @@ type ModuleProps = $ReadOnly<{|
 
   // Props
   // Boolean props
-  boolean_required: WithDefault<boolean, true>,
+  boolean_required: boolean,
   boolean_optional_key?: WithDefault<boolean, true>,
-  boolean_optional_value: ?WithDefault<boolean, true>,
-  boolean_optional_both?: ?WithDefault<boolean, true>,
+  boolean_optional_both?: WithDefault<boolean, true>,
 
   // String props
-  string_required: WithDefault<string, ''>,
+  string_required: string,
   string_optional_key?: WithDefault<string, ''>,
-  string_optional_value: ?WithDefault<string, ''>,
-  string_optional_both?: ?WithDefault<string, ''>,
+  string_optional_both?: WithDefault<string, ''>,
 
   // String props, null default
-  string_null_required: WithDefault<string, null>,
   string_null_optional_key?: WithDefault<string, null>,
-  string_null_optional_value: ?WithDefault<string, null>,
-  string_null_optional_both?: ?WithDefault<string, null>,
+  string_null_optional_both?: WithDefault<string, null>,
 
   // Stringish props
-  stringish_required: WithDefault<Stringish, ''>,
+  stringish_required: Stringish,
   stringish_optional_key?: WithDefault<Stringish, ''>,
-  stringish_optional_value: ?WithDefault<Stringish, ''>,
-  stringish_optional_both?: ?WithDefault<Stringish, ''>,
+  stringish_optional_both?: WithDefault<Stringish, ''>,
 
   // Stringish props, null default
-  stringish_null_required: WithDefault<Stringish, null>,
   stringish_null_optional_key?: WithDefault<Stringish, null>,
-  stringish_null_optional_value: ?WithDefault<Stringish, null>,
-  stringish_null_optional_both?: ?WithDefault<Stringish, null>,
+  stringish_null_optional_both?: WithDefault<Stringish, null>,
 
   // Float props
-  float_required: WithDefault<Float, 1.1>,
+  float_required: Float,
   float_optional_key?: WithDefault<Float, 1.1>,
-  float_optional_value: ?WithDefault<Float, 1.1>,
-  float_optional_both?: ?WithDefault<Float, 1.1>,
+  float_optional_both?: WithDefault<Float, 1.1>,
 
   // Int32 props
-  int32_required: WithDefault<Int32, 1>,
+  int32_required: Int32,
   int32_optional_key?: WithDefault<Int32, 1>,
-  int32_optional_value: ?WithDefault<Int32, 1>,
-  int32_optional_both?: ?WithDefault<Int32, 1>,
+  int32_optional_both?: WithDefault<Int32, 1>,
 
   // String enum props
-  enum_required: WithDefault<('small' | 'large'), 'small'>,
   enum_optional_key?: WithDefault<('small' | 'large'), 'small'>,
-  enum_optional_value: ?WithDefault<('small' | 'large'), 'small'>,
-  enum_optional_both?: ?WithDefault<('small' | 'large'), 'small'>,
+  enum_optional_both?: WithDefault<('small' | 'large'), 'small'>,
 
   // ImageSource props
   image_required: ImageSource,
@@ -285,10 +564,8 @@ type ModuleProps = $ReadOnly<{|
   array_int32_optional_both?: ?$ReadOnlyArray<Int32>,
 
   // String enum props
-  array_enum_required: WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
   array_enum_optional_key?: WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
-  array_enum_optional_value: ?WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
-  array_enum_optional_both?: ?WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
+  array_enum_optional_both?: WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
 
   // ImageSource props
   array_image_required: $ReadOnlyArray<ImageSource>,
@@ -330,8 +607,8 @@ const codegenNativeComponent = require('codegenNativeComponent');
 import type {
   Int32,
   Float,
-  BubblingEvent,
-  DirectEvent,
+  BubblingEventHandler,
+  DirectEventHandler,
 } from 'CodegenTypes';
 
 import type {ViewProps} from 'ViewPropTypes';
@@ -341,191 +618,81 @@ type ModuleProps = $ReadOnly<{|
   // No Props
 
   // Events
-  onDirectEventDefinedInline: (
-    event: DirectEvent<
+  onDirectEventDefinedInline:
+    DirectEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
     >,
-  ) => void,
 
-  onDirectEventDefinedInlineOptionalKey?: (
-    event: DirectEvent<
+  onDirectEventDefinedInlineOptionalKey?:
+    DirectEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
     >,
-  ) => void,
 
-  onDirectEventDefinedInlineOptionalValue: ?(
-    event: DirectEvent<
+  onDirectEventDefinedInlineOptionalValue: ?
+    DirectEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
     >,
-  ) => void,
 
-  onDirectEventDefinedInlineOptionalBoth?: ?(
-    event: DirectEvent<
+  onDirectEventDefinedInlineOptionalBoth?: ?
+    DirectEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
     >,
-  ) => void,
 
-  onBubblingEventDefinedInline: (
-    event: BubblingEvent<
+  onDirectEventDefinedInlineWithPaperName?: ?
+    DirectEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
+      'paperDirectEventDefinedInlineWithPaperName',
     >,
-  ) => void,
 
-  onBubblingEventDefinedInlineOptionalKey?: (
-    event: BubblingEvent<
+  onBubblingEventDefinedInline:
+    BubblingEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
     >,
-  ) => void,
 
-  onBubblingEventDefinedInlineOptionalValue: ?(
-    event: BubblingEvent<
+  onBubblingEventDefinedInlineOptionalKey?:
+    BubblingEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
     >,
-  ) => void,
 
-  onBubblingEventDefinedInlineOptionalBoth?: ?(
-    event: BubblingEvent<
+  onBubblingEventDefinedInlineOptionalValue: ?
+    BubblingEventHandler<
       $ReadOnly<{|
         ${EVENT_DEFINITION}
       |}>,
     >,
-  ) => void,
+
+  onBubblingEventDefinedInlineOptionalBoth?: ?
+    BubblingEventHandler<
+      $ReadOnly<{|
+        ${EVENT_DEFINITION}
+      |}>,
+    >,
+
+  onBubblingEventDefinedInlineWithPaperName?: ?
+    BubblingEventHandler<
+      $ReadOnly<{|
+        ${EVENT_DEFINITION}
+      |}>,
+      'paperBubblingEventDefinedInlineWithPaperName'
+    >,
 |}>;
 
 export default codegenNativeComponent<ModuleProps>('Module');
-`;
 
-const EVENTS_DEFINED_IN_FILE_WITH_ALL_TYPES = `
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @format
- * @flow
- */
-
-'use strict';
-
-const codegenNativeComponent = require('codegenNativeComponent');
-
-import type {
-  Float,
-  Int32,
-  BubblingEvent,
-  DirectEvent,
-} from 'CodegenTypes';
-
-import type {ViewProps} from 'ViewPropTypes';
-
-type EventInFile = $ReadOnly<{|
-  ${EVENT_DEFINITION}
-|}>;
-
-type DirectEventInFile = DirectEvent<EventInFile>;
-type BubblingEventInFile = BubblingEvent<EventInFile>;
-
-type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
-
-  // No props
-
-  // Events
-  // Events defined elsewhere in file
-
-  onDirectEventDefinedInFile: (event: DirectEventInFile) => void,
-  onDirectEventDefinedInFileOptionalKey?: (event: DirectEventInFile) => void,
-  onDirectEventDefinedInFileOptionalValue: ?(event: DirectEventInFile) => void,
-  onDirectEventDefinedInFileOptionalBoth?: ?(event: DirectEventInFile) => void,
-
-  onBubblingEventDefinedInFile: (event: BubblingEventInFile) => void,
-  onBubblingEventDefinedInFileOptionalKey?: (
-    event: BubblingEventInFile,
-  ) => void,
-  onBubblingEventDefinedInFileOptionalValue: ?(
-    event: BubblingEventInFile,
-  ) => void,
-  onBubblingEventDefinedInFileOptionalBoth?: ?(
-    event: BubblingEventInFile,
-  ) => void,
-|}>;
-
-export default codegenNativeComponent<ModuleProps>('Module');
-`;
-
-const EVENTS_DEFINED_AS_NULL_IN_FILE = `
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @format
- * @flow
- */
-
-'use strict';
-
-const codegenNativeComponent = require('codegenNativeComponent');
-
-import type {
-  BubblingEvent,
-  DirectEvent,
-} from 'CodegenTypes';
-
-import type {ViewProps} from 'ViewPropTypes';
-
-type DirectEventDefinedInFileNull = DirectEvent<null>;
-type BubblingEventDefinedInFileNull = BubblingEvent<null>;
-
-type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
-
-  // No props
-
-  // Events defined elsewhere in file
-  onDirectEventDefinedInFileNull: (event: DirectEventDefinedInFileNull) => void,
-  onDirectEventDefinedInFileNullOptionalKey?: (
-    event: DirectEventDefinedInFileNull,
-  ) => void,
-  onDirectEventDefinedInFileNullOptionalValue: ?(
-    event: DirectEventDefinedInFileNull,
-  ) => void,
-  onDirectEventDefinedInFileNullOptionalBoth?: ?(
-    event: DirectEventDefinedInFileNull,
-  ) => void,
-
-  onBubblingEventDefinedInFileNull: (
-    event: BubblingEventDefinedInFileNull,
-  ) => void,
-  onBubblingEventDefinedInFileNullOptionalKey?: (
-    event: BubblingEventDefinedInFileNull,
-  ) => void,
-  onBubblingEventDefinedInFileNullOptionalValue: ?(
-    event: BubblingEventDefinedInFileNull,
-  ) => void,
-  onBubblingEventDefinedInFileNullOptionalBoth?: ?(
-    event: BubblingEventDefinedInFileNull,
-  ) => void,
-|}>;
-
-
-export default codegenNativeComponent<ModuleProps>('Module');
 `;
 
 const EVENTS_DEFINED_AS_NULL_INLINE = `
@@ -544,11 +711,13 @@ const EVENTS_DEFINED_AS_NULL_INLINE = `
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {
-  BubblingEvent,
-  DirectEvent,
+  BubblingEventHandler,
+  DirectEventHandler,
 } from 'CodegenTypese';
 
 import type {ViewProps} from 'ViewPropTypes';
+
+const codegenNativeComponent = require('codegenNativeComponent');
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -556,27 +725,25 @@ type ModuleProps = $ReadOnly<{|
   // No props
 
   // Events defined inline
-  onDirectEventDefinedInlineNull: (event: DirectEvent<null>) => void,
-  onDirectEventDefinedInlineNullOptionalKey?: (
-    event: DirectEvent<null>,
-  ) => void,
-  onDirectEventDefinedInlineNullOptionalValue: ?(
-    event: DirectEvent<null>,
-  ) => void,
-  onDirectEventDefinedInlineNullOptionalBoth?: ?(
-    event: DirectEvent<null>,
-  ) => void,
+  onDirectEventDefinedInlineNull:DirectEventHandler<null>,
+  onDirectEventDefinedInlineNullOptionalKey?: DirectEventHandler<null>,
+  onDirectEventDefinedInlineNullOptionalValue: ?DirectEventHandler<null>,
+  onDirectEventDefinedInlineNullOptionalBoth?: DirectEventHandler<null>,
+  onDirectEventDefinedInlineNullWithPaperName?: ?
+    DirectEventHandler<
+      null,
+      'paperDirectEventDefinedInlineNullWithPaperName',
+    >,
 
-  onBubblingEventDefinedInlineNull: (event: BubblingEvent<null>) => void,
-  onBubblingEventDefinedInlineNullOptionalKey?: (
-    event: BubblingEvent<null>,
-  ) => void,
-  onBubblingEventDefinedInlineNullOptionalValue: ?(
-    event: BubblingEvent<null>,
-  ) => void,
-  onBubblingEventDefinedInlineNullOptionalBoth?: ?(
-    event: BubblingEvent<null>,
-  ) => void,
+  onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
+  onBubblingEventDefinedInlineNullOptionalKey?: BubblingEventHandler<null>,
+  onBubblingEventDefinedInlineNullOptionalValue: ?BubblingEventHandler<null>,
+  onBubblingEventDefinedInlineNullOptionalBoth?: ?BubblingEventHandler<null>,
+  onBubblingEventDefinedInlineNullWithPaperName?: ?
+    BubblingEventHandler<
+      null,
+      'paperBubblingEventDefinedInlineNullWithPaperName',
+    >,
 |}>;
 
 export default codegenNativeComponent<ModuleProps>('Module');
@@ -595,14 +762,14 @@ const PROPS_AND_EVENTS_TYPES_EXPORTED = `
 
 'use strict';
 
-const codegenNativeComponent = require('codegenNativeComponent');
-
 import type {
-  BubblingEvent,
-  DirectEvent,
+  BubblingEventHandler,
+  DirectEventHandler,
 } from 'CodegenTypes';
 
 import type {ViewProps} from 'ViewPropTypes';
+
+const codegenNativeComponent = require('codegenNativeComponent');
 
 export type EventInFile = $ReadOnly<{|
   ${EVENT_DEFINITION}
@@ -614,21 +781,72 @@ export type ModuleProps = $ReadOnly<{|
   // No props
 
   // Events defined inline
-  onBubblingEventDefinedInline: (event: BubblingEvent<EventInFile>) => void,
-  onDirectEventDefinedInline: (event: DirectEvent<EventInFile>) => void,
+  onBubblingEventDefinedInline: BubblingEventHandler<EventInFile>,
+  onBubblingEventDefinedInlineWithPaperName: BubblingEventHandler<EventInFile, 'paperBubblingEventDefinedInlineWithPaperName'>,
+  onDirectEventDefinedInline: DirectEventHandler<EventInFile>,
+  onDirectEventDefinedInlineWithPaperName: DirectEventHandler<EventInFile, 'paperDirectEventDefinedInlineWithPaperName'>,
 |}>;
 
 export default codegenNativeComponent<ModuleProps>('Module');
 `;
 
+const COMMANDS_DEFINED_WITH_ALL_TYPES = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+const codegenNativeCommands = require('codegenNativeCommands');
+
+import type {
+  Int32,
+  BubblingEventHandler,
+  DirectEventHandler,
+} from 'CodegenTypes';
+
+import type {ViewProps} from 'ViewPropTypes';
+
+interface NativeCommands {
+  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+  +scrollTo: (viewRef: React.Ref<'RCTView'>, y: Int32, animated: boolean) => void;
+}
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  // No props or events
+|}>;
+
+export const Commands = codegenNativeCommands<NativeCommands>();
+
+export default codegenNativeComponent<ModuleProps>('Module');
+`;
+
 module.exports = {
+  NATIVE_MODULE_WITH_WITH_ALIASES,
+  NATIVE_MODULE_WITH_PROMISE,
+  NATIVE_MODULE_WITH_COMPLEX_OBJECTS,
+  NATIVE_MODULE_WITH_SIMPLE_OBJECT,
+  NATIVE_MODULE_WITH_NULLABLE_PARAM,
+  NATIVE_MODULE_WITH_BASIC_ARRAY,
+  NATIVE_MODULE_WITH_COMPLEX_ARRAY,
+  NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS,
+  NATIVE_MODULE_WITH_BASIC_PARAM_TYPES,
+  NATIVE_MODULE_WITH_CALLBACK,
+  EMPTY_NATIVE_MODULE,
   ALL_PROP_TYPES_NO_EVENTS,
   ARRAY_PROP_TYPES_NO_EVENTS,
   ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS,
   NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION,
   EVENTS_DEFINED_INLINE_WITH_ALL_TYPES,
-  EVENTS_DEFINED_IN_FILE_WITH_ALL_TYPES,
-  EVENTS_DEFINED_AS_NULL_IN_FILE,
   EVENTS_DEFINED_AS_NULL_INLINE,
   PROPS_AND_EVENTS_TYPES_EXPORTED,
+  COMMANDS_DEFINED_WITH_ALL_TYPES,
 };

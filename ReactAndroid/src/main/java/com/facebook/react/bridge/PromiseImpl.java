@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
 import javax.annotation.Nonnull;
@@ -37,10 +36,8 @@ public class PromiseImpl implements Promise {
   private static final String STACK_FRAME_KEY_LINE_NUMBER = "lineNumber";
   private static final String STACK_FRAME_KEY_METHOD_NAME = "methodName";
 
-  private @Nullable
-  Callback mResolve;
-  private @Nullable
-  Callback mReject;
+  private @Nullable Callback mResolve;
+  private @Nullable Callback mReject;
 
   public PromiseImpl(@Nullable Callback resolve, @Nullable Callback reject) {
     mResolve = resolve;
@@ -64,46 +61,46 @@ public class PromiseImpl implements Promise {
   /**
    * Report an error without an exception using a custom code and error message.
    *
-   * @param code    String
+   * @param code String
    * @param message String
    */
   @Override
   public void reject(String code, String message) {
-    reject(code, message, /*Throwable*/null, /*WritableMap*/null);
+    reject(code, message, /*Throwable*/ null, /*WritableMap*/ null);
   }
 
   /**
    * Report an exception with a custom code.
    *
-   * @param code      String
+   * @param code String
    * @param throwable Throwable
    */
   @Override
   public void reject(String code, Throwable throwable) {
-    reject(code, /*Message*/null, throwable, /*WritableMap*/null);
+    reject(code, /*Message*/ null, throwable, /*WritableMap*/ null);
   }
 
   /**
    * Report an exception with a custom code and error message.
    *
-   * @param code      String
-   * @param message   String
+   * @param code String
+   * @param message String
    * @param throwable Throwable
    */
   @Override
   public void reject(String code, String message, Throwable throwable) {
-    reject(code, message, throwable, /*WritableMap*/null);
+    reject(code, message, throwable, /*WritableMap*/ null);
   }
 
   /**
-   * Report an exception, with default error code.
-   * Useful in catch-all scenarios where it's unclear why the error occurred.
+   * Report an exception, with default error code. Useful in catch-all scenarios where it's unclear
+   * why the error occurred.
    *
    * @param throwable Throwable
    */
   @Override
   public void reject(Throwable throwable) {
-    reject(/*Code*/null, /*Message*/null, throwable, /*WritableMap*/null);
+    reject(/*Code*/ null, /*Message*/ null, throwable, /*WritableMap*/ null);
   }
 
   /* ---------------------------
@@ -111,68 +108,67 @@ public class PromiseImpl implements Promise {
    * --------------------------- */
 
   /**
-   * Report an exception, with default error code, with userInfo.
-   * Useful in catch-all scenarios where it's unclear why the error occurred.
+   * Report an exception, with default error code, with userInfo. Useful in catch-all scenarios
+   * where it's unclear why the error occurred.
    *
    * @param throwable Throwable
-   * @param userInfo  WritableMap
+   * @param userInfo WritableMap
    */
   @Override
   public void reject(Throwable throwable, WritableMap userInfo) {
-    reject(/*Code*/null, /*Message*/null, throwable, userInfo);
+    reject(/*Code*/ null, /*Message*/ null, throwable, userInfo);
   }
 
   /**
    * Reject with a code and userInfo WritableMap.
    *
-   * @param code     String
+   * @param code String
    * @param userInfo WritableMap
    */
   @Override
   public void reject(String code, @Nonnull WritableMap userInfo) {
-    reject(code, /*Message*/null, /*Throwable*/null, userInfo);
+    reject(code, /*Message*/ null, /*Throwable*/ null, userInfo);
   }
 
   /**
    * Report an exception with a custom code and userInfo.
    *
-   * @param code      String
+   * @param code String
    * @param throwable Throwable
-   * @param userInfo  WritableMap
+   * @param userInfo WritableMap
    */
   @Override
   public void reject(String code, Throwable throwable, WritableMap userInfo) {
-    reject(code, /*Message*/null, throwable, userInfo);
+    reject(code, /*Message*/ null, throwable, userInfo);
   }
 
   /**
-   * Report an error with a custom code, error message and userInfo,
-   * an error not caused by an exception.
+   * Report an error with a custom code, error message and userInfo, an error not caused by an
+   * exception.
    *
-   * @param code     String
-   * @param message  String
+   * @param code String
+   * @param message String
    * @param userInfo WritableMap
    */
   @Override
   public void reject(String code, String message, @Nonnull WritableMap userInfo) {
-    reject(code, message, /*Throwable*/null, userInfo);
+    reject(code, message, /*Throwable*/ null, userInfo);
   }
 
   /**
    * Report an exception with a custom code, error message and userInfo.
    *
-   * @param code      String
-   * @param message   String
+   * @param code String
+   * @param message String
    * @param throwable Throwable
-   * @param userInfo  WritableMap
+   * @param userInfo WritableMap
    */
   @Override
   public void reject(
       @Nullable String code,
       @Nullable String message,
       @Nullable Throwable throwable,
-      @Nullable WritableMap userInfo
-  ) {
+      @Nullable WritableMap userInfo) {
     if (mReject == null) {
       mResolve = null;
       return;
@@ -243,6 +239,6 @@ public class PromiseImpl implements Promise {
   @Override
   @Deprecated
   public void reject(String message) {
-    reject(/*Code*/null, message, /*Throwable*/null, /*WritableMap*/null);
+    reject(/*Code*/ null, message, /*Throwable*/ null, /*WritableMap*/ null);
   }
 }

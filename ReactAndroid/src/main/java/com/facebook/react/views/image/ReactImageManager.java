@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.image;
 
 import android.graphics.Color;
@@ -123,13 +122,15 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     view.setBorderWidth(borderWidth);
   }
 
-  @ReactPropGroup(names = {
-      ViewProps.BORDER_RADIUS,
-      ViewProps.BORDER_TOP_LEFT_RADIUS,
-      ViewProps.BORDER_TOP_RIGHT_RADIUS,
-      ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
-      ViewProps.BORDER_BOTTOM_LEFT_RADIUS
-  }, defaultFloat = YogaConstants.UNDEFINED)
+  @ReactPropGroup(
+      names = {
+        ViewProps.BORDER_RADIUS,
+        ViewProps.BORDER_TOP_LEFT_RADIUS,
+        ViewProps.BORDER_TOP_RIGHT_RADIUS,
+        ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+        ViewProps.BORDER_BOTTOM_LEFT_RADIUS
+      },
+      defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderRadius(ReactImageView view, int index, float borderRadius) {
     if (!YogaConstants.isUndefined(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
@@ -157,7 +158,8 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     } else if ("scale".equals(resizeMethod)) {
       view.setResizeMethod(ImageResizeMethod.SCALE);
     } else {
-      throw new JSApplicationIllegalArgumentException("Invalid resize method: '" + resizeMethod+ "'");
+      throw new JSApplicationIllegalArgumentException(
+          "Invalid resize method: '" + resizeMethod + "'");
     }
   }
 
@@ -193,14 +195,14 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
   @Override
   public @Nullable Map getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.of(
-      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_START),
-        MapBuilder.of("registrationName", "onLoadStart"),
-      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD),
-        MapBuilder.of("registrationName", "onLoad"),
-      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_ERROR),
-        MapBuilder.of("registrationName", "onError"),
-      ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_END),
-        MapBuilder.of("registrationName", "onLoadEnd"));
+        ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_START),
+            MapBuilder.of("registrationName", "onLoadStart"),
+        ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD),
+            MapBuilder.of("registrationName", "onLoad"),
+        ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_ERROR),
+            MapBuilder.of("registrationName", "onError"),
+        ImageLoadEvent.eventNameForType(ImageLoadEvent.ON_LOAD_END),
+            MapBuilder.of("registrationName", "onLoadEnd"));
   }
 
   @Override

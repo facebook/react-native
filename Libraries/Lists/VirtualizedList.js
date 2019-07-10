@@ -968,7 +968,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._hasMore =
       this.state.last < this.props.getItemCount(this.props.data) - 1;
 
-    const ret = React.cloneElement(
+    const innerRet = React.cloneElement(
       (this.props.renderScrollComponent || this._defaultRenderScrollComponent)(
         scrollProps,
       ),
@@ -977,6 +977,27 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       },
       cells,
     );
+    let ret = innerRet;
+    if (__DEV__) {
+      ret = (
+        <ScrollView.Context.Consumer>
+          {scrollContext => {
+            if (
+              scrollContext != null &&
+              !this._hasWarned.nesting &&
+              this.context.virtualizedList == null
+            ) {
+              // TODO (T46547044): use React.warn once 16.9 is sync'd: https://github.com/facebook/react/pull/15170
+              console.warn(
+                'VirtualizedLists should never be nested inside a plain ScrollView - use another VirtualizedList-backed container instead.',
+              );
+              this._hasWarned.nesting = true;
+            }
+            return innerRet;
+          }}
+        </ScrollView.Context.Consumer>
+      );
+    }
     if (this.props.debug) {
       return (
         <View style={styles.debug}>
@@ -1828,10 +1849,10 @@ class CellRenderer extends React.Component<
     );
     const cellStyle = inversionStyle
       ? horizontal
-        ? [{flexDirection: 'row-reverse'}, inversionStyle]
-        : [{flexDirection: 'column-reverse'}, inversionStyle]
+        ? [styles.rowReverse, inversionStyle]
+        : [styles.columnReverse, inversionStyle]
       : horizontal
-      ? [{flexDirection: 'row'}, inversionStyle]
+      ? [styles.row, inversionStyle]
       : inversionStyle;
     if (!CellRendererComponent) {
       return (
@@ -1885,6 +1906,15 @@ const styles = StyleSheet.create({
   },
   horizontallyInverted: {
     transform: [{scaleX: -1}],
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  columnReverse: {
+    flexDirection: 'column-reverse',
   },
   debug: {
     flex: 1,

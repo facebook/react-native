@@ -16,12 +16,6 @@ using YGVector = std::vector<YGNodeRef>;
 
 YG_EXTERN_C_BEGIN
 
-WIN_EXPORT float YGRoundValueToPixelGrid(
-    const float value,
-    const float pointScaleFactor,
-    const bool forceCeil,
-    const bool forceFloor);
-
 void YGNodeCalculateLayoutWithContext(
     YGNodeRef node,
     float availableWidth,

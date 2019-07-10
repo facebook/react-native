@@ -42,6 +42,8 @@ APPLE = ""
 
 YOGA_TARGET = "//ReactAndroid/src/main/java/com/facebook:yoga"
 
+YOGA_CXX_TARGET = "//ReactCommon/yoga:yoga"
+
 FBGLOGINIT_TARGET = "//ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit"
 
 FBJNI_TARGET = "//ReactAndroid/src/main/jni/first-party/fb:jni"
@@ -78,6 +80,9 @@ def react_native_target(path):
 def react_native_xplat_target(path):
     return "//ReactCommon/" + path
 
+def react_native_xplat_target_apple(path):
+    return react_native_xplat_target(path) + "Apple"
+
 # Example: react_native_tests_target('java/com/facebook/react/modules:modules')
 def react_native_tests_target(path):
     return "//ReactAndroid/src/test/" + path
@@ -94,6 +99,12 @@ def react_native_dep(path):
 # Example: react_native_xplat_dep('java/com/facebook/systrace:systrace')
 def react_native_xplat_dep(path):
     return "//ReactCommon/" + path
+
+def rn_debug_flags():
+    return []
+
+def rn_feature_flags():
+    return []
 
 # React property preprocessor
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
@@ -320,3 +331,8 @@ def jni_instrumentation_test_lib(**_kwargs):
 def fb_xplat_cxx_test(**_kwargs):
     """A noop stub for OSS build."""
     pass
+
+# iOS Plugin support.
+def react_module_plugin_providers():
+    # Noop for now
+    return []

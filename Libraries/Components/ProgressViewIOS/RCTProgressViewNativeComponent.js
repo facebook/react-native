@@ -21,8 +21,8 @@ type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
   // Props
-  progressViewStyle?: ?WithDefault<'default' | 'bar', 'default'>,
-  progress?: ?WithDefault<Float, 0>,
+  progressViewStyle?: WithDefault<'default' | 'bar', 'default'>,
+  progress?: WithDefault<Float, 0>,
   progressTintColor?: ?ColorValue,
   trackTintColor?: ?ColorValue,
   progressImage?: ?ImageSource,

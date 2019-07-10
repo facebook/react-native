@@ -3,18 +3,7 @@ load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("@fbsource//tools/build_defs:fb_xplat_cxx_binary.bzl", "fb_xplat_cxx_binary")
 load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "rn_xplat_cxx_library")
 load("@fbsource//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
-load("@fbsource//xplat/js/react-native-github/packages/react-native-codegen:DEFS.bzl", "rn_codegen_test")
-
-fb_native.sh_binary(
-    name = "copy_fixture_schema",
-    main = "buck_tests/copy_fixture.sh",
-    resources = [
-        "buck_tests/copy-fixture.js",
-        "buck_tests/copy_fixture.sh",
-        "fbsource//xplat/js:setup_env",
-        "src/generators/__test_fixtures__/fixtures.js",
-    ],
-)
+load("@fbsource//xplat/js/react-native-github/packages/react-native-codegen:DEFS.bzl", "rn_codegen")
 
 fb_native.sh_binary(
     name = "write_to_json",
@@ -44,64 +33,20 @@ fb_native.sh_binary(
     visibility = ["PUBLIC"],
 )
 
-rn_codegen_test(
-    fixture_name = "INTERFACE_ONLY",
+fb_native.genrule(
+    name = "codegen_tests_schema",
+    srcs = glob(
+        [
+            "**/e2e/__test_fixtures__/*NativeComponent.js",
+        ],
+    ),
+    cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:write_to_json) $OUT $SRCS",
+    out = "schema-codegen_tests.json",
 )
 
-rn_codegen_test(
-    fixture_name = "BOOLEAN_PROP",
-)
-
-rn_codegen_test(
-    fixture_name = "STRING_PROP",
-)
-
-rn_codegen_test(
-    fixture_name = "INTEGER_PROPS",
-)
-
-rn_codegen_test(
-    fixture_name = "FLOAT_PROPS",
-)
-
-rn_codegen_test(
-    fixture_name = "COLOR_PROP",
-)
-
-rn_codegen_test(
-    fixture_name = "IMAGE_PROP",
-)
-
-rn_codegen_test(
-    fixture_name = "POINT_PROP",
-)
-
-rn_codegen_test(
-    fixture_name = "ARRAY_PROPS",
-)
-
-rn_codegen_test(
-    fixture_name = "MULTI_NATIVE_PROP",
-)
-
-rn_codegen_test(
-    fixture_name = "ENUM_PROP",
-)
-
-rn_codegen_test(
-    fixture_name = "EVENT_PROPS",
-)
-
-rn_codegen_test(
-    fixture_name = "EVENT_NESTED_OBJECT_PROPS",
-)
-
-rn_codegen_test(
-    fixture_name = "TWO_COMPONENTS_SAME_FILE",
-)
-
-rn_codegen_test(
-    fixture_name = "TWO_COMPONENTS_DIFFERENT_FILES",
+rn_codegen(
+    name = "codegen_tests",
+    schema_target = ":codegen_tests_schema",
 )
 
 fb_xplat_cxx_binary(
@@ -120,21 +65,7 @@ fb_xplat_cxx_binary(
     ],
     visibility = ["PUBLIC"],
     deps = [
-        ":generated_components-ARRAY_PROPS",
-        ":generated_components-BOOLEAN_PROP",
-        ":generated_components-COLOR_PROP",
-        ":generated_components-ENUM_PROP",
-        ":generated_components-EVENT_NESTED_OBJECT_PROPS",
-        ":generated_components-EVENT_PROPS",
-        ":generated_components-FLOAT_PROPS",
-        ":generated_components-IMAGE_PROP",
-        ":generated_components-INTEGER_PROPS",
-        ":generated_components-INTERFACE_ONLY",
-        ":generated_components-MULTI_NATIVE_PROP",
-        ":generated_components-POINT_PROP",
-        ":generated_components-STRING_PROP",
-        ":generated_components-TWO_COMPONENTS_DIFFERENT_FILES",
-        ":generated_components-TWO_COMPONENTS_SAME_FILE",
+        ":generated_components-codegen_tests",
     ],
 )
 
@@ -157,21 +88,7 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        ":generated_components-ARRAY_PROPS",
-        ":generated_components-BOOLEAN_PROP",
-        ":generated_components-COLOR_PROP",
-        ":generated_components-ENUM_PROP",
-        ":generated_components-EVENT_NESTED_OBJECT_PROPS",
-        ":generated_components-EVENT_PROPS",
-        ":generated_components-FLOAT_PROPS",
-        ":generated_components-IMAGE_PROP",
-        ":generated_components-INTEGER_PROPS",
-        ":generated_components-INTERFACE_ONLY",
-        ":generated_components-MULTI_NATIVE_PROP",
-        ":generated_components-POINT_PROP",
-        ":generated_components-STRING_PROP",
-        ":generated_components-TWO_COMPONENTS_DIFFERENT_FILES",
-        ":generated_components-TWO_COMPONENTS_SAME_FILE",
+        ":generated_components-codegen_tests",
     ],
 )
 

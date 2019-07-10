@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.image;
 
 import androidx.annotation.IntDef;
@@ -48,21 +47,17 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   }
 
   public ImageLoadEvent(
-    int viewId,
-    @ImageEventType int eventType,
-    @Nullable String imageUri,
-    int width,
-    int height) {
+      int viewId, @ImageEventType int eventType, @Nullable String imageUri, int width, int height) {
     this(viewId, eventType, imageUri, width, height, null);
   }
 
   public ImageLoadEvent(
-    int viewId,
-    @ImageEventType int eventType,
-    @Nullable String imageUri,
-    int width,
-    int height,
-    @Nullable String message) {
+      int viewId,
+      @ImageEventType int eventType,
+      @Nullable String imageUri,
+      int width,
+      int height,
+      @Nullable String message) {
     super(viewId);
     mEventType = eventType;
     mImageUri = imageUri;

@@ -231,8 +231,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 
     registerPerformanceLoggerHooks(_performanceLogger);
 
-    RCTLogInfo(@"Initializing %@ (parent: %@, executor: %@)", self, bridge, [self executorClass]);
-
     /**
      * Set Initial State
      */
@@ -914,14 +912,16 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
 
 #if RCT_DEV
-  if (self.devSettings.isHotLoadingAvailable && self.devSettings.isHotLoadingEnabled) {
+  if (self.devSettings.isHotLoadingAvailable) {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
     NSString *host = self.bundleURL.host;
     NSNumber *port = self.bundleURL.port;
+    BOOL isHotLoadingEnabled = self.devSettings.isHotLoadingEnabled;
     [self enqueueJSCall:@"HMRClient"
-                 method:@"enable"
-                   args:@[@"ios", path, host, RCTNullIfNil(port)]
-             completion:NULL];  }
+                 method:@"setup"
+                   args:@[@"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled)]
+             completion:NULL];
+  }
 #endif
 }
 

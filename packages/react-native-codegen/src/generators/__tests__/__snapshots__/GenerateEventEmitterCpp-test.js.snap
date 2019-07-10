@@ -69,6 +69,29 @@ namespace react {
 }
 `;
 
+exports[`GenerateEventEmitterCpp can generate fixture COMMANDS 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/COMMANDS/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateEventEmitterCpp can generate fixture ENUM_PROP 1`] = `
 Map {
   "EventEmitters.cpp" => "
@@ -174,6 +197,42 @@ void EventsNativeComponentEventEmitter::onOrientationChange(EventsNativeComponen
 }
 void EventsNativeComponentEventEmitter::onEnd() const {
   dispatchEvent(\\"end\\");
+}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterCpp can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/EVENTS_WITH_PAPER_NAME/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+void InterfaceOnlyComponentEventEmitter::onChange(InterfaceOnlyComponentOnChangeStruct event) const {
+  dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
+    payload.setProperty(runtime, \\"value\\", event.value);
+    return payload;
+  });
+}
+void InterfaceOnlyComponentEventEmitter::onDire tChange(InterfaceOnlyComponentOnDire tChangeStruct event) const {
+  dispatchEvent(\\"dire tChange\\", [event=std::move(event)](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
+    payload.setProperty(runtime, \\"value\\", event.value);
+    return payload;
+  });
 }
 
 } // namespace react

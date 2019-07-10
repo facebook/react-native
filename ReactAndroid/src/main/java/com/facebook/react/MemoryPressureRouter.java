@@ -13,12 +13,10 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-/**
- * Translates and routes memory pressure events to the current catalyst instance.
- */
+/** Translates and routes memory pressure events to the current catalyst instance. */
 public class MemoryPressureRouter implements ComponentCallbacks2 {
   private final Set<MemoryPressureListener> mListeners =
-    Collections.synchronizedSet(new LinkedHashSet<MemoryPressureListener>());
+      Collections.synchronizedSet(new LinkedHashSet<MemoryPressureListener>());
 
   MemoryPressureRouter(Context context) {
     context.getApplicationContext().registerComponentCallbacks(this);
@@ -28,16 +26,12 @@ public class MemoryPressureRouter implements ComponentCallbacks2 {
     context.getApplicationContext().unregisterComponentCallbacks(this);
   }
 
-  /**
-   * Add a listener to be notified of memory pressure events.
-   */
+  /** Add a listener to be notified of memory pressure events. */
   public void addMemoryPressureListener(MemoryPressureListener listener) {
     mListeners.add(listener);
   }
 
-  /**
-   * Remove a listener previously added with {@link #addMemoryPressureListener}.
-   */
+  /** Remove a listener previously added with {@link #addMemoryPressureListener}. */
   public void removeMemoryPressureListener(MemoryPressureListener listener) {
     mListeners.remove(listener);
   }
@@ -48,18 +42,16 @@ public class MemoryPressureRouter implements ComponentCallbacks2 {
   }
 
   @Override
-  public void onConfigurationChanged(Configuration newConfig) {
-  }
+  public void onConfigurationChanged(Configuration newConfig) {}
 
   @Override
-  public void onLowMemory() {
-  }
+  public void onLowMemory() {}
 
   private void dispatchMemoryPressure(int level) {
     // copy listeners array to avoid ConcurrentModificationException if any of the listeners remove
     // themselves in handleMemoryPressure()
     MemoryPressureListener[] listeners =
-      mListeners.toArray(new MemoryPressureListener[mListeners.size()]);
+        mListeners.toArray(new MemoryPressureListener[mListeners.size()]);
     for (MemoryPressureListener listener : listeners) {
       listener.handleMemoryPressure(level);
     }

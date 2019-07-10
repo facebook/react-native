@@ -1080,44 +1080,44 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^12.0.9"
 
-"@react-native-community/cli-platform-android@2.0.0-rc.2", "@react-native-community/cli-platform-android@^2.0.0-rc.2":
-  version "2.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.0.0-rc.2.tgz#78eba602aaccde906dbe8d0c48f2497900be3b3f"
-  integrity sha512-pZQ3W8vYqSP2hNTfhhZ2/VU2+7WVXB0dBTPU1wrNtWjxxzCYwpx6l3YM2Bjffwx5yGUJ/FpIrhKXGXZzXdAH9A==
+"@react-native-community/cli-platform-android@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.1.1.tgz#32e57988dbb7580d3aef3d2f9e35e9718d6e8077"
+  integrity sha512-M6HNSJYTPNAt8iV8RiclSySyBavo9dsMKAIvKsHJqwbIRNWbRPHONQ71hvw7PzxC+RTwFTHUFKMotWgjKGEKPw==
   dependencies:
-    "@react-native-community/cli-tools" "^2.0.0-rc.2"
-    logkitty "^0.4.0"
+    "@react-native-community/cli-tools" "^2.0.2"
+    logkitty "^0.5.0"
     slash "^2.0.0"
     xmldoc "^0.4.0"
 
-"@react-native-community/cli-platform-ios@2.0.0-rc.2", "@react-native-community/cli-platform-ios@^2.0.0-rc.2":
-  version "2.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.0.0-rc.2.tgz#3c73982363b5a07a5159da9ef04c6f3e45551467"
-  integrity sha512-4ruii2d0ISM0IpzX8o9C/uRdw4UnUDiWDLkLzEObpNjDpOjS3jl+lFJ+S4hW6U/bldl6ahj7CJeMmXiAsTrZWQ==
+"@react-native-community/cli-platform-ios@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.2.0.tgz#8008eee0bee871b52182217f49d86068bdb80efe"
+  integrity sha512-rgqksYcolGZNkG4EnWEX2nECWyTxYRUZXRb+pXc4niBsCvNMU88sXoMTxFIHb3wOAaVT2Eix3nS78yG6TA7dnA==
   dependencies:
-    "@react-native-community/cli-tools" "^2.0.0-rc.2"
+    "@react-native-community/cli-tools" "^2.0.2"
     chalk "^1.1.1"
     xcode "^2.0.0"
 
-"@react-native-community/cli-tools@^2.0.0-rc.2":
-  version "2.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.0-rc.2.tgz#4308b24de4fe0b4699c2cea687e938e7a8c62c86"
-  integrity sha512-B0l9k43MkLgrnZs+Z7EZ9Xmb4YYi51Ifj/pabM8EklZJPnLzjWdfvuY64NJBQf4prOg2cTXqh8s9iO/jrsgU3Q==
+"@react-native-community/cli-tools@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.2.tgz#1dc4055f27f1b2fe3d0493959a6fc20467e93fe0"
+  integrity sha512-6OOKrE1Sdq1Lmcdp2K68J5PsG5G80a9USa9I1Kv92wvPHUup6IRt+Dy7E8IZqxmskzC/mlOR62Oh1CB3sFm84g==
   dependencies:
     chalk "^1.1.1"
     lodash "^4.17.5"
     mime "^2.4.1"
     node-fetch "^2.5.0"
 
-"@react-native-community/cli@2.0.0-rc.2":
-  version "2.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.0.0-rc.2.tgz#8bb3c07a58056b0af5474782bedc457184b42595"
-  integrity sha512-G0NrMfJ6bcXfJKLijQmxuTV4S22pXfp8c5XI7L1i+b5Vu34IvR6xvKVPT9leYEEI/bg/ZuyguDZuVecycJb63A==
+"@react-native-community/cli@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.2.0.tgz#1b886f2854d0076207fd55198e2021fbb0406db6"
+  integrity sha512-yD2MaelEW7a3fX9c9rScgqiKBppnYy3ko+KuNQGDl9ocrr7GFI5s59V4i0K/5pMmzC5z67V5Xf9Z6hhnha70Vg==
   dependencies:
     "@hapi/joi" "^15.0.3"
-    "@react-native-community/cli-platform-android" "^2.0.0-rc.2"
-    "@react-native-community/cli-platform-ios" "^2.0.0-rc.2"
-    "@react-native-community/cli-tools" "^2.0.0-rc.2"
+    "@react-native-community/cli-platform-android" "^2.1.1"
+    "@react-native-community/cli-platform-ios" "^2.2.0"
+    "@react-native-community/cli-tools" "^2.0.2"
     chalk "^1.1.1"
     command-exists "^1.2.8"
     commander "^2.19.0"
@@ -3195,10 +3195,10 @@ flat-cache@^1.2.1:
     rimraf "~2.6.2"
     write "^0.2.1"
 
-flow-bin@^0.101.0:
-  version "0.101.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.101.0.tgz#c56fa0afb9c151eeba7954136e9066d408691063"
-  integrity sha512-2xriPEOSrGQklAArNw1ixoIUiLTWhIquYV26WqnxEu7IcXWgoZUcfJXufG9kIvrNbdwCNd5RBjTwbB0p6L6XaA==
+flow-bin@^0.102.0:
+  version "0.102.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.102.0.tgz#3d5de44bcc26d26585e932b3201988b766f9b380"
+  integrity sha512-mYon6noeLO0Q5SbiWULLQeM1L96iuXnRtYMd47j3bEWXAwUW9EnwNWcn+cZg/jC/Dg4Wj/jnkdTDEuFtbeu1ww==
 
 flow-parser@0.*:
   version "0.89.0"
@@ -4417,10 +4417,10 @@ jsbn@~0.1.0:
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
   integrity sha1-peZUwuWi3rXyAdls77yoDA7y9RM=
 
-jsc-android@^241213.1.0:
-  version "241213.1.0"
-  resolved "https://registry.yarnpkg.com/jsc-android/-/jsc-android-241213.1.0.tgz#8f940d7c7f6bebf14eda32bef42a76182e336452"
-  integrity sha512-AH8NYyMNLNhcUEF97QbMxPNLNW+oiSBlvm1rsMNzgJ1d5TQzdh/AOJGsxeeESp3m9YIWGLCgUvGTVoVLs0p68A==
+jsc-android@^245459.0.0:
+  version "245459.0.0"
+  resolved "https://registry.yarnpkg.com/jsc-android/-/jsc-android-245459.0.0.tgz#e584258dd0b04c9159a27fb104cd5d491fd202c9"
+  integrity sha512-wkjURqwaB1daNkDi2OYYbsLnIdC/lUM2nPXQKRs5pqEU9chDg435bjvo+LSaHotDENygHQDHe+ntUkkw2gwMtg==
 
 jscodeshift@^0.6.2:
   version "0.6.2"
@@ -4714,10 +4714,10 @@ log-symbols@^2.2.0:
   dependencies:
     chalk "^2.0.1"
 
-logkitty@^0.4.0:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/logkitty/-/logkitty-0.4.1.tgz#bbda70eb9f0a3de5f42fb6b47499b9001a4b77d0"
-  integrity sha512-h8SSUaiyi+SIAUoYdWl+hb1zPF7AjFgmSdt2NulA6YLHmbDkNI+LjkIBw2pxfR70LlR9Y2U31npYwQ5GQ2Gq3g==
+logkitty@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/logkitty/-/logkitty-0.5.0.tgz#5a348c2049551aa02da69543c3b5c44e28c7c24f"
+  integrity sha512-UA06TmPaSPiHxMBlo5uxL3ZvjJ2Gx/rEECrqowHsIsNoAoSB8aBSP553Fr2FJhOp3it2ulLsd520DZWS1IaYOw==
   dependencies:
     ansi-fragments "^0.2.1"
     yargs "^12.0.5"
@@ -5925,10 +5925,10 @@ react-proxy@^1.1.7:
     lodash "^4.6.1"
     react-deep-force-update "^1.0.0"
 
-react-refresh@0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.0.7.tgz#0d900c2fd605a89624e4ec79ec1ad786246e1f55"
-  integrity sha512-AOUyJUlII1ZcrOt5k72dkSleQeLwFOZqVvkMkZO4uLeU2Qsc2EEJN1MRyyHsnl9LHxBlVJ0gBnIFIJ0w8hsPhQ==
+react-refresh@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.2.0.tgz#f0cff375e8f75dea7133a847a1b40cf5c073dd0d"
+  integrity sha512-ITw8t/HOFNose2yf1y9pPFSSeB9ISOq2JdHpuZvj/Qb+iSsLml8GkkHdDlURzieO7B3dFDtMrrneZLl3N5z/hg==
 
 react-test-renderer@16.8.6:
   version "16.8.6"

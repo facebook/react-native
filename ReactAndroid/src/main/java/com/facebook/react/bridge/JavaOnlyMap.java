@@ -9,7 +9,6 @@ package com.facebook.react.bridge;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -71,7 +70,7 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
       Object val = keysAndValues[i + 1];
       if (val instanceof Number) {
         // all values from JS are doubles, so emulate that here for tests.
-        val = ((Number)val).doubleValue();
+        val = ((Number) val).doubleValue();
       }
       mBackingMap.put(keysAndValues[i], val);
     }
@@ -117,8 +116,8 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
   }
 
   @Override
-  public JavaOnlyArray getArray(@Nonnull String name) {
-    return (JavaOnlyArray) mBackingMap.get(name);
+  public ReadableArray getArray(@Nonnull String name) {
+    return (ReadableArray) mBackingMap.get(name);
   }
 
   @Override
@@ -197,7 +196,7 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
   }
 
   @Override
-  public void putMap(@Nonnull String key, @Nullable WritableMap value) {
+  public void putMap(@Nonnull String key, @Nullable ReadableMap value) {
     mBackingMap.put(key, value);
   }
 
@@ -214,7 +213,7 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
   }
 
   @Override
-  public void putArray(@Nonnull String key, @Nullable WritableArray value) {
+  public void putArray(@Nonnull String key, @Nullable ReadableArray value) {
     mBackingMap.put(key, value);
   }
 

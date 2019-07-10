@@ -22,7 +22,7 @@ const nullthrows = require('nullthrows');
 const DrawerConsts = UIManager.getViewManagerConfig('AndroidDrawerLayout')
   .Constants;
 const dismissKeyboard = require('../../Utilities/dismissKeyboard');
-const AndroidDrawerLayoutNativeComponent = require('./AndroidDrawerLayoutNativeComponent');
+import AndroidDrawerLayoutNativeComponent from './AndroidDrawerLayoutNativeComponent';
 
 const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
 
@@ -176,7 +176,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
   state = {statusBarBackgroundColor: null};
 
   render() {
-    const {onDrawerStateChanged, ...props} = this.props;
+    const {onDrawerStateChanged, renderNavigationView, ...props} = this.props;
     const drawStatusBar =
       Platform.Version >= 21 && this.props.statusBarBackgroundColor;
     const drawerViewWrapper = (
@@ -189,7 +189,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
           },
         ]}
         collapsable={false}>
-        {this.props.renderNavigationView()}
+        {renderNavigationView()}
         {drawStatusBar && <View style={styles.drawerStatusBar} />}
       </View>
     );

@@ -17,6 +17,13 @@ struct YGNode;
 namespace facebook {
 namespace yoga {
 
+enum LayoutType : int {
+  kLayout = 0,
+  kMeasure = 1,
+  kCachedLayout = 2,
+  kCachedMeasure = 3
+};
+
 struct Event {
   enum Type {
     NodeAllocation,
@@ -24,7 +31,8 @@ struct Event {
     NodeLayout,
     LayoutPassStart,
     LayoutPassEnd,
-    NodeMeasure,
+    MeasureCallbackStart,
+    MeasureCallbackEnd,
   };
   class Data;
   using Subscriber = void(const YGNode&, Type, Data);
@@ -52,7 +60,9 @@ struct Event {
 
   template <Type E>
   static void publish(const YGNode& node, const TypedData<E>& eventData = {}) {
+#ifdef YG_ENABLE_EVENTS
     publish(node, E, Data{eventData});
+#endif
   }
 
   template <Type E>
@@ -86,7 +96,7 @@ struct Event::TypedData<Event::LayoutPassEnd> {
 };
 
 template <>
-struct Event::TypedData<Event::NodeMeasure> {
+struct Event::TypedData<Event::MeasureCallbackEnd> {
   void* layoutContext;
   float width;
   YGMeasureMode widthMeasureMode;
@@ -94,12 +104,11 @@ struct Event::TypedData<Event::NodeMeasure> {
   YGMeasureMode heightMeasureMode;
   float measuredWidth;
   float measuredHeight;
-  float measureCallbackDuration;
 };
 
 template <>
 struct Event::TypedData<Event::NodeLayout> {
-  bool performLayout;
+  LayoutType layoutType;
   void* layoutContext;
 };
 

@@ -1,8 +1,8 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.animated;
 
@@ -10,17 +10,15 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
-
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nullable;
 
 /**
  * Animated node that corresponds to {@code AnimatedInterpolation} from AnimatedImplementation.js.
  *
- * Currently only a linear interpolation is supported on an input range of an arbitrary size.
+ * <p>Currently only a linear interpolation is supported on an input range of an arbitrary size.
  */
 /*package*/ class InterpolationAnimatedNode extends ValueAnimatedNode {
 
@@ -61,7 +59,7 @@ import javax.annotation.Nullable;
           break;
         default:
           throw new JSApplicationIllegalArgumentException(
-            "Invalid extrapolation type " + extrapolateLeft + "for left extrapolation");
+              "Invalid extrapolation type " + extrapolateLeft + "for left extrapolation");
       }
     }
 
@@ -76,7 +74,7 @@ import javax.annotation.Nullable;
           break;
         default:
           throw new JSApplicationIllegalArgumentException(
-            "Invalid extrapolation type " + extrapolateRight + "for right extrapolation");
+              "Invalid extrapolation type " + extrapolateRight + "for right extrapolation");
       }
     }
 
@@ -91,8 +89,7 @@ import javax.annotation.Nullable;
       return outputMax;
     }
 
-    return outputMin + (outputMax - outputMin) *
-      (result - inputMin) / (inputMax - inputMin);
+    return outputMin + (outputMax - outputMin) * (result - inputMin) / (inputMax - inputMin);
   }
 
   /*package*/ static double interpolate(
@@ -100,17 +97,16 @@ import javax.annotation.Nullable;
       double[] inputRange,
       double[] outputRange,
       String extrapolateLeft,
-      String extrapolateRight
-  ) {
+      String extrapolateRight) {
     int rangeIndex = findRangeIndex(value, inputRange);
     return interpolate(
-      value,
-      inputRange[rangeIndex],
-      inputRange[rangeIndex + 1],
-      outputRange[rangeIndex],
-      outputRange[rangeIndex + 1],
-      extrapolateLeft,
-      extrapolateRight);
+        value,
+        inputRange[rangeIndex],
+        inputRange[rangeIndex + 1],
+        outputRange[rangeIndex],
+        outputRange[rangeIndex + 1],
+        extrapolateLeft,
+        extrapolateRight);
   }
 
   private static int findRangeIndex(double value, double[] ranges) {
@@ -228,16 +224,19 @@ import javax.annotation.Nullable;
         int i = 0;
         mSOutputMatcher.reset();
         while (mSOutputMatcher.find()) {
-          double val = interpolate(value, mInputRange, mOutputs[i++], mExtrapolateLeft, mExtrapolateRight);
+          double val =
+              interpolate(value, mInputRange, mOutputs[i++], mExtrapolateLeft, mExtrapolateRight);
           if (mShouldRound) {
-            // rgba requires that the r,g,b are integers.... so we want to round them, but we *dont* want to
+            // rgba requires that the r,g,b are integers.... so we want to round them, but we *dont*
+            // want to
             // round the opacity (4th column).
             boolean isAlpha = i == 4;
-            int rounded = (int)Math.round(isAlpha ? val * 1000 : val);
-            String num = isAlpha ? Double.toString((double)rounded / 1000) : Integer.toString(rounded);
+            int rounded = (int) Math.round(isAlpha ? val * 1000 : val);
+            String num =
+                isAlpha ? Double.toString((double) rounded / 1000) : Integer.toString(rounded);
             mSOutputMatcher.appendReplacement(sb, num);
           } else {
-            int intVal = (int)val;
+            int intVal = (int) val;
             String num = intVal != val ? Double.toString(val) : Integer.toString(intVal);
             mSOutputMatcher.appendReplacement(sb, num);
           }

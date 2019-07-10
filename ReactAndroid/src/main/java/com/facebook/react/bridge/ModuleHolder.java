@@ -70,8 +70,7 @@ public class ModuleHolder {
             true,
             true,
             CxxModuleWrapper.class.isAssignableFrom(nativeModule.getClass()),
-            TurboModule.class.isAssignableFrom(nativeModule.getClass())
-          );
+            TurboModule.class.isAssignableFrom(nativeModule.getClass()));
 
     mModule = nativeModule;
     PrinterHolder.getPrinter()
@@ -199,7 +198,7 @@ public class ModuleHolder {
         doInitialize(module);
       }
     } finally {
-      ReactMarker.logMarker(CREATE_MODULE_END, mName ,mInstanceKey);
+      ReactMarker.logMarker(CREATE_MODULE_END, mName, mInstanceKey);
       SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
     return module;

@@ -53,7 +53,8 @@ public class ReactInstanceSpecForTest {
     return this;
   }
 
-  public ReactInstanceSpecForTest setFabricUIManagerFactory(@Nullable FabricUIManagerFactory fabricUIManagerFactory) {
+  public ReactInstanceSpecForTest setFabricUIManagerFactory(
+      @Nullable FabricUIManagerFactory fabricUIManagerFactory) {
     mFabricUIManagerFactory = fabricUIManagerFactory;
     return this;
   }

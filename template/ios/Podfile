@@ -3,8 +3,12 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 target 'HelloWorld' do
   # Pods for HelloWorld
+  pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
+  pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
+  pod 'RCTRequired', :path => "../node_modules/react-native/Libraries/RCTRequired"
   pod 'React', :path => '../node_modules/react-native/'
   pod 'React-Core', :path => '../node_modules/react-native/React'
+  pod 'React-CoreModules', :path => '../node_modules/react-native/React/CoreModules'
   pod 'React-DevSupport', :path => '../node_modules/react-native/React'
   pod 'React-RCTActionSheet', :path => '../node_modules/react-native/Libraries/ActionSheetIOS'
   pod 'React-RCTAnimation', :path => '../node_modules/react-native/Libraries/NativeAnimation'
@@ -16,11 +20,14 @@ target 'HelloWorld' do
   pod 'React-RCTText', :path => '../node_modules/react-native/Libraries/Text'
   pod 'React-RCTVibration', :path => '../node_modules/react-native/Libraries/Vibration'
   pod 'React-RCTWebSocket', :path => '../node_modules/react-native/Libraries/WebSocket'
+  pod 'React-TypeSafety', :path => "../node_modules/react-native/Libraries/TypeSafety"
 
   pod 'React-cxxreact', :path => '../node_modules/react-native/ReactCommon/cxxreact'
+  pod 'React-jscallinvoker', :path => "../node_modules/react-native/ReactCommon/jscallinvoker"
   pod 'React-jsi', :path => '../node_modules/react-native/ReactCommon/jsi'
   pod 'React-jsiexecutor', :path => '../node_modules/react-native/ReactCommon/jsiexecutor'
   pod 'React-jsinspector', :path => '../node_modules/react-native/ReactCommon/jsinspector'
+  pod 'React-turbomodule-core', :path => "../node_modules/react-native/ReactCommon/turbomodule/core"
   pod 'yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
 
   pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'

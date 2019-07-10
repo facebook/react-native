@@ -1,15 +1,13 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.share;
 
 import android.app.Activity;
 import android.content.Intent;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -19,9 +17,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
-/**
- * Intent module. Launch other activities or open URLs.
- */
+/** Intent module. Launch other activities or open URLs. */
 @ReactModule(name = ShareModule.NAME)
 public class ShareModule extends ReactContextBaseJavaModule {
 
@@ -42,7 +38,7 @@ public class ShareModule extends ReactContextBaseJavaModule {
   /**
    * Open a chooser dialog to send text content to other apps.
    *
-   * Refer http://developer.android.com/intl/ko/training/sharing/send.html
+   * <p>Refer http://developer.android.com/intl/ko/training/sharing/send.html
    *
    * @param content the data to send
    * @param dialogTitle the title of the chooser dialog

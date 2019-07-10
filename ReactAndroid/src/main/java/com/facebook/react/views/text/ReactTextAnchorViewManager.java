@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.text;
 
 import android.text.Spannable;
@@ -92,15 +91,14 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
   }
 
   @ReactPropGroup(
-    names = {
-      ViewProps.BORDER_RADIUS,
-      ViewProps.BORDER_TOP_LEFT_RADIUS,
-      ViewProps.BORDER_TOP_RIGHT_RADIUS,
-      ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
-      ViewProps.BORDER_BOTTOM_LEFT_RADIUS
-    },
-    defaultFloat = YogaConstants.UNDEFINED
-  )
+      names = {
+        ViewProps.BORDER_RADIUS,
+        ViewProps.BORDER_TOP_LEFT_RADIUS,
+        ViewProps.BORDER_TOP_RIGHT_RADIUS,
+        ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+        ViewProps.BORDER_BOTTOM_LEFT_RADIUS
+      },
+      defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderRadius(ReactTextView view, int index, float borderRadius) {
     if (!YogaConstants.isUndefined(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
@@ -119,15 +117,14 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
   }
 
   @ReactPropGroup(
-    names = {
-      ViewProps.BORDER_WIDTH,
-      ViewProps.BORDER_LEFT_WIDTH,
-      ViewProps.BORDER_RIGHT_WIDTH,
-      ViewProps.BORDER_TOP_WIDTH,
-      ViewProps.BORDER_BOTTOM_WIDTH,
-    },
-    defaultFloat = YogaConstants.UNDEFINED
-  )
+      names = {
+        ViewProps.BORDER_WIDTH,
+        ViewProps.BORDER_LEFT_WIDTH,
+        ViewProps.BORDER_RIGHT_WIDTH,
+        ViewProps.BORDER_TOP_WIDTH,
+        ViewProps.BORDER_BOTTOM_WIDTH,
+      },
+      defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderWidth(ReactTextView view, int index, float width) {
     if (!YogaConstants.isUndefined(width)) {
       width = PixelUtil.toPixelFromDIP(width);
@@ -136,15 +133,14 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
   }
 
   @ReactPropGroup(
-    names = {
-      "borderColor",
-      "borderLeftColor",
-      "borderRightColor",
-      "borderTopColor",
-      "borderBottomColor"
-    },
-    customType = "Color"
-  )
+      names = {
+        "borderColor",
+        "borderLeftColor",
+        "borderRightColor",
+        "borderTopColor",
+        "borderBottomColor"
+      },
+      customType = "Color")
   public void setBorderColor(ReactTextView view, int index, Integer color) {
     float rgbComponent =
         color == null ? YogaConstants.UNDEFINED : (float) ((int) color & 0x00FFFFFF);

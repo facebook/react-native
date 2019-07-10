@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.swiperefresh;
 
 import static com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager.REACT_CLASS;
@@ -22,7 +21,6 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.Map;
 import javax.annotation.Nullable;
 
@@ -84,7 +82,8 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
       } else if (sizeStr.equals("large")) {
         view.setSize(SwipeRefreshLayout.LARGE);
       } else {
-        throw new IllegalArgumentException("Size must be 'default' or 'large', received: " + sizeStr);
+        throw new IllegalArgumentException(
+            "Size must be 'default' or 'large', received: " + sizeStr);
       }
     } else {
       throw new IllegalArgumentException("Size must be 'default' or 'large'");
@@ -103,13 +102,14 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
 
   @Override
   protected void addEventEmitters(
-      final ThemedReactContext reactContext,
-      final ReactSwipeRefreshLayout view) {
+      final ThemedReactContext reactContext, final ReactSwipeRefreshLayout view) {
     view.setOnRefreshListener(
         new OnRefreshListener() {
           @Override
           public void onRefresh() {
-            reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()
+            reactContext
+                .getNativeModule(UIManagerModule.class)
+                .getEventDispatcher()
                 .dispatchEvent(new RefreshEvent(view.getId()));
           }
         });

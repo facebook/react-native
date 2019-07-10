@@ -134,7 +134,22 @@ public class MountingManager {
     return viewState;
   }
 
+  @Deprecated
   public void receiveCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
+    ViewState viewState = getViewState(reactTag);
+
+    if (viewState.mViewManager == null) {
+      throw new IllegalStateException("Unable to find viewState manager for tag " + reactTag);
+    }
+
+    if (viewState.mView == null) {
+      throw new IllegalStateException("Unable to find viewState view for tag " + reactTag);
+    }
+
+    viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
+  }
+
+  public void receiveCommand(int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
     ViewState viewState = getViewState(reactTag);
 
     if (viewState.mViewManager == null) {
@@ -190,10 +205,12 @@ public class MountingManager {
 
     if (isLayoutable) {
       viewManager = mViewManagerRegistry.get(componentName);
-      view = mViewFactory.getOrCreateView(componentName, propsDiffMap, stateWrapper, themedReactContext);
+      view =
+          mViewFactory.getOrCreateView(
+              componentName, propsDiffMap, stateWrapper, themedReactContext);
       view.setId(reactTag);
       if (stateWrapper != null) {
-        viewManager.updateState(view, stateWrapper);
+        viewManager.updateState(view, propsDiffMap, stateWrapper);
       }
     }
 
@@ -308,7 +325,11 @@ public class MountingManager {
     if (viewManager == null) {
       throw new IllegalStateException("Unable to find ViewManager for tag: " + reactTag);
     }
-    viewManager.updateState(viewState.mView, stateWrapper);
+    Object extraData =
+        viewManager.updateState(viewState.mView, viewState.mCurrentProps, stateWrapper);
+    if (extraData != null) {
+      viewManager.updateExtraData(viewState.mView, extraData);
+    }
   }
 
   @UiThread

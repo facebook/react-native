@@ -12,12 +12,12 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * A thread which invokes the "destruct" routine for objects after they have been garbage collected.
  *
- * An object which needs to be destructed should create a static subclass of {@link Destructor}.
- * Once the referent object is garbage collected, the DestructorThread will callback to the
- * {@link Destructor#destruct()} method.
+ * <p>An object which needs to be destructed should create a static subclass of {@link Destructor}.
+ * Once the referent object is garbage collected, the DestructorThread will callback to the {@link
+ * Destructor#destruct()} method.
  *
- * The underlying thread in DestructorThread starts when the first Destructor is constructed
- * and then runs indefinitely.
+ * <p>The underlying thread in DestructorThread starts when the first Destructor is constructed and
+ * then runs indefinitely.
  */
 public class DestructorThread {
 
@@ -48,6 +48,7 @@ public class DestructorThread {
   private static DestructorList sDestructorList;
   /** A thread safe stack where new Destructors are placed before being add to sDestructorList. */
   private static DestructorStack sDestructorStack;
+
   private static ReferenceQueue sReferenceQueue;
   private static Thread sThread;
 
@@ -55,27 +56,28 @@ public class DestructorThread {
     sDestructorStack = new DestructorStack();
     sReferenceQueue = new ReferenceQueue();
     sDestructorList = new DestructorList();
-    sThread = new Thread("HybridData DestructorThread") {
-      @Override
-      public void run() {
-        while (true) {
-          try {
-            Destructor current = (Destructor) sReferenceQueue.remove();
-            current.destruct();
+    sThread =
+        new Thread("HybridData DestructorThread") {
+          @Override
+          public void run() {
+            while (true) {
+              try {
+                Destructor current = (Destructor) sReferenceQueue.remove();
+                current.destruct();
 
-            // If current is in the sDestructorStack,
-            // transfer all the Destructors in the stack to the list.
-            if (current.previous == null) {
-              sDestructorStack.transferAllToList();
+                // If current is in the sDestructorStack,
+                // transfer all the Destructors in the stack to the list.
+                if (current.previous == null) {
+                  sDestructorStack.transferAllToList();
+                }
+
+                DestructorList.drop(current);
+              } catch (InterruptedException e) {
+                // Continue. This thread should never be terminated.
+              }
             }
-
-            DestructorList.drop(current);
-          } catch (InterruptedException e) {
-            // Continue. This thread should never be terminated.
           }
-        }
-      }
-    };
+        };
 
     sThread.start();
   }

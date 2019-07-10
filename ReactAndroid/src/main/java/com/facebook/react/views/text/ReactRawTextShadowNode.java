@@ -1,8 +1,8 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.views.text;
 
@@ -22,7 +22,7 @@ public class ReactRawTextShadowNode extends ReactShadowNodeImpl {
 
   private @Nullable String mText = null;
 
-  public ReactRawTextShadowNode() { }
+  public ReactRawTextShadowNode() {}
 
   @ReactProp(name = PROP_TEXT)
   public void setText(@Nullable String text) {

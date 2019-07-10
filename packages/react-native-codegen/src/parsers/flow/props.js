@@ -129,29 +129,20 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
         name: 'PointPrimitive',
       };
     case 'Int32':
-      if (defaultValue != null) {
-        return {
-          type: 'Int32TypeAnnotation',
-          default: (defaultValue: number),
-        };
-      }
-      throw new Error(`A default int is required for "${name}"`);
+      return {
+        type: 'Int32TypeAnnotation',
+        default: ((defaultValue ? defaultValue : 0): number),
+      };
     case 'Float':
-      if (defaultValue != null) {
-        return {
-          type: 'FloatTypeAnnotation',
-          default: (defaultValue: number),
-        };
-      }
-      throw new Error(`A default float is required for "${name}"`);
+      return {
+        type: 'FloatTypeAnnotation',
+        default: ((defaultValue ? defaultValue : 0): number),
+      };
     case 'BooleanTypeAnnotation':
-      if (defaultValue != null) {
-        return {
-          type: 'BooleanTypeAnnotation',
-          default: (defaultValue: boolean),
-        };
-      }
-      throw new Error(`A default boolean is required for "${name}"`);
+      return {
+        type: 'BooleanTypeAnnotation',
+        default: ((defaultValue == null ? false : defaultValue): boolean),
+      };
     case 'StringTypeAnnotation':
       if (typeof defaultValue !== 'undefined') {
         return {
@@ -185,16 +176,42 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
 
 function buildPropSchema(property): ?PropTypeShape {
   const name = property.key.name;
-  const optional =
-    property.value.type === 'NullableTypeAnnotation' || property.optional;
 
+  const {value} = property;
   let typeAnnotation =
-    property.value.type === 'NullableTypeAnnotation'
-      ? property.value.typeAnnotation
-      : property.value;
+    value.type === 'NullableTypeAnnotation' ? value.typeAnnotation : value;
+
+  const optional =
+    value.type === 'NullableTypeAnnotation' ||
+    property.optional ||
+    (value.type === 'GenericTypeAnnotation' &&
+      typeAnnotation.id.name === 'WithDefault');
+
+  if (
+    !property.optional &&
+    value.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.id.name === 'WithDefault'
+  ) {
+    throw new Error(
+      `key ${name} must be optional if used with WithDefault<> annotation`,
+    );
+  }
+  if (
+    value.type === 'NullableTypeAnnotation' &&
+    (typeAnnotation.type === 'GenericTypeAnnotation' &&
+      typeAnnotation.id.name === 'WithDefault')
+  ) {
+    throw new Error(
+      'WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it.',
+    );
+  }
 
   let type = typeAnnotation.type;
-  if (type === 'FunctionTypeAnnotation') {
+  if (
+    type === 'GenericTypeAnnotation' &&
+    (typeAnnotation.id.name === 'DirectEventHandler' ||
+      typeAnnotation.id.name === 'BubblingEventHandler')
+  ) {
     return null;
   }
 

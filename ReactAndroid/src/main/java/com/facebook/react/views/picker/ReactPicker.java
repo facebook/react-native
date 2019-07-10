@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.picker;
 
 import android.content.Context;
@@ -12,13 +11,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
-
 import androidx.appcompat.widget.AppCompatSpinner;
-
 import com.facebook.react.common.annotations.VisibleForTesting;
-
 import java.util.List;
-
 import javax.annotation.Nullable;
 
 public class ReactPicker extends AppCompatSpinner {
@@ -30,25 +25,24 @@ public class ReactPicker extends AppCompatSpinner {
   private @Nullable Integer mStagedSelection;
   private @Nullable Integer mStagedPrimaryTextColor;
 
-  private final OnItemSelectedListener mItemSelectedListener = new OnItemSelectedListener() {
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-      if (mOnSelectListener != null) {
-        mOnSelectListener.onItemSelected(position);
-      }
-    }
+  private final OnItemSelectedListener mItemSelectedListener =
+      new OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+          if (mOnSelectListener != null) {
+            mOnSelectListener.onItemSelected(position);
+          }
+        }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-      if (mOnSelectListener != null) {
-        mOnSelectListener.onItemSelected(-1);
-      }
-    }
-  };
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+          if (mOnSelectListener != null) {
+            mOnSelectListener.onItemSelected(-1);
+          }
+        }
+      };
 
-  /**
-   * Listener interface for ReactPicker events.
-   */
+  /** Listener interface for ReactPicker events. */
   public interface OnSelectListener {
     void onItemSelected(int position);
   }
@@ -75,15 +69,16 @@ public class ReactPicker extends AppCompatSpinner {
     mMode = mode;
   }
 
-  private final Runnable measureAndLayout = new Runnable() {
-    @Override
-    public void run() {
-      measure(
-          MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
-          MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
-      layout(getLeft(), getTop(), getRight(), getBottom());
-    }
-  };
+  private final Runnable measureAndLayout =
+      new Runnable() {
+        @Override
+        public void run() {
+          measure(
+              MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
+              MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
+          layout(getLeft(), getTop(), getRight(), getBottom());
+        }
+      };
 
   @Override
   public void requestLayout() {
@@ -104,25 +99,24 @@ public class ReactPicker extends AppCompatSpinner {
     // AdapterView updates the selection position from the default INVALID_POSITION.
     // To match iOS behavior, which no onItemSelected during initial layout.
     // We setup the listener after layout.
-    if (getOnItemSelectedListener() == null)
-      setOnItemSelectedListener(mItemSelectedListener);
+    if (getOnItemSelectedListener() == null) setOnItemSelectedListener(mItemSelectedListener);
   }
 
   public void setOnSelectListener(@Nullable OnSelectListener onSelectListener) {
     mOnSelectListener = onSelectListener;
   }
 
-  @Nullable public OnSelectListener getOnSelectListener() {
+  @Nullable
+  public OnSelectListener getOnSelectListener() {
     return mOnSelectListener;
   }
 
   /* package */ void setStagedItems(final @Nullable List<ReactPickerItem> items) {
-   mStagedItems = items;
+    mStagedItems = items;
   }
 
   /**
-   * Will cache "selection" value locally and set it only once {@link #commitStagedData} is
-   * called
+   * Will cache "selection" value locally and set it only once {@link #commitStagedData} is called
    */
   /* package */ void setStagedSelection(int selection) {
     mStagedSelection = selection;
@@ -133,9 +127,9 @@ public class ReactPicker extends AppCompatSpinner {
   }
 
   /**
-   * Used to commit staged data into ReactPicker view.
-   * During this period, we will disable {@link OnSelectListener#onItemSelected(int)} temporarily,
-   * so we don't get an event when changing the items/selection ourselves.
+   * Used to commit staged data into ReactPicker view. During this period, we will disable {@link
+   * OnSelectListener#onItemSelected(int)} temporarily, so we don't get an event when changing the
+   * items/selection ourselves.
    */
   /* package */ void commitStagedData() {
     setOnItemSelectedListener(null);
@@ -160,9 +154,9 @@ public class ReactPicker extends AppCompatSpinner {
       mStagedSelection = null;
     }
 
-    if (mStagedPrimaryTextColor != null &&
-        adapter != null &&
-        mStagedPrimaryTextColor != adapter.getPrimaryTextColor()) {
+    if (mStagedPrimaryTextColor != null
+        && adapter != null
+        && mStagedPrimaryTextColor != adapter.getPrimaryTextColor()) {
       adapter.setPrimaryTextColor(mStagedPrimaryTextColor);
       mStagedPrimaryTextColor = null;
     }

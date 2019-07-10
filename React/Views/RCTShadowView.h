@@ -235,9 +235,4 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  */
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor;
 
-/**
- * Checks if the current shadow view is a descendant of the provided `ancestor`
- */
-- (BOOL)viewIsDescendantOf:(RCTShadowView *)ancestor;
-
 @end
