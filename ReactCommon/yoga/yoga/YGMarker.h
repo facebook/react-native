@@ -14,7 +14,6 @@ typedef struct YGNode* YGNodeRef;
 typedef struct YGConfig* YGConfigRef;
 
 typedef YG_ENUM_BEGIN(YGMarker){
-    YGMarkerLayout,
     YGMarkerMeasure,
     YGMarkerBaselineFn,
 } YG_ENUM_END(YGMarker);
@@ -33,7 +32,6 @@ typedef struct {
 } YGMarkerNoData;
 
 typedef union {
-  YGMarkerLayoutData* layout;
   YGMarkerNoData* noData;
 } YGMarkerData;
 
@@ -59,12 +57,6 @@ namespace detail {
 
 template <YGMarker M>
 struct MarkerData;
-
-template <>
-struct MarkerData<YGMarkerLayout> {
-  using type = YGMarkerLayoutData;
-  static type*& get(YGMarkerData& d) { return d.layout; }
-};
 
 struct NoMarkerData {
   using type = YGMarkerNoData;

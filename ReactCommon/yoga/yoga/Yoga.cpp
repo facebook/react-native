@@ -4063,7 +4063,7 @@ void YGNodeCalculateLayoutWithContext(
     void* layoutContext) {
 
   Event::publish<Event::LayoutPassStart>(node, {layoutContext});
-  marker::MarkerSection<YGMarkerLayout> marker{node};
+  YGMarkerLayoutData markerData = {};
 
   // Increment the generation count. This will force the recursive routine to
   // visit all dirty nodes at least once. Subsequent visits will be skipped if
@@ -4122,7 +4122,7 @@ void YGNodeCalculateLayoutWithContext(
           true,
           "initial",
           node->getConfig(),
-          marker.data,
+          markerData,
           layoutContext,
           0, // tree root
           gCurrentGenerationCount)) {
@@ -4141,8 +4141,7 @@ void YGNodeCalculateLayoutWithContext(
 #endif
   }
 
-  marker.end();
-  Event::publish<Event::LayoutPassEnd>(node, {layoutContext, &marker.data});
+  Event::publish<Event::LayoutPassEnd>(node, {layoutContext, &markerData});
 
   // We want to get rid off `useLegacyStretchBehaviour` from YGConfig. But we
   // aren't sure whether client's of yoga have gotten rid off this flag or not.
@@ -4160,7 +4159,7 @@ void YGNodeCalculateLayoutWithContext(
     gCurrentGenerationCount++;
     // Rerun the layout, and calculate the diff
     unsetUseLegacyFlagRecursively(nodeWithoutLegacyFlag);
-    YGMarkerLayoutData layoutMarkerData;
+    YGMarkerLayoutData layoutMarkerData = {};
     if (YGLayoutNodeInternal(
             nodeWithoutLegacyFlag,
             width,
