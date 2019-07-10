@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {CommandTypeShape} from '../../CodegenSchema.js';
+import type {CommandTypeShape} from '../../../CodegenSchema.js';
 
 type EventTypeAST = Object;
 

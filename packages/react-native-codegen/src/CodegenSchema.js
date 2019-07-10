@@ -134,7 +134,7 @@ export type PrimitiveTypeAnnotationType =
   | 'StringTypeAnnotation'
   | 'NumberTypeAnnotation'
   | 'BooleanTypeAnnotation'
-  | 'ObjectWithoutPropertiesTypeAnnotation';
+  | 'GenericObjectTypeAnnotation';
 
 export type PrimitiveTypeAnnotation = $ReadOnly<{|
   type: PrimitiveTypeAnnotationType,
@@ -174,7 +174,7 @@ export type FunctionTypeAnnotationReturn =
       elementType: FunctionTypeAnnotationReturnArrayElementType,
     |}>
   | $ReadOnly<{|
-      type: 'PromiseTypeAnnotation',
+      type: 'GenericPromiseTypeAnnotation',
       resolvedType: FunctionTypeAnnotationReturn,
     |}>
   | $ReadOnly<{|

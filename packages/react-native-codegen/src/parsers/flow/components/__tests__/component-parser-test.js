@@ -11,7 +11,7 @@
 
 'use strict';
 
-const FlowParser = require('../index.js');
+const FlowParser = require('../../index.js');
 const fixtures = require('../__test_fixtures__/fixtures.js');
 const failureFixtures = require('../__test_fixtures__/failures.js');
 jest.mock('fs', () => ({

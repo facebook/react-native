@@ -10,7 +10,10 @@
 
 'use strict';
 
-import type {EventTypeShape, ObjectPropertyType} from '../../CodegenSchema.js';
+import type {
+  EventTypeShape,
+  ObjectPropertyType,
+} from '../../../CodegenSchema.js';
 
 function getPropertyType(name, optional, typeAnnotation) {
   const type =

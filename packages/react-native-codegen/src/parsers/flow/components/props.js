@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {PropTypeShape} from '../../CodegenSchema.js';
+import type {PropTypeShape} from '../../../CodegenSchema.js';
 
 function getTypeAnnotationForArray(name, typeAnnotation, defaultValue) {
   if (typeAnnotation.type === 'NullableTypeAnnotation') {

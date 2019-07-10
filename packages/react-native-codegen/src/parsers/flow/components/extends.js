@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {ExtendsPropsShape} from '../../CodegenSchema.js';
+import type {ExtendsPropsShape} from '../../../CodegenSchema.js';
 
 function extendsForProp(prop) {
   const name = prop.argument.id.name;

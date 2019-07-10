@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {OptionsShape} from '../../CodegenSchema.js';
+import type {OptionsShape} from '../../../CodegenSchema.js';
 
 // $FlowFixMe there's no flowtype for ASTs
 type OptionsAST = Object;
