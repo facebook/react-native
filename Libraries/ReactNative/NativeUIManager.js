@@ -59,6 +59,11 @@ export interface Spec extends TurboModule {
     reactTag: ?number,
     callback: (x: number, y: number, width: number, height: number) => void,
   ) => void;
+  +viewIsDescendantOf: (
+    reactTag: ?number,
+    ancestorReactTag: ?number,
+    callback: (result: Array<boolean>) => void,
+  ) => void;
   +measureLayout: (
     reactTag: ?number,
     ancestorReactTag: ?number,

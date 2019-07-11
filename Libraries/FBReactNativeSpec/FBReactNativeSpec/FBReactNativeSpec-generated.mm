@@ -1473,6 +1473,10 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "measureInWindow", @selector(measureInWindow:callback:), args, count);
     }
 
+    static facebook::jsi::Value __hostFunction_NativeUIManagerSpecJSI_viewIsDescendantOf(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "viewIsDescendantOf", @selector(viewIsDescendantOf:ancestorReactTag:callback:), args, count);
+    }
+
     static facebook::jsi::Value __hostFunction_NativeUIManagerSpecJSI_measureLayout(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "measureLayout", @selector(measureLayout:ancestorReactTag:errorCallback:callback:), args, count);
     }
@@ -1567,6 +1571,9 @@ namespace facebook {
         
         
         methodMap_["measureInWindow"] = MethodMetadata {2, __hostFunction_NativeUIManagerSpecJSI_measureInWindow};
+        
+        
+        methodMap_["viewIsDescendantOf"] = MethodMetadata {3, __hostFunction_NativeUIManagerSpecJSI_viewIsDescendantOf};
         
         
         methodMap_["measureLayout"] = MethodMetadata {4, __hostFunction_NativeUIManagerSpecJSI_measureLayout};

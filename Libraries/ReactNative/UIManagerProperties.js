@@ -49,6 +49,7 @@ module.exports = [
   'setLayoutAnimationEnabledExperimental',
   'showPopupMenu',
   'updateView',
+  'viewIsDescendantOf',
   'PopupMenu',
   'LazyViewManagersEnabled',
   'ViewManagerNames',
