@@ -11,7 +11,7 @@
 
 'use strict';
 
-const fixtures = require('../__test_fixtures__/fixtures.js');
+const fixtures = require('../__test_fixtures__/componentFixtures.js');
 const generator = require('../GenerateViewConfigJs.js');
 
 describe('GenerateViewConfigJs', () => {

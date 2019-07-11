@@ -27,7 +27,7 @@ const {
   EVENT_PROPS,
   TWO_COMPONENTS_SAME_FILE,
   TWO_COMPONENTS_DIFFERENT_FILES,
-} = require('../__test_fixtures__/fixtures.js');
+} = require('../__test_fixtures__/componentFixtures.js');
 
 describe('GenerateComponentDescriptorH', () => {
   it('can generate a array props', () => {
