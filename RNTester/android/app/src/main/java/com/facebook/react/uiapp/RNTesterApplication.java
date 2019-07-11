@@ -14,8 +14,11 @@ import com.facebook.react.BuildConfig;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
+import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.views.text.ReactFontManager;
+import com.facebook.soloader.SoLoader;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +52,7 @@ public class RNTesterApplication extends Application implements ReactApplication
   public void onCreate() {
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik);
     super.onCreate();
+    SoLoader.init(this, /* native exopackage */ false);
   }
 
   @Override

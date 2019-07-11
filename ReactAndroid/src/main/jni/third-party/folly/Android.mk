@@ -65,7 +65,7 @@ LOCAL_SRC_FILES := \
   folly/memory/MallctlHelper.cpp \
   folly/portability/SysMembarrier.cpp \
   folly/synchronization/AsymmetricMemoryBarrier.cpp \
-  folly/synchronization/HazPtr.cpp \
+  folly/synchronization/Hazptr.cpp \
   folly/synchronization/ParkingLot.cpp \
   folly/synchronization/WaitOptions.cpp
 

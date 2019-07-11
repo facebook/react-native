@@ -88,6 +88,17 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
     into("$thirdPartyNdkDir/folly")
 }
 
+task prepareHermes() {
+    def hermesAAR = new File("$projectDir/../node_modules/hermesvm/android/hermes-debug.aar")
+    def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
+
+    copy {
+        from soFiles
+        from "src/main/jni/first-party/hermes/Android.mk"
+        into "$thirdPartyNdkDir/hermes"
+    }
+}
+
 task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
     onlyIfNewer(true)
@@ -229,7 +240,7 @@ def getNdkBuildFullPath() {
     return ndkBuildFullPath
 }
 
-task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
+task buildReactNdkLib(dependsOn: [prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
     inputs.dir("$projectDir/../ReactCommon")
     inputs.dir("src/main/jni")
     outputs.dir("$buildDir/react-ndk/all")
@@ -265,6 +276,7 @@ task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
     from("$buildDir/react-ndk/all")
     into("$buildDir/react-ndk/exported")
     exclude("**/libjsc.so")
+    exclude("**/libhermes.so")
 }
 
 task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
