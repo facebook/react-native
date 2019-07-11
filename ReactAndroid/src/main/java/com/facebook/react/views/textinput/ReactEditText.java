@@ -499,7 +499,7 @@ public class ReactEditText extends EditText {
     return mTextWatcherDelegator;
   }
 
-  private boolean isMultiline() {
+  /* package */ boolean isMultiline() {
     return (getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0;
   }
 

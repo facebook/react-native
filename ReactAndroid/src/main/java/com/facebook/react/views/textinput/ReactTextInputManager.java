@@ -6,8 +6,6 @@
  */
 package com.facebook.react.views.textinput;
 
-import static android.view.View.FOCUS_FORWARD;
-
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -904,11 +902,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         new TextView.OnEditorActionListener() {
           @Override
           public boolean onEditorAction(TextView v, int actionId, KeyEvent keyEvent) {
-            // Any 'Enter' action will do
-            if ((actionId & EditorInfo.IME_MASK_ACTION) > 0 || actionId == EditorInfo.IME_NULL) {
+            if ((actionId & EditorInfo.IME_MASK_ACTION) != 0 || actionId == EditorInfo.IME_NULL) {
               boolean blurOnSubmit = editText.getBlurOnSubmit();
-              boolean isMultiline =
-                  ((editText.getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0);
+              boolean isMultiline = editText.isMultiline();
 
               // Motivation:
               // * blurOnSubmit && isMultiline => Clear focus; prevent default behaviour (return
@@ -931,13 +927,20 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               }
 
               // Prevent default behavior except when we want it to insert a newline.
-              return blurOnSubmit || !isMultiline;
-            } else if (actionId == EditorInfo.IME_ACTION_NEXT) {
-              View v1 = v.focusSearch(FOCUS_FORWARD);
-              if (v1 != null && !v.requestFocus(FOCUS_FORWARD)) {
+              if (blurOnSubmit || !isMultiline) {
                 return true;
               }
-              return false;
+
+              // If we've reached this point, it means that the TextInput has 'blurOnSubmit' set to
+              // false and 'multiline' set to true. But it's still possible to get IME_ACTION_NEXT
+              // and IME_ACTION_PREVIOUS here in case if 'disableFullscreenUI' is false and Android
+              // decides to render this EditText in the full screen mode (when a phone has the
+              // landscape orientation for example). The full screen EditText also renders an action
+              // button specified by the 'returnKeyType' prop. We have to prevent Android from
+              // requesting focus from the next/previous focusable view since it must only be
+              // controlled from JS.
+              return actionId == EditorInfo.IME_ACTION_NEXT
+                  || actionId == EditorInfo.IME_ACTION_PREVIOUS;
             }
 
             return true;
