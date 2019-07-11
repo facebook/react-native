@@ -23,7 +23,7 @@ describe('RN Codegen Flow Parser', () => {
     .sort()
     .forEach(fixtureName => {
       it(`can generate fixture ${fixtureName}`, () => {
-        expect(FlowParser.parseFile(fixtureName)).toMatchSnapshot();
+        expect(FlowParser.parseModuleFixture(fixtureName)).toMatchSnapshot();
       });
     });
 
@@ -32,7 +32,7 @@ describe('RN Codegen Flow Parser', () => {
     .forEach(fixtureName => {
       it(`Fails with error message ${fixtureName}`, () => {
         expect(() => {
-          FlowParser.parseFile(fixtureName);
+          FlowParser.parseModuleFixture(fixtureName);
         }).toThrowErrorMatchingSnapshot();
       });
     });
