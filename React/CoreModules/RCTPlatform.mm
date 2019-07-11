@@ -44,6 +44,11 @@ RCT_EXPORT_MODULE(PlatformConstants)
   return YES;
 }
 
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 // TODO: Use the generated struct return type.
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
