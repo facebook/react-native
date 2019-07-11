@@ -17,15 +17,15 @@ TODO:
 */
 
 const fs = require('fs');
-const generateComponentDescriptorH = require('./GenerateComponentDescriptorH.js');
-const generateEventEmitterCpp = require('./GenerateEventEmitterCpp.js');
-const generateEventEmitterH = require('./GenerateEventEmitterH.js');
-const generatePropsCpp = require('./GeneratePropsCpp.js');
-const generatePropsH = require('./GeneratePropsH.js');
-const generateTests = require('./GenerateTests.js');
-const generateShadowNodeCpp = require('./GenerateShadowNodeCpp.js');
-const generateShadowNodeH = require('./GenerateShadowNodeH.js');
-const generateViewConfigJs = require('./GenerateViewConfigJs.js');
+const generateComponentDescriptorH = require('./components/GenerateComponentDescriptorH.js');
+const generateEventEmitterCpp = require('./components/GenerateEventEmitterCpp.js');
+const generateEventEmitterH = require('./components/GenerateEventEmitterH.js');
+const generatePropsCpp = require('./components/GeneratePropsCpp.js');
+const generatePropsH = require('./components/GeneratePropsH.js');
+const generateTests = require('./components/GenerateTests.js');
+const generateShadowNodeCpp = require('./components/GenerateShadowNodeCpp.js');
+const generateShadowNodeH = require('./components/GenerateShadowNodeH.js');
+const generateViewConfigJs = require('./components/GenerateViewConfigJs.js');
 const path = require('path');
 const schemaValidator = require('../SchemaValidator.js');
 

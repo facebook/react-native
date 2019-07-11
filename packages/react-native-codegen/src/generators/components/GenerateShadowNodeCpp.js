@@ -1,0 +1,76 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict
+ * @format
+ */
+
+'use strict';
+
+import type {SchemaType} from '../../CodegenSchema';
+
+// File path -> contents
+type FilesOutput = Map<string, string>;
+
+const template = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/::_LIBRARY_::/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+::_COMPONENT_NAMES_::
+
+} // namespace react
+} // namespace facebook
+`;
+
+const componentTemplate = `
+extern const char ::_CLASSNAME_::ComponentName[] = "::_CLASSNAME_::";
+`.trim();
+
+module.exports = {
+  generate(libraryName: string, schema: SchemaType): FilesOutput {
+    const fileName = 'ShadowNodes.cpp';
+
+    const componentNames = Object.keys(schema.modules)
+      .map(moduleName => {
+        const components = schema.modules[moduleName].components;
+        // No components in this module
+        if (components == null) {
+          return null;
+        }
+
+        return Object.keys(components)
+          .map(componentName => {
+            if (components[componentName].interfaceOnly === true) {
+              return;
+            }
+            const replacedTemplate = componentTemplate.replace(
+              /::_CLASSNAME_::/g,
+              componentName,
+            );
+
+            return replacedTemplate;
+          })
+          .join('\n');
+      })
+      .filter(Boolean)
+      .join('\n');
+
+    const replacedTemplate = template
+      .replace(/::_COMPONENT_NAMES_::/g, componentNames)
+      .replace('::_LIBRARY_::', libraryName);
+
+    return new Map([[fileName, replacedTemplate]]);
+  },
+};
