@@ -6,6 +6,7 @@
  */
 package com.facebook.react.testing.network;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -17,7 +18,6 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import javax.annotation.Nullable;
 
 /**
  * Mock Networking module that records last request received by {@link #sendRequest} method and

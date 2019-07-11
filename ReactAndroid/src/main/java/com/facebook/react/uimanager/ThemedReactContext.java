@@ -8,10 +8,10 @@ package com.facebook.react.uimanager;
 
 import android.app.Activity;
 import android.content.Context;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
-import javax.annotation.Nullable;
 
 /**
  * Wraps {@link ReactContext} with the base {@link Context} passed into the constructor. It provides

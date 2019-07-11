@@ -6,12 +6,12 @@
  */
 package com.facebook.react.animated;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /** Handles updating a {@link ValueAnimatedNode} when an event gets dispatched. */
 /* package */ class EventAnimationDriver implements RCTEventEmitter {

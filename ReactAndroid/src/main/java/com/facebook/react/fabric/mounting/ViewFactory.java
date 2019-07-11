@@ -7,10 +7,10 @@
 package com.facebook.react.fabric.mounting;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
-import javax.annotation.Nullable;
 
 public interface ViewFactory {
 

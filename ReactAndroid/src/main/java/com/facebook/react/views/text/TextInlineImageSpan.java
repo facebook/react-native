@@ -11,7 +11,7 @@ import android.text.Spannable;
 import android.text.style.ReplacementSpan;
 import android.view.View;
 import android.widget.TextView;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /** Base class for inline image spans. */
 public abstract class TextInlineImageSpan extends ReplacementSpan implements ReactSpan {

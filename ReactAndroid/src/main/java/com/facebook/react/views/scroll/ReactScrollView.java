@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.OverScroller;
 import android.widget.ScrollView;
+import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
@@ -30,7 +31,6 @@ import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.lang.reflect.Field;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * A simple subclass of ScrollView that doesn't dispatch measure and layout to its children and has

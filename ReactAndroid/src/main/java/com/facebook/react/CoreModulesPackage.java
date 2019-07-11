@@ -12,6 +12,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_START;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMarker;
@@ -35,7 +36,6 @@ import com.facebook.systrace.Systrace;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * This is the basic module to support React Native. The debug modules are now in DebugCorePackage.

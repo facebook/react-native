@@ -9,9 +9,9 @@ package com.facebook.react.testing;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import javax.annotation.Nullable;
 
 /** NativeModule for tests that allows assertions from JS to propagate to Java. */
 public class AssertModule extends BaseJavaModule {

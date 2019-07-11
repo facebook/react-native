@@ -7,12 +7,12 @@
 package com.facebook.react.fabric.mounting;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import javax.annotation.Nullable;
 
 public class ViewManagerFactory implements ViewFactory {
 

@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.view.View;
+import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
@@ -49,7 +50,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Native module to allow JS to create and update native Views.

@@ -8,6 +8,7 @@ package com.facebook.react.modules.image;
 
 import android.net.Uri;
 import android.util.SparseArray;
+import androidx.annotation.Nullable;
 import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
@@ -31,7 +32,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.views.imagehelper.ImageSource;
-import javax.annotation.Nullable;
 
 @ReactModule(name = ImageLoaderModule.NAME)
 public class ImageLoaderModule extends ReactContextBaseJavaModule

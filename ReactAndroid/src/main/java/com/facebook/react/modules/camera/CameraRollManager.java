@@ -19,6 +19,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.text.TextUtils;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -47,7 +48,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 // TODO #6015104: rename to something less iOSish
 /**

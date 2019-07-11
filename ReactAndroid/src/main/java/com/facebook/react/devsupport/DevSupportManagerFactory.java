@@ -7,12 +7,12 @@
 package com.facebook.react.devsupport;
 
 import android.content.Context;
+import androidx.annotation.Nullable;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.packagerconnection.RequestHandler;
 import java.lang.reflect.Constructor;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * A simple factory that creates instances of {@link DevSupportManager} implementations. Uses

@@ -21,6 +21,7 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
@@ -59,7 +60,6 @@ import com.facebook.yoga.YogaConstants;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Wrapper class around Fresco's GenericDraweeView, enabling persisting props across multiple view

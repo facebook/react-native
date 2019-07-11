@@ -9,6 +9,7 @@ package com.facebook.react.views.text.frescosupport;
 import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
+import androidx.annotation.Nullable;
 import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.bridge.Dynamic;
@@ -21,7 +22,6 @@ import com.facebook.react.views.text.ReactTextInlineImageShadowNode;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.yoga.YogaConstants;
 import java.util.Locale;
-import javax.annotation.Nullable;
 
 /** Shadow node that represents an inline image. Loading is done using Fresco. */
 public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShadowNode {

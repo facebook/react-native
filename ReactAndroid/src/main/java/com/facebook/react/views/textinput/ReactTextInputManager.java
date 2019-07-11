@@ -21,6 +21,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -53,7 +54,6 @@ import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /** Manages instances of TextInput. */
 @ReactModule(name = ReactTextInputManager.REACT_CLASS)

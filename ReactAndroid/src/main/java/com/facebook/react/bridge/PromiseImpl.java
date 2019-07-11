@@ -6,8 +6,8 @@
  */
 package com.facebook.react.bridge;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /*
  * Implementation of {@link Promise} that represents a JavaScript Promise which can be passed to the
@@ -126,7 +126,7 @@ public class PromiseImpl implements Promise {
    * @param userInfo WritableMap
    */
   @Override
-  public void reject(String code, @Nonnull WritableMap userInfo) {
+  public void reject(String code, @NonNull WritableMap userInfo) {
     reject(code, /*Message*/ null, /*Throwable*/ null, userInfo);
   }
 
@@ -151,7 +151,7 @@ public class PromiseImpl implements Promise {
    * @param userInfo WritableMap
    */
   @Override
-  public void reject(String code, String message, @Nonnull WritableMap userInfo) {
+  public void reject(String code, String message, @NonNull WritableMap userInfo) {
     reject(code, message, /*Throwable*/ null, userInfo);
   }
 

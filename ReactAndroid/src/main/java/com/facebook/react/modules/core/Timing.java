@@ -7,6 +7,7 @@
 package com.facebook.react.modules.core;
 
 import android.util.SparseArray;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -22,7 +23,6 @@ import com.facebook.react.module.annotations.ReactModule;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nullable;
 
 /** Native module for JS timer execution. Timers fire on frame boundaries. */
 @ReactModule(name = Timing.NAME)

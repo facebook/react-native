@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.view.Gravity;
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.PixelUtil;
@@ -20,7 +21,6 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
-import javax.annotation.Nullable;
 
 /**
  * Abstract class for anchor {@code <Text>}-ish spannable views, such as {@link TextView} or {@link

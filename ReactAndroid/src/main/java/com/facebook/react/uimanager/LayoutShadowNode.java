@@ -5,6 +5,7 @@
 
 package com.facebook.react.uimanager;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableType;
@@ -20,7 +21,6 @@ import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaUnit;
 import com.facebook.yoga.YogaWrap;
-import javax.annotation.Nullable;
 
 /**
  * Supply setters for base view layout properties such as width, height, flex properties, borders,

@@ -6,7 +6,7 @@
  */
 package com.facebook.react.packagerconnection;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public interface RequestHandler {
   void onRequest(@Nullable Object params, Responder responder);

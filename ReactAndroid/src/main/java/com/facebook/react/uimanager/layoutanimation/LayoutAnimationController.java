@@ -11,10 +11,10 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 /**

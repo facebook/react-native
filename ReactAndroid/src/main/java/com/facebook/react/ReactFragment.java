@@ -15,10 +15,10 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
-import javax.annotation.Nullable;
 
 /**
  * Fragment for creating a React View. This allows the developer to "embed" a React Application

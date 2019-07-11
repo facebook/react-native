@@ -6,11 +6,11 @@
  */
 package com.facebook.react.turbomodule.core;
 
+import androidx.annotation.Nullable;
 import com.facebook.jni.HybridData;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.soloader.SoLoader;
-import javax.annotation.Nullable;
 
 public abstract class TurboModuleManagerDelegate {
   static {

@@ -7,8 +7,8 @@
 package com.facebook.react.bridge.queue;
 
 import android.os.Build;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
-import javax.annotation.Nullable;
 
 /**
  * Spec for creating a ReactQueueConfiguration. This exists so that CatalystInstance is able to set

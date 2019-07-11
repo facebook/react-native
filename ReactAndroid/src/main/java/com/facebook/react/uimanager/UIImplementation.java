@@ -9,6 +9,7 @@ package com.facebook.react.uimanager;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.View.MeasureSpec;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
@@ -29,7 +30,6 @@ import com.facebook.yoga.YogaDirection;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * A class that is used to receive React commands from JS and translate them into a shadow node

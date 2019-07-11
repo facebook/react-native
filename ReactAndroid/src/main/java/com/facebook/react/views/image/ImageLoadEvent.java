@@ -7,13 +7,13 @@
 package com.facebook.react.views.image;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import javax.annotation.Nullable;
 
 public class ImageLoadEvent extends Event<ImageLoadEvent> {
   @IntDef({ON_ERROR, ON_LOAD, ON_LOAD_END, ON_LOAD_START, ON_PROGRESS})

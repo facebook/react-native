@@ -6,6 +6,7 @@
  */
 package com.facebook.react.modules.debug;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -13,7 +14,6 @@ import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.uimanager.UIManagerModule;
 import java.util.Map;
 import java.util.TreeMap;
-import javax.annotation.Nullable;
 
 /**
  * Each time a frame is drawn, records whether it should have expected any more callbacks since the

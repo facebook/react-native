@@ -17,11 +17,11 @@ import android.os.Build;
 import android.provider.Settings;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-import javax.annotation.Nullable;
 
 /**
  * Helper class for controlling overlay view with FPS and JS FPS info that gets added directly

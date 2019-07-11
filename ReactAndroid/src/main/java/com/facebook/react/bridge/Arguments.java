@@ -7,12 +7,12 @@
 package com.facebook.react.bridge;
 
 import android.os.Bundle;
+import androidx.annotation.Nullable;
 import java.lang.reflect.Array;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 public class Arguments {
   private static Object makeNativeObject(Object object) {

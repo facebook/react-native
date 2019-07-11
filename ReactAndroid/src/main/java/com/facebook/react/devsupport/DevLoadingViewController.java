@@ -16,6 +16,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -23,7 +24,6 @@ import com.facebook.react.common.ReactConstants;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
-import javax.annotation.Nullable;
 
 /** Controller to display loading messages on top of the screen. All methods are thread safe. */
 public class DevLoadingViewController {

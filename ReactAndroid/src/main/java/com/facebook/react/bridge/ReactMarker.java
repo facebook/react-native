@@ -5,10 +5,10 @@
 
 package com.facebook.react.bridge;
 
+import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Static class that allows markers to be placed in React code and responded to in a configurable

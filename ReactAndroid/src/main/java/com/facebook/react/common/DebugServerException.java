@@ -8,8 +8,8 @@ package com.facebook.react.common;
 
 import android.net.Uri;
 import android.text.TextUtils;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
-import javax.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 

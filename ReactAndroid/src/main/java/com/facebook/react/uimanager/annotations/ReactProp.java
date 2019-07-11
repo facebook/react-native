@@ -7,10 +7,10 @@ package com.facebook.react.uimanager.annotations;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import androidx.annotation.Nullable;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import javax.annotation.Nullable;
 
 /**
  * Use this annotation to annotate properties of native views that should be exposed to JS. This

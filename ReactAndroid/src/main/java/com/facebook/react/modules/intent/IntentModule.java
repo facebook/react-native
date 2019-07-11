@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.provider.Settings;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -22,7 +23,6 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.module.annotations.ReactModule;
-import javax.annotation.Nullable;
 
 /** Intent module. Launch other activities or open URLs. */
 @ReactModule(name = IntentModule.NAME)

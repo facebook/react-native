@@ -9,13 +9,13 @@ package com.facebook.react.bridge;
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
+import androidx.annotation.Nullable;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.SystraceMessage;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import javax.annotation.Nullable;
 
 public class JavaMethodWrapper implements NativeModule.NativeMethod {
 

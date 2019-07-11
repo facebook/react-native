@@ -12,8 +12,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import javax.annotation.Nullable;
 
 /** A fragment used to display the dialog. */
 public class AlertFragment extends DialogFragment implements DialogInterface.OnClickListener {

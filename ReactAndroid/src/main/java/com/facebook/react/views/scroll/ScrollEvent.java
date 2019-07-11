@@ -6,6 +6,7 @@
  */
 package com.facebook.react.views.scroll;
 
+import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
@@ -13,7 +14,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
-import javax.annotation.Nullable;
 
 /** A event dispatched from a ScrollView scrolling. */
 public class ScrollEvent extends Event<ScrollEvent> {

@@ -12,6 +12,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.GET_CONSTANTS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.GET_CONSTANTS_START;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
+import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -21,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 /**
  * This is part of the glue which wraps a java BaseJavaModule in a C++ NativeModule. This could all

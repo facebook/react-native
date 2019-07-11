@@ -10,10 +10,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
-import javax.annotation.Nullable;
 
 /**
  * A delegate for handling React Application support. This delegate is unaware whether it is used in

@@ -19,6 +19,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.OverScroller;
+import androidx.annotation.Nullable;
 import androidx.core.text.TextUtilsCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Assertions;
@@ -33,7 +34,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import javax.annotation.Nullable;
 
 /** Similar to {@link ReactScrollView} but only supports horizontal scrolling. */
 public class ReactHorizontalScrollView extends HorizontalScrollView

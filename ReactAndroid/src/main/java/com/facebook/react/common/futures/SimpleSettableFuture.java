@@ -6,12 +6,12 @@
  */
 package com.facebook.react.common.futures;
 
+import androidx.annotation.Nullable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.Nullable;
 
 /**
  * A super simple Future-like class that can safely notify another Thread when a value is ready.

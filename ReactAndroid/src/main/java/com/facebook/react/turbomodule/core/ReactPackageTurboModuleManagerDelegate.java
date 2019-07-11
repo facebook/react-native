@@ -2,6 +2,7 @@
 
 package com.facebook.react.turbomodule.core;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.ReactPackage;
@@ -14,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModuleManagerDelegate {
   private final List<TurboReactPackage> mPackages = new ArrayList<>();

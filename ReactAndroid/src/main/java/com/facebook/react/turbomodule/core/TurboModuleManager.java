@@ -6,6 +6,7 @@
  */
 package com.facebook.react.turbomodule.core;
 
+import androidx.annotation.Nullable;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JSIModule;
@@ -16,7 +17,6 @@ import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.soloader.SoLoader;
 import java.util.*;
-import javax.annotation.Nullable;
 
 /**
  * This is the main class and entry point for TurboModules. Note that this is a hybrid class, and

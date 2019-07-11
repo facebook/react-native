@@ -7,6 +7,8 @@
 package com.facebook.react.modules.core;
 
 import android.net.Uri;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -15,8 +17,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /** Native module that handles device hardware events like hardware back presses. */
 @ReactModule(name = DeviceEventManagerModule.NAME)
@@ -24,7 +24,7 @@ public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
   public static final String NAME = "DeviceEventManager";
 
   public interface RCTDeviceEventEmitter extends JavaScriptModule {
-    void emit(@Nonnull String eventName, @Nullable Object data);
+    void emit(@NonNull String eventName, @Nullable Object data);
   }
 
   private final Runnable mInvokeDefaultBackPressRunnable;

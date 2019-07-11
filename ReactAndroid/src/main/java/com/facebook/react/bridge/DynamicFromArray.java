@@ -6,8 +6,8 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
-import javax.annotation.Nullable;
 
 /** Implementation of Dynamic wrapping a ReadableArray. */
 public class DynamicFromArray implements Dynamic {

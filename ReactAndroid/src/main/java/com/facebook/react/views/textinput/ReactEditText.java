@@ -30,6 +30,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import androidx.annotation.Nullable;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Assertions;
@@ -41,7 +42,6 @@ import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
-import javax.annotation.Nullable;
 
 /**
  * A wrapper around the EditText that lets us better control what happens when an EditText gets

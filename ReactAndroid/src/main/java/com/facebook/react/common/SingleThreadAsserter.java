@@ -6,8 +6,8 @@
  */
 package com.facebook.react.common;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
-import javax.annotation.Nullable;
 
 /** Simple class for asserting that operations only run on a single thread. */
 public class SingleThreadAsserter {

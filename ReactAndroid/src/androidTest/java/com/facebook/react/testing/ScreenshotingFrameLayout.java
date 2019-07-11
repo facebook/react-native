@@ -11,7 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Looper;
 import android.widget.FrameLayout;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * A FrameLayout that allows you to access the result of the last time its hierarchy was drawn. It

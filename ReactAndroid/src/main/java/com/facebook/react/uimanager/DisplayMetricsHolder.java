@@ -11,13 +11,13 @@ import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.WritableNativeMap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Holds an instance of the current DisplayMetrics so we don't have to thread it through all the

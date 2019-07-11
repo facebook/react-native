@@ -7,6 +7,7 @@
 package com.facebook.react.views.viewpager;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
@@ -16,7 +17,6 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /** Instance of {@link ViewManager} that provides native {@link ViewPager} view. */
 @ReactModule(name = ReactViewPagerManager.REACT_CLASS)

@@ -9,7 +9,7 @@ package com.facebook.react.touch;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * This class coordinates JSResponder commands for {@link UIManagerModule}. It should be set as

@@ -8,6 +8,7 @@ package com.facebook.react.tests;
 
 import android.content.Context;
 import android.widget.ScrollView;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.testing.ReactAppInstrumentationTestCase;
 import com.facebook.react.testing.ReactInstanceSpecForTest;
@@ -18,7 +19,6 @@ import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewManager;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 import org.junit.Assert;
 
 /**

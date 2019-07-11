@@ -15,6 +15,7 @@ import android.os.Build;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowManager;
+import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.GuardedRunnable;
@@ -28,7 +29,6 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /** {@link NativeModule} that allows changing the appearance of the status bar. */
 @ReactModule(name = StatusBarModule.NAME)

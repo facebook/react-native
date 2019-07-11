@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -21,7 +22,6 @@ import com.facebook.react.jstasks.HeadlessJsTaskContext;
 import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import javax.annotation.Nullable;
 
 /**
  * Base class for running JS without a UI. Generally, you only need to override {@link

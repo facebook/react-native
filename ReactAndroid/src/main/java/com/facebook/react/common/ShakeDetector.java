@@ -10,9 +10,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 
 /** Listens for the user shaking their phone. Allocation-less once it starts listening. */
 public class ShakeDetector implements SensorEventListener {

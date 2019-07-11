@@ -6,11 +6,11 @@
  */
 package com.facebook.react.views.text;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import javax.annotation.Nullable;
 
 /**
  * {@link ReactShadowNode} class for pure raw text node (aka {@code textContent} in terms of DOM).

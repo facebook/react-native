@@ -6,12 +6,12 @@
  */
 package com.facebook.react.animated;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Native counterpart of style animated node (see AnimatedStyle class in AnimatedImplementation.js)

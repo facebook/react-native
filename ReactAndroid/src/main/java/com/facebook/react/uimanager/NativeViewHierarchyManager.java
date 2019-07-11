@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.PopupMenu;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.bridge.Callback;
@@ -32,7 +33,6 @@ import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.util.Arrays;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 /**

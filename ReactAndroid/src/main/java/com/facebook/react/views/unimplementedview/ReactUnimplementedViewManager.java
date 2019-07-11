@@ -8,11 +8,11 @@ package com.facebook.react.views.unimplementedview;
 
 import static com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager.REACT_CLASS;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import javax.annotation.Nullable;
 
 /**
  * ViewManager for {@link ReactUnimplementedView} to represent a component that is not yet

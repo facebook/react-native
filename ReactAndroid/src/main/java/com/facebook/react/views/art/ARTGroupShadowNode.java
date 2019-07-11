@@ -10,10 +10,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Region;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import javax.annotation.Nullable;
 
 /** Shadow node for virtual ARTGroup view */
 public class ARTGroupShadowNode extends ARTVirtualNode {

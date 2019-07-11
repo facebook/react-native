@@ -8,12 +8,12 @@ package com.facebook.react.devsupport;
 
 import android.os.Handler;
 import android.os.Looper;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JavaJSExecutor;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nullable;
 
 /** Executes JS remotely via the react nodejs server as a proxy to a browser on the host machine. */
 public class WebsocketJavaScriptExecutor implements JavaJSExecutor {

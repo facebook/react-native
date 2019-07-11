@@ -6,10 +6,10 @@
  */
 package com.facebook.react.modules.network;
 
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.Headers;

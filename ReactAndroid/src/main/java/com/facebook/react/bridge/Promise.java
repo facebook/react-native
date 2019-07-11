@@ -6,8 +6,8 @@
  */
 package com.facebook.react.bridge;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /*
  * Interface that represents a JavaScript Promise which can be passed to the native module as a
@@ -77,7 +77,7 @@ public interface Promise {
    * @param code String
    * @param userInfo WritableMap
    */
-  void reject(String code, @Nonnull WritableMap userInfo);
+  void reject(String code, @NonNull WritableMap userInfo);
 
   /**
    * Report an exception with a custom code and userInfo.
@@ -96,7 +96,7 @@ public interface Promise {
    * @param message String
    * @param userInfo WritableMap
    */
-  void reject(String code, String message, @Nonnull WritableMap userInfo);
+  void reject(String code, String message, @NonNull WritableMap userInfo);
 
   /**
    * Report an exception with a custom code, error message and userInfo.

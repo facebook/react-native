@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
 import android.view.animation.Animation;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
@@ -44,7 +45,6 @@ import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaConstants;
-import javax.annotation.Nullable;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy

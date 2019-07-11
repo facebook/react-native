@@ -7,7 +7,7 @@
 package com.facebook.react.bridge;
 
 import android.view.View;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public interface UIManager extends JSIModule, PerformanceCounter {
 

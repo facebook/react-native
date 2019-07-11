@@ -6,10 +6,10 @@
  */
 package com.facebook.react;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import java.util.List;
-import javax.annotation.Nullable;
 
 public interface ViewManagerOnDemandReactPackage {
   /**

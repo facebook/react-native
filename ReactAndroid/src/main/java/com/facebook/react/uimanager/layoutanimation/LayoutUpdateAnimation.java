@@ -8,7 +8,7 @@ package com.facebook.react.uimanager.layoutanimation;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Class responsible for handling layout update animation, applied to view whenever a valid config

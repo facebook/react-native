@@ -7,10 +7,10 @@
 package com.facebook.react.packagerconnection;
 
 import android.net.Uri;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import java.util.Map;
-import javax.annotation.Nullable;
 import okio.ByteString;
 import org.json.JSONObject;
 

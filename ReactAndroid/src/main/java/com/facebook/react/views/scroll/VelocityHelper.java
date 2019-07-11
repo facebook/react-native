@@ -8,7 +8,7 @@ package com.facebook.react.views.scroll;
 
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * This Class helps to calculate the velocity for all ScrollView. The x and y velocity will later on

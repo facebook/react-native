@@ -9,8 +9,8 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.View;
+import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
-import javax.annotation.Nullable;
 
 /** Class that manages the background for views and borders. */
 public class ReactViewBackgroundManager {

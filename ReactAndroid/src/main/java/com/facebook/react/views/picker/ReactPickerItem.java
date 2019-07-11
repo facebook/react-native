@@ -1,10 +1,10 @@
 package com.facebook.react.views.picker;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /* package */
 class ReactPickerItem {

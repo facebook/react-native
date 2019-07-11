@@ -6,6 +6,7 @@
  */
 package com.facebook.react.devsupport;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -16,7 +17,6 @@ import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import java.io.File;
-import javax.annotation.Nullable;
 
 /**
  * A dummy implementation of {@link DevSupportManager} to be used in production mode where

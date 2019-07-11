@@ -10,9 +10,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
-import javax.annotation.Nullable;
 
 /**
  * Database supplier of the database used by react native. This creates, opens and deletes the

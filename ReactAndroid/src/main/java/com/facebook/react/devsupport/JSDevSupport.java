@@ -7,6 +7,7 @@ package com.facebook.react.devsupport;
 
 import android.util.Pair;
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -14,7 +15,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 @ReactModule(name = JSDevSupport.MODULE_NAME)
 public class JSDevSupport extends ReactContextBaseJavaModule {

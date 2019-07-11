@@ -6,12 +6,12 @@
  */
 package com.facebook.react.views.scroll;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.PixelUtil;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Helper for view managers to handle commands like 'scrollTo'. Shared by {@link

@@ -9,6 +9,7 @@ package com.facebook.react.views.drawer;
 import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
+import androidx.annotation.Nullable;
 import androidx.drawerlayout.widget.DrawerLayout;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Dynamic;
@@ -30,7 +31,6 @@ import com.facebook.react.views.drawer.events.DrawerSlideEvent;
 import com.facebook.react.views.drawer.events.DrawerStateChangedEvent;
 import java.lang.reflect.Method;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /** View Manager for {@link ReactDrawerLayout} components. */
 @ReactModule(name = ReactDrawerLayoutManager.REACT_CLASS)
