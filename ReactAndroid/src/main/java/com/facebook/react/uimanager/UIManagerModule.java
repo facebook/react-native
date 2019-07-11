@@ -629,8 +629,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule
         callback);
   }
 
-  /** Check if the first shadow node is the descendant of the second shadow node */
+  /**
+   * Check if the first shadow node is the descendant of the second shadow node
+   *
+   * @deprecated This method will not be part of Fabric.
+   */
   @ReactMethod
+  @Deprecated
   public void viewIsDescendantOf(
       final int reactTag, final int ancestorReactTag, final Callback callback) {
     mUIImplementation.viewIsDescendantOf(reactTag, ancestorReactTag, callback);

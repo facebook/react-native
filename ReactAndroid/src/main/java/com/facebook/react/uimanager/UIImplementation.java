@@ -513,7 +513,12 @@ public class UIImplementation {
     mOperationsQueue.enqueueFindTargetForTouch(reactTag, targetX, targetY, callback);
   }
 
-  /** Check if the first shadow node is the descendant of the second shadow node */
+  /**
+   * Check if the first shadow node is the descendant of the second shadow node
+   *
+   * @deprecated This method will not be implemented in Fabric.
+   */
+  @Deprecated
   public void viewIsDescendantOf(
       final int reactTag, final int ancestorReactTag, final Callback callback) {
     ReactShadowNode node = mShadowNodeRegistry.getNode(reactTag);
