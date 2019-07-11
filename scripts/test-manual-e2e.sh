@@ -51,7 +51,7 @@ info "and then press any key."
 info ""
 read -n 1
 
-./gradlew :RNTester:android:app:installDebug || error "Couln't build RNTester Android"
+./gradlew :RNTester:android:app:installJscDebug || error "Couln't build RNTester Android"
 
 info "Press any key to run RNTester in an already running Android emulator/device"
 info ""

@@ -8,12 +8,15 @@ import org.apache.tools.ant.taskdefs.condition.Os
 def config = project.hasProperty("react") ? project.react : [];
 
 def cliPath = config.cliPath ?: "node_modules/react-native/cli.js"
+def composeSourceMapsPath = config.composeSourceMapsPath ?: "node_modules/react-native/scripts/compose-source-maps.js"
 def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
 def entryFile = config.entryFile ?: "index.android.js"
 def bundleCommand = config.bundleCommand ?: "bundle"
 def reactRoot = file(config.root ?: "../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
+def enableVmCleanup = config.enableVmCleanup == null ? true : config.enableVmCleanup
+def hermesCommand = config.hermesCommand ?: "../../node_modules/hermesvm/%OS-BIN%/hermes"
 
 def reactNativeDevServerPort() {
     def value = project.getProperties().get("reactNativeDevServerPort")
@@ -23,6 +26,34 @@ def reactNativeDevServerPort() {
 def reactNativeInspectorProxyPort() {
     def value = project.getProperties().get("reactNativeInspectorProxyPort")
     return value != null ? value : reactNativeDevServerPort()
+}
+
+def getHermesOSBin() {
+  if (Os.isFamily(Os.FAMILY_WINDOWS)) return "win64-bin";
+  if (Os.isFamily(Os.FAMILY_MAC)) return "osx-bin";
+  if (Os.isOs(null, "linux", "amd64", null)) return "linux64-bin";
+  throw new Exception("OS not recognized. Please set project.ext.react.hermesCommand " +
+                      "to the path of a working Hermes compiler.");
+}
+
+// Make sure not to inspect the Hermes config unless we need it,
+// to avoid breaking any JSC-only setups.
+def getHermesCommand = {
+  // If the project specifies a Hermes command, don't second guess it.
+  if (!hermesCommand.contains("%OS-BIN%")) {
+    return hermesCommand
+  }
+
+  // Execution on Windows fails with / as separator
+  return hermesCommand
+      .replaceAll("%OS-BIN%", getHermesOSBin())
+      .replace('/' as char, File.separatorChar);
+}
+
+// Set enableHermesForVariant to a function to configure per variant,
+// or set `enableHermes` to True/False to set all of them
+def enableHermesForVariant = config.enableHermesForVariant ?: {
+      def variant -> config.enableHermes ?: false
 }
 
 android {
@@ -45,10 +76,16 @@ afterEvaluate {
         def resourcesDir = file("$buildDir/generated/res/react/${targetPath}")
 
         def jsBundleFile = file("$jsBundleDir/$bundleAssetName")
+        def jsSourceMapsDir = file("$buildDir/intermediates/sourcemaps/${targetPath}")
+        def jsPackagerSourceMapFile = file("$jsSourceMapsDir/${bundleAssetName}.packager.map")
+        def jsCompilerSourceMapFile = file("$jsSourceMapsDir/${bundleAssetName}.compiler.map")
+        def jsOutputSourceMapFile = file("$jsBundleDir/${bundleAssetName}.map")
 
         // Additional node and packager commandline arguments
         def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
         def extraPackagerArgs = config.extraPackagerArgs ?: []
+
+        def enableHermes = enableHermesForVariant(variant)
 
         def currentBundleTask = tasks.create(
             name: "bundle${targetName}JsAndAssets",
@@ -62,6 +99,8 @@ afterEvaluate {
                 jsBundleDir.mkdirs()
                 resourcesDir.deleteDir()
                 resourcesDir.mkdirs()
+                jsSourceMapsDir.deleteDir()
+                jsSourceMapsDir.mkdirs()
             }
 
             // Set up inputs and outputs so gradle can cache the result
@@ -86,10 +125,55 @@ afterEvaluate {
 
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 commandLine("cmd", "/c", *nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
-                    "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraArgs)
+                    "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir,
+                    "--sourcemap-output", jsPackagerSourceMapFile, *extraArgs)
             } else {
                 commandLine(*nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
-                    "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraArgs)
+                    "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir,
+                    "--sourcemap-output", jsPackagerSourceMapFile, *extraArgs)
+            }
+
+            if (enableHermes) {
+                doLast {
+                    def hermesFlags;
+                    exec {
+                        if (targetName.toLowerCase().contains("release")) {
+                            // Can't use ?: since that will also substitute valid empty lists
+                            hermesFlags = config.hermesFlagsRelease
+                            if (hermesFlags == null) hermesFlags = ["-O", "-output-source-map"]
+                        } else {
+                            hermesFlags = config.hermesFlagsDebug
+                            if (hermesFlags == null) hermesFlags = []
+                        }
+                        commandLine(getHermesCommand(), "-emit-binary", "-out", jsBundleFile, jsBundleFile, *hermesFlags)
+                    }
+                    if (hermesFlags.contains("-output-source-map")) {
+                        ant.move(
+                            // Hermes will generate a source map with this exact name
+                            // NOTE: name coincides with jsOutputSourceMapFile
+                            file: "${jsBundleFile}.map",
+                            tofile: jsCompilerSourceMapFile
+                        );
+                        exec {
+                            // TODO: set task dependencies for caching
+
+                            // Set up the call to the compose-source-maps script
+                            workingDir(reactRoot)
+                            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                                commandLine("cmd", "/c", *nodeExecutableAndArgs, composeSourceMapsPath, jsPackagerSourceMapFile, jsCompilerSourceMapFile, "-o", jsOutputSourceMapFile)
+                            } else {
+                                commandLine(*nodeExecutableAndArgs, composeSourceMapsPath, jsPackagerSourceMapFile, jsCompilerSourceMapFile, "-o", jsOutputSourceMapFile)
+                            }
+                        }
+                    }
+                }
+            } else {
+                doLast {
+                    ant.move(
+                        file: jsPackagerSourceMapFile,
+                        tofile: jsOutputSourceMapFile
+                    );
+                }
             }
 
             enabled config."bundleIn${targetName}" != null
@@ -180,6 +264,47 @@ afterEvaluate {
         packageTask.dependsOn(currentAssetsCopyTask)
         if (buildPreBundleTask != null) {
             buildPreBundleTask.dependsOn(currentAssetsCopyTask)
+        }
+
+        // Delete the VM related libraries that this build doesn't need.
+        // The application can manage this manually by setting 'enableVmCleanup: false'
+        //
+        // This should really be done by packaging all Hermes releated libs into
+        // two separate HermesDebug and HermesRelease AARs, but until then we'll
+        // kludge it by deleting the .so files out of the /transforms/ directory.
+        def isRelease = targetName.toLowerCase().contains("release")
+        def libDir = "$buildDir/intermediates/transforms/"
+        def vmSelectionAction = {
+            fileTree(libDir).matching {
+                if (enableHermes) {
+                    // For Hermes, delete all the libjsc* files
+                    include "**/libjsc*.so"
+
+                    if (isRelease) {
+                        // Reduce size by deleting the debugger/inspector
+                        include '**/libhermes-inspector.so'
+                        include '**/libhermes-executor-debug.so'
+                    } else {
+                        // Release libs take precedence and must be removed
+                        // to allow debugging
+                        include '**/libhermes-executor-release.so'
+                    }
+                } else {
+                    // For JSC, delete all the libhermes* files
+                    include "**/libhermes*.so"
+                }
+            }.visit { details ->
+                def targetVariant = ".*/transforms/[^/]*/${targetPath}/.*"
+                def path = details.file.getAbsolutePath().replace(File.separatorChar, '/' as char)
+                if (path.matches(targetVariant) && details.file.isFile()) {
+                  details.file.delete()
+                }
+            }
+        }
+
+        if (enableVmCleanup) {
+            def task = tasks.findByName("package${targetName}")
+            task.doFirst(vmSelectionAction)
         }
     }
 }
