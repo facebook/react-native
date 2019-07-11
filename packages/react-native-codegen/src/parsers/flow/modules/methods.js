@@ -98,6 +98,14 @@ function getElementTypeForArrayOrObject(
       return {
         type,
       };
+    case 'Int32':
+      return {
+        type: 'Int32TypeAnnotation',
+      };
+    case 'Float':
+      return {
+        type: 'FloatTypeAnnotation',
+      };
     default:
       throw new Error(
         `Unsupported param type for method "${name}", param "${paramName}". Found ${type}`,
@@ -204,6 +212,22 @@ function getTypeAnnotationForParam(
           type,
         },
       };
+    case 'Int32':
+      return {
+        nullable,
+        name: paramName,
+        typeAnnotation: {
+          type: 'Int32TypeAnnotation',
+        },
+      };
+    case 'Float':
+      return {
+        nullable,
+        name: paramName,
+        typeAnnotation: {
+          type: 'FloatTypeAnnotation',
+        },
+      };
     default:
       throw new Error(
         `Unsupported param type for method "${name}", param "${paramName}". Found ${type}`,
@@ -281,6 +305,14 @@ function getReturnTypeAnnotation(
     case 'VoidTypeAnnotation':
       return {
         type,
+      };
+    case 'Int32':
+      return {
+        type: 'Int32TypeAnnotation',
+      };
+    case 'Float':
+      return {
+        type: 'FloatTypeAnnotation',
       };
     default:
       (type: empty);

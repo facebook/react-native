@@ -126,6 +126,31 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
+const NATIVE_MODULE_WITH_WITH_FLOAT_AND_INT32 = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {Int32, Float} from 'react-native/Libraries/Types/CodegenTypes';
+
+export interface Spec extends TurboModule {
+  +getInt: (arg: Int32) => Int32;
+  +getFloat: (arg: Float) => Float;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+`;
+
 const NATIVE_MODULE_WITH_SIMPLE_OBJECT = `
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -303,6 +328,7 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 `;
 
 module.exports = {
+  NATIVE_MODULE_WITH_WITH_FLOAT_AND_INT32,
   NATIVE_MODULE_WITH_WITH_ALIASES,
   NATIVE_MODULE_WITH_PROMISE,
   NATIVE_MODULE_WITH_COMPLEX_OBJECTS,

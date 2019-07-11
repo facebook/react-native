@@ -133,6 +133,8 @@ export type PropTypeShape = $ReadOnly<{|
 export type PrimitiveTypeAnnotationType =
   | 'StringTypeAnnotation'
   | 'NumberTypeAnnotation'
+  | 'Int32TypeAnnotation'
+  | 'FloatTypeAnnotation'
   | 'BooleanTypeAnnotation'
   | 'GenericObjectTypeAnnotation';
 
