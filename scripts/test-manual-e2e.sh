@@ -58,10 +58,10 @@ info ""
 read -n 1
 adb shell am start -n com.facebook.react.uiapp/.RNTesterActivity
 
-info "Press any key to open the project in Xcode, then build and test manually."
+info "Press any key to open the workspace in Xcode, then build and test manually."
 info ""
 read -n 1
-open "RNTester/RNTester.xcodeproj"
+open "RNTester/RNTesterPods.xcworkspace"
 
 info "When done testing RNTester app on iOS and Android press any key to continue."
 info ""
