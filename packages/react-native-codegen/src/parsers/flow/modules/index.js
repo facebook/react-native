@@ -18,28 +18,37 @@ function getModuleProperties(types, interfaceName) {
     return types[interfaceName].body.properties;
   }
   throw new Error(
-    `Interface properties for "${interfaceName}" has been specified incorrectly.`,
+    `Interface properties for "${interfaceName} has been specified incorrectly."`,
   );
 }
 
-function findInterfaceName(types) {
-  return Object.keys(types)
-    .map(typeName => types[typeName])
-    .filter(
-      type =>
-        type.extends &&
-        type.extends[0] &&
-        type.extends[0].id.name === 'TurboModule',
-    )[0].id.name;
+function findModuleConfig(
+  ast,
+): $ReadOnly<{|moduleName: string, interfaceName: string|}> {
+  const defaultExport = ast.body.filter(
+    node => node.type === 'ExportDefaultDeclaration',
+  )[0];
+  try {
+    const interfaceName =
+      defaultExport.declaration.typeArguments.params[0].id.name;
+
+    const moduleName = defaultExport.declaration.arguments[0].value;
+    return {interfaceName, moduleName};
+  } catch (e) {
+    throw new Error(
+      `Default export for module specified incorrectly. It should containts
+      either "TurboModuleRegistry.getEnforcing" or "codegenNativeComponent".`,
+    );
+  }
 }
 
 // $FlowFixMe there's no flowtype for AST
-function processModule(types): NativeModuleSchemaBuilderConfig {
-  const interfaceName = findInterfaceName(types);
+function processModule(ast, types): NativeModuleSchemaBuilderConfig {
+  const {interfaceName, moduleName} = findModuleConfig(ast);
 
   const moduleProperties = getModuleProperties(types, interfaceName);
   const properties = getMethods(moduleProperties, types);
-  return {properties};
+  return {properties, filename: moduleName, moduleName};
 }
 
 module.exports = {

@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`RN Codegen Flow Parser Fails with error message INCORRECT_NATIVE_MODULES 1`] = `"Interface properties for \\"SpecWithTypo has been specified incorrectly.\\""`;
+
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULE_NULLABLE_BOOLEAN 1`] = `"Booleans and numbers cannot be nullable for param \\"a in method \\"getSth\\"."`;
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULE_NULLABLE_NUMBER 1`] = `"Booleans and numbers cannot be nullable for param \\"a in method \\"getSth\\"."`;
@@ -16,17 +18,12 @@ exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE 1`] = `"Unsupported return promise type for getBool: expected to find annotation for type of promise content"`;
 
-exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_EXTENDING_TURBO_MODULE 1`] = `"Found two types extending \\"TurboModule\\" is one file. Split them into separated files."`;
-
-exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT 1`] = `
-"Default export for module specified incorrectly. It should containts
-    either type extending \\"TurboModule\\" or \\"codegenNativeComponent\\"."
-`;
+exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT 1`] = `"File should contain only one default export."`;
 
 exports[`RN Codegen Flow Parser can generate fixture EMPTY_NATIVE_MODULE 1`] = `
 Object {
   "modules": Object {
-    "NativeSampleTurboModule": Object {
+    "SampleTurboModule": Object {
       "nativeModules": Object {
         "SampleTurboModule": Object {
           "properties": Array [],
@@ -40,7 +37,7 @@ Object {
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS 1`] = `
 Object {
   "modules": Object {
-    "NativeSampleTurboModule": Object {
+    "SampleTurboModule": Object {
       "nativeModules": Object {
         "SampleTurboModule": Object {
           "properties": Array [
@@ -80,7 +77,7 @@ Object {
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_ARRAY 1`] = `
 Object {
   "modules": Object {
-    "NativeSampleTurboModule": Object {
+    "SampleTurboModule": Object {
       "nativeModules": Object {
         "SampleTurboModule": Object {
           "properties": Array [
@@ -120,7 +117,7 @@ Object {
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PARAM_TYPES 1`] = `
 Object {
   "modules": Object {
-    "NativeSampleTurboModule": Object {
+    "SampleTurboModule": Object {
       "nativeModules": Object {
         "SampleTurboModule": Object {
           "properties": Array [
@@ -192,7 +189,7 @@ Object {
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_CALLBACK 1`] = `
 Object {
   "modules": Object {
-    "NativeSampleTurboModule": Object {
+    "SampleTurboModule": Object {
       "nativeModules": Object {
         "SampleTurboModule": Object {
           "properties": Array [
@@ -251,7 +248,7 @@ Object {
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_ARRAY 1`] = `
 Object {
   "modules": Object {
-    "NativeSampleTurboModule": Object {
+    "SampleTurboModule": Object {
       "nativeModules": Object {
         "SampleTurboModule": Object {
           "properties": Array [
@@ -309,7 +306,7 @@ Object {
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_OBJECTS 1`] = `
 Object {
   "modules": Object {
-    "NativeSampleTurboModule": Object {
+    "SampleTurboModule": Object {
       "nativeModules": Object {
         "SampleTurboModule": Object {
           "properties": Array [
@@ -456,7 +453,7 @@ Object {
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NULLABLE_PARAM 1`] = `
 Object {
   "modules": Object {
-    "NativeSampleTurboModule": Object {
+    "SampleTurboModule": Object {
       "nativeModules": Object {
         "SampleTurboModule": Object {
           "properties": Array [
@@ -490,7 +487,7 @@ Object {
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 1`] = `
 Object {
   "modules": Object {
-    "NativeSampleTurboModule": Object {
+    "SampleTurboModule": Object {
       "nativeModules": Object {
         "SampleTurboModule": Object {
           "properties": Array [
@@ -533,7 +530,7 @@ Object {
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_SIMPLE_OBJECT 1`] = `
 Object {
   "modules": Object {
-    "NativeSampleTurboModule": Object {
+    "SampleTurboModule": Object {
       "nativeModules": Object {
         "SampleTurboModule": Object {
           "properties": Array [
@@ -567,7 +564,7 @@ Object {
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_WITH_ALIASES 1`] = `
 Object {
   "modules": Object {
-    "NativeSampleTurboModule": Object {
+    "SampleTurboModule": Object {
       "nativeModules": Object {
         "SampleTurboModule": Object {
           "properties": Array [

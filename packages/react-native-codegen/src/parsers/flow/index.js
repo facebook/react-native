@@ -14,7 +14,6 @@ import type {SchemaType} from '../../CodegenSchema.js';
 // $FlowFixMe there's no flowtype flow-parser
 const flowParser = require('flow-parser');
 const fs = require('fs');
-const path = require('path');
 const {buildModuleSchema} = require('./modules/schema');
 const {buildComponentSchema} = require('./components/schema');
 const {processComponent} = require('./components');
@@ -36,79 +35,46 @@ function getTypes(ast) {
   }, {});
 }
 
-function getConfigType(ast, types): 'module' | 'component' {
+function getConfigType(ast): 'module' | 'component' {
   const defaultExports = ast.body.filter(
     node => node.type === 'ExportDefaultDeclaration',
   );
-  const isComponent =
-    defaultExports[0] &&
-    defaultExports[0].declaration &&
-    defaultExports[0].declaration.callee &&
-    defaultExports[0].declaration.callee.name === 'codegenNativeComponent';
-
-  const typesExtendingTurboModule = Object.keys(types)
-    .map(typeName => types[typeName])
-    .filter(
-      type =>
-        type.extends &&
-        type.extends[0] &&
-        type.extends[0].id.name === 'TurboModule',
-    );
-
-  if (typesExtendingTurboModule.length > 1) {
-    throw new Error(
-      'Found two types extending "TurboModule" is one file. Split them into separated files.',
-    );
+  if (defaultExports.length !== 1) {
+    throw new Error('File should contain only one default export.');
   }
-
-  const isModule = typesExtendingTurboModule.length === 1;
-
-  if (isModule && isComponent) {
-    throw new Error(
-      'Found type extending "TurboModule" and exported "codegenNativeComponent" declaration in one file. Split them into separated files.',
-    );
+  if (defaultExports[0].declaration && defaultExports[0].declaration.callee) {
+    const statement = defaultExports[0].declaration.callee;
+    if (statement.name === 'codegenNativeComponent') {
+      return 'component';
+    }
+    if (statement.object && statement.object.name === 'TurboModuleRegistry') {
+      return 'module';
+    }
   }
-
-  if (isModule) {
-    return 'module';
-  } else if (isComponent) {
-    return 'component';
-  } else {
-    throw new Error(
-      `Default export for module specified incorrectly. It should containts
-    either type extending "TurboModule" or "codegenNativeComponent".`,
-    );
-  }
+  throw new Error(
+    `Default export for module specified incorrectly. It should containts
+    either "TurboModuleRegistry.getEnforcing" or "codegenNativeComponent".`,
+  );
 }
 
-function buildSchema(contents: string, filename: ?string): ?SchemaType {
+function buildSchema(contents: string): ?SchemaType {
   const ast = flowParser.parse(contents);
 
-  const types = getTypes(ast);
+  const configType = getConfigType(ast);
 
-  const configType = getConfigType(ast, types);
+  const types = getTypes(ast);
 
   if (configType === 'component') {
     return buildComponentSchema(processComponent(ast, types));
   } else {
-    if (filename === undefined || filename === null) {
-      throw new Error('Filepath expected while parasing a module');
-    }
-    const moduleName = path.basename(filename).slice(6, -3);
-    return buildModuleSchema(processModule(types), moduleName);
+    return buildModuleSchema(processModule(ast, types));
   }
 }
 
 function parseFile(filename: string): ?SchemaType {
   const contents = fs.readFileSync(filename, 'utf8');
 
-  return buildSchema(contents, filename);
-}
-
-function parseModuleFixture(filename: string): ?SchemaType {
-  const contents = fs.readFileSync(filename, 'utf8');
-
-  return buildSchema(contents, 'path/NativeSampleTurboModule.js');
+  return buildSchema(contents);
 }
 
 function parseString(contents: string): ?SchemaType {
@@ -117,6 +83,5 @@ function parseString(contents: string): ?SchemaType {
 
 module.exports = {
   parseFile,
-  parseModuleFixture,
   parseString,
 };

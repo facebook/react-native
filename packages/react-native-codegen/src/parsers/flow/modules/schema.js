@@ -13,16 +13,19 @@
 import type {SchemaType, MethodTypeShape} from '../../../CodegenSchema.js';
 
 export type NativeModuleSchemaBuilderConfig = $ReadOnly<{|
+  filename: string,
+  moduleName: string,
   properties: $ReadOnlyArray<MethodTypeShape>,
 |}>;
 
-function buildModuleSchema(
-  {properties}: NativeModuleSchemaBuilderConfig,
-  moduleName: string,
-): SchemaType {
+function buildModuleSchema({
+  filename,
+  moduleName,
+  properties,
+}: NativeModuleSchemaBuilderConfig): SchemaType {
   return {
     modules: {
-      [`Native${moduleName}`]: {
+      [filename]: {
         nativeModules: {
           [moduleName]: {
             properties,
