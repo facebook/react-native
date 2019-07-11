@@ -377,6 +377,10 @@ jobs:
       - run: pod setup
 
       - run:
+          name: Generate RNTesterPods Workspace
+          command: pushd RNTester && pod install --verbose && popd
+
+      - run:
           name: Run Detox iOS End-to-End Tests
           command: yarn run build-ios-e2e && yarn run test-ios-e2e
           when: always
