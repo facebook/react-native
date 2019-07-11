@@ -260,14 +260,14 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   FBLazyVector: 34431b7e61740bed29b082ff81500b0ffafaffa0
-  FBReactNativeSpec: 82b0e4bdc0cb0b1b6990b5bbbc85b4b161a6a276
+  FBReactNativeSpec: 27edbb3f472981ab270b7faa8cdbe058b9811593
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   RCTRequired: 33f3b89d2d82ef01c02b9b4f8146c43762e509d8
   React: 7c652b87c228731c51ab5764de68b6c17e6342be
   React-ART: 28f8815acbbc4816cec14866b59911a83eb780ed
   React-Core: b85f6553c4b2a31e7d71234c28b51bb928a00cbd
-  React-CoreModules: 04ea22808b22232b251d462f3309ab1150e3b7dd
+  React-CoreModules: b4d2aa51d008ec9edf74f3a03075bbf0359c325f
   React-cxxreact: 7c4242192149ce0205b53efaa03e3bf86ba4337c
   React-DevSupport: f34768e3aad3e59ee9800c752a78bc6cb24d0f75
   React-jscallinvoker: e730f2eca4cb27830af459c0a9af00ac6691bf4c
