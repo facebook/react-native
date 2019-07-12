@@ -1123,7 +1123,7 @@ declare var expect: {
   hasAssertions(): void,
   any(value: mixed): JestAsymmetricEqualityType,
   anything(): any,
-  arrayContaining(value: Array<mixed>): Array<mixed>,
+  arrayContaining(value: $ReadOnlyArray<mixed>): Array<mixed>,
   objectContaining(value: Object): Object,
   /** Matches any received string that contains the exact expected string. */
   stringContaining(value: string): string,
@@ -1162,7 +1162,7 @@ declare var jasmine: {
   DEFAULT_TIMEOUT_INTERVAL: number,
   any(value: mixed): JestAsymmetricEqualityType,
   anything(): any,
-  arrayContaining(value: Array<mixed>): Array<mixed>,
+  arrayContaining(value: $ReadOnlyArray<mixed>): Array<mixed>,
   clock(): JestClockType,
   createSpy(name: string): JestSpyType,
   createSpyObj(
