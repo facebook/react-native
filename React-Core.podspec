@@ -21,6 +21,25 @@ folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 
 folly_version = '2018.10.22.00'
 boost_compiler_flags = '-Wno-documentation'
 
+header_subspecs = {
+  'ARTHeaders'                  => 'Libraries/ART/**/*.h',
+  'DevSupportHeaders'           => 'React/{DevSupport/*.h,Inspector/*.h}',
+  'CoreModulesHeaders'          => 'React/CoreModules/**/*.h',
+  'RCTActionSheetHeaders'       => 'Libraries/ActionSheetIOS/*.h',
+  'RCTAnimationHeaders'         => 'Libraries/NativeAnimation/{Drivers/*,Nodes/*,*}.{h}',
+  'RCTBlobHeaders'              => 'Libraries/Blob/{RCTBlobManager,RCTFileReaderModule}.h',
+  'RCTImageHeaders'             => 'Libraries/Image/*.h',
+  'RCTLinkingHeaders'           => 'Libraries/LinkingIOS/*.h',
+  'RCTNetworkHeaders'           => 'Libraries/Network/*.h',
+  'RCTPushNotificationHeaders'  => 'Libraries/PushNotificationIOS/*.h',
+  'RCTSettingsHeaders'          => 'Libraries/Settings/*.h',
+  'RCTTextHeaders'              => 'Libraries/Text/**/*.h',
+  'RCTTestHeaders'              => 'RNTester/RCTTest/**/*.h',
+  'RCTSettingsHeaders'          => 'Libraries/Settings/*.h',
+  'RCTVibrationHeaders'         => 'Libraries/Vibration/*.h',
+  'RCTWebSocketHeaders'         => 'Libraries/WebSocket/*.h',
+}
+
 Pod::Spec.new do |s|
   s.name                   = "React-Core"
   s.version                = version
@@ -32,6 +51,7 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "React"
+  s.static_framework       = true
   s.framework              = "JavaScriptCore"
   s.library                = "stdc++"
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
@@ -55,7 +75,17 @@ Pod::Spec.new do |s|
 
   s.subspec "CxxBridge" do |ss|
     # Make the C++ headers visible if they are needed
-    ss.public_header_files   = "React/**/*.{h}"
+    ss.public_header_files   = "React/Cxx*/*.h"
+    ss.dependency "React-Core/Default"
+  end
+
+  # Add a subspec containing just the headers for each
+  # pod that should live under <React/*.h>
+  header_subspecs.each do |name, headers|
+    s.subspec name do |ss|
+      ss.source_files = headers
+      ss.dependency "React-Core/Default"
+    end
   end
 
   s.dependency "Folly", folly_version

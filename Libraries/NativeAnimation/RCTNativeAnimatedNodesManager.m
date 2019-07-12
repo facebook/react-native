@@ -5,28 +5,28 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTNativeAnimatedNodesManager.h"
+#import <React/RCTNativeAnimatedNodesManager.h>
 
 #import <React/RCTConvert.h>
 
-#import "RCTAdditionAnimatedNode.h"
-#import "RCTAnimatedNode.h"
-#import "RCTAnimationDriver.h"
-#import "RCTDiffClampAnimatedNode.h"
-#import "RCTDivisionAnimatedNode.h"
-#import "RCTEventAnimation.h"
-#import "RCTFrameAnimation.h"
-#import "RCTDecayAnimation.h"
-#import "RCTInterpolationAnimatedNode.h"
-#import "RCTModuloAnimatedNode.h"
-#import "RCTMultiplicationAnimatedNode.h"
-#import "RCTPropsAnimatedNode.h"
-#import "RCTSpringAnimation.h"
-#import "RCTStyleAnimatedNode.h"
-#import "RCTSubtractionAnimatedNode.h"
-#import "RCTTransformAnimatedNode.h"
-#import "RCTValueAnimatedNode.h"
-#import "RCTTrackingAnimatedNode.h"
+#import <React/RCTAdditionAnimatedNode.h>
+#import <React/RCTAnimatedNode.h>
+#import <React/RCTAnimationDriver.h>
+#import <React/RCTDiffClampAnimatedNode.h>
+#import <React/RCTDivisionAnimatedNode.h>
+#import <React/RCTEventAnimation.h>
+#import <React/RCTFrameAnimation.h>
+#import <React/RCTDecayAnimation.h>
+#import <React/RCTInterpolationAnimatedNode.h>
+#import <React/RCTModuloAnimatedNode.h>
+#import <React/RCTMultiplicationAnimatedNode.h>
+#import <React/RCTPropsAnimatedNode.h>
+#import <React/RCTSpringAnimation.h>
+#import <React/RCTStyleAnimatedNode.h>
+#import <React/RCTSubtractionAnimatedNode.h>
+#import <React/RCTTransformAnimatedNode.h>
+#import <React/RCTValueAnimatedNode.h>
+#import <React/RCTTrackingAnimatedNode.h>
 
 // We do some normalizing of the event names in RCTEventDispatcher#RCTNormalizeInputEventName.
 // To make things simpler just get rid of the parts we change in the event names we use here.

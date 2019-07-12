@@ -3,15 +3,15 @@
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
-#import "RCTInspectorDevServerHelper.h"
+#import <React/RCTInspectorDevServerHelper.h>
 
 #if RCT_DEV && !TARGET_OS_UIKITFORMAC
 
 #import <UIKit/UIKit.h>
 #import <React/RCTLog.h>
 
-#import "RCTDefines.h"
-#import "RCTInspectorPackagerConnection.h"
+#import <React/RCTDefines.h>
+#import <React/RCTInspectorPackagerConnection.h>
 
 static NSString *const kDebuggerMsgDisable = @"{ \"id\":1,\"method\":\"Debugger.disable\" }";
 

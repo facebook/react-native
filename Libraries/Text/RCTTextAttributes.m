@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTTextAttributes.h"
+#import <React/RCTTextAttributes.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTFont.h>

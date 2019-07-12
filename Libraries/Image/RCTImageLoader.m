@@ -17,8 +17,8 @@
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
 
-#import "RCTImageCache.h"
-#import "RCTImageUtils.h"
+#import <React/RCTImageCache.h>
+#import <React/RCTImageUtils.h>
 
 static NSInteger RCTImageBytesForImage(UIImage *image)
 {

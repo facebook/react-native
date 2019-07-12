@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTNetInfo.h"
+#import <React/RCTNetInfo.h>
 
 #if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
   #import <CoreTelephony/CTTelephonyNetworkInfo.h>
