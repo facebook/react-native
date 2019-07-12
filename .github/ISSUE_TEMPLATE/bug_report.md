@@ -29,7 +29,7 @@ React Native version:
 Describe what you expected to happen:
 
 
-Snack, code example, or link to a repository:
+[Snack](https://snack.expo.io/), screenshot, code example, or link to a repository:
 
 
 <!--
