@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "jetify"
   },
   "dependencies": {
     "react": "16.8.1",
@@ -16,6 +17,7 @@
     "@react-native-community/eslint-config": "^0.0.3",
     "babel-jest": "^24.1.0",
     "jest": "^24.1.0",
+    "jetifier": "^1.6.2",
     "metro-react-native-babel-preset": "^0.51.1",
     "react-test-renderer": "16.8.1"
   },
