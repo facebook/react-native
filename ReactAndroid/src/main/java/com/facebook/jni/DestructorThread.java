@@ -31,7 +31,7 @@ public class DestructorThread {
     private Destructor next;
     private Destructor previous;
 
-    Destructor(Object referent) {
+    public Destructor(Object referent) {
       super(referent, sReferenceQueue);
       sDestructorStack.push(this);
     }
@@ -41,7 +41,7 @@ public class DestructorThread {
     }
 
     /** Callback which is invoked when the original object has been garbage collected. */
-    abstract void destruct();
+    protected abstract void destruct();
   }
 
   /** A list to keep all active Destructors in memory confined to the Destructor thread. */
@@ -84,7 +84,7 @@ public class DestructorThread {
 
   private static class Terminus extends Destructor {
     @Override
-    void destruct() {
+    protected void destruct() {
       throw new IllegalStateException("Cannot destroy Terminus Destructor.");
     }
   }
