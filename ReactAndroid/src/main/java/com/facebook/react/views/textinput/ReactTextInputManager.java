@@ -591,7 +591,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setFilters(newFilters);
   }
 
-  @ReactProp(name = "autoComplete")
+  @ReactProp(name = "autoCompleteType")
   public void setTextContentType(ReactEditText view, @Nullable String autocomplete) {
     if (autocomplete == null) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
