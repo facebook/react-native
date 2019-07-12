@@ -41,7 +41,7 @@ Pod::Spec.new do |s|
 
   s.dependency "Folly", folly_version
   s.dependency "RCTRequired", version
+  s.dependency "RCTTypeSafety", version
   s.dependency "React-Core", version
-  s.dependency "React-TypeSafety", version
   s.dependency "React-turbomodule-core", version
 end

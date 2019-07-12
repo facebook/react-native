@@ -21,7 +21,7 @@ folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 
 folly_version = '2018.10.22.00'
 
 Pod::Spec.new do |s|
-  s.name                   = "React-TypeSafety"
+  s.name                   = "RCTTypeSafety"
   s.version                = version
   s.summary                = "-"  # TODO
   s.homepage               = "http://facebook.github.io/react-native/"
@@ -31,7 +31,7 @@ Pod::Spec.new do |s|
   s.compiler_flags         = folly_compiler_flags
   s.source                 = source
   s.source_files           = "**/*.{c,h,m,mm,cpp}"
-  s.header_dir             = "React"
+  s.header_dir             = "RCTTypeSafety"
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",

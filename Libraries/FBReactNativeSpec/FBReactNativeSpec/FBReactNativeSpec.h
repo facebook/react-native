@@ -16,11 +16,11 @@
 #endif
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
+#import <RCTTypeSafety/RCTConvertHelpers.h>
+#import <RCTTypeSafety/RCTTypedModuleConstants.h>
 #import <React/RCTBridgeModule.h>
-#import <React/RCTConvertHelpers.h>
 #import <React/RCTCxxConvert.h>
 #import <React/RCTManagedPointer.h>
-#import <React/RCTTypedModuleConstants.h>
 #import <folly/Optional.h>
 #import <jsireact/RCTTurboModule.h>
 #import <vector>
@@ -1757,7 +1757,7 @@ namespace facebook {
   } // namespace react
 } // namespace facebook
 
-#import <React/RCTConvertHelpers.h>
+#import <RCTTypeSafety/RCTConvertHelpers.h>
 
 
 inline NSString *JS::NativeAlertManager::Args::title() const

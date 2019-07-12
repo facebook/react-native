@@ -13,6 +13,7 @@ def use_react_native! (options={})
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "#{prefix}/Libraries/FBReactNativeSpec"
   pod 'RCTRequired', :path => "#{prefix}/Libraries/RCTRequired"
+  pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety"
   pod 'React', :path => "#{prefix}/"
   pod 'React-Core', :path => "#{prefix}/React"
   pod 'React-CoreModules', :path => "#{prefix}/React/CoreModules"
@@ -26,7 +27,6 @@ def use_react_native! (options={})
   pod 'React-RCTText', :path => "#{prefix}/Libraries/Text"
   pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
   pod 'React-RCTWebSocket', :path => "#{prefix}/Libraries/WebSocket"
-  pod 'React-TypeSafety', :path => "#{prefix}/Libraries/TypeSafety"
 
   unless production
     pod 'React-DevSupport', :path => "#{prefix}/React"
