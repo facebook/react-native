@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
+import android.util.Log;
 
 /**
  * Class that stores the mapping between native view name used in JS and the corresponding instance
@@ -24,11 +25,13 @@ public final class ViewManagerRegistry {
   private static Map<String, String> sComponentNames = new HashMap<>();
 
   static {
+  	sComponentNames.put("Image", "RCTImageView");
     sComponentNames.put("ForwardRef(Image)", "RCTImageView");
     sComponentNames.put("Text", "RCTText");
     sComponentNames.put("TextInput", "AndroidTextInput");
     sComponentNames.put("TouchableHighlight", "RCTView");
     sComponentNames.put("WebView", "RCTWebView");
+    sComponentNames.put("AndroidHorizontalScrollView", "ReactHorizontalScrollViewManager");
   }
 
   public ViewManagerRegistry(UIManagerModule.ViewManagerResolver viewManagerResolver) {
@@ -71,6 +74,7 @@ public final class ViewManagerRegistry {
         return viewManager;
       }
     }
+	 Log.d("rohit", "No ViewManager defined for class " + newClassName);
     throw new IllegalViewOperationException("No ViewManager defined for class " + newClassName);
   }
 }
