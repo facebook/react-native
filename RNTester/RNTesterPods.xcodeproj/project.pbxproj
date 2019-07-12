@@ -7,19 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		08E577ADEA6D725E9377C9DA /* libPods-RNTesterUnitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 72247071A1BF06D54F0FECC7 /* libPods-RNTesterUnitTests.a */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		21A422067A416DD31A8C9E6B /* libPods-RNTesterIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DC8BF45A723792FE216DDD4 /* libPods-RNTesterIntegrationTests.a */; };
 		272E6B3F1BEA849E001FCF37 /* UpdatePropertiesExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */; };
 		27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */; };
-		2B4F154B3D4EC0787495836D /* libPods-RNTesterUnitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A31CF0ADE5D152C57F0E67 /* libPods-RNTesterUnitTests.a */; };
 		2DDEF0101F84BF7B00DBDF73 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DDEF00F1F84BF7B00DBDF73 /* Images.xcassets */; };
 		3D2AFAF51D646CF80089D1A3 /* legacy_image@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D2AFAF41D646CF80089D1A3 /* legacy_image@2x.png */; };
+		413F654822EE16AED0DF2540 /* libPods-RNTester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F94084777080D7B374FB4783 /* libPods-RNTester.a */; };
 		5C60EB1C226440DB0018C04F /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C60EB1B226440DB0018C04F /* AppDelegate.mm */; };
 		5CB07C9B226467E60039471C /* RNTesterTurboModuleProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5CB07C99226467E60039471C /* RNTesterTurboModuleProvider.mm */; };
 		68E1E4BC2230DF2F00570185 /* ComponentRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68E1E4BB2230DF2F00570185 /* ComponentRegistry.cpp */; };
-		B9C5BB1881F54450DBCA70F5 /* libPods-RNTester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8508AD3C1DC3509924E63948 /* libPods-RNTester.a */; };
-		C480FE5FFE5B7C5430FA898E /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		8BBFF9F061783A02D50DD2EC /* libPods-RNTesterIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8210317F3CE28B1945488740 /* libPods-RNTesterIntegrationTests.a */; };
 		E7C1241A22BEC44B00DA25C0 /* RNTesterIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7C1241922BEC44B00DA25C0 /* RNTesterIntegrationTests.m */; };
 		E7DB20D122B2BAA6005AC45F /* RCTBundleURLProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB20A922B2BAA3005AC45F /* RCTBundleURLProviderTests.m */; };
 		E7DB20D222B2BAA6005AC45F /* RCTModuleInitNotificationRaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB20AA22B2BAA3005AC45F /* RCTModuleInitNotificationRaceTests.m */; };
@@ -76,7 +75,6 @@
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RNTester/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RNTester/main.m; sourceTree = "<group>"; };
-		25A31CF0ADE5D152C57F0E67 /* libPods-RNTesterUnitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTesterUnitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		272E6B3B1BEA849E001FCF37 /* UpdatePropertiesExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UpdatePropertiesExampleView.h; path = RNTester/NativeExampleViews/UpdatePropertiesExampleView.h; sourceTree = "<group>"; };
 		272E6B3C1BEA849E001FCF37 /* UpdatePropertiesExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UpdatePropertiesExampleView.m; path = RNTester/NativeExampleViews/UpdatePropertiesExampleView.m; sourceTree = "<group>"; };
 		27F441E81BEBE5030039B79C /* FlexibleSizeExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FlexibleSizeExampleView.m; path = RNTester/NativeExampleViews/FlexibleSizeExampleView.m; sourceTree = "<group>"; };
@@ -88,10 +86,10 @@
 		5C60EB1B226440DB0018C04F /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = RNTester/AppDelegate.mm; sourceTree = "<group>"; };
 		5CB07C99226467E60039471C /* RNTesterTurboModuleProvider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RNTesterTurboModuleProvider.mm; path = RNTester/RNTesterTurboModuleProvider.mm; sourceTree = "<group>"; };
 		5CB07C9A226467E60039471C /* RNTesterTurboModuleProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNTesterTurboModuleProvider.h; path = RNTester/RNTesterTurboModuleProvider.h; sourceTree = "<group>"; };
-		5DC8BF45A723792FE216DDD4 /* libPods-RNTesterIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTesterIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		68E1E4BB2230DF2F00570185 /* ComponentRegistry.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentRegistry.cpp; sourceTree = "<group>"; };
+		72247071A1BF06D54F0FECC7 /* libPods-RNTesterUnitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTesterUnitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D51F73F0DA20287418D98BD /* Pods-RNTesterIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterIntegrationTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
-		8508AD3C1DC3509924E63948 /* libPods-RNTester.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTester.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8210317F3CE28B1945488740 /* libPods-RNTesterIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTesterIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		972A459EE6CF8CC63531A088 /* Pods-RNTesterIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterIntegrationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		98233960D1D6A1977D1C7EAF /* Pods-RNTester.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RNTester/Pods-RNTester.debug.xcconfig"; sourceTree = "<group>"; };
 		E771AEEA22B44E3100EA1189 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RNTester/Info.plist; sourceTree = "<group>"; };
@@ -169,6 +167,7 @@
 		E7DB216122B2F3EC005AC45F /* RCTRootViewIntegrationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRootViewIntegrationTests.m; sourceTree = "<group>"; };
 		E7DB218B22B41FCD005AC45F /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		E9618482EC8608D4872A6E28 /* Pods-RNTesterUnitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterUnitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests.release.xcconfig"; sourceTree = "<group>"; };
+		F94084777080D7B374FB4783 /* libPods-RNTester.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTester.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,8 +175,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B9C5BB1881F54450DBCA70F5 /* libPods-RNTester.a in Frameworks */,
-				C480FE5FFE5B7C5430FA898E /* (null) in Frameworks */,
+				413F654822EE16AED0DF2540 /* libPods-RNTester.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,7 +185,7 @@
 			files = (
 				E7DB213122B2C649005AC45F /* JavaScriptCore.framework in Frameworks */,
 				E7DB213222B2C67D005AC45F /* libOCMock.a in Frameworks */,
-				2B4F154B3D4EC0787495836D /* libPods-RNTesterUnitTests.a in Frameworks */,
+				08E577ADEA6D725E9377C9DA /* libPods-RNTesterUnitTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -197,7 +195,7 @@
 			files = (
 				E7DB218C22B41FCD005AC45F /* XCTest.framework in Frameworks */,
 				E7DB216722B2F69F005AC45F /* JavaScriptCore.framework in Frameworks */,
-				21A422067A416DD31A8C9E6B /* libPods-RNTesterIntegrationTests.a in Frameworks */,
+				8BBFF9F061783A02D50DD2EC /* libPods-RNTesterIntegrationTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,9 +267,9 @@
 				E7DB211A22B2BD53005AC45F /* libReact-RCTVibration.a */,
 				E7DB211C22B2BD53005AC45F /* libReact-RCTWebSocket.a */,
 				E7DB212222B2BD53005AC45F /* libyoga.a */,
-				8508AD3C1DC3509924E63948 /* libPods-RNTester.a */,
-				5DC8BF45A723792FE216DDD4 /* libPods-RNTesterIntegrationTests.a */,
-				25A31CF0ADE5D152C57F0E67 /* libPods-RNTesterUnitTests.a */,
+				F94084777080D7B374FB4783 /* libPods-RNTester.a */,
+				8210317F3CE28B1945488740 /* libPods-RNTesterIntegrationTests.a */,
+				72247071A1BF06D54F0FECC7 /* libPods-RNTesterUnitTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -733,6 +731,7 @@
 					"\"${PODS_ROOT}/Headers/Public/libevent\"",
 					"\"$(PODS_ROOT)/boost-for-react-native\"",
 					"\"$(PODS_ROOT)/Folly\"",
+					"\"$(PODS_ROOT)/DoubleConversion\"",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -741,29 +740,7 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
-					"-l\"DoubleConversion\"",
-					"-l\"Folly\"",
-					"-l\"React-ART\"",
-					"-l\"React-Core\"",
-					"-l\"React-DevSupport\"",
-					"-l\"React-RCTActionSheet\"",
-					"-l\"React-RCTAnimation\"",
-					"-l\"React-RCTBlob\"",
-					"-l\"React-RCTImage\"",
-					"-l\"React-RCTLinking\"",
-					"-l\"React-RCTNetwork\"",
-					"-l\"React-RCTPushNotification\"",
-					"-l\"React-RCTSettings\"",
-					"-l\"React-RCTText\"",
-					"-l\"React-RCTVibration\"",
-					"-l\"React-RCTWebSocket\"",
-					"-l\"React-cxxreact\"",
-					"-l\"React-jsi\"",
-					"-l\"React-jsiexecutor\"",
-					"-l\"React-jsinspector\"",
-					"-l\"glog\"",
 					"-l\"stdc++\"",
-					"-l\"yoga\"",
 					"-framework",
 					"\"JavaScriptCore\"",
 				);
@@ -810,6 +787,7 @@
 					"\"${PODS_ROOT}/Headers/Public/libevent\"",
 					"\"$(PODS_ROOT)/boost-for-react-native\"",
 					"\"$(PODS_ROOT)/Folly\"",
+					"\"$(PODS_ROOT)/DoubleConversion\"",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -818,29 +796,7 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
-					"-l\"DoubleConversion\"",
-					"-l\"Folly\"",
-					"-l\"React-ART\"",
-					"-l\"React-Core\"",
-					"-l\"React-DevSupport\"",
-					"-l\"React-RCTActionSheet\"",
-					"-l\"React-RCTAnimation\"",
-					"-l\"React-RCTBlob\"",
-					"-l\"React-RCTImage\"",
-					"-l\"React-RCTLinking\"",
-					"-l\"React-RCTNetwork\"",
-					"-l\"React-RCTPushNotification\"",
-					"-l\"React-RCTSettings\"",
-					"-l\"React-RCTText\"",
-					"-l\"React-RCTVibration\"",
-					"-l\"React-RCTWebSocket\"",
-					"-l\"React-cxxreact\"",
-					"-l\"React-jsi\"",
-					"-l\"React-jsiexecutor\"",
-					"-l\"React-jsinspector\"",
-					"-l\"glog\"",
 					"-l\"stdc++\"",
-					"-l\"yoga\"",
 					"-framework",
 					"\"JavaScriptCore\"",
 				);
