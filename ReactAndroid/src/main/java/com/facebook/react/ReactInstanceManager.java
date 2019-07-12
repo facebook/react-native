@@ -292,7 +292,16 @@ public class ReactInstanceManager {
       public @Nullable Activity getCurrentActivity() {
         return ReactInstanceManager.this.mCurrentActivity;
       }
+
+      @Override
+      public JavaScriptExecutorFactory getJavaScriptExecutorFactory() {
+        return ReactInstanceManager.this.getJSExecutorFactory();
+      }
     };
+  }
+
+  private JavaScriptExecutorFactory getJSExecutorFactory() {
+    return mJavaScriptExecutorFactory;
   }
 
   public DevSupportManager getDevSupportManager() {
