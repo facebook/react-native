@@ -10,7 +10,7 @@
 #include <functional>
 #include <memory>
 
-#include <jsireact/JSCallInvoker.h>
+#include <ReactCommon/JSCallInvoker.h>
 
 namespace facebook {
 namespace react {

@@ -134,7 +134,6 @@
 		E7DB20FA22B2BD53005AC45F /* libReact-Core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-Core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB20FC22B2BD53005AC45F /* libReact-cxxreact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-cxxreact.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB20FE22B2BD53005AC45F /* libReact-DevSupport.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-DevSupport.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E7DB210022B2BD53005AC45F /* libReact-jscallinvoker.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-jscallinvoker.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB210222B2BD53005AC45F /* libReact-jsi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-jsi.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB210422B2BD53005AC45F /* libReact-jsiexecutor.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-jsiexecutor.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB210622B2BD53005AC45F /* libReact-jsinspector.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-jsinspector.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -255,7 +254,6 @@
 				E7DB20FA22B2BD53005AC45F /* libReact-Core.a */,
 				E7DB20FC22B2BD53005AC45F /* libReact-cxxreact.a */,
 				E7DB20FE22B2BD53005AC45F /* libReact-DevSupport.a */,
-				E7DB210022B2BD53005AC45F /* libReact-jscallinvoker.a */,
 				E7DB210222B2BD53005AC45F /* libReact-jsi.a */,
 				E7DB210422B2BD53005AC45F /* libReact-jsiexecutor.a */,
 				E7DB210622B2BD53005AC45F /* libReact-jsinspector.a */,
@@ -760,7 +758,6 @@
 					"-l\"React-RCTVibration\"",
 					"-l\"React-RCTWebSocket\"",
 					"-l\"React-cxxreact\"",
-					"-l\"React-jscallinvoker\"",
 					"-l\"React-jsi\"",
 					"-l\"React-jsiexecutor\"",
 					"-l\"React-jsinspector\"",
@@ -838,7 +835,6 @@
 					"-l\"React-RCTVibration\"",
 					"-l\"React-RCTWebSocket\"",
 					"-l\"React-cxxreact\"",
-					"-l\"React-jscallinvoker\"",
 					"-l\"React-jsi\"",
 					"-l\"React-jsiexecutor\"",
 					"-l\"React-jsinspector\"",

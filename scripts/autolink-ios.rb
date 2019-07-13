@@ -33,10 +33,10 @@ def use_react_native! (options={})
   end
 
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
-  pod 'React-jscallinvoker', :path => "#{prefix}/ReactCommon/jscallinvoker"
   pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector"
+  pod 'ReactCommon/jscallinvoker', :path => "#{prefix}/ReactCommon"
   pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon"
   pod 'yoga', :path => "#{prefix}/ReactCommon/yoga"
 

@@ -23,10 +23,10 @@ target 'HelloWorld' do
   pod 'React-RCTWebSocket', :path => '../node_modules/react-native/Libraries/WebSocket'
 
   pod 'React-cxxreact', :path => '../node_modules/react-native/ReactCommon/cxxreact'
-  pod 'React-jscallinvoker', :path => "../node_modules/react-native/ReactCommon/jscallinvoker"
   pod 'React-jsi', :path => '../node_modules/react-native/ReactCommon/jsi'
   pod 'React-jsiexecutor', :path => '../node_modules/react-native/ReactCommon/jsiexecutor'
   pod 'React-jsinspector', :path => '../node_modules/react-native/ReactCommon/jsinspector'
+  pod 'ReactCommon/jscallinvoker', :path => "../node_modules/react-native/ReactCommon"
   pod 'ReactCommon/turbomodule/core', :path => "../node_modules/react-native/ReactCommon"
   pod 'yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
 

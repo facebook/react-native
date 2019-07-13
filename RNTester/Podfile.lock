@@ -74,9 +74,6 @@ PODS:
   - React-DevSupport (1000.0.0):
     - React-Core (= 1000.0.0)
     - React-RCTWebSocket (= 1000.0.0)
-  - React-jscallinvoker (1000.0.0):
-    - Folly (= 2018.10.22.00)
-    - React-cxxreact (= 1000.0.0)
   - React-jsi (1000.0.0):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
@@ -122,22 +119,27 @@ PODS:
     - React-Core (= 1000.0.0)
   - React-RCTWebSocket (1000.0.0):
     - React-Core (= 1000.0.0)
+  - ReactCommon/jscallinvoker (1000.0.0):
+    - DoubleConversion
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-cxxreact (= 1000.0.0)
   - ReactCommon/turbomodule/core (1000.0.0):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
     - React-Core/CxxBridge (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
-    - React-jscallinvoker (= 1000.0.0)
     - React-jsi (= 1000.0.0)
+    - ReactCommon/jscallinvoker (= 1000.0.0)
   - ReactCommon/turbomodule/samples (1000.0.0):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
     - React-Core/CxxBridge (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
-    - React-jscallinvoker (= 1000.0.0)
     - React-jsi (= 1000.0.0)
+    - ReactCommon/jscallinvoker (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - yoga (1000.0.0.React)
 
@@ -155,7 +157,6 @@ DEPENDENCIES:
   - React-CoreModules (from `../React/CoreModules`)
   - React-cxxreact (from `../ReactCommon/cxxreact`)
   - React-DevSupport (from `../React`)
-  - React-jscallinvoker (from `../ReactCommon/jscallinvoker`)
   - React-jsi (from `../ReactCommon/jsi`)
   - React-jsiexecutor (from `../ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../ReactCommon/jsinspector`)
@@ -171,6 +172,7 @@ DEPENDENCIES:
   - React-RCTText (from `../Libraries/Text`)
   - React-RCTVibration (from `../Libraries/Vibration`)
   - React-RCTWebSocket (from `../Libraries/WebSocket`)
+  - ReactCommon/jscallinvoker (from `../ReactCommon`)
   - ReactCommon/turbomodule/core (from `../ReactCommon`)
   - ReactCommon/turbomodule/samples (from `../ReactCommon`)
   - yoga (from `../ReactCommon/yoga`)
@@ -206,8 +208,6 @@ EXTERNAL SOURCES:
     :path: "../ReactCommon/cxxreact"
   React-DevSupport:
     :path: "../React"
-  React-jscallinvoker:
-    :path: "../ReactCommon/jscallinvoker"
   React-jsi:
     :path: "../ReactCommon/jsi"
   React-jsiexecutor:
@@ -258,7 +258,6 @@ SPEC CHECKSUMS:
   React-CoreModules: b4d2aa51d008ec9edf74f3a03075bbf0359c325f
   React-cxxreact: 7c4242192149ce0205b53efaa03e3bf86ba4337c
   React-DevSupport: f34768e3aad3e59ee9800c752a78bc6cb24d0f75
-  React-jscallinvoker: e730f2eca4cb27830af459c0a9af00ac6691bf4c
   React-jsi: 98d1f9d8a79d2720ba6a44c2d928a77f315b7e4f
   React-jsiexecutor: c0ab8c80a6e88380d63f583690a50d4a723b47b5
   React-jsinspector: ea0a218071a11c3687cef2480580180caa6a64c0
@@ -274,7 +273,7 @@ SPEC CHECKSUMS:
   React-RCTText: 469ec754592c92fc639825e558908c2f0e783e2c
   React-RCTVibration: ade3c169b54f3bc16c9a9918e17e48ef66aee6ba
   React-RCTWebSocket: cb5317e9a4adc37191660f819fb21d63433584ef
-  ReactCommon: 85e9a652d56873ab4e91820ecd759ca006dc1b56
+  ReactCommon: 040ed4788f8cae2ffa23b2d5fb0d4afa58c6d646
   yoga: b72aa5b3708cc93c5897f8297122d6eba1331e07
 
 PODFILE CHECKSUM: f866eab42001b1d59349bce6b20d00912cdc700c

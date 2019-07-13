@@ -8,7 +8,7 @@
 #pragma once
 
 #include <fb/fbjni.h>
-#include <jsireact/JSCallInvoker.h>
+#include <ReactCommon/JSCallInvoker.h>
 #include <memory>
 
 namespace facebook {
