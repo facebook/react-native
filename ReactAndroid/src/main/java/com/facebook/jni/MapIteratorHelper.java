@@ -6,10 +6,10 @@
  */
 package com.facebook.jni;
 
+import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.Iterator;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * To iterate over a Map from C++ requires four calls per entry: hasNext(), next(), getKey(),

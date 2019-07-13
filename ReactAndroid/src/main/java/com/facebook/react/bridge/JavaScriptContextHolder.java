@@ -5,7 +5,7 @@
 
 package com.facebook.react.bridge;
 
-import javax.annotation.concurrent.GuardedBy;
+import androidx.annotation.GuardedBy;
 
 /**
  * Wrapper for JavaScriptContext native pointer. CatalystInstanceImpl creates this on demand, and
