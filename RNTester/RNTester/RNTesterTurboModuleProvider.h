@@ -6,8 +6,6 @@
  *
  */
 
-#ifdef RN_TURBO_MODULE_ENABLED
-
 #import <ReactCommon/RCTTurboModule.h>
 
 namespace facebook {
@@ -32,5 +30,3 @@ std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name
 
 } // namespace react
 } // namespace facebook
-
-#endif
