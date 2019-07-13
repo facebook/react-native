@@ -453,23 +453,6 @@ class TextWithCapBaseBox extends React.Component<*, *> {
   }
 }
 
-function LongTextExample() {
-  const [collapsed, setCollapsed] = React.useState(true);
-  return (
-    <View>
-      <Button
-        onPress={() => setCollapsed(state => !state)}
-        title="Toggle long text"
-      />
-      <Text>
-        {Array.from({length: collapsed ? 5 : 5000})
-          .map((_, i) => i)
-          .join('\n')}
-      </Text>
-    </View>
-  );
-}
-
 exports.title = '<Text>';
 exports.description = 'Base component for rendering styled text.';
 exports.displayName = 'TextExample';
@@ -1140,12 +1123,6 @@ exports.examples = [
           </Text>
         </View>
       );
-    },
-  },
-  {
-    title: 'Async rendering for long text',
-    render: function() {
-      return <LongTextExample />;
     },
   },
 ];
