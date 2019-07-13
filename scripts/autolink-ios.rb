@@ -37,7 +37,7 @@ def use_react_native! (options={})
   pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector"
-  pod 'React-turbomodule-core', :path => "#{prefix}/ReactCommon/turbomodule/core"
+  pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon"
   pod 'yoga', :path => "#{prefix}/ReactCommon/yoga"
 
   pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"

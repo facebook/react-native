@@ -11,8 +11,8 @@
 #include <fb/fbjni.h>
 #include <jsi/jsi.h>
 
-#include <jsireact/TurboModuleBinding.h>
-#include <jsireact/TurboCxxModule.h>
+#include <ReactCommon/TurboModuleBinding.h>
+#include <ReactCommon/TurboCxxModule.h>
 #include <react/jni/JMessageQueueThread.h>
 
 #include "TurboModuleManager.h"

@@ -28,7 +28,7 @@
 #endif
 
 #ifdef RN_TURBO_MODULE_ENABLED
-#import <jsireact/RCTTurboModuleManager.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
 
 #import "RNTesterTurboModuleProvider.h"
 #endif

@@ -10,7 +10,7 @@ def pods()
 
   # Enable TurboModule
   use_react_native!(path: "..")
-  pod 'React-turbomodule-samples', :path => '../ReactCommon/turbomodule/samples'
+  pod 'ReactCommon/turbomodule/samples', :path => '../ReactCommon'
 
   # Additional Pods which aren't included in the default Podfile
   pod 'React-ART', :path => '../Libraries/ART'

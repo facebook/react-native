@@ -149,8 +149,6 @@
 		E7DB211822B2BD53005AC45F /* libReact-RCTText.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-RCTText.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB211A22B2BD53005AC45F /* libReact-RCTVibration.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-RCTVibration.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB211C22B2BD53005AC45F /* libReact-RCTWebSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-RCTWebSocket.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E7DB211E22B2BD53005AC45F /* libReact-turbomodule-core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-turbomodule-core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E7DB212022B2BD53005AC45F /* libReact-turbomodule-samples.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-turbomodule-samples.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB212222B2BD53005AC45F /* libyoga.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libyoga.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB212422B2C342005AC45F /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOCMock.a; sourceTree = "<group>"; };
 		E7DB212622B2C342005AC45F /* OCMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockObject.h; sourceTree = "<group>"; };
@@ -272,8 +270,6 @@
 				E7DB211822B2BD53005AC45F /* libReact-RCTText.a */,
 				E7DB211A22B2BD53005AC45F /* libReact-RCTVibration.a */,
 				E7DB211C22B2BD53005AC45F /* libReact-RCTWebSocket.a */,
-				E7DB211E22B2BD53005AC45F /* libReact-turbomodule-core.a */,
-				E7DB212022B2BD53005AC45F /* libReact-turbomodule-samples.a */,
 				E7DB212222B2BD53005AC45F /* libyoga.a */,
 				8508AD3C1DC3509924E63948 /* libPods-RNTester.a */,
 				5DC8BF45A723792FE216DDD4 /* libPods-RNTesterIntegrationTests.a */,
@@ -768,8 +764,6 @@
 					"-l\"React-jsi\"",
 					"-l\"React-jsiexecutor\"",
 					"-l\"React-jsinspector\"",
-					"-l\"React-turbomodule-core\"",
-					"-l\"React-turbomodule-samples\"",
 					"-l\"glog\"",
 					"-l\"stdc++\"",
 					"-l\"yoga\"",
@@ -848,8 +842,6 @@
 					"-l\"React-jsi\"",
 					"-l\"React-jsiexecutor\"",
 					"-l\"React-jsinspector\"",
-					"-l\"React-turbomodule-core\"",
-					"-l\"React-turbomodule-samples\"",
 					"-l\"glog\"",
 					"-l\"stdc++\"",
 					"-l\"yoga\"",

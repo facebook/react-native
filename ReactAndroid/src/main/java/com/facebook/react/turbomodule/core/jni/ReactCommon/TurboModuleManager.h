@@ -10,12 +10,12 @@
 #include <memory>
 #include <fb/fbjni.h>
 #include <jsi/jsi.h>
-#include <jsireact/TurboModule.h>
-#include <jsireact/JavaTurboModule.h>
+#include <ReactCommon/TurboModule.h>
+#include <ReactCommon/JavaTurboModule.h>
 #include <react/jni/CxxModuleWrapper.h>
 #include <react/jni/JMessageQueueThread.h>
-#include <jsireact/JSCallInvokerHolder.h>
-#include <jsireact/TurboModuleManagerDelegate.h>
+#include <ReactCommon/JSCallInvokerHolder.h>
+#include <ReactCommon/TurboModuleManagerDelegate.h>
 
 namespace facebook {
 namespace react {

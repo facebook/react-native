@@ -8,7 +8,7 @@
 
 #ifdef RN_TURBO_MODULE_ENABLED
 
-#import <jsireact/RCTTurboModule.h>
+#import <ReactCommon/RCTTurboModule.h>
 
 namespace facebook {
 namespace react {

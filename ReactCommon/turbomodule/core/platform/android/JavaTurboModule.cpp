@@ -11,14 +11,13 @@
 #include <fb/fbjni.h>
 #include <jsi/jsi.h>
 
-#include <jsireact/TurboModule.h>
-#import <jsireact/TurboModuleUtils.h>
-
+#include <ReactCommon/TurboModule.h>
+#include <ReactCommon/TurboModuleUtils.h>
 #include <jsi/JSIDynamic.h>
+#include <react/jni/JCallback.h>
+#include <react/jni/NativeMap.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/jni/WritableNativeMap.h>
-#include <react/jni/NativeMap.h>
-#include <react/jni/JCallback.h>
 
 #include "JavaTurboModule.h"
 

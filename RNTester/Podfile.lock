@@ -7,7 +7,7 @@ PODS:
     - RCTRequired (= 1000.0.0)
     - RCTTypeSafety (= 1000.0.0)
     - React-Core (= 1000.0.0)
-    - React-turbomodule-core (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
   - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
@@ -122,34 +122,23 @@ PODS:
     - React-Core (= 1000.0.0)
   - React-RCTWebSocket (1000.0.0):
     - React-Core (= 1000.0.0)
-  - React-turbomodule-core (1000.0.0):
+  - ReactCommon/turbomodule/core (1000.0.0):
+    - DoubleConversion
     - Folly (= 2018.10.22.00)
+    - glog
     - React-Core/CxxBridge (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jscallinvoker (= 1000.0.0)
     - React-jsi (= 1000.0.0)
-    - React-turbomodule-core/core-ios (= 1000.0.0)
-  - React-turbomodule-core/core-ios (1000.0.0):
+  - ReactCommon/turbomodule/samples (1000.0.0):
+    - DoubleConversion
     - Folly (= 2018.10.22.00)
+    - glog
     - React-Core/CxxBridge (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jscallinvoker (= 1000.0.0)
     - React-jsi (= 1000.0.0)
-  - React-turbomodule-samples (1000.0.0):
-    - DoubleConversion
-    - Folly (= 2018.10.22.00)
-    - React-Core (= 1000.0.0)
-    - React-cxxreact (= 1000.0.0)
-    - React-jsi (= 1000.0.0)
-    - React-turbomodule-core (= 1000.0.0)
-    - React-turbomodule-samples/samples-ios (= 1000.0.0)
-  - React-turbomodule-samples/samples-ios (1000.0.0):
-    - DoubleConversion
-    - Folly (= 2018.10.22.00)
-    - React-Core (= 1000.0.0)
-    - React-cxxreact (= 1000.0.0)
-    - React-jsi (= 1000.0.0)
-    - React-turbomodule-core (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
   - yoga (1000.0.0.React)
 
 DEPENDENCIES:
@@ -182,8 +171,8 @@ DEPENDENCIES:
   - React-RCTText (from `../Libraries/Text`)
   - React-RCTVibration (from `../Libraries/Vibration`)
   - React-RCTWebSocket (from `../Libraries/WebSocket`)
-  - React-turbomodule-core (from `../ReactCommon/turbomodule/core`)
-  - React-turbomodule-samples (from `../ReactCommon/turbomodule/samples`)
+  - ReactCommon/turbomodule/core (from `../ReactCommon`)
+  - ReactCommon/turbomodule/samples (from `../ReactCommon`)
   - yoga (from `../ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -249,10 +238,8 @@ EXTERNAL SOURCES:
     :path: "../Libraries/Vibration"
   React-RCTWebSocket:
     :path: "../Libraries/WebSocket"
-  React-turbomodule-core:
-    :path: "../ReactCommon/turbomodule/core"
-  React-turbomodule-samples:
-    :path: "../ReactCommon/turbomodule/samples"
+  ReactCommon:
+    :path: "../ReactCommon"
   yoga:
     :path: "../ReactCommon/yoga"
 
@@ -260,7 +247,7 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   FBLazyVector: 34431b7e61740bed29b082ff81500b0ffafaffa0
-  FBReactNativeSpec: 60bf4c6b7cd868b2878f2d3556e37ecfd5e51a17
+  FBReactNativeSpec: 0b697c23db60351a2ae629e110581cdefbe5e939
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   RCTRequired: 33f3b89d2d82ef01c02b9b4f8146c43762e509d8
@@ -287,10 +274,9 @@ SPEC CHECKSUMS:
   React-RCTText: 469ec754592c92fc639825e558908c2f0e783e2c
   React-RCTVibration: ade3c169b54f3bc16c9a9918e17e48ef66aee6ba
   React-RCTWebSocket: cb5317e9a4adc37191660f819fb21d63433584ef
-  React-turbomodule-core: 5cce62fb65bd0b19f249bc1c4c54b82b3cf9a749
-  React-turbomodule-samples: ef5c144b510530cb108d4bdb8615dc3943a802fd
+  ReactCommon: 85e9a652d56873ab4e91820ecd759ca006dc1b56
   yoga: b72aa5b3708cc93c5897f8297122d6eba1331e07
 
-PODFILE CHECKSUM: 5ebd7e7531d9b6db21435251001600722f432414
+PODFILE CHECKSUM: f866eab42001b1d59349bce6b20d00912cdc700c
 
 COCOAPODS: 1.7.1

@@ -8,7 +8,7 @@
 #pragma once
 
 #include <fb/fbjni.h>
-#include <jsireact/JavaTurboModule.h>
+#include <ReactCommon/JavaTurboModule.h>
 #include <jsireact/JSCallInvoker.h>
 #include <string>
 #include <memory>

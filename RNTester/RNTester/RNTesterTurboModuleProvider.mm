@@ -11,8 +11,8 @@
 #import "RNTesterTurboModuleProvider.h"
 
 #import <React/CoreModulesPlugins.h>
-#import <jsireact/SampleTurboCxxModule.h>
-#import <jsireact/RCTSampleTurboModule.h>
+#import <ReactCommon/SampleTurboCxxModule.h>
+#import <ReactCommon/RCTSampleTurboModule.h>
 
 // NOTE: This entire file should be codegen'ed.
 

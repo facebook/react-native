@@ -12,11 +12,11 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTModuleMethod.h>
+#import <ReactCommon/TurboModule.h>
 #import <cxxreact/MessageQueueThread.h>
 #import <jsireact/JSCallInvoker.h>
-#import <jsireact/TurboModule.h>
-#import <unordered_map>
 #import <string>
+#import <unordered_map>
 
 #define RCT_IS_TURBO_MODULE_CLASS(klass) ((RCTTurboModuleEnabled() && [(klass) conformsToProtocol:@protocol(RCTTurboModule)]))
 #define RCT_IS_TURBO_MODULE_INSTANCE(module) RCT_IS_TURBO_MODULE_CLASS([(module) class])

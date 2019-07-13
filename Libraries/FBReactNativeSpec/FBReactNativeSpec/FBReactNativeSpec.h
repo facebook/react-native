@@ -21,8 +21,8 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCxxConvert.h>
 #import <React/RCTManagedPointer.h>
+#import <ReactCommon/RCTTurboModule.h>
 #import <folly/Optional.h>
-#import <jsireact/RCTTurboModule.h>
 #import <vector>
 
 

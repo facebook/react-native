@@ -9,8 +9,8 @@
 
 #include <string>
 
+#include <ReactCommon/LongLivedObject.h>
 #include <cxxreact/SystraceSection.h>
-#include <jsireact/LongLivedObject.h>
 
 using namespace facebook;
 

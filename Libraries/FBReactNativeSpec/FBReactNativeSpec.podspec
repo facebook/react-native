@@ -43,5 +43,5 @@ Pod::Spec.new do |s|
   s.dependency "RCTRequired", version
   s.dependency "RCTTypeSafety", version
   s.dependency "React-Core", version
-  s.dependency "React-turbomodule-core", version
+  s.dependency "ReactCommon/turbomodule/core", version
 end
