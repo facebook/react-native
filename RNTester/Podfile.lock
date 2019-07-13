@@ -7,6 +7,7 @@ PODS:
     - RCTRequired (= 1000.0.0)
     - RCTTypeSafety (= 1000.0.0)
     - React-Core (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - Folly (2018.10.22.00):
     - boost-for-react-native
@@ -247,7 +248,7 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   FBLazyVector: 34431b7e61740bed29b082ff81500b0ffafaffa0
-  FBReactNativeSpec: 0b697c23db60351a2ae629e110581cdefbe5e939
+  FBReactNativeSpec: e9febd2d5cc091662f172724165922b2e28d10a3
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   RCTRequired: 33f3b89d2d82ef01c02b9b4f8146c43762e509d8
