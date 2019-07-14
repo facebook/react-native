@@ -964,6 +964,10 @@ class ScrollView extends React.Component<Props, State> {
       'ScrollContentContainerViewClass must not be undefined',
     );
 
+    ScrollContentContainerViewClass = AnimatedImplementation.createAnimatedComponent(
+      ScrollContentContainerViewClass,
+    );
+
     const contentContainerStyle = [
       this.props.horizontal === true && styles.contentContainerHorizontal,
       this.props.contentContainerStyle,
