@@ -585,9 +585,12 @@ function createScrollResponder(
   return scrollResponder;
 }
 
-type ContextType = {||} | null;
+type ContextType = {|horizontal: boolean|} | null;
 const Context = React.createContext<ContextType>(null);
-const standardContext: ContextType = Object.freeze({}); // not null with option value to add more info in the future
+const standardHorizontalContext: ContextType = Object.freeze({
+  horizontal: true,
+});
+const standardVerticalContext: ContextType = Object.freeze({horizontal: false});
 
 /**
  * Component that wraps platform ScrollView while providing
@@ -1022,7 +1025,14 @@ class ScrollView extends React.Component<Props, State> {
       });
     }
     children = (
-      <Context.Provider value={standardContext}>{children}</Context.Provider>
+      <Context.Provider
+        value={
+          this.props.horizontal === true
+            ? standardHorizontalContext
+            : standardVerticalContext
+        }>
+        {children}
+      </Context.Provider>
     );
 
     const hasStickyHeaders =
