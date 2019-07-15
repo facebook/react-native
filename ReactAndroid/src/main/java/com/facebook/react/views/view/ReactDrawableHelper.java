@@ -9,8 +9,6 @@ package com.facebook.react.views.view;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
@@ -30,7 +28,8 @@ public class ReactDrawableHelper {
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public static Drawable createDrawableFromJSDescription(
-      Context context, ReadableMap drawableDescriptionDict) {
+      ReactViewGroup view, ReadableMap drawableDescriptionDict) {
+    Context context = view.getContext();
     String type = drawableDescriptionDict.getString("type");
     if ("ThemeAttrAndroid".equals(type)) {
       String attr = drawableDescriptionDict.getString("attribute");
@@ -75,7 +74,7 @@ public class ReactDrawableHelper {
       if (!drawableDescriptionDict.hasKey("borderless")
           || drawableDescriptionDict.isNull("borderless")
           || !drawableDescriptionDict.getBoolean("borderless")) {
-        mask = new ColorDrawable(Color.WHITE);
+        mask = view.getBorderRadiusMask();
       }
       ColorStateList colorStateList =
           new ColorStateList(new int[][] {new int[] {}}, new int[] {color});
