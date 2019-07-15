@@ -13,11 +13,11 @@ import android.view.animation.BaseInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Class responsible for parsing and converting layout animation data into native {@link Animation}

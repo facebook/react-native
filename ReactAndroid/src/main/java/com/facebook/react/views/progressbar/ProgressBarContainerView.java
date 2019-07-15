@@ -12,8 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import javax.annotation.Nullable;
 
 /**
  * Controls an enclosing ProgressBar. Exists so that the ProgressBar can be recreated if the style

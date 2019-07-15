@@ -9,6 +9,7 @@ package com.facebook.react.packagerconnection;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,7 +17,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import javax.annotation.Nullable;
 import org.json.JSONObject;
 
 public class FileIoHandler implements Runnable {

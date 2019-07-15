@@ -8,8 +8,8 @@ package com.facebook.react.views.imagehelper;
 
 import android.content.Context;
 import android.net.Uri;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
-import javax.annotation.Nullable;
 
 /** Class describing an image source (network URI or resource) and size. */
 public class ImageSource {

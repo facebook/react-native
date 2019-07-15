@@ -7,12 +7,12 @@
 package com.facebook.react.views.text.frescosupport;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
-import javax.annotation.Nullable;
 
 /**
  * Manages Images embedded in Text nodes using Fresco. Since they are used only as a virtual nodes

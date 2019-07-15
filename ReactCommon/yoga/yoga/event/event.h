@@ -33,6 +33,8 @@ struct Event {
     LayoutPassEnd,
     MeasureCallbackStart,
     MeasureCallbackEnd,
+    NodeBaselineStart,
+    NodeBaselineEnd,
   };
   class Data;
   using Subscriber = void(const YGNode&, Type, Data);

@@ -5,9 +5,10 @@ PODS:
   - FBReactNativeSpec (1000.0.0):
     - Folly (= 2018.10.22.00)
     - RCTRequired (= 1000.0.0)
+    - RCTTypeSafety (= 1000.0.0)
     - React-Core (= 1000.0.0)
-    - React-turbomodule-core (= 1000.0.0)
-    - React-TypeSafety (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
   - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
@@ -19,6 +20,11 @@ PODS:
     - glog
   - glog (0.3.5)
   - RCTRequired (1000.0.0)
+  - RCTTypeSafety (1000.0.0):
+    - FBLazyVector (= 1000.0.0)
+    - Folly (= 2018.10.22.00)
+    - RCTRequired (= 1000.0.0)
+    - React-Core (= 1000.0.0)
   - React (1000.0.0):
     - React-Core (= 1000.0.0)
     - React-DevSupport (= 1000.0.0)
@@ -36,7 +42,24 @@ PODS:
     - React-Core (= 1000.0.0)
   - React-Core (1000.0.0):
     - Folly (= 2018.10.22.00)
+    - glog
+    - React-Core/Default (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - yoga (= 1000.0.0.React)
+  - React-Core/CxxBridge (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - yoga (= 1000.0.0.React)
+  - React-Core/Default (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
     - yoga (= 1000.0.0.React)
   - React-CoreModules (1000.0.0):
@@ -52,9 +75,6 @@ PODS:
   - React-DevSupport (1000.0.0):
     - React-Core (= 1000.0.0)
     - React-RCTWebSocket (= 1000.0.0)
-  - React-jscallinvoker (1000.0.0):
-    - Folly (= 2018.10.22.00)
-    - React-cxxreact (= 1000.0.0)
   - React-jsi (1000.0.0):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
@@ -100,37 +120,28 @@ PODS:
     - React-Core (= 1000.0.0)
   - React-RCTWebSocket (1000.0.0):
     - React-Core (= 1000.0.0)
-  - React-turbomodule-core (1000.0.0):
+  - ReactCommon/jscallinvoker (1000.0.0):
+    - DoubleConversion
     - Folly (= 2018.10.22.00)
-    - React-Core (= 1000.0.0)
+    - glog
     - React-cxxreact (= 1000.0.0)
-    - React-jscallinvoker (= 1000.0.0)
-    - React-jsi (= 1000.0.0)
-    - React-turbomodule-core/core-ios (= 1000.0.0)
-  - React-turbomodule-core/core-ios (1000.0.0):
+  - ReactCommon/turbomodule/core (1000.0.0):
+    - DoubleConversion
     - Folly (= 2018.10.22.00)
-    - React-Core (= 1000.0.0)
-    - React-cxxreact (= 1000.0.0)
-    - React-jscallinvoker (= 1000.0.0)
-    - React-jsi (= 1000.0.0)
-  - React-turbomodule-samples (1000.0.0):
-    - Folly (= 2018.10.22.00)
-    - React-Core (= 1000.0.0)
+    - glog
+    - React-Core/CxxBridge (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
-    - React-turbomodule-core (= 1000.0.0)
-    - React-turbomodule-samples/samples-ios (= 1000.0.0)
-  - React-turbomodule-samples/samples-ios (1000.0.0):
+    - ReactCommon/jscallinvoker (= 1000.0.0)
+  - ReactCommon/turbomodule/samples (1000.0.0):
+    - DoubleConversion
     - Folly (= 2018.10.22.00)
-    - React-Core (= 1000.0.0)
+    - glog
+    - React-Core/CxxBridge (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
-    - React-turbomodule-core (= 1000.0.0)
-  - React-TypeSafety (1000.0.0):
-    - FBLazyVector (= 1000.0.0)
-    - Folly (= 2018.10.22.00)
-    - RCTRequired (= 1000.0.0)
-    - React-Core (= 1000.0.0)
+    - ReactCommon/jscallinvoker (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
   - yoga (1000.0.0.React)
 
 DEPENDENCIES:
@@ -140,13 +151,13 @@ DEPENDENCIES:
   - Folly (from `../third-party-podspecs/Folly.podspec`)
   - glog (from `../third-party-podspecs/glog.podspec`)
   - RCTRequired (from `../Libraries/RCTRequired`)
+  - RCTTypeSafety (from `../Libraries/TypeSafety`)
   - React (from `../`)
   - React-ART (from `../Libraries/ART`)
   - React-Core (from `../React`)
   - React-CoreModules (from `../React/CoreModules`)
   - React-cxxreact (from `../ReactCommon/cxxreact`)
   - React-DevSupport (from `../React`)
-  - React-jscallinvoker (from `../ReactCommon/jscallinvoker`)
   - React-jsi (from `../ReactCommon/jsi`)
   - React-jsiexecutor (from `../ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../ReactCommon/jsinspector`)
@@ -162,9 +173,9 @@ DEPENDENCIES:
   - React-RCTText (from `../Libraries/Text`)
   - React-RCTVibration (from `../Libraries/Vibration`)
   - React-RCTWebSocket (from `../Libraries/WebSocket`)
-  - React-turbomodule-core (from `../ReactCommon/turbomodule/core`)
-  - React-turbomodule-samples (from `../ReactCommon/turbomodule/samples`)
-  - React-TypeSafety (from `../Libraries/TypeSafety`)
+  - ReactCommon/jscallinvoker (from `../ReactCommon`)
+  - ReactCommon/turbomodule/core (from `../ReactCommon`)
+  - ReactCommon/turbomodule/samples (from `../ReactCommon`)
   - yoga (from `../ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -184,6 +195,8 @@ EXTERNAL SOURCES:
     :podspec: "../third-party-podspecs/glog.podspec"
   RCTRequired:
     :path: "../Libraries/RCTRequired"
+  RCTTypeSafety:
+    :path: "../Libraries/TypeSafety"
   React:
     :path: "../"
   React-ART:
@@ -196,8 +209,6 @@ EXTERNAL SOURCES:
     :path: "../ReactCommon/cxxreact"
   React-DevSupport:
     :path: "../React"
-  React-jscallinvoker:
-    :path: "../ReactCommon/jscallinvoker"
   React-jsi:
     :path: "../ReactCommon/jsi"
   React-jsiexecutor:
@@ -228,12 +239,8 @@ EXTERNAL SOURCES:
     :path: "../Libraries/Vibration"
   React-RCTWebSocket:
     :path: "../Libraries/WebSocket"
-  React-turbomodule-core:
-    :path: "../ReactCommon/turbomodule/core"
-  React-turbomodule-samples:
-    :path: "../ReactCommon/turbomodule/samples"
-  React-TypeSafety:
-    :path: "../Libraries/TypeSafety"
+  ReactCommon:
+    :path: "../ReactCommon"
   yoga:
     :path: "../ReactCommon/yoga"
 
@@ -241,19 +248,19 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   FBLazyVector: 34431b7e61740bed29b082ff81500b0ffafaffa0
-  FBReactNativeSpec: 82b0e4bdc0cb0b1b6990b5bbbc85b4b161a6a276
+  FBReactNativeSpec: e9febd2d5cc091662f172724165922b2e28d10a3
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   RCTRequired: 33f3b89d2d82ef01c02b9b4f8146c43762e509d8
+  RCTTypeSafety: 2b1cb2d92b779aa9a3522f67bd4f07e6b6d0797e
   React: 7c652b87c228731c51ab5764de68b6c17e6342be
   React-ART: 28f8815acbbc4816cec14866b59911a83eb780ed
-  React-Core: 26b00da6b066d0d426a558d13c76240038aa7dc5
-  React-CoreModules: 04ea22808b22232b251d462f3309ab1150e3b7dd
-  React-cxxreact: 7e670bad16eb78fa889573d931c12bb1003a3598
+  React-Core: b85f6553c4b2a31e7d71234c28b51bb928a00cbd
+  React-CoreModules: b4d2aa51d008ec9edf74f3a03075bbf0359c325f
+  React-cxxreact: 7c4242192149ce0205b53efaa03e3bf86ba4337c
   React-DevSupport: f34768e3aad3e59ee9800c752a78bc6cb24d0f75
-  React-jscallinvoker: a477dfe11b3ebe31ee9575057ebfb57a963db636
-  React-jsi: 93638e9b97e1373ae1d8c40f0571c0a2814ef900
-  React-jsiexecutor: ee776181a1ba315dbae9500c4dba5cb94ea3c5d2
+  React-jsi: 98d1f9d8a79d2720ba6a44c2d928a77f315b7e4f
+  React-jsiexecutor: c0ab8c80a6e88380d63f583690a50d4a723b47b5
   React-jsinspector: ea0a218071a11c3687cef2480580180caa6a64c0
   React-RCTActionSheet: caf6532394bdbbe0fc0ec2363c84f26bcfcdd36a
   React-RCTAnimation: b324c6eb699637c735650c6180e13d003eeb0e56
@@ -267,11 +274,9 @@ SPEC CHECKSUMS:
   React-RCTText: 469ec754592c92fc639825e558908c2f0e783e2c
   React-RCTVibration: ade3c169b54f3bc16c9a9918e17e48ef66aee6ba
   React-RCTWebSocket: cb5317e9a4adc37191660f819fb21d63433584ef
-  React-turbomodule-core: 0a6e91fe8e28bbf119fe31132ecb27a4f42ea551
-  React-turbomodule-samples: b28927d482d6fcfc3cbe2fd25f304799d2ff9bb7
-  React-TypeSafety: 1de5a1034398108f4ca866b68489734f8dbb4c44
-  yoga: 542cb34fe3bca476487e08eb516dd640ea996a65
+  ReactCommon: 040ed4788f8cae2ffa23b2d5fb0d4afa58c6d646
+  yoga: b72aa5b3708cc93c5897f8297122d6eba1331e07
 
-PODFILE CHECKSUM: bdc86d3bfde60c2637cfa8c4ed81afeaa2aaf6a3
+PODFILE CHECKSUM: f866eab42001b1d59349bce6b20d00912cdc700c
 
 COCOAPODS: 1.7.1

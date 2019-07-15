@@ -7,6 +7,7 @@
 package com.facebook.react.views.picker;
 
 import android.widget.Spinner;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -16,7 +17,6 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.picker.events.PickerItemSelectEvent;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * {@link ViewManager} for the {@link ReactPicker} view. This is abstract because the {@link

@@ -170,6 +170,17 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   return (CGRect){offset, self.layoutMetrics.frame.size};
 }
 
+- (BOOL)viewIsDescendantOf:(RCTShadowView *)ancestor
+{
+  NSInteger depth = 30; // max depth to search
+  RCTShadowView *shadowView = self;
+  while (depth && shadowView && shadowView != ancestor) {
+    shadowView = shadowView->_superview;
+    depth--;
+  }
+  return ancestor == shadowView;
+}
+
 - (instancetype)init
 {
   if (self = [super init]) {

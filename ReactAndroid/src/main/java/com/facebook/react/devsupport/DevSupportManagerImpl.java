@@ -29,6 +29,7 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.JavaJSExecutor;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeDeltaClient;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
@@ -553,13 +554,48 @@ public class DevSupportManagerImpl
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
-            Intent intent =
-                new Intent(
-                    mApplicationContext.getPackageName()
-                        + (mIsSamplingProfilerEnabled
-                            ? DISABLE_SAMPLING_PROFILER
-                            : ENABLE_SAMPLING_PROFILER));
-            mApplicationContext.sendBroadcast(intent);
+            JavaScriptExecutorFactory javaScriptExecutorFactory =
+                mReactInstanceManagerHelper.getJavaScriptExecutorFactory();
+            if (!mIsSamplingProfilerEnabled) {
+              try {
+                javaScriptExecutorFactory.startSamplingProfiler();
+                Toast.makeText(
+                        mApplicationContext, "Starting Sampling Profiler", Toast.LENGTH_SHORT)
+                    .show();
+              } catch (UnsupportedOperationException e) {
+                Toast.makeText(
+                        mApplicationContext,
+                        javaScriptExecutorFactory.toString()
+                            + " does not support Sampling Profiler",
+                        Toast.LENGTH_LONG)
+                    .show();
+              }
+            } else {
+              try {
+                final String outputPath =
+                    File.createTempFile(
+                            "sampling-profiler-trace",
+                            ".cpuprofile",
+                            mApplicationContext.getCacheDir())
+                        .getPath();
+                javaScriptExecutorFactory.stopSamplingProfiler(outputPath);
+                Toast.makeText(
+                        mApplicationContext,
+                        "Saved results from Profiler to " + outputPath,
+                        Toast.LENGTH_LONG)
+                    .show();
+              } catch (IOException e) {
+                FLog.e(
+                    ReactConstants.TAG,
+                    "Could not create temporary file for saving results from Sampling Profiler");
+              } catch (UnsupportedOperationException e) {
+                Toast.makeText(
+                        mApplicationContext,
+                        javaScriptExecutorFactory.toString() + "does not support Sampling Profiler",
+                        Toast.LENGTH_LONG)
+                    .show();
+              }
+            }
             mIsSamplingProfilerEnabled = !mIsSamplingProfilerEnabled;
           }
         });

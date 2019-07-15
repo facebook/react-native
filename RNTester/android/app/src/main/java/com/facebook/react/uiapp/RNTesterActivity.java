@@ -7,9 +7,9 @@
 package com.facebook.react.uiapp;
 
 import android.os.Bundle;
+import androidx.annotation.Nullable;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
-import javax.annotation.Nullable;
 
 public class RNTesterActivity extends ReactActivity {
   public static class RNTesterActivityDelegate extends ReactActivityDelegate {

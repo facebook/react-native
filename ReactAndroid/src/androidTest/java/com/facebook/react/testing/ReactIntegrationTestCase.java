@@ -11,6 +11,7 @@ import static org.mockito.Mockito.mock;
 import android.test.AndroidTestCase;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.CatalystInstance;
@@ -29,7 +30,6 @@ import com.facebook.soloader.SoLoader;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 
 /**
  * Use this class for writing integration tests of catalyst. This class will run all JNI call within

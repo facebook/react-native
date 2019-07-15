@@ -11,6 +11,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import com.facebook.common.logging.FLog;
@@ -26,8 +28,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 @ReactModule(name = DialogModule.NAME)
 public class DialogModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
@@ -62,16 +62,16 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
   }
 
   @Override
-  public @Nonnull String getName() {
+  public @NonNull String getName() {
     return NAME;
   }
 
   private class FragmentManagerHelper {
-    private final @Nonnull FragmentManager mFragmentManager;
+    private final @NonNull FragmentManager mFragmentManager;
 
     private @Nullable Object mFragmentToShow;
 
-    public FragmentManagerHelper(@Nonnull FragmentManager fragmentManager) {
+    public FragmentManagerHelper(@NonNull FragmentManager fragmentManager) {
       mFragmentManager = fragmentManager;
     }
 

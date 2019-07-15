@@ -63,7 +63,7 @@ public class HybridData {
     }
 
     @Override
-    void destruct() {
+    protected final void destruct() {
       // When invoked from the DestructorThread instead of resetNative,
       // the DestructorThread has exclusive ownership of the HybridData
       // so synchronization is not necessary.

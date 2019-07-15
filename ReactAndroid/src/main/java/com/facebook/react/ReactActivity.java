@@ -9,11 +9,11 @@ package com.facebook.react;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
-import javax.annotation.Nullable;
 
 /** Base Activity for React Native applications. */
 public abstract class ReactActivity extends AppCompatActivity

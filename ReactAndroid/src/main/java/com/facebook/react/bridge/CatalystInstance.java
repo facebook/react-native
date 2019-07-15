@@ -6,13 +6,13 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.turbomodule.core.interfaces.JSCallInvokerHolder;
 import java.util.Collection;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * A higher level API on top of the asynchronous JSC bridge. This provides an environment allowing

@@ -7,10 +7,10 @@
 package com.facebook.react.uimanager.events;
 
 import android.view.MotionEvent;
+import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.SoftAssertions;
-import javax.annotation.Nullable;
 
 /**
  * An event representing the start, end or movement of a touch. Corresponds to a single {@link

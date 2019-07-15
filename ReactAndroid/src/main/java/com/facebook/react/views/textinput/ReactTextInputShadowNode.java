@@ -12,6 +12,7 @@ import android.text.Layout;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -28,7 +29,6 @@ import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
-import javax.annotation.Nullable;
 
 @VisibleForTesting
 @TargetApi(Build.VERSION_CODES.M)

@@ -11,13 +11,13 @@ import static org.junit.Assert.assertNotNull;
 
 import android.app.Activity;
 import android.content.Intent;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.WritableMap;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -170,7 +170,7 @@ public class ShareModuleTest {
     }
 
     @Override
-    public void reject(String code, @Nonnull WritableMap userInfo) {
+    public void reject(String code, @NonNull WritableMap userInfo) {
       reject(code, /*Message*/ null, /*Throwable*/ null, userInfo);
     }
 
@@ -180,7 +180,7 @@ public class ShareModuleTest {
     }
 
     @Override
-    public void reject(String code, String message, @Nonnull WritableMap userInfo) {
+    public void reject(String code, String message, @NonNull WritableMap userInfo) {
       reject(code, message, /*Throwable*/ null, userInfo);
     }
 

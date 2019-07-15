@@ -7,7 +7,7 @@
 package com.facebook.react.touch;
 
 import android.graphics.Rect;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * This interface should be implemented by all {@link View} subclasses that want to use the hitSlop

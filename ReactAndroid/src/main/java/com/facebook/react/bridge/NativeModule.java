@@ -6,8 +6,8 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.NonNull;
 import com.facebook.proguard.annotations.DoNotStrip;
-import javax.annotation.Nonnull;
 
 /**
  * A native module whose API can be provided to JS catalyst instances. {@link NativeModule}s whose
@@ -28,7 +28,7 @@ public interface NativeModule {
    * @return the name of this module. This will be the name used to {@code require()} this module
    *     from javascript.
    */
-  @Nonnull
+  @NonNull
   String getName();
 
   /**

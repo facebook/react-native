@@ -7,6 +7,7 @@
 package com.facebook.react.modules.deviceinfo;
 
 import android.content.Context;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -16,7 +17,6 @@ import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /** Module that exposes Android Constants to JS. */
 @ReactModule(name = DeviceInfoModule.NAME)

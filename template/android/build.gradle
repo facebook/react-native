@@ -7,7 +7,7 @@ buildscript {
         compileSdkVersion = 28
         targetSdkVersion = 28
         supportLibVersion = "28.0.0"
-        gradlePluginVersion = "3.4.1"
+        gradlePluginVersion = "3.4.2"
         reactnativeVersion = "+"
     }
     repositories {

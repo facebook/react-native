@@ -27,26 +27,17 @@
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
 #endif
 
-#ifdef RN_TURBO_MODULE_ENABLED
-#import <jsireact/RCTTurboModuleManager.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
 
 #import "RNTesterTurboModuleProvider.h"
-#endif
 
-#ifdef RN_TURBO_MODULE_ENABLED
 @interface AppDelegate() <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate>{
-#else
-@interface AppDelegate() <RCTCxxBridgeDelegate>{
-#endif
 
 #ifdef RN_FABRIC_ENABLED
   RCTSurfacePresenter *_surfacePresenter;
 #endif
 
-#ifdef RN_TURBO_MODULE_ENABLED
   RCTTurboModuleManager *_turboModuleManager;
-#endif
-
 }
 @end
 
@@ -54,9 +45,7 @@
 
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-#ifdef RN_TURBO_MODULE_ENABLED
   RCTEnableTurboModule(YES);
-#endif
 
   _bridge = [[RCTBridge alloc] initWithDelegate:self
                                   launchOptions:launchOptions];
@@ -120,17 +109,13 @@
     }
     __typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
-#ifdef RN_TURBO_MODULE_ENABLED
       strongSelf->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:strongSelf];
       [strongSelf->_turboModuleManager installJSBindingWithRuntime:&runtime];
-#endif
     }
   });
 }
 
 #pragma mark RCTTurboModuleManagerDelegate
-
-#ifdef RN_TURBO_MODULE_ENABLED
 
 - (Class)getModuleClassFromName:(const char *)name
 {
@@ -155,8 +140,6 @@
   // No custom initializer here.
   return [moduleClass new];
 }
-
-#endif
 
 # pragma mark - Push Notifications
 

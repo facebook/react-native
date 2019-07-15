@@ -6,6 +6,7 @@
  */
 package com.facebook.react.shell;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.TurboReactPackage;
 import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.NativeModule;
@@ -64,7 +65,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /** Package defining basic modules and view managers. */
 @ReactModuleList(

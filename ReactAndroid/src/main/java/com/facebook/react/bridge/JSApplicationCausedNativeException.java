@@ -6,7 +6,7 @@
  */
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * A special RuntimeException that should be thrown by native code if it has reached an exceptional

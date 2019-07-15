@@ -8,8 +8,8 @@ package com.facebook.react.uimanager;
 
 import android.os.Bundle;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import com.facebook.react.uimanager.common.UIManagerType;
-import javax.annotation.Nullable;
 
 /** Interface for the root native view of a React native application */
 public interface ReactRoot {

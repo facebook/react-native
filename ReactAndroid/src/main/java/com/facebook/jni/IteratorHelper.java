@@ -6,9 +6,9 @@
  */
 package com.facebook.jni;
 
+import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.Iterator;
-import javax.annotation.Nullable;
 
 /**
  * To iterate over an Iterator from C++ requires two calls per entry: hasNext() and next(). This

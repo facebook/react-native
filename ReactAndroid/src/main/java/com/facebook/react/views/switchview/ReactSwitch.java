@@ -9,8 +9,8 @@ package com.facebook.react.views.switchview;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
-import javax.annotation.Nullable;
 
 /**
  * Switch that has its value controlled by JS. Whenever the value of the switch changes, we do not

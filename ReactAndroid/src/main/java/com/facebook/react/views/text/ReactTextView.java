@@ -18,6 +18,7 @@ import android.text.util.Linkify;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.TintContextWrapper;
 import com.facebook.common.logging.FLog;
@@ -35,7 +36,6 @@ import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import javax.annotation.Nullable;
 
 public class ReactTextView extends AppCompatTextView implements ReactCompoundView {
 

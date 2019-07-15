@@ -8,6 +8,8 @@ package com.facebook.react.uimanager;
 
 import android.content.Context;
 import android.view.View;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -19,8 +21,6 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Class responsible for knowing how to create and update catalyst Views of a given type. It is also
@@ -39,20 +39,20 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param props
    * @param stateWrapper
    */
-  public void updateProperties(@Nonnull T viewToUpdate, ReactStylesDiffMap props) {
+  public void updateProperties(@NonNull T viewToUpdate, ReactStylesDiffMap props) {
     ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
     onAfterUpdateTransaction(viewToUpdate);
   }
 
   /** Creates a view and installs event emitters on it. */
-  private final @Nonnull T createView(
-      @Nonnull ThemedReactContext reactContext, JSResponderHandler jsResponderHandler) {
+  private final @NonNull T createView(
+      @NonNull ThemedReactContext reactContext, JSResponderHandler jsResponderHandler) {
     return createView(reactContext, null, null, jsResponderHandler);
   }
 
   /** Creates a view with knowledge of props. */
-  public @Nonnull T createView(
-      @Nonnull ThemedReactContext reactContext,
+  public @NonNull T createView(
+      @NonNull ThemedReactContext reactContext,
       @Nullable ReactStylesDiffMap props,
       @Nullable StateWrapper stateWrapper,
       JSResponderHandler jsResponderHandler) {
@@ -68,7 +68,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @return the name of this view manager. This will be the name used to reference this view
    *     manager from JavaScript in createReactNativeComponentClass.
    */
-  public abstract @Nonnull String getName();
+  public abstract @NonNull String getName();
 
   /**
    * This method should return a subclass of {@link ReactShadowNode} which will be then used for
@@ -79,7 +79,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     throw new RuntimeException("ViewManager subclasses must implement createShadowNodeInstance()");
   }
 
-  public @Nonnull C createShadowNodeInstance(@Nonnull ReactApplicationContext context) {
+  public @NonNull C createShadowNodeInstance(@NonNull ReactApplicationContext context) {
     return createShadowNodeInstance();
   }
 
@@ -100,7 +100,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    *
    * @param reactContext
    */
-  protected abstract @Nonnull T createViewInstance(@Nonnull ThemedReactContext reactContext);
+  protected abstract @NonNull T createViewInstance(@NonNull ThemedReactContext reactContext);
 
   /**
    * Subclasses should return a new View instance of the proper type. This is an optional method
@@ -109,8 +109,8 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    *
    * @param reactContext
    */
-  protected @Nonnull T createViewInstance(
-      @Nonnull ThemedReactContext reactContext,
+  protected @NonNull T createViewInstance(
+      @NonNull ThemedReactContext reactContext,
       @Nullable ReactStylesDiffMap initialProps,
       @Nullable StateWrapper stateWrapper) {
     T view = createViewInstance(reactContext);
@@ -124,14 +124,14 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * Called when view is detached from view hierarchy and allows for some additional cleanup by the
    * {@link ViewManager} subclass.
    */
-  public void onDropViewInstance(@Nonnull T view) {}
+  public void onDropViewInstance(@NonNull T view) {}
 
   /**
    * Subclasses can override this method to install custom event emitters on the given View. You
    * might want to override this method if your view needs to emit events besides basic touch events
    * to JS (e.g. scroll events).
    */
-  protected void addEventEmitters(@Nonnull ThemedReactContext reactContext, @Nonnull T view) {}
+  protected void addEventEmitters(@NonNull ThemedReactContext reactContext, @NonNull T view) {}
 
   /**
    * Callback that will be triggered after all properties are updated in current update transaction
@@ -139,7 +139,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * you want to override this method you should call super.onAfterUpdateTransaction from it as the
    * parent class of the ViewManager may rely on callback being executed.
    */
-  protected void onAfterUpdateTransaction(@Nonnull T view) {}
+  protected void onAfterUpdateTransaction(@NonNull T view) {}
 
   /**
    * Subclasses can implement this method to receive an optional extra data enqueued from the
@@ -152,7 +152,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    *
    * <p>TODO(7247021): Replace updateExtraData with generic update props mechanism after D2086999
    */
-  public abstract void updateExtraData(@Nonnull T root, Object extraData);
+  public abstract void updateExtraData(@NonNull T root, Object extraData);
 
   /**
    * Subclasses may use this method to receive events/commands directly from JS through the {@link
@@ -166,7 +166,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param args optional arguments for the command
    */
   @Deprecated
-  public void receiveCommand(@Nonnull T root, int commandId, @Nullable ReadableArray args) {}
+  public void receiveCommand(@NonNull T root, int commandId, @Nullable ReadableArray args) {}
 
   /**
    * Subclasses may use this method to receive events/commands directly from JS through the {@link
@@ -177,7 +177,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param commandId code of the command
    * @param args optional arguments for the command
    */
-  public void receiveCommand(@Nonnull T root, String commandId, @Nullable ReadableArray args) {}
+  public void receiveCommand(@NonNull T root, String commandId, @Nullable ReadableArray args) {}
 
   /**
    * Subclasses of {@link ViewManager} that expect to receive commands through {@link
@@ -244,7 +244,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
   }
 
   public @Nullable Object updateLocalData(
-      @Nonnull T view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
+      @NonNull T view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
     return null;
   }
 
@@ -253,7 +253,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * this component type.
    */
   public @Nullable Object updateState(
-      @Nonnull T view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
+      @NonNull T view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
     return null;
   }
 

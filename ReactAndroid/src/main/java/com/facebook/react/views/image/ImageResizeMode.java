@@ -7,9 +7,9 @@
 package com.facebook.react.views.image;
 
 import android.graphics.Shader;
+import androidx.annotation.Nullable;
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import javax.annotation.Nullable;
 
 /** Converts JS resize modes into Android-specific scale type. */
 public class ImageResizeMode {

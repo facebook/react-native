@@ -7,6 +7,7 @@ package com.facebook.react.uimanager.util;
 
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import com.facebook.react.R;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 /** Finds views in React Native view hierarchies */
 public class ReactFindViewUtil {

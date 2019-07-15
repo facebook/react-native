@@ -14,6 +14,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.provider.Settings.Secure;
+import androidx.annotation.Nullable;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -23,7 +24,6 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /** Module that exposes Android Constants to JS. */
 @ReactModule(name = AndroidInfoModule.NAME)

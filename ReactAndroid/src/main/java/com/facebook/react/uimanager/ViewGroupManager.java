@@ -8,9 +8,9 @@ package com.facebook.react.uimanager;
 
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import java.util.List;
 import java.util.WeakHashMap;
-import javax.annotation.Nullable;
 
 /** Class providing children management API for view managers of classes extending ViewGroup. */
 public abstract class ViewGroupManager<T extends ViewGroup>

@@ -6,8 +6,8 @@
  */
 package com.facebook.react.views.art;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
-import javax.annotation.Nullable;
 
 /** Contains static helper methods for accessing props. */
 /* package */ class PropHelper {

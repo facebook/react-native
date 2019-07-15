@@ -6,8 +6,6 @@
  */
 package com.facebook.react.views.textinput;
 
-import static android.view.View.FOCUS_FORWARD;
-
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -23,6 +21,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -55,7 +54,6 @@ import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /** Manages instances of TextInput. */
 @ReactModule(name = ReactTextInputManager.REACT_CLASS)
@@ -591,39 +589,39 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setFilters(newFilters);
   }
 
-  @ReactProp(name = "autoComplete")
-  public void setTextContentType(ReactEditText view, @Nullable String autocomplete) {
-    if (autocomplete == null) {
+  @ReactProp(name = "autoCompleteType")
+  public void setTextContentType(ReactEditText view, @Nullable String autoCompleteType) {
+    if (autoCompleteType == null) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
-    } else if ("username".equals(autocomplete)) {
+    } else if ("username".equals(autoCompleteType)) {
       setAutofillHints(view, View.AUTOFILL_HINT_USERNAME);
-    } else if ("password".equals(autocomplete)) {
+    } else if ("password".equals(autoCompleteType)) {
       setAutofillHints(view, View.AUTOFILL_HINT_PASSWORD);
-    } else if ("email".equals(autocomplete)) {
+    } else if ("email".equals(autoCompleteType)) {
       setAutofillHints(view, View.AUTOFILL_HINT_EMAIL_ADDRESS);
-    } else if ("name".equals(autocomplete)) {
+    } else if ("name".equals(autoCompleteType)) {
       setAutofillHints(view, View.AUTOFILL_HINT_NAME);
-    } else if ("tel".equals(autocomplete)) {
+    } else if ("tel".equals(autoCompleteType)) {
       setAutofillHints(view, View.AUTOFILL_HINT_PHONE);
-    } else if ("street-address".equals(autocomplete)) {
+    } else if ("street-address".equals(autoCompleteType)) {
       setAutofillHints(view, View.AUTOFILL_HINT_POSTAL_ADDRESS);
-    } else if ("postal-code".equals(autocomplete)) {
+    } else if ("postal-code".equals(autoCompleteType)) {
       setAutofillHints(view, View.AUTOFILL_HINT_POSTAL_CODE);
-    } else if ("cc-number".equals(autocomplete)) {
+    } else if ("cc-number".equals(autoCompleteType)) {
       setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_NUMBER);
-    } else if ("cc-csc".equals(autocomplete)) {
+    } else if ("cc-csc".equals(autoCompleteType)) {
       setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
-    } else if ("cc-exp".equals(autocomplete)) {
+    } else if ("cc-exp".equals(autoCompleteType)) {
       setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
-    } else if ("cc-exp-month".equals(autocomplete)) {
+    } else if ("cc-exp-month".equals(autoCompleteType)) {
       setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
-    } else if ("cc-exp-year".equals(autocomplete)) {
+    } else if ("cc-exp-year".equals(autoCompleteType)) {
       setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
-    } else if ("off".equals(autocomplete)) {
+    } else if ("off".equals(autoCompleteType)) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
     } else {
       throw new JSApplicationIllegalArgumentException(
-          "Invalid autocomplete option: " + autocomplete);
+          "Invalid autoCompleteType: " + autoCompleteType);
     }
   }
 
@@ -904,11 +902,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         new TextView.OnEditorActionListener() {
           @Override
           public boolean onEditorAction(TextView v, int actionId, KeyEvent keyEvent) {
-            // Any 'Enter' action will do
-            if ((actionId & EditorInfo.IME_MASK_ACTION) > 0 || actionId == EditorInfo.IME_NULL) {
+            if ((actionId & EditorInfo.IME_MASK_ACTION) != 0 || actionId == EditorInfo.IME_NULL) {
               boolean blurOnSubmit = editText.getBlurOnSubmit();
-              boolean isMultiline =
-                  ((editText.getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0);
+              boolean isMultiline = editText.isMultiline();
 
               // Motivation:
               // * blurOnSubmit && isMultiline => Clear focus; prevent default behaviour (return
@@ -931,13 +927,20 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               }
 
               // Prevent default behavior except when we want it to insert a newline.
-              return blurOnSubmit || !isMultiline;
-            } else if (actionId == EditorInfo.IME_ACTION_NEXT) {
-              View v1 = v.focusSearch(FOCUS_FORWARD);
-              if (v1 != null && !v.requestFocus(FOCUS_FORWARD)) {
+              if (blurOnSubmit || !isMultiline) {
                 return true;
               }
-              return false;
+
+              // If we've reached this point, it means that the TextInput has 'blurOnSubmit' set to
+              // false and 'multiline' set to true. But it's still possible to get IME_ACTION_NEXT
+              // and IME_ACTION_PREVIOUS here in case if 'disableFullscreenUI' is false and Android
+              // decides to render this EditText in the full screen mode (when a phone has the
+              // landscape orientation for example). The full screen EditText also renders an action
+              // button specified by the 'returnKeyType' prop. We have to prevent Android from
+              // requesting focus from the next/previous focusable view since it must only be
+              // controlled from JS.
+              return actionId == EditorInfo.IME_ACTION_NEXT
+                  || actionId == EditorInfo.IME_ACTION_PREVIOUS;
             }
 
             return true;

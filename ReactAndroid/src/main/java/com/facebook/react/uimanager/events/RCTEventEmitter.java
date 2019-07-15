@@ -6,10 +6,10 @@
  */
 package com.facebook.react.uimanager.events;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import javax.annotation.Nullable;
 
 public interface RCTEventEmitter extends JavaScriptModule {
   void receiveEvent(int targetTag, String eventName, @Nullable WritableMap event);

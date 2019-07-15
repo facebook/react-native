@@ -6,6 +6,7 @@
  */
 package com.facebook.react.animated;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -13,7 +14,6 @@ import com.facebook.react.bridge.ReadableType;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 
 /**
  * Animated node that corresponds to {@code AnimatedInterpolation} from AnimatedImplementation.js.

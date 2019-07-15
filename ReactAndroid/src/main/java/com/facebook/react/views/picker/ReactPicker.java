@@ -11,10 +11,10 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatSpinner;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import java.util.List;
-import javax.annotation.Nullable;
 
 public class ReactPicker extends AppCompatSpinner {
 

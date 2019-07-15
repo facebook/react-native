@@ -61,6 +61,11 @@ module.exports = {
     reactTag: ?number,
     callback: (x: number, y: number, width: number, height: number) => void,
   ) => {},
+  viewIsDescendantOf: (
+    reactTag: ?number,
+    ancestorReactTag: ?number,
+    callback: (result: Array<boolean>) => void,
+  ) => {},
   measureLayout: (
     reactTag: ?number,
     ancestorReactTag: ?number,

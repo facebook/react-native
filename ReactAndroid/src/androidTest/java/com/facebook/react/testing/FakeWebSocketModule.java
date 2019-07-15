@@ -6,11 +6,11 @@
  */
 package com.facebook.react.testing;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import javax.annotation.Nullable;
 
 /** Dummy implementation of storage module, used for testing */
 public final class FakeWebSocketModule extends BaseJavaModule {

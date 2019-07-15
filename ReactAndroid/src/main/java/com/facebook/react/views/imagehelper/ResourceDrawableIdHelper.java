@@ -9,9 +9,9 @@ package com.facebook.react.views.imagehelper;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import androidx.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 /** Helper class for obtaining information about local images. */

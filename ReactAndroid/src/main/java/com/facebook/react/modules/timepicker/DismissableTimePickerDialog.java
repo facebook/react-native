@@ -9,7 +9,7 @@ package com.facebook.react.modules.timepicker;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Build;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Certain versions of Android (Jellybean-KitKat) have a bug where when dismissed, the {@link

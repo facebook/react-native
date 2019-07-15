@@ -8,11 +8,11 @@ package com.facebook.react.packagerconnection;
 
 import android.os.Handler;
 import android.os.Looper;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;

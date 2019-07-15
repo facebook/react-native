@@ -8,6 +8,7 @@ package com.facebook.react.modules.network;
 
 import android.content.Context;
 import android.os.Build;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import java.io.File;
 import java.security.Provider;
@@ -15,7 +16,6 @@ import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 import okhttp3.Cache;
 import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;

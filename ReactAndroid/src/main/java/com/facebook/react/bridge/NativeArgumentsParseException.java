@@ -6,7 +6,7 @@
  */
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /** Exception thrown when a native module method call receives unexpected arguments from JS. */
 public class NativeArgumentsParseException extends JSApplicationCausedNativeException {

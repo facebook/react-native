@@ -6,11 +6,11 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Java {@link ArrayList} backed implementation of {@link ReadableArray} and {@link WritableArray}
@@ -116,12 +116,12 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
   }
 
   @Override
-  public @Nonnull Dynamic getDynamic(int index) {
+  public @NonNull Dynamic getDynamic(int index) {
     return DynamicFromArray.create(this, index);
   }
 
   @Override
-  public @Nonnull ReadableType getType(int index) {
+  public @NonNull ReadableType getType(int index) {
     Object object = mBackingList.get(index);
 
     if (object == null) {
@@ -176,7 +176,7 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
   }
 
   @Override
-  public @Nonnull ArrayList<Object> toArrayList() {
+  public @NonNull ArrayList<Object> toArrayList() {
     return new ArrayList<Object>(mBackingList);
   }
 

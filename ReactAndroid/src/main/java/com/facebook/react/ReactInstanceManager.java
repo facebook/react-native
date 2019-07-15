@@ -39,6 +39,7 @@ import android.os.Bundle;
 import android.os.Process;
 import android.util.Log;
 import android.view.View;
+import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
@@ -102,7 +103,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 /**
  * This class is managing instances of {@link CatalystInstance}. It exposes a way to configure
@@ -292,7 +292,16 @@ public class ReactInstanceManager {
       public @Nullable Activity getCurrentActivity() {
         return ReactInstanceManager.this.mCurrentActivity;
       }
+
+      @Override
+      public JavaScriptExecutorFactory getJavaScriptExecutorFactory() {
+        return ReactInstanceManager.this.getJSExecutorFactory();
+      }
     };
+  }
+
+  private JavaScriptExecutorFactory getJSExecutorFactory() {
+    return mJavaScriptExecutorFactory;
   }
 
   public DevSupportManager getDevSupportManager() {

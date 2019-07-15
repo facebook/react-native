@@ -6,6 +6,7 @@
  */
 package com.facebook.react.animated;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -25,7 +26,6 @@ import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.UIManagerModuleListener;
 import java.util.ArrayList;
-import javax.annotation.Nullable;
 
 /**
  * Module that exposes interface for creating and managing animated nodes on the "native" side.

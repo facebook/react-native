@@ -6,8 +6,8 @@
  */
 package com.facebook.react.animated;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
-import javax.annotation.Nullable;
 
 /**
  * Basic type of animated node that maps directly from {@code Animated.Value(x)} of Animated.js

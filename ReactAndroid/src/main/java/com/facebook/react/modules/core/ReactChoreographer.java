@@ -6,13 +6,13 @@
  */
 package com.facebook.react.modules.core;
 
+import androidx.annotation.GuardedBy;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import java.util.ArrayDeque;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
 
 /**
  * A simple wrapper around Choreographer that allows us to control the order certain callbacks are

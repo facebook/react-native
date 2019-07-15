@@ -6,13 +6,11 @@
  *
  */
 
-#ifdef RN_TURBO_MODULE_ENABLED
-
 #import "RNTesterTurboModuleProvider.h"
 
 #import <React/CoreModulesPlugins.h>
-#import <jsireact/SampleTurboCxxModule.h>
-#import <jsireact/RCTSampleTurboModule.h>
+#import <ReactCommon/SampleTurboCxxModule.h>
+#import <ReactCommon/RCTSampleTurboModule.h>
 
 // NOTE: This entire file should be codegen'ed.
 
@@ -43,5 +41,3 @@ std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name
 
 } // namespace react
 } // namespace facebook
-
-#endif

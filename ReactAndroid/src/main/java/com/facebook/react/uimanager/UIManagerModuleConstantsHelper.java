@@ -8,12 +8,12 @@ package com.facebook.react.uimanager;
 
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.systrace.SystraceMessage;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Helps generate constants map for {@link UIManagerModule} by collecting and merging constants from

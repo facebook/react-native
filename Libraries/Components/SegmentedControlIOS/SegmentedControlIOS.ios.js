@@ -43,7 +43,7 @@ type SegmentedControlIOSProps = $ReadOnly<{|
   /**
    * Callback that is called when the user taps a segment
    */
-  onChange?: ?(event: SyntheticEvent<OnChangeEvent>) => mixed,
+  onChange?: ?(event: SyntheticEvent<OnChangeEvent>) => void,
   /**
    * Callback that is called when the user taps a segment;
    * passes the segment's value as an argument

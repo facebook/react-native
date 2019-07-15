@@ -6,10 +6,10 @@
  */
 package com.facebook.common.logging;
 
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import javax.annotation.Nullable;
 
 public final class FakeLoggingDelegate implements LoggingDelegate {
 

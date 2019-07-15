@@ -14,6 +14,7 @@ import android.graphics.SurfaceTexture;
 import android.os.Build;
 import android.view.Surface;
 import android.view.TextureView;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.common.ReactConstants;
@@ -23,7 +24,6 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import javax.annotation.Nullable;
 
 /** Shadow node for ART virtual tree root - ARTSurfaceView */
 public class ARTSurfaceViewShadowNode extends LayoutShadowNode

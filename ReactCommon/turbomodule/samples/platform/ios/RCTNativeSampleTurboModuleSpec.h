@@ -13,20 +13,12 @@
 
 #import <React/RCTBridgeModule.h>
 
-#ifdef RN_TURBO_MODULE_ENABLED
-#import <jsireact/RCTTurboModule.h>
-#endif
+#import <ReactCommon/RCTTurboModule.h>
 
 /**
  * The ObjC protocol based on the JS Flow type for SampleTurboModule.
  */
-@protocol NativeSampleTurboModuleSpec <
-    RCTBridgeModule
-#ifdef RN_TURBO_MODULE_ENABLED
-    ,
-    RCTTurboModule
-#endif
-    >
+@protocol NativeSampleTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)voidFunc;
 - (NSNumber *)getBool:(BOOL)arg;
@@ -46,8 +38,6 @@
 
 @end
 
-#ifdef RN_TURBO_MODULE_ENABLED
-
 namespace facebook {
 namespace react {
 
@@ -61,5 +51,3 @@ public:
 
 } // namespace react
 } // namespace facebook
-
-#endif

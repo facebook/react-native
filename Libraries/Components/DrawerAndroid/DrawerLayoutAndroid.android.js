@@ -28,7 +28,7 @@ const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
 
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {DirectEventHandler} from '../../Types/CodegenTypes';
 import type {
   MeasureOnSuccessCallback,
   MeasureInWindowOnSuccessCallback,
@@ -37,17 +37,9 @@ import type {
 
 type DrawerStates = 'Idle' | 'Dragging' | 'Settling';
 
-type DrawerStateEvent = SyntheticEvent<
-  $ReadOnly<{|
-    drawerState: number,
-  |}>,
->;
-
-type DrawerSlideEvent = SyntheticEvent<
-  $ReadOnly<{|
-    offset: number,
-  |}>,
->;
+type DrawerSlideEvent = $ReadOnly<{|
+  offset: number,
+|}>;
 
 type Props = $ReadOnly<{|
   /**
@@ -93,7 +85,7 @@ type Props = $ReadOnly<{|
   /**
    * Function called whenever there is an interaction with the navigation view.
    */
-  onDrawerSlide?: ?(event: DrawerSlideEvent) => mixed,
+  onDrawerSlide?: ?DirectEventHandler<DrawerSlideEvent>,
 
   /**
    * Function called when the drawer state has changed. The drawer can be in 3 states:
@@ -176,7 +168,13 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
   state = {statusBarBackgroundColor: null};
 
   render() {
-    const {onDrawerStateChanged, renderNavigationView, ...props} = this.props;
+    const {
+      onDrawerStateChanged,
+      renderNavigationView,
+      onDrawerOpen,
+      onDrawerClose,
+      ...props
+    } = this.props;
     const drawStatusBar =
       Platform.Version >= 21 && this.props.statusBarBackgroundColor;
     const drawerViewWrapper = (
@@ -233,7 +231,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     );
   }
 
-  _onDrawerSlide = (event: DrawerSlideEvent) => {
+  _onDrawerSlide = event => {
     if (this.props.onDrawerSlide) {
       this.props.onDrawerSlide(event);
     }
@@ -254,7 +252,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     }
   };
 
-  _onDrawerStateChanged = (event: DrawerStateEvent) => {
+  _onDrawerStateChanged = event => {
     if (this.props.onDrawerStateChanged) {
       this.props.onDrawerStateChanged(
         DRAWER_STATES[event.nativeEvent.drawerState],

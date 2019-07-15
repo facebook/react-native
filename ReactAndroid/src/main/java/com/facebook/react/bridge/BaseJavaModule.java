@@ -6,8 +6,8 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.Nullable;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Base class for Catalyst native modules whose implementations are written in Java. Default

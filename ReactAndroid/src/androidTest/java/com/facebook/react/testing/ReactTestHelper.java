@@ -9,6 +9,7 @@ package com.facebook.react.testing;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import com.android.internal.util.Predicate;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.NativeModuleRegistryBuilder;
@@ -30,7 +31,6 @@ import com.facebook.react.uimanager.ViewManager;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 
 public class ReactTestHelper {
   private static class DefaultReactTestFactory implements ReactTestFactory {

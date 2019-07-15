@@ -14,10 +14,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 import java.util.Arrays;
 import java.util.Iterator;
-import javax.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 

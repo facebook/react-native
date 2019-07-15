@@ -179,6 +179,7 @@ def rn_plugin_apple_library(**kwargs):
     native.apple_library(**kwargs)
 
 def rn_java_library(*args, **kwargs):
+    is_androidx = kwargs.pop("is_androidx", False)
     native.java_library(*args, **kwargs)
 
 def rn_java_annotation_processor(*args, **kwargs):

@@ -9,6 +9,7 @@ import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriend
 
 import android.app.Activity;
 import android.app.Application;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSIModulePackage;
@@ -26,7 +27,6 @@ import com.facebook.react.uimanager.UIImplementationProvider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /** Builder class for {@link ReactInstanceManager} */
 public class ReactInstanceManagerBuilder {

@@ -11,6 +11,7 @@ import android.text.SpannableString;
 import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.View;
+import androidx.annotation.Nullable;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -26,7 +27,6 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import java.util.HashMap;
-import javax.annotation.Nullable;
 
 /**
  * Utility class that handles the addition of a "role" for accessibility to either a View or

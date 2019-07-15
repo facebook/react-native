@@ -10,13 +10,13 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.text.Layout;
 import android.view.Gravity;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaDirection;
-import javax.annotation.Nullable;
 
 public class TextAttributeProps {
 

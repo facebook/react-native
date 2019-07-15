@@ -16,13 +16,13 @@
 #endif
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
+#import <RCTTypeSafety/RCTConvertHelpers.h>
+#import <RCTTypeSafety/RCTTypedModuleConstants.h>
 #import <React/RCTBridgeModule.h>
-#import <React/RCTConvertHelpers.h>
 #import <React/RCTCxxConvert.h>
 #import <React/RCTManagedPointer.h>
-#import <React/RCTTypedModuleConstants.h>
+#import <ReactCommon/RCTTurboModule.h>
 #import <folly/Optional.h>
-#import <jsireact/RCTTurboModule.h>
 #import <vector>
 
 
@@ -1641,6 +1641,9 @@ namespace JS {
        callback:(RCTResponseSenderBlock)callback;
 - (void)measureInWindow:(NSNumber *)reactTag
                callback:(RCTResponseSenderBlock)callback;
+- (void)viewIsDescendantOf:(NSNumber *)reactTag
+          ancestorReactTag:(NSNumber *)ancestorReactTag
+                  callback:(RCTResponseSenderBlock)callback;
 - (void)measureLayout:(NSNumber *)reactTag
      ancestorReactTag:(NSNumber *)ancestorReactTag
         errorCallback:(RCTResponseSenderBlock)errorCallback
@@ -1754,7 +1757,7 @@ namespace facebook {
   } // namespace react
 } // namespace facebook
 
-#import <React/RCTConvertHelpers.h>
+#import <RCTTypeSafety/RCTConvertHelpers.h>
 
 
 inline NSString *JS::NativeAlertManager::Args::title() const

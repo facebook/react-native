@@ -6,7 +6,7 @@
  */
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Utility class to make assertions that should not hard-crash the app but instead be handled by the

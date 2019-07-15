@@ -6,9 +6,9 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.Nullable;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import javax.annotation.Nullable;
 
 /**
  * JavaScript executor that delegates JS calls processed by native code back to a java version of
@@ -30,6 +30,18 @@ public class ProxyJavaScriptExecutor extends JavaScriptExecutor {
     @Override
     public JavaScriptExecutor create() throws Exception {
       return new ProxyJavaScriptExecutor(mJavaJSExecutorFactory.create());
+    }
+
+    @Override
+    public void startSamplingProfiler() {
+      throw new UnsupportedOperationException(
+          "Starting sampling profiler not supported on " + toString());
+    }
+
+    @Override
+    public void stopSamplingProfiler(String filename) {
+      throw new UnsupportedOperationException(
+          "Stopping sampling profiler not supported on " + toString());
     }
   }
 

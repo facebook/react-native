@@ -12,10 +12,10 @@ import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.ReactHitSlopView;
-import javax.annotation.Nullable;
 
 /**
  * Class responsible for identifying which react view should handle a given {@link MotionEvent}. It

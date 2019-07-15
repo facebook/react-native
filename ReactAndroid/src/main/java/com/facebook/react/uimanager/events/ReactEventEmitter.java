@@ -9,13 +9,13 @@ package com.facebook.react.uimanager.events;
 import static com.facebook.react.uimanager.events.TouchesHelper.TARGET_KEY;
 
 import android.util.SparseArray;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
-import javax.annotation.Nullable;
 
 public class ReactEventEmitter implements RCTEventEmitter {
 

@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.util.TypedValue;
 import android.widget.CompoundButton;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.TintContextWrapper;
 import androidx.core.widget.CompoundButtonCompat;
 import com.facebook.react.bridge.ReactContext;
@@ -19,7 +20,6 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import javax.annotation.Nullable;
 
 /** View manager for {@link ReactCheckBox} components. */
 public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {

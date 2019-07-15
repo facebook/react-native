@@ -7,6 +7,7 @@
 package com.facebook.react.animated;
 
 import android.util.SparseArray;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -28,7 +29,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Queue;
-import javax.annotation.Nullable;
 
 /**
  * This is the main class that coordinates how native animated JS implementation drives UI changes.

@@ -7,11 +7,11 @@
 package com.facebook.react.uimanager;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Wrapper for {@link ReadableMap} which should be used for styles property map. It extends some of

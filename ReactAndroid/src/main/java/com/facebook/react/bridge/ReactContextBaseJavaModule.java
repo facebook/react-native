@@ -7,8 +7,8 @@
 package com.facebook.react.bridge;
 
 import android.app.Activity;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Base class for Catalyst native modules that require access to the {@link ReactContext} instance.
@@ -17,7 +17,7 @@ public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
 
   private final ReactApplicationContext mReactApplicationContext;
 
-  public ReactContextBaseJavaModule(@Nonnull ReactApplicationContext reactContext) {
+  public ReactContextBaseJavaModule(@NonNull ReactApplicationContext reactContext) {
     mReactApplicationContext = reactContext;
   }
 

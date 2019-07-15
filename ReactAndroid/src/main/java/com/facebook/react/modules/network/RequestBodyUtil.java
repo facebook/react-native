@@ -8,6 +8,7 @@ package com.facebook.react.modules.network;
 
 import android.content.Context;
 import android.net.Uri;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
 import java.io.ByteArrayOutputStream;
@@ -21,7 +22,6 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.zip.GZIPOutputStream;
-import javax.annotation.Nullable;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.internal.Util;

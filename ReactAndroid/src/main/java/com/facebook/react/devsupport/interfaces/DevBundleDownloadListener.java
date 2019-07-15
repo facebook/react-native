@@ -6,8 +6,8 @@
  */
 package com.facebook.react.devsupport.interfaces;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.NativeDeltaClient;
-import javax.annotation.Nullable;
 
 public interface DevBundleDownloadListener {
   void onSuccess(@Nullable NativeDeltaClient nativeDeltaClient);

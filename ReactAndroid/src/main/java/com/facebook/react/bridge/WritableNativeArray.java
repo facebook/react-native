@@ -6,10 +6,10 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import javax.annotation.Nullable;
 
 /**
  * Implementation of a write-only array stored in native memory. Use {@link Arguments#createArray()}

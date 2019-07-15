@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef RN_TURBO_MODULE_ENABLED
-
 #import "RCTNativeSampleTurboModuleSpec.h"
 
 namespace facebook {
@@ -79,5 +77,3 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule
 
 } // namespace react
 } // namespace facebook
-
-#endif

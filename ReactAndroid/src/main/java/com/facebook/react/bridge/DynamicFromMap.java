@@ -6,8 +6,8 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.Nullable;
 import androidx.core.util.Pools.SimplePool;
-import javax.annotation.Nullable;
 
 /** Implementation of Dynamic wrapping a ReadableMap. */
 public class DynamicFromMap implements Dynamic {

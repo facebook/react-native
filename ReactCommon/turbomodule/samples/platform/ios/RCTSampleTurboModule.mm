@@ -9,9 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#ifdef RN_TURBO_MODULE_ENABLED
 using namespace facebook::react;
-#endif
 
 @implementation RCTSampleTurboModule
 
@@ -19,10 +17,7 @@ using namespace facebook::react;
 RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
-
-#ifdef RN_TURBO_MODULE_ENABLED
 @synthesize turboModuleLookupDelegate = _turboModuleLookupDelegate;
-#endif
 
 // Backward-compatible queue configuration
 + (BOOL)requiresMainQueueSetup
@@ -35,14 +30,10 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-#ifdef RN_TURBO_MODULE_ENABLED
-
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
 {
   return std::make_shared<NativeSampleTurboModuleSpecJSI>(self, jsInvoker);
 }
-
-#endif
 
 // Backward compatible invalidation
 - (void)invalidate

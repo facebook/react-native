@@ -8,4 +8,17 @@ package com.facebook.react.bridge;
 
 public interface JavaScriptExecutorFactory {
   JavaScriptExecutor create() throws Exception;
+
+  /**
+   * Starts the sampling profiler for this specific JavaScriptExecutor Sampling profiler is usually
+   * a singleton on the runtime, hence the method exists here and not in {@link JavaScriptExecutor}
+   */
+  void startSamplingProfiler();
+
+  /**
+   * Stops the Sampling profile
+   *
+   * @param filename The filename where the results of the sampling profiler are dumped to
+   */
+  void stopSamplingProfiler(String filename);
 }

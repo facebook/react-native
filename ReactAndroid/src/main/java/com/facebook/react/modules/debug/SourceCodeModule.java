@@ -6,13 +6,13 @@
  */
 package com.facebook.react.modules.debug;
 
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.module.annotations.ReactModule;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Module that exposes the URL to the source code map (used for exception stack trace parsing) to JS

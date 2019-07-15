@@ -13,6 +13,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
@@ -24,7 +25,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.views.text.TextInlineImageSpan;
-import javax.annotation.Nullable;
 
 /**
  * FrescoBasedTextInlineImageSpan is a span for Images that are inside <Text/>. It computes its size
