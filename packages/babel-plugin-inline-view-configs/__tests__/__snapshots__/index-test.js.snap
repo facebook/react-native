@@ -19,7 +19,6 @@ type ModuleProps = $ReadOnly<{| ...ViewProps,
   onDirectEventDefinedInlineNull: DirectEventHandler<null>,
   onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
 |}>;
-export const Commands = codegenNativeCommands<NativeCommands>();
 
 const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
@@ -73,3 +72,9 @@ exports[`Babel plugin inline view configs can inline config for NotANativeCompon
 
 export default 'Not a view config';"
 `;
+
+exports[`Babel plugin inline view configs fails on inline config for CommandsExportedWithDifferentNameNativeComponent.js 1`] = `"Native commands must be exported with the name 'Commands'"`;
+
+exports[`Babel plugin inline view configs fails on inline config for CommandsExportedWithShorthandNativeComponent.js 1`] = `"'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands."`;
+
+exports[`Babel plugin inline view configs fails on inline config for OtherCommandsExportNativeComponent.js 1`] = `"'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands."`;
