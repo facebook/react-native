@@ -29,7 +29,7 @@ React Native version:
 Describe what you expected to happen:
 
 
-Snack, screenshot, code example, or link to a repository:
+Snack, code example, screenshot, or link to a repository:
 
 <!--
  If you think that a screenshot could be useful, you should verify that the errors are of a visual nature, that is, that they give us a clue as to where or why this problem has happened.
