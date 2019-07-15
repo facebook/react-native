@@ -29,7 +29,7 @@ public:
   std::string getFileURLByName(std::string name);
   std::string getNameBySourceURL(std::string sourceURL);
   std::string getNameByFileURL(std::string fileURL);
-  std::string getFileURLBySourceURL(std::string sourceULR);
+  std::string getFileURLBySourceURL(std::string sourceURL);
 
   JavaDevBundlesContainer::javaobject jobj() {
     return m_jobj.get();

@@ -39,10 +39,10 @@ JDevBundlesContainer::JDevBundlesContainer(alias_ref<JavaDevBundlesContainer::ja
     return method(m_jobj, facebook::jni::make_jstring(fileURL).get())->toString();
   }
 
-  std::string JDevBundlesContainer::getFileURLBySourceURL(std::string sourceULR) {
+  std::string JDevBundlesContainer::getFileURLBySourceURL(std::string sourceURL) {
     static auto method = JavaDevBundlesContainer::javaClassStatic()->
     getMethod<jstring(jstring)>("getFileURLBySourceURL");
-    return method(m_jobj, facebook::jni::make_jstring(sourceULR).get())->toString();
+    return method(m_jobj, facebook::jni::make_jstring(sourceURL).get())->toString();
   }
 
 

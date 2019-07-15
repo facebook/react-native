@@ -12,7 +12,6 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTCxxBridgeDelegate.h>
-#import <React/RCTJavaScriptLoader.h>
 #import <React/RCTDevBundlesDownloader.h>
 #import <React/RCTLinkingManager.h>
 #import <React/RCTRootView.h>
@@ -102,8 +101,8 @@
 }
 
 - (void)loadSourceForBridge:(RCTBridge *)bridge
-                 onProgress:(RCTSourceLoadProgressBlock)onProgress
-                 onComplete:(RCTSourceLoadBlock)loadCallback
+                 onProgress:(RCTDevBundlesProgressBlock)onProgress
+                 onComplete:(RCTDevBundlesLoadBlock)loadCallback
 {
   [RCTDevBundlesDownloader loadBundleAtURL:[self sourceURLForBridge:bridge]
                             onProgress:onProgress

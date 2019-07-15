@@ -152,8 +152,7 @@ public class BundleDownloader {
     downloadBundle(new DownloadListener() {
       @Override
       public void onSuccess(String sourceURL, @Nullable NativeDeltaClient nativeDeltaClient, @Nullable String[] additionalBundles) {
-        // DOWNLOAD ADDITIONAL BUNDLES IF NEEDED
-        if(additionalBundles != null) {
+        if (additionalBundles != null) {
           String bundlesDirectory = outputFile.getParent();
           downloadAdditionalBundles(new MultiDownloadListener() {
               @Override

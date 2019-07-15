@@ -26,7 +26,7 @@ public interface JSBundleLoaderDelegate {
   /**
    * Load a JS bundle from the filesystem.
    * See {@link JSBundleLoader#createFileLoader(String)} and {@link JSBundleLoader#createCachedBundleFromNetworkLoader(String, String)}
-   * @param sourceULR
+   * @param sourceURL
    * @param bundlesContainer
    * @param loadSynchronously
    */
