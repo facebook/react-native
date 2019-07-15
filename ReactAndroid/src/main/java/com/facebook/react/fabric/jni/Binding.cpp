@@ -450,7 +450,7 @@ local_ref<JMountItem::javaobject> createCreateMountItem(
 
 void Binding::schedulerDidFinishTransaction(
     MountingCoordinator::Shared const &mountingCoordinator) {
-  std::lock_guard<std::mutex> lock(commitMutex_);
+  std::lock_guard<std::recursive_mutex> lock(commitMutex_);
 
   SystraceSection s("FabricUIManagerBinding::schedulerDidFinishTransaction");
   long finishTransactionStartTime = getTime();
