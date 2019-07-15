@@ -8,11 +8,11 @@ import { Command } from '../src/Command.js';
 
 test('parses simple command', () => {
   let obj = {
-    "name": "setBreakpointsActive",
-    "parameters": [
-      { "name": "active", "type": "boolean", "description": "New value for breakpoints active state." }
+    'name': 'setBreakpointsActive',
+    'parameters': [
+      { 'name': 'active', 'type': 'boolean', 'description': 'New value for breakpoints active state.' },
     ],
-    "description": "Activates / deactivates all breakpoints on the page."
+    'description': 'Activates / deactivates all breakpoints on the page.',
   };
   let command = Command.create('Debugger', obj, false);
 
@@ -31,16 +31,16 @@ test('parses simple command', () => {
 
 test('parses command with return', () => {
   let obj = {
-    "name": "setBreakpoint",
-    "parameters": [
-      { "name": "location", "$ref": "Location", "description": "Location to set breakpoint in." },
-      { "name": "condition", "type": "string", "optional": true, "description": "Expression to use as a breakpoint condition. When specified, debugger will only stop on the breakpoint if this expression evaluates to true." }
+    'name': 'setBreakpoint',
+    'parameters': [
+      { 'name': 'location', '$ref': 'Location', 'description': 'Location to set breakpoint in.' },
+      { 'name': 'condition', 'type': 'string', 'optional': true, 'description': 'Expression to use as a breakpoint condition. When specified, debugger will only stop on the breakpoint if this expression evaluates to true.' },
     ],
-    "returns": [
-      { "name": "breakpointId", "$ref": "BreakpointId", "description": "Id of the created breakpoint for further reference." },
-      { "name": "actualLocation", "$ref": "Location", "description": "Location this breakpoint resolved into." }
+    'returns': [
+      { 'name': 'breakpointId', '$ref': 'BreakpointId', 'description': 'Id of the created breakpoint for further reference.' },
+      { 'name': 'actualLocation', '$ref': 'Location', 'description': 'Location this breakpoint resolved into.' },
     ],
-    "description": "Sets JavaScript breakpoint at a given location."
+    'description': 'Sets JavaScript breakpoint at a given location.',
   };
   let command = Command.create('Debugger', obj, false);
 

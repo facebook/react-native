@@ -1,6 +1,8 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
  */
+ /*global expect*/
+
 'use strict';
 
 // munges string so that it's nice to look at in a test diff

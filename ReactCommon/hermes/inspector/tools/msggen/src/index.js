@@ -7,7 +7,6 @@
 'use strict';
 
 import fs from 'fs';
-import {Writable} from 'stream';
 
 // $FlowFixMe: flow doesn't know about yargs
 import yargs from 'yargs';

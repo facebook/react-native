@@ -9,7 +9,7 @@ import {
   emitNotificationDef,
   emitRequestDef,
   emitResponseDef,
-  emitTypeDef
+  emitTypeDef,
 } from '../src/ImplementationWriter';
 import { Event } from '../src/Event';
 import { Command } from '../src/Command';
@@ -23,14 +23,14 @@ beforeEach(() => {
 
 test('emits type def', () => {
   let obj = {
-    "id": "Location",
-    "type": "object",
-    "properties": [
-        { "name": "scriptId", "$ref": "Runtime.ScriptId", "description": "Script identifier as reported in the <code>Debugger.scriptParsed</code>." },
-        { "name": "lineNumber", "type": "integer", "description": "Line number in the script (0-based)." },
-        { "name": "columnNumber", "type": "integer", "optional": true, "description": "Column number in the script (0-based)." }
+    'id': 'Location',
+    'type': 'object',
+    'properties': [
+        { 'name': 'scriptId', '$ref': 'Runtime.ScriptId', 'description': 'Script identifier as reported in the <code>Debugger.scriptParsed</code>.' },
+        { 'name': 'lineNumber', 'type': 'integer', 'description': 'Line number in the script (0-based).' },
+        { 'name': 'columnNumber', 'type': 'integer', 'optional': true, 'description': 'Column number in the script (0-based).' },
     ],
-    "description": "Location in the source code."
+    'description': 'Location in the source code.',
   };
   let type = Type.create('Debugger', obj);
 
@@ -55,14 +55,14 @@ test('emits type def', () => {
 
 test('emits request def', () => {
   let obj = {
-    "name": "getScriptSource",
-    "parameters": [
-      { "name": "scriptId", "$ref": "Runtime.ScriptId", "description": "Id of the script to get source for." }
+    'name': 'getScriptSource',
+    'parameters': [
+      { 'name': 'scriptId', '$ref': 'Runtime.ScriptId', 'description': 'Id of the script to get source for.' },
     ],
-    "returns": [
-      { "name": "scriptSource", "type": "string", "description": "Script source." }
+    'returns': [
+      { 'name': 'scriptSource', 'type': 'string', 'description': 'Script source.' },
     ],
-    "description": "Returns source for the script with given id."
+    'description': 'Returns source for the script with given id.',
   };
   let command = Command.create('Debugger', obj);
 
@@ -100,14 +100,14 @@ test('emits request def', () => {
 
 test('emits response def', () => {
   let obj = {
-    "name": "getScriptSource",
-    "parameters": [
-      { "name": "scriptId", "$ref": "Runtime.ScriptId", "description": "Id of the script to get source for." }
+    'name': 'getScriptSource',
+    'parameters': [
+      { 'name': 'scriptId', '$ref': 'Runtime.ScriptId', 'description': 'Id of the script to get source for.' },
     ],
-    "returns": [
-      { "name": "scriptSource", "type": "string", "description": "Script source." }
+    'returns': [
+      { 'name': 'scriptSource', 'type': 'string', 'description': 'Script source.' },
     ],
-    "description": "Returns source for the script with given id."
+    'description': 'Returns source for the script with given id.',
   };
   let command = Command.create('Debugger', obj);
 
@@ -135,11 +135,11 @@ test('emits response def', () => {
 
 test('emits notification def', () => {
   let obj = {
-    "name": "messageAdded",
-    "parameters": [
-      { "name": "message", "$ref": "ConsoleMessage", "description": "Console message that has been added." }
+    'name': 'messageAdded',
+    'parameters': [
+      { 'name': 'message', '$ref': 'ConsoleMessage', 'description': 'Console message that has been added.' },
     ],
-    "description": "Issued when new console message is added."
+    'description': 'Issued when new console message is added.',
   };
   let event = Event.create('Console', obj);
 

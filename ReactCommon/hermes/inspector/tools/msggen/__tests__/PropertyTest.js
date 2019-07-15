@@ -8,9 +8,9 @@ import { Property } from '../src/Property.js';
 
 test('parses required primitive prop', () => {
   let obj = {
-    "name": "lineNumber",
-    "type": "integer",
-    "description": "Line number in the script (0-based)."
+    'name': 'lineNumber',
+    'type': 'integer',
+    'description': 'Line number in the script (0-based).',
   };
   let prop = Property.create('Debugger', obj);
 
@@ -27,10 +27,10 @@ test('parses required primitive prop', () => {
 
 test('parses optional primitive prop', () => {
   let obj = {
-    "name": "samplingInterval",
-    "type": "number",
-    "optional": true,
-    "description": "Average sample interval in bytes."
+    'name': 'samplingInterval',
+    'type': 'number',
+    'optional': true,
+    'description': 'Average sample interval in bytes.',
   };
   let prop = Property.create('HeapProfiler', obj);
 
@@ -47,10 +47,10 @@ test('parses optional primitive prop', () => {
 
 test('parses optional ref prop', () => {
   let obj = {
-    "name": "exceptionDetails",
-    "optional": true,
-    "$ref": "Runtime.ExceptionDetails",
-    "description": "Exception details if any."
+    'name': 'exceptionDetails',
+    'optional': true,
+    '$ref': 'Runtime.ExceptionDetails',
+    'description': 'Exception details if any.',
   };
   let prop = Property.create('Debugger', obj);
 
@@ -67,11 +67,11 @@ test('parses optional ref prop', () => {
 
 test('parses recursive ref prop', () => {
   let obj = {
-    "name": "parent",
-    "$ref": "StackTrace",
-    "optional": true,
-    "recursive": true,
-    "description": "Asynchronous JavaScript stack trace..."
+    'name': 'parent',
+    '$ref': 'StackTrace',
+    'optional': true,
+    'recursive': true,
+    'description': 'Asynchronous JavaScript stack trace...',
   };
   let prop = Property.create('Runtime', obj);
 
@@ -89,11 +89,11 @@ test('parses recursive ref prop', () => {
 
 test('parses optional array items prop', () => {
   let obj = {
-    "name": "hitBreakpoints",
-    "type": "array",
-    "optional": true,
-    "items": { "type": "string" },
-    "description": "Hit breakpoints IDs"
+    'name': 'hitBreakpoints',
+    'type': 'array',
+    'optional': true,
+    'items': { 'type': 'string' },
+    'description': 'Hit breakpoints IDs',
   };
   let prop = Property.create('Debugger', obj);
 
@@ -101,8 +101,8 @@ test('parses optional array items prop', () => {
   expect(prop.name).toBe('hitBreakpoints');
   expect(prop.type).toBe('array');
   expect(prop.optional).toBe(true);
-  expect(prop.items).toEqual({ "type": "string" });
-  expect(prop.description).toBe("Hit breakpoints IDs");
+  expect(prop.items).toEqual({ 'type': 'string' });
+  expect(prop.description).toBe('Hit breakpoints IDs');
 
   expect(prop.getFullCppType()).toBe('folly::Optional<std::vector<std::string>>');
   expect(prop.getCppIdentifier()).toBe('hitBreakpoints');
@@ -111,18 +111,18 @@ test('parses optional array items prop', () => {
 
 test('parses array ref prop', () => {
   let obj = {
-    "name": "domains",
-    "type": "array",
-    "items": { "$ref": "Domain" },
-    "description": "List of supported domains."
+    'name': 'domains',
+    'type': 'array',
+    'items': { '$ref': 'Domain' },
+    'description': 'List of supported domains.',
   };
   let prop = Property.create('Schema', obj);
 
   expect(prop.domain).toBe('Schema');
   expect(prop.name).toBe('domains');
   expect(prop.type).toBe('array');
-  expect(prop.items).toEqual({ $ref: "Domain" });
-  expect(prop.description).toBe("List of supported domains.");
+  expect(prop.items).toEqual({ $ref: 'Domain' });
+  expect(prop.description).toBe('List of supported domains.');
 
   expect(prop.getFullCppType()).toBe('std::vector<schema::Domain>');
   expect(prop.getCppIdentifier()).toBe('domains');

@@ -8,9 +8,9 @@ import { Type } from '../src/Type.js';
 
 test('parses primitive type', () => {
   let obj = {
-    "id": "Timestamp",
-    "type": "number",
-    "description": "Number of milliseconds since epoch."
+    'id': 'Timestamp',
+    'type': 'number',
+    'description': 'Number of milliseconds since epoch.',
   };
   let type = Type.create('Runtime', obj, false);
 
@@ -26,14 +26,14 @@ test('parses primitive type', () => {
 
 test('parses object type', () => {
   let obj = {
-    "id": "Location",
-    "type": "object",
-    "properties": [
-        { "name": "scriptId", "$ref": "Runtime.ScriptId", "description": "Script identifier as reported in the <code>Debugger.scriptParsed</code>." },
-        { "name": "lineNumber", "type": "integer", "description": "Line number in the script (0-based)." },
-        { "name": "columnNumber", "type": "integer", "optional": true, "description": "Column number in the script (0-based)." }
+    'id': 'Location',
+    'type': 'object',
+    'properties': [
+        { 'name': 'scriptId', '$ref': 'Runtime.ScriptId', 'description': 'Script identifier as reported in the <code>Debugger.scriptParsed</code>.' },
+        { 'name': 'lineNumber', 'type': 'integer', 'description': 'Line number in the script (0-based).' },
+        { 'name': 'columnNumber', 'type': 'integer', 'optional': true, 'description': 'Column number in the script (0-based).' },
     ],
-    "description": "Location in the source code."
+    'description': 'Location in the source code.',
   };
   let type = Type.create('Debugger', obj, false);
 

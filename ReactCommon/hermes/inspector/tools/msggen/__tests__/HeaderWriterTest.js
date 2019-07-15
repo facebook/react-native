@@ -23,14 +23,14 @@ beforeEach(() => {
 
 test('emits type decl', () => {
   let obj = {
-    "id": "Location",
-    "type": "object",
-    "properties": [
-        { "name": "scriptId", "$ref": "Runtime.ScriptId", "description": "Script identifier as reported in the <code>Debugger.scriptParsed</code>." },
-        { "name": "lineNumber", "type": "integer", "description": "Line number in the script (0-based)." },
-        { "name": "columnNumber", "type": "integer", "optional": true, "description": "Column number in the script (0-based)." }
+    'id': 'Location',
+    'type': 'object',
+    'properties': [
+        { 'name': 'scriptId', '$ref': 'Runtime.ScriptId', 'description': 'Script identifier as reported in the <code>Debugger.scriptParsed</code>.' },
+        { 'name': 'lineNumber', 'type': 'integer', 'description': 'Line number in the script (0-based).' },
+        { 'name': 'columnNumber', 'type': 'integer', 'optional': true, 'description': 'Column number in the script (0-based).' },
     ],
-    "description": "Location in the source code."
+    'description': 'Location in the source code.',
   };
   let type = Type.create('Debugger', obj);
 
@@ -51,14 +51,14 @@ test('emits type decl', () => {
 
 test('emits request decl', () => {
   let obj = {
-    "name": "getScriptSource",
-    "parameters": [
-      { "name": "scriptId", "$ref": "Runtime.ScriptId", "description": "Id of the script to get source for." }
+    'name': 'getScriptSource',
+    'parameters': [
+      { 'name': 'scriptId', '$ref': 'Runtime.ScriptId', 'description': 'Id of the script to get source for.' },
     ],
-    "returns": [
-      { "name": "scriptSource", "type": "string", "description": "Script source." }
+    'returns': [
+      { 'name': 'scriptSource', 'type': 'string', 'description': 'Script source.' },
     ],
-    "description": "Returns source for the script with given id."
+    'description': 'Returns source for the script with given id.',
   };
   let command = Command.create('Debugger', obj);
 
@@ -79,14 +79,14 @@ test('emits request decl', () => {
 
 test('emits response decl', () => {
   let obj = {
-    "name": "getScriptSource",
-    "parameters": [
-      { "name": "scriptId", "$ref": "Runtime.ScriptId", "description": "Id of the script to get source for." }
+    'name': 'getScriptSource',
+    'parameters': [
+      { 'name': 'scriptId', '$ref': 'Runtime.ScriptId', 'description': 'Id of the script to get source for.' },
     ],
-    "returns": [
-      { "name": "scriptSource", "type": "string", "description": "Script source." }
+    'returns': [
+      { 'name': 'scriptSource', 'type': 'string', 'description': 'Script source.' },
     ],
-    "description": "Returns source for the script with given id."
+    'description': 'Returns source for the script with given id.',
   };
   let command = Command.create('Debugger', obj);
 
@@ -105,11 +105,11 @@ test('emits response decl', () => {
 
 test('emits notification decl', () => {
   let obj = {
-    "name": "messageAdded",
-    "parameters": [
-      { "name": "message", "$ref": "ConsoleMessage", "description": "Console message that has been added." }
+    'name': 'messageAdded',
+    'parameters': [
+      { 'name': 'message', '$ref': 'ConsoleMessage', 'description': 'Console message that has been added.' },
     ],
-    "description": "Issued when new console message is added."
+    'description': 'Issued when new console message is added.',
   };
   let event = Event.create('Console', obj);
 

@@ -9,7 +9,6 @@
 import {Writable} from 'stream';
 
 import {GeneratedHeader} from './GeneratedHeader';
-import {Property} from './Property';
 import {PropsType, Type} from './Type';
 import {Command} from './Command';
 import {Event} from './Event';
@@ -265,7 +264,7 @@ export function emitRequestDef(stream: Writable, command: Command) {
     assign(method, obj, "method");\n\n`);
 
   if (props.length > 0) {
-    stream.write(`dynamic params = obj.at("params");\n`);
+    stream.write('dynamic params = obj.at("params");\n');
 
     for (const prop of props) {
       const id = prop.getCppIdentifier();
@@ -280,7 +279,7 @@ export function emitRequestDef(stream: Writable, command: Command) {
   stream.write(`dynamic ${cppNs}::${cppType}::toDynamic() const {\n`);
 
   if (props.length > 0) {
-    stream.write(`dynamic params = dynamic::object;\n`);
+    stream.write('dynamic params = dynamic::object;\n');
 
     for (const prop of props) {
       const id = prop.getCppIdentifier();
@@ -296,7 +295,7 @@ export function emitRequestDef(stream: Writable, command: Command) {
   `);
 
   if (props.length > 0) {
-    stream.write(`put(obj, "params", std::move(params));\n`);
+    stream.write('put(obj, "params", std::move(params));\n');
   }
 
   stream.write(`return obj;
@@ -321,7 +320,7 @@ export function emitResponseDef(stream: Writable, command: Command) {
 
   const props = command.returns || [];
   if (props.length > 0) {
-    stream.write(`dynamic res = obj.at("result");\n`);
+    stream.write('dynamic res = obj.at("result");\n');
 
     for (const prop of props) {
       const id = prop.getCppIdentifier();
@@ -336,7 +335,7 @@ export function emitResponseDef(stream: Writable, command: Command) {
   stream.write(`dynamic ${cppNs}::${cppType}::toDynamic() const {\n`);
 
   if (props.length > 0) {
-    stream.write(`dynamic res = dynamic::object;\n`);
+    stream.write('dynamic res = dynamic::object;\n');
 
     for (const prop of props) {
       const id = prop.getCppIdentifier();
@@ -369,7 +368,7 @@ export function emitNotificationDef(stream: Writable, event: Event) {
     assign(method, obj, "method");\n\n`);
 
   if (props.length > 0) {
-    stream.write(`dynamic params = obj.at("params");\n`);
+    stream.write('dynamic params = obj.at("params");\n');
 
     for (const prop of props) {
       const id = prop.getCppIdentifier();
@@ -384,7 +383,7 @@ export function emitNotificationDef(stream: Writable, event: Event) {
   stream.write(`dynamic ${cppNs}::${cppType}::toDynamic() const {\n`);
 
   if (props.length > 0) {
-    stream.write(`dynamic params = dynamic::object;\n`);
+    stream.write('dynamic params = dynamic::object;\n');
 
     for (const prop of props) {
       const id = prop.getCppIdentifier();
@@ -399,7 +398,7 @@ export function emitNotificationDef(stream: Writable, event: Event) {
   `);
 
   if (props.length > 0) {
-    stream.write(`put(obj, "params", std::move(params));\n`);
+    stream.write('put(obj, "params", std::move(params));\n');
   }
 
   stream.write(`return obj;
