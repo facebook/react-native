@@ -22,14 +22,14 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   @Nullable private Object mData;
 
   public YogaNodeJNIBase() {
-    mNativePointer = YogaNative.jni_YGNodeNew(YogaConfig.useBatchingForLayoutOutputs);
+    mNativePointer = YogaNative.jni_YGNodeNew();
     if (mNativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
     }
   }
 
   public YogaNodeJNIBase(YogaConfig config) {
-    mNativePointer = YogaNative.jni_YGNodeNewWithConfig(config.mNativePointer, YogaConfig.useBatchingForLayoutOutputs);
+    mNativePointer = YogaNative.jni_YGNodeNewWithConfig(config.mNativePointer);
     if (mNativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
     }

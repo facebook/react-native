@@ -10,11 +10,11 @@ import javax.annotation.Nullable;
 
 public abstract class YogaNode {
   public static YogaNode create() {
-    return YogaConfig.useBatchingForLayoutOutputs ? new YogaNodeJNIBatching() : new YogaNodeJNI();
+    return new YogaNodeJNIBatching();
   }
 
   public static YogaNode create(YogaConfig config) {
-    return YogaConfig.useBatchingForLayoutOutputs ? new YogaNodeJNIBatching(config) : new YogaNodeJNI(config);
+    return new YogaNodeJNIBatching(config);
   }
 
   public abstract void reset();
