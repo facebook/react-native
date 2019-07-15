@@ -338,6 +338,10 @@ public class ReactViewBackgroundDrawable extends Drawable {
     }
 
     final RectF borderWidth = getDirectionAwareBorderInsets();
+    int colorLeft = getBorderColor(Spacing.LEFT);
+    int colorTop = getBorderColor(Spacing.TOP);
+    int colorRight = getBorderColor(Spacing.RIGHT);
+    int colorBottom = getBorderColor(Spacing.BOTTOM);
 
     if (borderWidth.top > 0
         || borderWidth.bottom > 0
@@ -346,12 +350,16 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
       // If it's a full and even border draw inner rect path with stroke
       final float fullBorderWidth = getFullBorderWidth();
+      int borderColor = getBorderColor(Spacing.ALL);
       if (borderWidth.top == fullBorderWidth
           && borderWidth.bottom == fullBorderWidth
           && borderWidth.left == fullBorderWidth
-          && borderWidth.right == fullBorderWidth) {
+          && borderWidth.right == fullBorderWidth
+          && colorLeft == borderColor
+          && colorTop == borderColor
+          && colorRight == borderColor
+          && colorBottom == borderColor) {
         if (fullBorderWidth > 0) {
-          int borderColor = getBorderColor(Spacing.ALL);
           mPaint.setColor(ColorUtil.multiplyColorAlpha(borderColor, mAlpha));
           mPaint.setStyle(Paint.Style.STROKE);
           mPaint.setStrokeWidth(fullBorderWidth);
@@ -365,11 +373,6 @@ public class ReactViewBackgroundDrawable extends Drawable {
         // Draw border
         canvas.clipPath(mOuterClipPathForBorderRadius, Region.Op.INTERSECT);
         canvas.clipPath(mInnerClipPathForBorderRadius, Region.Op.DIFFERENCE);
-
-        int colorLeft = getBorderColor(Spacing.LEFT);
-        int colorTop = getBorderColor(Spacing.TOP);
-        int colorRight = getBorderColor(Spacing.RIGHT);
-        int colorBottom = getBorderColor(Spacing.BOTTOM);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
           final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
