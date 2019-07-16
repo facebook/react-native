@@ -38,3 +38,4 @@ polyfillGlobal(
   'AbortSignal',
   () => require('abort-controller/dist/abort-controller').AbortSignal, // flowlint-line untyped-import:off
 );
+polyfillGlobal('EventSource', () => require('../Network/EventSource'));
