@@ -28,6 +28,12 @@ public class HermesExecutorFactory implements JavaScriptExecutorFactory {
   }
 
   @Override
+  public void startSamplingProfiler() {}
+
+  @Override
+  public void stopSamplingProfiler(String filename) {}
+
+  @Override
   public String toString() {
     return "JSIExecutor+HermesRuntime";
   }
