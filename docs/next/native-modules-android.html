@@ -188,7 +188,7 @@ R<span class="hljs-function"><span class="hljs-title">eadableArray</span> -&gt;<
 </code></pre>
 <p>To make it simpler to access your new functionality from JavaScript, it is common to wrap the native module in a JavaScript module. This is not necessary but saves the consumers of your library the need to pull it off of <code>NativeModules</code> each time. This JavaScript file also becomes a good location for you to add any JavaScript side functionality.</p>
 <p>Create a new JavaScript file named <code>ToastExample.js</code> with the content below:</p>
-<pre><code class="hljs css language-javascript"><span class="token comment">/**
+<pre><code class="hljs css language-jsx"><span class="token comment">/**
  * This exposes the native ToastExample module as a JS module. This has a
  * function 'show' which takes the following parameters:
  *
@@ -200,7 +200,7 @@ R<span class="hljs-function"><span class="hljs-title">eadableArray</span> -&gt;<
 module<span class="token punctuation">.</span>exports <span class="token operator">=</span> NativeModules<span class="token punctuation">.</span>ToastExample<span class="token punctuation">;</span>
 </code></pre>
 <p>Now, from your other JavaScript file you can call the method like this:</p>
-<pre><code class="hljs css language-javascript"><span class="token keyword">import</span> ToastExample <span class="token keyword">from</span> <span class="token string">'./ToastExample'</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> ToastExample <span class="token keyword">from</span> <span class="token string">'./ToastExample'</span><span class="token punctuation">;</span>
 
 ToastExample<span class="token punctuation">.</span><span class="token function">show</span><span class="token punctuation">(</span><span class="token string">'Awesome'</span><span class="token punctuation">,</span> ToastExample<span class="token punctuation">.</span><span class="token constant">SHORT</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
@@ -235,7 +235,7 @@ ToastExample<span class="token punctuation">.</span><span class="token function"
 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
 </code></pre>
 <p>This method would be accessed in JavaScript using:</p>
-<pre><code class="hljs css language-javascript">UIManager<span class="token punctuation">.</span><span class="token function">measureLayout</span><span class="token punctuation">(</span>
+<pre><code class="hljs css language-jsx">UIManager<span class="token punctuation">.</span><span class="token function">measureLayout</span><span class="token punctuation">(</span>
   <span class="token number">100</span><span class="token punctuation">,</span>
   <span class="token number">100</span><span class="token punctuation">,</span>
   <span class="token punctuation">(</span><span class="token parameter">msg</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
@@ -281,7 +281,7 @@ ToastExample<span class="token punctuation">.</span><span class="token function"
 <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
 </code></pre>
 <p>The JavaScript counterpart of this method returns a Promise. This means you can use the <code>await</code> keyword within an async function to call it and wait for its result:</p>
-<pre><code class="hljs css language-javascript"><span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">measureLayout</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">measureLayout</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">try</span> <span class="token punctuation">{</span>
     <span class="token keyword">var</span> <span class="token punctuation">{</span>relativeX<span class="token punctuation">,</span> relativeY<span class="token punctuation">,</span> width<span class="token punctuation">,</span> height<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> UIManager<span class="token punctuation">.</span><span class="token function">measureLayout</span><span class="token punctuation">(</span>
       <span class="token number">100</span><span class="token punctuation">,</span>
@@ -316,7 +316,7 @@ ToastExample<span class="token punctuation">.</span><span class="token function"
 <span class="token function">sendEvent</span><span class="token punctuation">(</span>reactContext<span class="token punctuation">,</span> <span class="token string">"keyboardWillShow"</span><span class="token punctuation">,</span> params<span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p>JavaScript modules can then register to receive events by <code>addListenerOn</code> using the <code>Subscribable</code> mixin.</p>
-<pre><code class="hljs css language-javascript"><span class="token keyword">import</span> <span class="token punctuation">{</span> DeviceEventEmitter <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> <span class="token punctuation">{</span> DeviceEventEmitter <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
 <span class="token operator">...</span>
 
 <span class="token keyword">var</span> ScrollResponderMixin <span class="token operator">=</span> <span class="token punctuation">{</span>
@@ -336,7 +336,7 @@ ToastExample<span class="token punctuation">.</span><span class="token function"
   <span class="token punctuation">}</span><span class="token punctuation">,</span>
 </code></pre>
 <p>You can also directly use the <code>DeviceEventEmitter</code> module to listen for events.</p>
-<pre><code class="hljs css language-javascript"><span class="token operator">...</span>
+<pre><code class="hljs css language-jsx"><span class="token operator">...</span>
 <span class="token function">componentDidMount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">this</span><span class="token punctuation">.</span>subscription <span class="token operator">=</span> DeviceEventEmitter<span class="token punctuation">.</span><span class="token function">addListener</span><span class="token punctuation">(</span><span class="token string">'keyboardWillShow'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">e<span class="token punctuation">:</span> Event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment">// handle event</span>

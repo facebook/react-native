@@ -79,7 +79,7 @@
 <pre><code class="hljs">npm <span class="hljs-keyword">install</span> <span class="hljs-comment">--save react-navigation</span>
 </code></pre>
 <p>Then you can quickly create an app with a home screen and a profile screen:</p>
-<pre><code class="hljs css language-javascript"><span class="token keyword">import</span> <span class="token punctuation">{</span>createStackNavigator<span class="token punctuation">,</span> createAppContainer<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-navigation'</span><span class="token punctuation">;</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> <span class="token punctuation">{</span>createStackNavigator<span class="token punctuation">,</span> createAppContainer<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-navigation'</span><span class="token punctuation">;</span>
 
 <span class="token keyword">const</span> MainNavigator <span class="token operator">=</span> <span class="token function">createStackNavigator</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
   Home<span class="token punctuation">:</span> <span class="token punctuation">{</span>screen<span class="token punctuation">:</span> HomeScreen<span class="token punctuation">}</span><span class="token punctuation">,</span>
@@ -91,17 +91,17 @@
 <span class="token keyword">export</span> <span class="token keyword">default</span> App<span class="token punctuation">;</span>
 </code></pre>
 <p>Each screen component can set navigation options such as the header title. It can use action creators on the <code>navigation</code> prop to link to other screens:</p>
-<pre><code class="hljs css language-javascript"><span class="token keyword">class</span> <span class="token class-name">HomeScreen</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+<pre><code class="hljs css language-jsx"><span class="token keyword">class</span> <span class="token class-name">HomeScreen</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
   <span class="token keyword">static</span> navigationOptions <span class="token operator">=</span> <span class="token punctuation">{</span>
     title<span class="token punctuation">:</span> <span class="token string">'Welcome'</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
   <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">const</span> <span class="token punctuation">{</span>navigate<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>navigation<span class="token punctuation">;</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
-      <span class="token operator">&lt;</span>Button
-        title<span class="token operator">=</span><span class="token string">"Go to Jane's profile"</span>
-        onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token function">navigate</span><span class="token punctuation">(</span><span class="token string">'Profile'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>name<span class="token punctuation">:</span> <span class="token string">'Jane'</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
-      <span class="token operator">/</span><span class="token operator">></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Button</span></span>
+        <span class="token attr-name">title</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Go to Jane's profile<span class="token punctuation">"</span></span>
+        <span class="token attr-name">onPress</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token function">navigate</span><span class="token punctuation">(</span><span class="token string">'Profile'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>name<span class="token punctuation">:</span> <span class="token string">'Jane'</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span>
+      <span class="token punctuation">/></span></span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
