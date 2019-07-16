@@ -31,19 +31,17 @@ function reportException(e: ExtendedError, isFatal: boolean) {
     const currentExceptionID = ++exceptionID;
     const message =
       e.jsEngine == null ? e.message : `${e.message}, js engine: ${e.jsEngine}`;
-    if (isFatal) {
-      NativeExceptionsManager.reportFatalException(
-        message,
-        stack,
-        currentExceptionID,
-      );
-    } else {
-      NativeExceptionsManager.reportSoftException(
-        message,
-        stack,
-        currentExceptionID,
-      );
-    }
+    NativeExceptionsManager.reportException({
+      message,
+      stack,
+      id: currentExceptionID,
+      isFatal,
+      extraData: {
+        jsEngine: e.jsEngine,
+        rawStack: e.stack,
+        framesPopped: e.framesToPop,
+      },
+    });
     if (__DEV__) {
       if (e.preventSymbolication === true) {
         return;

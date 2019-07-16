@@ -696,6 +696,41 @@ namespace JS {
 @interface RCTCxxConvert (NativeExceptionsManager_StackFrame)
 + (RCTManagedPointer *)JS_NativeExceptionsManager_StackFrame:(id)json;
 @end
+
+namespace JS {
+  namespace NativeExceptionsManager {
+    struct ExceptionDataExtraData {
+
+      ExceptionDataExtraData(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeExceptionsManager_ExceptionDataExtraData)
++ (RCTManagedPointer *)JS_NativeExceptionsManager_ExceptionDataExtraData:(id)json;
+@end
+
+namespace JS {
+  namespace NativeExceptionsManager {
+    struct ExceptionData {
+      NSString *message() const;
+      facebook::react::LazyVector<JS::NativeExceptionsManager::StackFrame> stack() const;
+      double id_() const;
+      bool isFatal() const;
+      folly::Optional<JS::NativeExceptionsManager::ExceptionDataExtraData> extraData() const;
+
+      ExceptionData(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeExceptionsManager_ExceptionData)
++ (RCTManagedPointer *)JS_NativeExceptionsManager_ExceptionData:(id)json;
+@end
 @protocol NativeExceptionsManagerSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)reportFatalException:(NSString *)message
@@ -704,6 +739,7 @@ namespace JS {
 - (void)reportSoftException:(NSString *)message
                       stack:(NSArray *)stack
                 exceptionId:(double)exceptionId;
+- (void)reportException:(JS::NativeExceptionsManager::ExceptionData &)data;
 - (void)updateExceptionMessage:(NSString *)message
                          stack:(NSArray *)stack
                    exceptionId:(double)exceptionId;
@@ -1979,6 +2015,32 @@ inline NSString *JS::NativeExceptionsManager::StackFrame::methodName() const
 {
   id const p = _v[@"methodName"];
   return RCTBridgingToString(p);
+}
+
+inline NSString *JS::NativeExceptionsManager::ExceptionData::message() const
+{
+  id const p = _v[@"message"];
+  return RCTBridgingToString(p);
+}
+inline facebook::react::LazyVector<JS::NativeExceptionsManager::StackFrame> JS::NativeExceptionsManager::ExceptionData::stack() const
+{
+  id const p = _v[@"stack"];
+  return RCTBridgingToVec(p, ^JS::NativeExceptionsManager::StackFrame(id itemValue_0) { return JS::NativeExceptionsManager::StackFrame(itemValue_0); });
+}
+inline double JS::NativeExceptionsManager::ExceptionData::id_() const
+{
+  id const p = _v[@"id"];
+  return RCTBridgingToDouble(p);
+}
+inline bool JS::NativeExceptionsManager::ExceptionData::isFatal() const
+{
+  id const p = _v[@"isFatal"];
+  return RCTBridgingToBool(p);
+}
+inline folly::Optional<JS::NativeExceptionsManager::ExceptionDataExtraData> JS::NativeExceptionsManager::ExceptionData::extraData() const
+{
+  id const p = _v[@"extraData"];
+  return (p == nil ? folly::none : folly::make_optional(JS::NativeExceptionsManager::ExceptionDataExtraData(p)));
 }
 inline JS::NativeI18nManager::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];

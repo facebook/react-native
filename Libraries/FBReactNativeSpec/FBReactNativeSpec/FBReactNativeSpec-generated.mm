@@ -642,6 +642,18 @@ namespace facebook {
   return facebook::react::managedPointer<JS::NativeExceptionsManager::StackFrame>(json);
 }
 @end
+@implementation RCTCxxConvert (NativeExceptionsManager_ExceptionDataExtraData)
++ (RCTManagedPointer *)JS_NativeExceptionsManager_ExceptionDataExtraData:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeExceptionsManager::ExceptionDataExtraData>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeExceptionsManager_ExceptionData)
++ (RCTManagedPointer *)JS_NativeExceptionsManager_ExceptionData:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeExceptionsManager::ExceptionData>(json);
+}
+@end
 namespace facebook {
   namespace react {
 
@@ -652,6 +664,10 @@ namespace facebook {
 
     static facebook::jsi::Value __hostFunction_NativeExceptionsManagerSpecJSI_reportSoftException(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "reportSoftException", @selector(reportSoftException:stack:exceptionId:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeExceptionsManagerSpecJSI_reportException(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "reportException", @selector(reportException:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeExceptionsManagerSpecJSI_updateExceptionMessage(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -671,6 +687,10 @@ namespace facebook {
         
         methodMap_["reportSoftException"] = MethodMetadata {3, __hostFunction_NativeExceptionsManagerSpecJSI_reportSoftException};
         
+        
+        methodMap_["reportException"] = MethodMetadata {1, __hostFunction_NativeExceptionsManagerSpecJSI_reportException};
+        
+        setMethodArgConversionSelector(@"reportException", 0, @"JS_NativeExceptionsManager_ExceptionData:");
         
         methodMap_["updateExceptionMessage"] = MethodMetadata {3, __hostFunction_NativeExceptionsManagerSpecJSI_updateExceptionMessage};
         
