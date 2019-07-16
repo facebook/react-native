@@ -18,17 +18,11 @@ import type {
   ObjectParamTypeAnnotation,
 } from '../../../CodegenSchema.js';
 
+import type {TypeMap} from '../utils.js';
+const {getValueFromTypes} = require('../utils.js');
+
 // $FlowFixMe there's no flowtype for ASTs
 type MethodAST = Object;
-// $FlowFixMe there's no flowtype for ASTs
-type TypeMap = $ReadOnly<{|[name: string]: Object|}>;
-
-function getValueFromTypes(value, types) {
-  if (value.type === 'GenericTypeAnnotation' && types[value.id.name]) {
-    return getValueFromTypes(types[value.id.name].right, types);
-  }
-  return value;
-}
 
 function getObjectProperties(
   name: string,

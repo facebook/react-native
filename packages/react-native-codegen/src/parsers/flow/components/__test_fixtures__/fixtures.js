@@ -501,6 +501,30 @@ export type ModuleProps = $ReadOnly<{|
 export default codegenNativeComponent<ModuleProps>('Module');
 `;
 
+const PROPS_AS_EXTERNAL_TYPES = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+export type String = string;
+export type AnotherArray = $ReadOnlyArray<String>;
+
+export type ModuleProps = $ReadOnly<{|
+  disable: String,
+  array: AnotherArray,
+|}>;
+
+export default codegenNativeComponent<ModuleProps>('Module');
+`;
+
 const COMMANDS_DEFINED_WITH_ALL_TYPES = `
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -540,6 +564,103 @@ export const Commands = codegenNativeCommands<NativeCommands>();
 export default codegenNativeComponent<ModuleProps>('Module');
 `;
 
+const COMMANDS_WITH_EXTERNAL_TYPES = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+const codegenNativeCommands = require('codegenNativeCommands');
+
+import type {
+  Int32,
+  BubblingEventHandler,
+  DirectEventHandler,
+} from 'CodegenTypes';
+
+import type {ViewProps} from 'ViewPropTypes';
+
+export type Boolean = boolean;
+export type Int = Int32;
+export type Void = void;
+
+export type ScrollTo = (viewRef: React.Ref<'RCTView'>, y: Int, animated: Boolean) => Void
+
+interface NativeCommands {
+  +scrollTo: ScrollTo;
+}
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  // No props or events
+|}>;
+
+export const Commands = codegenNativeCommands<NativeCommands>();
+
+export default codegenNativeComponent<ModuleProps>('Module');
+`;
+
+const COMMANDS_AND_EVENTS_TYPES_EXPORTED = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import type {
+  BubblingEventHandler,
+  DirectEventHandler,
+} from 'CodegenTypes';
+
+import type {ViewProps} from 'ViewPropTypes';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+export type EventInFile = $ReadOnly<{|
+  ${EVENT_DEFINITION}
+|}>;
+
+export type Boolean = boolean;
+export type Int = Int32;
+export type Void = void;
+
+export type ScrollTo = (viewRef: React.Ref<'RCTView'>, y: Int, animated: Boolean) => Void
+
+interface NativeCommands {
+  +scrollTo: ScrollTo;
+}
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  // No props
+
+  // Events defined inline
+  onBubblingEventDefinedInline: BubblingEventHandler<EventInFile>,
+  onBubblingEventDefinedInlineWithPaperName: BubblingEventHandler<EventInFile, 'paperBubblingEventDefinedInlineWithPaperName'>,
+  onDirectEventDefinedInline: DirectEventHandler<EventInFile>,
+  onDirectEventDefinedInlineWithPaperName: DirectEventHandler<EventInFile, 'paperDirectEventDefinedInlineWithPaperName'>,
+|}>;
+
+export const Commands = codegenNativeCommands<NativeCommands>();
+
+export default codegenNativeComponent<ModuleProps>('Module');
+`;
+
 module.exports = {
   ALL_PROP_TYPES_NO_EVENTS,
   ARRAY_PROP_TYPES_NO_EVENTS,
@@ -548,5 +669,8 @@ module.exports = {
   EVENTS_DEFINED_INLINE_WITH_ALL_TYPES,
   EVENTS_DEFINED_AS_NULL_INLINE,
   PROPS_AND_EVENTS_TYPES_EXPORTED,
+  COMMANDS_AND_EVENTS_TYPES_EXPORTED,
   COMMANDS_DEFINED_WITH_ALL_TYPES,
+  PROPS_AS_EXTERNAL_TYPES,
+  COMMANDS_WITH_EXTERNAL_TYPES,
 };

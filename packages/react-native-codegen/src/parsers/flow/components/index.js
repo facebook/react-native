@@ -143,9 +143,9 @@ function processComponent(ast, types): ComponentSchemaBuilderConfig {
   const extendsProps = getExtendsProps(propProperties);
   const options = getOptions(optionsExpression);
 
-  const props = getProps(propProperties);
+  const props = getProps(propProperties, types);
   const events = getEvents(propProperties, types);
-  const commands = getCommands(commandProperties);
+  const commands = getCommands(commandProperties, types);
 
   return {
     filename: componentName,

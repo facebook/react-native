@@ -11,17 +11,21 @@
 'use strict';
 
 import type {PropTypeShape} from '../../../CodegenSchema.js';
+import type {TypeMap} from '../utils.js';
 
-function getTypeAnnotationForArray(name, typeAnnotation, defaultValue) {
-  if (typeAnnotation.type === 'NullableTypeAnnotation') {
+const {getValueFromTypes} = require('../utils.js');
+
+function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
+  const extractedTypeAnnotation = getValueFromTypes(typeAnnotation, types);
+  if (extractedTypeAnnotation.type === 'NullableTypeAnnotation') {
     throw new Error(
       'Nested optionals such as "$ReadOnlyArray<?boolean>" are not supported, please declare optionals at the top level of value definitions as in "?$ReadOnlyArray<boolean>"',
     );
   }
 
   if (
-    typeAnnotation.type === 'GenericTypeAnnotation' &&
-    typeAnnotation.id.name === 'WithDefault'
+    extractedTypeAnnotation.type === 'GenericTypeAnnotation' &&
+    extractedTypeAnnotation.id.name === 'WithDefault'
   ) {
     throw new Error(
       'Nested defaults such as "$ReadOnlyArray<WithDefault<boolean, false>>" are not supported, please declare defaults at the top level of value definitions as in "WithDefault<$ReadOnlyArray<boolean>, false>"',
@@ -29,9 +33,9 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue) {
   }
 
   const type =
-    typeAnnotation.type === 'GenericTypeAnnotation'
-      ? typeAnnotation.id.name
-      : typeAnnotation.type;
+    extractedTypeAnnotation.type === 'GenericTypeAnnotation'
+      ? extractedTypeAnnotation.id.name
+      : extractedTypeAnnotation.type;
 
   switch (type) {
     case 'ImageSource':
@@ -76,7 +80,9 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue) {
       return {
         type: 'StringEnumTypeAnnotation',
         default: defaultValue,
-        options: typeAnnotation.types.map(option => ({name: option.value})),
+        options: extractedTypeAnnotation.types.map(option => ({
+          name: option.value,
+        })),
       };
     default:
       (type: empty);
@@ -84,7 +90,7 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue) {
   }
 }
 
-function getTypeAnnotation(name, typeAnnotation, defaultValue) {
+function getTypeAnnotation(name, typeAnnotation, defaultValue, types) {
   if (
     typeAnnotation.type === 'GenericTypeAnnotation' &&
     typeAnnotation.id.name === '$ReadOnlyArray'
@@ -95,6 +101,7 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
         name,
         typeAnnotation.typeParameters.params[0],
         defaultValue,
+        types,
       ),
     };
   }
@@ -174,10 +181,10 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
   }
 }
 
-function buildPropSchema(property): ?PropTypeShape {
+function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
   const name = property.key.name;
 
-  const {value} = property;
+  const value = getValueFromTypes(property.value, types);
   let typeAnnotation =
     value.type === 'NullableTypeAnnotation' ? value.typeAnnotation : value;
 
@@ -257,7 +264,12 @@ function buildPropSchema(property): ?PropTypeShape {
   return {
     name,
     optional,
-    typeAnnotation: getTypeAnnotation(name, typeAnnotation, defaultValue),
+    typeAnnotation: getTypeAnnotation(
+      name,
+      typeAnnotation,
+      defaultValue,
+      types,
+    ),
   };
 }
 
@@ -266,10 +278,11 @@ type PropAST = Object;
 
 function getProps(
   typeDefinition: $ReadOnlyArray<PropAST>,
+  types: TypeMap,
 ): $ReadOnlyArray<PropTypeShape> {
   return typeDefinition
     .filter(property => property.type === 'ObjectTypeProperty')
-    .map(buildPropSchema)
+    .map(property => buildPropSchema(property, types))
     .filter(Boolean);
 }
 

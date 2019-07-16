@@ -18,8 +18,7 @@ import type {
   Int32,
   Float,
 } from 'react-native/Libraries/Types/CodegenTypes';
-
-type ColorValue = null | string;
+import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 
 type DrawerStateEvent = $ReadOnly<{|
   drawerState: Int32,
