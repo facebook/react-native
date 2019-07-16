@@ -6,15 +6,21 @@
  */
 package com.facebook.react.fabric;
 
+import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.modules.core.ChoreographerCompat;
 
 public abstract class GuardedFrameCallback extends ChoreographerCompat.FrameCallback {
 
-  private final ReactContext mReactContext;
+  private final NativeModuleCallExceptionHandler mExceptionHandler;
 
+  @Deprecated
   protected GuardedFrameCallback(ReactContext reactContext) {
-    mReactContext = reactContext;
+    this(reactContext.getExceptionHandler());
+  }
+
+  protected GuardedFrameCallback(NativeModuleCallExceptionHandler exceptionHandler) {
+    mExceptionHandler = exceptionHandler;
   }
 
   @Override
@@ -22,7 +28,7 @@ public abstract class GuardedFrameCallback extends ChoreographerCompat.FrameCall
     try {
       doFrameGuarded(frameTimeNanos);
     } catch (RuntimeException e) {
-      mReactContext.handleException(e);
+      mExceptionHandler.handleException(e);
     }
   }
 
