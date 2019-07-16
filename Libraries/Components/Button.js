@@ -128,11 +128,7 @@ class Button extends React.Component<ButtonProps> {
     const formattedTitle =
       Platform.OS === 'android' ? title.toUpperCase() : title;
     const Touchable =
-      Platform.OS === 'android' // [TODO(windows ISS)
-        ? TouchableNativeFeedback
-        : Platform.OS === 'uwp' || Platform.OS === 'windesktop'
-          ? TouchableHighlight
-          : TouchableOpacity; // ]TODO(windows ISS)
+      Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
     return (
       <Touchable
         accessibilityLabel={accessibilityLabel}
@@ -163,12 +159,6 @@ const styles = StyleSheet.create({
       borderRadius: 2,
     },
     macos: {}, // TODO(macOS ISS#2323203)
-    uwp: {
-      // [TODO(windows ISS)
-      backgroundColor: '#2196F3',
-      borderRadius: 2,
-    },
-    windesktop: {}, // ]TODO(windows ISS)
   }),
   text: {
     textAlign: 'center',
@@ -188,12 +178,6 @@ const styles = StyleSheet.create({
         color: '#007AFF',
         fontSize: 18,
       }, // ]TODO(macOS ISS#2323203)
-      uwp: {
-        // [TODO(windows ISS)
-        color: 'white',
-        fontWeight: '500',
-      },
-      windesktop: {}, // ]TODO(windows ISS)
     }),
   },
   buttonDisabled: Platform.select({
@@ -203,11 +187,6 @@ const styles = StyleSheet.create({
       backgroundColor: '#dfdfdf',
     },
     macos: {}, // TODO(macOS ISS#2323203)
-    uwp: {
-      // [TODO(windows ISS)
-      backgroundColor: '#dfdfdf',
-    },
-    windesktop: {}, // ]TODO(windows ISS)
   }),
   textDisabled: Platform.select({
     ios: {
@@ -220,13 +199,6 @@ const styles = StyleSheet.create({
     android: {
       color: '#a1a1a1',
     },
-    uwp: {
-      // [TODO(windows ISS)
-      color: '#a1a1a1',
-    },
-    windesktop: {
-      color: '#a1a1a1',
-    }, // ]TODO(windows ISS)
   }),
 });
 

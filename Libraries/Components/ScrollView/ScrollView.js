@@ -952,9 +952,6 @@ class ScrollView extends React.Component<Props, State> {
         ScrollViewClass = AndroidScrollView;
         ScrollContentContainerViewClass = View;
       }
-    } /* [TODO(windows ISS) */ else if (Platform.OS === 'windesktop') {
-      ScrollViewClass = RCTScrollView;
-      ScrollContentContainerViewClass = View; // ]TODO(windows ISS)
     } else {
       ScrollViewClass = RCTScrollView;
       ScrollContentContainerViewClass = RCTScrollContentView;
