@@ -13,15 +13,15 @@
 import type {
   PointValue,
   ColorValue,
-} from '../../../../Libraries/StyleSheet/StyleSheetTypes';
-import type {ImageSource} from '../../../../Libraries/Image/ImageSource';
+} from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
+import type {ImageSource} from '../../../../../Libraries/Image/ImageSource';
 import type {
   Int32,
   Float,
   WithDefault,
-} from '../../../../Libraries/Types/CodegenTypes';
-import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
-import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
+} from '../../../../../Libraries/Types/CodegenTypes';
+import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
+import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,

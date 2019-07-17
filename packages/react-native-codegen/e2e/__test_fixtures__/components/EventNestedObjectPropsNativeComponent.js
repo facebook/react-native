@@ -14,9 +14,9 @@ import type {
   Int32,
   BubblingEventHandler,
   WithDefault,
-} from '../../../../Libraries/Types/CodegenTypes';
-import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
-import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
+} from '../../../../../Libraries/Types/CodegenTypes';
+import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
+import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
 
 type OnChangeEvent = $ReadOnly<{|
   location: {
