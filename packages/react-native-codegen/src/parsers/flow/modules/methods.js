@@ -201,12 +201,6 @@ function getTypeAnnotationForParam(
       };
     case 'NumberTypeAnnotation':
     case 'BooleanTypeAnnotation':
-      if (nullable) {
-        throw new Error(
-          `Booleans and numbers cannot be nullable for param "${paramName} in method "${name}".`,
-        );
-      }
-    // eslint-disable no-fallthrough
     case 'StringTypeAnnotation':
       return {
         nullable,

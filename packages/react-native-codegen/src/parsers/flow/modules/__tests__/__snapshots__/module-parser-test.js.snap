@@ -1,9 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULE_NULLABLE_BOOLEAN 1`] = `"Booleans and numbers cannot be nullable for param \\"a in method \\"getSth\\"."`;
-
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULE_NULLABLE_NUMBER 1`] = `"Booleans and numbers cannot be nullable for param \\"a in method \\"getSth\\"."`;
-
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT 1`] = `"Unsupported return type for getString: expected to find annotation for type of array contents"`;
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM 1`] = `"Unsupported type for getString, param: \\"arg\\": expected to find annotation for type of array contents"`;
