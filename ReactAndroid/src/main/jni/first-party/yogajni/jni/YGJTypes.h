@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the LICENSE
  * file in the root directory of this source tree.
  */
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <yoga/YGValue.h>
 #include <yoga/Yoga.h>
 #include <map>
