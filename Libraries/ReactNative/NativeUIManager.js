@@ -42,7 +42,7 @@ export interface Spec extends TurboModule {
   +dispatchViewManagerCommand: (
     reactTag: ?number,
     commandID: number,
-    commandArgs: ?Array<string | number | boolean>, // is this best?
+    commandArgs: ?Array<any>,
   ) => void;
   +measure: (
     reactTag: ?number,
