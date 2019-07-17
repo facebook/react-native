@@ -64,9 +64,9 @@ function reportException(e: ExtendedError, isFatal: boolean) {
             throw new Error('The stack is null');
           }
         })
-        .catch(error =>
-          console.warn('Unable to symbolicate stack trace: ' + error.message),
-        );
+        .catch(error => {
+          console.log('Unable to symbolicate stack trace: ' + error.message);
+        });
     }
   }
 }
