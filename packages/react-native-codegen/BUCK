@@ -38,6 +38,7 @@ fb_native.genrule(
     srcs = glob(
         [
             "**/e2e/__test_fixtures__/*NativeComponent.js",
+            "**/e2e/__test_fixtures__/Native*.js",
         ],
     ),
     cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:write_to_json) $OUT $SRCS",
@@ -66,6 +67,7 @@ fb_xplat_cxx_binary(
     visibility = ["PUBLIC"],
     deps = [
         ":generated_components-codegen_tests",
+        ":generated_modules-codegen_tests",
     ],
 )
 
@@ -89,6 +91,7 @@ rn_xplat_cxx_library(
     ],
     deps = [
         ":generated_components-codegen_tests",
+        ":generated_modules-codegen_tests",
     ],
 )
 
