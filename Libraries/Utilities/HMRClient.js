@@ -148,10 +148,7 @@ Error: ${e.message}`;
         // Until we get "connection-done", messages aren't real edits.
         didFinishInitialUpdate &&
         // If HMR is disabled by the user, we're ignoring updates.
-        client.shouldApplyUpdates &&
-        // If full refresh is forced, there's no need to flash the indicator.
-        // It will be refreshed in a few milliseconds anyway.
-        !(require: any).Refresh.forceFullRefresh
+        client.shouldApplyUpdates
       );
     }
 

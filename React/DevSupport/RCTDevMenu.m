@@ -286,17 +286,8 @@ RCT_EXPORT_MODULE()
         devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
       }
     }]];
-
     // "Live reload" which refreshes on every edit was removed in favor of "Fast Refresh".
     // While native code for "Live reload" is still there, please don't add the option back.
-    //
-    // If for some reason you really need a full reload on every edit,
-    // you can put this into your application entry point as an escape hatch:
-    //
-    // if (__DEV__) {
-    //   require.Refresh.forceFullRefresh = true;
-    // }
-    //
     // See D15958697 for more context.
   }
 
