@@ -38,18 +38,21 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
+                      optional: false,
                       name: 'const1',
                       typeAnnotation: {
                         type: 'BooleanTypeAnnotation',
                       },
                     },
                     {
+                      optional: false,
                       name: 'const2',
                       typeAnnotation: {
                         type: 'NumberTypeAnnotation',
                       },
                     },
                     {
+                      optional: false,
                       name: 'const3',
                       typeAnnotation: {
                         type: 'StringTypeAnnotation',

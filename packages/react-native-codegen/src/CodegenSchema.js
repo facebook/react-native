@@ -163,6 +163,7 @@ export type FunctionTypeAnnotationParamTypeAnnotation =
 export type FunctionTypeAnnotationReturnArrayElementType = FunctionTypeAnnotationParamTypeAnnotation;
 
 export type ObjectParamTypeAnnotation = $ReadOnly<{|
+  optional: boolean,
   name: string,
   typeAnnotation: FunctionTypeAnnotationParamTypeAnnotation,
 |}>;

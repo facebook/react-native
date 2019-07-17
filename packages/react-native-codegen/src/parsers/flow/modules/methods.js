@@ -30,15 +30,24 @@ function getObjectProperties(
   paramName: string,
   types: TypeMap,
 ): $ReadOnlyArray<ObjectParamTypeAnnotation> {
-  return objectParam.properties.map(objectTypeProperty => ({
-    name: objectTypeProperty.key.name,
-    typeAnnotation: getElementTypeForArrayOrObject(
-      name,
-      objectTypeProperty.value,
-      paramName,
-      types,
-    ),
-  }));
+  return objectParam.properties.map(objectTypeProperty => {
+    let optional = false;
+    let value = objectTypeProperty.value;
+    if (value.type === 'NullableTypeAnnotation') {
+      optional = true;
+      value = objectTypeProperty.value.typeAnnotation;
+    }
+    return {
+      optional,
+      name: objectTypeProperty.key.name,
+      typeAnnotation: getElementTypeForArrayOrObject(
+        name,
+        value,
+        paramName,
+        types,
+      ),
+    };
+  });
 }
 
 function getElementTypeForArrayOrObject(
@@ -80,7 +89,7 @@ function getElementTypeForArrayOrObject(
     case 'ObjectTypeAnnotation':
       return {
         type: 'ObjectTypeAnnotation',
-        properties: getObjectProperties(name, arrayParam, paramName, types),
+        properties: getObjectProperties(name, typeAnnotation, paramName, types),
       };
     case 'AnyTypeAnnotation':
       return {
@@ -166,7 +175,7 @@ function getTypeAnnotationForParam(
           type: 'ObjectTypeAnnotation',
           properties: getObjectProperties(
             name,
-            param.typeAnnotation,
+            typeAnnotation,
             paramName,
             types,
           ),
