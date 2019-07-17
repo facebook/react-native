@@ -210,6 +210,21 @@ class MessageQueue {
         if (this._callID > DEBUG_INFO_LIMIT) {
           delete this._debugInfo[this._callID - DEBUG_INFO_LIMIT];
         }
+        if (this._successCallbacks.size > 500) {
+          const info = {};
+          this._successCallbacks.forEach((_, callID) => {
+            const debug = this._debugInfo[callID];
+            const module = debug && this._remoteModuleTable[debug[0]];
+            const method = debug && this._remoteMethodTable[debug[0]][debug[1]];
+            info[callID] = {module, method};
+          });
+          console.error(
+            `Please report: Excessive number of pending callbacks: ${
+              this._successCallbacks.size
+            }. Some pending callbacks that might have leaked by never being called from native code:`,
+            info,
+          );
+        }
       }
       // Encode callIDs into pairs of callback identifiers by shifting left and using the rightmost bit
       // to indicate fail (0) or success (1)
