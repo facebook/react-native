@@ -55,7 +55,7 @@ function getElementTypeForArrayOrObject(
   arrayParam,
   paramName,
   types: TypeMap,
-): FunctionTypeAnnotationParamTypeAnnotation {
+): FunctionTypeAnnotationParamTypeAnnotation | typeof undefined {
   const typeAnnotation = getValueFromTypes(arrayParam, types);
   const type =
     typeAnnotation.type === 'GenericTypeAnnotation'
@@ -113,6 +113,9 @@ function getElementTypeForArrayOrObject(
       return {
         type: 'FloatTypeAnnotation',
       };
+    case 'TupleTypeAnnotation':
+    case 'UnionTypeAnnotation':
+      return undefined;
     default:
       throw new Error(
         `Unsupported param type for method "${name}", param "${paramName}". Found ${type}`,

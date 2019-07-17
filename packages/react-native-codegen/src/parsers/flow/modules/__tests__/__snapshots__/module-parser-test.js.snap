@@ -73,6 +73,42 @@ Object {
 }
 `;
 
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE 1`] = `
+Object {
+  "modules": Object {
+    "NativeSampleTurboModule": Object {
+      "nativeModules": Object {
+        "SampleTurboModule": Object {
+          "properties": Array [
+            Object {
+              "name": "getArray",
+              "typeAnnotation": Object {
+                "optional": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "nullable": false,
+                    "typeAnnotation": Object {
+                      "elementType": undefined,
+                      "type": "ArrayTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "elementType": undefined,
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_ARRAY 1`] = `
 Object {
   "modules": Object {

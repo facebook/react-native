@@ -148,11 +148,11 @@ export type FunctionTypeAnnotationParamTypeAnnotation =
     |}>
   | $ReadOnly<{|
       type: 'ArrayTypeAnnotation',
-      elementType: FunctionTypeAnnotationParamTypeAnnotation,
+      elementType: ?FunctionTypeAnnotationParamTypeAnnotation,
     |}>
   | $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
-      properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,
+      properties: ?$ReadOnlyArray<ObjectParamTypeAnnotation>,
     |}>
   | $ReadOnly<{|
       type: 'FunctionTypeAnnotation',
@@ -174,7 +174,7 @@ export type FunctionTypeAnnotationReturn =
     |}>
   | $ReadOnly<{|
       type: 'ArrayTypeAnnotation',
-      elementType: FunctionTypeAnnotationReturnArrayElementType,
+      elementType: ?FunctionTypeAnnotationReturnArrayElementType,
     |}>
   | $ReadOnly<{|
       type: 'GenericPromiseTypeAnnotation',
@@ -182,7 +182,7 @@ export type FunctionTypeAnnotationReturn =
     |}>
   | $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
-      properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,
+      properties: ?$ReadOnlyArray<ObjectParamTypeAnnotation>,
     |}>;
 
 export type FunctionTypeAnnotationParam = $ReadOnly<{|
