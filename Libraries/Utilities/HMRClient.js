@@ -133,7 +133,7 @@ URL: ${host}:${port}
 
 Error: ${e.message}`;
 
-      throw new Error(error);
+      setHMRUnavailableReason(error);
     });
 
     let didFinishInitialUpdate = false;
@@ -229,7 +229,10 @@ Error: ${e.message}`;
 
 function setHMRUnavailableReason(reason) {
   invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
-
+  if (hmrUnavailableReason !== null) {
+    // Don't show more than one warning.
+    return;
+  }
   hmrUnavailableReason = reason;
   if (hmrClient.shouldApplyUpdates) {
     // If HMR is currently enabled, show a warning.
