@@ -183,16 +183,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @Override
-  public void removeRootView(int reactRootTag) {
-    // TODO T31905686: integrate with the unmounting of Fabric React Renderer.
-    mMountingManager.removeRootView(reactRootTag);
-    mReactContextForRootTag.remove(reactRootTag);
-    if (DEBUG) {
-      FLog.d(TAG, "Removing surface for reactTag: ", reactRootTag);
-    }
-  }
-
-  @Override
   public void initialize() {
     mEventDispatcher.registerEventEmitter(FABRIC, new FabricEventEmitter(this));
     mEventDispatcher.addBatchEventDispatchedListener(mEventBeatManager);

@@ -421,6 +421,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     return tag;
   }
 
+  /** Unregisters a new root view. */
   @ReactMethod
   public void removeRootView(int rootViewTag) {
     mUIImplementation.removeRootView(rootViewTag);
