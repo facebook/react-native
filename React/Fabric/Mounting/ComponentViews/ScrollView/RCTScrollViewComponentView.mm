@@ -169,6 +169,19 @@ using namespace facebook::react;
   });
 }
 
+- (void)prepareForRecycle
+{
+  // This is a temporary workaround.
+  // Some external libraries rely on that fact that UIScrollView instance inside React Native nulls its `delegate` when
+  // being unmounted. Here we are trying to mimic this behavior.
+  // See T47356757 for more details.
+  id<UIScrollViewDelegate> delegate = _scrollView.delegate;
+  _scrollView.delegate = nil;
+  _scrollView.delegate = delegate;
+  _scrollView.contentOffset = CGPointZero;
+  [super prepareForRecycle];
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
