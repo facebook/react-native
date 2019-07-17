@@ -97,9 +97,13 @@ function getElementTypeForArrayOrObject(
       };
     case 'NumberTypeAnnotation':
     case 'BooleanTypeAnnotation':
-    case 'StringTypeAnnotation':
       return {
         type,
+      };
+    case 'StringTypeAnnotation':
+    case 'Stringish':
+      return {
+        type: 'StringTypeAnnotation',
       };
     case 'Int32':
       return {
@@ -201,12 +205,21 @@ function getTypeAnnotationForParam(
       };
     case 'NumberTypeAnnotation':
     case 'BooleanTypeAnnotation':
-    case 'StringTypeAnnotation':
       return {
         nullable,
         name: paramName,
         typeAnnotation: {
           type,
+        },
+      };
+
+    case 'StringTypeAnnotation':
+    case 'Stringish':
+      return {
+        nullable,
+        name: paramName,
+        typeAnnotation: {
+          type: 'StringTypeAnnotation',
         },
       };
     case 'Int32':
@@ -298,11 +311,16 @@ function getReturnTypeAnnotation(
 
     case 'BooleanTypeAnnotation':
     case 'NumberTypeAnnotation':
-    case 'StringTypeAnnotation':
     case 'VoidTypeAnnotation':
       return {
         type,
       };
+    case 'StringTypeAnnotation':
+    case 'Stringish':
+      return {
+        type: 'StringTypeAnnotation',
+      };
+
     case 'Int32':
       return {
         type: 'Int32TypeAnnotation',

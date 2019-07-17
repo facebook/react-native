@@ -177,6 +177,25 @@ Object {
                 "type": "FunctionTypeAnnotation",
               },
             },
+            Object {
+              "name": "passStringish",
+              "typeAnnotation": Object {
+                "optional": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "nullable": false,
+                    "typeAnnotation": Object {
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "type": "VoidTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
           ],
         },
       },

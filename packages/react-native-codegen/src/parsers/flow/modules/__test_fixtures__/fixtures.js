@@ -122,6 +122,7 @@ export interface Spec extends TurboModule {
   +passBool?: (arg: boolean) => void;
   +passNumber: (arg: number) => void;
   +passString: (arg: string) => void;
+  +passStringish: (arg: Stringish) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
