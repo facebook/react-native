@@ -37,8 +37,8 @@ fb_native.genrule(
     name = "codegen_tests_schema",
     srcs = glob(
         [
-            "**/e2e/__test_fixtures__/*NativeComponent.js",
-            "**/e2e/__test_fixtures__/Native*.js",
+            "**/e2e/__test_fixtures__/components/*NativeComponent.js",
+            "**/e2e/__test_fixtures__/modules/Native*.js",
         ],
     ),
     cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:write_to_json) $OUT $SRCS",

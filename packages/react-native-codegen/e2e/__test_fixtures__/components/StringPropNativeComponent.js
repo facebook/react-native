@@ -10,9 +10,9 @@
 
 'use strict';
 
-import type {WithDefault} from '../../../../Libraries/Types/CodegenTypes';
-import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
-import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
+import type {WithDefault} from '../../../../../Libraries/Types/CodegenTypes';
+import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
+import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
