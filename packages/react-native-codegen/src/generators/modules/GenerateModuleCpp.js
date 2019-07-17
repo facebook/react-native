@@ -15,15 +15,15 @@ import type {SchemaType} from '../../CodegenSchema';
 type FilesOutput = Map<string, string>;
 
 const propertyHeaderTemplate =
-  'static jsi::Value __hostFunction_Native::_MODULE_NAME_::TurboCxxModuleSpecJSI_::_PROPERTY_NAME_::(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {';
+  'static jsi::Value __hostFunction_Native::_MODULE_NAME_::SpecJSI_::_PROPERTY_NAME_::(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {';
 
 const propertyCastTemplate =
-  'static_cast<Native::_MODULE_NAME_::TurboCxxModuleSpecJSI *>(&turboModule)->::_PROPERTY_NAME_::(rt::_ARGS_::);';
+  'static_cast<Native::_MODULE_NAME_::SpecJSI *>(&turboModule)->::_PROPERTY_NAME_::(rt::_ARGS_::);';
 
 const nonvoidPropertyTemplate = `
 ${propertyHeaderTemplate}
   return ${propertyCastTemplate}
-}`;
+}`.trim();
 
 const voidPropertyTemplate = `
 ${propertyHeaderTemplate}
@@ -32,16 +32,15 @@ ${propertyHeaderTemplate}
 }`;
 
 const proprertyDefTemplate =
-  '  methodMap_["::_PROPERTY_NAME_::"] = MethodMetadata {::_ARGS_COUNT_::, __hostFunction_Native::_MODULE_NAME_::TurboCxxModuleSpecJSI_::_PROPERTY_NAME_::};';
+  '  methodMap_["::_PROPERTY_NAME_::"] = MethodMetadata {::_ARGS_COUNT_::, __hostFunction_Native::_MODULE_NAME_::SpecJSI_::_PROPERTY_NAME_::};';
 
 const moduleTemplate = `
-::_MODULE_PROPERTIES_::​
+::_MODULE_PROPERTIES_::
 
-Native::_MODULE_NAME_::TurboCxxModuleSpecJSI::Native::_MODULE_NAME_::TurboCxxModuleSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
-  : TurboModule("::_MODULE_NAME_::TurboCxxModule", jsInvoker) {
+Native::_MODULE_NAME_::SpecJSI::Native::_MODULE_NAME_::SpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+  : TurboModule("::_MODULE_NAME_::", jsInvoker) {
 ::_PROPERTIES_MAP_::
-}
-`;
+}`.trim();
 
 const template = `
 /**
@@ -51,7 +50,7 @@ const template = `
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "Native::_MODULE_NAME_::TurboCxxModuleSpecJSI.h"
+#include <react/modules/::_LIBRARY_NAME_::/NativeModules.h>
 
 namespace facebook {
 namespace react {
@@ -72,11 +71,11 @@ function traverseArg(arg, index): string {
     case 'StringTypeAnnotation':
       return wrap('.getString(rt)');
     case 'BooleanTypeAnnotation':
-      return wrap('.getBool(rt)');
+      return wrap('.getBool()');
     case 'NumberTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
-      return wrap('.getNumber(rt)');
+      return wrap('.getNumber()');
     case 'ArrayTypeAnnotation':
       return wrap('.getObject(rt).getArray(rt)');
     case 'FunctionTypeAnnotation':
@@ -138,13 +137,14 @@ module.exports = {
               )
               .join('\n'),
           )
-          .replace(/::_MODULE_NAME_::/g, name.slice(0, -11)); // FIXME
+          .replace(/::_MODULE_NAME_::/g, name);
       })
       .join('\n');
 
-    const fileName = 'NativeModules.h';
-    const replacedTemplate = template.replace(/::_MODULES_::/g, modules);
-
+    const fileName = 'NativeModules.cpp';
+    const replacedTemplate = template
+      .replace(/::_MODULES_::/g, modules)
+      .replace(/::_LIBRARY_NAME_::/g, libraryName);
     return new Map([[fileName, replacedTemplate]]);
   },
 };

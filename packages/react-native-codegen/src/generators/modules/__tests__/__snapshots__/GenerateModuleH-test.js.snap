@@ -12,14 +12,14 @@ Map {
 
 #pragma once
 
-#include <jsireact/TurboModule.h>
+#include <ReactCommon/TurboModule.h>
 
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT NativeSampleTurboCxxModuleSpecJSI : public TurboModule {
+class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public TurboModule {
 protected:
-  NativeSampleTurboCxxModuleSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+  NativeSampleTurboModuleSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
 
 public:
 
@@ -44,14 +44,14 @@ Map {
 
 #pragma once
 
-#include <jsireact/TurboModule.h>
+#include <ReactCommon/TurboModule.h>
 
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT NativeSampleTurboCxxModuleSpecJSI : public TurboModule {
+class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public TurboModule {
 protected:
-  NativeSampleTurboCxxModuleSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+  NativeSampleTurboModuleSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
 
 public:
 virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
@@ -85,23 +85,23 @@ Map {
 
 #pragma once
 
-#include <jsireact/TurboModule.h>
+#include <ReactCommon/TurboModule.h>
 
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT NativeSampleTurboCxxModuleSpecJSI : public TurboModule {
+class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public TurboModule {
 protected:
-  NativeSampleTurboCxxModuleSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+  NativeSampleTurboModuleSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
 
 public:
 virtual void voidFunc(jsi::Runtime &rt) = 0;
 
 };
 
-class JSI_EXPORT NativeSample2TurboCxxModuleSpecJSI : public TurboModule {
+class JSI_EXPORT NativeSample2TurboModuleSpecJSI : public TurboModule {
 protected:
-  NativeSample2TurboCxxModuleSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+  NativeSample2TurboModuleSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
 
 public:
 virtual void voidFunc(jsi::Runtime &rt) = 0;
@@ -126,23 +126,23 @@ Map {
 
 #pragma once
 
-#include <jsireact/TurboModule.h>
+#include <ReactCommon/TurboModule.h>
 
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT NativeSampleTurboCxxModuleSpecJSI : public TurboModule {
+class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public TurboModule {
 protected:
-  NativeSampleTurboCxxModuleSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+  NativeSampleTurboModuleSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
 
 public:
 virtual void voidFunc(jsi::Runtime &rt) = 0;
 
 };
 
-class JSI_EXPORT NativeSample2TurboCxxModuleSpecJSI : public TurboModule {
+class JSI_EXPORT NativeSample2TurboModuleSpecJSI : public TurboModule {
 protected:
-  NativeSample2TurboCxxModuleSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+  NativeSample2TurboModuleSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
 
 public:
 virtual void voidFunc(jsi::Runtime &rt) = 0;

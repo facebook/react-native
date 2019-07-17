@@ -19,9 +19,9 @@ import type {
 type FilesOutput = Map<string, string>;
 
 const moduleTemplate = `
-class JSI_EXPORT Native::_MODULE_NAME_::TurboCxxModuleSpecJSI : public TurboModule {
+class JSI_EXPORT Native::_MODULE_NAME_::SpecJSI : public TurboModule {
 protected:
-  Native::_MODULE_NAME_::TurboCxxModuleSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+  Native::_MODULE_NAME_::SpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
 
 public:
 ::_MODULE_PROPERTIES_::
@@ -38,7 +38,7 @@ const template = `
 
 #pragma once
 
-#include <jsireact/TurboModule.h>
+#include <ReactCommon/TurboModule.h>
 
 namespace facebook {
 namespace react {
@@ -137,7 +137,7 @@ module.exports = {
           .join('\n');
         return moduleTemplate
           .replace(/::_MODULE_PROPERTIES_::/g, traversedProperties)
-          .replace(/::_MODULE_NAME_::/g, name.slice(0, -11)) // FIXME
+          .replace(/::_MODULE_NAME_::/g, name)
           .replace('::_PROPERTIES_MAP_::', '');
       })
       .join('\n');

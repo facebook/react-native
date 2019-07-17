@@ -44,5 +44,14 @@ try {
 
 RNCodegen.generate(
   {libraryName, schema, outputDirectory},
-  {generators: ['descriptors', 'events', 'props', 'tests', 'shadow-nodes']},
+  {
+    generators: [
+      'descriptors',
+      'events',
+      'props',
+      'tests',
+      'shadow-nodes',
+      'modules',
+    ],
+  },
 );

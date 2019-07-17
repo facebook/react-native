@@ -22,6 +22,8 @@ const generateEventEmitterCpp = require('./components/GenerateEventEmitterCpp.js
 const generateEventEmitterH = require('./components/GenerateEventEmitterH.js');
 const generatePropsCpp = require('./components/GeneratePropsCpp.js');
 const generatePropsH = require('./components/GeneratePropsH.js');
+const generateModuleH = require('./modules/GenerateModuleH.js');
+const generateModuleCpp = require('./modules/GenerateModuleCpp.js');
 const generateTests = require('./components/GenerateTests.js');
 const generateShadowNodeCpp = require('./components/GenerateShadowNodeCpp.js');
 const generateShadowNodeH = require('./components/GenerateShadowNodeH.js');
@@ -43,6 +45,7 @@ type Generators =
   | 'props'
   | 'tests'
   | 'shadow-nodes'
+  | 'modules'
   | 'view-configs';
 
 type Config = $ReadOnly<{|
@@ -54,6 +57,7 @@ const GENERATORS = {
   descriptors: [generateComponentDescriptorH.generate],
   events: [generateEventEmitterCpp.generate, generateEventEmitterH.generate],
   props: [generatePropsCpp.generate, generatePropsH.generate],
+  modules: [generateModuleCpp.generate, generateModuleH.generate],
   tests: [generateTests.generate],
   'shadow-nodes': [
     generateShadowNodeCpp.generate,
