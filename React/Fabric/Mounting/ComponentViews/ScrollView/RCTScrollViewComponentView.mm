@@ -108,7 +108,11 @@ using namespace facebook::react;
   MAP_SCROLL_VIEW_PROP(showsVerticalScrollIndicator);
   MAP_VIEW_PROP(scrollEventThrottle);
   MAP_SCROLL_VIEW_PROP(zoomScale);
-  // MAP_SCROLL_VIEW_PROP(contentInset);
+
+  if (oldScrollViewProps.contentInset != newScrollViewProps.contentInset) {
+    _scrollView.contentInset = RCTUIEdgeInsetsFromEdgeInsets(newScrollViewProps.contentInset);
+  }
+
   // MAP_SCROLL_VIEW_PROP(scrollIndicatorInsets);
   // MAP_SCROLL_VIEW_PROP(snapToInterval);
   // MAP_SCROLL_VIEW_PROP(snapToAlignment);
