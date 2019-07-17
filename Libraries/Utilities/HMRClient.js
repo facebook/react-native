@@ -18,7 +18,6 @@ import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 
 import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
 
-let didSetupSocket = false;
 let hmrClient = null;
 let hmrUnavailableReason: string | null = null;
 
@@ -50,12 +49,6 @@ const HMRClient: HMRClientNativeInterface = {
 
     invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
     hmrClient.shouldApplyUpdates = true;
-
-    // We connect lazily. This only ever must run once.
-    if (!didSetupSocket) {
-      didSetupSocket = true;
-      hmrClient.enable();
-    }
 
     // Intentionally reading it outside the condition
     // so that it's less likely we'd break it later.
@@ -215,6 +208,14 @@ Error: ${e.message}`;
         'Disconnected from the Metro server. Fast Refresh will be disabled until you reload the application.',
       );
     });
+
+    // This sets up the socket. A better name would be open(), or perhaps
+    // it should just connect in the constructor. We can change this name if we
+    // cut a major Metro bump right after. This runs even if Fast Refresh is off.
+    client.enable();
+    // Don't confuse this with the enable/disable calls below which actually
+    // enable or disable applying updates. (Yes, this is very confusing.)
+    // TODO(gaearon): refactor this to reduce the confusion.
 
     if (isEnabled) {
       HMRClient.enable();
