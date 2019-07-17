@@ -108,7 +108,7 @@ static void sliceChildShadowNodeViewPairsRecursively(
   }
 }
 
-static ShadowViewNodePair::List sliceChildShadowNodeViewPairs(
+ShadowViewNodePair::List sliceChildShadowNodeViewPairs(
     ShadowNode const &shadowNode) {
   auto pairList = ShadowViewNodePair::List{};
   sliceChildShadowNodeViewPairsRecursively(pairList, {0, 0}, shadowNode);
