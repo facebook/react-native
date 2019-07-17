@@ -1,3 +1,0 @@
-DIRS = \
-    jscexecutor \
-    v8executor \

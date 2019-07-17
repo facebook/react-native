@@ -1,3 +1,0 @@
-DIRS = \
-	win32{apple,chpe,x64,x86} \
-    winrt{x86,x64,arm} \

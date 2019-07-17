@@ -1,3 +1,0 @@
-DIRS = \
-    devmainJava{droidarm,droidarm64,droidx64,droidx86} \
-

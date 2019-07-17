@@ -1,5 +1,0 @@
-LIBLET_WIN32 = 1
-LIBLET_LOB = 1
-!include ..\sources.inc
-
-SOURCES = $(SOURCES_WIN32)

@@ -1,2 +1,0 @@
-DIRS = \
-    double-conversion{droidarm,droidarm64,droidx64,droidx86} \

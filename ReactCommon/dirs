@@ -1,7 +1,0 @@
-DIRS = \
-	cxxreact \
-	jsi \
-	jsiexecutor \
-	privatedata \
-	Yoga \
-	v8helpers \

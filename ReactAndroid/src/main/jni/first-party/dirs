@@ -1,4 +1,0 @@
-DIRS = \
-    fb{droidarm,droidarm64,droidx64,droidx86} \
-    fbgloginit{droidarm,droidarm64,droidx64,droidx86} \
-    yogajni{droidarm,droidarm64,droidx64,droidx86} \

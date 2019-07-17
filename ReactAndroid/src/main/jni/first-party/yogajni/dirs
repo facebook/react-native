@@ -1,2 +1,0 @@
-DIRS = \
-    jni{droidarm,droidarm64,droidx64,droidx86} \

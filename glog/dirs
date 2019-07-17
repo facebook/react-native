@@ -1,2 +1,0 @@
-DIRS = \
-    src{droidarm,droidarm64,droidx64,droidx86} \
