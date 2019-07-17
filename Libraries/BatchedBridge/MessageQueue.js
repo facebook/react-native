@@ -40,8 +40,8 @@ const DEBUG_INFO_LIMIT = 32;
 class MessageQueue {
   _lazyCallableModules: {[key: string]: (void) => Object};
   _queue: [number[], number[], any[], number];
-  _successCallbacks: {[key: number]: ?Function};
-  _failureCallbacks: {[key: number]: ?Function};
+  _successCallbacks: Map<number, ?Function>;
+  _failureCallbacks: Map<number, ?Function>;
   _callID: number;
   _lastFlush: number;
   _eventLoopStartTime: number;
@@ -56,8 +56,8 @@ class MessageQueue {
   constructor() {
     this._lazyCallableModules = {};
     this._queue = [[], [], [], 0];
-    this._successCallbacks = {};
-    this._failureCallbacks = {};
+    this._successCallbacks = new Map();
+    this._failureCallbacks = new Map();
     this._callID = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = Date.now();
@@ -217,8 +217,8 @@ class MessageQueue {
       onFail && params.push(this._callID << 1);
       // eslint-disable-next-line no-bitwise
       onSucc && params.push((this._callID << 1) | 1);
-      this._successCallbacks[this._callID] = onSucc;
-      this._failureCallbacks[this._callID] = onFail;
+      this._successCallbacks.set(this._callID, onSucc);
+      this._failureCallbacks.set(this._callID, onFail);
     }
     if (__DEV__) {
       global.nativeTraceBeginAsyncFlow &&
@@ -423,8 +423,8 @@ class MessageQueue {
     // eslint-disable-next-line no-bitwise
     const isSuccess = cbID & 1;
     const callback = isSuccess
-      ? this._successCallbacks[callID]
-      : this._failureCallbacks[callID];
+      ? this._successCallbacks.get(callID)
+      : this._failureCallbacks.get(callID);
 
     if (__DEV__) {
       const debug = this._debugInfo[callID];
@@ -453,8 +453,8 @@ class MessageQueue {
       return;
     }
 
-    delete this._successCallbacks[callID];
-    delete this._failureCallbacks[callID];
+    this._successCallbacks.delete(callID);
+    this._failureCallbacks.delete(callID);
     callback(...args);
 
     if (__DEV__) {
