@@ -1000,9 +1000,7 @@ static float YGBaseline(const YGNodeRef node, void* layoutContext) {
 
     Event::publish<Event::NodeBaselineStart>(node);
 
-    const float baseline = marker::MarkerSection<YGMarkerBaselineFn>::wrap(
-        node,
-        &YGNode::baseline,
+    const float baseline = node->baseline(
         node->getLayout().measuredDimensions[YGDimensionWidth],
         node->getLayout().measuredDimensions[YGDimensionHeight],
         layoutContext);
@@ -1638,9 +1636,7 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
     Event::publish<Event::MeasureCallbackStart>(node);
 
     // Measure the text under the current constraints.
-    const YGSize measuredSize = marker::MarkerSection<YGMarkerMeasure>::wrap(
-        node,
-        &YGNode::measure,
+    const YGSize measuredSize = node->measure(
         innerWidth,
         widthMeasureMode,
         innerHeight,
