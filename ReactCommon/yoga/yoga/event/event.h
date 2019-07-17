@@ -9,7 +9,6 @@
 #include <functional>
 #include <vector>
 #include <yoga/YGEnums.h>
-#include <yoga/YGMarker.h>
 
 struct YGConfig;
 struct YGNode;
@@ -22,6 +21,15 @@ enum LayoutType : int {
   kMeasure = 1,
   kCachedLayout = 2,
   kCachedMeasure = 3
+};
+
+struct LayoutData {
+  int layouts;
+  int measures;
+  int maxMeasureCache;
+  int cachedLayouts;
+  int cachedMeasures;
+  int measureCallbacks;
 };
 
 struct Event {
@@ -94,7 +102,7 @@ struct Event::TypedData<Event::LayoutPassStart> {
 template <>
 struct Event::TypedData<Event::LayoutPassEnd> {
   void* layoutContext;
-  YGMarkerLayoutData* layoutData;
+  LayoutData* layoutData;
 };
 
 template <>

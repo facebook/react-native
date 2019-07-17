@@ -15,7 +15,6 @@
 #include "YGNodePrint.h"
 #include "Yoga-internal.h"
 #include "event/event.h"
-#include "instrumentation.h"
 #ifdef _MSC_VER
 #include <float.h>
 
@@ -941,7 +940,7 @@ bool YGLayoutNodeInternal(
     const bool performLayout,
     const char* reason,
     const YGConfigRef config,
-    YGMarkerLayoutData& layoutMarkerData,
+    LayoutData& layoutMarkerData,
     void* const layoutContext,
     const uint32_t depth,
     const uint32_t generationCount);
@@ -1191,7 +1190,7 @@ static void YGNodeComputeFlexBasisForChild(
     const YGMeasureMode heightMode,
     const YGDirection direction,
     const YGConfigRef config,
-    YGMarkerLayoutData& layoutMarkerData,
+    LayoutData& layoutMarkerData,
     void* const layoutContext,
     const uint32_t depth,
     const uint32_t generationCount) {
@@ -1387,7 +1386,7 @@ static void YGNodeAbsoluteLayoutChild(
     const float height,
     const YGDirection direction,
     const YGConfigRef config,
-    YGMarkerLayoutData& layoutMarkerData,
+    LayoutData& layoutMarkerData,
     void* const layoutContext,
     const uint32_t depth,
     const uint32_t generationCount) {
@@ -1588,7 +1587,7 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
     const YGMeasureMode heightMeasureMode,
     const float ownerWidth,
     const float ownerHeight,
-    YGMarkerLayoutData& layoutMarkerData,
+    LayoutData& layoutMarkerData,
     void* const layoutContext) {
   YGAssertWithNode(
       node,
@@ -1836,7 +1835,7 @@ static float YGNodeComputeFlexBasisForChildren(
     YGFlexDirection mainAxis,
     const YGConfigRef config,
     bool performLayout,
-    YGMarkerLayoutData& layoutMarkerData,
+    LayoutData& layoutMarkerData,
     void* const layoutContext,
     const uint32_t depth,
     const uint32_t generationCount) {
@@ -2020,7 +2019,7 @@ static float YGDistributeFreeSpaceSecondPass(
     const YGMeasureMode measureModeCrossDim,
     const bool performLayout,
     const YGConfigRef config,
-    YGMarkerLayoutData& layoutMarkerData,
+    LayoutData& layoutMarkerData,
     void* const layoutContext,
     const uint32_t depth,
     const uint32_t generationCount) {
@@ -2321,7 +2320,7 @@ static void YGResolveFlexibleLength(
     const YGMeasureMode measureModeCrossDim,
     const bool performLayout,
     const YGConfigRef config,
-    YGMarkerLayoutData& layoutMarkerData,
+    LayoutData& layoutMarkerData,
     void* const layoutContext,
     const uint32_t depth,
     const uint32_t generationCount) {
@@ -2651,7 +2650,7 @@ static void YGNodelayoutImpl(
     const float ownerHeight,
     const bool performLayout,
     const YGConfigRef config,
-    YGMarkerLayoutData& layoutMarkerData,
+    LayoutData& layoutMarkerData,
     void* const layoutContext,
     const uint32_t depth,
     const uint32_t generationCount) {
@@ -3707,7 +3706,7 @@ bool YGLayoutNodeInternal(
     const bool performLayout,
     const char* reason,
     const YGConfigRef config,
-    YGMarkerLayoutData& layoutMarkerData,
+    LayoutData& layoutMarkerData,
     void* const layoutContext,
     uint32_t depth,
     const uint32_t generationCount) {
@@ -4065,7 +4064,7 @@ void YGNodeCalculateLayoutWithContext(
     void* layoutContext) {
 
   Event::publish<Event::LayoutPassStart>(node, {layoutContext});
-  YGMarkerLayoutData markerData = {};
+  LayoutData markerData = {};
 
   // Increment the generation count. This will force the recursive routine to
   // visit all dirty nodes at least once. Subsequent visits will be skipped if
@@ -4161,7 +4160,7 @@ void YGNodeCalculateLayoutWithContext(
     gCurrentGenerationCount++;
     // Rerun the layout, and calculate the diff
     unsetUseLegacyFlagRecursively(nodeWithoutLegacyFlag);
-    YGMarkerLayoutData layoutMarkerData = {};
+    LayoutData layoutMarkerData = {};
     if (YGLayoutNodeInternal(
             nodeWithoutLegacyFlag,
             width,
