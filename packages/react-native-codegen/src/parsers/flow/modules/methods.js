@@ -290,7 +290,7 @@ function getReturnTypeAnnotation(
         type: 'ObjectTypeAnnotation',
         properties: getObjectProperties(
           methodName,
-          returnType,
+          typeAnnotation,
           'returning value',
           types,
         ),

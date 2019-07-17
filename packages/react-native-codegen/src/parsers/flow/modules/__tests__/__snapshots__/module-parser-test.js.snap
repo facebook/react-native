@@ -680,6 +680,29 @@ Object {
                 "type": "FunctionTypeAnnotation",
               },
             },
+            Object {
+              "name": "getValueWithPromiseObjDefinedSomewhereElse",
+              "typeAnnotation": Object {
+                "optional": false,
+                "params": Array [],
+                "returnTypeAnnotation": Object {
+                  "resolvedType": Object {
+                    "properties": Array [
+                      Object {
+                        "name": "a",
+                        "optional": false,
+                        "typeAnnotation": Object {
+                          "type": "StringTypeAnnotation",
+                        },
+                      },
+                    ],
+                    "type": "ObjectTypeAnnotation",
+                  },
+                  "type": "GenericPromiseTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
           ],
         },
       },

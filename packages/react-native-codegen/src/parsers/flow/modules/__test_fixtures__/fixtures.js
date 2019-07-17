@@ -358,10 +358,12 @@ import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export type String = string
+export type SomeObj = {| a: string |};
 
 export interface Spec extends TurboModule {
   +getValueWithPromise: () => Promise<string>;
   +getValueWithPromiseDefinedSomewhereElse: () => Promise<String>;
+  +getValueWithPromiseObjDefinedSomewhereElse: () => Promise<SomeObj>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
