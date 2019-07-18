@@ -13,7 +13,7 @@
             <link>https://facebook.github.io/react-native/blog</link>
         </image>
         <item>
-            <title><![CDATA[Meet Hermes, a new JavaScript VM optimized for React Native]]></title>
+            <title><![CDATA[Meet Hermes, a new JavaScript Engine optimized for React Native]]></title>
             <link>https://facebook.github.io/react-native/blog/2019/07/17/hermes.html</link>
             <guid>https://facebook.github.io/react-native/blog/2019/07/17/hermes.html</guid>
             <pubDate>Wed, 17 Jul 2019 06:00:00 GMT</pubDate>
