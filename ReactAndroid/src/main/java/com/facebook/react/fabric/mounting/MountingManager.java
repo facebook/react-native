@@ -99,20 +99,6 @@ public class MountingManager {
     }
   }
 
-  /** Releases all references to react root tag. */
-  @UiThread
-  public void removeRootView(int reactRootTag) {
-    UiThreadUtil.assertOnUiThread();
-    ViewState viewState = mTagToViewState.get(reactRootTag);
-    if (viewState == null || !viewState.mIsRoot) {
-      SoftAssertions.assertUnreachable(
-          "View with tag " + reactRootTag + " is not registered as a root view");
-    }
-    if (viewState.mView != null) {
-      dropView(viewState.mView);
-    }
-  }
-
   @UiThread
   public void addViewAt(int parentTag, int tag, int index) {
     UiThreadUtil.assertOnUiThread();
