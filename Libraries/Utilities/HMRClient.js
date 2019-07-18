@@ -53,6 +53,10 @@ const HMRClient: HMRClientNativeInterface = {
     invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
     hmrClient.shouldApplyUpdates = true;
 
+    // We use this for internal logging only.
+    // It doesn't affect the logic.
+    hmrClient.send(JSON.stringify({type: 'log-opt-in'}));
+
     // Intentionally reading it outside the condition
     // so that it's less likely we'd break it later.
     const modules = (require: any).getModules();
@@ -73,8 +77,6 @@ const HMRClient: HMRClientNativeInterface = {
       // Don't warn about the same modules twice.
       hmrClient.outdatedModules.clear();
     }
-
-    registerBundleEntryPoints(hmrClient);
   },
 
   disable() {
@@ -223,6 +225,8 @@ Error: ${e.message}`;
     } else {
       HMRClient.disable();
     }
+
+    registerBundleEntryPoints(hmrClient);
   },
 };
 
