@@ -190,12 +190,12 @@ Error: ${e.message}`;
       LoadingView.hide();
 
       if (data.type === 'GraphNotFoundError') {
-        client.disable();
+        client.close();
         setHMRUnavailableReason(
           'The Metro server has restarted since the last edit. Fast Refresh will be disabled until you reload the application.',
         );
       } else if (data.type === 'RevisionNotFoundError') {
-        client.disable();
+        client.close();
         setHMRUnavailableReason(
           'The Metro server and the client are out of sync. Fast Refresh will be disabled until you reload the application.',
         );
@@ -217,14 +217,6 @@ Error: ${e.message}`;
         'Disconnected from the Metro server. Fast Refresh will be disabled until you reload the application.',
       );
     });
-
-    // This sets up the socket. A better name would be open(), or perhaps
-    // it should just connect in the constructor. We can change this name if we
-    // cut a major Metro bump right after. This runs even if Fast Refresh is off.
-    client.enable();
-    // Don't confuse this with the enable/disable calls below which actually
-    // enable or disable applying updates. (Yes, this is very confusing.)
-    // TODO(gaearon): refactor this to reduce the confusion.
 
     if (isEnabled) {
       HMRClient.enable();
