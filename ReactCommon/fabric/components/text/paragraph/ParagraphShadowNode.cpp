@@ -62,17 +62,15 @@ Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
   ParagraphAttributes const paragraphAttributes =
       getProps()->paragraphAttributes;
 
-  // Cache results of this function so we don't need to call measure()
-  // repeatedly.
-  if (measureCache_) {
-    return measureCache_->get(
-        ParagraphMeasurementCacheKey{
-            attributedString, paragraphAttributes, layoutConstraints},
-        [&](ParagraphMeasurementCacheKey const &key) {
-          return textLayoutManager_->measure(
-              attributedString, paragraphAttributes, layoutConstraints);
-        });
-  }
+  assert(measureCache_);
+
+  return measureCache_->get(
+      ParagraphMeasurementCacheKey{
+          attributedString, paragraphAttributes, layoutConstraints},
+      [&](ParagraphMeasurementCacheKey const &key) {
+        return textLayoutManager_->measure(
+            attributedString, paragraphAttributes, layoutConstraints);
+      });
 
   return textLayoutManager_->measure(
       attributedString, paragraphAttributes, layoutConstraints);
