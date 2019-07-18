@@ -21,7 +21,6 @@ import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
 const pendingEntryPoints = [];
 let hmrClient = null;
 let hmrUnavailableReason: string | null = null;
-let isRegisteringEntryPoints = false;
 
 export type HMRClientNativeInterface = {|
   enable(): void,
@@ -59,8 +58,7 @@ const HMRClient: HMRClientNativeInterface = {
 
     // When toggling Fast Refresh on, we might already have some stashed updates.
     // Since they'll get applied now, we'll show a banner.
-    const hasUpdates =
-      hmrClient.hasPendingUpdates() && !isRegisteringEntryPoints;
+    const hasUpdates = hmrClient.hasPendingUpdates();
 
     if (hasUpdates) {
       LoadingView.showMessage('Refreshing...', 'refresh');
@@ -135,14 +133,6 @@ Error: ${e.message}`;
       setHMRUnavailableReason(error);
     });
 
-    function isFastRefreshActive() {
-      return client.isEnabled() && !isRegisteringEntryPoints;
-    }
-
-    client.on('bundle-registered', () => {
-      isRegisteringEntryPoints = false;
-    });
-
     function dismissRedbox() {
       if (
         Platform.OS === 'ios' &&
@@ -159,14 +149,14 @@ Error: ${e.message}`;
       }
     }
 
-    client.on('update-start', () => {
-      if (isFastRefreshActive()) {
+    client.on('update-start', ({isInitialUpdate}) => {
+      if (client.isEnabled() && !isInitialUpdate) {
         LoadingView.showMessage('Refreshing...', 'refresh');
       }
     });
 
     client.on('update', () => {
-      if (isFastRefreshActive()) {
+      if (client.isEnabled()) {
         dismissRedbox();
       }
     });
@@ -188,7 +178,7 @@ Error: ${e.message}`;
         setHMRUnavailableReason(
           'The Metro server and the client are out of sync. Fast Refresh will be disabled until you reload the application.',
         );
-      } else if (isFastRefreshActive()) {
+      } else if (client.isEnabled()) {
         // Even if there is already a redbox, syntax errors are more important.
         // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
         dismissRedbox();
@@ -233,7 +223,6 @@ function setHMRUnavailableReason(reason) {
 
 function registerBundleEntryPoints(client) {
   if (pendingEntryPoints.length > 0) {
-    isRegisteringEntryPoints = true;
     client.send(
       JSON.stringify({
         type: 'register-entrypoints',
