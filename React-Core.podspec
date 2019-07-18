@@ -55,6 +55,7 @@ Pod::Spec.new do |s|
   s.framework              = "JavaScriptCore"
   s.library                = "stdc++"
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
+  s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}
   s.default_subspec         = "Default"
 
   s.subspec "Default" do |ss|
@@ -71,12 +72,6 @@ Pod::Spec.new do |s|
                                 "React/Views/RCTSlider*",
                                 "React/Views/RCTSwitch*",
     ss.private_header_files   = "React/Cxx*/*.h"
-  end
-
-  s.subspec "CxxBridge" do |ss|
-    # Make the C++ headers visible if they are needed
-    ss.public_header_files   = "React/Cxx*/*.h"
-    ss.dependency "React-Core/Default"
   end
 
   # Add a subspec containing just the headers for each
