@@ -403,10 +403,7 @@ struct AfterCaller<T, decltype((void)&T::after)> {
 // RAII constructed before each call to the undecorated class; the
 // ctor is passed a single argument of type WithArg&.  Plain and Base
 // are used as in the base class.
-template <
-    typename With,
-    typename Plain = Runtime,
-    typename Base = Runtime>
+template <typename With, typename Plain = Runtime, typename Base = Runtime>
 class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
  public:
   using RD = RuntimeDecorator<Plain, Base>;
