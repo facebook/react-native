@@ -26,11 +26,11 @@ Pod::Spec.new do |s|
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.source                 = source
-  s.source_files           = "**/*.{m}"
+  s.source_files           = "**/*.{h,m}"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.framework              = "XCTest"
   s.header_dir             = "RCTTest"
   s.static_framework       = true
 
-  s.dependency "React-Core/RCTTestHeaders", version
+  s.dependency "React-Core", version
 end

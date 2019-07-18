@@ -34,7 +34,6 @@ header_subspecs = {
   'RCTPushNotificationHeaders'  => 'Libraries/PushNotificationIOS/*.h',
   'RCTSettingsHeaders'          => 'Libraries/Settings/*.h',
   'RCTTextHeaders'              => 'Libraries/Text/**/*.h',
-  'RCTTestHeaders'              => 'RNTester/RCTTest/**/*.h',
   'RCTSettingsHeaders'          => 'Libraries/Settings/*.h',
   'RCTVibrationHeaders'         => 'Libraries/Vibration/*.h',
   'RCTWebSocketHeaders'         => 'Libraries/WebSocket/*.h',
