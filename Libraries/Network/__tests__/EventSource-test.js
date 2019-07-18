@@ -36,6 +36,11 @@ jest
       },
       abortRequest: function() {},
     },
+    PlatformConstants: {
+      getConstants() {
+        return {};
+      },
+    },
   });
 
 const EventSource = require('../EventSource');
