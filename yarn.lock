@@ -1080,46 +1080,47 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^12.0.9"
 
-"@react-native-community/cli-platform-android@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.1.1.tgz#32e57988dbb7580d3aef3d2f9e35e9718d6e8077"
-  integrity sha512-M6HNSJYTPNAt8iV8RiclSySyBavo9dsMKAIvKsHJqwbIRNWbRPHONQ71hvw7PzxC+RTwFTHUFKMotWgjKGEKPw==
+"@react-native-community/cli-platform-android@^2.6.0":
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.6.0.tgz#44fc0a781f9b78b374a32b2d90a0cc2260a9976c"
+  integrity sha512-3sEeErfrWWjBwuGDZvp2RTkPwzrzvn69wqUbasGHdu5H+IWhJr3V8Zj7J2j+7YSnP+pFde/HoaBJOzaHT5hJsQ==
   dependencies:
-    "@react-native-community/cli-tools" "^2.0.2"
+    "@react-native-community/cli-tools" "^2.4.1"
+    chalk "^2.4.2"
+    jetifier "^1.6.2"
     logkitty "^0.5.0"
     slash "^2.0.0"
     xmldoc "^0.4.0"
 
-"@react-native-community/cli-platform-ios@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.2.0.tgz#8008eee0bee871b52182217f49d86068bdb80efe"
-  integrity sha512-rgqksYcolGZNkG4EnWEX2nECWyTxYRUZXRb+pXc4niBsCvNMU88sXoMTxFIHb3wOAaVT2Eix3nS78yG6TA7dnA==
+"@react-native-community/cli-platform-ios@^2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.4.1.tgz#99b38c6b3feecf061ecf1243fe41013f4112a51c"
+  integrity sha512-EKfnN+ubIcCHbCCo2a1SlYcd4jLZDT12HfoLHhFg8WXG3/zFWc/vMNpBi+omrvT7Hoktr8cTtROXPg9cIS7FCQ==
   dependencies:
-    "@react-native-community/cli-tools" "^2.0.2"
-    chalk "^1.1.1"
+    "@react-native-community/cli-tools" "^2.4.1"
+    chalk "^2.4.2"
     xcode "^2.0.0"
 
-"@react-native-community/cli-tools@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.2.tgz#1dc4055f27f1b2fe3d0493959a6fc20467e93fe0"
-  integrity sha512-6OOKrE1Sdq1Lmcdp2K68J5PsG5G80a9USa9I1Kv92wvPHUup6IRt+Dy7E8IZqxmskzC/mlOR62Oh1CB3sFm84g==
+"@react-native-community/cli-tools@^2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.4.1.tgz#5a23b92d0b486753add00a27d77d0ea9e8c331e1"
+  integrity sha512-3V5Atno3q5uBGseHcW8gM3d7Gpcr87LJvC3YbB6SwCCM7g93+94u+U1vm9j4KmHt2tnf3Q4urL4rUCrdxzvSfw==
   dependencies:
-    chalk "^1.1.1"
+    chalk "^2.4.2"
     lodash "^4.17.5"
     mime "^2.4.1"
     node-fetch "^2.5.0"
 
-"@react-native-community/cli@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.2.0.tgz#1b886f2854d0076207fd55198e2021fbb0406db6"
-  integrity sha512-yD2MaelEW7a3fX9c9rScgqiKBppnYy3ko+KuNQGDl9ocrr7GFI5s59V4i0K/5pMmzC5z67V5Xf9Z6hhnha70Vg==
+"@react-native-community/cli@^2.6.0":
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.6.0.tgz#71eb04021bed28fd699e39f27bf72d5e686de725"
+  integrity sha512-W2W9ta9xROeQFo++OyClfAxx98uMlL3MVTCP7E1Cq4BZdbo8W43TO8KN5Boe8F3laxtELgzD/mCd+bto7m4yiw==
   dependencies:
     "@hapi/joi" "^15.0.3"
-    "@react-native-community/cli-platform-android" "^2.1.1"
-    "@react-native-community/cli-platform-ios" "^2.2.0"
-    "@react-native-community/cli-tools" "^2.0.2"
-    chalk "^1.1.1"
-    command-exists "^1.2.8"
+    "@react-native-community/cli-platform-android" "^2.6.0"
+    "@react-native-community/cli-platform-ios" "^2.4.1"
+    "@react-native-community/cli-tools" "^2.4.1"
+    chalk "^2.4.2"
     commander "^2.19.0"
     compression "^1.7.1"
     connect "^3.6.5"
@@ -1969,7 +1970,7 @@ caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-chalk@^1.1.1, chalk@^1.1.3:
+chalk@^1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-1.1.3.tgz#a8115c55e4a702fe4d150abd3872822a7e09fc98"
   integrity sha1-qBFcVeSnAv5NFQq9OHKCKn4J/Jg=
@@ -2137,11 +2138,6 @@ combined-stream@1.0.6, combined-stream@~1.0.6:
   integrity sha1-cj599ugBrFYTETp+RFqbactjKBg=
   dependencies:
     delayed-stream "~1.0.0"
-
-command-exists@^1.2.8:
-  version "1.2.8"
-  resolved "https://registry.yarnpkg.com/command-exists/-/command-exists-1.2.8.tgz#715acefdd1223b9c9b37110a149c6392c2852291"
-  integrity sha512-PM54PkseWbiiD/mMsbvW351/u+dafwTJ0ye2qB60G1aGQP9j3xK2gmMDc+R34L3nDtx4qMCitXT75mkbkGJDLw==
 
 commander@^2.11.0, commander@^2.19.0:
   version "2.19.0"
@@ -4372,6 +4368,11 @@ jest@^24.7.1:
   dependencies:
     import-local "^2.0.0"
     jest-cli "^24.7.1"
+
+jetifier@^1.6.2:
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/jetifier/-/jetifier-1.6.3.tgz#61a95b29aefddfe3b6d81ee956f5e99f8b9cba19"
+  integrity sha512-i0rb2nHVPZDPzFhgs9+yYxEDMh2z0iSHRD3vBQmvn98wlgWKwhmU2F3MUEEXfK+MLnKwLKqsCTvlcS1+CpDTUg==
 
 js-levenshtein@^1.1.3:
   version "1.1.4"
