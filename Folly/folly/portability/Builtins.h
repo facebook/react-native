@@ -50,7 +50,7 @@ FOLLY_ALWAYS_INLINE int __builtin_clzl(unsigned long x) {
   return __builtin_clz((unsigned int)x);
 }
 
-#if defined(_M_IX86) || defined(_M_ARM)
+#if defined(_M_IX86) || defined(_M_ARM) || defined(_M_ARM64) // Non-amd64 platforms
 FOLLY_ALWAYS_INLINE int __builtin_clzll(unsigned long long x) {
   if (x == 0)
     return 64;
@@ -74,7 +74,7 @@ FOLLY_ALWAYS_INLINE int __builtin_ctzl(unsigned long x) {
   return __builtin_ctz((unsigned int)x);
 }
 
-#if defined(_M_IX86) || defined(_M_ARM)
+#if defined(_M_IX86) || defined(_M_ARM) || defined(_M_ARM64) // Non-amd64 platforms
 FOLLY_ALWAYS_INLINE int __builtin_ctzll(unsigned long long x) {
   unsigned long index;
   unsigned int msb = (unsigned int)(x >> 32);
@@ -100,7 +100,7 @@ FOLLY_ALWAYS_INLINE int __builtin_ffsl(long x) {
   return __builtin_ffs(int(x));
 }
 
-#if defined(_M_IX86) || defined(_M_ARM)
+#if defined(_M_IX86) || defined(_M_ARM) || defined(_M_ARM64) // Non-amd64 platforms
 FOLLY_ALWAYS_INLINE int __builtin_ffsll(long long x) {
   int ctzll = __builtin_ctzll((unsigned long long)x);
   return ctzll != 64 ? ctzll + 1 : 0;
