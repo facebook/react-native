@@ -21,6 +21,7 @@ import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
 const pendingEntryPoints = [];
 let hmrClient = null;
 let hmrUnavailableReason: string | null = null;
+let currentCompileErrorMessage: string | null = null;
 
 export type HMRClientNativeInterface = {|
   enable(): void,
@@ -70,6 +71,10 @@ const HMRClient: HMRClientNativeInterface = {
         LoadingView.hide();
       }
     }
+
+    // There could be a compile error while Fast Refresh was off,
+    // but we ignored it at the time. Show it now.
+    showCompileError();
   },
 
   disable() {
@@ -133,23 +138,8 @@ Error: ${e.message}`;
       setHMRUnavailableReason(error);
     });
 
-    function dismissRedbox() {
-      if (
-        Platform.OS === 'ios' &&
-        NativeRedBox != null &&
-        NativeRedBox.dismiss != null
-      ) {
-        NativeRedBox.dismiss();
-      } else {
-        const NativeExceptionsManager = require('../Core/NativeExceptionsManager')
-          .default;
-        NativeExceptionsManager &&
-          NativeExceptionsManager.dismissRedbox &&
-          NativeExceptionsManager.dismissRedbox();
-      }
-    }
-
     client.on('update-start', ({isInitialUpdate}) => {
+      currentCompileErrorMessage = null;
       if (client.isEnabled() && !isInitialUpdate) {
         LoadingView.showMessage('Refreshing...', 'refresh');
       }
@@ -178,15 +168,11 @@ Error: ${e.message}`;
         setHMRUnavailableReason(
           'The Metro server and the client are out of sync. Fast Refresh will be disabled until you reload the application.',
         );
-      } else if (client.isEnabled()) {
-        // Even if there is already a redbox, syntax errors are more important.
-        // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
-        dismissRedbox();
-        const error: ExtendedError = new Error(`${data.type} ${data.message}`);
-        // Symbolicating compile errors is wasted effort
-        // because the stack trace is meaningless:
-        error.preventSymbolication = true;
-        throw error;
+      } else {
+        currentCompileErrorMessage = `${data.type} ${data.message}`;
+        if (client.isEnabled()) {
+          showCompileError();
+        }
       }
     });
 
@@ -231,6 +217,41 @@ function registerBundleEntryPoints(client) {
     );
     pendingEntryPoints.length = 0;
   }
+}
+
+function dismissRedbox() {
+  if (
+    Platform.OS === 'ios' &&
+    NativeRedBox != null &&
+    NativeRedBox.dismiss != null
+  ) {
+    NativeRedBox.dismiss();
+  } else {
+    const NativeExceptionsManager = require('../Core/NativeExceptionsManager')
+      .default;
+    NativeExceptionsManager &&
+      NativeExceptionsManager.dismissRedbox &&
+      NativeExceptionsManager.dismissRedbox();
+  }
+}
+
+function showCompileError() {
+  if (currentCompileErrorMessage === null) {
+    return;
+  }
+
+  // Even if there is already a redbox, syntax errors are more important.
+  // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
+  dismissRedbox();
+
+  const message = currentCompileErrorMessage;
+  currentCompileErrorMessage = null;
+
+  const error: ExtendedError = new Error(message);
+  // Symbolicating compile errors is wasted effort
+  // because the stack trace is meaningless:
+  error.preventSymbolication = true;
+  throw error;
 }
 
 module.exports = HMRClient;
