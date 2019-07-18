@@ -10,12 +10,12 @@
 
 'use strict';
 
-const processColor = require('../StyleSheet/processColor');
+import processColor from '../StyleSheet/processColor';
 import NativeDevLoadingView from './NativeDevLoadingView';
 
-class HMRLoadingView {
-  static showMessage(message: string) {
-    if (NativeDevLoadingView != null) {
+module.exports = {
+  showMessage(message: string) {
+    if (NativeDevLoadingView) {
       NativeDevLoadingView.showMessage(
         message,
         // Use same colors as iOS "Personal Hotspot" bar.
@@ -23,13 +23,8 @@ class HMRLoadingView {
         processColor('#2584e8'),
       );
     }
-  }
-
-  static hide() {
-    if (NativeDevLoadingView != null) {
-      NativeDevLoadingView.hide();
-    }
-  }
-}
-
-module.exports = HMRLoadingView;
+  },
+  hide() {
+    NativeDevLoadingView && NativeDevLoadingView.hide();
+  },
+};

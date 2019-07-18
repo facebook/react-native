@@ -10,14 +10,7 @@
 
 'use strict';
 
-class HMRLoadingView {
-  static showMessage(message: string) {
-    // noop
-  }
-
-  static hide() {
-    // noop
-  }
-}
-
-module.exports = HMRLoadingView;
+module.exports = {
+  showMessage(message: string) {},
+  hide() {},
+};

@@ -107,7 +107,7 @@ const HMRClient: HMRClientNativeInterface = {
     invariant(!hmrClient, 'Cannot initialize hmrClient twice');
 
     // Moving to top gives errors due to NativeModules not being initialized
-    const HMRLoadingView = require('./HMRLoadingView');
+    const LoadingView = require('./LoadingView');
 
     const wsHost = port !== null && port !== '' ? `${host}:${port}` : host;
     const client = new MetroHMRClient(`ws://${wsHost}/hot`);
@@ -172,7 +172,7 @@ Error: ${e.message}`;
 
     client.on('update-start', () => {
       if (isFastRefreshActive()) {
-        HMRLoadingView.showMessage('Refreshing...');
+        LoadingView.showMessage('Refreshing...');
       }
     });
 
@@ -183,11 +183,11 @@ Error: ${e.message}`;
     });
 
     client.on('update-done', () => {
-      HMRLoadingView.hide();
+      LoadingView.hide();
     });
 
     client.on('error', data => {
-      HMRLoadingView.hide();
+      LoadingView.hide();
 
       if (data.type === 'GraphNotFoundError') {
         client.disable();
@@ -212,7 +212,7 @@ Error: ${e.message}`;
     });
 
     client.on('close', data => {
-      HMRLoadingView.hide();
+      LoadingView.hide();
       setHMRUnavailableReason(
         'Disconnected from the Metro server. Fast Refresh will be disabled until you reload the application.',
       );
