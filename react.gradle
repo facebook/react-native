@@ -126,11 +126,11 @@ afterEvaluate {
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 commandLine("cmd", "/c", *nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
                     "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir,
-                    "--sourcemap-output", jsPackagerSourceMapFile, *extraArgs)
+                    "--sourcemap-output", enableHermes ? jsPackagerSourceMapFile : jsOutputSourceMapFile, *extraArgs)
             } else {
                 commandLine(*nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
                     "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir,
-                    "--sourcemap-output", jsPackagerSourceMapFile, *extraArgs)
+                    "--sourcemap-output", enableHermes ? jsPackagerSourceMapFile : jsOutputSourceMapFile, *extraArgs)
             }
 
             if (enableHermes) {
@@ -166,13 +166,6 @@ afterEvaluate {
                             }
                         }
                     }
-                }
-            } else {
-                doLast {
-                    ant.move(
-                        file: jsPackagerSourceMapFile,
-                        tofile: jsOutputSourceMapFile
-                    );
                 }
             }
 
