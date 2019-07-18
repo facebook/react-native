@@ -22,6 +22,7 @@ const HMRClientProdShim: HMRClientNativeInterface = {
     );
   },
   disable() {},
+  registerBundle() {},
 };
 
 module.exports = HMRClientProdShim;

@@ -18,12 +18,15 @@ import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 
 import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
 
+const pendingEntryPoints = [];
 let hmrClient = null;
 let hmrUnavailableReason: string | null = null;
+let isRegisteringEntryPoints = false;
 
 export type HMRClientNativeInterface = {|
   enable(): void,
   disable(): void,
+  registerBundle(requestUrl: string): void,
   setup(
     platform: string,
     bundleEntry: string,
@@ -70,6 +73,8 @@ const HMRClient: HMRClientNativeInterface = {
       // Don't warn about the same modules twice.
       hmrClient.outdatedModules.clear();
     }
+
+    registerBundleEntryPoints(hmrClient);
   },
 
   disable() {
@@ -79,6 +84,12 @@ const HMRClient: HMRClientNativeInterface = {
     // This lets us avoid reasonining about complex race conditions
     // if the user toggles the setting on and off.
     hmrClient.shouldApplyUpdates = false;
+  },
+
+  registerBundle(requestUrl: string) {
+    invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
+    pendingEntryPoints.push(requestUrl);
+    registerBundleEntryPoints(hmrClient);
   },
 
   // Called once by the bridge on startup, even if Fast Refresh is off.
@@ -99,10 +110,12 @@ const HMRClient: HMRClientNativeInterface = {
     const HMRLoadingView = require('./HMRLoadingView');
 
     const wsHost = port !== null && port !== '' ? `${host}:${port}` : host;
-    const client = new MetroHMRClient(
+    const client = new MetroHMRClient(`ws://${wsHost}/hot`);
+    hmrClient = client;
+
+    pendingEntryPoints.push(
       `ws://${wsHost}/hot?bundleEntry=${bundleEntry}&platform=${platform}`,
     );
-    hmrClient = client;
 
     client.on('connection-error', e => {
       let error = `Fast Refresh isn't working because it cannot connect to the development server.
@@ -129,21 +142,17 @@ Error: ${e.message}`;
       setHMRUnavailableReason(error);
     });
 
-    let didFinishInitialUpdate = false;
-    client.on('connection-done', () => {
-      // Don't show the loading view during the initial update.
-      didFinishInitialUpdate = true;
-    });
-
     // This is intentionally called lazily, as these values change.
     function isFastRefreshActive() {
       return (
-        // Until we get "connection-done", messages aren't real edits.
-        didFinishInitialUpdate &&
         // If HMR is disabled by the user, we're ignoring updates.
-        client.shouldApplyUpdates
+        client.shouldApplyUpdates && !isRegisteringEntryPoints
       );
     }
+
+    client.on('bundle-registered', () => {
+      isRegisteringEntryPoints = false;
+    });
 
     function dismissRedbox() {
       if (
@@ -255,6 +264,19 @@ function getShortModuleName(fullName) {
     }
   }
   return shortName;
+}
+
+function registerBundleEntryPoints(client) {
+  if (pendingEntryPoints.length > 0) {
+    isRegisteringEntryPoints = true;
+    client.send(
+      JSON.stringify({
+        type: 'register-entrypoints',
+        entryPoints: pendingEntryPoints,
+      }),
+    );
+    pendingEntryPoints.length = 0;
+  }
 }
 
 module.exports = HMRClient;
