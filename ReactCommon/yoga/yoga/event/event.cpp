@@ -12,6 +12,27 @@
 namespace facebook {
 namespace yoga {
 
+const char* LayoutPassToString(const LayoutPassReason value) {
+  switch (value) {
+    case kInitial:
+      return "initial";
+    case kMeasureChild:
+      return "measure";
+    case kAbsMeasureChild:
+      return "abs_measure";
+    case kFlex:
+      return "flex";
+    case kAbsLayout:
+      return "abs_layout";
+    case kStretch:
+      return "stretch";
+    case kMultilineStretch:
+      return "multiline_stretch";
+    default:
+      return "unknown";
+  }
+}
+
 namespace {
 
 struct Node {

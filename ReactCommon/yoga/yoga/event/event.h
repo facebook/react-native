@@ -32,6 +32,18 @@ struct LayoutData {
   int measureCallbacks;
 };
 
+enum LayoutPassReason : int {
+  kInitial = 0,
+  kMeasureChild = 1,
+  kAbsMeasureChild = 2,
+  kFlex = 3,
+  kAbsLayout = 4,
+  kStretch = 5,
+  kMultilineStretch = 6
+};
+
+const char* LayoutPassToString(const LayoutPassReason value);
+
 struct Event {
   enum Type {
     NodeAllocation,
@@ -114,6 +126,7 @@ struct Event::TypedData<Event::MeasureCallbackEnd> {
   YGMeasureMode heightMeasureMode;
   float measuredWidth;
   float measuredHeight;
+  const LayoutPassReason reason;
 };
 
 template <>
