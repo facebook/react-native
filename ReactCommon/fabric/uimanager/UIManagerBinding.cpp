@@ -69,10 +69,17 @@ void UIManagerBinding::startSurface(
 
 void UIManagerBinding::stopSurface(jsi::Runtime &runtime, SurfaceId surfaceId)
     const {
-  auto module = getModule(runtime, "ReactFabric");
-  auto method = module.getPropertyAsFunction(runtime, "unmountComponentAtNode");
+  if (runtime.global().hasProperty(runtime, "RN$stopSurface")) {
+    auto method =
+        runtime.global().getPropertyAsFunction(runtime, "RN$stopSurface");
+    method.call(runtime, {jsi::Value{surfaceId}});
+  } else {
+    auto module = getModule(runtime, "ReactFabric");
+    auto method =
+        module.getPropertyAsFunction(runtime, "unmountComponentAtNode");
 
-  method.callWithThis(runtime, module, {jsi::Value{surfaceId}});
+    method.callWithThis(runtime, module, {jsi::Value{surfaceId}});
+  }
 }
 
 void UIManagerBinding::dispatchEvent(

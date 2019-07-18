@@ -182,6 +182,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mEventDispatcher.dispatchAllEvents();
   }
 
+  public void stopSurface(int surfaceID) {
+    mBinding.stopSurface(surfaceID);
+  }
+
   @Override
   public void initialize() {
     mEventDispatcher.registerEventEmitter(FABRIC, new FabricEventEmitter(this));

@@ -23,6 +23,12 @@ if (__DEV__) {
   ReactFabric = require('../implementations/ReactFabric-prod');
 }
 
-BatchedBridge.registerCallableModule('ReactFabric', ReactFabric);
+if (global.RN$Bridgeless) {
+  // TODO T47525605 Clean this up once stopSurface has been added
+  global.RN$stopSurface =
+    ReactFabric.stopSurface ?? ReactFabric.unmountComponentAtNode;
+} else {
+  BatchedBridge.registerCallableModule('ReactFabric', ReactFabric);
+}
 
 module.exports = (ReactFabric: ReactNativeType);
