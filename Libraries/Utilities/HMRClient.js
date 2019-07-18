@@ -51,41 +51,32 @@ const HMRClient: HMRClientNativeInterface = {
     }
 
     invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
-    hmrClient.shouldApplyUpdates = true;
+    const LoadingView = require('./LoadingView');
 
     // We use this for internal logging only.
     // It doesn't affect the logic.
     hmrClient.send(JSON.stringify({type: 'log-opt-in'}));
 
-    // Intentionally reading it outside the condition
-    // so that it's less likely we'd break it later.
-    const modules = (require: any).getModules();
-    if (hmrClient.outdatedModules.size > 0) {
-      let message =
-        "You've changed these files before turning on Fast Refresh: ";
-      message +=
-        Array.from(hmrClient.outdatedModules)
-          .map(id => {
-            const mod = modules[id];
-            return getShortModuleName(mod.verboseName);
-          })
-          .join(', ') + '.';
-      message +=
-        "\n\nThese pending changes won't be reflected unless you save them again " +
-        'or perform a full reload.';
-      console.warn(message);
-      // Don't warn about the same modules twice.
-      hmrClient.outdatedModules.clear();
+    // When toggling Fast Refresh on, we might already have some stashed updates.
+    // Since they'll get applied now, we'll show a banner.
+    const hasUpdates =
+      hmrClient.hasPendingUpdates() && !isRegisteringEntryPoints;
+
+    if (hasUpdates) {
+      LoadingView.showMessage('Refreshing...', 'refresh');
+    }
+    try {
+      hmrClient.enable();
+    } finally {
+      if (hasUpdates) {
+        LoadingView.hide();
+      }
     }
   },
 
   disable() {
     invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
-    // Note: we don't actually tear down the connection.
-    // We just tell the client to ignore updates.
-    // This lets us avoid reasonining about complex race conditions
-    // if the user toggles the setting on and off.
-    hmrClient.shouldApplyUpdates = false;
+    hmrClient.disable();
   },
 
   registerBundle(requestUrl: string) {
@@ -144,12 +135,8 @@ Error: ${e.message}`;
       setHMRUnavailableReason(error);
     });
 
-    // This is intentionally called lazily, as these values change.
     function isFastRefreshActive() {
-      return (
-        // If HMR is disabled by the user, we're ignoring updates.
-        client.shouldApplyUpdates && !isRegisteringEntryPoints
-      );
+      return client.isEnabled() && !isRegisteringEntryPoints;
     }
 
     client.on('bundle-registered', () => {
@@ -242,24 +229,6 @@ function setHMRUnavailableReason(reason) {
     console.warn(reason);
     // (Not using the `warning` module to prevent a Buck cycle.)
   }
-}
-
-// Returns the filename without the folder path.
-// If file is called index.js, it does include the parent folder though.
-function getShortModuleName(fullName) {
-  const BEFORE_SLASH_RE = /^(.*)[\\\/]/;
-  let shortName = fullName.replace(BEFORE_SLASH_RE, '');
-  if (/^index\./.test(shortName)) {
-    const match = fullName.match(BEFORE_SLASH_RE);
-    if (match) {
-      const pathBeforeSlash = match[1];
-      if (pathBeforeSlash) {
-        const folderName = pathBeforeSlash.replace(BEFORE_SLASH_RE, '');
-        return folderName + '/' + shortName;
-      }
-    }
-  }
-  return shortName;
 }
 
 function registerBundleEntryPoints(client) {
