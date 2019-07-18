@@ -1364,7 +1364,7 @@ static void YGNodeComputeFlexBasisForChild(
         ownerWidth,
         ownerHeight,
         false,
-        kMeasureChild,
+        LayoutPassReason::kMeasureChild,
         config,
         layoutMarkerData,
         layoutContext,
@@ -1492,7 +1492,7 @@ static void YGNodeAbsoluteLayoutChild(
         childWidth,
         childHeight,
         false,
-        kAbsMeasureChild,
+        LayoutPassReason::kAbsMeasureChild,
         config,
         layoutMarkerData,
         layoutContext,
@@ -1514,7 +1514,7 @@ static void YGNodeAbsoluteLayoutChild(
       childWidth,
       childHeight,
       true,
-      kAbsLayout,
+      LayoutPassReason::kAbsLayout,
       config,
       layoutMarkerData,
       layoutContext,
@@ -2187,7 +2187,7 @@ static float YGDistributeFreeSpaceSecondPass(
         availableInnerWidth,
         availableInnerHeight,
         performLayout && !requiresStretchLayout,
-        kFlex,
+        LayoutPassReason::kFlex,
         config,
         layoutMarkerData,
         layoutContext,
@@ -3121,7 +3121,7 @@ static void YGNodelayoutImpl(
                   availableInnerWidth,
                   availableInnerHeight,
                   true,
-                  kStretch,
+                  LayoutPassReason::kStretch,
                   config,
                   layoutMarkerData,
                   layoutContext,
@@ -3331,7 +3331,7 @@ static void YGNodelayoutImpl(
                         availableInnerWidth,
                         availableInnerHeight,
                         true,
-                        kMultilineStretch,
+                        LayoutPassReason::kMultilineStretch,
                         config,
                         layoutMarkerData,
                         layoutContext,
@@ -3835,7 +3835,7 @@ bool YGLayoutNodeInternal(
           availableHeight,
           cachedResults->computedWidth,
           cachedResults->computedHeight,
-          LayoutPassReason(reason));
+          LayoutPassReasonToString(reason));
     }
   } else {
     if (gPrintChanges) {
@@ -3857,7 +3857,7 @@ bool YGLayoutNodeInternal(
           YGMeasureModeName(heightMeasureMode, performLayout),
           availableWidth,
           availableHeight,
-          LayoutPassToString(reason));
+          LayoutPassReasonToString(reason));
     }
 
     YGNodelayoutImpl(
@@ -3896,7 +3896,7 @@ bool YGLayoutNodeInternal(
           YGMeasureModeName(heightMeasureMode, performLayout),
           layout->measuredDimensions[YGDimensionWidth],
           layout->measuredDimensions[YGDimensionHeight],
-          LayoutPassToString(reason));
+          LayoutPassReasonToString(reason));
     }
 
     layout->lastOwnerDirection = ownerDirection;
@@ -4126,7 +4126,7 @@ void YGNodeCalculateLayoutWithContext(
           ownerWidth,
           ownerHeight,
           true,
-          kInitial,
+          LayoutPassReason::kInitial,
           node->getConfig(),
           markerData,
           layoutContext,
@@ -4176,7 +4176,7 @@ void YGNodeCalculateLayoutWithContext(
             ownerWidth,
             ownerHeight,
             true,
-            kInitial,
+            LayoutPassReason::kInitial,
             nodeWithoutLegacyFlag->getConfig(),
             layoutMarkerData,
             layoutContext,

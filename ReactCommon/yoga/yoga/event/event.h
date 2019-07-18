@@ -16,7 +16,7 @@ struct YGNode;
 namespace facebook {
 namespace yoga {
 
-enum LayoutType : int {
+enum struct LayoutType : int {
   kLayout = 0,
   kMeasure = 1,
   kCachedLayout = 2,
@@ -32,7 +32,7 @@ struct LayoutData {
   int measureCallbacks;
 };
 
-enum LayoutPassReason : int {
+enum struct LayoutPassReason : int {
   kInitial = 0,
   kMeasureChild = 1,
   kAbsMeasureChild = 2,
@@ -42,7 +42,7 @@ enum LayoutPassReason : int {
   kMultilineStretch = 6
 };
 
-const char* LayoutPassToString(const LayoutPassReason value);
+const char* LayoutPassReasonToString(const LayoutPassReason value);
 
 struct Event {
   enum Type {

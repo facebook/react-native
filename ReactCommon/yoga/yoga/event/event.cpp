@@ -12,21 +12,21 @@
 namespace facebook {
 namespace yoga {
 
-const char* LayoutPassToString(const LayoutPassReason value) {
+const char* LayoutPassReasonToString(const LayoutPassReason value) {
   switch (value) {
-    case kInitial:
+    case LayoutPassReason::kInitial:
       return "initial";
-    case kMeasureChild:
+    case LayoutPassReason::kMeasureChild:
       return "measure";
-    case kAbsMeasureChild:
+    case LayoutPassReason::kAbsMeasureChild:
       return "abs_measure";
-    case kFlex:
+    case LayoutPassReason::kFlex:
       return "flex";
-    case kAbsLayout:
+    case LayoutPassReason::kAbsLayout:
       return "abs_layout";
-    case kStretch:
+    case LayoutPassReason::kStretch:
       return "stretch";
-    case kMultilineStretch:
+    case LayoutPassReason::kMultilineStretch:
       return "multiline_stretch";
     default:
       return "unknown";
