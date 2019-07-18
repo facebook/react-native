@@ -41,7 +41,10 @@ Value valueFromDynamic(Runtime& runtime, const folly::dynamic& dyn) {
       for (const auto& element : dyn.items()) {
         Value value = valueFromDynamic(runtime, element.second);
         if (element.first.isNumber() || element.first.isString()) {
-          ret.setProperty(runtime, element.first.asString().c_str(), value);
+          ret.setProperty(
+              runtime,
+              PropNameID::forUtf8(runtime, element.first.asString()),
+              value);
         }
       }
       return std::move(ret);
