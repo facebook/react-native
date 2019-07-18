@@ -172,7 +172,7 @@ Error: ${e.message}`;
 
     client.on('update-start', () => {
       if (isFastRefreshActive()) {
-        LoadingView.showMessage('Refreshing...');
+        LoadingView.showMessage('Refreshing...', 'refresh');
       }
     });
 

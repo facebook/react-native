@@ -14,13 +14,15 @@ import processColor from '../StyleSheet/processColor';
 import NativeDevLoadingView from './NativeDevLoadingView';
 
 module.exports = {
-  showMessage(message: string) {
+  showMessage(message: string, type: 'load' | 'refresh') {
     if (NativeDevLoadingView) {
       NativeDevLoadingView.showMessage(
         message,
         // Use same colors as iOS "Personal Hotspot" bar.
         processColor('#ffffff'),
-        processColor('#2584e8'),
+        type && type === 'load'
+          ? processColor('#275714')
+          : processColor('#2584e8'),
       );
     }
   },

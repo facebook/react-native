@@ -11,6 +11,6 @@
 'use strict';
 
 module.exports = {
-  showMessage(message: string) {},
+  showMessage(message: string, type: 'load' | 'refresh') {},
   hide() {},
 };

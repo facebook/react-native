@@ -16,7 +16,7 @@ const TOAST_SHORT_DELAY = 2000;
 let isVisible = false;
 
 module.exports = {
-  showMessage(message: string) {
+  showMessage(message: string, type: 'load' | 'refresh') {
     if (!isVisible) {
       ToastAndroid.show(message, ToastAndroid.SHORT);
       isVisible = true;
