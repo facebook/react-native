@@ -139,6 +139,7 @@ afterEvaluate {
             if (enableHermes) {
                 doLast {
                     def hermesFlags;
+                    def hbcTempFile = file("${jsBundleFile}.hbc")
                     exec {
                         if (targetName.toLowerCase().contains("release")) {
                             // Can't use ?: since that will also substitute valid empty lists
@@ -148,13 +149,16 @@ afterEvaluate {
                             hermesFlags = config.hermesFlagsDebug
                             if (hermesFlags == null) hermesFlags = []
                         }
-                        commandLine(getHermesCommand(), "-emit-binary", "-out", jsBundleFile, jsBundleFile, *hermesFlags)
+                        commandLine(getHermesCommand(), "-emit-binary", "-out", hbcTempFile, jsBundleFile, *hermesFlags)
                     }
+                    ant.move(
+                        file: hbcTempFile,
+                        toFile: jsBundleFile
+                    );
                     if (hermesFlags.contains("-output-source-map")) {
                         ant.move(
                             // Hermes will generate a source map with this exact name
-                            // NOTE: name coincides with jsOutputSourceMapFile
-                            file: "${jsBundleFile}.map",
+                            file: "${jsBundleFile}.hbc.map",
                             tofile: jsCompilerSourceMapFile
                         );
                         exec {
