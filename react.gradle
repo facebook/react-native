@@ -76,10 +76,11 @@ afterEvaluate {
         def resourcesDir = file("$buildDir/generated/res/react/${targetPath}")
 
         def jsBundleFile = file("$jsBundleDir/$bundleAssetName")
-        def jsSourceMapsDir = file("$buildDir/intermediates/sourcemaps/${targetPath}")
-        def jsPackagerSourceMapFile = file("$jsSourceMapsDir/${bundleAssetName}.packager.map")
-        def jsCompilerSourceMapFile = file("$jsSourceMapsDir/${bundleAssetName}.compiler.map")
-        def jsOutputSourceMapFile = file("$jsBundleDir/${bundleAssetName}.map")
+        def jsSourceMapsDir = file("$buildDir/generated/sourcemaps/react/${targetPath}")
+        def jsIntermediateSourceMapsDir = file("$buildDir/intermediates/sourcemaps/react/${targetPath}")
+        def jsPackagerSourceMapFile = file("$jsIntermediateSourceMapsDir/${bundleAssetName}.packager.map")
+        def jsCompilerSourceMapFile = file("$jsIntermediateSourceMapsDir/${bundleAssetName}.compiler.map")
+        def jsOutputSourceMapFile = file("$jsSourceMapsDir/${bundleAssetName}.map")
 
         // Additional node and packager commandline arguments
         def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
@@ -99,6 +100,8 @@ afterEvaluate {
                 jsBundleDir.mkdirs()
                 resourcesDir.deleteDir()
                 resourcesDir.mkdirs()
+                jsIntermediateSourceMapsDir.deleteDir()
+                jsIntermediateSourceMapsDir.mkdirs()
                 jsSourceMapsDir.deleteDir()
                 jsSourceMapsDir.mkdirs()
             }
