@@ -15,10 +15,8 @@ const Platform = require('../Utilities/Platform');
 const invariant = require('invariant');
 const processColor = require('../StyleSheet/processColor');
 
-const {
-  ActionSheetManager,
-  ShareModule,
-} = require('../BatchedBridge/NativeModules');
+const {ShareModule} = require('../BatchedBridge/NativeModules');
+import NativeActionSheetManager from '../ActionSheetIOS/NativeActionSheetManager';
 
 type Content =
   | {title?: string, message: string}
@@ -86,8 +84,22 @@ class Share {
       return ShareModule.share(content, options.dialogTitle);
     } else if (Platform.OS === 'ios') {
       return new Promise((resolve, reject) => {
-        ActionSheetManager.showShareActionSheetWithOptions(
-          {...content, ...options, tintColor: processColor(options.tintColor)},
+        const tintColor = processColor(options.tintColor);
+
+        invariant(
+          NativeActionSheetManager,
+          'NativeActionSheetManager is not registered on iOS, but it should be.',
+        );
+
+        NativeActionSheetManager.showShareActionSheetWithOptions(
+          {
+            message:
+              typeof content.message === 'string' ? content.message : undefined,
+            url: typeof content.url === 'string' ? content.url : undefined,
+            subject: options.subject,
+            tintColor: tintColor != null ? tintColor : undefined,
+            excludedActivityTypes: options.excludedActivityTypes,
+          },
           error => reject(error),
           (success, activityType) => {
             if (success) {
@@ -111,17 +123,13 @@ class Share {
   /**
    * The content was successfully shared.
    */
-  static get sharedAction(): string {
-    return 'sharedAction';
-  }
+  static sharedAction: 'sharedAction' = 'sharedAction';
 
   /**
    * The dialog has been dismissed.
    * @platform ios
    */
-  static get dismissedAction(): string {
-    return 'dismissedAction';
-  }
+  static dismissedAction: 'dismissedAction' = 'dismissedAction';
 }
 
 module.exports = Share;

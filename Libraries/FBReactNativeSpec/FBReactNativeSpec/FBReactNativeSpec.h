@@ -80,6 +80,90 @@ namespace facebook {
 } // namespace facebook
 
 namespace JS {
+  namespace NativeActionSheetManager {
+    struct SpecShowActionSheetWithOptionsOptions {
+      NSString *title() const;
+      NSString *message() const;
+      folly::Optional<facebook::react::LazyVector<NSString *>> options() const;
+      folly::Optional<double> destructiveButtonIndex() const;
+      folly::Optional<double> cancelButtonIndex() const;
+      folly::Optional<double> anchor() const;
+      folly::Optional<double> tintColor() const;
+
+      SpecShowActionSheetWithOptionsOptions(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeActionSheetManager_SpecShowActionSheetWithOptionsOptions)
++ (RCTManagedPointer *)JS_NativeActionSheetManager_SpecShowActionSheetWithOptionsOptions:(id)json;
+@end
+
+namespace JS {
+  namespace NativeActionSheetManager {
+    struct SpecShowShareActionSheetWithOptionsOptions {
+      NSString *message() const;
+      NSString *url() const;
+      NSString *subject() const;
+      folly::Optional<double> anchor() const;
+      folly::Optional<double> tintColor() const;
+      folly::Optional<facebook::react::LazyVector<NSString *>> excludedActivityTypes() const;
+
+      SpecShowShareActionSheetWithOptionsOptions(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeActionSheetManager_SpecShowShareActionSheetWithOptionsOptions)
++ (RCTManagedPointer *)JS_NativeActionSheetManager_SpecShowShareActionSheetWithOptionsOptions:(id)json;
+@end
+
+namespace JS {
+  namespace NativeActionSheetManager {
+    struct SpecShowShareActionSheetWithOptionsFailureCallbackError {
+      NSString *domain() const;
+      NSString *code() const;
+      id<NSObject> _Nullable userInfo() const;
+      NSString *message() const;
+
+      SpecShowShareActionSheetWithOptionsFailureCallbackError(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeActionSheetManager_SpecShowShareActionSheetWithOptionsFailureCallbackError)
++ (RCTManagedPointer *)JS_NativeActionSheetManager_SpecShowShareActionSheetWithOptionsFailureCallbackError:(id)json;
+@end
+@protocol NativeActionSheetManagerSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)showActionSheetWithOptions:(JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions &)options
+                          callback:(RCTResponseSenderBlock)callback;
+- (void)showShareActionSheetWithOptions:(JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions &)options
+                        failureCallback:(RCTResponseSenderBlock)failureCallback
+                        successCallback:(RCTResponseSenderBlock)successCallback;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'ActionSheetManager'
+     */
+
+    class JSI_EXPORT NativeActionSheetManagerSpecJSI : public ObjCTurboModule {
+    public:
+      NativeActionSheetManagerSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace JS {
   namespace NativeAlertManager {
     struct Args {
       NSString *title() const;
@@ -1796,6 +1880,91 @@ namespace facebook {
 #import <RCTTypeSafety/RCTConvertHelpers.h>
 
 
+inline NSString *JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::title() const
+{
+  id const p = _v[@"title"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::message() const
+{
+  id const p = _v[@"message"];
+  return RCTBridgingToString(p);
+}
+inline folly::Optional<facebook::react::LazyVector<NSString *>> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::options() const
+{
+  id const p = _v[@"options"];
+  return RCTBridgingToOptionalVec(p, ^NSString *(id itemValue_0) { return RCTBridgingToString(itemValue_0); });
+}
+inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::destructiveButtonIndex() const
+{
+  id const p = _v[@"destructiveButtonIndex"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::cancelButtonIndex() const
+{
+  id const p = _v[@"cancelButtonIndex"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::anchor() const
+{
+  id const p = _v[@"anchor"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::tintColor() const
+{
+  id const p = _v[@"tintColor"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::message() const
+{
+  id const p = _v[@"message"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::url() const
+{
+  id const p = _v[@"url"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::subject() const
+{
+  id const p = _v[@"subject"];
+  return RCTBridgingToString(p);
+}
+inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::anchor() const
+{
+  id const p = _v[@"anchor"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::tintColor() const
+{
+  id const p = _v[@"tintColor"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<facebook::react::LazyVector<NSString *>> JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::excludedActivityTypes() const
+{
+  id const p = _v[@"excludedActivityTypes"];
+  return RCTBridgingToOptionalVec(p, ^NSString *(id itemValue_0) { return RCTBridgingToString(itemValue_0); });
+}
+inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsFailureCallbackError::domain() const
+{
+  id const p = _v[@"domain"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsFailureCallbackError::code() const
+{
+  id const p = _v[@"code"];
+  return RCTBridgingToString(p);
+}
+inline id<NSObject> _Nullable JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsFailureCallbackError::userInfo() const
+{
+  id const p = _v[@"userInfo"];
+  return p;
+}
+inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsFailureCallbackError::message() const
+{
+  id const p = _v[@"message"];
+  return RCTBridgingToString(p);
+}
 inline NSString *JS::NativeAlertManager::Args::title() const
 {
   id const p = _v[@"title"];

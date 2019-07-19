@@ -124,6 +124,53 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
+@implementation RCTCxxConvert (NativeActionSheetManager_SpecShowActionSheetWithOptionsOptions)
++ (RCTManagedPointer *)JS_NativeActionSheetManager_SpecShowActionSheetWithOptionsOptions:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeActionSheetManager_SpecShowShareActionSheetWithOptionsOptions)
++ (RCTManagedPointer *)JS_NativeActionSheetManager_SpecShowShareActionSheetWithOptionsOptions:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeActionSheetManager_SpecShowShareActionSheetWithOptionsFailureCallbackError)
++ (RCTManagedPointer *)JS_NativeActionSheetManager_SpecShowShareActionSheetWithOptionsFailureCallbackError:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsFailureCallbackError>(json);
+}
+@end
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeActionSheetManagerSpecJSI_showActionSheetWithOptions(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "showActionSheetWithOptions", @selector(showActionSheetWithOptions:callback:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeActionSheetManagerSpecJSI_showShareActionSheetWithOptions(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "showShareActionSheetWithOptions", @selector(showShareActionSheetWithOptions:failureCallback:successCallback:), args, count);
+    }
+
+
+    NativeActionSheetManagerSpecJSI::NativeActionSheetManagerSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+      : ObjCTurboModule("ActionSheetManager", instance, jsInvoker) {
+        
+        methodMap_["showActionSheetWithOptions"] = MethodMetadata {2, __hostFunction_NativeActionSheetManagerSpecJSI_showActionSheetWithOptions};
+        
+        setMethodArgConversionSelector(@"showActionSheetWithOptions", 0, @"JS_NativeActionSheetManager_SpecShowActionSheetWithOptionsOptions:");
+        
+        methodMap_["showShareActionSheetWithOptions"] = MethodMetadata {3, __hostFunction_NativeActionSheetManagerSpecJSI_showShareActionSheetWithOptions};
+        
+        setMethodArgConversionSelector(@"showShareActionSheetWithOptions", 0, @"JS_NativeActionSheetManager_SpecShowShareActionSheetWithOptionsOptions:");
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
 @implementation RCTCxxConvert (NativeAlertManager_Args)
 + (RCTManagedPointer *)JS_NativeAlertManager_Args:(id)json
 {
