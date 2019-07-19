@@ -1,9 +1,10 @@
 load("@fbsource//tools/build_defs:default_platform_defs.bzl", "ANDROID", "APPLE")
 load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("@fbsource//tools/build_defs:fb_xplat_cxx_binary.bzl", "fb_xplat_cxx_binary")
-load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "rn_xplat_cxx_library")
+load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_xplat_cxx_library")
 load("@fbsource//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
 load("@fbsource//xplat/js/react-native-github/packages/react-native-codegen:DEFS.bzl", "rn_codegen")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_target")
 
 fb_native.sh_binary(
     name = "write_to_json",
@@ -68,6 +69,21 @@ fb_xplat_cxx_binary(
     deps = [
         ":generated_components-codegen_tests",
         ":generated_modules-codegen_tests",
+    ],
+)
+
+rn_android_library(
+    name = "rn_codegen_library_java",
+    srcs = glob(["**/*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_target("java/com/facebook/react/bridge:bridge"),
+        react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/views/view:view"),
+        react_native_target("java/com/facebook/react/uimanager:uimanager"),
+        ":generated_components_java-codegen_tests",
     ],
 )
 
