@@ -44,11 +44,11 @@ Pod::Spec.new do |s|
 
   s.dependency "React-Core", version
   s.dependency "React-DevSupport", version
-  s.dependency "React-RCTActionSheet", version
+  s.ios.dependency "React-RCTActionSheet", version
   s.dependency "React-RCTAnimation", version
   s.dependency "React-RCTBlob", version
   s.dependency "React-RCTImage", version
-  s.dependency "React-RCTLinking", version
+  s.ios.dependency "React-RCTLinking", version
   s.dependency "React-RCTNetwork", version
   s.dependency "React-RCTSettings", version
   s.dependency "React-RCTText", version
