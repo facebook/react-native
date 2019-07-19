@@ -406,6 +406,129 @@ namespace facebook {
 } // namespace facebook
 
 namespace JS {
+  namespace NativeAsyncStorage {
+    struct SpecMultiGetCallbackErrorsElement {
+      NSString *message() const;
+
+      SpecMultiGetCallbackErrorsElement(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAsyncStorage_SpecMultiGetCallbackErrorsElement)
++ (RCTManagedPointer *)JS_NativeAsyncStorage_SpecMultiGetCallbackErrorsElement:(id)json;
+@end
+
+namespace JS {
+  namespace NativeAsyncStorage {
+    struct SpecMultiSetCallbackErrorsElement {
+      NSString *message() const;
+
+      SpecMultiSetCallbackErrorsElement(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAsyncStorage_SpecMultiSetCallbackErrorsElement)
++ (RCTManagedPointer *)JS_NativeAsyncStorage_SpecMultiSetCallbackErrorsElement:(id)json;
+@end
+
+namespace JS {
+  namespace NativeAsyncStorage {
+    struct SpecMultiMergeCallbackErrorsElement {
+      NSString *message() const;
+
+      SpecMultiMergeCallbackErrorsElement(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAsyncStorage_SpecMultiMergeCallbackErrorsElement)
++ (RCTManagedPointer *)JS_NativeAsyncStorage_SpecMultiMergeCallbackErrorsElement:(id)json;
+@end
+
+namespace JS {
+  namespace NativeAsyncStorage {
+    struct SpecMultiRemoveCallbackErrorsElement {
+      NSString *message() const;
+
+      SpecMultiRemoveCallbackErrorsElement(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAsyncStorage_SpecMultiRemoveCallbackErrorsElement)
++ (RCTManagedPointer *)JS_NativeAsyncStorage_SpecMultiRemoveCallbackErrorsElement:(id)json;
+@end
+
+namespace JS {
+  namespace NativeAsyncStorage {
+    struct SpecClearCallbackError {
+      NSString *message() const;
+
+      SpecClearCallbackError(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAsyncStorage_SpecClearCallbackError)
++ (RCTManagedPointer *)JS_NativeAsyncStorage_SpecClearCallbackError:(id)json;
+@end
+
+namespace JS {
+  namespace NativeAsyncStorage {
+    struct SpecGetAllKeysCallbackError {
+      NSString *message() const;
+
+      SpecGetAllKeysCallbackError(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAsyncStorage_SpecGetAllKeysCallbackError)
++ (RCTManagedPointer *)JS_NativeAsyncStorage_SpecGetAllKeysCallbackError:(id)json;
+@end
+@protocol NativeAsyncStorageSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)multiGet:(NSArray *)keys
+        callback:(RCTResponseSenderBlock)callback;
+- (void)multiSet:(NSArray *)kvPairs
+        callback:(RCTResponseSenderBlock)callback;
+- (void)multiMerge:(NSArray *)kvPairs
+          callback:(RCTResponseSenderBlock)callback;
+- (void)multiRemove:(NSArray *)keys
+           callback:(RCTResponseSenderBlock)callback;
+- (void)clear:(RCTResponseSenderBlock)callback;
+- (void)getAllKeys:(RCTResponseSenderBlock)callback;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'AsyncStorage'
+     */
+
+    class JSI_EXPORT NativeAsyncStorageSpecJSI : public ObjCTurboModule {
+    public:
+      NativeAsyncStorageSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace JS {
   namespace NativeBlobModule {
     struct Constants {
 
@@ -2044,6 +2167,36 @@ inline JS::NativeAppState::Constants::Builder::Builder(const Input i) : _factory
 inline JS::NativeAppState::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
+inline NSString *JS::NativeAsyncStorage::SpecMultiGetCallbackErrorsElement::message() const
+{
+  id const p = _v[@"message"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeAsyncStorage::SpecMultiSetCallbackErrorsElement::message() const
+{
+  id const p = _v[@"message"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeAsyncStorage::SpecMultiMergeCallbackErrorsElement::message() const
+{
+  id const p = _v[@"message"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeAsyncStorage::SpecMultiRemoveCallbackErrorsElement::message() const
+{
+  id const p = _v[@"message"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeAsyncStorage::SpecClearCallbackError::message() const
+{
+  id const p = _v[@"message"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeAsyncStorage::SpecGetAllKeysCallbackError::message() const
+{
+  id const p = _v[@"message"];
+  return RCTBridgingToString(p);
+}
 inline JS::NativeBlobModule::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto BLOB_URI_SCHEME = i.BLOB_URI_SCHEME.get();

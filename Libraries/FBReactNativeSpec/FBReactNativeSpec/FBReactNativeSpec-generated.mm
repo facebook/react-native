@@ -438,6 +438,97 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
+@implementation RCTCxxConvert (NativeAsyncStorage_SpecMultiGetCallbackErrorsElement)
++ (RCTManagedPointer *)JS_NativeAsyncStorage_SpecMultiGetCallbackErrorsElement:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeAsyncStorage::SpecMultiGetCallbackErrorsElement>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeAsyncStorage_SpecMultiSetCallbackErrorsElement)
++ (RCTManagedPointer *)JS_NativeAsyncStorage_SpecMultiSetCallbackErrorsElement:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeAsyncStorage::SpecMultiSetCallbackErrorsElement>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeAsyncStorage_SpecMultiMergeCallbackErrorsElement)
++ (RCTManagedPointer *)JS_NativeAsyncStorage_SpecMultiMergeCallbackErrorsElement:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeAsyncStorage::SpecMultiMergeCallbackErrorsElement>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeAsyncStorage_SpecMultiRemoveCallbackErrorsElement)
++ (RCTManagedPointer *)JS_NativeAsyncStorage_SpecMultiRemoveCallbackErrorsElement:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeAsyncStorage::SpecMultiRemoveCallbackErrorsElement>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeAsyncStorage_SpecClearCallbackError)
++ (RCTManagedPointer *)JS_NativeAsyncStorage_SpecClearCallbackError:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeAsyncStorage::SpecClearCallbackError>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeAsyncStorage_SpecGetAllKeysCallbackError)
++ (RCTManagedPointer *)JS_NativeAsyncStorage_SpecGetAllKeysCallbackError:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeAsyncStorage::SpecGetAllKeysCallbackError>(json);
+}
+@end
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_multiGet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "multiGet", @selector(multiGet:callback:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_multiSet(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "multiSet", @selector(multiSet:callback:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_multiMerge(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "multiMerge", @selector(multiMerge:callback:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_multiRemove(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "multiRemove", @selector(multiRemove:callback:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_clear(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "clear", @selector(clear:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAsyncStorageSpecJSI_getAllKeys(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "getAllKeys", @selector(getAllKeys:), args, count);
+    }
+
+
+    NativeAsyncStorageSpecJSI::NativeAsyncStorageSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+      : ObjCTurboModule("AsyncStorage", instance, jsInvoker) {
+        
+        methodMap_["multiGet"] = MethodMetadata {2, __hostFunction_NativeAsyncStorageSpecJSI_multiGet};
+        
+        
+        methodMap_["multiSet"] = MethodMetadata {2, __hostFunction_NativeAsyncStorageSpecJSI_multiSet};
+        
+        
+        methodMap_["multiMerge"] = MethodMetadata {2, __hostFunction_NativeAsyncStorageSpecJSI_multiMerge};
+        
+        
+        methodMap_["multiRemove"] = MethodMetadata {2, __hostFunction_NativeAsyncStorageSpecJSI_multiRemove};
+        
+        
+        methodMap_["clear"] = MethodMetadata {1, __hostFunction_NativeAsyncStorageSpecJSI_clear};
+        
+        
+        methodMap_["getAllKeys"] = MethodMetadata {1, __hostFunction_NativeAsyncStorageSpecJSI_getAllKeys};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
 namespace facebook {
   namespace react {
 
