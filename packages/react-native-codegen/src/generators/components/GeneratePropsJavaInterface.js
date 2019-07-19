@@ -79,7 +79,7 @@ function generatePropsString(component: ComponentShape, componentName: string) {
         prop.name,
       )}(T view, ${getJavaValueForProp(prop, componentName)});`;
     })
-    .join(',\n' + '  ');
+    .join('\n' + '  ');
 }
 
 function getClassExtendString(component): string {

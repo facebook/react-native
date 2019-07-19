@@ -16,14 +16,14 @@ function upperCaseFirst(inString: string): string {
   return inString[0].toUpperCase() + inString.slice(1);
 }
 
-export function toSafeJavaString(input: string): string {
+function toSafeJavaString(input: string): string {
   return input
     .split('-')
     .map(upperCaseFirst)
     .join('');
 }
 
-export function getImports(component: ComponentShape): Set<string> {
+function getImports(component: ComponentShape): Set<string> {
   const imports: Set<string> = new Set();
 
   component.extendsProps.forEach(extendProps => {
@@ -75,3 +75,8 @@ export function getImports(component: ComponentShape): Set<string> {
 
   return imports;
 }
+
+module.exports = {
+  toSafeJavaString,
+  getImports,
+};

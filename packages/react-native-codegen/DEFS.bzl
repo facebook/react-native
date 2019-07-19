@@ -10,7 +10,9 @@ load(
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
+    "react_native_target",
     "react_native_xplat_target",
+    "rn_android_library",
     "rn_xplat_cxx_library",
 )
 
@@ -22,8 +24,9 @@ def rn_codegen(
     generate_event_emitter_cpp_name = "generate_event_emitter_cpp-{}".format(name)
     generate_event_emitter_h_name = "generate_event_emitter_h-{}".format(name)
     generate_props_cpp_name = "generate_props_cpp-{}".format(name)
-    generate_tests_cpp_name = "generate_tests_cpp-{}".format(name)
     generate_props_h_name = "generated_props_h-{}".format(name)
+    generate_props_java_name = "generate_props_java-{}".format(name)
+    generate_tests_cpp_name = "generate_tests_cpp-{}".format(name)
     generate_shadow_node_cpp_name = "generated_shadow_node_cpp-{}".format(name)
     generate_shadow_node_h_name = "generated_shadow_node_h-{}".format(name)
     generate_module_h_name = "generate_module_h-{}".format(name)
@@ -31,7 +34,7 @@ def rn_codegen(
 
     fb_native.genrule(
         name = generate_fixtures_rule_name,
-        srcs = [],
+        srcs = native.glob(["src/generators/**/*.js"]),
         cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:rn_codegen) $(location {}) {} $OUT".format(schema_target, name),
         out = "codegenfiles-{}".format(name),
     )
@@ -70,6 +73,13 @@ def rn_codegen(
         name = generate_props_h_name,
         cmd = "cp $(location :{})/Props.h $OUT".format(generate_fixtures_rule_name),
         out = "Props.h",
+    )
+
+    fb_native.zip_file(
+        name = generate_props_java_name,
+        srcs = [":{}".format(generate_fixtures_rule_name)],
+        out = "{}.src.zip".format(generate_props_java_name),
+        visibility = ["PUBLIC"],
     )
 
     fb_native.genrule(
@@ -148,7 +158,6 @@ def rn_codegen(
         ],
     )
 
-    # libs
     rn_xplat_cxx_library(
         name = "generated_modules-{}".format(name),
         tests = [":generated_tests-{}".format(name)],
@@ -179,6 +188,17 @@ def rn_codegen(
         visibility = ["PUBLIC"],
         exported_deps = [
             react_native_xplat_target("turbomodule/core:core"),
+        ],
+    )
+
+    rn_android_library(
+        name = "generated_components_java-{}".format(name),
+        srcs = [
+            ":{}".format(generate_props_java_name),
+        ],
+        visibility = ["PUBLIC"],
+        deps = [
+            react_native_target("java/com/facebook/react/bridge:bridge"),
         ],
     )
 

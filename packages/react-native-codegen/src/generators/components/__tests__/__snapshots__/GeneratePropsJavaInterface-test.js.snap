@@ -9,13 +9,13 @@ import android.view.View;
 import com.facebook.react.bridge.ReadableArray;
 
 public interface ArrayPropsNativeComponentInterface<T extends View> {
-  void setNames(T view, ReadableArray value);,
-  void setDisableds(T view, ReadableArray value);,
-  void setProgress(T view, ReadableArray value);,
-  void setRadii(T view, ReadableArray value);,
-  void setColors(T view, ReadableArray value);,
-  void setSrcs(T view, ReadableArray value);,
-  void setPoints(T view, ReadableArray value);,
+  void setNames(T view, ReadableArray value);
+  void setDisableds(T view, ReadableArray value);
+  void setProgress(T view, ReadableArray value);
+  void setRadii(T view, ReadableArray value);
+  void setColors(T view, ReadableArray value);
+  void setSrcs(T view, ReadableArray value);
+  void setPoints(T view, ReadableArray value);
   void setSizes(T view, ReadableArray value);
 }
 ",
@@ -128,11 +128,11 @@ package com.facebook.react.viewmanagers;
 import android.view.View;
 
 public interface FloatPropNativeComponentInterface<T extends View> {
-  void setBlurRadius(T view, Float value);,
-  void setBlurRadius2(T view, Float value);,
-  void setBlurRadius3(T view, Float value);,
-  void setBlurRadius4(T view, Float value);,
-  void setBlurRadius5(T view, Float value);,
+  void setBlurRadius(T view, Float value);
+  void setBlurRadius2(T view, Float value);
+  void setBlurRadius3(T view, Float value);
+  void setBlurRadius4(T view, Float value);
+  void setBlurRadius5(T view, Float value);
   void setBlurRadius6(T view, Float value);
 }
 ",
@@ -162,8 +162,8 @@ package com.facebook.react.viewmanagers;
 import android.view.View;
 
 public interface IntegerPropNativeComponentInterface<T extends View> {
-  void setProgress1(T view, int value);,
-  void setProgress2(T view, int value);,
+  void setProgress1(T view, int value);
+  void setProgress2(T view, int value);
   void setProgress3(T view, int value);
 }
 ",
@@ -193,9 +193,9 @@ import android.view.View;
 import com.facebook.react.bridge.ReadableMap;
 
 public interface ImageColorPropNativeComponentInterface<T extends View> {
-  void setThumbImage(T view, ReadableMap value);,
-  void setColor(T view, Integer value);,
-  void setThumbTintColor(T view, Integer value);,
+  void setThumbImage(T view, ReadableMap value);
+  void setColor(T view, Integer value);
+  void setThumbTintColor(T view, Integer value);
   void setPoint(T view, ReadableMap value);
 }
 ",
@@ -239,7 +239,7 @@ package com.facebook.react.viewmanagers;
 import android.view.View;
 
 public interface StringPropComponentInterface<T extends View> {
-  void setAccessibilityHint(T view, String value);,
+  void setAccessibilityHint(T view, String value);
   void setAccessibilityRole(T view, String value);
 }
 ",

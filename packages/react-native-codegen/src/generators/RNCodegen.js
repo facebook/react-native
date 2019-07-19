@@ -24,6 +24,8 @@ const generatePropsCpp = require('./components/GeneratePropsCpp.js');
 const generatePropsH = require('./components/GeneratePropsH.js');
 const generateModuleH = require('./modules/GenerateModuleH.js');
 const generateModuleCpp = require('./modules/GenerateModuleCpp.js');
+const generatePropsJavaInterface = require('./components/GeneratePropsJavaInterface.js');
+const generatePropsJavaDelegate = require('./components/GeneratePropsJavaDelegate.js');
 const generateTests = require('./components/GenerateTests.js');
 const generateShadowNodeCpp = require('./components/GenerateShadowNodeCpp.js');
 const generateShadowNodeH = require('./components/GenerateShadowNodeH.js');
@@ -56,7 +58,12 @@ type Config = $ReadOnly<{|
 const GENERATORS = {
   descriptors: [generateComponentDescriptorH.generate],
   events: [generateEventEmitterCpp.generate, generateEventEmitterH.generate],
-  props: [generatePropsCpp.generate, generatePropsH.generate],
+  props: [
+    generatePropsCpp.generate,
+    generatePropsH.generate,
+    generatePropsJavaInterface.generate,
+    generatePropsJavaDelegate.generate,
+  ],
   modules: [generateModuleCpp.generate, generateModuleH.generate],
   tests: [generateTests.generate],
   'shadow-nodes': [
