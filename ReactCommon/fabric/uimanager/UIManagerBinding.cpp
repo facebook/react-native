@@ -141,7 +141,7 @@ jsi::Value UIManagerBinding::get(
               runtime,
               uiManager.createNode(
                   tagFromValue(runtime, arguments[0]),
-                  componentNameFromValue(runtime, arguments[1]),
+                  stringFromValue(runtime, arguments[1]),
                   surfaceIdFromValue(runtime, arguments[2]),
                   RawProps(runtime, arguments[3]),
                   eventTargetFromValue(runtime, arguments[4], arguments[0])));
@@ -329,6 +329,25 @@ jsi::Value UIManagerBinding::get(
           result.setProperty(runtime, "width", frame.size.width);
           result.setProperty(runtime, "height", frame.size.height);
           return result;
+        });
+  }
+
+  if (methodName == "dispatchCommand") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        3,
+        [&uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          uiManager.dispatchCommand(
+              shadowNodeFromValue(runtime, arguments[0]),
+              stringFromValue(runtime, arguments[1]),
+              commandArgsFromValue(runtime, arguments[2]));
+
+          return jsi::Value::undefined();
         });
   }
 

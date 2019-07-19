@@ -75,6 +75,11 @@ class UIManager {
       const SharedShadowNode &shadowNode,
       const StateData::Shared &rawStateData) const;
 
+  void dispatchCommand(
+      const SharedShadowNode &shadowNode,
+      std::string const &commandName,
+      folly::dynamic const args) const;
+
   ShadowTreeRegistry *shadowTreeRegistry_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;

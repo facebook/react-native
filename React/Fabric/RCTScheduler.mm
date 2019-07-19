@@ -34,6 +34,15 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     // Preemptive allocation of native views on iOS does not require this call.
   }
 
+  void schedulerDidDispatchCommand(
+      const ShadowView &shadowView,
+      const std::string &commandName,
+      const folly::dynamic args) override
+  {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerDidDispatchCommand:shadowView commandName:commandName args:args];
+  }
+
  private:
   void *scheduler_;
 };

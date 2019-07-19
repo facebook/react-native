@@ -248,6 +248,11 @@ inline local_ref<ReadableMap::javaobject> castReadableMap(
   return make_local(reinterpret_cast<ReadableMap::javaobject>(nativeMap.get()));
 }
 
+inline local_ref<ReadableArray::javaobject> castReadableArray(
+  local_ref<ReadableNativeArray::javaobject> nativeArray) {
+  return make_local(reinterpret_cast<ReadableArray::javaobject>(nativeArray.get()));
+}
+
 // TODO: this method will be removed when binding for components are code-gen
 local_ref<JString> getPlatformComponentName(const ShadowView &shadowView) {
   local_ref<JString> componentName;
@@ -670,6 +675,31 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
       props.get(),
       (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr),
       isLayoutableShadowNode);
+}
+
+void Binding::schedulerDidDispatchCommand(
+  const ShadowView &shadowView,
+  std::string const &commandName,
+  folly::dynamic const args) {
+
+  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
+  if (!localJavaUIManager) {
+    LOG(ERROR) << "Binding::schedulerDidDispatchCommand: JavaUIManager disappeared";
+    return;
+  }
+
+  static auto dispatchCommand =
+    jni::findClassStatic(UIManagerJavaDescriptor)
+      ->getMethod<void(
+        jint, jstring, ReadableArray::javaobject)>(
+        "dispatchCommand");
+
+  local_ref<JString> command = make_jstring(commandName);
+
+  local_ref<ReadableArray::javaobject> argsArray = castReadableArray(
+    ReadableNativeArray::newObjectCxxArgs(args));
+
+  dispatchCommand(localJavaUIManager, shadowView.tag, command.get(), argsArray.get());
 }
 
 void Binding::registerNatives() {

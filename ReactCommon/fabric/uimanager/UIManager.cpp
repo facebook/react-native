@@ -167,6 +167,15 @@ void UIManager::updateState(
       });
 }
 
+void UIManager::dispatchCommand(
+    const SharedShadowNode &shadowNode,
+    std::string const &commandName,
+    folly::dynamic const args) const {
+  if (delegate_) {
+    delegate_->uiManagerDispatchCommand(shadowNode, commandName, args);
+  }
+}
+
 void UIManager::setShadowTreeRegistry(ShadowTreeRegistry *shadowTreeRegistry) {
   shadowTreeRegistry_ = shadowTreeRegistry;
 }

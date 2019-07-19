@@ -258,5 +258,17 @@ void Scheduler::uiManagerDidCreateShadowNode(
   }
 }
 
+void Scheduler::uiManagerDispatchCommand(
+    const SharedShadowNode &shadowNode,
+    std::string const &commandName,
+    folly::dynamic const args) {
+  SystraceSection s("Scheduler::uiManagerDispatchCommand");
+
+  if (delegate_) {
+    auto shadowView = ShadowView(*shadowNode);
+    delegate_->schedulerDidDispatchCommand(shadowView, commandName, args);
+  }
+}
+
 } // namespace react
 } // namespace facebook

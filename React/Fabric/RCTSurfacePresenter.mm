@@ -321,6 +321,17 @@ using namespace facebook::react;
   [_mountingManager scheduleTransaction:mountingCoordinator];
 }
 
+- (void)schedulerDidDispatchCommand:(facebook::react::ShadowView const &)shadowView
+                        commandName:(std::string const &)commandName
+                               args:(folly::dynamic const)args
+{
+  ReactTag tag = shadowView.tag;
+  NSString *commandStr = [[NSString alloc] initWithUTF8String:commandName.c_str()];
+  NSArray *argsArray = convertFollyDynamicToId(args);
+
+  [self->_mountingManager dispatchCommand:tag commandName:commandStr args:argsArray];
+}
+
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
 {
   std::unique_lock<better::shared_mutex> lock(_observerListMutex);

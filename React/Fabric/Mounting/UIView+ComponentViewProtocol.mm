@@ -60,6 +60,11 @@ using namespace facebook::react;
   // Default implementation does nothing.
 }
 
+- (void)handleCommand:(NSString *)commandName args:(NSArray *)args
+{
+  // Default implementation does nothing.
+}
+
 - (void)updateLayoutMetrics:(LayoutMetrics const &)layoutMetrics
            oldLayoutMetrics:(LayoutMetrics const &)oldLayoutMetrics
 {

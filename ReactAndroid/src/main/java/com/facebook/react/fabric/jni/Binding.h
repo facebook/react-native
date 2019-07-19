@@ -82,6 +82,11 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
       const SurfaceId surfaceId,
       const ShadowView &shadowView);
 
+  void schedulerDidDispatchCommand(
+    const ShadowView &shadowView,
+    std::string const &commandName,
+    folly::dynamic const args);
+
   void setPixelDensity(float pointScaleFactor);
 
   void uninstallFabricUIManager();
