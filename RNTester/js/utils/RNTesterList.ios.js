@@ -19,19 +19,9 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'ARTExample',
-    module: require('../examples/ART/ARTExample'),
-    supportsTVOS: true,
-  },
-  {
     key: 'ButtonExample',
     module: require('../examples/Button/ButtonExample'),
     supportsTVOS: true,
-  },
-  {
-    key: 'DatePickerIOSExample',
-    module: require('../examples/DatePicker/DatePickerIOSExample'),
-    supportsTVOS: false,
   },
   {
     key: 'FlatListExample',
@@ -56,11 +46,6 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'LayoutEventsExample',
     module: require('../examples/Layout/LayoutEventsExample'),
-    supportsTVOS: true,
-  },
-  {
-    key: 'MaskedViewExample',
-    module: require('../examples/MaskedView/MaskedViewExample'),
     supportsTVOS: true,
   },
   {
@@ -126,11 +111,6 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'SegmentedControlIOSExample',
     module: require('../examples/SegmentedControlIOS/SegmentedControlIOSExample'),
-    supportsTVOS: false,
-  },
-  {
-    key: 'SliderExample',
-    module: require('../examples/Slider/SliderExample'),
     supportsTVOS: false,
   },
   {
@@ -207,11 +187,6 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'AsyncStorageExample',
-    module: require('../examples/AsyncStorage/AsyncStorageExample'),
-    supportsTVOS: true,
-  },
-  {
     key: 'BorderExample',
     module: require('../examples/Border/BorderExample'),
     supportsTVOS: true,
@@ -269,11 +244,6 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'PointerEventsExample',
     module: require('../examples/PointerEvents/PointerEventsExample'),
-    supportsTVOS: false,
-  },
-  {
-    key: 'PushNotificationIOSExample',
-    module: require('../examples/PushNotificationIOS/PushNotificationIOSExample'),
     supportsTVOS: false,
   },
   {
