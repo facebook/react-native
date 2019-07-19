@@ -1706,6 +1706,44 @@ namespace facebook {
 } // namespace facebook
 
 namespace JS {
+  namespace NativeShareModule {
+    struct SpecShareContent {
+      NSString *title() const;
+      NSString *message() const;
+
+      SpecShareContent(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeShareModule_SpecShareContent)
++ (RCTManagedPointer *)JS_NativeShareModule_SpecShareContent:(id)json;
+@end
+@protocol NativeShareModuleSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)share:(JS::NativeShareModule::SpecShareContent &)content
+  dialogTitle:(NSString *)dialogTitle
+      resolve:(RCTPromiseResolveBlock)resolve
+       reject:(RCTPromiseRejectBlock)reject;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'ShareModule'
+     */
+
+    class JSI_EXPORT NativeShareModuleSpecJSI : public ObjCTurboModule {
+    public:
+      NativeShareModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace JS {
   namespace NativeSourceCode {
     struct Constants {
 
@@ -2649,6 +2687,16 @@ inline JS::NativeSettingsManager::Constants::Builder::Builder(const Input i) : _
 inline JS::NativeSettingsManager::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
+inline NSString *JS::NativeShareModule::SpecShareContent::title() const
+{
+  id const p = _v[@"title"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeShareModule::SpecShareContent::message() const
+{
+  id const p = _v[@"message"];
+  return RCTBridgingToString(p);
+}
 inline JS::NativeSourceCode::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto scriptURL = i.scriptURL.get();

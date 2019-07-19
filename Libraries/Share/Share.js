@@ -15,8 +15,8 @@ const Platform = require('../Utilities/Platform');
 const invariant = require('invariant');
 const processColor = require('../StyleSheet/processColor');
 
-const {ShareModule} = require('../BatchedBridge/NativeModules');
 import NativeActionSheetManager from '../ActionSheetIOS/NativeActionSheetManager';
+import NativeShareModule from './NativeShareModule';
 
 type Content =
   | {title?: string, message: string}
@@ -78,10 +78,21 @@ class Share {
 
     if (Platform.OS === 'android') {
       invariant(
+        NativeShareModule,
+        'ShareModule should be registered on Android.',
+      );
+      invariant(
         !content.title || typeof content.title === 'string',
         'Invalid title: title should be a string.',
       );
-      return ShareModule.share(content, options.dialogTitle);
+
+      const newContent = {
+        title: content.title,
+        message:
+          typeof content.message === 'string' ? content.message : undefined,
+      };
+
+      return NativeShareModule.share(newContent, options.dialogTitle);
     } else if (Platform.OS === 'ios') {
       return new Promise((resolve, reject) => {
         const tintColor = processColor(options.tintColor);

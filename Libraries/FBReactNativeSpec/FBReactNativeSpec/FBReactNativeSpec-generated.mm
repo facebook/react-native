@@ -1506,6 +1506,33 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
+@implementation RCTCxxConvert (NativeShareModule_SpecShareContent)
++ (RCTManagedPointer *)JS_NativeShareModule_SpecShareContent:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeShareModule::SpecShareContent>(json);
+}
+@end
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeShareModuleSpecJSI_share(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "share", @selector(share:dialogTitle:resolve:reject:), args, count);
+    }
+
+
+    NativeShareModuleSpecJSI::NativeShareModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+      : ObjCTurboModule("ShareModule", instance, jsInvoker) {
+        
+        methodMap_["share"] = MethodMetadata {2, __hostFunction_NativeShareModuleSpecJSI_share};
+        
+        setMethodArgConversionSelector(@"share", 0, @"JS_NativeShareModule_SpecShareContent:");
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
 namespace facebook {
   namespace react {
 
