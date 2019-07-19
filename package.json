@@ -50,7 +50,8 @@
     "template.config.js",
     "!template/node_modules",
     "!template/yarn.lock",
-    "!template/package-lock.json"
+    "!template/package-lock.json",
+    "RNTester/RCTTest"
   ],
   "scripts": {
     "start": "react-native start",
