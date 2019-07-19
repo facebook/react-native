@@ -595,6 +595,33 @@ namespace facebook {
   namespace react {
 
     
+    static facebook::jsi::Value __hostFunction_NativeClipboardSpecJSI_getString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "getString", @selector(getString:reject:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeClipboardSpecJSI_setString(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setString", @selector(setString:), args, count);
+    }
+
+
+    NativeClipboardSpecJSI::NativeClipboardSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+      : ObjCTurboModule("Clipboard", instance, jsInvoker) {
+        
+        methodMap_["getString"] = MethodMetadata {0, __hostFunction_NativeClipboardSpecJSI_getString};
+        
+        
+        methodMap_["setString"] = MethodMetadata {1, __hostFunction_NativeClipboardSpecJSI_setString};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
     static facebook::jsi::Value __hostFunction_NativeDatePickerAndroidSpecJSI_open(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "open", @selector(open:resolve:reject:), args, count);
     }

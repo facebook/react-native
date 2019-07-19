@@ -583,6 +583,26 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+@protocol NativeClipboardSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)getString:(RCTPromiseResolveBlock)resolve
+           reject:(RCTPromiseRejectBlock)reject;
+- (void)setString:(NSString *)content;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'Clipboard'
+     */
+
+    class JSI_EXPORT NativeClipboardSpecJSI : public ObjCTurboModule {
+    public:
+      NativeClipboardSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
 @protocol NativeDatePickerAndroidSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)open:(NSDictionary *)options
