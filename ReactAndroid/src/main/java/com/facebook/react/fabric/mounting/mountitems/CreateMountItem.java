@@ -37,6 +37,13 @@ public class CreateMountItem implements MountItem {
 
   @Override
   public String toString() {
-    return "CreateMountItem [" + mReactTag + "]";
+    return "CreateMountItem ["
+        + mReactTag
+        + "] - component: "
+        + mComponent
+        + " - rootTag: "
+        + mRootTag
+        + " - isLayoutable: "
+        + mIsLayoutable;
   }
 }
