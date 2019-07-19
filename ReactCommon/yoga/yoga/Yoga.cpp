@@ -15,6 +15,7 @@
 #include "YGNodePrint.h"
 #include "Yoga-internal.h"
 #include "event/event.h"
+#include "internal/experiments-inl.h"
 #ifdef _MSC_VER
 #include <float.h>
 
@@ -1655,6 +1656,15 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
          measuredSize.width,
          measuredSize.height,
          reason});
+
+    if (internal::isEnabled(internal::Experiment::kDoubleMeasureCallbacks)) {
+      node->measure(
+          innerWidth,
+          widthMeasureMode,
+          innerHeight,
+          heightMeasureMode,
+          layoutContext);
+    }
 
     node->setLayoutMeasuredDimension(
         YGNodeBoundAxis(
