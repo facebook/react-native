@@ -1102,6 +1102,65 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+
+namespace JS {
+  namespace NativeImagePickerIOS {
+    struct SpecOpenCameraDialogConfig {
+      bool unmirrorFrontFacingCamera() const;
+      bool videoMode() const;
+
+      SpecOpenCameraDialogConfig(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeImagePickerIOS_SpecOpenCameraDialogConfig)
++ (RCTManagedPointer *)JS_NativeImagePickerIOS_SpecOpenCameraDialogConfig:(id)json;
+@end
+
+namespace JS {
+  namespace NativeImagePickerIOS {
+    struct SpecOpenSelectDialogConfig {
+      bool showImages() const;
+      bool showVideos() const;
+
+      SpecOpenSelectDialogConfig(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeImagePickerIOS_SpecOpenSelectDialogConfig)
++ (RCTManagedPointer *)JS_NativeImagePickerIOS_SpecOpenSelectDialogConfig:(id)json;
+@end
+@protocol NativeImagePickerIOSSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)canRecordVideos:(RCTResponseSenderBlock)callback;
+- (void)canUseCamera:(RCTResponseSenderBlock)callback;
+- (void)openCameraDialog:(JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig &)config
+         successCallback:(RCTResponseSenderBlock)successCallback
+          cancelCallback:(RCTResponseSenderBlock)cancelCallback;
+- (void)openSelectDialog:(JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig &)config
+         successCallback:(RCTResponseSenderBlock)successCallback
+          cancelCallback:(RCTResponseSenderBlock)cancelCallback;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'ImagePickerIOS'
+     */
+
+    class JSI_EXPORT NativeImagePickerIOSSpecJSI : public ObjCTurboModule {
+    public:
+      NativeImagePickerIOSSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
 @protocol NativeJSCSamplingProfilerSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)operationComplete:(double)token
@@ -2395,6 +2454,26 @@ inline JS::NativeI18nManager::Constants::Builder::Builder(const Input i) : _fact
 inline JS::NativeI18nManager::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
+inline bool JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig::unmirrorFrontFacingCamera() const
+{
+  id const p = _v[@"unmirrorFrontFacingCamera"];
+  return RCTBridgingToBool(p);
+}
+inline bool JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig::videoMode() const
+{
+  id const p = _v[@"videoMode"];
+  return RCTBridgingToBool(p);
+}
+inline bool JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig::showImages() const
+{
+  id const p = _v[@"showImages"];
+  return RCTBridgingToBool(p);
+}
+inline bool JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig::showVideos() const
+{
+  id const p = _v[@"showVideos"];
+  return RCTBridgingToBool(p);
+}
 inline JS::NativeJSDevSupport::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto ERROR_CODE_EXCEPTION = i.ERROR_CODE_EXCEPTION.get();

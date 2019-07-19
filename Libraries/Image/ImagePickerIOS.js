@@ -10,42 +10,72 @@
 
 'use strict';
 
-const RCTImagePicker = require('../BatchedBridge/NativeModules').ImagePickerIOS;
+import NativeImagePickerIOS from './NativeImagePickerIOS';
+import invariant from 'invariant';
 
 const ImagePickerIOS = {
-  canRecordVideos: function(callback: Function) {
-    return RCTImagePicker.canRecordVideos(callback);
+  canRecordVideos: function(callback: (result: boolean) => void) {
+    invariant(NativeImagePickerIOS, 'ImagePickerIOS is not available');
+    return NativeImagePickerIOS.canRecordVideos(callback);
   },
-  canUseCamera: function(callback: Function) {
-    return RCTImagePicker.canUseCamera(callback);
+  canUseCamera: function(callback: (result: boolean) => void) {
+    invariant(NativeImagePickerIOS, 'ImagePickerIOS is not available');
+    return NativeImagePickerIOS.canUseCamera(callback);
   },
   openCameraDialog: function(
-    config: Object,
-    successCallback: Function,
-    cancelCallback: Function,
+    config: $ReadOnly<{|
+      unmirrorFrontFacingCamera?: boolean,
+      videoMode?: boolean,
+    |}>,
+    successCallback: (imageURL: string, height: number, width: number) => void,
+    cancelCallback: () => void,
   ) {
-    config = {
-      videoMode: false,
-      ...config,
+    invariant(NativeImagePickerIOS, 'ImagePickerIOS is not available');
+
+    var newConfig = {
+      videoMode: true,
+      unmirrorFrontFacingCamera: false,
     };
-    return RCTImagePicker.openCameraDialog(
-      config,
+
+    if (config.videoMode != null) {
+      newConfig.videoMode = config.videoMode;
+    }
+
+    if (config.unmirrorFrontFacingCamera != null) {
+      newConfig.unmirrorFrontFacingCamera = config.unmirrorFrontFacingCamera;
+    }
+
+    return NativeImagePickerIOS.openCameraDialog(
+      newConfig,
       successCallback,
       cancelCallback,
     );
   },
   openSelectDialog: function(
-    config: Object,
-    successCallback: Function,
-    cancelCallback: Function,
+    config: $ReadOnly<{|
+      showImages?: boolean,
+      showVideos?: boolean,
+    |}>,
+    successCallback: (imageURL: string, height: number, width: number) => void,
+    cancelCallback: () => void,
   ) {
-    config = {
+    invariant(NativeImagePickerIOS, 'ImagePickerIOS is not available');
+
+    var newConfig = {
       showImages: true,
       showVideos: false,
-      ...config,
     };
-    return RCTImagePicker.openSelectDialog(
-      config,
+
+    if (config.showImages != null) {
+      newConfig.showImages = config.showImages;
+    }
+
+    if (config.showVideos != null) {
+      newConfig.showVideos = config.showVideos;
+    }
+
+    return NativeImagePickerIOS.openSelectDialog(
+      newConfig,
       successCallback,
       cancelCallback,
     );

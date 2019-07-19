@@ -990,6 +990,61 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
+@implementation RCTCxxConvert (NativeImagePickerIOS_SpecOpenCameraDialogConfig)
++ (RCTManagedPointer *)JS_NativeImagePickerIOS_SpecOpenCameraDialogConfig:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeImagePickerIOS_SpecOpenSelectDialogConfig)
++ (RCTManagedPointer *)JS_NativeImagePickerIOS_SpecOpenSelectDialogConfig:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig>(json);
+}
+@end
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeImagePickerIOSSpecJSI_canRecordVideos(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "canRecordVideos", @selector(canRecordVideos:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeImagePickerIOSSpecJSI_canUseCamera(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "canUseCamera", @selector(canUseCamera:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeImagePickerIOSSpecJSI_openCameraDialog(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "openCameraDialog", @selector(openCameraDialog:successCallback:cancelCallback:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeImagePickerIOSSpecJSI_openSelectDialog(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "openSelectDialog", @selector(openSelectDialog:successCallback:cancelCallback:), args, count);
+    }
+
+
+    NativeImagePickerIOSSpecJSI::NativeImagePickerIOSSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+      : ObjCTurboModule("ImagePickerIOS", instance, jsInvoker) {
+        
+        methodMap_["canRecordVideos"] = MethodMetadata {1, __hostFunction_NativeImagePickerIOSSpecJSI_canRecordVideos};
+        
+        
+        methodMap_["canUseCamera"] = MethodMetadata {1, __hostFunction_NativeImagePickerIOSSpecJSI_canUseCamera};
+        
+        
+        methodMap_["openCameraDialog"] = MethodMetadata {3, __hostFunction_NativeImagePickerIOSSpecJSI_openCameraDialog};
+        
+        setMethodArgConversionSelector(@"openCameraDialog", 0, @"JS_NativeImagePickerIOS_SpecOpenCameraDialogConfig:");
+        
+        methodMap_["openSelectDialog"] = MethodMetadata {3, __hostFunction_NativeImagePickerIOSSpecJSI_openSelectDialog};
+        
+        setMethodArgConversionSelector(@"openSelectDialog", 0, @"JS_NativeImagePickerIOS_SpecOpenSelectDialogConfig:");
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
 namespace facebook {
   namespace react {
 
