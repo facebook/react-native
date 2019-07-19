@@ -16,7 +16,7 @@ namespace react {
 class JReactMarker : public facebook::jni::JavaClass<JReactMarker> {
 public:
   static constexpr auto kJavaDescriptor = "Lcom/facebook/react/bridge/ReactMarker;";
-  static void setLogPerfMarkerIfNeeded();
+  static ReactMarker::LogTaggedMarker setLogPerfMarkerIfNeeded();
 
 private:
   static void logMarker(const std::string& marker);

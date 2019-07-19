@@ -39,8 +39,6 @@ typedef void(*LogTaggedMarker)(const ReactMarkerId, const char* tag);
 
 extern RN_EXPORT LogTaggedMarker logTaggedMarker;
 
-extern RN_EXPORT void logMarker(const ReactMarkerId markerId);
-
 }
 }
 }

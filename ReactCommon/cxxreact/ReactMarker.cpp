@@ -20,10 +20,6 @@ LogTaggedMarker logTaggedMarker = nullptr;
 #pragma clang diagnostic pop
 #endif
 
-void logMarker(const ReactMarkerId markerId) {
-  logTaggedMarker(markerId, nullptr);
-}
-
 }
 }
 }

@@ -13,6 +13,7 @@
 #include <jsi/jsi.h>
 #include <functional>
 #include <mutex>
+#include <cxxreact/ReactMarker.h>
 
 namespace facebook {
 namespace react {
@@ -74,7 +75,8 @@ class JSIExecutor : public JSExecutor {
       std::shared_ptr<jsi::Runtime> runtime,
       std::shared_ptr<ExecutorDelegate> delegate,
       const JSIScopedTimeoutInvoker &timeoutInvoker,
-      RuntimeInstaller runtimeInstaller);
+      RuntimeInstaller runtimeInstaller,
+      ReactMarker::LogTaggedMarker);
   void loadApplicationScript(
       std::unique_ptr<const JSBigString> script,
       std::string sourceURL) override;
@@ -120,6 +122,7 @@ class JSIExecutor : public JSExecutor {
   std::unique_ptr<RAMBundleRegistry> bundleRegistry_;
   JSIScopedTimeoutInvoker scopedTimeoutInvoker_;
   RuntimeInstaller runtimeInstaller_;
+  ReactMarker::LogTaggedMarker logTaggedMarker_;
 
   folly::Optional<jsi::Function> callFunctionReturnFlushedQueue_;
   folly::Optional<jsi::Function> invokeCallbackAndReturnFlushedQueue_;
