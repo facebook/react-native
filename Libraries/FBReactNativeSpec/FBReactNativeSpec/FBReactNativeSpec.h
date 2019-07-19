@@ -2015,6 +2015,27 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+@protocol NativeVibrationSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)vibrate:(double)pattern;
+- (void)vibrateByPattern:(NSArray *)pattern
+                  repeat:(double)repeat;
+- (void)cancel;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'Vibration'
+     */
+
+    class JSI_EXPORT NativeVibrationSpecJSI : public ObjCTurboModule {
+    public:
+      NativeVibrationSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
 
 namespace JS {
   namespace NativeWebSocketModule {

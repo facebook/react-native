@@ -1863,6 +1863,40 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeVibrationSpecJSI_vibrate(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "vibrate", @selector(vibrate:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeVibrationSpecJSI_vibrateByPattern(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "vibrateByPattern", @selector(vibrateByPattern:repeat:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeVibrationSpecJSI_cancel(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "cancel", @selector(cancel), args, count);
+    }
+
+
+    NativeVibrationSpecJSI::NativeVibrationSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+      : ObjCTurboModule("Vibration", instance, jsInvoker) {
+        
+        methodMap_["vibrate"] = MethodMetadata {1, __hostFunction_NativeVibrationSpecJSI_vibrate};
+        
+        
+        methodMap_["vibrateByPattern"] = MethodMetadata {2, __hostFunction_NativeVibrationSpecJSI_vibrateByPattern};
+        
+        
+        methodMap_["cancel"] = MethodMetadata {0, __hostFunction_NativeVibrationSpecJSI_cancel};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
 @implementation RCTCxxConvert (NativeWebSocketModule_SpecConnectOptionsHeaders)
 + (RCTManagedPointer *)JS_NativeWebSocketModule_SpecConnectOptionsHeaders:(id)json
 {
