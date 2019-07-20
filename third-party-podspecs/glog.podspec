@@ -21,13 +21,23 @@ Pod::Spec.new do |spec|
   spec.module_name = 'glog'
   spec.header_dir = 'glog'
   spec.source_files = 'src/glog/*.h',
+                      'src/glog/*.h.in',
+                      'libglog.pc.in',
                       'src/demangle.cc',
                       'src/logging.cc',
                       'src/raw_logging.cc',
                       'src/signalhandler.cc',
                       'src/symbolize.cc',
                       'src/utilities.cc',
-                      'src/vlog_is_on.cc'
+                      'src/vlog_is_on.cc',
+                      'src/config.h.in',
+                      'config.guess',
+                      'config.sub',
+                      'configure',
+                      'configure.ac',
+                      'Makefile.in',
+                      'install-sh',
+                      'ltmain.sh'
   # workaround for https://github.com/facebook/react-native/issues/14326
   spec.preserve_paths = 'src/*.h',
                         'src/base/*.h'
