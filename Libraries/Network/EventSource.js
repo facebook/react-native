@@ -52,7 +52,7 @@ class EventSource extends EventTarget(...EVENT_SOURCE_EVENTS) {
   _eventTypeBuf: string = '';
   _lastEventIdBuf: string = '';
 
-  _headers: Object;
+  _headers: {[key: string]: any} = {};
   _lastEventId: string = '';
   _reconnectIntervalMs: number = 1000;
   _requestId: ?number;
@@ -81,9 +81,10 @@ class EventSource extends EventTarget(...EVENT_SOURCE_EVENTS) {
     }
     this.url = url;
 
-    this.headers = {'Cache-Control': 'no-store', Accept: 'text/event-stream'};
+    this._headers['Cache-Control'] = 'no-store';
+    this._headers.Accept = 'text/event-stream';
     if (this._lastEventId) {
-      this.headers['Last-Event-ID'] = this._lastEventId;
+      this._headers['Last-Event-ID'] = this._lastEventId;
     }
 
     if (eventSourceInitDict) {
@@ -96,7 +97,7 @@ class EventSource extends EventTarget(...EVENT_SOURCE_EVENTS) {
         for (var headerKey in eventSourceInitDict.headers) {
           const header = eventSourceInitDict.headers[headerKey];
           if (header) {
-            this.headers[headerKey] = header;
+            this._headers[headerKey] = header;
           }
         }
       }
@@ -149,14 +150,14 @@ class EventSource extends EventTarget(...EVENT_SOURCE_EVENTS) {
     }
 
     if (this._lastEventId) {
-      this.headers['Last-Event-ID'] = this._lastEventId;
+      this._headers['Last-Event-ID'] = this._lastEventId;
     }
 
     RCTNetworking.sendRequest(
       'GET', // EventSource always GETs the resource
       this._trackingName,
       this.url,
-      this.headers,
+      this._headers,
       '', // body for EventSource request is always empty
       'text', // SSE is a text protocol
       true, // we want incremental events
@@ -244,7 +245,7 @@ class EventSource extends EventTarget(...EVENT_SOURCE_EVENTS) {
       // this is a comment line and should be ignored
       return;
     } else if (colonPos > 0) {
-      if (line[colonPos + 1] == ' ') {
+      if (line[colonPos + 1] === ' ') {
         field = line.slice(0, colonPos);
         value = line.slice(colonPos + 2); // ignores the first space from the value
       } else {
@@ -322,11 +323,13 @@ class EventSource extends EventTarget(...EVENT_SOURCE_EVENTS) {
       return;
     }
 
-    // make the header names case insensitive
-    for (const entry of Object.entries(responseHeaders)) {
-      const [key, value] = entry;
-      delete responseHeaders[key];
-      responseHeaders[key.toLowerCase()] = value;
+    if (responseHeaders) {
+      // make the header names case insensitive
+      for (const entry of Object.entries(responseHeaders)) {
+        const [key, value] = entry;
+        delete responseHeaders[key];
+        responseHeaders[key.toLowerCase()] = value;
+      }
     }
 
     // Handle redirects

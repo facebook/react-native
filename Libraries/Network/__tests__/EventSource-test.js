@@ -92,7 +92,7 @@ describe('EventSource', function() {
 
     expect(capturedOptions.method).toBe('GET');
     expect(capturedOptions.url).toBe(testUrl);
-    expect(capturedOptions.headers['Accept']).toBe('text/event-stream');
+    expect(capturedOptions.headers.Accept).toBe('text/event-stream');
     expect(capturedOptions.headers['Cache-Control']).toBe('no-store');
     expect(capturedOptions.responseType).toBe('text');
     expect(capturedOptions.incrementalUpdates).toBe(true);
@@ -562,7 +562,7 @@ describe('EventSource', function() {
     });
 
     // make sure the default headers are passed in
-    expect(capturedOptions.headers['Accept']).toBe('text/event-stream');
+    expect(capturedOptions.headers.Accept).toBe('text/event-stream');
     expect(capturedOptions.headers['Cache-Control']).toBe('no-store');
 
     // make sure the custom header was passed in;
@@ -575,7 +575,7 @@ describe('EventSource', function() {
     });
 
     // make sure the default headers are passed in
-    expect(capturedOptions.headers['Accept']).toBe('text/event-stream');
+    expect(capturedOptions.headers.Accept).toBe('text/event-stream');
     expect(capturedOptions.headers['Cache-Control']).toBe('no-store');
     expect(capturedOptions.headers['Last-Event-ID']).toBe('my id');
 
