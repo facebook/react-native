@@ -5,6 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 set -e
+cd glog
 
 PLATFORM_NAME="${PLATFORM_NAME:-iphoneos}"
 CURRENT_ARCH="${CURRENT_ARCH}"
@@ -57,7 +58,7 @@ cat << EOF >> src/config.h
 EOF
 
 # Prepare exported header include
-EXPORTED_INCLUDE_DIR="exported/glog"
+EXPORTED_INCLUDE_DIR="../Headers/Public/glog/"
 mkdir -p exported/glog
 cp -f src/glog/log_severity.h "$EXPORTED_INCLUDE_DIR/"
 cp -f src/glog/logging.h "$EXPORTED_INCLUDE_DIR/"
