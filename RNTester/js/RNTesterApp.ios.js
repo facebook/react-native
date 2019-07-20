@@ -22,6 +22,7 @@ const {
   Text,
   View,
   YellowBox,
+  StatusBar,
 } = require('react-native');
 const RNTesterActions = require('./utils/RNTesterActions');
 const RNTesterExampleContainer = require('./components/RNTesterExampleContainer');
@@ -128,6 +129,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     }
     return (
       <View style={styles.exampleContainer}>
+        <StatusBar barStyle="dark-content" />
         <Header title="RNTester" />
         <RNTesterExampleList
           onNavigate={this._handleAction}

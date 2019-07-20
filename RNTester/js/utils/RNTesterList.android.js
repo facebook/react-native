@@ -22,10 +22,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('../examples/Button/ButtonExample'),
   },
   {
-    key: 'CheckBoxExample',
-    module: require('../examples/CheckBox/CheckBoxExample'),
-  },
-  {
     key: 'FlatListExample',
     module: require('../examples/FlatList/FlatListExample'),
   },
@@ -76,10 +72,6 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'SectionListExample',
     module: require('../examples/SectionList/SectionListExample'),
-  },
-  {
-    key: 'SliderExample',
-    module: require('../examples/Slider/SliderExample'),
   },
   {
     key: 'StatusBarExample',
@@ -141,10 +133,6 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/Crash/CrashExample'),
   },
   {
-    key: 'DatePickerAndroidExample',
-    module: require('../examples/DatePicker/DatePickerAndroidExample'),
-  },
-  {
     key: 'Dimensions',
     module: require('../examples/Dimensions/DimensionsExample'),
   },
@@ -191,10 +179,6 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'ShareExample',
     module: require('../examples/Share/ShareExample'),
-  },
-  {
-    key: 'TimePickerAndroidExample',
-    module: require('../examples/TimePicker/TimePickerAndroidExample'),
   },
   {
     key: 'TimerExample',
