@@ -29,6 +29,8 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
@@ -116,6 +118,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private long mLayoutTime = 0l;
   private long mFinishTransactionTime = 0l;
   private long mFinishTransactionCPPTime = 0l;
+
+  // C++ keeps track of commit numbers for telemetry purposes. We don't want to incur a JNI
+  // round-trip cost just for this, so commits from C++ are numbered 0+ and synchronous commits
+  // are 10k+. Since these are only used for perf tracking, it's unlikely for the number of commits
+  // from C++ to exceed 9,999 and it should be obvious what's going on when analyzing performance.
+  private int mCurrentSynchronousCommitNumber = 10000;
 
   public FabricUIManager(
       ReactApplicationContext reactContext,
@@ -290,8 +298,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @DoNotStrip
   @SuppressWarnings("unused")
-  private MountItem createBatchMountItem(MountItem[] items, int size) {
-    return new BatchMountItem(items, size);
+  private MountItem createBatchMountItem(MountItem[] items, int size, int commitNumber) {
+    return new BatchMountItem(items, size, commitNumber);
   }
 
   @DoNotStrip
@@ -321,11 +329,18 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props) {
     long time = SystemClock.uptimeMillis();
+    int commitNumber = mCurrentSynchronousCommitNumber++;
     try {
-      scheduleMountItem(updatePropsMountItem(reactTag, props), time, 0, time, time);
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
+      scheduleMountItem(
+          updatePropsMountItem(reactTag, props), commitNumber, time, 0, 0, 0, 0, 0, 0);
     } catch (Exception ex) {
       // ignore exceptions for now
       // TODO T42943890: Fix animations in Fabric and remove this try/catch
+    } finally {
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END, null, commitNumber);
     }
   }
 
@@ -337,19 +352,55 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @SuppressWarnings("unused")
   private void scheduleMountItem(
       final MountItem mountItem,
+      int commitNumber,
       long commitStartTime,
-      long layoutTime,
+      long diffStartTime,
+      long diffEndTime,
+      long layoutStartTime,
+      long layoutEndTime,
       long finishTransactionStartTime,
       long finishTransactionEndTime) {
-
     // TODO T31905686: support multithreading
-    mCommitStartTime = commitStartTime;
-    mLayoutTime = layoutTime;
-    mFinishTransactionCPPTime = finishTransactionEndTime - finishTransactionStartTime;
-    mFinishTransactionTime = SystemClock.uptimeMillis() - finishTransactionStartTime;
-    mDispatchViewUpdatesTime = SystemClock.uptimeMillis();
+    // When Binding.cpp calls scheduleMountItems during a commit phase, it always calls with
+    // a BatchMountItem. No other sites call into this with a BatchMountItem, and Binding.cpp only
+    // calls scheduleMountItems with a BatchMountItem.
+    boolean isBatchMountItem = mountItem instanceof BatchMountItem;
+
+    if (isBatchMountItem) {
+      mCommitStartTime = commitStartTime;
+      mLayoutTime = layoutEndTime - layoutStartTime;
+      mFinishTransactionCPPTime = finishTransactionEndTime - finishTransactionStartTime;
+      mFinishTransactionTime = SystemClock.uptimeMillis() - finishTransactionStartTime;
+      mDispatchViewUpdatesTime = SystemClock.uptimeMillis();
+    }
+
     synchronized (mMountItemsLock) {
       mMountItems.add(mountItem);
+    }
+
+    // Post markers outside of lock
+    if (isBatchMountItem) {
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_COMMIT_START, null, commitNumber, mCommitStartTime);
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_FINISH_TRANSACTION_START,
+          null,
+          commitNumber,
+          finishTransactionStartTime);
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_FINISH_TRANSACTION_END,
+          null,
+          commitNumber,
+          finishTransactionEndTime);
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_DIFF_START, null, commitNumber, diffStartTime);
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_DIFF_END, null, commitNumber, diffEndTime);
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_LAYOUT_START, null, commitNumber, layoutStartTime);
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_LAYOUT_END, null, commitNumber, layoutEndTime);
+      ReactMarker.logFabricMarker(ReactMarkerConstants.FABRIC_COMMIT_END, null, commitNumber);
     }
 
     if (UiThreadUtil.isOnUiThread()) {

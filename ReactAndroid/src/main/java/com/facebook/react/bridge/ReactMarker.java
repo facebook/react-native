@@ -21,10 +21,22 @@ public class ReactMarker {
     void logMarker(ReactMarkerConstants name, @Nullable String tag, int instanceKey);
   };
 
+  // This is for verbose, Fabric-only logging
+  // In the future we can deprecate the old logMarker API and
+  public interface FabricMarkerListener {
+    void logFabricMarker(
+        ReactMarkerConstants name, @Nullable String tag, int instanceKey, long timestamp);
+  };
+
   // Use a list instead of a set here because we expect the number of listeners
   // to be very small, and we want listeners to be called in a deterministic
   // order.
   private static final List<MarkerListener> sListeners = new ArrayList<>();
+
+  // Use a list instead of a set here because we expect the number of listeners
+  // to be very small, and we want listeners to be called in a deterministic
+  // order. For Fabric-specific events.
+  private static final List<FabricMarkerListener> sFabricMarkerListeners = new ArrayList<>();
 
   @DoNotStrip
   public static void addListener(MarkerListener listener) {
@@ -47,6 +59,50 @@ public class ReactMarker {
     synchronized (sListeners) {
       sListeners.clear();
     }
+  }
+
+  // Specific to Fabric marker listeners
+  @DoNotStrip
+  public static void addFabricListener(FabricMarkerListener listener) {
+    synchronized (sFabricMarkerListeners) {
+      if (!sFabricMarkerListeners.contains(listener)) {
+        sFabricMarkerListeners.add(listener);
+      }
+    }
+  }
+
+  // Specific to Fabric marker listeners
+  @DoNotStrip
+  public static void removeFabricListener(FabricMarkerListener listener) {
+    synchronized (sFabricMarkerListeners) {
+      sFabricMarkerListeners.remove(listener);
+    }
+  }
+
+  // Specific to Fabric marker listeners
+  @DoNotStrip
+  public static void clearFabricMarkerListeners() {
+    synchronized (sFabricMarkerListeners) {
+      sFabricMarkerListeners.clear();
+    }
+  }
+
+  // Specific to Fabric marker listeners
+  @DoNotStrip
+  public static void logFabricMarker(
+      ReactMarkerConstants name, @Nullable String tag, int instanceKey, long timestamp) {
+    synchronized (sFabricMarkerListeners) {
+      for (FabricMarkerListener listener : sFabricMarkerListeners) {
+        listener.logFabricMarker(name, tag, instanceKey, timestamp);
+      }
+    }
+  }
+
+  // Specific to Fabric marker listeners
+  @DoNotStrip
+  public static void logFabricMarker(
+      ReactMarkerConstants name, @Nullable String tag, int instanceKey) {
+    logFabricMarker(name, tag, instanceKey, -1);
   }
 
   @DoNotStrip
@@ -92,5 +148,6 @@ public class ReactMarker {
         listener.logMarker(name, tag, instanceKey);
       }
     }
+    logFabricMarker(name, tag, instanceKey);
   }
 }

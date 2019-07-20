@@ -476,6 +476,8 @@ void Binding::schedulerDidFinishTransaction(
   auto surfaceId = mountingTransaction->getSurfaceId();
   auto &mutations = mountingTransaction->getMutations();
 
+  int64_t commitNumber = telemetry.getCommitNumber();
+
   std::vector<local_ref<jobject>> queue;
   // Upper bound estimation of mount items to be delivered to Java side.
   int size = mutations.size() * 3 + 42;
@@ -609,24 +611,28 @@ void Binding::schedulerDidFinishTransaction(
   static auto createMountItemsBatchContainer =
       jni::findClassStatic(UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(
-              jtypeArray<JMountItem::javaobject>, jint)>(
+              jtypeArray<JMountItem::javaobject>, jint, jint)>(
               "createBatchMountItem");
 
   auto batch = createMountItemsBatchContainer(
-      localJavaUIManager, mountItemsArray.get(), position);
+      localJavaUIManager, mountItemsArray.get(), position, commitNumber);
 
-  static auto scheduleMountItems =
+  static auto scheduleMountItem =
       jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<void(JMountItem::javaobject, jlong, jlong, jlong, jlong)>(
+          ->getMethod<void(JMountItem::javaobject, jint, jlong, jlong, jlong, jlong, jlong, jlong, jlong)>(
               "scheduleMountItem");
 
   long finishTransactionEndTime = getTime();
 
-  scheduleMountItems(
+  scheduleMountItem(
       localJavaUIManager,
       batch.get(),
+      telemetry.getCommitNumber(),
       telemetry.getCommitStartTime(),
-      telemetry.getLayoutTime(),
+      telemetry.getDiffStartTime(),
+      telemetry.getDiffEndTime(),
+      telemetry.getLayoutStartTime(),
+      telemetry.getLayoutEndTime(),
       finishTransactionStartTime,
       finishTransactionEndTime);
 }
