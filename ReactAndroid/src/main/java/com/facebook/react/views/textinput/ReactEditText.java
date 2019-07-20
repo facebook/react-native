@@ -23,7 +23,6 @@ import android.text.method.QwertyKeyListener;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
@@ -80,7 +79,6 @@ public class ReactEditText extends EditText {
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
   private @Nullable ScrollWatcher mScrollWatcher;
   private final InternalKeyListener mKeyListener;
-  private boolean mDetectScrollMovement = false;
   private boolean mOnKeyPress = false;
   private TextAttributes mTextAttributes;
 
@@ -151,31 +149,6 @@ public class ReactEditText extends EditText {
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
     onContentSizeChange();
-  }
-
-  @Override
-  public boolean onTouchEvent(MotionEvent ev) {
-    switch (ev.getAction()) {
-      case MotionEvent.ACTION_DOWN:
-        mDetectScrollMovement = true;
-        // Disallow parent views to intercept touch events, until we can detect if we should be
-        // capturing these touches or not.
-        this.getParent().requestDisallowInterceptTouchEvent(true);
-        break;
-      case MotionEvent.ACTION_MOVE:
-        if (mDetectScrollMovement) {
-          if (!canScrollVertically(-1)
-              && !canScrollVertically(1)
-              && !canScrollHorizontally(-1)
-              && !canScrollHorizontally(1)) {
-            // We cannot scroll, let parent views take care of these touches.
-            this.getParent().requestDisallowInterceptTouchEvent(false);
-          }
-          mDetectScrollMovement = false;
-        }
-        break;
-    }
-    return super.onTouchEvent(ev);
   }
 
   // Consume 'Enter' key events: TextView tries to give focus to the next TextInput, but it can't
