@@ -12,7 +12,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 @DoNotStrip
-public class YogaNodeJNIBase extends YogaNode implements Cloneable {
+public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   /* Those flags needs be in sync with YGJNI.cpp */
   private static final byte MARGIN = 1;
@@ -35,7 +35,7 @@ public class YogaNodeJNIBase extends YogaNode implements Cloneable {
   @Nullable private List<YogaNodeJNIBase> mChildren;
   @Nullable private YogaMeasureFunction mMeasureFunction;
   @Nullable private YogaBaselineFunction mBaselineFunction;
-  private long mNativePointer;
+  protected long mNativePointer;
   @Nullable private Object mData;
 
   @DoNotStrip
@@ -46,37 +46,21 @@ public class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   private boolean mHasNewLayout = true;
 
-  public YogaNodeJNIBase() {
-    mNativePointer = YogaNative.jni_YGNodeNew();
-    if (mNativePointer == 0) {
+  private YogaNodeJNIBase(long nativePointer) {
+    if (nativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
     }
+    mNativePointer = nativePointer;
   }
 
-  public YogaNodeJNIBase(YogaConfig config) {
-    mNativePointer = YogaNative.jni_YGNodeNewWithConfig(config.mNativePointer);
-    if (mNativePointer == 0) {
-      throw new IllegalStateException("Failed to allocate native memory");
-    }
+  YogaNodeJNIBase() {
+    this(YogaNative.jni_YGNodeNew());
   }
 
-  @Override
-  protected void finalize() throws Throwable {
-    try {
-      freeNatives();
-    } finally {
-      super.finalize();
-    }
+  YogaNodeJNIBase(YogaConfig config) {
+    this(YogaNative.jni_YGNodeNewWithConfig(config.mNativePointer));
   }
 
-  /* frees the native underlying YGNode. Useful for testing. */
-  public void freeNatives() {
-    if (mNativePointer > 0) {
-      long nativePointer = mNativePointer;
-      mNativePointer = 0;
-      YogaNative.jni_YGNodeFree(nativePointer);
-    }
-  }
   public void reset() {
     mMeasureFunction = null;
     mBaselineFunction = null;

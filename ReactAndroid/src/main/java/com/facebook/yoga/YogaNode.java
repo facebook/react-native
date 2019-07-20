@@ -10,11 +10,11 @@ import javax.annotation.Nullable;
 
 public abstract class YogaNode {
   public static YogaNode create() {
-    return new YogaNodeJNIBase();
+    return new YogaNodeJNIFinalizer();
   }
 
   public static YogaNode create(YogaConfig config) {
-    return new YogaNodeJNIBase(config);
+    return new YogaNodeJNIFinalizer(config);
   }
 
   public abstract void reset();
