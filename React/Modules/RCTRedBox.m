@@ -161,7 +161,7 @@
 - (NSInteger)bottomSafeViewHeight
 {
     if (@available(iOS 11.0, *)) {
-        return [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+        return RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
     } else {
         return 0;
     }
