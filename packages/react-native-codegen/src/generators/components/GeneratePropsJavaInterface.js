@@ -11,6 +11,7 @@
 'use strict';
 
 import type {
+  CommandTypeShape,
   ComponentShape,
   PropTypeShape,
   SchemaType,
@@ -26,7 +27,7 @@ package com.facebook.react.viewmanagers;
 ::_IMPORTS_::
 
 public interface ::_CLASSNAME_::<T extends ::_EXTEND_CLASSES_::> {
-  ::_PROP_SETTERS_::
+  ::_METHODS_::
 }
 `;
 
@@ -70,7 +71,7 @@ function getJavaValueForProp(
 
 function generatePropsString(component: ComponentShape, componentName: string) {
   if (component.props.length === 0) {
-    return '  // No props';
+    return '// No props';
   }
 
   return component.props
@@ -78,6 +79,51 @@ function generatePropsString(component: ComponentShape, componentName: string) {
       return `void set${toSafeJavaString(
         prop.name,
       )}(T view, ${getJavaValueForProp(prop, componentName)});`;
+    })
+    .join('\n' + '  ');
+}
+
+function getCommandArgJavaType(param) {
+  switch (param.typeAnnotation.type) {
+    case 'BooleanTypeAnnotation':
+      return 'boolean';
+    case 'Int32TypeAnnotation':
+      return 'int';
+    default:
+      (param.typeAnnotation.type: empty);
+      throw new Error('Receieved invalid typeAnnotation');
+  }
+}
+
+function getCommandArguments(
+  command: CommandTypeShape,
+  componentName: string,
+): string {
+  const commandArgs = command.typeAnnotation.params
+    .map(param => {
+      const commandArgJavaType = getCommandArgJavaType(param);
+
+      return `${commandArgJavaType} ${param.name}`;
+    })
+    .join(', ');
+
+  return `T view, ${commandArgs}`;
+}
+
+function generateCommandsString(
+  component: ComponentShape,
+  componentName: string,
+) {
+  return component.commands
+    .map(command => {
+      const safeJavaName = toSafeJavaString(command.name);
+      const lowerJavaName =
+        safeJavaName[0].toLowerCase() + safeJavaName.slice(1);
+
+      return `void ${lowerJavaName}(${getCommandArguments(
+        command,
+        componentName,
+      )});`;
     })
     .join('\n' + '  ');
 }
@@ -121,6 +167,7 @@ module.exports = {
 
         const imports = getImports(component);
         const propsString = generatePropsString(component, componentName);
+        const commandsString = generateCommandsString(component, componentName);
         const extendString = getClassExtendString(component);
 
         const replacedTemplate = template
@@ -132,7 +179,11 @@ module.exports = {
           )
           .replace(/::_CLASSNAME_::/g, className)
           .replace('::_EXTEND_CLASSES_::', extendString)
-          .replace('::_PROP_SETTERS_::', propsString);
+          .replace(
+            '::_METHODS_::',
+            [propsString, commandsString].join('\n' + '  ').trimRight(),
+          )
+          .replace('::_COMMAND_HANDLERS_::', commandsString);
 
         files.set(fileName, replacedTemplate);
       });

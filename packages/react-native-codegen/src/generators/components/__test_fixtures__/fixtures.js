@@ -970,6 +970,57 @@ const COMMANDS: SchemaType = {
   },
 };
 
+const COMMANDS_AND_PROPS: SchemaType = {
+  modules: {
+    Switch: {
+      components: {
+        CommandNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'accessibilityHint',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+                default: '',
+              },
+            },
+          ],
+          commands: [
+            {
+              name: 'hotspotUpdate',
+              optional: false,
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                params: [
+                  {
+                    name: 'x',
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                    },
+                  },
+                  {
+                    name: 'y',
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+};
+
 module.exports = {
   NO_PROPS_NO_EVENTS,
   INTERFACE_ONLY,
@@ -989,4 +1040,5 @@ module.exports = {
   TWO_COMPONENTS_SAME_FILE,
   TWO_COMPONENTS_DIFFERENT_FILES,
   COMMANDS,
+  COMMANDS_AND_PROPS,
 };

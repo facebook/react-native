@@ -58,7 +58,24 @@ package com.facebook.react.viewmanagers;
 import android.view.View;
 
 public interface CommandNativeComponentInterface<T extends View> {
-    // No props
+  // No props
+  void hotspotUpdate(T view, int x, int y);
+  void scrollTo(T view, int y, boolean animated);
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaInterface can generate fixture COMMANDS_AND_PROPS 1`] = `
+Map {
+  "CommandNativeComponentInterface.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public interface CommandNativeComponentInterface<T extends View> {
+  void setAccessibilityHint(T view, String value);
+  void hotspotUpdate(T view, int x, int y);
 }
 ",
 }
@@ -114,7 +131,7 @@ package com.facebook.react.viewmanagers;
 import android.view.View;
 
 public interface InterfaceOnlyComponentInterface<T extends View> {
-    // No props
+  // No props
 }
 ",
 }
@@ -210,7 +227,7 @@ package com.facebook.react.viewmanagers;
 import android.view.View;
 
 public interface NoPropsNoEventsComponentInterface<T extends View> {
-    // No props
+  // No props
 }
 ",
 }
