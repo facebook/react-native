@@ -251,7 +251,7 @@ using namespace facebook::react;
   // * `RCTImageLoader` should be moved to `RNImageComponentView`.
   // * `ReactNativeConfig` should be set by outside product code.
   _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
-  _contextContainer->insert("RCTImageLoader", wrapManagedObject([_bridge imageLoader]));
+  _contextContainer->insert("RCTImageLoader", wrapManagedObject([_bridge moduleForClass:[RCTImageLoader class]]));
 
   return _contextContainer;
 }

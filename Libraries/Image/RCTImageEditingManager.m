@@ -43,38 +43,39 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     [RCTConvert CGSize:cropData[@"size"]]
   };
 
-  [_bridge.imageLoader loadImageWithURLRequest:imageRequest callback:^(NSError *error, UIImage *image) {
-    if (error) {
-      errorCallback(error);
-      return;
-    }
+  [[_bridge moduleForClass:[RCTImageLoader class]]
+   loadImageWithURLRequest:imageRequest callback:^(NSError *error, UIImage *image) {
+     if (error) {
+       errorCallback(error);
+       return;
+     }
 
-    // Crop image
-    CGSize targetSize = rect.size;
-    CGRect targetRect = {{-rect.origin.x, -rect.origin.y}, image.size};
-    CGAffineTransform transform = RCTTransformFromTargetRect(image.size, targetRect);
-    UIImage *croppedImage = RCTTransformImage(image, targetSize, image.scale, transform);
+     // Crop image
+     CGSize targetSize = rect.size;
+     CGRect targetRect = {{-rect.origin.x, -rect.origin.y}, image.size};
+     CGAffineTransform transform = RCTTransformFromTargetRect(image.size, targetRect);
+     UIImage *croppedImage = RCTTransformImage(image, targetSize, image.scale, transform);
 
-    // Scale image
-    if (cropData[@"displaySize"]) {
-      targetSize = [RCTConvert CGSize:cropData[@"displaySize"]]; // in pixels
-      RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:cropData[@"resizeMode"] ?: @"contain"];
-      targetRect = RCTTargetRect(croppedImage.size, targetSize, 1, resizeMode);
-      transform = RCTTransformFromTargetRect(croppedImage.size, targetRect);
-      croppedImage = RCTTransformImage(croppedImage, targetSize, image.scale, transform);
-    }
+     // Scale image
+     if (cropData[@"displaySize"]) {
+       targetSize = [RCTConvert CGSize:cropData[@"displaySize"]]; // in pixels
+       RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:cropData[@"resizeMode"] ?: @"contain"];
+       targetRect = RCTTargetRect(croppedImage.size, targetSize, 1, resizeMode);
+       transform = RCTTransformFromTargetRect(croppedImage.size, targetRect);
+       croppedImage = RCTTransformImage(croppedImage, targetSize, image.scale, transform);
+     }
 
-    // Store image
-    [self->_bridge.imageStoreManager storeImage:croppedImage withBlock:^(NSString *croppedImageTag) {
-      if (!croppedImageTag) {
-        NSString *errorMessage = @"Error storing cropped image in RCTImageStoreManager";
-        RCTLogWarn(@"%@", errorMessage);
-        errorCallback(RCTErrorWithMessage(errorMessage));
-        return;
-      }
-      successCallback(@[croppedImageTag]);
-    }];
-  }];
+     // Store image
+     [self->_bridge.imageStoreManager storeImage:croppedImage withBlock:^(NSString *croppedImageTag) {
+       if (!croppedImageTag) {
+         NSString *errorMessage = @"Error storing cropped image in RCTImageStoreManager";
+         RCTLogWarn(@"%@", errorMessage);
+         errorCallback(RCTErrorWithMessage(errorMessage));
+         return;
+       }
+       successCallback(@[croppedImageTag]);
+     }];
+   }];
 }
 
 @end

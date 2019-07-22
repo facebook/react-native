@@ -87,7 +87,6 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 {
   if ((self = [super initWithFrame:CGRectZero])) {
     _bridge = bridge;
-
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center addObserver:self
                selector:@selector(clearImageIfDetached)
@@ -328,14 +327,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     };
 
     _reloadImageCancellationBlock =
-    [_bridge.imageLoader loadImageWithURLRequest:source.request
-                                            size:imageSize
-                                           scale:imageScale
-                                         clipped:NO
-                                      resizeMode:_resizeMode
-                                   progressBlock:progressHandler
-                                partialLoadBlock:partialLoadHandler
-                                 completionBlock:completionHandler];
+    [[_bridge moduleForClass:[RCTImageLoader class]] loadImageWithURLRequest:source.request
+                                                                        size:imageSize
+                                                                       scale:imageScale
+                                                                     clipped:NO
+                                                                  resizeMode:_resizeMode
+                                                               progressBlock:progressHandler
+                                                            partialLoadBlock:partialLoadHandler
+                                                             completionBlock:completionHandler];
   } else {
     [self clearImage];
   }

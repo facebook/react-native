@@ -141,7 +141,7 @@ RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
       inputURI = request.URL;
       saveBlock();
     } else {
-      [self.bridge.imageLoader loadImageWithURLRequest:request callback:^(NSError *error, UIImage *image) {
+      [[self.bridge moduleForClass:[RCTImageLoader class]] loadImageWithURLRequest:request callback:^(NSError *error, UIImage *image) {
         if (error) {
           reject(kErrorUnableToLoad, nil, error);
           return;
