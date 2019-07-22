@@ -544,8 +544,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * Replaces the View specified by oldTag with the View specified by newTag within oldTag's parent.
    * This resolves to a simple {@link #manageChildren} call, but React doesn't have enough info in
    * JS to formulate it itself.
+   *
+   * @deprecated This method will not be available in Fabric UIManager.
    */
   @ReactMethod
+  @Deprecated
   public void replaceExistingNonRootView(int oldTag, int newTag) {
     mUIImplementation.replaceExistingNonRootView(oldTag, newTag);
   }
