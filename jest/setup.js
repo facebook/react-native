@@ -348,4 +348,19 @@ jest
   .mock(
     '../Libraries/Utilities/verifyComponentAttributeEquivalence',
     () => function() {},
-  );
+  )
+  .mock('../Libraries/Components/View/ViewNativeComponent', () => {
+    const React = require('react');
+    const Component = class extends React.Component {
+      render() {
+        return React.createElement('View', this.props, this.props.children);
+      }
+    };
+
+    Component.displayName = 'View';
+
+    return {
+      __esModule: true,
+      default: Component,
+    };
+  });
