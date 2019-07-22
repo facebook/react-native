@@ -487,6 +487,8 @@ struct RCTInstanceCallback : public InstanceCallback {
     }
     return moduleData.instance;
   }
+  
+  static NSSet<NSString *> *ignoredModuleLoadFailures = [NSSet setWithArray: @[@"UIManager"]];
 
   // Module may not be loaded yet, so attempt to force load it here.
   const BOOL result = [self.delegate respondsToSelector:@selector(bridge:didNotFindModule:)] &&
@@ -494,6 +496,8 @@ struct RCTInstanceCallback : public InstanceCallback {
   if (result) {
     // Try again.
     moduleData = _moduleDataByName[moduleName];
+  } else if ([ignoredModuleLoadFailures containsObject: moduleName]) {
+    RCTLogWarn(@"Unable to find module for %@", moduleName);
   } else {
     RCTLogError(@"Unable to find module for %@", moduleName);
   }
