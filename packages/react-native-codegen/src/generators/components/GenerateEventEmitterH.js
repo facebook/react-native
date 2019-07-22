@@ -102,7 +102,7 @@ function getNativeTypeFromAnnotation(
       );
     default:
       (type: empty);
-      throw new Error(`Receieved invalid event property type ${type}`);
+      throw new Error(`Received invalid event property type ${type}`);
   }
 }
 function generateEnum(structs, componentName, options, nameParts) {
@@ -175,7 +175,7 @@ function generateStruct(
       default:
         (property: empty);
         throw new Error(
-          `Receieved invalid event property type ${property.type}`,
+          `Received invalid event property type ${property.type}`,
         );
     }
   });

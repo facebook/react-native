@@ -113,7 +113,7 @@ function getCommandProperties(commandTypeName, types) {
 
   if (typeAlias.type !== 'InterfaceDeclaration') {
     throw new Error(
-      `The type argument for codegenNativeCommands must be an interface, receieved ${
+      `The type argument for codegenNativeCommands must be an interface, received ${
         typeAlias.type
       }`,
     );

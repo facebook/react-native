@@ -225,7 +225,7 @@ YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
     int childIndex) {
   SystraceSection s("YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector");
 
-  // At this point it is garanteed that all shadow nodes associated with yoga
+  // At this point it is guaranteed that all shadow nodes associated with yoga
   // nodes are `YogaLayoutableShadowNode` subclasses.
   auto parentNode =
       static_cast<YogaLayoutableShadowNode *>(parentYogaNode->getContext());

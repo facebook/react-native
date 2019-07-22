@@ -20,6 +20,6 @@ type NativeProps = $ReadOnly<{|
   name?: WithDefault<string, ''>,
 |}>;
 
-// NOTE: This compoenent is not implemented in paper
+// NOTE: This component is not implemented in paper
 // Do not require this file in paper builds
 export default codegenNativeComponent<NativeProps>('UnimplementedNativeView');

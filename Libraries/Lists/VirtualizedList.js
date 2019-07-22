@@ -1180,7 +1180,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       if (!this._scrollRef) {
         return;
       }
-      // We are asuming that getOutermostParentListRef().getScrollRef()
+      // We are assuming that getOutermostParentListRef().getScrollRef()
       // is a non-null reference to a ScrollView
       this._scrollRef.measureLayout(
         this.context.virtualizedList

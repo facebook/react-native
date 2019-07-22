@@ -279,7 +279,7 @@ module.exports = {
    * > **NOTE**: Exercise caution as abusing this can tax you in terms of
    * > optimizations.
    * >
-   * > IDs enable optimizations through the bridge and memory in general. Refering
+   * > IDs enable optimizations through the bridge and memory in general. Referring
    * > to style objects directly will deprive you of these optimizations.
    *
    * Example:

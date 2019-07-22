@@ -136,7 +136,7 @@ RCT_EXPORT_MODULE()
 - (void)setImageCache:(id<RCTImageCache>)cache
 {
   if (_imageCache) {
-    RCTLogWarn(@"RCTImageCache was already set and has now been overriden.");
+    RCTLogWarn(@"RCTImageCache was already set and has now been overridden.");
   }
   _imageCache = cache;
 }

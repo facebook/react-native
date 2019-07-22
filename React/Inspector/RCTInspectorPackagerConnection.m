@@ -246,7 +246,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return;
   }
 
-  // The corresopnding android code has a lot of custom config options for
+  // The corresponding android code has a lot of custom config options for
   // timeouts, but it appears the iOS RCTSRWebSocket API doesn't have the same
   // implemented options.
   _webSocket = [[RCTSRWebSocket alloc] initWithURL:_url];

@@ -51,7 +51,7 @@ const _cookies: {[key: string]: number} = {};
 const PRINT_TO_CONSOLE: false = false; // Type as false to prevent accidentally committing `true`;
 
 /**
- * This function creates peformance loggers that can be used to collect and log
+ * This function creates performance loggers that can be used to collect and log
  * various performance data such as timespans, points and extras.
  * The loggers need to have minimal overhead since they're used in production.
  */

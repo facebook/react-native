@@ -159,7 +159,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       setRole(info, accessibilityRole, host.getContext());
     }
 
-    // states are changable.
+    // states are changeable.
     final ReadableArray accessibilityStates =
         (ReadableArray) host.getTag(R.id.accessibility_states);
     final ReadableMap accessibilityState = (ReadableMap) host.getTag(R.id.accessibility_state);

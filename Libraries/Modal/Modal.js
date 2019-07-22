@@ -169,7 +169,7 @@ class Modal extends React.Component<Props> {
 
   getChildContext() {
     // Reset the context so VirtualizedList doesn't get confused by nesting
-    // in the React tree that doesn't reflect the native component heirarchy.
+    // in the React tree that doesn't reflect the native component hierarchy.
     return {
       virtualizedList: null,
     };

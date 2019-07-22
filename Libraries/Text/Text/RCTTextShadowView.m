@@ -116,7 +116,7 @@
       [descendantViews addObject:descendantView];
     }];
 
-    // Removing all references to Shadow Views to avoid unnececery retainning.
+    // Removing all references to Shadow Views to avoid unnecessary retaining.
     [textStorage removeAttribute:RCTBaseTextShadowViewEmbeddedShadowViewAttributeName range:NSMakeRange(0, textStorage.length)];
 
     [textView setTextStorage:textStorage

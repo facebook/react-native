@@ -144,7 +144,7 @@ NSString *const RCTContentDidAppearNotification;
  * The intrinsic size of the root view's content. This is set right before the
  * `rootViewDidChangeIntrinsicSize` method of `RCTRootViewDelegate` is called.
  * This property is deprecated and will be removed in next releases.
- * Use UIKit `intrinsicContentSize` propery instead.
+ * Use UIKit `intrinsicContentSize` property instead.
  */
 @property (readonly, nonatomic, assign) CGSize intrinsicSize
 __deprecated_msg("Use `intrinsicContentSize` instead.");

@@ -110,7 +110,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)performUpdate
 {
   _needsUpdate = NO;
-  // To be overidden by subclasses
+  // To be overridden by subclasses
   // This method is called on a node only if it has been marked for update
   // during the current update loop
 }

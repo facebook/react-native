@@ -155,7 +155,7 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
           return 'Point';
         default:
           (typeAnnotation.name: empty);
-          throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');
+          throw new Error('Received unknown NativePrimitiveTypeAnnotation');
       }
     case 'ArrayTypeAnnotation': {
       if (typeAnnotation.elementType.type === 'ArrayTypeAnnotation') {
@@ -177,7 +177,7 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
       return getEnumName(componentName, prop.name);
     default:
       (typeAnnotation: empty);
-      throw new Error('Receieved invalid typeAnnotation');
+      throw new Error('Received invalid typeAnnotation');
   }
 }
 
@@ -208,7 +208,7 @@ function convertDefaultTypeToString(componentName: string, prop): string {
           return '';
         default:
           (typeAnnotation.name: empty);
-          throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');
+          throw new Error('Received unknown NativePrimitiveTypeAnnotation');
       }
     case 'ArrayTypeAnnotation': {
       switch (typeAnnotation.elementType.type) {
@@ -234,7 +234,7 @@ function convertDefaultTypeToString(componentName: string, prop): string {
       )}`;
     default:
       (typeAnnotation: empty);
-      throw new Error('Receieved invalid typeAnnotation');
+      throw new Error('Received invalid typeAnnotation');
   }
 }
 
