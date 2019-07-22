@@ -558,8 +558,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * receipt. TODO: The method name is incorrect and will be renamed, #6033872
    *
    * @param containerTag the tag of the container for which the subviews must be removed
+   * @deprecated This method will not be available in Fabric UIManager.
    */
   @ReactMethod
+  @Deprecated
   public void removeSubviewsFromContainerWithID(int containerTag) {
     mUIImplementation.removeSubviewsFromContainerWithID(containerTag);
   }
