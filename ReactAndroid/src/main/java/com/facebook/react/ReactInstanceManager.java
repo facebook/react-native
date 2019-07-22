@@ -369,15 +369,6 @@ public class ReactInstanceManager {
     if (mUseDeveloperSupport && mJSMainModulePath != null) {
       final DeveloperSettings devSettings = mDevSupportManager.getDevSettings();
 
-      // If remote JS debugging is enabled, load from dev server.
-      if (mDevSupportManager.hasUpToDateJSBundleInCache()
-          && !devSettings.isRemoteJSDebugEnabled()) {
-        // If there is a up-to-date bundle downloaded from server,
-        // with remote JS debugging disabled, always use that.
-        onJSBundleLoadedFromServer(null);
-        return;
-      }
-
       if (!Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
         if (mBundleLoader == null) {
           mDevSupportManager.handleReloadJS();
@@ -392,6 +383,11 @@ public class ReactInstanceManager {
                         public void run() {
                           if (packagerIsRunning) {
                             mDevSupportManager.handleReloadJS();
+                          } else if (mDevSupportManager.hasUpToDateJSBundleInCache()
+                              && !devSettings.isRemoteJSDebugEnabled()) {
+                            // If there is a up-to-date bundle downloaded from server,
+                            // with remote JS debugging disabled, always use that.
+                            onJSBundleLoadedFromServer(null);
                           } else {
                             // If dev server is down, disable the remote JS debugging.
                             devSettings.setRemoteJSDebugEnabled(false);
