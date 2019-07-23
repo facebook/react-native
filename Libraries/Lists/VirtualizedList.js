@@ -692,6 +692,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       keyExtractor,
       getItemLayout,
       renderItem,
+      ListItemComponent,
       extraData,
       debug,
     } = this.props;
@@ -723,6 +724,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           onUnmount={this._onCellUnmount}
           getItemLayout={getItemLayout}
           renderItem={renderItem}
+          ListItemComponent={ListItemComponent}
           extraData={extraData}
           debug={debug}
           ref={ref => {
@@ -1688,10 +1690,9 @@ type CellRendererProps = {
   onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
   prevCellKey: ?string,
   getItemLayout?: ?Function,
-  renderItem: renderItemType,
+  renderItem: $PropertyType<OptionalProps, 'renderItem'>,
   ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
   debug: ?boolean,
-  prevCellKey: ?string,
 };
 
 type CellRendererState = {
@@ -1829,9 +1830,6 @@ class CellRenderer extends React.Component<
     );
 
     const onLayout =
-      /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.68 was deployed. To see the error delete this
-       * comment and run Flow. */
       getItemLayout && !debug && !fillRateHelper.enabled()
         ? undefined
         : this._onLayout;
