@@ -103,7 +103,7 @@
     "pretty-format": "^24.7.0",
     "promise": "^7.1.1",
     "prop-types": "^15.7.2",
-    "react-devtools-core": "^3.6.0",
+    "react-devtools-core": "^3.6.2",
     "react-refresh": "^0.2.0",
     "regenerator-runtime": "^0.13.2",
     "scheduler": "0.14.0",
