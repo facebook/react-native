@@ -15,10 +15,10 @@ import type {SchemaType} from '../../CodegenSchema';
 type FilesOutput = Map<string, string>;
 
 const propertyHeaderTemplate =
-  'static jsi::Value __hostFunction_Native::_MODULE_NAME_::SpecJSI_::_PROPERTY_NAME_::(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {';
+  'static jsi::Value __hostFunction_Native::_MODULE_NAME_::CxxSpecJSI_::_PROPERTY_NAME_::(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {';
 
 const propertyCastTemplate =
-  'static_cast<Native::_MODULE_NAME_::SpecJSI *>(&turboModule)->::_PROPERTY_NAME_::(rt::_ARGS_::);';
+  'static_cast<Native::_MODULE_NAME_::CxxSpecJSI *>(&turboModule)->::_PROPERTY_NAME_::(rt::_ARGS_::);';
 
 const nonvoidPropertyTemplate = `
 ${propertyHeaderTemplate}
@@ -32,12 +32,12 @@ ${propertyHeaderTemplate}
 }`;
 
 const proprertyDefTemplate =
-  '  methodMap_["::_PROPERTY_NAME_::"] = MethodMetadata {::_ARGS_COUNT_::, __hostFunction_Native::_MODULE_NAME_::SpecJSI_::_PROPERTY_NAME_::};';
+  '  methodMap_["::_PROPERTY_NAME_::"] = MethodMetadata {::_ARGS_COUNT_::, __hostFunction_Native::_MODULE_NAME_::CxxSpecJSI_::_PROPERTY_NAME_::};';
 
 const moduleTemplate = `
 ::_MODULE_PROPERTIES_::
 
-Native::_MODULE_NAME_::SpecJSI::Native::_MODULE_NAME_::SpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+Native::_MODULE_NAME_::CxxSpecJSI::Native::_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
   : TurboModule("::_MODULE_NAME_::", jsInvoker) {
 ::_PROPERTIES_MAP_::
 }`.trim();
