@@ -145,8 +145,8 @@ Error: ${e.message}`;
       }
     });
 
-    client.on('update', () => {
-      if (client.isEnabled()) {
+    client.on('update', ({isInitialUpdate}) => {
+      if (client.isEnabled() && !isInitialUpdate) {
         dismissRedbox();
       }
     });
