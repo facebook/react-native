@@ -47,4 +47,10 @@ describe('stringifySafe', () => {
     const result = stringifySafe(arg);
     expect(result).toEqual('["object" failed to stringify]');
   });
+
+  it('stringifySafe stringifies error messages', () => {
+    const error = new Error('error');
+    const result = stringifySafe(error);
+    expect(result).toEqual('Error: error');
+  });
 });
