@@ -35,7 +35,13 @@ if (__DEV__) {
 
     register: ReactRefreshRuntime.register,
 
-    performReactRefresh: ReactRefreshRuntime.performReactRefresh,
+    performReactRefresh() {
+      if (ReactRefreshRuntime.hasUnrecoverableErrors()) {
+        NativeDevSettings.reload();
+        return;
+      }
+      ReactRefreshRuntime.performReactRefresh();
+    },
   };
 
   (require: any).Refresh = Refresh;
