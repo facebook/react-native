@@ -865,7 +865,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       if (initializeImmediately && RCTIsMainQueue()) {
         block();
       } else {
-        // We've already checked that dispatchGroup is non-null, but this satisifies the
+        // We've already checked that dispatchGroup is non-null, but this satisfies the
         // Xcode analyzer
         if (dispatchGroup) {
           dispatch_group_async(dispatchGroup, dispatch_get_main_queue(), block);
@@ -1153,7 +1153,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   // work to the JS queue directly.
 
   if (self.loading || _pendingCount > 0) {
-    // From the callers' perspecive:
+    // From the callers' perspective:
 
     // Phase 1: jsQueueBlocks are added to the queue; _pendingCount is
     // incremented for each.  If the first block is created after self.loading is

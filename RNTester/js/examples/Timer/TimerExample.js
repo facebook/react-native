@@ -208,7 +208,7 @@ class TimerTester extends React.Component<TimerTesterProps> {
           this._immediateId = setImmediate(this._run);
         };
       } else if (this.props.type === 'setInterval') {
-        this._iters = 30; // Only used for forceUpdate periodicidy
+        this._iters = 30; // Only used for forceUpdate periodicity
         this._timerFn = null;
         this._intervalId = setInterval(this._run, this.props.dt);
       }

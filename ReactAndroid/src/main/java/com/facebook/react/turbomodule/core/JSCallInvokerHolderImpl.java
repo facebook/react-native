@@ -13,7 +13,7 @@ import com.facebook.soloader.SoLoader;
 /**
  * JSCallInvoker is created at a different time/place (i.e: in CatalystInstance) than
  * TurboModuleManager. Therefore, we need to wrap JSCallInvoker within a hybrid class so that we may
- * pass it from CatalystInstance, through Java, to TurboMoudleManager::initHybrid.
+ * pass it from CatalystInstance, through Java, to TurboModuleManager::initHybrid.
  */
 public class JSCallInvokerHolderImpl implements JSCallInvokerHolder {
   static {

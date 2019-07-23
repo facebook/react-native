@@ -143,7 +143,7 @@ static void calculateShadowViewMutations(
     ShadowView const &parentShadowView,
     ShadowViewNodePair::List const &oldChildPairs,
     ShadowViewNodePair::List const &newChildPairs) {
-  // The current version of the algorithm is otimized for simplicity,
+  // The current version of the algorithm is optimized for simplicity,
   // not for performance or optimal result.
 
   if (oldChildPairs == newChildPairs) {

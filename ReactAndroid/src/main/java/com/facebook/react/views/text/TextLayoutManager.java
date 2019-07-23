@@ -149,7 +149,7 @@ public class TextLayoutManager {
     SpannableStringBuilder sb = new SpannableStringBuilder();
 
     // The {@link SpannableStringBuilder} implementation require setSpan operation to be called
-    // up-to-bottom, otherwise all the spannables that are withing the region for which one may set
+    // up-to-bottom, otherwise all the spannables that are within the region for which one may set
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
 

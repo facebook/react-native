@@ -124,7 +124,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         _instance = _moduleProvider ? _moduleProvider() : nil;
         RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
         if (!_instance) {
-          // Module init returned nil, probably because automatic instantatiation
+          // Module init returned nil, probably because automatic instantiation
           // of the module is not supported, and it is supposed to be passed in to
           // the bridge constructor. Mark setup complete to avoid doing more work.
           _setupComplete = YES;

@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIView<RCTComponentViewProtocol> *)componentViewByTag:(ReactTag)tag;
 
 /**
- * Returns `tag` assosiated with given `componentView`.
+ * Returns `tag` associated with given `componentView`.
  */
 - (ReactTag)tagByComponentView:(UIView<RCTComponentViewProtocol> *)componentView;
 

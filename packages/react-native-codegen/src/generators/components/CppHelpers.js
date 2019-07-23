@@ -40,7 +40,7 @@ function getCppTypeForAnnotation(
       return 'Float';
     default:
       (type: empty);
-      throw new Error(`Receieved invalid typeAnnotation ${type}`);
+      throw new Error(`Received invalid typeAnnotation ${type}`);
   }
 }
 

@@ -14,7 +14,7 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
 {
   RCTNativeAnimatedNodesManager *_nodesManager;
 
-  // Oparations called after views have been updated.
+  // Operations called after views have been updated.
   NSMutableArray<AnimatedOperation> *_operations;
   // Operations called before views have been updated.
   NSMutableArray<AnimatedOperation> *_preOperations;

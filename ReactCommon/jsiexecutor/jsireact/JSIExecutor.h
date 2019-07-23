@@ -28,7 +28,7 @@ namespace react {
 // error report. Note that the errorMessageProducer will be invoked
 // asynchronously on a different thread.
 //
-// The timeout behavior does NOT caues the invokee to aborted. If the invokee
+// The timeout behavior does NOT cause the invokee to aborted. If the invokee
 // blocks forever, so will the ScopedTimeoutInvoker (but the soft error may
 // still be reported).
 //

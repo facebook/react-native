@@ -234,11 +234,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 }
 
 /***
- * To ensure compatibilty when using UIManager.measure and RCTTouchHandler, we have to adopt
+ * To ensure compatibility when using UIManager.measure and RCTTouchHandler, we have to adopt
  * UIManager.measure's behavior in finding a "root view".
  * Usually RCTTouchHandler is already attached to a root view but in some cases (e.g. Modal),
  * we are instead attached to some RCTView subtree. This is also the case when embedding some RN
- * views inside a seperate ViewController not controlled by RN.
+ * views inside a separate ViewController not controlled by RN.
  * This logic will either find the nearest rootView, or go all the way to the UIWindow.
  * While this is not optimal, it is exactly what UIManager.measure does, and what Touchable.js
  * relies on.

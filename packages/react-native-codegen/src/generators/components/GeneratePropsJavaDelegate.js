@@ -59,7 +59,7 @@ function getJavaValueForProp(
           return '(ReadableMap) value';
         default:
           (typeAnnotation.name: empty);
-          throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');
+          throw new Error('Received unknown NativePrimitiveTypeAnnotation');
       }
     case 'ArrayTypeAnnotation': {
       return '(ReadableArray) value';
@@ -68,7 +68,7 @@ function getJavaValueForProp(
       return '(String) value';
     default:
       (typeAnnotation: empty);
-      throw new Error('Receieved invalid typeAnnotation');
+      throw new Error('Received invalid typeAnnotation');
   }
 }
 

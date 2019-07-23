@@ -118,7 +118,7 @@ function generateSetters(
           `.trim();
         default:
           (eventProperty: empty);
-          throw new Error('Receieved invalid event property type');
+          throw new Error('Received invalid event property type');
       }
     })
     .join('\n');

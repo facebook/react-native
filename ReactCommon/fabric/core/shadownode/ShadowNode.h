@@ -139,7 +139,7 @@ class ShadowNode : public virtual Sealable,
       int suggestedIndex = -1);
 
   /*
-   * Sets local data assosiated with the node.
+   * Sets local data associated with the node.
    * The node must be unsealed at this point.
    */
   void setLocalData(const SharedLocalData &localData);

@@ -53,7 +53,7 @@ class DebugStringConvertible {
   // Default implementation returns "Node".
   virtual std::string getDebugName() const;
 
-  // Returns a value assosiate with the object.
+  // Returns a value associate with the object.
   // Default implementation returns an empty string.
   virtual std::string getDebugValue() const;
 
@@ -111,7 +111,7 @@ std::string toString(void const *value);
  * - `getDebugName`: Returns a name of the object. Default implementation
  * returns "Node".
  *
- * - `getDebugValue`: Returns a value assosiate with the object. Default
+ * - `getDebugValue`: Returns a value associate with the object. Default
  * implementation returns an empty string.
  *
  * - `getDebugChildren`: Returns a list of `DebugStringConvertible`-compatible

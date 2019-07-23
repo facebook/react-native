@@ -67,7 +67,7 @@ class AnExTilt extends React.Component<Object, any> {
   _startBurnsZoom() {
     this.state.burns.setValue(1); // reset to beginning
     Animated.decay(this.state.burns, {
-      velocity: 1, // sublte zoom
+      velocity: 1, // subtle zoom
       deceleration: 0.9999, // slow decay
     }).start();
   }

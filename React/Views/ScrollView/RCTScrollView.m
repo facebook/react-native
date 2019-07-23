@@ -170,7 +170,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     [self.panGestureRecognizer addTarget:self action:@selector(handleCustomPan:)];
 
     if ([self respondsToSelector:@selector(setSemanticContentAttribute:)]) {
-      // We intentionaly force `UIScrollView`s `semanticContentAttribute` to `LTR` here
+      // We intentionally force `UIScrollView`s `semanticContentAttribute` to `LTR` here
       // because this attribute affects a position of vertical scrollbar; we don't want this
       // scrollbar flip because we also flip it with whole `UIScrollView` flip.
       self.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
@@ -367,7 +367,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   [super didMoveToWindow];
   // ScrollView enables pinch gesture late in its lifecycle. So simply setting it
-  // in the setter gets overriden when the view loads.
+  // in the setter gets overridden when the view loads.
   self.pinchGestureRecognizer.enabled = _pinchGestureEnabled;
 }
 #endif //TARGET_OS_TV

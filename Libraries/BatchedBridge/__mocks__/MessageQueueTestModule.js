@@ -11,7 +11,7 @@
 
 /**
  * Dummy module that only exists for the sake of proving that the message queue
- * correctly dispatches to commonJS modules. The `testHook` is overriden by test
+ * correctly dispatches to commonJS modules. The `testHook` is overridden by test
  * cases.
  */
 const MessageQueueTestModule = {

@@ -10286,7 +10286,7 @@ function updateReducer(reducer, initialArg, init) {
         }
 
         hook.memoizedState = newState;
-        // Don't persist the state accumlated from the render phase updates to
+        // Don't persist the state accumulated from the render phase updates to
         // the base state unless the queue is empty.
         // TODO: Not sure if this is the desired semantics, but it's what we
         // do for gDSFP. I can't remember why.
@@ -14544,7 +14544,7 @@ function completeWork(current, workInProgress, renderExpirationTime) {
       }
 
       if (nextDidTimeout && !prevDidTimeout) {
-        // If this subtreee is running in concurrent mode we can suspend,
+        // If this subtree is running in concurrent mode we can suspend,
         // otherwise we won't suspend.
         // TODO: This will still suspend a synchronous tree if anything
         // in the concurrent tree already suspended during this render.
@@ -14558,7 +14558,7 @@ function completeWork(current, workInProgress, renderExpirationTime) {
         // TODO: Only schedule updates if not prevDidTimeout.
         if (nextDidTimeout) {
           // If this boundary just timed out, schedule an effect to attach a
-          // retry listener to the proimse. This flag is also used to hide the
+          // retry listener to the promise. This flag is also used to hide the
           // primary children.
           workInProgress.effectTag |= Update;
         }
@@ -14567,7 +14567,7 @@ function completeWork(current, workInProgress, renderExpirationTime) {
         // TODO: Only schedule updates if these values are non equal, i.e. it changed.
         if (nextDidTimeout || prevDidTimeout) {
           // If this boundary just timed out, schedule an effect to attach a
-          // retry listener to the proimse. This flag is also used to hide the
+          // retry listener to the promise. This flag is also used to hide the
           // primary children. In mutation mode, we also need the flag to
           // *unhide* children that were previously hidden, so check if the
           // is currently timed out, too.
@@ -16211,7 +16211,7 @@ function throwException(
               sourceFiber.tag = IncompleteClassComponent;
             } else {
               // When we try rendering again, we should not reuse the current fiber,
-              // since it's known to be in an inconsistent state. Use a force updte to
+              // since it's known to be in an inconsistent state. Use a force update to
               // prevent a bail out.
               var update = createUpdate(Sync);
               update.tag = ForceUpdate;
@@ -16601,7 +16601,7 @@ function scheduleUpdateOnFiber(fiber, expirationTime) {
         // Flush the synchronous work now, wnless we're already working or inside
         // a batch. This is intentionally inside scheduleUpdateOnFiber instead of
         // scheduleCallbackForFiber to preserve the ability to schedule a callback
-        // without immediately flushing it. We only do this for user-initated
+        // without immediately flushing it. We only do this for user-initiated
         // updates, to preserve historical behavior of sync mode.
         flushImmediateQueue();
       }
@@ -17068,7 +17068,7 @@ function renderRoot(root, expirationTime, isSync) {
       if (!isSync) {
         // If we're rendering asynchronously, it's possible the error was
         // caused by tearing due to a mutation during an event. Try rendering
-        // one more time without yiedling to events.
+        // one more time without yielding to events.
         prepareFreshStack(root, expirationTime);
         scheduleCallback(
           ImmediatePriority,

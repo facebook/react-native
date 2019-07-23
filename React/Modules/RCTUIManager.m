@@ -279,7 +279,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     @"Attempt to register rootTag (%@) which is not actually root tag.", rootTag);
 
   RCTAssert(![_rootViewTags containsObject:rootTag],
-    @"Attempt to register rootTag (%@) which was already registred.", rootTag);
+    @"Attempt to register rootTag (%@) which was already registered.", rootTag);
 
   [_rootViewTags addObject:rootTag];
 
@@ -1203,7 +1203,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
   // so we have to maintain this collection properly.
   NSArray<NSString *> *previousProps;
   if ((previousProps = [_shadowViewsWithUpdatedProps objectForKey:shadowView])) {
-    // Merging already registred changed props and new ones.
+    // Merging already registered changed props and new ones.
     NSMutableSet *set = [NSMutableSet setWithArray:previousProps];
     [set addObjectsFromArray:props];
     props = [set allObjects];
@@ -1324,7 +1324,7 @@ RCT_EXPORT_METHOD(measureInWindow:(nonnull NSNumber *)reactTag
 }
 
 /**
- * Returs if the shadow view provided has the `ancestor` shadow view as
+ * Returns if the shadow view provided has the `ancestor` shadow view as
  * an actual ancestor.
  */
 RCT_EXPORT_METHOD(viewIsDescendantOf:(nonnull NSNumber *)reactTag
