@@ -99,10 +99,8 @@ class HermesExecutorHolder
 
   static jni::local_ref<jhybriddata> initHybridDefaultConfig(
       jni::alias_ref<jclass>) {
-    JReactMarker::setLogPerfMarkerIfNeeded();
-
     return makeCxxInstance(
-        folly::make_unique<HermesExecutorFactory>(installBindings));
+        folly::make_unique<HermesExecutorFactory>(installBindings, JReactMarker::setLogPerfMarkerIfNeeded()));
   }
 
   static jni::local_ref<jhybriddata> initHybrid(
@@ -114,7 +112,6 @@ class HermesExecutorHolder
       jni::alias_ref<jsi::jni::HermesMemoryDumper> heapDumper,
       jlong tripWireCooldownMS,
       jlong tripWireLimitBytes) {
-    JReactMarker::setLogPerfMarkerIfNeeded();
     auto runtimeConfig = makeRuntimeConfig(
         heapSizeMB,
         es6Symbol,
@@ -124,7 +121,7 @@ class HermesExecutorHolder
         tripWireCooldownMS,
         tripWireLimitBytes);
     return makeCxxInstance(folly::make_unique<HermesExecutorFactory>(
-        installBindings, JSIExecutor::defaultTimeoutInvoker, runtimeConfig));
+        installBindings, JReactMarker::setLogPerfMarkerIfNeeded(), JSIExecutor::defaultTimeoutInvoker, runtimeConfig));
   }
 
   static bool canLoadFile(jni::alias_ref<jclass>, const std::string &path) {

@@ -213,7 +213,7 @@ std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
   errorPrototype.setProperty(*decoratedRuntime, "jsEngine", "hermes");
 
   return std::make_unique<HermesExecutor>(
-      decoratedRuntime, delegate, jsQueue, timeoutInvoker_, runtimeInstaller_);
+      decoratedRuntime, delegate, jsQueue, timeoutInvoker_, runtimeInstaller_, logTaggedMarker_);
 }
 
 HermesExecutor::HermesExecutor(
@@ -221,8 +221,9 @@ HermesExecutor::HermesExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
     std::shared_ptr<MessageQueueThread> jsQueue,
     const JSIScopedTimeoutInvoker &timeoutInvoker,
-    RuntimeInstaller runtimeInstaller)
-    : JSIExecutor(runtime, delegate, timeoutInvoker, runtimeInstaller) {
+    RuntimeInstaller runtimeInstaller,
+    ReactMarker::LogTaggedMarker logTaggedMarker)
+    : JSIExecutor(runtime, delegate, timeoutInvoker, runtimeInstaller, logTaggedMarker) {
   jsi::addNativeTracingHooks(*runtime);
 }
 
