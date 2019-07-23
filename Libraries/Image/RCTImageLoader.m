@@ -22,26 +22,11 @@
 
 static NSInteger RCTImageBytesForImage(UIImage *image)
 {
-  CAKeyframeAnimation *keyFrameAnimation = [image reactKeyframeAnimation];
   NSInteger singleImageBytes = image.size.width * image.size.height * image.scale * image.scale * 4;
-  if (keyFrameAnimation) {
-    return keyFrameAnimation.values.count * singleImageBytes;
-  } else {
-    return image.images ? image.images.count * singleImageBytes : singleImageBytes;
-  }
+  return image.images ? image.images.count * singleImageBytes : singleImageBytes;
 }
 
 @implementation UIImage (React)
-
-- (CAKeyframeAnimation *)reactKeyframeAnimation
-{
-  return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)setReactKeyframeAnimation:(CAKeyframeAnimation *)reactKeyframeAnimation
-{
-  objc_setAssociatedObject(self, @selector(reactKeyframeAnimation), reactKeyframeAnimation, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
 
 - (NSInteger)reactDecodedImageBytes
 {
@@ -280,11 +265,9 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       CGSizeEqualToSize(image.size, size)) {
     return image;
   }
-  CAKeyframeAnimation *animation = image.reactKeyframeAnimation;
   CGRect targetSize = RCTTargetRect(image.size, size, scale, resizeMode);
   CGAffineTransform transform = RCTTransformFromTargetRect(image.size, targetSize);
   image = RCTTransformImage(image, size, scale, transform);
-  image.reactKeyframeAnimation = animation;
   return image;
 }
 
