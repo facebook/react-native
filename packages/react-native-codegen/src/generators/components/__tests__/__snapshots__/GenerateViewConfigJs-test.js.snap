@@ -144,14 +144,6 @@ export const __INTERNAL_VIEW_CONFIG = CommandNativeComponentViewConfig;
 export default nativeComponentName;
 
 export const Commands = {
-    flashScrollIndicators(ref) {
-        UIManager.dispatchViewCommand(
-          findNodeHandle(ref),
-          UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.flashScrollIndicators,
-          []
-        );
-    },
-
     hotspotUpdate(ref, x, y) {
         UIManager.dispatchViewCommand(
           findNodeHandle(ref),

@@ -922,14 +922,6 @@ const COMMANDS: SchemaType = {
           props: [],
           commands: [
             {
-              name: 'flashScrollIndicators',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                params: [],
-              },
-            },
-            {
               name: 'hotspotUpdate',
               optional: false,
               typeAnnotation: {

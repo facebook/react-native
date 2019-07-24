@@ -16,17 +16,11 @@ function upperCaseFirst(inString: string): string {
   return inString[0].toUpperCase() + inString.slice(1);
 }
 
-function toSafeJavaString(
-  input: string,
-  shouldUpperCaseFirst?: boolean,
-): string {
-  const parts = input.split('-');
-
-  if (shouldUpperCaseFirst === false) {
-    return parts.join('');
-  }
-
-  return parts.map(upperCaseFirst).join('');
+function toSafeJavaString(input: string): string {
+  return input
+    .split('-')
+    .map(upperCaseFirst)
+    .join('');
 }
 
 function getImports(component: ComponentShape): Set<string> {
