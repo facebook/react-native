@@ -107,7 +107,7 @@ public class DevInternalSettings
   }
 
   public boolean isHotModuleReplacementEnabled() {
-    return mPreferences.getBoolean(PREFS_HOT_MODULE_REPLACEMENT_KEY, false);
+    return mPreferences.getBoolean(PREFS_HOT_MODULE_REPLACEMENT_KEY, true);
   }
 
   public void setHotModuleReplacementEnabled(boolean enabled) {
