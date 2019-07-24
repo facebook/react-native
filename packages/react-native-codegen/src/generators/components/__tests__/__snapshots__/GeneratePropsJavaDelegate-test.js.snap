@@ -91,9 +91,7 @@ import android.view.View;
 
 public class CommandNativeComponentDelegate<T extends View> {
   public void setProperty(CommandNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
-    switch (propName) {
-        // No props
-    }
+    // No props
   }
 }
 ",
@@ -189,9 +187,7 @@ import android.view.View;
 
 public class InterfaceOnlyComponentDelegate<T extends View> {
   public void setProperty(InterfaceOnlyComponentInterface<T> viewManager, T view, String propName, Object value) {
-    switch (propName) {
-        // No props
-    }
+    // No props
   }
 }
 ",
@@ -339,9 +335,7 @@ import android.view.View;
 
 public class NoPropsNoEventsComponentDelegate<T extends View> {
   public void setProperty(NoPropsNoEventsComponentInterface<T> viewManager, T view, String propName, Object value) {
-    switch (propName) {
-        // No props
-    }
+    // No props
   }
 }
 ",

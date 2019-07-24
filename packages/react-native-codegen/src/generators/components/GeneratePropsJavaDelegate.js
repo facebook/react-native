@@ -27,9 +27,7 @@ package com.facebook.react.viewmanagers;
 
 public class ::_CLASSNAME_::<T extends ::_EXTEND_CLASSES_::> {
   public void setProperty(::_INTERFACE_CLASSNAME_::<T> viewManager, T view, String propName, Object value) {
-    switch (propName) {
-      ::_PROP_CASES_::
-    }
+    ::_PROP_CASES_::
   }
 }
 `;
@@ -77,10 +75,10 @@ function generatePropCasesString(
   componentName: string,
 ) {
   if (component.props.length === 0) {
-    return '  // No props';
+    return '// No props';
   }
 
-  return component.props
+  const cases = component.props
     .map(prop => {
       return `case "${prop.name}":
         viewManager.set${toSafeJavaString(
@@ -89,6 +87,10 @@ function generatePropCasesString(
         break;`;
     })
     .join('\n' + '      ');
+
+  return `switch (propName) {
+      ${cases}
+    }`;
 }
 
 function getClassExtendString(component): string {
