@@ -1789,6 +1789,81 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+
+namespace JS {
+  namespace NativeStatusBarManager {
+    struct SpecGetHeightCallbackResult {
+      double height() const;
+
+      SpecGetHeightCallbackResult(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeStatusBarManager_SpecGetHeightCallbackResult)
++ (RCTManagedPointer *)JS_NativeStatusBarManager_SpecGetHeightCallbackResult:(id)json;
+@end
+
+namespace JS {
+  namespace NativeStatusBarManager {
+    struct Constants {
+
+      struct Builder {
+        struct Input {
+          RCTRequired<double> HEIGHT;
+          RCTRequired<double> DEFAULT_BACKGROUND_COLOR;
+        };
+
+        /** Initialize with a set of values */
+        Builder(const Input i);
+        /** Initialize with an existing Constants */
+        Builder(Constants i);
+        /** Builds the object. Generally used only by the infrastructure. */
+        NSDictionary *buildUnsafeRawValue() const { return _factory(); };
+      private:
+        NSDictionary *(^_factory)(void);
+      };
+
+      static Constants fromUnsafeRawValue(NSDictionary *const v) { return {v}; }
+      NSDictionary *unsafeRawValue() const { return _v; }
+    private:
+      Constants(NSDictionary *const v) : _v(v) {}
+      NSDictionary *_v;
+    };
+  }
+}
+@protocol NativeStatusBarManagerSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)setColor:(double)color
+        animated:(BOOL)animated;
+- (void)setTranslucent:(BOOL)translucent;
+- (void)getHeight:(RCTResponseSenderBlock)callback;
+- (void)setNetworkActivityIndicatorVisible:(BOOL)visible;
+- (void)addListener:(NSString *)eventType;
+- (void)removeListeners:(double)count;
+- (void)setStyle:(NSString * _Nullable)statusBarStyle
+        animated:(NSNumber *)animated;
+- (void)setHidden:(BOOL)hidden
+    withAnimation:(NSString * _Nullable)withAnimation;
+- (facebook::react::ModuleConstants<JS::NativeStatusBarManager::Constants::Builder>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::NativeStatusBarManager::Constants::Builder>)getConstants;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'StatusBarManager'
+     */
+
+    class JSI_EXPORT NativeStatusBarManagerSpecJSI : public ObjCTurboModule {
+    public:
+      NativeStatusBarManagerSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
 @protocol NativeTVNavigationEventEmitterSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)addListener:(NSString *)eventName;
@@ -2704,6 +2779,22 @@ inline JS::NativeSourceCode::Constants::Builder::Builder(const Input i) : _facto
   return d;
 }) {}
 inline JS::NativeSourceCode::Constants::Builder::Builder(Constants i) : _factory(^{
+  return i.unsafeRawValue();
+}) {}
+inline double JS::NativeStatusBarManager::SpecGetHeightCallbackResult::height() const
+{
+  id const p = _v[@"height"];
+  return RCTBridgingToDouble(p);
+}
+inline JS::NativeStatusBarManager::Constants::Builder::Builder(const Input i) : _factory(^{
+  NSMutableDictionary *d = [NSMutableDictionary new];
+  auto HEIGHT = i.HEIGHT.get();
+  d[@"HEIGHT"] = @(HEIGHT);
+  auto DEFAULT_BACKGROUND_COLOR = i.DEFAULT_BACKGROUND_COLOR.get();
+  d[@"DEFAULT_BACKGROUND_COLOR"] = @(DEFAULT_BACKGROUND_COLOR);
+  return d;
+}) {}
+inline JS::NativeStatusBarManager::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
 inline folly::Optional<double> JS::NativeTimePickerAndroid::TimePickerOptions::hour() const
