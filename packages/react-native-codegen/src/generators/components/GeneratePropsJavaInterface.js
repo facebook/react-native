@@ -107,15 +107,14 @@ function getCommandArguments(
   command: CommandTypeShape,
   componentName: string,
 ): string {
-  const commandArgs = command.typeAnnotation.params
-    .map(param => {
+  return [
+    'T view',
+    ...command.typeAnnotation.params.map(param => {
       const commandArgJavaType = getCommandArgJavaType(param);
 
       return `${commandArgJavaType} ${param.name}`;
-    })
-    .join(', ');
-
-  return `T view, ${commandArgs}`;
+    }),
+  ].join(', ');
 }
 
 function generateCommandsString(
@@ -124,11 +123,9 @@ function generateCommandsString(
 ) {
   return component.commands
     .map(command => {
-      const safeJavaName = toSafeJavaString(command.name);
-      const lowerJavaName =
-        safeJavaName[0].toLowerCase() + safeJavaName.slice(1);
+      const safeJavaName = toSafeJavaString(command.name, false);
 
-      return `void ${lowerJavaName}(${getCommandArguments(
+      return `void ${safeJavaName}(${getCommandArguments(
         command,
         componentName,
       )});`;

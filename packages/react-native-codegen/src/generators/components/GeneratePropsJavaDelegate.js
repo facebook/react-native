@@ -11,6 +11,7 @@
 'use strict';
 
 import type {
+  CommandTypeShape,
   ComponentShape,
   PropTypeShape,
   SchemaType,
@@ -26,10 +27,20 @@ package com.facebook.react.viewmanagers;
 ::_IMPORTS_::
 
 public class ::_CLASSNAME_::<T extends ::_EXTEND_CLASSES_::> {
+  ::_METHODS_::
+}
+`;
+
+const propSetterTemplate = `
   public void setProperty(::_INTERFACE_CLASSNAME_::<T> viewManager, T view, String propName, Object value) {
     ::_PROP_CASES_::
   }
-}
+`;
+
+const commandsTemplate = `
+  public void receiveCommand(::_INTERFACE_CLASSNAME_::<T> viewManager, T view, String commandName, ReadableArray args) {
+    ::_COMMAND_CASES_::
+  }
 `;
 
 function getJavaValueForProp(
@@ -105,6 +116,51 @@ function generatePropCasesString(
     }`;
 }
 
+function getCommandArgJavaType(param) {
+  switch (param.typeAnnotation.type) {
+    case 'BooleanTypeAnnotation':
+      return 'getBoolean';
+    case 'Int32TypeAnnotation':
+      return 'getInt';
+    default:
+      (param.typeAnnotation.type: empty);
+      throw new Error('Receieved invalid typeAnnotation');
+  }
+}
+
+function getCommandArguments(command: CommandTypeShape): string {
+  return [
+    'view',
+    ...command.typeAnnotation.params.map((param, index) => {
+      const commandArgJavaType = getCommandArgJavaType(param);
+
+      return `args.${commandArgJavaType}(${index})`;
+    }),
+  ].join(', ');
+}
+
+function generateCommandCasesString(
+  component: ComponentShape,
+  componentName: string,
+) {
+  if (component.commands.length === 0) {
+    return null;
+  }
+
+  const commandMethods = component.commands
+    .map(command => {
+      return `case "${command.name}":
+      viewManager.${toSafeJavaString(
+        command.name,
+        false,
+      )}(${getCommandArguments(command)});
+      break;`;
+    })
+    .join('\n' + '    ');
+
+  return commandMethods;
+}
+
 function getClassExtendString(component): string {
   const extendString = component.extendsProps
     .map(extendProps => {
@@ -127,6 +183,28 @@ function getClassExtendString(component): string {
   return extendString;
 }
 
+function getDelegateImports(component) {
+  const imports = getImports(component);
+  // The delegate needs ReadableArray for commands always.
+  // The interface doesn't always need it
+  if (component.commands.length > 0) {
+    imports.add('import com.facebook.react.bridge.ReadableArray;');
+  }
+
+  return imports;
+}
+
+function generateMethods(propsString, commandsString): string {
+  return [
+    propSetterTemplate.trim().replace('::_PROP_CASES_::', propsString),
+    commandsString != null
+      ? commandsTemplate.trim().replace('::_COMMAND_CASES_::', commandsString)
+      : '',
+  ]
+    .join('\n\n  ')
+    .trimRight();
+}
+
 module.exports = {
   generate(libraryName: string, schema: SchemaType): FilesOutput {
     const files = new Map();
@@ -143,8 +221,12 @@ module.exports = {
         const interfaceClassName = `${componentName}ViewManagerInterface`;
         const fileName = `${className}.java`;
 
-        const imports = getImports(component);
+        const imports = getDelegateImports(component);
         const propsString = generatePropCasesString(component, componentName);
+        const commandsString = generateCommandCasesString(
+          component,
+          componentName,
+        );
         const extendString = getClassExtendString(component);
 
         const replacedTemplate = template
@@ -155,9 +237,13 @@ module.exports = {
               .join('\n'),
           )
           .replace(/::_CLASSNAME_::/g, className)
-          .replace(/::_INTERFACE_CLASSNAME_::/g, interfaceClassName)
           .replace('::_EXTEND_CLASSES_::', extendString)
-          .replace('::_PROP_CASES_::', propsString);
+          .replace('::_PROP_CASES_::', propsString)
+          .replace(
+            '::_METHODS_::',
+            generateMethods(propsString, commandsString),
+          )
+          .replace(/::_INTERFACE_CLASSNAME_::/g, interfaceClassName);
 
         files.set(fileName, replacedTemplate);
       });
