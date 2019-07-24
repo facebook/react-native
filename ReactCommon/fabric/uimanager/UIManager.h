@@ -58,6 +58,12 @@ class UIManager {
       const SharedShadowNode &shadowNode,
       const RawProps &rawProps) const;
 
+  void setJSResponder(
+      const SharedShadowNode &shadowNode,
+      const bool blockNativeResponder) const;
+
+  void clearJSResponder() const;
+
   /*
    * Returns layout metrics of given `shadowNode` relative to
    * `ancestorShadowNode` (relative to the root node in case if provided

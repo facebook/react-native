@@ -91,6 +91,12 @@ void UIManager::completeSurface(
   }
 }
 
+void UIManager::setJSResponder(
+    const SharedShadowNode &shadowNode,
+    const bool blockNativeResponder) const {}
+
+void UIManager::clearJSResponder() const {}
+
 void UIManager::setNativeProps(
     const SharedShadowNode &shadowNode,
     const RawProps &rawProps) const {

@@ -33,6 +33,7 @@ exports.examples = [
       'scrolls on the right side of the ScrollView (white area located on the' +
       ' right side of the gray area), the touch event is managed by native ' +
       'which blocks the scroll event.',
+
     render: function() {
       const views = [];
       for (let i = 0; i < 100; i++) {
