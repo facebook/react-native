@@ -2,11 +2,11 @@ package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.viewmanagers.ArrayPropsNativeComponentDelegate;
-import com.facebook.react.viewmanagers.ArrayPropsNativeComponentInterface;
+import com.facebook.react.viewmanagers.ArrayPropsNativeComponentViewManagerDelegate;
+import com.facebook.react.viewmanagers.ArrayPropsNativeComponentViewManagerInterface;
 
 public class ArrayPropsNativeComponentViewManager extends SimpleViewManager<ViewGroup>
-    implements ArrayPropsNativeComponentInterface<ViewGroup> {
+    implements ArrayPropsNativeComponentViewManagerInterface<ViewGroup> {
 
   public static final String REACT_CLASS = "ArrayPropsNativeComponent";
 
@@ -16,7 +16,8 @@ public class ArrayPropsNativeComponentViewManager extends SimpleViewManager<View
   }
 
   private void test() {
-    ArrayPropsNativeComponentDelegate delegate = new ArrayPropsNativeComponentDelegate<ViewGroup>();
+    ArrayPropsNativeComponentViewManagerDelegate delegate =
+        new ArrayPropsNativeComponentViewManagerDelegate<ViewGroup>();
   }
 
   @Override

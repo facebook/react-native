@@ -1,11 +1,11 @@
 package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
-import com.facebook.react.viewmanagers.ColorPropNativeComponentDelegate;
-import com.facebook.react.viewmanagers.ColorPropNativeComponentInterface;
+import com.facebook.react.viewmanagers.ColorPropNativeComponentViewManagerDelegate;
+import com.facebook.react.viewmanagers.ColorPropNativeComponentViewManagerInterface;
 
 public class ColorPropNativeComponentViewManager extends SimpleViewManager<ViewGroup>
-    implements ColorPropNativeComponentInterface<ViewGroup> {
+    implements ColorPropNativeComponentViewManagerInterface<ViewGroup> {
 
   public static final String REACT_CLASS = "ColorPropNativeComponentView";
 
@@ -15,7 +15,8 @@ public class ColorPropNativeComponentViewManager extends SimpleViewManager<ViewG
   }
 
   private void test() {
-    ColorPropNativeComponentDelegate delegate = new ColorPropNativeComponentDelegate<ViewGroup>();
+    ColorPropNativeComponentViewManagerDelegate delegate =
+        new ColorPropNativeComponentViewManagerDelegate<ViewGroup>();
   }
 
   @Override

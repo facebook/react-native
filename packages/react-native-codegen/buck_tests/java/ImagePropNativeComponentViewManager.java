@@ -2,11 +2,11 @@ package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.viewmanagers.ImagePropNativeComponentDelegate;
-import com.facebook.react.viewmanagers.ImagePropNativeComponentInterface;
+import com.facebook.react.viewmanagers.ImagePropNativeComponentViewManagerDelegate;
+import com.facebook.react.viewmanagers.ImagePropNativeComponentViewManagerInterface;
 
 public class ImagePropNativeComponentViewManager extends SimpleViewManager<ViewGroup>
-    implements ImagePropNativeComponentInterface<ViewGroup> {
+    implements ImagePropNativeComponentViewManagerInterface<ViewGroup> {
 
   public static final String REACT_CLASS = "ImagePropNativeComponentView";
 
@@ -16,7 +16,8 @@ public class ImagePropNativeComponentViewManager extends SimpleViewManager<ViewG
   }
 
   private void test() {
-    ImagePropNativeComponentDelegate delegate = new ImagePropNativeComponentDelegate<ViewGroup>();
+    ImagePropNativeComponentViewManagerDelegate delegate =
+        new ImagePropNativeComponentViewManagerDelegate<ViewGroup>();
   }
 
   @Override

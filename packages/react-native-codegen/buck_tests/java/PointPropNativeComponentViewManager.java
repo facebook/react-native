@@ -2,11 +2,11 @@ package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.viewmanagers.PointPropNativeComponentDelegate;
-import com.facebook.react.viewmanagers.PointPropNativeComponentInterface;
+import com.facebook.react.viewmanagers.PointPropNativeComponentViewManagerDelegate;
+import com.facebook.react.viewmanagers.PointPropNativeComponentViewManagerInterface;
 
 public class PointPropNativeComponentViewManager extends SimpleViewManager<ViewGroup>
-    implements PointPropNativeComponentInterface<ViewGroup> {
+    implements PointPropNativeComponentViewManagerInterface<ViewGroup> {
 
   public static final String REACT_CLASS = "PointPropNativeComponentView";
 
@@ -16,7 +16,8 @@ public class PointPropNativeComponentViewManager extends SimpleViewManager<ViewG
   }
 
   private void test() {
-    PointPropNativeComponentDelegate delegate = new PointPropNativeComponentDelegate<ViewGroup>();
+    PointPropNativeComponentViewManagerDelegate delegate =
+        new PointPropNativeComponentViewManagerDelegate<ViewGroup>();
   }
 
   @Override

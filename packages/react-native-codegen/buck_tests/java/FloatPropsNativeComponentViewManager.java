@@ -1,11 +1,11 @@
 package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
-import com.facebook.react.viewmanagers.FloatPropsNativeComponentDelegate;
-import com.facebook.react.viewmanagers.FloatPropsNativeComponentInterface;
+import com.facebook.react.viewmanagers.FloatPropsNativeComponentViewManagerDelegate;
+import com.facebook.react.viewmanagers.FloatPropsNativeComponentViewManagerInterface;
 
 public class FloatPropsNativeComponentViewManager extends SimpleViewManager<ViewGroup>
-    implements FloatPropsNativeComponentInterface<ViewGroup> {
+    implements FloatPropsNativeComponentViewManagerInterface<ViewGroup> {
 
   public static final String REACT_CLASS = "FloatPropsNativeComponentView";
 
@@ -15,7 +15,8 @@ public class FloatPropsNativeComponentViewManager extends SimpleViewManager<View
   }
 
   private void test() {
-    FloatPropsNativeComponentDelegate delegate = new FloatPropsNativeComponentDelegate<ViewGroup>();
+    FloatPropsNativeComponentViewManagerDelegate delegate =
+        new FloatPropsNativeComponentViewManagerDelegate<ViewGroup>();
   }
 
   @Override

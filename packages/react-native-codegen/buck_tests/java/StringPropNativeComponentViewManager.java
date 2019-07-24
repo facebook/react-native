@@ -1,11 +1,11 @@
 package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
-import com.facebook.react.viewmanagers.StringPropNativeComponentDelegate;
-import com.facebook.react.viewmanagers.StringPropNativeComponentInterface;
+import com.facebook.react.viewmanagers.StringPropNativeComponentViewManagerDelegate;
+import com.facebook.react.viewmanagers.StringPropNativeComponentViewManagerInterface;
 
 public class StringPropNativeComponentViewManager extends SimpleViewManager<ViewGroup>
-    implements StringPropNativeComponentInterface<ViewGroup> {
+    implements StringPropNativeComponentViewManagerInterface<ViewGroup> {
 
   public static final String REACT_CLASS = "StringPropNativeComponentView";
 
@@ -15,7 +15,8 @@ public class StringPropNativeComponentViewManager extends SimpleViewManager<View
   }
 
   private void test() {
-    StringPropNativeComponentDelegate delegate = new StringPropNativeComponentDelegate<ViewGroup>();
+    StringPropNativeComponentViewManagerDelegate delegate =
+        new StringPropNativeComponentViewManagerDelegate<ViewGroup>();
   }
 
   @Override

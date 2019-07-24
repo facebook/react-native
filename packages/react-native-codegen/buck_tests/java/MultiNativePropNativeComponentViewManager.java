@@ -2,11 +2,11 @@ package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.viewmanagers.MultiNativePropNativeComponentDelegate;
-import com.facebook.react.viewmanagers.MultiNativePropNativeComponentInterface;
+import com.facebook.react.viewmanagers.MultiNativePropNativeComponentViewManagerDelegate;
+import com.facebook.react.viewmanagers.MultiNativePropNativeComponentViewManagerInterface;
 
 public class MultiNativePropNativeComponentViewManager extends SimpleViewManager<ViewGroup>
-    implements MultiNativePropNativeComponentInterface<ViewGroup> {
+    implements MultiNativePropNativeComponentViewManagerInterface<ViewGroup> {
 
   public static final String REACT_CLASS = "MultiNativePropNativeComponentView";
 
@@ -16,8 +16,8 @@ public class MultiNativePropNativeComponentViewManager extends SimpleViewManager
   }
 
   private void test() {
-    MultiNativePropNativeComponentDelegate delegate =
-        new MultiNativePropNativeComponentDelegate<ViewGroup>();
+    MultiNativePropNativeComponentViewManagerDelegate delegate =
+        new MultiNativePropNativeComponentViewManagerDelegate<ViewGroup>();
   }
 
   @Override

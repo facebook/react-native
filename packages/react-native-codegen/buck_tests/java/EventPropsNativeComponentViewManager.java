@@ -1,11 +1,11 @@
 package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
-import com.facebook.react.viewmanagers.EventPropsNativeComponentDelegate;
-import com.facebook.react.viewmanagers.EventPropsNativeComponentInterface;
+import com.facebook.react.viewmanagers.EventPropsNativeComponentViewManagerDelegate;
+import com.facebook.react.viewmanagers.EventPropsNativeComponentViewManagerInterface;
 
 public class EventPropsNativeComponentViewManager extends SimpleViewManager<ViewGroup>
-    implements EventPropsNativeComponentInterface<ViewGroup> {
+    implements EventPropsNativeComponentViewManagerInterface<ViewGroup> {
 
   public static final String REACT_CLASS = "EventPropsNativeComponentView";
 
@@ -15,7 +15,8 @@ public class EventPropsNativeComponentViewManager extends SimpleViewManager<View
   }
 
   private void test() {
-    EventPropsNativeComponentDelegate delegate = new EventPropsNativeComponentDelegate<ViewGroup>();
+    EventPropsNativeComponentViewManagerDelegate delegate =
+        new EventPropsNativeComponentViewManagerDelegate<ViewGroup>();
   }
 
   @Override

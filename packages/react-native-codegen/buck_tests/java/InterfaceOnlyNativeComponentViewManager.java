@@ -1,11 +1,11 @@
 package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
-import com.facebook.react.viewmanagers.InterfaceOnlyNativeComponentDelegate;
-import com.facebook.react.viewmanagers.InterfaceOnlyNativeComponentInterface;
+import com.facebook.react.viewmanagers.InterfaceOnlyNativeComponentViewManagerDelegate;
+import com.facebook.react.viewmanagers.InterfaceOnlyNativeComponentViewManagerInterface;
 
 public class InterfaceOnlyNativeComponentViewManager extends SimpleViewManager<ViewGroup>
-    implements InterfaceOnlyNativeComponentInterface<ViewGroup> {
+    implements InterfaceOnlyNativeComponentViewManagerInterface<ViewGroup> {
 
   public static final String REACT_CLASS = "InterfaceOnlyNativeComponentView";
 
@@ -15,8 +15,8 @@ public class InterfaceOnlyNativeComponentViewManager extends SimpleViewManager<V
   }
 
   private void test() {
-    InterfaceOnlyNativeComponentDelegate delegate =
-        new InterfaceOnlyNativeComponentDelegate<ViewGroup>();
+    InterfaceOnlyNativeComponentViewManagerDelegate delegate =
+        new InterfaceOnlyNativeComponentViewManagerDelegate<ViewGroup>();
   }
 
   @Override

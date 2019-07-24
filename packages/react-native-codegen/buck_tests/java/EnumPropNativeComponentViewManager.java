@@ -1,11 +1,11 @@
 package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
-import com.facebook.react.viewmanagers.EnumPropNativeComponentDelegate;
-import com.facebook.react.viewmanagers.EnumPropNativeComponentInterface;
+import com.facebook.react.viewmanagers.EnumPropNativeComponentViewManagerDelegate;
+import com.facebook.react.viewmanagers.EnumPropNativeComponentViewManagerInterface;
 
 public class EnumPropNativeComponentViewManager extends SimpleViewManager<ViewGroup>
-    implements EnumPropNativeComponentInterface<ViewGroup> {
+    implements EnumPropNativeComponentViewManagerInterface<ViewGroup> {
 
   public static final String REACT_CLASS = "EnumPropNativeComponentView";
 
@@ -15,7 +15,8 @@ public class EnumPropNativeComponentViewManager extends SimpleViewManager<ViewGr
   }
 
   private void test() {
-    EnumPropNativeComponentDelegate delegate = new EnumPropNativeComponentDelegate<ViewGroup>();
+    EnumPropNativeComponentViewManagerDelegate delegate =
+        new EnumPropNativeComponentViewManagerDelegate<ViewGroup>();
   }
 
   @Override

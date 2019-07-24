@@ -1,11 +1,11 @@
 package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
-import com.facebook.react.viewmanagers.EventNestedObjectPropsNativeComponentDelegate;
-import com.facebook.react.viewmanagers.EventNestedObjectPropsNativeComponentInterface;
+import com.facebook.react.viewmanagers.EventNestedObjectPropsNativeComponentViewManagerDelegate;
+import com.facebook.react.viewmanagers.EventNestedObjectPropsNativeComponentViewManagerInterface;
 
 public class EventNestedObjectPropsNativeComponentViewManager extends SimpleViewManager<ViewGroup>
-    implements EventNestedObjectPropsNativeComponentInterface<ViewGroup> {
+    implements EventNestedObjectPropsNativeComponentViewManagerInterface<ViewGroup> {
 
   public static final String REACT_CLASS = "EventNestedObjectPropsNativeComponentView";
 
@@ -15,8 +15,8 @@ public class EventNestedObjectPropsNativeComponentViewManager extends SimpleView
   }
 
   private void test() {
-    EventNestedObjectPropsNativeComponentDelegate delegate =
-        new EventNestedObjectPropsNativeComponentDelegate<ViewGroup>();
+    EventNestedObjectPropsNativeComponentViewManagerDelegate delegate =
+        new EventNestedObjectPropsNativeComponentViewManagerDelegate<ViewGroup>();
   }
 
   @Override

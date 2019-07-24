@@ -2,14 +2,14 @@
 
 exports[`GeneratePropsJavaDelegate can generate fixture ARRAY_PROPS 1`] = `
 Map {
-  "ArrayPropsNativeComponentDelegate.java" => "
+  "ArrayPropsNativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import com.facebook.react.bridge.ReadableArray;
 
-public class ArrayPropsNativeComponentDelegate<T extends View> {
-  public void setProperty(ArrayPropsNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class ArrayPropsNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(ArrayPropsNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"names\\":
         viewManager.setNames(view, (ReadableArray) value);
@@ -44,13 +44,13 @@ public class ArrayPropsNativeComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture BOOLEAN_PROP 1`] = `
 Map {
-  "BooleanPropNativeComponentDelegate.java" => "
+  "BooleanPropNativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class BooleanPropNativeComponentDelegate<T extends View> {
-  public void setProperty(BooleanPropNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class BooleanPropNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(BooleanPropNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"disabled\\":
         viewManager.setDisabled(view, value == null ? false : (boolean) value);
@@ -64,13 +64,13 @@ public class BooleanPropNativeComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture COLOR_PROP 1`] = `
 Map {
-  "ColorPropNativeComponentDelegate.java" => "
+  "ColorPropNativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class ColorPropNativeComponentDelegate<T extends View> {
-  public void setProperty(ColorPropNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class ColorPropNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(ColorPropNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"tintColor\\":
         viewManager.setTintColor(view, value == null ? null : ((Double) value).intValue());
@@ -84,13 +84,13 @@ public class ColorPropNativeComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture COMMANDS 1`] = `
 Map {
-  "CommandNativeComponentDelegate.java" => "
+  "CommandNativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class CommandNativeComponentDelegate<T extends View> {
-  public void setProperty(CommandNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class CommandNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(CommandNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     // No props
   }
 }
@@ -100,13 +100,13 @@ public class CommandNativeComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture COMMANDS_AND_PROPS 1`] = `
 Map {
-  "CommandNativeComponentDelegate.java" => "
+  "CommandNativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class CommandNativeComponentDelegate<T extends View> {
-  public void setProperty(CommandNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class CommandNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(CommandNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"accessibilityHint\\":
         viewManager.setAccessibilityHint(view, value == null ? \\"\\" : (String) value);
@@ -120,13 +120,13 @@ public class CommandNativeComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture ENUM_PROP 1`] = `
 Map {
-  "EnumPropsNativeComponentDelegate.java" => "
+  "EnumPropsNativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class EnumPropsNativeComponentDelegate<T extends View> {
-  public void setProperty(EnumPropsNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class EnumPropsNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(EnumPropsNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"alignment\\":
         viewManager.setAlignment(view, (String) value);
@@ -140,13 +140,13 @@ public class EnumPropsNativeComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
-  "EventsNestedObjectNativeComponentDelegate.java" => "
+  "EventsNestedObjectNativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class EventsNestedObjectNativeComponentDelegate<T extends View> {
-  public void setProperty(EventsNestedObjectNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class EventsNestedObjectNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(EventsNestedObjectNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"disabled\\":
         viewManager.setDisabled(view, value == null ? false : (boolean) value);
@@ -160,13 +160,13 @@ public class EventsNestedObjectNativeComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture EVENT_PROPS 1`] = `
 Map {
-  "EventsNativeComponentDelegate.java" => "
+  "EventsNativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class EventsNativeComponentDelegate<T extends View> {
-  public void setProperty(EventsNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class EventsNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(EventsNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"disabled\\":
         viewManager.setDisabled(view, value == null ? false : (boolean) value);
@@ -180,13 +180,13 @@ public class EventsNativeComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
 Map {
-  "InterfaceOnlyComponentDelegate.java" => "
+  "InterfaceOnlyComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class InterfaceOnlyComponentDelegate<T extends View> {
-  public void setProperty(InterfaceOnlyComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class InterfaceOnlyComponentViewManagerDelegate<T extends View> {
+  public void setProperty(InterfaceOnlyComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     // No props
   }
 }
@@ -196,13 +196,13 @@ public class InterfaceOnlyComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture FLOAT_PROPS 1`] = `
 Map {
-  "FloatPropNativeComponentDelegate.java" => "
+  "FloatPropNativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class FloatPropNativeComponentDelegate<T extends View> {
-  public void setProperty(FloatPropNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class FloatPropNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(FloatPropNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"blurRadius\\":
         viewManager.setBlurRadius(view, value == null ? Float.NaN : ((Double) value).floatValue());
@@ -231,14 +231,14 @@ public class FloatPropNativeComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture IMAGE_PROP 1`] = `
 Map {
-  "ImagePropNativeComponentDelegate.java" => "
+  "ImagePropNativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import com.facebook.react.bridge.ReadableMap;
 
-public class ImagePropNativeComponentDelegate<T extends View> {
-  public void setProperty(ImagePropNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class ImagePropNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(ImagePropNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"thumbImage\\":
         viewManager.setThumbImage(view, (ReadableMap) value);
@@ -252,13 +252,13 @@ public class ImagePropNativeComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture INTEGER_PROPS 1`] = `
 Map {
-  "IntegerPropNativeComponentDelegate.java" => "
+  "IntegerPropNativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class IntegerPropNativeComponentDelegate<T extends View> {
-  public void setProperty(IntegerPropNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class IntegerPropNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(IntegerPropNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"progress1\\":
         viewManager.setProgress1(view, value == null ? 0 : ((Double) value).intValue());
@@ -278,13 +278,13 @@ public class IntegerPropNativeComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture INTERFACE_ONLY 1`] = `
 Map {
-  "InterfaceOnlyComponentDelegate.java" => "
+  "InterfaceOnlyComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class InterfaceOnlyComponentDelegate<T extends View> {
-  public void setProperty(InterfaceOnlyComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class InterfaceOnlyComponentViewManagerDelegate<T extends View> {
+  public void setProperty(InterfaceOnlyComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"accessibilityHint\\":
         viewManager.setAccessibilityHint(view, value == null ? \\"\\" : (String) value);
@@ -298,14 +298,14 @@ public class InterfaceOnlyComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture MULTI_NATIVE_PROP 1`] = `
 Map {
-  "ImageColorPropNativeComponentDelegate.java" => "
+  "ImageColorPropNativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import com.facebook.react.bridge.ReadableMap;
 
-public class ImageColorPropNativeComponentDelegate<T extends View> {
-  public void setProperty(ImageColorPropNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class ImageColorPropNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(ImageColorPropNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"thumbImage\\":
         viewManager.setThumbImage(view, (ReadableMap) value);
@@ -328,13 +328,13 @@ public class ImageColorPropNativeComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture NO_PROPS_NO_EVENTS 1`] = `
 Map {
-  "NoPropsNoEventsComponentDelegate.java" => "
+  "NoPropsNoEventsComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class NoPropsNoEventsComponentDelegate<T extends View> {
-  public void setProperty(NoPropsNoEventsComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class NoPropsNoEventsComponentViewManagerDelegate<T extends View> {
+  public void setProperty(NoPropsNoEventsComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     // No props
   }
 }
@@ -344,14 +344,14 @@ public class NoPropsNoEventsComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture POINT_PROP 1`] = `
 Map {
-  "PointPropNativeComponentDelegate.java" => "
+  "PointPropNativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import com.facebook.react.bridge.ReadableMap;
 
-public class PointPropNativeComponentDelegate<T extends View> {
-  public void setProperty(PointPropNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class PointPropNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(PointPropNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"startPoint\\":
         viewManager.setStartPoint(view, (ReadableMap) value);
@@ -365,13 +365,13 @@ public class PointPropNativeComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture STRING_PROP 1`] = `
 Map {
-  "StringPropComponentDelegate.java" => "
+  "StringPropComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class StringPropComponentDelegate<T extends View> {
-  public void setProperty(StringPropComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class StringPropComponentViewManagerDelegate<T extends View> {
+  public void setProperty(StringPropComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"accessibilityHint\\":
         viewManager.setAccessibilityHint(view, value == null ? \\"\\" : (String) value);
@@ -388,13 +388,13 @@ public class StringPropComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
 Map {
-  "MultiFile1NativeComponentDelegate.java" => "
+  "MultiFile1NativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class MultiFile1NativeComponentDelegate<T extends View> {
-  public void setProperty(MultiFile1NativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class MultiFile1NativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(MultiFile1NativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"disabled\\":
         viewManager.setDisabled(view, value == null ? false : (boolean) value);
@@ -403,13 +403,13 @@ public class MultiFile1NativeComponentDelegate<T extends View> {
   }
 }
 ",
-  "MultiFile2NativeComponentDelegate.java" => "
+  "MultiFile2NativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class MultiFile2NativeComponentDelegate<T extends View> {
-  public void setProperty(MultiFile2NativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class MultiFile2NativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(MultiFile2NativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"disabled\\":
         viewManager.setDisabled(view, value == null ? true : (boolean) value);
@@ -423,13 +423,13 @@ public class MultiFile2NativeComponentDelegate<T extends View> {
 
 exports[`GeneratePropsJavaDelegate can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
 Map {
-  "MultiComponent1NativeComponentDelegate.java" => "
+  "MultiComponent1NativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class MultiComponent1NativeComponentDelegate<T extends View> {
-  public void setProperty(MultiComponent1NativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class MultiComponent1NativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(MultiComponent1NativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"disabled\\":
         viewManager.setDisabled(view, value == null ? false : (boolean) value);
@@ -438,13 +438,13 @@ public class MultiComponent1NativeComponentDelegate<T extends View> {
   }
 }
 ",
-  "MultiComponent2NativeComponentDelegate.java" => "
+  "MultiComponent2NativeComponentViewManagerDelegate.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public class MultiComponent2NativeComponentDelegate<T extends View> {
-  public void setProperty(MultiComponent2NativeComponentInterface<T> viewManager, T view, String propName, Object value) {
+public class MultiComponent2NativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(MultiComponent2NativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"disabled\\":
         viewManager.setDisabled(view, value == null ? true : (boolean) value);

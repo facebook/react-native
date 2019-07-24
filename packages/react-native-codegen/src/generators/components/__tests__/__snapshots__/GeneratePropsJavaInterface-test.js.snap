@@ -2,14 +2,14 @@
 
 exports[`GeneratePropsJavaInterface can generate fixture ARRAY_PROPS 1`] = `
 Map {
-  "ArrayPropsNativeComponentInterface.java" => "
+  "ArrayPropsNativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 
-public interface ArrayPropsNativeComponentInterface<T extends View> {
+public interface ArrayPropsNativeComponentViewManagerInterface<T extends View> {
   void setNames(T view, @Nullable ReadableArray value);
   void setDisableds(T view, @Nullable ReadableArray value);
   void setProgress(T view, @Nullable ReadableArray value);
@@ -25,12 +25,12 @@ public interface ArrayPropsNativeComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture BOOLEAN_PROP 1`] = `
 Map {
-  "BooleanPropNativeComponentInterface.java" => "
+  "BooleanPropNativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public interface BooleanPropNativeComponentInterface<T extends View> {
+public interface BooleanPropNativeComponentViewManagerInterface<T extends View> {
   void setDisabled(T view, boolean value);
 }
 ",
@@ -39,13 +39,13 @@ public interface BooleanPropNativeComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture COLOR_PROP 1`] = `
 Map {
-  "ColorPropNativeComponentInterface.java" => "
+  "ColorPropNativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
 
-public interface ColorPropNativeComponentInterface<T extends View> {
+public interface ColorPropNativeComponentViewManagerInterface<T extends View> {
   void setTintColor(T view, @Nullable Integer value);
 }
 ",
@@ -54,12 +54,12 @@ public interface ColorPropNativeComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture COMMANDS 1`] = `
 Map {
-  "CommandNativeComponentInterface.java" => "
+  "CommandNativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public interface CommandNativeComponentInterface<T extends View> {
+public interface CommandNativeComponentViewManagerInterface<T extends View> {
   // No props
   void hotspotUpdate(T view, int x, int y);
   void scrollTo(T view, int y, boolean animated);
@@ -70,13 +70,13 @@ public interface CommandNativeComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture COMMANDS_AND_PROPS 1`] = `
 Map {
-  "CommandNativeComponentInterface.java" => "
+  "CommandNativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
 
-public interface CommandNativeComponentInterface<T extends View> {
+public interface CommandNativeComponentViewManagerInterface<T extends View> {
   void setAccessibilityHint(T view, @Nullable String value);
   void hotspotUpdate(T view, int x, int y);
 }
@@ -86,13 +86,13 @@ public interface CommandNativeComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture ENUM_PROP 1`] = `
 Map {
-  "EnumPropsNativeComponentInterface.java" => "
+  "EnumPropsNativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
 
-public interface EnumPropsNativeComponentInterface<T extends View> {
+public interface EnumPropsNativeComponentViewManagerInterface<T extends View> {
   void setAlignment(T view, @Nullable String value);
 }
 ",
@@ -101,12 +101,12 @@ public interface EnumPropsNativeComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
-  "EventsNestedObjectNativeComponentInterface.java" => "
+  "EventsNestedObjectNativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public interface EventsNestedObjectNativeComponentInterface<T extends View> {
+public interface EventsNestedObjectNativeComponentViewManagerInterface<T extends View> {
   void setDisabled(T view, boolean value);
 }
 ",
@@ -115,12 +115,12 @@ public interface EventsNestedObjectNativeComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture EVENT_PROPS 1`] = `
 Map {
-  "EventsNativeComponentInterface.java" => "
+  "EventsNativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public interface EventsNativeComponentInterface<T extends View> {
+public interface EventsNativeComponentViewManagerInterface<T extends View> {
   void setDisabled(T view, boolean value);
 }
 ",
@@ -129,12 +129,12 @@ public interface EventsNativeComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
 Map {
-  "InterfaceOnlyComponentInterface.java" => "
+  "InterfaceOnlyComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public interface InterfaceOnlyComponentInterface<T extends View> {
+public interface InterfaceOnlyComponentViewManagerInterface<T extends View> {
   // No props
 }
 ",
@@ -143,13 +143,13 @@ public interface InterfaceOnlyComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture FLOAT_PROPS 1`] = `
 Map {
-  "FloatPropNativeComponentInterface.java" => "
+  "FloatPropNativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
 
-public interface FloatPropNativeComponentInterface<T extends View> {
+public interface FloatPropNativeComponentViewManagerInterface<T extends View> {
   void setBlurRadius(T view, Float value);
   void setBlurRadius2(T view, Float value);
   void setBlurRadius3(T view, Float value);
@@ -163,14 +163,14 @@ public interface FloatPropNativeComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture IMAGE_PROP 1`] = `
 Map {
-  "ImagePropNativeComponentInterface.java" => "
+  "ImagePropNativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 
-public interface ImagePropNativeComponentInterface<T extends View> {
+public interface ImagePropNativeComponentViewManagerInterface<T extends View> {
   void setThumbImage(T view, @Nullable ReadableMap value);
 }
 ",
@@ -179,12 +179,12 @@ public interface ImagePropNativeComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture INTEGER_PROPS 1`] = `
 Map {
-  "IntegerPropNativeComponentInterface.java" => "
+  "IntegerPropNativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public interface IntegerPropNativeComponentInterface<T extends View> {
+public interface IntegerPropNativeComponentViewManagerInterface<T extends View> {
   void setProgress1(T view, int value);
   void setProgress2(T view, int value);
   void setProgress3(T view, int value);
@@ -195,13 +195,13 @@ public interface IntegerPropNativeComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture INTERFACE_ONLY 1`] = `
 Map {
-  "InterfaceOnlyComponentInterface.java" => "
+  "InterfaceOnlyComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
 
-public interface InterfaceOnlyComponentInterface<T extends View> {
+public interface InterfaceOnlyComponentViewManagerInterface<T extends View> {
   void setAccessibilityHint(T view, @Nullable String value);
 }
 ",
@@ -210,14 +210,14 @@ public interface InterfaceOnlyComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture MULTI_NATIVE_PROP 1`] = `
 Map {
-  "ImageColorPropNativeComponentInterface.java" => "
+  "ImageColorPropNativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 
-public interface ImageColorPropNativeComponentInterface<T extends View> {
+public interface ImageColorPropNativeComponentViewManagerInterface<T extends View> {
   void setThumbImage(T view, @Nullable ReadableMap value);
   void setColor(T view, @Nullable Integer value);
   void setThumbTintColor(T view, @Nullable Integer value);
@@ -229,12 +229,12 @@ public interface ImageColorPropNativeComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture NO_PROPS_NO_EVENTS 1`] = `
 Map {
-  "NoPropsNoEventsComponentInterface.java" => "
+  "NoPropsNoEventsComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public interface NoPropsNoEventsComponentInterface<T extends View> {
+public interface NoPropsNoEventsComponentViewManagerInterface<T extends View> {
   // No props
 }
 ",
@@ -243,14 +243,14 @@ public interface NoPropsNoEventsComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture POINT_PROP 1`] = `
 Map {
-  "PointPropNativeComponentInterface.java" => "
+  "PointPropNativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 
-public interface PointPropNativeComponentInterface<T extends View> {
+public interface PointPropNativeComponentViewManagerInterface<T extends View> {
   void setStartPoint(T view, @Nullable ReadableMap value);
 }
 ",
@@ -259,13 +259,13 @@ public interface PointPropNativeComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture STRING_PROP 1`] = `
 Map {
-  "StringPropComponentInterface.java" => "
+  "StringPropComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
 
-public interface StringPropComponentInterface<T extends View> {
+public interface StringPropComponentViewManagerInterface<T extends View> {
   void setAccessibilityHint(T view, @Nullable String value);
   void setAccessibilityRole(T view, @Nullable String value);
 }
@@ -275,21 +275,21 @@ public interface StringPropComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
 Map {
-  "MultiFile1NativeComponentInterface.java" => "
+  "MultiFile1NativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public interface MultiFile1NativeComponentInterface<T extends View> {
+public interface MultiFile1NativeComponentViewManagerInterface<T extends View> {
   void setDisabled(T view, boolean value);
 }
 ",
-  "MultiFile2NativeComponentInterface.java" => "
+  "MultiFile2NativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public interface MultiFile2NativeComponentInterface<T extends View> {
+public interface MultiFile2NativeComponentViewManagerInterface<T extends View> {
   void setDisabled(T view, boolean value);
 }
 ",
@@ -298,21 +298,21 @@ public interface MultiFile2NativeComponentInterface<T extends View> {
 
 exports[`GeneratePropsJavaInterface can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
 Map {
-  "MultiComponent1NativeComponentInterface.java" => "
+  "MultiComponent1NativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public interface MultiComponent1NativeComponentInterface<T extends View> {
+public interface MultiComponent1NativeComponentViewManagerInterface<T extends View> {
   void setDisabled(T view, boolean value);
 }
 ",
-  "MultiComponent2NativeComponentInterface.java" => "
+  "MultiComponent2NativeComponentViewManagerInterface.java" => "
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public interface MultiComponent2NativeComponentInterface<T extends View> {
+public interface MultiComponent2NativeComponentViewManagerInterface<T extends View> {
   void setDisabled(T view, boolean value);
 }
 ",
