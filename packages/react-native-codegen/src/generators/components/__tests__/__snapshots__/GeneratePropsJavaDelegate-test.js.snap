@@ -88,10 +88,20 @@ Map {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import com.facebook.react.bridge.ReadableArray;
 
 public class CommandNativeComponentViewManagerDelegate<T extends View> {
   public void setProperty(CommandNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
     // No props
+  }
+
+  public void receiveCommand(CommandNativeComponentInterface<T> viewManager, T view, String commandName, ReadableArray args) {
+    case \\"hotspotUpdate\\":
+      viewManager.hotspotUpdate(view, args.getInt(0), args.getInt(1));
+      break;
+    case \\"scrollTo\\":
+      viewManager.scrollTo(view, args.getInt(0), args.getBoolean(1));
+      break;
   }
 }
 ",
@@ -104,6 +114,7 @@ Map {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import com.facebook.react.bridge.ReadableArray;
 
 public class CommandNativeComponentViewManagerDelegate<T extends View> {
   public void setProperty(CommandNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
@@ -112,6 +123,12 @@ public class CommandNativeComponentViewManagerDelegate<T extends View> {
         viewManager.setAccessibilityHint(view, value == null ? \\"\\" : (String) value);
         break;
     }
+  }
+
+  public void receiveCommand(CommandNativeComponentInterface<T> viewManager, T view, String commandName, ReadableArray args) {
+    case \\"hotspotUpdate\\":
+      viewManager.hotspotUpdate(view, args.getInt(0), args.getInt(1));
+      break;
   }
 }
 ",

@@ -124,11 +124,9 @@ function generateCommandsString(
 ) {
   return component.commands
     .map(command => {
-      const safeJavaName = toSafeJavaString(command.name);
-      const lowerJavaName =
-        safeJavaName[0].toLowerCase() + safeJavaName.slice(1);
+      const safeJavaName = toSafeJavaString(command.name, false);
 
-      return `void ${lowerJavaName}(${getCommandArguments(
+      return `void ${safeJavaName}(${getCommandArguments(
         command,
         componentName,
       )});`;
