@@ -96,6 +96,9 @@ public class CommandNativeComponentViewManagerDelegate<T extends View> {
   }
 
   public void receiveCommand(CommandNativeComponentInterface<T> viewManager, T view, String commandName, ReadableArray args) {
+    case \\"flashScrollIndicators\\":
+      viewManager.flashScrollIndicators(view);
+      break;
     case \\"hotspotUpdate\\":
       viewManager.hotspotUpdate(view, args.getInt(0), args.getInt(1));
       break;

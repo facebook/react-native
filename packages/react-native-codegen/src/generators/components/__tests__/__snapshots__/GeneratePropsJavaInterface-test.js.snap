@@ -61,6 +61,7 @@ import android.view.View;
 
 public interface CommandNativeComponentViewManagerInterface<T extends View> {
   // No props
+  void flashScrollIndicators(T view);
   void hotspotUpdate(T view, int x, int y);
   void scrollTo(T view, int y, boolean animated);
 }

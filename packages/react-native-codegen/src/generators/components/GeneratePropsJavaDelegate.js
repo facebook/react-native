@@ -129,15 +129,14 @@ function getCommandArgJavaType(param) {
 }
 
 function getCommandArguments(command: CommandTypeShape): string {
-  const commandArgs = command.typeAnnotation.params
-    .map((param, index) => {
+  return [
+    'view',
+    ...command.typeAnnotation.params.map((param, index) => {
       const commandArgJavaType = getCommandArgJavaType(param);
 
       return `args.${commandArgJavaType}(${index})`;
-    })
-    .join(', ');
-
-  return `view, ${commandArgs}`;
+    }),
+  ].join(', ');
 }
 
 function generateCommandCasesString(
