@@ -33,6 +33,9 @@ import type {
   ViewToken,
   ViewabilityConfigCallbackPair,
 } from './ViewabilityHelper';
+import type {
+  LayoutEvent,
+} from 'react-native/Libraries/Types/CoreEventTypes';
 
 type Item = any;
 
@@ -170,7 +173,7 @@ type OptionalProps = {
   maxToRenderPerBatch: number,
   onEndReached?: ?(info: {distanceFromEnd: number}) => void,
   onEndReachedThreshold?: ?number, // units of visible length
-  onLayout?: ?Function,
+  onLayout?: ?(e: LayoutEvent) => void,
   /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
    * sure to also set the `refreshing` prop correctly.
@@ -632,7 +635,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         this._frames = storedState.frames;
       }
     }
-
+    let virtualizedList = this;
+    this._onCellLayout = function (e) {
+      virtualizedList._onCellLayoutGen(e, this.cellKey, this.index)
+    }
     this.state = initialState;
   }
 
@@ -1121,7 +1127,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   };
 
-  _onCellLayout = (e, cellKey, index): void => {
+  _onCellLayout: (e: LayoutEvent) => void
+  _onCellLayoutGen = (e, cellKey, index): void => {
     const layout = e.nativeEvent.layout;
     const next = {
       offset: this._selectOffset(layout),
@@ -1697,7 +1704,7 @@ type CellRendererBaseProps = {
   index: number,
   inversionStyle: ViewStyleProp,
   item: Item,
-  onLayout: (event: Object, key: string, index: number) => void, // This is extracted by ScrollViewStickyHeader
+  onLayout: (event: LayoutEvent) => void, // This is extracted by ScrollViewStickyHeader
   onUnmount: (cellKey: string) => void,
   onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
   prevCellKey: ?string,
@@ -1803,7 +1810,7 @@ class CellRenderer extends React.Component<
 
   _onLayout = (e): void =>
     this.props.onLayout &&
-    this.props.onLayout(e, this.props.cellKey, this.props.index);
+    this.props.onLayout(e);
 
   _renderElement(renderItem, ListItemComponent, item, index) {
     if (renderItem && ListItemComponent) {
