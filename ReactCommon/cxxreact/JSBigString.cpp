@@ -110,6 +110,9 @@ static off_t maybeRemap(char *data, size_t size, int fd) {
 #endif // WITH_FBREMAP
 
 const char *JSBigFileString::c_str() const {
+  if (m_size == 0) {
+    return "";
+  }
   if (!m_data) {
     m_data =
       (const char *) mmap(0, m_size, PROT_READ, MAP_PRIVATE, m_fd, m_mapOff);

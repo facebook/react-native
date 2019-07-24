@@ -161,6 +161,10 @@ void JSIExecutor::registerBundle(
     bundleRegistry_->registerBundle(bundleId, bundlePath);
   } else {
     auto script = JSBigFileString::fromPath(bundlePath);
+    if (script->size() == 0) {
+      throw std::invalid_argument(
+          "Empty bundle registered with ID " + tag + " from " + bundlePath);
+    }
     runtime_->evaluateJavaScript(
         std::make_unique<BigStringBuffer>(std::move(script)),
         JSExecutor::getSyntheticBundlePath(bundleId, bundlePath));
