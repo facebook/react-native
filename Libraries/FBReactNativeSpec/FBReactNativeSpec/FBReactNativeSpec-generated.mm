@@ -1418,6 +1418,159 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
+@implementation RCTCxxConvert (NativePushNotificationManagerIOS_SpecRequestPermissionsPermission)
++ (RCTManagedPointer *)JS_NativePushNotificationManagerIOS_SpecRequestPermissionsPermission:(id)json
+{
+  return facebook::react::managedPointer<JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission>(json);
+}
+@end
+@implementation RCTCxxConvert (NativePushNotificationManagerIOS_Permissions)
++ (RCTManagedPointer *)JS_NativePushNotificationManagerIOS_Permissions:(id)json
+{
+  return facebook::react::managedPointer<JS::NativePushNotificationManagerIOS::Permissions>(json);
+}
+@end
+@implementation RCTCxxConvert (NativePushNotificationManagerIOS_Notification)
++ (RCTManagedPointer *)JS_NativePushNotificationManagerIOS_Notification:(id)json
+{
+  return facebook::react::managedPointer<JS::NativePushNotificationManagerIOS::Notification>(json);
+}
+@end
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_onFinishRemoteNotification(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "onFinishRemoteNotification", @selector(onFinishRemoteNotification:fetchResult:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_setApplicationIconBadgeNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setApplicationIconBadgeNumber", @selector(setApplicationIconBadgeNumber:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_getApplicationIconBadgeNumber(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "getApplicationIconBadgeNumber", @selector(getApplicationIconBadgeNumber:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_requestPermissions(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "requestPermissions", @selector(requestPermissions:resolve:reject:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_abandonPermissions(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "abandonPermissions", @selector(abandonPermissions), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_checkPermissions(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "checkPermissions", @selector(checkPermissions:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_presentLocalNotification(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "presentLocalNotification", @selector(presentLocalNotification:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_scheduleLocalNotification(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "scheduleLocalNotification", @selector(scheduleLocalNotification:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_cancelAllLocalNotifications(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "cancelAllLocalNotifications", @selector(cancelAllLocalNotifications), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_cancelLocalNotifications(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "cancelLocalNotifications", @selector(cancelLocalNotifications:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_getInitialNotification(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "getInitialNotification", @selector(getInitialNotification:reject:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_getScheduledLocalNotifications(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "getScheduledLocalNotifications", @selector(getScheduledLocalNotifications:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_removeAllDeliveredNotifications(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "removeAllDeliveredNotifications", @selector(removeAllDeliveredNotifications), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_removeDeliveredNotifications(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "removeDeliveredNotifications", @selector(removeDeliveredNotifications:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_getDeliveredNotifications(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "getDeliveredNotifications", @selector(getDeliveredNotifications:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_addListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "addListener", @selector(addListener:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativePushNotificationManagerIOSSpecJSI_removeListeners(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "removeListeners", @selector(removeListeners:), args, count);
+    }
+
+
+    NativePushNotificationManagerIOSSpecJSI::NativePushNotificationManagerIOSSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+      : ObjCTurboModule("PushNotificationManagerIOS", instance, jsInvoker) {
+        
+        methodMap_["onFinishRemoteNotification"] = MethodMetadata {2, __hostFunction_NativePushNotificationManagerIOSSpecJSI_onFinishRemoteNotification};
+        
+        
+        methodMap_["setApplicationIconBadgeNumber"] = MethodMetadata {1, __hostFunction_NativePushNotificationManagerIOSSpecJSI_setApplicationIconBadgeNumber};
+        
+        
+        methodMap_["getApplicationIconBadgeNumber"] = MethodMetadata {1, __hostFunction_NativePushNotificationManagerIOSSpecJSI_getApplicationIconBadgeNumber};
+        
+        
+        methodMap_["requestPermissions"] = MethodMetadata {1, __hostFunction_NativePushNotificationManagerIOSSpecJSI_requestPermissions};
+        
+        setMethodArgConversionSelector(@"requestPermissions", 0, @"JS_NativePushNotificationManagerIOS_SpecRequestPermissionsPermission:");
+        
+        methodMap_["abandonPermissions"] = MethodMetadata {0, __hostFunction_NativePushNotificationManagerIOSSpecJSI_abandonPermissions};
+        
+        
+        methodMap_["checkPermissions"] = MethodMetadata {1, __hostFunction_NativePushNotificationManagerIOSSpecJSI_checkPermissions};
+        
+        
+        methodMap_["presentLocalNotification"] = MethodMetadata {1, __hostFunction_NativePushNotificationManagerIOSSpecJSI_presentLocalNotification};
+        
+        setMethodArgConversionSelector(@"presentLocalNotification", 0, @"JS_NativePushNotificationManagerIOS_Notification:");
+        
+        methodMap_["scheduleLocalNotification"] = MethodMetadata {1, __hostFunction_NativePushNotificationManagerIOSSpecJSI_scheduleLocalNotification};
+        
+        setMethodArgConversionSelector(@"scheduleLocalNotification", 0, @"JS_NativePushNotificationManagerIOS_Notification:");
+        
+        methodMap_["cancelAllLocalNotifications"] = MethodMetadata {0, __hostFunction_NativePushNotificationManagerIOSSpecJSI_cancelAllLocalNotifications};
+        
+        
+        methodMap_["cancelLocalNotifications"] = MethodMetadata {1, __hostFunction_NativePushNotificationManagerIOSSpecJSI_cancelLocalNotifications};
+        
+        
+        methodMap_["getInitialNotification"] = MethodMetadata {0, __hostFunction_NativePushNotificationManagerIOSSpecJSI_getInitialNotification};
+        
+        
+        methodMap_["getScheduledLocalNotifications"] = MethodMetadata {1, __hostFunction_NativePushNotificationManagerIOSSpecJSI_getScheduledLocalNotifications};
+        
+        
+        methodMap_["removeAllDeliveredNotifications"] = MethodMetadata {0, __hostFunction_NativePushNotificationManagerIOSSpecJSI_removeAllDeliveredNotifications};
+        
+        
+        methodMap_["removeDeliveredNotifications"] = MethodMetadata {1, __hostFunction_NativePushNotificationManagerIOSSpecJSI_removeDeliveredNotifications};
+        
+        
+        methodMap_["getDeliveredNotifications"] = MethodMetadata {1, __hostFunction_NativePushNotificationManagerIOSSpecJSI_getDeliveredNotifications};
+        
+        
+        methodMap_["addListener"] = MethodMetadata {1, __hostFunction_NativePushNotificationManagerIOSSpecJSI_addListener};
+        
+        
+        methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativePushNotificationManagerIOSSpecJSI_removeListeners};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
 namespace facebook {
   namespace react {
 

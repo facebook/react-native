@@ -1612,6 +1612,104 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+
+namespace JS {
+  namespace NativePushNotificationManagerIOS {
+    struct SpecRequestPermissionsPermission {
+      folly::Optional<bool> alert() const;
+      folly::Optional<bool> badge() const;
+      folly::Optional<bool> sound() const;
+
+      SpecRequestPermissionsPermission(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativePushNotificationManagerIOS_SpecRequestPermissionsPermission)
++ (RCTManagedPointer *)JS_NativePushNotificationManagerIOS_SpecRequestPermissionsPermission:(id)json;
+@end
+
+namespace JS {
+  namespace NativePushNotificationManagerIOS {
+    struct Permissions {
+      bool alert() const;
+      bool badge() const;
+      bool sound() const;
+
+      Permissions(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativePushNotificationManagerIOS_Permissions)
++ (RCTManagedPointer *)JS_NativePushNotificationManagerIOS_Permissions:(id)json;
+@end
+
+namespace JS {
+  namespace NativePushNotificationManagerIOS {
+    struct Notification {
+      NSString *alertTitle() const;
+      folly::Optional<double> fireDate() const;
+      NSString *alertBody() const;
+      NSString *alertAction() const;
+      id<NSObject> _Nullable userInfo() const;
+      NSString *category() const;
+      NSString *repeatInterval() const;
+      folly::Optional<double> applicationIconBadgeNumber() const;
+      folly::Optional<bool> isSilent() const;
+
+      Notification(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativePushNotificationManagerIOS_Notification)
++ (RCTManagedPointer *)JS_NativePushNotificationManagerIOS_Notification:(id)json;
+@end
+@protocol NativePushNotificationManagerIOSSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)onFinishRemoteNotification:(NSString *)notificationId
+                       fetchResult:(NSString *)fetchResult;
+- (void)setApplicationIconBadgeNumber:(double)num;
+- (void)getApplicationIconBadgeNumber:(RCTResponseSenderBlock)callback;
+- (void)requestPermissions:(JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission &)permission
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject;
+- (void)abandonPermissions;
+- (void)checkPermissions:(RCTResponseSenderBlock)callback;
+- (void)presentLocalNotification:(JS::NativePushNotificationManagerIOS::Notification &)notification;
+- (void)scheduleLocalNotification:(JS::NativePushNotificationManagerIOS::Notification &)notification;
+- (void)cancelAllLocalNotifications;
+- (void)cancelLocalNotifications:(NSDictionary *)userInfo;
+- (void)getInitialNotification:(RCTPromiseResolveBlock)resolve
+                        reject:(RCTPromiseRejectBlock)reject;
+- (void)getScheduledLocalNotifications:(RCTResponseSenderBlock)callback;
+- (void)removeAllDeliveredNotifications;
+- (void)removeDeliveredNotifications:(NSArray *)identifiers;
+- (void)getDeliveredNotifications:(RCTResponseSenderBlock)callback;
+- (void)addListener:(NSString *)eventType;
+- (void)removeListeners:(double)count;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'PushNotificationManagerIOS'
+     */
+
+    class JSI_EXPORT NativePushNotificationManagerIOSSpecJSI : public ObjCTurboModule {
+    public:
+      NativePushNotificationManagerIOSSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
 @protocol NativeRedBoxSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)setExtraData:(NSDictionary *)extraData
@@ -2753,6 +2851,81 @@ inline JS::NativePlatformConstantsIOS::Constants::Builder::Builder(const Input i
 inline JS::NativePlatformConstantsIOS::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
+inline folly::Optional<bool> JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission::alert() const
+{
+  id const p = _v[@"alert"];
+  return RCTBridgingToOptionalBool(p);
+}
+inline folly::Optional<bool> JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission::badge() const
+{
+  id const p = _v[@"badge"];
+  return RCTBridgingToOptionalBool(p);
+}
+inline folly::Optional<bool> JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission::sound() const
+{
+  id const p = _v[@"sound"];
+  return RCTBridgingToOptionalBool(p);
+}
+inline bool JS::NativePushNotificationManagerIOS::Permissions::alert() const
+{
+  id const p = _v[@"alert"];
+  return RCTBridgingToBool(p);
+}
+inline bool JS::NativePushNotificationManagerIOS::Permissions::badge() const
+{
+  id const p = _v[@"badge"];
+  return RCTBridgingToBool(p);
+}
+inline bool JS::NativePushNotificationManagerIOS::Permissions::sound() const
+{
+  id const p = _v[@"sound"];
+  return RCTBridgingToBool(p);
+}
+inline NSString *JS::NativePushNotificationManagerIOS::Notification::alertTitle() const
+{
+  id const p = _v[@"alertTitle"];
+  return RCTBridgingToString(p);
+}
+inline folly::Optional<double> JS::NativePushNotificationManagerIOS::Notification::fireDate() const
+{
+  id const p = _v[@"fireDate"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline NSString *JS::NativePushNotificationManagerIOS::Notification::alertBody() const
+{
+  id const p = _v[@"alertBody"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativePushNotificationManagerIOS::Notification::alertAction() const
+{
+  id const p = _v[@"alertAction"];
+  return RCTBridgingToString(p);
+}
+inline id<NSObject> _Nullable JS::NativePushNotificationManagerIOS::Notification::userInfo() const
+{
+  id const p = _v[@"userInfo"];
+  return p;
+}
+inline NSString *JS::NativePushNotificationManagerIOS::Notification::category() const
+{
+  id const p = _v[@"category"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativePushNotificationManagerIOS::Notification::repeatInterval() const
+{
+  id const p = _v[@"repeatInterval"];
+  return RCTBridgingToString(p);
+}
+inline folly::Optional<double> JS::NativePushNotificationManagerIOS::Notification::applicationIconBadgeNumber() const
+{
+  id const p = _v[@"applicationIconBadgeNumber"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<bool> JS::NativePushNotificationManagerIOS::Notification::isSilent() const
+{
+  id const p = _v[@"isSilent"];
+  return RCTBridgingToOptionalBool(p);
+}
 inline JS::NativeSettingsManager::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto settings = i.settings.get();
