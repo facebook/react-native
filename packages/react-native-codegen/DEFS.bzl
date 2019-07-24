@@ -31,6 +31,8 @@ def rn_codegen(
     generate_shadow_node_h_name = "generated_shadow_node_h-{}".format(name)
     generate_module_h_name = "generate_module_h-{}".format(name)
     generate_module_cpp_name = "generate_module_cpp-{}".format(name)
+    generate_module_hobjcpp_name = "generate_module_hobjcpp-{}".format(name)
+    generate_module_mm_name = "generate_module_mm-{}".format(name)
 
     fb_native.genrule(
         name = generate_fixtures_rule_name,
@@ -106,6 +108,18 @@ def rn_codegen(
         out = "NativeModules.cpp",
     )
 
+    fb_native.genrule(
+        name = generate_module_hobjcpp_name,
+        cmd = "cp $(location :{})/RCTNativeModules.h $OUT".format(generate_fixtures_rule_name),
+        out = "RCTNativeModules.h",
+    )
+
+    fb_native.genrule(
+        name = generate_module_mm_name,
+        cmd = "cp $(location :{})/RCTNativeModules.mm $OUT".format(generate_fixtures_rule_name),
+        out = "RCTNativeModules.mm",
+    )
+
     # libs
     rn_xplat_cxx_library(
         name = "generated_components-{}".format(name),
@@ -161,15 +175,25 @@ def rn_codegen(
     rn_xplat_cxx_library(
         name = "generated_modules-{}".format(name),
         tests = [":generated_tests-{}".format(name)],
+        ios_srcs = [
+            ":{}".format(generate_module_mm_name),
+        ],
         srcs = [
             ":{}".format(generate_module_cpp_name),
         ],
         headers = [
             ":{}".format(generate_module_h_name),
         ],
+        ios_headers = [
+            ":{}".format(generate_module_hobjcpp_name),
+        ],
         exported_headers = {
             "NativeModules.cpp": ":{}".format(generate_module_cpp_name),
             "NativeModules.h": ":{}".format(generate_module_h_name),
+        },
+        ios_exported_headers = {
+            "RCTNativeModules.h": ":{}".format(generate_module_hobjcpp_name),
+            "RCTNativeModules.mm": ":{}".format(generate_module_mm_name),
         },
         header_namespace = "react/modules/{}".format(name),
         compiler_flags = [

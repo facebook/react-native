@@ -24,6 +24,8 @@ const generatePropsCpp = require('./components/GeneratePropsCpp.js');
 const generatePropsH = require('./components/GeneratePropsH.js');
 const generateModuleH = require('./modules/GenerateModuleH.js');
 const generateModuleCpp = require('./modules/GenerateModuleCpp.js');
+const generateModuleHObjCpp = require('./modules/GenerateModuleHObjCpp.js');
+const generateModuleMm = require('./modules/GenerateModuleMm.js');
 const generatePropsJavaInterface = require('./components/GeneratePropsJavaInterface.js');
 const generatePropsJavaDelegate = require('./components/GeneratePropsJavaDelegate.js');
 const generateTests = require('./components/GenerateTests.js');
@@ -57,7 +59,12 @@ type Config = $ReadOnly<{|
 
 const GENERATORS = {
   descriptors: [generateComponentDescriptorH.generate],
-  events: [generateEventEmitterCpp.generate, generateEventEmitterH.generate],
+  events: [
+    generateEventEmitterCpp.generate,
+    generateEventEmitterH.generate,
+    generateModuleHObjCpp.generate,
+    generateModuleMm.generate,
+  ],
   props: [
     generatePropsCpp.generate,
     generatePropsH.generate,
