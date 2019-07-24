@@ -143,10 +143,10 @@ const HMRClient: HMRClientNativeInterface = {
     );
 
     client.on('connection-error', e => {
-      let error = `Fast Refresh isn't working because it cannot connect to the development server.
+      let error = `Cannot connect to the Metro server.
 
 Try the following to fix the issue:
-- Ensure that the Metro Server is running and available on the same network`;
+- Ensure that the Metro server is running and available on the same network`;
 
       if (Platform.OS === 'ios') {
         error += `
@@ -190,12 +190,12 @@ Error: ${e.message}`;
       if (data.type === 'GraphNotFoundError') {
         client.close();
         setHMRUnavailableReason(
-          'The Metro server has restarted since the last edit. Fast Refresh will be disabled until you reload the application.',
+          'The Metro server has restarted since the last edit. Reload to reconnect.',
         );
       } else if (data.type === 'RevisionNotFoundError') {
         client.close();
         setHMRUnavailableReason(
-          'The Metro server and the client are out of sync. Fast Refresh will be disabled until you reload the application.',
+          'The Metro server and the client are out of sync. Reload to reconnect.',
         );
       } else {
         currentCompileErrorMessage = `${data.type} ${data.message}`;
@@ -208,7 +208,7 @@ Error: ${e.message}`;
     client.on('close', data => {
       LoadingView.hide();
       setHMRUnavailableReason(
-        'Disconnected from the Metro server. Fast Refresh will be disabled until you reload the application.',
+        'Disconnected from the Metro server. Reload to reconnect.',
       );
     });
 
@@ -229,7 +229,7 @@ function setHMRUnavailableReason(reason) {
     return;
   }
   hmrUnavailableReason = reason;
-  if (hmrClient.shouldApplyUpdates) {
+  if (hmrClient.isEnabled()) {
     // If HMR is currently enabled, show a warning.
     console.warn(reason);
     // (Not using the `warning` module to prevent a Buck cycle.)
