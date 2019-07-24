@@ -10,6 +10,7 @@ load(
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
+    "react_native_dep",
     "react_native_target",
     "react_native_xplat_target",
     "rn_android_library",
@@ -222,6 +223,7 @@ def rn_codegen(
         ],
         visibility = ["PUBLIC"],
         deps = [
+            react_native_dep("third-party/android/androidx:annotation"),
             react_native_target("java/com/facebook/react/bridge:bridge"),
         ],
     )

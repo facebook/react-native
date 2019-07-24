@@ -31,45 +31,53 @@ public interface ::_CLASSNAME_::<T extends ::_EXTEND_CLASSES_::> {
 }
 `;
 
-function getJavaValueForProp(
-  prop: PropTypeShape,
-  componentName: string,
-): string {
+function addNullable(imports) {
+  imports.add('import androidx.annotation.Nullable;');
+}
+
+function getJavaValueForProp(prop: PropTypeShape, imports): string {
   const typeAnnotation = prop.typeAnnotation;
 
   switch (typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
       return 'boolean value';
     case 'StringTypeAnnotation':
-      return 'String value';
+      addNullable(imports);
+      return '@Nullable String value';
     case 'Int32TypeAnnotation':
       return 'int value';
     case 'FloatTypeAnnotation':
+      addNullable(imports);
       return 'Float value';
     case 'NativePrimitiveTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
-          return 'Integer value';
+          addNullable(imports);
+          return '@Nullable Integer value';
         case 'ImageSourcePrimitive':
-          return 'ReadableMap value';
+          addNullable(imports);
+          return '@Nullable ReadableMap value';
         case 'PointPrimitive':
-          return 'ReadableMap value';
+          addNullable(imports);
+          return '@Nullable ReadableMap value';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Received unknown NativePrimitiveTypeAnnotation');
       }
     case 'ArrayTypeAnnotation': {
-      return 'ReadableArray value';
+      addNullable(imports);
+      return '@Nullable ReadableArray value';
     }
     case 'StringEnumTypeAnnotation':
-      return 'String value';
+      addNullable(imports);
+      return '@Nullable String value';
     default:
       (typeAnnotation: empty);
       throw new Error('Received invalid typeAnnotation');
   }
 }
 
-function generatePropsString(component: ComponentShape, componentName: string) {
+function generatePropsString(component: ComponentShape, imports) {
   if (component.props.length === 0) {
     return '// No props';
   }
@@ -78,7 +86,7 @@ function generatePropsString(component: ComponentShape, componentName: string) {
     .map(prop => {
       return `void set${toSafeJavaString(
         prop.name,
-      )}(T view, ${getJavaValueForProp(prop, componentName)});`;
+      )}(T view, ${getJavaValueForProp(prop, imports)});`;
     })
     .join('\n' + '  ');
 }
@@ -166,7 +174,7 @@ module.exports = {
         const fileName = `${className}.java`;
 
         const imports = getImports(component);
-        const propsString = generatePropsString(component, componentName);
+        const propsString = generatePropsString(component, imports);
         const commandsString = generateCommandsString(component, componentName);
         const extendString = getClassExtendString(component);
 

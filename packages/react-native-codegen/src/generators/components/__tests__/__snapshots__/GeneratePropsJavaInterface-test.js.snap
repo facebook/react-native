@@ -6,17 +6,18 @@ Map {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 
 public interface ArrayPropsNativeComponentInterface<T extends View> {
-  void setNames(T view, ReadableArray value);
-  void setDisableds(T view, ReadableArray value);
-  void setProgress(T view, ReadableArray value);
-  void setRadii(T view, ReadableArray value);
-  void setColors(T view, ReadableArray value);
-  void setSrcs(T view, ReadableArray value);
-  void setPoints(T view, ReadableArray value);
-  void setSizes(T view, ReadableArray value);
+  void setNames(T view, @Nullable ReadableArray value);
+  void setDisableds(T view, @Nullable ReadableArray value);
+  void setProgress(T view, @Nullable ReadableArray value);
+  void setRadii(T view, @Nullable ReadableArray value);
+  void setColors(T view, @Nullable ReadableArray value);
+  void setSrcs(T view, @Nullable ReadableArray value);
+  void setPoints(T view, @Nullable ReadableArray value);
+  void setSizes(T view, @Nullable ReadableArray value);
 }
 ",
 }
@@ -42,9 +43,10 @@ Map {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 
 public interface ColorPropNativeComponentInterface<T extends View> {
-  void setTintColor(T view, Integer value);
+  void setTintColor(T view, @Nullable Integer value);
 }
 ",
 }
@@ -72,9 +74,10 @@ Map {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 
 public interface CommandNativeComponentInterface<T extends View> {
-  void setAccessibilityHint(T view, String value);
+  void setAccessibilityHint(T view, @Nullable String value);
   void hotspotUpdate(T view, int x, int y);
 }
 ",
@@ -87,9 +90,10 @@ Map {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 
 public interface EnumPropsNativeComponentInterface<T extends View> {
-  void setAlignment(T view, String value);
+  void setAlignment(T view, @Nullable String value);
 }
 ",
 }
@@ -143,6 +147,7 @@ Map {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 
 public interface FloatPropNativeComponentInterface<T extends View> {
   void setBlurRadius(T view, Float value);
@@ -162,10 +167,11 @@ Map {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 
 public interface ImagePropNativeComponentInterface<T extends View> {
-  void setThumbImage(T view, ReadableMap value);
+  void setThumbImage(T view, @Nullable ReadableMap value);
 }
 ",
 }
@@ -193,9 +199,10 @@ Map {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 
 public interface InterfaceOnlyComponentInterface<T extends View> {
-  void setAccessibilityHint(T view, String value);
+  void setAccessibilityHint(T view, @Nullable String value);
 }
 ",
 }
@@ -207,13 +214,14 @@ Map {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 
 public interface ImageColorPropNativeComponentInterface<T extends View> {
-  void setThumbImage(T view, ReadableMap value);
-  void setColor(T view, Integer value);
-  void setThumbTintColor(T view, Integer value);
-  void setPoint(T view, ReadableMap value);
+  void setThumbImage(T view, @Nullable ReadableMap value);
+  void setColor(T view, @Nullable Integer value);
+  void setThumbTintColor(T view, @Nullable Integer value);
+  void setPoint(T view, @Nullable ReadableMap value);
 }
 ",
 }
@@ -239,10 +247,11 @@ Map {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 
 public interface PointPropNativeComponentInterface<T extends View> {
-  void setStartPoint(T view, ReadableMap value);
+  void setStartPoint(T view, @Nullable ReadableMap value);
 }
 ",
 }
@@ -254,10 +263,11 @@ Map {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 
 public interface StringPropComponentInterface<T extends View> {
-  void setAccessibilityHint(T view, String value);
-  void setAccessibilityRole(T view, String value);
+  void setAccessibilityHint(T view, @Nullable String value);
+  void setAccessibilityRole(T view, @Nullable String value);
 }
 ",
 }
