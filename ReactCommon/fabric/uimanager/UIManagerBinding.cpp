@@ -421,6 +421,34 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "measure") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        2,
+        [&uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          auto layoutMetrics = uiManager.getRelativeLayoutMetrics(
+              *shadowNodeFromValue(runtime, arguments[0]), nullptr);
+          auto frame = layoutMetrics.frame;
+          auto onSuccessFunction =
+              arguments[1].getObject(runtime).getFunction(runtime);
+
+          onSuccessFunction.call(
+              runtime,
+              {0,
+               0,
+               jsi::Value{runtime, (double)frame.origin.x},
+               jsi::Value{runtime, (double)frame.origin.y},
+               jsi::Value{runtime, (double)frame.size.width},
+               jsi::Value{runtime, (double)frame.size.height}});
+          return jsi::Value::undefined();
+        });
+  }
+
   if (methodName == "measureInWindow") {
     return jsi::Function::createFromHostFunction(
         runtime,
