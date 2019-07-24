@@ -23,10 +23,21 @@ let hmrClient = null;
 let hmrUnavailableReason: string | null = null;
 let currentCompileErrorMessage: string | null = null;
 
+type LogLevel =
+  | 'trace'
+  | 'info'
+  | 'warn'
+  | 'log'
+  | 'group'
+  | 'groupCollapsed'
+  | 'groupEnd'
+  | 'debug';
+
 export type HMRClientNativeInterface = {|
   enable(): void,
   disable(): void,
   registerBundle(requestUrl: string): void,
+  log(level: LogLevel, data: Array<mixed>): void,
   setup(
     platform: string,
     bundleEntry: string,
@@ -86,6 +97,24 @@ const HMRClient: HMRClientNativeInterface = {
     invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
     pendingEntryPoints.push(requestUrl);
     registerBundleEntryPoints(hmrClient);
+  },
+
+  log(level: LogLevel, data: Array<mixed>) {
+    let message;
+    try {
+      message = JSON.stringify({type: 'log', level, data});
+    } catch (error) {
+      message = JSON.stringify({type: 'log', level, data: [error.message]});
+    }
+
+    try {
+      if (hmrClient) {
+        hmrClient.send(message);
+      }
+    } catch (error) {
+      // If sending logs causes any failures we want to silently ignore them
+      // to ensure we do not cause infinite-logging loops.
+    }
   },
 
   // Called once by the bridge on startup, even if Fast Refresh is off.
