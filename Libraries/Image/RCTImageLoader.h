@@ -155,11 +155,12 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
 @end
 
+/**
+ * DEPRECATED!! DO NOT USE
+ * Instead use `[_bridge moduleForClass:[RCTImageLoader class]]`
+ */
 @interface RCTBridge (RCTImageLoader)
 
-/**
- * The shared image loader instance
- */
 @property (nonatomic, readonly) RCTImageLoader *imageLoader;
 
 @end
