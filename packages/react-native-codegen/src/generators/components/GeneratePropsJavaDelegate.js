@@ -44,13 +44,13 @@ function getJavaValueForProp(
     case 'StringTypeAnnotation':
       return '(String) value';
     case 'Int32TypeAnnotation':
-      return '(int) value';
+      return '((Double) value).intValue()';
     case 'FloatTypeAnnotation':
-      return '(Float) value';
+      return '((Double) value).floatValue()';
     case 'NativePrimitiveTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
-          return '(Integer) value';
+          return '((Double) value).intValue()';
         case 'ImageSourcePrimitive':
           return '(ReadableMap) value';
         case 'PointPrimitive':

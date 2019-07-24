@@ -73,7 +73,7 @@ public class ColorPropNativeComponentDelegate<T extends View> {
   public void setProperty(ColorPropNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"tintColor\\":
-        viewManager.setTintColor(view, (Integer) value);
+        viewManager.setTintColor(view, ((Double) value).intValue());
         break;
     }
   }
@@ -205,22 +205,22 @@ public class FloatPropNativeComponentDelegate<T extends View> {
   public void setProperty(FloatPropNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"blurRadius\\":
-        viewManager.setBlurRadius(view, (Float) value);
+        viewManager.setBlurRadius(view, ((Double) value).floatValue());
         break;
       case \\"blurRadius2\\":
-        viewManager.setBlurRadius2(view, (Float) value);
+        viewManager.setBlurRadius2(view, ((Double) value).floatValue());
         break;
       case \\"blurRadius3\\":
-        viewManager.setBlurRadius3(view, (Float) value);
+        viewManager.setBlurRadius3(view, ((Double) value).floatValue());
         break;
       case \\"blurRadius4\\":
-        viewManager.setBlurRadius4(view, (Float) value);
+        viewManager.setBlurRadius4(view, ((Double) value).floatValue());
         break;
       case \\"blurRadius5\\":
-        viewManager.setBlurRadius5(view, (Float) value);
+        viewManager.setBlurRadius5(view, ((Double) value).floatValue());
         break;
       case \\"blurRadius6\\":
-        viewManager.setBlurRadius6(view, (Float) value);
+        viewManager.setBlurRadius6(view, ((Double) value).floatValue());
         break;
     }
   }
@@ -261,13 +261,13 @@ public class IntegerPropNativeComponentDelegate<T extends View> {
   public void setProperty(IntegerPropNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"progress1\\":
-        viewManager.setProgress1(view, (int) value);
+        viewManager.setProgress1(view, ((Double) value).intValue());
         break;
       case \\"progress2\\":
-        viewManager.setProgress2(view, (int) value);
+        viewManager.setProgress2(view, ((Double) value).intValue());
         break;
       case \\"progress3\\":
-        viewManager.setProgress3(view, (int) value);
+        viewManager.setProgress3(view, ((Double) value).intValue());
         break;
     }
   }
@@ -311,10 +311,10 @@ public class ImageColorPropNativeComponentDelegate<T extends View> {
         viewManager.setThumbImage(view, (ReadableMap) value);
         break;
       case \\"color\\":
-        viewManager.setColor(view, (Integer) value);
+        viewManager.setColor(view, ((Double) value).intValue());
         break;
       case \\"thumbTintColor\\":
-        viewManager.setThumbTintColor(view, (Integer) value);
+        viewManager.setThumbTintColor(view, ((Double) value).intValue());
         break;
       case \\"point\\":
         viewManager.setPoint(view, (ReadableMap) value);
