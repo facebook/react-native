@@ -53,7 +53,7 @@ public class BooleanPropNativeComponentDelegate<T extends View> {
   public void setProperty(BooleanPropNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"disabled\\":
-        viewManager.setDisabled(view, (boolean) value);
+        viewManager.setDisabled(view, value == null ? false : (boolean) value);
         break;
     }
   }
@@ -73,7 +73,7 @@ public class ColorPropNativeComponentDelegate<T extends View> {
   public void setProperty(ColorPropNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"tintColor\\":
-        viewManager.setTintColor(view, ((Double) value).intValue());
+        viewManager.setTintColor(view, value == null ? null : ((Double) value).intValue());
         break;
     }
   }
@@ -109,7 +109,7 @@ public class CommandNativeComponentDelegate<T extends View> {
   public void setProperty(CommandNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"accessibilityHint\\":
-        viewManager.setAccessibilityHint(view, (String) value);
+        viewManager.setAccessibilityHint(view, value == null ? \\"\\" : (String) value);
         break;
     }
   }
@@ -149,7 +149,7 @@ public class EventsNestedObjectNativeComponentDelegate<T extends View> {
   public void setProperty(EventsNestedObjectNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"disabled\\":
-        viewManager.setDisabled(view, (boolean) value);
+        viewManager.setDisabled(view, value == null ? false : (boolean) value);
         break;
     }
   }
@@ -169,7 +169,7 @@ public class EventsNativeComponentDelegate<T extends View> {
   public void setProperty(EventsNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"disabled\\":
-        viewManager.setDisabled(view, (boolean) value);
+        viewManager.setDisabled(view, value == null ? false : (boolean) value);
         break;
     }
   }
@@ -205,22 +205,22 @@ public class FloatPropNativeComponentDelegate<T extends View> {
   public void setProperty(FloatPropNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"blurRadius\\":
-        viewManager.setBlurRadius(view, ((Double) value).floatValue());
+        viewManager.setBlurRadius(view, value == null ? Float.NaN : ((Double) value).floatValue());
         break;
       case \\"blurRadius2\\":
-        viewManager.setBlurRadius2(view, ((Double) value).floatValue());
+        viewManager.setBlurRadius2(view, value == null ? 0.001f : ((Double) value).floatValue());
         break;
       case \\"blurRadius3\\":
-        viewManager.setBlurRadius3(view, ((Double) value).floatValue());
+        viewManager.setBlurRadius3(view, value == null ? 2.1f : ((Double) value).floatValue());
         break;
       case \\"blurRadius4\\":
-        viewManager.setBlurRadius4(view, ((Double) value).floatValue());
+        viewManager.setBlurRadius4(view, value == null ? 0f : ((Double) value).floatValue());
         break;
       case \\"blurRadius5\\":
-        viewManager.setBlurRadius5(view, ((Double) value).floatValue());
+        viewManager.setBlurRadius5(view, value == null ? 1f : ((Double) value).floatValue());
         break;
       case \\"blurRadius6\\":
-        viewManager.setBlurRadius6(view, ((Double) value).floatValue());
+        viewManager.setBlurRadius6(view, value == null ? 0f : ((Double) value).floatValue());
         break;
     }
   }
@@ -261,13 +261,13 @@ public class IntegerPropNativeComponentDelegate<T extends View> {
   public void setProperty(IntegerPropNativeComponentInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"progress1\\":
-        viewManager.setProgress1(view, ((Double) value).intValue());
+        viewManager.setProgress1(view, value == null ? 0 : ((Double) value).intValue());
         break;
       case \\"progress2\\":
-        viewManager.setProgress2(view, ((Double) value).intValue());
+        viewManager.setProgress2(view, value == null ? -1 : ((Double) value).intValue());
         break;
       case \\"progress3\\":
-        viewManager.setProgress3(view, ((Double) value).intValue());
+        viewManager.setProgress3(view, value == null ? 10 : ((Double) value).intValue());
         break;
     }
   }
@@ -287,7 +287,7 @@ public class InterfaceOnlyComponentDelegate<T extends View> {
   public void setProperty(InterfaceOnlyComponentInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"accessibilityHint\\":
-        viewManager.setAccessibilityHint(view, (String) value);
+        viewManager.setAccessibilityHint(view, value == null ? \\"\\" : (String) value);
         break;
     }
   }
@@ -311,10 +311,10 @@ public class ImageColorPropNativeComponentDelegate<T extends View> {
         viewManager.setThumbImage(view, (ReadableMap) value);
         break;
       case \\"color\\":
-        viewManager.setColor(view, ((Double) value).intValue());
+        viewManager.setColor(view, value == null ? null : ((Double) value).intValue());
         break;
       case \\"thumbTintColor\\":
-        viewManager.setThumbTintColor(view, ((Double) value).intValue());
+        viewManager.setThumbTintColor(view, value == null ? null : ((Double) value).intValue());
         break;
       case \\"point\\":
         viewManager.setPoint(view, (ReadableMap) value);
@@ -374,10 +374,10 @@ public class StringPropComponentDelegate<T extends View> {
   public void setProperty(StringPropComponentInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"accessibilityHint\\":
-        viewManager.setAccessibilityHint(view, (String) value);
+        viewManager.setAccessibilityHint(view, value == null ? \\"\\" : (String) value);
         break;
       case \\"accessibilityRole\\":
-        viewManager.setAccessibilityRole(view, (String) value);
+        viewManager.setAccessibilityRole(view, value == null ? null : (String) value);
         break;
     }
   }
@@ -397,7 +397,7 @@ public class MultiFile1NativeComponentDelegate<T extends View> {
   public void setProperty(MultiFile1NativeComponentInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"disabled\\":
-        viewManager.setDisabled(view, (boolean) value);
+        viewManager.setDisabled(view, value == null ? false : (boolean) value);
         break;
     }
   }
@@ -412,7 +412,7 @@ public class MultiFile2NativeComponentDelegate<T extends View> {
   public void setProperty(MultiFile2NativeComponentInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"disabled\\":
-        viewManager.setDisabled(view, (boolean) value);
+        viewManager.setDisabled(view, value == null ? true : (boolean) value);
         break;
     }
   }
@@ -432,7 +432,7 @@ public class MultiComponent1NativeComponentDelegate<T extends View> {
   public void setProperty(MultiComponent1NativeComponentInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"disabled\\":
-        viewManager.setDisabled(view, (boolean) value);
+        viewManager.setDisabled(view, value == null ? false : (boolean) value);
         break;
     }
   }
@@ -447,7 +447,7 @@ public class MultiComponent2NativeComponentDelegate<T extends View> {
   public void setProperty(MultiComponent2NativeComponentInterface<T> viewManager, T view, String propName, Object value) {
     switch (propName) {
       case \\"disabled\\":
-        viewManager.setDisabled(view, (boolean) value);
+        viewManager.setDisabled(view, value == null ? true : (boolean) value);
         break;
     }
   }

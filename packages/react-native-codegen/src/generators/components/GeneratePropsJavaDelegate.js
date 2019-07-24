@@ -40,17 +40,29 @@ function getJavaValueForProp(
 
   switch (typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
-      return '(boolean) value';
+      return `value == null ? ${typeAnnotation.default.toString()} : (boolean) value`;
     case 'StringTypeAnnotation':
-      return '(String) value';
+      const defaultValueString =
+        typeAnnotation.default === null
+          ? 'null'
+          : `"${typeAnnotation.default}"`;
+      return `value == null ? ${defaultValueString} : (String) value`;
     case 'Int32TypeAnnotation':
-      return '((Double) value).intValue()';
+      return `value == null ? ${
+        typeAnnotation.default
+      } : ((Double) value).intValue()`;
     case 'FloatTypeAnnotation':
-      return '((Double) value).floatValue()';
+      if (prop.optional) {
+        return `value == null ? ${
+          typeAnnotation.default
+        }f : ((Double) value).floatValue()`;
+      } else {
+        return 'value == null ? Float.NaN : ((Double) value).floatValue()';
+      }
     case 'NativePrimitiveTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
-          return '((Double) value).intValue()';
+          return 'value == null ? null : ((Double) value).intValue()';
         case 'ImageSourcePrimitive':
           return '(ReadableMap) value';
         case 'PointPrimitive':

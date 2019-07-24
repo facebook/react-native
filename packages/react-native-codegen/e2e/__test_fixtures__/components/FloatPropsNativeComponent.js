@@ -21,7 +21,7 @@ type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
   // Props
-  blurRadius?: WithDefault<Float, 0.0>,
+  blurRadius: Float,
   blurRadius2?: WithDefault<Float, 0.001>,
   blurRadius3?: WithDefault<Float, 2.1>,
   blurRadius4?: WithDefault<Float, 0>,

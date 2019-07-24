@@ -269,7 +269,7 @@ const FLOAT_PROPS: SchemaType = {
           props: [
             {
               name: 'blurRadius',
-              optional: true,
+              optional: false,
               typeAnnotation: {
                 type: 'FloatTypeAnnotation',
                 default: 0.0,
