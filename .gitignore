@@ -80,3 +80,9 @@ RNTester/build
 
 #vscode
 .vscode/*
+
+# Javadocs and copy of third party ndks created by build.
+ReactAndroid/bin/
+
+# Projects files created by build
+**/.project
