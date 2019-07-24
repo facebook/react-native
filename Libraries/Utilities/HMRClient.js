@@ -22,6 +22,7 @@ const pendingEntryPoints = [];
 let hmrClient = null;
 let hmrUnavailableReason: string | null = null;
 let currentCompileErrorMessage: string | null = null;
+let didConnect: boolean = false;
 
 type LogLevel =
   | 'trace'
@@ -169,6 +170,8 @@ Error: ${e.message}`;
 
     client.on('update-start', ({isInitialUpdate}) => {
       currentCompileErrorMessage = null;
+      didConnect = true;
+
       if (client.isEnabled() && !isInitialUpdate) {
         LoadingView.showMessage('Refreshing...', 'refresh');
       }
@@ -229,8 +232,11 @@ function setHMRUnavailableReason(reason) {
     return;
   }
   hmrUnavailableReason = reason;
-  if (hmrClient.isEnabled()) {
-    // If HMR is currently enabled, show a warning.
+
+  // We only want to show a warning if Fast Refresh is on *and* if we ever
+  // previously managed to connect successfully. We don't want to show
+  // the warning to native engineers who use cached bundles without Metro.
+  if (hmrClient.isEnabled() && didConnect) {
     console.warn(reason);
     // (Not using the `warning` module to prevent a Buck cycle.)
   }
