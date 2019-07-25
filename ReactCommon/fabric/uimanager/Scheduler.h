@@ -21,8 +21,8 @@
 #include <react/uimanager/SchedulerToolbox.h>
 #include <react/uimanager/UIManagerBinding.h>
 #include <react/uimanager/UIManagerDelegate.h>
-#include <react/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
+#include <react/utils/RuntimeExecutor.h>
 
 namespace facebook {
 namespace react {

@@ -11,9 +11,6 @@
 namespace facebook {
 namespace react {
 
-using RuntimeExecutor = std::function<void(
-    std::function<void(facebook::jsi::Runtime &runtime)> &&callback)>;
-
 struct EventHandlerWrapper : public EventHandler {
   EventHandlerWrapper(jsi::Function eventHandler)
       : callback(std::move(eventHandler)) {}

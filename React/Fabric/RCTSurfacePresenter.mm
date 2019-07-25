@@ -34,6 +34,7 @@
 #import <react/uimanager/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
+#import <react/utils/RuntimeExecutor.h>
 
 #import "MainRunLoopEventBeat.h"
 #import "RCTConversions.h"
