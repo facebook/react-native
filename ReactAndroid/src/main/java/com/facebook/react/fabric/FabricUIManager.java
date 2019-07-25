@@ -138,11 +138,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mReactApplicationContext.addLifecycleEventListener(this);
   }
 
+  // TODO (T47819352): Rename this to startSurface for consistency with xplat/iOS
   @Override
   public <T extends View> int addRootView(
       final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
-    // TODO T31905686: Refactor both addRootView methods into one method
+    // TODO T31905686: Combine with startSurface below
     ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, rootView.getContext());
     mMountingManager.addRootView(rootTag, rootView);
@@ -158,7 +159,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return rootTag;
   }
 
-  public <T extends View> int addRootView(
+  public <T extends View> int startSurface(
       final T rootView,
       final String moduleName,
       final WritableMap initialProps,
