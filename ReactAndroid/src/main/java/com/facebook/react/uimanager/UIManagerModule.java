@@ -607,8 +607,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * <p>NB: Unlike {@link #measure}, this will measure relative to the view layout, not the visible
    * window which can cause unexpected results when measuring relative to things like ScrollViews
    * that can have offset content on the screen.
+   *
+   * @deprecated This method will not be part of Fabric.
    */
   @ReactMethod
+  @Deprecated
   public void measureLayoutRelativeToParent(
       int tag, Callback errorCallback, Callback successCallback) {
     mUIImplementation.measureLayoutRelativeToParent(tag, errorCallback, successCallback);
