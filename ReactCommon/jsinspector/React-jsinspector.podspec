@@ -28,4 +28,5 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "*.{cpp,h}"
   s.header_dir             = 'jsinspector'
+  s.static_framework       = true
 end

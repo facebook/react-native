@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTInterpolationAnimatedNode.h"
+#import <React/RCTInterpolationAnimatedNode.h>
 
-#import "RCTAnimationUtils.h"
+#import <React/RCTAnimationUtils.h>
 
 static NSRegularExpression *regex;
 

@@ -26,10 +26,12 @@ Pod::Spec.new do |s|
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.source                 = source
-  s.source_files           = "DevSupport/*",
-                             "Inspector/*"
-  s.header_dir             = "React"
+  s.source_files           = "DevSupport/*.{mm,m}",
+                             "Inspector/*.{mm,m}"
+  s.header_dir             = "DevSupport"
+  s.static_framework       = true
 
-  s.dependency "React-Core", version
+  s.dependency "React-Core/DevSupportHeaders", version
   s.dependency "React-RCTWebSocket", version
+  s.dependency "React-jsinspector", version
 end

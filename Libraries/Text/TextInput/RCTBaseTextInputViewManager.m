@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTBaseTextInputViewManager.h"
+#import <React/RCTBaseTextInputViewManager.h>
 
 #import <React/RCTAccessibilityManager.h>
 #import <React/RCTBridge.h>
@@ -17,9 +17,9 @@
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
 
-#import "RCTBaseTextInputShadowView.h"
-#import "RCTBaseTextInputView.h"
-#import "RCTConvert+Text.h"
+#import <React/RCTBaseTextInputShadowView.h>
+#import <React/RCTBaseTextInputView.h>
+#import <React/RCTConvert+Text.h>
 
 @interface RCTBaseTextInputViewManager () <RCTUIManagerObserver>
 

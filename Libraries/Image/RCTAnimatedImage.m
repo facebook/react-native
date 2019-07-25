@@ -6,7 +6,7 @@
  */
 
 #import <ImageIO/ImageIO.h>
-#import "RCTAnimatedImage.h"
+#import <React/RCTAnimatedImage.h>
 
 @interface RCTGIFCoderFrame : NSObject
 

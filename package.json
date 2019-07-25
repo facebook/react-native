@@ -39,6 +39,7 @@
     "react-native.config.js",
     "react.gradle",
     "React.podspec",
+    "React-Core.podspec",
     "React",
     "ReactAndroid",
     "ReactCommon",

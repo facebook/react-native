@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "ARTRenderable.h"
+#import <React/ARTRenderable.h>
 
 @implementation ARTRenderable
 

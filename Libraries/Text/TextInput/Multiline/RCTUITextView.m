@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTUITextView.h"
+#import <React/RCTUITextView.h>
 
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
-#import "RCTBackedTextInputDelegateAdapter.h"
-#import "RCTTextAttributes.h"
+#import <React/RCTBackedTextInputDelegateAdapter.h>
+#import <React/RCTTextAttributes.h>
 
 @implementation RCTUITextView
 {

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTUIImageViewAnimated.h"
+#import <React/RCTUIImageViewAnimated.h>
 
 #import <mach/mach.h>
 #import <objc/runtime.h>

@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "ARTSurfaceView.h"
+#import <React/ARTSurfaceView.h>
 
 #import <React/RCTLog.h>
 
-#import "ARTNode.h"
+#import <React/ARTNode.h>
 
 @implementation ARTSurfaceView
 

@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTDecayAnimation.h"
+#import <React/RCTDecayAnimation.h>
 
 #import <UIKit/UIKit.h>
 #import <React/RCTConvert.h>
 
-#import "RCTAnimationUtils.h"
-#import "RCTValueAnimatedNode.h"
+#import <React/RCTAnimationUtils.h>
+#import <React/RCTValueAnimatedNode.h>
 
 @interface RCTDecayAnimation ()
 
