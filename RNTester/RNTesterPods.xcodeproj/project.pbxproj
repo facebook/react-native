@@ -131,7 +131,6 @@
 		E7DB20F822B2BD53005AC45F /* libReact-ART.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-ART.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB20FA22B2BD53005AC45F /* libReact-Core.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-Core.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB20FC22B2BD53005AC45F /* libReact-cxxreact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-cxxreact.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E7DB20FE22B2BD53005AC45F /* libReact-DevSupport.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-DevSupport.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB210222B2BD53005AC45F /* libReact-jsi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-jsi.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB210422B2BD53005AC45F /* libReact-jsiexecutor.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-jsiexecutor.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB210622B2BD53005AC45F /* libReact-jsinspector.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-jsinspector.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -145,7 +144,6 @@
 		E7DB211622B2BD53005AC45F /* libReact-RCTSettings.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-RCTSettings.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB211822B2BD53005AC45F /* libReact-RCTText.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-RCTText.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB211A22B2BD53005AC45F /* libReact-RCTVibration.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-RCTVibration.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E7DB211C22B2BD53005AC45F /* libReact-RCTWebSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libReact-RCTWebSocket.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB212222B2BD53005AC45F /* libyoga.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libyoga.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7DB212422B2C342005AC45F /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOCMock.a; sourceTree = "<group>"; };
 		E7DB212622B2C342005AC45F /* OCMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockObject.h; sourceTree = "<group>"; };
@@ -251,7 +249,6 @@
 				E7DB20F822B2BD53005AC45F /* libReact-ART.a */,
 				E7DB20FA22B2BD53005AC45F /* libReact-Core.a */,
 				E7DB20FC22B2BD53005AC45F /* libReact-cxxreact.a */,
-				E7DB20FE22B2BD53005AC45F /* libReact-DevSupport.a */,
 				E7DB210222B2BD53005AC45F /* libReact-jsi.a */,
 				E7DB210422B2BD53005AC45F /* libReact-jsiexecutor.a */,
 				E7DB210622B2BD53005AC45F /* libReact-jsinspector.a */,
@@ -265,7 +262,6 @@
 				E7DB211622B2BD53005AC45F /* libReact-RCTSettings.a */,
 				E7DB211822B2BD53005AC45F /* libReact-RCTText.a */,
 				E7DB211A22B2BD53005AC45F /* libReact-RCTVibration.a */,
-				E7DB211C22B2BD53005AC45F /* libReact-RCTWebSocket.a */,
 				E7DB212222B2BD53005AC45F /* libyoga.a */,
 				F94084777080D7B374FB4783 /* libPods-RNTester.a */,
 				8210317F3CE28B1945488740 /* libPods-RNTesterIntegrationTests.a */,
@@ -707,7 +703,6 @@
 					"\"${PODS_ROOT}/Headers/Public/DoubleConversion\"",
 					"\"${PODS_ROOT}/Headers/Public/React-ART\"",
 					"\"${PODS_ROOT}/Headers/Public/React-Core\"",
-					"\"${PODS_ROOT}/Headers/Public/React-DevSupport\"",
 					"\"${PODS_ROOT}/Headers/Public/React-Fabric\"",
 					"\"${PODS_ROOT}/Headers/Public/React-RCTActionSheet\"",
 					"\"${PODS_ROOT}/Headers/Public/React-RCTAnimation\"",
@@ -721,7 +716,6 @@
 					"\"${PODS_ROOT}/Headers/Public/React-RCTSettings\"",
 					"\"${PODS_ROOT}/Headers/Public/React-RCTText\"",
 					"\"${PODS_ROOT}/Headers/Public/React-RCTVibration\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTWebSocket\"",
 					"\"${PODS_ROOT}/Headers/Public/React-cxxreact\"",
 					"\"${PODS_ROOT}/Headers/Public/React-fishhook\"",
 					"\"${PODS_ROOT}/Headers/Public/React-jsi\"",
@@ -763,7 +757,6 @@
 					"\"${PODS_ROOT}/Headers/Public/DoubleConversion\"",
 					"\"${PODS_ROOT}/Headers/Public/React-ART\"",
 					"\"${PODS_ROOT}/Headers/Public/React-Core\"",
-					"\"${PODS_ROOT}/Headers/Public/React-DevSupport\"",
 					"\"${PODS_ROOT}/Headers/Public/React-Fabric\"",
 					"\"${PODS_ROOT}/Headers/Public/React-RCTActionSheet\"",
 					"\"${PODS_ROOT}/Headers/Public/React-RCTAnimation\"",
@@ -777,7 +770,6 @@
 					"\"${PODS_ROOT}/Headers/Public/React-RCTSettings\"",
 					"\"${PODS_ROOT}/Headers/Public/React-RCTText\"",
 					"\"${PODS_ROOT}/Headers/Public/React-RCTVibration\"",
-					"\"${PODS_ROOT}/Headers/Public/React-RCTWebSocket\"",
 					"\"${PODS_ROOT}/Headers/Public/React-cxxreact\"",
 					"\"${PODS_ROOT}/Headers/Public/React-fishhook\"",
 					"\"${PODS_ROOT}/Headers/Public/React-jsi\"",
