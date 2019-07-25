@@ -11,7 +11,6 @@
 
 const Platform = require('./Platform');
 const invariant = require('invariant');
-const prettyFormat = require('pretty-format');
 
 const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
 
@@ -104,23 +103,36 @@ const HMRClient: HMRClientNativeInterface = {
   log(level: LogLevel, data: Array<mixed>) {
     try {
       if (hmrClient) {
-        hmrClient.send(
-          JSON.stringify({
+        let message;
+        if (global.Symbol) {
+          message = JSON.stringify({
             type: 'log',
             level,
-            data: data.map(message =>
-              typeof message === 'string'
-                ? message
-                : prettyFormat(message, {
+            data: data.map(item =>
+              typeof item === 'string'
+                ? item
+                : require('pretty-format')(item, {
                     escapeString: true,
                     highlight: true,
                     maxDepth: 3,
                     min: true,
-                    plugins: [prettyFormat.plugins.ReactElement],
+                    plugins: [require('pretty-format').plugins.ReactElement],
                   }),
             ),
-          }),
-        );
+          });
+        } else {
+          try {
+            message = JSON.stringify({type: 'log', level, data});
+          } catch (error) {
+            message = JSON.stringify({
+              type: 'log',
+              level,
+              data: [error.message],
+            });
+          }
+        }
+
+        hmrClient.send(message);
       }
     } catch (error) {
       // If sending logs causes any failures we want to silently ignore them
