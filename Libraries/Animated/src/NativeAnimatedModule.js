@@ -14,7 +14,7 @@ import type {TurboModule} from '../../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
 
 type EndResult = {finished: boolean};
-type EndCallback = (result: EndResult) => void;
+type EndCallback = (result: EndResult) => void | Promise<void>;
 
 export type EventMapping = {|
   nativeEventPath: Array<string>,

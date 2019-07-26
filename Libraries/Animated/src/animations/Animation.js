@@ -14,7 +14,7 @@ const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 import type AnimatedValue from '../nodes/AnimatedValue';
 
 export type EndResult = {finished: boolean};
-export type EndCallback = (result: EndResult) => void;
+export type EndCallback = (result: EndResult) => void | Promise<void>;
 
 export type AnimationConfig = {
   isInteraction?: boolean,
