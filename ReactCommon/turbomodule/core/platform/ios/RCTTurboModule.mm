@@ -360,7 +360,7 @@ jsi::Value performMethodInvocation(
 } // namespace
 
 /**
- * Given a method name, and an argument index, return type type of that argument.
+ * Given a method name, and an argument index, return type of that argument.
  * Prerequisite: You must wrap the method declaration inside some variant of the
  * RCT_EXPORT_METHOD macro.
  *
