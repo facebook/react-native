@@ -19,9 +19,6 @@ steps:
   # Task Group: XCode select proper version
   - template: apple-xcode-select.yml
 
-  # Task Group: ISS Install Apple certs and provisioning profiles
-  - template: apple-install-certs.yml
-
   - task: CmdLine@2
     displayName: npm install
     inputs:
