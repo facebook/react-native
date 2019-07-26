@@ -1,0 +1,143 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GenerateStructs can generate fixture SIMPLE_STRUCT 1`] = `
+"
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#import <RCTTypeSafety/RCTConvertHelpers.h>
+
+namespace JS {
+  namespace NativeSampleTurboModule {
+    struct SpecSampleFuncReturnType {
+      bool a() const;
+      double b() const;
+      NSString *c() const;
+      JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeD d() const;
+
+      SpecSampleFuncReturnType(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeSampleTurboModule_SpecSampleFuncReturnType)
++ (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecSampleFuncReturnType:(id)json;
+@end
+
+
+namespace JS {
+  namespace NativeSampleTurboModule {
+    struct SpecSampleFuncReturnTypeD {
+      bool e() const;
+      double f() const;
+      JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeDG g() const;
+
+      SpecSampleFuncReturnTypeD(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeSampleTurboModule_SpecSampleFuncReturnTypeD)
++ (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecSampleFuncReturnTypeD:(id)json;
+@end
+
+
+namespace JS {
+  namespace NativeSampleTurboModule {
+    struct SpecSampleFuncReturnTypeDG {
+      bool h() const;
+      double i() const;
+      NSString *j() const;
+
+      SpecSampleFuncReturnTypeDG(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeSampleTurboModule_SpecSampleFuncReturnTypeDG)
++ (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecSampleFuncReturnTypeDG:(id)json;
+@end
+
+
+
+inline bool *JS::NativeSampleTurboModule::SpecSampleFuncReturnType::a() const
+{
+  id const p = _v[@\\"a\\"];
+  return RCTBridgingToBool(p);
+}
+
+
+inline double *JS::NativeSampleTurboModule::SpecSampleFuncReturnType::b() const
+{
+  id const p = _v[@\\"a\\"];
+  return RCTBridgingToDouble(p);
+}
+
+
+inline NSString *JS::NativeSampleTurboModule::SpecSampleFuncReturnType::c() const
+{
+  id const p = _v[@\\"a\\"];
+  return RCTBridgingToString(p);
+}
+
+
+inline JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeD *JS::NativeSampleTurboModule::SpecSampleFuncReturnType::d() const
+{
+  id const p = _v[@\\"a\\"];
+  return JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeD(p);
+}
+
+
+inline bool *JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeD::e() const
+{
+  id const p = _v[@\\"a\\"];
+  return RCTBridgingToBool(p);
+}
+
+
+inline double *JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeD::f() const
+{
+  id const p = _v[@\\"a\\"];
+  return RCTBridgingToDouble(p);
+}
+
+
+inline JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeDG *JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeD::g() const
+{
+  id const p = _v[@\\"a\\"];
+  return JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeDG(p);
+}
+
+
+inline bool *JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeDG::h() const
+{
+  id const p = _v[@\\"a\\"];
+  return RCTBridgingToBool(p);
+}
+
+
+inline double *JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeDG::i() const
+{
+  id const p = _v[@\\"a\\"];
+  return RCTBridgingToDouble(p);
+}
+
+
+inline NSString *JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeDG::j() const
+{
+  id const p = _v[@\\"a\\"];
+  return RCTBridgingToString(p);
+}
+
+"
+`;
