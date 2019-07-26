@@ -26,6 +26,7 @@ function flatObjects(
       |}>,
     |}>,
   >,
+  forConstants: boolean = false,
 ): $ReadOnlyArray<
   $ReadOnly<{|
     name: string,
@@ -35,10 +36,15 @@ function flatObjects(
   let objectTypesToFlatten: Array<{|
     properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,
     name: string,
-  |}> = annotations.map(annotation => ({
-    name: annotation.name,
-    properties: annotation.object.properties,
-  }));
+  |}> = annotations
+    .map(annotation => ({
+      name: annotation.name,
+      properties: annotation.object.properties,
+    }))
+    .filter(
+      annotation =>
+        (annotation.name === 'GetConstantsReturnType') === forConstants,
+    );
 
   let flattenObjects: Array<{|
     properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,

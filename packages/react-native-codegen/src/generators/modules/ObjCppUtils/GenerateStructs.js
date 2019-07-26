@@ -12,6 +12,7 @@
 
 import type {ObjectParamTypeAnnotation} from '../../../CodegenSchema';
 import {flatObjects, capitalizeFirstLetter} from './Utils';
+import {generateStructsForConstants} from './GenerateStructsForConstants';
 
 const template = `
 /**
@@ -22,6 +23,8 @@ const template = `
  */
 
 #import <RCTTypeSafety/RCTConvertHelpers.h>
+::_CONSTANTS_::
+
 ::_STRUCTS_::
 
 ::_INLINES_::
@@ -74,8 +77,11 @@ function getInlineMethodSignature(
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
       return `id<NSObject> ${property.name}() const;`;
-    case 'FunctionTypeAnnotation':
     case 'ArrayTypeAnnotation':
+      return `facebook::react::LazyVector<id<NSObject>> ${
+        property.name
+      }() const;`;
+    case 'FunctionTypeAnnotation':
     default:
       throw new Error(`Unknown prop type, found: ${typeAnnotation.type}"`);
   }
@@ -120,8 +126,17 @@ function getInlineMethodImplementation(
             property.name,
           )}(p)`,
         );
-    case 'FunctionTypeAnnotation':
     case 'ArrayTypeAnnotation':
+      return inlineTemplate
+        .replace(
+          /::_RETURN_TYPE_::/,
+          'facebook::react::LazyVector<id<NSObject>>',
+        )
+        .replace(
+          /::_RETURN_VALUE_::/,
+          'RCTBridgingToVec(p, ^id<NSObject>(id itemValue_0) { return itemValue_0; })',
+        );
+    case 'FunctionTypeAnnotation':
     default:
       throw new Error(`Unknown prop type, found: ${typeAnnotation.type}"`);
   }
@@ -167,9 +182,12 @@ function translateObjectsForStructs(
     )
     .join('\n');
 
+  const translatedConstants = generateStructsForConstants(annotations);
+
   return template
     .replace(/::_STRUCTS_::/, translatedStructs)
-    .replace(/::_INLINES_::/, translatedInlineMethods);
+    .replace(/::_INLINES_::/, translatedInlineMethods)
+    .replace(/::_CONSTANTS_::/, translatedConstants);
 }
 module.exports = {
   translateObjectsForStructs,

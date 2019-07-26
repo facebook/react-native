@@ -103,6 +103,100 @@ const SIMPLE_STRUCT: $ReadOnlyArray<
     },
   },
 ];
+
+const SIMPLE_CONSTANTS: $ReadOnlyArray<
+  $ReadOnly<{|
+    name: string,
+    object: $ReadOnly<{|
+      type: 'ObjectTypeAnnotation',
+      properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,
+    |}>,
+  |}>,
+> = [
+  {
+    name: 'GetConstantsReturnType',
+    object: {
+      type: 'ObjectTypeAnnotation',
+      properties: [
+        {
+          optional: false,
+          name: 'a',
+          typeAnnotation: {
+            type: 'BooleanTypeAnnotation',
+          },
+        },
+        {
+          optional: false,
+          name: 'b',
+          typeAnnotation: {
+            type: 'NumberTypeAnnotation',
+          },
+        },
+        {
+          optional: false,
+          name: 'c',
+          typeAnnotation: {
+            type: 'StringTypeAnnotation',
+          },
+        },
+        {
+          optional: false,
+          name: 'd',
+          typeAnnotation: {
+            type: 'ObjectTypeAnnotation',
+            properties: [
+              {
+                optional: false,
+                name: 'e',
+                typeAnnotation: {
+                  type: 'BooleanTypeAnnotation',
+                },
+              },
+              {
+                optional: false,
+                name: 'f',
+                typeAnnotation: {
+                  type: 'NumberTypeAnnotation',
+                },
+              },
+              {
+                optional: false,
+                name: 'g',
+                typeAnnotation: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      optional: false,
+                      name: 'h',
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
+                    },
+                    {
+                      optional: false,
+                      name: 'i',
+                      typeAnnotation: {
+                        type: 'NumberTypeAnnotation',
+                      },
+                    },
+                    {
+                      optional: false,
+                      name: 'j',
+                      typeAnnotation: {
+                        type: 'StringTypeAnnotation',
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  },
+];
 module.exports = {
   SIMPLE_STRUCT,
+  SIMPLE_CONSTANTS,
 };

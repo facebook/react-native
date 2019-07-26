@@ -57,10 +57,6 @@ const template = `
 
 #import <ReactCommon/RCTTurboModule.h>
 
-/**
- * The ObjC protocol based on the JS Flow type for SampleTurboModule.
- */
-
 ::_PROTOCOLS_::
 
 namespace facebook {

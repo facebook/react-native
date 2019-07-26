@@ -32,7 +32,7 @@ const moduleTemplate = `
 ::_TURBOMODULE_METHOD_INVOKERS_::
 
 Native::_MODULE_NAME_::SpecJSI::Native::_MODULE_NAME_::SpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
-  : ObjCTurboModule("SampleTurboModule", instance, jsInvoker) {
+  : ObjCTurboModule("::_MODULE_NAME_::", instance, jsInvoker) {
 ::_PROPERTIES_MAP_::
 }`.trim();
 
