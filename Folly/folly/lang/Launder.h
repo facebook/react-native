@@ -28,7 +28,8 @@
 
 // Note: libc++ 6+ adds std::launder but does not define __cpp_lib_launder
 #if __cpp_lib_launder >= 201606 || (_MSC_VER && _HAS_LAUNDER) || \
-    (_LIBCPP_VERSION >= 6000 && __cplusplus >= 201703L)
+    ((_LIBCPP_VERSION >= (__ANDROID__ ? 7000 : 6000)) &&         \
+     __cplusplus >= 201703L)
 
 namespace folly {
 

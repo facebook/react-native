@@ -86,3 +86,7 @@ ReactAndroid/bin/
 
 # Projects files created by build
 **/.project
+
+# binary files generated during ReactAndroid build.
+RNTester/android/app/bin/
+processor/bin/
