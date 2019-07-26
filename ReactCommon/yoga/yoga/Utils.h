@@ -9,7 +9,7 @@
 #include "Yoga-internal.h"
 #include "CompactValue.h"
 
-// This struct is an helper model to hold the data for step 4 of flexbox algo,
+// This struct is a helper model to hold the data for step 4 of flexbox algo,
 // which is collecting the flex items in a line.
 //
 // - itemsOnLine: Number of items which can fit in a line considering the
