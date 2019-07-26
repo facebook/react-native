@@ -68,6 +68,7 @@ $(call import-module,cxxreact)
 $(call import-module,jsi)
 $(call import-module,jsiexecutor)
 $(call import-module,jscallinvoker)
+$(call import-module,hermes)
 
 include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
 

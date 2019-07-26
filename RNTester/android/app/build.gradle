@@ -68,7 +68,10 @@ project.ext.react = [
     bundleAssetName: "RNTesterApp.android.bundle",
     entryFile: file("../../js/RNTesterApp.android.js"),
     root: "$rootDir",
-    inputExcludes: ["android/**", "./**", ".gradle/**"]
+    inputExcludes: ["android/**", "./**", ".gradle/**"],
+    composeSourceMapsPath: "$rootDir/scripts/compose-source-maps.js",
+    hermesCommand: "../../../node_modules/hermesvm/%OS-BIN%/hermes",
+    enableHermesForVariant: { def v -> v.name.contains("hermes") }
 ]
 
 apply from: "../../../react.gradle"
@@ -105,6 +108,16 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    flavorDimensions "vm"
+    productFlavors {
+      hermes {
+        dimension "vm"
+      }
+      jsc {
+        dimension "vm"
+      }
+    }
+
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
         minSdkVersion 16
@@ -138,6 +151,12 @@ android {
             signingConfig signingConfigs.release
         }
     }
+    packagingOptions {
+        pickFirst '**/armeabi-v7a/libc++_shared.so'
+        pickFirst '**/x86/libc++_shared.so'
+        pickFirst '**/arm64-v8a/libc++_shared.so'
+        pickFirst '**/x86_64/libc++_shared.so'
+    }
 }
 
 dependencies {
@@ -145,6 +164,10 @@ dependencies {
 
     // Build React Native from source
     implementation project(':ReactAndroid')
+
+    def hermesPath = '$projectDir/../../../../node_modules/hermesvm/android/'
+    debugImplementation files(hermesPath + "hermes-debug.aar")
+    releaseImplementation files(hermesPath + "hermes-release.aar")
 
     if (useIntlJsc) {
         implementation 'org.webkit:android-jsc-intl:+'

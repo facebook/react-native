@@ -12,8 +12,9 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class NativeRunnable implements Runnable {
 
-  private final HybridData mHybridData;
+  @DoNotStrip private final HybridData mHybridData;
 
+  @DoNotStrip
   private NativeRunnable(HybridData hybridData) {
     mHybridData = hybridData;
   }
