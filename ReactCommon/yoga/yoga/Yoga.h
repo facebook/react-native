@@ -94,14 +94,14 @@ WIN_EXPORT void YGNodeCalculateLayout(
 // Mark a node as dirty. Only valid for nodes with a custom measure function
 // set.
 //
-// Yoga knows when to mark all other nodes as dirty but because nodes with
+// Yoga knows when to mark all other nodes as dirty but because of nodes with
 // measure functions depend on information not known to Yoga they must perform
 // this dirty marking manually.
 WIN_EXPORT void YGNodeMarkDirty(YGNodeRef node);
 
 // Marks the current node and all its descendants as dirty.
 //
-// Intended to be used for Uoga benchmarks. Don't use in production, as calling
+// Intended to be used for Yoga benchmarks. Don't use in production, as calling
 // `YGCalculateLayout` will cause the recalculation of each and every node.
 WIN_EXPORT void YGNodeMarkDirtyAndPropogateToDescendants(YGNodeRef node);
 
@@ -282,7 +282,7 @@ bool YGNodeLayoutGetDidLegacyStretchFlagAffectLayout(YGNodeRef node);
 
 // Get the computed values for these nodes after performing layout. If they were
 // set using point values then the returned value will be the same as
-// YGNodeStyleGetXXX. However if they were set using a percentage value then the
+// YGNodeStyleGetXXX. However, if they were set using a percentage value then the
 // returned value is the computed value used during layout.
 WIN_EXPORT float YGNodeLayoutGetMargin(YGNodeRef node, YGEdge edge);
 WIN_EXPORT float YGNodeLayoutGetBorder(YGNodeRef node, YGEdge edge);
@@ -309,9 +309,9 @@ void YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(
 
 // Yoga previously had an error where containers would take the maximum space
 // possible instead of the minimum like they are supposed to. In practice this
-// resulted in implicit behaviour similar to align-self: stretch; Because this
-// was such a long-standing bug we must allow legacy users to switch back to
-// this behaviour.
+// resulted in implicit behaviour similar to align-self: stretch; 
+// Because of this was such a long-standing bug we must allow legacy users 
+// to switch back to this behavior.
 WIN_EXPORT void YGConfigSetUseLegacyStretchBehaviour(
     YGConfigRef config,
     bool useLegacyStretchBehaviour);
@@ -331,7 +331,7 @@ WIN_EXPORT bool YGConfigIsExperimentalFeatureEnabled(
     YGExperimentalFeature feature);
 
 // Using the web defaults is the preferred configuration for new projects. Usage
-// of non web defaults should be considered as legacy.
+// of non-web defaults should be considered as legacy.
 WIN_EXPORT void YGConfigSetUseWebDefaults(YGConfigRef config, bool enabled);
 WIN_EXPORT bool YGConfigGetUseWebDefaults(YGConfigRef config);
 
