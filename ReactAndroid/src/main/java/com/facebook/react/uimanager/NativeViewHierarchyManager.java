@@ -660,18 +660,18 @@ public class NativeViewHierarchyManager {
     outputBuffer[1] -= rootY;
   }
 
-  void computeBoundingBox(View v, int[] outputBuffer) {
+  private void computeBoundingBox(View v, int[] outputBuffer) {
     mBoundingBox.set(0, 0, v.getWidth(), v.getHeight());
     mapRectFromViewToWindowCoords(v, mBoundingBox);
 
-    outputBuffer[0] = (int) mBoundingBox.left;
-    outputBuffer[1] = (int) mBoundingBox.top;
-    outputBuffer[2] = (int) (mBoundingBox.right - mBoundingBox.left);
-    outputBuffer[3] = (int) (mBoundingBox.bottom - mBoundingBox.top);
+    outputBuffer[0] = Math.round(mBoundingBox.left);
+    outputBuffer[1] = Math.round(mBoundingBox.top);
+    outputBuffer[2] = Math.round(mBoundingBox.right - mBoundingBox.left);
+    outputBuffer[3] = Math.round(mBoundingBox.bottom - mBoundingBox.top);
   }
 
   // simplified version of the hidden Android method View.mapRectFromViewToScreenCoords()
-  void mapRectFromViewToWindowCoords(View v, RectF rect) {
+  private void mapRectFromViewToWindowCoords(View v, RectF rect) {
     Matrix m = v.getMatrix();
     if (!m.isIdentity()) {
       m.mapRect(rect);
