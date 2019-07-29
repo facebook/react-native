@@ -10,8 +10,8 @@
 
 'use strict';
 
-const React = require('react');
-const {Dimensions, Text, View} = require('react-native');
+import * as React from 'react';
+import {Dimensions, Text, useWindowDimensions} from 'react-native';
 
 class DimensionsSubscription extends React.Component<
   {dim: string},
@@ -36,11 +36,7 @@ class DimensionsSubscription extends React.Component<
   };
 
   render() {
-    return (
-      <View>
-        <Text>{JSON.stringify(this.state.dims)}</Text>
-      </View>
-    );
+    return <Text>{JSON.stringify(this.state.dims, null, 2)}</Text>;
   }
 }
 
@@ -48,13 +44,23 @@ exports.title = 'Dimensions';
 exports.description = 'Dimensions of the viewport';
 exports.examples = [
   {
-    title: 'window',
+    title: 'useWindowDimensions hook',
+    render() {
+      const DimensionsViaHook = () => {
+        const dims = useWindowDimensions();
+        return <Text>{JSON.stringify(dims, null, 2)}</Text>;
+      };
+      return <DimensionsViaHook />;
+    },
+  },
+  {
+    title: 'Non-component `get` API: window',
     render(): React.Element<any> {
       return <DimensionsSubscription dim="window" />;
     },
   },
   {
-    title: 'screen',
+    title: 'Non-component `get` API: screen',
     render(): React.Element<any> {
       return <DimensionsSubscription dim="screen" />;
     },

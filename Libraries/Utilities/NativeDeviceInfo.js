@@ -13,29 +13,31 @@
 import type {TurboModule} from '../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
-type DisplayMetricsAndroid = {|
+type DisplayMetricsAndroid = $ReadOnly<{|
   width: number,
   height: number,
   scale: number,
   fontScale: number,
   densityDpi: number,
-|};
+|}>;
 
-type DisplayMetricsIOS = {|
+export type DisplayMetrics = $ReadOnly<{|
   width: number,
   height: number,
   scale: number,
   fontScale: number,
-|};
+|}>;
+
+export type DimensionsPayload = $ReadOnly<{|
+  window?: DisplayMetrics,
+  screen?: DisplayMetrics,
+  windowPhysicalPixels?: DisplayMetricsAndroid,
+  screenPhysicalPixels?: DisplayMetricsAndroid,
+|}>;
 
 export interface Spec extends TurboModule {
   +getConstants: () => {|
-    +Dimensions: {
-      window?: DisplayMetricsIOS,
-      screen?: DisplayMetricsIOS,
-      windowPhysicalPixels?: DisplayMetricsAndroid,
-      screenPhysicalPixels?: DisplayMetricsAndroid,
-    },
+    +Dimensions: DimensionsPayload,
     +isIPhoneX_deprecated?: boolean,
   |};
 }
