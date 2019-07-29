@@ -152,11 +152,11 @@ export const Commands = {
         );
     },
 
-    allTypes(ref, x, animated) {
+    allTypes(ref, x, message, animated) {
         UIManager.dispatchViewCommand(
           findNodeHandle(ref),
           UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.allTypes,
-          [x, animated]
+          [x, message, animated]
         );
     }
 };

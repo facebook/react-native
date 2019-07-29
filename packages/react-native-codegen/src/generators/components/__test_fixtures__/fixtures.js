@@ -942,6 +942,12 @@ const COMMANDS: SchemaType = {
                     },
                   },
                   {
+                    name: 'message',
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                    },
+                  },
+                  {
                     name: 'animated',
                     typeAnnotation: {
                       type: 'BooleanTypeAnnotation',

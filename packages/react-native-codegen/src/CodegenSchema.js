@@ -22,7 +22,8 @@ export type CommandsFunctionTypeParamAnnotation = $ReadOnly<{|
 
 export type CommandsTypeAnnotation =
   | BooleanTypeAnnotation
-  | Int32TypeAnnotation;
+  | Int32TypeAnnotation
+  | StringTypeAnnotation;
 
 export type BooleanTypeAnnotation = $ReadOnly<{|
   type: 'BooleanTypeAnnotation',
@@ -30,6 +31,10 @@ export type BooleanTypeAnnotation = $ReadOnly<{|
 
 export type Int32TypeAnnotation = $ReadOnly<{|
   type: 'Int32TypeAnnotation',
+|}>;
+
+export type StringTypeAnnotation = $ReadOnly<{|
+  type: 'StringTypeAnnotation',
 |}>;
 
 export type ObjectPropertyType =

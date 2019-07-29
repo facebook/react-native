@@ -86,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol CommandNativeComponentViewProtocol <NSObject>
 - (void)flashScrollIndicators;
-- (void)allTypes:(NSInteger)x animated:(BOOL)animated;
+- (void)allTypes:(NSInteger)x message:(NSString *)message animated:(BOOL)animated;
 @end
 
 RCT_EXTERN inline void CommandNativeComponentHandleCommand(
@@ -110,8 +110,8 @@ RCT_EXTERN inline void CommandNativeComponentHandleCommand(
 
 if ([commandName isEqualToString:@\\"allTypes\\"]) {
 #if RCT_DEBUG
-  if ([args count] != 2) {
-    RCTLogError(@\\"%@ command %@ received %d arguments, expected %d.\\", @\\"CommandNativeComponent\\", commandName, (int)[args count], 2);
+  if ([args count] != 3) {
+    RCTLogError(@\\"%@ command %@ received %d arguments, expected %d.\\", @\\"CommandNativeComponent\\", commandName, (int)[args count], 3);
     return;
   }
 #endif
@@ -126,13 +126,21 @@ if ([commandName isEqualToString:@\\"allTypes\\"]) {
 
 #if RCT_DEBUG
   NSObject *arg1 = args[1];
-  if (!RCTValidateTypeOfViewCommandArgument(arg1, [NSNumber class], @\\"boolean\\", @\\"CommandNativeComponent\\", commandName, @\\"2nd\\")) {
+  if (!RCTValidateTypeOfViewCommandArgument(arg1, [NSString class], @\\"string\\", @\\"CommandNativeComponent\\", commandName, @\\"2nd\\")) {
     return;
   }
 #endif
-  BOOL animated = [(NSNumber *)arg1 boolValue];
+  NSString * message = (NSString *)arg1;
 
-  [componentView allTypes:x animated:animated]
+#if RCT_DEBUG
+  NSObject *arg2 = args[2];
+  if (!RCTValidateTypeOfViewCommandArgument(arg2, [NSNumber class], @\\"boolean\\", @\\"CommandNativeComponent\\", commandName, @\\"3rd\\")) {
+    return;
+  }
+#endif
+  BOOL animated = [(NSNumber *)arg2 boolValue];
+
+  [componentView allTypes:x message:message animated:animated]
   return;
 }
 

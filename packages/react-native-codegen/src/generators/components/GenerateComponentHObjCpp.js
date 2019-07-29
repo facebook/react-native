@@ -107,6 +107,8 @@ function getObjCParamType(param: CommandsFunctionTypeParamAnnotation): string {
       return 'BOOL';
     case 'Int32TypeAnnotation':
       return 'NSInteger';
+    case 'StringTypeAnnotation':
+      return 'NSString *';
     default:
       (param.typeAnnotation.type: empty);
       throw new Error('Received invalid param type annotation');
@@ -121,6 +123,8 @@ function getObjCExpectedKindParamType(
       return '[NSNumber class]';
     case 'Int32TypeAnnotation':
       return '[NSNumber class]';
+    case 'StringTypeAnnotation':
+      return '[NSString class]';
     default:
       (param.typeAnnotation.type: empty);
       throw new Error('Received invalid param type annotation');
@@ -135,6 +139,8 @@ function getReadableExpectedKindParamType(
       return 'boolean';
     case 'Int32TypeAnnotation':
       return 'number';
+    case 'StringTypeAnnotation':
+      return 'string';
     default:
       (param.typeAnnotation.type: empty);
       throw new Error('Received invalid param type annotation');
@@ -150,6 +156,8 @@ function getObjCRightHandAssignmentParamType(
       return `[(NSNumber *)arg${index} boolValue]`;
     case 'Int32TypeAnnotation':
       return `[(NSNumber *)arg${index} intValue]`;
+    case 'StringTypeAnnotation':
+      return `(NSString *)arg${index}`;
     default:
       (param.typeAnnotation.type: empty);
       throw new Error('Received invalid param type annotation');

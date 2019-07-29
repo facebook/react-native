@@ -122,6 +122,8 @@ function getCommandArgJavaType(param) {
       return 'getBoolean';
     case 'Int32TypeAnnotation':
       return 'getInt';
+    case 'StringTypeAnnotation':
+      return 'getString';
     default:
       (param.typeAnnotation.type: empty);
       throw new Error('Receieved invalid typeAnnotation');

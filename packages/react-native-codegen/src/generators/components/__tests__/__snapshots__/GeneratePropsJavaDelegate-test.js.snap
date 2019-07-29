@@ -100,7 +100,7 @@ public class CommandNativeComponentViewManagerDelegate<T extends View> {
       viewManager.flashScrollIndicators(view);
       break;
     case \\"allTypes\\":
-      viewManager.allTypes(view, args.getInt(0), args.getBoolean(1));
+      viewManager.allTypes(view, args.getInt(0), args.getString(1), args.getBoolean(2));
       break;
   }
 }
