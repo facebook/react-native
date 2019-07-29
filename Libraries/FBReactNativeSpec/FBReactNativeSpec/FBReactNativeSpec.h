@@ -912,6 +912,7 @@ namespace JS {
       NSString *file() const;
       double lineNumber() const;
       NSString *methodName() const;
+      folly::Optional<bool> collapse() const;
 
       StackFrame(NSDictionary *const v) : _v(v) {}
     private:
@@ -2648,6 +2649,11 @@ inline NSString *JS::NativeExceptionsManager::StackFrame::methodName() const
 {
   id const p = _v[@"methodName"];
   return RCTBridgingToString(p);
+}
+inline folly::Optional<bool> JS::NativeExceptionsManager::StackFrame::collapse() const
+{
+  id const p = _v[@"collapse"];
+  return RCTBridgingToOptionalBool(p);
 }
 
 inline NSString *JS::NativeExceptionsManager::ExceptionData::message() const

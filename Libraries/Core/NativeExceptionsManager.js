@@ -18,6 +18,7 @@ export type StackFrame = {|
   file: string,
   lineNumber: number,
   methodName: string,
+  collapse?: boolean,
 |};
 
 export type ExceptionData = {
