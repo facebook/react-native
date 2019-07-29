@@ -17,7 +17,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
-import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
@@ -107,7 +106,8 @@ public class MountingManager {
     ViewState viewState = getViewState(tag);
     final View view = viewState.mView;
     if (view == null) {
-      throw new IllegalStateException("Unable to find view for viewState " + viewState);
+      throw new IllegalStateException(
+          "Unable to find view for viewState " + viewState + " and tag " + tag);
     }
     getViewGroupManager(parentViewState).addView(parentView, view, index);
   }
@@ -115,7 +115,7 @@ public class MountingManager {
   private ViewState getViewState(int tag) {
     ViewState viewState = mTagToViewState.get(tag);
     if (viewState == null) {
-      throw new IllegalStateException("Unable to find viewState view " + viewState);
+      throw new IllegalStateException("Unable to find viewState view for tag " + tag);
     }
     return viewState;
   }
