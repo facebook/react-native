@@ -930,34 +930,13 @@ const COMMANDS: SchemaType = {
               },
             },
             {
-              name: 'hotspotUpdate',
+              name: 'allTypes',
               optional: false,
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 params: [
                   {
                     name: 'x',
-                    typeAnnotation: {
-                      type: 'Int32TypeAnnotation',
-                    },
-                  },
-                  {
-                    name: 'y',
-                    typeAnnotation: {
-                      type: 'Int32TypeAnnotation',
-                    },
-                  },
-                ],
-              },
-            },
-            {
-              name: 'scrollTo',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                params: [
-                  {
-                    name: 'y',
                     typeAnnotation: {
                       type: 'Int32TypeAnnotation',
                     },

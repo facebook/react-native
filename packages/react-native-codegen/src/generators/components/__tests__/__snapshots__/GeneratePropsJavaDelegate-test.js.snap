@@ -99,11 +99,8 @@ public class CommandNativeComponentViewManagerDelegate<T extends View> {
     case \\"flashScrollIndicators\\":
       viewManager.flashScrollIndicators(view);
       break;
-    case \\"hotspotUpdate\\":
-      viewManager.hotspotUpdate(view, args.getInt(0), args.getInt(1));
-      break;
-    case \\"scrollTo\\":
-      viewManager.scrollTo(view, args.getInt(0), args.getBoolean(1));
+    case \\"allTypes\\":
+      viewManager.allTypes(view, args.getInt(0), args.getBoolean(1));
       break;
   }
 }

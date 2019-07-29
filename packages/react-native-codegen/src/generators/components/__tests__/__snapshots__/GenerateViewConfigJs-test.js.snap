@@ -152,19 +152,11 @@ export const Commands = {
         );
     },
 
-    hotspotUpdate(ref, x, y) {
+    allTypes(ref, x, animated) {
         UIManager.dispatchViewCommand(
           findNodeHandle(ref),
-          UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.hotspotUpdate,
-          [x, y]
-        );
-    },
-
-    scrollTo(ref, y, animated) {
-        UIManager.dispatchViewCommand(
-          findNodeHandle(ref),
-          UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.scrollTo,
-          [y, animated]
+          UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.allTypes,
+          [x, animated]
         );
     }
 };

@@ -86,8 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol CommandNativeComponentViewProtocol <NSObject>
 - (void)flashScrollIndicators;
-- (void)hotspotUpdate:(NSInteger)x y:(NSInteger)y;
-- (void)scrollTo:(NSInteger)y animated:(BOOL)animated;
+- (void)allTypes:(NSInteger)x animated:(BOOL)animated;
 @end
 
 RCT_EXTERN inline void CommandNativeComponentHandleCommand(
@@ -109,7 +108,7 @@ RCT_EXTERN inline void CommandNativeComponentHandleCommand(
   return;
 }
 
-if ([commandName isEqualToString:@\\"hotspotUpdate\\"]) {
+if ([commandName isEqualToString:@\\"allTypes\\"]) {
 #if RCT_DEBUG
   if ([args count] != 2) {
     RCTLogError(@\\"%@ command %@ received %d arguments, expected %d.\\", @\\"CommandNativeComponent\\", commandName, (int)[args count], 2);
@@ -127,41 +126,13 @@ if ([commandName isEqualToString:@\\"hotspotUpdate\\"]) {
 
 #if RCT_DEBUG
   NSObject *arg1 = args[1];
-  if (!RCTValidateTypeOfViewCommandArgument(arg1, [NSNumber class], @\\"number\\", @\\"CommandNativeComponent\\", commandName, @\\"2nd\\")) {
-    return;
-  }
-#endif
-  NSInteger y = [(NSNumber *)arg1 intValue];
-
-  [componentView hotspotUpdate:x y:y]
-  return;
-}
-
-if ([commandName isEqualToString:@\\"scrollTo\\"]) {
-#if RCT_DEBUG
-  if ([args count] != 2) {
-    RCTLogError(@\\"%@ command %@ received %d arguments, expected %d.\\", @\\"CommandNativeComponent\\", commandName, (int)[args count], 2);
-    return;
-  }
-#endif
-
-#if RCT_DEBUG
-  NSObject *arg0 = args[0];
-  if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @\\"number\\", @\\"CommandNativeComponent\\", commandName, @\\"1st\\")) {
-    return;
-  }
-#endif
-  NSInteger y = [(NSNumber *)arg0 intValue];
-
-#if RCT_DEBUG
-  NSObject *arg1 = args[1];
   if (!RCTValidateTypeOfViewCommandArgument(arg1, [NSNumber class], @\\"boolean\\", @\\"CommandNativeComponent\\", commandName, @\\"2nd\\")) {
     return;
   }
 #endif
   BOOL animated = [(NSNumber *)arg1 boolValue];
 
-  [componentView scrollTo:y animated:animated]
+  [componentView allTypes:x animated:animated]
   return;
 }
 
