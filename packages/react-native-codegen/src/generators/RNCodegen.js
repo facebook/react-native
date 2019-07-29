@@ -18,6 +18,7 @@ TODO:
 
 const fs = require('fs');
 const generateComponentDescriptorH = require('./components/GenerateComponentDescriptorH.js');
+const generateComponentHObjCpp = require('./components/GenerateComponentHObjCpp.js');
 const generateEventEmitterCpp = require('./components/GenerateEventEmitterCpp.js');
 const generateEventEmitterH = require('./components/GenerateEventEmitterH.js');
 const generatePropsCpp = require('./components/GeneratePropsCpp.js');
@@ -66,6 +67,7 @@ const GENERATORS = {
     generateModuleMm.generate,
   ],
   props: [
+    generateComponentHObjCpp.generate,
     generatePropsCpp.generate,
     generatePropsH.generate,
     generatePropsJavaInterface.generate,

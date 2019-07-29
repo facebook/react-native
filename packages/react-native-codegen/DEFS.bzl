@@ -22,6 +22,7 @@ def rn_codegen(
         schema_target = ""):
     generate_fixtures_rule_name = "generate_fixtures-{}".format(name)
     generate_component_descriptor_h_name = "generate_component_descriptor_h-{}".format(name)
+    generate_component_hobjcpp_name = "generate_component_hobjcpp-{}".format(name)
     generate_event_emitter_cpp_name = "generate_event_emitter_cpp-{}".format(name)
     generate_event_emitter_h_name = "generate_event_emitter_h-{}".format(name)
     generate_props_cpp_name = "generate_props_cpp-{}".format(name)
@@ -47,6 +48,12 @@ def rn_codegen(
         name = generate_component_descriptor_h_name,
         cmd = "cp $(location :{})/ComponentDescriptors.h $OUT".format(generate_fixtures_rule_name),
         out = "ComponentDescriptors.h",
+    )
+
+    fb_native.genrule(
+        name = generate_component_hobjcpp_name,
+        cmd = "cp $(location :{})/ComponentViewHelpers.h $OUT".format(generate_fixtures_rule_name),
+        out = "ComponentViewHelpers.h",
     )
 
     fb_native.genrule(
@@ -143,11 +150,17 @@ def rn_codegen(
             ":{}".format(generate_props_h_name),
             ":{}".format(generate_shadow_node_h_name),
         ],
+        ios_headers = [
+            ":{}".format(generate_component_hobjcpp_name),
+        ],
         exported_headers = {
             "ComponentDescriptors.h": ":{}".format(generate_component_descriptor_h_name),
             "EventEmitters.h": ":{}".format(generate_event_emitter_h_name),
             "Props.h": ":{}".format(generate_props_h_name),
             "ShadowNodes.h": ":{}".format(generate_shadow_node_h_name),
+        },
+        ios_exported_headers = {
+            "ComponentViewHelpers.h": ":{}".format(generate_component_hobjcpp_name),
         },
         header_namespace = "react/components/{}".format(name),
         compiler_flags = [
