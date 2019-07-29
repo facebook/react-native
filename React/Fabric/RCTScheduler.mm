@@ -56,8 +56,7 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
 {
   if (self = [super init]) {
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
-    _scheduler = std::make_shared<Scheduler>(toolbox);
-    _scheduler->setDelegate(_delegateProxy.get());
+    _scheduler = std::make_shared<Scheduler>(toolbox, _delegateProxy.get());
   }
 
   return self;

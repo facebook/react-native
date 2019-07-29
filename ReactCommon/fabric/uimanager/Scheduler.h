@@ -32,7 +32,7 @@ namespace react {
  */
 class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
  public:
-  Scheduler(SchedulerToolbox schedulerToolbox);
+  Scheduler(SchedulerToolbox schedulerToolbox, SchedulerDelegate *delegate);
   ~Scheduler();
 
 #pragma mark - Surface Management

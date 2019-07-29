@@ -18,7 +18,9 @@
 namespace facebook {
 namespace react {
 
-Scheduler::Scheduler(SchedulerToolbox schedulerToolbox) {
+Scheduler::Scheduler(
+    SchedulerToolbox schedulerToolbox,
+    SchedulerDelegate *delegate) {
   runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
 
   reactNativeConfig_ =
@@ -55,6 +57,8 @@ Scheduler::Scheduler(SchedulerToolbox schedulerToolbox) {
 
   rootComponentDescriptor_ =
       std::make_unique<const RootComponentDescriptor>(eventDispatcher);
+
+  delegate_ = delegate;
 
   uiManagerRef.setDelegate(this);
   uiManagerRef.setShadowTreeRegistry(&shadowTreeRegistry_);
