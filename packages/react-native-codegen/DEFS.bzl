@@ -26,7 +26,6 @@ def rn_codegen(
     generate_event_emitter_h_name = "generate_event_emitter_h-{}".format(name)
     generate_props_cpp_name = "generate_props_cpp-{}".format(name)
     generate_props_h_name = "generated_props_h-{}".format(name)
-    generate_props_java_name = "generate_props_java-{}".format(name)
     generate_tests_cpp_name = "generate_tests_cpp-{}".format(name)
     generate_shadow_node_cpp_name = "generated_shadow_node_cpp-{}".format(name)
     generate_shadow_node_h_name = "generated_shadow_node_h-{}".format(name)
@@ -34,6 +33,8 @@ def rn_codegen(
     generate_module_cpp_name = "generate_module_cpp-{}".format(name)
     generate_module_hobjcpp_name = "generate_module_hobjcpp-{}".format(name)
     generate_module_mm_name = "generate_module_mm-{}".format(name)
+    copy_generated_java_files = "copy_generated_java_files-{}".format(name)
+    zip_generated_java_files = "zip_generated_java_files-{}".format(name)
 
     fb_native.genrule(
         name = generate_fixtures_rule_name,
@@ -78,10 +79,16 @@ def rn_codegen(
         out = "Props.h",
     )
 
+    fb_native.genrule(
+        name = copy_generated_java_files,
+        cmd = "mkdir $OUT && find $(location :{}) -name '*.java' -exec cp {{}} $OUT \;".format(generate_fixtures_rule_name),
+        out = "java",
+    )
+
     fb_native.zip_file(
-        name = generate_props_java_name,
-        srcs = [":{}".format(generate_fixtures_rule_name)],
-        out = "{}.src.zip".format(generate_props_java_name),
+        name = zip_generated_java_files,
+        srcs = [":{}".format(copy_generated_java_files)],
+        out = "{}.src.zip".format(zip_generated_java_files),
         visibility = ["PUBLIC"],
     )
 
@@ -219,7 +226,7 @@ def rn_codegen(
     rn_android_library(
         name = "generated_components_java-{}".format(name),
         srcs = [
-            ":{}".format(generate_props_java_name),
+            ":{}".format(zip_generated_java_files),
         ],
         visibility = ["PUBLIC"],
         deps = [
