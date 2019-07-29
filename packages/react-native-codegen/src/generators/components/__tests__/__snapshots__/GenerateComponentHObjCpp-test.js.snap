@@ -1,0 +1,448 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GenerateComponentHObjCpp can generate fixture ARRAY_PROPS 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol ArrayPropsNativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture BOOLEAN_PROP 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol BooleanPropNativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture COLOR_PROP 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol ColorPropNativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture COMMANDS 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol CommandNativeComponentViewProtocol <NSObject>
+- (void)flashScrollIndicators;
+- (void)hotspotUpdate:(NSInteger)x y:(NSInteger)y;
+- (void)scrollTo:(NSInteger)y animated:(BOOL)animated;
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture COMMANDS_AND_PROPS 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol CommandNativeComponentViewProtocol <NSObject>
+- (void)hotspotUpdate:(NSInteger)x y:(NSInteger)y;
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture ENUM_PROP 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol EnumPropsNativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol EventsNestedObjectNativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture EVENT_PROPS 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol EventsNativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol InterfaceOnlyComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture FLOAT_PROPS 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol FloatPropNativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture IMAGE_PROP 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol ImagePropNativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture INTEGER_PROPS 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol IntegerPropNativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture INTERFACE_ONLY 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol InterfaceOnlyComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture MULTI_NATIVE_PROP 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol ImageColorPropNativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture NO_PROPS_NO_EVENTS 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol NoPropsNoEventsComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture POINT_PROP 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol PointPropNativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture STRING_PROP 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol StringPropComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol MultiFile1NativeComponentViewProtocol <NSObject>
+
+@end
+
+@protocol MultiFile2NativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
+
+exports[`GenerateComponentHObjCpp can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
+Map {
+  "ComponentViewHelpers.h" => "/**
+* Copyright (c) Facebook, Inc. and its affiliates.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+#import <Foundation/Foundation.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol MultiComponent1NativeComponentViewProtocol <NSObject>
+
+@end
+
+@protocol MultiComponent2NativeComponentViewProtocol <NSObject>
+
+@end
+
+NS_ASSUME_NONNULL_END",
+}
+`;
