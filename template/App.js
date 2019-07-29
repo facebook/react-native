@@ -2,7 +2,12 @@
  * Sample React Native App
  * https://github.com/facebook/react-native
  *
+ * The @format comment is used by `prettier` which is a code formatter.
+ * See more at https://prettier.io/docs/en/options.html#require-pragma
  * @format
+ *
+ * The @flow comment is used by `flow` which is a static type checker for JavaScript.
+ * See more at https://flow.org/en/docs/usage/#toc-prepare-your-code-for-flow
  * @flow
  */
 
