@@ -24,8 +24,18 @@ public class JSStackTrace {
       stringBuilder
         .append(frame.getString("methodName"))
         .append("@")
-        .append(parseFileId(frame))
-        .append(frame.getInt("lineNumber"));
+        .append(parseFileId(frame));
+      
+      if (frame.hasKey("lineNumber") &&
+        !frame.isNull("lineNumber") &&
+        frame.getType("lineNumber") == ReadableType.Number) {
+        stringBuilder
+          .append(frame.getInt("lineNumber"));
+      } else {
+        stringBuilder
+          .append(-1);
+      }
+      
       if (frame.hasKey("column") &&
         !frame.isNull("column") &&
         frame.getType("column") == ReadableType.Number) {
@@ -33,6 +43,7 @@ public class JSStackTrace {
           .append(":")
           .append(frame.getInt("column"));
       }
+      
       stringBuilder.append("\n");
     }
     return stringBuilder.toString();
