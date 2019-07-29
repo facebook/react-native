@@ -11,8 +11,8 @@
 'use strict';
 
 const EventTarget = require('event-target-shim');
-const Blob = require('Blob');
-const {FileReaderModule} = require('NativeModules');
+const Blob = require('./Blob');
+import NativeFileReaderModule from './NativeFileReaderModule';
 
 type ReadyState =
   | 0 // EMPTY
@@ -87,7 +87,7 @@ class FileReader extends EventTarget(...READER_EVENTS) {
   readAsDataURL(blob: Blob) {
     this._aborted = false;
 
-    FileReaderModule.readAsDataURL(blob.data).then(
+    NativeFileReaderModule.readAsDataURL(blob.data).then(
       (text: string) => {
         if (this._aborted) {
           return;
@@ -108,7 +108,7 @@ class FileReader extends EventTarget(...READER_EVENTS) {
   readAsText(blob: Blob, encoding: string = 'UTF-8') {
     this._aborted = false;
 
-    FileReaderModule.readAsText(blob.data, encoding).then(
+    NativeFileReaderModule.readAsText(blob.data, encoding).then(
       (text: string) => {
         if (this._aborted) {
           return;

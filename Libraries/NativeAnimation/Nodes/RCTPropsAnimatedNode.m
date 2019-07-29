@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTPropsAnimatedNode.h"
+#import <React/RCTPropsAnimatedNode.h>
 
 #import <React/RCTLog.h>
 #import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTUIManager.h>
 
-#import "RCTAnimationUtils.h"
-#import "RCTStyleAnimatedNode.h"
-#import "RCTValueAnimatedNode.h"
+#import <React/RCTAnimationUtils.h>
+#import <React/RCTStyleAnimatedNode.h>
+#import <React/RCTValueAnimatedNode.h>
 
 
 
@@ -34,6 +34,11 @@
     _propsDictionary = [NSMutableDictionary new];
   }
   return self;
+}
+
+- (BOOL)isManagedByFabric
+{
+  return _managedByFabric;
 }
 
 - (void)connectToView:(NSNumber *)viewTag
@@ -110,8 +115,13 @@
 
     } else if ([parentNode isKindOfClass:[RCTValueAnimatedNode class]]) {
       NSString *property = [self propertyNameForParentTag:parentTag];
-      CGFloat value = [(RCTValueAnimatedNode *)parentNode value];
-      self->_propsDictionary[property] = @(value);
+      id animatedObject = [(RCTValueAnimatedNode *)parentNode animatedObject];
+      if (animatedObject) {
+        self->_propsDictionary[property] = animatedObject;
+      } else {
+        CGFloat value = [(RCTValueAnimatedNode *)parentNode value];
+        self->_propsDictionary[property] = @(value);
+      }
     }
   }
 

@@ -22,8 +22,6 @@ AVD_UUID=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
 ANDROID_NPM_DEPS="appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3 pretty-data2@0.40.1"
 CLI_PACKAGE="$ROOT/react-native-cli/react-native-cli-*.tgz"
 PACKAGE="$ROOT/react-native-*.tgz"
-# Version of react-native-dummy to test against
-REACT_DUMMY_PLATFORM=react-native-dummy@0.1.0
 
 # solve issue with max user watches limit
 echo 65536 | tee -a /proc/sys/fs/inotify/max_user_watches
@@ -249,20 +247,6 @@ function e2e_suite() {
         echo "Could not build iOS bundle"
         return 1
       fi
-
-      if ! retry "$RETRY_COUNT" npm install --save "$REACT_DUMMY_PLATFORM" --silent >> /dev/null
-      then
-        echo "Failed to install react-native-dummy"
-        echo "Most common reason is npm registry connectivity, try again"
-        return 1
-      fi
-
-      if ! react-native bundle --max-workers 1 --platform dummy --dev true --entry-file index.js --bundle-output dummy-bundle.js
-      then
-        echo "Could not build dummy bundle"
-        return 1
-      fi
-    fi
 
     # directory cleanup
     rm "$IOS_MARKER"

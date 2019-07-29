@@ -5,15 +5,6 @@
 
 package com.facebook.react.modules.network;
 
-import javax.annotation.Nullable;
-
-import java.io.IOException;
-import java.net.CookieHandler;
-import java.net.URI;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
@@ -24,16 +15,22 @@ import android.text.TextUtils;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.ValueCallback;
-
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.GuardedResultAsyncTask;
 import com.facebook.react.bridge.ReactContext;
+import java.io.IOException;
+import java.net.CookieHandler;
+import java.net.URI;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Cookie handler that forwards all cookies to the WebView CookieManager.
  *
- * This class relies on CookieManager to persist cookies to disk so cookies may be lost if the
+ * <p>This class relies on CookieManager to persist cookies to disk so cookies may be lost if the
  * application is terminated before it syncs.
  */
 public class ForwardingCookieHandler extends CookieHandler {
@@ -171,17 +168,28 @@ public class ForwardingCookieHandler extends CookieHandler {
   }
 
   /**
-   * Instantiating CookieManager in KitKat+ will load the Chromium task taking a 100ish ms so we
-   * do it lazily to make sure it's done on a background thread as needed.
+   * Instantiating CookieManager in KitKat+ will load the Chromium task taking a 100ish ms so we do
+   * it lazily to make sure it's done on a background thread as needed.
    */
   private @Nullable CookieManager getCookieManager() {
     if (mCookieManager == null) {
       possiblyWorkaroundSyncManager(mContext);
       try {
-          mCookieManager = CookieManager.getInstance();
+        mCookieManager = CookieManager.getInstance();
       } catch (IllegalArgumentException ex) {
         // https://bugs.chromium.org/p/chromium/issues/detail?id=559720
         return null;
+      } catch (Exception exception) {
+        String message = exception.getMessage();
+        // We cannot catch MissingWebViewPackageException as it is in a private / system API
+        // class. This validates the exception's message to ensure we are only handling this
+        // specific exception.
+        // https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/webkit/WebViewFactory.java#98
+        if (message != null && message.contains("No WebView installed")) {
+          return null;
+        } else {
+          throw exception;
+        }
       }
 
       if (USES_LEGACY_STORE) {
@@ -214,17 +222,20 @@ public class ForwardingCookieHandler extends CookieHandler {
     private final Handler mHandler;
 
     public CookieSaver() {
-      mHandler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-          if (msg.what == MSG_PERSIST_COOKIES) {
-            persistCookies();
-            return true;
-          } else {
-            return false;
-          }
-        }
-      });
+      mHandler =
+          new Handler(
+              Looper.getMainLooper(),
+              new Handler.Callback() {
+                @Override
+                public boolean handleMessage(Message msg) {
+                  if (msg.what == MSG_PERSIST_COOKIES) {
+                    persistCookies();
+                    return true;
+                  } else {
+                    return false;
+                  }
+                }
+              });
     }
 
     public void onCookiesModified() {

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTLinkingManager.h"
+#import <React/RCTLinkingManager.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
@@ -69,7 +69,7 @@ RCT_EXPORT_MODULE()
 + (BOOL)application:(UIApplication *)application
 continueUserActivity:(NSUserActivity *)userActivity
   restorationHandler:
-    #if __has_include(<UIKitCore/UIUserActivity.h>) && defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= 12000) /* __IPHONE_12_0 */
+    #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= 12000) /* __IPHONE_12_0 */
         (nonnull void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))restorationHandler {
     #else
         (nonnull void (^)(NSArray *_Nullable))restorationHandler {
@@ -95,18 +95,21 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
   if (@available(iOS 10.0, *)) {
     [RCTSharedApplication() openURL:URL options:@{} completionHandler:^(BOOL success) {
       if (success) {
-        resolve(nil);
+        resolve(@YES);
       } else {
         reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
       }
     }];
   } else {
+#if !TARGET_OS_UIKITFORMAC
+    // Note: this branch will never be taken on UIKitForMac
     BOOL opened = [RCTSharedApplication() openURL:URL];
     if (opened) {
-      resolve(nil);
+      resolve(@YES);
     } else {
       reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
     }
+#endif
   }
 
 }
@@ -170,12 +173,15 @@ RCT_EXPORT_METHOD(openSettings:(RCTPromiseResolveBlock)resolve
       }
     }];
   } else {
+#if !TARGET_OS_UIKITFORMAC
+   // Note: This branch will never be taken on UIKitForMac
    BOOL opened = [RCTSharedApplication() openURL:url];
    if (opened) {
      resolve(nil);
    } else {
      reject(RCTErrorUnspecified, @"Unable to open app settings", nil);
    }
+#endif
   }
 }
 

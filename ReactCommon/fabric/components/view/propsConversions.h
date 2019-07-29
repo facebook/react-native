@@ -14,11 +14,11 @@ namespace facebook {
 namespace react {
 
 static inline YGStyle::Dimensions convertRawProp(
-    const RawProps &rawProps,
-    const std::string &widthName,
-    const std::string &heightName,
-    const YGStyle::Dimensions &sourceValue,
-    const YGStyle::Dimensions &defaultValue) {
+    RawProps const &rawProps,
+    char const *widthName,
+    char const *heightName,
+    YGStyle::Dimensions const &sourceValue,
+    YGStyle::Dimensions const &defaultValue) {
   auto dimensions = defaultValue;
   dimensions[YGDimensionWidth] = convertRawProp(
       rawProps,
@@ -34,64 +34,82 @@ static inline YGStyle::Dimensions convertRawProp(
 }
 
 static inline YGStyle::Edges convertRawProp(
-    const RawProps &rawProps,
-    const std::string &prefix,
-    const std::string &suffix,
-    const YGStyle::Edges &sourceValue,
-    const YGStyle::Edges &defaultValue) {
+    RawProps const &rawProps,
+    char const *prefix,
+    char const *suffix,
+    YGStyle::Edges const &sourceValue,
+    YGStyle::Edges const &defaultValue) {
   auto result = defaultValue;
   result[YGEdgeLeft] = convertRawProp(
       rawProps,
-      prefix + "Left" + suffix,
+      "Left",
       sourceValue[YGEdgeLeft],
-      defaultValue[YGEdgeLeft]);
+      defaultValue[YGEdgeLeft],
+      prefix,
+      suffix);
   result[YGEdgeTop] = convertRawProp(
       rawProps,
-      prefix + "Top" + suffix,
+      "Top",
       sourceValue[YGEdgeTop],
-      defaultValue[YGEdgeTop]);
+      defaultValue[YGEdgeTop],
+      prefix,
+      suffix);
   result[YGEdgeRight] = convertRawProp(
       rawProps,
-      prefix + "Right" + suffix,
+      "Right",
       sourceValue[YGEdgeRight],
-      defaultValue[YGEdgeRight]);
+      defaultValue[YGEdgeRight],
+      prefix,
+      suffix);
   result[YGEdgeBottom] = convertRawProp(
       rawProps,
-      prefix + "Bottom" + suffix,
+      "Bottom",
       sourceValue[YGEdgeBottom],
-      defaultValue[YGEdgeBottom]);
+      defaultValue[YGEdgeBottom],
+      prefix,
+      suffix);
   result[YGEdgeStart] = convertRawProp(
       rawProps,
-      prefix + "Start" + suffix,
+      "Start",
       sourceValue[YGEdgeStart],
-      defaultValue[YGEdgeStart]);
+      defaultValue[YGEdgeStart],
+      prefix,
+      suffix);
   result[YGEdgeEnd] = convertRawProp(
       rawProps,
-      prefix + "End" + suffix,
+      "End",
       sourceValue[YGEdgeEnd],
-      defaultValue[YGEdgeEnd]);
+      defaultValue[YGEdgeEnd],
+      prefix,
+      suffix);
   result[YGEdgeHorizontal] = convertRawProp(
       rawProps,
-      prefix + "Horizontal" + suffix,
+      "Horizontal",
       sourceValue[YGEdgeHorizontal],
-      defaultValue[YGEdgeHorizontal]);
+      defaultValue[YGEdgeHorizontal],
+      prefix,
+      suffix);
   result[YGEdgeVertical] = convertRawProp(
       rawProps,
-      prefix + "Vertical" + suffix,
+      "Vertical",
       sourceValue[YGEdgeVertical],
-      defaultValue[YGEdgeVertical]);
+      defaultValue[YGEdgeVertical],
+      prefix,
+      suffix);
   result[YGEdgeAll] = convertRawProp(
       rawProps,
-      prefix + suffix,
+      "",
       sourceValue[YGEdgeAll],
-      defaultValue[YGEdgeAll]);
+      defaultValue[YGEdgeAll],
+      prefix,
+      suffix);
   return result;
 }
 
 static inline YGStyle::Edges convertRawProp(
-    const RawProps &rawProps,
-    const YGStyle::Edges &sourceValue,
-    const YGStyle::Edges &defaultValue) {
+    RawProps const &rawProps,
+    YGStyle::Edges const &sourceValue,
+    YGStyle::Edges const &defaultValue) {
   auto result = defaultValue;
   result[YGEdgeLeft] = convertRawProp(
       rawProps, "left", sourceValue[YGEdgeLeft], defaultValue[YGEdgeLeft]);
@@ -112,135 +130,143 @@ static inline YGStyle::Edges convertRawProp(
 }
 
 static inline YGStyle convertRawProp(
-    const RawProps &rawProps,
-    const YGStyle &sourceValue) {
+    RawProps const &rawProps,
+    YGStyle const &sourceValue) {
   auto yogaStyle = YGStyle{};
-  yogaStyle.direction = convertRawProp(
-      rawProps, "direction", sourceValue.direction, yogaStyle.direction);
-  yogaStyle.flexDirection = convertRawProp(
+  yogaStyle.direction() = convertRawProp(
+      rawProps, "direction", sourceValue.direction(), yogaStyle.direction());
+  yogaStyle.flexDirection() = convertRawProp(
       rawProps,
       "flexDirection",
-      sourceValue.flexDirection,
-      yogaStyle.flexDirection);
-  yogaStyle.justifyContent = convertRawProp(
+      sourceValue.flexDirection(),
+      yogaStyle.flexDirection());
+  yogaStyle.justifyContent() = convertRawProp(
       rawProps,
       "justifyContent",
-      sourceValue.justifyContent,
-      yogaStyle.justifyContent);
-  yogaStyle.alignContent = convertRawProp(
+      sourceValue.justifyContent(),
+      yogaStyle.justifyContent());
+  yogaStyle.alignContent() = convertRawProp(
       rawProps,
       "alignContent",
-      sourceValue.alignContent,
-      yogaStyle.alignContent);
-  yogaStyle.alignItems = convertRawProp(
-      rawProps, "alignItems", sourceValue.alignItems, yogaStyle.alignItems);
-  yogaStyle.alignSelf = convertRawProp(
-      rawProps, "alignSelf", sourceValue.alignSelf, yogaStyle.alignSelf);
-  yogaStyle.positionType = convertRawProp(
-      rawProps, "position", sourceValue.positionType, yogaStyle.positionType);
-  yogaStyle.flexWrap = convertRawProp(
-      rawProps, "flexWrap", sourceValue.flexWrap, yogaStyle.flexWrap);
-  yogaStyle.overflow = convertRawProp(
-      rawProps, "overflow", sourceValue.overflow, yogaStyle.overflow);
-  yogaStyle.display = convertRawProp(
-      rawProps, "display", sourceValue.display, yogaStyle.display);
-  yogaStyle.flex =
-      convertRawProp(rawProps, "flex", sourceValue.flex, yogaStyle.flex);
-  yogaStyle.flexGrow = convertRawProp(
-      rawProps, "flexGrow", sourceValue.flexGrow, yogaStyle.flexGrow);
-  yogaStyle.flexShrink = convertRawProp(
-      rawProps, "flexShrink", sourceValue.flexShrink, yogaStyle.flexShrink);
-  yogaStyle.flexBasis = convertRawProp(
-      rawProps, "flexBasis", sourceValue.flexBasis, yogaStyle.flexBasis);
-  yogaStyle.margin = convertRawProp(
-      rawProps, "margin", "", sourceValue.margin, yogaStyle.margin);
-  yogaStyle.position =
-      convertRawProp(rawProps, sourceValue.position, yogaStyle.position);
-  yogaStyle.padding = convertRawProp(
-      rawProps, "padding", "", sourceValue.padding, yogaStyle.padding);
-  yogaStyle.border = convertRawProp(
-      rawProps, "border", "Width", sourceValue.border, yogaStyle.border);
-  yogaStyle.dimensions = convertRawProp(
+      sourceValue.alignContent(),
+      yogaStyle.alignContent());
+  yogaStyle.alignItems() = convertRawProp(
+      rawProps, "alignItems", sourceValue.alignItems(), yogaStyle.alignItems());
+  yogaStyle.alignSelf() = convertRawProp(
+      rawProps, "alignSelf", sourceValue.alignSelf(), yogaStyle.alignSelf());
+  yogaStyle.positionType() = convertRawProp(
+      rawProps,
+      "position",
+      sourceValue.positionType(),
+      yogaStyle.positionType());
+  yogaStyle.flexWrap() = convertRawProp(
+      rawProps, "flexWrap", sourceValue.flexWrap(), yogaStyle.flexWrap());
+  yogaStyle.overflow() = convertRawProp(
+      rawProps, "overflow", sourceValue.overflow(), yogaStyle.overflow());
+  yogaStyle.display() = convertRawProp(
+      rawProps, "display", sourceValue.display(), yogaStyle.display());
+  yogaStyle.flex() =
+      convertRawProp(rawProps, "flex", sourceValue.flex(), yogaStyle.flex());
+  yogaStyle.flexGrow() = convertRawProp(
+      rawProps, "flexGrow", sourceValue.flexGrow(), yogaStyle.flexGrow());
+  yogaStyle.flexShrink() = convertRawProp(
+      rawProps, "flexShrink", sourceValue.flexShrink(), yogaStyle.flexShrink());
+  yogaStyle.flexBasis() = convertRawProp(
+      rawProps, "flexBasis", sourceValue.flexBasis(), yogaStyle.flexBasis());
+  yogaStyle.margin() = convertRawProp(
+      rawProps, "margin", "", sourceValue.margin(), yogaStyle.margin());
+  yogaStyle.position() =
+      convertRawProp(rawProps, sourceValue.position(), yogaStyle.position());
+  yogaStyle.padding() = convertRawProp(
+      rawProps, "padding", "", sourceValue.padding(), yogaStyle.padding());
+  yogaStyle.border() = convertRawProp(
+      rawProps, "border", "Width", sourceValue.border(), yogaStyle.border());
+  yogaStyle.dimensions() = convertRawProp(
       rawProps,
       "width",
       "height",
-      sourceValue.dimensions,
-      yogaStyle.dimensions);
-  yogaStyle.minDimensions = convertRawProp(
+      sourceValue.dimensions(),
+      yogaStyle.dimensions());
+  yogaStyle.minDimensions() = convertRawProp(
       rawProps,
       "minWidth",
       "minHeight",
-      sourceValue.minDimensions,
-      yogaStyle.minDimensions);
-  yogaStyle.maxDimensions = convertRawProp(
+      sourceValue.minDimensions(),
+      yogaStyle.minDimensions());
+  yogaStyle.maxDimensions() = convertRawProp(
       rawProps,
       "maxWidth",
       "maxHeight",
-      sourceValue.maxDimensions,
-      yogaStyle.maxDimensions);
-  yogaStyle.aspectRatio = convertRawProp(
-      rawProps, "aspectRatio", sourceValue.aspectRatio, yogaStyle.aspectRatio);
+      sourceValue.maxDimensions(),
+      yogaStyle.maxDimensions());
+  yogaStyle.aspectRatio() = convertRawProp(
+      rawProps,
+      "aspectRatio",
+      sourceValue.aspectRatio(),
+      yogaStyle.aspectRatio());
   return yogaStyle;
 }
 
 template <typename T>
 static inline CascadedRectangleCorners<T> convertRawProp(
-    const RawProps &rawProps,
-    const std::string &prefix,
-    const std::string &suffix,
-    const CascadedRectangleCorners<T> &sourceValue) {
+    RawProps const &rawProps,
+    char const *prefix,
+    char const *suffix,
+    CascadedRectangleCorners<T> const &sourceValue) {
   CascadedRectangleCorners<T> result;
 
   result.topLeft = convertRawProp(
-      rawProps, prefix + "TopLeft" + suffix, sourceValue.topLeft);
+      rawProps, "TopLeft", sourceValue.topLeft, {}, prefix, suffix);
   result.topRight = convertRawProp(
-      rawProps, prefix + "TopRight" + suffix, sourceValue.topRight);
+      rawProps, "TopRight", sourceValue.topRight, {}, prefix, suffix);
   result.bottomLeft = convertRawProp(
-      rawProps, prefix + "BottomLeft" + suffix, sourceValue.bottomLeft);
+      rawProps, "BottomLeft", sourceValue.bottomLeft, {}, prefix, suffix);
   result.bottomRight = convertRawProp(
-      rawProps, prefix + "BottomRight" + suffix, sourceValue.bottomRight);
+      rawProps, "BottomRight", sourceValue.bottomRight, {}, prefix, suffix);
 
   result.topStart = convertRawProp(
-      rawProps, prefix + "TopStart" + suffix, sourceValue.topStart);
-  result.topEnd =
-      convertRawProp(rawProps, prefix + "TopEnd" + suffix, sourceValue.topEnd);
+      rawProps, "TopStart", sourceValue.topStart, {}, prefix, suffix);
+  result.topEnd = convertRawProp(
+      rawProps, "TopEnd", sourceValue.topEnd, {}, prefix, suffix);
   result.bottomStart = convertRawProp(
-      rawProps, prefix + "BottomStart" + suffix, sourceValue.bottomStart);
+      rawProps, "BottomStart", sourceValue.bottomStart, {}, prefix, suffix);
   result.bottomEnd = convertRawProp(
-      rawProps, prefix + "BottomEnd" + suffix, sourceValue.bottomEnd);
+      rawProps, "BottomEnd", sourceValue.bottomEnd, {}, prefix, suffix);
 
-  result.all = convertRawProp(rawProps, prefix + suffix, sourceValue.all);
+  result.all =
+      convertRawProp(rawProps, "", sourceValue.all, {}, prefix, suffix);
 
   return result;
 }
 
 template <typename T>
 static inline CascadedRectangleEdges<T> convertRawProp(
-    const RawProps &rawProps,
-    const std::string &prefix,
-    const std::string &suffix,
-    const CascadedRectangleEdges<T> &sourceValue) {
+    RawProps const &rawProps,
+    char const *prefix,
+    char const *suffix,
+    CascadedRectangleEdges<T> const &sourceValue) {
   CascadedRectangleEdges<T> result;
 
   result.left =
-      convertRawProp(rawProps, prefix + "Left" + suffix, sourceValue.left);
+      convertRawProp(rawProps, "Left", sourceValue.left, {}, prefix, suffix);
   result.right =
-      convertRawProp(rawProps, prefix + "Right" + suffix, sourceValue.right);
+      convertRawProp(rawProps, "Right", sourceValue.right, {}, prefix, suffix);
   result.top =
-      convertRawProp(rawProps, prefix + "Top" + suffix, sourceValue.top);
-  result.bottom =
-      convertRawProp(rawProps, prefix + "Bottom" + suffix, sourceValue.bottom);
+      convertRawProp(rawProps, "Top", sourceValue.top, {}, prefix, suffix);
+  result.bottom = convertRawProp(
+      rawProps, "Bottom", sourceValue.bottom, {}, prefix, suffix);
 
   result.start =
-      convertRawProp(rawProps, prefix + "Start" + suffix, sourceValue.start);
+      convertRawProp(rawProps, "Start", sourceValue.start, {}, prefix, suffix);
   result.end =
-      convertRawProp(rawProps, prefix + "End" + suffix, sourceValue.end);
+      convertRawProp(rawProps, "End", sourceValue.end, {}, prefix, suffix);
   result.horizontal = convertRawProp(
-      rawProps, prefix + "Horizontal" + suffix, sourceValue.horizontal);
+      rawProps, "Horizontal", sourceValue.horizontal, {}, prefix, suffix);
   result.vertical = convertRawProp(
-      rawProps, prefix + "Vertical" + suffix, sourceValue.vertical);
+      rawProps, "Vertical", sourceValue.vertical, {}, prefix, suffix);
 
-  result.all = convertRawProp(rawProps, prefix + suffix, sourceValue.all);
+  result.all =
+      convertRawProp(rawProps, "", sourceValue.all, {}, prefix, suffix);
 
   return result;
 }

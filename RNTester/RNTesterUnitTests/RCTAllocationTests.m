@@ -169,7 +169,17 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
 #endif
 }
 
-- (void)testUnderlyingBridgeIsDeallocated
+/**
+ * T42930872:
+ *
+ * Both bridge invalidation and bridge setUp occur execute concurrently.
+ * Therefore, it's not safe for us to create a bridge, and immediately reload on
+ * it. It's also unsafe to just reload the bridge, because that calls invalidate
+ * and then setUp. Because of these race conditions, this test may randomly
+ * crash. Hence, we should disable this test until we either fix the bridge
+ * or delete it.
+ */
+- (void)disabled_testUnderlyingBridgeIsDeallocated
 {
   RCTBridge *bridge;
   __weak id batchedBridge;

@@ -14,33 +14,31 @@ namespace facebook {
 namespace react {
 
 static YGStyle yogaStyleFromLayoutConstraints(
-    const LayoutConstraints &layoutConstraints) {
+    LayoutConstraints const &layoutConstraints) {
   auto yogaStyle = YGStyle{};
-  yogaStyle.minDimensions[YGDimensionWidth] =
+  yogaStyle.minDimensions()[YGDimensionWidth] =
       yogaStyleValueFromFloat(layoutConstraints.minimumSize.width);
-  yogaStyle.minDimensions[YGDimensionHeight] =
+  yogaStyle.minDimensions()[YGDimensionHeight] =
       yogaStyleValueFromFloat(layoutConstraints.minimumSize.height);
 
-  yogaStyle.maxDimensions[YGDimensionWidth] =
+  yogaStyle.maxDimensions()[YGDimensionWidth] =
       yogaStyleValueFromFloat(layoutConstraints.maximumSize.width);
-  yogaStyle.maxDimensions[YGDimensionHeight] =
+  yogaStyle.maxDimensions()[YGDimensionHeight] =
       yogaStyleValueFromFloat(layoutConstraints.maximumSize.height);
 
-  yogaStyle.direction =
+  yogaStyle.direction() =
       yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);
 
   return yogaStyle;
 }
 
-RootProps::RootProps(const RootProps &sourceProps, const RawProps &rawProps) {
-  // `RootProps` cannot be constructed from `RawProps`.
-  assert(false);
-}
+RootProps::RootProps(RootProps const &sourceProps, RawProps const &rawProps)
+    : ViewProps(sourceProps, rawProps) {}
 
 RootProps::RootProps(
-    const RootProps &sourceProps,
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext)
+    RootProps const &sourceProps,
+    LayoutConstraints const &layoutConstraints,
+    LayoutContext const &layoutContext)
     : ViewProps(yogaStyleFromLayoutConstraints(layoutConstraints)),
       layoutConstraints(layoutConstraints),
       layoutContext(layoutContext){};

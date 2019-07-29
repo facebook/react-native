@@ -12,7 +12,7 @@
 
 #include <jsi/jsi.h>
 
-#include "JSCallInvoker.h"
+#include <ReactCommon/JSCallInvoker.h>
 
 namespace facebook {
 namespace react {
@@ -40,23 +40,7 @@ public:
   TurboModule(const std::string &name, std::shared_ptr<JSCallInvoker> jsInvoker);
   virtual ~TurboModule();
 
-  /**
-   * Instruct this module to invalidate itself.
-   */
-  virtual void invalidate();
-
   virtual facebook::jsi::Value get(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& propName) override;
-
-  /**
-   * General method invocation mechanism.
-   * Each subclass decides how the invocation should be, and whether it should be platform-specific.
-   */
-  virtual jsi::Value invokeMethod(
-      jsi::Runtime &runtime,
-      TurboModuleMethodValueKind valueKind,
-      const std::string &methodName,
-      const jsi::Value *args,
-      size_t count);
 
   const std::string name_;
   std::shared_ptr<JSCallInvoker> jsInvoker_;

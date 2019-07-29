@@ -1,0 +1,195 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GenerateModuleHObjCpp can generate fixture EMPTY_NATIVE_MODULES 1`] = `
+Map {
+  "RCTNativeModules.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+// NOTE: This entire file should be codegen'ed.
+
+#import <vector>
+
+#import <Foundation/Foundation.h>
+
+#import <React/RCTBridgeModule.h>
+
+#import <ReactCommon/RCTTurboModule.h>
+
+
+@protocol NativeSampleTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
+
+@end
+
+
+namespace facebook {
+namespace react {
+
+class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
+public:
+  NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateModuleHObjCpp can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
+Map {
+  "RCTNativeModules.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+// NOTE: This entire file should be codegen'ed.
+
+#import <vector>
+
+#import <Foundation/Foundation.h>
+
+#import <React/RCTBridgeModule.h>
+
+#import <ReactCommon/RCTTurboModule.h>
+
+
+@protocol NativeSampleTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
+- (NSDictionary *) getConstants;
+- (NSDictionary *) constantsToExport;
+- (void) voidFunc;
+- (BOOL) getBool:(BOOL)arg;
+- (NSNumber *) getNumber:(NSNumber *)arg;
+- (NSString *) getString:(NSString *)arg;
+- (NSArray<id<NSObject>> *) getArray:(NSArray<id<NSObject>> *)arg;
+- (NSDictionary *) getObject:(NSDictionary *)arg;
+- (NSDictionary *) getValue:(NSNumber *)x
+   y:(NSString *)y
+   z:(NSDictionary *)z;
+- (void) getValueWithCallback:(RCTResponseSenderBlock)callback;
+- (void) getValueWithPromise:(BOOL)error
+   resolve:(RCTPromiseResolveBlock)resolve
+   reject:(RCTPromiseRejectBlock)reject;
+@end
+
+
+namespace facebook {
+namespace react {
+
+class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
+public:
+  NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateModuleHObjCpp can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
+Map {
+  "RCTNativeModules.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+// NOTE: This entire file should be codegen'ed.
+
+#import <vector>
+
+#import <Foundation/Foundation.h>
+
+#import <React/RCTBridgeModule.h>
+
+#import <ReactCommon/RCTTurboModule.h>
+
+
+@protocol NativeSampleTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
+- (void) voidFunc;
+@end
+
+
+@protocol NativeSample2TurboModuleSpec <RCTBridgeModule, RCTTurboModule>
+- (void) voidFunc;
+@end
+
+
+namespace facebook {
+namespace react {
+
+class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
+public:
+  NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+};
+
+class JSI_EXPORT NativeSample2TurboModuleSpecJSI : public ObjCTurboModule {
+public:
+  NativeSample2TurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateModuleHObjCpp can generate fixture TWO_MODULES_SAME_FILE 1`] = `
+Map {
+  "RCTNativeModules.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+// NOTE: This entire file should be codegen'ed.
+
+#import <vector>
+
+#import <Foundation/Foundation.h>
+
+#import <React/RCTBridgeModule.h>
+
+#import <ReactCommon/RCTTurboModule.h>
+
+
+@protocol NativeSampleTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
+- (void) voidFunc;
+@end
+
+
+@protocol NativeSample2TurboModuleSpec <RCTBridgeModule, RCTTurboModule>
+- (void) voidFunc;
+@end
+
+
+namespace facebook {
+namespace react {
+
+class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
+public:
+  NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+};
+
+class JSI_EXPORT NativeSample2TurboModuleSpecJSI : public ObjCTurboModule {
+public:
+  NativeSample2TurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;

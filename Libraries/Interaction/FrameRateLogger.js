@@ -10,7 +10,7 @@
 
 'use strict';
 
-const NativeModules = require('NativeModules');
+const NativeModules = require('../BatchedBridge/NativeModules');
 
 const invariant = require('invariant');
 
@@ -46,15 +46,11 @@ const FrameRateLogger = {
       );
     }
     if (NativeModules.FrameRateLogger) {
-      // Freeze the object to avoid the prepack warning (PP0017) about leaking
-      // unfrozen objects.
       // Needs to clone the object first to avoid modifying the argument.
       const optionsClone = {
         debug: !!options.debug,
         reportStackTraces: !!options.reportStackTraces,
       };
-      Object.freeze(optionsClone);
-      Object.seal(optionsClone);
       NativeModules.FrameRateLogger.setGlobalOptions(optionsClone);
     }
   },

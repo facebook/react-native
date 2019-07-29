@@ -1,18 +1,17 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
 import android.content.Context;
 import com.facebook.react.common.DebugServerException;
 
 /**
- * A class that stores JS bundle information and allows a {@link JSBundleLoaderDelegate}
- * (e.g. {@link CatalystInstance}) to load a correct bundle through {@link ReactBridge}.
+ * A class that stores JS bundle information and allows a {@link JSBundleLoaderDelegate} (e.g.
+ * {@link CatalystInstance}) to load a correct bundle through {@link ReactBridge}.
  */
 public abstract class JSBundleLoader {
 
@@ -22,9 +21,7 @@ public abstract class JSBundleLoader {
    * strings from java to native memory.
    */
   public static JSBundleLoader createAssetLoader(
-      final Context context,
-      final String assetUrl,
-      final boolean loadSynchronously) {
+      final Context context, final String assetUrl, final boolean loadSynchronously) {
     return new JSBundleLoader() {
       @Override
       public String loadScript(JSBundleLoaderDelegate delegate) {
@@ -43,9 +40,7 @@ public abstract class JSBundleLoader {
   }
 
   public static JSBundleLoader createFileLoader(
-      final String fileName,
-      final String assetUrl,
-      final boolean loadSynchronously) {
+      final String fileName, final String assetUrl, final boolean loadSynchronously) {
     return new JSBundleLoader() {
       @Override
       public String loadScript(JSBundleLoaderDelegate delegate) {
@@ -63,8 +58,7 @@ public abstract class JSBundleLoader {
    * work correctly and allows for source maps to correctly symbolize those.
    */
   public static JSBundleLoader createCachedBundleFromNetworkLoader(
-      final String sourceURL,
-      final String cachedFileLocation) {
+      final String sourceURL, final String cachedFileLocation) {
     return new JSBundleLoader() {
       @Override
       public String loadScript(JSBundleLoaderDelegate delegate) {
@@ -72,7 +66,7 @@ public abstract class JSBundleLoader {
           delegate.loadScriptFromFile(cachedFileLocation, sourceURL, false);
           return sourceURL;
         } catch (Exception e) {
-          throw DebugServerException.makeGeneric(e.getMessage(), e);
+          throw DebugServerException.makeGeneric(sourceURL, e.getMessage(), e);
         }
       }
     };
@@ -82,11 +76,11 @@ public abstract class JSBundleLoader {
    * This loader is used to load delta bundles from the dev server. We pass each delta message to
    * the loader and process it in C++. Passing it as a string leads to inefficiencies due to memory
    * copies, which will have to be addressed in a follow-up.
+   *
    * @param nativeDeltaClient
    */
   public static JSBundleLoader createDeltaFromNetworkLoader(
-    final String sourceURL,
-    final NativeDeltaClient nativeDeltaClient) {
+      final String sourceURL, final NativeDeltaClient nativeDeltaClient) {
     return new JSBundleLoader() {
       @Override
       public String loadScript(JSBundleLoaderDelegate delegate) {
@@ -94,7 +88,7 @@ public abstract class JSBundleLoader {
           delegate.loadScriptFromDeltaBundle(sourceURL, nativeDeltaClient, false);
           return sourceURL;
         } catch (Exception e) {
-          throw DebugServerException.makeGeneric(e.getMessage(), e);
+          throw DebugServerException.makeGeneric(sourceURL, e.getMessage(), e);
         }
       }
     };
@@ -105,8 +99,7 @@ public abstract class JSBundleLoader {
    * the bundle from device as remote executor will have to do it anyway.
    */
   public static JSBundleLoader createRemoteDebuggerBundleLoader(
-      final String proxySourceURL,
-      final String realSourceURL) {
+      final String proxySourceURL, final String realSourceURL) {
     return new JSBundleLoader() {
       @Override
       public String loadScript(JSBundleLoaderDelegate delegate) {

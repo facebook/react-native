@@ -9,9 +9,10 @@
 
 #import <React/RCTMountingManagerDelegate.h>
 #import <React/RCTPrimitives.h>
+#import <react/core/ComponentDescriptor.h>
 #import <react/core/ReactPrimitives.h>
+#import <react/mounting/MountingCoordinator.h>
 #import <react/mounting/ShadowView.h>
-#import <react/mounting/ShadowViewMutation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,22 +27,20 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) RCTComponentViewRegistry *componentViewRegistry;
 
 /**
- * Transfroms mutation instructions to mount items and executes them.
- * The order of mutation instructions matters.
+ * Schedule a mounting transaction to be performed on the main thread.
  * Can be called from any thread.
  */
-- (void)performTransactionWithMutations:(facebook::react::ShadowViewMutationList)mutations rootTag:(ReactTag)rootTag;
+- (void)scheduleTransaction:(facebook::react::MountingCoordinator::Shared const &)mountingCoordinator;
 
 /**
- * Suggests preliminary creation of a component view of given type.
- * The receiver is free to ignore the request.
+ * Dispatch a command to be performed on the main thread.
  * Can be called from any thread.
  */
-- (void)optimisticallyCreateComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
+- (void)dispatchCommand:(ReactTag)reactTag commandName:(NSString *)commandName args:(NSArray *)args;
 
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
-                                 oldProps:(facebook::react::SharedProps)oldProps
-                                 newProps:(facebook::react::SharedProps)newProps;
+                             changedProps:(NSDictionary *)props
+                      componentDescriptor:(const facebook::react::ComponentDescriptor &)componentDescriptor;
 @end
 
 NS_ASSUME_NONNULL_END

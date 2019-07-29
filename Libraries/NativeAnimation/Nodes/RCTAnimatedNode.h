@@ -23,13 +23,15 @@
 
 @property (nonatomic, readonly) BOOL needsUpdate;
 
+-(BOOL)isManagedByFabric;
+
 /**
  * Marks a node and its children as needing update.
  */
 - (void)setNeedsUpdate NS_REQUIRES_SUPER;
 
 /**
- * The node will update its value if necesarry and only after its parents have updated.
+ * The node will update its value if necessary and only after its parents have updated.
  */
 - (void)updateNodeIfNecessary NS_REQUIRES_SUPER;
 

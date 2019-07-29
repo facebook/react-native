@@ -28,6 +28,7 @@
 }
 
 @synthesize methods = _methods;
+@synthesize methodsByName = _methodsByName;
 @synthesize instance = _instance;
 @synthesize methodQueue = _methodQueue;
 
@@ -123,7 +124,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
         _instance = _moduleProvider ? _moduleProvider() : nil;
         RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
         if (!_instance) {
-          // Module init returned nil, probably because automatic instantatiation
+          // Module init returned nil, probably because automatic instantiation
           // of the module is not supported, and it is supposed to be passed in to
           // the bridge constructor. Mark setup complete to avoid doing more work.
           _setupComplete = YES;
@@ -225,6 +226,47 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
   }
 }
 
+- (void) calculateMethods
+{
+    if (_methods && _methodsByName) {
+      return;
+    }
+
+    NSMutableArray<id<RCTBridgeMethod>> *moduleMethods = [NSMutableArray new];
+    NSMutableDictionary<NSString *, id<RCTBridgeMethod>> *moduleMethodsByName = [NSMutableDictionary new];
+
+    if ([_moduleClass instancesRespondToSelector:@selector(methodsToExport)]) {
+        [moduleMethods addObjectsFromArray:[self.instance methodsToExport]];
+    }
+
+    unsigned int methodCount;
+    Class cls = _moduleClass;
+    while (cls && cls != [NSObject class] && cls != [NSProxy class]) {
+        Method *methods = class_copyMethodList(object_getClass(cls), &methodCount);
+
+        for (unsigned int i = 0; i < methodCount; i++) {
+            Method method = methods[i];
+            SEL selector = method_getName(method);
+            if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
+                IMP imp = method_getImplementation(method);
+                auto exportedMethod = ((const RCTMethodInfo *(*)(id, SEL))imp)(_moduleClass, selector);
+                id<RCTBridgeMethod> moduleMethod = [[RCTModuleMethod alloc] initWithExportedMethod:exportedMethod
+                                                                                       moduleClass:_moduleClass];
+
+                NSString *str = [NSString stringWithUTF8String:moduleMethod.JSMethodName];
+                [moduleMethodsByName setValue:moduleMethod forKey:str];
+                [moduleMethods addObject:moduleMethod];
+            }
+        }
+
+        free(methods);
+        cls = class_getSuperclass(cls);
+    }
+
+    _methods = [moduleMethods copy];
+    _methodsByName = [moduleMethodsByName copy];
+}
+
 #pragma mark - public getters
 
 - (BOOL)hasInstance
@@ -267,37 +309,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (NSArray<id<RCTBridgeMethod>> *)methods
 {
-  if (!_methods) {
-    NSMutableArray<id<RCTBridgeMethod>> *moduleMethods = [NSMutableArray new];
+    [self calculateMethods];
+    return _methods;
+}
 
-    if ([_moduleClass instancesRespondToSelector:@selector(methodsToExport)]) {
-      [moduleMethods addObjectsFromArray:[self.instance methodsToExport]];
-    }
-
-    unsigned int methodCount;
-    Class cls = _moduleClass;
-    while (cls && cls != [NSObject class] && cls != [NSProxy class]) {
-      Method *methods = class_copyMethodList(object_getClass(cls), &methodCount);
-
-      for (unsigned int i = 0; i < methodCount; i++) {
-        Method method = methods[i];
-        SEL selector = method_getName(method);
-        if ([NSStringFromSelector(selector) hasPrefix:@"__rct_export__"]) {
-          IMP imp = method_getImplementation(method);
-          auto exportedMethod = ((const RCTMethodInfo *(*)(id, SEL))imp)(_moduleClass, selector);
-          id<RCTBridgeMethod> moduleMethod = [[RCTModuleMethod alloc] initWithExportedMethod:exportedMethod
-                                                                                 moduleClass:_moduleClass];
-          [moduleMethods addObject:moduleMethod];
-        }
-      }
-
-      free(methods);
-      cls = class_getSuperclass(cls);
-    }
-
-    _methods = [moduleMethods copy];
-  }
-  return _methods;
+- (NSDictionary<NSString *, id<RCTBridgeMethod>> *)methodsByName
+{
+    [self calculateMethods];
+    return _methodsByName;
 }
 
 - (void)gatherConstants

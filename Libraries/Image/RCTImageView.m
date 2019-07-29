@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTImageView.h"
+#import <React/RCTImageView.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
@@ -14,9 +14,10 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
-#import "RCTImageBlurUtils.h"
-#import "RCTImageLoader.h"
-#import "RCTImageUtils.h"
+#import <React/RCTUIImageViewAnimated.h>
+#import <React/RCTImageBlurUtils.h>
+#import <React/RCTImageLoader.h>
+#import <React/RCTImageUtils.h>
 
 /**
  * Determines whether an image of `currentSize` should be reloaded for display
@@ -78,13 +79,14 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 
   // Whether the latest change of props requires the image to be reloaded
   BOOL _needsReload;
+
+   RCTUIImageViewAnimated *_imageView;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
-  if ((self = [super init])) {
+  if ((self = [super initWithFrame:CGRectZero])) {
     _bridge = bridge;
-
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center addObserver:self
                selector:@selector(clearImageIfDetached)
@@ -94,6 +96,9 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
                selector:@selector(clearImageIfDetached)
                    name:UIApplicationDidEnterBackgroundNotification
                  object:nil];
+    _imageView = [[RCTUIImageViewAnimated alloc] init];
+    _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self addSubview:_imageView];
   }
   return self;
 }
@@ -105,10 +110,14 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+
 - (void)updateWithImage:(UIImage *)image
 {
   if (!image) {
-    super.image = nil;
+    _imageView.image = nil;
     return;
   }
 
@@ -125,10 +134,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   // Apply trilinear filtering to smooth out mis-sized images
-  self.layer.minificationFilter = kCAFilterTrilinear;
-  self.layer.magnificationFilter = kCAFilterTrilinear;
+  _imageView.layer.minificationFilter = kCAFilterTrilinear;
+  _imageView.layer.magnificationFilter = kCAFilterTrilinear;
 
-  super.image = image;
+  _imageView.image = image;
 }
 
 - (void)setImage:(UIImage *)image
@@ -137,6 +146,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (image != self.image) {
     [self updateWithImage:image];
   }
+}
+
+- (UIImage *)image {
+  return _imageView.image;
 }
 
 - (void)setBlurRadius:(CGFloat)blurRadius
@@ -186,9 +199,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     if (_resizeMode == RCTResizeModeRepeat) {
       // Repeat resize mode is handled by the UIImage. Use scale to fill
       // so the repeated image fills the UIImageView.
-      self.contentMode = UIViewContentModeScaleToFill;
+      _imageView.contentMode = UIViewContentModeScaleToFill;
     } else {
-      self.contentMode = (UIViewContentMode)resizeMode;
+      _imageView.contentMode = (UIViewContentMode)resizeMode;
     }
 
     if ([self shouldReloadImageSourceAfterResize]) {
@@ -211,7 +224,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)clearImage
 {
   [self cancelImageLoad];
-  [self.layer removeAnimationForKey:@"contents"];
   self.image = nil;
   _imageSource = nil;
 }
@@ -314,14 +326,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     };
 
     _reloadImageCancellationBlock =
-    [_bridge.imageLoader loadImageWithURLRequest:source.request
-                                            size:imageSize
-                                           scale:imageScale
-                                         clipped:NO
-                                      resizeMode:_resizeMode
-                                   progressBlock:progressHandler
-                                partialLoadBlock:partialLoadHandler
-                                 completionBlock:completionHandler];
+    [[_bridge moduleForClass:[RCTImageLoader class]] loadImageWithURLRequest:source.request
+                                                                        size:imageSize
+                                                                       scale:imageScale
+                                                                     clipped:NO
+                                                                  resizeMode:_resizeMode
+                                                               progressBlock:progressHandler
+                                                            partialLoadBlock:partialLoadHandler
+                                                             completionBlock:completionHandler];
   } else {
     [self clearImage];
   }
@@ -350,12 +362,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       self->_pendingImageSource = nil;
     }
 
-    if (image.reactKeyframeAnimation) {
-      [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
-    } else {
-      [self.layer removeAnimationForKey:@"contents"];
-      self.image = image;
-    }
+    self.image = image;
 
     if (isPartialLoad) {
       if (self->_onPartialLoad) {

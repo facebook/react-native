@@ -13,7 +13,7 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const {View} = ReactNative;
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const RCTDeviceEventEmitter = require('react-native/Libraries/EventEmitter/RCTDeviceEventEmitter');
 const {TestModule, AccessibilityManager} = ReactNative.NativeModules;
 
 class AccessibilityManagerTest extends React.Component<{}> {

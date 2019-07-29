@@ -43,8 +43,14 @@ class ShadowNode : public virtual Sealable,
                    public virtual DebugStringConvertible,
                    public std::enable_shared_from_this<ShadowNode> {
  public:
-  using Shared = std::shared_ptr<const ShadowNode>;
-  using Weak = std::weak_ptr<const ShadowNode>;
+  using Shared = std::shared_ptr<ShadowNode const>;
+  using Weak = std::weak_ptr<ShadowNode const>;
+  using Unshared = std::shared_ptr<ShadowNode>;
+  using ListOfShared =
+      better::small_vector<Shared, kShadowNodeChildrenSmallVectorSize>;
+  using SharedListOfShared = std::shared_ptr<ListOfShared const>;
+  using UnsharedListOfShared = std::shared_ptr<ListOfShared>;
+
   using AncestorList = better::small_vector<
       std::pair<
           std::reference_wrapper<ShadowNode const> /* parentNode */,
@@ -106,10 +112,13 @@ class ShadowNode : public virtual Sealable,
   const State::Shared &getState() const;
 
   /*
-   * Returns a momentary value of currently committed state associated with a
-   * family of nodes which this node belongs to.
+   * Returns a momentary value of the most recently created or committed state
+   * associated with a family of nodes which this node belongs to.
+   * Sequential calls might return different values.
+   * The method may return null pointer in case if the particular `ShadowNode`
+   * does not use `State`.
    */
-  const State::Shared &getCommitedState() const;
+  State::Shared getMostRecentState() const;
 
   /*
    * Returns a local data associated with the node.
@@ -130,7 +139,7 @@ class ShadowNode : public virtual Sealable,
       int suggestedIndex = -1);
 
   /*
-   * Sets local data assosiated with the node.
+   * Sets local data associated with the node.
    * The node must be unsealed at this point.
    */
   void setLocalData(const SharedLocalData &localData);

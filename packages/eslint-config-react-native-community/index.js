@@ -22,6 +22,7 @@ module.exports = {
     'react',
     'react-hooks',
     'react-native',
+    '@react-native-community',
     'jest',
   ],
 
@@ -57,7 +58,10 @@ module.exports = {
       },
     },
     {
-      files: ['*.{spec,test}.{js,ts,tsx}', '**/__tests__/**/*.{js,ts,tsx}'],
+      files: [
+        '*.{spec,test}.{js,ts,tsx}',
+        '**/__{mocks,tests}__/**/*.{js,ts,tsx}',
+      ],
       env: {
         jest: true,
         'jest/globals': true,
@@ -216,7 +220,7 @@ module.exports = {
 
     // Prettier Plugin
     // https://github.com/prettier/eslint-plugin-prettier
-    'prettier/prettier': [2, 'fb', '@format'],
+    'prettier/prettier': 2,
 
     // Stylistic Issues
     // These rules are purely matters of style and are quite subjective.

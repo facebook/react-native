@@ -11,7 +11,7 @@
 
 /* eslint-disable lint/no-unclear-flowtypes */
 
-type JestMockFn<TArguments: $ReadOnlyArray<*>, TReturn> = {
+type JestMockFn<TArguments: $ReadOnlyArray<mixed>, TReturn> = {|
   (...args: TArguments): TReturn,
   /**
    * An object for introspecting mock calls
@@ -105,7 +105,7 @@ type JestMockFn<TArguments: $ReadOnlyArray<*>, TReturn> = {
    * Sugar for jest.fn().mockImplementationOnce(() => Promise.reject(value))
    */
   mockRejectedValueOnce(value: TReturn): JestMockFn<TArguments, Promise<any>>,
-};
+|};
 
 type JestAsymmetricEqualityType = {
   /**
@@ -794,7 +794,7 @@ type JestObjectType = {
    * Returns a new, unused mock function. Optionally takes a mock
    * implementation.
    */
-  fn<TArguments: $ReadOnlyArray<*>, TReturn>(
+  fn<TArguments: $ReadOnlyArray<mixed>, TReturn>(
     implementation?: (...args: TArguments) => TReturn,
   ): JestMockFn<TArguments, TReturn>,
   /**
@@ -953,7 +953,7 @@ declare var describe: {
    * @param {table} table of Test
    */
   each(
-    table: Array<Array<mixed> | mixed>,
+    table: $ReadOnlyArray<mixed | $ReadOnlyArray<mixed>>,
   ): (
     name: JestTestName,
     fn?: (...args: Array<any>) => ?Promise<mixed>,
@@ -980,7 +980,7 @@ declare var it: {
    * @param {table} table of Test
    */
   each(
-    table: Array<Array<mixed> | mixed>,
+    table: $ReadOnlyArray<mixed | $ReadOnlyArray<mixed>>,
   ): (
     name: JestTestName,
     fn?: (...args: Array<any>) => ?Promise<mixed>,
@@ -998,7 +998,7 @@ declare var it: {
     timeout?: number,
   ): {
     each(
-      table: Array<Array<mixed> | mixed>,
+      table: $ReadOnlyArray<mixed | $ReadOnlyArray<mixed>>,
     ): (
       name: JestTestName,
       fn?: (...args: Array<any>) => ?Promise<mixed>,
@@ -1034,7 +1034,7 @@ declare var it: {
    * @param {table} table of Test
    */
   each(
-    table: Array<Array<mixed> | mixed>,
+    table: $ReadOnlyArray<mixed | $ReadOnlyArray<mixed>>,
   ): (
     name: JestTestName,
     fn?: (...args: Array<any>) => ?Promise<mixed>,
@@ -1065,9 +1065,7 @@ type JestPrettyFormatColors = {
 };
 
 type JestPrettyFormatIndent = string => string;
-type JestPrettyFormatRefs = Array<any>;
 type JestPrettyFormatPrint = any => string;
-type JestPrettyFormatStringOrNull = string | null;
 
 type JestPrettyFormatOptions = {|
   callToJSON: boolean,
@@ -1123,7 +1121,7 @@ declare var expect: {
   hasAssertions(): void,
   any(value: mixed): JestAsymmetricEqualityType,
   anything(): any,
-  arrayContaining(value: Array<mixed>): Array<mixed>,
+  arrayContaining(value: $ReadOnlyArray<mixed>): Array<mixed>,
   objectContaining(value: Object): Object,
   /** Matches any received string that contains the exact expected string. */
   stringContaining(value: string): string,
@@ -1144,6 +1142,17 @@ declare function spyOn(value: mixed, method: string): Object;
 declare var jest: JestObjectType;
 
 /**
+ * https://jasmine.github.io/2.4/custom_reporter.html
+ */
+type JasmineReporter = {
+  jasmineStarted?: (suiteInfo: mixed) => void,
+  suiteStarted?: (result: mixed) => void,
+  specStarted?: (result: mixed) => void,
+  specDone?: (result: mixed) => void,
+  suiteDone?: (result: mixed) => void,
+};
+
+/**
  * The global Jasmine object, this is generally not exposed as the public API,
  * using features inside here could break in later versions of Jest.
  */
@@ -1151,13 +1160,14 @@ declare var jasmine: {
   DEFAULT_TIMEOUT_INTERVAL: number,
   any(value: mixed): JestAsymmetricEqualityType,
   anything(): any,
-  arrayContaining(value: Array<mixed>): Array<mixed>,
+  arrayContaining(value: $ReadOnlyArray<mixed>): Array<mixed>,
   clock(): JestClockType,
   createSpy(name: string): JestSpyType,
   createSpyObj(
     baseName: string,
     methodNames: Array<string>,
   ): {[methodName: string]: JestSpyType},
+  getEnv(): {addReporter: (jasmineReporter: JasmineReporter) => void},
   objectContaining(value: Object): Object,
   stringMatching(value: string): string,
 };

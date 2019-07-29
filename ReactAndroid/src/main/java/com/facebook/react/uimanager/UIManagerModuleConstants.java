@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
 
 import android.view.accessibility.AccessibilityEvent;
@@ -13,10 +12,7 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.events.TouchEventType;
 import java.util.Map;
 
-
-/**
- * Constants exposed to JS from {@link UIManagerModule}.
- */
+/** Constants exposed to JS from {@link UIManagerModule}. */
 /* package */ class UIManagerModuleConstants {
 
   public static final String ACTION_DISMISSED = "dismissed";
@@ -38,38 +34,22 @@ import java.util.Map;
             TouchEventType.getJSEventName(TouchEventType.START),
             MapBuilder.of(
                 "phasedRegistrationNames",
-                MapBuilder.of(
-                    "bubbled",
-                    "onTouchStart",
-                    "captured",
-                    "onTouchStartCapture")))
+                MapBuilder.of("bubbled", "onTouchStart", "captured", "onTouchStartCapture")))
         .put(
             TouchEventType.getJSEventName(TouchEventType.MOVE),
             MapBuilder.of(
                 "phasedRegistrationNames",
-                MapBuilder.of(
-                    "bubbled",
-                    "onTouchMove",
-                    "captured",
-                    "onTouchMoveCapture")))
+                MapBuilder.of("bubbled", "onTouchMove", "captured", "onTouchMoveCapture")))
         .put(
             TouchEventType.getJSEventName(TouchEventType.END),
             MapBuilder.of(
                 "phasedRegistrationNames",
-                MapBuilder.of(
-                    "bubbled",
-                    "onTouchEnd",
-                    "captured",
-                    "onTouchEndCapture")))
+                MapBuilder.of("bubbled", "onTouchEnd", "captured", "onTouchEndCapture")))
         .put(
             TouchEventType.getJSEventName(TouchEventType.CANCEL),
             MapBuilder.of(
                 "phasedRegistrationNames",
-                MapBuilder.of(
-                    "bubbled",
-                    "onTouchCancel",
-                    "captured",
-                    "onTouchCancelCapture")))
+                MapBuilder.of("bubbled", "onTouchCancel", "captured", "onTouchCancelCapture")))
         .build();
   }
 
@@ -83,6 +63,7 @@ import java.util.Map;
         .put("topLoadingStart", MapBuilder.of(rn, "onLoadingStart"))
         .put("topSelectionChange", MapBuilder.of(rn, "onSelectionChange"))
         .put("topMessage", MapBuilder.of(rn, "onMessage"))
+        .put("topClick", MapBuilder.of(rn, "onClick"))
         // Scroll events are added as per task T22348735.
         // Subject for further improvement.
         .put("topScrollBeginDrag", MapBuilder.of(rn, "onScrollBeginDrag"))
@@ -124,20 +105,17 @@ import java.util.Map;
     constants.put(
         "PopupMenu",
         MapBuilder.of(
-            ACTION_DISMISSED,
-            ACTION_DISMISSED,
-            ACTION_ITEM_SELECTED,
-            ACTION_ITEM_SELECTED));
+            ACTION_DISMISSED, ACTION_DISMISSED, ACTION_ITEM_SELECTED, ACTION_ITEM_SELECTED));
 
     constants.put(
-      "AccessibilityEventTypes",
-      MapBuilder.of(
-          "typeWindowStateChanged",
-          AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
-          "typeViewFocused",
-          AccessibilityEvent.TYPE_VIEW_FOCUSED,
-          "typeViewClicked",
-          AccessibilityEvent.TYPE_VIEW_CLICKED));
+        "AccessibilityEventTypes",
+        MapBuilder.of(
+            "typeWindowStateChanged",
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+            "typeViewFocused",
+            AccessibilityEvent.TYPE_VIEW_FOCUSED,
+            "typeViewClicked",
+            AccessibilityEvent.TYPE_VIEW_CLICKED));
 
     return constants;
   }

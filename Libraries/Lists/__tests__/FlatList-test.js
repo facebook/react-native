@@ -10,10 +10,10 @@
  */
 'use strict';
 
-const React = require('React');
+const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
-const FlatList = require('FlatList');
+const FlatList = require('../FlatList');
 
 describe('FlatList', () => {
   it('renders simple list', () => {
@@ -21,6 +21,41 @@ describe('FlatList', () => {
       <FlatList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
         renderItem={({item}) => <item value={item.key} />}
+      />,
+    );
+    expect(component).toMatchSnapshot();
+  });
+  it('renders simple list (multiple columns)', () => {
+    const component = ReactTestRenderer.create(
+      <FlatList
+        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+        renderItem={({item}) => <item value={item.key} />}
+        numColumns={2}
+      />,
+    );
+    expect(component).toMatchSnapshot();
+  });
+  it('renders simple list using ListItemComponent', () => {
+    function ListItemComponent({item}) {
+      return <item value={item.key} />;
+    }
+    const component = ReactTestRenderer.create(
+      <FlatList
+        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+        ListItemComponent={ListItemComponent}
+      />,
+    );
+    expect(component).toMatchSnapshot();
+  });
+  it('renders simple list using ListItemComponent (multiple columns)', () => {
+    function ListItemComponent({item}) {
+      return <item value={item.key} />;
+    }
+    const component = ReactTestRenderer.create(
+      <FlatList
+        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+        ListItemComponent={ListItemComponent}
+        numColumns={2}
       />,
     );
     expect(component).toMatchSnapshot();

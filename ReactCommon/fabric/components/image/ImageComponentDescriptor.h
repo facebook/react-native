@@ -10,7 +10,7 @@
 #include <react/components/image/ImageShadowNode.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 #include <react/imagemanager/ImageManager.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -23,21 +23,9 @@ class ImageComponentDescriptor final
  public:
   ImageComponentDescriptor(
       EventDispatcher::Shared eventDispatcher,
-      const SharedContextContainer &contextContainer)
+      ContextContainer::Shared const &contextContainer)
       : ConcreteComponentDescriptor(eventDispatcher),
-  // TODO (39486757): implement image manager on Android, currently Android does
-  // not have an ImageManager so this will crash
-#ifndef ANDROID
-        imageManager_(
-            contextContainer
-                ? contextContainer->getInstance<SharedImageManager>(
-                      "ImageManager")
-                : nullptr) {
-  }
-#else
-        imageManager_(nullptr) {
-  }
-#endif
+        imageManager_(std::make_shared<ImageManager>(contextContainer)){};
 
   void adopt(UnsharedShadowNode shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);

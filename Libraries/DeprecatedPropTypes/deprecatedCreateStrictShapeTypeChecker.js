@@ -11,7 +11,7 @@
 'use strict';
 
 const invariant = require('invariant');
-const merge = require('merge');
+const merge = require('../vendor/core/merge');
 
 function deprecatedCreateStrictShapeTypeChecker(shapeTypes: {
   [key: string]: ReactPropsCheckType,

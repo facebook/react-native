@@ -27,8 +27,7 @@ Size TextLayoutManager::measure(
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   const jni::global_ref<jobject> &fabricUIManager =
-      contextContainer_->getInstance<jni::global_ref<jobject>>(
-          "FabricUIManager");
+      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 
   static auto measure =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
@@ -36,17 +35,14 @@ Size TextLayoutManager::measure(
               jstring,
               ReadableMap::javaobject,
               ReadableMap::javaobject,
-              jint,
-              jint,
-              jint,
-              jint)>("measure");
+              ReadableMap::javaobject,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloat)>("measure");
 
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
-  int minWidth = (int)minimumSize.width;
-  int minHeight = (int)minimumSize.height;
-  int maxWidth = (int)maximumSize.width;
-  int maxHeight = (int)maximumSize.height;
 
   local_ref<JString> componentName = make_jstring("RCTText");
   local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
@@ -63,10 +59,11 @@ Size TextLayoutManager::measure(
       componentName.get(),
       attributedStringRM.get(),
       paragraphAttributesRM.get(),
-      minWidth,
-      maxWidth,
-      minHeight,
-      maxHeight));
+      nullptr,
+      minimumSize.width,
+      maximumSize.width,
+      minimumSize.height,
+      maximumSize.height));
 }
 
 } // namespace react

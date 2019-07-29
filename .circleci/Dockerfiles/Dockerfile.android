@@ -8,10 +8,10 @@
 #
 # The base image is expected to remain relatively stable, and only
 # needs to be updated when major dependencies such as the Android
-# SDK or NDK are updated. 
+# SDK or NDK are updated.
 #
-# In this Android Test image, we download the latest dependencies 
-# and build a Android application that can be used to run the 
+# In this Android Test image, we download the latest dependencies
+# and build a Android application that can be used to run the
 # tests specified in the scripts/ directory.
 #
 FROM reactnativecommunity/react-native-android
@@ -42,16 +42,11 @@ RUN buck fetch ReactAndroid/src/androidTest/...
 RUN buck build ReactAndroid/src/main/java/com/facebook/react
 RUN buck build ReactAndroid/src/main/java/com/facebook/react/shell
 
-ADD gradle /app/gradle
-ADD gradlew /app/gradlew
-ADD settings.gradle /app/settings.gradle
-ADD build.gradle /app/build.gradle
-ADD react.gradle /app/react.gradle
-
-RUN ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSC
-
-RUN ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1
-
 ADD . /app
 
 RUN yarn
+
+RUN ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
+
+RUN ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1
+

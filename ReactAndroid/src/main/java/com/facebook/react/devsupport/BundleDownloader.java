@@ -1,14 +1,14 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.devsupport;
 
 import android.util.Log;
 import android.util.Pair;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.NativeDeltaClient;
@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
@@ -142,11 +141,11 @@ public class BundleDownloader {
             }
             mDownloadBundleFromURLCall = null;
 
+            String url = call.request().url().toString();
+
             callback.onFailure(
                 DebugServerException.makeGeneric(
-                    "Could not connect to development server.",
-                    "URL: " + call.request().url().toString(),
-                    e));
+                    url, "Could not connect to development server.", "URL: " + url, e));
           }
 
           @Override
@@ -167,19 +166,19 @@ public class BundleDownloader {
             try (Response r = response) {
               if (match.find()) {
                 processMultipartResponse(
-                  url, r, match.group(1), outputFile, bundleInfo, clientType, callback);
+                    url, r, match.group(1), outputFile, bundleInfo, clientType, callback);
               } else {
                 // In case the server doesn't support multipart/mixed responses, fallback to normal
                 // download.
                 processBundleResult(
-                  url,
-                  r.code(),
-                  r.headers(),
-                  Okio.buffer(r.body().source()),
-                  outputFile,
-                  bundleInfo,
-                  clientType,
-                  callback);
+                    url,
+                    r.code(),
+                    r.headers(),
+                    Okio.buffer(r.body().source()),
+                    outputFile,
+                    bundleInfo,
+                    clientType,
+                    callback);
               }
             }
           }
@@ -187,9 +186,11 @@ public class BundleDownloader {
   }
 
   private String formatBundleUrl(String bundleURL, BundleDeltaClient.ClientType clientType) {
-    return BundleDeltaClient.isDeltaUrl(bundleURL) && mBundleDeltaClient != null && mBundleDeltaClient.canHandle(clientType)
-      ? mBundleDeltaClient.extendUrlForDelta(bundleURL)
-      : bundleURL;
+    return BundleDeltaClient.isDeltaUrl(bundleURL)
+            && mBundleDeltaClient != null
+            && mBundleDeltaClient.canHandle(clientType)
+        ? mBundleDeltaClient.extendUrlForDelta(bundleURL)
+        : bundleURL;
   }
 
   private void processMultipartResponse(
@@ -222,7 +223,14 @@ public class BundleDownloader {
                     status = Integer.parseInt(headers.get("X-Http-Status"));
                   }
                   processBundleResult(
-                      url, status, Headers.of(headers), body, outputFile, bundleInfo, clientType, callback);
+                      url,
+                      status,
+                      Headers.of(headers),
+                      body,
+                      outputFile,
+                      bundleInfo,
+                      clientType,
+                      callback);
                 } else {
                   if (!headers.containsKey("Content-Type")
                       || !headers.get("Content-Type").equals("application/json")) {
@@ -284,15 +292,19 @@ public class BundleDownloader {
     // Check for server errors. If the server error has the expected form, fail with more info.
     if (statusCode != 200) {
       String bodyString = body.readUtf8();
-      DebugServerException debugServerException = DebugServerException.parse(bodyString);
+      DebugServerException debugServerException = DebugServerException.parse(url, bodyString);
       if (debugServerException != null) {
         callback.onFailure(debugServerException);
       } else {
         StringBuilder sb = new StringBuilder();
-        sb.append("The development server returned response error code: ").append(statusCode).append("\n\n")
-          .append("URL: ").append(url).append("\n\n")
-          .append("Body:\n")
-          .append(bodyString);
+        sb.append("The development server returned response error code: ")
+            .append(statusCode)
+            .append("\n\n")
+            .append("URL: ")
+            .append(url)
+            .append("\n\n")
+            .append("Body:\n")
+            .append(bodyString);
         callback.onFailure(new DebugServerException(sb.toString()));
       }
       return;
@@ -351,8 +363,10 @@ public class BundleDownloader {
     return true;
   }
 
-  private static void populateBundleInfo(String url, Headers headers, BundleDeltaClient.ClientType clientType, BundleInfo bundleInfo) {
-    bundleInfo.mDeltaClientName = clientType == BundleDeltaClient.ClientType.NONE ? null : clientType.name();
+  private static void populateBundleInfo(
+      String url, Headers headers, BundleDeltaClient.ClientType clientType, BundleInfo bundleInfo) {
+    bundleInfo.mDeltaClientName =
+        clientType == BundleDeltaClient.ClientType.NONE ? null : clientType.name();
     bundleInfo.mUrl = url;
 
     String filesChangedCountStr = headers.get("X-Metro-Files-Changed-Count");

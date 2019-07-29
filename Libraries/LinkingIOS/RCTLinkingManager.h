@@ -6,7 +6,9 @@
  */
 
 #import <UIKit/UIKit.h>
-
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= 12000) /* __IPHONE_12_0 */
+#import <UIKit/UIUserActivity.h>
+#endif
 #import <React/RCTEventEmitter.h>
 
 @interface RCTLinkingManager : RCTEventEmitter
@@ -23,7 +25,7 @@
 + (BOOL)application:(nonnull UIApplication *)application
     continueUserActivity:(nonnull NSUserActivity *)userActivity
       restorationHandler:
-        #if __has_include(<UIKitCore/UIUserActivity.h>) && defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= 12000) /* __IPHONE_12_0 */
+        #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= 12000) /* __IPHONE_12_0 */
             (nonnull void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))restorationHandler;
         #else
             (nonnull void (^)(NSArray *_Nullable))restorationHandler;

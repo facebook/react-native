@@ -10,9 +10,9 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 #import <objc/runtime.h>
+#import <react/components/view/ViewComponentDescriptor.h>
 #import <react/components/view/ViewEventEmitter.h>
 #import <react/components/view/ViewProps.h>
-#import <react/components/view/ViewShadowNode.h>
 
 #import "RCTConversions.h"
 
@@ -21,16 +21,21 @@ using namespace facebook::react;
 @implementation RCTViewComponentView {
   UIColor *_backgroundColor;
   CALayer *_borderLayer;
+  BOOL _needsInvalidateLayer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ViewProps>();
+    static auto const defaultProps = std::make_shared<ViewProps const>();
     _props = defaultProps;
   }
-
   return self;
+}
+
+- (facebook::react::SharedProps)props
+{
+  return _props;
 }
 
 - (void)setContentView:(UIView *)contentView
@@ -80,32 +85,30 @@ using namespace facebook::react;
 
 #pragma mark - RCTComponentViewProtocol
 
-+ (ComponentHandle)componentHandle
++ (ComponentDescriptorProvider)componentDescriptorProvider
 {
   RCTAssert(
       self == [RCTViewComponentView class],
-      @"`+[RCTComponentViewProtocol componentHandle]` must be implemented for all subclasses (and `%@` particularly).",
+      @"`+[RCTComponentViewProtocol componentDescriptorProvider]` must be implemented for all subclasses (and `%@` particularly).",
       NSStringFromClass([self class]));
-  return ViewShadowNode::Handle();
+  return concreteComponentDescriptorProvider<ViewComponentDescriptor>();
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
 #ifndef NS_BLOCK_ASSERTIONS
   auto propsRawPtr = _props.get();
   RCTAssert(
       propsRawPtr &&
           ([self class] == [RCTViewComponentView class] ||
-           typeid(*propsRawPtr).hash_code() != typeid(const ViewProps).hash_code()),
+           typeid(*propsRawPtr).hash_code() != typeid(ViewProps const).hash_code()),
       @"`RCTViewComponentView` subclasses (and `%@` particularly) must setup `_props`"
        " instance variable with a default value in the constructor.",
       NSStringFromClass([self class]));
 #endif
 
-  const auto &oldViewProps = *std::static_pointer_cast<const ViewProps>(oldProps ?: _props);
-  const auto &newViewProps = *std::static_pointer_cast<const ViewProps>(props);
-
-  _props = std::static_pointer_cast<const ViewProps>(props);
+  auto const &oldViewProps = *std::static_pointer_cast<ViewProps const>(_props);
+  auto const &newViewProps = *std::static_pointer_cast<ViewProps const>(props);
 
   BOOL needsInvalidateLayer = NO;
 
@@ -117,7 +120,7 @@ using namespace facebook::react;
 
   // `backgroundColor`
   if (oldViewProps.backgroundColor != newViewProps.backgroundColor) {
-    _backgroundColor = RCTUIColorFromSharedColor(newViewProps.backgroundColor);
+    self.backgroundColor = RCTUIColorFromSharedColor(newViewProps.backgroundColor);
     needsInvalidateLayer = YES;
   }
 
@@ -154,7 +157,7 @@ using namespace facebook::react;
 
   // `backfaceVisibility`
   if (oldViewProps.backfaceVisibility != newViewProps.backfaceVisibility) {
-    self.layer.doubleSided = newViewProps.backfaceVisibility;
+    self.layer.doubleSided = newViewProps.backfaceVisibility == BackfaceVisibility::Visible;
   }
 
   // `shouldRasterize`
@@ -180,8 +183,8 @@ using namespace facebook::react;
   }
 
   // `overflow`
-  if (oldViewProps.yogaStyle.overflow != newViewProps.yogaStyle.overflow) {
-    self.clipsToBounds = newViewProps.yogaStyle.overflow != YGOverflowVisible;
+  if (oldViewProps.getClipsContentToBounds() != newViewProps.getClipsContentToBounds()) {
+    self.clipsToBounds = newViewProps.getClipsContentToBounds();
     needsInvalidateLayer = YES;
   }
 
@@ -216,12 +219,6 @@ using namespace facebook::react;
     self.accessibilityElement.accessibilityHint = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint);
   }
 
-  // `accessibilityTraits`
-  if (oldViewProps.accessibilityTraits != newViewProps.accessibilityTraits) {
-    self.accessibilityElement.accessibilityTraits =
-        RCTUIAccessibilityTraitsFromAccessibilityTraits(newViewProps.accessibilityTraits);
-  }
-
   // `accessibilityViewIsModal`
   if (oldViewProps.accessibilityViewIsModal != newViewProps.accessibilityViewIsModal) {
     self.accessibilityElement.accessibilityViewIsModal = newViewProps.accessibilityViewIsModal;
@@ -241,23 +238,33 @@ using namespace facebook::react;
 #endif
   }
 
-  if (needsInvalidateLayer) {
-    [self invalidateLayer];
-  }
+  _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
+
+  _props = std::static_pointer_cast<ViewProps const>(props);
 }
 
-- (void)updateEventEmitter:(SharedEventEmitter)eventEmitter
+- (void)updateEventEmitter:(EventEmitter::Shared const &)eventEmitter
 {
-  assert(std::dynamic_pointer_cast<const ViewEventEmitter>(eventEmitter));
-  _eventEmitter = std::static_pointer_cast<const ViewEventEmitter>(eventEmitter);
+  assert(std::dynamic_pointer_cast<ViewEventEmitter const>(eventEmitter));
+  _eventEmitter = std::static_pointer_cast<ViewEventEmitter const>(eventEmitter);
 }
 
-- (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics oldLayoutMetrics:(LayoutMetrics)oldLayoutMetrics
+- (void)updateLayoutMetrics:(LayoutMetrics const &)layoutMetrics
+           oldLayoutMetrics:(LayoutMetrics const &)oldLayoutMetrics
 {
-  _layoutMetrics = layoutMetrics;
-
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
 
+  _layoutMetrics = layoutMetrics;
+  _needsInvalidateLayer = YES;
+}
+
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
+{
+  if (!_needsInvalidateLayer) {
+    return;
+  }
+
+  _needsInvalidateLayer = NO;
   [self invalidateLayer];
 }
 
@@ -326,12 +333,10 @@ static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
 
 static RCTBorderColors RCTBorderColorsFromBorderColors(BorderColors borderColors)
 {
-  return RCTBorderColors{
-    .left = RCTCGColorRefUnretainedFromSharedColor(borderColors.left),
-    .top =  RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
-    .bottom =  RCTCGColorRefUnretainedFromSharedColor(borderColors.bottom),
-    .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)
-  };
+  return RCTBorderColors{.left = RCTCGColorRefUnretainedFromSharedColor(borderColors.left),
+                         .top = RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
+                         .bottom = RCTCGColorRefUnretainedFromSharedColor(borderColors.bottom),
+                         .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)};
 }
 
 static UIEdgeInsets UIEdgeInsetsFromBorderInsets(EdgeInsets edgeInsets)
@@ -362,15 +367,14 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     return;
   }
 
-  const auto borderMetrics =
-      _props->resolveBorderMetrics(_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft);
+  auto const borderMetrics = _props->resolveBorderMetrics(_layoutMetrics);
 
   // Stage 1. Shadow Path
-  BOOL layerHasShadow = layer.shadowOpacity > 0 && CGColorGetAlpha(layer.shadowColor) > 0;
+  BOOL const layerHasShadow = layer.shadowOpacity > 0 && CGColorGetAlpha(layer.shadowColor) > 0;
   if (layerHasShadow) {
     if (CGColorGetAlpha(_backgroundColor.CGColor) > 0.999) {
       // If view has a solid background color, calculate shadow path from border.
-      const RCTCornerInsets cornerInsets =
+      RCTCornerInsets const cornerInsets =
           RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
       CGPathRef shadowPath = RCTPathCreateWithRoundedRect(self.bounds, cornerInsets, nil);
       layer.shadowPath = shadowPath;
@@ -384,7 +388,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
   }
 
   // Stage 2. Border Rendering
-  const bool useCoreAnimationBorderRendering =
+  bool const useCoreAnimationBorderRendering =
       borderMetrics.borderColors.isUniform() && borderMetrics.borderWidths.isUniform() &&
       borderMetrics.borderStyles.isUniform() && borderMetrics.borderRadii.isUniform() &&
       borderMetrics.borderStyles.left == BorderStyle::Solid &&
@@ -407,8 +411,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     CGColorRelease(borderColor);
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
     layer.backgroundColor = _backgroundColor.CGColor;
-    _contentView.layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
-    _contentView.layer.masksToBounds = YES;
   } else {
     if (!_borderLayer) {
       _borderLayer = [[CALayer alloc] init];
@@ -422,8 +424,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.borderWidth = 0;
     layer.borderColor = nil;
     layer.cornerRadius = 0;
-    _contentView.layer.cornerRadius = 0;
-    _contentView.layer.masksToBounds = NO;
 
     UIImage *image = RCTGetBorderImage(
         RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),
@@ -446,7 +446,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       _borderLayer.contents = (id)image.CGImage;
       _borderLayer.contentsScale = image.scale;
 
-      const BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
+      BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
       if (isResizable) {
         _borderLayer.contentsCenter = contentsCenter;
       } else {
@@ -459,7 +459,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     CGFloat cornerRadius = 0;
     if (self.clipsToBounds) {
       if (borderMetrics.borderRadii.isUniform()) {
-        // In this case we can simply use `cornerRadius` exclusivly.
+        // In this case we can simply use `cornerRadius` exclusively.
         cornerRadius = borderMetrics.borderRadii.topLeft;
       } else {
         // In this case we have to generate masking layer manually.
@@ -518,14 +518,14 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
-  const auto &accessibilityActions = _props->accessibilityActions;
+  auto const &accessibilityActions = _props->accessibilityActions;
 
   if (accessibilityActions.size() == 0) {
     return nil;
   }
 
   NSMutableArray<UIAccessibilityCustomAction *> *customActions = [NSMutableArray array];
-  for (const auto &accessibilityAction : accessibilityActions) {
+  for (auto const &accessibilityAction : accessibilityActions) {
     [customActions
         addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction)
                                                              target:self
@@ -562,6 +562,11 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point
 {
   return _eventEmitter;
+}
+
+- (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN
+{
+  return RCTNSStringFromString([[self class] componentDescriptorProvider].name);
 }
 
 @end

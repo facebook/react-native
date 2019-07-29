@@ -21,13 +21,15 @@ using SharedLocalData = std::shared_ptr<const LocalData>;
 /*
  * Abstract class for any kind of concrete pieces of local data specific for
  * some kinds of `ShadowNode`s.
- * LocalData might be used to communicate some infomation between `ShadowNode`s
+ * LocalData might be used to communicate some information between `ShadowNode`s
  * and native component views.
  * All `LocalData` objects *must* be immutable (sealed) when they became
  * a part of the shadow tree.
  */
 class LocalData : public Sealable, public DebugStringConvertible {
  public:
+  using Shared = std::shared_ptr<LocalData const>;
+
   virtual ~LocalData() = default;
 
   virtual folly::dynamic getDynamic() const {

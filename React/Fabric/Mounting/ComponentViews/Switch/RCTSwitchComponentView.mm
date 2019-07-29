@@ -7,9 +7,9 @@
 
 #import "RCTSwitchComponentView.h"
 
+#import <react/components/rncore/ComponentDescriptors.h>
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
-#import <react/components/rncore/ShadowNodes.h>
 
 using namespace facebook::react;
 
@@ -38,17 +38,15 @@ using namespace facebook::react;
 
 #pragma mark - RCTComponentViewProtocol
 
-+ (ComponentHandle)componentHandle
++ (ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return SwitchShadowNode::Handle();
+  return concreteComponentDescriptorProvider<SwitchComponentDescriptor>();
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &oldSwitchProps = *std::static_pointer_cast<const SwitchProps>(oldProps ?: _props);
+  const auto &oldSwitchProps = *std::static_pointer_cast<const SwitchProps>(_props);
   const auto &newSwitchProps = *std::static_pointer_cast<const SwitchProps>(props);
-
-  [super updateProps:props oldProps:oldProps];
 
   // `value`
   if (oldSwitchProps.value != newSwitchProps.value) {
@@ -75,6 +73,8 @@ using namespace facebook::react;
   if (oldSwitchProps.thumbTintColor != newSwitchProps.thumbTintColor) {
     _switchView.thumbTintColor = [UIColor colorWithCGColor:newSwitchProps.thumbTintColor.get()];
   }
+
+  [super updateProps:props oldProps:oldProps];
 }
 
 - (void)onChange:(UISwitch *)sender

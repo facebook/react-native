@@ -9,12 +9,12 @@
  */
 'use strict';
 
-const NativeAnimatedHelper = require('NativeAnimatedHelper');
+const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
 import type AnimatedValue from '../nodes/AnimatedValue';
 
 export type EndResult = {finished: boolean};
-export type EndCallback = (result: EndResult) => void;
+export type EndCallback = (result: EndResult) => void | Promise<void>;
 
 export type AnimationConfig = {
   isInteraction?: boolean,
@@ -56,7 +56,9 @@ class Animation {
     onEnd && onEnd(result);
   }
   __startNativeAnimation(animatedValue: AnimatedValue): void {
+    NativeAnimatedHelper.API.enableQueue();
     animatedValue.__makeNative();
+    NativeAnimatedHelper.API.disableQueue();
     this.__nativeId = NativeAnimatedHelper.generateNewAnimationId();
     NativeAnimatedHelper.API.startAnimatingNode(
       this.__nativeId,

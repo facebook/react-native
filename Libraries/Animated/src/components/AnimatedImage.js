@@ -10,8 +10,8 @@
 
 'use strict';
 
-const Image = require('Image');
+const Image = require('../../../Image/Image');
 
-const createAnimatedComponent = require('createAnimatedComponent');
+const createAnimatedComponent = require('../createAnimatedComponent');
 
 module.exports = createAnimatedComponent(Image);

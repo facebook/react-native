@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -134,9 +134,7 @@ public:
         payload_.repr != ZERO_BITS_PERCENT && std::isnan(payload_.value));
   }
 
-  bool isAuto() const noexcept {
-    return payload_.repr == AUTO_BITS;
-  }
+  bool isAuto() const noexcept { return payload_.repr == AUTO_BITS; }
 
 private:
   union Payload {
@@ -160,9 +158,7 @@ private:
 
   Payload payload_;
 
-  VISIBLE_FOR_TESTING uint32_t repr() {
-    return payload_.repr;
-  }
+  VISIBLE_FOR_TESTING uint32_t repr() { return payload_.repr; }
 };
 
 template <>

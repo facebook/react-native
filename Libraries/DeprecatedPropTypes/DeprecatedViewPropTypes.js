@@ -10,18 +10,16 @@
 
 'use strict';
 
-const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
-const PlatformViewPropTypes = require('PlatformViewPropTypes');
+const DeprecatedEdgeInsetsPropType = require('./DeprecatedEdgeInsetsPropType');
+const PlatformViewPropTypes = require('../Components/View/PlatformViewPropTypes');
 const PropTypes = require('prop-types');
-const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
-const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
+const DeprecatedStyleSheetPropType = require('./DeprecatedStyleSheetPropType');
+const DeprecatedViewStylePropTypes = require('./DeprecatedViewStylePropTypes');
 
 const {
-  DeprecatedAccessibilityComponentTypes,
-  DeprecatedAccessibilityTraits,
   DeprecatedAccessibilityRoles,
   DeprecatedAccessibilityStates,
-} = require('DeprecatedViewAccessibility');
+} = require('./DeprecatedViewAccessibility');
 
 const stylePropType = DeprecatedStyleSheetPropType(
   DeprecatedViewStylePropTypes,
@@ -70,18 +68,6 @@ module.exports = {
   accessibilityIgnoresInvertColors: PropTypes.bool,
 
   /**
-   * Indicates to accessibility services to treat UI component like a
-   * native one. Works for Android only.
-   *
-   * @platform android
-   *
-   * See http://facebook.github.io/react-native/docs/view.html#accessibilitycomponenttype
-   */
-  accessibilityComponentType: PropTypes.oneOf(
-    DeprecatedAccessibilityComponentTypes,
-  ),
-
-  /**
    * Indicates to accessibility services to treat UI component like a specific role.
    */
   accessibilityRole: PropTypes.oneOf(DeprecatedAccessibilityRoles),
@@ -92,6 +78,7 @@ module.exports = {
   accessibilityStates: PropTypes.arrayOf(
     PropTypes.oneOf(DeprecatedAccessibilityStates),
   ),
+  accessibilityState: PropTypes.object,
   /**
    * Indicates to accessibility services whether the user should be notified
    * when this view changes. Works for Android API >= 19 only.
@@ -116,21 +103,6 @@ module.exports = {
     'yes',
     'no',
     'no-hide-descendants',
-  ]),
-
-  /**
-   * Provides additional traits to screen reader. By default no traits are
-   * provided unless specified otherwise in element.
-   *
-   * You can provide one trait or an array of many traits.
-   *
-   * @platform ios
-   *
-   * See http://facebook.github.io/react-native/docs/view.html#accessibilitytraits
-   */
-  accessibilityTraits: PropTypes.oneOfType([
-    PropTypes.oneOf(DeprecatedAccessibilityTraits),
-    PropTypes.arrayOf(PropTypes.oneOf(DeprecatedAccessibilityTraits)),
   ]),
 
   /**

@@ -9,31 +9,31 @@
  */
 'use strict';
 
-const DeprecatedColorPropType = require('DeprecatedColorPropType');
-const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const DocumentSelectionState = require('DocumentSelectionState');
-const NativeMethodsMixin = require('NativeMethodsMixin');
-const Platform = require('Platform');
+const DeprecatedColorPropType = require('../../DeprecatedPropTypes/DeprecatedColorPropType');
+const DeprecatedViewPropTypes = require('../../DeprecatedPropTypes/DeprecatedViewPropTypes');
+const DocumentSelectionState = require('../../vendor/document/selection/DocumentSelectionState');
+const NativeMethodsMixin = require('../../Renderer/shims/NativeMethodsMixin');
+const Platform = require('../../Utilities/Platform');
 const PropTypes = require('prop-types');
-const React = require('React');
-const ReactNative = require('ReactNative');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const TextAncestor = require('TextAncestor');
-const TextInputState = require('TextInputState');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-const UIManager = require('UIManager');
+const React = require('react');
+const ReactNative = require('../../Renderer/shims/ReactNative');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const Text = require('../../Text/Text');
+const TextAncestor = require('../../Text/TextAncestor');
+const TextInputState = require('./TextInputState');
+const TouchableWithoutFeedback = require('../Touchable/TouchableWithoutFeedback');
+const UIManager = require('../../ReactNative/UIManager');
 
 const createReactClass = require('create-react-class');
 const invariant = require('invariant');
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 const warning = require('fbjs/lib/warning');
 
-import type {TextStyleProp, ViewStyleProp} from 'StyleSheet';
-import type {ColorValue} from 'StyleSheetTypes';
-import type {ViewProps} from 'ViewPropTypes';
-import type {SyntheticEvent, ScrollEvent} from 'CoreEventTypes';
-import type {PressEvent} from 'CoreEventTypes';
+import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {SyntheticEvent, ScrollEvent} from '../../Types/CoreEventTypes';
+import type {PressEvent} from '../../Types/CoreEventTypes';
 
 let AndroidTextInput;
 let RCTMultilineTextInputView;
@@ -178,6 +178,38 @@ export type ReturnKeyType =
 
 export type AutoCapitalize = 'none' | 'sentences' | 'words' | 'characters';
 
+export type TextContentType =
+  | 'none'
+  | 'URL'
+  | 'addressCity'
+  | 'addressCityAndState'
+  | 'addressState'
+  | 'countryName'
+  | 'creditCardNumber'
+  | 'emailAddress'
+  | 'familyName'
+  | 'fullStreetAddress'
+  | 'givenName'
+  | 'jobTitle'
+  | 'location'
+  | 'middleName'
+  | 'name'
+  | 'namePrefix'
+  | 'nameSuffix'
+  | 'nickname'
+  | 'organizationName'
+  | 'postalCode'
+  | 'streetAddressLine1'
+  | 'streetAddressLine2'
+  | 'sublocality'
+  | 'telephoneNumber'
+  | 'username'
+  | 'password'
+  | 'newPassword'
+  | 'oneTimeCode';
+
+type PasswordRules = string;
+
 type IOSProps = $ReadOnly<{|
   spellCheck?: ?boolean,
   keyboardAppearance?: ?('default' | 'light' | 'dark'),
@@ -189,36 +221,8 @@ type IOSProps = $ReadOnly<{|
     | ?DataDetectorTypesType
     | $ReadOnlyArray<DataDetectorTypesType>,
   inputAccessoryViewID?: ?string,
-  textContentType?: ?(
-    | 'none'
-    | 'URL'
-    | 'addressCity'
-    | 'addressCityAndState'
-    | 'addressState'
-    | 'countryName'
-    | 'creditCardNumber'
-    | 'emailAddress'
-    | 'familyName'
-    | 'fullStreetAddress'
-    | 'givenName'
-    | 'jobTitle'
-    | 'location'
-    | 'middleName'
-    | 'name'
-    | 'namePrefix'
-    | 'nameSuffix'
-    | 'nickname'
-    | 'organizationName'
-    | 'postalCode'
-    | 'streetAddressLine1'
-    | 'streetAddressLine2'
-    | 'sublocality'
-    | 'telephoneNumber'
-    | 'username'
-    | 'password'
-    | 'newPassword'
-    | 'oneTimeCode'
-  ),
+  textContentType?: ?TextContentType,
+  PasswordRules?: ?PasswordRules,
   scrollEnabled?: ?boolean,
 |}>;
 
@@ -252,6 +256,7 @@ type AndroidProps = $ReadOnly<{|
     | 'yes'
     | 'yesExcludeDescendants'
   ),
+  showSoftInputOnFocus?: ?boolean,
 |}>;
 
 type Props = $ReadOnly<{|
@@ -925,6 +930,12 @@ const TextInput = createReactClass({
       'newPassword',
       'oneTimeCode',
     ]),
+    /**
+     * When `false`, it will prevent the soft keyboard from showing when the field is focused.
+     * Defaults to `true`.
+     * @platform android
+     */
+    showSoftInputOnFocus: PropTypes.bool,
   },
   getDefaultProps() {
     return {
@@ -1103,6 +1114,7 @@ const TextInput = createReactClass({
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
         accessibilityStates={props.accessibilityStates}
+        accessibilityState={props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={props.testID}>
         {textContainer}
@@ -1155,6 +1167,7 @@ const TextInput = createReactClass({
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
         accessibilityStates={props.accessibilityStates}
+        accessibilityState={props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={props.testID}>
         {textContainer}
@@ -1212,6 +1225,7 @@ const TextInput = createReactClass({
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityRole={this.props.accessibilityRole}
         accessibilityStates={this.props.accessibilityStates}
+        accessibilityState={this.props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={this.props.testID}>
         {textContainer}

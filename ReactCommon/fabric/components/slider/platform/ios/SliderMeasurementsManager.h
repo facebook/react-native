@@ -9,7 +9,7 @@
 
 #include <react/core/ConcreteComponentDescriptor.h>
 #include <react/core/LayoutConstraints.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -20,7 +20,7 @@ namespace react {
  */
 class SliderMeasurementsManager {
  public:
-  SliderMeasurementsManager(const SharedContextContainer &contextContainer) {}
+  SliderMeasurementsManager(ContextContainer::Shared const &contextContainer) {}
 
   static inline bool shouldMeasureSlider() {
     return false;

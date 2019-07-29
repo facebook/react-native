@@ -10,7 +10,6 @@
 #import "RCTBridge.h"
 #import "RCTModalHostView.h"
 #import "RCTModalHostViewController.h"
-#import "RCTModalManager.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
 
@@ -49,7 +48,7 @@ RCT_ENUM_CONVERTER(UIModalPresentationStyle, (@{
 
 @implementation RCTModalHostViewManager
 {
-  NSHashTable *_hostViews;
+  NSPointerArray *_hostViews;
 }
 
 RCT_EXPORT_MODULE()
@@ -59,9 +58,9 @@ RCT_EXPORT_MODULE()
   RCTModalHostView *view = [[RCTModalHostView alloc] initWithBridge:self.bridge];
   view.delegate = self;
   if (!_hostViews) {
-    _hostViews = [NSHashTable weakObjectsHashTable];
+    _hostViews = [NSPointerArray weakObjectsPointerArray];
   }
-  [_hostViews addObject:view];
+  [_hostViews addPointer:(__bridge void *)view];
   return view;
 }
 
@@ -81,15 +80,10 @@ RCT_EXPORT_MODULE()
 
 - (void)dismissModalHostView:(RCTModalHostView *)modalHostView withViewController:(RCTModalHostViewController *)viewController animated:(BOOL)animated
 {
-  dispatch_block_t completionBlock = ^{
-    if (modalHostView.identifier) {
-      [[self.bridge moduleForClass:[RCTModalManager class]] modalDismissed:modalHostView.identifier];
-    }
-  };
   if (_dismissalBlock) {
-    _dismissalBlock([modalHostView reactViewController], viewController, animated, completionBlock);
+    _dismissalBlock([modalHostView reactViewController], viewController, animated, nil);
   } else {
-    [viewController dismissViewControllerAnimated:animated completion:completionBlock];
+    [viewController.presentingViewController dismissViewControllerAnimated:animated completion:nil];
   }
 }
 
@@ -104,7 +98,7 @@ RCT_EXPORT_MODULE()
   for (RCTModalHostView *hostView in _hostViews) {
     [hostView invalidate];
   }
-  [_hostViews removeAllObjects];
+  _hostViews = nil;
 }
 
 RCT_EXPORT_VIEW_PROPERTY(animationType, NSString)

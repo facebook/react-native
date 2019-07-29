@@ -18,7 +18,9 @@
 
 static NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
 static NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
-static NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
+// This option is no longer exposed in the dev menu UI.
+// It was renamed in D15958697 so it doesn't get stuck with no way to turn it off:
+static NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled_LEGACY";
 static NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
 static NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
 static NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
@@ -129,6 +131,7 @@ RCT_EXPORT_MODULE()
   // default behavior is to use NSUserDefaults
   NSDictionary *defaultValues = @{
     kRCTDevSettingShakeToShowDevMenu: @YES,
+    kRCTDevSettingHotLoadingEnabled: @YES,
   };
   RCTDevSettingsUserDefaultsDataSource *dataSource = [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
   return [self initWithDataSource:dataSource];
@@ -171,7 +174,7 @@ RCT_EXPORT_MODULE()
    forMethod:@"reload"];
 #endif
 
-#if RCT_ENABLE_INSPECTOR
+#if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC
   // we need this dispatch back to the main thread because even though this
   // is executed on the main thread, at this point the bridge is not yet
   // finished with its initialisation. But it does finish by the time it
@@ -327,7 +330,22 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 {
   if (self.isHotLoadingEnabled != enabled) {
     [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingHotLoadingEnabled];
-    [_bridge reload];
+    if (_isJSLoaded) {
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      if (enabled) {
+        [_bridge enqueueJSCall:@"HMRClient"
+                        method:@"enable"
+                        args:@[]
+                        completion:NULL];
+      } else {
+        [_bridge enqueueJSCall:@"HMRClient"
+                        method:@"disable"
+                        args:@[]
+                        completion:NULL];
+      }
+  #pragma clang diagnostic pop
+    }
   }
 }
 

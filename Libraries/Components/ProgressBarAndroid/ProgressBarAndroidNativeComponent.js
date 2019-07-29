@@ -10,24 +10,23 @@
 
 'use strict';
 
-const requireNativeComponent = require('requireNativeComponent');
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {Float, WithDefault} from '../../Types/CodegenTypes';
 
-import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'ReactNative';
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
+
+  //Props
   styleAttr?: string,
   typeAttr?: string,
   indeterminate: boolean,
-  progress?: number,
-  animating?: ?boolean,
-  color?: ?string,
-  testID?: ?string,
+  progress?: WithDefault<Float, 0>,
+  animating?: WithDefault<boolean, true>,
+  color?: ?ColorValue,
+  testID?: WithDefault<string, ''>,
 |}>;
 
-type ProgressBarAndroidType = Class<NativeComponent<NativeProps>>;
-
-module.exports = ((requireNativeComponent(
-  'AndroidProgressBar',
-): any): ProgressBarAndroidType);
+export default codegenNativeComponent<NativeProps>('AndroidProgressBar');

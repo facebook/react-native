@@ -1,13 +1,13 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react;
 
 import android.app.Application;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
@@ -17,7 +17,6 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Simple class that holds an instance of {@link ReactInstanceManager}. This can be used in your
@@ -32,9 +31,7 @@ public abstract class ReactNativeHost {
     mApplication = application;
   }
 
-  /**
-   * Get the current {@link ReactInstanceManager} instance, or create one.
-   */
+  /** Get the current {@link ReactInstanceManager} instance, or create one. */
   public ReactInstanceManager getReactInstanceManager() {
     if (mReactInstanceManager == null) {
       ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_START);
@@ -65,15 +62,16 @@ public abstract class ReactNativeHost {
 
   protected ReactInstanceManager createReactInstanceManager() {
     ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_START);
-    ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
-      .setApplication(mApplication)
-      .setJSMainModulePath(getJSMainModuleName())
-      .setUseDeveloperSupport(getUseDeveloperSupport())
-      .setRedBoxHandler(getRedBoxHandler())
-      .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
-      .setUIImplementationProvider(getUIImplementationProvider())
-      .setJSIModulesPackage(getJSIModulePackage())
-      .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
+    ReactInstanceManagerBuilder builder =
+        ReactInstanceManager.builder()
+            .setApplication(mApplication)
+            .setJSMainModulePath(getJSMainModuleName())
+            .setUseDeveloperSupport(getUseDeveloperSupport())
+            .setRedBoxHandler(getRedBoxHandler())
+            .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
+            .setUIImplementationProvider(getUIImplementationProvider())
+            .setJSIModulesPackage(getJSIModulePackage())
+            .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
 
     for (ReactPackage reactPackage : getPackages()) {
       builder.addPackage(reactPackage);
@@ -90,17 +88,12 @@ public abstract class ReactNativeHost {
     return reactInstanceManager;
   }
 
-  /**
-   * Get the {@link RedBoxHandler} to send RedBox-related callbacks to.
-   */
+  /** Get the {@link RedBoxHandler} to send RedBox-related callbacks to. */
   protected @Nullable RedBoxHandler getRedBoxHandler() {
     return null;
   }
 
-  /**
-   * Get the {@link JavaScriptExecutorFactory}.  Override this to use a custom
-   * Executor.
-   */
+  /** Get the {@link JavaScriptExecutorFactory}. Override this to use a custom Executor. */
   protected @Nullable JavaScriptExecutorFactory getJavaScriptExecutorFactory() {
     return null;
   }
@@ -113,22 +106,20 @@ public abstract class ReactNativeHost {
    * Get the {@link UIImplementationProvider} to use. Override this method if you want to use a
    * custom UI implementation.
    *
-   * Note: this is very advanced functionality, in 99% of cases you don't need to override this.
+   * <p>Note: this is very advanced functionality, in 99% of cases you don't need to override this.
    */
   protected UIImplementationProvider getUIImplementationProvider() {
     return new UIImplementationProvider();
   }
 
-  protected @Nullable
-  JSIModulePackage getJSIModulePackage() {
+  protected @Nullable JSIModulePackage getJSIModulePackage() {
     return null;
   }
 
   /**
-   * Returns the name of the main module. Determines the URL used to fetch the JS bundle
-   * from the packager server. It is only used when dev support is enabled.
-   * This is the first file to be executed once the {@link ReactInstanceManager} is created.
-   * e.g. "index.android"
+   * Returns the name of the main module. Determines the URL used to fetch the JS bundle from the
+   * packager server. It is only used when dev support is enabled. This is the first file to be
+   * executed once the {@link ReactInstanceManager} is created. e.g. "index.android"
    */
   protected String getJSMainModuleName() {
     return "index.android";
@@ -136,9 +127,8 @@ public abstract class ReactNativeHost {
 
   /**
    * Returns a custom path of the bundle file. This is used in cases the bundle should be loaded
-   * from a custom path. By default it is loaded from Android assets, from a path specified
-   * by {@link getBundleAssetName}.
-   * e.g. "file://sdcard/myapp_cache/index.android.bundle"
+   * from a custom path. By default it is loaded from Android assets, from a path specified by
+   * {@link getBundleAssetName}. e.g. "file://sdcard/myapp_cache/index.android.bundle"
    */
   protected @Nullable String getJSBundleFile() {
     return null;
@@ -146,24 +136,20 @@ public abstract class ReactNativeHost {
 
   /**
    * Returns the name of the bundle in assets. If this is null, and no file path is specified for
-   * the bundle, the app will only work with {@code getUseDeveloperSupport} enabled and will
-   * always try to load the JS bundle from the packager server.
-   * e.g. "index.android.bundle"
+   * the bundle, the app will only work with {@code getUseDeveloperSupport} enabled and will always
+   * try to load the JS bundle from the packager server. e.g. "index.android.bundle"
    */
   protected @Nullable String getBundleAssetName() {
     return "index.android.bundle";
   }
 
-  /**
-   * Returns whether dev mode should be enabled. This enables e.g. the dev menu.
-   */
+  /** Returns whether dev mode should be enabled. This enables e.g. the dev menu. */
   public abstract boolean getUseDeveloperSupport();
 
   /**
-   * Returns a list of {@link ReactPackage} used by the app.
-   * You'll most likely want to return at least the {@code MainReactPackage}.
-   * If your app uses additional views or modules besides the default ones,
-   * you'll want to include more packages here.
+   * Returns a list of {@link ReactPackage} used by the app. You'll most likely want to return at
+   * least the {@code MainReactPackage}. If your app uses additional views or modules besides the
+   * default ones, you'll want to include more packages here.
    */
   protected abstract List<ReactPackage> getPackages();
 }

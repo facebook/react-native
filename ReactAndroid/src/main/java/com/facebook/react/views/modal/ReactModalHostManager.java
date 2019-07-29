@@ -1,16 +1,18 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.modal;
 
 import android.content.DialogInterface;
+import android.graphics.Point;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
@@ -18,9 +20,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.Map;
 
-/**
- * View manager for {@link ReactModalHostView} components.
- */
+/** View manager for {@link ReactModalHostView} components. */
 @ReactModule(name = ReactModalHostManager.REACT_CLASS)
 public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> {
 
@@ -68,38 +68,44 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
   }
 
   @Override
-  protected void addEventEmitters(
-      ThemedReactContext reactContext,
-      final ReactModalHostView view) {
+  protected void addEventEmitters(ThemedReactContext reactContext, final ReactModalHostView view) {
     final EventDispatcher dispatcher =
-      reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+        reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     view.setOnRequestCloseListener(
-      new ReactModalHostView.OnRequestCloseListener() {
-        @Override
-        public void onRequestClose(DialogInterface dialog) {
-          dispatcher.dispatchEvent(new RequestCloseEvent(view.getId()));
-        }
-      });
+        new ReactModalHostView.OnRequestCloseListener() {
+          @Override
+          public void onRequestClose(DialogInterface dialog) {
+            dispatcher.dispatchEvent(new RequestCloseEvent(view.getId()));
+          }
+        });
     view.setOnShowListener(
-      new DialogInterface.OnShowListener() {
-        @Override
-        public void onShow(DialogInterface dialog) {
-          dispatcher.dispatchEvent(new ShowEvent(view.getId()));
-        }
-      });
+        new DialogInterface.OnShowListener() {
+          @Override
+          public void onShow(DialogInterface dialog) {
+            dispatcher.dispatchEvent(new ShowEvent(view.getId()));
+          }
+        });
   }
 
   @Override
   public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.<String, Object>builder()
-      .put(RequestCloseEvent.EVENT_NAME, MapBuilder.of("registrationName", "onRequestClose"))
-      .put(ShowEvent.EVENT_NAME, MapBuilder.of("registrationName", "onShow"))
-      .build();
+        .put(RequestCloseEvent.EVENT_NAME, MapBuilder.of("registrationName", "onRequestClose"))
+        .put(ShowEvent.EVENT_NAME, MapBuilder.of("registrationName", "onShow"))
+        .build();
   }
 
   @Override
   protected void onAfterUpdateTransaction(ReactModalHostView view) {
     super.onAfterUpdateTransaction(view);
     view.showOrUpdate();
+  }
+
+  @Override
+  public Object updateState(
+      ReactModalHostView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
+    Point modalSize = ModalHostHelper.getModalHostSize(view.getContext());
+    view.updateState(stateWrapper, modalSize.x, modalSize.y);
+    return null;
   }
 }

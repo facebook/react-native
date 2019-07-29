@@ -1,25 +1,21 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.devsupport;
 
+import android.util.JsonReader;
+import android.util.Pair;
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.NativeDeltaClient;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedHashMap;
-import javax.annotation.Nullable;
-
-import android.util.JsonReader;
-import android.util.JsonToken;
-import android.util.Pair;
-import com.facebook.react.bridge.NativeDeltaClient;
+import java.util.TreeMap;
 import okhttp3.Headers;
-import okio.Buffer;
 import okio.BufferedSource;
 
 public abstract class BundleDeltaClient {
@@ -48,13 +44,12 @@ public abstract class BundleDeltaClient {
     return null;
   }
 
-  abstract public boolean canHandle(ClientType type);
+  public abstract boolean canHandle(ClientType type);
 
-  abstract protected Pair<Boolean, NativeDeltaClient> processDelta(
-    BufferedSource body,
-    File outputFile) throws IOException;
+  protected abstract Pair<Boolean, NativeDeltaClient> processDelta(
+      BufferedSource body, File outputFile) throws IOException;
 
-  final public synchronized String extendUrlForDelta(String bundleURL) {
+  public final synchronized String extendUrlForDelta(String bundleURL) {
     return mRevisionId != null ? bundleURL + "&revisionId=" + mRevisionId : bundleURL;
   }
 
@@ -63,9 +58,7 @@ public abstract class BundleDeltaClient {
   }
 
   public synchronized Pair<Boolean, NativeDeltaClient> processDelta(
-    Headers headers,
-    BufferedSource body,
-    File outputFile) throws IOException {
+      Headers headers, BufferedSource body, File outputFile) throws IOException {
 
     mRevisionId = headers.get(METRO_DELTA_ID_HEADER);
     return processDelta(body, outputFile);
@@ -75,7 +68,7 @@ public abstract class BundleDeltaClient {
 
     byte[] mPreCode;
     byte[] mPostCode;
-    final LinkedHashMap<Number, byte[]> mModules = new LinkedHashMap<Number, byte[]>();
+    final TreeMap<Number, byte[]> mModules = new TreeMap<Number, byte[]>();
 
     @Override
     public boolean canHandle(ClientType type) {
@@ -91,8 +84,7 @@ public abstract class BundleDeltaClient {
 
     @Override
     public synchronized Pair<Boolean, NativeDeltaClient> processDelta(
-      BufferedSource body,
-      File outputFile) throws IOException {
+        BufferedSource body, File outputFile) throws IOException {
       JsonReader jsonReader = new JsonReader(new InputStreamReader(body.inputStream()));
       jsonReader.beginObject();
       int numChangedModules = 0;
@@ -146,8 +138,8 @@ public abstract class BundleDeltaClient {
       return Pair.create(Boolean.TRUE, null);
     }
 
-    private static int setModules(JsonReader jsonReader, LinkedHashMap<Number, byte[]> map)
-      throws IOException {
+    private static int setModules(JsonReader jsonReader, TreeMap<Number, byte[]> map)
+        throws IOException {
       jsonReader.beginArray();
 
       int numModules = 0;
@@ -167,8 +159,8 @@ public abstract class BundleDeltaClient {
       return numModules;
     }
 
-    private static int removeModules(JsonReader jsonReader, LinkedHashMap<Number, byte[]> map)
-      throws IOException {
+    private static int removeModules(JsonReader jsonReader, TreeMap<Number, byte[]> map)
+        throws IOException {
       jsonReader.beginArray();
 
       int numModules = 0;
@@ -195,9 +187,8 @@ public abstract class BundleDeltaClient {
     }
 
     @Override
-    protected Pair<Boolean, NativeDeltaClient> processDelta(
-        BufferedSource body,
-        File outputFile) throws IOException {
+    protected Pair<Boolean, NativeDeltaClient> processDelta(BufferedSource body, File outputFile)
+        throws IOException {
       nativeClient.processDelta(body);
       return Pair.create(Boolean.FALSE, nativeClient);
     }

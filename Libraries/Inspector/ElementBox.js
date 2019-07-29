@@ -10,14 +10,14 @@
 
 'use strict';
 
-const BorderBox = require('BorderBox');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
-const Dimensions = require('Dimensions');
+const BorderBox = require('./BorderBox');
+const React = require('react');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const View = require('../Components/View/View');
+const Dimensions = require('../Utilities/Dimensions');
 
-const flattenStyle = require('flattenStyle');
-const resolveBoxStyle = require('resolveBoxStyle');
+const flattenStyle = require('../StyleSheet/flattenStyle');
+const resolveBoxStyle = require('./resolveBoxStyle');
 
 class ElementBox extends React.Component<$FlowFixMeProps> {
   render() {

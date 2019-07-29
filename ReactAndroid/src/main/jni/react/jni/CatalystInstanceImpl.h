@@ -7,6 +7,8 @@
 
 #include <fb/fbjni.h>
 #include <folly/Memory.h>
+#include <ReactCommon/JSCallInvokerHolder.h>
+#include <ReactCommon/BridgeJSCallInvoker.h>
 
 #include "CxxModuleWrapper.h"
 #include "JavaModuleWrapper.h"
@@ -73,6 +75,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   void jniLoadScriptFromDeltaBundle(const std::string& sourceURL, jni::alias_ref<NativeDeltaClient::jhybridobject> deltaClient, bool loadSynchronously);
   void jniCallJSFunction(std::string module, std::string method, NativeArray* arguments);
   void jniCallJSCallback(jint callbackId, NativeArray* arguments);
+  jni::alias_ref<JSCallInvokerHolder::javaobject> getJSCallInvokerHolder();
   void setGlobalVariable(std::string propName,
                          std::string&& jsonValue);
   jlong getJavaScriptContext();
@@ -83,6 +86,8 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   std::shared_ptr<Instance> instance_;
   std::shared_ptr<ModuleRegistry> moduleRegistry_;
   std::shared_ptr<JMessageQueueThread> moduleMessageQueue_;
+  jni::global_ref<JSCallInvokerHolder::javaobject> javaInstanceHolder_;
+  std::shared_ptr<BridgeJSCallInvoker> jsCallInvoker_;
 };
 
 }}

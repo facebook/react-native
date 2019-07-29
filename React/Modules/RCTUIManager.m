@@ -177,10 +177,13 @@ RCT_EXPORT_MODULE()
     }
   }
 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(didReceiveNewContentSizeMultiplier)
-                                               name:RCTAccessibilityManagerDidUpdateMultiplierNotification
-                                             object:_bridge.accessibilityManager];
+  // This dispatch_async avoids a deadlock while configuring native modules
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didReceiveNewContentSizeMultiplier)
+                                                 name:RCTAccessibilityManagerDidUpdateMultiplierNotification
+                                               object:self->_bridge.accessibilityManager];
+  });
 #if !TARGET_OS_TV
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(namedOrientationDidChange)
@@ -276,7 +279,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     @"Attempt to register rootTag (%@) which is not actually root tag.", rootTag);
 
   RCTAssert(![_rootViewTags containsObject:rootTag],
-    @"Attempt to register rootTag (%@) which was already registred.", rootTag);
+    @"Attempt to register rootTag (%@) which was already registered.", rootTag);
 
   [_rootViewTags addObject:rootTag];
 
@@ -667,6 +670,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
  */
 RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containerID)
 {
+  RCTLogWarn(@"RCTUIManager.removeSubviewsFromContainerWithID method is deprecated and it will not be implemented in newer versions of RN (Fabric) - T47686450");
   id<RCTComponent> container = _shadowViewRegistry[containerID];
   RCTAssert(container != nil, @"container view (for ID %@) not found", containerID);
 
@@ -805,6 +809,7 @@ RCT_EXPORT_METHOD(removeRootView:(nonnull NSNumber *)rootReactTag)
 RCT_EXPORT_METHOD(replaceExistingNonRootView:(nonnull NSNumber *)reactTag
                   withView:(nonnull NSNumber *)newReactTag)
 {
+  RCTLogWarn(@"RCTUIManager.replaceExistingNonRootView method is deprecated and it will not be implemented in newer versions of RN (Fabric) - T47686450");
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   RCTAssert(shadowView != nil, @"shadowView (for ID %@) not found", reactTag);
 
@@ -1057,14 +1062,45 @@ RCT_EXPORT_METHOD(findSubviewIn:(nonnull NSNumber *)reactTag atPoint:(CGPoint)po
 }
 
 RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
-                  commandID:(NSInteger)commandID
+                  commandID:(id /*(NSString or NSNumber) */)commandID
                   commandArgs:(NSArray<id> *)commandArgs)
 {
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   RCTComponentData *componentData = _componentDataByName[shadowView.viewName];
+
+  // Achtung! Achtung!
+  // This is a remarkably hacky and ugly workaround.
+  // We need this only temporary for some testing. We need this hack until Fabric fully implements command-execution pipeline.
+  // This does not affect non-Fabric apps.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+  if (!componentData) {
+    __block UIView *view;
+    RCTUnsafeExecuteOnMainQueueSync(^{
+      view = self->_viewRegistry[reactTag];
+    });
+    if ([view respondsToSelector:@selector(componentViewName_DO_NOT_USE_THIS_IS_BROKEN)]) {
+      NSString *name = [view performSelector:@selector(componentViewName_DO_NOT_USE_THIS_IS_BROKEN)];
+      componentData = _componentDataByName[[NSString stringWithFormat:@"RCT%@", name]];
+    }
+  }
+#pragma clang diagnostic pop
+
   Class managerClass = componentData.managerClass;
   RCTModuleData *moduleData = [_bridge moduleDataForName:RCTBridgeModuleNameForClass(managerClass)];
-  id<RCTBridgeMethod> method = moduleData.methods[commandID];
+
+  id<RCTBridgeMethod> method;
+  if ([commandID isKindOfClass:[NSNumber class]]) {
+    method = moduleData.methods[[commandID intValue]];
+  } else if([commandID isKindOfClass:[NSString class]]) {
+    method = moduleData.methodsByName[commandID];
+    if (method == nil) {
+      RCTLogError(@"No command found with name \"%@\"", commandID);
+    }
+  } else {
+    RCTLogError(@"dispatchViewManagerCommand must be called with a string or integer command");
+    return;
+  }
 
   NSArray *args = [@[reactTag] arrayByAddingObjectsFromArray:commandArgs];
   [method invokeWithBridge:_bridge module:componentData.manager arguments:args];
@@ -1167,7 +1203,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
   // so we have to maintain this collection properly.
   NSArray<NSString *> *previousProps;
   if ((previousProps = [_shadowViewsWithUpdatedProps objectForKey:shadowView])) {
-    // Merging already registred changed props and new ones.
+    // Merging already registered changed props and new ones.
     NSMutableSet *set = [NSMutableSet setWithArray:previousProps];
     [set addObjectsFromArray:props];
     props = [set allObjects];
@@ -1288,7 +1324,7 @@ RCT_EXPORT_METHOD(measureInWindow:(nonnull NSNumber *)reactTag
 }
 
 /**
- * Returs if the shadow view provided has the `ancestor` shadow view as
+ * Returns if the shadow view provided has the `ancestor` shadow view as
  * an actual ancestor.
  */
 RCT_EXPORT_METHOD(viewIsDescendantOf:(nonnull NSNumber *)reactTag
@@ -1362,6 +1398,7 @@ RCT_EXPORT_METHOD(measureLayoutRelativeToParent:(nonnull NSNumber *)reactTag
                   errorCallback:(__unused RCTResponseSenderBlock)errorCallback
                   callback:(RCTResponseSenderBlock)callback)
 {
+  RCTLogWarn(@"RCTUIManager.measureLayoutRelativeToParent method is deprecated and it will not be implemented in newer versions of RN (Fabric) - T47686450");
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   RCTMeasureLayout(shadowView, shadowView.reactSuperview, callback);
 }

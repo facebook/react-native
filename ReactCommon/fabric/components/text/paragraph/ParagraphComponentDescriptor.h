@@ -11,9 +11,10 @@
 #include "ParagraphShadowNode.h"
 
 #include <folly/container/EvictingCacheMap.h>
+#include <react/config/ReactNativeConfig.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 #include <react/textlayoutmanager/TextLayoutManager.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -26,7 +27,7 @@ class ParagraphComponentDescriptor final
  public:
   ParagraphComponentDescriptor(
       EventDispatcher::Shared eventDispatcher,
-      const SharedContextContainer &contextContainer)
+      ContextContainer::Shared const &contextContainer)
       : ConcreteComponentDescriptor<ParagraphShadowNode>(eventDispatcher) {
     // Every single `ParagraphShadowNode` will have a reference to
     // a shared `TextLayoutManager`.
@@ -34,24 +35,7 @@ class ParagraphComponentDescriptor final
     // Every single `ParagraphShadowNode` will have a reference to
     // a shared `EvictingCacheMap`, a simple LRU cache for Paragraph
     // measurements.
-#ifdef ANDROID
-    auto paramName = "react_fabric:enabled_paragraph_measure_cache_android";
-#else
-    auto paramName = "react_fabric:enabled_paragraph_measure_cache_ios";
-#endif
-    // TODO: T39927960 - get rid of this if statement
-    bool enableCache =
-        (contextContainer != nullptr
-             ? contextContainer
-                   ->getInstance<std::shared_ptr<const ReactNativeConfig>>(
-                       "ReactNativeConfig")
-                   ->getBool(paramName)
-             : false);
-    if (enableCache) {
-      measureCache_ = std::make_unique<ParagraphMeasurementCache>();
-    } else {
-      measureCache_ = nullptr;
-    }
+    measureCache_ = std::make_unique<ParagraphMeasurementCache>();
   }
 
  protected:
@@ -80,7 +64,7 @@ class ParagraphComponentDescriptor final
 
  private:
   SharedTextLayoutManager textLayoutManager_;
-  std::unique_ptr<const ParagraphMeasurementCache> measureCache_;
+  std::unique_ptr<ParagraphMeasurementCache const> measureCache_;
 };
 
 } // namespace react

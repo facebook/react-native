@@ -290,11 +290,75 @@
   return UIEdgeInsetsInsetRect(self.bounds, self.reactCompoundInsets);
 }
 
-#pragma mark - Accessiblity
+#pragma mark - Accessibility
 
 - (UIView *)reactAccessibilityElement
 {
   return self;
 }
 
+- (NSArray<NSDictionary *> *)accessibilityActions
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setAccessibilityActions:(NSArray<NSDictionary *> *)accessibilityActions
+{
+  objc_setAssociatedObject(self, @selector(accessibilityActions), accessibilityActions, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSString *)accessibilityRole
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setAccessibilityRole:(NSString *)accessibilityRole
+{
+  objc_setAssociatedObject(self, @selector(accessibilityRole), accessibilityRole, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSArray<NSString *> *)accessibilityStates
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setAccessibilityStates:(NSArray<NSString *> *)accessibilityStates
+{
+  objc_setAssociatedObject(self, @selector(accessibilityStates), accessibilityStates, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSDictionary<NSString *, id> *)accessibilityState
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setAccessibilityState:(NSDictionary<NSString *, id> *)accessibilityState
+{
+  objc_setAssociatedObject(self, @selector(accessibilityState), accessibilityState, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+#pragma mark - Debug
+
+- (void)react_addRecursiveDescriptionToString:(NSMutableString *)string atLevel:(NSUInteger)level
+{
+  for (NSUInteger i = 0; i < level; i++) {
+    [string appendString:@"   | "];
+  }
+
+  [string appendString:self.description];
+  [string appendString:@"\n"];
+
+  for (UIView *subview in self.subviews) {
+    [subview react_addRecursiveDescriptionToString:string atLevel:level + 1];
+  }
+}
+
+- (NSString *)react_recursiveDescription
+{
+  NSMutableString *description = [NSMutableString string];
+  [self react_addRecursiveDescriptionToString:description atLevel:0];
+  return description;
+}
+
 @end
+

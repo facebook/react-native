@@ -15,14 +15,15 @@ import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.media.AudioManager;
-import android.util.ArrayMap;
 import android.view.View;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
-import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.OnBatchCompleteListener;
@@ -32,12 +33,12 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
@@ -49,7 +50,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Native module to allow JS to create and update native Views.
@@ -242,8 +242,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   /**
-   * This method is intended to reuse the {@link ViewManagerRegistry} with FabricUIManager.
-   * Do not use this method as this will be removed in the near future.
+   * This method is intended to reuse the {@link ViewManagerRegistry} with FabricUIManager. Do not
+   * use this method as this will be removed in the near future.
    */
   @Deprecated
   public ViewManagerRegistry getViewManagerRegistry_DO_NOT_USE() {
@@ -376,22 +376,22 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     return mUIImplementation.getProfiledBatchPerfCounters();
   }
 
-  public <T extends View> int addRootView(
-      final T rootView) {
-        return addRootView(rootView, null, null);
-      }
+  public <T extends View> int addRootView(final T rootView) {
+    return addRootView(rootView, null, null);
+  }
 
   /**
    * Used by native animated module to bypass the process of updating the values through the shadow
    * view hierarchy. This method will directly update native views, which means that updates for
-   * layout-related propertied won't be handled properly.
-   * Make sure you know what you're doing before calling this method :)
+   * layout-related propertied won't be handled properly. Make sure you know what you're doing
+   * before calling this method :)
    */
   @Override
   public void synchronouslyUpdateViewOnUIThread(int tag, ReadableMap props) {
     int uiManagerType = ViewUtil.getUIManagerType(tag);
     if (uiManagerType == FABRIC) {
-      UIManager fabricUIManager = UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
+      UIManager fabricUIManager =
+          UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
       fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
     } else {
       mUIImplementation.synchronouslyUpdateViewOnUIThread(tag, new ReactStylesDiffMap(props));
@@ -421,6 +421,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     return tag;
   }
 
+  /** Unregisters a new root view. */
   @ReactMethod
   public void removeRootView(int rootViewTag) {
     mUIImplementation.removeRootView(rootViewTag);
@@ -474,7 +475,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
     int uiManagerType = ViewUtil.getUIManagerType(tag);
     if (uiManagerType == FABRIC) {
-      UIManager fabricUIManager = UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
+      UIManager fabricUIManager =
+          UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
       fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
     } else {
       mUIImplementation.updateView(tag, className, props);
@@ -542,8 +544,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * Replaces the View specified by oldTag with the View specified by newTag within oldTag's parent.
    * This resolves to a simple {@link #manageChildren} call, but React doesn't have enough info in
    * JS to formulate it itself.
+   *
+   * @deprecated This method will not be available in Fabric UIManager.
    */
   @ReactMethod
+  @Deprecated
   public void replaceExistingNonRootView(int oldTag, int newTag) {
     mUIImplementation.replaceExistingNonRootView(oldTag, newTag);
   }
@@ -553,8 +558,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * receipt. TODO: The method name is incorrect and will be renamed, #6033872
    *
    * @param containerTag the tag of the container for which the subviews must be removed
+   * @deprecated This method will not be available in Fabric UIManager.
    */
   @ReactMethod
+  @Deprecated
   public void removeSubviewsFromContainerWithID(int containerTag) {
     mUIImplementation.removeSubviewsFromContainerWithID(containerTag);
   }
@@ -600,8 +607,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * <p>NB: Unlike {@link #measure}, this will measure relative to the view layout, not the visible
    * window which can cause unexpected results when measuring relative to things like ScrollViews
    * that can have offset content on the screen.
+   *
+   * @deprecated This method will not be part of Fabric.
    */
   @ReactMethod
+  @Deprecated
   public void measureLayoutRelativeToParent(
       int tag, Callback errorCallback, Callback successCallback) {
     mUIImplementation.measureLayoutRelativeToParent(tag, errorCallback, successCallback);
@@ -628,28 +638,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule
         callback);
   }
 
-  /** Check if the first shadow node is the descendant of the second shadow node */
+  /**
+   * Check if the first shadow node is the descendant of the second shadow node
+   *
+   * @deprecated This method will not be part of Fabric.
+   */
   @ReactMethod
+  @Deprecated
   public void viewIsDescendantOf(
       final int reactTag, final int ancestorReactTag, final Callback callback) {
     mUIImplementation.viewIsDescendantOf(reactTag, ancestorReactTag, callback);
-  }
-
-  /** Registers a new Animation that can then be added to a View using {@link #addAnimation}. */
-  public void registerAnimation(Animation animation) {
-    mUIImplementation.registerAnimation(animation);
-  }
-
-  /**
-   * Adds an Animation previously registered with {@link #registerAnimation} to a View and starts it
-   */
-  public void addAnimation(int reactTag, int animationID, Callback onSuccess) {
-    mUIImplementation.addAnimation(reactTag, animationID, onSuccess);
-  }
-
-  /** Removes an existing Animation, canceling it if it was in progress. */
-  public void removeAnimation(int reactTag, int animationID) {
-    mUIImplementation.removeAnimation(reactTag, animationID);
   }
 
   @Override
@@ -666,15 +664,31 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   @ReactMethod
   public void dispatchViewManagerCommand(
-      int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
+      int reactTag, Dynamic commandId, @Nullable ReadableArray commandArgs) {
     // TODO: this is a temporary approach to support ViewManagerCommands in Fabric until
     // the dispatchViewManagerCommand() method is supported by Fabric JS API.
-    UIManagerHelper.getUIManager(getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag))
-        .dispatchCommand(reactTag, commandId, commandArgs);
+    if (commandId.getType() == ReadableType.Number) {
+      final int commandIdNum = commandId.asInt();
+      UIManagerHelper.getUIManager(
+              getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag))
+          .dispatchCommand(reactTag, commandIdNum, commandArgs);
+    } else if (commandId.getType() == ReadableType.String) {
+      final String commandIdStr = commandId.asString();
+      UIManagerHelper.getUIManager(
+              getReactApplicationContext(), ViewUtil.getUIManagerType(reactTag))
+          .dispatchCommand(reactTag, commandIdStr, commandArgs);
+    }
+  }
+
+  /** Deprecated, use {@link #dispatchCommand(int, String, ReadableArray)} instead. */
+  @Deprecated
+  @Override
+  public void dispatchCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
+    mUIImplementation.dispatchViewManagerCommand(reactTag, commandId, commandArgs);
   }
 
   @Override
-  public void dispatchCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
+  public void dispatchCommand(int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
     mUIImplementation.dispatchViewManagerCommand(reactTag, commandId, commandArgs);
   }
 
@@ -727,8 +741,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * Configure an animation to be used for the native layout changes, and native views creation. The
    * animation will only apply during the current batch operations.
    *
-   * <p>TODO(7728153) : animating view deletion is currently not supported. TODO(7613721) :
-   * callbacks are not supported, this feature will likely be killed.
+   * <p>TODO(7728153) : animating view deletion is currently not supported.
    *
    * @param config the configuration of the animation for view addition/removal/update.
    * @param success will be called when the animation completes, or when the animation get
@@ -737,7 +750,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    */
   @ReactMethod
   public void configureNextLayoutAnimation(ReadableMap config, Callback success, Callback error) {
-    mUIImplementation.configureNextLayoutAnimation(config, success, error);
+    mUIImplementation.configureNextLayoutAnimation(config, success);
   }
 
   /**
@@ -881,6 +894,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   public View resolveView(int tag) {
     UiThreadUtil.assertOnUiThread();
-    return mUIImplementation.getUIViewOperationQueue().getNativeViewHierarchyManager().resolveView(tag);
+    return mUIImplementation
+        .getUIViewOperationQueue()
+        .getNativeViewHierarchyManager()
+        .resolveView(tag);
   }
 }

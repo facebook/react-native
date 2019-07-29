@@ -1,13 +1,10 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.devsupport;
-
-import javax.annotation.Nullable;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -27,25 +24,22 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.devsupport.RedBoxHandler.ReportCompletedListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.StackFrame;
-import com.facebook.react.devsupport.RedBoxHandler.ReportCompletedListener;
-
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.json.JSONObject;
 
-/**
- * Dialog for displaying JS errors in an eye-catching form (red box).
- */
+/** Dialog for displaying JS errors in an eye-catching form (red box). */
 /* package */ class RedBoxDialog extends Dialog implements AdapterView.OnItemClickListener {
 
   private final DevSupportManager mDevSupportManager;
@@ -55,55 +49,57 @@ import org.json.JSONObject;
   private ListView mStackView;
   private Button mReloadJsButton;
   private Button mDismissButton;
-  private Button mCopyToClipboardButton;
   private @Nullable Button mReportButton;
   private @Nullable TextView mReportTextView;
   private @Nullable ProgressBar mLoadingIndicator;
   private @Nullable View mLineSeparator;
   private boolean isReporting = false;
 
-  private ReportCompletedListener mReportCompletedListener = new ReportCompletedListener() {
-    @Override
-    public void onReportSuccess(final SpannedString spannedString) {
-      isReporting = false;
-      Assertions.assertNotNull(mReportButton).setEnabled(true);
-      Assertions.assertNotNull(mLoadingIndicator).setVisibility(View.GONE);
-      Assertions.assertNotNull(mReportTextView).setText(spannedString);
-    }
-    @Override
-    public void onReportError(final SpannedString spannedString) {
-      isReporting = false;
-      Assertions.assertNotNull(mReportButton).setEnabled(true);
-      Assertions.assertNotNull(mLoadingIndicator).setVisibility(View.GONE);
-      Assertions.assertNotNull(mReportTextView).setText(spannedString);
-    }
-  };
+  private ReportCompletedListener mReportCompletedListener =
+      new ReportCompletedListener() {
+        @Override
+        public void onReportSuccess(final SpannedString spannedString) {
+          isReporting = false;
+          Assertions.assertNotNull(mReportButton).setEnabled(true);
+          Assertions.assertNotNull(mLoadingIndicator).setVisibility(View.GONE);
+          Assertions.assertNotNull(mReportTextView).setText(spannedString);
+        }
 
-  private View.OnClickListener mReportButtonOnClickListener = new View.OnClickListener() {
-    @Override
-    public void onClick(View view) {
-      if (mRedBoxHandler == null || !mRedBoxHandler.isReportEnabled() || isReporting) {
-        return;
-      }
-      isReporting = true;
-      Assertions.assertNotNull(mReportTextView).setText("Reporting...");
-      Assertions.assertNotNull(mReportTextView).setVisibility(View.VISIBLE);
-      Assertions.assertNotNull(mLoadingIndicator).setVisibility(View.VISIBLE);
-      Assertions.assertNotNull(mLineSeparator).setVisibility(View.VISIBLE);
-      Assertions.assertNotNull(mReportButton).setEnabled(false);
+        @Override
+        public void onReportError(final SpannedString spannedString) {
+          isReporting = false;
+          Assertions.assertNotNull(mReportButton).setEnabled(true);
+          Assertions.assertNotNull(mLoadingIndicator).setVisibility(View.GONE);
+          Assertions.assertNotNull(mReportTextView).setText(spannedString);
+        }
+      };
 
-      String title = Assertions.assertNotNull(mDevSupportManager.getLastErrorTitle());
-      StackFrame[] stack = Assertions.assertNotNull(mDevSupportManager.getLastErrorStack());
-      String sourceUrl = mDevSupportManager.getSourceUrl();
+  private View.OnClickListener mReportButtonOnClickListener =
+      new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          if (mRedBoxHandler == null || !mRedBoxHandler.isReportEnabled() || isReporting) {
+            return;
+          }
+          isReporting = true;
+          Assertions.assertNotNull(mReportTextView).setText("Reporting...");
+          Assertions.assertNotNull(mReportTextView).setVisibility(View.VISIBLE);
+          Assertions.assertNotNull(mLoadingIndicator).setVisibility(View.VISIBLE);
+          Assertions.assertNotNull(mLineSeparator).setVisibility(View.VISIBLE);
+          Assertions.assertNotNull(mReportButton).setEnabled(false);
 
-      mRedBoxHandler.reportRedbox(
-          view.getContext(),
-          title,
-          stack,
-          sourceUrl,
-          Assertions.assertNotNull(mReportCompletedListener));
-    }
-  };
+          String title = Assertions.assertNotNull(mDevSupportManager.getLastErrorTitle());
+          StackFrame[] stack = Assertions.assertNotNull(mDevSupportManager.getLastErrorStack());
+          String sourceUrl = mDevSupportManager.getSourceUrl();
+
+          mRedBoxHandler.reportRedbox(
+              view.getContext(),
+              title,
+              stack,
+              sourceUrl,
+              Assertions.assertNotNull(mReportCompletedListener));
+        }
+      };
 
   private static class StackAdapter extends BaseAdapter {
     private static final int VIEW_TYPE_COUNT = 2;
@@ -166,16 +162,20 @@ import org.json.JSONObject;
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
       if (position == 0) {
-        TextView title = convertView != null
-            ? (TextView) convertView
-            : (TextView) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.redbox_item_title, parent, false);
-        title.setText(mTitle);
+        TextView title =
+            convertView != null
+                ? (TextView) convertView
+                : (TextView)
+                    LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.redbox_item_title, parent, false);
+        // Remove ANSI color codes from the title
+        title.setText(mTitle.replaceAll("\\x1b\\[[0-9;]*m", ""));
         return title;
       } else {
         if (convertView == null) {
-          convertView = LayoutInflater.from(parent.getContext())
-              .inflate(R.layout.redbox_item_frame, parent, false);
+          convertView =
+              LayoutInflater.from(parent.getContext())
+                  .inflate(R.layout.redbox_item_frame, parent, false);
           convertView.setTag(new FrameViewHolder(convertView));
         }
         StackFrame frame = mStack[position - 1];
@@ -200,13 +200,14 @@ import org.json.JSONObject;
     protected Void doInBackground(StackFrame... stackFrames) {
       try {
         String openStackFrameUrl =
-            Uri.parse(mDevSupportManager.getSourceUrl()).buildUpon()
+            Uri.parse(mDevSupportManager.getSourceUrl())
+                .buildUpon()
                 .path("/open-stack-frame")
                 .query(null)
                 .build()
                 .toString();
         OkHttpClient client = new OkHttpClient();
-        for (StackFrame frame: stackFrames) {
+        for (StackFrame frame : stackFrames) {
           String payload = stackFrameToJson(frame).toString();
           RequestBody body = RequestBody.create(JSON, payload);
           Request request = new Request.Builder().url(openStackFrameUrl).post(body).build();
@@ -224,44 +225,12 @@ import org.json.JSONObject;
               "file", frame.getFile(),
               "methodName", frame.getMethod(),
               "lineNumber", frame.getLine(),
-              "column", frame.getColumn()
-          ));
-    }
-  }
-
-  private static class CopyToHostClipBoardTask extends AsyncTask<String, Void, Void> {
-    private final DevSupportManager mDevSupportManager;
-
-    private CopyToHostClipBoardTask(DevSupportManager devSupportManager) {
-      mDevSupportManager = devSupportManager;
-    }
-
-    @Override
-    protected Void doInBackground(String... clipBoardString) {
-      try {
-        String sendClipBoardUrl =
-            Uri.parse(mDevSupportManager.getSourceUrl()).buildUpon()
-                .path("/copy-to-clipboard")
-                .query(null)
-                .build()
-                .toString();
-        for (String string: clipBoardString) {
-          OkHttpClient client = new OkHttpClient();
-          RequestBody body = RequestBody.create(null, string);
-          Request request = new Request.Builder().url(sendClipBoardUrl).post(body).build();
-          client.newCall(request).execute();
-        }
-      } catch (Exception e) {
-        FLog.e(ReactConstants.TAG, "Could not copy to the host clipboard", e);
-      }
-      return null;
+              "column", frame.getColumn()));
     }
   }
 
   protected RedBoxDialog(
-    Context context,
-    DevSupportManager devSupportManager,
-    @Nullable RedBoxHandler redBoxHandler) {
+      Context context, DevSupportManager devSupportManager, @Nullable RedBoxHandler redBoxHandler) {
     super(context, R.style.Theme_Catalyst_RedBox);
 
     requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -276,32 +245,21 @@ import org.json.JSONObject;
     mStackView.setOnItemClickListener(this);
 
     mReloadJsButton = (Button) findViewById(R.id.rn_redbox_reload_button);
-    mReloadJsButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        mDevSupportManager.handleReloadJS();
-      }
-    });
+    mReloadJsButton.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            mDevSupportManager.handleReloadJS();
+          }
+        });
     mDismissButton = (Button) findViewById(R.id.rn_redbox_dismiss_button);
-    mDismissButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        dismiss();
-      }
-    });
-    mCopyToClipboardButton = (Button) findViewById(R.id.rn_redbox_copy_button);
-    mCopyToClipboardButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        String title = mDevSupportManager.getLastErrorTitle();
-        StackFrame[] stack = mDevSupportManager.getLastErrorStack();
-        Assertions.assertNotNull(title);
-        Assertions.assertNotNull(stack);
-        new CopyToHostClipBoardTask(mDevSupportManager).executeOnExecutor(
-            AsyncTask.THREAD_POOL_EXECUTOR,
-            StackTraceHelper.formatStackTrace(title, stack));
-      }
-    });
+    mDismissButton.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            dismiss();
+          }
+        });
 
     if (mRedBoxHandler != null && mRedBoxHandler.isReportEnabled()) {
       mLoadingIndicator = (ProgressBar) findViewById(R.id.rn_redbox_loading_indicator);
@@ -318,9 +276,7 @@ import org.json.JSONObject;
     mStackView.setAdapter(new StackAdapter(title, stack));
   }
 
-  /**
-   * Show the report button, hide the report textview and the loading indicator.
-   */
+  /** Show the report button, hide the report textview and the loading indicator. */
   public void resetReporting() {
     if (mRedBoxHandler == null || !mRedBoxHandler.isReportEnabled()) {
       return;
@@ -335,9 +291,9 @@ import org.json.JSONObject;
 
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    new OpenStackFrameTask(mDevSupportManager).executeOnExecutor(
-        AsyncTask.THREAD_POOL_EXECUTOR,
-        (StackFrame) mStackView.getAdapter().getItem(position));
+    new OpenStackFrameTask(mDevSupportManager)
+        .executeOnExecutor(
+            AsyncTask.THREAD_POOL_EXECUTOR, (StackFrame) mStackView.getAdapter().getItem(position));
   }
 
   @Override

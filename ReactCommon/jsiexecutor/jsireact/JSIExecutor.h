@@ -28,7 +28,7 @@ namespace react {
 // error report. Note that the errorMessageProducer will be invoked
 // asynchronously on a different thread.
 //
-// The timeout behavior does NOT caues the invokee to aborted. If the invokee
+// The timeout behavior does NOT cause the invokee to aborted. If the invokee
 // blocks forever, so will the ScopedTimeoutInvoker (but the soft error may
 // still be reported).
 //
@@ -112,6 +112,9 @@ class JSIExecutor : public JSExecutor {
   void callNativeModules(const jsi::Value &queue, bool isEndOfBatch);
   jsi::Value nativeCallSyncHook(const jsi::Value *args, size_t count);
   jsi::Value nativeRequire(const jsi::Value *args, size_t count);
+#ifdef DEBUG
+  jsi::Value globalEvalWithSourceUrl(const jsi::Value *args, size_t count);
+#endif
 
   std::shared_ptr<jsi::Runtime> runtime_;
   std::shared_ptr<ExecutorDelegate> delegate_;

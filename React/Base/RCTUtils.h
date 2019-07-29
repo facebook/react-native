@@ -133,6 +133,11 @@ RCT_EXTERN BOOL RCTIsLocalAssetURL(NSURL *__nullable imageURL);
 // does not correspond to a local asset.
 RCT_EXTERN UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL);
 
+// Only used in case when RCTImageFromLocalAssetURL fails to get an image
+// This method basically checks for the image in the bundle location, instead
+// of the CodePush location
+RCT_EXTERN UIImage *__nullable RCTImageFromLocalBundleAssetURL(NSURL *imageURL);
+
 // Creates a new, unique temporary file path with the specified extension
 RCT_EXTERN NSString *__nullable RCTTempFilePath(NSString *__nullable extension, NSError **error);
 
@@ -142,6 +147,9 @@ RCT_EXTERN NSString *RCTColorToHexString(CGColorRef color);
 // Get standard localized string (if it exists)
 RCT_EXTERN NSString *RCTUIKitLocalizedString(NSString *string);
 
+// Get a human readable type string from an NSObject. For example NSString becomes string
+RCT_EXTERN NSString *RCTHumanReadableType(NSObject *obj);
+
 // URL manipulation
 RCT_EXTERN NSString *__nullable RCTGetURLQueryParam(NSURL *__nullable URL, NSString *param);
 RCT_EXTERN NSURL *__nullable RCTURLByReplacingQueryParam(NSURL *__nullable URL, NSString *param, NSString *__nullable value);
@@ -150,5 +158,7 @@ RCT_EXTERN NSURL *__nullable RCTURLByReplacingQueryParam(NSURL *__nullable URL, 
 RCT_EXTERN NSString *RCTDropReactPrefixes(NSString *s);
 
 RCT_EXTERN BOOL RCTUIManagerTypeForTagIsFabric(NSNumber *reactTag);
+
+RCT_EXTERN BOOL RCTValidateTypeOfViewCommandArgument(NSObject *obj, id expectedClass, NSString const * expectedType, NSString const *componentName, NSString const * commandName, NSString const * argPos);
 
 NS_ASSUME_NONNULL_END

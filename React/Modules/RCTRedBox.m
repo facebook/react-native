@@ -134,7 +134,7 @@
 
         CGFloat buttonWidth = self.bounds.size.width / 4;
         CGFloat bottomButtonHeight = self.bounds.size.height - buttonHeight - [self bottomSafeViewHeight];
-    
+
         dismissButton.frame = CGRectMake(0, bottomButtonHeight, buttonWidth, buttonHeight);
         reloadButton.frame = CGRectMake(buttonWidth, bottomButtonHeight, buttonWidth, buttonHeight);
         copyButton.frame = CGRectMake(buttonWidth * 2, bottomButtonHeight, buttonWidth, buttonHeight);
@@ -148,11 +148,11 @@
         [rootView addSubview:copyButton];
         [rootView addSubview:extraButton];
         [rootView addSubview:topBorder];
-        
+
         UIView *bottomSafeView = [UIView new];
         bottomSafeView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
         bottomSafeView.frame = CGRectMake(0, self.bounds.size.height - [self bottomSafeViewHeight], self.bounds.size.width, [self bottomSafeViewHeight]);
-        
+
         [rootView addSubview:bottomSafeView];
     }
     return self;
@@ -161,7 +161,7 @@
 - (NSInteger)bottomSafeViewHeight
 {
     if (@available(iOS 11.0, *)) {
-        return [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+        return RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
     } else {
         return 0;
     }
@@ -176,14 +176,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (NSString *)stripAnsi:(NSString *)text
+{
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\x1b\\[[0-9;]*m" options:NSRegularExpressionCaseInsensitive error:&error];
+    return [regex stringByReplacingMatchesInString:text options:0 range:NSMakeRange(0, [text length]) withTemplate:@""];
+}
+
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<RCTJSStackFrame *> *)stack isUpdate:(BOOL)isUpdate
 {
+    // Remove ANSI color codes from the message
+    NSString *messageWithoutAnsi = [self stripAnsi:message];
+
     // Show if this is a new message, or if we're updating the previous message
-    if ((self.hidden && !isUpdate) || (!self.hidden && isUpdate && [_lastErrorMessage isEqualToString:message])) {
+    if ((self.hidden && !isUpdate) || (!self.hidden && isUpdate && [_lastErrorMessage isEqualToString:messageWithoutAnsi])) {
         _lastStackTrace = stack;
         // message is displayed using UILabel, which is unable to render text of
         // unlimited length, so we truncate it
-        _lastErrorMessage = [message substringToIndex:MIN((NSUInteger)10000, message.length)];
+        _lastErrorMessage = [messageWithoutAnsi substringToIndex:MIN((NSUInteger)10000, messageWithoutAnsi.length)];
 
         [_stackTraceTableView reloadData];
 

@@ -14,7 +14,9 @@
 //   limitations under the License.
 //
 
-#import "RCTSRWebSocket.h"
+#if !TARGET_OS_UIKITFORMAC
+
+#import <React/RCTSRWebSocket.h>
 
 #import <Availability.h>
 #import <Endian.h>
@@ -1635,3 +1637,5 @@ static NSRunLoop *networkRunLoop = nil;
 }
 
 @end
+
+#endif

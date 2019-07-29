@@ -10,34 +10,7 @@
 
 'use strict';
 
-export type AccessibilityTrait =
-  | 'none'
-  | 'button'
-  | 'link'
-  | 'header'
-  | 'search'
-  | 'image'
-  | 'selected'
-  | 'plays'
-  | 'key'
-  | 'text'
-  | 'summary'
-  | 'disabled'
-  | 'frequentUpdates'
-  | 'startsMedia'
-  | 'adjustable'
-  | 'allowsDirectInteraction'
-  | 'pageTurn';
-
-export type AccessibilityTraits =
-  | AccessibilityTrait
-  | $ReadOnlyArray<AccessibilityTrait>;
-
-export type AccessibilityComponentType =
-  | 'none'
-  | 'button'
-  | 'radiobutton_checked'
-  | 'radiobutton_unchecked';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 
 // This must be kept in sync with the AccessibilityRolesMask in RCTViewManager.m
 export type AccessibilityRole =
@@ -51,7 +24,53 @@ export type AccessibilityRole =
   | 'adjustable'
   | 'imagebutton'
   | 'header'
-  | 'summary';
+  | 'summary'
+  | 'alert'
+  | 'checkbox'
+  | 'combobox'
+  | 'menu'
+  | 'menubar'
+  | 'menuitem'
+  | 'progressbar'
+  | 'radio'
+  | 'radiogroup'
+  | 'scrollbar'
+  | 'spinbutton'
+  | 'switch'
+  | 'tab'
+  | 'tablist'
+  | 'timer'
+  | 'toolbar';
 
 // This must be kept in sync with the AccessibilityStatesMask in RCTViewManager.m
-export type AccessibilityStates = $ReadOnlyArray<'disabled' | 'selected'>;
+export type AccessibilityStates = $ReadOnlyArray<
+  | 'disabled'
+  | 'selected'
+  | 'checked'
+  | 'unchecked'
+  | 'busy'
+  | 'expanded'
+  | 'collapsed'
+  | 'hasPopup',
+>;
+
+// the info associated with an accessibility action
+export type AccessibilityActionInfo = $ReadOnly<{
+  name: string,
+  label?: string,
+}>;
+
+// The info included in the event sent to onAccessibilityAction
+export type AccessibilityActionEvent = SyntheticEvent<
+  $ReadOnly<{
+    actionName: string,
+  }>,
+>;
+
+export type AccessibilityState = {
+  disabled?: boolean,
+  selected?: boolean,
+  checked?: ?boolean | 'mixed',
+  busy?: boolean,
+  expanded?: boolean,
+};

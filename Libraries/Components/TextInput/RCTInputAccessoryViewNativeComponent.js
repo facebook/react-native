@@ -9,26 +9,14 @@
  */
 'use strict';
 
-import type {NativeComponent} from 'ReactNative';
-import type {ColorValue} from 'StyleSheetTypes';
-import type {ViewStyleProp} from 'StyleSheet';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
-const React = require('React');
-const requireNativeComponent = require('requireNativeComponent');
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
-  +children: React.Node,
-  /**
-   * An ID which is used to associate this `InputAccessoryView` to
-   * specified TextInput(s).
-   */
-  nativeID?: ?string,
-  style?: ?ViewStyleProp,
+  ...ViewProps,
   backgroundColor?: ?ColorValue,
 |}>;
 
-type NativeInputAccessoryView = Class<NativeComponent<NativeProps>>;
-
-module.exports = ((requireNativeComponent(
-  'RCTInputAccessoryView',
-): any): NativeInputAccessoryView);
+export default codegenNativeComponent<NativeProps>('RCTInputAccessoryView');

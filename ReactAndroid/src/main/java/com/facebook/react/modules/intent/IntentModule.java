@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.intent;
 
 import android.app.Activity;
@@ -12,8 +11,9 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.provider.Settings;
-
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -24,11 +24,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.module.annotations.ReactModule;
 
-import javax.annotation.Nullable;
-
-/**
- * Intent module. Launch other activities or open URLs.
- */
+/** Intent module. Launch other activities or open URLs. */
 @ReactModule(name = IntentModule.NAME)
 public class IntentModule extends ReactContextBaseJavaModule {
 
@@ -59,23 +55,26 @@ public class IntentModule extends ReactContextBaseJavaModule {
         String action = intent.getAction();
         Uri uri = intent.getData();
 
-        if (Intent.ACTION_VIEW.equals(action) && uri != null) {
+        if (uri != null
+            && (Intent.ACTION_VIEW.equals(action)
+                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
           initialURL = uri.toString();
         }
       }
 
       promise.resolve(initialURL);
     } catch (Exception e) {
-      promise.reject(new JSApplicationIllegalArgumentException(
-          "Could not get the initial URL : " + e.getMessage()));
+      promise.reject(
+          new JSApplicationIllegalArgumentException(
+              "Could not get the initial URL : " + e.getMessage()));
     }
   }
 
   /**
    * Starts a corresponding external activity for the given URL.
    *
-   * For example, if the URL is "https://www.facebook.com", the system browser will be opened,
-   * or the "choose application" dialog will be shown.
+   * <p>For example, if the URL is "https://www.facebook.com", the system browser will be opened, or
+   * the "choose application" dialog will be shown.
    *
    * @param url the URL to open
    */
@@ -91,8 +90,8 @@ public class IntentModule extends ReactContextBaseJavaModule {
       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url).normalizeScheme());
 
       String selfPackageName = getReactApplicationContext().getPackageName();
-      ComponentName componentName = intent.resolveActivity(
-        getReactApplicationContext().getPackageManager());
+      ComponentName componentName =
+          intent.resolveActivity(getReactApplicationContext().getPackageManager());
       String otherPackageName = (componentName != null ? componentName.getPackageName() : "");
 
       // If there is no currentActivity or we are launching to a different package we need to set
@@ -109,8 +108,9 @@ public class IntentModule extends ReactContextBaseJavaModule {
 
       promise.resolve(true);
     } catch (Exception e) {
-      promise.reject(new JSApplicationIllegalArgumentException(
-          "Could not open URL '" + url + "': " + e.getMessage()));
+      promise.reject(
+          new JSApplicationIllegalArgumentException(
+              "Could not open URL '" + url + "': " + e.getMessage()));
     }
   }
 
@@ -136,8 +136,9 @@ public class IntentModule extends ReactContextBaseJavaModule {
           intent.resolveActivity(getReactApplicationContext().getPackageManager()) != null;
       promise.resolve(canOpen);
     } catch (Exception e) {
-      promise.reject(new JSApplicationIllegalArgumentException(
-          "Could not check if URL '" + url + "' can be opened: " + e.getMessage()));
+      promise.reject(
+          new JSApplicationIllegalArgumentException(
+              "Could not check if URL '" + url + "' can be opened: " + e.getMessage()));
     }
   }
 
@@ -163,20 +164,19 @@ public class IntentModule extends ReactContextBaseJavaModule {
 
       promise.resolve(true);
     } catch (Exception e) {
-      promise.reject(new JSApplicationIllegalArgumentException(
-          "Could not open the Settings: " + e.getMessage()));
+      promise.reject(
+          new JSApplicationIllegalArgumentException(
+              "Could not open the Settings: " + e.getMessage()));
     }
   }
 
   /**
    * Allows to send intents on Android
    *
-   * For example, you can open the Notification Category screen for a specific application
-   * passing action = 'android.settings.CHANNEL_NOTIFICATION_SETTINGS'
-   * and extras = [
-   * { 'android.provider.extra.APP_PACKAGE': 'your.package.name.here' },
-   * { 'android.provider.extra.CHANNEL_ID': 'your.channel.id.here }
-   * ]
+   * <p>For example, you can open the Notification Category screen for a specific application
+   * passing action = 'android.settings.CHANNEL_NOTIFICATION_SETTINGS' and extras = [ {
+   * 'android.provider.extra.APP_PACKAGE': 'your.package.name.here' }, {
+   * 'android.provider.extra.CHANNEL_ID': 'your.channel.id.here } ]
    *
    * @param action The general action to be performed
    * @param extras An array of extras [{ String, String | Number | Boolean }]
@@ -192,7 +192,9 @@ public class IntentModule extends ReactContextBaseJavaModule {
 
     PackageManager packageManager = getReactApplicationContext().getPackageManager();
     if (intent.resolveActivity(packageManager) == null) {
-      promise.reject(new JSApplicationIllegalArgumentException("Could not launch Intent with action " + action + "."));
+      promise.reject(
+          new JSApplicationIllegalArgumentException(
+              "Could not launch Intent with action " + action + "."));
       return;
     }
 
@@ -203,27 +205,32 @@ public class IntentModule extends ReactContextBaseJavaModule {
         ReadableType type = map.getType(name);
 
         switch (type) {
-          case String: {
-            intent.putExtra(name, map.getString(name));
-            break;
-          }
-          case Number: {
-            // We cannot know from JS if is an Integer or Double
-            // See: https://github.com/facebook/react-native/issues/4141
-            // We might need to find a workaround if this is really an issue
-            Double number = map.getDouble(name);
-            intent.putExtra(name, number);
-            break;
-          }
-          case Boolean: {
-            intent.putExtra(name, map.getBoolean(name));
-            break;
-          }
-          default: {
-            promise.reject(new JSApplicationIllegalArgumentException(
-                "Extra type for " + name + " not supported."));
-            return;
-          }
+          case String:
+            {
+              intent.putExtra(name, map.getString(name));
+              break;
+            }
+          case Number:
+            {
+              // We cannot know from JS if is an Integer or Double
+              // See: https://github.com/facebook/react-native/issues/4141
+              // We might need to find a workaround if this is really an issue
+              Double number = map.getDouble(name);
+              intent.putExtra(name, number);
+              break;
+            }
+          case Boolean:
+            {
+              intent.putExtra(name, map.getBoolean(name));
+              break;
+            }
+          default:
+            {
+              promise.reject(
+                  new JSApplicationIllegalArgumentException(
+                      "Extra type for " + name + " not supported."));
+              return;
+            }
         }
       }
     }

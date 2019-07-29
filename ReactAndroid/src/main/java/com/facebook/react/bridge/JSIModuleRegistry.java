@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
 import com.facebook.infer.annotation.Assertions;
@@ -14,21 +13,21 @@ import java.util.Map;
 
 public class JSIModuleRegistry {
 
-  private final Map<Class, JSIModuleHolder> mModules = new HashMap<>();
+  private final Map<JSIModuleType, JSIModuleHolder> mModules = new HashMap<>();
 
-  public JSIModuleRegistry() { }
+  public JSIModuleRegistry() {}
 
-  public <T extends JSIModule> T getModule(Class<T> moduleClass) {
-    JSIModuleHolder jsiModuleHolder = mModules.get(moduleClass);
+  public JSIModule getModule(JSIModuleType moduleType) {
+    JSIModuleHolder jsiModuleHolder = mModules.get(moduleType);
     if (jsiModuleHolder == null) {
-      throw new IllegalArgumentException("Unable to find JSIModule for class " + moduleClass);
+      throw new IllegalArgumentException("Unable to find JSIModule for class " + moduleType);
     }
-    return (T) Assertions.assertNotNull(jsiModuleHolder.getJSIModule());
+    return Assertions.assertNotNull(jsiModuleHolder.getJSIModule());
   }
 
   public void registerModules(List<JSIModuleSpec> jsiModules) {
     for (JSIModuleSpec spec : jsiModules) {
-      mModules.put(spec.getJSIModuleClass(), new JSIModuleHolder(spec));
+      mModules.put(spec.getJSIModuleType(), new JSIModuleHolder(spec));
     }
   }
 

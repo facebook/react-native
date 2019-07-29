@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.appstate;
 
 import com.facebook.react.bridge.Arguments;
@@ -13,19 +12,19 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WindowFocusChangeListener;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
-
 import java.util.HashMap;
 import java.util.Map;
 
 @ReactModule(name = AppStateModule.NAME)
 public class AppStateModule extends ReactContextBaseJavaModule
-        implements LifecycleEventListener {
+    implements LifecycleEventListener, WindowFocusChangeListener {
 
-  protected static final String NAME = "AppState";
+  public static final String NAME = "AppState";
 
   public static final String APP_STATE_ACTIVE = "active";
   public static final String APP_STATE_BACKGROUND = "background";
@@ -37,8 +36,11 @@ public class AppStateModule extends ReactContextBaseJavaModule
   public AppStateModule(ReactApplicationContext reactContext) {
     super(reactContext);
     reactContext.addLifecycleEventListener(this);
-    mAppState = (reactContext.getLifecycleState() == LifecycleState.RESUMED ?
-            APP_STATE_ACTIVE : APP_STATE_BACKGROUND);
+    reactContext.addWindowFocusChangeListener(this);
+    mAppState =
+        (reactContext.getLifecycleState() == LifecycleState.RESUMED
+            ? APP_STATE_ACTIVE
+            : APP_STATE_BACKGROUND);
   }
 
   @Override
@@ -76,6 +78,13 @@ public class AppStateModule extends ReactContextBaseJavaModule
     // catalyst instance is going to be immediately dropped, and all JS calls with it.
   }
 
+  @Override
+  public void onWindowFocusChange(boolean hasFocus) {
+    getReactApplicationContext()
+        .getJSModule(RCTDeviceEventEmitter.class)
+        .emit("appStateFocusChange", hasFocus);
+  }
+
   private WritableMap createAppStateEventMap() {
     WritableMap appState = Arguments.createMap();
     appState.putString("app_state", mAppState);
@@ -83,7 +92,8 @@ public class AppStateModule extends ReactContextBaseJavaModule
   }
 
   private void sendAppStateChangeEvent() {
-    getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class)
-            .emit("appStateDidChange", createAppStateEventMap());
+    getReactApplicationContext()
+        .getJSModule(RCTDeviceEventEmitter.class)
+        .emit("appStateDidChange", createAppStateEventMap());
   }
 }

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string
+    name="link_description"
+    translatable="false"
+    >Link</string>
+  <string
+    name="search_description"
+    translatable="false"
+    >Search Field</string>
+  <string
+    name="image_description"
+    translatable="false"
+    >Image</string>
+  <string
+    name="imagebutton_description"
+    translatable="false"
+    >Button, Image</string>
+  <string
+    name="header_description"
+    translatable="false"
+    >Heading</string>
+  <string
+    name="alert_description"
+    translatable="false"
+    >Alert</string>
+  <string
+    name="combobox_description"
+    translatable="false"
+    >Combo Box</string>
+  <string
+    name="menu_description"
+    translatable="false"
+    >Menu</string>
+  <string
+    name="menubar_description"
+    translatable="false"
+    >Menu Bar</string>
+  <string
+    name="menuitem_description"
+    translatable="false"
+    >Menu Item</string>
+  <string
+    name="progressbar_description"
+    translatable="false"
+    >Progress Bar</string>
+  <string
+    name="radiogroup_description"
+    translatable="false"
+    >Radio Group</string>
+  <string
+    name="scrollbar_description"
+    translatable="false"
+    >Scroll Bar</string>
+  <string
+    name="spinbutton_description"
+    translatable="false"
+    >Spin Button</string>
+  <string
+    name="rn_tab_description"
+    translatable="false"
+    >Tab</string>
+  <string
+    name="tablist_description"
+    translatable="false"
+    >Tab List</string>
+  <string
+    name="timer_description"
+    translatable="false"
+    >Timer</string>
+  <string
+    name="toolbar_description"
+    translatable="false"
+    >Tool Bar</string>
+  <string
+    name="summary_description"
+    translatable="false"
+    >Summary</string>
+  <string
+    name="state_busy_description"
+    translatable="false"
+    >busy</string>
+  <string
+    name="state_expanded_description"
+    translatable="false"
+    >expanded</string>
+  <string
+    name="state_collapsed_description"
+    translatable="false"
+    >collapsed</string>
+  <string
+    name="state_on_description"
+    translatable="false"
+    >on</string>
+  <string
+    name="state_off_description"
+    translatable="false"
+    >off</string>
+  <string
+    name="state_mixed_description"
+    translatable="false"
+    >mixed</string>
+</resources>

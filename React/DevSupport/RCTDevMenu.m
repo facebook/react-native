@@ -5,20 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTDevMenu.h"
+#import <React/RCTDevMenu.h>
 
-#import "RCTBridge+Private.h"
-#import "RCTDevSettings.h"
-#import "RCTKeyCommands.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
-#import "RCTDefines.h"
+#import <React/RCTBridge+Private.h>
+#import <React/RCTDevSettings.h>
+#import <React/RCTKeyCommands.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
+#import <React/RCTDefines.h>
 #import <React/RCTBundleURLProvider.h>
 
 #if RCT_DEV
 
 #if RCT_ENABLE_INSPECTOR
-#import "RCTInspectorDevServerHelper.h"
+#import <React/RCTInspectorDevServerHelper.h>
 #endif
 
 NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
@@ -210,56 +210,71 @@ RCT_EXPORT_MODULE()
     [bridge reload];
   }]];
 
-  if (devSettings.isNuclideDebuggingAvailable) {
-    [items addObject:[RCTDevMenuItem buttonItemWithTitle:[NSString stringWithFormat:@"Debug JS in Nuclide %@", @"\U0001F4AF"] handler:^{
-#if RCT_ENABLE_INSPECTOR
-      [RCTInspectorDevServerHelper attachDebugger:@"ReactNative" withBundleURL:bridge.bundleURL withView: RCTPresentedViewController()];
-#endif
-    }]];
+  if (!devSettings.isProfilingEnabled) {
+    if (!devSettings.isRemoteDebuggingAvailable) {
+      [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Debugger Unavailable" handler:^{
+        NSString *message = RCTTurboModuleEnabled() ?
+            @"Debugging is not currently supported when TurboModule is enabled." :
+            @"Include the RCTWebSocket library to enable JavaScript debugging.";
+        UIAlertController *alertController = [UIAlertController
+          alertControllerWithTitle:@"Debugger Unavailable"
+          message:message
+          preferredStyle:UIAlertControllerStyleAlert];
+        __weak typeof(alertController) weakAlertController = alertController;
+        [alertController addAction:
+        [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action){
+          [weakAlertController dismissViewControllerAnimated:YES completion:nil];
+        }]];
+        [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
+      }]];
+    } else {
+      [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
+        if (devSettings.isNuclideDebuggingAvailable) {
+          return devSettings.isDebuggingRemotely ? @"Stop Chrome Debugger" : @"Debug with Chrome";
+        } else {
+          return devSettings.isDebuggingRemotely ? @"Stop Debugging" : @"Debug";
+        }
+      } handler:^{
+        devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
+      }]];
+    }
+
+    if (devSettings.isNuclideDebuggingAvailable && !devSettings.isDebuggingRemotely) {
+      [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Debug with Nuclide" handler:^{
+  #if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC
+        [RCTInspectorDevServerHelper attachDebugger:@"ReactNative" withBundleURL:bridge.bundleURL withView: RCTPresentedViewController()];
+  #endif
+      }]];
+    }
   }
 
-  if (!devSettings.isRemoteDebuggingAvailable) {
-    [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Remote JS Debugger Unavailable" handler:^{
-      NSString *message = RCTTurboModuleEnabled() ?
-          @"You cannot use remote JS debugging when TurboModule system is enabled" :
-      @"You need to include the RCTWebSocket library to enable remote JS debugging";
-      UIAlertController *alertController = [UIAlertController
-        alertControllerWithTitle:@"Remote JS Debugger Unavailable"
-        message:message
-        preferredStyle:UIAlertControllerStyleAlert];
-      __weak typeof(alertController) weakAlertController = alertController;
-      [alertController addAction:
-       [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action){
-        [weakAlertController dismissViewControllerAnimated:YES completion:nil];
-      }]];
-      [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
-    }]];
-  } else {
+  [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
+    return devSettings.isElementInspectorShown ? @"Hide Inspector" : @"Show Inspector";
+  } handler:^{
+    [devSettings toggleElementInspector];
+  }]];
+
+  if (devSettings.isHotLoadingAvailable) {
     [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      NSString *title = devSettings.isDebuggingRemotely ? @"Stop Remote JS Debugging" : @"Debug JS Remotely";
-      if (devSettings.isNuclideDebuggingAvailable) {
-        return [NSString stringWithFormat:@"%@ %@", title, @"\U0001F645"];
-      } else {
-        return title;
-      }
+      // Previously known as "Hot Reloading". We won't use this term anymore.
+      return devSettings.isHotLoadingEnabled ? @"Disable Fast Refresh" : @"Enable Fast Refresh";
     } handler:^{
-      devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
+      devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled;
     }]];
   }
 
   if (devSettings.isLiveReloadAvailable) {
     [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      return devSettings.isLiveReloadEnabled ? @"Disable Live Reload" : @"Enable Live Reload";
-    } handler:^{
-      devSettings.isLiveReloadEnabled = !devSettings.isLiveReloadEnabled;
-    }]];
-    [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      return devSettings.isProfilingEnabled ? @"Stop Systrace" : @"Start Systrace";
+      return devSettings.isDebuggingRemotely
+        ? @"Systrace Unavailable"
+        : devSettings.isProfilingEnabled
+          ? @"Stop Systrace"
+          : @"Start Systrace";
     } handler:^{
       if (devSettings.isDebuggingRemotely) {
         UIAlertController *alertController = [UIAlertController
           alertControllerWithTitle:@"Systrace Unavailable"
-          message:@"You need to stop remote JS debugging to enable Systrace"
+          message:@"Stop debugging to enable Systrace."
           preferredStyle:UIAlertControllerStyleAlert];
         __weak typeof(alertController) weakAlertController = alertController;
         [alertController addAction:
@@ -271,21 +286,16 @@ RCT_EXPORT_MODULE()
         devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
       }
     }]];
-  }
-
-  if (_bridge.devSettings.isHotLoadingAvailable) {
-    [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      return devSettings.isHotLoadingEnabled ? @"Disable Hot Reloading" : @"Enable Hot Reloading";
-    } handler:^{
-      devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled;
-    }]];
+    // "Live reload" which refreshes on every edit was removed in favor of "Fast Refresh".
+    // While native code for "Live reload" is still there, please don't add the option back.
+    // See D15958697 for more context.
   }
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-    return @"Change packager location";
+    return @"Configure Bundler";
   } handler:^{
-    UIAlertController * alertController = [UIAlertController alertControllerWithTitle: @"Change packager location"
-                                                                              message: @"Input packager IP, port and entrypoint"
+    UIAlertController * alertController = [UIAlertController alertControllerWithTitle: @"Configure Bundler"
+                                                                              message: @"Provide a custom bundler address, port, and entrypoint."
                                                                        preferredStyle:UIAlertControllerStyleAlert];
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
       textField.placeholder = @"0.0.0.0";
@@ -296,18 +306,12 @@ RCT_EXPORT_MODULE()
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
       textField.placeholder = @"index";
     }];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Use bundled JS" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action) {
-      [weakSelf setDefaultJSBundle];
-    }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Use packager location" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action) {
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Apply Changes" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action) {
       NSArray * textfields = alertController.textFields;
       UITextField * ipTextField = textfields[0];
       UITextField * portTextField = textfields[1];
       UITextField * bundleRootTextField = textfields[2];
       NSString * bundleRoot = bundleRootTextField.text;
-      if(bundleRoot.length==0){
-        bundleRoot = @"index";
-      }
       if(ipTextField.text.length == 0 && portTextField.text.length == 0) {
         [weakSelf setDefaultJSBundle];
         return;
@@ -322,20 +326,20 @@ RCT_EXPORT_MODULE()
                                                           ipTextField.text, portNumber.intValue];
       __strong RCTBridge *strongBridge = bridge;
       if (strongBridge) {
-        strongBridge.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:bundleRoot fallbackResource:nil];
+        NSURL *bundleURL = bundleRoot.length
+          ? [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:bundleRoot fallbackResource:nil]
+          : [strongBridge.delegate sourceURLForBridge:strongBridge];
+        strongBridge.bundleURL = bundleURL;
         [strongBridge reload];
       }
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Reset to Default" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action) {
+      [weakSelf setDefaultJSBundle];
     }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(__unused UIAlertAction *action) {
       return;
     }]];
     [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
-  }]];
-
-  [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-    return @"Toggle Inspector";
-  } handler:^{
-    [devSettings toggleElementInspector];
   }]];
 
   [items addObjectsFromArray:_extraMenuItems];
@@ -348,15 +352,15 @@ RCT_EXPORT_METHOD(show)
     return;
   }
 
-  NSString *desc = _bridge.bridgeDescription;
-  if (desc.length == 0) {
-    desc = NSStringFromClass([_bridge class]);
-  }
-  NSString *title = [NSString stringWithFormat:@"React Native: Development (%@)", desc];
+  NSString *bridgeDescription = _bridge.bridgeDescription;
+  NSString *description = bridgeDescription.length > 0
+    ? [NSString stringWithFormat:@"Running %@", bridgeDescription]
+    : nil;
+
   // On larger devices we don't have an anchor point for the action sheet
   UIAlertControllerStyle style = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? UIAlertControllerStyleActionSheet : UIAlertControllerStyleAlert;
-  _actionSheet = [UIAlertController alertControllerWithTitle:title
-                                                     message:@""
+  _actionSheet = [UIAlertController alertControllerWithTitle:@"React Native Debug Menu"
+                                                     message:description
                                               preferredStyle:style];
 
   NSArray<RCTDevMenuItem *> *items = [self _menuItemsToPresent];

@@ -58,7 +58,7 @@ public:
     if (isEndOfBatch) {
       // onBatchComplete will be called on the native (module) queue, but
       // decrementPendingJSCalls will be called sync. Be aware that the bridge may still
-      // be processing native calls when the birdge idle signaler fires.
+      // be processing native calls when the bridge idle signaler fires.
       if (m_batchHadNativeModuleCalls) {
         m_callback->onBatchComplete();
         m_batchHadNativeModuleCalls = false;
@@ -84,14 +84,15 @@ private:
 };
 
 NativeToJsBridge::NativeToJsBridge(
-    JSExecutorFactory* jsExecutorFactory,
+    JSExecutorFactory *jsExecutorFactory,
     std::shared_ptr<ModuleRegistry> registry,
     std::shared_ptr<MessageQueueThread> jsQueue,
     std::shared_ptr<InstanceCallback> callback)
-    : m_destroyed(std::make_shared<bool>(false))
-    , m_delegate(std::make_shared<JsToNativeBridge>(registry, callback))
-    , m_executor(jsExecutorFactory->createJSExecutor(m_delegate, jsQueue))
-    , m_executorMessageQueueThread(std::move(jsQueue)) {}
+    : m_destroyed(std::make_shared<bool>(false)),
+      m_delegate(std::make_shared<JsToNativeBridge>(registry, callback)),
+      m_executor(jsExecutorFactory->createJSExecutor(m_delegate, jsQueue)),
+      m_executorMessageQueueThread(std::move(jsQueue)),
+      m_inspectable(m_executor->isInspectable()) {}
 
 // This must be called on the same thread on which the constructor was called.
 NativeToJsBridge::~NativeToJsBridge() {
@@ -225,7 +226,7 @@ void* NativeToJsBridge::getJavaScriptContext() {
 }
 
 bool NativeToJsBridge::isInspectable() {
-  return m_executor->isInspectable();
+  return m_inspectable;
 }
   
 bool NativeToJsBridge::isBatchActive() {

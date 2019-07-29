@@ -1,25 +1,21 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.dialog;
-
-import javax.annotation.Nullable;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 
-/**
- * A fragment used to display the dialog.
- */
+/** A fragment used to display the dialog. */
 public class AlertFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
   /* package */ static final String ARG_TITLE = "title";
@@ -32,7 +28,7 @@ public class AlertFragment extends DialogFragment implements DialogInterface.OnC
   private final @Nullable DialogModule.AlertFragmentListener mListener;
 
   public AlertFragment() {
-      mListener = null;
+    mListener = null;
   }
 
   @SuppressLint("ValidFragment")
@@ -43,8 +39,8 @@ public class AlertFragment extends DialogFragment implements DialogInterface.OnC
 
   public static Dialog createDialog(
       Context activityContext, Bundle arguments, DialogInterface.OnClickListener fragment) {
-    AlertDialog.Builder builder = new AlertDialog.Builder(activityContext)
-        .setTitle(arguments.getString(ARG_TITLE));
+    AlertDialog.Builder builder =
+        new AlertDialog.Builder(activityContext).setTitle(arguments.getString(ARG_TITLE));
 
     if (arguments.containsKey(ARG_BUTTON_POSITIVE)) {
       builder.setPositiveButton(arguments.getString(ARG_BUTTON_POSITIVE), fragment);

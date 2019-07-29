@@ -225,7 +225,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 {
   TouchEvent event = {};
   std::unordered_set<ActiveTouch, ActiveTouch::Hasher, ActiveTouch::Comparator> changedActiveTouches = {};
-  std::unordered_set<SharedTouchEventEmitter> uniqueEventEmitter = {};
+  std::unordered_set<SharedTouchEventEmitter> uniqueEventEmitters = {};
   BOOL isEndishEventType = eventType == RCTTouchEventTypeTouchEnd || eventType == RCTTouchEventTypeTouchCancel;
 
   for (const auto &activeTouch : activeTouches) {
@@ -235,7 +235,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 
     changedActiveTouches.insert(activeTouch);
     event.changedTouches.insert(activeTouch.touch);
-    uniqueEventEmitter.insert(activeTouch.eventEmitter);
+    uniqueEventEmitters.insert(activeTouch.eventEmitter);
   }
 
   for (const auto &pair : _activeTouches) {
@@ -253,7 +253,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
     event.touches.insert(pair.second.touch);
   }
 
-  for (const auto &eventEmitter : uniqueEventEmitter) {
+  for (const auto &eventEmitter : uniqueEventEmitters) {
     event.targetTouches.clear();
 
     for (const auto &pair : _activeTouches) {

@@ -149,5 +149,31 @@ Transform Transform::operator*(Transform const &rhs) const {
   return result;
 }
 
+Float &Transform::at(int i, int j) {
+  return matrix[(i * 4) + j];
+}
+
+Float const &Transform::at(int i, int j) const {
+  return matrix[(i * 4) + j];
+}
+
+Point operator*(Point const &point, Transform const &transform) {
+  if (transform == Transform::Identity()) {
+    return point;
+  }
+
+  auto result = Point{};
+  result.x = transform.at(3, 0) + point.x * transform.at(0, 0) + point.y * transform.at(1, 0);
+  result.y = transform.at(3, 1) + point.x * transform.at(0, 1) + point.y * transform.at(1, 1);
+  auto w = transform.at(3, 3) + point.x * transform.at(0, 3) + point.y * transform.at(1, 3);
+
+  if (w != 1 && w != 0) {
+    result.x /= w;
+    result.y /= w;
+  }
+
+  return result;
+}
+
 } // namespace react
 } // namespace facebook

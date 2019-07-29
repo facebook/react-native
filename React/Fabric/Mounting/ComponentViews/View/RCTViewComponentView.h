@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
  * and `padding`) of the component.
  * This view must not be a component view; it's just a convenient way
  * to embed/bridge pure native views as component views.
- * Defaults to `nil`. Assing `nil` to remove view as subview.
+ * Defaults to `nil`. Assign `nil` to remove view as subview.
  */
 @property (nonatomic, strong, nullable) UIView *contentView;
 
@@ -67,6 +67,23 @@ NS_ASSUME_NONNULL_BEGIN
  * Insets used when hit testing inside this view.
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
+
+/**
+ * Enforcing `call super` semantic for overridden methods from `RCTComponentViewProtocol`.
+ * The methods update the instance variables.
+ */
+- (void)updateProps:(facebook::react::Props::Shared const &)props
+           oldProps:(facebook::react::Props::Shared const &)oldProps NS_REQUIRES_SUPER;
+- (void)updateEventEmitter:(facebook::react::EventEmitter::Shared const &)eventEmitter NS_REQUIRES_SUPER;
+- (void)updateLayoutMetrics:(facebook::react::LayoutMetrics const &)layoutMetrics
+           oldLayoutMetrics:(facebook::react::LayoutMetrics const &)oldLayoutMetrics NS_REQUIRES_SUPER;
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask NS_REQUIRES_SUPER;
+- (void)prepareForRecycle NS_REQUIRES_SUPER;
+
+/*
+ * This is a fragment of temporary workaround that we need only temporary and will get rid of soon.
+ */
+- (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN;
 
 @end
 

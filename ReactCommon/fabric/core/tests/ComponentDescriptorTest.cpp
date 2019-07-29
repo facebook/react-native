@@ -16,23 +16,21 @@ TEST(ComponentDescriptorTest, createShadowNode) {
       std::make_shared<TestComponentDescriptor>(nullptr);
 
   ASSERT_EQ(descriptor->getComponentHandle(), TestShadowNode::Handle());
-  ASSERT_STREQ(
-      descriptor->getComponentName().c_str(), TestShadowNode::Name().c_str());
-  ASSERT_STREQ(descriptor->getComponentName().c_str(), "Test");
+  ASSERT_STREQ(descriptor->getComponentName(), TestShadowNode::Name());
+  ASSERT_STREQ(descriptor->getComponentName(), "Test");
 
   const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   SharedProps props = descriptor->cloneProps(nullptr, raw);
   SharedShadowNode node = descriptor->createShadowNode(ShadowNodeFragment{
       /* .tag = */ 9,
-      /* .rootTag = */ 1,
+      /* .surfaceId = */ 1,
       /* .props = */ props,
       /* .eventEmitter = */ descriptor->createEventEmitter(0, 9),
   });
 
   ASSERT_EQ(node->getComponentHandle(), TestShadowNode::Handle());
-  ASSERT_STREQ(
-      node->getComponentName().c_str(), TestShadowNode::Name().c_str());
-  ASSERT_STREQ(node->getComponentName().c_str(), "Test");
+  ASSERT_STREQ(node->getComponentName(), TestShadowNode::Name());
+  ASSERT_STREQ(node->getComponentName(), "Test");
   ASSERT_EQ(node->getTag(), 9);
   ASSERT_EQ(node->getSurfaceId(), 1);
   ASSERT_STREQ(node->getProps()->nativeId.c_str(), "abc");
@@ -46,13 +44,13 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
   SharedProps props = descriptor->cloneProps(nullptr, raw);
   SharedShadowNode node = descriptor->createShadowNode(ShadowNodeFragment{
       /* .tag = */ 9,
-      /* .rootTag = */ 1,
+      /* .surfaceId = */ 1,
       /* .props = */ props,
       /* .eventEmitter = */ descriptor->createEventEmitter(0, 9),
   });
   SharedShadowNode cloned = descriptor->cloneShadowNode(*node, {});
 
-  ASSERT_STREQ(cloned->getComponentName().c_str(), "Test");
+  ASSERT_STREQ(cloned->getComponentName(), "Test");
   ASSERT_EQ(cloned->getTag(), 9);
   ASSERT_EQ(cloned->getSurfaceId(), 1);
   ASSERT_STREQ(cloned->getProps()->nativeId.c_str(), "abc");
@@ -66,19 +64,19 @@ TEST(ComponentDescriptorTest, appendChild) {
   SharedProps props = descriptor->cloneProps(nullptr, raw);
   SharedShadowNode node1 = descriptor->createShadowNode(ShadowNodeFragment{
       /* .tag = */ 1,
-      /* .rootTag = */ 1,
+      /* .surfaceId = */ 1,
       /* .props = */ props,
       /* .eventEmitter = */ descriptor->createEventEmitter(0, 1),
   });
   SharedShadowNode node2 = descriptor->createShadowNode(ShadowNodeFragment{
       /* .tag = */ 2,
-      /* .rootTag = */ 1,
+      /* .surfaceId = */ 1,
       /* .props = */ props,
       /* .eventEmitter = */ descriptor->createEventEmitter(0, 2),
   });
   SharedShadowNode node3 = descriptor->createShadowNode(ShadowNodeFragment{
       /* .tag = */ 3,
-      /* .rootTag = */ 1,
+      /* .surfaceId = */ 1,
       /* .props = */ props,
       /* .eventEmitter = */ descriptor->createEventEmitter(0, 3),
   });

@@ -6,7 +6,6 @@
 #pragma once
 
 #include <fcntl.h>
-#include <unistd.h>
 #include <sys/mman.h>
 
 #include <folly/Exception.h>
@@ -133,7 +132,7 @@ public:
 private:
   int m_fd;                     // The file descriptor being mmaped
   size_t m_size;                // The size of the mmaped region
-  off_t m_pageOff;             // The offset in the mmaped region to the data.
+  mutable off_t m_pageOff;      // The offset in the mmaped region to the data.
   off_t m_mapOff;               // The offset in the file to the mmaped region.
   mutable const char *m_data;   // Pointer to the mmaped region.
 };

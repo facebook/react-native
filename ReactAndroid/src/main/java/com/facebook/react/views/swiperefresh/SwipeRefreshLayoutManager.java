@@ -1,18 +1,20 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.swiperefresh;
 
 import static com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager.REACT_CLASS;
 
 import android.graphics.Color;
+import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -20,9 +22,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * ViewManager for {@link ReactSwipeRefreshLayout} which allows the user to "pull to refresh" a
@@ -66,9 +66,28 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
     view.setProgressBackgroundColorSchemeColor(color);
   }
 
-  @ReactProp(name = "size", defaultInt = SwipeRefreshLayout.DEFAULT)
-  public void setSize(ReactSwipeRefreshLayout view, int size) {
-    view.setSize(size);
+  // This prop temporarily takes both 0 and 1 as well as 'default' and 'large'.
+  // 0 and 1 are deprecated and will be removed in a future release.
+  // See T46143833
+  @ReactProp(name = "size")
+  public void setSize(ReactSwipeRefreshLayout view, Dynamic size) {
+    if (size.isNull()) {
+      view.setSize(SwipeRefreshLayout.DEFAULT);
+    } else if (size.getType() == ReadableType.Number) {
+      view.setSize(size.asInt());
+    } else if (size.getType() == ReadableType.String) {
+      final String sizeStr = size.asString();
+      if (sizeStr.equals("default")) {
+        view.setSize(SwipeRefreshLayout.DEFAULT);
+      } else if (sizeStr.equals("large")) {
+        view.setSize(SwipeRefreshLayout.LARGE);
+      } else {
+        throw new IllegalArgumentException(
+            "Size must be 'default' or 'large', received: " + sizeStr);
+      }
+    } else {
+      throw new IllegalArgumentException("Size must be 'default' or 'large'");
+    }
   }
 
   @ReactProp(name = "refreshing")
@@ -83,13 +102,14 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
 
   @Override
   protected void addEventEmitters(
-      final ThemedReactContext reactContext,
-      final ReactSwipeRefreshLayout view) {
+      final ThemedReactContext reactContext, final ReactSwipeRefreshLayout view) {
     view.setOnRefreshListener(
         new OnRefreshListener() {
           @Override
           public void onRefresh() {
-            reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()
+            reactContext
+                .getNativeModule(UIManagerModule.class)
+                .getEventDispatcher()
                 .dispatchEvent(new RefreshEvent(view.getId()));
           }
         });

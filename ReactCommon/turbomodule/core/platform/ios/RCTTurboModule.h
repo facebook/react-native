@@ -12,11 +12,11 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTModuleMethod.h>
+#import <ReactCommon/JSCallInvoker.h>
+#import <ReactCommon/TurboModule.h>
 #import <cxxreact/MessageQueueThread.h>
-#import <jsireact/JSCallInvoker.h>
-#import <jsireact/TurboModule.h>
-#import <unordered_map>
 #import <string>
+#import <unordered_map>
 
 #define RCT_IS_TURBO_MODULE_CLASS(klass) ((RCTTurboModuleEnabled() && [(klass) conformsToProtocol:@protocol(RCTTurboModule)]))
 #define RCT_IS_TURBO_MODULE_INSTANCE(module) RCT_IS_TURBO_MODULE_CLASS([(module) class])
@@ -33,12 +33,13 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 public:
   ObjCTurboModule(const std::string &name, id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
 
-  virtual jsi::Value invokeMethod(
+  jsi::Value invokeObjCMethod(
       jsi::Runtime &runtime,
       TurboModuleMethodValueKind valueKind,
       const std::string &methodName,
+      SEL selector,
       const jsi::Value *args,
-      size_t count) override;
+      size_t count);
 
   id<RCTTurboModule> instance_;
 protected:
@@ -90,7 +91,6 @@ private:
 // TODO: Consolidate this extension with the one in RCTSurfacePresenter.
 @interface RCTBridge ()
 
-- (std::shared_ptr<facebook::react::MessageQueueThread>)jsMessageThread;
-- (std::shared_ptr<facebook::react::Instance>)reactInstance;
+- (std::weak_ptr<facebook::react::Instance>)reactInstance;
 
 @end

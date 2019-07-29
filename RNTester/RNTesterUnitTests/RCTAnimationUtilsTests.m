@@ -8,7 +8,7 @@
 
 #import <XCTest/XCTest.h>
 
-#import <RCTAnimation/RCTAnimationUtils.h>
+#import <React/RCTAnimationUtils.h>
 
 @interface RCTAnimationUtilsTests : XCTestCase
 

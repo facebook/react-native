@@ -9,10 +9,10 @@
 
 'use strict';
 
-const React = require('React');
-const Recording = require('NativeModules').Recording;
-const StyleSheet = require('StyleSheet');
-const View = require('View');
+const React = require('react');
+const {NativeModules, StyleSheet, View} = require('react-native');
+
+const {Recording} = NativeModules;
 
 const extractSingleTouch = nativeEvent => {
   const touches = nativeEvent.touches;

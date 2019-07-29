@@ -4,10 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
-apply plugin: 'com.android.application'
-
-import com.android.build.OutputFile
+plugins {
+    id("com.android.application")
+}
 
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
@@ -70,7 +69,9 @@ project.ext.react = [
     entryFile: file("../../js/RNTesterApp.android.js"),
     root: "$rootDir",
     inputExcludes: ["android/**", "./**", ".gradle/**"],
-    extraPackagerArgs: ["--reactNativePath", "$rootDir"]
+    composeSourceMapsPath: "$rootDir/scripts/compose-source-maps.js",
+    hermesCommand: "../../../node_modules/hermesvm/%OS-BIN%/hermes",
+    enableHermesForVariant: { def v -> v.name.contains("hermes") }
 ]
 
 apply from: "../../../react.gradle"
@@ -91,12 +92,30 @@ def enableSeparateBuildPerCPUArchitecture = true
  */
 def enableProguardInReleaseBuilds = true
 
+/**
+ * Use the international variant of JavaScriptCore
+ * This variant includes the ICU i18n library to make APIs like `Date.toLocaleString`
+ * and `String.localeCompare` work when using with locales other than en-US.
+ * Note that this variant is about 6MiB larger per architecture than the default.
+ */
+def useIntlJsc = false
+
 android {
     compileSdkVersion 28
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    flavorDimensions "vm"
+    productFlavors {
+      hermes {
+        dimension "vm"
+      }
+      jsc {
+        dimension "vm"
+      }
     }
 
     defaultConfig {
@@ -132,6 +151,12 @@ android {
             signingConfig signingConfigs.release
         }
     }
+    packagingOptions {
+        pickFirst '**/armeabi-v7a/libc++_shared.so'
+        pickFirst '**/x86/libc++_shared.so'
+        pickFirst '**/arm64-v8a/libc++_shared.so'
+        pickFirst '**/x86_64/libc++_shared.so'
+    }
 }
 
 dependencies {
@@ -139,4 +164,14 @@ dependencies {
 
     // Build React Native from source
     implementation project(':ReactAndroid')
+
+    def hermesPath = '$projectDir/../../../../node_modules/hermesvm/android/'
+    debugImplementation files(hermesPath + "hermes-debug.aar")
+    releaseImplementation files(hermesPath + "hermes-release.aar")
+
+    if (useIntlJsc) {
+        implementation 'org.webkit:android-jsc-intl:+'
+    } else {
+        implementation 'org.webkit:android-jsc:+'
+    }
 }

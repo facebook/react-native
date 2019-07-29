@@ -10,55 +10,35 @@
 
 'use strict';
 
-const Platform = require('Platform');
-const ReactNative = require('ReactNative');
+import type {BubblingEventHandler, WithDefault} from '../../Types/CodegenTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
-const requireNativeComponent = require('requireNativeComponent');
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 
-import type {SwitchChangeEvent} from 'CoreEventTypes';
-import type {ViewProps} from 'ViewPropTypes';
+type SwitchChangeEvent = $ReadOnly<{|
+  value: boolean,
+|}>;
 
-type SwitchProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{|
   ...ViewProps,
-  disabled?: ?boolean,
-  onChange?: ?(event: SwitchChangeEvent) => mixed,
-  thumbColor?: ?string,
-  trackColorForFalse?: ?string,
-  trackColorForTrue?: ?string,
-  value?: ?boolean,
+
+  // Props
+  disabled?: WithDefault<boolean, false>,
+  value?: WithDefault<boolean, false>,
+  tintColor?: ?ColorValue,
+  onTintColor?: ?ColorValue,
+  thumbTintColor?: ?ColorValue,
+
+  // Deprecated props
+  thumbColor?: ?ColorValue,
+  trackColorForFalse?: ?ColorValue,
+  trackColorForTrue?: ?ColorValue,
+
+  // Events
+  onChange?: ?BubblingEventHandler<SwitchChangeEvent>,
 |}>;
 
-// @see ReactSwitchManager.java
-export type NativeAndroidProps = $ReadOnly<{|
-  ...SwitchProps,
-
-  enabled?: ?boolean,
-  on?: ?boolean,
-  thumbTintColor?: ?string,
-  trackTintColor?: ?string,
-|}>;
-
-// @see RCTSwitchManager.m
-export type NativeIOSProps = $ReadOnly<{|
-  ...SwitchProps,
-
-  onTintColor?: ?string,
-  thumbTintColor?: ?string,
-  tintColor?: ?string,
-|}>;
-
-type SwitchNativeComponentType = Class<
-  ReactNative.NativeComponent<
-    $ReadOnly<{|
-      ...NativeAndroidProps,
-      ...NativeIOSProps,
-    |}>,
-  >,
->;
-
-const SwitchNativeComponent: SwitchNativeComponentType =
-  Platform.OS === 'android'
-    ? (requireNativeComponent('AndroidSwitch'): any)
-    : (requireNativeComponent('RCTSwitch'): any);
-
-module.exports = SwitchNativeComponent;
+export default codegenNativeComponent<NativeProps>('Switch', {
+  paperComponentName: 'RCTSwitch',
+});

@@ -10,8 +10,8 @@
 
 'use strict';
 
-const setNormalizedColorAlpha = require('setNormalizedColorAlpha');
-const normalizeColor = require('normalizeColor');
+const setNormalizedColorAlpha = require('../setNormalizedColorAlpha');
+const normalizeColor = require('../../Color/normalizeColor');
 
 describe('setNormalizedColorAlpha', function() {
   it('should adjust the alpha of the color passed in', function() {

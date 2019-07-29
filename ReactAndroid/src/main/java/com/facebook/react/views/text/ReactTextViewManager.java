@@ -6,20 +6,20 @@
  */
 package com.facebook.react.views.text;
 
+import android.content.Context;
 import android.text.Layout;
 import android.text.Spannable;
-import com.facebook.react.bridge.ReactContext;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.IViewManagerWithChildren;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 /**
  * Concrete class for {@link ReactTextAnchorViewManager} which represents view managers of anchor
@@ -73,9 +73,9 @@ public class ReactTextViewManager
   }
 
   @Override
-  public Object updateLocalData(
-      ReactTextView view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
-    ReadableMap attributedString = localData.getMap("attributedString");
+  public Object updateState(
+      ReactTextView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
+    ReadableMap attributedString = stateWrapper.getState().getMap("attributedString");
 
     Spannable spanned =
         TextLayoutManager.getOrCreateSpannableForText(view.getContext(), attributedString);
@@ -97,10 +97,9 @@ public class ReactTextViewManager
         textViewProps.getTopPadding(),
         textViewProps.getEndPadding(),
         textViewProps.getBottomPadding(),
-        textViewProps.getTextAlign(),
+        0,
         textBreakStrategy,
-        justificationMode
-      );
+        justificationMode);
   }
 
   @Override
@@ -112,9 +111,10 @@ public class ReactTextViewManager
 
   @Override
   public long measure(
-      ReactContext context,
+      Context context,
       ReadableMap localData,
       ReadableMap props,
+      ReadableMap state,
       float width,
       YogaMeasureMode widthMode,
       float height,

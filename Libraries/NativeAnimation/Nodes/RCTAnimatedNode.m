@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTAnimatedNode.h"
+#import <React/RCTAnimatedNode.h>
 
 #import <React/RCTDefines.h>
 
@@ -110,9 +110,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)performUpdate
 {
   _needsUpdate = NO;
-  // To be overidden by subclasses
+  // To be overridden by subclasses
   // This method is called on a node only if it has been marked for update
   // during the current update loop
+}
+
+- (BOOL)isManagedByFabric
+{
+  for (RCTAnimatedNode *child in _childNodes.objectEnumerator) {
+    if ([child isManagedByFabric]) {
+      return YES;
+    }
+  }
+  return NO;
 }
 
 @end

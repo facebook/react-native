@@ -1,12 +1,13 @@
 {
   "version": "0.0.1",
-  "name": "react-native-codgen",
+  "name": "react-native-codegen",
   "description": "⚛️ Code generation tools for React Native",
   "repository": {
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
   },
   "dependencies": {
+    "flow-parser": "^0.102.0",
     "jscodeshift": "^0.6.2",
     "nullthrows": "^1.1.0"
   },

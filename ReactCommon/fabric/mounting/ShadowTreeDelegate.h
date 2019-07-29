@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <react/mounting/ShadowViewMutation.h>
+#include <react/mounting/MountingCoordinator.h>
 
 namespace facebook {
 namespace react {
@@ -21,10 +21,8 @@ class ShadowTreeDelegate {
    * Called right after Shadow Tree commit a new state of the the tree.
    */
   virtual void shadowTreeDidCommit(
-      const ShadowTree &shadowTree,
-      const ShadowViewMutationList &mutations,
-      long commitStartTime,
-      long layoutTime) const = 0;
+      ShadowTree const &shadowTree,
+      MountingCoordinator::Shared const &mountingCoordinator) const = 0;
 
   virtual ~ShadowTreeDelegate() noexcept = default;
 };

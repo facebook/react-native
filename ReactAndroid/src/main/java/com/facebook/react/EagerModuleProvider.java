@@ -5,13 +5,10 @@
 
 package com.facebook.react;
 
+import com.facebook.react.bridge.NativeModule;
 import javax.inject.Provider;
 
-import com.facebook.react.bridge.NativeModule;
-
-/**
- * Provider for an already initialized and non-lazy NativeModule.
- */
+/** Provider for an already initialized and non-lazy NativeModule. */
 public class EagerModuleProvider implements Provider<NativeModule> {
 
   private final NativeModule mModule;

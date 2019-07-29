@@ -10,22 +10,22 @@
 
 'use strict';
 
-const Batchinator = require('Batchinator');
-const IncrementalGroup = require('IncrementalGroup');
-const React = require('React');
-const ScrollView = require('ScrollView');
-const StyleSheet = require('StyleSheet');
-const Systrace = require('Systrace');
-const View = require('View');
-const ViewabilityHelper = require('ViewabilityHelper');
+const Batchinator = require('../Interaction/Batchinator');
+const IncrementalGroup = require('./IncrementalGroup');
+const React = require('react');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Systrace = require('../Performance/Systrace');
+const View = require('../Components/View/View');
+const ViewabilityHelper = require('../Lists/ViewabilityHelper');
 
-const clamp = require('clamp');
-const deepDiffer = require('deepDiffer');
-const infoLog = require('infoLog');
+const clamp = require('../Utilities/clamp');
+const deepDiffer = require('../Utilities/differ/deepDiffer');
+const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
 const nullthrows = require('nullthrows');
 
-import type {NativeMethodsMixinType} from 'ReactNativeTypes';
+import type {NativeMethodsMixinType} from '../Renderer/shims/ReactNativeTypes';
 
 const DEBUG = false;
 
@@ -151,7 +151,7 @@ type State = {
 };
 class WindowedListView extends React.Component<Props, State> {
   /**
-   * Recomputing which rows to render is batched up and run asynchronously to avoid wastful updates,
+   * Recomputing which rows to render is batched up and run asynchronously to avoid wasteful updates,
    * e.g. from multiple layout updates in rapid succession.
    */
   _computeRowsToRenderBatcher: Batchinator;
@@ -390,7 +390,7 @@ class WindowedListView extends React.Component<Props, State> {
     }
     this._updateVisibleRows(firstVisible, lastVisible);
 
-    // Unfortuantely, we can't use <Incremental> to simplify our increment logic in this function
+    // Unfortunately, we can't use <Incremental> to simplify our increment logic in this function
     // because we need to make sure that cells are rendered in the right order one at a time when
     // scrolling back up.
 
@@ -646,7 +646,7 @@ type CellProps = {
    * after offscreen rendering has completed, includeInLayout will be set true and the finished cell
    * can be dropped into place.
    *
-   * This is coordinated outside this component so the parent can syncronize this re-render with
+   * This is coordinated outside this component so the parent can synchronize this re-render with
    * managing the placeholder sizing.
    */
   includeInLayout: boolean,
@@ -656,7 +656,7 @@ type CellProps = {
    */
   onNewLayout: (params: {rowKey: string, layout: Object}) => void,
   /**
-   * Used to track when rendering is in progress so the parent can avoid wastedful re-renders that
+   * Used to track when rendering is in progress so the parent can avoid wasteful re-renders that
    * are just going to be invalidated once the cell finishes.
    */
   onProgressChange: (progress: {rowKey: string, inProgress: boolean}) => void,
@@ -777,7 +777,7 @@ class CellRenderer extends React.Component<CellProps> {
     let debug;
     if (DEBUG) {
       infoLog('render cell ' + this.props.rowIndex);
-      const Text = require('Text');
+      const Text = require('../Text/Text');
       debug = <Text style={styles.debug}>Row: {this.props.rowIndex}</Text>;
     }
     const style = this._includeInLayoutLatch ? styles.include : styles.remove;

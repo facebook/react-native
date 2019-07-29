@@ -9,7 +9,6 @@
 
 #import <react/debug/SystraceSection.h>
 #import <react/uimanager/ComponentDescriptorFactory.h>
-#import <react/uimanager/ContextContainer.h>
 #import <react/uimanager/Scheduler.h>
 #import <react/uimanager/SchedulerDelegate.h>
 
@@ -23,20 +22,25 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
  public:
   SchedulerDelegateProxy(void *scheduler) : scheduler_(scheduler) {}
 
-  void schedulerDidFinishTransaction(
-      Tag rootTag,
-      const ShadowViewMutationList &mutations,
-      const long commitStartTime,
-      const long layoutTime) override
+  void schedulerDidFinishTransaction(MountingCoordinator::Shared const &mountingCoordinator) override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerDidFinishTransaction:mutations rootTag:rootTag];
+    [scheduler.delegate schedulerDidFinishTransaction:mountingCoordinator];
   }
 
   void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, const ShadowView &shadowView) override
   {
     // Does nothing.
     // Preemptive allocation of native views on iOS does not require this call.
+  }
+
+  void schedulerDidDispatchCommand(
+      const ShadowView &shadowView,
+      const std::string &commandName,
+      const folly::dynamic args) override
+  {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerDidDispatchCommand:shadowView commandName:commandName args:args];
   }
 
  private:
@@ -48,13 +52,11 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
   std::shared_ptr<SchedulerDelegateProxy> _delegateProxy;
 }
 
-- (instancetype)initWithContextContainer:(std::shared_ptr<void>)contextContainer
+- (instancetype)initWithToolbox:(facebook::react::SchedulerToolbox)toolbox
 {
   if (self = [super init]) {
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
-    _scheduler = std::make_shared<Scheduler>(
-        std::static_pointer_cast<ContextContainer>(contextContainer), getDefaultComponentRegistryFactory());
-    _scheduler->setDelegate(_delegateProxy.get());
+    _scheduler = std::make_shared<Scheduler>(toolbox, _delegateProxy.get());
   }
 
   return self;

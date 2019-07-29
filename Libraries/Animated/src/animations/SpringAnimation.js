@@ -51,13 +51,6 @@ export type SpringAnimationConfigSingle = AnimationConfig & {
   delay?: number,
 };
 
-function withDefault<T>(value: ?T, defaultValue: T): T {
-  if (value === undefined || value === null) {
-    return defaultValue;
-  }
-  return value;
-}
-
 class SpringAnimation extends Animation {
   _overshootClamping: boolean;
   _restDisplacementThreshold: number;
@@ -83,20 +76,16 @@ class SpringAnimation extends Animation {
   constructor(config: SpringAnimationConfigSingle) {
     super();
 
-    this._overshootClamping = withDefault(config.overshootClamping, false);
-    this._restDisplacementThreshold = withDefault(
-      config.restDisplacementThreshold,
-      0.001,
-    );
-    this._restSpeedThreshold = withDefault(config.restSpeedThreshold, 0.001);
-    this._initialVelocity = withDefault(config.velocity, 0);
-    this._lastVelocity = withDefault(config.velocity, 0);
+    this._overshootClamping = config.overshootClamping ?? false;
+    this._restDisplacementThreshold = config.restDisplacementThreshold ?? 0.001;
+    this._restSpeedThreshold = config.restSpeedThreshold ?? 0.001;
+    this._initialVelocity = config.velocity ?? 0;
+    this._lastVelocity = config.velocity ?? 0;
     this._toValue = config.toValue;
-    this._delay = withDefault(config.delay, 0);
+    this._delay = config.delay ?? 0;
     this._useNativeDriver = shouldUseNativeDriver(config);
-    this.__isInteraction =
-      config.isInteraction !== undefined ? config.isInteraction : true;
-    this.__iterations = config.iterations !== undefined ? config.iterations : 1;
+    this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
+    this.__iterations = config.iterations ?? 1;
 
     if (
       config.stiffness !== undefined ||
@@ -110,9 +99,9 @@ class SpringAnimation extends Animation {
           config.friction === undefined,
         'You can define one of bounciness/speed, tension/friction, or stiffness/damping/mass, but not more than one',
       );
-      this._stiffness = withDefault(config.stiffness, 100);
-      this._damping = withDefault(config.damping, 10);
-      this._mass = withDefault(config.mass, 1);
+      this._stiffness = config.stiffness ?? 100;
+      this._damping = config.damping ?? 10;
+      this._mass = config.mass ?? 1;
     } else if (config.bounciness !== undefined || config.speed !== undefined) {
       // Convert the origami bounciness/speed values to stiffness/damping
       // We assume mass is 1.
@@ -125,8 +114,8 @@ class SpringAnimation extends Animation {
         'You can define one of bounciness/speed, tension/friction, or stiffness/damping/mass, but not more than one',
       );
       const springConfig = SpringConfig.fromBouncinessAndSpeed(
-        withDefault(config.bounciness, 8),
-        withDefault(config.speed, 12),
+        config.bounciness ?? 8,
+        config.speed ?? 12,
       );
       this._stiffness = springConfig.stiffness;
       this._damping = springConfig.damping;
@@ -135,8 +124,8 @@ class SpringAnimation extends Animation {
       // Convert the origami tension/friction values to stiffness/damping
       // We assume mass is 1.
       const springConfig = SpringConfig.fromOrigamiTensionAndFriction(
-        withDefault(config.tension, 40),
-        withDefault(config.friction, 7),
+        config.tension ?? 40,
+        config.friction ?? 7,
       );
       this._stiffness = springConfig.stiffness;
       this._damping = springConfig.damping;
@@ -157,7 +146,7 @@ class SpringAnimation extends Animation {
       stiffness: this._stiffness,
       damping: this._damping,
       mass: this._mass,
-      initialVelocity: withDefault(this._initialVelocity, this._lastVelocity),
+      initialVelocity: this._initialVelocity ?? this._lastVelocity,
       toValue: this._toValue,
       iterations: this.__iterations,
     };

@@ -9,10 +9,10 @@
  */
 'use strict';
 
-const RCTActionSheetManager = require('NativeModules').ActionSheetManager;
+import RCTActionSheetManager from './NativeActionSheetManager';
 
 const invariant = require('invariant');
-const processColor = require('processColor');
+const processColor = require('../StyleSheet/processColor');
 
 /**
  * Display action sheets and share sheets on iOS.
@@ -53,9 +53,12 @@ const ActionSheetIOS = {
       'Options must be a valid object',
     );
     invariant(typeof callback === 'function', 'Must provide a valid callback');
+    invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
+
+    const {tintColor, ...remainingOptions} = options;
 
     RCTActionSheetManager.showActionSheetWithOptions(
-      {...options, tintColor: processColor(options.tintColor)},
+      {...remainingOptions, tintColor: processColor(tintColor)},
       callback,
     );
   },
@@ -100,6 +103,7 @@ const ActionSheetIOS = {
       typeof successCallback === 'function',
       'Must provide a valid successCallback',
     );
+    invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
     RCTActionSheetManager.showShareActionSheetWithOptions(
       {...options, tintColor: processColor(options.tintColor)},
       failureCallback,

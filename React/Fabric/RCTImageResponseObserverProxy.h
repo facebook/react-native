@@ -24,7 +24,7 @@ namespace facebook {
       void didReceiveFailure() override;
       
     private:
-      id<RCTImageResponseDelegate> delegate_;
+      __weak id<RCTImageResponseDelegate> delegate_;
     };
   }
 }

@@ -10,14 +10,18 @@
 
 'use strict';
 
-import type {LayoutEvent, PressEvent, TextLayoutEvent} from 'CoreEventTypes';
-import type React from 'React';
-import type {TextStyleProp} from 'StyleSheet';
+import type {
+  LayoutEvent,
+  PressEvent,
+  TextLayoutEvent,
+} from '../Types/CoreEventTypes';
+import type {Node} from 'react';
+import type {TextStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   AccessibilityRole,
   AccessibilityStates,
-  AccessibilityTrait,
-} from 'ViewAccessibility';
+  AccessibilityState,
+} from '../Components/View/ViewAccessibility';
 
 export type PressRetentionOffset = $ReadOnly<{|
   top: number,
@@ -40,7 +44,7 @@ export type TextProps = $ReadOnly<{|
   accessibilityLabel?: ?Stringish,
   accessibilityRole?: ?AccessibilityRole,
   accessibilityStates?: ?AccessibilityStates,
-  accessibilityTraits?: ?(AccessibilityTrait | Array<AccessibilityTrait>),
+  accessibilityState?: ?AccessibilityState,
 
   /**
    * Whether font should be scaled down automatically.
@@ -55,7 +59,7 @@ export type TextProps = $ReadOnly<{|
    * See https://facebook.github.io/react-native/docs/text.html#allowfontscaling
    */
   allowFontScaling?: ?boolean,
-  children?: ?React.Node,
+  children?: ?Node,
 
   /**
    * When `numberOfLines` is set, this prop defines how text will be

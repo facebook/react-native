@@ -9,16 +9,16 @@
  */
 'use strict';
 
-const AnimatedImplementation = require('AnimatedImplementation');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
+const AnimatedImplementation = require('../../Animated/src/AnimatedImplementation');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const View = require('../View/View');
 
-import type {LayoutEvent} from 'CoreEventTypes';
+import type {LayoutEvent} from '../../Types/CoreEventTypes';
 
 const AnimatedView = AnimatedImplementation.createAnimatedComponent(View);
 
-type Props = {
+export type Props = {
   children?: React.Element<any>,
   nextHeaderLayoutY: ?number,
   onLayout: (event: LayoutEvent) => void,

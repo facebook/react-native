@@ -9,11 +9,11 @@
  */
 'use strict';
 
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
-import type {SyntheticEvent} from 'CoreEventTypes';
-import type {TextStyleProp} from 'StyleSheet';
-import type {NativeComponent} from 'ReactNative';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
+import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 
 type PickerIOSChangeEvent = SyntheticEvent<
   $ReadOnly<{|
