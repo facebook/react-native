@@ -79,14 +79,6 @@ type NativeProps = $ReadOnly<{|
   onShow?: ?DirectEventHandler<null>,
 
   /**
-   * The `onDismiss` prop allows passing a function that will be called once
-   * the modal has been dismissed.
-   *
-   * See https://facebook.github.io/react-native/docs/modal.html#ondismiss
-   */
-  onDismiss?: ?BubblingEventHandler<null>,
-
-  /**
    * Deprecated. Use the `animationType` prop instead.
    */
   animated?: WithDefault<boolean, false>,

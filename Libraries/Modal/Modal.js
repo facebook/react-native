@@ -12,9 +12,6 @@
 
 const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');
-const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-import NativeModalManager from './NativeModalManager';
-const Platform = require('../Utilities/Platform');
 const React = require('react');
 const PropTypes = require('prop-types');
 const ScrollView = require('../Components/ScrollView/ScrollView');
@@ -22,10 +19,6 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
-const ModalEventEmitter =
-  Platform.OS === 'ios' && NativeModalManager != null
-    ? new NativeEventEmitter(NativeModalManager)
-    : null;
 
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
@@ -175,22 +168,9 @@ class Modal extends React.Component<Props> {
     };
   }
 
-  componentDidMount() {
-    if (ModalEventEmitter) {
-      this._eventSubscription = ModalEventEmitter.addListener(
-        'modalDismissed',
-        event => {
-          if (event.modalID === this._identifier && this.props.onDismiss) {
-            this.props.onDismiss();
-          }
-        },
-      );
-    }
-  }
-
   componentWillUnmount() {
-    if (this._eventSubscription) {
-      this._eventSubscription.remove();
+    if (this.props.onDismiss != null) {
+      this.props.onDismiss();
     }
   }
 
