@@ -49,12 +49,9 @@ function doPublish() {
   // Push tar to GitHub releases
   exec(`npm pack`);
 
-  const npmTarPath = path.resolve(
-    __dirname,
-    `../react-native-${releaseVersion}.tgz`
-  );
-  const finalDir = path.join(process.env.SYSTEM_DEFAULTWORKINGDIRECTORY, 'final');
-  fs.copyFileSync(npmTarPath, finalDir);
+  const npmTarFileName = `../react-native-${releaseVersion}.tgz`;
+  const npmTarPath = path.resolve(__dirname, npmTarFileName);
+  fs.copyFileSync(npmTarPath, path.join(process.env.SYSTEM_DEFAULTWORKINGDIRECTORY, 'final', npmTarFileName));
 
   const assetUpdateUrl = `https://uploads.github.com/repos/microsoft/react-native/releases/{id}/assets?name=react-native-${releaseVersion}.tgz`;
   const authHeader =
