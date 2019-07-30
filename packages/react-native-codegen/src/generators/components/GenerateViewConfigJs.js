@@ -293,7 +293,7 @@ function buildCommands(
     );
 
     const expression = j.template.expression`
-      UIManager.dispatchViewCommand(
+      UIManager.dispatchViewManagerCommand(
         findNodeHandle(ref),
         UIManager.getViewManagerConfig(${componentNameLiteral}).Commands.${commandNameIdentifier},
         ${arrayParams}

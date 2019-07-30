@@ -145,7 +145,7 @@ export default nativeComponentName;
 
 export const Commands = {
     flashScrollIndicators(ref) {
-        UIManager.dispatchViewCommand(
+        UIManager.dispatchViewManagerCommand(
           findNodeHandle(ref),
           UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.flashScrollIndicators,
           []
@@ -153,7 +153,7 @@ export const Commands = {
     },
 
     allTypes(ref, x, message, animated) {
-        UIManager.dispatchViewCommand(
+        UIManager.dispatchViewManagerCommand(
           findNodeHandle(ref),
           UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.allTypes,
           [x, message, animated]
@@ -200,7 +200,7 @@ export default nativeComponentName;
 
 export const Commands = {
     hotspotUpdate(ref, x, y) {
-        UIManager.dispatchViewCommand(
+        UIManager.dispatchViewManagerCommand(
           findNodeHandle(ref),
           UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.hotspotUpdate,
           [x, y]
