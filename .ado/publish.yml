@@ -18,8 +18,7 @@ jobs:
   - job: RNGithubPublish
     displayName: React-Native GitHub Publish
     pool:
-      name: OE Standard Pool
-      demands: ['Agent.OS -equals Windows_NT', 'ANDROID_NDK', 'OnPrem -equals False']
+      vmImage: vs2017-win2016
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
     steps:
@@ -123,28 +122,15 @@ jobs:
         inputs:
           command: pack
           packagesToPack: 'ReactAndroid/ReactAndroid.nuspec'
-          packDestination: '$(System.DefaultWorkingDirectory)'
-
-      - task: NuGetCommand@2
-        displayName: 'NuGet push'
-        inputs:
-          command: push
-          packagesToPush: '$(System.DefaultWorkingDirectory)/OfficeReact.Android*.nupkg'
-          publishVstsFeed: '86ec7889-a365-4cd1-90df-6e18cc2ea59f'
-
-      - task: CmdLine@1
-        displayName: 'npm auth'
-        inputs:
-          filename: npm
-          arguments: 'config set $(publishnpmfeed)/registry/:_authToken $(npmTokenOffice)'
+          packDestination: '$(System.DefaultWorkingDirectory)\final'
 
       - task: CmdLine@2
         displayName: Do Publish
         inputs:
           script: node .ado/publish.js
 
-      - task: CmdLine@1
-        displayName: 'npm unauth'
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish final artifacts'
         inputs:
-          filename: npm
-          arguments: 'config set $(publishnpmfeed)/registry/:_authToken XXXXX'
+          PathtoPublish: '$(System.DefaultWorkingDirectory)\final'
+          ArtifactName: 'ReactNative-Final'

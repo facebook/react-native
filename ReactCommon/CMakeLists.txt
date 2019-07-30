@@ -58,7 +58,7 @@ if(WIN32)
 endif(WIN32)
 
 if(ANDROID)
-	target_include_directories(reactcommon PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_SOURCE_DIR}/../src/react-native/ReactAndroid/packages/Office.Google_V8.Android.7.0.276.32/headers/include/")
+	target_include_directories(reactcommon PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_SOURCE_DIR}/../src/react-native/ReactAndroid/packages/ReactNative.V8.Android.7.0.276.32/headers/include/")
 endif(ANDROID)
 
 target_include_directories(reactcommon PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/yoga")

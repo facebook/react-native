@@ -10,8 +10,7 @@ jobs:
   - job: AndroidRNPR
     displayName: Android React Native PR
     pool:
-      name: OE Standard Pool
-      demands: ['Agent.OS -equals Windows_NT', 'ANDROID_NDK', 'OnPrem -equals False']
+      vmImage: vs2017-win2016
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
     steps:
@@ -26,17 +25,6 @@ jobs:
       #   displayName: NPM Authenticate # friendly name displayed in the UI
       #   inputs:
       #     workingFile: common\config\rush\.npmrc
-
-      - task: PowerShell@2
-        displayName: Cleanup any packagers left over from other builds
-        inputs:
-          targetType: inline # filePath | inline
-          script: |
-            echo "ports:{"
-            echo ${env:RNTester.PackagerPort}
-            echo "}"
-            Get-NetTCPConnection -LocalPort 8081 -ErrorAction Ignore | ForEach-Object { Stop-Process $_.OwningProcess -ErrorAction Ignore }
-            Get-NetTCPConnection -LocalPort 5555 -ErrorAction Ignore | ForEach-Object { Stop-Process $_.OwningProcess -ErrorAction Ignore }
 
       - task: CmdLine@2
         displayName: npm install

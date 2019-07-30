@@ -43,18 +43,6 @@ function doPublish() {
     exec("git checkout ReactAndroid/gradle.properties");
   }
 
-  // Configure npm to publish to internal feed
-  const npmrcPath = path.resolve(__dirname, "../.npmrc");
-  const npmrcContents = `registry=https:${
-    process.env.publishnpmfeed
-  }/registry/\nalways-auth=true`;
-  console.log(`Creating ${npmrcPath} for publishing:`);
-  console.log(npmrcContents);
-  fs.writeFileSync(npmrcPath, npmrcContents);
-
-  exec(`npm publish${publishBranchName !== 'master' ? ` --tag ${publishBranchName}` : ''}`);
-  exec(`del ${npmrcPath}`);
-
   // Push tar to GitHub releases
   exec(`npm pack`);
 
@@ -62,6 +50,10 @@ function doPublish() {
     __dirname,
     `../react-native-${releaseVersion}.tgz`
   );
+  const finalDir = path.join(process.env.SYSTEM_DEFAULWORKINGDIRECTORY, 'final');
+  fs.mkdirSync(finalDir);
+  fs.copyFileSync(npmTarPath, finalDir);
+
   const assetUpdateUrl = `https://uploads.github.com/repos/microsoft/react-native/releases/{id}/assets?name=react-native-${releaseVersion}.tgz`;
   const authHeader =
     "Basic " + new Buffer(":" + process.env.githubToken).toString("base64");
