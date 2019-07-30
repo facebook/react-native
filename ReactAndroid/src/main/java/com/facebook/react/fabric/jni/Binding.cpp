@@ -427,13 +427,15 @@ local_ref<JMountItem::javaobject> createDeleteMountItem(
   return deleteInstruction(javaUIManager, mutation.oldChildShadowView.tag);
 }
 
+// TODO T48019320: because we pass initial props and state to the Create (and preallocate) mount instruction,
+// we technically don't need to pass the first Update to any components. Dedupe?
 local_ref<JMountItem::javaobject> createCreateMountItem(
     const jni::global_ref<jobject> &javaUIManager,
     const ShadowViewMutation &mutation,
     const Tag surfaceId) {
   static auto createJavaInstruction =
       jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<alias_ref<JMountItem>(jstring, jint, jint, jboolean)>(
+          ->getMethod<alias_ref<JMountItem>(jstring, ReadableMap::javaobject, jobject, jint, jint, jboolean)>(
               "createMountItem");
 
   auto newChildShadowView = mutation.newChildShadowView;
@@ -444,9 +446,24 @@ local_ref<JMountItem::javaobject> createCreateMountItem(
   jboolean isLayoutable =
       newChildShadowView.layoutMetrics != EmptyLayoutMetrics;
 
+  local_ref<ReadableMap::javaobject> props = castReadableMap(
+    ReadableNativeMap::newObjectCxxArgs(newChildShadowView.props->rawProps));
+
+  // Do not hold onto Java object from C
+  // We DO want to hold onto C object from Java, since we don't know the
+  // lifetime of the Java object
+  local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
+  if (newChildShadowView.state != nullptr) {
+    javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
+    StateWrapperImpl *cStateWrapper = cthis(javaStateWrapper);
+    cStateWrapper->state_ = newChildShadowView.state;
+  }
+
   return createJavaInstruction(
       javaUIManager,
       componentName.get(),
+      props.get(),
+      (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr),
       surfaceId,
       newChildShadowView.tag,
       isLayoutable);
@@ -514,7 +531,7 @@ void Binding::schedulerDidFinishTransaction(
       }
       case ShadowViewMutation::Delete: {
         mountItems[position++] =
-            createDeleteMountItem(localJavaUIManager, mutation);
+          createDeleteMountItem(localJavaUIManager, mutation);
 
         deletedViewTags.insert(mutation.oldChildShadowView.tag);
         break;

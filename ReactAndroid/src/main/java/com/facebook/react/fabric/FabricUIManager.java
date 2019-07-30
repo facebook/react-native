@@ -219,7 +219,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       int reactTag,
       final String componentName,
       @Nullable ReadableMap props,
-      Object stateWrapper,
+      @Nullable Object stateWrapper,
       boolean isLayoutable) {
     ThemedReactContext context = mReactContextForRootTag.get(rootTag);
     String component = getFabricComponentName(componentName);
@@ -239,13 +239,25 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @DoNotStrip
   @SuppressWarnings("unused")
   private MountItem createMountItem(
-      String componentName, int reactRootTag, int reactTag, boolean isLayoutable) {
+      String componentName,
+      @Nullable ReadableMap props,
+      @Nullable Object stateWrapper,
+      int reactRootTag,
+      int reactTag,
+      boolean isLayoutable) {
     String component = getFabricComponentName(componentName);
     ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
     if (reactContext == null) {
       throw new IllegalArgumentException("Unable to find ReactContext for root: " + reactRootTag);
     }
-    return new CreateMountItem(reactContext, reactRootTag, reactTag, component, isLayoutable);
+    return new CreateMountItem(
+        reactContext,
+        reactRootTag,
+        reactTag,
+        component,
+        props,
+        (StateWrapper) stateWrapper,
+        isLayoutable);
   }
 
   @DoNotStrip
@@ -449,6 +461,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     long batchedExecutionStartTime = SystemClock.uptimeMillis();
     for (MountItem mountItem : mountItemsToDispatch) {
+      if (DEBUG) {
+        FLog.d(TAG, "dispatchMountItems: Executing mountItem: " + mountItem);
+      }
       mountItem.execute(mMountingManager);
     }
     mBatchedExecutionTime = SystemClock.uptimeMillis() - batchedExecutionStartTime;

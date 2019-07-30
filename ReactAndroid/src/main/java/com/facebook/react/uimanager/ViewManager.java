@@ -117,6 +117,12 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     if (initialProps != null) {
       updateProperties(view, initialProps);
     }
+    if (stateWrapper != null) {
+      Object extraData = updateState(view, initialProps, stateWrapper);
+      if (extraData != null) {
+        updateExtraData(view, extraData);
+      }
+    }
     return view;
   }
 
@@ -150,7 +156,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * x/y/width/height this is the recommended and thread-safe way of passing extra data from css
    * node to the native view counterpart.
    *
-   * <p>TODO(7247021): Replace updateExtraData with generic update props mechanism after D2086999
+   * <p>TODO T7247021: Replace updateExtraData with generic update props mechanism after D2086999
    */
   public abstract void updateExtraData(@NonNull T root, Object extraData);
 
