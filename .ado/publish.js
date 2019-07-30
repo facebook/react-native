@@ -53,7 +53,7 @@ function doPublish() {
     __dirname,
     `../react-native-${releaseVersion}.tgz`
   );
-  const finalDir = path.join(process.env.SYSTEM_DEFAULWORKINGDIRECTORY, 'final');
+  const finalDir = path.join(process.env.SYSTEM_DEFAULTWORKINGDIRECTORY, 'final');
   fs.mkdirSync(finalDir);
   fs.copyFileSync(npmTarPath, finalDir);
 
