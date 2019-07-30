@@ -54,7 +54,6 @@ function doPublish() {
     `../react-native-${releaseVersion}.tgz`
   );
   const finalDir = path.join(process.env.SYSTEM_DEFAULTWORKINGDIRECTORY, 'final');
-  fs.mkdirSync(finalDir);
   fs.copyFileSync(npmTarPath, finalDir);
 
   const assetUpdateUrl = `https://uploads.github.com/repos/microsoft/react-native/releases/{id}/assets?name=react-native-${releaseVersion}.tgz`;
