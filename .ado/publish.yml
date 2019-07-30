@@ -77,12 +77,6 @@ jobs:
           #verbosityPack: 'Detailed' # Options: quiet, normal, detailed
           #arguments: # Required when command == Custom
 
-      - task: CmdLine@1
-        displayName: 'npm auth'
-        inputs:
-          filename: npm
-          arguments: 'config set $(publishnpmfeed)/registry/:_authToken $(npmTokenOffice)'
-
       - task: Gradle@1
         displayName: gradlew installArchives
         inputs:
@@ -108,12 +102,6 @@ jobs:
           #checkStyleRunAnalysis: false # Optional
           #findBugsRunAnalysis: false # Optional
           #pmdRunAnalysis: false # Optional
-
-      - task: CmdLine@1
-        displayName: 'npm unauth'
-        inputs:
-          filename: npm
-          arguments: 'config set $(publishnpmfeed)/registry/:_authToken XXXXX'
 
       - template: templates\prep-android-nuget.yml
 
