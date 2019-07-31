@@ -110,15 +110,17 @@ jobs:
         inputs:
           command: pack
           packagesToPack: 'ReactAndroid/ReactAndroid.nuspec'
-          packDestination: '$(System.DefaultWorkingDirectory)\final'
+          packDestination: '$(Build.StagingDirectory)\final'
 
       - task: CmdLine@2
         displayName: Do Publish
         inputs:
           script: node .ado/publish.js
+        env:
+          BUILD_STAGINGDIRECTORY: $(Build.StagingDirectory)
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish final artifacts'
         inputs:
-          PathtoPublish: '$(System.DefaultWorkingDirectory)\final'
+          PathtoPublish: '$(Build.StagingDirectory)\final'
           ArtifactName: 'ReactNative-Final'

@@ -51,7 +51,7 @@ function doPublish() {
 
   const npmTarFileName = `../react-native-${releaseVersion}.tgz`;
   const npmTarPath = path.resolve(__dirname, npmTarFileName);
-  const finalTarPath = path.join(process.env.SYSTEM_DEFAULTWORKINGDIRECTORY, 'final', npmTarFileName);
+  const finalTarPath = path.join(process.env.BUILD_STAGINGDIRECTORY, 'final', npmTarFileName);
   console.log(`Copying tar file ${npmTarPath} to: ${finalTarPath}`)
   fs.copyFileSync(npmTarPath, finalTarPath);
 
