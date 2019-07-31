@@ -337,6 +337,8 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   public void createReactContextInBackground() {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.createReactContextInBackground()");
+    UiThreadUtil
+        .assertOnUiThread(); // Assert before setting mHasStartedCreatingInitialContext = true
     if (!mHasStartedCreatingInitialContext) {
       mHasStartedCreatingInitialContext = true;
       recreateReactContextInBackgroundInner();
