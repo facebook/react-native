@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`GenerateComponentDescriptorH can generate a array props 1`] = `
+exports[`GenerateComponentDescriptorH can generate fixture ARRAY_PROPS 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -26,59 +26,7 @@ using ArrayPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor
 }
 `;
 
-exports[`GenerateComponentDescriptorH can generate a native primitive image prop 1`] = `
-Map {
-  "ComponentDescriptors.h" => "
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-#pragma once
-
-#include <react/components/IMAGE_PROP/ShadowNodes.h>
-#include <react/core/ConcreteComponentDescriptor.h>
-
-namespace facebook {
-namespace react {
-
-using ImagePropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<ImagePropNativeComponentShadowNode>;
-
-} // namespace react
-} // namespace facebook
-",
-}
-`;
-
-exports[`GenerateComponentDescriptorH can generate a native primitive point prop 1`] = `
-Map {
-  "ComponentDescriptors.h" => "
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-#pragma once
-
-#include <react/components/IMAGE_PROP/ShadowNodes.h>
-#include <react/core/ConcreteComponentDescriptor.h>
-
-namespace facebook {
-namespace react {
-
-using PointPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<PointPropNativeComponentShadowNode>;
-
-} // namespace react
-} // namespace facebook
-",
-}
-`;
-
-exports[`GenerateComponentDescriptorH can generate a single boolean prop 1`] = `
+exports[`GenerateComponentDescriptorH can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -104,7 +52,7 @@ using BooleanPropNativeComponentComponentDescriptor = ConcreteComponentDescripto
 }
 `;
 
-exports[`GenerateComponentDescriptorH can generate a single native primitive prop 1`] = `
+exports[`GenerateComponentDescriptorH can generate fixture COLOR_PROP 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -130,7 +78,7 @@ using ColorPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<
 }
 `;
 
-exports[`GenerateComponentDescriptorH can generate a single string prop 1`] = `
+exports[`GenerateComponentDescriptorH can generate fixture COMMANDS 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -142,13 +90,13 @@ Map {
 
 #pragma once
 
-#include <react/components/STRING_PROPS/ShadowNodes.h>
+#include <react/components/COMMANDS/ShadowNodes.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
 
-using StringPropComponentComponentDescriptor = ConcreteComponentDescriptor<StringPropComponentShadowNode>;
+using CommandNativeComponentComponentDescriptor = ConcreteComponentDescriptor<CommandNativeComponentShadowNode>;
 
 } // namespace react
 } // namespace facebook
@@ -156,7 +104,33 @@ using StringPropComponentComponentDescriptor = ConcreteComponentDescriptor<Strin
 }
 `;
 
-exports[`GenerateComponentDescriptorH can generate enum props 1`] = `
+exports[`GenerateComponentDescriptorH can generate fixture COMMANDS_AND_PROPS 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/COMMANDS_AND_PROPS/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+using CommandNativeComponentComponentDescriptor = ConcreteComponentDescriptor<CommandNativeComponentShadowNode>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateComponentDescriptorH can generate fixture ENUM_PROP 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -182,7 +156,33 @@ using EnumPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<
 }
 `;
 
-exports[`GenerateComponentDescriptorH can generate events 1`] = `
+exports[`GenerateComponentDescriptorH can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/EVENT_NESTED_OBJECT_PROPS/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+using EventsNestedObjectNativeComponentComponentDescriptor = ConcreteComponentDescriptor<EventsNestedObjectNativeComponentShadowNode>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateComponentDescriptorH can generate fixture EVENT_PROPS 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -208,7 +208,33 @@ using EventsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<Eve
 }
 `;
 
-exports[`GenerateComponentDescriptorH can generate float props 1`] = `
+exports[`GenerateComponentDescriptorH can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/EVENTS_WITH_PAPER_NAME/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateComponentDescriptorH can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -234,7 +260,33 @@ using FloatPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<
 }
 `;
 
-exports[`GenerateComponentDescriptorH can generate integer props 1`] = `
+exports[`GenerateComponentDescriptorH can generate fixture IMAGE_PROP 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/IMAGE_PROP/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+using ImagePropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<ImagePropNativeComponentShadowNode>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateComponentDescriptorH can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -260,7 +312,33 @@ using IntegerPropNativeComponentComponentDescriptor = ConcreteComponentDescripto
 }
 `;
 
-exports[`GenerateComponentDescriptorH can generate multiple native props 1`] = `
+exports[`GenerateComponentDescriptorH can generate fixture INTERFACE_ONLY 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/INTERFACE_ONLY/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateComponentDescriptorH can generate fixture MULTI_NATIVE_PROP 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -286,7 +364,85 @@ using ImageColorPropNativeComponentComponentDescriptor = ConcreteComponentDescri
 }
 `;
 
-exports[`GenerateComponentDescriptorH supports two components from different modules 1`] = `
+exports[`GenerateComponentDescriptorH can generate fixture NO_PROPS_NO_EVENTS 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/NO_PROPS_NO_EVENTS/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+using NoPropsNoEventsComponentComponentDescriptor = ConcreteComponentDescriptor<NoPropsNoEventsComponentShadowNode>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateComponentDescriptorH can generate fixture POINT_PROP 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/POINT_PROP/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+using PointPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<PointPropNativeComponentShadowNode>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateComponentDescriptorH can generate fixture STRING_PROP 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/STRING_PROP/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+using StringPropComponentComponentDescriptor = ConcreteComponentDescriptor<StringPropComponentShadowNode>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateComponentDescriptorH can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
@@ -313,7 +469,7 @@ using MultiFile2NativeComponentComponentDescriptor = ConcreteComponentDescriptor
 }
 `;
 
-exports[`GenerateComponentDescriptorH supports two components from same module 1`] = `
+exports[`GenerateComponentDescriptorH can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
 Map {
   "ComponentDescriptors.h" => "
 /**
