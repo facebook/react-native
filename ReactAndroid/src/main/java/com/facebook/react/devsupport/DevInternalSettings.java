@@ -36,7 +36,8 @@ public class DevInternalSettings
   private static final String PREFS_INSPECTOR_DEBUG_KEY = "inspector_debug";
   private static final String PREFS_HOT_MODULE_REPLACEMENT_KEY = "hot_module_replacement";
   private static final String PREFS_REMOTE_JS_DEBUG_KEY = "remote_js_debug";
-  private static final String PREFS_SAMPLING_PROFILER_ENABLED = "sampling_profiler_enabled";
+  private static final String PREFS_START_SAMPLING_PROFILER_ON_INIT =
+      "start_sampling_profiler_on_init";
 
   private final SharedPreferences mPreferences;
   private final Listener mListener;
@@ -100,6 +101,7 @@ public class DevInternalSettings
           || PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key)
           || PREFS_JS_BUNDLE_DELTAS_KEY.equals(key)
           || PREFS_JS_BUNDLE_DELTAS_CPP_KEY.equals(key)
+          || PREFS_START_SAMPLING_PROFILER_ON_INIT.equals(key)
           || PREFS_JS_MINIFY_DEBUG_KEY.equals(key)) {
         mListener.onInternalSettingsChanged();
       }
@@ -164,6 +166,11 @@ public class DevInternalSettings
   @Override
   public void setRemoteJSDebugEnabled(boolean remoteJSDebugEnabled) {
     mPreferences.edit().putBoolean(PREFS_REMOTE_JS_DEBUG_KEY, remoteJSDebugEnabled).apply();
+  }
+
+  @Override
+  public boolean isStartSamplingProfilerOnInit() {
+    return mPreferences.getBoolean(PREFS_START_SAMPLING_PROFILER_ON_INIT, false);
   }
 
   public interface Listener {
