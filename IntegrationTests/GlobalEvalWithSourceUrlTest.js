@@ -62,9 +62,9 @@ class GlobalEvalWithSourceUrlTest extends React.Component<{}> {
     const parsedStack = parseErrorStack(error);
     if (parsedStack[0].file !== url) {
       throw new Error(
-        `Expected first eval stack frame to be in ${url} but found ${
-          parsedStack[0].file
-        }`,
+        `Expected first eval stack frame to be in ${url} but found ${String(
+          parsedStack[0].file,
+        )}`,
       );
     }
     TestModule.markTestCompleted();

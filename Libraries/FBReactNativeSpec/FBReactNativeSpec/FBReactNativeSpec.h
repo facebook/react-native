@@ -816,7 +816,7 @@ namespace JS {
     struct StackFrame {
       folly::Optional<double> column() const;
       NSString *file() const;
-      double lineNumber() const;
+      folly::Optional<double> lineNumber() const;
       NSString *methodName() const;
       folly::Optional<bool> collapse() const;
 
@@ -2502,10 +2502,10 @@ inline NSString *JS::NativeExceptionsManager::StackFrame::file() const
   id const p = _v[@"file"];
   return RCTBridgingToString(p);
 }
-inline double JS::NativeExceptionsManager::StackFrame::lineNumber() const
+inline folly::Optional<double> JS::NativeExceptionsManager::StackFrame::lineNumber() const
 {
   id const p = _v[@"lineNumber"];
-  return RCTBridgingToDouble(p);
+  return RCTBridgingToOptionalDouble(p);
 }
 inline NSString *JS::NativeExceptionsManager::StackFrame::methodName() const
 {

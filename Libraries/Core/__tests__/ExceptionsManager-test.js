@@ -462,6 +462,9 @@ describe('ExceptionsManager', () => {
 const linesByFile = new Map();
 
 function getLineFromFrame({lineNumber /* 1-based */, file}) {
+  if (file == null) {
+    return null;
+  }
   const cleanedFile = cleanFileName(file);
   const lines =
     linesByFile.get(cleanedFile) ||

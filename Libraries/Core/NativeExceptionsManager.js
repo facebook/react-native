@@ -15,8 +15,8 @@ import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 export type StackFrame = {|
   column: ?number,
-  file: string,
-  lineNumber: number,
+  file: ?string,
+  lineNumber: ?number,
   methodName: string,
   collapse?: boolean,
 |};
