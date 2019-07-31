@@ -46,7 +46,9 @@ type ModuleProps = $ReadOnly<{|
   onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
 |}>;
 
-export const Commands = codegenNativeCommands<NativeCommands>();
+export const Commands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['hotspotUpdate', 'scrollTo'],
+});
 
 export default codegenNativeComponent<ModuleProps>('Module', {
   interfaceOnly: true,
