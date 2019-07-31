@@ -34,12 +34,13 @@ struct LayoutData {
 
 enum struct LayoutPassReason : int {
   kInitial = 0,
-  kMeasureChild = 1,
-  kAbsMeasureChild = 2,
-  kFlex = 3,
-  kAbsLayout = 4,
-  kStretch = 5,
-  kMultilineStretch = 6
+  kAbsLayout = 1,
+  kStretch = 2,
+  kMultilineStretch = 3,
+  kFlexLayout = 4,
+  kMeasureChild = 5,
+  kAbsMeasureChild = 6,
+  kFlexMeasure = 7
 };
 
 const char* LayoutPassReasonToString(const LayoutPassReason value);

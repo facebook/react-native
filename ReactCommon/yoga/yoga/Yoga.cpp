@@ -2185,6 +2185,7 @@ static float YGDistributeFreeSpaceSecondPass(
     const YGMeasureMode childHeightMeasureMode =
         !isMainAxisRow ? childMainMeasureMode : childCrossMeasureMode;
 
+    const bool isLayoutPass = performLayout && !requiresStretchLayout;
     // Recursively call the layout algorithm for this child with the updated
     // main size.
     YGLayoutNodeInternal(
@@ -2196,8 +2197,9 @@ static float YGDistributeFreeSpaceSecondPass(
         childHeightMeasureMode,
         availableInnerWidth,
         availableInnerHeight,
-        performLayout && !requiresStretchLayout,
-        LayoutPassReason::kFlex,
+        isLayoutPass,
+        isLayoutPass ? LayoutPassReason::kFlexLayout
+                     : LayoutPassReason::kFlexMeasure,
         config,
         layoutMarkerData,
         layoutContext,
