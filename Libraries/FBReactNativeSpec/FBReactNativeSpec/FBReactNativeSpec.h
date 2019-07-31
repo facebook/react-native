@@ -850,6 +850,9 @@ namespace JS {
   namespace NativeExceptionsManager {
     struct ExceptionData {
       NSString *message() const;
+      NSString *originalMessage() const;
+      NSString *name() const;
+      NSString *componentStack() const;
       facebook::react::LazyVector<JS::NativeExceptionsManager::StackFrame> stack() const;
       double id_() const;
       bool isFatal() const;
@@ -2518,6 +2521,21 @@ inline folly::Optional<bool> JS::NativeExceptionsManager::StackFrame::collapse()
 inline NSString *JS::NativeExceptionsManager::ExceptionData::message() const
 {
   id const p = _v[@"message"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeExceptionsManager::ExceptionData::originalMessage() const
+{
+  id const p = _v[@"originalMessage"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeExceptionsManager::ExceptionData::name() const
+{
+  id const p = _v[@"name"];
+  return RCTBridgingToString(p);
+}
+inline NSString *JS::NativeExceptionsManager::ExceptionData::componentStack() const
+{
+  id const p = _v[@"componentStack"];
   return RCTBridgingToString(p);
 }
 inline facebook::react::LazyVector<JS::NativeExceptionsManager::StackFrame> JS::NativeExceptionsManager::ExceptionData::stack() const

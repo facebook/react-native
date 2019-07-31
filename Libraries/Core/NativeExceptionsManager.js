@@ -23,6 +23,9 @@ export type StackFrame = {|
 
 export type ExceptionData = {
   message: string,
+  originalMessage: ?string,
+  name: ?string,
+  componentStack: ?string,
   stack: Array<StackFrame>,
   id: number,
   isFatal: boolean,
