@@ -53,8 +53,9 @@ using namespace facebook::react;
     _containerView = [[UIView alloc] initWithFrame:CGRectZero];
     [_scrollView addSubview:_containerView];
 
+    __weak __typeof(self) weakSelf = self;
     _scrollViewDelegateSplitter = [[RNGenericDelegateSplitter alloc] initWithDelegateUpdateBlock:^(id delegate) {
-      self->_scrollView.delegate = delegate;
+      weakSelf.scrollView.delegate = delegate;
     }];
 
     [_scrollViewDelegateSplitter addDelegate:self];
