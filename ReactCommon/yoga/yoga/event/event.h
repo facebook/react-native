@@ -23,15 +23,6 @@ enum struct LayoutType : int {
   kCachedMeasure = 3
 };
 
-struct LayoutData {
-  int layouts;
-  int measures;
-  int maxMeasureCache;
-  int cachedLayouts;
-  int cachedMeasures;
-  int measureCallbacks;
-};
-
 enum struct LayoutPassReason : int {
   kInitial = 0,
   kAbsLayout = 1,
@@ -40,7 +31,20 @@ enum struct LayoutPassReason : int {
   kFlexLayout = 4,
   kMeasureChild = 5,
   kAbsMeasureChild = 6,
-  kFlexMeasure = 7
+  kFlexMeasure = 7,
+  COUNT
+};
+
+struct LayoutData {
+  int layouts;
+  int measures;
+  int maxMeasureCache;
+  int cachedLayouts;
+  int cachedMeasures;
+  int measureCallbacks;
+  int measureChildMeasureCallbacks;
+  int absMeasureChildMeasureCallbacks;
+  int flexMeasureMeasureCallbacks;
 };
 
 const char* LayoutPassReasonToString(const LayoutPassReason value);
