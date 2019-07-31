@@ -559,9 +559,7 @@ export type ModuleProps = $ReadOnly<{|
   // No props or events
 |}>;
 
-export const Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['hotspotUpdate', 'scrollTo']
-});
+export const Commands = codegenNativeCommands<NativeCommands>();
 
 export default codegenNativeComponent<ModuleProps>('Module');
 `;
@@ -605,9 +603,7 @@ export type ModuleProps = $ReadOnly<{|
   // No props or events
 |}>;
 
-export const Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['scrollTo']
-});
+export const Commands = codegenNativeCommands<NativeCommands>();
 
 export default codegenNativeComponent<ModuleProps>('Module');
 `;
@@ -660,9 +656,7 @@ export type ModuleProps = $ReadOnly<{|
   onDirectEventDefinedInlineWithPaperName: DirectEventHandler<EventInFile, 'paperDirectEventDefinedInlineWithPaperName'>,
 |}>;
 
-export const Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['scrollTo']
-});
+export const Commands = codegenNativeCommands<NativeCommands>();
 
 export default codegenNativeComponent<ModuleProps>('Module');
 `;
