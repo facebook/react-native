@@ -86,7 +86,7 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
       const SharedShadowNodeUnsharedList &rootChildNodes) override;
   void uiManagerDidCreateShadowNode(
       const SharedShadowNode &shadowNode) override;
-  void uiManagerDispatchCommand(
+  void uiManagerDidDispatchCommand(
       const SharedShadowNode &shadowNode,
       std::string const &commandName,
       folly::dynamic const args) override;

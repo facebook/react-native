@@ -37,7 +37,7 @@ class UIManagerDelegate {
   /*
    * Called when UIManager wants to dispatch a command to the mounting layer.
    */
-  virtual void uiManagerDispatchCommand(
+  virtual void uiManagerDidDispatchCommand(
       const SharedShadowNode &shadowNode,
       std::string const &commandName,
       folly::dynamic const args) = 0;

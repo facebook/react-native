@@ -178,7 +178,7 @@ void UIManager::dispatchCommand(
     std::string const &commandName,
     folly::dynamic const args) const {
   if (delegate_) {
-    delegate_->uiManagerDispatchCommand(shadowNode, commandName, args);
+    delegate_->uiManagerDidDispatchCommand(shadowNode, commandName, args);
   }
 }
 

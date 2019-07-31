@@ -262,7 +262,7 @@ void Scheduler::uiManagerDidCreateShadowNode(
   }
 }
 
-void Scheduler::uiManagerDispatchCommand(
+void Scheduler::uiManagerDidDispatchCommand(
     const SharedShadowNode &shadowNode,
     std::string const &commandName,
     folly::dynamic const args) {
