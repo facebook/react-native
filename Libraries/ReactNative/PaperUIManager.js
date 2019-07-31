@@ -86,8 +86,8 @@ NativeUIManager.getViewManagerConfig = UIManagerJS.getViewManagerConfig;
 
 function lazifyViewManagerConfig(viewName) {
   const viewConfig = getConstants()[viewName];
+  viewManagerConfigs[viewName] = viewConfig;
   if (viewConfig.Manager) {
-    viewManagerConfigs[viewName] = viewConfig;
     defineLazyObjectProperty(viewConfig, 'Constants', {
       get: () => {
         const viewManager = NativeModules[viewConfig.Manager];
