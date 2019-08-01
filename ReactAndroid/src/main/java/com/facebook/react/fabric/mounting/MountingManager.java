@@ -42,12 +42,10 @@ public class MountingManager {
   private final ConcurrentHashMap<Integer, ViewState> mTagToViewState;
   private final ViewManagerRegistry mViewManagerRegistry;
   private final RootViewManager mRootViewManager = new RootViewManager();
-  private final ViewFactory mViewFactory;
 
   public MountingManager(ViewManagerRegistry viewManagerRegistry) {
     mTagToViewState = new ConcurrentHashMap<>();
     mViewManagerRegistry = viewManagerRegistry;
-    mViewFactory = new ViewManagerFactory(viewManagerRegistry);
   }
 
   public void addRootView(int reactRootTag, View rootView) {
@@ -89,13 +87,6 @@ public class MountingManager {
     }
 
     mTagToViewState.remove(reactTag);
-    Context context = view.getContext();
-    if (context instanceof ThemedReactContext) {
-      // We only recycle views that were created by RN (its context is instance of
-      // ThemedReactContext)
-      mViewFactory.recycle(
-          (ThemedReactContext) context, Assertions.assertNotNull(viewManager).getName(), view);
-    }
   }
 
   @UiThread
@@ -193,8 +184,8 @@ public class MountingManager {
       viewManager = mViewManagerRegistry.get(componentName);
       // View Managers are responsible for dealing with initial state and props.
       view =
-          mViewFactory.getOrCreateView(
-              componentName, propsDiffMap, stateWrapper, themedReactContext);
+          viewManager.createView(
+              themedReactContext, propsDiffMap, stateWrapper, null);
       view.setId(reactTag);
     }
 
