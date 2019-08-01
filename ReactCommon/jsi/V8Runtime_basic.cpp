@@ -73,7 +73,7 @@ namespace facebook { namespace v8runtime {
     return script;
   }
 
-  bool V8Runtime::ExecuteString(const v8::Local<v8::String>& source, const std::string& sourceURL) {
+  jsi::Value V8Runtime::ExecuteString(const v8::Local<v8::String>& source, const std::string& sourceURL) {
     _ISOLATE_CONTEXT_ENTER
     v8::TryCatch try_catch(isolate);
     v8::Local<v8::Context> context(isolate->GetCurrentContext());

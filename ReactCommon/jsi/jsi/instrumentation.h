@@ -1,10 +1,12 @@
-//  Copyright (c) Facebook, Inc. and its affiliates.
-//
-// This source code is licensed under the MIT license found in the
- // LICENSE file in the root directory of this source tree.
-
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
+ */
 #pragma once
 
+#include <iosfwd>
 #include <string>
 
 #include <jsi/jsi.h>
@@ -54,6 +56,15 @@ class Instrumentation {
   /// \return true iff the heap capture succeeded
   virtual bool createSnapshotToFile(const std::string& path, bool compact) = 0;
 
+  /// Captures the heap to an output stream
+  ///
+  /// \param os output stream to write to.
+  ///
+  /// \param compact Whether the JSON should be compact or pretty
+  ///
+  /// \return true iff the heap capture succeeded.
+  virtual bool createSnapshotToStream(std::ostream& os, bool compact) = 0;
+
   /// Write a trace of bridge traffic to the given file name.
   virtual void writeBridgeTrafficTraceToFile(
       const std::string& fileName) const = 0;
@@ -61,12 +72,6 @@ class Instrumentation {
   /// Write basic block profile trace to the given file name.
   virtual void writeBasicBlockProfileTraceToFile(
       const std::string& fileName) const = 0;
-
-  /// Enable sampling profiler.
-  virtual void enableSamplingProfiler() const = 0;
-
-  /// Dump sampled stack trace to the given file name.
-  virtual void dumpSampledTraceToFile(const std::string& fileName) const = 0;
 
   /// Dump external profiler symbols to the given file name.
   virtual void dumpProfilerSymbolsToFile(const std::string& fileName) const = 0;

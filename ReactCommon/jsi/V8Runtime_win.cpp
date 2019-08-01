@@ -18,7 +18,7 @@ namespace facebook { namespace v8runtime {
     std::abort();
   }
 
-  bool V8Runtime::ExecuteString(const v8::Local<v8::String>& source, const std::string& sourceURL) {
+  jsi::Value V8Runtime::ExecuteString(const v8::Local<v8::String>& source, const std::string& sourceURL) {
     // Not to be called on windows.
     std::abort();
   }

@@ -52,7 +52,7 @@ namespace facebook { namespace v8runtime {
 
     ~V8Runtime();
 
-    void evaluateJavaScript(std::unique_ptr<const jsi::Buffer> buffer, const std::string& sourceURL) override;
+    jsi::Value evaluateJavaScript(const std::shared_ptr<const jsi::Buffer>& buffer, const std::string& sourceURL) override;
 
     jsi::Object global() override;
 
@@ -276,17 +276,22 @@ namespace facebook { namespace v8runtime {
     class ExternalOwningOneByteStringResource
       : public v8::String::ExternalOneByteStringResource {
     public:
-      explicit ExternalOwningOneByteStringResource(std::unique_ptr<const jsi::Buffer>&& buffer)
-        : buffer_(std::move(buffer)) {}
+      explicit ExternalOwningOneByteStringResource(const std::shared_ptr<const jsi::Buffer>& buffer)
+        : buffer_(buffer) /*create a copy of shared_ptr*/ {}
       const char* data() const override { return reinterpret_cast<const char*>(buffer_->data()); }
       size_t length() const override { return buffer_->size(); }
 
     private:
-      std::unique_ptr<const jsi::Buffer> buffer_;
+      std::shared_ptr<const jsi::Buffer> buffer_;
     };
 
+    std::shared_ptr<const facebook::jsi::PreparedJavaScript> prepareJavaScript(const std::shared_ptr<const facebook::jsi::Buffer> &, std::string) override;
+    facebook::jsi::Value evaluatePreparedJavaScript(const std::shared_ptr<const facebook::jsi::PreparedJavaScript> &) override;
 
+    std::string symbolToString(const facebook::jsi::Symbol &) override;
+    
     PointerValue* cloneString(const Runtime::PointerValue* pv) override;
+    PointerValue *cloneSymbol(const PointerValue *) override;
     PointerValue* cloneObject(const Runtime::PointerValue* pv) override;
     PointerValue* clonePropNameID(const Runtime::PointerValue* pv) override;
 
@@ -355,6 +360,8 @@ namespace facebook { namespace v8runtime {
 
     bool strictEquals(const jsi::String& a, const jsi::String& b) const override;
     bool strictEquals(const jsi::Object& a, const jsi::Object& b) const override;
+    bool strictEquals(const jsi::Symbol& a, const jsi::Symbol& b) const override;
+
     bool instanceOf(const jsi::Object& o, const jsi::Function& f) override;
 
   void AddHostObjectLifetimeTracker(std::shared_ptr<HostObjectLifetimeTracker> hostObjectLifetimeTracker);
@@ -371,8 +378,8 @@ namespace facebook { namespace v8runtime {
     v8::Local<v8::Script> GetCompiledScriptFromCache(const v8::Local<v8::String> &source, const std::string& sourceURL);
     v8::Local<v8::Script> GetCompiledScript(const v8::Local<v8::String> &source, const std::string& sourceURL);
 
-    bool ExecuteString(v8::Local<v8::String> source, const jsi::Buffer* cache, v8::Local<v8::Value> name, bool report_exceptions);
-    bool ExecuteString(const v8::Local<v8::String>& source, const std::string& sourceURL);
+    jsi::Value ExecuteString(v8::Local<v8::String> source, const jsi::Buffer* cache, v8::Local<v8::Value> name, bool report_exceptions);
+    jsi::Value ExecuteString(const v8::Local<v8::String>& source, const std::string& sourceURL);
 
     void Log(const std::string& message, const unsigned int logLevel) {
       if (logger_) {

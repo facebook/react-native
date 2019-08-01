@@ -1,8 +1,9 @@
-//  Copyright (c) Facebook, Inc. and its affiliates.
-//
-// This source code is licensed under the MIT license found in the
- // LICENSE file in the root directory of this source tree.
-
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
+ */
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
@@ -14,6 +15,29 @@
 namespace facebook {
 namespace jsi {
 
+namespace {
+
+// This is used for generating short exception strings.
+std::string kindToString(const Value& v, Runtime* rt = nullptr) {
+  if (v.isUndefined()) {
+    return "undefined";
+  } else if (v.isNull()) {
+    return "null";
+  } else if (v.isBool()) {
+    return v.getBool() ? "true" : "false";
+  } else if (v.isNumber()) {
+    return "a number";
+  } else if (v.isString()) {
+    return "a string";
+  } else {
+    assert(v.isObject() && "Expecting object.");
+    return rt != nullptr && v.getObject(*rt).isFunction(*rt) ? "a function"
+                                                             : "an object";
+  }
+}
+
+} // namespace
+
 namespace detail {
 
 void throwJSError(Runtime& rt, const char* msg) {
@@ -22,7 +46,9 @@ void throwJSError(Runtime& rt, const char* msg) {
 
 } // namespace detail
 
-Buffer::~Buffer() {}
+Buffer::~Buffer() = default;
+
+PreparedJavaScript::~PreparedJavaScript() = default;
 
 Value HostObject::get(Runtime&, const PropNameID&) {
   return Value();
@@ -55,19 +81,15 @@ Instrumentation& Runtime::instrumentation() {
       return false;
     }
 
+    bool createSnapshotToStream(std::ostream&, bool) override {
+      return false;
+    }
+
     void writeBridgeTrafficTraceToFile(const std::string&) const override {
       std::abort();
     }
 
     void writeBasicBlockProfileTraceToFile(const std::string&) const override {
-      std::abort();
-    }
-
-    void enableSamplingProfiler() const override {
-      std::abort();
-    }
-
-    void dumpSampledTraceToFile(const std::string&) const override {
       std::abort();
     }
 
@@ -95,8 +117,8 @@ Object Object::getPropertyAsObject(Runtime& runtime, const char* name) const {
   if (!v.isObject()) {
     throw JSError(
         runtime,
-        std::string("getPropertyAsObject: property '") + name +
-            "' is not an Object");
+        std::string("getPropertyAsObject: property '") + name + "' is " +
+            kindToString(v, &runtime) + ", expected an Object");
   }
 
   return v.getObject(runtime);
@@ -108,8 +130,8 @@ Function Object::getPropertyAsFunction(Runtime& runtime, const char* name)
   if (!obj.isFunction(runtime)) {
     throw JSError(
         runtime,
-        std::string("getPropertyAsFunction: property '") + name +
-            "' is not a Function");
+        std::string("getPropertyAsFunction: property '") + name + "' is " +
+            kindToString(std::move(obj), &runtime) + ", expected a Function");
   };
 
   Runtime::PointerValue* value = obj.ptr_;
@@ -119,28 +141,40 @@ Function Object::getPropertyAsFunction(Runtime& runtime, const char* name)
 
 Array Object::asArray(Runtime& runtime) const& {
   if (!isArray(runtime)) {
-    throw JSError(runtime, "Object is not an array");
+    throw JSError(
+        runtime,
+        "Object is " + kindToString(Value(runtime, *this), &runtime) +
+            ", expected an array");
   }
   return getArray(runtime);
 }
 
 Array Object::asArray(Runtime& runtime) && {
   if (!isArray(runtime)) {
-    throw JSError(runtime, "Object is not an array");
+    throw JSError(
+        runtime,
+        "Object is " + kindToString(Value(runtime, *this), &runtime) +
+            ", expected an array");
   }
   return std::move(*this).getArray(runtime);
 }
 
 Function Object::asFunction(Runtime& runtime) const& {
   if (!isFunction(runtime)) {
-    throw JSError(runtime, "Object is not a function");
+    throw JSError(
+        runtime,
+        "Object is " + kindToString(Value(runtime, *this), &runtime) +
+            ", expected a function");
   }
   return getFunction(runtime);
 }
 
 Function Object::asFunction(Runtime& runtime) && {
   if (!isFunction(runtime)) {
-    throw JSError(runtime, "Object is not a function");
+    throw JSError(
+        runtime,
+        "Object is " + kindToString(Value(runtime, *this), &runtime) +
+            ", expected a function");
   }
   return std::move(*this).getFunction(runtime);
 }
@@ -165,6 +199,8 @@ Value::Value(Runtime& runtime, const Value& other) : Value(other.kind_) {
     data_.boolean = other.data_.boolean;
   } else if (kind_ == NumberKind) {
     data_.number = other.data_.number;
+  } else if (kind_ == SymbolKind) {
+    new (&data_.pointer) Pointer(runtime.cloneSymbol(other.data_.pointer.ptr_));
   } else if (kind_ == StringKind) {
     new (&data_.pointer) Pointer(runtime.cloneString(other.data_.pointer.ptr_));
   } else if (kind_ >= ObjectKind) {
@@ -200,6 +236,10 @@ bool Value::strictEquals(Runtime& runtime, const Value& a, const Value& b) {
       return a.data_.boolean == b.data_.boolean;
     case NumberKind:
       return a.data_.number == b.data_.number;
+    case SymbolKind:
+      return runtime.strictEquals(
+          static_cast<const Symbol&>(a.data_.pointer),
+          static_cast<const Symbol&>(b.data_.pointer));
     case StringKind:
       return runtime.strictEquals(
           static_cast<const String&>(a.data_.pointer),
@@ -214,32 +254,54 @@ bool Value::strictEquals(Runtime& runtime, const Value& a, const Value& b) {
 
 double Value::asNumber() const {
   if (!isNumber()) {
-    throw JSINativeException("Value is not an Object");
+    throw JSINativeException(
+        "Value is " + kindToString(*this) + ", expected a number");
   }
 
   return getNumber();
 }
 
-Object Value::asObject(Runtime& runtime) const& {
+Object Value::asObject(Runtime& rt) const& {
   if (!isObject()) {
-    throw JSError(runtime, "Value is not an Object");
+    throw JSError(
+        rt, "Value is " + kindToString(*this, &rt) + ", expected an Object");
   }
 
-  return getObject(runtime);
+  return getObject(rt);
 }
 
 Object Value::asObject(Runtime& rt) && {
   if (!isObject()) {
-    throw JSError(rt, "Value is not an Object");
+    throw JSError(
+        rt, "Value is " + kindToString(*this, &rt) + ", expected an Object");
   }
   auto ptr = data_.pointer.ptr_;
   data_.pointer.ptr_ = nullptr;
   return static_cast<Object>(ptr);
 }
 
+Symbol Value::asSymbol(Runtime& rt) const& {
+  if (!isSymbol()) {
+    throw JSError(
+        rt, "Value is " + kindToString(*this, &rt) + ", expected a Symbol");
+  }
+
+  return getSymbol(rt);
+}
+
+Symbol Value::asSymbol(Runtime& rt) && {
+  if (!isSymbol()) {
+    throw JSError(
+        rt, "Value is " + kindToString(*this, &rt) + ", expected a Symbol");
+  }
+
+  return std::move(*this).getSymbol(rt);
+}
+
 String Value::asString(Runtime& rt) const& {
   if (!isString()) {
-    throw JSError(rt, "Value is not a String");
+    throw JSError(
+        rt, "Value is " + kindToString(*this, &rt) + ", expected a String");
   }
 
   return getString(rt);
@@ -247,7 +309,8 @@ String Value::asString(Runtime& rt) const& {
 
 String Value::asString(Runtime& rt) && {
   if (!isString()) {
-    throw JSError(rt, "Value is not a String");
+    throw JSError(
+        rt, "Value is " + kindToString(*this, &rt) + ", expected a String");
   }
 
   return std::move(*this).getString(rt);

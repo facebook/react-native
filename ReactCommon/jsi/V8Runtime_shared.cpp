@@ -164,14 +164,14 @@ namespace facebook { namespace v8runtime {
     }
   }
 
-  void V8Runtime::evaluateJavaScript(
-    std::unique_ptr<const jsi::Buffer> buffer,
+  jsi::Value V8Runtime::evaluateJavaScript(
+    const std::shared_ptr<const jsi::Buffer>& buffer,
     const std::string& sourceURL) {
 
     _ISOLATE_CONTEXT_ENTER
 
     // TODO :: assert if not one byte.
-    ExternalOwningOneByteStringResource* external_string_resource = new ExternalOwningOneByteStringResource(std::move(buffer));
+    ExternalOwningOneByteStringResource* external_string_resource = new ExternalOwningOneByteStringResource(buffer);
     v8::Local<v8::String> sourceV8String;
     if (!v8::String::NewExternalOneByte(isolate, external_string_resource).ToLocal(&sourceV8String)) {
       // fallback.
@@ -185,9 +185,9 @@ namespace facebook { namespace v8runtime {
     if (cacheProvider_) {
       v8::Local<v8::String> urlV8String = v8::String::NewFromUtf8(isolate, reinterpret_cast<const char*>(sourceURL.c_str()));
       std::unique_ptr<const jsi::Buffer> cache{ (*cacheProvider_)(sourceURL) };
-      ExecuteString(sourceV8String, cache.get(), urlV8String, true);
+      return ExecuteString(sourceV8String, cache.get(), urlV8String, true);
     } else {
-      ExecuteString(sourceV8String, sourceURL);
+      return ExecuteString(sourceV8String, sourceURL);
     }
   }
 
@@ -200,7 +200,7 @@ namespace facebook { namespace v8runtime {
     return context;
   }
 
-  bool V8Runtime::ExecuteString(v8::Local<v8::String> source, const jsi::Buffer* cache, v8::Local<v8::Value> name, bool report_exceptions) {
+  jsi::Value V8Runtime::ExecuteString(v8::Local<v8::String> source, const jsi::Buffer* cache, v8::Local<v8::Value> name, bool report_exceptions) {
     _ISOLATE_CONTEXT_ENTER
     v8::TryCatch try_catch(isolate);
     v8::ScriptOrigin origin(name);
@@ -220,7 +220,7 @@ namespace facebook { namespace v8runtime {
       // Print errors that happened during compilation.
       if (report_exceptions)
         ReportException(&try_catch);
-      return false;
+      return createValue(v8::Undefined(GetIsolate()));
     }
     else {
       v8::Local<v8::Value> result;
@@ -230,13 +230,21 @@ namespace facebook { namespace v8runtime {
         if (report_exceptions) {
           ReportException(&try_catch);
         }
-        return false;
+        return createValue(v8::Undefined(GetIsolate()));
       }
       else {
         assert(!try_catch.HasCaught());
-        return true;
+        return createValue(result);
       }
     }
+  }
+
+  std::shared_ptr<const facebook::jsi::PreparedJavaScript>V8Runtime::prepareJavaScript(const std::shared_ptr<const facebook::jsi::Buffer> &, std::string) {
+    throw jsi::JSINativeException("V8Runtime::prepareJavaScript is not implemented!");
+  }
+
+  facebook::jsi::Value V8Runtime::evaluatePreparedJavaScript(const std::shared_ptr<const facebook::jsi::PreparedJavaScript> &) {
+    throw jsi::JSINativeException("V8Runtime::evaluatePreparedJavaScript is not implemented!");
   }
 
   void V8Runtime::ReportException(v8::TryCatch* try_catch) {
@@ -361,6 +369,14 @@ namespace facebook { namespace v8runtime {
     _ISOLATE_CONTEXT_ENTER
     const V8StringValue* string = static_cast<const V8StringValue*>(pv);
     return makeStringValue(string->v8String_.Get(GetIsolate()));
+  }
+
+  jsi::Runtime::PointerValue *V8Runtime::cloneSymbol(const jsi::Runtime::PointerValue*) {
+    throw jsi::JSINativeException("V8Runtime::cloneSymbol is not implemented!");
+  }
+
+  std::string V8Runtime::symbolToString(const jsi::Symbol &) {
+    throw jsi::JSINativeException("V8Runtime::symbolToString is not implemented!");
   }
 
   jsi::PropNameID V8Runtime::createPropNameIDFromAscii(const char* str, size_t length) {
@@ -628,6 +644,10 @@ namespace facebook { namespace v8runtime {
   bool V8Runtime::strictEquals(const jsi::Object& a, const jsi::Object& b) const {
     _ISOLATE_CONTEXT_ENTER
     return objectRef(a)->StrictEquals(objectRef(b));
+  }
+
+  bool V8Runtime::strictEquals(const jsi::Symbol &, const jsi::Symbol &) const {
+    throw jsi::JSINativeException("Not implemented!");
   }
 
   bool V8Runtime::instanceOf(const jsi::Object& o, const jsi::Function& f) {

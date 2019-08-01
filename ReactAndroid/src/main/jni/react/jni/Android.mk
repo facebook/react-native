@@ -26,7 +26,7 @@ LOCAL_LDLIBS += -landroid
 LOCAL_SHARED_LIBRARIES := libfolly_json libfb libglog_init libyoga libprivatedata
 
 # The static libraries (.a files) that this module depends on.
-LOCAL_STATIC_LIBRARIES := libreactnative
+LOCAL_STATIC_LIBRARIES := libreactnative jsi
 
 # Name of this module.
 #
@@ -62,8 +62,10 @@ LOCAL_V8_FILES := \
   
 ifeq ($(JS_ENGINE), V8)
   LOCAL_SRC_FILES += $(LOCAL_V8_FILES)
+  LOCAL_STATIC_LIBRARIES += v8runtime
 else ifeq ($(JS_ENGINE), JSC)
   LOCAL_SHARED_LIBRARIES += libjsc
+  LOCAL_STATIC_LIBRARIES += jscruntime
 endif
 
 # Build the files in this directory as a shared library

@@ -1,8 +1,9 @@
-//  Copyright (c) Facebook, Inc. and its affiliates.
-//
-// This source code is licensed under the MIT license found in the
- // LICENSE file in the root directory of this source tree.
-
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
+ */
 #pragma once
 
 namespace facebook {
@@ -17,6 +18,9 @@ inline Value toValue(Runtime&, bool b) {
 }
 inline Value toValue(Runtime&, double d) {
   return Value(d);
+}
+inline Value toValue(Runtime&, float f) {
+  return Value(static_cast<double>(f));
 }
 inline Value toValue(Runtime&, int i) {
   return Value(i);
@@ -227,9 +231,8 @@ inline Value Function::call(Runtime& runtime, std::initializer_list<Value> args)
 template <typename... Args>
 inline Value Function::call(Runtime& runtime, Args&&... args) const {
   // A more awesome version of this would be able to create raw values
-  // which can be used directly as HermesValues, instead of having to
-  // wrap the args in Values and hvFromValue on each to unwrap them.
-  // But this will do for now.
+  // which can be used directly without wrapping and unwrapping, but
+  // this will do for now.
   return call(runtime, {detail::toValue(runtime, std::forward<Args>(args))...});
 }
 
@@ -254,9 +257,8 @@ inline Value Function::callWithThis(
     const Object& jsThis,
     Args&&... args) const {
   // A more awesome version of this would be able to create raw values
-  // which can be used directly as HermesValues, instead of having to
-  // wrap the args in Values and hvFromValue on each to unwrap them.
-  // But this will do for now.
+  // which can be used directly without wrapping and unwrapping, but
+  // this will do for now.
   return callWithThis(
       runtime, jsThis, {detail::toValue(runtime, std::forward<Args>(args))...});
 }

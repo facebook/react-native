@@ -9,9 +9,16 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := jsi
 
-LOCAL_SRC_FILES := \
-    jsi.cpp \
-    JSIDynamic.cpp \
+LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/jsi/*.cpp)
+LOCAL_C_INCLUDES := $(LOCAL_PATH)
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
+
+LOCAL_CFLAGS := -fexceptions -frtti -O3
+LOCAL_SHARED_LIBRARIES := libfolly_json glog
+
+include $(BUILD_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
 
 LOCAL_V8_FILES := \
     FileUtils.cpp \
@@ -23,19 +30,18 @@ LOCAL_V8_FILES := \
 LOCAL_JSC_FILES := \
    JSCRuntime.cpp \
 
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/..
-
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
-
-LOCAL_CFLAGS := -fexceptions -frtti -O3
-LOCAL_SHARED_LIBRARIES := libfolly_json glog
-
 ifeq ($(JS_ENGINE), V8)
-  LOCAL_SRC_FILES += $(LOCAL_V8_FILES)
-  LOCAL_SHARED_LIBRARIES += libv8 libv8platform libv8base
+  LOCAL_MODULE := v8runtime
+  LOCAL_SRC_FILES := $(LOCAL_V8_FILES)
+  LOCAL_SHARED_LIBRARIES := libfolly_json glog libv8 libv8platform libv8base
 else ifeq ($(JS_ENGINE), JSC)
-  LOCAL_SRC_FILES += $(LOCAL_JSC_FILES)
-  LOCAL_SHARED_LIBRARIES += libjsc
+  LOCAL_MODULE := jscruntime
+  LOCAL_SRC_FILES := $(LOCAL_JSC_FILES)
+  LOCAL_SHARED_LIBRARIES += libfolly_json glog libjsc
 endif
 
+LOCAL_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/..
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
+
+LOCAL_CFLAGS := -fexceptions -frtti -O3
 include $(BUILD_STATIC_LIBRARY)
