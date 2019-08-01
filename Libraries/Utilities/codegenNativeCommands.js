@@ -10,7 +10,11 @@
 
 'use strict';
 
-function codegenNativeCommands<T>(): T {
+type Options<T = string> = $ReadOnly<{|
+  supportedCommands: $ReadOnlyArray<T>,
+|}>;
+
+function codegenNativeCommands<T>(options: Options<$Keys<T>>): T {
   return (({}: any): T);
 }
 
