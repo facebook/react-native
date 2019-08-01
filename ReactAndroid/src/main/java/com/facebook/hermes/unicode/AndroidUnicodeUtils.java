@@ -14,6 +14,7 @@ import java.util.Locale;
 // TODO: use com.facebook.common.locale.Locales.getApplicationLocale() as the current locale,
 // rather than the device locale. This is challenging because getApplicationLocale() is only
 // available via DI.
+@DoNotStrip
 public class AndroidUnicodeUtils {
   public static int localeCompare(String left, String right) {
     Collator collator = Collator.getInstance();
