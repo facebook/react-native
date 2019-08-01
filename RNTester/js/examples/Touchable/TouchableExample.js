@@ -494,7 +494,11 @@ exports.examples = [
     platform: 'android',
     render: function() {
       const mScale = new Animated.Value(1);
-      Animated.timing(mScale, {toValue: 0.3, duration: 1000}).start();
+      Animated.timing(mScale, {
+        toValue: 0.3,
+        duration: 1000,
+        useNativeDriver: false,
+      }).start();
       const style = {
         backgroundColor: 'rgb(180, 64, 119)',
         width: 200,

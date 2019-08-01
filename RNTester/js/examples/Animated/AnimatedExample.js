@@ -57,8 +57,13 @@ exports.examples = [
             // Uses easing functions
             this.state.fadeAnim, // The value to drive
             {
-              toValue: 1, // Target
-              duration: 2000, // Configuration
+              // Target
+              toValue: 1,
+
+              // Configuration
+              duration: 2000,
+
+              useNativeDriver: false,
             },
           ).start(); // Don't forget start!
         }
@@ -121,10 +126,19 @@ exports.examples = [
           <RNTesterButton
             onPress={() => {
               Animated.spring(this.anim, {
-                toValue: 0, // Returns to the start
-                velocity: 3, // Velocity makes it move
-                tension: -10, // Slow
-                friction: 1, // Oscillate a lot
+                // Returns to the start
+                toValue: 0,
+
+                // Velocity makes it move
+                velocity: 3,
+
+                // Slow
+                tension: -10,
+
+                // Oscillate a lot
+                friction: 1,
+
+                useNativeDriver: false,
               }).start();
             }}>
             Press to Fling it!
@@ -182,18 +196,35 @@ exports.examples = [
                 timing(this.anims[0], {
                   toValue: 200,
                   easing: Easing.linear,
+                  useNativeDriver: false,
                 }),
                 Animated.delay(400), // Use with sequence
                 timing(this.anims[0], {
                   toValue: 0,
-                  easing: Easing.elastic(2), // Springy
+
+                  // Springy
+                  easing: Easing.elastic(2),
+
+                  useNativeDriver: false,
                 }),
                 Animated.delay(400),
                 Animated.stagger(
                   200,
                   this.anims
-                    .map(anim => timing(anim, {toValue: 200}))
-                    .concat(this.anims.map(anim => timing(anim, {toValue: 0}))),
+                    .map(anim =>
+                      timing(anim, {
+                        toValue: 200,
+                        useNativeDriver: false,
+                      }),
+                    )
+                    .concat(
+                      this.anims.map(anim =>
+                        timing(anim, {
+                          toValue: 0,
+                          useNativeDriver: false,
+                        }),
+                      ),
+                    ),
                 ),
                 Animated.delay(400),
                 Animated.parallel(
@@ -206,6 +237,7 @@ exports.examples = [
                       toValue: 320,
                       easing,
                       duration: 3000,
+                      useNativeDriver: false,
                     }),
                   ),
                 ),
@@ -215,8 +247,12 @@ exports.examples = [
                   this.anims.map(anim =>
                     timing(anim, {
                       toValue: 0,
-                      easing: Easing.bounce, // Like a ball
+
+                      // Like a ball
+                      easing: Easing.bounce,
+
                       duration: 2000,
+                      useNativeDriver: false,
                     }),
                   ),
                 ),
@@ -250,10 +286,19 @@ exports.examples = [
           <RNTesterButton
             onPress={() => {
               Animated.spring(this.anim, {
-                toValue: 0, // Returns to the start
-                velocity: 3, // Velocity makes it move
-                tension: -10, // Slow
-                friction: 1, // Oscillate a lot
+                // Returns to the start
+                toValue: 0,
+
+                // Velocity makes it move
+                velocity: 3,
+
+                // Slow
+                tension: -10,
+
+                // Oscillate a lot
+                friction: 1,
+
+                useNativeDriver: false,
               }).start();
             }}>
             Press to Spin it!

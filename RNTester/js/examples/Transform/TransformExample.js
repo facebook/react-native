@@ -27,6 +27,7 @@ class Flip extends React.Component<{}, $FlowFixMeState> {
     Animated.timing(this.state.theta, {
       toValue: 360,
       duration: 5000,
+      useNativeDriver: false,
     }).start(this._animate);
   };
 

@@ -29,7 +29,11 @@ class AnExTilt extends React.Component<Object, any> {
             inputRange: [-300, 0, 300], // pan is in pixels
             outputRange: [0, 1, 0], // goes to zero at both edges
           }),
-          duration: 0, // direct tracking
+
+          // direct tracking
+          duration: 0,
+
+          useNativeDriver: false,
         }).start();
       },
       onPanResponderMove: Animated.event(
@@ -43,10 +47,15 @@ class AnExTilt extends React.Component<Object, any> {
           toValue = -500;
         }
         Animated.spring(this.state.panX, {
-          toValue, // animate back to center or off screen
-          velocity: gestureState.vx, // maintain gesture velocity
+          // animate back to center or off screen
+          toValue,
+
+          // maintain gesture velocity
+          velocity: gestureState.vx,
+
           tension: 10,
           friction: 3,
+          useNativeDriver: false,
         }).start();
         this.state.panX.removeAllListeners();
         const id = this.state.panX.addListener(({value}) => {
@@ -54,7 +63,10 @@ class AnExTilt extends React.Component<Object, any> {
           if (Math.abs(value) > 400) {
             this.state.panX.removeListener(id); // offscreen, so stop listening
             Animated.timing(this.state.opacity, {
-              toValue: 1, // Fade back in.  This unlinks it from tracking this.state.panX
+              // Fade back in.  This unlinks it from tracking this.state.panX
+              toValue: 1,
+
+              useNativeDriver: false,
             }).start();
             this.state.panX.setValue(0); // Note: stops the spring animation
             toValue !== 0 && this._startBurnsZoom();
@@ -67,8 +79,13 @@ class AnExTilt extends React.Component<Object, any> {
   _startBurnsZoom() {
     this.state.burns.setValue(1); // reset to beginning
     Animated.decay(this.state.burns, {
-      velocity: 1, // subtle zoom
-      deceleration: 0.9999, // slow decay
+      // subtle zoom
+      velocity: 1,
+
+      // slow decay
+      deceleration: 0.9999,
+
+      useNativeDriver: false,
     }).start();
   }
 
