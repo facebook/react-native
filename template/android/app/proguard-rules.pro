@@ -8,3 +8,6 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+# Hermes specific rules (uncomment only if you have hermes enabled):
+# -keep class com.facebook.hermes.unicode.* { *; }
