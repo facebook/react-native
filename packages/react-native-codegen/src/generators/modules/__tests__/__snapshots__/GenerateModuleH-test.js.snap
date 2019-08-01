@@ -1,5 +1,37 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`GenerateModuleCpp can generate fixture COMPLEX_OBJECTS 1`] = `
+Map {
+  "NativeModules.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <ReactCommon/TurboModule.h>
+
+namespace facebook {
+namespace react {
+
+class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
+protected:
+  NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+
+public:
+virtual jsi::Object difficult(jsi::Runtime &rt, const jsi::Object &A) = 0;
+
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateModuleCpp can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
   "NativeModules.h" => "

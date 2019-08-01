@@ -19,10 +19,43 @@ type AnotherGenericObject = GenericObject;
 export interface Spec extends TurboModule {
   +getGenericObject: (arg: Object) => Object;
   +getGenericObjectWithAlias: (arg: GenericObject) => AnotherGenericObject;
+  +difficultObject: (A: {|
+    D: boolean,
+    E: {|
+      D: boolean,
+      E: number,
+      F: string,
+    |},
+    F: string,
+  |}) => {|
+    D: boolean,
+    E: {|
+      D: boolean,
+      E: {|
+        D: boolean,
+        E: number,
+        F: string,
+      |},
+      F: string,
+    |},
+    F: string,
+  |};
   +getConstants: () => {|
-    const1: boolean,
-    const2: number,
-    const3: string,
+    D: boolean,
+    E: {|
+      D: boolean,
+      E: {|
+        D: boolean,
+        E: {|
+          D: boolean,
+          E: number,
+          F: string,
+        |},
+        F: string,
+      |},
+      F: string,
+    |},
+    F: string,
   |};
 }
 

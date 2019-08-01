@@ -1,5 +1,54 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`GenerateModuleHObjCpp can generate fixture COMPLEX_OBJECTS 1`] = `
+Map {
+  "RCTNativeModules.mm" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/modules/COMPLEX_OBJECTS/RCTNativeModules.h>
+@implementation RCTCxxConvert (NativeSampleTurboModule_SpecDifficultReturnType)
++ (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecDifficultReturnType:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeSampleTurboModule::SpecDifficultReturnType>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeSampleTurboModule_SpecDifficultA)
++ (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecDifficultA:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeSampleTurboModule::SpecDifficultA>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeSampleTurboModule_SpecDifficultAE)
++ (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecDifficultAE:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeSampleTurboModule::SpecDifficultAE>(json);
+}
+@end
+namespace facebook {
+namespace react {
+
+static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_difficult(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+  return static_cast<ObjCTurboModule &>(turboModule)
+         .invokeObjCMethod(rt, ObjectKind, \\"difficult\\", @selector(difficult:), args, count);
+}
+
+NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+  : ObjCTurboModule(\\"SampleTurboModule\\", instance, jsInvoker) {
+  methodMap_[\\"difficult\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_difficult};
+}
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateModuleHObjCpp can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
   "RCTNativeModules.mm" => "
@@ -118,6 +167,7 @@ Map {
 
 #include <react/modules/TWO_MODULES_DIFFERENT_FILES/RCTNativeModules.h>
 
+
 namespace facebook {
 namespace react {
 
@@ -158,6 +208,7 @@ Map {
  */
 
 #include <react/modules/TWO_MODULES_SAME_FILE/RCTNativeModules.h>
+
 
 namespace facebook {
 namespace react {

@@ -351,7 +351,108 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
   },
 };
 
+const COMPLEX_OBJECTS: SchemaType = {
+  modules: {
+    NativeSampleTurboModule: {
+      nativeModules: {
+        SampleTurboModule: {
+          properties: [
+            {
+              name: 'difficult',
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                returnTypeAnnotation: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      optional: false,
+                      name: 'D',
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
+                    },
+                    {
+                      optional: false,
+                      name: 'E',
+                      typeAnnotation: {
+                        type: 'NumberTypeAnnotation',
+                      },
+                    },
+                    {
+                      optional: false,
+                      name: 'F',
+                      typeAnnotation: {
+                        type: 'StringTypeAnnotation',
+                      },
+                    },
+                  ],
+                },
+                params: [
+                  {
+                    nullable: false,
+                    name: 'A',
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          optional: false,
+                          name: 'D',
+                          typeAnnotation: {
+                            type: 'BooleanTypeAnnotation',
+                          },
+                        },
+                        {
+                          optional: false,
+                          name: 'E',
+                          typeAnnotation: {
+                            type: 'ObjectTypeAnnotation',
+                            properties: [
+                              {
+                                optional: false,
+                                name: 'D',
+                                typeAnnotation: {
+                                  type: 'BooleanTypeAnnotation',
+                                },
+                              },
+                              {
+                                optional: false,
+                                name: 'E',
+                                typeAnnotation: {
+                                  type: 'NumberTypeAnnotation',
+                                },
+                              },
+                              {
+                                optional: false,
+                                name: 'F',
+                                typeAnnotation: {
+                                  type: 'StringTypeAnnotation',
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        {
+                          optional: false,
+                          name: 'F',
+                          typeAnnotation: {
+                            type: 'StringTypeAnnotation',
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+                optional: false,
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+};
 module.exports = {
+  COMPLEX_OBJECTS,
   TWO_MODULES_SAME_FILE,
   TWO_MODULES_DIFFERENT_FILES,
   EMPTY_NATIVE_MODULES,

@@ -10,7 +10,10 @@
 
 'use strict';
 
-import type {SchemaType} from '../../CodegenSchema';
+import type {SchemaType, NativeModuleShape} from '../../CodegenSchema';
+
+const {capitalizeFirstLetter} = require('./ObjCppUtils/GenerateStructs');
+const {flatObjects} = require('./ObjCppUtils/Utils');
 
 type FilesOutput = Map<string, string>;
 
@@ -36,6 +39,15 @@ Native::_MODULE_NAME_::SpecJSI::Native::_MODULE_NAME_::SpecJSI(id<RCTTurboModule
 ::_PROPERTIES_MAP_::
 }`.trim();
 
+const getterTemplate = `
+  @implementation RCTCxxConvert (Native::_MODULE_NAME_::_Spec::_GETTER_NAME_::)
++ (RCTManagedPointer *)JS_Native::_MODULE_NAME_::_Spec::_GETTER_NAME_:::(id)json
+{
+  return facebook::react::managedPointer<JS::Native::_MODULE_NAME_::::Spec::_GETTER_NAME_::>(json);
+}
+@end
+`.trim();
+
 const template = `
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -45,7 +57,7 @@ const template = `
  */
 
 #include <react/modules/::_LIBRARY_NAME_::/RCTNativeModules.h>
-
+::_GETTERS_::
 namespace facebook {
 namespace react {
 
@@ -117,7 +129,9 @@ function tranlsateMethodForImplementation(property): string {
 
 module.exports = {
   generate(libraryName: string, schema: SchemaType): FilesOutput {
-    const nativeModules = Object.keys(schema.modules)
+    const nativeModules: {[name: string]: NativeModuleShape} = Object.keys(
+      schema.modules,
+    )
       .map(moduleName => {
         const modules = schema.modules[moduleName].nativeModules;
         if (modules == null) {
@@ -128,6 +142,62 @@ module.exports = {
       })
       .filter(Boolean)
       .reduce((acc, modules) => Object.assign(acc, modules), {});
+
+    const gettersImplementations = Object.keys(nativeModules)
+      .reduce((acc, moduleName: string) => {
+        const module: NativeModuleShape = nativeModules[moduleName];
+        return acc.concat(
+          flatObjects(
+            module.properties.reduce((moduleAcc, property) => {
+              const {returnTypeAnnotation} = property.typeAnnotation;
+              if (returnTypeAnnotation.type === 'ObjectTypeAnnotation') {
+                const {properties} = returnTypeAnnotation;
+                if (properties) {
+                  moduleAcc.push({
+                    name: capitalizeFirstLetter(property.name) + 'ReturnType',
+                    object: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: properties,
+                    },
+                  });
+                }
+              }
+              if (property.typeAnnotation.params) {
+                return moduleAcc.concat(
+                  property.typeAnnotation.params
+                    .map(param => {
+                      if (
+                        param.typeAnnotation.type === 'ObjectTypeAnnotation'
+                      ) {
+                        const {properties} = param.typeAnnotation;
+                        if (properties) {
+                          return {
+                            name:
+                              capitalizeFirstLetter(property.name) +
+                              capitalizeFirstLetter(param.name),
+                            object: {
+                              type: 'ObjectTypeAnnotation',
+                              properties: properties,
+                            },
+                          };
+                        }
+                      }
+                    })
+                    .filter(Boolean),
+                );
+              }
+              return moduleAcc;
+            }, []),
+          )
+            .map(object =>
+              getterTemplate
+                .replace(/::_GETTER_NAME_::/g, object.name)
+                .replace(/::_MODULE_NAME_::/g, moduleName),
+            )
+            .join('\n'),
+        );
+      }, [])
+      .join('\n');
 
     const modules = Object.keys(nativeModules)
       .map(name => {
@@ -153,6 +223,7 @@ module.exports = {
 
     const fileName = 'RCTNativeModules.mm';
     const replacedTemplate = template
+      .replace(/::_GETTERS_::/g, gettersImplementations)
       .replace(/::_MODULES_::/g, modules)
       .replace(/::_LIBRARY_NAME_::/g, libraryName);
     return new Map([[fileName, replacedTemplate]]);

@@ -11,7 +11,7 @@
 'use strict';
 
 import type {ObjectParamTypeAnnotation} from '../../../CodegenSchema';
-import {flatObjects, capitalizeFirstLetter} from './Utils';
+const {flatObjects, capitalizeFirstLetter} = require('./Utils');
 
 const structTemplate = `
 namespace JS {
@@ -41,13 +41,6 @@ namespace JS {
     };
   }
 }
-
-@protocol Native::_MODULE_NAME_::Spec <RCTBridgeModule, RCTTurboModule>
-
-- (facebook::react::ModuleConstants<JS::Native::_MODULE_NAME_::::::_STRUCT_NAME_::::Builder>)constantsToExport;
-- (facebook::react::ModuleConstants<JS::Native::_MODULE_NAME_::::::_STRUCT_NAME_::::Builder>)getConstants;
-
-@end
 
 inline JS::Native::_MODULE_NAME_::::::_STRUCT_NAME_::::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
@@ -119,7 +112,7 @@ function numberAndBoolGetter(name: string) {
 function unsafeGetter(name: string) {
   return `
   auto ${name} = i.${name}.get();
-  d[@"${name}"] = ${name};
+  d[@"${name}"] = ${name}.buildUnsafeRawValue();
   `.trim();
 }
 
@@ -179,7 +172,9 @@ function generateStructsForConstants(
         ),
       [],
     )
+    .reverse()
     .join('\n')
+    .replace(/SpecGetConstantsReturnType/g, 'Constants')
     .replace(/GetConstantsReturnType/g, 'Constants');
 }
 module.exports = {

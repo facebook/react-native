@@ -14,7 +14,13 @@ import type {
   SchemaType,
   FunctionTypeAnnotationParamTypeAnnotation,
   FunctionTypeAnnotationReturn,
+  ObjectParamTypeAnnotation,
 } from '../../CodegenSchema';
+
+const {
+  translateObjectsForStructs,
+  capitalizeFirstLetter,
+} = require('./ObjCppUtils/GenerateStructs');
 
 type FilesOutput = Map<string, string>;
 
@@ -24,7 +30,9 @@ public:
   Native::_MODULE_NAME_::SpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
 };`;
 
-const protolocTemplate = `
+const protocolTemplate = `
+::_STRUCTS_::
+
 @protocol Native::_MODULE_NAME_::Spec <RCTBridgeModule, RCTTurboModule>
 ::_MODULE_PROPERTIES_::
 @end
@@ -56,6 +64,10 @@ const template = `
 #import <React/RCTBridgeModule.h>
 
 #import <ReactCommon/RCTTurboModule.h>
+#import <RCTRequired/RCTRequired.h>
+#import <RCTTypeSafety/RCTTypedModuleConstants.h>
+#import <React/RCTCxxConvert.h>
+#import <React/RCTManagedPointer.h>
 
 ::_PROTOCOLS_::
 
@@ -66,6 +78,17 @@ namespace react {
 } // namespace react
 } // namespace facebook
 `;
+
+type ObjectForGeneratingStructs = $ReadOnly<{|
+  name: string,
+  object: $ReadOnly<{|
+    type: 'ObjectTypeAnnotation',
+    properties: $ReadOnlyArray<ObjectParamTypeAnnotation>,
+  |}>,
+|}>;
+
+const constants = `- (facebook::react::ModuleConstants<JS::Native::_MODULE_NAME_::::Constants::Builder>)constantsToExport;
+- (facebook::react::ModuleConstants<JS::Native::_MODULE_NAME_::::Constants::Builder>)getConstants;`;
 
 function translatePrimitiveJSTypeToObjCType(
   type:
@@ -86,13 +109,13 @@ function translatePrimitiveJSTypeToObjCType(
     case 'BooleanTypeAnnotation':
       return 'BOOL';
     case 'GenericObjectTypeAnnotation':
-    case 'ObjectTypeAnnotation':
       return 'NSDictionary *';
     case 'ArrayTypeAnnotation':
       return 'NSArray<id<NSObject>> *';
     case 'FunctionTypeAnnotation':
       return 'RCTResponseSenderBlock';
-
+    case 'ObjectTypeAnnotation':
+      return 'NSDictionary *';
     default:
       throw new Error(error);
   }
@@ -120,11 +143,26 @@ module.exports = {
 
     const protocols = Object.keys(nativeModules)
       .map(name => {
+        const objectForGeneratingStructs: Array<ObjectForGeneratingStructs> = [];
         const {properties} = nativeModules[name];
         const implementations = properties
           .map(prop => {
             const nativeArgs = prop.typeAnnotation.params
               .map((param, i) => {
+                if (
+                  param.typeAnnotation.type === 'ObjectTypeAnnotation' &&
+                  param.typeAnnotation.properties
+                ) {
+                  objectForGeneratingStructs.push({
+                    name:
+                      capitalizeFirstLetter(prop.name) +
+                      capitalizeFirstLetter(param.name),
+                    object: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: param.typeAnnotation.properties,
+                    },
+                  });
+                }
                 const paramObjCType = translatePrimitiveJSTypeToObjCType(
                   param.typeAnnotation,
                   `Unspopported type for param "${param.name}" in ${
@@ -137,12 +175,26 @@ module.exports = {
               })
               .join('\n   ')
               .concat(callbackArgs(prop));
+            const {returnTypeAnnotation} = prop.typeAnnotation;
+            if (
+              returnTypeAnnotation.type === 'ObjectTypeAnnotation' &&
+              returnTypeAnnotation.properties
+            ) {
+              objectForGeneratingStructs.push({
+                name: capitalizeFirstLetter(prop.name) + 'ReturnType',
+
+                object: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: returnTypeAnnotation.properties,
+                },
+              });
+            }
             const implementation = methodImplementationTemplate
               .replace('::_PROPERTY_NAME_::', prop.name)
               .replace(
                 '::_RETURN_VALUE_::',
                 translatePrimitiveJSTypeToObjCType(
-                  prop.typeAnnotation.returnTypeAnnotation,
+                  returnTypeAnnotation,
                   `Unspopported return type for ${prop.name}. Found: ${
                     prop.typeAnnotation.returnTypeAnnotation.type
                   }`,
@@ -150,16 +202,16 @@ module.exports = {
               )
               .replace('::_ARGS_::', nativeArgs);
             if (prop.name === 'getConstants') {
-              return (
-                implementation +
-                '\n' +
-                implementation.replace('getConstants', 'constantsToExport')
-              );
+              return constants.replace(/::_MODULE_NAME_::/, name);
             }
             return implementation;
           })
           .join('\n');
-        return protolocTemplate
+        return protocolTemplate
+          .replace(
+            /::_STRUCTS_::/g,
+            translateObjectsForStructs(objectForGeneratingStructs),
+          )
           .replace(/::_MODULE_PROPERTIES_::/g, implementations)
           .replace(/::_MODULE_NAME_::/g, name)
           .replace('::_PROPERTIES_MAP_::', '');

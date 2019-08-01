@@ -1,4 +1,4 @@
-load("@fbsource//tools/build_defs:default_platform_defs.bzl", "ANDROID", "APPLE")
+load("@fbsource//tools/build_defs:default_platform_defs.bzl", "ANDROID", "APPLE", "IOS")
 load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("@fbsource//tools/build_defs:fb_xplat_cxx_binary.bzl", "fb_xplat_cxx_binary")
 load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_xplat_cxx_library")
@@ -68,7 +68,6 @@ fb_xplat_cxx_binary(
     visibility = ["PUBLIC"],
     deps = [
         ":generated_components-codegen_tests",
-        ":generated_modules-codegen_tests",
     ],
 )
 
@@ -107,7 +106,6 @@ rn_xplat_cxx_library(
     ],
     deps = [
         ":generated_components-codegen_tests",
-        ":generated_modules-codegen_tests",
     ],
 )
 
@@ -115,6 +113,7 @@ rn_xplat_cxx_library(
     name = "rn_codegen_library_mm",
     srcs = ["buck_tests/emptyFile.mm"],
     headers = [],
+    apple_sdks = (IOS,),
     compiler_flags = [
         "-fexceptions",
         "-frtti",
@@ -130,6 +129,7 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
+        "fbsource//xplat/js:React",
         ":generated_components-codegen_tests",
         ":generated_modules-codegen_tests",
     ],
