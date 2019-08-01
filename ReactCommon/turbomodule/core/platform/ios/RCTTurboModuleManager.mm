@@ -40,7 +40,7 @@ static Class getFallbackClassFromName(const char *name)
   __weak id<RCTTurboModuleManagerDelegate> _delegate;
   __weak RCTBridge *_bridge;
   /**
-   * TODO(rsnara):
+   * TODO(T48018690):
    * All modules are currently long-lived.
    * We need to come up with a mechanism to allow modules to specify whether
    * they want to be long-lived or short-lived.
