@@ -183,9 +183,7 @@ public class MountingManager {
     if (isLayoutable) {
       viewManager = mViewManagerRegistry.get(componentName);
       // View Managers are responsible for dealing with initial state and props.
-      view =
-          viewManager.createView(
-              themedReactContext, propsDiffMap, stateWrapper, null);
+      view = viewManager.createView(themedReactContext, propsDiffMap, stateWrapper, null);
       view.setId(reactTag);
     }
 
