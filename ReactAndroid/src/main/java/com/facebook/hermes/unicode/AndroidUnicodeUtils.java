@@ -16,11 +16,13 @@ import java.util.Locale;
 // available via DI.
 @DoNotStrip
 public class AndroidUnicodeUtils {
+  @DoNotStrip
   public static int localeCompare(String left, String right) {
     Collator collator = Collator.getInstance();
     return collator.compare(left, right);
   }
 
+  @DoNotStrip
   public static String dateFormat(double unixtimeMs, boolean formatDate, boolean formatTime) {
     DateFormat format;
     if (formatDate && formatTime) {
@@ -35,6 +37,7 @@ public class AndroidUnicodeUtils {
     return format.format((long) unixtimeMs).toString();
   }
 
+  @DoNotStrip
   public static String convertToCase(String input, int targetCase, boolean useCurrentLocale) {
     // These values must match CaseConversion in PlatformUnicode.h
     final int targetUppercase = 0;
@@ -53,6 +56,7 @@ public class AndroidUnicodeUtils {
     }
   }
 
+  @DoNotStrip
   public static String normalize(String input, int form) {
     // Values must match NormalizationForm in PlatformUnicode.h.
     final int formC = 0;
