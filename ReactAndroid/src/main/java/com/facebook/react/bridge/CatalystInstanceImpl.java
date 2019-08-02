@@ -359,40 +359,24 @@ public class CatalystInstanceImpl implements CatalystInstance {
                 listener.onBridgeDestroyed();
               }
             }
+            AsyncTask.execute(
+                new Runnable() {
+                  @Override
+                  public void run() {
+                    // Kill non-UI threads from neutral third party
+                    // potentially expensive, so don't run on UI thread
 
-            final JSIModule turboModuleManager =
-                mJSIModuleRegistry.getModule(JSIModuleType.TurboModuleManager);
+                    // contextHolder is used as a lock to guard against other users of the JS VM
+                    // having
+                    // the VM destroyed underneath them, so notify them before we resetNative
+                    mJavaScriptContextHolder.clear();
 
-            mReactQueueConfiguration
-                .getJSQueueThread()
-                .runOnQueue(
-                    new Runnable() {
-                      @Override
-                      public void run() {
-                        // We need to destroy the TurboModuleManager on the JS Thread
-                        turboModuleManager.onCatalystInstanceDestroy();
-
-                        AsyncTask.execute(
-                            new Runnable() {
-                              @Override
-                              public void run() {
-                                // Kill non-UI threads from neutral third party
-                                // potentially expensive, so don't run on UI thread
-
-                                // contextHolder is used as a lock to guard against other users of
-                                // the JS VM having the VM destroyed underneath them, so notify
-                                // them before we resetNative
-                                mJavaScriptContextHolder.clear();
-
-                                mHybridData.resetNative();
-                                getReactQueueConfiguration().destroy();
-                                Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() end");
-                                ReactMarker.logMarker(
-                                    ReactMarkerConstants.DESTROY_CATALYST_INSTANCE_END);
-                              }
-                            });
-                      }
-                    });
+                    mHybridData.resetNative();
+                    getReactQueueConfiguration().destroy();
+                    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() end");
+                    ReactMarker.logMarker(ReactMarkerConstants.DESTROY_CATALYST_INSTANCE_END);
+                  }
+                });
           }
         });
 
