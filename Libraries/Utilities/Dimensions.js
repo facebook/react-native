@@ -118,13 +118,23 @@ class Dimensions {
   }
 }
 
-// Subscribe before calling getConstants to make sure we don't miss any updates in between.
-RCTDeviceEventEmitter.addListener(
-  'didUpdateDimensions',
-  (update: DimensionsPayload) => {
-    Dimensions.set(update);
-  },
-);
-Dimensions.set(NativeDeviceInfo.getConstants().Dimensions);
+let initialDims: ?$ReadOnly<{[key: string]: any}> =
+  global.nativeExtensions &&
+  global.nativeExtensions.DeviceInfo &&
+  global.nativeExtensions.DeviceInfo.Dimensions;
+if (!initialDims) {
+  // Subscribe before calling getConstants to make sure we don't miss any updates in between.
+  RCTDeviceEventEmitter.addListener(
+    'didUpdateDimensions',
+    (update: DimensionsPayload) => {
+      Dimensions.set(update);
+    },
+  );
+  // Can't use NativeDeviceInfo in ComponentScript because it does not support NativeModules,
+  // but has nativeExtensions instead.
+  initialDims = NativeDeviceInfo.getConstants().Dimensions;
+}
+
+Dimensions.set(initialDims);
 
 module.exports = Dimensions;
