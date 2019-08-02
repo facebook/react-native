@@ -51,13 +51,82 @@ module.exports = function(context) {
     pre(state) {
       this.code = state.code;
       this.filename = state.opts.filename;
+      this.defaultExport = null;
+      this.commandsExport = null;
+      this.codeInserted = false;
     },
     visitor: {
+      ExportNamedDeclaration(nodePath) {
+        if (this.codeInserted) {
+          return;
+        }
+
+        if (
+          nodePath.node.declaration &&
+          nodePath.node.declaration.declarations &&
+          nodePath.node.declaration.declarations[0]
+        ) {
+          const firstDeclaration = nodePath.node.declaration.declarations[0];
+
+          if (firstDeclaration.type === 'VariableDeclarator') {
+            if (
+              firstDeclaration.init.type === 'CallExpression' &&
+              firstDeclaration.init.callee.type === 'Identifier' &&
+              firstDeclaration.init.callee.name === 'codegenNativeCommands'
+            ) {
+              if (
+                firstDeclaration.id.type === 'Identifier' &&
+                firstDeclaration.id.name !== 'Commands'
+              ) {
+                throw new Error(
+                  "Native commands must be exported with the name 'Commands'",
+                );
+              }
+              this.commandsExport = nodePath;
+              return;
+            } else {
+              if (firstDeclaration.id.name === 'Commands') {
+                throw new Error(
+                  "'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands.",
+                );
+              }
+            }
+          }
+        } else if (
+          nodePath.node.specifiers &&
+          nodePath.node.specifiers.length > 0
+        ) {
+          nodePath.node.specifiers.forEach(specifier => {
+            if (
+              specifier.type === 'ExportSpecifier' &&
+              specifier.local.type === 'Identifier' &&
+              specifier.local.name === 'Commands'
+            ) {
+              throw new Error(
+                "'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands.",
+              );
+            }
+          });
+        }
+      },
       ExportDefaultDeclaration(nodePath, state) {
         if (isCodegenDeclaration(nodePath.node.declaration)) {
-          const viewConfig = generateViewConfig(this.filename, this.code);
-          nodePath.replaceWithMultiple(context.parse(viewConfig).program.body);
+          this.defaultExport = nodePath;
         }
+      },
+      Program: {
+        exit() {
+          if (this.defaultExport) {
+            const viewConfig = generateViewConfig(this.filename, this.code);
+            this.defaultExport.replaceWithMultiple(
+              context.parse(viewConfig).program.body,
+            );
+            if (this.commandsExport != null) {
+              this.commandsExport.remove();
+            }
+            this.codeInserted = true;
+          }
+        },
       },
     },
   };

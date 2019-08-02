@@ -1,19 +1,16 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
-import javax.annotation.Nullable;
 
-/**
- * Implementation of Dynamic wrapping a ReadableArray.
- */
+/** Implementation of Dynamic wrapping a ReadableArray. */
 public class DynamicFromObject implements Dynamic {
   private @Nullable Object mObject;
 
@@ -33,33 +30,33 @@ public class DynamicFromObject implements Dynamic {
 
   @Override
   public boolean asBoolean() {
-    return (boolean)mObject;
+    return (boolean) mObject;
   }
 
   @Override
   public double asDouble() {
-    return (double)mObject;
+    return (double) mObject;
   }
 
   @Override
   public int asInt() {
     // Numbers from JS are always Doubles
-    return ((Double)mObject).intValue();
+    return ((Double) mObject).intValue();
   }
 
   @Override
   public String asString() {
-    return (String)mObject;
+    return (String) mObject;
   }
 
   @Override
   public ReadableArray asArray() {
-    return (ReadableArray)mObject;
+    return (ReadableArray) mObject;
   }
 
   @Override
   public ReadableMap asMap() {
-    return (ReadableMap)mObject;
+    return (ReadableMap) mObject;
   }
 
   @Override

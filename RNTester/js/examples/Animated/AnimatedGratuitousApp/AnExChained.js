@@ -25,7 +25,11 @@ class AnExChained extends React.Component<Object, any> {
       const sticker = new Animated.ValueXY();
       Animated.spring(sticker, {
         ...stickerConfig,
-        toValue: this.state.stickers[i], // Animated toValue's are tracked
+
+        // Animated toValue's are tracked
+        toValue: this.state.stickers[i],
+
+        useNativeDriver: false,
       }).start();
       this.state.stickers.push(sticker); // push on the followers
     }
@@ -36,10 +40,15 @@ class AnExChained extends React.Component<Object, any> {
         Animated.decay(this.state.stickers[0], {
           // coast to a stop
           velocity: {x: gestureState.vx, y: gestureState.vy},
+
           deceleration: 0.997,
+          useNativeDriver: false,
         }),
         Animated.spring(this.state.stickers[0], {
-          toValue: {x: 0, y: 0}, // return to start
+          // return to start
+          toValue: {x: 0, y: 0},
+
+          useNativeDriver: false,
         }),
       ]).start();
     };

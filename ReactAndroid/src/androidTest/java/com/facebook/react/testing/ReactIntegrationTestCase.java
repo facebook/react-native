@@ -1,24 +1,17 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.testing;
 
-import com.facebook.react.modules.core.ReactChoreographer;
-import javax.annotation.Nullable;
+import static org.mockito.Mockito.mock;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-
-import android.app.Application;
 import android.test.AndroidTestCase;
 import android.view.View;
 import android.view.ViewGroup;
-
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.CatalystInstance;
@@ -29,26 +22,30 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.core.Timing;
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
 import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
 import com.facebook.soloader.SoLoader;
-
-import static org.mockito.Mockito.mock;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Use this class for writing integration tests of catalyst. This class will run all JNI call
- * within separate android looper, thus you don't need to care about starting your own looper.
+ * Use this class for writing integration tests of catalyst. This class will run all JNI call within
+ * separate android looper, thus you don't need to care about starting your own looper.
  *
- * Keep in mind that all JS remote method calls and script load calls are asynchronous and you
+ * <p>Keep in mind that all JS remote method calls and script load calls are asynchronous and you
  * should not expect them to return results immediately.
  *
- * In order to write catalyst integration:
- *  1) Make {@link ReactIntegrationTestCase} a base class of your test case
- *  2) Use {@link ReactTestHelper#catalystInstanceBuilder()}
- *  instead of {@link com.facebook.react.bridge.CatalystInstanceImpl.Builder} to build catalyst
- *  instance for testing purposes
+ * <p>In order to write catalyst integration:
  *
+ * <ol>
+ *   <li>Make {@link ReactIntegrationTestCase} a base class of your test case
+ *   <li>Use {@link ReactTestHelper#catalystInstanceBuilder()} instead of {@link
+ *       com.facebook.react.bridge.CatalystInstanceImpl.Builder} to build catalyst instance for
+ *       testing purposes
+ * </ol>
  */
 public abstract class ReactIntegrationTestCase extends AndroidTestCase {
 
@@ -76,22 +73,23 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
       mInstance = null;
 
       final SimpleSettableFuture<Void> semaphore = new SimpleSettableFuture<>();
-      UiThreadUtil.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          if (contextToDestroy != null) {
-            contextToDestroy.destroy();
-          }
-          semaphore.set(null);
-        }
-      });
+      UiThreadUtil.runOnUiThread(
+          new Runnable() {
+            @Override
+            public void run() {
+              if (contextToDestroy != null) {
+                contextToDestroy.destroy();
+              }
+              semaphore.set(null);
+            }
+          });
       semaphore.getOrThrow();
     }
   }
 
   /**
-   * This method isn't safe since it doesn't factor in layout-only view removal. Use
-   * {@link #getViewByTestId} instead.
+   * This method isn't safe since it doesn't factor in layout-only view removal. Use {@link
+   * #getViewByTestId} instead.
    */
   @Deprecated
   public <T extends View> T getViewAtPath(ViewGroup rootView, int... path) {
@@ -165,14 +163,12 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
   public void waitForIdleSync() {
     return;
     // TODO: re-enable after cleanup of android-x migration
-    //InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+    // InstrumentationRegistry.getInstrumentation().waitForIdleSync();
   }
 
   public void waitForBridgeAndUIIdle() {
     ReactIdleDetectionUtil.waitForBridgeAndUIIdle(
-        Assertions.assertNotNull(mBridgeIdleSignaler),
-        getContext(),
-        IDLE_TIMEOUT_MS);
+        Assertions.assertNotNull(mBridgeIdleSignaler), getContext(), IDLE_TIMEOUT_MS);
   }
 
   @Override

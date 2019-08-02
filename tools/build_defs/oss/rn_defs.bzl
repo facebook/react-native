@@ -100,6 +100,12 @@ def react_native_dep(path):
 def react_native_xplat_dep(path):
     return "//ReactCommon/" + path
 
+def rn_debug_flags():
+    return []
+
+def rn_feature_flags():
+    return []
+
 # React property preprocessor
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
     if react_native_target(
@@ -173,6 +179,7 @@ def rn_plugin_apple_library(**kwargs):
     native.apple_library(**kwargs)
 
 def rn_java_library(*args, **kwargs):
+    is_androidx = kwargs.pop("is_androidx", False)
     native.java_library(*args, **kwargs)
 
 def rn_java_annotation_processor(*args, **kwargs):
@@ -325,3 +332,8 @@ def jni_instrumentation_test_lib(**_kwargs):
 def fb_xplat_cxx_test(**_kwargs):
     """A noop stub for OSS build."""
     pass
+
+# iOS Plugin support.
+def react_module_plugin_providers():
+    # Noop for now
+    return []

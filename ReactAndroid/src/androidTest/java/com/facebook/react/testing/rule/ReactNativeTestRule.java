@@ -6,16 +6,14 @@
 package com.facebook.react.testing.rule;
 
 import android.app.Activity;
-import android.os.Build;
-import androidx.test.rule.ActivityTestRule;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import androidx.test.rule.ActivityTestRule;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.shell.MainReactPackage;
-import com.facebook.react.testing.ReactInstanceSpecForTest;
 import com.facebook.react.testing.ReactTestHelper;
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
 import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
@@ -164,9 +162,7 @@ public class ReactNativeTestRule implements TestRule {
 
   public void waitForIdleSync() {
     ReactIdleDetectionUtil.waitForBridgeAndUIIdle(
-      mBridgeIdleSignaler,
-      mReactInstanceManager.getCurrentReactContext(),
-      IDLE_TIMEOUT_MS);
+        mBridgeIdleSignaler, mReactInstanceManager.getCurrentReactContext(), IDLE_TIMEOUT_MS);
   }
 
   /** Returns the react view */

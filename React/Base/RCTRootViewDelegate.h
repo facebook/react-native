@@ -23,7 +23,7 @@
  * `setNeedsLayout` for its superview which in its turn will trigger relayout.
  *
  * The new intrinsic content size is available via the `intrinsicContentSize`
- * propery of the root view. The view will not resize itself.
+ * property of the root view. The view will not resize itself.
  */
 - (void)rootViewDidChangeIntrinsicSize:(RCTRootView *)rootView;
 

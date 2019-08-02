@@ -21,8 +21,8 @@
 #include <react/uimanager/SchedulerToolbox.h>
 #include <react/uimanager/UIManagerBinding.h>
 #include <react/uimanager/UIManagerDelegate.h>
-#include <react/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
+#include <react/utils/RuntimeExecutor.h>
 
 namespace facebook {
 namespace react {
@@ -32,7 +32,7 @@ namespace react {
  */
 class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
  public:
-  Scheduler(SchedulerToolbox schedulerToolbox);
+  Scheduler(SchedulerToolbox schedulerToolbox, SchedulerDelegate *delegate);
   ~Scheduler();
 
 #pragma mark - Surface Management
@@ -86,6 +86,10 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
       const SharedShadowNodeUnsharedList &rootChildNodes) override;
   void uiManagerDidCreateShadowNode(
       const SharedShadowNode &shadowNode) override;
+  void uiManagerDidDispatchCommand(
+      const SharedShadowNode &shadowNode,
+      std::string const &commandName,
+      folly::dynamic const args) override;
 
 #pragma mark - ShadowTreeDelegate
 

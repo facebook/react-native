@@ -8,7 +8,7 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 # Header search path for all source files in this module.
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/jsireact
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/ReactCommon
 
 # Header search path for modules that depend on this module
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
@@ -22,8 +22,8 @@ LOCAL_SHARED_LIBRARIES = libfb
 # Name of this module.
 LOCAL_MODULE := jscallinvokerholder
 
-# Compile all local c++ files under ./platform/android/jsireact
-LOCAL_SRC_FILES := $(LOCAL_PATH)/jsireact/JSCallInvokerHolder.cpp
+# Compile all local c++ files
+LOCAL_SRC_FILES := $(LOCAL_PATH)/ReactCommon/JSCallInvokerHolder.cpp
 
 # Build the files in this directory as a shared library
 include $(BUILD_STATIC_LIBRARY)

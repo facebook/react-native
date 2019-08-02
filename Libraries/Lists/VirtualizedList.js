@@ -160,7 +160,7 @@ type OptionalProps = {
   listKey?: string,
   /**
    * The maximum number of items to render in each incremental render batch. The more rendered at
-   * once, the better the fill rate, but responsiveness my suffer because rendering content may
+   * once, the better the fill rate, but responsiveness may suffer because rendering content may
    * interfere with responding to button taps or other interactions.
    */
   maxToRenderPerBatch: number,
@@ -968,7 +968,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._hasMore =
       this.state.last < this.props.getItemCount(this.props.data) - 1;
 
-    const ret = React.cloneElement(
+    const innerRet = React.cloneElement(
       (this.props.renderScrollComponent || this._defaultRenderScrollComponent)(
         scrollProps,
       ),
@@ -977,6 +977,29 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       },
       cells,
     );
+    let ret = innerRet;
+    if (__DEV__) {
+      ret = (
+        <ScrollView.Context.Consumer>
+          {scrollContext => {
+            if (
+              scrollContext != null &&
+              !scrollContext.horizontal === !this.props.horizontal &&
+              !this._hasWarned.nesting &&
+              this.context.virtualizedList == null
+            ) {
+              // TODO (T46547044): use React.warn once 16.9 is sync'd: https://github.com/facebook/react/pull/15170
+              console.warn(
+                'VirtualizedLists should never be nested inside plain ScrollViews with the same ' +
+                  'orientation - use another VirtualizedList-backed container instead.',
+              );
+              this._hasWarned.nesting = true;
+            }
+            return innerRet;
+          }}
+        </ScrollView.Context.Consumer>
+      );
+    }
     if (this.props.debug) {
       return (
         <View style={styles.debug}>
@@ -1157,7 +1180,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       if (!this._scrollRef) {
         return;
       }
-      // We are asuming that getOutermostParentListRef().getScrollRef()
+      // We are assuming that getOutermostParentListRef().getScrollRef()
       // is a non-null reference to a ScrollView
       this._scrollRef.measureLayout(
         this.context.virtualizedList
@@ -1828,10 +1851,10 @@ class CellRenderer extends React.Component<
     );
     const cellStyle = inversionStyle
       ? horizontal
-        ? [{flexDirection: 'row-reverse'}, inversionStyle]
-        : [{flexDirection: 'column-reverse'}, inversionStyle]
+        ? [styles.rowReverse, inversionStyle]
+        : [styles.columnReverse, inversionStyle]
       : horizontal
-      ? [{flexDirection: 'row'}, inversionStyle]
+      ? [styles.row, inversionStyle]
       : inversionStyle;
     if (!CellRendererComponent) {
       return (
@@ -1885,6 +1908,15 @@ const styles = StyleSheet.create({
   },
   horizontallyInverted: {
     transform: [{scaleX: -1}],
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  columnReverse: {
+    flexDirection: 'column-reverse',
   },
   debug: {
     flex: 1,

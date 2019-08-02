@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTBaseTextShadowView.h"
+#import <React/RCTBaseTextShadowView.h>
 
 #import <React/RCTShadowView+Layout.h>
 
-#import "RCTRawTextShadowView.h"
-#import "RCTVirtualTextShadowView.h"
+#import <React/RCTRawTextShadowView.h>
+#import <React/RCTVirtualTextShadowView.h>
 
 NSString *const RCTBaseTextShadowViewEmbeddedShadowViewAttributeName = @"RCTBaseTextShadowViewEmbeddedShadowViewAttributeName";
 

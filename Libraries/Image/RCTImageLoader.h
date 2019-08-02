@@ -52,8 +52,6 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
 @interface UIImage (React)
 
-@property (nonatomic, copy) CAKeyframeAnimation *reactKeyframeAnimation;
-
 /**
  * Memory bytes of the image with the default calculation of static image or GIF. Custom calculations of decoded bytes can be assigned manually.
  */
@@ -157,11 +155,12 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
 @end
 
+/**
+ * DEPRECATED!! DO NOT USE
+ * Instead use `[_bridge moduleForClass:[RCTImageLoader class]]`
+ */
 @interface RCTBridge (RCTImageLoader)
 
-/**
- * The shared image loader instance
- */
 @property (nonatomic, readonly) RCTImageLoader *imageLoader;
 
 @end

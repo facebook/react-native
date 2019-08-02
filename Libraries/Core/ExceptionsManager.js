@@ -12,12 +12,9 @@
 
 import type {ExtendedError} from './Devtools/parseErrorStack';
 
-const INTERNAL_CALLSITES_REGEX = new RegExp(
-  [
-    '/Libraries/Renderer/oss/ReactNativeRenderer-dev\\.js$',
-    '/Libraries/BatchedBridge/MessageQueue\\.js$',
-  ].join('|'),
-);
+class SyntheticError extends Error {
+  name = '';
+}
 
 /**
  * Handles the developer-visible aspect of errors and exceptions
@@ -29,21 +26,44 @@ function reportException(e: ExtendedError, isFatal: boolean) {
     const parseErrorStack = require('./Devtools/parseErrorStack');
     const stack = parseErrorStack(e);
     const currentExceptionID = ++exceptionID;
-    const message =
-      e.jsEngine == null ? e.message : `${e.message}, js engine: ${e.jsEngine}`;
-    if (isFatal) {
-      NativeExceptionsManager.reportFatalException(
-        message,
-        stack,
-        currentExceptionID,
-      );
-    } else {
-      NativeExceptionsManager.reportSoftException(
-        message,
-        stack,
-        currentExceptionID,
-      );
+    const originalMessage = e.message || '';
+    let message = originalMessage;
+    if (e.componentStack != null) {
+      message += `\n\nThis error is located at:${e.componentStack}`;
     }
+    const namePrefix = e.name == null || e.name === '' ? '' : `${e.name}: `;
+    const isFromConsoleError = e.name === 'console.error';
+
+    if (!message.startsWith(namePrefix)) {
+      message = namePrefix + message;
+    }
+
+    // Errors created by `console.error` have already been printed.
+    if (!isFromConsoleError) {
+      if (console._errorOriginal) {
+        console._errorOriginal(message);
+      } else {
+        console.error(message);
+      }
+    }
+
+    message =
+      e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
+    NativeExceptionsManager.reportException({
+      message,
+      originalMessage: message === originalMessage ? null : originalMessage,
+      name: e.name == null || e.name === '' ? null : e.name,
+      componentStack:
+        typeof e.componentStack === 'string' ? e.componentStack : null,
+      stack,
+      id: currentExceptionID,
+      isFatal,
+      extraData: {
+        jsEngine: e.jsEngine,
+        rawStack: e.stack,
+        framesPopped: e.framesToPop,
+      },
+    });
     if (__DEV__) {
       if (e.preventSymbolication === true) {
         return;
@@ -52,23 +72,21 @@ function reportException(e: ExtendedError, isFatal: boolean) {
       symbolicateStackTrace(stack)
         .then(prettyStack => {
           if (prettyStack) {
-            const stackWithoutInternalCallsites = prettyStack.filter(
-              frame =>
-                frame.file &&
-                frame.file.match(INTERNAL_CALLSITES_REGEX) === null,
+            const stackWithoutCollapsedFrames = prettyStack.filter(
+              frame => !frame.collapse,
             );
             NativeExceptionsManager.updateExceptionMessage(
               message,
-              stackWithoutInternalCallsites,
+              stackWithoutCollapsedFrames,
               currentExceptionID,
             );
           } else {
             throw new Error('The stack is null');
           }
         })
-        .catch(error =>
-          console.warn('Unable to symbolicate stack trace: ' + error.message),
-        );
+        .catch(error => {
+          console.log('Unable to symbolicate stack trace: ' + error.message);
+        });
     }
   }
 }
@@ -88,25 +106,22 @@ function handleException(e: Error, isFatal: boolean) {
   // `throw '<error message>'` somewhere in your codebase.
   if (!e.message) {
     // $FlowFixMe - cannot reassign constant, explanation above
-    e = new Error(e);
-  }
-  if (console._errorOriginal) {
-    console._errorOriginal(e.message);
-  } else {
-    console.error(e.message);
+    e = new SyntheticError(e);
   }
   reportException(e, isFatal);
 }
 
 function reactConsoleErrorHandler() {
-  console._errorOriginal.apply(console, arguments);
   if (!console.reportErrorsAsExceptions) {
+    console._errorOriginal.apply(console, arguments);
     return;
   }
 
   if (arguments[0] && arguments[0].stack) {
+    // reportException will console.error this with high enough fidelity.
     reportException(arguments[0], /* isFatal */ false);
   } else {
+    console._errorOriginal.apply(console, arguments);
     const stringifySafe = require('../Utilities/stringifySafe');
     const str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
     if (str.slice(0, 10) === '"Warning: ') {
@@ -115,7 +130,8 @@ function reactConsoleErrorHandler() {
       // (Note: Logic duplicated in polyfills/console.js.)
       return;
     }
-    const error: ExtendedError = new Error('console.error: ' + str);
+    const error: ExtendedError = new SyntheticError(str);
+    error.name = 'console.error';
     error.framesToPop = 1;
     reportException(error, /* isFatal */ false);
   }
@@ -140,4 +156,4 @@ function installConsoleErrorReporter() {
   }
 }
 
-module.exports = {handleException, installConsoleErrorReporter};
+module.exports = {handleException, installConsoleErrorReporter, SyntheticError};

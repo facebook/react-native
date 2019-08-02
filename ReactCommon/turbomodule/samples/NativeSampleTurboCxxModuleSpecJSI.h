@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include <jsireact/TurboModule.h>
+#include <ReactCommon/TurboModule.h>
 
 namespace facebook {
 namespace react {

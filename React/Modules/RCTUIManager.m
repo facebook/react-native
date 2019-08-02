@@ -279,7 +279,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     @"Attempt to register rootTag (%@) which is not actually root tag.", rootTag);
 
   RCTAssert(![_rootViewTags containsObject:rootTag],
-    @"Attempt to register rootTag (%@) which was already registred.", rootTag);
+    @"Attempt to register rootTag (%@) which was already registered.", rootTag);
 
   [_rootViewTags addObject:rootTag];
 
@@ -670,6 +670,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
  */
 RCT_EXPORT_METHOD(removeSubviewsFromContainerWithID:(nonnull NSNumber *)containerID)
 {
+  RCTLogWarn(@"RCTUIManager.removeSubviewsFromContainerWithID method is deprecated and it will not be implemented in newer versions of RN (Fabric) - T47686450");
   id<RCTComponent> container = _shadowViewRegistry[containerID];
   RCTAssert(container != nil, @"container view (for ID %@) not found", containerID);
 
@@ -808,6 +809,7 @@ RCT_EXPORT_METHOD(removeRootView:(nonnull NSNumber *)rootReactTag)
 RCT_EXPORT_METHOD(replaceExistingNonRootView:(nonnull NSNumber *)reactTag
                   withView:(nonnull NSNumber *)newReactTag)
 {
+  RCTLogWarn(@"RCTUIManager.replaceExistingNonRootView method is deprecated and it will not be implemented in newer versions of RN (Fabric) - T47686450");
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   RCTAssert(shadowView != nil, @"shadowView (for ID %@) not found", reactTag);
 
@@ -1201,7 +1203,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
   // so we have to maintain this collection properly.
   NSArray<NSString *> *previousProps;
   if ((previousProps = [_shadowViewsWithUpdatedProps objectForKey:shadowView])) {
-    // Merging already registred changed props and new ones.
+    // Merging already registered changed props and new ones.
     NSMutableSet *set = [NSMutableSet setWithArray:previousProps];
     [set addObjectsFromArray:props];
     props = [set allObjects];
@@ -1321,6 +1323,26 @@ RCT_EXPORT_METHOD(measureInWindow:(nonnull NSNumber *)reactTag
   }];
 }
 
+/**
+ * Returns if the shadow view provided has the `ancestor` shadow view as
+ * an actual ancestor.
+ */
+RCT_EXPORT_METHOD(viewIsDescendantOf:(nonnull NSNumber *)reactTag
+                  ancestor:(nonnull NSNumber *)ancestorReactTag
+                  callback:(RCTResponseSenderBlock)callback)
+{
+  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
+  RCTShadowView *ancestorShadowView = _shadowViewRegistry[ancestorReactTag];
+  if (!shadowView) {
+    return;
+  }
+  if (!ancestorShadowView) {
+    return;
+  }
+  BOOL viewIsAncestor = [shadowView viewIsDescendantOf:ancestorShadowView];
+  callback(@[@(viewIsAncestor)]);
+}
+
 static void RCTMeasureLayout(RCTShadowView *view,
                              RCTShadowView *ancestor,
                              RCTResponseSenderBlock callback)
@@ -1376,6 +1398,7 @@ RCT_EXPORT_METHOD(measureLayoutRelativeToParent:(nonnull NSNumber *)reactTag
                   errorCallback:(__unused RCTResponseSenderBlock)errorCallback
                   callback:(RCTResponseSenderBlock)callback)
 {
+  RCTLogWarn(@"RCTUIManager.measureLayoutRelativeToParent method is deprecated and it will not be implemented in newer versions of RN (Fabric) - T47686450");
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   RCTMeasureLayout(shadowView, shadowView.reactSuperview, callback);
 }

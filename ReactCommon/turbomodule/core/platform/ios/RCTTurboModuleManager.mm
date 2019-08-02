@@ -16,9 +16,9 @@
 #import <React/RCTCxxModule.h>
 #import <React/RCTLog.h>
 #import <React/RCTPerformanceLogger.h>
-#import <jsireact/BridgeJSCallInvoker.h>
-#import <jsireact/TurboCxxModule.h>
-#import <jsireact/TurboModuleBinding.h>
+#import <ReactCommon/BridgeJSCallInvoker.h>
+#import <ReactCommon/TurboCxxModule.h>
+#import <ReactCommon/TurboModuleBinding.h>
 
 using namespace facebook;
 
@@ -49,7 +49,7 @@ static Class getFallbackClassFromName(const char *name)
   std::unordered_map<std::string, std::shared_ptr<react::TurboModule>> _turboModuleCache;
 
   /**
-   * _rctTurboModuleCache can be accessed by muitiple threads at once via
+   * _rctTurboModuleCache can be accessed by multiple threads at once via
    * the provideRCTTurboModule method. This can lead to races. Therefore, we
    * need to protect access to this unordered_map.
    *

@@ -7,8 +7,8 @@
 
 #include <fb/fbjni.h>
 #include <folly/Memory.h>
-#include <jsireact/JSCallInvokerHolder.h>
-#include <jsireact/BridgeJSCallInvoker.h>
+#include <ReactCommon/JSCallInvokerHolder.h>
+#include <ReactCommon/BridgeJSCallInvoker.h>
 
 #include "CxxModuleWrapper.h"
 #include "JavaModuleWrapper.h"

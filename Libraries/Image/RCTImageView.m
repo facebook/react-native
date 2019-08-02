@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTImageView.h"
+#import <React/RCTImageView.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
@@ -14,10 +14,10 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
-#import "RCTUIImageViewAnimated.h"
-#import "RCTImageBlurUtils.h"
-#import "RCTImageLoader.h"
-#import "RCTImageUtils.h"
+#import <React/RCTUIImageViewAnimated.h>
+#import <React/RCTImageBlurUtils.h>
+#import <React/RCTImageLoader.h>
+#import <React/RCTImageUtils.h>
 
 /**
  * Determines whether an image of `currentSize` should be reloaded for display
@@ -87,7 +87,6 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 {
   if ((self = [super initWithFrame:CGRectZero])) {
     _bridge = bridge;
-
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     [center addObserver:self
                selector:@selector(clearImageIfDetached)
@@ -225,7 +224,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 - (void)clearImage
 {
   [self cancelImageLoad];
-  [_imageView.layer removeAnimationForKey:@"contents"];
   self.image = nil;
   _imageSource = nil;
 }
@@ -328,14 +326,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     };
 
     _reloadImageCancellationBlock =
-    [_bridge.imageLoader loadImageWithURLRequest:source.request
-                                            size:imageSize
-                                           scale:imageScale
-                                         clipped:NO
-                                      resizeMode:_resizeMode
-                                   progressBlock:progressHandler
-                                partialLoadBlock:partialLoadHandler
-                                 completionBlock:completionHandler];
+    [[_bridge moduleForClass:[RCTImageLoader class]] loadImageWithURLRequest:source.request
+                                                                        size:imageSize
+                                                                       scale:imageScale
+                                                                     clipped:NO
+                                                                  resizeMode:_resizeMode
+                                                               progressBlock:progressHandler
+                                                            partialLoadBlock:partialLoadHandler
+                                                             completionBlock:completionHandler];
   } else {
     [self clearImage];
   }
@@ -364,18 +362,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       self->_pendingImageSource = nil;
     }
 
-    [self->_imageView.layer removeAnimationForKey:@"contents"];
-    if (image.reactKeyframeAnimation) {
-      CGImageRef posterImageRef = (__bridge CGImageRef)[image.reactKeyframeAnimation.values firstObject];
-      if (!posterImageRef) {
-        return;
-      }
-      // Apply renderingMode to animated image.
-      self->_imageView.image = [[UIImage imageWithCGImage:posterImageRef] imageWithRenderingMode:self->_renderingMode];
-      [self->_imageView.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
-    } else {
-      self.image = image;
-    }
+    self.image = image;
 
     if (isPartialLoad) {
       if (self->_onPartialLoad) {

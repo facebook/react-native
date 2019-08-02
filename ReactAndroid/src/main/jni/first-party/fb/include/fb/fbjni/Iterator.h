@@ -77,7 +77,7 @@ struct JIterable : JavaClass<JIterable<E>> {
 
 /**
  * JavaClass types which represent Collection, List, and Set are also provided.
- * These preserve the Java class heirarchy.
+ * These preserve the Java class hierarchy.
  */
 template <typename E = jobject>
 struct JCollection : JavaClass<JCollection<E>, JIterable<E>> {

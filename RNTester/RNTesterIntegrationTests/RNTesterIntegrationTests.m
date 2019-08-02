@@ -74,5 +74,6 @@ RCT_TEST(SyncMethodTest)
 RCT_TEST(PromiseTest)
 RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest) // Requires a WebSocket test server, see scripts/objc-test.sh
 RCT_TEST(AccessibilityManagerTest)
+RCT_TEST(GlobalEvalWithSourceUrlTest)
 
 @end

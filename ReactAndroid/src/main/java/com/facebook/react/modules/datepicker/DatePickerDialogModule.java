@@ -1,27 +1,24 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.datepicker;
-
 
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
+import android.widget.DatePicker;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-import android.widget.DatePicker;
 import com.facebook.react.bridge.*;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * {@link NativeModule} that allows JS to show a native date picker dialog and get called back when
@@ -30,8 +27,7 @@ import javax.annotation.Nullable;
 @ReactModule(name = DatePickerDialogModule.FRAGMENT_TAG)
 public class DatePickerDialogModule extends ReactContextBaseJavaModule {
 
-  @VisibleForTesting
-  public static final String FRAGMENT_TAG = "DatePickerAndroid";
+  @VisibleForTesting public static final String FRAGMENT_TAG = "DatePickerAndroid";
 
   private static final String ERROR_NO_ACTIVITY = "E_NO_ACTIVITY";
 
@@ -48,7 +44,7 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
   }
 
   @Override
-  public @Nonnull String getName() {
+  public @NonNull String getName() {
     return DatePickerDialogModule.FRAGMENT_TAG;
   }
 
@@ -89,34 +85,25 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
    * Show a date picker dialog.
    *
    * @param options a map containing options. Available keys are:
+   *     <ul>
+   *       <li>{@code date} (timestamp in milliseconds) the date to show by default
+   *       <li>{@code minDate} (timestamp in milliseconds) the minimum date the user should be
+   *           allowed to select
+   *       <li>{@code maxDate} (timestamp in milliseconds) the maximum date the user should be
+   *           allowed to select
+   *       <li>{@code mode} To set the date picker mode to 'calendar/spinner/default'
+   *     </ul>
    *
-   * <ul>
-   *   <li>{@code date} (timestamp in milliseconds) the date to show by default</li>
-   *   <li>
-   *     {@code minDate} (timestamp in milliseconds) the minimum date the user should be allowed
-   *     to select
-   *   </li>
-   *   <li>
-   *     {@code maxDate} (timestamp in milliseconds) the maximum date the user should be allowed
-   *     to select
-   *    </li>
-   *   <li>
-   *      {@code mode} To set the date picker mode to 'calendar/spinner/default'
-   *   </li>
-   * </ul>
-   *
-   * @param promise This will be invoked with parameters action, year,
-   *                month (0-11), day, where action is {@code dateSetAction} or
-   *                {@code dismissedAction}, depending on what the user did. If the action is
-   *                dismiss, year, month and date are undefined.
+   * @param promise This will be invoked with parameters action, year, month (0-11), day, where
+   *     action is {@code dateSetAction} or {@code dismissedAction}, depending on what the user did.
+   *     If the action is dismiss, year, month and date are undefined.
    */
   @ReactMethod
   public void open(@Nullable final ReadableMap options, Promise promise) {
     FragmentActivity activity = (FragmentActivity) getCurrentActivity();
     if (activity == null) {
       promise.reject(
-          ERROR_NO_ACTIVITY,
-          "Tried to open a DatePicker dialog while not attached to an Activity");
+          ERROR_NO_ACTIVITY, "Tried to open a DatePicker dialog while not attached to an Activity");
       return;
     }
 

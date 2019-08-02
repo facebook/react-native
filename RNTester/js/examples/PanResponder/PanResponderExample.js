@@ -128,6 +128,7 @@ const styles = StyleSheet.create({
   circle: {
     width: CIRCLE_SIZE,
     height: CIRCLE_SIZE,
+    backgroundColor: 'green',
     borderRadius: CIRCLE_SIZE / 2,
     position: 'absolute',
     left: 0,
@@ -135,7 +136,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingTop: 64,
+    height: 500,
   },
 });
 
@@ -144,7 +145,7 @@ exports.description =
   'Shows the Use of PanResponder to provide basic gesture handling';
 exports.examples = [
   {
-    title: 'Basic gresture handling',
+    title: 'Basic gesture handling',
     render: function(): React.Element<typeof PanResponderExample> {
       return <PanResponderExample />;
     },

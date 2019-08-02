@@ -1,32 +1,10 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
-
-import android.util.DisplayMetrics;
-
-import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaConstants;
-import com.facebook.yoga.YogaFlexDirection;
-import com.facebook.yoga.YogaJustify;
-import com.facebook.yoga.YogaPositionType;
-import com.facebook.react.bridge.JavaOnlyMap;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -40,13 +18,31 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+import android.util.DisplayMetrics;
+import com.facebook.react.bridge.JavaOnlyMap;
+import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaFlexDirection;
+import com.facebook.yoga.YogaJustify;
+import com.facebook.yoga.YogaPositionType;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.robolectric.RobolectricTestRunner;
+
 @PrepareForTest({PixelUtil.class})
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class LayoutPropertyApplicatorTest {
 
-  @Rule
-  public PowerMockRule rule = new PowerMockRule();
+  @Rule public PowerMockRule rule = new PowerMockRule();
 
   @Before
   public void setup() {
@@ -67,16 +63,8 @@ public class LayoutPropertyApplicatorTest {
   @Test
   public void testDimensions() {
     LayoutShadowNode reactShadowNode = spy(new LayoutShadowNode());
-    ReactStylesDiffMap map = spy(
-        buildStyles(
-            "width",
-            10.0,
-            "height",
-            10.0,
-            "left",
-            10.0,
-            "top",
-            10.0));
+    ReactStylesDiffMap map =
+        spy(buildStyles("width", 10.0, "height", 10.0, "left", 10.0, "top", 10.0));
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setStyleWidth(anyFloat());
@@ -122,13 +110,7 @@ public class LayoutPropertyApplicatorTest {
   @Test
   public void testPosition() {
     LayoutShadowNode reactShadowNode = spy(new LayoutShadowNode());
-    ReactStylesDiffMap map = spy(buildStyles(
-        "position",
-        "absolute",
-        "bottom",
-        10.0,
-        "right",
-        5.0));
+    ReactStylesDiffMap map = spy(buildStyles("position", "absolute", "bottom", 10.0, "right", 5.0));
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setPosition(eq(Spacing.BOTTOM), anyFloat());
@@ -285,17 +267,18 @@ public class LayoutPropertyApplicatorTest {
   @Test
   public void testEnumerations() {
     LayoutShadowNode reactShadowNode = spy(new LayoutShadowNode());
-    ReactStylesDiffMap map = buildStyles(
-        "flexDirection",
-        "column",
-        "alignSelf",
-        "stretch",
-        "alignItems",
-        "center",
-        "justifyContent",
-        "space_between",
-        "position",
-        "relative");
+    ReactStylesDiffMap map =
+        buildStyles(
+            "flexDirection",
+            "column",
+            "alignSelf",
+            "stretch",
+            "alignItems",
+            "center",
+            "justifyContent",
+            "space_between",
+            "position",
+            "relative");
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setFlexDirection(YogaFlexDirection.COLUMN);
@@ -322,33 +305,34 @@ public class LayoutPropertyApplicatorTest {
     DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
 
     LayoutShadowNode reactShadowNode = spy(new LayoutShadowNode());
-    ReactStylesDiffMap map = buildStyles(
-        "width",
-        10.0,
-        "height",
-        10.0,
-        "left",
-        10.0,
-        "top",
-        10.0,
-        "flex",
-        1.0,
-        "padding",
-        10.0,
-        "marginLeft",
-        10.0,
-        "borderTopWidth",
-        10.0,
-        "flexDirection",
-        "row",
-        "alignSelf",
-        "stretch",
-        "alignItems",
-        "center",
-        "justifyContent",
-        "space_between",
-        "position",
-        "absolute");
+    ReactStylesDiffMap map =
+        buildStyles(
+            "width",
+            10.0,
+            "height",
+            10.0,
+            "left",
+            10.0,
+            "top",
+            10.0,
+            "flex",
+            1.0,
+            "padding",
+            10.0,
+            "marginLeft",
+            10.0,
+            "borderTopWidth",
+            10.0,
+            "flexDirection",
+            "row",
+            "alignSelf",
+            "stretch",
+            "alignItems",
+            "center",
+            "justifyContent",
+            "space_between",
+            "position",
+            "absolute");
 
     reactShadowNode.updateProperties(map);
     verify(reactShadowNode).setStyleWidth(10.f);
@@ -365,33 +349,34 @@ public class LayoutPropertyApplicatorTest {
     verify(reactShadowNode).setJustifyContent(YogaJustify.SPACE_BETWEEN);
     verify(reactShadowNode).setPositionType(YogaPositionType.ABSOLUTE);
 
-    map = buildStyles(
-        "width",
-        null,
-        "height",
-        null,
-        "left",
-        null,
-        "top",
-        null,
-        "flex",
-        null,
-        "padding",
-        null,
-        "marginLeft",
-        null,
-        "borderTopWidth",
-        null,
-        "flexDirection",
-        null,
-        "alignSelf",
-        null,
-        "alignItems",
-        null,
-        "justifyContent",
-        null,
-        "position",
-        null);
+    map =
+        buildStyles(
+            "width",
+            null,
+            "height",
+            null,
+            "left",
+            null,
+            "top",
+            null,
+            "flex",
+            null,
+            "padding",
+            null,
+            "marginLeft",
+            null,
+            "borderTopWidth",
+            null,
+            "flexDirection",
+            null,
+            "alignSelf",
+            null,
+            "alignItems",
+            null,
+            "justifyContent",
+            null,
+            "position",
+            null);
 
     reset(reactShadowNode);
     reactShadowNode.updateProperties(map);
@@ -413,14 +398,15 @@ public class LayoutPropertyApplicatorTest {
   @Test
   public void testSettingDefaultStyleValues() {
     mockStatic(PixelUtil.class);
-    when(PixelUtil.toPixelFromDIP(anyFloat())).thenAnswer(
-        new Answer() {
-          @Override
-          public Float answer(InvocationOnMock invocation) throws Throwable {
-            Object[] args = invocation.getArguments();
-            return (Float) args[0];
-          }
-        });
+    when(PixelUtil.toPixelFromDIP(anyFloat()))
+        .thenAnswer(
+            new Answer() {
+              @Override
+              public Float answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                return (Float) args[0];
+              }
+            });
 
     LayoutShadowNode[] nodes = new LayoutShadowNode[7];
     for (int idx = 0; idx < nodes.length; idx++) {
@@ -437,13 +423,8 @@ public class LayoutPropertyApplicatorTest {
     mapNodes[2] = buildStyles("paddingLeft", 10.0, "paddingVertical", 5.0);
     mapNodes[3] = buildStyles("paddingBottom", 10.0, "paddingHorizontal", 5.0);
     mapNodes[4] = buildStyles("padding", null, "paddingTop", 5.0);
-    mapNodes[5] = buildStyles(
-        "paddingRight",
-        10.0,
-        "paddingHorizontal",
-        null,
-        "paddingVertical",
-        7.0);
+    mapNodes[5] =
+        buildStyles("paddingRight", 10.0, "paddingHorizontal", null, "paddingVertical", 7.0);
     mapNodes[6] = buildStyles("margin", 5.0);
 
     for (int idx = 0; idx < nodes.length; idx++) {

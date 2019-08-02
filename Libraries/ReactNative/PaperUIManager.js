@@ -86,8 +86,8 @@ NativeUIManager.getViewManagerConfig = UIManagerJS.getViewManagerConfig;
 
 function lazifyViewManagerConfig(viewName) {
   const viewConfig = getConstants()[viewName];
+  viewManagerConfigs[viewName] = viewConfig;
   if (viewConfig.Manager) {
-    viewManagerConfigs[viewName] = viewConfig;
     defineLazyObjectProperty(viewConfig, 'Constants', {
       get: () => {
         const viewManager = NativeModules[viewConfig.Manager];
@@ -130,33 +130,11 @@ if (Platform.OS === 'ios') {
     lazifyViewManagerConfig(viewName);
   });
 } else if (getConstants().ViewManagerNames) {
-  // We want to add all the view managers to the UIManager.
-  // However, the way things are set up, the list of view managers is not known at compile time.
-  // As Prepack runs at compile it, it cannot process this loop.
-  // So we wrap it in a special __residual call, which basically tells Prepack to ignore it.
-  let residual = global.__residual
-    ? global.__residual
-    : (_, f, ...args) => f.apply(undefined, args);
-  residual(
-    'void',
-    (UIManager, defineLazyObjectProperty) => {
-      UIManager.getConstants().ViewManagerNames.forEach(viewManagerName => {
-        defineLazyObjectProperty(UIManager, viewManagerName, {
-          get: () => UIManager.getConstantsForViewManager(viewManagerName),
-        });
-      });
-    },
-    NativeUIManager,
-    defineLazyObjectProperty,
-  );
-
-  // As Prepack now no longer knows which properties exactly the UIManager has,
-  // we also tell Prepack that it has only partial knowledge of the UIManager,
-  // so that any accesses to unknown properties along the global code will fail
-  // when Prepack encounters them.
-  if (global.__makePartial) {
-    global.__makePartial(NativeUIManager);
-  }
+  NativeUIManager.getConstants().ViewManagerNames.forEach(viewManagerName => {
+    defineLazyObjectProperty(NativeUIManager, viewManagerName, {
+      get: () => NativeUIManager.getConstantsForViewManager(viewManagerName),
+    });
+  });
 }
 
 if (!global.nativeCallSyncHook) {

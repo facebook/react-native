@@ -12,16 +12,16 @@
 #import <sstream>
 #import <vector>
 
-#import <React/RCTConvert.h>
 #import <React/RCTBridgeModule.h>
-#import <React/RCTModuleMethod.h>
-#import <React/RCTUtils.h>
-#import <jsireact/JSCallInvoker.h>
-#import <jsireact/LongLivedObject.h>
-#import <jsireact/TurboModule.h>
-#import <jsireact/TurboModuleUtils.h>
+#import <React/RCTConvert.h>
 #import <React/RCTCxxConvert.h>
 #import <React/RCTManagedPointer.h>
+#import <React/RCTModuleMethod.h>
+#import <React/RCTUtils.h>
+#import <ReactCommon/JSCallInvoker.h>
+#import <ReactCommon/LongLivedObject.h>
+#import <ReactCommon/TurboModule.h>
+#import <ReactCommon/TurboModuleUtils.h>
 
 using namespace facebook;
 
@@ -360,7 +360,7 @@ jsi::Value performMethodInvocation(
 } // namespace
 
 /**
- * Given a method name, and an argument index, return type type of that argument.
+ * Given a method name, and an argument index, return type of that argument.
  * Prerequisite: You must wrap the method declaration inside some variant of the
  * RCT_EXPORT_METHOD macro.
  *

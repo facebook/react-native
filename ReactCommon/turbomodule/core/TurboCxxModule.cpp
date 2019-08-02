@@ -9,8 +9,8 @@
 
 #include <vector>
 
+#include <ReactCommon/TurboModuleUtils.h>
 #include <jsi/JSIDynamic.h>
-#include <jsireact/TurboModuleUtils.h>
 
 using namespace facebook;
 using namespace facebook::xplat::module;

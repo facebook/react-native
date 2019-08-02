@@ -8,7 +8,7 @@
 #import "RNGenericDelegateSplitter.h"
 
 @implementation RNGenericDelegateSplitter {
-  NSMutableArray *_delegates;
+  NSHashTable *_delegates;
 }
 
 #pragma mark - Public
@@ -17,7 +17,7 @@
 {
   if (self = [super init]) {
     _delegateUpdateBlock = block;
-    _delegates = [NSMutableArray new];
+    _delegates = [NSHashTable weakObjectsHashTable];
   }
 
   return self;
@@ -44,7 +44,7 @@
     return;
   }
 
-  _delegateUpdateBlock(_delegates.count == 1 ? _delegates.firstObject : self);
+  _delegateUpdateBlock(_delegates.count == 1 ? [_delegates allObjects].firstObject : self);
 }
 
 #pragma mark - Fast Forwarding

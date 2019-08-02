@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTActionSheetManager.h"
+#import <React/RCTActionSheetManager.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>

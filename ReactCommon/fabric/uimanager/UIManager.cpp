@@ -91,6 +91,12 @@ void UIManager::completeSurface(
   }
 }
 
+void UIManager::setJSResponder(
+    const SharedShadowNode &shadowNode,
+    const bool blockNativeResponder) const {}
+
+void UIManager::clearJSResponder() const {}
+
 void UIManager::setNativeProps(
     const SharedShadowNode &shadowNode,
     const RawProps &rawProps) const {
@@ -165,6 +171,15 @@ void UIManager::updateState(
               return oldRootShadowNode->clone(shadowNode, newShadowNode);
             });
       });
+}
+
+void UIManager::dispatchCommand(
+    const SharedShadowNode &shadowNode,
+    std::string const &commandName,
+    folly::dynamic const args) const {
+  if (delegate_) {
+    delegate_->uiManagerDidDispatchCommand(shadowNode, commandName, args);
+  }
 }
 
 void UIManager::setShadowTreeRegistry(ShadowTreeRegistry *shadowTreeRegistry) {

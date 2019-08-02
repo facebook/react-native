@@ -72,10 +72,13 @@ RNTester/build
 
 # Libs that shouldn't have Xcode project
 /Libraries/FBLazyVector/**/*.xcodeproj
+/Libraries/FBReactNativeSpec/**/*.xcodeproj
 /Libraries/RCTRequired/**/*.xcodeproj
+/React/CoreModules/**/*.xcodeproj
+/packages/react-native-codegen/**/*.xcodeproj
 
 # CocoaPods
 /template/ios/Pods/
 /template/ios/Podfile.lock
-RNTester/Pods/
-RNTester/RNTesterPods.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+RNTester/Pods/Local Podspecs
+RNTester/Pods/Target Support Files

@@ -32,6 +32,6 @@ export interface Spec extends TurboModule {
   +removeListeners: (count: number) => void;
 }
 
-export default (Platform.OS === 'ios'
-  ? TurboModuleRegistry.getEnforcing<Spec>('LinkingManager')
-  : TurboModuleRegistry.getEnforcing<Spec>('IntentAndroid'));
+export default (Platform.OS === 'android'
+  ? TurboModuleRegistry.getEnforcing<Spec>('IntentAndroid')
+  : TurboModuleRegistry.getEnforcing<Spec>('LinkingManager'));

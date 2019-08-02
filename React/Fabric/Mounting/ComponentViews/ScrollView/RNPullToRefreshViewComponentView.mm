@@ -11,14 +11,14 @@
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
 
-#import <React/RCTConversions.h>
-#import <React/RCTScrollViewComponentView.h>
+#import <React/RNConversions.h>
+#import <React/RNScrollViewComponentView.h>
 
 using namespace facebook::react;
 
 @implementation RNPullToRefreshViewComponentView {
   UIRefreshControl *_refreshControl;
-  RCTScrollViewComponentView *_scrollViewComponentView;
+  RNScrollViewComponentView *_scrollViewComponentView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -41,7 +41,7 @@ using namespace facebook::react;
   return self;
 }
 
-#pragma mark - RCTComponentViewProtocol
+#pragma mark - RNComponentViewProtocol
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
@@ -120,7 +120,7 @@ using namespace facebook::react;
     [self _detach];
   }
 
-  _scrollViewComponentView = [RCTScrollViewComponentView findScrollViewComponentViewForView:self];
+  _scrollViewComponentView = [RNScrollViewComponentView findScrollViewComponentViewForView:self];
   if (!_scrollViewComponentView) {
     return;
   }

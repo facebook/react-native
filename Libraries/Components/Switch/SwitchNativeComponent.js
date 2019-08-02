@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {BubblingEvent, WithDefault} from '../../Types/CodegenTypes';
+import type {BubblingEventHandler, WithDefault} from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
@@ -24,8 +24,8 @@ type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
   // Props
-  disabled?: ?WithDefault<boolean, false>,
-  value?: ?WithDefault<boolean, false>,
+  disabled?: WithDefault<boolean, false>,
+  value?: WithDefault<boolean, false>,
   tintColor?: ?ColorValue,
   onTintColor?: ?ColorValue,
   thumbTintColor?: ?ColorValue,
@@ -36,7 +36,7 @@ type NativeProps = $ReadOnly<{|
   trackColorForTrue?: ?ColorValue,
 
   // Events
-  onChange?: ?(event: BubblingEvent<SwitchChangeEvent>) => mixed,
+  onChange?: ?BubblingEventHandler<SwitchChangeEvent>,
 |}>;
 
 export default codegenNativeComponent<NativeProps>('Switch', {

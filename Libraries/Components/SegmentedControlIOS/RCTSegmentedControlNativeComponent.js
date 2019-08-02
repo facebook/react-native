@@ -11,28 +11,30 @@
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {BubblingEvent, WithDefault, Int32} from '../../Types/CodegenTypes';
+import type {
+  BubblingEventHandler,
+  WithDefault,
+  Int32,
+} from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 
-export type OnChangeEvent = BubblingEvent<
-  $ReadOnly<{|
-    value: Int32,
-    selectedSegmentIndex: Int32,
-  |}>,
->;
+export type OnChangeEvent = $ReadOnly<{|
+  value: Int32,
+  selectedSegmentIndex: Int32,
+|}>;
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
   // Props
   values?: $ReadOnlyArray<string>,
-  selectedIndex?: ?WithDefault<Int32, 0>,
-  enabled?: ?WithDefault<boolean, true>,
+  selectedIndex?: WithDefault<Int32, 0>,
+  enabled?: WithDefault<boolean, true>,
   tintColor?: ?ColorValue,
-  momentary?: ?WithDefault<boolean, false>,
+  momentary?: WithDefault<boolean, false>,
 
   // Events
-  onChange?: ?(event: OnChangeEvent) => mixed,
+  onChange?: ?BubblingEventHandler<OnChangeEvent>,
 |}>;
 
 export default codegenNativeComponent<NativeProps>('RCTSegmentedControl');

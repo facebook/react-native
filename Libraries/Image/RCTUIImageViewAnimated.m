@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTUIImageViewAnimated.h"
+#import <React/RCTUIImageViewAnimated.h>
 
 #import <mach/mach.h>
 #import <objc/runtime.h>
@@ -85,15 +85,15 @@ static NSUInteger RCTDeviceFreeMemory() {
   if (self.image == image) {
     return;
   }
+  
+  [self stop];
+  [self resetAnimatedImage];
 
   if ([image respondsToSelector:@selector(animatedImageFrameAtIndex:)]) {
-    [self stop];
-    [self resetAnimatedImage];
-    
     NSUInteger animatedImageFrameCount = ((UIImage<RCTAnimatedImage> *)image).animatedImageFrameCount;
     
-    // Check the frame count
-    if (animatedImageFrameCount <= 1) {
+    // In case frame count is 0, there is no reason to continue.
+    if (animatedImageFrameCount == 0) {
       return;
     }
     
@@ -173,7 +173,12 @@ static NSUInteger RCTDeviceFreeMemory() {
 
 - (void)displayDidRefresh:(CADisplayLink *)displayLink
 {
+#if TARGET_OS_UIKITFORMAC
+  // TODO: `displayLink.frameInterval` is not available on UIKitForMac
+  NSTimeInterval duration = displayLink.duration;
+#else
   NSTimeInterval duration = displayLink.duration * displayLink.frameInterval;
+#endif
   NSUInteger totalFrameCount = self.totalFrameCount;
   NSUInteger currentFrameIndex = self.currentFrameIndex;
   NSUInteger nextFrameIndex = (currentFrameIndex + 1) % totalFrameCount;

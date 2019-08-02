@@ -12,9 +12,10 @@
 
 const {transform: babelTransform} = require('@babel/core');
 const fixtures = require('../__test_fixtures__/fixtures.js');
+const failures = require('../__test_fixtures__/failures.js');
 
-function transform(filename) {
-  return babelTransform(fixtures[filename], {
+function transform(fixture, filename) {
+  return babelTransform(fixture, {
     plugins: [require('@babel/plugin-syntax-flow'), require('../index')],
     babelrc: false,
     filename,
@@ -26,7 +27,17 @@ describe('Babel plugin inline view configs', () => {
     .sort()
     .forEach(fixtureName => {
       it(`can inline config for ${fixtureName}`, () => {
-        expect(transform(fixtureName)).toMatchSnapshot();
+        expect(transform(fixtures[fixtureName], fixtureName)).toMatchSnapshot();
+      });
+    });
+
+  Object.keys(failures)
+    .sort()
+    .forEach(fixtureName => {
+      it(`fails on inline config for ${fixtureName}`, () => {
+        expect(() => {
+          transform(failures[fixtureName], fixtureName);
+        }).toThrowErrorMatchingSnapshot();
       });
     });
 });

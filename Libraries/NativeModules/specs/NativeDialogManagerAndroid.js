@@ -41,7 +41,7 @@ export interface Spec extends TurboModule {
   |};
   +showAlert: (
     config: DialogOptions,
-    onError: (string) => void,
+    onError: (error: string) => void,
     onAction: (action: DialogAction, buttonKey?: DialogButtonKey) => void,
   ) => void;
 }

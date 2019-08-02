@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTFrameAnimation.h"
+#import <React/RCTFrameAnimation.h>
 
 #import <UIKit/UIKit.h>
 
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 
-#import "RCTAnimationUtils.h"
-#import "RCTValueAnimatedNode.h"
+#import <React/RCTAnimationUtils.h>
+#import <React/RCTValueAnimatedNode.h>
 
 @interface RCTFrameAnimation ()
 

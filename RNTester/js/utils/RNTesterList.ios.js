@@ -44,6 +44,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'JSResponderHandlerExample',
+    module: require('../examples/JSResponderHandlerExample/JSResponderHandlerExample'),
+  },
+  {
     key: 'InputAccessoryViewExample',
     module: require('../examples/InputAccessoryView/InputAccessoryViewExample'),
     supportsTVOS: true,

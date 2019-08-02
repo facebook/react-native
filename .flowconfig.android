@@ -19,7 +19,7 @@
 .*/node_modules/warning/.*
 
 ; Flow doesn't support platforms
-.*/Libraries/Utilities/HMRLoadingView.js
+.*/Libraries/Utilities/LoadingView.js
 
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
@@ -78,4 +78,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.102.0
+^0.104.0

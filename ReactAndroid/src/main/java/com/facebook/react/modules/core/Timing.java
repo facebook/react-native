@@ -1,20 +1,13 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.core;
 
-import javax.annotation.Nullable;
-
-import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import android.util.SparseArray;
-
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -27,13 +20,14 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.jstasks.HeadlessJsTaskContext;
 import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
 import com.facebook.react.module.annotations.ReactModule;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Native module for JS timer execution. Timers fire on frame boundaries.
- */
+/** Native module for JS timer execution. Timers fire on frame boundaries. */
 @ReactModule(name = Timing.NAME)
-public final class Timing extends ReactContextBaseJavaModule implements LifecycleEventListener,
-  HeadlessJsTaskEventListener {
+public final class Timing extends ReactContextBaseJavaModule
+    implements LifecycleEventListener, HeadlessJsTaskEventListener {
 
   public static final String NAME = "Timing";
 
@@ -53,11 +47,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     private final int mInterval;
     private long mTargetTime;
 
-    private Timer(
-        int callbackID,
-        long initialTargetTime,
-        int duration,
-        boolean repeat) {
+    private Timer(int callbackID, long initialTargetTime, int duration, boolean repeat) {
       mCallbackID = callbackID;
       mTargetTime = initialTargetTime;
       mInterval = duration;
@@ -70,9 +60,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     // Temporary map for constructing the individual arrays of timers to call
     private @Nullable WritableArray mTimersToCall = null;
 
-    /**
-     * Calls all timers that have expired since the last time this frame callback was called.
-     */
+    /** Calls all timers that have expired since the last time this frame callback was called. */
     @Override
     public void doFrame(long frameTimeNanos) {
       if (isPaused.get() && !isRunningTasks.get()) {
@@ -155,7 +143,8 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
       }
 
       if (sendIdleEvents) {
-        getReactApplicationContext().getJSModule(JSTimers.class)
+        getReactApplicationContext()
+            .getJSModule(JSTimers.class)
             .callIdleCallbacks(absoluteFrameStartTime);
       }
 
@@ -185,21 +174,22 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     super(reactContext);
     mDevSupportManager = devSupportManager;
     // We store timers sorted by finish time.
-    mTimers = new PriorityQueue<Timer>(
-        11, // Default capacity: for some reason they don't expose a (Comparator) constructor
-        new Comparator<Timer>() {
-          @Override
-          public int compare(Timer lhs, Timer rhs) {
-            long diff = lhs.mTargetTime - rhs.mTargetTime;
-            if (diff == 0) {
-              return 0;
-            } else if (diff < 0) {
-              return -1;
-            } else {
-              return 1;
-            }
-          }
-        });
+    mTimers =
+        new PriorityQueue<Timer>(
+            11, // Default capacity: for some reason they don't expose a (Comparator) constructor
+            new Comparator<Timer>() {
+              @Override
+              public int compare(Timer lhs, Timer rhs) {
+                long diff = lhs.mTargetTime - rhs.mTargetTime;
+                if (diff == 0) {
+                  return 0;
+                } else if (diff < 0) {
+                  return -1;
+                } else {
+                  return 1;
+                }
+              }
+            });
     mTimerIdsToTimers = new SparseArray<>();
     mReactChoreographer = ReactChoreographer.getInstance();
   }
@@ -208,7 +198,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   public void initialize() {
     getReactApplicationContext().addLifecycleEventListener(this);
     HeadlessJsTaskContext headlessJsTaskContext =
-      HeadlessJsTaskContext.getInstance(getReactApplicationContext());
+        HeadlessJsTaskContext.getInstance(getReactApplicationContext());
     headlessJsTaskContext.addTaskEventListener(this);
   }
 
@@ -245,7 +235,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   @Override
   public void onHeadlessJsTaskFinish(int taskId) {
     HeadlessJsTaskContext headlessJsTaskContext =
-      HeadlessJsTaskContext.getInstance(getReactApplicationContext());
+        HeadlessJsTaskContext.getInstance(getReactApplicationContext());
     if (!headlessJsTaskContext.hasActiveTasks()) {
       isRunningTasks.set(false);
       clearFrameCallback();
@@ -258,7 +248,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     clearFrameCallback();
     clearChoreographerIdleCallback();
     HeadlessJsTaskContext headlessJsTaskContext =
-      HeadlessJsTaskContext.getInstance(getReactApplicationContext());
+        HeadlessJsTaskContext.getInstance(getReactApplicationContext());
     headlessJsTaskContext.removeTaskEventListener(this);
   }
 
@@ -279,20 +269,17 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   private void setChoreographerCallback() {
     if (!mFrameCallbackPosted) {
       mReactChoreographer.postFrameCallback(
-          ReactChoreographer.CallbackType.TIMERS_EVENTS,
-          mTimerFrameCallback);
+          ReactChoreographer.CallbackType.TIMERS_EVENTS, mTimerFrameCallback);
       mFrameCallbackPosted = true;
     }
   }
 
   private void clearFrameCallback() {
     HeadlessJsTaskContext headlessJsTaskContext =
-      HeadlessJsTaskContext.getInstance(getReactApplicationContext());
-    if (mFrameCallbackPosted && isPaused.get() &&
-      !headlessJsTaskContext.hasActiveTasks()) {
+        HeadlessJsTaskContext.getInstance(getReactApplicationContext());
+    if (mFrameCallbackPosted && isPaused.get() && !headlessJsTaskContext.hasActiveTasks()) {
       mReactChoreographer.removeFrameCallback(
-          ReactChoreographer.CallbackType.TIMERS_EVENTS,
-          mTimerFrameCallback);
+          ReactChoreographer.CallbackType.TIMERS_EVENTS, mTimerFrameCallback);
       mFrameCallbackPosted = false;
     }
   }
@@ -300,8 +287,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   private void setChoreographerIdleCallback() {
     if (!mFrameIdleCallbackPosted) {
       mReactChoreographer.postFrameCallback(
-          ReactChoreographer.CallbackType.IDLE_EVENT,
-          mIdleFrameCallback);
+          ReactChoreographer.CallbackType.IDLE_EVENT, mIdleFrameCallback);
       mFrameIdleCallbackPosted = true;
     }
   }
@@ -309,8 +295,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
   private void clearChoreographerIdleCallback() {
     if (mFrameIdleCallbackPosted) {
       mReactChoreographer.removeFrameCallback(
-          ReactChoreographer.CallbackType.IDLE_EVENT,
-          mIdleFrameCallback);
+          ReactChoreographer.CallbackType.IDLE_EVENT, mIdleFrameCallback);
       mFrameIdleCallbackPosted = false;
     }
   }
@@ -335,10 +320,11 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     if (mDevSupportManager.getDevSupportEnabled()) {
       long driftTime = Math.abs(remoteTime - deviceTime);
       if (driftTime > 60000) {
-        getReactApplicationContext().getJSModule(JSTimers.class)
-          .emitTimeDriftWarning(
-            "Debugger and device times have drifted by more than 60s. Please correct this by " +
-            "running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your debugger machine.");
+        getReactApplicationContext()
+            .getJSModule(JSTimers.class)
+            .emitTimeDriftWarning(
+                "Debugger and device times have drifted by more than 60s. Please correct this by "
+                    + "running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your debugger machine.");
       }
     }
 
@@ -347,8 +333,7 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
     if (duration == 0 && !repeat) {
       WritableArray timerToCall = Arguments.createArray();
       timerToCall.pushInt(callbackID);
-      getReactApplicationContext().getJSModule(JSTimers.class)
-        .callTimers(timerToCall);
+      getReactApplicationContext().getJSModule(JSTimers.class).callTimers(timerToCall);
       return;
     }
 
@@ -378,17 +363,18 @@ public final class Timing extends ReactContextBaseJavaModule implements Lifecycl
       mSendIdleEvents = sendIdleEvents;
     }
 
-    UiThreadUtil.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        synchronized (mIdleCallbackGuard) {
-          if (sendIdleEvents) {
-            setChoreographerIdleCallback();
-          } else {
-            clearChoreographerIdleCallback();
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            synchronized (mIdleCallbackGuard) {
+              if (sendIdleEvents) {
+                setChoreographerIdleCallback();
+              } else {
+                clearChoreographerIdleCallback();
+              }
+            }
           }
-        }
-      }
-    });
+        });
   }
 }

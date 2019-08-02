@@ -1,14 +1,14 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.view;
 
-import android.graphics.PixelFormat;
+import static org.junit.Assert.*;
 
+import android.graphics.PixelFormat;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,17 +16,12 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
-import static org.junit.Assert.*;
-
-/**
- * Based on Fresco's DrawableUtilsTest (https://github.com/facebook/fresco).
- */
+/** Based on Fresco's DrawableUtilsTest (https://github.com/facebook/fresco). */
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ColorUtilTest {
 
-  @Rule
-  public PowerMockRule rule = new PowerMockRule();
+  @Rule public PowerMockRule rule = new PowerMockRule();
 
   @Test
   public void testMultiplyColorAlpha() {

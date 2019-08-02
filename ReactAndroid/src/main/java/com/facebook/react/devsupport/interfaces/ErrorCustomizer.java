@@ -1,16 +1,14 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.devsupport.interfaces;
 
 import android.util.Pair;
 
-/**
- * Interface that lets parts of the app process the errors before showing the redbox
- */
+/** Interface that lets parts of the app process the errors before showing the redbox */
 public interface ErrorCustomizer {
 
   /**

@@ -18,35 +18,26 @@
 
 #import <cxxreact/JSExecutor.h>
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
 #import <React/RCTPushNotificationManager.h>
 #endif
 
 #ifdef RN_FABRIC_ENABLED
-#import <React/RCTSurfacePresenter.h>
-#import <React/RCTFabricSurfaceHostingProxyRootView.h>
+#import <React/RNSurfacePresenter.h>
+#import <React/RNFabricSurfaceHostingProxyRootView.h>
 #endif
 
-#ifdef RN_TURBO_MODULE_ENABLED
-#import <jsireact/RCTTurboModuleManager.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
 
 #import "RNTesterTurboModuleProvider.h"
-#endif
 
-#ifdef RN_TURBO_MODULE_ENABLED
 @interface AppDelegate() <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate>{
-#else
-@interface AppDelegate() <RCTCxxBridgeDelegate>{
-#endif
 
 #ifdef RN_FABRIC_ENABLED
-  RCTSurfacePresenter *_surfacePresenter;
+  RNSurfacePresenter *_surfacePresenter;
 #endif
 
-#ifdef RN_TURBO_MODULE_ENABLED
   RCTTurboModuleManager *_turboModuleManager;
-#endif
-
 }
 @end
 
@@ -54,9 +45,7 @@
 
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-#ifdef RN_TURBO_MODULE_ENABLED
   RCTEnableTurboModule(YES);
-#endif
 
   _bridge = [[RCTBridge alloc] initWithDelegate:self
                                   launchOptions:launchOptions];
@@ -69,10 +58,10 @@
   }
 
 #ifdef RN_FABRIC_ENABLED
-  _surfacePresenter = [[RCTSurfacePresenter alloc] initWithBridge:_bridge config:nil];
+  _surfacePresenter = [[RNSurfacePresenter alloc] initWithBridge:_bridge config:nil];
   _bridge.surfacePresenter = _surfacePresenter;
 
-  UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
+  UIView *rootView = [[RNFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
 #else
   UIView *rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
 #endif
@@ -120,29 +109,30 @@
     }
     __typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
-#ifdef RN_TURBO_MODULE_ENABLED
       strongSelf->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:strongSelf];
       [strongSelf->_turboModuleManager installJSBindingWithRuntime:&runtime];
-#endif
     }
   });
 }
 
 #pragma mark RCTTurboModuleManagerDelegate
 
-#ifdef RN_TURBO_MODULE_ENABLED
+- (Class)getModuleClassFromName:(const char *)name
+{
+  return facebook::react::RNTesterTurboModuleClassProvider(name);
+}
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
 {
-  return RNTesterTurboModuleProvider(name, jsInvoker);
+  return facebook::react::RNTesterTurboModuleProvider(name, jsInvoker);
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                        instance:(id<RCTTurboModule>)instance
                                                       jsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
 {
-  return RNTesterTurboModuleProvider(name, instance, jsInvoker);
+  return facebook::react::RNTesterTurboModuleProvider(name, instance, jsInvoker);
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
@@ -151,11 +141,9 @@
   return [moduleClass new];
 }
 
-#endif
-
 # pragma mark - Push Notifications
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
 
 // Required to register for notifications
 - (void)application:(__unused UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings

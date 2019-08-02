@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.dialog;
 
 import android.app.Activity;
@@ -12,9 +11,10 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -28,9 +28,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import java.util.Map;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 @ReactModule(name = DialogModule.NAME)
 public class DialogModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
@@ -50,12 +47,13 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
   /* package */ static final String KEY_ITEMS = "items";
   /* package */ static final String KEY_CANCELABLE = "cancelable";
 
-  /* package */ static final Map<String, Object> CONSTANTS = MapBuilder.<String, Object>of(
-      ACTION_BUTTON_CLICKED, ACTION_BUTTON_CLICKED,
-      ACTION_DISMISSED, ACTION_DISMISSED,
-      KEY_BUTTON_POSITIVE, DialogInterface.BUTTON_POSITIVE,
-      KEY_BUTTON_NEGATIVE, DialogInterface.BUTTON_NEGATIVE,
-      KEY_BUTTON_NEUTRAL, DialogInterface.BUTTON_NEUTRAL);
+  /* package */ static final Map<String, Object> CONSTANTS =
+      MapBuilder.<String, Object>of(
+          ACTION_BUTTON_CLICKED, ACTION_BUTTON_CLICKED,
+          ACTION_DISMISSED, ACTION_DISMISSED,
+          KEY_BUTTON_POSITIVE, DialogInterface.BUTTON_POSITIVE,
+          KEY_BUTTON_NEGATIVE, DialogInterface.BUTTON_NEGATIVE,
+          KEY_BUTTON_NEUTRAL, DialogInterface.BUTTON_NEUTRAL);
 
   private boolean mIsInForeground;
 
@@ -64,16 +62,16 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
   }
 
   @Override
-  public @Nonnull String getName() {
+  public @NonNull String getName() {
     return NAME;
   }
 
   private class FragmentManagerHelper {
-    private final @Nonnull FragmentManager mFragmentManager;
+    private final @NonNull FragmentManager mFragmentManager;
 
     private @Nullable Object mFragmentToShow;
 
-    public FragmentManagerHelper(@Nonnull FragmentManager fragmentManager) {
+    public FragmentManagerHelper(@NonNull FragmentManager fragmentManager) {
       mFragmentManager = fragmentManager;
     }
 
@@ -93,8 +91,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
       if (!mIsInForeground) {
         return;
       }
-      AlertFragment oldFragment =
-        (AlertFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
+      AlertFragment oldFragment = (AlertFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
       if (oldFragment != null && oldFragment.isResumed()) {
         oldFragment.dismiss();
       }
@@ -167,8 +164,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
   }
 
   @Override
-  public void onHostDestroy() {
-  }
+  public void onHostDestroy() {}
 
   @Override
   public void onHostResume() {
@@ -184,9 +180,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
 
   @ReactMethod
   public void showAlert(
-      ReadableMap options,
-      Callback errorCallback,
-      final Callback actionCallback) {
+      ReadableMap options, Callback errorCallback, final Callback actionCallback) {
     final FragmentManagerHelper fragmentManagerHelper = getFragmentManagerHelper();
     if (fragmentManagerHelper == null) {
       errorCallback.invoke("Tried to show an alert while not attached to an Activity");
@@ -212,7 +206,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     if (options.hasKey(KEY_ITEMS)) {
       ReadableArray items = options.getArray(KEY_ITEMS);
       CharSequence[] itemsArray = new CharSequence[items.size()];
-      for (int i = 0; i < items.size(); i ++) {
+      for (int i = 0; i < items.size(); i++) {
         itemsArray[i] = items.getString(i);
       }
       args.putCharSequenceArray(AlertFragment.ARG_ITEMS, itemsArray);
@@ -221,20 +215,20 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
       args.putBoolean(KEY_CANCELABLE, options.getBoolean(KEY_CANCELABLE));
     }
 
-    UiThreadUtil.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        fragmentManagerHelper.showNewAlert(args, actionCallback);
-      }
-    });
-
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            fragmentManagerHelper.showNewAlert(args, actionCallback);
+          }
+        });
   }
 
   /**
-   * Creates a new helper to work with FragmentManager.
-   * Returns null if we're not attached to an Activity.
+   * Creates a new helper to work with FragmentManager. Returns null if we're not attached to an
+   * Activity.
    *
-   * DO NOT HOLD LONG-LIVED REFERENCES TO THE OBJECT RETURNED BY THIS METHOD, AS THIS WILL CAUSE
+   * <p>DO NOT HOLD LONG-LIVED REFERENCES TO THE OBJECT RETURNED BY THIS METHOD, AS THIS WILL CAUSE
    * MEMORY LEAKS.
    */
   private @Nullable FragmentManagerHelper getFragmentManagerHelper() {

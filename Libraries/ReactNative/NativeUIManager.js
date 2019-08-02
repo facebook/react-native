@@ -42,7 +42,7 @@ export interface Spec extends TurboModule {
   +dispatchViewManagerCommand: (
     reactTag: ?number,
     commandID: number,
-    commandArgs: ?Array<string | number | boolean>, // is this best?
+    commandArgs: ?Array<any>,
   ) => void;
   +measure: (
     reactTag: ?number,
@@ -58,6 +58,11 @@ export interface Spec extends TurboModule {
   +measureInWindow: (
     reactTag: ?number,
     callback: (x: number, y: number, width: number, height: number) => void,
+  ) => void;
+  +viewIsDescendantOf: (
+    reactTag: ?number,
+    ancestorReactTag: ?number,
+    callback: (result: Array<boolean>) => void,
   ) => void;
   +measureLayout: (
     reactTag: ?number,

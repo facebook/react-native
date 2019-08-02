@@ -13,7 +13,7 @@ namespace facebook {
 namespace react {
 
 /*
- * Represents retrieved image bitmap and any assotiated platform-specific info.
+ * Represents retrieved image bitmap and any associated platform-specific info.
  */
 class ImageResponse final {
  public:

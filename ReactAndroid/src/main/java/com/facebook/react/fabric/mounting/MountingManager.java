@@ -17,7 +17,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
-import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
@@ -43,12 +42,10 @@ public class MountingManager {
   private final ConcurrentHashMap<Integer, ViewState> mTagToViewState;
   private final ViewManagerRegistry mViewManagerRegistry;
   private final RootViewManager mRootViewManager = new RootViewManager();
-  private final ViewFactory mViewFactory;
 
   public MountingManager(ViewManagerRegistry viewManagerRegistry) {
     mTagToViewState = new ConcurrentHashMap<>();
     mViewManagerRegistry = viewManagerRegistry;
-    mViewFactory = new ViewManagerFactory(viewManagerRegistry);
   }
 
   public void addRootView(int reactRootTag, View rootView) {
@@ -90,27 +87,6 @@ public class MountingManager {
     }
 
     mTagToViewState.remove(reactTag);
-    Context context = view.getContext();
-    if (context instanceof ThemedReactContext) {
-      // We only recycle views that were created by RN (its context is instance of
-      // ThemedReactContext)
-      mViewFactory.recycle(
-          (ThemedReactContext) context, Assertions.assertNotNull(viewManager).getName(), view);
-    }
-  }
-
-  /** Releases all references to react root tag. */
-  @UiThread
-  public void removeRootView(int reactRootTag) {
-    UiThreadUtil.assertOnUiThread();
-    ViewState viewState = mTagToViewState.get(reactRootTag);
-    if (viewState == null || !viewState.mIsRoot) {
-      SoftAssertions.assertUnreachable(
-          "View with tag " + reactRootTag + " is not registered as a root view");
-    }
-    if (viewState.mView != null) {
-      dropView(viewState.mView);
-    }
   }
 
   @UiThread
@@ -121,7 +97,8 @@ public class MountingManager {
     ViewState viewState = getViewState(tag);
     final View view = viewState.mView;
     if (view == null) {
-      throw new IllegalStateException("Unable to find view for viewState " + viewState);
+      throw new IllegalStateException(
+          "Unable to find view for viewState " + viewState + " and tag " + tag);
     }
     getViewGroupManager(parentViewState).addView(parentView, view, index);
   }
@@ -129,11 +106,12 @@ public class MountingManager {
   private ViewState getViewState(int tag) {
     ViewState viewState = mTagToViewState.get(tag);
     if (viewState == null) {
-      throw new IllegalStateException("Unable to find viewState view " + viewState);
+      throw new IllegalStateException("Unable to find viewState view for tag " + tag);
     }
     return viewState;
   }
 
+  @Deprecated
   public void receiveCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     ViewState viewState = getViewState(reactTag);
 
@@ -204,11 +182,9 @@ public class MountingManager {
 
     if (isLayoutable) {
       viewManager = mViewManagerRegistry.get(componentName);
-      view = mViewFactory.getOrCreateView(componentName, propsDiffMap, stateWrapper, themedReactContext);
+      // View Managers are responsible for dealing with initial state and props.
+      view = viewManager.createView(themedReactContext, propsDiffMap, stateWrapper, null);
       view.setId(reactTag);
-      if (stateWrapper != null) {
-        viewManager.updateState(view, stateWrapper);
-      }
     }
 
     ViewState viewState = new ViewState(reactTag, view, viewManager);
@@ -322,7 +298,11 @@ public class MountingManager {
     if (viewManager == null) {
       throw new IllegalStateException("Unable to find ViewManager for tag: " + reactTag);
     }
-    viewManager.updateState(viewState.mView, stateWrapper);
+    Object extraData =
+        viewManager.updateState(viewState.mView, viewState.mCurrentProps, stateWrapper);
+    if (extraData != null) {
+      viewManager.updateExtraData(viewState.mView, extraData);
+    }
   }
 
   @UiThread

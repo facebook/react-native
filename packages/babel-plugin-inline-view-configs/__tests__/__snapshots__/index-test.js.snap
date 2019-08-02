@@ -6,7 +6,7 @@ const codegenNativeCommands = require('codegenNativeCommands');
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type { Int32, BubblingEvent, DirectEvent, WithDefault } from 'CodegenFlowtypes';
+import type { Int32, BubblingEventHandler, DirectEventHandler, WithDefault } from 'CodegenFlowtypes';
 import type { ViewProps } from 'ViewPropTypes';
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void,
@@ -14,12 +14,11 @@ interface NativeCommands {
 }
 type ModuleProps = $ReadOnly<{| ...ViewProps,
   // Props
-  boolean_default_true_optional_both?: ?WithDefault<boolean, true>,
+  boolean_default_true_optional_both?: WithDefault<boolean, true>,
   // Events
-  onDirectEventDefinedInlineNull: (event: DirectEvent<null>) => void,
-  onBubblingEventDefinedInlineNull: (event: BubblingEvent<null>) => void,
+  onDirectEventDefinedInlineNull: DirectEventHandler<null>,
+  onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
 |}>;
-export const Commands = codegenNativeCommands<NativeCommands>();
 
 const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
@@ -58,11 +57,11 @@ export const __INTERNAL_VIEW_CONFIG = ModuleViewConfig;
 export default nativeComponentName;
 export const Commands = {
   hotspotUpdate(ref, x, y) {
-    UIManager.dispatchViewCommand(findNodeHandle(ref), UIManager.getViewManagerConfig(\\"RCTModule\\").Commands.hotspotUpdate, [x, y]);
+    UIManager.dispatchViewManagerCommand(findNodeHandle(ref), UIManager.getViewManagerConfig(\\"RCTModule\\").Commands.hotspotUpdate, [x, y]);
   },
 
   scrollTo(ref, y, animated) {
-    UIManager.dispatchViewCommand(findNodeHandle(ref), UIManager.getViewManagerConfig(\\"RCTModule\\").Commands.scrollTo, [y, animated]);
+    UIManager.dispatchViewManagerCommand(findNodeHandle(ref), UIManager.getViewManagerConfig(\\"RCTModule\\").Commands.scrollTo, [y, animated]);
   }
 
 };"
@@ -73,3 +72,9 @@ exports[`Babel plugin inline view configs can inline config for NotANativeCompon
 
 export default 'Not a view config';"
 `;
+
+exports[`Babel plugin inline view configs fails on inline config for CommandsExportedWithDifferentNameNativeComponent.js 1`] = `"Native commands must be exported with the name 'Commands'"`;
+
+exports[`Babel plugin inline view configs fails on inline config for CommandsExportedWithShorthandNativeComponent.js 1`] = `"'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands."`;
+
+exports[`Babel plugin inline view configs fails on inline config for OtherCommandsExportNativeComponent.js 1`] = `"'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands."`;

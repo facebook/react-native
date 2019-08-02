@@ -16,7 +16,7 @@ namespace react {
 class UIManagerBinding : public jsi::HostObject {
  public:
   /*
-   * Installs UIManagerBinding into JavaSctipt runtime.
+   * Installs UIManagerBinding into JavaScript runtime.
    * Thread synchronization must be enforced externally.
    */
   static void install(
