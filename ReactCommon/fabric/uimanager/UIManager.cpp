@@ -93,9 +93,18 @@ void UIManager::completeSurface(
 
 void UIManager::setJSResponder(
     const SharedShadowNode &shadowNode,
-    const bool blockNativeResponder) const {}
+    const bool blockNativeResponder) const {
+  if (delegate_) {
+    delegate_->uiManagerDidSetJSResponder(
+        shadowNode->getSurfaceId(), shadowNode, blockNativeResponder);
+  }
+}
 
-void UIManager::clearJSResponder() const {}
+void UIManager::clearJSResponder() const {
+  if (delegate_) {
+    delegate_->uiManagerDidClearJSResponder();
+  }
+}
 
 void UIManager::setNativeProps(
     const SharedShadowNode &shadowNode,

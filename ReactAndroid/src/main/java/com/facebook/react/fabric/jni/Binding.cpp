@@ -724,6 +724,14 @@ void Binding::schedulerDidDispatchCommand(
   dispatchCommand(localJavaUIManager, shadowView.tag, command.get(), argsArray.get());
 }
 
+void Binding::schedulerDidSetJSResponder(
+    SurfaceId surfaceId,
+    const ShadowView &shadowView,
+    const ShadowView &initialShadowView,
+    bool blockNativeResponder) { }
+
+void Binding::schedulerDidClearJSResponder() { }
+
 void Binding::registerNatives() {
   registerHybrid(
       {makeNativeMethod("initHybrid", Binding::initHybrid),

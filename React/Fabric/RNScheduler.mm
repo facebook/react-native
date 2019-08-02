@@ -43,6 +43,20 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerDidDispatchCommand:shadowView commandName:commandName args:args];
   }
 
+  void schedulerDidSetJSResponder(
+      SurfaceId surfaceId,
+      const ShadowView &shadowView,
+      const ShadowView &initialShadowView,
+      bool blockNativeResponder) override
+  {
+    // Does nothing for now.
+  }
+
+  void schedulerDidClearJSResponder() override
+  {
+    // Does nothing for now.
+  }
+
  private:
   void *scheduler_;
 };
