@@ -194,27 +194,17 @@ def rn_codegen(
     )
 
     rn_xplat_cxx_library(
-        name = "generated_modules-{}".format(name),
+        name = "generated_cxx_modules-{}".format(name),
         tests = [":generated_tests-{}".format(name)],
-        ios_srcs = [
-            ":{}".format(generate_module_mm_name),
-        ],
         srcs = [
             ":{}".format(generate_module_cpp_name),
         ],
         headers = [
             ":{}".format(generate_module_h_name),
         ],
-        ios_headers = [
-            ":{}".format(generate_module_hobjcpp_name),
-        ],
         exported_headers = {
             "NativeModules.cpp": ":{}".format(generate_module_cpp_name),
             "NativeModules.h": ":{}".format(generate_module_h_name),
-        },
-        ios_exported_headers = {
-            "RCTNativeModules.h": ":{}".format(generate_module_hobjcpp_name),
-            "RCTNativeModules.mm": ":{}".format(generate_module_mm_name),
         },
         header_namespace = "react/modules/{}".format(name),
         compiler_flags = [
@@ -233,6 +223,40 @@ def rn_codegen(
         visibility = ["PUBLIC"],
         exported_deps = [
             react_native_xplat_target("turbomodule/core:core"),
+        ],
+    )
+
+    rn_xplat_cxx_library(
+        name = "generated_objcpp_modules-{}".format(name),
+        tests = [":generated_tests-{}".format(name)],
+        ios_srcs = [
+            ":{}".format(generate_module_mm_name),
+        ],
+        ios_headers = [
+            ":{}".format(generate_module_hobjcpp_name),
+        ],
+        ios_exported_headers = {
+            "RCTNativeModules.h": ":{}".format(generate_module_hobjcpp_name),
+            "RCTNativeModules.mm": ":{}".format(generate_module_mm_name),
+        },
+        header_namespace = "react/modules/{}".format(name),
+        compiler_flags = [
+            "-fexceptions",
+            "-frtti",
+            "-std=c++14",
+            "-Wall",
+        ],
+        fbobjc_compiler_flags = get_apple_compiler_flags(),
+        fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+        platforms = (APPLE),
+        apple_sdks = (IOS),
+        preprocessor_flags = [
+            "-DLOG_TAG=\"ReactNative\"",
+            "-DWITH_FBSYSTRACE=1",
+        ],
+        visibility = ["PUBLIC"],
+        deps = [
+            "fbsource//xplat/js:React",
         ],
     )
 
