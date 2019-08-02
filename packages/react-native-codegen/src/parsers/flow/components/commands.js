@@ -26,6 +26,7 @@ function buildCommandSchema(property, types: TypeMap) {
 
   if (
     !(
+      firstParam.id != null &&
       firstParam.id.type === 'QualifiedTypeIdentifier' &&
       firstParam.id.qualification.name === 'React' &&
       firstParam.id.id.name === 'Ref'
