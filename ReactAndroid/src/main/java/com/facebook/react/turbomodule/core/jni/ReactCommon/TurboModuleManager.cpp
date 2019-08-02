@@ -24,23 +24,23 @@ TurboModuleManager::TurboModuleManager(
   jni::alias_ref<TurboModuleManager::javaobject> jThis,
   jsi::Runtime* rt,
   std::shared_ptr<JSCallInvoker> jsCallInvoker,
-  jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate
+  jni::alias_ref<TurboModuleManagerDelegate::javaobject> tmmDelegate
 ):
   javaPart_(jni::make_global(jThis)),
   runtime_(rt),
   jsCallInvoker_(jsCallInvoker),
-  delegate_(jni::make_global(delegate))
+  turboModuleManagerDelegate_(jni::make_global(tmmDelegate))
   {}
 
 jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
   jni::alias_ref<jhybridobject> jThis,
   jlong jsContext,
   jni::alias_ref<JSCallInvokerHolder::javaobject> jsCallInvokerHolder,
-  jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate
+  jni::alias_ref<TurboModuleManagerDelegate::javaobject> tmmDelegate
 ) {
   auto jsCallInvoker = jsCallInvokerHolder->cthis()->getJSCallInvoker();
 
-  return makeCxxInstance(jThis, (jsi::Runtime *) jsContext, jsCallInvoker, delegate);
+  return makeCxxInstance(jThis, (jsi::Runtime *) jsContext, jsCallInvoker, tmmDelegate);
 }
 
 void TurboModuleManager::registerNatives() {
@@ -61,26 +61,23 @@ void TurboModuleManager::installJSIBindings() {
           return turboModuleLookup->second;
         }
 
-        auto cxxModule = delegate_->cthis()->getTurboModule(name, jsCallInvoker_);
+        auto cxxModule = turboModuleManagerDelegate_->cthis()->getTurboModule(name, jsCallInvoker_);
         if (cxxModule) {
           turboModuleCache_.insert({name, cxxModule});
           return cxxModule;
         }
 
-        static auto getLegacyCxxModule = delegate_->getClass()->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(const std::string&)>("getLegacyCxxModule");
-        auto legacyCxxModule = getLegacyCxxModule(delegate_.get(), name);
-
+        auto legacyCxxModule = getLegacyCxxJavaModule(name);
         if (legacyCxxModule) {
           auto turboModule = std::make_shared<react::TurboCxxModule>(legacyCxxModule->cthis()->getModule(), jsCallInvoker_);
           turboModuleCache_.insert({name, turboModule});
           return turboModule;
         }
 
-        static auto getJavaModule = javaClassStatic()->getMethod<jni::alias_ref<JTurboModule>(const std::string&)>("getJavaModule");
-        auto moduleInstance = getJavaModule(javaPart_.get(), name);
+        auto moduleInstance = getJavaModule(name);
 
         if (moduleInstance) {
-          auto turboModule = delegate_->cthis()->getTurboModule(name, moduleInstance, jsCallInvoker_);
+          auto turboModule = turboModuleManagerDelegate_->cthis()->getTurboModule(name, moduleInstance, jsCallInvoker_);
           turboModuleCache_.insert({name, turboModule});
           return turboModule;
         }
@@ -88,6 +85,20 @@ void TurboModuleManager::installJSIBindings() {
         return std::shared_ptr<TurboModule>(nullptr);
       })
   );
+}
+
+jni::global_ref<JTurboModule> TurboModuleManager::getJavaModule(std::string name) {
+  static auto method = javaClassStatic()->getMethod<jni::alias_ref<JTurboModule>(const std::string&)>("getJavaModule");
+
+  auto module = jni::make_global(method(javaPart_.get(), name));
+
+  return module;
+}
+
+jni::global_ref<CxxModuleWrapper::javaobject> TurboModuleManager::getLegacyCxxJavaModule(std::string name) {
+  static auto method = turboModuleManagerDelegate_->getClass()->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(const std::string&)>("getLegacyCxxModule");
+  auto module = jni::make_global(method(turboModuleManagerDelegate_.get(), name));
+  return module;
 }
 
 } // namespace react

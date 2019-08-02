@@ -17,16 +17,12 @@ namespace facebook {
 namespace react {
 
 struct JTurboModule : jni::JavaClass<JTurboModule> {
-  static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/turbomodule/core/interfaces/TurboModule;";
+  static auto constexpr kJavaDescriptor = "Lcom/facebook/react/turbomodule/core/interfaces/TurboModule;";
 };
 
 class JSI_EXPORT JavaTurboModule : public TurboModule {
- public:
-  JavaTurboModule(
-      const std::string &name,
-      jni::alias_ref<JTurboModule> instance,
-      std::shared_ptr<JSCallInvoker> jsInvoker);
+public:
+  JavaTurboModule(const std::string &name, jni::global_ref<JTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
   jsi::Value invokeJavaMethod(
       jsi::Runtime &runtime,
       TurboModuleMethodValueKind valueKind,
@@ -34,8 +30,7 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
       const std::string &methodSignature,
       const jsi::Value *args,
       size_t count);
-
- private:
+private:
   jni::global_ref<JTurboModule> instance_;
   jclass findClass(JNIEnv *env) const;
 };
