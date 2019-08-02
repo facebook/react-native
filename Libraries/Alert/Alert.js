@@ -15,6 +15,7 @@ import NativeDialogManagerAndroid, {
   type DialogOptions,
 } from '../NativeModules/specs/NativeDialogManagerAndroid';
 import RCTAlertManager from './RCTAlertManager';
+import ReactNative from '../../Renderer/shims/ReactNative';
 
 export type AlertType =
   | 'default'
@@ -31,11 +32,11 @@ export type Buttons = Array<{
 type Options = {
   cancelable?: ?boolean,
   onDismiss?: ?() => void,
-  rootTag?: number,
+  surface?: mixed,
 };
 
 type PromptOptions = {
-  rootTag?: number,
+  surface?: mixed,
 };
 
 /**
@@ -52,7 +53,7 @@ class Alert {
   ): void {
     if (Platform.OS === 'ios') {
       Alert.prompt(title, message, buttons, 'default', undefined, undefined, {
-        rootTag: options.rootTag,
+        reactTag: ReactNative.findNodeHandle(options.surface),
       });
     } else if (Platform.OS === 'android') {
       if (!NativeDialogManagerAndroid) {
@@ -171,7 +172,9 @@ class Alert {
           cancelButtonKey,
           destructiveButtonKey,
           keyboardType,
-          rootTag: options.rootTag ?? -1,
+          reactTag: options.surface
+            ? ReactNative.findNodeHandle(options.surface)
+            : -1,
         },
         (id, value) => {
           const cb = callbacks[id];

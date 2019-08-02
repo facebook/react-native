@@ -74,7 +74,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   NSString *cancelButtonKey = [RCTConvert NSString:args[@"cancelButtonKey"]];
   NSString *destructiveButtonKey = [RCTConvert NSString:args[@"destructiveButtonKey"]];
   UIKeyboardType keyboardType = [RCTConvert UIKeyboardType:args[@"keyboardType"]];
-  NSNumber *rootTag = args[@"rootTag"] ? [RCTConvert NSNumber:args[@"rootTag"]] : @-1;
+  NSNumber *reactTag = args[@"reactTag"] ? [RCTConvert NSNumber:args[@"reactTag"]] : @-1;
 
   if (!title && !message) {
     RCTLogError(@"Must specify either an alert title, or message, or both");
@@ -176,8 +176,8 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   [_alertControllers addObject:alertController];
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    UIView *rootView = [self.bridge.uiManager viewForReactTag:rootTag];
-    UIViewController *presentingController = RCTPresentedViewController(rootView.window);
+    UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
+    UIViewController *presentingController = RCTPresentedViewController(view.window);
 
     if (presentingController == nil) {
       RCTLogError(@"Tried to display alert view but there is no application window. args: %@", args);

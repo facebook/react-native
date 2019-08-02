@@ -22,7 +22,7 @@ export type Args = {|
   cancelButtonKey?: string,
   destructiveButtonKey?: string,
   keyboardType?: string,
-  rootTag?: number,
+  reactTag?: number,
 |};
 
 export interface Spec extends TurboModule {

@@ -73,9 +73,9 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
     destructiveButtonIndices = @[destructiveButtonIndex];
   }
 
-  NSNumber *rootTag = options[@"rootTag"] ? [RCTConvert NSNumber:options[@"rootTag"]] : @-1;
-  UIView *rootView = [self.bridge.uiManager viewForReactTag:rootTag];
-  UIViewController *controller = RCTPresentedViewController(rootView.window);
+  NSNumber *reactTag = options[@"reactTag"] ? [RCTConvert NSNumber:options[@"reactTag"]] : @-1;
+  UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
+  UIViewController *controller = RCTPresentedViewController(view.window);
 
   if (controller == nil) {
     RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
@@ -88,7 +88,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
    * defaults to centering the share popup on screen without any arrows.
    */
   NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
-  
+
   UIAlertController *alertController =
   [UIAlertController alertControllerWithTitle:title
                                       message:message
@@ -164,9 +164,9 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
     shareController.excludedActivityTypes = excludedActivityTypes;
   }
 
-  NSNumber *rootTag = options[@"rootTag"] ? [RCTConvert NSNumber:options[@"rootTag"]] : @-1;
-  UIView *rootView = [self.bridge.uiManager viewForReactTag:rootTag];
-  UIViewController *controller = RCTPresentedViewController(rootView.window);
+  NSNumber *reactTag = options[@"reactTag"] ? [RCTConvert NSNumber:options[@"reactTag"]] : @-1;
+  UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
+  UIViewController *controller = RCTPresentedViewController(view.window);
 
   shareController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
     if (activityError) {
@@ -178,7 +178,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
 
   NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
   shareController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
-  
+
   [self presentViewController:shareController onParentViewController:controller anchorViewTag:anchorViewTag];
 }
 

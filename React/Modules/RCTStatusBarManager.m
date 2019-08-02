@@ -105,7 +105,7 @@ RCT_EXPORT_METHOD(getHeight:(RCTResponseSenderBlock)callback)
 
 RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
                   animated:(BOOL)animated
-                  rootTag:(nonnull __unused NSNumber *)rootTag)
+                  reactTag:(nonnull __unused NSNumber *)reactTag)
 {
   if (RCTViewControllerBasedStatusBarAppearance()) {
     RCTLogError(@"RCTStatusBarManager module requires that the \
@@ -124,7 +124,7 @@ RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
 
 RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
                   withAnimation:(UIStatusBarAnimation)animation
-                  rootTag:(nonnull __unused NSNumber *)rootTag)
+                  reactTag:(nonnull __unused NSNumber *)reactTag)
 {
   if (RCTViewControllerBasedStatusBarAppearance()) {
     RCTLogError(@"RCTStatusBarManager module requires that the \

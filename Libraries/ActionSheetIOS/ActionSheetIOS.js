@@ -10,6 +10,7 @@
 'use strict';
 
 import RCTActionSheetManager from './NativeActionSheetManager';
+import ReactNative from '../../Renderer/shims/ReactNative';
 
 const invariant = require('invariant');
 const processColor = require('../StyleSheet/processColor');
@@ -45,7 +46,7 @@ const ActionSheetIOS = {
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
       +tintColor?: number | string,
-      +rootTag?: number,
+      +surface?: mixed,
     |},
     callback: (buttonIndex: number) => void,
   ) {
@@ -56,10 +57,11 @@ const ActionSheetIOS = {
     invariant(typeof callback === 'function', 'Must provide a valid callback');
     invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
 
-    const {tintColor, ...remainingOptions} = options;
+    const {tintColor, surface, ...remainingOptions} = options;
+    const reactTag = ReactNative.findNodeHandle(surface) ?? -1;
 
     RCTActionSheetManager.showActionSheetWithOptions(
-      {...remainingOptions, tintColor: processColor(tintColor)},
+      {...remainingOptions, reactTag, tintColor: processColor(tintColor)},
       callback,
     );
   },
@@ -88,7 +90,14 @@ const ActionSheetIOS = {
    * See http://facebook.github.io/react-native/docs/actionsheetios.html#showshareactionsheetwithoptions
    */
   showShareActionSheetWithOptions(
-    options: Object,
+    options: {|
+      +url?: ?string,
+      +message?: ?string,
+      +subject?: ?string,
+      +excludedActivityTypes?: ?(string[]),
+      +tintColor?: number | string,
+      +surface?: mixed,
+    |},
     failureCallback: Function,
     successCallback: Function,
   ) {
@@ -105,8 +114,16 @@ const ActionSheetIOS = {
       'Must provide a valid successCallback',
     );
     invariant(RCTActionSheetManager, "ActionSheetManager does't exist");
+
+    const {tintColor, surface, ...remainingOptions} = options;
+    const reactTag = ReactNative.findNodeHandle(surface) ?? -1;
+
     RCTActionSheetManager.showShareActionSheetWithOptions(
-      {...options, tintColor: processColor(options.tintColor)},
+      {
+        ...remainingOptions,
+        reactTag,
+        tintColor: processColor(options.tintColor),
+      },
       failureCallback,
       successCallback,
     );
