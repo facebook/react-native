@@ -28,7 +28,7 @@ function doPublish() {
   const tempPublishBranch = `publish-temp-${Date.now()}`;
   exec(`git checkout -b ${tempPublishBranch}`);
 
-  exec(`git config --global user.email "30809111+acoates-ms@users.noreply.github.com"`);
+  exec(`git config --global user.email "53619745+rnbot@users.noreply.github.com"`);
   exec(`git config --global user.name "React-Native Build"`);
 
   exec(`git add ${pkgJsonPath}`);
