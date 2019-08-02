@@ -99,16 +99,18 @@ declare var console: typeof console & {
 /**
  * Logs exceptions to the (native) console and displays them
  */
-function handleException(e: Error, isFatal: boolean) {
-  // Workaround for reporting errors caused by `throw 'some string'`
-  // Unfortunately there is no way to figure out the stacktrace in this
-  // case, so if you ended up here trying to trace an error, look for
-  // `throw '<error message>'` somewhere in your codebase.
-  if (!e.message) {
-    // $FlowFixMe - cannot reassign constant, explanation above
-    e = new SyntheticError(e);
+function handleException(e: mixed, isFatal: boolean) {
+  let error: Error;
+  if (e instanceof Error) {
+    error = e;
+  } else {
+    // Workaround for reporting errors caused by `throw 'some string'`
+    // Unfortunately there is no way to figure out the stacktrace in this
+    // case, so if you ended up here trying to trace an error, look for
+    // `throw '<error message>'` somewhere in your codebase.
+    error = new SyntheticError(e);
   }
-  reportException(e, isFatal);
+  reportException(error, isFatal);
 }
 
 function reactConsoleErrorHandler() {

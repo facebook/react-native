@@ -11,9 +11,6 @@
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
-; Ignore polyfills
-.*/Libraries/polyfills/.*
-
 ; These should not be required directly
 ; require from fbjs/lib instead: require('fbjs/lib/warning')
 .*/node_modules/warning/.*
