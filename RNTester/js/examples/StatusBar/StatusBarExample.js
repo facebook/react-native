@@ -254,9 +254,14 @@ class StatusBarTranslucentExample extends React.Component<{}, $FlowFixMeState> {
 }
 
 class StatusBarStaticIOSExample extends React.Component<{}> {
+  constructor(props) {
+    super(props);
+    this.viewRef = React.createRef();
+  }
+
   render() {
     return (
-      <View>
+      <View ref={this.viewRef}>
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() => {
@@ -278,6 +283,15 @@ class StatusBarStaticIOSExample extends React.Component<{}> {
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() => {
+            StatusBar.setHidden(true, 'fade', this.viewRef.current);
+          }}>
+          <View style={styles.button}>
+            <Text>setHidden(true, 'fade', componentRef)</Text>
+          </View>
+        </TouchableHighlight>
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={() => {
             StatusBar.setBarStyle('default', true);
           }}>
           <View style={styles.button}>
@@ -291,6 +305,15 @@ class StatusBarStaticIOSExample extends React.Component<{}> {
           }}>
           <View style={styles.button}>
             <Text>setBarStyle('light-content', true)</Text>
+          </View>
+        </TouchableHighlight>
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={() => {
+            StatusBar.setBarStyle('default', false, this.viewRef.current);
+          }}>
+          <View style={styles.button}>
+            <Text>setBarStyle('default', false, componentRef)</Text>
           </View>
         </TouchableHighlight>
         <TouchableHighlight
