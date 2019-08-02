@@ -8,7 +8,6 @@
 #pragma once
 
 #include <memory>
-#include <unordered_map>
 #include <fb/fbjni.h>
 #include <jsi/jsi.h>
 #include <ReactCommon/TurboModule.h>
@@ -37,14 +36,6 @@ private:
   jsi::Runtime* runtime_;
   std::shared_ptr<JSCallInvoker> jsCallInvoker_;
   jni::global_ref<TurboModuleManagerDelegate::javaobject> turboModuleManagerDelegate_;
-
-  /**
-   * TODO(T48018690):
-   * All modules are currently long-lived.
-   * We need to come up with a mechanism to allow modules to specify whether
-   * they want to be long-lived or short-lived.
-   */
-  std::unordered_map<std::string, std::shared_ptr<react::TurboModule>> turboModuleCache_;
 
   jni::global_ref<JTurboModule> getJavaModule(std::string name);
   jni::global_ref<CxxModuleWrapper::javaobject> getLegacyCxxJavaModule(std::string name);

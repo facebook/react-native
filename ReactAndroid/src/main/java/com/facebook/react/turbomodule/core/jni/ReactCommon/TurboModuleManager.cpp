@@ -56,30 +56,20 @@ void TurboModuleManager::installJSIBindings() {
   }
   TurboModuleBinding::install(*runtime_, std::make_shared<TurboModuleBinding>(
       [this](const std::string &name) -> std::shared_ptr<TurboModule> {
-        auto turboModuleLookup = turboModuleCache_.find(name);
-        if (turboModuleLookup != turboModuleCache_.end()) {
-          return turboModuleLookup->second;
-        }
-
         auto cxxModule = turboModuleManagerDelegate_->cthis()->getTurboModule(name, jsCallInvoker_);
         if (cxxModule) {
-          turboModuleCache_.insert({name, cxxModule});
           return cxxModule;
         }
 
         auto legacyCxxModule = getLegacyCxxJavaModule(name);
         if (legacyCxxModule) {
-          auto turboModule = std::make_shared<react::TurboCxxModule>(legacyCxxModule->cthis()->getModule(), jsCallInvoker_);
-          turboModuleCache_.insert({name, turboModule});
-          return turboModule;
+          return std::make_shared<react::TurboCxxModule>(legacyCxxModule->cthis()->getModule(), jsCallInvoker_);
         }
 
         auto moduleInstance = getJavaModule(name);
 
         if (moduleInstance) {
-          auto turboModule = turboModuleManagerDelegate_->cthis()->getTurboModule(name, moduleInstance, jsCallInvoker_);
-          turboModuleCache_.insert({name, turboModule});
-          return turboModule;
+          return turboModuleManagerDelegate_->cthis()->getTurboModule(name, moduleInstance, jsCallInvoker_);
         }
 
         return std::shared_ptr<TurboModule>(nullptr);
