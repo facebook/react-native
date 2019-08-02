@@ -10,7 +10,7 @@
 'use strict';
 
 import RCTActionSheetManager from './NativeActionSheetManager';
-import ReactNative from '../../Renderer/shims/ReactNative';
+import ReactNative from '../Renderer/shims/ReactNative';
 
 const invariant = require('invariant');
 const processColor = require('../StyleSheet/processColor');

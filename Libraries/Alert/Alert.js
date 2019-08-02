@@ -15,7 +15,7 @@ import NativeDialogManagerAndroid, {
   type DialogOptions,
 } from '../NativeModules/specs/NativeDialogManagerAndroid';
 import RCTAlertManager from './RCTAlertManager';
-import ReactNative from '../../Renderer/shims/ReactNative';
+import ReactNative from '../Renderer/shims/ReactNative';
 
 export type AlertType =
   | 'default'
