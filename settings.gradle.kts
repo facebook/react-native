@@ -9,3 +9,9 @@ include(
     ":ReactAndroid",
     ":RNTester:android:app"
 )
+
+include(":react-native-annotations")
+project(":react-native-annotations").projectDir = File(rootProject.projectDir, "android/annotations")
+
+include(":react-native-annotations-compiler")
+project(":react-native-annotations-compiler").projectDir = File(rootProject.projectDir, "android/annotations-compiler")

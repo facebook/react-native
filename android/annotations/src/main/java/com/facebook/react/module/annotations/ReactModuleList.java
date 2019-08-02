@@ -7,10 +7,11 @@
 
 package com.facebook.react.module.annotations;
 
+import com.facebook.react.module.model.BaseNativeModule;
+
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-import com.facebook.react.bridge.NativeModule;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -27,5 +28,5 @@ public @interface ReactModuleList {
    *
    * @return List of Native modules in the package.
    */
-  Class<? extends NativeModule>[] nativeModules();
+  Class<? extends BaseNativeModule>[] nativeModules();
 }
