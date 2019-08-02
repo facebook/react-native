@@ -569,11 +569,32 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @DoNotStrip
   public void setJSResponder(
       final int reactTag, final int initialReactTag, final boolean blockNativeResponder) {
-    // do nothing for now.
+    synchronized (mMountItemsLock) {
+      mMountItems.add(
+          new MountItem() {
+            @Override
+            public void execute(MountingManager mountingManager) {
+              mountingManager.setJSResponder(reactTag, initialReactTag, blockNativeResponder);
+            }
+          });
+    }
   }
 
+  /**
+   * Clears the JS Responder specified by {@link #setJSResponder(int, int, boolean)}. After this
+   * method is called, all the touch events are going to be handled by JS.
+   */
+  @DoNotStrip
   public void clearJSResponder() {
-    // do nothing for now.
+    synchronized (mMountItemsLock) {
+      mMountItems.add(
+          new MountItem() {
+            @Override
+            public void execute(MountingManager mountingManager) {
+              mountingManager.clearJSResponder();
+            }
+          });
+    }
   }
 
   @Override

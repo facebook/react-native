@@ -17,10 +17,12 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
+import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.RootView;
@@ -40,6 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MountingManager {
 
   private final ConcurrentHashMap<Integer, ViewState> mTagToViewState;
+  private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
   private final ViewManagerRegistry mViewManagerRegistry;
   private final RootViewManager mRootViewManager = new RootViewManager();
 
@@ -183,7 +186,9 @@ public class MountingManager {
     if (isLayoutable) {
       viewManager = mViewManagerRegistry.get(componentName);
       // View Managers are responsible for dealing with initial state and props.
-      view = viewManager.createView(themedReactContext, propsDiffMap, stateWrapper, null);
+      view =
+          viewManager.createView(
+              themedReactContext, propsDiffMap, stateWrapper, mJSResponderHandler);
       view.setId(reactTag);
     }
 
@@ -327,6 +332,59 @@ public class MountingManager {
     UiThreadUtil.assertOnUiThread();
     ViewState viewState = getViewState(reactTag);
     viewState.mEventEmitter = eventEmitter;
+  }
+
+  /**
+   * Set the JS responder for the view associated with the tags received as a parameter.
+   *
+   * <p>The JSResponder coordinates the return values of the onInterceptTouch method in Android
+   * Views. This allows JS to coordinate when a touch should be handled by JS or by the Android
+   * native views. See {@link JSResponderHandler} for more details.
+   *
+   * <p>This method is going to be executed on the UIThread as soon as it is delivered from JS to
+   * RN.
+   *
+   * <p>Currently, there is no warranty that the view associated with the react tag exists, because
+   * this method is not handled by the react commit process.
+   *
+   * @param reactTag React tag of the first parent of the view that is NOT virtual
+   * @param initialReactTag React tag of the JS view that initiated the touch operation
+   * @param blockNativeResponder If native responder should be blocked or not
+   */
+  @UiThread
+  public synchronized void setJSResponder(
+      int reactTag, int initialReactTag, boolean blockNativeResponder) {
+    if (!blockNativeResponder) {
+      mJSResponderHandler.setJSResponder(initialReactTag, null);
+      return;
+    }
+
+    ViewState viewState = getViewState(reactTag);
+    View view = viewState.mView;
+    if (initialReactTag != reactTag && view instanceof ViewParent) {
+      // In this case, initialReactTag corresponds to a virtual/layout-only View, and we already
+      // have a parent of that View in reactTag, so we can use it.
+      mJSResponderHandler.setJSResponder(initialReactTag, (ViewParent) view);
+      return;
+    } else if (view == null) {
+      SoftAssertions.assertUnreachable("Cannot find view for tag " + reactTag + ".");
+      return;
+    }
+
+    if (viewState.mIsRoot) {
+      SoftAssertions.assertUnreachable(
+          "Cannot block native responder on " + reactTag + " that is a root view");
+    }
+    mJSResponderHandler.setJSResponder(initialReactTag, view.getParent());
+  }
+
+  /**
+   * Clears the JS Responder specified by {@link #setJSResponder(int, int, boolean)}. After this
+   * method is called, all the touch events are going to be handled by JS.
+   */
+  @UiThread
+  public void clearJSResponder() {
+    mJSResponderHandler.clearJSResponder();
   }
 
   @AnyThread
