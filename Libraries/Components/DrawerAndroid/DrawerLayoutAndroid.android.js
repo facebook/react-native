@@ -22,7 +22,9 @@ const nullthrows = require('nullthrows');
 const DrawerConsts = UIManager.getViewManagerConfig('AndroidDrawerLayout')
   .Constants;
 const dismissKeyboard = require('../../Utilities/dismissKeyboard');
-import AndroidDrawerLayoutNativeComponent from './AndroidDrawerLayoutNativeComponent';
+import AndroidDrawerLayoutNativeComponent, {
+  Commands,
+} from './AndroidDrawerLayoutNativeComponent';
 
 const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
 
@@ -163,7 +165,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
     drawerBackgroundColor: 'white',
   };
 
-  _nativeRef = React.createRef<Class<ReactNative.NativeComponent<Props>>>();
+  _nativeRef = React.createRef();
 
   state = {statusBarBackgroundColor: null};
 
@@ -264,23 +266,14 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
    * Opens the drawer.
    */
   openDrawer() {
-    UIManager.dispatchViewManagerCommand(
-      this._getDrawerLayoutHandle(),
-      UIManager.getViewManagerConfig('AndroidDrawerLayout').Commands.openDrawer,
-      null,
-    );
+    Commands.openDrawer(nullthrows(this._nativeRef.current));
   }
 
   /**
    * Closes the drawer.
    */
   closeDrawer() {
-    UIManager.dispatchViewManagerCommand(
-      this._getDrawerLayoutHandle(),
-      UIManager.getViewManagerConfig('AndroidDrawerLayout').Commands
-        .closeDrawer,
-      null,
-    );
+    Commands.closeDrawer(nullthrows(this._nativeRef.current));
   }
 
   /**
@@ -318,9 +311,6 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
    *   </DrawerLayoutAndroid>
    * )
    */
-  _getDrawerLayoutHandle() {
-    return ReactNative.findNodeHandle(this._nativeRef.current);
-  }
 
   /**
    * Native methods
