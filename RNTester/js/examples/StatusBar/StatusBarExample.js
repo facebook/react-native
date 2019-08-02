@@ -10,7 +10,7 @@
 
 'use strict';
 
-const React = require('react');
+import React from 'react';
 const {
   StatusBar,
   StyleSheet,
@@ -254,7 +254,10 @@ class StatusBarTranslucentExample extends React.Component<{}, $FlowFixMeState> {
 }
 
 class StatusBarStaticIOSExample extends React.Component<{}> {
-  viewRef: React.Ref<React.ElementRef<View> | undefined> = React.createRef();
+  // $FlowFixMe
+  viewRef: React.MutableRefObject<React.ElementRef<
+    typeof View,
+  > | void> = React.createRef();
 
   render() {
     return (
