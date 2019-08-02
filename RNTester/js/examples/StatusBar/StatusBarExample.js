@@ -254,7 +254,7 @@ class StatusBarTranslucentExample extends React.Component<{}, $FlowFixMeState> {
 }
 
 class StatusBarStaticIOSExample extends React.Component<{}> {
-  viewRef = React.createRef();
+  viewRef = React.createRef<?React$Node>();
 
   render() {
     return (

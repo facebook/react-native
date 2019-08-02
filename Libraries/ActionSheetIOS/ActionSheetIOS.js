@@ -46,7 +46,7 @@ const ActionSheetIOS = {
       +destructiveButtonIndex?: ?number,
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
-      +tintColor?: ?number,
+      +tintColor?: ?number | string,
       +surface?: mixed,
     |},
     callback: (buttonIndex: number) => void,
@@ -96,16 +96,11 @@ const ActionSheetIOS = {
       +url?: ?string,
       +subject?: ?string,
       +anchor?: ?number,
-      +tintColor?: ?number,
+      +tintColor?: ?number | string,
       +excludedActivityTypes?: ?Array<string>,
       +surface?: mixed,
     |},
-    failureCallback: (error: {|
-      +domain: string,
-      +code: string,
-      +userInfo?: ?Object,
-      +message: string,
-    |}) => void,
+    failureCallback: Function,
     successCallback: (completed: boolean, activityType: ?string) => void,
   ) {
     invariant(
