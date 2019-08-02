@@ -15,6 +15,7 @@
 #import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLinkingManager.h>
 #import <React/RCTRootView.h>
+#import <React/RCTRootViewController.h>
 
 #import <cxxreact/JSExecutor.h>
 
@@ -63,12 +64,13 @@
 
   UIView *rootView = [[RNFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
 #else
-  UIView *rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_bridge
+                                                   moduleName:@"RNTesterApp"
+                                            initialProperties:initProps];
 #endif
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [UIViewController new];
-  rootViewController.view = rootView;
+  RCTRootViewController *rootViewController = [[RCTRootViewController alloc] initWithRootView:rootView];
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   return YES;
