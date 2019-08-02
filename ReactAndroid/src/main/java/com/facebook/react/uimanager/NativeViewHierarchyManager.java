@@ -660,6 +660,12 @@ public class NativeViewHierarchyManager {
     outputBuffer[1] -= rootY;
   }
 
+  /**
+   * Fills the outputBuffer with the view's bounding box [x, y, width, height]
+   *
+   * @param v
+   * @param outputBuffer
+   */
   private void computeBoundingBox(View v, int[] outputBuffer) {
     mBoundingBox.set(0, 0, v.getWidth(), v.getHeight());
     mapRectFromViewToWindowCoords(v, mBoundingBox);
@@ -670,7 +676,14 @@ public class NativeViewHierarchyManager {
     outputBuffer[3] = Math.round(mBoundingBox.bottom - mBoundingBox.top);
   }
 
-  // simplified version of the hidden Android method View.mapRectFromViewToScreenCoords()
+  /**
+   * Map a rectangle from view-relative coordinates to root-view-relative coordinates.
+   * This is a simplified version of the hidden Android method View.mapRectFromViewToScreenCoords()
+   * @see {@link View#mapRectFromViewToScreenCoords}
+   *
+   * @param v The view the coordinates are relative to
+   * @param rect The rectangle to be mapped
+   */
   private void mapRectFromViewToWindowCoords(View v, RectF rect) {
     Matrix m = v.getMatrix();
     if (!m.isIdentity()) {
