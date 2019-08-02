@@ -1750,6 +1750,24 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+@protocol NativeSoundManagerSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)playTouchSound;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'SoundManager'
+     */
+
+    class JSI_EXPORT NativeSoundManagerSpecJSI : public ObjCTurboModule {
+    public:
+      NativeSoundManagerSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
 
 namespace JS {
   namespace NativeSourceCode {

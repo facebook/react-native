@@ -1690,6 +1690,26 @@ namespace facebook {
   namespace react {
 
     
+    static facebook::jsi::Value __hostFunction_NativeSoundManagerSpecJSI_playTouchSound(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "playTouchSound", @selector(playTouchSound), args, count);
+    }
+
+
+    NativeSoundManagerSpecJSI::NativeSoundManagerSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+      : ObjCTurboModule("SoundManager", instance, jsInvoker) {
+        
+        methodMap_["playTouchSound"] = MethodMetadata {0, __hostFunction_NativeSoundManagerSpecJSI_playTouchSound};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
     static facebook::jsi::Value __hostFunction_NativeSourceCodeSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, "getConstants", @selector(getConstants), args, count);
     }
