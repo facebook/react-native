@@ -11,12 +11,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/*
- * UIView class for root <PullToRefreshView> component.
- * This view is designed to only serve ViewController-like purpose for the actual `UIRefreshControl` view which is being
- * attached to some `UIScrollView` (not to this view).
+/**
+ * `UIScrollView` subclass which has some improvements and tweaks
+ * which are not directly related to React.
  */
-@interface RNPullToRefreshViewComponentView : RNViewComponentView
+@interface RNEnhancedScrollView : UIScrollView
+
+@property (nonatomic, assign) BOOL pinchGestureEnabled;
+@property (nonatomic, assign) BOOL centerContent;
 
 @end
 

@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RNViewComponentView.h>
+#import <React/RCTSurfaceHostingProxyRootView.h>
 
 /**
- * UIView class for root <ModalHostView> component.
+ * Fabric-compatible RCTSurfaceHostingProxyRootView implementation.
  */
-@interface RNModalHostViewComponentView : RNViewComponentView
+@interface RNFabricSurfaceHostingProxyRootView : RCTSurfaceHostingProxyRootView
 
 @end

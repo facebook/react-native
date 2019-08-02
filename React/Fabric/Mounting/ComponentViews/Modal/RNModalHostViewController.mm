@@ -8,11 +8,11 @@
 #import "RNModalHostViewController.h"
 
 #import <React/RCTLog.h>
-#import <React/RCTSurfaceTouchHandler.h>
+#import <React/RNSurfaceTouchHandler.h>
 
 @implementation RNModalHostViewController {
   CGRect _lastViewBounds;
-  RCTSurfaceTouchHandler *_touchHandler;
+  RNSurfaceTouchHandler *_touchHandler;
 }
 
 - (instancetype)init
@@ -20,7 +20,7 @@
   if (!(self = [super init])) {
     return nil;
   }
-  _touchHandler = [RCTSurfaceTouchHandler new];
+  _touchHandler = [RNSurfaceTouchHandler new];
 
   return self;
 }

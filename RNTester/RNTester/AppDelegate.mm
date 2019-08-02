@@ -23,8 +23,8 @@
 #endif
 
 #ifdef RN_FABRIC_ENABLED
-#import <React/RCTSurfacePresenter.h>
-#import <React/RCTFabricSurfaceHostingProxyRootView.h>
+#import <React/RNSurfacePresenter.h>
+#import <React/RNFabricSurfaceHostingProxyRootView.h>
 #endif
 
 #import <ReactCommon/RCTTurboModuleManager.h>
@@ -34,7 +34,7 @@
 @interface AppDelegate() <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate>{
 
 #ifdef RN_FABRIC_ENABLED
-  RCTSurfacePresenter *_surfacePresenter;
+  RNSurfacePresenter *_surfacePresenter;
 #endif
 
   RCTTurboModuleManager *_turboModuleManager;
@@ -58,10 +58,10 @@
   }
 
 #ifdef RN_FABRIC_ENABLED
-  _surfacePresenter = [[RCTSurfacePresenter alloc] initWithBridge:_bridge config:nil];
+  _surfacePresenter = [[RNSurfacePresenter alloc] initWithBridge:_bridge config:nil];
   _bridge.surfacePresenter = _surfacePresenter;
 
-  UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
+  UIView *rootView = [[RNFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
 #else
   UIView *rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
 #endif

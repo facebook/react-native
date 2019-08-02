@@ -13,7 +13,7 @@
 #import <react/components/modal/ModalHostViewState.h>
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
-#import "RCTConversions.h"
+#import "RNConversions.h"
 
 using namespace facebook::react;
 
@@ -164,7 +164,7 @@ static ModalHostViewOnOrientationChangeStruct onOrientationChangeStruct(CGRect r
   }
 }
 
-#pragma mark - RCTComponentViewProtocol
+#pragma mark - RNComponentViewProtocol
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
@@ -194,12 +194,12 @@ static ModalHostViewOnOrientationChangeStruct onOrientationChangeStruct(CGRect r
   _state = std::static_pointer_cast<const ModalHostViewShadowNode::ConcreteState>(state);
 }
 
-- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)mountChildComponentView:(UIView<RNComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [_viewController.view insertSubview:childComponentView atIndex:index];
 }
 
-- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)unmountChildComponentView:(UIView<RNComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [childComponentView removeFromSuperview];
 }

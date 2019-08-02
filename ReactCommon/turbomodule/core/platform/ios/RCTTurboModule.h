@@ -88,7 +88,7 @@ private:
 
 @end
 
-// TODO: Consolidate this extension with the one in RCTSurfacePresenter.
+// TODO: Consolidate this extension with the one in RNSurfacePresenter.
 @interface RCTBridge ()
 
 - (std::weak_ptr<facebook::react::Instance>)reactInstance;

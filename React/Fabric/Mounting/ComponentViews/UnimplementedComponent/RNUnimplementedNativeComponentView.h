@@ -5,11 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <UIKit/UIKit.h>
+
 #import <React/RNViewComponentView.h>
 
-/**
- * UIView class for root <ModalHostView> component.
- */
-@interface RNModalHostViewComponentView : RNViewComponentView
+NS_ASSUME_NONNULL_BEGIN
+
+@interface RNUnimplementedNativeComponentView : RNViewComponentView
 
 @end
+
+NS_ASSUME_NONNULL_END

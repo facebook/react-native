@@ -231,7 +231,7 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
   });
 }
 
-#pragma mark - RCTSurfacePresenterObserver
+#pragma mark - RNSurfacePresenterObserver
 
 - (void)willMountComponentsWithRootTag:(NSInteger)rootTag
 {

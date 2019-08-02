@@ -8,7 +8,7 @@
 #import <React/RCTPropsAnimatedNode.h>
 
 #import <React/RCTLog.h>
-#import <React/RCTSurfacePresenterStub.h>
+#import <React/RNSurfacePresenterStub.h>
 #import <React/RCTUIManager.h>
 
 #import <React/RCTAnimationUtils.h>
