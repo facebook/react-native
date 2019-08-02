@@ -119,7 +119,7 @@ function getInlineMethodImplementation(
       return inlineTemplate
         .replace(
           /::_RETURN_TYPE_::/,
-          'facebook::react::LazyVector<id<NSObject>> *',
+          'facebook::react::LazyVector<id<NSObject>> +',
         )
         .replace(
           /::_RETURN_VALUE_::/,

@@ -59,11 +59,14 @@ function getBuilderInputFieldDeclaration(
     if (!property.optional) {
       return 'RCTRequired<' + annotation + '> ' + property.name + ';';
     }
-    return annotation + ' ' + property.name + ';';
+    return 'folly::Optional<' + annotation + '> ' + property.name + ';';
   }
   const {typeAnnotation} = property;
   switch (typeAnnotation.type) {
     case 'StringTypeAnnotation':
+      if (property.optional) {
+        return 'NSString *' + property.name + ';';
+      }
       return markRequiredIfNecessary('NSString *');
     case 'NumberTypeAnnotation':
     case 'FloatTypeAnnotation':
@@ -79,6 +82,9 @@ function getBuilderInputFieldDeclaration(
       );
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
+      if (property.optional) {
+        return 'id<NSObject> _Nullable' + property.name + ';';
+      }
       return markRequiredIfNecessary('id<NSObject>');
     case 'ArrayTypeAnnotation':
       return markRequiredIfNecessary('std::vector<id<NSObject>>');
@@ -88,31 +94,52 @@ function getBuilderInputFieldDeclaration(
   }
 }
 
-function safeGetter(name: string) {
+function safeGetter(name: string, optional: boolean) {
   return `
-  auto ${name} = i.${name}.get();
+  auto ${name} = i.${name}${optional ? '' : '.get()'};
   d[@"${name}"] = ${name};
   `.trim();
 }
 
-function arrayGetter(name: string) {
+function arrayGetter(name: string, optional: boolean) {
   return `
-  auto ${name} = i.${name}.get();
-  d[@"${name}"] = RCTConvertVecToArray(${name}, ^id(id<NSObject> el_) { return el_; });
+  auto ${name} = i.${name}${optional ? '' : '.get()'};
+  d[@"${name}"] = RCTConvert${
+    optional ? 'Optional' : ''
+  }VecToArray(${name}, ^id(id<NSObject> el_) { return el_; });
   `.trim();
 }
 
-function numberAndBoolGetter(name: string) {
+function boolGetter(name: string, optional: boolean) {
   return `
-  auto ${name} = i.${name}.get();
-  d[@"${name}"] = @(${name});
+  auto ${name} = i.${name}${optional ? '' : '.get()'};
+  d[@"${name}"] = ${
+    optional
+      ? `${name}.hasValue() ? @((BOOL)${name}.value()) : nil`
+      : `@(${name})`
+  };
   `.trim();
 }
 
-function unsafeGetter(name: string) {
+function numberGetter(name: string, optional: boolean) {
   return `
-  auto ${name} = i.${name}.get();
-  d[@"${name}"] = ${name}.buildUnsafeRawValue();
+  auto ${name} = i.${name}${optional ? '' : '.get()'};
+  d[@"${name}"] = ${
+    optional
+      ? `${name}.hasValue() ? @((double)${name}.value()) : nil`
+      : `@(${name})`
+  };
+  `.trim();
+}
+
+function unsafeGetter(name: string, optional: boolean) {
+  return `
+  auto ${name} = i.${name}${optional ? '' : '.get()'};
+  d[@"${name}"] = ${
+    optional
+      ? `${name}.hasValue() ? ${name}.value().buildUnsafeRawValue() : nil`
+      : `${name}.buildUnsafeRawValue()`
+  };
   `.trim();
 }
 
@@ -122,16 +149,17 @@ function getObjectProperty(property: ObjectParamTypeAnnotation): string {
     case 'NumberTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
+      return numberGetter(property.name, property.optional);
     case 'BooleanTypeAnnotation':
-      return numberAndBoolGetter(property.name);
+      return boolGetter(property.name, property.optional);
     case 'StringTypeAnnotation':
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
-      return safeGetter(property.name);
+      return safeGetter(property.name, property.optional);
     case 'ObjectTypeAnnotation':
-      return unsafeGetter(property.name);
+      return unsafeGetter(property.name, property.optional);
     case 'ArrayTypeAnnotation':
-      return arrayGetter(property.name);
+      return arrayGetter(property.name, property.optional);
     case 'FunctionTypeAnnotation':
     default:
       throw new Error(`Unknown prop type, found: ${typeAnnotation.type}"`);
