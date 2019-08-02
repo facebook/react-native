@@ -20,7 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * Conforming view controllers should use this to update preferred status bar style
  */
-- (void)updateStatusBarStyle:(UIStatusBarStyle)style hidden:(BOOL)hidden animation:(UIStatusBarAnimation)animation;
+- (void)updateStatusBarStyle:(UIStatusBarStyle)style
+                      hidden:(BOOL)hidden
+                   animation:(UIStatusBarAnimation)animation
+                    animated:(BOOL)animate;
 
 @end
 
@@ -39,7 +42,10 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * See: RCTRootViewControllerProtocol
  */
-- (void)updateStatusBarStyle:(UIStatusBarStyle)style hidden:(BOOL)hidden animation:(UIStatusBarAnimation)animation;
+- (void)updateStatusBarStyle:(UIStatusBarStyle)style
+                      hidden:(BOOL)hidden
+                   animation:(UIStatusBarAnimation)animation
+                    animated:(BOOL)animate;
 
 @end
 

@@ -12,6 +12,7 @@
 #import "RCTUtils.h"
 #import "RCTUIManager.h"
 #import "RCTBridge.h"
+#import "RCTRootViewController.h"
 
 #if !TARGET_OS_TV
 @implementation RCTConvert (UIStatusBar)
@@ -96,6 +97,26 @@ RCT_EXPORT_MODULE()
   [self emitEvent:@"statusBarFrameWillChange" forNotification:notification];
 }
 
+- (UIViewController<RCTRootViewControllerProtocol>*) viewControllerForReactTag:(nonnull NSNumber *)reactTag
+{
+  if (!RCTViewControllerBasedStatusBarAppearance()) {
+    return nil;
+  }
+
+  UIView *view = [self.bridge.uiManager viewForReactTag:reactTag];
+  UIViewController *viewController = view.window.rootViewController ?: RCTKeyWindow().rootViewController;
+
+  if ([viewController conformsToProtocol:@protocol(RCTRootViewControllerProtocol)]) {
+    return (UIViewController<RCTRootViewControllerProtocol>*) viewController;
+  } else {
+    RCTLogError(@"RCTStatusBarManager could not find RCTRootViewController. \
+                If UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to YES (recommended for new apps), \
+                You need to use RCTRootViewControllerProtocol-conforming view controller as app window's root view controller \
+                and must pass a node reference to `surface` argument of StatusBar methods.");
+    return nil;
+  }
+}
+
 RCT_EXPORT_METHOD(getHeight:(RCTResponseSenderBlock)callback)
 {
   callback(@[@{
@@ -103,43 +124,44 @@ RCT_EXPORT_METHOD(getHeight:(RCTResponseSenderBlock)callback)
   }]);
 }
 
-RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
+RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)style
                   animated:(BOOL)animated
-                  reactTag:(nonnull __unused NSNumber *)reactTag)
+                  reactTag:(nonnull NSNumber *)reactTag)
 {
-  if (RCTViewControllerBasedStatusBarAppearance()) {
-    RCTLogError(@"RCTStatusBarManager module requires that the \
-                UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
-    return;
-  }
+  UIViewController<RCTRootViewControllerProtocol> *viewController = [self viewControllerForReactTag: reactTag];
 
-  // TODO: Add proper support for UIScenes (this requires view controller based status bar management)
-
+  if (viewController) {
+    [viewController updateStatusBarStyle:style
+                                  hidden:viewController.prefersStatusBarHidden
+                               animation:viewController.preferredStatusBarUpdateAnimation
+                                animated:animated];
+  } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [RCTSharedApplication() setStatusBarStyle:statusBarStyle
-                                   animated:animated];
+    [RCTSharedApplication() setStatusBarStyle:style
+                                     animated:animated];
 #pragma clang diagnostic pop
+  }
 }
 
 RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
                   withAnimation:(UIStatusBarAnimation)animation
                   reactTag:(nonnull __unused NSNumber *)reactTag)
 {
-  if (RCTViewControllerBasedStatusBarAppearance()) {
-    RCTLogError(@"RCTStatusBarManager module requires that the \
-                UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
-    return;
-  }
+  UIViewController<RCTRootViewControllerProtocol> *viewController = [self viewControllerForReactTag: reactTag];
 
-  // TODO: Add proper support for UIScenes (this requires view controller based status bar management)
-
+  if (viewController) {
+    [viewController updateStatusBarStyle:viewController.preferredStatusBarStyle
+                                  hidden:hidden
+                               animation:animation
+                                animated:animation != UIStatusBarAnimationNone];
+  } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [RCTSharedApplication() setStatusBarHidden:hidden
-                               withAnimation:animation];
+    [RCTSharedApplication() setStatusBarHidden:hidden
+                                 withAnimation:animation];
 #pragma clang diagnostic pop
-
+  }
 }
 
 RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)

@@ -22,6 +22,9 @@
 
     if (self = [super initWithNibName:nil bundle:nil]) {
         _rootView = rootView;
+        _statusBarStyle = UIStatusBarStyleDefault;
+        _statusBarHidden = false;
+        _statusBarAnimation = UIStatusBarAnimationFade;
     }
 
     return self;
@@ -50,12 +53,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     return _statusBarAnimation;
 }
 
-- (void)updateStatusBarStyle:(UIStatusBarStyle)style hidden:(BOOL)hidden animation:(UIStatusBarAnimation)animation
+- (void)updateStatusBarStyle:(UIStatusBarStyle)style
+                      hidden:(BOOL)hidden
+                   animation:(UIStatusBarAnimation)animation
+                    animated:(BOOL)animate;
 {
     _statusBarStyle = style;
     _statusBarHidden = hidden;
     _statusBarAnimation = animation;
-    [self setNeedsStatusBarAppearanceUpdate];
+    if (animate) {
+        [UIView animateWithDuration:0.150 animations:^{
+            [self setNeedsStatusBarAppearanceUpdate];
+        }];
+    } else {
+        [self setNeedsStatusBarAppearanceUpdate];
+    }
 }
 
 @end
