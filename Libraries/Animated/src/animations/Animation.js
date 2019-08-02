@@ -18,7 +18,7 @@ export type EndCallback = (result: EndResult) => void | Promise<void>;
 
 export type AnimationConfig = {
   isInteraction?: boolean,
-  useNativeDriver?: boolean,
+  useNativeDriver: boolean,
   onComplete?: ?EndCallback,
   iterations?: number,
 };
