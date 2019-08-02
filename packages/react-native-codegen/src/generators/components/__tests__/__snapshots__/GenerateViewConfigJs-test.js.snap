@@ -127,8 +127,7 @@ Map {
 'use strict';
 
 const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
-const {UIManager} = require(\\"react-native\\")
-const {findNodeHandle} = require(\\"react-native\\")
+const {dispatchCommand} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
 const CommandNativeComponentViewConfig = {
   uiViewClassName: 'CommandNativeComponent',
@@ -145,19 +144,11 @@ export default nativeComponentName;
 
 export const Commands = {
     flashScrollIndicators(ref) {
-        UIManager.dispatchViewManagerCommand(
-          findNodeHandle(ref),
-          UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.flashScrollIndicators,
-          []
-        );
+        dispatchCommand(ref, \\"flashScrollIndicators\\", []);
     },
 
     allTypes(ref, x, message, animated) {
-        UIManager.dispatchViewManagerCommand(
-          findNodeHandle(ref),
-          UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.allTypes,
-          [x, message, animated]
-        );
+        dispatchCommand(ref, \\"allTypes\\", [x, message, animated]);
     }
 };
 ",
@@ -179,8 +170,7 @@ Map {
 'use strict';
 
 const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
-const {UIManager} = require(\\"react-native\\")
-const {findNodeHandle} = require(\\"react-native\\")
+const {dispatchCommand} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
 const CommandNativeComponentViewConfig = {
   uiViewClassName: 'CommandNativeComponent',
@@ -200,11 +190,7 @@ export default nativeComponentName;
 
 export const Commands = {
     hotspotUpdate(ref, x, y) {
-        UIManager.dispatchViewManagerCommand(
-          findNodeHandle(ref),
-          UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.hotspotUpdate,
-          [x, y]
-        );
+        dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
     }
 };
 ",

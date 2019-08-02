@@ -23,12 +23,8 @@ type ModuleProps = $ReadOnly<{| ...ViewProps,
 const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
 const {
-  UIManager
-} = require(\\"react-native\\");
-
-const {
-  findNodeHandle
-} = require(\\"react-native\\");
+  dispatchCommand
+} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
 const ModuleViewConfig = {
   uiViewClassName: 'RCTModule',
@@ -57,11 +53,11 @@ export const __INTERNAL_VIEW_CONFIG = ModuleViewConfig;
 export default nativeComponentName;
 export const Commands = {
   hotspotUpdate(ref, x, y) {
-    UIManager.dispatchViewManagerCommand(findNodeHandle(ref), UIManager.getViewManagerConfig(\\"RCTModule\\").Commands.hotspotUpdate, [x, y]);
+    dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
   },
 
   scrollTo(ref, y, animated) {
-    UIManager.dispatchViewManagerCommand(findNodeHandle(ref), UIManager.getViewManagerConfig(\\"RCTModule\\").Commands.scrollTo, [y, animated]);
+    dispatchCommand(ref, \\"scrollTo\\", [y, animated]);
   }
 
 };"
