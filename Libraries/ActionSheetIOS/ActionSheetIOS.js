@@ -41,11 +41,12 @@ const ActionSheetIOS = {
     options: {|
       +title?: ?string,
       +message?: ?string,
-      +options: Array<string>,
+      +options: ?Array<string>,
+      // Supports Array<number> as well.
       +destructiveButtonIndex?: ?number,
       +cancelButtonIndex?: ?number,
       +anchor?: ?number,
-      +tintColor?: number | string,
+      +tintColor?: ?number,
       +surface?: mixed,
     |},
     callback: (buttonIndex: number) => void,
@@ -91,15 +92,21 @@ const ActionSheetIOS = {
    */
   showShareActionSheetWithOptions(
     options: {|
-      +url?: ?string,
       +message?: ?string,
+      +url?: ?string,
       +subject?: ?string,
-      +excludedActivityTypes?: ?(string[]),
-      +tintColor?: number | string,
+      +anchor?: ?number,
+      +tintColor?: ?number,
+      +excludedActivityTypes?: ?Array<string>,
       +surface?: mixed,
     |},
-    failureCallback: Function,
-    successCallback: Function,
+    failureCallback: (error: {|
+      +domain: string,
+      +code: string,
+      +userInfo?: ?Object,
+      +message: string,
+    |}) => void,
+    successCallback: (completed: boolean, activityType: ?string) => void,
   ) {
     invariant(
       typeof options === 'object' && options !== null,
