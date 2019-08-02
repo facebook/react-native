@@ -31,6 +31,7 @@ ADD ReactAndroid /app/ReactAndroid
 ADD ReactCommon /app/ReactCommon
 ADD React /app/React
 ADD keystores /app/keystores
+ADD packages/annotations-compiler /app/packages/annotations-compiler
 ADD packages/react-native-codegen /app/packages/react-native-codegen
 ADD tools /app/tools
 

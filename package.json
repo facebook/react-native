@@ -28,6 +28,7 @@
     "Libraries",
     "LICENSE",
     "local-cli",
+    "packages/annotations-compiler",
     "React-Core.podspec",
     "react-native.config.js",
     "react.gradle",

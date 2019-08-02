@@ -223,6 +223,7 @@ dependencies {
 
     // Build React Native from source
     implementation project(':ReactAndroid')
+    annotationProcessor project(":react-native-annotations-compiler")
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 

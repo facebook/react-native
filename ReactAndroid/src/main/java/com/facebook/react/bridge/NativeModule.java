@@ -9,6 +9,7 @@ package com.facebook.react.bridge;
 
 import androidx.annotation.NonNull;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.module.annotations.BaseNativeModule;
 
 /**
  * A native module whose API can be provided to JS catalyst instances. {@link NativeModule}s whose
@@ -18,7 +19,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
  * themselves using {@link CxxModuleWrapper}.
  */
 @DoNotStrip
-public interface NativeModule {
+public interface NativeModule extends BaseNativeModule {
   interface NativeMethod {
     void invoke(JSInstance jsInstance, ReadableArray parameters);
 

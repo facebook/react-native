@@ -22,3 +22,7 @@ include(
 // Include this to enable codegen Gradle plugin.
 includeBuild("packages/react-native-gradle-plugin/")
 
+include(":react-native-annotations")
+project(":react-native-annotations").projectDir = File(rootProject.projectDir, "packages/annotations-compiler/annotations")
+include(":react-native-annotations-compiler")
+project(":react-native-annotations-compiler").projectDir = File(rootProject.projectDir, "packages/annotations-compiler/compiler")

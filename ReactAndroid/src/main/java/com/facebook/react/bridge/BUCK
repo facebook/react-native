@@ -89,5 +89,6 @@ rn_android_library(
     exported_deps = [
         react_native_dep("java/com/facebook/proguard/annotations:annotations"),
         react_native_dep("third-party/java/jsr-330:jsr-330"),
+        react_native_target("java/com/facebook/react/module/annotations:annotations"),
     ],
 )
