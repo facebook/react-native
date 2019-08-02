@@ -53,7 +53,7 @@ class Alert {
   ): void {
     if (Platform.OS === 'ios') {
       Alert.prompt(title, message, buttons, 'default', undefined, undefined, {
-        reactTag: ReactNative.findNodeHandle(options.surface),
+        surface: options.surface,
       });
     } else if (Platform.OS === 'android') {
       if (!NativeDialogManagerAndroid) {
@@ -172,9 +172,7 @@ class Alert {
           cancelButtonKey,
           destructiveButtonKey,
           keyboardType,
-          reactTag: options.surface
-            ? ReactNative.findNodeHandle(options.surface)
-            : -1,
+          reactTag: ReactNative.findNodeHandle(options.surface) ?? -1,
         },
         (id, value) => {
           const cb = callbacks[id];
