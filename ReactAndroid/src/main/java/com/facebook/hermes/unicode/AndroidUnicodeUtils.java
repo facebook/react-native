@@ -6,6 +6,7 @@
  */
 package com.facebook.hermes.unicode;
 
+import com.facebook.proguard.annotations.DoNotStrip;
 import java.text.Collator;
 import java.text.DateFormat;
 import java.text.Normalizer;
