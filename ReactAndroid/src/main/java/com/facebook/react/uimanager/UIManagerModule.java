@@ -692,7 +692,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mUIImplementation.dispatchViewManagerCommand(reactTag, commandId, commandArgs);
   }
 
+  /** @deprecated use {@link SoundManager#playTouchSound()} instead. */
   @ReactMethod
+  @Deprecated
   public void playTouchSound() {
     AudioManager audioManager =
         (AudioManager) getReactApplicationContext().getSystemService(Context.AUDIO_SERVICE);
