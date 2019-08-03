@@ -32,7 +32,15 @@ public class JSIModuleRegistry {
   }
 
   public void notifyJSInstanceDestroy() {
-    for (JSIModuleHolder moduleHolder : mModules.values()) {
+    for (Map.Entry<JSIModuleType, JSIModuleHolder> entry : mModules.entrySet()) {
+      JSIModuleType moduleType = entry.getKey();
+
+      // Don't call TurboModuleManager.onCatalystInstanceDestroy
+      if (moduleType == JSIModuleType.TurboModuleManager) {
+        continue;
+      }
+
+      JSIModuleHolder moduleHolder = entry.getValue();
       moduleHolder.notifyJSInstanceDestroy();
     }
   }
