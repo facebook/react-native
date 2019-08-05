@@ -24,7 +24,7 @@ SharedShadowNode UIManager::createNode(
       componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
   auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
   auto const state = componentDescriptor.createInitialState(
-      ShadowNodeFragment{surfaceId, tag, props, eventEmitter});
+      ShadowNodeFragment{tag, surfaceId, props, eventEmitter});
 
   auto shadowNode = componentDescriptor.createShadowNode({
       /* .tag = */ tag,
