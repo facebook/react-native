@@ -83,7 +83,7 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name)
 
   // Initialize modulesByName_
   if (modulesByName_.empty() && !modules_.empty()) {
-    moduleNames();
+    moduleNamesVec_ = moduleNames();
   }
 
   auto it = modulesByName_.find(name);

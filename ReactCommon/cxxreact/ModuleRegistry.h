@@ -52,6 +52,9 @@ class RN_EXPORT ModuleRegistry {
   // This is always populated
   std::vector<std::unique_ptr<NativeModule>> modules_;
 
+  // This is used to hold modlue names vector so that it's not freed up.
+  std::vector<std::string> moduleNamesVec_;
+
   // This is used to extend the population of modulesByName_ if registerModules is called after moduleNames
   void updateModuleNamesFromIndex(size_t size);
 
