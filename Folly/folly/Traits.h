@@ -571,8 +571,18 @@ struct StrictDisjunction
  * although that is not guaranteed by the standard.
  */
 
-FOLLY_NAMESPACE_STD_BEGIN
 
+#ifdef __ANDROID__
+#include <string>
+#include <vector>
+#include <set>
+#include <deque>
+#include <map>
+#include <utility>
+#else
+
+FOLLY_NAMESPACE_STD_BEGIN
+// These references are not required in Android; it is causing conflicts
 template <class T, class U>
 struct pair;
 #ifndef _GLIBCXX_USE_FB
@@ -596,6 +606,7 @@ template <class T>
 class shared_ptr;
 
 FOLLY_NAMESPACE_STD_END
+#endif // __ANDROID__
 
 namespace folly {
 
