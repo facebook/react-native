@@ -23,10 +23,10 @@ type DialogAction = string;
 type DialogButtonKey = number;
 export type DialogOptions = {|
   title?: string,
-  message?: Stringish,
-  buttonPositive?: Stringish,
-  buttonNegative?: Stringish,
-  buttonNeutral?: Stringish,
+  message?: string,
+  buttonPositive?: string,
+  buttonNegative?: string,
+  buttonNeutral?: string,
   items?: Array<string>,
   cancelable?: boolean,
 |};

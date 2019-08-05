@@ -739,10 +739,10 @@ namespace JS {
   namespace NativeDialogManagerAndroid {
     struct DialogOptions {
       NSString *title() const;
-      id<NSObject> _Nullable message() const;
-      id<NSObject> _Nullable buttonPositive() const;
-      id<NSObject> _Nullable buttonNegative() const;
-      id<NSObject> _Nullable buttonNeutral() const;
+      NSString *message() const;
+      NSString *buttonPositive() const;
+      NSString *buttonNegative() const;
+      NSString *buttonNeutral() const;
       folly::Optional<facebook::react::LazyVector<NSString *>> items() const;
       folly::Optional<bool> cancelable() const;
 
@@ -2463,25 +2463,25 @@ inline NSString *JS::NativeDialogManagerAndroid::DialogOptions::title() const
   id const p = _v[@"title"];
   return RCTBridgingToString(p);
 }
-inline id<NSObject> _Nullable JS::NativeDialogManagerAndroid::DialogOptions::message() const
+inline NSString *JS::NativeDialogManagerAndroid::DialogOptions::message() const
 {
   id const p = _v[@"message"];
-  return p;
+  return RCTBridgingToString(p);
 }
-inline id<NSObject> _Nullable JS::NativeDialogManagerAndroid::DialogOptions::buttonPositive() const
+inline NSString *JS::NativeDialogManagerAndroid::DialogOptions::buttonPositive() const
 {
   id const p = _v[@"buttonPositive"];
-  return p;
+  return RCTBridgingToString(p);
 }
-inline id<NSObject> _Nullable JS::NativeDialogManagerAndroid::DialogOptions::buttonNegative() const
+inline NSString *JS::NativeDialogManagerAndroid::DialogOptions::buttonNegative() const
 {
   id const p = _v[@"buttonNegative"];
-  return p;
+  return RCTBridgingToString(p);
 }
-inline id<NSObject> _Nullable JS::NativeDialogManagerAndroid::DialogOptions::buttonNeutral() const
+inline NSString *JS::NativeDialogManagerAndroid::DialogOptions::buttonNeutral() const
 {
   id const p = _v[@"buttonNeutral"];
-  return p;
+  return RCTBridgingToString(p);
 }
 inline folly::Optional<facebook::react::LazyVector<NSString *>> JS::NativeDialogManagerAndroid::DialogOptions::items() const
 {
