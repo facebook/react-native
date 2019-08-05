@@ -484,11 +484,11 @@ public class ReactEditText extends EditText {
     return true;
   }
 
-  private boolean showSoftKeyboard() {
+  protected boolean showSoftKeyboard() {
     return mInputMethodManager.showSoftInput(this, 0);
   }
 
-  private void hideSoftKeyboard() {
+  protected void hideSoftKeyboard() {
     mInputMethodManager.hideSoftInputFromWindow(getWindowToken(), 0);
   }
 
