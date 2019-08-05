@@ -134,7 +134,7 @@ function reactConsoleErrorHandler() {
     }
     const error: ExtendedError = new SyntheticError(str);
     error.name = 'console.error';
-    error.framesToPop = 1;
+    error.framesToPop = (error.framesToPop || 0) + 1;
     reportException(error, /* isFatal */ false);
   }
 }
