@@ -18,12 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
     timeouts.push(setTimeout(animateStep, timeout));
   }
 
-  timeouts.push(
-    setTimeout(() => {
-      logo.classList.remove('init');
-      animateStep();
-    }, 2000)
-  );
+  // only start the animation if the document is visible on load
+  if (!document.hidden) {
+    timeouts.push(
+      setTimeout(() => {
+        logo.classList.remove('init');
+        animateStep();
+      }, 2000)
+    );
+  }
 
   // https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
   document.addEventListener(
@@ -36,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // clear the timeouts array
         timeouts.length = 0;
       } else {
+        // restart the animation when visible
         animateStep();
       }
     },
