@@ -41,7 +41,8 @@ function codegenNativeComponent<Props>(
       componentNameInUse = options.paperComponentNameDeprecated;
     } else {
       throw new Error(
-        'Failed to find native component for either "::_COMPONENT_NAME_::" or "::_COMPONENT_NAME_DEPRECATED_::"',
+        `Failed to find native component for either ${componentName} or ${options.paperComponentNameDeprecated ||
+          '(unknown)'}`,
       );
     }
   }
