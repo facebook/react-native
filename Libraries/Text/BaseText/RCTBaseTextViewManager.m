@@ -11,7 +11,7 @@
 
 RCT_EXPORT_MODULE(RCTBaseText)
 
-- (UIView *)view
+- (RCTUIView *)view // TODO(macOS ISS#3536887)
 {
   RCTAssert(NO, @"The `-[RCTBaseTextViewManager view]` property must be overridden in subclass.");
   return nil;

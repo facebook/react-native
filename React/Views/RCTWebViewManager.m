@@ -24,7 +24,7 @@
 
 RCT_EXPORT_MODULE()
 
-- (UIView *)view
+- (RCTUIView *)view // TODO(macOS ISS#3536887)
 {
   RCTWebView *webView = [RCTWebView new];
   webView.delegate = self;

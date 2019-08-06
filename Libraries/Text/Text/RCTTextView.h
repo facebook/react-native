@@ -11,13 +11,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RCTTextView : UIView
+@interface RCTTextView : RCTUIView // TODO(macOS ISS#3536887)
 
 @property (nonatomic, assign) BOOL selectable;
 
 - (void)setTextStorage:(NSTextStorage *)textStorage
           contentFrame:(CGRect)contentFrame
-       descendantViews:(NSArray<UIView *> *)descendantViews;
+       descendantViews:(NSArray<RCTUIView *> *)descendantViews; // TODO(macOS ISS#3536887)
 
 @end
 

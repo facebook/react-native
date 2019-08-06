@@ -7,7 +7,7 @@
 
 #import "RCTSnapshotManager.h"
 
-@interface RCTSnapshotView : UIView
+@interface RCTSnapshotView : RCTUIView // TODO(macOS ISS#3536887)
 
 @property (nonatomic, copy) RCTDirectEventBlock onSnapshotReady;
 @property (nonatomic, copy) NSString *testIdentifier;
@@ -35,7 +35,7 @@
 
 RCT_EXPORT_MODULE()
 
-- (UIView *)view
+- (RCTUIView *)view // TODO(macOS ISS#3536887)
 {
   return [RCTSnapshotView new];
 }

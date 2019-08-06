@@ -42,7 +42,7 @@ NSString *const RCTContentDidAppearNotification;
  * like any ordinary UIView. You can have multiple RCTRootViews on screen at
  * once, all controlled by the same JavaScript application.
  */
-@interface RCTRootView : UIView
+@interface RCTRootView : RCTUIView // TODO(macOS ISS#3536887)
 
 /**
  * - Designated initializer -
@@ -105,14 +105,14 @@ NSString *const RCTContentDidAppearNotification;
 /**
  * The React-managed contents view of the root view.
  */
-@property (nonatomic, strong, readonly) UIView *contentView;
+@property (nonatomic, strong, readonly) RCTUIView *contentView; // TODO(macOS ISS#3536887)
 
 /**
  * A view to display while the JavaScript is loading, so users aren't presented
  * with a blank screen. By default this is nil, but you can override it with
  * (for example) a UIActivityIndicatorView or a placeholder image.
  */
-@property (nonatomic, strong) UIView *loadingView;
+@property (nonatomic, strong) RCTUIView *loadingView; // TODO(macOS ISS#3536887)
 
 /**
  * Calling this will result in emitting a "touches cancelled" event to js,

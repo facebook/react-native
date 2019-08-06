@@ -60,28 +60,30 @@ UIKIT_STATIC_INLINE CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path)
 
 // UIView
 #define RCTPlatformView         UIView
+#define RCTUIView UIView // TODO(macOS ISS#3536887)
+#define RCTUIScrollView UIScrollView // TODO(macOS ISS#3536887)
 
-UIKIT_STATIC_INLINE RCTPlatformView *UIViewHitTestWithEvent(RCTPlatformView *view, CGPoint point, UIEvent *event)
+UIKIT_STATIC_INLINE RCTPlatformView *RCTUIViewHitTestWithEvent(RCTPlatformView *view, CGPoint point, UIEvent *event)
 {
   return [view hitTest:point withEvent:event];
 }
 
-UIKIT_STATIC_INLINE BOOL UIViewSetClipsToBounds(RCTPlatformView *view)
+UIKIT_STATIC_INLINE BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view)
 {
   return view.clipsToBounds;
 }
 
-UIKIT_STATIC_INLINE void UIViewSetContentModeRedraw(UIView *view)
+UIKIT_STATIC_INLINE void RCTUIViewSetContentModeRedraw(UIView *view)
 {
   view.contentMode = UIViewContentModeRedraw;
 }
 
-UIKIT_STATIC_INLINE BOOL UIViewDrawViewHierarchyInRectAfterScreenUpdates(RCTPlatformView *view, CGRect rect, BOOL afterUpdates)
+UIKIT_STATIC_INLINE BOOL RCTUIViewDrawViewHierarchyInRectAfterScreenUpdates(RCTPlatformView *view, CGRect rect, BOOL afterUpdates)
 {
   return [view drawViewHierarchyInRect:rect afterScreenUpdates:afterUpdates];
 }
 
-UIKIT_STATIC_INLINE BOOL UIViewIsDescendantOfView(RCTPlatformView *view, RCTPlatformView *parent)
+UIKIT_STATIC_INLINE BOOL RCTUIViewIsDescendantOfView(RCTPlatformView *view, RCTPlatformView *parent)
 {
   return [view isDescendantOfView:parent];
 }
@@ -353,7 +355,7 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 // UIView
 #define RCTPlatformView NSView
 
-@interface UIView : NSView
+@interface RCTUIView : NSView // TODO(macOS ISS#3536887)
 
 @property (nonatomic, readonly) BOOL canBecomeFirstResponder;
 - (BOOL)becomeFirstResponder;
@@ -394,7 +396,7 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 
 // UIScrollView
 
-@interface UIScrollView : NSScrollView
+@interface RCTUIScrollView : NSScrollView // TODO(macOS ISS#3536887)
 
 // UIScrollView properties missing in NSScrollView
 @property (nonatomic, assign) CGPoint contentOffset;
@@ -409,19 +411,19 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 
 @end
 
-NS_INLINE RCTPlatformView *UIViewHitTestWithEvent(RCTPlatformView *view, CGPoint point, __unused UIEvent *event)
+NS_INLINE RCTPlatformView *RCTUIViewHitTestWithEvent(RCTPlatformView *view, CGPoint point, __unused UIEvent *event)
 {
   return [view hitTest:point];
 }
 
-BOOL UIViewSetClipsToBounds(RCTPlatformView *view);
+BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view);
 
-NS_INLINE void UIViewSetContentModeRedraw(UIView *view)
+NS_INLINE void RCTUIViewSetContentModeRedraw(RCTPlatformView *view)
 {
   view.layerContentsRedrawPolicy = NSViewLayerContentsRedrawDuringViewResize;
 }
 
-NS_INLINE BOOL UIViewDrawViewHierarchyInRectAfterScreenUpdates(RCTPlatformView *view, CGRect rect, __unused BOOL afterUpdates)
+NS_INLINE BOOL RCTUIViewDrawViewHierarchyInRectAfterScreenUpdates(RCTPlatformView *view, CGRect rect, __unused BOOL afterUpdates)
 {
   RCTAssert(afterUpdates, @"We're redrawing the view so it will necessarily include the latest changes.");
   (void) afterUpdates;
@@ -429,14 +431,14 @@ NS_INLINE BOOL UIViewDrawViewHierarchyInRectAfterScreenUpdates(RCTPlatformView *
   return YES;
 }
 
-NS_INLINE BOOL UIViewIsDescendantOfView(RCTPlatformView *view, RCTPlatformView *parent)
+NS_INLINE BOOL RCTUIViewIsDescendantOfView(RCTPlatformView *view, RCTPlatformView *parent)
 {
   return [view isDescendantOf:parent];
 }
 
-NSArray *UIViewCalculateKeyViewLoop(RCTPlatformView *root);
+NSArray *RCTUIViewCalculateKeyViewLoop(RCTPlatformView *root);
 
-BOOL UIViewHasDescendantPassingPredicate(RCTPlatformView *root, BOOL (^predicate)(RCTPlatformView *view));
+BOOL RCTUIViewHasDescendantPassingPredicate(RCTPlatformView *root, BOOL (^predicate)(RCTPlatformView *view));
 
 NS_INLINE NSValue *NSValueWithCGRect(CGRect rect)
 {

@@ -209,7 +209,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 #endif // ]TODO(macOS ISS#2323203)
 }
 
-- (void)setLoadingView:(UIView *)loadingView
+- (void)setLoadingView:(RCTUIView *)loadingView // TODO(macOS ISS#3536887)
 {
   _loadingView = loadingView;
   if (!_contentView.contentHasAppeared) {

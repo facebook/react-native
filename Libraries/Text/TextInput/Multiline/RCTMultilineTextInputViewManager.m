@@ -13,7 +13,7 @@
 
 RCT_EXPORT_MODULE()
 
-- (UIView *)view
+- (RCTUIView *)view // TODO(macOS ISS#3536887)
 {
   return [[RCTMultilineTextInputView alloc] initWithBridge:self.bridge];
 }

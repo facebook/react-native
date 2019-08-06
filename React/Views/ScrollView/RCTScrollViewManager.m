@@ -158,8 +158,8 @@ RCT_EXPORT_METHOD(scrollTo:(nonnull NSNumber *)reactTag
                   animated:(BOOL)animated)
 {
   [self.bridge.uiManager addUIBlock:
-   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
-    UIView *view = viewRegistry[reactTag];
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry){ // TODO(macOS ISS#3536887)
+    RCTUIView *view = viewRegistry[reactTag]; // TODO(macOS ISS#3536887)
     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
       [(id<RCTScrollableProtocol>)view scrollToOffset:(CGPoint){x, y} animated:animated];
     } else {
@@ -173,8 +173,8 @@ RCT_EXPORT_METHOD(scrollToEnd:(nonnull NSNumber *)reactTag
                   animated:(BOOL)animated)
 {
   [self.bridge.uiManager addUIBlock:
-   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
-     UIView *view = viewRegistry[reactTag];
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry){ // TODO(macOS ISS#3536887)
+     RCTUIView *view = viewRegistry[reactTag]; // TODO(macOS ISS#3536887)
      if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
        [(id<RCTScrollableProtocol>)view scrollToEnd:animated];
      } else {
@@ -189,8 +189,8 @@ RCT_EXPORT_METHOD(zoomToRect:(nonnull NSNumber *)reactTag
                   animated:(BOOL)animated)
 {
   [self.bridge.uiManager addUIBlock:
-   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
-    UIView *view = viewRegistry[reactTag];
+   ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry){ // TODO(macOS ISS#3536887)
+    RCTUIView *view = viewRegistry[reactTag]; // TODO(macOS ISS#3536887)
     if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)]) {
       [(id<RCTScrollableProtocol>)view zoomToRect:rect animated:animated];
     } else {

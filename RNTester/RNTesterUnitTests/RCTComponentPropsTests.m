@@ -30,7 +30,7 @@
 
 @end
 
-@interface RCTPropsTestView : UIView
+@interface RCTPropsTestView : RCTUIView // TODO(macOS ISS#3536887)
 
 @property (nonatomic, assign) NSInteger integerProp;
 @property (nonatomic, strong) id objectProp;
@@ -49,7 +49,7 @@
 
 RCT_EXPORT_MODULE()
 
-- (UIView *)view
+- (RCTUIView *)view // TODO(macOS ISS#3536887)
 {
   RCTPropsTestView *view = [RCTPropsTestView new];
   view.integerProp = 57;
@@ -111,7 +111,7 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
 
   dispatch_async(uiManager.methodQueue, ^{
     [uiManager createView:@2 viewName:@"RCTPropsTestView" rootTag:self->_rootViewReactTag props:props];
-    [uiManager addUIBlock:^(__unused RCTUIManager *_uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    [uiManager addUIBlock:^(__unused RCTUIManager *_uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
       view = (RCTPropsTestView *)viewRegistry[@2];
       XCTAssertEqual(view.integerProp, 58);
       XCTAssertEqualObjects(view.objectProp, @10);
@@ -141,7 +141,7 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
   dispatch_async(uiManager.methodQueue, ^{
     [uiManager createView:@2 viewName:@"RCTPropsTestView" rootTag:self->_rootViewReactTag props:props];
     [uiManager updateView:@2 viewName:@"RCTPropsTestView" props:resetProps];
-    [uiManager addUIBlock:^(__unused RCTUIManager *_uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    [uiManager addUIBlock:^(__unused RCTUIManager *_uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
       view = (RCTPropsTestView *)viewRegistry[@2];
       XCTAssertEqual(view.integerProp, 57);
       XCTAssertEqualObjects(view.objectProp, @9);
@@ -163,12 +163,12 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
 
   dispatch_async(uiManager.methodQueue, ^{
     [uiManager createView:@2 viewName:@"RCTView" rootTag:self->_rootViewReactTag props:props];
-    [uiManager addUIBlock:^(__unused RCTUIManager *_uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    [uiManager addUIBlock:^(__unused RCTUIManager *_uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
       view = (RCTView *)viewRegistry[@2];
       XCTAssertEqualObjects(view.backgroundColor, [RCTConvert UIColor:@0xffffffff]);
     }];
     [uiManager updateView:@2 viewName:@"RCTView" props:resetProps];
-    [uiManager addUIBlock:^(__unused RCTUIManager *_uiManager, __unused NSDictionary<NSNumber *,UIView *> *viewRegistry) {
+    [uiManager addUIBlock:^(__unused RCTUIManager *_uiManager, __unused NSDictionary<NSNumber *,RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
       view = (RCTView *)viewRegistry[@2];
       XCTAssertNil(view.backgroundColor);
     }];

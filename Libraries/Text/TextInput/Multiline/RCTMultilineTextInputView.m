@@ -14,7 +14,7 @@
 @implementation RCTMultilineTextInputView
 {
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-  UIScrollView *_scrollView;
+  RCTUIScrollView *_scrollView; // TODO(macOS ISS#3536887)
 #endif // ]TODO(macOS ISS#2323203)
   RCTUITextView *_backedTextInputView;
 }
@@ -37,7 +37,7 @@
 #endif
     _backedTextInputView.scrollEnabled = YES;
 #else // [TODO(macOS ISS#2323203)
-    _scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
+    _scrollView = [[RCTUIScrollView alloc] initWithFrame:self.bounds]; // TODO(macOS ISS#3536887)
     _scrollView.backgroundColor = [UIColor clearColor];
     _scrollView.drawsBackground = NO;
     _scrollView.borderType = NSNoBorder;
@@ -102,7 +102,7 @@
 
 #pragma mark - UIScrollViewDelegate
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+- (void)scrollViewDidScroll:(RCTUIScrollView *)scrollView // TODO(macOS ISS#3536887)
 {
   RCTDirectEventBlock onScroll = self.onScroll;
 

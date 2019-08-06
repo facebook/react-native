@@ -30,7 +30,7 @@
  * efficiently since it will have already been computed by the off-main-thread
  * layout system.
  */
-@property (nonatomic, readonly) UIView *contentView;
+@property (nonatomic, readonly) RCTUIView *contentView; // TODO(macOS ISS#3536887)
 
 /**
  * If the `contentSize` is not specified (or is specified as {0, 0}, then the
@@ -41,7 +41,7 @@
 /**
  * The underlying scrollView (TODO: can we remove this?)
  */
-@property (nonatomic, readonly) UIScrollView *scrollView;
+@property (nonatomic, readonly) RCTUIScrollView *scrollView; // TODO(macOS ISS#3536887)
 
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;

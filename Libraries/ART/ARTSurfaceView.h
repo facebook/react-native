@@ -9,6 +9,6 @@
 
 #import "ARTContainer.h"
 
-@interface ARTSurfaceView : UIView <ARTContainer>
+@interface ARTSurfaceView : RCTUIView <ARTContainer> // TODO(macOS ISS#3536887)
 
 @end

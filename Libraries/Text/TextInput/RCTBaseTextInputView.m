@@ -44,7 +44,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
-- (UIView<RCTBackedTextInputViewProtocol> *)backedTextInputView
+- (RCTUIView<RCTBackedTextInputViewProtocol> *)backedTextInputView // TODO(macOS ISS#3536887)
 {
   RCTAssert(NO, @"-[RCTBaseTextInputView backedTextInputView] must be implemented in subclass.");
   return nil;
@@ -584,7 +584,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 #pragma mark - Accessibility
 
-- (UIView *)reactAccessibilityElement
+- (RCTUIView *)reactAccessibilityElement // TODO(macOS ISS#3536887)
 {
   return self.backedTextInputView;
 }

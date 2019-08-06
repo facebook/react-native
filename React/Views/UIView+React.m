@@ -61,7 +61,7 @@
 
 - (NSNumber *)reactTagAtPoint:(CGPoint)point
 {
-  RCTPlatformView *view = UIViewHitTestWithEvent(self, point, nil); // TODO(macOS ISS#2323203)
+  RCTPlatformView *view = RCTUIViewHitTestWithEvent(self, point, nil); // TODO(macOS ISS#2323203) and TODO(macOS ISS#3536887)
   while (view && !view.reactTag) {
     view = view.superview;
   }
@@ -164,13 +164,13 @@
 {
   // Check if sorting is required - in most cases it won't be.
   BOOL sortingRequired = NO;
-  for (UIView *subview in self.subviews) {
+  for (RCTUIView *subview in self.subviews) { // TODO(macOS ISS#3536887)
     if (subview.reactZIndex != 0) {
       sortingRequired = YES;
       break;
     }
   }
-  return sortingRequired ? [self.reactSubviews sortedArrayUsingComparator:^NSComparisonResult(UIView *a, UIView *b) {
+  return sortingRequired ? [self.reactSubviews sortedArrayUsingComparator:^NSComparisonResult(RCTUIView *a, RCTUIView *b) { // TODO(macOS ISS#3536887)
     if (a.reactZIndex > b.reactZIndex) {
       return NSOrderedDescending;
     } else {

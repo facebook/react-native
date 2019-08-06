@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * UIView instance which represents the Surface
  */
-@interface RCTSurfaceView : UIView
+@interface RCTSurfaceView : RCTUIView // TODO(macOS ISS#3536887)
 
 - (instancetype)initWithSurface:(RCTSurface *)surface NS_DESIGNATED_INITIALIZER;
 

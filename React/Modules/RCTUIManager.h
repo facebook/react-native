@@ -37,7 +37,7 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
 /**
  * Register a root view with the RCTUIManager.
  */
-- (void)registerRootView:(UIView *)rootView;
+- (void)registerRootView:(RCTUIView *)rootView; // TODO(macOS ISS#3536887)
 
 /**
  * Gets the view name associated with a reactTag.
@@ -61,7 +61,7 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
  * this value does not affect root node size style properties.
  * Can be considered as something similar to `setSize:forView:` but applicable only for root view.
  */
-- (void)setAvailableSize:(CGSize)availableSize forRootView:(UIView *)rootView;
+- (void)setAvailableSize:(CGSize)availableSize forRootView:(RCTUIView *)rootView; // TODO(macOS ISS#3536887)
 
 /**
  * Sets local data for a shadow view corresponded with given view.
@@ -72,7 +72,7 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
  * the shadow view.
  * Please respect one-directional data flow of React.
  */
-- (void)setLocalData:(NSObject *)localData forView:(UIView *)view;
+- (void)setLocalData:(NSObject *)localData forView:(RCTUIView *)view; // TODO(macOS ISS#3536887)
 
 /**
  * Set the size of a view. This might be in response to a screen rotation
@@ -134,7 +134,7 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
  * @param nativeID the id reference to native component relative to root view.
  * @param rootTag the react tag of root view hierarchy from which to find the view.
  */
-- (UIView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag;
+- (RCTUIView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag; // TODO(macOS ISS#3536887)
 
 /**
  * The view that is currently first responder, according to the JS context.

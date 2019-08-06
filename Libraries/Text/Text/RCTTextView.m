@@ -26,7 +26,7 @@
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
 #endif // TODO(macOS ISS#2323203)
 
-  NSArray<UIView *> *_Nullable _descendantViews;
+  NSArray<RCTUIView *> *_Nullable _descendantViews; // TODO(macOS ISS#3536887)
   NSTextStorage *_Nullable _textStorage;
   CGRect _contentFrame;
 }
@@ -41,7 +41,7 @@
     self.accessibilityRole = NSAccessibilityStaticTextRole;
 #endif // ]TODO(macOS ISS#2323203)
     self.opaque = NO;
-    UIViewSetContentModeRedraw(self); // TODO(macOS ISS#2323203)
+    RCTUIViewSetContentModeRedraw(self); // TODO(macOS ISS#2323203) and TODO(macOS ISS#3536887)
   }
   return self;
 }
@@ -113,7 +113,7 @@
 
 - (void)setTextStorage:(NSTextStorage *)textStorage
           contentFrame:(CGRect)contentFrame
-       descendantViews:(NSArray<UIView *> *)descendantViews
+       descendantViews:(NSArray<RCTUIView *> *)descendantViews // TODO(macOS ISS#3536887)
 {
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   // On macOS when a large number of flex layouts are being performed, such
@@ -133,13 +133,13 @@
   _contentFrame = contentFrame;
 
   // FIXME: Optimize this.
-  for (UIView *view in _descendantViews) {
+  for (RCTUIView *view in _descendantViews) { // TODO(macOS ISS#3536887)
     [view removeFromSuperview];
   }
 
   _descendantViews = descendantViews;
 
-  for (UIView *view in descendantViews) {
+  for (RCTUIView *view in descendantViews) { // TODO(macOS ISS#3536887)
     [self addSubview:view];
   }
 

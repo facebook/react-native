@@ -24,7 +24,7 @@
   // this does is forward message to our subviews,
   // in case any of those do support it
 
-  for (UIView *subview in self.subviews) {
+  for (RCTUIView *subview in self.subviews) { // TODO(macOS ISS#3536887)
     [subview react_remountAllSubviews];
   }
 }
@@ -35,7 +35,7 @@
   // we do support clipsToBounds, so if that's enabled
   // we'll update the clipping
 
-  if (UIViewSetClipsToBounds(self) && self.subviews.count > 0) { // TODO(macOS ISS#2323203)
+  if (RCTUIViewSetClipsToBounds(self) && self.subviews.count > 0) { // TODO(macOS ISS#2323203) and TODO(macOS ISS#3536887)
     clipRect = [clipView convertRect:clipRect toView:self];
     clipRect = CGRectIntersection(clipRect, self.bounds);
     clipView = self;
@@ -45,7 +45,7 @@
   // this does is forward message to our subviews,
   // in case any of those do support it
 
-  for (UIView *subview in self.subviews) {
+  for (RCTUIView *subview in self.subviews) { // TODO(macOS ISS#3536887)
     [subview react_updateClippedSubviewsWithClipRect:clipRect relativeToView:clipView];
   }
 }
@@ -57,7 +57,7 @@
   CGRect clipRect = self.bounds;
   // We will only look for a clipping view up the view hierarchy until we hit the root view.
   while (testView) {
-    if (UIViewSetClipsToBounds(testView)) { // TODO(macOS ISS#2323203)
+    if (RCTUIViewSetClipsToBounds(testView)) { // TODO(macOS ISS#2323203) and TODO(macOS ISS#3536887)
       if (clipView) {
         CGRect testRect = [clipView convertRect:clipRect toView:testView];
         if (!CGRectContainsRect(testView.bounds, testRect)) {
@@ -83,10 +83,10 @@
 
 @end
 
-static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
+static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS ISS#3536887)
 {
   NSMutableString *str = [NSMutableString stringWithString:@""];
-  for (UIView *subview in view.subviews) {
+  for (RCTUIView *subview in view.subviews) { // TODO(macOS ISS#3536887)
     NSString *label = subview.accessibilityLabel;
     if (!label) {
       label = RCTRecursiveAccessibilityLabel(subview);
@@ -230,7 +230,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   BOOL needsHitSubview = !(_pointerEvents == RCTPointerEventsNone || _pointerEvents == RCTPointerEventsBoxOnly);
   if (needsHitSubview && (![self clipsToBounds] || isPointInside)) {
     // Take z-index into account when calculating the touch target.
-    NSArray<UIView *> *sortedSubviews = [self reactZIndexSortedSubviews];
+    NSArray<RCTUIView *> *sortedSubviews = [self reactZIndexSortedSubviews]; // TODO(macOS ISS#3536887)
 
     // The default behaviour of UIKit is that if a view does not contain a point,
     // then no subviews will be returned from hit testing, even if they contain
@@ -238,7 +238,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     // the strict containment policy (i.e., UIKit guarantees that every ancestor
     // of the hit view will return YES from -pointInside:withEvent:). See:
     //  - https://developer.apple.com/library/ios/qa/qa2013/qa1812.html
-    for (UIView *subview in [sortedSubviews reverseObjectEnumerator]) {
+    for (RCTUIView *subview in [sortedSubviews reverseObjectEnumerator]) { // TODO(macOS ISS#3536887)
       CGPoint pointForHitTest = CGPointZero; // [TODO(macOS ISS#2323203)
 #if TARGET_OS_OSX
       if ([subview isKindOfClass:[RCTView class]]) {
@@ -249,7 +249,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 #else
       pointForHitTest = [subview convertPoint:point fromView:self];
 #endif
-      hitSubview = UIViewHitTestWithEvent(subview, pointForHitTest, event); // ]TODO(macOS ISS#2323203)
+      hitSubview = RCTUIViewHitTestWithEvent(subview, pointForHitTest, event); // ]TODO(macOS ISS#2323203) and TODO(macOS ISS#3536887)
       if (hitSubview != nil) {
         break;
       }
@@ -417,8 +417,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 #pragma mark - Statics for dealing with layoutGuides
 
-+ (void)autoAdjustInsetsForView:(UIView<RCTAutoInsetsProtocol> *)parentView
-                 withScrollView:(UIScrollView *)scrollView
++ (void)autoAdjustInsetsForView:(RCTUIView<RCTAutoInsetsProtocol> *)parentView // TODO(macOS ISS#3536887)
+                 withScrollView:(RCTUIScrollView *)scrollView // TODO(macOS ISS#3536887)
                    updateOffset:(BOOL)updateOffset
 {
   UIEdgeInsets baseInset = parentView.contentInset;
@@ -472,7 +472,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 - (void)react_remountAllSubviews
 {
   if (_removeClippedSubviews) {
-    for (UIView *view in self.reactSubviews) {
+    for (RCTUIView *view in self.reactSubviews) { // TODO(macOS ISS#3536887)
       if (view.superview != self) {
         [self addSubview:view];
         [view react_remountAllSubviews];
@@ -511,7 +511,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   clipView = self;
 
   // Mount / unmount views
-  for (UIView *view in self.reactSubviews) {
+  for (RCTUIView *view in self.reactSubviews) { // TODO(macOS ISS#3536887)
     if (!CGSizeEqualToSize(CGRectIntersection(clipRect, view.frame).size, CGSizeZero)) {
       // View is at least partially visible, so remount it if unmounted
       [self addSubview:view];

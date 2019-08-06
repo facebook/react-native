@@ -296,7 +296,7 @@ typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
 
 #pragma mark - Private API
 
-- (BOOL)_performPixelComparisonWithView:(UIView *)view
+- (BOOL)_performPixelComparisonWithView:(RCTUIView *)view // TODO(macOS ISS#3536887)
                                selector:(SEL)selector
                              identifier:(NSString *)identifier
                                   error:(NSError **)errorPtr
@@ -317,7 +317,7 @@ typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
   return NO;
 }
 
-- (BOOL)_recordSnapshotOfView:(UIView *)view
+- (BOOL)_recordSnapshotOfView:(RCTUIView *)view // TODO(macOS ISS#3536887)
                      selector:(SEL)selector
                    identifier:(NSString *)identifier
                         error:(NSError **)errorPtr
@@ -326,7 +326,7 @@ typedef NS_ENUM(NSUInteger, FBTestSnapshotFileNameType) {
   return [self saveReferenceImage:snapshot selector:selector identifier:identifier error:errorPtr];
 }
 
-- (UIImage *)_snapshotView:(UIView *)view
+- (UIImage *)_snapshotView:(RCTUIView *)view // TODO(macOS ISS#3536887)
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   [view layoutIfNeeded];

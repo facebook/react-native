@@ -201,11 +201,8 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *bezierPath)
 
 // UIView
 
-@interface UIView ()
 
-@end
-
-@implementation UIView
+@implementation RCTUIView // TODO(macOS ISS#3536887)
 {
 @private
   NSColor *_backgroundColor;
@@ -234,7 +231,7 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *bezierPath)
   return keyPaths;
 }
 
-static UIView *UIViewCommonInit(UIView *self)
+static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
 {
   if (self != nil) {
     self.wantsLayer = YES;
@@ -246,12 +243,12 @@ static UIView *UIViewCommonInit(UIView *self)
 
 - (instancetype)initWithFrame:(NSRect)frameRect
 {
-  return UIViewCommonInit([super initWithFrame:frameRect]);
+  return RCTUIViewCommonInit([super initWithFrame:frameRect]);
 }
 
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
-  return UIViewCommonInit([super initWithCoder:coder]);
+  return RCTUIViewCommonInit([super initWithCoder:coder]);
 }
 
 - (BOOL)acceptsFirstResponder
@@ -400,9 +397,9 @@ static UIView *UIViewCommonInit(UIView *self)
 
 @end
 
-// UIScrollView
+// RCTUIScrollView
 
-@implementation UIScrollView
+@implementation RCTUIScrollView // TODO(macOS ISS#3536887)
 
 // UIScrollView properties missing from NSScrollView
 - (CGPoint)contentOffset
@@ -499,7 +496,7 @@ static UIView *UIViewCommonInit(UIView *self)
 
 @end
 
-BOOL UIViewSetClipsToBounds(RCTPlatformView *view)
+BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view)
 {
   // NSViews are always clipped to bounds
   BOOL clipsToBounds = YES;
@@ -513,7 +510,7 @@ BOOL UIViewSetClipsToBounds(RCTPlatformView *view)
   return clipsToBounds;
 }
 
-static BOOL UIViewIsFieldEditor(RCTPlatformView *view)
+static BOOL RCTUIViewIsFieldEditor(RCTPlatformView *view)
 {
   if ([view isKindOfClass:[NSText class]]) {
     NSText *textObj = (NSText *) view;
@@ -522,14 +519,14 @@ static BOOL UIViewIsFieldEditor(RCTPlatformView *view)
   return NO;
 }
 
-static BOOL UIViewDescendantIsFieldEditor(RCTPlatformView *root)
+static BOOL RCTUIViewDescendantIsFieldEditor(RCTPlatformView *root)
 {
-  return UIViewHasDescendantPassingPredicate(root, ^BOOL(RCTPlatformView *view) {
-    return UIViewIsFieldEditor(view);
+  return RCTUIViewHasDescendantPassingPredicate(root, ^BOOL(RCTPlatformView *view) {
+    return RCTUIViewIsFieldEditor(view);
   });
 }
 
-static RCTPlatformView *UIViewDescendantPassingPredicate_DFS(RCTPlatformView *root, BOOL (^predicate)(RCTPlatformView *view))
+static RCTPlatformView *RCTUIViewDescendantPassingPredicate_DFS(RCTPlatformView *root, BOOL (^predicate)(RCTPlatformView *view))
 {
   if (!root || !predicate) {
     return nil;
@@ -540,7 +537,7 @@ static RCTPlatformView *UIViewDescendantPassingPredicate_DFS(RCTPlatformView *ro
   }
 
   for (RCTPlatformView *subview in [root subviews]) {
-    RCTPlatformView *passingView = UIViewDescendantPassingPredicate_DFS(subview, predicate);
+    RCTPlatformView *passingView = RCTUIViewDescendantPassingPredicate_DFS(subview, predicate);
 
     if (passingView) {
       return passingView;
@@ -550,15 +547,15 @@ static RCTPlatformView *UIViewDescendantPassingPredicate_DFS(RCTPlatformView *ro
   return nil;
 }
 
-BOOL UIViewHasDescendantPassingPredicate(RCTPlatformView *root, BOOL (^predicate)(RCTPlatformView *view))
+BOOL RCTUIViewHasDescendantPassingPredicate(RCTPlatformView *root, BOOL (^predicate)(RCTPlatformView *view))
 {
-  return UIViewDescendantPassingPredicate_DFS(root, predicate) != nil;
+  return RCTUIViewDescendantPassingPredicate_DFS(root, predicate) != nil;
 }
 
-static void UIViewCalculateKeyViewLoopInternal(RCTPlatformView *root, NSMutableArray *keyViewLoop)
+static void RCTUIViewCalculateKeyViewLoopInternal(RCTPlatformView *root, NSMutableArray *keyViewLoop)
 {
   for (RCTPlatformView *view in root.subviews) {
-    UIViewCalculateKeyViewLoopInternal(view, keyViewLoop);
+    RCTUIViewCalculateKeyViewLoopInternal(view, keyViewLoop);
   }
   if ([root canBecomeKeyView]) {
     BOOL include = YES;
@@ -579,7 +576,7 @@ static void UIViewCalculateKeyViewLoopInternal(RCTPlatformView *root, NSMutableA
          NSTextView <-- The field editor. We do not want this in the key view loop.
      
      */
-    if (UIViewDescendantIsFieldEditor(root)) {
+    if (RCTUIViewDescendantIsFieldEditor(root)) {
       BOOL isEditedControl = [root isKindOfClass:[NSControl class]] ? ([(NSControl *) root currentEditor] != nil) : NO;
       
       if (!isEditedControl) {
@@ -592,10 +589,10 @@ static void UIViewCalculateKeyViewLoopInternal(RCTPlatformView *root, NSMutableA
   }
 }
 
-NSArray *UIViewCalculateKeyViewLoop(RCTPlatformView *root)
+NSArray *RCTUIViewCalculateKeyViewLoop(RCTPlatformView *root)
 {
   NSMutableArray *keyViewLoop = [NSMutableArray array];
-  UIViewCalculateKeyViewLoopInternal(root, keyViewLoop);
+  RCTUIViewCalculateKeyViewLoopInternal(root, keyViewLoop);
   // Avoid returning self-referential single-link loops
   if ([keyViewLoop count] == 1 && [keyViewLoop firstObject] == root) {
     return nil;

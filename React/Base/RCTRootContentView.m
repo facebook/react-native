@@ -93,7 +93,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
   [self updateAvailableSize];
 }
 
-- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
+- (void)insertReactSubview:(RCTUIView *)subview atIndex:(NSInteger)atIndex // TODO(macOS ISS#3536887)
 {
   [super insertReactSubview:subview atIndex:atIndex];
   [_bridge.performanceLogger markStopForTag:RCTPLTTI];
@@ -134,10 +134,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder:(nonnull NSCoder *)aDecoder)
   [_bridge.uiManager setAvailableSize:self.availableSize forRootView:self];
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+- (RCTUIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event // TODO(macOS ISS#3536887)
 {
   // The root content view itself should never receive touches
-  UIView *hitView = [super hitTest:point withEvent:event];
+  RCTUIView *hitView = [super hitTest:point withEvent:event]; // TODO(macOS ISS#3536887)
   if (_passThroughTouches && hitView == self) {
     return nil;
   }

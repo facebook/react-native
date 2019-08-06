@@ -15,7 +15,7 @@
 
 @class RCTView;
 
-@interface RCTView : UIView
+@interface RCTView : RCTUIView // TODO(macOS ISS#3536887)
 
 // [TODO(OSS Candidate ISS#2710739)
 - (BOOL)becomeFirstResponder;
@@ -42,8 +42,8 @@
  */
 @property (nonatomic, assign) RCTPointerEvents pointerEvents;
 
-+ (void)autoAdjustInsetsForView:(UIView<RCTAutoInsetsProtocol> *)parentView
-                 withScrollView:(UIScrollView *)scrollView
++ (void)autoAdjustInsetsForView:(RCTUIView<RCTAutoInsetsProtocol> *)parentView // TODO(macOS ISS#3536887)
+                 withScrollView:(RCTUIScrollView *)scrollView // TODO(macOS ISS#3536887) and TODO(macOS ISS#3536887)
                    updateOffset:(BOOL)updateOffset;
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
