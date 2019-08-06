@@ -82,6 +82,7 @@ module.exports = {
     clearTimeout: false,
     console: false,
     document: false,
+    ErrorUtils: false,
     escape: false,
     Event: false,
     EventTarget: false,
