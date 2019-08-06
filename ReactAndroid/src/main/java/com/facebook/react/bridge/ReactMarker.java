@@ -7,8 +7,8 @@ package com.facebook.react.bridge;
 
 import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Static class that allows markers to be placed in React code and responded to in a configurable
@@ -31,70 +31,57 @@ public class ReactMarker {
   // Use a list instead of a set here because we expect the number of listeners
   // to be very small, and we want listeners to be called in a deterministic
   // order.
-  private static final List<MarkerListener> sListeners = new ArrayList<>();
+  private static final List<MarkerListener> sListeners = new CopyOnWriteArrayList<>();
 
   // Use a list instead of a set here because we expect the number of listeners
   // to be very small, and we want listeners to be called in a deterministic
   // order. For Fabric-specific events.
-  private static final List<FabricMarkerListener> sFabricMarkerListeners = new ArrayList<>();
+  private static final List<FabricMarkerListener> sFabricMarkerListeners =
+      new CopyOnWriteArrayList<>();
 
   @DoNotStrip
   public static void addListener(MarkerListener listener) {
-    synchronized (sListeners) {
-      if (!sListeners.contains(listener)) {
-        sListeners.add(listener);
-      }
+    if (!sListeners.contains(listener)) {
+      sListeners.add(listener);
     }
   }
 
   @DoNotStrip
   public static void removeListener(MarkerListener listener) {
-    synchronized (sListeners) {
-      sListeners.remove(listener);
-    }
+    sListeners.remove(listener);
   }
 
   @DoNotStrip
   public static void clearMarkerListeners() {
-    synchronized (sListeners) {
-      sListeners.clear();
-    }
+    sListeners.clear();
   }
 
   // Specific to Fabric marker listeners
   @DoNotStrip
   public static void addFabricListener(FabricMarkerListener listener) {
-    synchronized (sFabricMarkerListeners) {
-      if (!sFabricMarkerListeners.contains(listener)) {
-        sFabricMarkerListeners.add(listener);
-      }
+    if (!sFabricMarkerListeners.contains(listener)) {
+      sFabricMarkerListeners.add(listener);
     }
   }
 
   // Specific to Fabric marker listeners
   @DoNotStrip
   public static void removeFabricListener(FabricMarkerListener listener) {
-    synchronized (sFabricMarkerListeners) {
-      sFabricMarkerListeners.remove(listener);
-    }
+    sFabricMarkerListeners.remove(listener);
   }
 
   // Specific to Fabric marker listeners
   @DoNotStrip
   public static void clearFabricMarkerListeners() {
-    synchronized (sFabricMarkerListeners) {
-      sFabricMarkerListeners.clear();
-    }
+    sFabricMarkerListeners.clear();
   }
 
   // Specific to Fabric marker listeners
   @DoNotStrip
   public static void logFabricMarker(
       ReactMarkerConstants name, @Nullable String tag, int instanceKey, long timestamp) {
-    synchronized (sFabricMarkerListeners) {
-      for (FabricMarkerListener listener : sFabricMarkerListeners) {
-        listener.logFabricMarker(name, tag, instanceKey, timestamp);
-      }
+    for (FabricMarkerListener listener : sFabricMarkerListeners) {
+      listener.logFabricMarker(name, tag, instanceKey, timestamp);
     }
   }
 
@@ -143,11 +130,9 @@ public class ReactMarker {
 
   @DoNotStrip
   public static void logMarker(ReactMarkerConstants name, @Nullable String tag, int instanceKey) {
-    synchronized (sListeners) {
-      for (MarkerListener listener : sListeners) {
-        listener.logMarker(name, tag, instanceKey);
-      }
-    }
     logFabricMarker(name, tag, instanceKey);
+    for (MarkerListener listener : sListeners) {
+      listener.logMarker(name, tag, instanceKey);
+    }
   }
 }
