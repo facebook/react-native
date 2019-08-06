@@ -60,11 +60,11 @@ RCT_EXPORT_MODULE(PlatformConstants)
   UIDevice *device = [UIDevice currentDevice];
   auto versions = RCTGetReactNativeVersion();
   return typedConstants<JS::NativePlatformConstantsIOS::Constants>({
-    .forceTouchAvailable = @(RCTForceTouchAvailable()),
+    .forceTouchAvailable = RCTForceTouchAvailable() ? true : false,
     .osVersion = [device systemVersion],
     .systemName = [device systemName],
     .interfaceIdiom = interfaceIdiom([device userInterfaceIdiom]),
-    .isTesting = @(RCTRunningInTestEnvironment()),
+    .isTesting = RCTRunningInTestEnvironment() ? true : false,
     .reactNativeVersion = JS::NativePlatformConstantsIOS::ConstantsReactNativeVersion::Builder({
       .minor = [versions[@"minor"] doubleValue],
       .major = [versions[@"major"] doubleValue],
