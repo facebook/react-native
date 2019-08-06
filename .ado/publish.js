@@ -49,8 +49,8 @@ function doPublish() {
   // Push tar to GitHub releases
   exec(`npm pack`);
 
-  const npmTarFileName = `../react-native-${releaseVersion}.tgz`;
-  const npmTarPath = path.resolve(__dirname, npmTarFileName);
+  const npmTarFileName = `react-native-${releaseVersion}.tgz`;
+  const npmTarPath = path.resolve(__dirname, '..', npmTarFileName);
   const finalTarPath = path.join(process.env.BUILD_STAGINGDIRECTORY, 'final', npmTarFileName);
   console.log(`Copying tar file ${npmTarPath} to: ${finalTarPath}`)
   fs.copyFileSync(npmTarPath, finalTarPath);
