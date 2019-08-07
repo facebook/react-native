@@ -73,7 +73,7 @@
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/text.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">Text</h1></header><article><div><span><p>A React component for displaying text.</p>
 <p><code>Text</code> supports nesting, styling, and touch handling.</p>
 <p>In the following example, the nested title and body text will inherit the <code>fontFamily</code> from <code>styles.baseText</code>, but the title provides its own additional styles. The title and body willstack on top of each other on account of the literal newlines:</p>
-<div class="web-player"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { AppRegistry, Text, StyleSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TextInANest</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
@@ -111,11 +111,23 @@
 
 <span class="hljs-comment">// skip this line if using Create React Native App</span>
 AppRegistry.registerComponent(<span class="hljs-string">'TextInANest'</span>, () =&gt; TextInANest);
-</code></pre><iframe style="margin-top: 4" width="100%" height="420" data-src="//cdn.rawgit.com/dabbott/react-native-web-player/gh-v1.10.0/index.html#code=import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20Text%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20TextInANest%20extends%20Component%20%7B%0A%20%20constructor(props)%20%7B%0A%20%20%20%20super(props)%3B%0A%20%20%20%20this.state%20%3D%20%7B%0A%20%20%20%20%20%20titleText%3A%20%22Bird's%20Nest%22%2C%0A%20%20%20%20%20%20bodyText%3A%20'This%20is%20not%20really%20a%20bird%20nest.'%0A%20%20%20%20%7D%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.baseText%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.titleText%7D%20onPress%3D%7Bthis.onPressTitle%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%7Bthis.state.titleText%7D%7B'%5Cn'%7D%7B'%5Cn'%7D%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CText%20numberOfLines%3D%7B5%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%7Bthis.state.bodyText%7D%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20baseText%3A%20%7B%0A%20%20%20%20fontFamily%3A%20'Cochin'%2C%0A%20%20%7D%2C%0A%20%20titleText%3A%20%7B%0A%20%20%20%20fontSize%3A%2020%2C%0A%20%20%20%20fontWeight%3A%20'bold'%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0A%2F%2F%20skip%20this%20line%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent('TextInANest'%2C%20()%20%3D%3E%20TextInANest)%3B%0A" frame-border="0"></iframe></div>
-
-<h2><a class="anchor" aria-hidden="true" id="nested-text"></a><a href="#nested-text" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Nested text</h2>
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Example"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20Text%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20TextInANest%20extends%20Component%20%7B%0A%20%20constructor(props)%20%7B%0A%20%20%20%20super(props)%3B%0A%20%20%20%20this.state%20%3D%20%7B%0A%20%20%20%20%20%20titleText%3A%20%22Bird's%20Nest%22%2C%0A%20%20%20%20%20%20bodyText%3A%20'This%20is%20not%20really%20a%20bird%20nest.'%0A%20%20%20%20%7D%3B%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.baseText%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.titleText%7D%20onPress%3D%7Bthis.onPressTitle%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%7Bthis.state.titleText%7D%7B'%5Cn'%7D%7B'%5Cn'%7D%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3CText%20numberOfLines%3D%7B5%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%7Bthis.state.bodyText%7D%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20baseText%3A%20%7B%0A%20%20%20%20fontFamily%3A%20'Cochin'%2C%0A%20%20%7D%2C%0A%20%20titleText%3A%20%7B%0A%20%20%20%20fontSize%3A%2020%2C%0A%20%20%20%20fontWeight%3A%20'bold'%2C%0A%20%20%7D%2C%0A%7D)%3B%0A%0A%2F%2F%20skip%20this%20line%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent('TextInANest'%2C%20()%20%3D%3E%20TextInANest)%3B%0A"
+        data-snack-platform="web"
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 880px;
+        "
+      ></div></div></div><h2><a class="anchor" aria-hidden="true" id="nested-text"></a><a href="#nested-text" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Nested text</h2>
 <p>Both iOS and Android allow you to display formatted text by annotating ranges of a string with specific formatting like bold or colored text (<code>NSAttributedString</code> on iOS, <code>SpannableString</code> on Android). In practice, this is very tedious. For React Native, we decided to use web paradigm for this where you can nest text to achieve the same effect.</p>
-<div class="web-player"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { AppRegistry, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BoldAndBeautiful</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
@@ -133,16 +145,28 @@ AppRegistry.registerComponent(<span class="hljs-string">'TextInANest'</span>, ()
 
 <span class="hljs-comment">// skip this line if using Create React Native App</span>
 AppRegistry.registerComponent(<span class="hljs-string">'AwesomeProject'</span>, () =&gt; BoldAndBeautiful);
-</code></pre><iframe style="margin-top: 4" width="100%" height="420" data-src="//cdn.rawgit.com/dabbott/react-native-web-player/gh-v1.10.0/index.html#code=import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20Text%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20BoldAndBeautiful%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CText%20style%3D%7B%7BfontWeight%3A%20'bold'%7D%7D%3E%0A%20%20%20%20%20%20%20%20I%20am%20bold%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7Bcolor%3A%20'red'%7D%7D%3E%0A%20%20%20%20%20%20%20%20%20%20and%20red%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20skip%20this%20line%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent('AwesomeProject'%2C%20()%20%3D%3E%20BoldAndBeautiful)%3B%0A" frame-border="0"></iframe></div>
-
-<p>Behind the scenes, React Native converts this to a flat <code>NSAttributedString</code> or <code>SpannableString</code> that contains the following information:</p>
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Example"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20Text%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20BoldAndBeautiful%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CText%20style%3D%7B%7BfontWeight%3A%20'bold'%7D%7D%3E%0A%20%20%20%20%20%20%20%20I%20am%20bold%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7Bcolor%3A%20'red'%7D%7D%3E%0A%20%20%20%20%20%20%20%20%20%20and%20red%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20skip%20this%20line%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent('AwesomeProject'%2C%20()%20%3D%3E%20BoldAndBeautiful)%3B%0A"
+        data-snack-platform="web"
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 880px;
+        "
+      ></div></div></div><p>Behind the scenes, React Native converts this to a flat <code>NSAttributedString</code> or <code>SpannableString</code> that contains the following information:</p>
 <pre><code class="hljs css language-jsx"><span class="token string">"I am bold and red"</span>
 <span class="token number">0</span><span class="token operator">-</span><span class="token number">9</span><span class="token punctuation">:</span> bold
 <span class="token number">9</span><span class="token operator">-</span><span class="token number">17</span><span class="token punctuation">:</span> bold<span class="token punctuation">,</span> red
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="nested-views-ios-only"></a><a href="#nested-views-ios-only" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Nested views (iOS only)</h2>
 <p>On iOS, you can nest views within your Text component. Here's an example:</p>
-<div class="web-player"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { AppRegistry, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BlueIsCool</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Component</span> </span>{
@@ -159,9 +183,21 @@ AppRegistry.registerComponent(<span class="hljs-string">'AwesomeProject'</span>,
 
 // skip this line if using Create React Native App
 AppRegistry.registerComponent('AwesomeProject', () =&gt; BlueIsCool);
-</span></code></pre><iframe style="margin-top: 4" width="100%" height="420" data-src="//cdn.rawgit.com/dabbott/react-native-web-player/gh-v1.10.0/index.html#code=import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20BlueIsCool%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CText%3E%0A%20%20%20%20%20%20%20%20There%20is%20a%20blue%20square%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7Bwidth%3A%2050%2C%20height%3A%2050%2C%20backgroundColor%3A%20'steelblue'%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20in%20between%20my%20text.%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20skip%20this%20line%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent('AwesomeProject'%2C%20()%20%3D%3E%20BlueIsCool)%3B%0A" frame-border="0"></iframe></div>
-
-<blockquote>
+</span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="Example"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20BlueIsCool%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CText%3E%0A%20%20%20%20%20%20%20%20There%20is%20a%20blue%20square%0A%20%20%20%20%20%20%20%20%3CView%20style%3D%7B%7Bwidth%3A%2050%2C%20height%3A%2050%2C%20backgroundColor%3A%20'steelblue'%7D%7D%20%2F%3E%0A%20%20%20%20%20%20%20%20in%20between%20my%20text.%0A%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20skip%20this%20line%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent('AwesomeProject'%2C%20()%20%3D%3E%20BlueIsCool)%3B%0A"
+        data-snack-platform="web"
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 880px;
+        "
+      ></div></div></div><blockquote>
 <p>In order to use this feature, you must give the view a <code>width</code> and a <code>height</code>.</p>
 </blockquote>
 <h2><a class="anchor" aria-hidden="true" id="containers"></a><a href="#containers" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Containers</h2>
