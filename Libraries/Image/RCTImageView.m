@@ -347,6 +347,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 
   if (error) {
+    if (_pendingImageSource.request && _imageSource.request && ![_pendingImageSource.request.URL.absoluteString isEqual: _imageSource.request.URL.absoluteString]) {
+        RCTExecuteOnMainQueue(^{
+            [self.layer removeAnimationForKey:@"contents"];
+            self.image = loadedImage;
+            self->_imageSource = source;
+            self->_pendingImageSource = nil;
+        });
+    }
     if (_onError) {
       _onError(@{ @"error": error.localizedDescription });
     }
