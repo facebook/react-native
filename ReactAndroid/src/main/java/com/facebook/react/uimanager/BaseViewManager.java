@@ -6,11 +6,14 @@
 package com.facebook.react.uimanager;
 
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewParent;
 import androidx.core.view.ViewCompat;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
@@ -173,23 +176,23 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     final String accessibilityLabel = (String) view.getTag(R.id.accessibility_label);
     final ReadableArray accessibilityStates = (ReadableArray) view.getTag(R.id.accessibility_states);
     final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
-    StringBuilder contentDescription = new StringBuilder();
+    final List<String> contentDescription = new ArrayList<>();
     if (accessibilityLabel != null) {
-      contentDescription.append(accessibilityLabel + ", ");
+      contentDescription.add(accessibilityLabel);
     }
     if (accessibilityStates != null) {
       for (int i = 0; i < accessibilityStates.size(); i++) {
         String state = accessibilityStates.getString(i);
         if (sStateDescription.containsKey(state)) {
-          contentDescription.append(view.getContext().getString(sStateDescription.get(state)) + ", ");
+          contentDescription.add(view.getContext().getString(sStateDescription.get(state)));
         }
       }
     }
     if (accessibilityHint != null) {
-      contentDescription.append(accessibilityHint + ", ");
+      contentDescription.add(accessibilityHint);
     }
-    if (contentDescription.length() > 0) {
-      view.setContentDescription(contentDescription.toString());
+    if (contentDescription.size() > 0) {
+      view.setContentDescription(TextUtils.join(", ", contentDescription));
     }
   }
 
