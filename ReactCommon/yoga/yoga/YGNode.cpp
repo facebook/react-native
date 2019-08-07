@@ -15,14 +15,7 @@ using facebook::yoga::detail::CompactValue;
 
 YGNode::YGNode(YGNode&& node) {
   context_ = node.context_;
-  hasNewLayout_ = node.hasNewLayout_;
-  isReferenceBaseline_ = node.isReferenceBaseline_;
-  isDirty_ = node.isDirty_;
-  nodeType_ = node.nodeType_;
-  measureUsesContext_ = node.measureUsesContext_;
-  baselineUsesContext_ = node.baselineUsesContext_;
-  printUsesContext_ = node.printUsesContext_;
-  useWebDefaults_ = node.useWebDefaults_;
+  flags_ = node.flags_;
   measure_ = node.measure_;
   baseline_ = node.baseline_;
   print_ = node.print_;
@@ -48,7 +41,7 @@ YGNode::YGNode(const YGNode& node, YGConfigRef config) : YGNode{node} {
 
 void YGNode::print(void* printContext) {
   if (print_.noContext != nullptr) {
-    if (printUsesContext_) {
+    if (flags_.at<printUsesContext_>()) {
       print_.withContext(this, printContext);
     } else {
       print_.noContext(this);
@@ -154,14 +147,14 @@ YGSize YGNode::measure(
     YGMeasureMode heightMode,
     void* layoutContext) {
 
-  return measureUsesContext_
+  return flags_.at<measureUsesContext_>()
       ? measure_.withContext(
             this, width, widthMode, height, heightMode, layoutContext)
       : measure_.noContext(this, width, widthMode, height, heightMode);
 }
 
 float YGNode::baseline(float width, float height, void* layoutContext) {
-  return baselineUsesContext_
+  return flags_.at<baselineUsesContext_>()
       ? baseline_.withContext(this, width, height, layoutContext)
       : baseline_.noContext(this, width, height);
 }
@@ -172,7 +165,7 @@ void YGNode::setMeasureFunc(decltype(YGNode::measure_) measureFunc) {
   if (measureFunc.noContext == nullptr) {
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
-    nodeType_ = YGNodeTypeDefault;
+    flags_.at<nodeType_>() = YGNodeTypeDefault;
   } else {
     YGAssertWithNode(
         this,
@@ -188,14 +181,14 @@ void YGNode::setMeasureFunc(decltype(YGNode::measure_) measureFunc) {
 }
 
 void YGNode::setMeasureFunc(YGMeasureFunc measureFunc) {
-  measureUsesContext_ = false;
+  flags_.at<measureUsesContext_>() = false;
   decltype(YGNode::measure_) m;
   m.noContext = measureFunc;
   setMeasureFunc(m);
 }
 
 void YGNode::setMeasureFunc(MeasureWithContextFn measureFunc) {
-  measureUsesContext_ = true;
+  flags_.at<measureUsesContext_>() = true;
   decltype(YGNode::measure_) m;
   m.withContext = measureFunc;
   setMeasureFunc(m);
@@ -214,10 +207,10 @@ void YGNode::insertChild(YGNodeRef child, uint32_t index) {
 }
 
 void YGNode::setDirty(bool isDirty) {
-  if (isDirty == isDirty_) {
+  if (isDirty == flags_.at<isDirty_>()) {
     return;
   }
-  isDirty_ = isDirty;
+  flags_.at<isDirty_>() = isDirty;
   if (isDirty && dirtied_) {
     dirtied_(this);
   }
@@ -357,7 +350,7 @@ YGValue YGNode::resolveFlexBasisPtr() const {
     return flexBasis;
   }
   if (!style_.flex().isUndefined() && style_.flex().unwrap() > 0.0f) {
-    return useWebDefaults_ ? YGValueAuto : YGValueZero;
+    return flags_.at<useWebDefaults_>() ? YGValueAuto : YGValueZero;
   }
   return YGValueAuto;
 }
@@ -396,7 +389,7 @@ void YGNode::cloneChildrenIfNeeded(void* cloneContext) {
 }
 
 void YGNode::markDirtyAndPropogate() {
-  if (!isDirty_) {
+  if (!flags_.at<isDirty_>()) {
     setDirty(true);
     setLayoutComputedFlexBasis(YGFloatOptional());
     if (owner_) {
@@ -406,7 +399,7 @@ void YGNode::markDirtyAndPropogate() {
 }
 
 void YGNode::markDirtyAndPropogateDownwards() {
-  isDirty_ = true;
+  flags_.at<isDirty_>() = true;
   for_each(children_.begin(), children_.end(), [](YGNodeRef childNode) {
     childNode->markDirtyAndPropogateDownwards();
   });
@@ -433,11 +426,12 @@ float YGNode::resolveFlexShrink() const {
   if (!style_.flexShrink().isUndefined()) {
     return style_.flexShrink().unwrap();
   }
-  if (!useWebDefaults_ && !style_.flex().isUndefined() &&
+  if (!flags_.at<useWebDefaults_>() && !style_.flex().isUndefined() &&
       style_.flex().unwrap() < 0.0f) {
     return -style_.flex().unwrap();
   }
-  return useWebDefaults_ ? kWebDefaultFlexShrink : kDefaultFlexShrink;
+  return flags_.at<useWebDefaults_>() ? kWebDefaultFlexShrink
+                                      : kDefaultFlexShrink;
 }
 
 bool YGNode::isNodeFlexible() {
@@ -582,7 +576,7 @@ void YGNode::reset() {
 
   clearChildren();
 
-  auto webDefaults = useWebDefaults_;
+  auto webDefaults = flags_.at<useWebDefaults_>();
   *this = YGNode{getConfig()};
   if (webDefaults) {
     useWebDefaults();

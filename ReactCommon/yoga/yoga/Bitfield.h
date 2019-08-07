@@ -95,6 +95,20 @@ class Bitfield {
   template <size_t Idx>
   using TypeAt = typename detail::IndexedType<Idx, Fields...>::Type;
 
+  template <size_t Idx, typename Value, typename... Values>
+  static constexpr Storage initStorage(Value value, Values... values) {
+    return ((value << BitTraits::shift(Idx)) & BitTraits::mask(Idx)) |
+        initStorage<Idx + 1, Values...>(values...);
+  }
+
+  template <size_t Idx>
+  static constexpr Storage initStorage() {
+    return Storage{0};
+  }
+
+  Storage storage_ = 0;
+
+public:
   template <size_t Idx>
   class Ref {
     Bitfield& bitfield_;
@@ -111,20 +125,6 @@ class Bitfield {
     }
   };
 
-  template <size_t Idx, typename Value, typename... Values>
-  static constexpr Storage initStorage(Value value, Values... values) {
-    return ((value << BitTraits::shift(Idx)) & BitTraits::mask(Idx)) |
-        initStorage<Idx + 1, Values...>(values...);
-  }
-
-  template <size_t Idx>
-  static constexpr Storage initStorage() {
-    return Storage{0};
-  }
-
-  Storage storage_ = 0;
-
-public:
   constexpr Bitfield() = default;
   constexpr Bitfield(Fields... values) : storage_{initStorage<0>(values...)} {}
 

@@ -9,24 +9,12 @@
 #include <array>
 #include <cstdint>
 #include <type_traits>
+#include "Bitfield.h"
 #include "CompactValue.h"
 #include "YGEnums.h"
 #include "YGFloatOptional.h"
 #include "Yoga-internal.h"
 #include "Yoga.h"
-
-#if !defined(ENUM_BITFIELDS_NOT_SUPPORTED)
-#define BITFIELD_ENUM_SIZED(num) : num
-#else
-#define BITFIELD_ENUM_SIZED(num)
-#endif
-
-#define BITFIELD_ACCESSORS(FIELD)                             \
-  decltype(FIELD##_) get_##FIELD() const { return FIELD##_; } \
-  void set_##FIELD(decltype(FIELD##_) x) { FIELD##_ = x; }
-
-#define BITFIELD_REF(FIELD) \
-  BitfieldRef<decltype(FIELD##_), &YGStyle::get_##FIELD, &YGStyle::set_##FIELD>
 
 class YGStyle {
   template <typename Enum>
@@ -71,53 +59,43 @@ public:
     CompactValue operator[](Idx idx) const { return (style.*Prop)[idx]; }
   };
 
-  template <typename T, T (YGStyle::*Get)() const, void (YGStyle::*Set)(T)>
-  struct BitfieldRef {
-    YGStyle& style;
-
-    operator T() const { return (style.*Get)(); }
-    BitfieldRef<T, Get, Set>& operator=(T x) {
-      (style.*Set)(x);
-      return *this;
-    }
-  };
-
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wbitfield-constant-conversion"
-#endif
-
-  YGStyle()
-      : direction_(YGDirectionInherit),
-        flexDirection_(YGFlexDirectionColumn),
-        justifyContent_(YGJustifyFlexStart),
-        alignContent_(YGAlignFlexStart),
-        alignItems_(YGAlignStretch),
-        alignSelf_(YGAlignAuto),
-        positionType_(YGPositionTypeRelative),
-        flexWrap_(YGWrapNoWrap),
-        overflow_(YGOverflowVisible),
-        display_(YGDisplayFlex) {}
-
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-
+  YGStyle() = default;
   ~YGStyle() = default;
 
 private:
-  /* Some platforms don't support enum bitfields,
-     so please use BITFIELD_ENUM_SIZED(BITS_COUNT) */
-  YGDirection direction_ BITFIELD_ENUM_SIZED(2);
-  YGFlexDirection flexDirection_ BITFIELD_ENUM_SIZED(2);
-  YGJustify justifyContent_ BITFIELD_ENUM_SIZED(3);
-  YGAlign alignContent_ BITFIELD_ENUM_SIZED(3);
-  YGAlign alignItems_ BITFIELD_ENUM_SIZED(3);
-  YGAlign alignSelf_ BITFIELD_ENUM_SIZED(3);
-  YGPositionType positionType_ BITFIELD_ENUM_SIZED(1);
-  YGWrap flexWrap_ BITFIELD_ENUM_SIZED(2);
-  YGOverflow overflow_ BITFIELD_ENUM_SIZED(2);
-  YGDisplay display_ BITFIELD_ENUM_SIZED(1);
+  static constexpr size_t directionIdx = 0;
+  static constexpr size_t flexDirectionIdx = 1;
+  static constexpr size_t justifyContentIdx = 2;
+  static constexpr size_t alignContentIdx = 3;
+  static constexpr size_t alignItemsIdx = 4;
+  static constexpr size_t alignSelfIdx = 5;
+  static constexpr size_t positionTypeIdx = 6;
+  static constexpr size_t flexWrapIdx = 7;
+  static constexpr size_t overflowIdx = 8;
+  static constexpr size_t displayIdx = 9;
+  using Flags = facebook::yoga::Bitfield<
+      uint32_t,
+      YGDirection,
+      YGFlexDirection,
+      YGJustify,
+      YGAlign,
+      YGAlign,
+      YGAlign,
+      YGPositionType,
+      YGWrap,
+      YGOverflow,
+      YGDisplay>;
+
+  Flags flags_ = {YGDirectionInherit,
+                  YGFlexDirectionColumn,
+                  YGJustifyFlexStart,
+                  YGAlignFlexStart,
+                  YGAlignStretch,
+                  YGAlignAuto,
+                  YGPositionTypeRelative,
+                  YGWrapNoWrap,
+                  YGOverflowVisible,
+                  YGDisplayFlex};
   YGFloatOptional flex_ = {};
   YGFloatOptional flexGrow_ = {};
   YGFloatOptional flexShrink_ = {};
@@ -132,50 +110,49 @@ private:
   // Yoga specific properties, not compatible with flexbox specification
   YGFloatOptional aspectRatio_ = {};
 
-  BITFIELD_ACCESSORS(direction)
-  BITFIELD_ACCESSORS(flexDirection)
-  BITFIELD_ACCESSORS(justifyContent)
-  BITFIELD_ACCESSORS(alignContent);
-  BITFIELD_ACCESSORS(alignItems);
-  BITFIELD_ACCESSORS(alignSelf);
-  BITFIELD_ACCESSORS(positionType);
-  BITFIELD_ACCESSORS(flexWrap);
-  BITFIELD_ACCESSORS(overflow);
-  BITFIELD_ACCESSORS(display);
-
 public:
   // for library users needing a type
   using ValueRepr = std::remove_reference<decltype(margin_[0])>::type;
 
-  YGDirection direction() const { return direction_; }
-  BITFIELD_REF(direction) direction() { return {*this}; }
+  YGDirection direction() const { return flags_.at<directionIdx>(); }
+  Flags::Ref<directionIdx> direction() { return flags_.at<directionIdx>(); }
 
-  YGFlexDirection flexDirection() const { return flexDirection_; }
-  BITFIELD_REF(flexDirection) flexDirection() { return {*this}; }
+  YGFlexDirection flexDirection() const {
+    return flags_.at<flexDirectionIdx>();
+  }
+  Flags::Ref<flexDirectionIdx> flexDirection() {
+    return flags_.at<flexDirectionIdx>();
+  }
 
-  YGJustify justifyContent() const { return justifyContent_; }
-  BITFIELD_REF(justifyContent) justifyContent() { return {*this}; }
+  YGJustify justifyContent() const { return flags_.at<justifyContentIdx>(); }
+  Flags::Ref<justifyContentIdx> justifyContent() {
+    return flags_.at<justifyContentIdx>();
+  }
 
-  YGAlign alignContent() const { return alignContent_; }
-  BITFIELD_REF(alignContent) alignContent() { return {*this}; }
+  YGAlign alignContent() const { return flags_.at<alignContentIdx>(); }
+  Flags::Ref<alignContentIdx> alignContent() {
+    return flags_.at<alignContentIdx>();
+  }
 
-  YGAlign alignItems() const { return alignItems_; }
-  BITFIELD_REF(alignItems) alignItems() { return {*this}; }
+  YGAlign alignItems() const { return flags_.at<alignItemsIdx>(); }
+  Flags::Ref<alignItemsIdx> alignItems() { return flags_.at<alignItemsIdx>(); }
 
-  YGAlign alignSelf() const { return alignSelf_; }
-  BITFIELD_REF(alignSelf) alignSelf() { return {*this}; }
+  YGAlign alignSelf() const { return flags_.at<alignSelfIdx>(); }
+  Flags::Ref<alignSelfIdx> alignSelf() { return flags_.at<alignSelfIdx>(); }
 
-  YGPositionType positionType() const { return positionType_; }
-  BITFIELD_REF(positionType) positionType() { return {*this}; }
+  YGPositionType positionType() const { return flags_.at<positionTypeIdx>(); }
+  Flags::Ref<positionTypeIdx> positionType() {
+    return flags_.at<positionTypeIdx>();
+  }
 
-  YGWrap flexWrap() const { return flexWrap_; }
-  BITFIELD_REF(flexWrap) flexWrap() { return {*this}; }
+  YGWrap flexWrap() const { return flags_.at<flexWrapIdx>(); }
+  Flags::Ref<flexWrapIdx> flexWrap() { return flags_.at<flexWrapIdx>(); }
 
-  YGOverflow overflow() const { return overflow_; }
-  BITFIELD_REF(overflow) overflow() { return {*this}; }
+  YGOverflow overflow() const { return flags_.at<overflowIdx>(); }
+  Flags::Ref<overflowIdx> overflow() { return flags_.at<overflowIdx>(); }
 
-  YGDisplay display() const { return display_; }
-  BITFIELD_REF(display) display() { return {*this}; }
+  YGDisplay display() const { return flags_.at<displayIdx>(); }
+  Flags::Ref<displayIdx> display() { return flags_.at<displayIdx>(); }
 
   YGFloatOptional flex() const { return flex_; }
   Ref<YGFloatOptional, &YGStyle::flex_> flex() { return {*this}; }
@@ -223,7 +200,3 @@ bool operator==(const YGStyle& lhs, const YGStyle& rhs);
 inline bool operator!=(const YGStyle& lhs, const YGStyle& rhs) {
   return !(lhs == rhs);
 }
-
-#undef BITFIELD_ENUM_SIZED
-#undef BITFIELD_ACCESSORS
-#undef BITFIELD_REF
