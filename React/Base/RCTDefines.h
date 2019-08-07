@@ -90,6 +90,13 @@
 #endif
 
 /**
+ * Add the default packager name
+ */
+#ifndef RCT_PACKAGER_NAME
+#define RCT_PACKAGER_NAME @"Metro"
+#endif
+
+/**
  * By default, only raise an NSAssertion in debug mode
  * (custom assert functions will still be called).
  */

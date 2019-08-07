@@ -130,22 +130,22 @@ RCT_EXPORT_METHOD(hide)
 {
   UIColor *color;
   UIColor *backgroundColor;
-  NSString *source;
+  NSString *message;
   if (URL.fileURL) {
     // If dev mode is not enabled, we don't want to show this kind of notification
 #if !RCT_DEV
     return;
 #endif
-    color = [UIColor grayColor];
+    color = [UIColor whiteColor];
     backgroundColor = [UIColor blackColor];
-    source = @"pre-bundled file";
+      message = [NSString stringWithFormat:@"Connect to %@ to develop JavaScript.", RCT_PACKAGER_NAME];
   } else {
     color = [UIColor whiteColor];
     backgroundColor = [UIColor colorWithHue:1./3 saturation:1 brightness:.35 alpha:1];
-    source = [NSString stringWithFormat:@"%@:%@", URL.host, URL.port];
+    message = [NSString stringWithFormat:@"Loading from %@:%@...", URL.host, URL.port];
   }
 
-  [self showMessage:[NSString stringWithFormat:@"Loading from %@...", source]
+  [self showMessage:message
               color:color
     backgroundColor:backgroundColor];
 }
