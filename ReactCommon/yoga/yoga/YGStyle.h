@@ -7,7 +7,6 @@
 #pragma once
 #include <algorithm>
 #include <array>
-#include <bitset>
 #include <cstdint>
 #include <type_traits>
 #include "CompactValue.h"
@@ -26,12 +25,8 @@
   decltype(FIELD##_) get_##FIELD() const { return FIELD##_; } \
   void set_##FIELD(decltype(FIELD##_) x) { FIELD##_ = x; }
 
-#define BITFIELD_REF(FIELD)  \
-  BitfieldRef<               \
-      decltype(FIELD##_),    \
-      &YGStyle::get_##FIELD, \
-      &YGStyle::set_##FIELD, \
-      FIELD##Bit>
+#define BITFIELD_REF(FIELD) \
+  BitfieldRef<decltype(FIELD##_), &YGStyle::get_##FIELD, &YGStyle::set_##FIELD>
 
 class YGStyle {
   template <typename Enum>
@@ -39,28 +34,21 @@ class YGStyle {
       facebook::yoga::detail::Values<facebook::yoga::enums::count<Enum>()>;
   using CompactValue = facebook::yoga::detail::CompactValue;
 
-  static constexpr uint64_t allBits(int fromBit, int toBit) {
-    return fromBit < toBit
-        ? (uint64_t{1} << fromBit) | allBits(fromBit + 1, toBit)
-        : 0;
-  }
-
 public:
   using Dimensions = Values<YGDimension>;
   using Edges = Values<YGEdge>;
 
-  template <typename T, T YGStyle::*Prop, int PropBit>
+  template <typename T, T YGStyle::*Prop>
   struct Ref {
     YGStyle& style;
     operator T() const { return style.*Prop; }
-    Ref<T, Prop, PropBit>& operator=(T value) {
+    Ref<T, Prop>& operator=(T value) {
       style.*Prop = value;
-      style.assignedProps_.set(PropBit);
       return *this;
     }
   };
 
-  template <typename Idx, Values<Idx> YGStyle::*Prop, int PropBit>
+  template <typename Idx, Values<Idx> YGStyle::*Prop>
   struct IdxRef {
     struct Ref {
       YGStyle& style;
@@ -69,16 +57,13 @@ public:
       operator YGValue() const { return (style.*Prop)[idx]; }
       Ref& operator=(CompactValue value) {
         (style.*Prop)[idx] = value;
-        style.assignedProps_.set(PropBit + idx);
         return *this;
       }
     };
 
     YGStyle& style;
-    IdxRef<Idx, Prop, PropBit>& operator=(const Values<Idx>& values) {
+    IdxRef<Idx, Prop>& operator=(const Values<Idx>& values) {
       style.*Prop = values;
-      style.assignedProps_ |=
-          allBits(PropBit, PropBit + facebook::yoga::enums::count<Idx>());
       return *this;
     }
     operator const Values<Idx>&() const { return style.*Prop; }
@@ -86,18 +71,13 @@ public:
     CompactValue operator[](Idx idx) const { return (style.*Prop)[idx]; }
   };
 
-  template <
-      typename T,
-      T (YGStyle::*Get)() const,
-      void (YGStyle::*Set)(T),
-      int PropBit>
+  template <typename T, T (YGStyle::*Get)() const, void (YGStyle::*Set)(T)>
   struct BitfieldRef {
     YGStyle& style;
 
     operator T() const { return (style.*Get)(); }
-    BitfieldRef<T, Get, Set, PropBit>& operator=(T x) {
+    BitfieldRef<T, Get, Set>& operator=(T x) {
       (style.*Set)(x);
-      style.assignedProps_.set(PropBit);
       return *this;
     }
   };
@@ -125,41 +105,7 @@ public:
 
   ~YGStyle() = default;
 
-  static constexpr int directionBit = 0;
-  static constexpr int flexDirectionBit = directionBit + 1;
-  static constexpr int justifyContentBit = flexDirectionBit + 1;
-  static constexpr int alignContentBit = justifyContentBit + 1;
-  static constexpr int alignItemsBit = alignContentBit + 1;
-  static constexpr int alignSelfBit = alignItemsBit + 1;
-  static constexpr int positionTypeBit = alignSelfBit + 1;
-  static constexpr int flexWrapBit = positionTypeBit + 1;
-  static constexpr int overflowBit = flexWrapBit + 1;
-  static constexpr int displayBit = overflowBit + 1;
-  static constexpr int flexBit = displayBit + 1;
-  static constexpr int flexGrowBit = flexBit + 1;
-  static constexpr int flexShrinkBit = flexGrowBit + 1;
-  static constexpr int flexBasisBit = flexShrinkBit + 1;
-  static constexpr int marginBit = flexBasisBit + 1;
-  static constexpr int positionBit =
-      marginBit + facebook::yoga::enums::count<YGEdge>();
-  static constexpr int paddingBit =
-      positionBit + facebook::yoga::enums::count<YGEdge>();
-  static constexpr int borderBit =
-      paddingBit + facebook::yoga::enums::count<YGEdge>();
-  static constexpr int dimensionsBit =
-      borderBit + facebook::yoga::enums::count<YGEdge>();
-  static constexpr int maxDimensionsBit =
-      dimensionsBit + facebook::yoga::enums::count<YGDimension>();
-  static constexpr int minDimensionsBit =
-      maxDimensionsBit + facebook::yoga::enums::count<YGDimension>();
-  static constexpr int aspectRatioBit =
-      minDimensionsBit + facebook::yoga::enums::count<YGDimension>();
-
-  static constexpr int numStyles = aspectRatioBit + 1;
-
 private:
-  std::bitset<aspectRatioBit + 1> assignedProps_;
-
   /* Some platforms don't support enum bitfields,
      so please use BITFIELD_ENUM_SIZED(BITS_COUNT) */
   YGDirection direction_ BITFIELD_ENUM_SIZED(2);
@@ -198,10 +144,6 @@ private:
   BITFIELD_ACCESSORS(display);
 
 public:
-  const decltype(assignedProps_)& assignedProps() const {
-    return assignedProps_;
-  }
-
   // for library users needing a type
   using ValueRepr = std::remove_reference<decltype(margin_[0])>::type;
 
@@ -236,59 +178,45 @@ public:
   BITFIELD_REF(display) display() { return {*this}; }
 
   YGFloatOptional flex() const { return flex_; }
-  Ref<YGFloatOptional, &YGStyle::flex_, flexBit> flex() { return {*this}; }
+  Ref<YGFloatOptional, &YGStyle::flex_> flex() { return {*this}; }
 
   YGFloatOptional flexGrow() const { return flexGrow_; }
-  Ref<YGFloatOptional, &YGStyle::flexGrow_, flexGrowBit> flexGrow() {
-    return {*this};
-  }
+  Ref<YGFloatOptional, &YGStyle::flexGrow_> flexGrow() { return {*this}; }
 
   YGFloatOptional flexShrink() const { return flexShrink_; }
-  Ref<YGFloatOptional, &YGStyle::flexShrink_, flexShrinkBit> flexShrink() {
-    return {*this};
-  }
+  Ref<YGFloatOptional, &YGStyle::flexShrink_> flexShrink() { return {*this}; }
 
   CompactValue flexBasis() const { return flexBasis_; }
-  Ref<CompactValue, &YGStyle::flexBasis_, flexBasisBit> flexBasis() {
-    return {*this};
-  }
+  Ref<CompactValue, &YGStyle::flexBasis_> flexBasis() { return {*this}; }
 
   const Edges& margin() const { return margin_; }
-  IdxRef<YGEdge, &YGStyle::margin_, marginBit> margin() { return {*this}; }
+  IdxRef<YGEdge, &YGStyle::margin_> margin() { return {*this}; }
 
   const Edges& position() const { return position_; }
-  IdxRef<YGEdge, &YGStyle::position_, positionBit> position() {
-    return {*this};
-  }
+  IdxRef<YGEdge, &YGStyle::position_> position() { return {*this}; }
 
   const Edges& padding() const { return padding_; }
-  IdxRef<YGEdge, &YGStyle::padding_, paddingBit> padding() { return {*this}; }
+  IdxRef<YGEdge, &YGStyle::padding_> padding() { return {*this}; }
 
   const Edges& border() const { return border_; }
-  IdxRef<YGEdge, &YGStyle::border_, borderBit> border() { return {*this}; }
+  IdxRef<YGEdge, &YGStyle::border_> border() { return {*this}; }
 
   const Dimensions& dimensions() const { return dimensions_; }
-  IdxRef<YGDimension, &YGStyle::dimensions_, dimensionsBit> dimensions() {
-    return {*this};
-  }
+  IdxRef<YGDimension, &YGStyle::dimensions_> dimensions() { return {*this}; }
 
   const Dimensions& minDimensions() const { return minDimensions_; }
-  IdxRef<YGDimension, &YGStyle::minDimensions_, minDimensionsBit>
-  minDimensions() {
+  IdxRef<YGDimension, &YGStyle::minDimensions_> minDimensions() {
     return {*this};
   }
 
   const Dimensions& maxDimensions() const { return maxDimensions_; }
-  IdxRef<YGDimension, &YGStyle::maxDimensions_, maxDimensionsBit>
-  maxDimensions() {
+  IdxRef<YGDimension, &YGStyle::maxDimensions_> maxDimensions() {
     return {*this};
   }
 
   // Yoga specific properties, not compatible with flexbox specification
   YGFloatOptional aspectRatio() const { return aspectRatio_; }
-  Ref<YGFloatOptional, &YGStyle::aspectRatio_, aspectRatioBit> aspectRatio() {
-    return {*this};
-  }
+  Ref<YGFloatOptional, &YGStyle::aspectRatio_> aspectRatio() { return {*this}; }
 };
 
 bool operator==(const YGStyle& lhs, const YGStyle& rhs);
