@@ -12,6 +12,8 @@ exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE 1`] = `"Unsupported return promise type for getBool: expected to find annotation for type of promise content"`;
 
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_READ_ONLY_OBJECT_NO_TYPE_FOR_CONTENT 1`] = `"Unsupported param for method \\"getString\\", param \\"arg\\". No type specified for $ReadOnly"`;
+
 exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_EXTENDING_TURBO_MODULE 1`] = `"Found two types extending \\"TurboModule\\" is one file. Split them into separated files."`;
 
 exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT 1`] = `
@@ -116,6 +118,31 @@ Object {
       "nativeModules": Object {
         "SampleTurboModule": Object {
           "properties": Array [
+            Object {
+              "name": "getArray",
+              "typeAnnotation": Object {
+                "optional": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "nullable": false,
+                    "typeAnnotation": Object {
+                      "elementType": Object {
+                        "type": "StringTypeAnnotation",
+                      },
+                      "type": "ArrayTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "elementType": Object {
+                    "type": "StringTypeAnnotation",
+                  },
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
             Object {
               "name": "getArray",
               "typeAnnotation": Object {
@@ -256,31 +283,6 @@ Object {
                     "name": "callback",
                     "nullable": false,
                     "typeAnnotation": Object {
-                      "params": Array [
-                        Object {
-                          "name": "value",
-                          "nullable": false,
-                          "typeAnnotation": Object {
-                            "type": "StringTypeAnnotation",
-                          },
-                        },
-                        Object {
-                          "name": "arr",
-                          "nullable": false,
-                          "typeAnnotation": Object {
-                            "elementType": Object {
-                              "elementType": Object {
-                                "type": "StringTypeAnnotation",
-                              },
-                              "type": "ArrayTypeAnnotation",
-                            },
-                            "type": "ArrayTypeAnnotation",
-                          },
-                        },
-                      ],
-                      "returnTypeAnnotation": Object {
-                        "type": "VoidTypeAnnotation",
-                      },
                       "type": "FunctionTypeAnnotation",
                     },
                   },
@@ -366,6 +368,61 @@ Object {
           "properties": Array [
             Object {
               "name": "getObject",
+              "typeAnnotation": Object {
+                "optional": false,
+                "params": Array [
+                  Object {
+                    "name": "arg",
+                    "nullable": false,
+                    "typeAnnotation": Object {
+                      "properties": Array [
+                        Object {
+                          "name": "const1",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "properties": Array [
+                              Object {
+                                "name": "const1",
+                                "optional": false,
+                                "typeAnnotation": Object {
+                                  "type": "BooleanTypeAnnotation",
+                                },
+                              },
+                            ],
+                            "type": "ObjectTypeAnnotation",
+                          },
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                  },
+                ],
+                "returnTypeAnnotation": Object {
+                  "properties": Array [
+                    Object {
+                      "name": "const1",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "properties": Array [
+                          Object {
+                            "name": "const1",
+                            "optional": false,
+                            "typeAnnotation": Object {
+                              "type": "BooleanTypeAnnotation",
+                            },
+                          },
+                        ],
+                        "type": "ObjectTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "getReadOnlyObject",
               "typeAnnotation": Object {
                 "optional": false,
                 "params": Array [
@@ -692,6 +749,44 @@ Object {
                 "type": "FunctionTypeAnnotation",
               },
             },
+            Object {
+              "name": "getConstants2",
+              "typeAnnotation": Object {
+                "optional": false,
+                "params": Array [],
+                "returnTypeAnnotation": Object {
+                  "properties": Array [
+                    Object {
+                      "name": "Dimensions",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "properties": Array [
+                          Object {
+                            "name": "windowPhysicalPixels",
+                            "optional": false,
+                            "typeAnnotation": Object {
+                              "properties": Array [
+                                Object {
+                                  "name": "width",
+                                  "optional": false,
+                                  "typeAnnotation": Object {
+                                    "type": "NumberTypeAnnotation",
+                                  },
+                                },
+                              ],
+                              "type": "ObjectTypeAnnotation",
+                            },
+                          },
+                        ],
+                        "type": "ObjectTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "FunctionTypeAnnotation",
+              },
+            },
           ],
         },
       },
@@ -713,9 +808,6 @@ Object {
                 "optional": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
-                  "resolvedType": Object {
-                    "type": "StringTypeAnnotation",
-                  },
                   "type": "GenericPromiseTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -727,9 +819,6 @@ Object {
                 "optional": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
-                  "resolvedType": Object {
-                    "type": "StringTypeAnnotation",
-                  },
                   "type": "GenericPromiseTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -741,18 +830,6 @@ Object {
                 "optional": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
-                  "resolvedType": Object {
-                    "properties": Array [
-                      Object {
-                        "name": "a",
-                        "optional": false,
-                        "typeAnnotation": Object {
-                          "type": "StringTypeAnnotation",
-                        },
-                      },
-                    ],
-                    "type": "ObjectTypeAnnotation",
-                  },
                   "type": "GenericPromiseTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",

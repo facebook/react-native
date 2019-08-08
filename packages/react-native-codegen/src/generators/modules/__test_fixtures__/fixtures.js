@@ -222,18 +222,6 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
                     nullable: false,
                     typeAnnotation: {
                       type: 'FunctionTypeAnnotation',
-                      params: [
-                        {
-                          nullable: false,
-                          name: 'value',
-                          typeAnnotation: {
-                            type: 'StringTypeAnnotation',
-                          },
-                        },
-                      ],
-                      returnTypeAnnotation: {
-                        type: 'VoidTypeAnnotation',
-                      },
                     },
                   },
                 ],
@@ -246,9 +234,6 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
                   type: 'GenericPromiseTypeAnnotation',
-                  resolvedType: {
-                    type: 'StringTypeAnnotation',
-                  },
                 },
                 params: [
                   {
