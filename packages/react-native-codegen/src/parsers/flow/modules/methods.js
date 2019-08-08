@@ -83,10 +83,6 @@ function getElementTypeForArrayOrObject(
           `Unsupported type for ${name}, param: "${paramName}": expected to find annotation for type of nested array contents`,
         );
       }
-    case 'Object':
-      return {
-        type: 'GenericObjectTypeAnnotation',
-      };
     case 'ObjectTypeAnnotation':
       return {
         type: 'ObjectTypeAnnotation',
@@ -137,9 +133,9 @@ function getElementTypeForArrayOrObject(
     case 'UnionTypeAnnotation':
       return undefined;
     default:
-      throw new Error(
-        `Unsupported param type for method "${name}", param "${paramName}". Found ${type}`,
-      );
+      return {
+        type: 'GenericObjectTypeAnnotation',
+      };
   }
 }
 
@@ -163,14 +159,6 @@ function getTypeAnnotationForParam(
       : typeAnnotation.type;
 
   switch (type) {
-    case 'Object':
-      return {
-        nullable,
-        name: paramName,
-        typeAnnotation: {
-          type: 'GenericObjectTypeAnnotation',
-        },
-      };
     case 'Array':
     case '$ReadOnlyArray':
       if (
@@ -276,9 +264,13 @@ function getTypeAnnotationForParam(
         },
       };
     default:
-      throw new Error(
-        `Unsupported param type for method "${name}", param "${paramName}". Found ${type}`,
-      );
+      return {
+        nullable,
+        name: paramName,
+        typeAnnotation: {
+          type: 'GenericObjectTypeAnnotation',
+        },
+      };
   }
 }
 
@@ -299,11 +291,6 @@ function getReturnTypeAnnotation(
       : typeAnnotation.type;
 
   switch (type) {
-    case 'Object':
-      return {
-        type: 'GenericObjectTypeAnnotation',
-        nullable,
-      };
     case 'Promise':
       if (
         typeAnnotation.typeParameters &&
@@ -395,10 +382,10 @@ function getReturnTypeAnnotation(
         type: 'FloatTypeAnnotation',
       };
     default:
-      (type: empty);
-      throw new Error(
-        `Unsupported return type for method "${methodName}", Found ${type}`,
-      );
+      return {
+        type: 'GenericObjectTypeAnnotation',
+        nullable,
+      };
   }
 }
 

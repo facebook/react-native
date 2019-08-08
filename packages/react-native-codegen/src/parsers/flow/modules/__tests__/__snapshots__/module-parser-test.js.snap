@@ -4,10 +4,6 @@ exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARR
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM 1`] = `"Unsupported type for getString, param: \\"arg\\": expected to find annotation for type of array contents"`;
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_EXISTING_TYPE_AS_PARAM 1`] = `"Unsupported param type for method \\"getString\\", param \\"arg\\". Found NotString"`;
-
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_EXISTING_TYPE_AS_RETURN 1`] = `"Unsupported param type for method \\"getString\\", param \\"arg\\". Found NotString"`;
-
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_ONLY_METHODS 1`] = `"Only methods are supported as module properties. Found BooleanTypeAnnotation in sampleBool"`;
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE 1`] = `"Unsupported return promise type for getBool: expected to find annotation for type of promise content"`;
