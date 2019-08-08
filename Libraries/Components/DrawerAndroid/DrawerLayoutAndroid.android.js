@@ -12,15 +12,11 @@
 
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
-const ReactNative = require('../../Renderer/shims/ReactNative');
 const StatusBar = require('../StatusBar/StatusBar');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
-const UIManager = require('../../ReactNative/UIManager');
 const View = require('../View/View');
 const nullthrows = require('nullthrows');
 
-const DrawerConsts = UIManager.getViewManagerConfig('AndroidDrawerLayout')
-  .Constants;
 const dismissKeyboard = require('../../Utilities/dismissKeyboard');
 import AndroidDrawerLayoutNativeComponent, {
   Commands,
@@ -67,7 +63,7 @@ type Props = $ReadOnly<{|
   /**
    * Specifies the side of the screen from which the drawer will slide in.
    */
-  drawerPosition: ?number,
+  drawerPosition: ?('left' | 'right'),
 
   /**
    * Specifies the width of the drawer, more precisely the width of the view that be pulled in
@@ -148,7 +144,7 @@ type State = {|
  *   return (
  *     <DrawerLayoutAndroid
  *       drawerWidth={300}
- *       drawerPosition={DrawerLayoutAndroid.positions.Left}
+ *       drawerPosition="left"
  *       renderNavigationView={() => navigationView}>
  *       <View style={{flex: 1, alignItems: 'center'}}>
  *         <Text style={{margin: 10, fontSize: 15, textAlign: 'right'}}>Hello</Text>
@@ -160,7 +156,13 @@ type State = {|
  * ```
  */
 class DrawerLayoutAndroid extends React.Component<Props, State> {
-  static positions = DrawerConsts.DrawerPosition;
+  static get positions(): mixed {
+    console.warn(
+      'Setting DrawerLayoutAndroid drawerPosition using `DrawerLayoutAndroid.positions` is deprecated. Instead pass the string value "left" or "right"',
+    );
+
+    return {Left: 'left', Right: 'right'};
+  }
   static defaultProps = {
     drawerBackgroundColor: 'white',
   };

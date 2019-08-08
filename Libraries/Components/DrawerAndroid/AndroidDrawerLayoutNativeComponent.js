@@ -60,7 +60,7 @@ type NativeProps = $ReadOnly<{|
   /**
    * Specifies the side of the screen from which the drawer will slide in.
    */
-  drawerPosition: ?Int32,
+  drawerPosition?: WithDefault<'left' | 'right', 'left'>,
 
   /**
    * Specifies the width of the drawer, more precisely the width of the view that be pulled in
