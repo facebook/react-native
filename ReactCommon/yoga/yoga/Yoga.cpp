@@ -1644,13 +1644,8 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
         layoutContext);
 
     layoutMarkerData.measureCallbacks += 1;
-    if (reason == LayoutPassReason::kMeasureChild) {
-      layoutMarkerData.measureChildMeasureCallbacks += 1;
-    } else if (reason == LayoutPassReason::kFlexMeasure) {
-      layoutMarkerData.flexMeasureMeasureCallbacks += 1;
-    } else if (reason == LayoutPassReason::kAbsMeasureChild) {
-      layoutMarkerData.absMeasureChildMeasureCallbacks += 1;
-    }
+    layoutMarkerData.measureCallbackReasonsCount[static_cast<size_t>(reason)] +=
+        1;
 
     Event::publish<Event::MeasureCallbackEnd>(
         node,

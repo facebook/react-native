@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <vector>
+#include <array>
 #include <yoga/YGEnums.h>
 
 struct YGConfig;
@@ -42,9 +43,8 @@ struct LayoutData {
   int cachedLayouts;
   int cachedMeasures;
   int measureCallbacks;
-  int measureChildMeasureCallbacks;
-  int absMeasureChildMeasureCallbacks;
-  int flexMeasureMeasureCallbacks;
+  std::array<int, static_cast<uint8_t>(LayoutPassReason::COUNT)>
+      measureCallbackReasonsCount;
 };
 
 const char* LayoutPassReasonToString(const LayoutPassReason value);
