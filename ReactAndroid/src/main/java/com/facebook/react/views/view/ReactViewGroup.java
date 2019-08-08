@@ -12,6 +12,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -45,6 +46,7 @@ import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaConstants;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 
 import static com.facebook.react.common.ReactConstants.TAG;
 
@@ -885,4 +887,146 @@ public class ReactViewGroup extends ViewGroup implements
 
     setAlpha(0);
   }
+
+  //region Handling of clipped touches
+
+  private boolean hasChildWithZ() {
+    int childCount = getChildCount();
+    for (int i = 0; i < childCount; i++)
+      if (getChildAt(i).getZ() != 0) return true;
+    return false;
+  }
+
+  private int getAndVerifyPreorderedIndex(int childrenCount, int i, boolean customOrder) {
+    final int childIndex;
+    if (customOrder) {
+      final int childIndex1 = getChildDrawingOrder(childrenCount, i);
+      if (childIndex1 >= childrenCount) {
+        throw new IndexOutOfBoundsException("getChildDrawingOrder() "
+                + "returned invalid index " + childIndex1
+                + " (child count is " + childrenCount + ")");
+      }
+      childIndex = childIndex1;
+    } else {
+      childIndex = i;
+    }
+    return childIndex;
+  }
+
+  private ArrayList<View> mPreSortedChildren;
+
+  private ArrayList<View> buildOrderedChildList() {
+    final int childrenCount = getChildCount();
+    if (childrenCount <= 1 || !hasChildWithZ()) return null;
+
+    if (mPreSortedChildren == null) {
+      mPreSortedChildren = new ArrayList<>(childrenCount);
+    } else {
+      // callers should clear, so clear shouldn't be necessary, but for safety...
+      mPreSortedChildren.clear();
+      mPreSortedChildren.ensureCapacity(childrenCount);
+    }
+
+    final boolean customOrder = isChildrenDrawingOrderEnabled();
+    for (int i = 0; i < childrenCount; i++) {
+      // add next child (in child order) to end of list
+      final int childIndex = getAndVerifyPreorderedIndex(childrenCount, i, customOrder);
+      final View nextChild = getChildAt(childIndex);
+      final float currentZ = nextChild.getZ();
+
+      // insert ahead of any Views with greater Z
+      int insertIndex = i;
+      while (insertIndex > 0 && mPreSortedChildren.get(insertIndex - 1).getZ() > currentZ) {
+        insertIndex--;
+      }
+      mPreSortedChildren.add(insertIndex, nextChild);
+    }
+    return mPreSortedChildren;
+  }
+
+  private static boolean canViewReceivePointerEvents(@NonNull View child) {
+    return child.getVisibility() == VISIBLE || child.getAnimation() != null;
+  }
+
+  private Matrix mTempMatrix = null;
+
+  @Override
+  public boolean dispatchTouchEvent(MotionEvent ev) {
+    if (super.dispatchTouchEvent(ev))
+      return true;
+
+    if (ev == null || !onFilterTouchEventForSecurity(ev) || getClipChildren())
+      return false;
+
+    // Now what we're going to do, is take some of Android's
+    //   routines for traversing through child views,
+    //   and pass the events down *without* testing for isPointView, as we're expecting it to *not* be in the view.
+    // super.dispatchTouchEvent() already tested for points inside the view,
+    // so if we're doing the extra work here it's only to find a target for the touch.
+    //
+    // Also note, that the one who's actually clipping the children - is the grandparent, not the parent.
+    // That's right. Android's layout system is deeply flawed.
+    //
+    // Note: A lot of stuff is not in here, like accessibility and stuff.
+    //   That's basically okay, as the grandparent is passing its touches to the
+    //   parent, which will do it's normal magic as usual, except it will now
+    //   work for the touches that are outside the clipping zone.
+
+    boolean handled = false;
+
+    final int childrenCount = getChildCount();
+
+    if (childrenCount > 0) {
+      final ArrayList<View> preorderedList = buildOrderedChildList();
+
+      final boolean customOrder = preorderedList == null
+              && isChildrenDrawingOrderEnabled();
+
+      for (int i = childrenCount - 1; i >= 0; i--) {
+        final int childIndex = getAndVerifyPreorderedIndex(childrenCount, i, customOrder);
+        View child = preorderedList == null ? null : preorderedList.get(childIndex);
+        if (child == null)
+          child = getChildAt(childIndex);
+
+        if (!canViewReceivePointerEvents(child))
+          continue;
+
+        final MotionEvent transformedEvent;
+        if (child.getMatrix().isIdentity()) {
+          final float offsetX = getScrollX() - child.getLeft();
+          final float offsetY = getScrollY() - child.getTop();
+          ev.offsetLocation(offsetX, offsetY);
+
+          handled = child.dispatchTouchEvent(ev);
+
+          ev.offsetLocation(-offsetX, -offsetY);
+        } else {
+          transformedEvent = MotionEvent.obtain(ev);
+          final float offsetX = getScrollX() - child.getLeft();
+          final float offsetY = getScrollY() - child.getTop();
+          transformedEvent.offsetLocation(offsetX, offsetY);
+          if (!child.getMatrix().isIdentity()) {
+            if (mTempMatrix == null)
+              mTempMatrix = new Matrix();
+            child.getMatrix().invert(mTempMatrix);
+            transformedEvent.transform(mTempMatrix);
+          }
+
+          handled = child.dispatchTouchEvent(transformedEvent);
+
+          transformedEvent.recycle();
+        }
+
+        if (handled)
+          break;
+      }
+
+      if (preorderedList != null)
+        preorderedList.clear();
+    }
+
+    return handled;
+  }
+
+  //endregion
 }
