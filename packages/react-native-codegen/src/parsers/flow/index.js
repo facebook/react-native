@@ -23,7 +23,7 @@ const {processModule} = require('./modules');
 function getTypes(ast) {
   return ast.body.reduce((types, node) => {
     if (node.type === 'ExportNamedDeclaration') {
-      if (node.declaration.type !== 'VariableDeclaration') {
+      if (node.declaration && node.declaration.type !== 'VariableDeclaration') {
         types[node.declaration.id.name] = node.declaration;
       }
     } else if (
