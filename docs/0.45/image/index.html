@@ -80,7 +80,8 @@
     <span class="hljs-keyword">return</span> (
       &lt;View&gt;
         &lt;Image
-          source={require('/react-native/img/favicon.png')}
+          style={{width: 50, height: 50}}
+          source={require('@expo/snack-static/react-native-logo.png')}
         /&gt;
         &lt;Image
           style={{width: 50, height: 50}}
@@ -96,7 +97,7 @@ AppRegistry.registerComponent('DisplayAnImage', () =&gt; DisplayAnImage);
 </code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Example"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20View%2C%20Image%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20DisplayAnImage%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20source%3D%7Brequire('%2Freact-native%2Fimg%2Ffavicon.png')%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7B%7Bwidth%3A%2050%2C%20height%3A%2050%7D%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7B%7Buri%3A%20'https%3A%2F%2Ffacebook.github.io%2Freact%2Fassets%2Flogo_og.png'%7D%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20skip%20this%20line%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent('DisplayAnImage'%2C%20()%20%3D%3E%20DisplayAnImage)%3B%0A"
+        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20View%2C%20Image%20%7D%20from%20'react-native'%3B%0A%0Aexport%20default%20class%20DisplayAnImage%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7B%7Bwidth%3A%2050%2C%20height%3A%2050%7D%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7Brequire('%40expo%2Fsnack-static%2Freact-native-logo.png')%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7B%7Bwidth%3A%2050%2C%20height%3A%2050%7D%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7B%7Buri%3A%20'https%3A%2F%2Ffacebook.github.io%2Freact%2Fassets%2Flogo_og.png'%7D%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20skip%20this%20line%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent('DisplayAnImage'%2C%20()%20%3D%3E%20DisplayAnImage)%3B%0A"
         data-snack-platform="web"
         data-snack-preview="true"
         style="
@@ -124,7 +125,7 @@ AppRegistry.registerComponent('DisplayAnImage', () =&gt; DisplayAnImage);
       <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">Image</span>
           <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.stretch}</span>
-          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>'/<span class="hljs-attr">react-native</span>/<span class="hljs-attr">img</span>/<span class="hljs-attr">favicon.png</span>')}
+          <span class="hljs-attr">source</span>=<span class="hljs-string">{require(</span>'@<span class="hljs-attr">expo</span>/<span class="hljs-attr">snack-static</span>/<span class="hljs-attr">react-native-logo.png</span>')}
         /&gt;</span>
       <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
     );
@@ -139,7 +140,7 @@ AppRegistry.registerComponent(
 </span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Example"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20View%2C%20Image%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20stretch%3A%20%7B%0A%20%20%20%20width%3A%2050%2C%0A%20%20%20%20height%3A%20200%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20class%20DisplayAnImageWithStyle%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.stretch%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7Brequire('%2Freact-native%2Fimg%2Ffavicon.png')%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20skip%20these%20lines%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent(%0A%20%20'DisplayAnImageWithStyle'%2C%0A%20%20()%20%3D%3E%20DisplayAnImageWithStyle%0A)%3B%0A"
+        data-snack-code="import%20React%2C%20%7B%20Component%20%7D%20from%20'react'%3B%0Aimport%20%7B%20AppRegistry%2C%20View%2C%20Image%2C%20StyleSheet%20%7D%20from%20'react-native'%3B%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20stretch%3A%20%7B%0A%20%20%20%20width%3A%2050%2C%0A%20%20%20%20height%3A%20200%0A%20%20%7D%0A%7D)%3B%0A%0Aexport%20default%20class%20DisplayAnImageWithStyle%20extends%20Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%3E%0A%20%20%20%20%20%20%20%20%3CImage%0A%20%20%20%20%20%20%20%20%20%20style%3D%7Bstyles.stretch%7D%0A%20%20%20%20%20%20%20%20%20%20source%3D%7Brequire('%40expo%2Fsnack-static%2Freact-native-logo.png')%7D%0A%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20skip%20these%20lines%20if%20using%20Create%20React%20Native%20App%0AAppRegistry.registerComponent(%0A%20%20'DisplayAnImageWithStyle'%2C%0A%20%20()%20%3D%3E%20DisplayAnImageWithStyle%0A)%3B%0A"
         data-snack-platform="web"
         data-snack-preview="true"
         style="
