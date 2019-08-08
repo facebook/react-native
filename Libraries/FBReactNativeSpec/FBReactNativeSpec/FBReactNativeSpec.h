@@ -941,6 +941,44 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+
+namespace JS {
+  namespace NativeFrameRateLogger {
+    struct SpecSetGlobalOptionsOptions {
+      folly::Optional<bool> debug() const;
+      folly::Optional<bool> reportStackTraces() const;
+
+      SpecSetGlobalOptionsOptions(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeFrameRateLogger_SpecSetGlobalOptionsOptions)
++ (RCTManagedPointer *)JS_NativeFrameRateLogger_SpecSetGlobalOptionsOptions:(id)json;
+@end
+@protocol NativeFrameRateLoggerSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)setGlobalOptions:(JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions &)options;
+- (void)setContext:(NSString *)context;
+- (void)beginScroll;
+- (void)endScroll;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'FrameRateLogger'
+     */
+
+    class JSI_EXPORT NativeFrameRateLoggerSpecJSI : public ObjCTurboModule {
+    public:
+      NativeFrameRateLoggerSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
 @protocol NativeHeadlessJsTaskSupportSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)notifyTaskFinished:(double)taskId;
@@ -2596,6 +2634,16 @@ inline folly::Optional<JS::NativeExceptionsManager::ExceptionDataExtraData> JS::
 {
   id const p = _v[@"extraData"];
   return (p == nil ? folly::none : folly::make_optional(JS::NativeExceptionsManager::ExceptionDataExtraData(p)));
+}
+inline folly::Optional<bool> JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions::debug() const
+{
+  id const p = _v[@"debug"];
+  return RCTBridgingToOptionalBool(p);
+}
+inline folly::Optional<bool> JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions::reportStackTraces() const
+{
+  id const p = _v[@"reportStackTraces"];
+  return RCTBridgingToOptionalBool(p);
 }
 inline JS::NativeI18nManager::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];

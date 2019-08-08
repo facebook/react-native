@@ -929,6 +929,54 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
+@implementation RCTCxxConvert (NativeFrameRateLogger_SpecSetGlobalOptionsOptions)
++ (RCTManagedPointer *)JS_NativeFrameRateLogger_SpecSetGlobalOptionsOptions:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions>(json);
+}
+@end
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeFrameRateLoggerSpecJSI_setGlobalOptions(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setGlobalOptions", @selector(setGlobalOptions:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeFrameRateLoggerSpecJSI_setContext(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setContext", @selector(setContext:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeFrameRateLoggerSpecJSI_beginScroll(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "beginScroll", @selector(beginScroll), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeFrameRateLoggerSpecJSI_endScroll(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "endScroll", @selector(endScroll), args, count);
+    }
+
+
+    NativeFrameRateLoggerSpecJSI::NativeFrameRateLoggerSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+      : ObjCTurboModule("FrameRateLogger", instance, jsInvoker) {
+        
+        methodMap_["setGlobalOptions"] = MethodMetadata {1, __hostFunction_NativeFrameRateLoggerSpecJSI_setGlobalOptions};
+        
+        setMethodArgConversionSelector(@"setGlobalOptions", 0, @"JS_NativeFrameRateLogger_SpecSetGlobalOptionsOptions:");
+        
+        methodMap_["setContext"] = MethodMetadata {1, __hostFunction_NativeFrameRateLoggerSpecJSI_setContext};
+        
+        
+        methodMap_["beginScroll"] = MethodMetadata {0, __hostFunction_NativeFrameRateLoggerSpecJSI_beginScroll};
+        
+        
+        methodMap_["endScroll"] = MethodMetadata {0, __hostFunction_NativeFrameRateLoggerSpecJSI_endScroll};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
 namespace facebook {
   namespace react {
 
