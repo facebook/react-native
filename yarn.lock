@@ -5873,10 +5873,10 @@ react-proxy@^1.1.7:
     lodash "^4.6.1"
     react-deep-force-update "^1.0.0"
 
-react-refresh@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.3.0.tgz#dcbf3c1f2fd2f06dc553c4682cf4ae8e72413b05"
-  integrity sha512-Q4VkuukL/FMo01lifODwMPl6/Pa1OUDJqBEHNw8aLnWIoNsX2BmzRUG+5V7bAPLRXw/fWHNFOmcwRqFfGKrpBw==
+react-refresh@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.4.0.tgz#d421f9bd65e0e4b9822a399f14ac56bda9c92292"
+  integrity sha512-bacjSio8GOtzNZKZZM6EWqbhlbb6pr28JWJWFTLwEBKvPIBRo6/Ob68D2EWZA2VyTdQxAh+TRnCYOPNKsQiXTA==
 
 react-test-renderer@16.8.6:
   version "16.8.6"

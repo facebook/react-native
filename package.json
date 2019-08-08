@@ -108,7 +108,7 @@
     "promise": "^7.1.1",
     "prop-types": "^15.7.2",
     "react-devtools-core": "^3.6.3",
-    "react-refresh": "^0.3.0",
+    "react-refresh": "^0.4.0",
     "regenerator-runtime": "^0.13.2",
     "scheduler": "0.14.0",
     "stacktrace-parser": "^0.1.3",
