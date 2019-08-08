@@ -62,6 +62,7 @@ Object {
                   "elementType": Object {
                     "type": "StringTypeAnnotation",
                   },
+                  "nullable": false,
                   "type": "ArrayTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -98,6 +99,7 @@ Object {
                 ],
                 "returnTypeAnnotation": Object {
                   "elementType": undefined,
+                  "nullable": false,
                   "type": "ArrayTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -138,6 +140,7 @@ Object {
                   "elementType": Object {
                     "type": "StringTypeAnnotation",
                   },
+                  "nullable": false,
                   "type": "ArrayTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -163,6 +166,7 @@ Object {
                   "elementType": Object {
                     "type": "StringTypeAnnotation",
                   },
+                  "nullable": false,
                   "type": "ArrayTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -197,6 +201,7 @@ Object {
                   },
                 ],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "type": "VoidTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -216,6 +221,7 @@ Object {
                   },
                 ],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "type": "VoidTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -235,6 +241,7 @@ Object {
                   },
                 ],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "type": "VoidTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -254,6 +261,7 @@ Object {
                   },
                 ],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "type": "VoidTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -288,6 +296,7 @@ Object {
                   },
                 ],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "type": "VoidTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -346,6 +355,7 @@ Object {
                     },
                     "type": "ArrayTypeAnnotation",
                   },
+                  "nullable": false,
                   "type": "ArrayTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -398,6 +408,7 @@ Object {
                   },
                 ],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "properties": Array [
                     Object {
                       "name": "const1",
@@ -453,6 +464,7 @@ Object {
                   },
                 ],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "properties": Array [
                     Object {
                       "name": "const1",
@@ -499,6 +511,7 @@ Object {
                   },
                 ],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "type": "GenericObjectTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -557,6 +570,7 @@ Object {
                     ],
                     "type": "ObjectTypeAnnotation",
                   },
+                  "nullable": false,
                   "type": "ArrayTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -583,6 +597,7 @@ Object {
                 "optional": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "properties": Array [
                     Object {
                       "name": "isTesting",
@@ -691,6 +706,7 @@ Object {
                   },
                 ],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "type": "VoidTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -717,6 +733,7 @@ Object {
                 "optional": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "properties": Array [
                     Object {
                       "name": "Dimensions",
@@ -755,6 +772,7 @@ Object {
                 "optional": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "properties": Array [
                     Object {
                       "name": "Dimensions",
@@ -808,6 +826,7 @@ Object {
                 "optional": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "type": "GenericPromiseTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -819,6 +838,7 @@ Object {
                 "optional": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "type": "GenericPromiseTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -830,6 +850,7 @@ Object {
                 "optional": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "type": "GenericPromiseTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -864,6 +885,7 @@ Object {
                   },
                 ],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "type": "GenericObjectTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -898,6 +920,7 @@ Object {
                   },
                 ],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "type": "VoidTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -909,6 +932,7 @@ Object {
                 "optional": false,
                 "params": Array [],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "type": "VoidTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -931,6 +955,7 @@ Object {
                   },
                 ],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "properties": Array [
                     Object {
                       "name": "a",
@@ -974,6 +999,7 @@ Object {
                   },
                 ],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "type": "Int32TypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",
@@ -993,6 +1019,7 @@ Object {
                   },
                 ],
                 "returnTypeAnnotation": Object {
+                  "nullable": false,
                   "type": "FloatTypeAnnotation",
                 },
                 "type": "FunctionTypeAnnotation",

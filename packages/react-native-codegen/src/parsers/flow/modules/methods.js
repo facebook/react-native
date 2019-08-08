@@ -287,8 +287,13 @@ function getReturnTypeAnnotation(
   returnType,
   types: TypeMap,
 ): FunctionTypeAnnotationReturn {
-  const typeAnnotation = getValueFromTypes(returnType, types);
-  const type =
+  let typeAnnotation = getValueFromTypes(returnType, types);
+  let nullable = false;
+  if (typeAnnotation.type === 'NullableTypeAnnotation') {
+    nullable = true;
+    typeAnnotation = typeAnnotation.typeAnnotation;
+  }
+  let type =
     typeAnnotation.type === 'GenericTypeAnnotation'
       ? typeAnnotation.id.name
       : typeAnnotation.type;
@@ -297,6 +302,7 @@ function getReturnTypeAnnotation(
     case 'Object':
       return {
         type: 'GenericObjectTypeAnnotation',
+        nullable,
       };
     case 'Promise':
       if (
@@ -305,6 +311,7 @@ function getReturnTypeAnnotation(
       ) {
         return {
           type: 'GenericPromiseTypeAnnotation',
+          nullable,
         };
       } else {
         throw new Error(
@@ -318,6 +325,7 @@ function getReturnTypeAnnotation(
         typeAnnotation.typeParameters.params[0]
       ) {
         return {
+          nullable,
           type: 'ArrayTypeAnnotation',
           elementType: getElementTypeForArrayOrObject(
             methodName,
@@ -333,6 +341,7 @@ function getReturnTypeAnnotation(
       }
     case 'ObjectTypeAnnotation':
       return {
+        nullable,
         type: 'ObjectTypeAnnotation',
         properties: getObjectProperties(
           methodName,
@@ -347,6 +356,7 @@ function getReturnTypeAnnotation(
         typeAnnotation.typeParameters.params[0]
       ) {
         return {
+          nullable,
           type: 'ObjectTypeAnnotation',
           properties: getObjectProperties(
             methodName,
@@ -364,20 +374,24 @@ function getReturnTypeAnnotation(
     case 'NumberTypeAnnotation':
     case 'VoidTypeAnnotation':
       return {
+        nullable,
         type,
       };
     case 'StringTypeAnnotation':
     case 'Stringish':
       return {
+        nullable,
         type: 'StringTypeAnnotation',
       };
 
     case 'Int32':
       return {
+        nullable,
         type: 'Int32TypeAnnotation',
       };
     case 'Float':
       return {
+        nullable,
         type: 'FloatTypeAnnotation',
       };
     default:

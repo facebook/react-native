@@ -91,15 +91,10 @@ const constants = `- (facebook::react::ModuleConstants<JS::Native::_MODULE_NAME_
 - (facebook::react::ModuleConstants<JS::Native::_MODULE_NAME_::::Constants::Builder>)getConstants;`;
 
 function translatePrimitiveJSTypeToObjCType(
-  type:
-    | FunctionTypeAnnotationParamTypeAnnotation
-    | FunctionTypeAnnotationReturn,
+  type: FunctionTypeAnnotationParamTypeAnnotation,
   error: string,
 ) {
   switch (type.type) {
-    case 'VoidTypeAnnotation':
-    case 'GenericPromiseTypeAnnotation':
-      return 'void';
     case 'StringTypeAnnotation':
       return 'NSString *';
     case 'NumberTypeAnnotation':
@@ -116,6 +111,36 @@ function translatePrimitiveJSTypeToObjCType(
       return 'RCTResponseSenderBlock';
     case 'ObjectTypeAnnotation':
       return 'NSDictionary *';
+    default:
+      throw new Error(error);
+  }
+}
+
+function translatePrimitiveJSTypeToObjCTypeForReturn(
+  type: FunctionTypeAnnotationReturn,
+  error: string,
+) {
+  function wrapIntoNullableIfNeeded(generatedType: string) {
+    return type.nullable ? `${generatedType} _Nullable` : generatedType;
+  }
+  switch (type.type) {
+    case 'VoidTypeAnnotation':
+    case 'GenericPromiseTypeAnnotation':
+      return 'void';
+    case 'StringTypeAnnotation':
+      return wrapIntoNullableIfNeeded('NSString *');
+    case 'NumberTypeAnnotation':
+    case 'FloatTypeAnnotation':
+    case 'Int32TypeAnnotation':
+      return wrapIntoNullableIfNeeded('NSNumber *');
+    case 'BooleanTypeAnnotation':
+      return type.nullable ? 'NSNumber * _Nullable' : 'BOOL';
+    case 'GenericObjectTypeAnnotation':
+      return wrapIntoNullableIfNeeded('NSDictionary *');
+    case 'ArrayTypeAnnotation':
+      return wrapIntoNullableIfNeeded('NSArray<id<NSObject>> *');
+    case 'ObjectTypeAnnotation':
+      return wrapIntoNullableIfNeeded('NSDictionary *');
     default:
       throw new Error(error);
   }
@@ -193,7 +218,7 @@ module.exports = {
               .replace('::_PROPERTY_NAME_::', prop.name)
               .replace(
                 '::_RETURN_VALUE_::',
-                translatePrimitiveJSTypeToObjCType(
+                translatePrimitiveJSTypeToObjCTypeForReturn(
                   returnTypeAnnotation,
                   `Unspopported return type for ${prop.name}. Found: ${
                     prop.typeAnnotation.returnTypeAnnotation.type

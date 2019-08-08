@@ -173,16 +173,19 @@ export type ObjectParamTypeAnnotation = $ReadOnly<{|
 
 export type FunctionTypeAnnotationReturn =
   | $ReadOnly<{|
+      nullable: boolean,
       type:
         | PrimitiveTypeAnnotationType
         | 'VoidTypeAnnotation'
         | 'GenericPromiseTypeAnnotation',
     |}>
   | $ReadOnly<{|
+      nullable: boolean,
       type: 'ArrayTypeAnnotation',
       elementType: ?FunctionTypeAnnotationReturnArrayElementType,
     |}>
   | $ReadOnly<{|
+      nullable: boolean,
       type: 'ObjectTypeAnnotation',
       properties: ?$ReadOnlyArray<ObjectParamTypeAnnotation>,
     |}>;
