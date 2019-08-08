@@ -583,6 +583,27 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+@protocol NativeBugReportingSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)startReportAProblemFlow;
+- (void)setExtraData:(NSDictionary *)extraData
+          extraFiles:(NSDictionary *)extraFiles;
+- (void)setCategoryID:(NSString *)categoryID;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'BugReporting'
+     */
+
+    class JSI_EXPORT NativeBugReportingSpecJSI : public ObjCTurboModule {
+    public:
+      NativeBugReportingSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
 @protocol NativeClipboardSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)getString:(RCTPromiseResolveBlock)resolve
