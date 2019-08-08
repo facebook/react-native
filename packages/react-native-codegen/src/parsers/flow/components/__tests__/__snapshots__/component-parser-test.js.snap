@@ -4293,6 +4293,64 @@ Object {
 }
 `;
 
+exports[`RN Codegen Flow Parser can generate fixture ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS_NO_CAST 1`] = `
+Object {
+  "modules": Object {
+    "Module": Object {
+      "components": Object {
+        "Module": Object {
+          "commands": Array [],
+          "events": Array [
+            Object {
+              "bubblingType": "direct",
+              "name": "onDirectEventDefinedInlineNull",
+              "optional": false,
+              "typeAnnotation": Object {
+                "argument": Object {
+                  "properties": Array [],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "EventTypeAnnotation",
+              },
+            },
+            Object {
+              "bubblingType": "bubble",
+              "name": "onBubblingEventDefinedInlineNull",
+              "optional": false,
+              "typeAnnotation": Object {
+                "argument": Object {
+                  "properties": Array [],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "EventTypeAnnotation",
+              },
+            },
+          ],
+          "extendsProps": Array [
+            Object {
+              "knownTypeName": "ReactNativeCoreViewProps",
+              "type": "ReactNativeBuiltInType",
+            },
+          ],
+          "interfaceOnly": true,
+          "paperComponentName": "RCTModule",
+          "props": Array [
+            Object {
+              "name": "boolean_default_true_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": true,
+                "type": "BooleanTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
 exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPORTED 1`] = `
 Object {
   "modules": Object {

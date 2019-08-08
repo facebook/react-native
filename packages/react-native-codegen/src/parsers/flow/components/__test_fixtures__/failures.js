@@ -23,16 +23,12 @@ const COMMANDS_DEFINED_INLINE = `
 
 'use strict';
 
-const codegenNativeComponent = require('codegenNativeComponent');
 const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  Int32,
-  BubblingEvent,
-  DirectEvent,
-} from 'CodegenTypes';
-
+import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -40,12 +36,14 @@ export type ModuleProps = $ReadOnly<{|
 |}>;
 
 export const Commands = codegenNativeCommands<{
-  +hotspotUpdate: (ref: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+  +hotspotUpdate: (ref: React.Ref<'RCTView'>, x: Int32, y: Int32) => void,
 }>({
-  supportedCommands: ['hotspotUpdate']
+  supportedCommands: ['hotspotUpdate'],
 });
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
 
 const COMMANDS_DEFINED_MULTIPLE_TIMES = `
@@ -61,16 +59,12 @@ const COMMANDS_DEFINED_MULTIPLE_TIMES = `
 
 'use strict';
 
-const codegenNativeComponent = require('codegenNativeComponent');
 const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  Int32,
-  BubblingEvent,
-  DirectEvent,
-} from 'CodegenTypes';
-
+import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
@@ -82,13 +76,15 @@ export type ModuleProps = $ReadOnly<{|
 |}>;
 
 export const Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['hotspotUpdate']
+  supportedCommands: ['hotspotUpdate'],
 });
 export const Commands2 = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['hotspotUpdate']
+  supportedCommands: ['hotspotUpdate'],
 });
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
 
 const COMMANDS_DEFINED_WITHOUT_REF = `
@@ -104,16 +100,12 @@ const COMMANDS_DEFINED_WITHOUT_REF = `
 
 'use strict';
 
-const codegenNativeComponent = require('codegenNativeComponent');
 const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  Int32,
-  BubblingEvent,
-  DirectEvent,
-} from 'CodegenTypes';
-
+import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 interface NativeCommands {
   +hotspotUpdate: (x: Int32, y: Int32) => void;
@@ -125,10 +117,12 @@ export type ModuleProps = $ReadOnly<{|
 |}>;
 
 export const Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['hotspotUpdate']
+  supportedCommands: ['hotspotUpdate'],
 });
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
 
 const COMMANDS_DEFINED_WITH_NULLABLE_REF = `
@@ -144,16 +138,12 @@ const COMMANDS_DEFINED_WITH_NULLABLE_REF = `
 
 'use strict';
 
-const codegenNativeComponent = require('codegenNativeComponent');
 const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  Int32,
-  BubblingEvent,
-  DirectEvent,
-} from 'CodegenTypes';
-
+import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: ?React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
@@ -165,10 +155,12 @@ export type ModuleProps = $ReadOnly<{|
 |}>;
 
 export const Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['hotspotUpdate']
+  supportedCommands: ['hotspotUpdate'],
 });
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
 
 const COMMANDS_DEFINED_WITH_MISMATCHED_METHOD_NAMES = `
@@ -184,20 +176,20 @@ const COMMANDS_DEFINED_WITH_MISMATCHED_METHOD_NAMES = `
 
 'use strict';
 
-const codegenNativeComponent = require('codegenNativeComponent');
 const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  Int32,
-  BubblingEventHandler,
-  DirectEventHandler,
-} from 'CodegenTypes';
-
+import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
-  +scrollTo: (viewRef: React.Ref<'RCTView'>, y: Int32, animated: boolean) => void;
+  +scrollTo: (
+    viewRef: React.Ref<'RCTView'>,
+    y: Int32,
+    animated: boolean,
+  ) => void;
 }
 
 export type ModuleProps = $ReadOnly<{|
@@ -206,10 +198,12 @@ export type ModuleProps = $ReadOnly<{|
 |}>;
 
 export const Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['scrollTo']
+  supportedCommands: ['scrollTo'],
 });
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
 
 const COMMANDS_DEFINED_WITHOUT_METHOD_NAMES = `
@@ -225,20 +219,20 @@ const COMMANDS_DEFINED_WITHOUT_METHOD_NAMES = `
 
 'use strict';
 
-const codegenNativeComponent = require('codegenNativeComponent');
 const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  Int32,
-  BubblingEventHandler,
-  DirectEventHandler,
-} from 'CodegenTypes';
-
+import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
-  +scrollTo: (viewRef: React.Ref<'RCTView'>, y: Int32, animated: boolean) => void;
+  +scrollTo: (
+    viewRef: React.Ref<'RCTView'>,
+    y: Int32,
+    animated: boolean,
+  ) => void;
 }
 
 export type ModuleProps = $ReadOnly<{|
@@ -248,7 +242,9 @@ export type ModuleProps = $ReadOnly<{|
 
 export const Commands = codegenNativeCommands<NativeCommands>();
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
 
 const NULLABLE_WITH_DEFAULT = `
@@ -266,20 +262,18 @@ const NULLABLE_WITH_DEFAULT = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  WithDefault,
-  Float,
-} from 'CodegenTypes';
-
+import type {WithDefault, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-
+import type {NativeComponent} from 'codegenNativeComponent';
 
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
   nullable_with_default: ?WithDefault<Float, 1.0>,
 |}>;
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
 
 const NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE = `
@@ -297,21 +291,20 @@ const NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  WithDefault,
-  Float,
-} from 'CodegenTypes';
-
+import type {WithDefault, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-
+import type {NativeComponent} from 'codegenNativeComponent';
 
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
   required_key_with_default: WithDefault<Float, 1.0>,
 |}>;
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
+
 module.exports = {
   COMMANDS_DEFINED_INLINE,
   COMMANDS_DEFINED_MULTIPLE_TIMES,

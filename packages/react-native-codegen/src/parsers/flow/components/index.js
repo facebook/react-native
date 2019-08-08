@@ -25,10 +25,18 @@ function findComponentConfig(ast) {
   );
 
   defaultExports.forEach(statement => {
+    let declaration = statement.declaration;
+
+    // codegenNativeComponent can be nested inside a cast
+    // expression so we need to go one level deeper
+    if (declaration.type === 'TypeCastExpression') {
+      declaration = declaration.expression;
+    }
+
     try {
-      if (statement.declaration.callee.name === 'codegenNativeComponent') {
-        const typeArgumentParams = statement.declaration.typeArguments.params;
-        const funcArgumentParams = statement.declaration.arguments;
+      if (declaration.callee.name === 'codegenNativeComponent') {
+        const typeArgumentParams = declaration.typeArguments.params;
+        const funcArgumentParams = declaration.arguments;
 
         const nativeComponentType = {};
         nativeComponentType.propsTypeName = typeArgumentParams[0].id.name;
