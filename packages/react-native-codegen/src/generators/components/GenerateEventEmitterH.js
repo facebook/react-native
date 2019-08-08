@@ -221,7 +221,11 @@ function generateEvents(componentName: string, component): string {
 }
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const moduleComponents: ComponentCollection = Object.keys(schema.modules)
       .map(moduleName => {
         const components = schema.modules[moduleName].components;

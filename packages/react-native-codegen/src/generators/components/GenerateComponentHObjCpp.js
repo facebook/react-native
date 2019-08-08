@@ -263,7 +263,11 @@ function generateCommandHandler(
 }
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const fileName = 'RCTComponentViewHelpers.h';
 
     const componentContent = Object.keys(schema.modules)

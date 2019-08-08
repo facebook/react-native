@@ -418,7 +418,11 @@ function getImports(component): Set<string> {
 }
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const fileName = 'Props.h';
 
     const allImports: Set<string> = new Set();

@@ -208,7 +208,11 @@ function generateMethods(propsString, commandsString): string {
 }
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const files = new Map();
     Object.keys(schema.modules).forEach(moduleName => {
       const components = schema.modules[moduleName].components;

@@ -149,7 +149,11 @@ const methodImplementationTemplate =
   '- (::_RETURN_VALUE_::) ::_PROPERTY_NAME_::::_ARGS_::;';
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const nativeModules = Object.keys(schema.modules)
       .map(moduleName => {
         const modules = schema.modules[moduleName].nativeModules;
@@ -243,7 +247,7 @@ module.exports = {
       })
       .join('\n');
 
-    const fileName = 'RCTNativeModules.h';
+    const fileName = `${moduleSpecName}.h`;
     const replacedTemplate = template
       .replace(/::_MODULES_::/g, modules)
       .replace(/::_PROTOCOLS_::/g, protocols);

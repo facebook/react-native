@@ -48,6 +48,7 @@ fb_native.genrule(
 
 rn_codegen(
     name = "codegen_tests",
+    native_module_spec_name = "FBReactNativeTestSpec",
     schema_target = ":codegen_tests_schema",
 )
 

@@ -2,7 +2,7 @@
 
 exports[`GenerateModuleHObjCpp can generate fixture COMPLEX_OBJECTS 1`] = `
 Map {
-  "RCTNativeModules.h" => "
+  "SampleSpec.h" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -169,7 +169,7 @@ public:
 
 exports[`GenerateModuleHObjCpp can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
-  "RCTNativeModules.h" => "
+  "SampleSpec.h" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -218,7 +218,7 @@ public:
 
 exports[`GenerateModuleHObjCpp can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
 Map {
-  "RCTNativeModules.h" => "
+  "SampleSpec.h" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -324,7 +324,7 @@ public:
 
 exports[`GenerateModuleHObjCpp can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
 Map {
-  "RCTNativeModules.h" => "
+  "SampleSpec.h" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -388,7 +388,7 @@ public:
 
 exports[`GenerateModuleHObjCpp can generate fixture TWO_MODULES_SAME_FILE 1`] = `
 Map {
-  "RCTNativeModules.h" => "
+  "SampleSpec.h" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *

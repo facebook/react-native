@@ -56,7 +56,7 @@ const template = `
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/modules/::_LIBRARY_NAME_::/RCTNativeModules.h>
+#include <::_INCLUDE_::>
 ::_GETTERS_::
 namespace facebook {
 namespace react {
@@ -128,7 +128,11 @@ function tranlsateMethodForImplementation(property): string {
 }
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const nativeModules: {[name: string]: NativeModuleShape} = Object.keys(
       schema.modules,
     )
@@ -221,11 +225,12 @@ module.exports = {
       })
       .join('\n');
 
-    const fileName = 'RCTNativeModules.mm';
+    const fileName = `${moduleSpecName}-generated.mm`;
     const replacedTemplate = template
       .replace(/::_GETTERS_::/g, gettersImplementations)
       .replace(/::_MODULES_::/g, modules)
-      .replace(/::_LIBRARY_NAME_::/g, libraryName);
+      .replace(/::_LIBRARY_NAME_::/g, libraryName)
+      .replace(/::_INCLUDE_::/g, `${moduleSpecName}/${moduleSpecName}.h`);
     return new Map([[fileName, replacedTemplate]]);
   },
 };

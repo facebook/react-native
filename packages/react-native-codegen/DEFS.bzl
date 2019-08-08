@@ -18,6 +18,7 @@ load(
 )
 
 def rn_codegen(
+        native_module_spec_name,
         name = "",
         schema_target = ""):
     generate_fixtures_rule_name = "generate_fixtures-{}".format(name)
@@ -40,7 +41,7 @@ def rn_codegen(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:rn_codegen) $(location {}) {} $OUT".format(schema_target, name),
+        cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:rn_codegen) $(location {}) {} $OUT {}".format(schema_target, name, native_module_spec_name),
         out = "codegenfiles-{}".format(name),
     )
 
@@ -125,14 +126,14 @@ def rn_codegen(
 
     fb_native.genrule(
         name = generate_module_hobjcpp_name,
-        cmd = "cp $(location :{})/RCTNativeModules.h $OUT".format(generate_fixtures_rule_name),
-        out = "RCTNativeModules.h",
+        cmd = "cp $(location :{})/{}.h $OUT".format(generate_fixtures_rule_name, native_module_spec_name),
+        out = "{}.h".format(native_module_spec_name),
     )
 
     fb_native.genrule(
         name = generate_module_mm_name,
-        cmd = "cp $(location :{})/RCTNativeModules.mm $OUT".format(generate_fixtures_rule_name),
-        out = "RCTNativeModules.mm",
+        cmd = "cp $(location :{})/{}-generated.mm $OUT".format(generate_fixtures_rule_name, native_module_spec_name),
+        out = "{}-generated.mm".format(native_module_spec_name),
     )
 
     # libs
@@ -236,10 +237,10 @@ def rn_codegen(
             ":{}".format(generate_module_hobjcpp_name),
         ],
         ios_exported_headers = {
-            "RCTNativeModules.h": ":{}".format(generate_module_hobjcpp_name),
-            "RCTNativeModules.mm": ":{}".format(generate_module_mm_name),
+            "{}.h".format(native_module_spec_name): ":{}".format(generate_module_hobjcpp_name),
+            "{}-generated.mm".format(native_module_spec_name): ":{}".format(generate_module_mm_name),
         },
-        header_namespace = "react/modules/{}".format(name),
+        header_namespace = native_module_spec_name,
         compiler_flags = [
             "-fexceptions",
             "-frtti",

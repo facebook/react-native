@@ -133,7 +133,11 @@ function generateTestsString(name, component) {
 }
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const fileName = 'Tests.cpp';
     const allImports = new Set([
       '#include <react/core/propsConversions.h>',

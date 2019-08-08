@@ -2,7 +2,7 @@
 
 exports[`GenerateModuleHObjCpp can generate fixture COMPLEX_OBJECTS 1`] = `
 Map {
-  "RCTNativeModules.mm" => "
+  "SampleSpec-generated.mm" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -10,7 +10,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/modules/COMPLEX_OBJECTS/RCTNativeModules.h>
+#include <SampleSpec/SampleSpec.h>
 @implementation RCTCxxConvert (NativeSampleTurboModule_SpecDifficultReturnType)
 + (RCTManagedPointer *)JS_NativeSampleTurboModule_SpecDifficultReturnType:(id)json
 {
@@ -51,7 +51,7 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule
 
 exports[`GenerateModuleHObjCpp can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
-  "RCTNativeModules.mm" => "
+  "SampleSpec-generated.mm" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -59,7 +59,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/modules/EMPTY_NATIVE_MODULES/RCTNativeModules.h>
+#include <SampleSpec/SampleSpec.h>
 
 namespace facebook {
 namespace react {
@@ -80,7 +80,7 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule
 
 exports[`GenerateModuleHObjCpp can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
 Map {
-  "RCTNativeModules.mm" => "
+  "SampleSpec-generated.mm" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -88,7 +88,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/modules/SIMPLE_NATIVE_MODULES/RCTNativeModules.h>
+#include <SampleSpec/SampleSpec.h>
 
 namespace facebook {
 namespace react {
@@ -157,7 +157,7 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule
 
 exports[`GenerateModuleHObjCpp can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
 Map {
-  "RCTNativeModules.mm" => "
+  "SampleSpec-generated.mm" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -165,7 +165,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/modules/TWO_MODULES_DIFFERENT_FILES/RCTNativeModules.h>
+#include <SampleSpec/SampleSpec.h>
 
 
 namespace facebook {
@@ -199,7 +199,7 @@ NativeSample2TurboModuleSpecJSI::NativeSample2TurboModuleSpecJSI(id<RCTTurboModu
 
 exports[`GenerateModuleHObjCpp can generate fixture TWO_MODULES_SAME_FILE 1`] = `
 Map {
-  "RCTNativeModules.mm" => "
+  "SampleSpec-generated.mm" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -207,7 +207,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/modules/TWO_MODULES_SAME_FILE/RCTNativeModules.h>
+#include <SampleSpec/SampleSpec.h>
 
 
 namespace facebook {
