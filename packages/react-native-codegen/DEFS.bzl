@@ -52,8 +52,8 @@ def rn_codegen(
 
     fb_native.genrule(
         name = generate_component_hobjcpp_name,
-        cmd = "cp $(location :{})/ComponentViewHelpers.h $OUT".format(generate_fixtures_rule_name),
-        out = "ComponentViewHelpers.h",
+        cmd = "cp $(location :{})/RCTComponentViewHelpers.h $OUT".format(generate_fixtures_rule_name),
+        out = "RCTComponentViewHelpers.h",
     )
 
     fb_native.genrule(

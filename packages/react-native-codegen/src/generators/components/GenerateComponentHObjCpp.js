@@ -37,7 +37,7 @@ function getOrdinalNumber(num: number): string {
 }
 
 const protocolTemplate = `
-@protocol ::_COMPONENT_NAME_::ViewProtocol <NSObject>
+@protocol RCT::_COMPONENT_NAME_::ViewProtocol <NSObject>
 ::_METHODS_::
 @end
 `.trim();
@@ -69,7 +69,7 @@ if ([commandName isEqualToString:@"::_COMMAND_NAME_::"]) {
 `.trim();
 
 const commandHandlerTemplate = `
-RCT_EXTERN inline void ::_COMPONENT_NAME_::HandleCommand(
+RCT_EXTERN inline void RCT::_COMPONENT_NAME_::HandleCommand(
   id<::_COMPONENT_NAME_::ViewProtocol> componentView,
   NSString const *commandName,
   NSArray const *args)
@@ -264,7 +264,7 @@ function generateCommandHandler(
 
 module.exports = {
   generate(libraryName: string, schema: SchemaType): FilesOutput {
-    const fileName = 'ComponentViewHelpers.h';
+    const fileName = 'RCTComponentViewHelpers.h';
 
     const componentContent = Object.keys(schema.modules)
       .map(moduleName => {

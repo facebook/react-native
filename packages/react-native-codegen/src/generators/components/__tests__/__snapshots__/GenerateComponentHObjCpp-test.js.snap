@@ -2,7 +2,7 @@
 
 exports[`GenerateComponentHObjCpp can generate fixture ARRAY_PROPS 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,7 +15,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol ArrayPropsNativeComponentViewProtocol <NSObject>
+@protocol RCTArrayPropsNativeComponentViewProtocol <NSObject>
 
 @end
 
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture BOOLEAN_PROP 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -38,7 +38,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol BooleanPropNativeComponentViewProtocol <NSObject>
+@protocol RCTBooleanPropNativeComponentViewProtocol <NSObject>
 
 @end
 
@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture COLOR_PROP 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -61,7 +61,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol ColorPropNativeComponentViewProtocol <NSObject>
+@protocol RCTColorPropNativeComponentViewProtocol <NSObject>
 
 @end
 
@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture COMMANDS 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -84,12 +84,12 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol CommandNativeComponentViewProtocol <NSObject>
+@protocol RCTCommandNativeComponentViewProtocol <NSObject>
 - (void)flashScrollIndicators;
 - (void)allTypes:(NSInteger)x message:(NSString *)message animated:(BOOL)animated;
 @end
 
-RCT_EXTERN inline void CommandNativeComponentHandleCommand(
+RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
   id<CommandNativeComponentViewProtocol> componentView,
   NSString const *commandName,
   NSArray const *args)
@@ -155,7 +155,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture COMMANDS_AND_PROPS 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -168,11 +168,11 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol CommandNativeComponentViewProtocol <NSObject>
+@protocol RCTCommandNativeComponentViewProtocol <NSObject>
 - (void)hotspotUpdate:(NSInteger)x y:(NSInteger)y;
 @end
 
-RCT_EXTERN inline void CommandNativeComponentHandleCommand(
+RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
   id<CommandNativeComponentViewProtocol> componentView,
   NSString const *commandName,
   NSArray const *args)
@@ -216,7 +216,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture ENUM_PROP 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -229,7 +229,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol EnumPropsNativeComponentViewProtocol <NSObject>
+@protocol RCTEnumPropsNativeComponentViewProtocol <NSObject>
 
 @end
 
@@ -239,7 +239,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -252,7 +252,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol EventsNestedObjectNativeComponentViewProtocol <NSObject>
+@protocol RCTEventsNestedObjectNativeComponentViewProtocol <NSObject>
 
 @end
 
@@ -262,7 +262,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture EVENT_PROPS 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -275,7 +275,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol EventsNativeComponentViewProtocol <NSObject>
+@protocol RCTEventsNativeComponentViewProtocol <NSObject>
 
 @end
 
@@ -285,7 +285,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -298,7 +298,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol InterfaceOnlyComponentViewProtocol <NSObject>
+@protocol RCTInterfaceOnlyComponentViewProtocol <NSObject>
 
 @end
 
@@ -308,7 +308,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture FLOAT_PROPS 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -321,7 +321,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol FloatPropNativeComponentViewProtocol <NSObject>
+@protocol RCTFloatPropNativeComponentViewProtocol <NSObject>
 
 @end
 
@@ -331,7 +331,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture IMAGE_PROP 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -344,7 +344,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol ImagePropNativeComponentViewProtocol <NSObject>
+@protocol RCTImagePropNativeComponentViewProtocol <NSObject>
 
 @end
 
@@ -354,7 +354,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture INTEGER_PROPS 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -367,7 +367,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol IntegerPropNativeComponentViewProtocol <NSObject>
+@protocol RCTIntegerPropNativeComponentViewProtocol <NSObject>
 
 @end
 
@@ -377,7 +377,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture INTERFACE_ONLY 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -390,7 +390,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol InterfaceOnlyComponentViewProtocol <NSObject>
+@protocol RCTInterfaceOnlyComponentViewProtocol <NSObject>
 
 @end
 
@@ -400,7 +400,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture MULTI_NATIVE_PROP 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -413,7 +413,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol ImageColorPropNativeComponentViewProtocol <NSObject>
+@protocol RCTImageColorPropNativeComponentViewProtocol <NSObject>
 
 @end
 
@@ -423,7 +423,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture NO_PROPS_NO_EVENTS 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -436,7 +436,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol NoPropsNoEventsComponentViewProtocol <NSObject>
+@protocol RCTNoPropsNoEventsComponentViewProtocol <NSObject>
 
 @end
 
@@ -446,7 +446,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture POINT_PROP 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -459,7 +459,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol PointPropNativeComponentViewProtocol <NSObject>
+@protocol RCTPointPropNativeComponentViewProtocol <NSObject>
 
 @end
 
@@ -469,7 +469,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture STRING_PROP 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -482,7 +482,7 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol StringPropComponentViewProtocol <NSObject>
+@protocol RCTStringPropComponentViewProtocol <NSObject>
 
 @end
 
@@ -492,7 +492,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -505,11 +505,11 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol MultiFile1NativeComponentViewProtocol <NSObject>
+@protocol RCTMultiFile1NativeComponentViewProtocol <NSObject>
 
 @end
 
-@protocol MultiFile2NativeComponentViewProtocol <NSObject>
+@protocol RCTMultiFile2NativeComponentViewProtocol <NSObject>
 
 @end
 
@@ -519,7 +519,7 @@ NS_ASSUME_NONNULL_END",
 
 exports[`GenerateComponentHObjCpp can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
 Map {
-  "ComponentViewHelpers.h" => "/**
+  "RCTComponentViewHelpers.h" => "/**
 * Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
@@ -532,11 +532,11 @@ Map {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol MultiComponent1NativeComponentViewProtocol <NSObject>
+@protocol RCTMultiComponent1NativeComponentViewProtocol <NSObject>
 
 @end
 
-@protocol MultiComponent2NativeComponentViewProtocol <NSObject>
+@protocol RCTMultiComponent2NativeComponentViewProtocol <NSObject>
 
 @end
 
