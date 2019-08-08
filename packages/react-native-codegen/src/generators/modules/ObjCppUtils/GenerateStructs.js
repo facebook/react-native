@@ -99,7 +99,7 @@ function getInlineMethodImplementation(
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
       return inlineTemplate
-        .replace(/::_RETURN_TYPE_::/, 'id<NSObject> *')
+        .replace(/::_RETURN_TYPE_::/, 'id<NSObject> ')
         .replace(/::_RETURN_VALUE_::/, 'p');
     case 'ObjectTypeAnnotation':
       return inlineTemplate
