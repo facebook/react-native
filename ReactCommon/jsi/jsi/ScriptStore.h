@@ -11,7 +11,7 @@ using ScriptVersion_t = uint64_t;  // It shouldbe std::optional<uint64_t> once w
 using JSRuntimeVersion_t = uint64_t; // 0 implies version can't be computed. We assert whenever that happens.
 
 struct VersionedBuffer {
-  std::unique_ptr<const facebook::jsi::Buffer> buffer;
+  std::shared_ptr<const facebook::jsi::Buffer> buffer;
   ScriptVersion_t version;
 };
 
@@ -34,7 +34,7 @@ struct PreparedScriptStore {
   // RuntimeSignature : Javascript engine type and version
   // prepareTag : Custom tag to uniquely identify JS engine specific preparation schemes. It is usually useful while experimentation and can be null.
   // It is possible that no prepared script is available for a given script & runtime signature. This method should null if so
-  virtual std::unique_ptr<const facebook::jsi::Buffer> tryGetPreparedScript(
+  virtual std::shared_ptr<const facebook::jsi::Buffer> tryGetPreparedScript(
     const ScriptSignature& scriptSignature,
     const JSRuntimeSignature& runtimeSignature,
     const char* prepareTag // Optional tag. For e.g. eagerly evaluated vs lazy cache.
