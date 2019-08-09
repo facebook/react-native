@@ -15,9 +15,9 @@ const PropTypes = require('prop-types');
 const React = require('react');
 const View = require('../Components/View/View');
 
-import type {Context} from './Incremental';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {LayoutEvent} from '../Types/CoreEventTypes';
+import type {Context} from './Incremental';
 
 /**
  * WARNING: EXPERIMENTAL. Breaking changes will probably happen a lot and will
@@ -44,7 +44,12 @@ class IncrementalPresenter extends React.Component<Props> {
   context: Context;
   _isDone: boolean;
 
-  static contextTypes = {
+  static contextTypes:
+    | any
+    | $TEMPORARY$object<{|
+        incrementalGroup: React$PropType$Primitive<any>,
+        incrementalGroupEnabled: React$PropType$Primitive<boolean>,
+      |}> = {
     incrementalGroup: PropTypes.object,
     incrementalGroupEnabled: PropTypes.bool,
   };
@@ -67,7 +72,7 @@ class IncrementalPresenter extends React.Component<Props> {
     }
     this.props.onDone && this.props.onDone();
   }
-  render() {
+  render(): React.Node {
     let style: ViewStyleProp;
     if (
       this.props.disabled !== true &&

@@ -139,7 +139,7 @@ const InteractionManager = {
     _deleteInteractionSet.add(handle);
   },
 
-  addListener: _emitter.addListener.bind(_emitter),
+  addListener: (_emitter.addListener.bind(_emitter): $FlowFixMe),
 
   /**
    * A positive number will use setTimeout to schedule any tasks after the

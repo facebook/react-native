@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {ProgressViewIOS, StyleSheet, View} = require('react-native');
 
 type Props = {||};
@@ -98,7 +99,7 @@ exports.description = 'ProgressViewIOS';
 exports.examples = [
   {
     title: 'ProgressViewIOS',
-    render() {
+    render(): React.Node {
       return <ProgressViewExample />;
     },
   },

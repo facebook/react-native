@@ -42,7 +42,9 @@ class AppContainer extends React.Component<Props, State> {
   _mainRef: ?React.ElementRef<typeof View>;
   _subscription: ?EmitterSubscription = null;
 
-  static childContextTypes = {
+  static childContextTypes:
+    | any
+    | $TEMPORARY$object<{|rootTag: React$PropType$Primitive<number>|}> = {
     rootTag: PropTypes.number,
   };
 

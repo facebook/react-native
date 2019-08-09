@@ -18,4 +18,6 @@ export interface Spec extends TurboModule {
   +removeListeners: (count: number) => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('TVNavigationEventEmitter');
+export default (TurboModuleRegistry.get<Spec>(
+  'TVNavigationEventEmitter',
+): ?Spec);

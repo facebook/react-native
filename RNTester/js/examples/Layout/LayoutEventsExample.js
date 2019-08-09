@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   Image,
   LayoutAnimation,
@@ -152,9 +153,8 @@ const styles = StyleSheet.create({
 });
 
 exports.title = 'Layout Events';
-exports.description =
-  'Examples that show how Layout events can be used to ' +
-  'measure view size and position.';
+exports.description = ('Examples that show how Layout events can be used to ' +
+  'measure view size and position.': string);
 exports.examples = [
   {
     title: 'LayoutEventExample',

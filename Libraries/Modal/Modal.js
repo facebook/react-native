@@ -12,18 +12,17 @@
 
 const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');
-const React = require('react');
 const PropTypes = require('prop-types');
+const React = require('react');
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 
-import RCTModalHostView from './RCTModalHostViewNativeComponent';
-
-import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
-import type {SyntheticEvent} from '../Types/CoreEventTypes';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
+import type {SyntheticEvent} from '../Types/CoreEventTypes';
+import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
+import RCTModalHostView from './RCTModalHostViewNativeComponent';
 /**
  * The Modal component is a simple way to present content above an enclosing view.
  *
@@ -138,12 +137,17 @@ export type Props = $ReadOnly<{|
 |}>;
 
 class Modal extends React.Component<Props> {
-  static defaultProps = {
+  static defaultProps: $TEMPORARY$object<{|
+    hardwareAccelerated: boolean,
+    visible: boolean,
+  |}> = {
     visible: true,
     hardwareAccelerated: false,
   };
 
-  static contextTypes = {
+  static contextTypes:
+    | any
+    | $TEMPORARY$object<{|rootTag: React$PropType$Primitive<number>|}> = {
     rootTag: PropTypes.number,
   };
 
@@ -156,11 +160,13 @@ class Modal extends React.Component<Props> {
     this._identifier = uniqueModalIdentifier++;
   }
 
-  static childContextTypes = {
+  static childContextTypes:
+    | any
+    | $TEMPORARY$object<{|virtualizedList: React$PropType$Primitive<any>|}> = {
     virtualizedList: PropTypes.object,
   };
 
-  getChildContext() {
+  getChildContext(): $TEMPORARY$object<{|virtualizedList: null|}> {
     // Reset the context so VirtualizedList doesn't get confused by nesting
     // in the React tree that doesn't reflect the native component hierarchy.
     return {

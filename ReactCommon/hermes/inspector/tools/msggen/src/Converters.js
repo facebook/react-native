@@ -9,11 +9,11 @@
  */
 'use strict';
 
-export function toCppNamespace(domain: string) {
+export function toCppNamespace(domain: string): string {
   return domain.substr(0, 1).toLowerCase() + domain.substr(1);
 }
 
-export function toCppType(type: string) {
+export function toCppType(type: string): string {
   return type.substr(0, 1).toUpperCase() + type.substr(1);
 }
 

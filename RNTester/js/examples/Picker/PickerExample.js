@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {Picker, StyleSheet, Text} = require('react-native');
 
 const Item = Picker.Item;
@@ -20,11 +21,11 @@ type State = {
 };
 
 class BasicPickerExample extends React.Component<{}, State> {
-  state = {
+  state: State = {
     value: 'key1',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <Picker
         testID="basic-picker"
@@ -39,11 +40,11 @@ class BasicPickerExample extends React.Component<{}, State> {
 }
 
 class DisabledPickerExample extends React.Component<{}, State> {
-  state = {
+  state: State = {
     value: 'key1',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <Picker
         style={styles.picker}
@@ -57,11 +58,11 @@ class DisabledPickerExample extends React.Component<{}, State> {
 }
 
 class DropdownPickerExample extends React.Component<{}, State> {
-  state = {
+  state: State = {
     value: 'key1',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <Picker
         style={styles.picker}
@@ -76,11 +77,11 @@ class DropdownPickerExample extends React.Component<{}, State> {
 }
 
 class PromptPickerExample extends React.Component<{}, State> {
-  state = {
+  state: State = {
     value: 'key1',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <Picker
         style={styles.picker}
@@ -99,11 +100,11 @@ type ColorState = {
 };
 
 class ColorPickerExample extends React.Component<{}, ColorState> {
-  state = {
+  state: ColorState = {
     color: 'red',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <>
         <Picker

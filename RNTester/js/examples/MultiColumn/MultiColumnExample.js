@@ -9,11 +9,8 @@
  */
 
 'use strict';
-
-const React = require('react');
-const {FlatList, StyleSheet, Text, View, Alert} = require('react-native');
-
 const RNTesterPage = require('../../components/RNTesterPage');
+const React = require('react');
 
 const infoLog = require('../../../../Libraries/Utilities/infoLog');
 
@@ -28,12 +25,24 @@ const {
   pressItem,
   renderSmallSwitchOption,
 } = require('../../components/ListExampleShared');
+const {FlatList, StyleSheet, Text, View, Alert} = require('react-native');
+
+import type {Item} from '../../components/ListExampleShared';
 
 class MultiColumnExample extends React.PureComponent<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  state = {
+  state:
+    | any
+    | $TEMPORARY$object<{|
+        data: Array<Item>,
+        filterText: string,
+        fixedHeight: boolean,
+        logViewable: boolean,
+        numColumns: number,
+        virtualized: boolean,
+      |}> = {
     data: genItemData(1000),
     filterText: '',
     fixedHeight: true,
@@ -47,7 +56,7 @@ class MultiColumnExample extends React.PureComponent<
   _onChangeNumColumns = numColumns => {
     this.setState(() => ({numColumns: Number(numColumns)}));
   };
-  render() {
+  render(): React.Node {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
     const filter = item =>
       filterRegex.test(item.text) || filterRegex.test(item.title);

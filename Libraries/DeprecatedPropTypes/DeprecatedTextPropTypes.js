@@ -16,12 +16,23 @@ const DeprecatedStyleSheetPropType = require('./DeprecatedStyleSheetPropType');
 const PropTypes = require('prop-types');
 const TextStylePropTypes = require('../Text/TextStylePropTypes');
 
-const stylePropType = DeprecatedStyleSheetPropType(TextStylePropTypes);
+const stylePropType: ReactPropsCheckType = DeprecatedStyleSheetPropType(
+  TextStylePropTypes,
+);
 
 module.exports = {
-  ellipsizeMode: PropTypes.oneOf(['head', 'middle', 'tail', 'clip']),
+  ellipsizeMode: (PropTypes.oneOf([
+    'head',
+    'middle',
+    'tail',
+    'clip',
+  ]): React$PropType$Primitive<'head' | 'middle' | 'tail' | 'clip'>),
   numberOfLines: PropTypes.number,
-  textBreakStrategy: PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
+  textBreakStrategy: (PropTypes.oneOf([
+    'simple',
+    'highQuality',
+    'balanced',
+  ]): React$PropType$Primitive<'simple' | 'highQuality' | 'balanced'>),
   onLayout: PropTypes.func,
   onPress: PropTypes.func,
   onLongPress: PropTypes.func,

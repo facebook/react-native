@@ -12,8 +12,8 @@
 
 const getNativeComponentAttributes = require('../ReactNative/getNativeComponentAttributes');
 
-import type {ReactNativeBaseComponentViewConfig} from '../Renderer/shims/ReactNativeTypes';
 import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewConfig';
+import type {ReactNativeBaseComponentViewConfig} from '../Renderer/shims/ReactNativeTypes';
 
 const IGNORED_KEYS = ['transform', 'hitSlop'];
 /**
@@ -105,7 +105,7 @@ export function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {
 export function getConfigWithoutViewProps(
   viewConfig: ReactNativeBaseComponentViewConfig<>,
   propName: string,
-) {
+): $TEMPORARY$object<{||}> {
   if (!viewConfig[propName]) {
     return {};
   }
@@ -118,7 +118,7 @@ export function getConfigWithoutViewProps(
     }, {});
 }
 
-export function stringifyViewConfig(viewConfig: any) {
+export function stringifyViewConfig(viewConfig: any): string {
   return JSON.stringify(
     viewConfig,
     (key, val) => {

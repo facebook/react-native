@@ -60,4 +60,6 @@ export interface Spec extends TurboModule {
   |};
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default (TurboModuleRegistry.getEnforcing<Spec>(
+  'SampleTurboModule',
+): Spec);

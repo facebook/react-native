@@ -10,17 +10,17 @@
 
 'use strict';
 
-import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
-import * as React from 'react';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 import type {
   WithDefault,
   DirectEventHandler,
   Int32,
   Float,
 } from 'react-native/Libraries/Types/CodegenTypes';
-import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
+import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import * as React from 'react';
 
 type DrawerStateEvent = $ReadOnly<{|
   drawerState: Int32,
@@ -113,7 +113,7 @@ type NativeProps = $ReadOnly<{|
   statusBarBackgroundColor?: ?ColorValue,
 |}>;
 
-export const Commands = codegenNativeCommands<NativeCommands>({
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['openDrawer', 'closeDrawer'],
 });
 

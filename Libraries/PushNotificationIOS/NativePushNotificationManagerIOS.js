@@ -8,8 +8,8 @@
  * @flow
  */
 
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 import type {TurboModule} from '../TurboModule/RCTExport';
+import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 type Permissions = {|
   alert: boolean,
@@ -69,4 +69,6 @@ export interface Spec extends TurboModule {
   +removeListeners: (count: number) => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('PushNotificationManager');
+export default (TurboModuleRegistry.get<Spec>(
+  'PushNotificationManager',
+): ?Spec);

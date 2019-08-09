@@ -12,15 +12,15 @@ const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const View = require('../View/View');
 
-import type {ViewProps} from '../View/ViewPropTypes';
 import type {NativeComponent} from '../../Renderer/shims/ReactNative';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 type Props = $ReadOnly<{|
   ...ViewProps,
   emulateUnlessSupported?: boolean,
 |}>;
 
-let exported;
+let exported: Class<React$Component<Props>> | Class<NativeComponent<Props>>;
 
 /**
  * Renders nested content and automatically applies paddings reflect the portion

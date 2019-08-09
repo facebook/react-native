@@ -26,7 +26,7 @@ const {
 class ScrollViewAnimatedExample extends Component<{}> {
   _scrollViewPos = new Animated.Value(0);
 
-  startAnimation = () => {
+  startAnimation: () => void = () => {
     this._scrollViewPos.setValue(0);
     Animated.timing(this._scrollViewPos, {
       toValue: 100,
@@ -36,7 +36,7 @@ class ScrollViewAnimatedExample extends Component<{}> {
     }).start();
   };
 
-  render() {
+  render(): React.Node {
     const interpolated = this._scrollViewPos.interpolate({
       inputRange: [0, 1],
       outputRange: [0, 0.1],

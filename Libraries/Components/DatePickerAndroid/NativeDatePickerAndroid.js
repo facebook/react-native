@@ -17,4 +17,6 @@ export interface Spec extends TurboModule {
   +open: (options: Object) => Promise<Object>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('DatePickerAndroid');
+export default (TurboModuleRegistry.getEnforcing<Spec>(
+  'DatePickerAndroid',
+): Spec);

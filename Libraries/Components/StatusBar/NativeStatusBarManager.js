@@ -45,4 +45,6 @@ export interface Spec extends TurboModule {
   +setHidden: (hidden: boolean, withAnimation?: ?string) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('StatusBarManager');
+export default (TurboModuleRegistry.getEnforcing<Spec>(
+  'StatusBarManager',
+): Spec);

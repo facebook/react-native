@@ -35,4 +35,4 @@ export interface Spec extends TurboModule {
   ) => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('ImagePickerIOS');
+export default (TurboModuleRegistry.get<Spec>('ImagePickerIOS'): ?Spec);

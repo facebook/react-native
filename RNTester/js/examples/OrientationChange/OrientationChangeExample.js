@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {DeviceEventEmitter, Text, View} = require('react-native');
 
 import type EmitterSubscription from '../../../../Libraries/vendor/emitter/EmitterSubscription';
@@ -58,7 +59,7 @@ exports.examples = [
   {
     title: 'OrientationChangeExample',
     description: 'listening to device orientation changes',
-    render() {
+    render(): React.Node {
       return <OrientationChangeExample />;
     },
   },

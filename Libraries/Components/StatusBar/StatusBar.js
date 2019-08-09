@@ -10,10 +10,11 @@
 
 'use strict';
 
-const React = require('react');
 const Platform = require('../../Utilities/Platform');
+const React = require('react');
 
 const processColor = require('../../StyleSheet/processColor');
+
 import NativeStatusBarManager from './NativeStatusBarManager';
 
 /**
@@ -245,7 +246,7 @@ class StatusBar extends React.Component<Props> {
    *
    * @platform android
    */
-  static currentHeight = NativeStatusBarManager.getConstants().HEIGHT;
+  static currentHeight: number = NativeStatusBarManager.getConstants().HEIGHT;
 
   // Provide an imperative API as static functions of the component.
   // See the corresponding prop for more detail.
@@ -339,7 +340,7 @@ class StatusBar extends React.Component<Props> {
    *
    * @param props Object containing the StatusBar props to use in the stack entry.
    */
-  static pushStackEntry(props: any) {
+  static pushStackEntry(props: any): any {
     const entry = createStackEntry(props);
     StatusBar._propsStack.push(entry);
     StatusBar._updatePropsStack();
@@ -365,7 +366,7 @@ class StatusBar extends React.Component<Props> {
    * @param entry Entry returned from `pushStackEntry` to replace.
    * @param props Object containing the StatusBar props to use in the replacement stack entry.
    */
-  static replaceStackEntry(entry: any, props: any) {
+  static replaceStackEntry(entry: any, props: any): any {
     const newEntry = createStackEntry(props);
     const index = StatusBar._propsStack.indexOf(entry);
     if (index !== -1) {
@@ -375,7 +376,10 @@ class StatusBar extends React.Component<Props> {
     return newEntry;
   }
 
-  static defaultProps = {
+  static defaultProps: $TEMPORARY$object<{|
+    animated: boolean,
+    showHideTransition: $TEMPORARY$string<'fade'>,
+  |}> = {
     animated: false,
     showHideTransition: 'fade',
   };

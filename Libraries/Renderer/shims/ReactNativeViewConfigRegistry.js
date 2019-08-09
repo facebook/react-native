@@ -20,8 +20,8 @@ import type {
 const invariant = require('invariant');
 
 // Event configs
-const customBubblingEventTypes = {};
-const customDirectEventTypes = {};
+const customBubblingEventTypes: $TEMPORARY$object<{||}> = {};
+const customDirectEventTypes: $TEMPORARY$object<{||}> = {};
 
 exports.customBubblingEventTypes = customBubblingEventTypes;
 exports.customDirectEventTypes = customDirectEventTypes;

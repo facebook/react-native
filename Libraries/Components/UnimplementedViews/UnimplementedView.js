@@ -23,7 +23,7 @@ class UnimplementedView extends React.Component<$FlowFixMeProps> {
     // See ensureComponentIsNative.js for more info
   }
 
-  render() {
+  render(): React.Node {
     // Workaround require cycle from requireNativeComponent
     const View = require('../View/View');
     return (

@@ -10,10 +10,11 @@
 
 'use strict';
 
-const ReactNative = require('../../Renderer/shims/ReactNative');
 const Platform = require('../../Utilities/Platform');
-const registerGeneratedViewConfig = require('../../Utilities/registerGeneratedViewConfig');
+const ReactNative = require('../../Renderer/shims/ReactNative');
 const ReactNativeViewViewConfigAndroid = require('./ReactNativeViewViewConfigAndroid');
+
+const registerGeneratedViewConfig = require('../../Utilities/registerGeneratedViewConfig');
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
 import type {ViewProps} from './ViewPropTypes';
@@ -23,7 +24,30 @@ export type ViewNativeComponentType = Class<
 >;
 
 let NativeViewComponent;
-let viewConfig;
+let viewConfig:
+  | $TEMPORARY$object<{||}>
+  | $TEMPORARY$object<{|
+      bubblingEventTypes?: $ReadOnly<{
+        [eventName: string]: $ReadOnly<{|
+          phasedRegistrationNames: $ReadOnly<{|
+            bubbled: string,
+            captured: string,
+          |}>,
+        |}>,
+      }>,
+      directEventTypes?: $ReadOnly<{
+        [eventName: string]: $ReadOnly<{|registrationName: string|}>,
+      }>,
+      uiViewClassName: string,
+      validAttributes?: {
+        [propName: string]:
+          | true
+          | $ReadOnly<{|
+              diff?: <T>(arg1: any, arg2: any) => boolean,
+              process?: (arg1: any) => any,
+            |}>,
+      },
+    |}>;
 
 // Only use the JS view config in DEV
 if (__DEV__) {

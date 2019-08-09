@@ -13,7 +13,7 @@
 import type {ExtendedError} from './Devtools/parseErrorStack';
 
 class SyntheticError extends Error {
-  name = '';
+  name: string = '';
 }
 
 /**

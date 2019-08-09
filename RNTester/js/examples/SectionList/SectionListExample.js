@@ -9,18 +9,8 @@
  */
 
 'use strict';
-
-const React = require('react');
-const {
-  Alert,
-  Animated,
-  Button,
-  StyleSheet,
-  Text,
-  View,
-} = require('react-native');
-
 const RNTesterPage = require('../../components/RNTesterPage');
+const React = require('react');
 
 const infoLog = require('../../../../Libraries/Utilities/infoLog');
 
@@ -36,6 +26,16 @@ const {
   renderSmallSwitchOption,
   renderStackedItem,
 } = require('../../components/ListExampleShared');
+const {
+  Alert,
+  Animated,
+  Button,
+  StyleSheet,
+  Text,
+  View,
+} = require('react-native');
+
+import type {Item} from '../../components/ListExampleShared';
 
 const VIEWABILITY_CONFIG = {
   minimumViewTime: 3000,
@@ -68,7 +68,16 @@ const CustomSeparatorComponent = ({highlighted, text}) => (
 );
 
 class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
-  state = {
+  state:
+    | any
+    | $TEMPORARY$object<{|
+        data: Array<Item>,
+        debug: boolean,
+        filterText: string,
+        inverted: boolean,
+        logViewable: boolean,
+        virtualized: boolean,
+      |}> = {
     data: genItemData(1000),
     debug: false,
     filterText: '',
@@ -92,7 +101,7 @@ class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
     this._sectionListRef.getNode().scrollToLocation({sectionIndex, itemIndex});
   }
 
-  render() {
+  render(): React.Node {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
     const filter = item =>
       filterRegex.test(item.text) || filterRegex.test(item.title);

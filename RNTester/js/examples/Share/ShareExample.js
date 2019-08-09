@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   StyleSheet,
   View,
@@ -119,7 +120,7 @@ exports.description = 'Share data with other Apps.';
 exports.examples = [
   {
     title: 'Share Text Content',
-    render() {
+    render(): React.Node {
       return <ShareMessageExample />;
     },
   },

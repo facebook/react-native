@@ -17,7 +17,7 @@ const {toSafeCppString} = require('./CppHelpers.js');
 function generateStructName(
   componentName: string,
   parts: $ReadOnlyArray<string> = [],
-) {
+): string {
   const additional = parts.map(toSafeCppString).join('');
   return `${componentName}${additional}Struct`;
 }
