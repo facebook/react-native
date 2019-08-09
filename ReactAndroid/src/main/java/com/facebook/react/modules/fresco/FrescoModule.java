@@ -149,7 +149,7 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     HashSet<RequestListener> requestListeners = new HashSet<>();
     requestListeners.add(new SystraceRequestListener());
 
-    OkHttpClient client = OkHttpClientProvider.createClient();
+    OkHttpClient client = OkHttpClientProvider.getOkHttpClient();
 
     // make sure to forward cookies for any requests via the okHttpClient
     // so that image requests to endpoints that use cookies still work
