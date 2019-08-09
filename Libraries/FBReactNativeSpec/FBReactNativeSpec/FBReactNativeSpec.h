@@ -47,6 +47,33 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+
+namespace JS {
+  namespace NativeAccessibilityManager {
+    struct SpecSetAccessibilityContentSizeMultipliersJSMultiipliers {
+      folly::Optional<double> extraSmall() const;
+      folly::Optional<double> small() const;
+      folly::Optional<double> medium() const;
+      folly::Optional<double> large() const;
+      folly::Optional<double> extraLarge() const;
+      folly::Optional<double> extraExtraLarge() const;
+      folly::Optional<double> extraExtraExtraLarge() const;
+      folly::Optional<double> accessibilityMedium() const;
+      folly::Optional<double> accessibilityLarge() const;
+      folly::Optional<double> accessibilityExtraLarge() const;
+      folly::Optional<double> accessibilityExtraExtraLarge() const;
+      folly::Optional<double> accessibilityExtraExtraExtraLarge() const;
+
+      SpecSetAccessibilityContentSizeMultipliersJSMultiipliers(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultiipliers)
++ (RCTManagedPointer *)JS_NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultiipliers:(id)json;
+@end
 @protocol NativeAccessibilityManagerSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)getCurrentBoldTextState:(RCTResponseSenderBlock)onSuccess
@@ -61,6 +88,7 @@ namespace facebook {
                                   onError:(RCTResponseSenderBlock)onError;
 - (void)getCurrentVoiceOverState:(RCTResponseSenderBlock)onSuccess
                          onError:(RCTResponseSenderBlock)onError;
+- (void)setAccessibilityContentSizeMultipliers:(JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers &)JSMultiipliers;
 - (void)setAccessibilityFocus:(double)reactTag;
 - (void)announceForAccessibility:(NSString *)announcement;
 
@@ -2301,6 +2329,66 @@ namespace facebook {
 #import <RCTTypeSafety/RCTConvertHelpers.h>
 
 
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::extraSmall() const
+{
+  id const p = _v[@"extraSmall"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::small() const
+{
+  id const p = _v[@"small"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::medium() const
+{
+  id const p = _v[@"medium"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::large() const
+{
+  id const p = _v[@"large"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::extraLarge() const
+{
+  id const p = _v[@"extraLarge"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::extraExtraLarge() const
+{
+  id const p = _v[@"extraExtraLarge"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::extraExtraExtraLarge() const
+{
+  id const p = _v[@"extraExtraExtraLarge"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::accessibilityMedium() const
+{
+  id const p = _v[@"accessibilityMedium"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::accessibilityLarge() const
+{
+  id const p = _v[@"accessibilityLarge"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::accessibilityExtraLarge() const
+{
+  id const p = _v[@"accessibilityExtraLarge"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::accessibilityExtraExtraLarge() const
+{
+  id const p = _v[@"accessibilityExtraExtraLarge"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::accessibilityExtraExtraExtraLarge() const
+{
+  id const p = _v[@"accessibilityExtraExtraExtraLarge"];
+  return RCTBridgingToOptionalDouble(p);
+}
 inline NSString *JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::title() const
 {
   id const p = _v[@"title"];

@@ -55,6 +55,12 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
+@implementation RCTCxxConvert (NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultiipliers)
++ (RCTManagedPointer *)JS_NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultiipliers:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers>(json);
+}
+@end
 namespace facebook {
   namespace react {
 
@@ -81,6 +87,10 @@ namespace facebook {
 
     static facebook::jsi::Value __hostFunction_NativeAccessibilityManagerSpecJSI_getCurrentVoiceOverState(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "getCurrentVoiceOverState", @selector(getCurrentVoiceOverState:onError:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAccessibilityManagerSpecJSI_setAccessibilityContentSizeMultipliers(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setAccessibilityContentSizeMultipliers", @selector(setAccessibilityContentSizeMultipliers:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeAccessibilityManagerSpecJSI_setAccessibilityFocus(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -112,6 +122,10 @@ namespace facebook {
         
         methodMap_["getCurrentVoiceOverState"] = MethodMetadata {2, __hostFunction_NativeAccessibilityManagerSpecJSI_getCurrentVoiceOverState};
         
+        
+        methodMap_["setAccessibilityContentSizeMultipliers"] = MethodMetadata {1, __hostFunction_NativeAccessibilityManagerSpecJSI_setAccessibilityContentSizeMultipliers};
+        
+        setMethodArgConversionSelector(@"setAccessibilityContentSizeMultipliers", 0, @"JS_NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultiipliers:");
         
         methodMap_["setAccessibilityFocus"] = MethodMetadata {1, __hostFunction_NativeAccessibilityManagerSpecJSI_setAccessibilityFocus};
         

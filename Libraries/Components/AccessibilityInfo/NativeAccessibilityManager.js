@@ -38,6 +38,20 @@ export interface Spec extends TurboModule {
     onSuccess: (isScreenReaderEnabled: boolean) => void,
     onError: (error: Object) => void,
   ) => void;
+  +setAccessibilityContentSizeMultipliers: (JSMultiipliers: {|
+    +extraSmall?: ?number,
+    +small?: ?number,
+    +medium?: ?number,
+    +large?: ?number,
+    +extraLarge?: ?number,
+    +extraExtraLarge?: ?number,
+    +extraExtraExtraLarge?: ?number,
+    +accessibilityMedium?: ?number,
+    +accessibilityLarge?: ?number,
+    +accessibilityExtraLarge?: ?number,
+    +accessibilityExtraExtraLarge?: ?number,
+    +accessibilityExtraExtraExtraLarge?: ?number,
+  |}) => void;
   +setAccessibilityFocus: (reactTag: number) => void;
   +announceForAccessibility: (announcement: string) => void;
 }
