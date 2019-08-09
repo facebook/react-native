@@ -79,27 +79,27 @@
 
     <file src="build\tmp\buildReactNdkLib\local\x86_64\libprivatedata.so" target="lib\droidx64\unstripped"/>
     <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libprivatedata.so" target="lib\droidarm\unstripped"/>
-    <file src="build\tmp\buildReactNdkLib\local\x86\libprivatedata.so" target="lib\droidx86\unstripped\unstripped\unstripped"/>
+    <file src="build\tmp\buildReactNdkLib\local\x86\libprivatedata.so" target="lib\droidx86\unstripped"/>
     <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libprivatedata.so" target="lib\droidarm64\unstripped"/>
 
     <file src="build\tmp\buildReactNdkLib\local\x86_64\libreactnativejni.so" target="lib\droidx64\unstripped"/>
     <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libreactnativejni.so" target="lib\droidarm\unstripped"/>
-    <file src="build\tmp\buildReactNdkLib\local\x86\libreactnativejni.so" target="lib\droidx86\unstripped\unstripped\unstripped"/>
+    <file src="build\tmp\buildReactNdkLib\local\x86\libreactnativejni.so" target="lib\droidx86\unstripped"/>
     <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libreactnativejni.so" target="lib\droidarm64\unstripped"/>
 
     <file src="build\tmp\buildReactNdkLib\local\x86_64\libv8executor.so" target="lib\droidx64\unstripped"/>
     <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libv8executor.so" target="lib\droidarm\unstripped"/>
-    <file src="build\tmp\buildReactNdkLib\local\x86\libv8executor.so" target="lib\droidx86\unstripped\unstripped\unstripped"/>
+    <file src="build\tmp\buildReactNdkLib\local\x86\libv8executor.so" target="lib\droidx86\unstripped"/>
     <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libv8executor.so" target="lib\droidarm64\unstripped"/>
 
     <file src="build\tmp\buildReactNdkLib\local\x86_64\libyoga.so" target="lib\droidx64\unstripped"/>
     <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libyoga.so" target="lib\droidarm\unstripped"/>
-    <file src="build\tmp\buildReactNdkLib\local\x86\libyoga.so" target="lib\droidx86\unstripped\unstripped\unstripped"/>
+    <file src="build\tmp\buildReactNdkLib\local\x86\libyoga.so" target="lib\droidx86\unstripped"/>
     <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libyoga.so" target="lib\droidarm64\unstripped"/>
 
     <file src="build\tmp\buildReactNdkLib\local\x86_64\libyoga.so" target="lib\droidx64\unstripped"/>
     <file src="build\tmp\buildReactNdkLib\local\armeabi-v7a\libyoga.so" target="lib\droidarm\unstripped"/>
-    <file src="build\tmp\buildReactNdkLib\local\x86\libyoga.so" target="lib\droidx86\unstripped\unstripped\unstripped"/>
+    <file src="build\tmp\buildReactNdkLib\local\x86\libyoga.so" target="lib\droidx86\unstripped"/>
     <file src="build\tmp\buildReactNdkLib\local\arm64-v8a\libyoga.so" target="lib\droidarm64\unstripped"/>
 
     <!-- AAR and POM -->
