@@ -22,6 +22,7 @@ import type {
 } from '../../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../../../../Libraries/Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -37,4 +38,6 @@ type NativeProps = $ReadOnly<{|
   sizes?: WithDefault<$ReadOnlyArray<'small' | 'large'>, 'small'>,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('ArrayPropsNativeComponent');
+export default (codegenNativeComponent<NativeProps>(
+  'ArrayPropsNativeComponent',
+): NativeComponentType<NativeProps>);

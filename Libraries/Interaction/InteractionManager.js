@@ -18,7 +18,7 @@ const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
 const keyMirror = require('fbjs/lib/keyMirror');
 
-type Handle = number;
+export type Handle = number;
 import type {Task} from './TaskQueue';
 
 const _emitter = new EventEmitter();

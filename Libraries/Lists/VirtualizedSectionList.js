@@ -120,9 +120,10 @@ export type Props<SectionT> = RequiredProps<SectionT> &
   OptionalProps<SectionT> &
   VirtualizedListProps;
 
-type DefaultProps = typeof VirtualizedList.defaultProps & {
+type DefaultProps = {|
+  ...typeof VirtualizedList.defaultProps,
   data: $ReadOnlyArray<Item>,
-};
+|};
 type State = {childProps: VirtualizedListProps};
 
 /**
@@ -206,7 +207,7 @@ class VirtualizedSectionList<
     };
   }
 
-  render() {
+  render(): React.Node {
     return (
       <VirtualizedList {...this.state.childProps} ref={this._captureRef} />
     );

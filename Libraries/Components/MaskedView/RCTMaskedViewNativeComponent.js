@@ -10,9 +10,12 @@
 
 import type {ViewProps} from '../View/ViewPropTypes';
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('RCTMaskedView');
+export default (codegenNativeComponent<NativeProps>(
+  'RCTMaskedView',
+): NativeComponentType<NativeProps>);

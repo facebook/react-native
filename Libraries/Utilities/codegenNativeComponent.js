@@ -22,10 +22,12 @@ type Options = $ReadOnly<{|
   paperComponentNameDeprecated?: string,
 |}>;
 
+export type NativeComponentType<T> = Class<NativeComponent<T>>;
+
 function codegenNativeComponent<Props>(
   componentName: string,
   options?: Options,
-): Class<NativeComponent<Props>> {
+): NativeComponentType<Props> {
   let componentNameInUse =
     options && options.paperComponentName
       ? options.paperComponentName

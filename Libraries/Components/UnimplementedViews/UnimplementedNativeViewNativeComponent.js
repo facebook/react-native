@@ -14,6 +14,7 @@ import type {WithDefault} from '../../Types/CodegenTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -22,4 +23,6 @@ type NativeProps = $ReadOnly<{|
 
 // NOTE: This component is not implemented in paper
 // Do not require this file in paper builds
-export default codegenNativeComponent<NativeProps>('UnimplementedNativeView');
+export default (codegenNativeComponent<NativeProps>(
+  'UnimplementedNativeView',
+): NativeComponentType<NativeProps>);

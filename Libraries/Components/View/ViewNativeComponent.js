@@ -18,7 +18,9 @@ const requireNativeComponent = require('../../ReactNative/requireNativeComponent
 
 import type {ViewProps} from './ViewPropTypes';
 
-type ViewNativeComponentType = Class<ReactNative.NativeComponent<ViewProps>>;
+export type ViewNativeComponentType = Class<
+  ReactNative.NativeComponent<ViewProps>,
+>;
 
 let NativeViewComponent;
 let viewConfig;

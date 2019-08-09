@@ -109,7 +109,7 @@ class PanResponderExample extends React.Component<Props> {
     this.circle && this.circle.setNativeProps(this._circleStyles);
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.container}>
         <View

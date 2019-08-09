@@ -287,7 +287,7 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
     }
   }
 
-  getScrollableNode() {
+  getScrollableNode(): any {
     const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
     if (listRef) {
       return listRef.getScrollableNode();
@@ -301,7 +301,7 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
     }
   }
 
-  render() {
+  render(): React.Node {
     return (
       <VirtualizedSectionList
         {...this.props}
