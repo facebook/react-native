@@ -227,7 +227,7 @@ type IOSProps = $ReadOnly<{|
 |}>;
 
 type AndroidProps = $ReadOnly<{|
-  autoCompleteType?: ?(
+  autoComplete?: ?(
     | 'cc-csc'
     | 'cc-exp'
     | 'cc-exp-month'
@@ -464,7 +464,7 @@ const TextInput = createReactClass({
      *
      * @platform android
      */
-    autoCompleteType: PropTypes.oneOf([
+    autoComplete: PropTypes.oneOf([
       'cc-csc',
       'cc-exp',
       'cc-exp-month',

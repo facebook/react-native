@@ -589,39 +589,39 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setFilters(newFilters);
   }
 
-  @ReactProp(name = "autoCompleteType")
-  public void setTextContentType(ReactEditText view, @Nullable String autoCompleteType) {
-    if (autoCompleteType == null) {
+  @ReactProp(name = "autoComplete")
+  public void setTextContentType(ReactEditText view, @Nullable String autoComplete) {
+    if (autoComplete == null) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
-    } else if ("username".equals(autoCompleteType)) {
+    } else if ("username".equals(autoComplete)) {
       setAutofillHints(view, View.AUTOFILL_HINT_USERNAME);
-    } else if ("password".equals(autoCompleteType)) {
+    } else if ("password".equals(autoComplete)) {
       setAutofillHints(view, View.AUTOFILL_HINT_PASSWORD);
-    } else if ("email".equals(autoCompleteType)) {
+    } else if ("email".equals(autoComplete)) {
       setAutofillHints(view, View.AUTOFILL_HINT_EMAIL_ADDRESS);
-    } else if ("name".equals(autoCompleteType)) {
+    } else if ("name".equals(autoComplete)) {
       setAutofillHints(view, View.AUTOFILL_HINT_NAME);
-    } else if ("tel".equals(autoCompleteType)) {
+    } else if ("tel".equals(autoComplete)) {
       setAutofillHints(view, View.AUTOFILL_HINT_PHONE);
-    } else if ("street-address".equals(autoCompleteType)) {
+    } else if ("street-address".equals(autoComplete)) {
       setAutofillHints(view, View.AUTOFILL_HINT_POSTAL_ADDRESS);
-    } else if ("postal-code".equals(autoCompleteType)) {
+    } else if ("postal-code".equals(autoComplete)) {
       setAutofillHints(view, View.AUTOFILL_HINT_POSTAL_CODE);
-    } else if ("cc-number".equals(autoCompleteType)) {
+    } else if ("cc-number".equals(autoComplete)) {
       setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_NUMBER);
-    } else if ("cc-csc".equals(autoCompleteType)) {
+    } else if ("cc-csc".equals(autoComplete)) {
       setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
-    } else if ("cc-exp".equals(autoCompleteType)) {
+    } else if ("cc-exp".equals(autoComplete)) {
       setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
-    } else if ("cc-exp-month".equals(autoCompleteType)) {
+    } else if ("cc-exp-month".equals(autoComplete)) {
       setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
-    } else if ("cc-exp-year".equals(autoCompleteType)) {
+    } else if ("cc-exp-year".equals(autoComplete)) {
       setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
-    } else if ("off".equals(autoCompleteType)) {
+    } else if ("off".equals(autoComplete)) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
     } else {
       throw new JSApplicationIllegalArgumentException(
-          "Invalid autoCompleteType: " + autoCompleteType);
+          "Invalid autoComplete: " + autoComplete);
     }
   }
 
