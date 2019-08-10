@@ -15,10 +15,10 @@ import {type DisplayMetrics} from './NativeDeviceInfo';
 import * as React from 'react';
 
 export default function useWindowDimensions(): DisplayMetrics {
-  const [dims, setDims] =  React.useState(Dimensions.get('window')); // set initial value
+  const [dims, setDims] = React.useState(Dimensions.get('window')); // set initial value
   React.useEffect(() => {
     function handleChange({window}) {
-      setDims(window)
+      setDims(window);
     }
     Dimensions.addEventListener('change', handleChange);
     return () => {
