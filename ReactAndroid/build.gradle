@@ -99,8 +99,8 @@ task prepareHermes() {
         hermesAAR = file("$projectDir/../../hermes-engine/android/hermes-debug.aar")
 
         if (!hermesAAR.exists()) {
-          // At Facebook, this file is in a different folder
-          hermesAAR = file("$projectDir/../../node_modules/hermes-engine/android/hermes-debug.aar")
+            // At Facebook, this file is in a different folder
+            hermesAAR = file("$projectDir/../../node_modules/hermes-engine/android/hermes-debug.aar")
         }
     }
     def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
