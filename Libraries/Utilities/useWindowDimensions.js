@@ -15,21 +15,15 @@ import {type DisplayMetrics} from './NativeDeviceInfo';
 import * as React from 'react';
 
 export default function useWindowDimensions(): DisplayMetrics {
-  const dims = Dimensions.get('window'); // always read the latest value
-  const forceUpdate = React.useState(false)[1].bind(null, v => !v);
-  const initialDims = React.useState(dims)[0];
+  const [dims, setDims] =  React.useState(Dimensions.get('window')); // set initial value
   React.useEffect(() => {
-    Dimensions.addEventListener('change', forceUpdate);
-
-    const latestDims = Dimensions.get('window');
-    if (latestDims !== initialDims) {
-      // We missed an update between calling `get` in render and
-      // `addEventListener` in this handler...
-      forceUpdate();
+    function handleChange({ window}) {
+      setDims(window)
     }
+    Dimensions.addEventListener('change', handleChange);
     return () => {
-      Dimensions.removeEventListener('change', forceUpdate);
+      Dimensions.removeEventListener('change', handleChange);
     };
-  }, [forceUpdate, initialDims]);
+  }, []);
   return dims;
 }
