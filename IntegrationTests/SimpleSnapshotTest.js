@@ -12,6 +12,7 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
+
 const requestAnimationFrame = require('fbjs/lib/requestAnimationFrame');
 
 const {StyleSheet, View} = ReactNative;
@@ -25,11 +26,11 @@ class SimpleSnapshotTest extends React.Component<{}> {
     requestAnimationFrame(() => TestModule.verifySnapshot(this.done));
   }
 
-  done = (success: boolean) => {
+  done: (success: boolean) => void = (success: boolean) => {
     TestModule.markTestPassed(success);
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.container}>
         <View style={styles.box1} />

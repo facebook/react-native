@@ -7,6 +7,7 @@
 package com.facebook.react.testing;
 
 import android.annotation.SuppressLint;
+import androidx.annotation.Nullable;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -15,7 +16,6 @@ import com.facebook.react.uimanager.ViewManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * A spec that allows a test to add additional NativeModules/JS modules to the ReactInstance. This
@@ -53,7 +53,8 @@ public class ReactInstanceSpecForTest {
     return this;
   }
 
-  public ReactInstanceSpecForTest setFabricUIManagerFactory(@Nullable FabricUIManagerFactory fabricUIManagerFactory) {
+  public ReactInstanceSpecForTest setFabricUIManagerFactory(
+      @Nullable FabricUIManagerFactory fabricUIManagerFactory) {
     mFabricUIManagerFactory = fabricUIManagerFactory;
     return this;
   }

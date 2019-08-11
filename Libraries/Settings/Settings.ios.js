@@ -11,15 +11,16 @@
 'use strict';
 
 const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
-import NativeSettingsManager from './NativeSettingsManager';
 
 const invariant = require('invariant');
+
+import NativeSettingsManager from './NativeSettingsManager';
 
 const subscriptions: Array<{keys: Array<string>, callback: ?Function}> = [];
 
 const Settings = {
-  _settings:
-    NativeSettingsManager && NativeSettingsManager.getConstants().settings,
+  _settings: (NativeSettingsManager &&
+    NativeSettingsManager.getConstants().settings: any),
 
   get(key: string): mixed {
     return this._settings[key];

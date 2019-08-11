@@ -5,18 +5,24 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow strict
  * @polyfill
- * @nolint
  */
 
 let _inGuard = 0;
+
+type ErrorHandler = (error: mixed, isFatal: boolean) => void;
+type Fn<Args, Return> = (...Args) => Return;
 
 /**
  * This is the error handler that is called when we encounter an exception
  * when loading a module. This will report any errors encountered before
  * ExceptionsManager is configured.
  */
-let _globalHandler = function onError(e) {
+let _globalHandler: ErrorHandler = function onError(
+  e: mixed,
+  isFatal: boolean,
+) {
   throw e;
 };
 
@@ -29,21 +35,31 @@ let _globalHandler = function onError(e) {
  * set) globally before requiring anything.
  */
 const ErrorUtils = {
-  setGlobalHandler(fun) {
+  setGlobalHandler(fun: ErrorHandler): void {
     _globalHandler = fun;
   },
-  getGlobalHandler() {
+  getGlobalHandler(): ErrorHandler {
     return _globalHandler;
   },
-  reportError(error) {
-    _globalHandler && _globalHandler(error);
+  reportError(error: mixed): void {
+    _globalHandler && _globalHandler(error, false);
   },
-  reportFatalError(error) {
+  reportFatalError(error: mixed): void {
+    // NOTE: This has an untyped call site in Metro.
     _globalHandler && _globalHandler(error, true);
   },
-  applyWithGuard(fun, context, args) {
+  applyWithGuard<TArgs: $ReadOnlyArray<mixed>, TOut>(
+    fun: Fn<TArgs, TOut>,
+    context?: ?mixed,
+    args?: ?TArgs,
+    // Unused, but some code synced from www sets it to null.
+    unused_onError?: null,
+    // Some callers pass a name here, which we ignore.
+    unused_name?: ?string,
+  ): ?TOut {
     try {
       _inGuard++;
+      // $FlowFixMe: TODO T48204745 (1) apply(context, null) is fine. (2) array -> rest array should work
       return fun.apply(context, args);
     } catch (e) {
       ErrorUtils.reportError(e);
@@ -52,30 +68,41 @@ const ErrorUtils = {
     }
     return null;
   },
-  applyWithGuardIfNeeded(fun, context, args) {
+  applyWithGuardIfNeeded<TArgs: $ReadOnlyArray<mixed>, TOut>(
+    fun: Fn<TArgs, TOut>,
+    context?: ?mixed,
+    args?: ?TArgs,
+  ): ?TOut {
     if (ErrorUtils.inGuard()) {
+      // $FlowFixMe: TODO T48204745 (1) apply(context, null) is fine. (2) array -> rest array should work
       return fun.apply(context, args);
     } else {
       ErrorUtils.applyWithGuard(fun, context, args);
     }
     return null;
   },
-  inGuard() {
-    return _inGuard;
+  inGuard(): boolean {
+    return !!_inGuard;
   },
-  guard(fun, name, context) {
+  guard<TArgs: $ReadOnlyArray<mixed>, TOut>(
+    fun: Fn<TArgs, TOut>,
+    name?: ?string,
+    context?: ?mixed,
+  ): ?(...TArgs) => ?TOut {
+    // TODO: (moti) T48204753 Make sure this warning is never hit and remove it - types
+    // should be sufficient.
     if (typeof fun !== 'function') {
       console.warn('A function must be passed to ErrorUtils.guard, got ', fun);
       return null;
     }
-    name = name || fun.name || '<generated guard>';
-    function guarded() {
+    const guardName = name ?? fun.name ?? '<generated guard>';
+    function guarded(...args: TArgs): ?TOut {
       return ErrorUtils.applyWithGuard(
         fun,
-        context || this,
-        arguments,
+        context ?? this,
+        args,
         null,
-        name,
+        guardName,
       );
     }
 
@@ -84,3 +111,5 @@ const ErrorUtils = {
 };
 
 global.ErrorUtils = ErrorUtils;
+
+export type ErrorUtilsT = typeof ErrorUtils;

@@ -11,9 +11,10 @@
 'use strict';
 
 const React = require('react');
+
 const {Image, Text, TouchableHighlight, View} = require('react-native');
 
-function Basic() {
+function Basic(): React.Node {
   return (
     <Text>
       This text contains an inline blue view{' '}
@@ -24,7 +25,7 @@ function Basic() {
   );
 }
 
-function ClippedByText() {
+function ClippedByText(): React.Node {
   return (
     <View>
       {/*
@@ -92,11 +93,11 @@ type ChangeSizeState = {|
 |};
 
 class ChangeImageSize extends React.Component<*, ChangeSizeState> {
-  state = {
+  state: ChangeSizeState = {
     width: 50,
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <TouchableHighlight
@@ -128,11 +129,11 @@ class ChangeImageSize extends React.Component<*, ChangeSizeState> {
 }
 
 class ChangeViewSize extends React.Component<*, ChangeSizeState> {
-  state = {
+  state: ChangeSizeState = {
     width: 50,
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <TouchableHighlight
@@ -160,11 +161,11 @@ class ChangeViewSize extends React.Component<*, ChangeSizeState> {
 }
 
 class ChangeInnerViewSize extends React.Component<*, ChangeSizeState> {
-  state = {
+  state: ChangeSizeState = {
     width: 50,
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <TouchableHighlight

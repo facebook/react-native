@@ -17,31 +17,16 @@
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
 
-#import "RCTImageCache.h"
-#import "RCTImageUtils.h"
+#import <React/RCTImageCache.h>
+#import <React/RCTImageUtils.h>
 
 static NSInteger RCTImageBytesForImage(UIImage *image)
 {
-  CAKeyframeAnimation *keyFrameAnimation = [image reactKeyframeAnimation];
   NSInteger singleImageBytes = image.size.width * image.size.height * image.scale * image.scale * 4;
-  if (keyFrameAnimation) {
-    return keyFrameAnimation.values.count * singleImageBytes;
-  } else {
-    return image.images ? image.images.count * singleImageBytes : singleImageBytes;
-  }
+  return image.images ? image.images.count * singleImageBytes : singleImageBytes;
 }
 
 @implementation UIImage (React)
-
-- (CAKeyframeAnimation *)reactKeyframeAnimation
-{
-  return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)setReactKeyframeAnimation:(CAKeyframeAnimation *)reactKeyframeAnimation
-{
-  objc_setAssociatedObject(self, @selector(reactKeyframeAnimation), reactKeyframeAnimation, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
 
 - (NSInteger)reactDecodedImageBytes
 {
@@ -136,7 +121,7 @@ RCT_EXPORT_MODULE()
 - (void)setImageCache:(id<RCTImageCache>)cache
 {
   if (_imageCache) {
-    RCTLogWarn(@"RCTImageCache was already set and has now been overriden.");
+    RCTLogWarn(@"RCTImageCache was already set and has now been overridden.");
   }
   _imageCache = cache;
 }
@@ -280,11 +265,9 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       CGSizeEqualToSize(image.size, size)) {
     return image;
   }
-  CAKeyframeAnimation *animation = image.reactKeyframeAnimation;
   CGRect targetSize = RCTTargetRect(image.size, size, scale, resizeMode);
   CGAffineTransform transform = RCTTransformFromTargetRect(image.size, targetSize);
   image = RCTTransformImage(image, size, scale, transform);
-  image.reactKeyframeAnimation = animation;
   return image;
 }
 
@@ -953,10 +936,16 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
 @end
 
+/**
+ * DEPRECATED!! DO NOT USE
+ * Instead use `[_bridge moduleForClass:[RCTImageLoader class]]`
+ */
 @implementation RCTBridge (RCTImageLoader)
 
 - (RCTImageLoader *)imageLoader
 {
+  RCTLogWarn(@"Calling bridge.imageLoader is deprecated and will not work in newer versions of RN. Please update to the"
+             "moduleForClass API or turboModuleLookupDelegate API.");
   return [self moduleForClass:[RCTImageLoader class]];
 }
 

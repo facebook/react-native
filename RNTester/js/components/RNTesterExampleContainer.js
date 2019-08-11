@@ -15,6 +15,8 @@ const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterExampleFilter = require('./RNTesterExampleFilter');
 const RNTesterPage = require('./RNTesterPage');
 
+const invariant = require('invariant');
+
 class RNTesterExampleContainer extends React.Component {
   renderExample(example, i) {
     // Filter platform-specific examples
@@ -34,10 +36,18 @@ class RNTesterExampleContainer extends React.Component {
   }
 
   render(): React.Element<any> {
-    if (this.props.module.examples.length === 1) {
+    const {module} = this.props;
+    if (module.simpleExampleContainer) {
+      invariant(
+        module.examples.length === 1,
+        'If noExampleContainer is specified, only one example is allowed',
+      );
+      return module.examples[0].render();
+    }
+    if (module.examples.length === 1) {
       return (
         <RNTesterPage title={this.props.title}>
-          {this.renderExample(this.props.module.examples[0])}
+          {this.renderExample(module.examples[0])}
         </RNTesterPage>
       );
     }
@@ -46,7 +56,7 @@ class RNTesterExampleContainer extends React.Component {
 
     const sections = [
       {
-        data: this.props.module.examples,
+        data: module.examples,
         title: 'EXAMPLES',
         key: 'e',
       },

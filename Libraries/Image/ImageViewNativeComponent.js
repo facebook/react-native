@@ -12,6 +12,6 @@
 
 const requireNativeComponent = require('../ReactNative/requireNativeComponent');
 
-const ImageViewNativeComponent = requireNativeComponent('RCTImageView');
+const ImageViewNativeComponent: string = requireNativeComponent('RCTImageView');
 
 module.exports = ImageViewNativeComponent;

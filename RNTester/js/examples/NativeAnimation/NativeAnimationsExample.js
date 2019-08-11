@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   View,
   Text,
@@ -221,7 +222,7 @@ class InternalSettings extends React.Component<
 
 class EventExample extends React.Component<{}, $FlowFixMeState> {
   state = {
-    scrollX: new Animated.Value(0),
+    anim: new Animated.Value(0),
   };
 
   render() {
@@ -233,7 +234,7 @@ class EventExample extends React.Component<{}, $FlowFixMeState> {
             {
               transform: [
                 {
-                  rotate: this.state.scrollX.interpolate({
+                  rotate: this.state.anim.interpolate({
                     inputRange: [0, 1],
                     outputRange: ['0deg', '1deg'],
                   }),
@@ -246,7 +247,7 @@ class EventExample extends React.Component<{}, $FlowFixMeState> {
           horizontal
           style={{height: 100, marginTop: 16}}
           onScroll={Animated.event(
-            [{nativeEvent: {contentOffset: {x: this.state.scrollX}}}],
+            [{nativeEvent: {contentOffset: {x: this.state.anim}}}],
             {useNativeDriver: true},
           )}>
           <View
@@ -259,6 +260,13 @@ class EventExample extends React.Component<{}, $FlowFixMeState> {
             <Text>Scroll me sideways!</Text>
           </View>
         </Animated.ScrollView>
+        <AnimatedSlider
+          maximumValue={200}
+          onValueChange={Animated.event(
+            [{nativeEvent: {value: this.state.anim}}],
+            {useNativeDriver: true},
+          )}
+        />
       </View>
     );
   }
@@ -364,7 +372,7 @@ exports.description = 'Test out Native Animations';
 exports.examples = [
   {
     title: 'Multistage With Multiply and rotation',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Tester type="timing" config={{duration: 1000}}>
           {anim => (
@@ -412,7 +420,7 @@ exports.examples = [
   },
   {
     title: 'Multistage With Multiply',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Tester type="timing" config={{duration: 1000}}>
           {anim => (
@@ -454,7 +462,7 @@ exports.examples = [
   },
   {
     title: 'Multistage With Subtract',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Tester type="timing" config={{duration: 1000}}>
           {anim => (
@@ -496,7 +504,7 @@ exports.examples = [
   },
   {
     title: 'Scale interpolation with clamping',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Tester type="timing" config={{duration: 1000}}>
           {anim => (
@@ -523,7 +531,7 @@ exports.examples = [
   },
   {
     title: 'Opacity with delay',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Tester type="timing" config={{duration: 1000, delay: 1000}}>
           {anim => (
@@ -542,7 +550,7 @@ exports.examples = [
   },
   {
     title: 'Rotate interpolation',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Tester type="timing" config={{duration: 1000}}>
           {anim => (
@@ -568,7 +576,7 @@ exports.examples = [
   },
   {
     title: 'translateX => Animated.spring (bounciness/speed)',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Tester type="spring" config={{bounciness: 0}}>
           {anim => (
@@ -594,7 +602,7 @@ exports.examples = [
   },
   {
     title: 'translateX => Animated.spring (stiffness/damping/mass)',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Tester type="spring" config={{stiffness: 1000, damping: 500, mass: 3}}>
           {anim => (
@@ -620,7 +628,7 @@ exports.examples = [
   },
   {
     title: 'translateX => Animated.decay',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Tester
           type="decay"
@@ -646,7 +654,7 @@ exports.examples = [
   },
   {
     title: 'Drive custom property (tap to animate)',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Tester type="timing" config={{duration: 1000}}>
           {anim => <AnimatedSlider style={{}} value={anim} />}
@@ -656,31 +664,31 @@ exports.examples = [
   },
   {
     title: 'Animated value listener',
-    render: function() {
+    render: function(): React.Node {
       return <ValueListenerExample />;
     },
   },
   {
     title: 'Animated loop',
-    render: function() {
+    render: function(): React.Node {
       return <LoopExample />;
     },
   },
   {
     title: 'Animated events',
-    render: function() {
+    render: function(): React.Node {
       return <EventExample />;
     },
   },
   {
     title: 'Animated Tracking - tap me many times',
-    render: function() {
+    render: function(): React.Node {
       return <TrackingExample />;
     },
   },
   {
     title: 'Internal Settings',
-    render: function() {
+    render: function(): React.Node {
       return <InternalSettings />;
     },
   },

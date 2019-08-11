@@ -10,15 +10,21 @@
 
 'use strict';
 
-const SwitchNativeComponent = require('./SwitchNativeComponent');
+const AndroidSwitchNativeComponent = require('./AndroidSwitchNativeComponent');
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 
-import type {SwitchChangeEvent} from '../../Types/CoreEventTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {NativeAndroidProps, NativeIOSProps} from './SwitchNativeComponent';
+import SwitchNativeComponent from './SwitchNativeComponent';
+
+type SwitchChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    value: boolean,
+  |}>,
+>;
 
 export type Props = $ReadOnly<{|
   ...ViewProps,
@@ -83,9 +89,11 @@ export type Props = $ReadOnly<{|
  * supplied `value` prop instead of the expected result of any user actions.
  */
 class Switch extends React.Component<Props> {
-  _nativeSwitchRef: ?React.ElementRef<typeof SwitchNativeComponent>;
+  _nativeSwitchRef: ?React.ElementRef<
+    typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
+  >;
 
-  render() {
+  render(): React.Node {
     const {
       disabled,
       ios_backgroundColor,
@@ -130,37 +138,50 @@ class Switch extends React.Component<Props> {
       }
     }
 
-    const platformProps =
-      Platform.OS === 'android'
-        ? ({
-            enabled: disabled !== true,
-            on: value === true,
-            style,
-            thumbTintColor: _thumbColor,
-            trackColorForFalse: _trackColorForFalse,
-            trackColorForTrue: _trackColorForTrue,
-            trackTintColor:
-              value === true ? _trackColorForTrue : _trackColorForFalse,
-          }: NativeAndroidProps)
-        : ({
-            disabled,
-            onTintColor: _trackColorForTrue,
-            style: StyleSheet.compose(
-              {height: 31, width: 51},
-              StyleSheet.compose(
-                style,
-                ios_backgroundColor == null
-                  ? null
-                  : {
-                      backgroundColor: ios_backgroundColor,
-                      borderRadius: 16,
-                    },
-              ),
-            ),
-            thumbTintColor: _thumbColor,
-            tintColor: _trackColorForFalse,
-            value: value === true,
-          }: NativeIOSProps);
+    if (Platform.OS === 'android') {
+      const platformProps = {
+        enabled: disabled !== true,
+        on: value === true,
+        style,
+        thumbTintColor: _thumbColor,
+        trackColorForFalse: _trackColorForFalse,
+        trackColorForTrue: _trackColorForTrue,
+        trackTintColor:
+          value === true ? _trackColorForTrue : _trackColorForFalse,
+      };
+
+      return (
+        <AndroidSwitchNativeComponent
+          {...props}
+          {...platformProps}
+          accessibilityRole={props.accessibilityRole ?? 'button'}
+          onChange={this._handleChange}
+          onResponderTerminationRequest={returnsFalse}
+          onStartShouldSetResponder={returnsTrue}
+          ref={this._handleSwitchNativeComponentRef}
+        />
+      );
+    }
+
+    const platformProps = {
+      disabled,
+      onTintColor: _trackColorForTrue,
+      style: StyleSheet.compose(
+        {height: 31, width: 51},
+        StyleSheet.compose(
+          style,
+          ios_backgroundColor == null
+            ? null
+            : {
+                backgroundColor: ios_backgroundColor,
+                borderRadius: 16,
+              },
+        ),
+      ),
+      thumbTintColor: _thumbColor,
+      tintColor: _trackColorForFalse,
+      value: value === true,
+    };
 
     return (
       <SwitchNativeComponent
@@ -198,7 +219,9 @@ class Switch extends React.Component<Props> {
   };
 
   _handleSwitchNativeComponentRef = (
-    ref: ?React.ElementRef<typeof SwitchNativeComponent>,
+    ref: ?React.ElementRef<
+      typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
+    >,
   ) => {
     this._nativeSwitchRef = ref;
   };

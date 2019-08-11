@@ -23,6 +23,12 @@ module.exports = {
     return require('../Components/ActivityIndicator/ActivityIndicator');
   },
   get ART() {
+    warnOnce(
+      'art-moved',
+      'React Native ART has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/art' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/art',
+    );
     return require('../ART/ReactNativeART');
   },
   get Button() {
@@ -38,6 +44,12 @@ module.exports = {
     return require('../Components/CheckBox/CheckBox');
   },
   get DatePickerIOS() {
+    warnOnce(
+      'DatePickerIOS-merged',
+      'DatePickerIOS has been merged with DatePickerAndroid and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-datetimepicker',
+    );
     return require('../Components/DatePicker/DatePickerIOS');
   },
   get DrawerLayoutAndroid() {
@@ -51,25 +63,6 @@ module.exports = {
   },
   get ImageBackground() {
     return require('../Image/ImageBackground');
-  },
-  get ImageEditor() {
-    warnOnce(
-      'image-editor-moved',
-      'Image Editor has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/image-editor' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-image-editor',
-    );
-    return require('../Image/ImageEditor');
-  },
-  get ImageStore() {
-    warnOnce(
-      'imagestore-deprecation',
-      'ImageStore is deprecated and will be removed in a future release. ' +
-        'To get a base64-encoded string from a local image use either of the following third-party libraries:' +
-        "* expo-file-system: `readAsStringAsync(filepath, 'base64')`" +
-        "* react-native-fs: `readFile(filepath, 'base64')`",
-    );
-    return require('../Image/ImageStore');
   },
   get InputAccessoryView() {
     return require('../Components/TextInput/InputAccessoryView');
@@ -155,15 +148,6 @@ module.exports = {
   get View() {
     return require('../Components/View/View');
   },
-  get ViewPagerAndroid() {
-    warnOnce(
-      'viewpager-moved',
-      'ViewPagerAndroid has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-viewpager',
-    );
-    return require('../Components/ViewPager/ViewPagerAndroid');
-  },
   get VirtualizedList() {
     return require('../Lists/VirtualizedList');
   },
@@ -190,7 +174,7 @@ module.exports = {
   get AsyncStorage() {
     warnOnce(
       'async-storage-moved',
-      'Async Storage has been extracted from react-native core and will be removed in a future release. ' +
+      'AsyncStorage has been extracted from react-native core and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/async-storage' instead of 'react-native'. " +
         'See https://github.com/react-native-community/react-native-async-storage',
     );
@@ -203,6 +187,12 @@ module.exports = {
     return require('../Components/Clipboard/Clipboard');
   },
   get DatePickerAndroid() {
+    warnOnce(
+      'DatePickerAndroid-merged',
+      'DatePickerAndroid has been merged with DatePickerIOS and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-datetimepicker',
+    );
     return require('../Components/DatePickerAndroid/DatePickerAndroid');
   },
   get DeviceInfo() {
@@ -273,6 +263,10 @@ module.exports = {
     return require('../Share/Share');
   },
   get StatusBarIOS() {
+    warnOnce(
+      'StatusBarIOS-merged',
+      'StatusBarIOS has been merged with StatusBar and will be removed in a future release. Use StatusBar for mutating the status bar',
+    );
     return require('../Components/StatusBar/StatusBarIOS');
   },
   get StyleSheet() {
@@ -282,6 +276,12 @@ module.exports = {
     return require('../Performance/Systrace');
   },
   get TimePickerAndroid() {
+    warnOnce(
+      'TimePickerAndroid-merged',
+      'TimePickerAndroid has been merged with DatePickerIOS and DatePickerAndroid and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-datetimepicker',
+    );
     return require('../Components/TimePickerAndroid/TimePickerAndroid');
   },
   get ToastAndroid() {
@@ -298,6 +298,9 @@ module.exports = {
   },
   get unstable_batchedUpdates() {
     return require('../Renderer/shims/ReactNative').unstable_batchedUpdates;
+  },
+  get useWindowDimensions() {
+    return require('../Utilities/useWindowDimensions').default;
   },
   get UTFSequence() {
     return require('../UTFSequence');
@@ -328,6 +331,9 @@ module.exports = {
   get requireNativeComponent() {
     return require('../ReactNative/requireNativeComponent');
   },
+  get unstable_RootTagContext() {
+    return require('../ReactNative/RootTagContext');
+  },
 
   // Prop Types
   get ColorPropType() {
@@ -341,10 +347,6 @@ module.exports = {
   },
   get ViewPropTypes() {
     return require('../DeprecatedPropTypes/DeprecatedViewPropTypes');
-  },
-  // TODO(cpojer): Temporary fix for missing Toolbar
-  get ToolbarAndroid() {
-    return require('../Components/UnimplementedViews/UnimplementedView');
   },
 };
 
@@ -410,6 +412,46 @@ if (__DEV__) {
         'CameraRoll has been removed from React Native. ' +
           "It can now be installed and imported from 'react-native-cameraroll' instead of 'react-native'. " +
           'See https://github.com/react-native-community/react-native-cameraroll',
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access ImageStore.
+  Object.defineProperty(module.exports, 'ImageStore', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'ImageStore has been removed from React Native. ' +
+          'To get a base64-encoded string from a local image use either of the following third-party libraries:' +
+          "* expo-file-system: `readAsStringAsync(filepath, 'base64')`" +
+          "* react-native-fs: `readFile(filepath, 'base64')`",
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access ImageEditor.
+  Object.defineProperty(module.exports, 'ImageEditor', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'ImageEditor has been removed from React Native. ' +
+          "It can now be installed and imported from 'react-native-image-editor' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-image-editor',
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access ViewPagerAndroid.
+  Object.defineProperty(module.exports, 'ViewPagerAndroid', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'ViewPagerAndroid has been removed from React Native. ' +
+          "It can now be installed and imported from 'react-native-viewpager' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-viewpager',
       );
     },
   });

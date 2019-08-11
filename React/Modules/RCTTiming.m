@@ -147,7 +147,7 @@ RCT_EXPORT_MODULE()
   if (_backgroundTaskIdentifier == UIBackgroundTaskInvalid) {
     __weak typeof(self) weakSelf = self;
     // Marks the beginning of a new long-running background task. We can run the timer in the background.
-    _backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+    _backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"rct.timing.gb.task" expirationHandler:^{
       typeof(self) strongSelf = weakSelf;
       if (!strongSelf) {
         return;
@@ -365,7 +365,7 @@ RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
   @synchronized (_timers) {
     _timers[callbackID] = timer;
   }
-  
+
   if (_inBackground) {
     [self markStartOfBackgroundTaskIfNeeded];
     [self scheduleSleepTimer:timer.target];

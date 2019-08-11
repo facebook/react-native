@@ -1,24 +1,19 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.text.frescosupport;
-
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import com.facebook.react.uimanager.PixelUtil;
-import javax.annotation.Nullable;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.TextView;
-
+import androidx.annotation.Nullable;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
@@ -27,19 +22,20 @@ import com.facebook.drawee.view.DraweeHolder;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
+import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.views.text.TextInlineImageSpan;
 
 /**
- * FrescoBasedTextInlineImageSpan is a span for Images that are inside <Text/>. It computes
- * its size based on the input size. When it is time to draw, it will use the Fresco framework to
- * get the right Drawable and let that draw.
+ * FrescoBasedTextInlineImageSpan is a span for Images that are inside <Text/>. It computes its size
+ * based on the input size. When it is time to draw, it will use the Fresco framework to get the
+ * right Drawable and let that draw.
  *
- * Since Fresco needs to callback to the TextView that contains this, in the ViewManager, you must
- * tell the Span about the TextView
+ * <p>Since Fresco needs to callback to the TextView that contains this, in the ViewManager, you
+ * must tell the Span about the TextView
  *
- * Note: It borrows code from DynamicDrawableSpan and if that code updates how it computes size or
- * draws, we need to update this as well.
+ * <p>Note: It borrows code from DynamicDrawableSpan and if that code updates how it computes size
+ * or draws, we need to update this as well.
  */
 public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
 
@@ -65,23 +61,19 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
       ReadableMap headers,
       AbstractDraweeControllerBuilder draweeControllerBuilder,
       @Nullable Object callerContext) {
-    mDraweeHolder = new DraweeHolder(
-        GenericDraweeHierarchyBuilder.newInstance(resources)
-            .build()
-    );
+    mDraweeHolder = new DraweeHolder(GenericDraweeHierarchyBuilder.newInstance(resources).build());
     mDraweeControllerBuilder = draweeControllerBuilder;
     mCallerContext = callerContext;
     mTintColor = tintColor;
     mUri = (uri != null) ? uri : Uri.EMPTY;
     mHeaders = headers;
-    mWidth = (int)(PixelUtil.toPixelFromDIP(width));
-    mHeight = (int)(PixelUtil.toPixelFromDIP(height));
-
+    mWidth = (int) (PixelUtil.toPixelFromDIP(width));
+    mHeight = (int) (PixelUtil.toPixelFromDIP(height));
   }
 
   /**
-   * The ReactTextView that holds this ImageSpan is responsible for passing these methods on so
-   * that we can do proper lifetime management for Fresco
+   * The ReactTextView that holds this ImageSpan is responsible for passing these methods on so that
+   * we can do proper lifetime management for Fresco
    */
   public void onDetachedFromWindow() {
     mDraweeHolder.onDetach();
@@ -104,8 +96,7 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
   }
 
   @Override
-  public int getSize(
-      Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
+  public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
     // NOTE: This getSize code is copied from DynamicDrawableSpan and modified to not use a Drawable
 
     if (fm != null) {
@@ -136,24 +127,25 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
       Paint paint) {
     if (mDrawable == null) {
       ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(mUri);
-      ImageRequest imageRequest = ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, mHeaders);
+      ImageRequest imageRequest =
+          ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, mHeaders);
 
-      DraweeController draweeController = mDraweeControllerBuilder
-          .reset()
-          .setOldController(mDraweeHolder.getController())
-          .setCallerContext(mCallerContext)
-          .setImageRequest(imageRequest)
-          .build();
+      DraweeController draweeController =
+          mDraweeControllerBuilder
+              .reset()
+              .setOldController(mDraweeHolder.getController())
+              .setCallerContext(mCallerContext)
+              .setImageRequest(imageRequest)
+              .build();
       mDraweeHolder.setController(draweeController);
       mDraweeControllerBuilder.reset();
 
       mDrawable = mDraweeHolder.getTopLevelDrawable();
       mDrawable.setBounds(0, 0, mWidth, mHeight);
-      if(mTintColor != 0) {
+      if (mTintColor != 0) {
         mDrawable.setColorFilter(mTintColor, PorterDuff.Mode.SRC_IN);
       }
       mDrawable.setCallback(mTextView);
-
     }
 
     // NOTE: This drawing code is copied from DynamicDrawableSpan
@@ -161,8 +153,8 @@ public class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
     canvas.save();
 
     // Align to center
-    int fontHeight = (int)(paint.descent() - paint.ascent());
-    int centerY = y + (int)paint.descent() - fontHeight / 2;
+    int fontHeight = (int) (paint.descent() - paint.ascent());
+    int centerY = y + (int) paint.descent() - fontHeight / 2;
     int transY = centerY - (mDrawable.getBounds().bottom - mDrawable.getBounds().top) / 2;
 
     canvas.translate(x, transY);

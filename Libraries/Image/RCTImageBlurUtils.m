@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTImageBlurUtils.h"
+#import <React/RCTImageBlurUtils.h>
 
 UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
 {

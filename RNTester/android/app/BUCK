@@ -25,7 +25,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react:react"),
         react_native_target("java/com/facebook/react/common:build_config"),
         react_native_target("java/com/facebook/react/modules/core:core"),
-        react_native_target("java/com/facebook/react/views/text:text"),
         react_native_target("java/com/facebook/react/shell:shell"),
         react_native_target("jni/prebuilt:android-jsc"),
         # .so files are prebuilt by Gradle with `./gradlew :ReactAndroid:packageReactNdkLibsForBuck`

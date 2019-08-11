@@ -129,9 +129,3 @@ export type ScrollEvent = SyntheticEvent<
     responderIgnoreScroll?: boolean,
   |}>,
 >;
-
-export type SwitchChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
-    value: boolean,
-  |}>,
->;

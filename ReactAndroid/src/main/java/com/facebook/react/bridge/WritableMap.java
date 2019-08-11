@@ -1,27 +1,32 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-/**
- * Interface for a mutable map. Used to pass arguments from Java to JS.
- */
+/** Interface for a mutable map. Used to pass arguments from Java to JS. */
 public interface WritableMap extends ReadableMap {
 
-  void putNull(@Nonnull String key);
-  void putBoolean(@Nonnull String key, boolean value);
-  void putDouble(@Nonnull String key, double value);
-  void putInt(@Nonnull String key, int value);
-  void putString(@Nonnull String key, @Nullable String value);
-  void putArray(@Nonnull String key, @Nullable WritableArray value);
-  void putMap(@Nonnull String key, @Nullable WritableMap value);
+  void putNull(@NonNull String key);
 
-  void merge(@Nonnull ReadableMap source);
+  void putBoolean(@NonNull String key, boolean value);
+
+  void putDouble(@NonNull String key, double value);
+
+  void putInt(@NonNull String key, int value);
+
+  void putString(@NonNull String key, @Nullable String value);
+
+  void putArray(@NonNull String key, @Nullable ReadableArray value);
+
+  void putMap(@NonNull String key, @Nullable ReadableMap value);
+
+  void merge(@NonNull ReadableMap source);
+
+  WritableMap copy();
 }

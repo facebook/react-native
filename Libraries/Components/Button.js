@@ -128,7 +128,7 @@ type ButtonProps = $ReadOnly<{|
  */
 
 class Button extends React.Component<ButtonProps> {
-  render() {
+  render(): React.Node {
     const {
       accessibilityLabel,
       color,

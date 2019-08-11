@@ -56,7 +56,7 @@ class ImageBackground extends React.Component<$FlowFixMeProps> {
     this._viewRef = ref;
   };
 
-  render() {
+  render(): React.Node {
     const {children, style, imageStyle, imageRef, ...props} = this.props;
 
     return (

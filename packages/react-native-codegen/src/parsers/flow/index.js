@@ -14,92 +14,120 @@ import type {SchemaType} from '../../CodegenSchema.js';
 // $FlowFixMe there's no flowtype flow-parser
 const flowParser = require('flow-parser');
 const fs = require('fs');
-const {buildSchema} = require('./schema');
-const {getEvents} = require('./events');
-const {getProps} = require('./props');
-const {getOptions} = require('./options');
-const {getExtendsProps} = require('./extends');
-
-function findConfig(types) {
-  const foundConfigs = [];
-
-  Object.keys(types).forEach(key => {
-    try {
-      const type = types[key];
-      if (type.right.id.name === 'CodegenNativeComponent') {
-        const params = type.right.typeParameters.params;
-        const nativeComponentType = {};
-        nativeComponentType.componentName = params[0].value;
-        nativeComponentType.propsTypeName = params[1].id.name;
-        if (params.length > 2) {
-          nativeComponentType.optionsTypeName = params[2].id.name;
-        }
-        foundConfigs.push(nativeComponentType);
-      }
-    } catch (e) {
-      // ignore
-    }
-  });
-
-  if (foundConfigs.length === 0) {
-    throw new Error('Could not find component config for native component');
-  }
-  if (foundConfigs.length > 1) {
-    throw new Error('Only one component is supported per file');
-  }
-
-  return foundConfigs[0];
-}
+const path = require('path');
+const {buildModuleSchema} = require('./modules/schema');
+const {buildComponentSchema} = require('./components/schema');
+const {processComponent} = require('./components');
+const {processModule} = require('./modules');
 
 function getTypes(ast) {
-  return ast.body
-    .filter(node => node.type === 'TypeAlias')
-    .reduce((types, node) => {
+  return ast.body.reduce((types, node) => {
+    if (node.type === 'ExportNamedDeclaration') {
+      if (node.declaration && node.declaration.type !== 'VariableDeclaration') {
+        types[node.declaration.id.name] = node.declaration;
+      }
+    } else if (
+      node.type === 'TypeAlias' ||
+      node.type === 'InterfaceDeclaration'
+    ) {
       types[node.id.name] = node;
-      return types;
-    }, {});
+    }
+    return types;
+  }, {});
 }
 
-function getPropProperties(propsTypeName, types) {
-  const typeAlias = types[propsTypeName];
-  try {
-    return typeAlias.right.typeParameters.params[0].properties;
-  } catch (e) {
+function getConfigType(ast, types): 'module' | 'component' {
+  const defaultExports = ast.body.filter(
+    node => node.type === 'ExportDefaultDeclaration',
+  );
+
+  let isComponent = false;
+
+  if (defaultExports.length > 0) {
+    let declaration = defaultExports[0].declaration;
+    // codegenNativeComponent can be nested inside a cast
+    // expression so we need to go one level deeper
+    if (declaration.type === 'TypeCastExpression') {
+      declaration = declaration.expression;
+    }
+
+    isComponent =
+      declaration &&
+      declaration.callee &&
+      declaration.callee.name === 'codegenNativeComponent';
+  }
+
+  const typesExtendingTurboModule = Object.keys(types)
+    .map(typeName => types[typeName])
+    .filter(
+      type =>
+        type.extends &&
+        type.extends[0] &&
+        type.extends[0].id.name === 'TurboModule',
+    );
+
+  if (typesExtendingTurboModule.length > 1) {
     throw new Error(
-      `Failed find type definition for "${propsTypeName}", please check that you have a valid codegen flow file`,
+      'Found two types extending "TurboModule" is one file. Split them into separated files.',
+    );
+  }
+
+  const isModule = typesExtendingTurboModule.length === 1;
+
+  if (isModule && isComponent) {
+    throw new Error(
+      'Found type extending "TurboModule" and exported "codegenNativeComponent" declaration in one file. Split them into separated files.',
+    );
+  }
+
+  if (isModule) {
+    return 'module';
+  } else if (isComponent) {
+    return 'component';
+  } else {
+    throw new Error(
+      `Default export for module specified incorrectly. It should containts
+    either type extending "TurboModule" or "codegenNativeComponent".`,
     );
   }
 }
 
-function parseFileAst(filename: string) {
-  const contents = fs.readFileSync(filename, 'utf8');
+function buildSchema(contents: string, filename: ?string): ?SchemaType {
   const ast = flowParser.parse(contents);
 
   const types = getTypes(ast);
-  const {componentName, propsTypeName, optionsTypeName} = findConfig(types);
 
-  const propProperties = getPropProperties(propsTypeName, types);
+  const configType = getConfigType(ast, types);
 
-  const extendsProps = getExtendsProps(propProperties);
-  const options = getOptions(types[optionsTypeName]);
-
-  const props = getProps(propProperties);
-  const events = getEvents(propProperties, types);
-
-  return {
-    filename: componentName,
-    componentName,
-    options,
-    extendsProps,
-    events,
-    props,
-  };
+  if (configType === 'component') {
+    return buildComponentSchema(processComponent(ast, types));
+  } else {
+    if (filename === undefined || filename === null) {
+      throw new Error('Filepath expected while parasing a module');
+    }
+    const moduleName = path.basename(filename).slice(6, -3);
+    return buildModuleSchema(processModule(types), moduleName);
+  }
 }
 
-function parse(filename: string): ?SchemaType {
-  return buildSchema(parseFileAst(filename));
+function parseFile(filename: string): ?SchemaType {
+  const contents = fs.readFileSync(filename, 'utf8');
+
+  return buildSchema(contents, filename);
+}
+
+function parseModuleFixture(filename: string): ?SchemaType {
+  const contents = fs.readFileSync(filename, 'utf8');
+
+  return buildSchema(contents, 'path/NativeSampleTurboModule.js');
+}
+
+function parseString(contents: string): ?SchemaType {
+  return buildSchema(contents);
 }
 
 module.exports = {
-  parse,
+  parseFile,
+  parseModuleFixture,
+  parseString,
 };

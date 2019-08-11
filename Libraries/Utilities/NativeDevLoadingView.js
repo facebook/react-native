@@ -22,4 +22,4 @@ export interface Spec extends TurboModule {
   +hide: () => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('DevLoadingView');
+export default (TurboModuleRegistry.get<Spec>('DevLoadingView'): ?Spec);

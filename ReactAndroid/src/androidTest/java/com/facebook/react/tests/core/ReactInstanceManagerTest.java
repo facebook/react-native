@@ -36,26 +36,28 @@ public class ReactInstanceManagerTest {
     Activity activity = mActivityRule.getActivity();
     mReactRootView = new ReactRootView(activity);
     mReactInstanceManager =
-      ReactTestHelper.getReactTestFactory()
-        .getReactInstanceManagerBuilder()
-        .setApplication(activity.getApplication())
-        .setBundleAssetName("AndroidTestBundle.js")
-        .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
-        .addPackage(new MainReactPackage())
-        .build();
+        ReactTestHelper.getReactTestFactory()
+            .getReactInstanceManagerBuilder()
+            .setApplication(activity.getApplication())
+            .setBundleAssetName("AndroidTestBundle.js")
+            .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
+            .addPackage(new MainReactPackage())
+            .build();
   }
 
   @After
   public void tearDown() {
     final ReactRootView reactRootView = mReactRootView;
     final ReactInstanceManager reactInstanceManager = mReactInstanceManager;
-    InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-      @Override
-      public void run() {
-        reactRootView.unmountReactApplication();
-        reactInstanceManager.destroy();
-      }
-    });
+    InstrumentationRegistry.getInstrumentation()
+        .runOnMainSync(
+            new Runnable() {
+              @Override
+              public void run() {
+                reactRootView.unmountReactApplication();
+                reactInstanceManager.destroy();
+              }
+            });
   }
 
   @Test

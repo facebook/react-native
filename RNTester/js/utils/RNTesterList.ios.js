@@ -44,6 +44,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'JSResponderHandlerExample',
+    module: require('../examples/JSResponderHandlerExample/JSResponderHandlerExample'),
+  },
+  {
     key: 'InputAccessoryViewExample',
     module: require('../examples/InputAccessoryView/InputAccessoryViewExample'),
     supportsTVOS: true,
@@ -111,6 +115,11 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'ScrollViewExample',
     module: require('../examples/ScrollView/ScrollViewExample'),
+    supportsTVOS: true,
+  },
+  {
+    key: 'ScrollViewAnimatedExample',
+    module: require('../examples/ScrollView/ScrollViewAnimatedExample'),
     supportsTVOS: true,
   },
   {
@@ -328,7 +337,7 @@ const APIExamples: Array<RNTesterExample> = [
   },
 ];
 
-const Modules = {};
+const Modules: $TEMPORARY$object<{||}> = {};
 
 APIExamples.concat(ComponentExamples).forEach(Example => {
   Modules[Example.key] = Example.module;

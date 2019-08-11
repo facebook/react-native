@@ -40,8 +40,8 @@ const DEBUG_INFO_LIMIT = 32;
 class MessageQueue {
   _lazyCallableModules: {[key: string]: (void) => Object};
   _queue: [number[], number[], any[], number];
-  _successCallbacks: {[key: number]: ?Function};
-  _failureCallbacks: {[key: number]: ?Function};
+  _successCallbacks: Map<number, ?Function>;
+  _failureCallbacks: Map<number, ?Function>;
   _callID: number;
   _lastFlush: number;
   _eventLoopStartTime: number;
@@ -49,15 +49,15 @@ class MessageQueue {
 
   _debugInfo: {[number]: [number, number]};
   _remoteModuleTable: {[number]: string};
-  _remoteMethodTable: {[number]: string[]};
+  _remoteMethodTable: {[number]: $ReadOnlyArray<string>};
 
   __spy: ?(data: SpyData) => void;
 
   constructor() {
     this._lazyCallableModules = {};
     this._queue = [[], [], [], 0];
-    this._successCallbacks = {};
-    this._failureCallbacks = {};
+    this._successCallbacks = new Map();
+    this._failureCallbacks = new Map();
     this._callID = 0;
     this._lastFlush = 0;
     this._eventLoopStartTime = Date.now();
@@ -101,7 +101,11 @@ class MessageQueue {
     }
   }
 
-  callFunctionReturnFlushedQueue(module: string, method: string, args: any[]) {
+  callFunctionReturnFlushedQueue(
+    module: string,
+    method: string,
+    args: any[],
+  ): null | [Array<number>, Array<number>, Array<any>, number] {
     this.__guard(() => {
       this.__callFunction(module, method, args);
     });
@@ -113,7 +117,7 @@ class MessageQueue {
     module: string,
     method: string,
     args: any[],
-  ) {
+  ): $TEMPORARY$array<?[Array<number>, Array<number>, Array<any>, number]> {
     let result;
     this.__guard(() => {
       result = this.__callFunction(module, method, args);
@@ -122,7 +126,10 @@ class MessageQueue {
     return [result, this.flushedQueue()];
   }
 
-  invokeCallbackAndReturnFlushedQueue(cbID: number, args: any[]) {
+  invokeCallbackAndReturnFlushedQueue(
+    cbID: number,
+    args: any[],
+  ): null | [Array<number>, Array<number>, Array<any>, number] {
     this.__guard(() => {
       this.__invokeCallback(cbID, args);
     });
@@ -130,7 +137,7 @@ class MessageQueue {
     return this.flushedQueue();
   }
 
-  flushedQueue() {
+  flushedQueue(): null | [Array<number>, Array<number>, Array<any>, number] {
     this.__guard(() => {
       this.__callImmediates();
     });
@@ -140,7 +147,7 @@ class MessageQueue {
     return queue[0].length ? queue : null;
   }
 
-  getEventLoopRunningTime() {
+  getEventLoopRunningTime(): number {
     return Date.now() - this._eventLoopStartTime;
   }
 
@@ -160,7 +167,7 @@ class MessageQueue {
     };
   }
 
-  getCallableModule(name: string) {
+  getCallableModule(name: string): any | null {
     const getValue = this._lazyCallableModules[name];
     return getValue ? getValue() : null;
   }
@@ -171,7 +178,7 @@ class MessageQueue {
     params: any[],
     onFail: ?Function,
     onSucc: ?Function,
-  ) {
+  ): any {
     if (__DEV__) {
       invariant(
         global.nativeCallSyncHook,
@@ -182,7 +189,19 @@ class MessageQueue {
       );
     }
     this.processCallbacks(moduleID, methodID, params, onFail, onSucc);
-    return global.nativeCallSyncHook(moduleID, methodID, params);
+    try {
+      return global.nativeCallSyncHook(moduleID, methodID, params);
+    } catch (e) {
+      if (
+        typeof e === 'object' &&
+        e != null &&
+        typeof e.framesToPop === 'undefined' &&
+        /^Exception in HostFunction: /.test(e.message)
+      ) {
+        e.framesToPop = 2;
+      }
+      throw e;
+    }
   }
 
   processCallbacks(
@@ -198,6 +217,21 @@ class MessageQueue {
         if (this._callID > DEBUG_INFO_LIMIT) {
           delete this._debugInfo[this._callID - DEBUG_INFO_LIMIT];
         }
+        if (this._successCallbacks.size > 500) {
+          const info = {};
+          this._successCallbacks.forEach((_, callID) => {
+            const debug = this._debugInfo[callID];
+            const module = debug && this._remoteModuleTable[debug[0]];
+            const method = debug && this._remoteMethodTable[debug[0]][debug[1]];
+            info[callID] = {module, method};
+          });
+          console.error(
+            `Please report: Excessive number of pending callbacks: ${
+              this._successCallbacks.size
+            }. Some pending callbacks that might have leaked by never being called from native code:`,
+            info,
+          );
+        }
       }
       // Encode callIDs into pairs of callback identifiers by shifting left and using the rightmost bit
       // to indicate fail (0) or success (1)
@@ -205,8 +239,8 @@ class MessageQueue {
       onFail && params.push(this._callID << 1);
       // eslint-disable-next-line no-bitwise
       onSucc && params.push((this._callID << 1) | 1);
-      this._successCallbacks[this._callID] = onSucc;
-      this._failureCallbacks[this._callID] = onFail;
+      this._successCallbacks.set(this._callID, onSucc);
+      this._failureCallbacks.set(this._callID, onFail);
     }
     if (__DEV__) {
       global.nativeTraceBeginAsyncFlow &&
@@ -317,10 +351,14 @@ class MessageQueue {
     }
   }
 
-  createDebugLookup(moduleID: number, name: string, methods: string[]) {
+  createDebugLookup(
+    moduleID: number,
+    name: string,
+    methods: ?$ReadOnlyArray<string>,
+  ) {
     if (__DEV__) {
       this._remoteModuleTable[moduleID] = name;
-      this._remoteMethodTable[moduleID] = methods;
+      this._remoteMethodTable[moduleID] = methods || [];
     }
   }
 
@@ -352,7 +390,7 @@ class MessageQueue {
   // This makes stacktraces to be placed at MessageQueue rather than at where they were launched
   // The parameter DebuggerInternal.shouldPauseOnThrow is used to check before catching all exceptions and
   // can be configured by the VM or any Inspector
-  __shouldPauseOnThrow() {
+  __shouldPauseOnThrow(): boolean {
     return (
       // $FlowFixMe
       typeof DebuggerInternal !== 'undefined' &&
@@ -407,8 +445,8 @@ class MessageQueue {
     // eslint-disable-next-line no-bitwise
     const isSuccess = cbID & 1;
     const callback = isSuccess
-      ? this._successCallbacks[callID]
-      : this._failureCallbacks[callID];
+      ? this._successCallbacks.get(callID)
+      : this._failureCallbacks.get(callID);
 
     if (__DEV__) {
       const debug = this._debugInfo[callID];
@@ -437,8 +475,8 @@ class MessageQueue {
       return;
     }
 
-    delete this._successCallbacks[callID];
-    delete this._failureCallbacks[callID];
+    this._successCallbacks.delete(callID);
+    this._failureCallbacks.delete(callID);
     callback(...args);
 
     if (__DEV__) {

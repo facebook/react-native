@@ -16,6 +16,7 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.view.Gravity;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableArray;
@@ -32,10 +33,7 @@ import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
-
 import java.util.ArrayList;
-
-import javax.annotation.Nullable;
 
 /**
  * {@link ReactBaseTextShadowNode} concrete class for anchor {@code Text} node.
@@ -106,14 +104,17 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             } else {
               StaticLayout.Builder builder =
                   StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, hintWidth)
-                    .setAlignment(alignment)
-                    .setLineSpacing(0.f, 1.f)
-                    .setIncludePad(mIncludeFontPadding)
-                    .setBreakStrategy(mTextBreakStrategy)
-                    .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
+                      .setAlignment(alignment)
+                      .setLineSpacing(0.f, 1.f)
+                      .setIncludePad(mIncludeFontPadding)
+                      .setBreakStrategy(mTextBreakStrategy)
+                      .setHyphenationFrequency(mHyphenationFrequency);
 
               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 builder.setJustificationMode(mJustificationMode);
+              }
+              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                builder.setUseLineSpacingFromFallbacks(true);
               }
               layout = builder.build();
             }
@@ -139,14 +140,18 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                   new StaticLayout(
                       text, textPaint, (int) width, alignment, 1.f, 0.f, mIncludeFontPadding);
             } else {
-              layout =
+              StaticLayout.Builder builder =
                   StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, (int) width)
                       .setAlignment(alignment)
                       .setLineSpacing(0.f, 1.f)
                       .setIncludePad(mIncludeFontPadding)
                       .setBreakStrategy(mTextBreakStrategy)
-                      .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL)
-                      .build();
+                      .setHyphenationFrequency(mHyphenationFrequency);
+
+              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                builder.setUseLineSpacingFromFallbacks(true);
+              }
+              layout = builder.build();
             }
           }
 
@@ -195,11 +200,12 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
   @Override
   public void onBeforeLayout(NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
-    mPreparedSpannableText = spannedFromShadowNode(
-        this,
-        /* text (e.g. from `value` prop): */ null,
-        /* supportsInlineViews: */ true,
-        nativeViewHierarchyOptimizer);
+    mPreparedSpannableText =
+        spannedFromShadowNode(
+            this,
+            /* text (e.g. from `value` prop): */ null,
+            /* supportsInlineViews: */ true,
+            nativeViewHierarchyOptimizer);
     markUpdated();
   }
 
@@ -257,10 +263,12 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       return null;
     }
 
-    Spanned text = Assertions.assertNotNull(
-        this.mPreparedSpannableText,
-        "Spannable element has not been prepared in onBeforeLayout");
-    TextInlineViewPlaceholderSpan[] placeholders = text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
+    Spanned text =
+        Assertions.assertNotNull(
+            this.mPreparedSpannableText,
+            "Spannable element has not been prepared in onBeforeLayout");
+    TextInlineViewPlaceholderSpan[] placeholders =
+        text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
     ArrayList<ReactShadowNode> shadowNodes = new ArrayList<ReactShadowNode>(placeholders.length);
 
     for (TextInlineViewPlaceholderSpan placeholder : placeholders) {

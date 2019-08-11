@@ -16,9 +16,9 @@ const TouchableWithoutFeedback = require('../../Components/Touchable/TouchableWi
 const View = require('../../Components/View/View');
 const YellowBoxStyle = require('./YellowBoxStyle');
 
-import type {PressEvent} from '../../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {PressEvent} from '../../Types/CoreEventTypes';
 
 type Props = $ReadOnly<{|
   backgroundColor: $ReadOnly<{|
@@ -36,14 +36,16 @@ type State = {|
 |};
 
 class YellowBoxPressable extends React.Component<Props, State> {
-  static defaultProps = {
+  static defaultProps: $TEMPORARY$object<{|
+    backgroundColor: $TEMPORARY$object<{|default: string, pressed: string|}>,
+  |}> = {
     backgroundColor: {
       default: YellowBoxStyle.getBackgroundColor(0.95),
       pressed: YellowBoxStyle.getHighlightColor(1),
     },
   };
 
-  state = {
+  state: State = {
     pressed: false,
   };
 

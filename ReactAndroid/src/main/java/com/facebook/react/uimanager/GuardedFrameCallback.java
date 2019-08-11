@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
 
 import com.facebook.react.bridge.ReactContext;
@@ -33,8 +32,8 @@ public abstract class GuardedFrameCallback extends ChoreographerCompat.FrameCall
   }
 
   /**
-   * Like the standard doFrame but RuntimeExceptions will be caught and passed to
-   * {@link com.facebook.react.bridge.ReactContext#handleException(RuntimeException)}.
+   * Like the standard doFrame but RuntimeExceptions will be caught and passed to {@link
+   * com.facebook.react.bridge.ReactContext#handleException(RuntimeException)}.
    */
   protected abstract void doFrameGuarded(long frameTimeNanos);
 }

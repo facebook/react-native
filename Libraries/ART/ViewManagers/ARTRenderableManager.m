@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "ARTRenderableManager.h"
+#import <React/ARTRenderableManager.h>
 
 #import "RCTConvert+ART.h"
 

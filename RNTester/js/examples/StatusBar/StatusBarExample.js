@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   StatusBar,
   StyleSheet,
@@ -433,55 +434,55 @@ exports.description = 'Component for controlling the status bar';
 exports.examples = [
   {
     title: 'StatusBar hidden',
-    render() {
+    render(): React.Node {
       return <StatusBarHiddenExample />;
     },
   },
   {
     title: 'StatusBar style',
-    render() {
+    render(): React.Node {
       return <StatusBarStyleExample />;
     },
     platform: 'ios',
   },
   {
     title: 'StatusBar network activity indicator',
-    render() {
+    render(): React.Node {
       return <StatusBarNetworkActivityExample />;
     },
     platform: 'ios',
   },
   {
     title: 'StatusBar background color',
-    render() {
+    render(): React.Node {
       return <StatusBarBackgroundColorExample />;
     },
     platform: 'android',
   },
   {
     title: 'StatusBar translucent',
-    render() {
+    render(): React.Node {
       return <StatusBarTranslucentExample />;
     },
     platform: 'android',
   },
   {
     title: 'StatusBar static API',
-    render() {
+    render(): React.Node {
       return <StatusBarStaticIOSExample />;
     },
     platform: 'ios',
   },
   {
     title: 'StatusBar static API',
-    render() {
+    render(): React.Node {
       return <StatusBarStaticAndroidExample />;
     },
     platform: 'android',
   },
   {
     title: 'StatusBar dimensions',
-    render() {
+    render(): React.Node {
       return (
         <View>
           <Text>Height (Android only): {StatusBar.currentHeight} pts</Text>

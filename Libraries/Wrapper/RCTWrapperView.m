@@ -74,7 +74,7 @@
   [super invalidateIntrinsicContentSize];
 
   // Setting `intrinsicContentSize` dirties the Yoga node and
-  // enfoce Yoga to call `measure` function (backed to `measureBlock`).
+  // enforce Yoga to call `measure` function (backed to `measureBlock`).
   [_bridge.uiManager setIntrinsicContentSize:self.intrinsicContentSize forView:self];
 }
 

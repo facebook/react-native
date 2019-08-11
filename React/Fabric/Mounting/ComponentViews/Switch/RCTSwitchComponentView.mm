@@ -45,10 +45,8 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &oldSwitchProps = *std::static_pointer_cast<const SwitchProps>(oldProps ?: _props);
+  const auto &oldSwitchProps = *std::static_pointer_cast<const SwitchProps>(_props);
   const auto &newSwitchProps = *std::static_pointer_cast<const SwitchProps>(props);
-
-  [super updateProps:props oldProps:oldProps];
 
   // `value`
   if (oldSwitchProps.value != newSwitchProps.value) {
@@ -75,6 +73,8 @@ using namespace facebook::react;
   if (oldSwitchProps.thumbTintColor != newSwitchProps.thumbTintColor) {
     _switchView.thumbTintColor = [UIColor colorWithCGColor:newSwitchProps.thumbTintColor.get()];
   }
+
+  [super updateProps:props oldProps:oldProps];
 }
 
 - (void)onChange:(UISwitch *)sender

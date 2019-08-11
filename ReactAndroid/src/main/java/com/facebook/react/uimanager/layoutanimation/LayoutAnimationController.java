@@ -5,19 +5,17 @@
 
 package com.facebook.react.uimanager.layoutanimation;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
-
 import android.os.Handler;
 import android.os.Looper;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
+import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * Class responsible for animation layout changes, if a valid layout animation config has been
@@ -38,7 +36,8 @@ public class LayoutAnimationController {
 
   @Nullable private static Handler sCompletionHandler;
 
-  public void initializeFromConfig(final @Nullable ReadableMap config, final Callback completionCallback) {
+  public void initializeFromConfig(
+      final @Nullable ReadableMap config, final Callback completionCallback) {
     if (config == null) {
       reset();
       return;
@@ -63,12 +62,13 @@ public class LayoutAnimationController {
     }
 
     if (mShouldAnimateLayout && completionCallback != null) {
-      mCompletionRunnable = new Runnable() {
-        @Override
-        public void run() {
-          completionCallback.invoke(Boolean.TRUE);
-        }
-      };
+      mCompletionRunnable =
+          new Runnable() {
+            @Override
+            public void run() {
+              completionCallback.invoke(Boolean.TRUE);
+            }
+          };
     }
   }
 
@@ -87,7 +87,7 @@ public class LayoutAnimationController {
     // If there's a layout handling animation going on, it should be animated nonetheless since the
     // ongoing animation needs to be updated.
     return (mShouldAnimateLayout && viewToAnimate.getParent() != null)
-      || mLayoutHandlers.get(viewToAnimate.getId()) != null;
+        || mLayoutHandlers.get(viewToAnimate.getId()) != null;
   }
 
   /**
@@ -117,27 +117,29 @@ public class LayoutAnimationController {
     // Determine which animation to use : if view is initially invisible, use create animation,
     // otherwise use update animation. This approach is easier than maintaining a list of tags
     // for recently created views.
-    AbstractLayoutAnimation layoutAnimation = (view.getWidth() == 0 || view.getHeight() == 0) ?
-        mLayoutCreateAnimation :
-        mLayoutUpdateAnimation;
+    AbstractLayoutAnimation layoutAnimation =
+        (view.getWidth() == 0 || view.getHeight() == 0)
+            ? mLayoutCreateAnimation
+            : mLayoutUpdateAnimation;
 
     Animation animation = layoutAnimation.createAnimation(view, x, y, width, height);
 
     if (animation instanceof LayoutHandlingAnimation) {
-      animation.setAnimationListener(new Animation.AnimationListener() {
-        @Override
-        public void onAnimationStart(Animation animation) {
-          mLayoutHandlers.put(reactTag, (LayoutHandlingAnimation) animation);
-        }
+      animation.setAnimationListener(
+          new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+              mLayoutHandlers.put(reactTag, (LayoutHandlingAnimation) animation);
+            }
 
-        @Override
-        public void onAnimationEnd(Animation animation) {
-          mLayoutHandlers.remove(reactTag);
-        }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+              mLayoutHandlers.remove(reactTag);
+            }
 
-        @Override
-        public void onAnimationRepeat(Animation animation) {}
-      });
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+          });
     } else {
       view.layout(x, y, x + width, y + height);
     }
@@ -154,33 +156,36 @@ public class LayoutAnimationController {
   }
 
   /**
-   * Animate a view deletion using the layout animation configuration supplied during initialization.
+   * Animate a view deletion using the layout animation configuration supplied during
+   * initialization.
    *
-   * @param view     The view to animate.
-   * @param listener Called once the animation is finished, should be used to
-   *                 completely remove the view.
+   * @param view The view to animate.
+   * @param listener Called once the animation is finished, should be used to completely remove the
+   *     view.
    */
   public void deleteView(final View view, final LayoutAnimationListener listener) {
     UiThreadUtil.assertOnUiThread();
 
-    Animation animation = mLayoutDeleteAnimation.createAnimation(
-        view, view.getLeft(), view.getTop(), view.getWidth(), view.getHeight());
+    Animation animation =
+        mLayoutDeleteAnimation.createAnimation(
+            view, view.getLeft(), view.getTop(), view.getWidth(), view.getHeight());
 
     if (animation != null) {
       disableUserInteractions(view);
 
-      animation.setAnimationListener(new Animation.AnimationListener() {
-        @Override
-        public void onAnimationStart(Animation anim) {}
+      animation.setAnimationListener(
+          new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation anim) {}
 
-        @Override
-        public void onAnimationRepeat(Animation anim) {}
+            @Override
+            public void onAnimationRepeat(Animation anim) {}
 
-        @Override
-        public void onAnimationEnd(Animation anim) {
-          listener.onAnimationEnd();
-        }
-      });
+            @Override
+            public void onAnimationEnd(Animation anim) {
+              listener.onAnimationEnd();
+            }
+          });
 
       long animationDuration = animation.getDuration();
       if (animationDuration > mMaxAnimationDuration) {
@@ -194,13 +199,11 @@ public class LayoutAnimationController {
     }
   }
 
-  /**
-   * Disables user interactions for a view and all it's subviews.
-   */
+  /** Disables user interactions for a view and all it's subviews. */
   private void disableUserInteractions(View view) {
     view.setClickable(false);
     if (view instanceof ViewGroup) {
-      ViewGroup viewGroup = (ViewGroup)view;
+      ViewGroup viewGroup = (ViewGroup) view;
       for (int i = 0; i < viewGroup.getChildCount(); i++) {
         disableUserInteractions(viewGroup.getChildAt(i));
       }

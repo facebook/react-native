@@ -108,19 +108,42 @@ static void sliceChildShadowNodeViewPairsRecursively(
   }
 }
 
-static ShadowViewNodePair::List sliceChildShadowNodeViewPairs(
+ShadowViewNodePair::List sliceChildShadowNodeViewPairs(
     ShadowNode const &shadowNode) {
   auto pairList = ShadowViewNodePair::List{};
   sliceChildShadowNodeViewPairsRecursively(pairList, {0, 0}, shadowNode);
   return pairList;
 }
 
+/*
+ * Before we start to diff, let's make sure all our core data structures are in
+ * good shape to deliver the best performance.
+ */
+static_assert(
+    std::is_move_constructible<ShadowViewMutation>::value,
+    "`ShadowViewMutation` must be `move constructible`.");
+static_assert(
+    std::is_move_constructible<ShadowView>::value,
+    "`ShadowView` must be `move constructible`.");
+static_assert(
+    std::is_move_constructible<ShadowViewNodePair>::value,
+    "`ShadowViewNodePair` must be `move constructible`.");
+static_assert(
+    std::is_move_assignable<ShadowViewMutation>::value,
+    "`ShadowViewMutation` must be `move assignable`.");
+static_assert(
+    std::is_move_assignable<ShadowView>::value,
+    "`ShadowView` must be `move assignable`.");
+static_assert(
+    std::is_move_assignable<ShadowViewNodePair>::value,
+    "`ShadowViewNodePair` must be `move assignable`.");
+
 static void calculateShadowViewMutations(
     ShadowViewMutation::List &mutations,
     ShadowView const &parentShadowView,
     ShadowViewNodePair::List const &oldChildPairs,
     ShadowViewNodePair::List const &newChildPairs) {
-  // The current version of the algorithm is otimized for simplicity,
+  // The current version of the algorithm is optimized for simplicity,
   // not for performance or optimal result.
 
   if (oldChildPairs == newChildPairs) {
@@ -183,7 +206,7 @@ static void calculateShadowViewMutations(
     auto const &newChildPair = newChildPairs[index];
 
     insertMutations.push_back(ShadowViewMutation::InsertMutation(
-          parentShadowView, newChildPair.shadowView, index));
+        parentShadowView, newChildPair.shadowView, index));
 
     insertedPairs.insert({newChildPair.shadowView.tag, &newChildPair});
   }

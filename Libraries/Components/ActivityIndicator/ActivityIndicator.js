@@ -21,7 +21,7 @@ import type {ViewProps} from '../View/ViewPropTypes';
 const PlatformActivityIndicator =
   Platform.OS === 'android'
     ? require('../ProgressBarAndroid/ProgressBarAndroid')
-    : require('./ActivityIndicatorViewNativeComponent');
+    : require('./ActivityIndicatorViewNativeComponent').default;
 
 const GRAY = '#999999';
 

@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTNetInfo.h"
+#import <React/RCTNetInfo.h>
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
   #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #endif
 #import <React/RCTAssert.h>
@@ -148,7 +148,7 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
     status = RCTReachabilityStateNone;
   }
   
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
   
   else if ((flags & kSCNetworkReachabilityFlagsIsWWAN) != 0) {
     connectionType = RCTConnectionTypeCellular;

@@ -18,4 +18,4 @@ export interface Spec extends TurboModule {
   +dismiss: () => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('RedBox');
+export default (TurboModuleRegistry.get<Spec>('RedBox'): ?Spec);

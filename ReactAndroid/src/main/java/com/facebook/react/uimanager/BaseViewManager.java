@@ -9,12 +9,9 @@ import android.graphics.Color;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewParent;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import com.facebook.react.R;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
@@ -22,15 +19,13 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Base class that should be suitable for the majority of subclasses of {@link ViewManager}. It
@@ -72,7 +67,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       new MatrixMathHelper.MatrixDecompositionContext();
   private static double[] sTransformDecompositionArray = new double[16];
 
-  public static final HashMap<String, Integer> sStateDescription = new HashMap<String, Integer>();
+  public static final Map<String, Integer> sStateDescription = new HashMap<>();
 
   static {
     sStateDescription.put("busy", R.string.state_busy_description);
@@ -88,14 +83,14 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String STATE_BUSY = "busy";
   private static final String STATE_EXPANDED = "expanded";
   private static final String STATE_MIXED = "mixed";
- 
+
   @ReactProp(name = PROP_BACKGROUND_COLOR, defaultInt = Color.TRANSPARENT, customType = "Color")
-  public void setBackgroundColor(@Nonnull T view, int backgroundColor) {
+  public void setBackgroundColor(@NonNull T view, int backgroundColor) {
     view.setBackgroundColor(backgroundColor);
   }
 
   @ReactProp(name = PROP_TRANSFORM)
-  public void setTransform(@Nonnull T view, @Nullable ReadableArray matrix) {
+  public void setTransform(@NonNull T view, @Nullable ReadableArray matrix) {
     if (matrix == null) {
       resetTransformProperty(view);
     } else {
@@ -104,32 +99,32 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @ReactProp(name = ViewProps.OPACITY, defaultFloat = 1.f)
-  public void setOpacity(@Nonnull T view, float opacity) {
+  public void setOpacity(@NonNull T view, float opacity) {
     view.setAlpha(opacity);
   }
 
   @ReactProp(name = PROP_ELEVATION)
-  public void setElevation(@Nonnull T view, float elevation) {
+  public void setElevation(@NonNull T view, float elevation) {
     ViewCompat.setElevation(view, PixelUtil.toPixelFromDIP(elevation));
   }
 
   @ReactProp(name = PROP_Z_INDEX)
-  public void setZIndex(@Nonnull T view, float zIndex) {
+  public void setZIndex(@NonNull T view, float zIndex) {
     int integerZIndex = Math.round(zIndex);
     ViewGroupManager.setViewZIndex(view, integerZIndex);
     ViewParent parent = view.getParent();
-    if (parent != null && parent instanceof ReactZIndexedViewGroup) {
+    if (parent instanceof ReactZIndexedViewGroup) {
       ((ReactZIndexedViewGroup) parent).updateDrawingOrder();
     }
   }
 
   @ReactProp(name = PROP_RENDER_TO_HARDWARE_TEXTURE)
-  public void setRenderToHardwareTexture(@Nonnull T view, boolean useHWTexture) {
+  public void setRenderToHardwareTexture(@NonNull T view, boolean useHWTexture) {
     view.setLayerType(useHWTexture ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE, null);
   }
 
   @ReactProp(name = PROP_TEST_ID)
-  public void setTestId(@Nonnull T view, String testId) {
+  public void setTestId(@NonNull T view, String testId) {
     view.setTag(R.id.react_test_id, testId);
 
     // temporarily set the tag and keyed tags to avoid end to end test regressions
@@ -137,25 +132,25 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @ReactProp(name = PROP_NATIVE_ID)
-  public void setNativeId(@Nonnull T view, String nativeId) {
+  public void setNativeId(@NonNull T view, String nativeId) {
     view.setTag(R.id.view_tag_native_id, nativeId);
     ReactFindViewUtil.notifyViewRendered(view);
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_LABEL)
-  public void setAccessibilityLabel(@Nonnull T view, String accessibilityLabel) {
+  public void setAccessibilityLabel(@NonNull T view, String accessibilityLabel) {
     view.setTag(R.id.accessibility_label, accessibilityLabel);
     updateViewContentDescription(view);
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_HINT)
-  public void setAccessibilityHint(@Nonnull T view, String accessibilityHint) {
+  public void setAccessibilityHint(@NonNull T view, String accessibilityHint) {
     view.setTag(R.id.accessibility_hint, accessibilityHint);
     updateViewContentDescription(view);
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_ROLE)
-  public void setAccessibilityRole(@Nonnull T view, @Nullable String accessibilityRole) {
+  public void setAccessibilityRole(@NonNull T view, @Nullable String accessibilityRole) {
     if (accessibilityRole == null) {
       return;
     }
@@ -163,7 +158,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_STATES)
-  public void setViewStates(@Nonnull T view, @Nullable ReadableArray accessibilityStates) {
+  public void setViewStates(@NonNull T view, @Nullable ReadableArray accessibilityStates) {
     boolean shouldUpdateContentDescription =
         view.getTag(R.id.accessibility_states) != null && accessibilityStates == null;
     view.setTag(R.id.accessibility_states, accessibilityStates);
@@ -175,9 +170,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         if (sStateDescription.containsKey(state)) {
           shouldUpdateContentDescription = true;
         }
-        if (state.equals("selected")) {
+        if ("selected".equals(state)) {
           view.setSelected(true);
-        } else if (state.equals("disabled")) {
+        } else if ("disabled".equals(state)) {
           view.setEnabled(false);
         }
       }
@@ -188,7 +183,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_STATE)
-  public void setViewState(@Nonnull T view, @Nullable ReadableMap accessibilityState) {
+  public void setViewState(@NonNull T view, @Nullable ReadableMap accessibilityState) {
     if (accessibilityState == null) {
       return;
     }
@@ -203,20 +198,23 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     final ReadableMapKeySetIterator i = accessibilityState.keySetIterator();
     while (i.hasNextKey()) {
       final String state = i.nextKey();
-      if (state.equals(STATE_BUSY) || state.equals(STATE_EXPANDED) ||
-          (state.equals(STATE_CHECKED) && accessibilityState.getType(STATE_CHECKED) == ReadableType.String)) {
+      if (state.equals(STATE_BUSY)
+          || state.equals(STATE_EXPANDED)
+          || (state.equals(STATE_CHECKED)
+              && accessibilityState.getType(STATE_CHECKED) == ReadableType.String)) {
         updateViewContentDescription(view);
         break;
       }
     }
   }
 
-  private void updateViewContentDescription(@Nonnull T view) {
+  private void updateViewContentDescription(@NonNull T view) {
     final String accessibilityLabel = (String) view.getTag(R.id.accessibility_label);
-    final ReadableArray accessibilityStates = (ReadableArray) view.getTag(R.id.accessibility_states);
+    final ReadableArray accessibilityStates =
+        (ReadableArray) view.getTag(R.id.accessibility_states);
     final ReadableMap accessibilityState = (ReadableMap) view.getTag(R.id.accessibility_state);
     final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
-    final ArrayList<String> contentDescription = new ArrayList<String>();
+    final List<String> contentDescription = new ArrayList<>();
     if (accessibilityLabel != null) {
       contentDescription.add(accessibilityLabel);
     }
@@ -233,12 +231,21 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       while (i.hasNextKey()) {
         final String state = i.nextKey();
         final Dynamic value = accessibilityState.getDynamic(state);
-        if (state.equals(STATE_CHECKED) && value.getType() == ReadableType.String && value.asString().equals(STATE_MIXED)) {
+        if (state.equals(STATE_CHECKED)
+            && value.getType() == ReadableType.String
+            && value.asString().equals(STATE_MIXED)) {
           contentDescription.add(view.getContext().getString(R.string.state_mixed_description));
-        } else if (state.equals(STATE_BUSY) && value.getType() == ReadableType.Boolean && value.asBoolean()) {
+        } else if (state.equals(STATE_BUSY)
+            && value.getType() == ReadableType.Boolean
+            && value.asBoolean()) {
           contentDescription.add(view.getContext().getString(R.string.state_busy_description));
         } else if (state.equals(STATE_EXPANDED) && value.getType() == ReadableType.Boolean) {
-          contentDescription.add(view.getContext().getString(value.asBoolean() ? R.string.state_expanded_description : R.string.state_collapsed_description));
+          contentDescription.add(
+              view.getContext()
+                  .getString(
+                      value.asBoolean()
+                          ? R.string.state_expanded_description
+                          : R.string.state_collapsed_description));
         }
       }
     }
@@ -261,7 +268,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = PROP_IMPORTANT_FOR_ACCESSIBILITY)
   public void setImportantForAccessibility(
-      @Nonnull T view, @Nullable String importantForAccessibility) {
+      @NonNull T view, @Nullable String importantForAccessibility) {
     if (importantForAccessibility == null || importantForAccessibility.equals("auto")) {
       ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     } else if (importantForAccessibility.equals("yes")) {
@@ -276,36 +283,36 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @Deprecated
   @ReactProp(name = PROP_ROTATION)
-  public void setRotation(@Nonnull T view, float rotation) {
+  public void setRotation(@NonNull T view, float rotation) {
     view.setRotation(rotation);
   }
 
   @Deprecated
   @ReactProp(name = PROP_SCALE_X, defaultFloat = 1f)
-  public void setScaleX(@Nonnull T view, float scaleX) {
+  public void setScaleX(@NonNull T view, float scaleX) {
     view.setScaleX(scaleX);
   }
 
   @Deprecated
   @ReactProp(name = PROP_SCALE_Y, defaultFloat = 1f)
-  public void setScaleY(@Nonnull T view, float scaleY) {
+  public void setScaleY(@NonNull T view, float scaleY) {
     view.setScaleY(scaleY);
   }
 
   @Deprecated
   @ReactProp(name = PROP_TRANSLATE_X, defaultFloat = 0f)
-  public void setTranslateX(@Nonnull T view, float translateX) {
+  public void setTranslateX(@NonNull T view, float translateX) {
     view.setTranslationX(PixelUtil.toPixelFromDIP(translateX));
   }
 
   @Deprecated
   @ReactProp(name = PROP_TRANSLATE_Y, defaultFloat = 0f)
-  public void setTranslateY(@Nonnull T view, float translateY) {
+  public void setTranslateY(@NonNull T view, float translateY) {
     view.setTranslationY(PixelUtil.toPixelFromDIP(translateY));
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_LIVE_REGION)
-  public void setAccessibilityLiveRegion(@Nonnull T view, @Nullable String liveRegion) {
+  public void setAccessibilityLiveRegion(@NonNull T view, @Nullable String liveRegion) {
     if (liveRegion == null || liveRegion.equals("none")) {
       ViewCompat.setAccessibilityLiveRegion(view, ViewCompat.ACCESSIBILITY_LIVE_REGION_NONE);
     } else if (liveRegion.equals("polite")) {
@@ -315,7 +322,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  private static void setTransformProperty(@Nonnull View view, ReadableArray transforms) {
+  private static void setTransformProperty(@NonNull View view, ReadableArray transforms) {
     TransformHelper.processTransform(transforms, sTransformDecompositionArray);
     MatrixMathHelper.decomposeMatrix(sTransformDecompositionArray, sMatrixDecompositionContext);
     view.setTranslationX(
@@ -352,7 +359,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  private static void resetTransformProperty(@Nonnull View view) {
+  private static void resetTransformProperty(@NonNull View view) {
     view.setTranslationX(PixelUtil.toPixelFromDIP(0));
     view.setTranslationY(PixelUtil.toPixelFromDIP(0));
     view.setRotation(0);
@@ -363,12 +370,12 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setCameraDistance(0);
   }
 
-  private void updateViewAccessibility(@Nonnull T view) {
+  private void updateViewAccessibility(@NonNull T view) {
     ReactAccessibilityDelegate.setDelegate(view);
   }
 
   @Override
-  protected void onAfterUpdateTransaction(@Nonnull T view) {
+  protected void onAfterUpdateTransaction(@NonNull T view) {
     super.onAfterUpdateTransaction(view);
     updateViewAccessibility(view);
   }

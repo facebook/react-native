@@ -11,6 +11,8 @@
 'use strict';
 
 const React = require('react');
+
+const {SimpleAlertExampleBlock} = require('./AlertExample');
 const {
   StyleSheet,
   View,
@@ -18,8 +20,6 @@ const {
   TouchableHighlight,
   Alert,
 } = require('react-native');
-
-const {SimpleAlertExampleBlock} = require('./AlertExample');
 
 type Props = $ReadOnly<{||}>;
 type State = {|promptValue: ?string|};
@@ -157,7 +157,7 @@ exports.description = 'iOS alerts and action sheets';
 exports.examples = [
   {
     title: 'Alerts',
-    render() {
+    render(): React.Node {
       return <SimpleAlertExampleBlock />;
     },
   },
@@ -169,7 +169,7 @@ exports.examples = [
   },
   {
     title: 'Prompt Types',
-    render() {
+    render(): React.Node {
       return (
         <View>
           <TouchableHighlight

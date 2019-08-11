@@ -22,11 +22,11 @@ class ImageSnapshotTest extends React.Component<{}> {
     }
   }
 
-  done = (success: boolean) => {
+  done: (success: boolean) => void = (success: boolean) => {
     TestModule.markTestPassed(success);
   };
 
-  render() {
+  render(): React.Node {
     return (
       <Image
         source={require('./blue_square.png')}

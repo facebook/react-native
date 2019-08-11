@@ -11,7 +11,8 @@
 'use strict';
 
 const getNativeComponentAttributes = require('../../ReactNative/getNativeComponentAttributes');
-const verifyComponentAttributeEquivalence = require('../verifyComponentAttributeEquivalence');
+const verifyComponentAttributeEquivalence = require('../verifyComponentAttributeEquivalence')
+  .default;
 
 jest.dontMock('../verifyComponentAttributeEquivalence');
 jest.mock('../../ReactNative/getNativeComponentAttributes', () => () => ({

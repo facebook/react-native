@@ -26,7 +26,7 @@
 #include <folly/Memory.h>
 #include <jni/Countable.h>
 #include <jni/LocalReference.h>
-#include <jsireact/JSCallInvokerHolder.h>
+#include <ReactCommon/JSCallInvokerHolder.h>
 
 #include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
@@ -199,6 +199,8 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
       sourceURL,
       loadSynchronously);
     return;
+  } else if (Instance::isIndexedRAMBundle(&script)) {
+    instance_->loadRAMBundleFromString(std::move(script), sourceURL);
   } else {
     instance_->loadScriptFromString(std::move(script), sourceURL, loadSynchronously);
   }

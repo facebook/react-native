@@ -14,4 +14,4 @@ const Image = require('../../../Image/Image');
 
 const createAnimatedComponent = require('../createAnimatedComponent');
 
-module.exports = createAnimatedComponent(Image);
+module.exports = (createAnimatedComponent(Image): $FlowFixMe);

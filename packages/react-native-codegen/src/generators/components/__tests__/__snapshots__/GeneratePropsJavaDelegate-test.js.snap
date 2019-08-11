@@ -1,0 +1,474 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GeneratePropsJavaDelegate can generate fixture ARRAY_PROPS 1`] = `
+Map {
+  "ArrayPropsNativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import com.facebook.react.bridge.ReadableArray;
+
+public class ArrayPropsNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(ArrayPropsNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"names\\":
+        viewManager.setNames(view, (ReadableArray) value);
+        break;
+      case \\"disableds\\":
+        viewManager.setDisableds(view, (ReadableArray) value);
+        break;
+      case \\"progress\\":
+        viewManager.setProgress(view, (ReadableArray) value);
+        break;
+      case \\"radii\\":
+        viewManager.setRadii(view, (ReadableArray) value);
+        break;
+      case \\"colors\\":
+        viewManager.setColors(view, (ReadableArray) value);
+        break;
+      case \\"srcs\\":
+        viewManager.setSrcs(view, (ReadableArray) value);
+        break;
+      case \\"points\\":
+        viewManager.setPoints(view, (ReadableArray) value);
+        break;
+      case \\"sizes\\":
+        viewManager.setSizes(view, (ReadableArray) value);
+        break;
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture BOOLEAN_PROP 1`] = `
+Map {
+  "BooleanPropNativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public class BooleanPropNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(BooleanPropNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"disabled\\":
+        viewManager.setDisabled(view, value == null ? false : (boolean) value);
+        break;
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture COLOR_PROP 1`] = `
+Map {
+  "ColorPropNativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public class ColorPropNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(ColorPropNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"tintColor\\":
+        viewManager.setTintColor(view, value == null ? null : ((Double) value).intValue());
+        break;
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture COMMANDS 1`] = `
+Map {
+  "CommandNativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import com.facebook.react.bridge.ReadableArray;
+
+public class CommandNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(CommandNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    // No props
+  }
+
+  public void receiveCommand(CommandNativeComponentViewManagerInterface<T> viewManager, T view, String commandName, ReadableArray args) {
+    case \\"flashScrollIndicators\\":
+      viewManager.flashScrollIndicators(view);
+      break;
+    case \\"allTypes\\":
+      viewManager.allTypes(view, args.getInt(0), args.getString(1), args.getBoolean(2));
+      break;
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture COMMANDS_AND_PROPS 1`] = `
+Map {
+  "CommandNativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import com.facebook.react.bridge.ReadableArray;
+
+public class CommandNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(CommandNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"accessibilityHint\\":
+        viewManager.setAccessibilityHint(view, value == null ? \\"\\" : (String) value);
+        break;
+    }
+  }
+
+  public void receiveCommand(CommandNativeComponentViewManagerInterface<T> viewManager, T view, String commandName, ReadableArray args) {
+    case \\"hotspotUpdate\\":
+      viewManager.hotspotUpdate(view, args.getInt(0), args.getInt(1));
+      break;
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture ENUM_PROP 1`] = `
+Map {
+  "EnumPropsNativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public class EnumPropsNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(EnumPropsNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"alignment\\":
+        viewManager.setAlignment(view, (String) value);
+        break;
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
+Map {
+  "EventsNestedObjectNativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public class EventsNestedObjectNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(EventsNestedObjectNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"disabled\\":
+        viewManager.setDisabled(view, value == null ? false : (boolean) value);
+        break;
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture EVENT_PROPS 1`] = `
+Map {
+  "EventsNativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public class EventsNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(EventsNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"disabled\\":
+        viewManager.setDisabled(view, value == null ? false : (boolean) value);
+        break;
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture EVENTS_WITH_PAPER_NAME 1`] = `
+Map {
+  "InterfaceOnlyComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public class InterfaceOnlyComponentViewManagerDelegate<T extends View> {
+  public void setProperty(InterfaceOnlyComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    // No props
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture FLOAT_PROPS 1`] = `
+Map {
+  "FloatPropNativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public class FloatPropNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(FloatPropNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"blurRadius\\":
+        viewManager.setBlurRadius(view, value == null ? Float.NaN : ((Double) value).floatValue());
+        break;
+      case \\"blurRadius2\\":
+        viewManager.setBlurRadius2(view, value == null ? 0.001f : ((Double) value).floatValue());
+        break;
+      case \\"blurRadius3\\":
+        viewManager.setBlurRadius3(view, value == null ? 2.1f : ((Double) value).floatValue());
+        break;
+      case \\"blurRadius4\\":
+        viewManager.setBlurRadius4(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
+      case \\"blurRadius5\\":
+        viewManager.setBlurRadius5(view, value == null ? 1f : ((Double) value).floatValue());
+        break;
+      case \\"blurRadius6\\":
+        viewManager.setBlurRadius6(view, value == null ? 0f : ((Double) value).floatValue());
+        break;
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture IMAGE_PROP 1`] = `
+Map {
+  "ImagePropNativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import com.facebook.react.bridge.ReadableMap;
+
+public class ImagePropNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(ImagePropNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"thumbImage\\":
+        viewManager.setThumbImage(view, (ReadableMap) value);
+        break;
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture INTEGER_PROPS 1`] = `
+Map {
+  "IntegerPropNativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public class IntegerPropNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(IntegerPropNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"progress1\\":
+        viewManager.setProgress1(view, value == null ? 0 : ((Double) value).intValue());
+        break;
+      case \\"progress2\\":
+        viewManager.setProgress2(view, value == null ? -1 : ((Double) value).intValue());
+        break;
+      case \\"progress3\\":
+        viewManager.setProgress3(view, value == null ? 10 : ((Double) value).intValue());
+        break;
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture INTERFACE_ONLY 1`] = `
+Map {
+  "InterfaceOnlyComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public class InterfaceOnlyComponentViewManagerDelegate<T extends View> {
+  public void setProperty(InterfaceOnlyComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"accessibilityHint\\":
+        viewManager.setAccessibilityHint(view, value == null ? \\"\\" : (String) value);
+        break;
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture MULTI_NATIVE_PROP 1`] = `
+Map {
+  "ImageColorPropNativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import com.facebook.react.bridge.ReadableMap;
+
+public class ImageColorPropNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(ImageColorPropNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"thumbImage\\":
+        viewManager.setThumbImage(view, (ReadableMap) value);
+        break;
+      case \\"color\\":
+        viewManager.setColor(view, value == null ? null : ((Double) value).intValue());
+        break;
+      case \\"thumbTintColor\\":
+        viewManager.setThumbTintColor(view, value == null ? null : ((Double) value).intValue());
+        break;
+      case \\"point\\":
+        viewManager.setPoint(view, (ReadableMap) value);
+        break;
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture NO_PROPS_NO_EVENTS 1`] = `
+Map {
+  "NoPropsNoEventsComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public class NoPropsNoEventsComponentViewManagerDelegate<T extends View> {
+  public void setProperty(NoPropsNoEventsComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    // No props
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture POINT_PROP 1`] = `
+Map {
+  "PointPropNativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import com.facebook.react.bridge.ReadableMap;
+
+public class PointPropNativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(PointPropNativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"startPoint\\":
+        viewManager.setStartPoint(view, (ReadableMap) value);
+        break;
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture STRING_PROP 1`] = `
+Map {
+  "StringPropComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public class StringPropComponentViewManagerDelegate<T extends View> {
+  public void setProperty(StringPropComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"accessibilityHint\\":
+        viewManager.setAccessibilityHint(view, value == null ? \\"\\" : (String) value);
+        break;
+      case \\"accessibilityRole\\":
+        viewManager.setAccessibilityRole(view, value == null ? null : (String) value);
+        break;
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
+Map {
+  "MultiFile1NativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public class MultiFile1NativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(MultiFile1NativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"disabled\\":
+        viewManager.setDisabled(view, value == null ? false : (boolean) value);
+        break;
+    }
+  }
+}
+",
+  "MultiFile2NativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public class MultiFile2NativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(MultiFile2NativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"disabled\\":
+        viewManager.setDisabled(view, value == null ? true : (boolean) value);
+        break;
+    }
+  }
+}
+",
+}
+`;
+
+exports[`GeneratePropsJavaDelegate can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
+Map {
+  "MultiComponent1NativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public class MultiComponent1NativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(MultiComponent1NativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"disabled\\":
+        viewManager.setDisabled(view, value == null ? false : (boolean) value);
+        break;
+    }
+  }
+}
+",
+  "MultiComponent2NativeComponentViewManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public class MultiComponent2NativeComponentViewManagerDelegate<T extends View> {
+  public void setProperty(MultiComponent2NativeComponentViewManagerInterface<T> viewManager, T view, String propName, Object value) {
+    switch (propName) {
+      case \\"disabled\\":
+        viewManager.setDisabled(view, value == null ? true : (boolean) value);
+        break;
+    }
+  }
+}
+",
+}
+`;

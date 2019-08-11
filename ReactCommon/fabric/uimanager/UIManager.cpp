@@ -10,7 +10,7 @@ namespace react {
 
 SharedShadowNode UIManager::createNode(
     Tag tag,
-    const ComponentName &name,
+    std::string const &name,
     SurfaceId surfaceId,
     const RawProps &rawProps,
     SharedEventTarget eventTarget) const {
@@ -24,7 +24,7 @@ SharedShadowNode UIManager::createNode(
       componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
   auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
   auto const state = componentDescriptor.createInitialState(
-      ShadowNodeFragment{surfaceId, tag, props, eventEmitter});
+      ShadowNodeFragment{tag, surfaceId, props, eventEmitter});
 
   auto shadowNode = componentDescriptor.createShadowNode({
       /* .tag = */ tag,
@@ -88,6 +88,21 @@ void UIManager::completeSurface(
 
   if (delegate_) {
     delegate_->uiManagerDidFinishTransaction(surfaceId, rootChildren);
+  }
+}
+
+void UIManager::setJSResponder(
+    const SharedShadowNode &shadowNode,
+    const bool blockNativeResponder) const {
+  if (delegate_) {
+    delegate_->uiManagerDidSetJSResponder(
+        shadowNode->getSurfaceId(), shadowNode, blockNativeResponder);
+  }
+}
+
+void UIManager::clearJSResponder() const {
+  if (delegate_) {
+    delegate_->uiManagerDidClearJSResponder();
   }
 }
 
@@ -165,6 +180,15 @@ void UIManager::updateState(
               return oldRootShadowNode->clone(shadowNode, newShadowNode);
             });
       });
+}
+
+void UIManager::dispatchCommand(
+    const SharedShadowNode &shadowNode,
+    std::string const &commandName,
+    folly::dynamic const args) const {
+  if (delegate_) {
+    delegate_->uiManagerDidDispatchCommand(shadowNode, commandName, args);
+  }
 }
 
 void UIManager::setShadowTreeRegistry(ShadowTreeRegistry *shadowTreeRegistry) {

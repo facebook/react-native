@@ -32,10 +32,13 @@ public class StateWrapperImpl implements StateWrapper {
     mHybridData = initHybrid();
   }
 
-  @Override public native ReadableNativeMap getState();
+  @Override
+  public native ReadableNativeMap getState();
+
   public native void updateStateImpl(NativeMap map);
 
-  @Override public void updateState(WritableMap map) {
-    updateStateImpl((NativeMap)map);
+  @Override
+  public void updateState(WritableMap map) {
+    updateStateImpl((NativeMap) map);
   }
 }

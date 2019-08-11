@@ -9,9 +9,9 @@
  */
 
 'use strict';
-
-import React from 'react';
+import type {Node} from 'React';
 import {NativeModules, Button} from 'react-native';
+import React from 'react';
 
 const {CrashyCrash} = NativeModules;
 
@@ -23,7 +23,7 @@ exports.description = 'Crash examples.';
 exports.examples = [
   {
     title: 'JS crash',
-    render() {
+    render(): Node {
       return (
         <Button
           title="JS crash"
@@ -38,7 +38,7 @@ exports.examples = [
   },
   {
     title: 'Native crash',
-    render() {
+    render(): Node {
       return (
         <Button
           title="Native crash"

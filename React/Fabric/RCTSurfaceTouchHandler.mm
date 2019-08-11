@@ -7,9 +7,9 @@
 
 #import "RCTSurfaceTouchHandler.h"
 
-#import <UIKit/UIGestureRecognizerSubclass.h>
 #import <React/RCTUtils.h>
 #import <React/RCTViewComponentView.h>
+#import <UIKit/UIGestureRecognizerSubclass.h>
 
 #import "RCTConversions.h"
 #import "RCTTouchableComponentViewProtocol.h"
@@ -92,7 +92,8 @@ static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponen
   ActiveTouch activeTouch = {};
 
   if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
-    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
+    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView
+        touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
     activeTouch.touch.target = (Tag)componentView.tag;
   }
 
@@ -225,7 +226,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 {
   TouchEvent event = {};
   std::unordered_set<ActiveTouch, ActiveTouch::Hasher, ActiveTouch::Comparator> changedActiveTouches = {};
-  std::unordered_set<SharedTouchEventEmitter> uniqueEventEmitter = {};
+  std::unordered_set<SharedTouchEventEmitter> uniqueEventEmitters = {};
   BOOL isEndishEventType = eventType == RCTTouchEventTypeTouchEnd || eventType == RCTTouchEventTypeTouchCancel;
 
   for (const auto &activeTouch : activeTouches) {
@@ -235,7 +236,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 
     changedActiveTouches.insert(activeTouch);
     event.changedTouches.insert(activeTouch.touch);
-    uniqueEventEmitter.insert(activeTouch.eventEmitter);
+    uniqueEventEmitters.insert(activeTouch.eventEmitter);
   }
 
   for (const auto &pair : _activeTouches) {
@@ -253,7 +254,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
     event.touches.insert(pair.second.touch);
   }
 
-  for (const auto &eventEmitter : uniqueEventEmitter) {
+  for (const auto &eventEmitter : uniqueEventEmitters) {
     event.targetTouches.clear();
 
     for (const auto &pair : _activeTouches) {

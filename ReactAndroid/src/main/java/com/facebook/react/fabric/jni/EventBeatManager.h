@@ -7,7 +7,7 @@
 #include <fb/fbjni.h>
 #include <jsi/jsi.h>
 #include <react/core/EventBeat.h>
-#include <react/uimanager/primitives.h>
+#include <react/utils/RuntimeExecutor.h>
 #include <mutex>
 #include <unordered_set>
 

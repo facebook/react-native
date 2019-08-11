@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   ScrollView,
   StyleSheet,
@@ -24,7 +25,10 @@ class ScrollViewSimpleExample extends React.Component<{}> {
   /* $FlowFixMe(>=0.98.0 site=react_native_fb) This comment suppresses an error
    * found when Flow v0.98 was deployed. To see the error delete this comment
    * and run Flow. */
-  makeItems = (nItems: number, styles): Array<any> => {
+  makeItems: (nItems: number, styles: any) => Array<any> = (
+    nItems: number,
+    styles,
+  ): Array<any> => {
     const items = [];
     for (let i = 0; i < nItems; i++) {
       items[i] = (
@@ -36,7 +40,7 @@ class ScrollViewSimpleExample extends React.Component<{}> {
     return items;
   };
 
-  render() {
+  render(): React.Node {
     // One of the items is a horizontal scroll view
     const items = this.makeItems(NUM_ITEMS, styles.itemWrapper);
     items[4] = (

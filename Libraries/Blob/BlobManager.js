@@ -12,10 +12,10 @@
 
 const Blob = require('./Blob');
 const BlobRegistry = require('./BlobRegistry');
-import NativeBlobModule from './NativeBlobModule';
-import invariant from 'invariant';
 
 import type {BlobData, BlobOptions, BlobCollector} from './BlobTypes';
+import NativeBlobModule from './NativeBlobModule';
+import invariant from 'invariant';
 
 /*eslint-disable no-bitwise */
 /*eslint-disable eqeqeq */
@@ -54,7 +54,7 @@ class BlobManager {
   /**
    * If the native blob module is available.
    */
-  static isAvailable = !!NativeBlobModule;
+  static isAvailable: boolean = !!NativeBlobModule;
 
   /**
    * Create blob from existing array of blobs.

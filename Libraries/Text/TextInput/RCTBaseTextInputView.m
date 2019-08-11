@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTBaseTextInputView.h"
+#import <React/RCTBaseTextInputView.h>
 
 #import <React/RCTAccessibilityManager.h>
 #import <React/RCTBridge.h>
@@ -15,10 +15,10 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
-#import "RCTInputAccessoryView.h"
-#import "RCTInputAccessoryViewContent.h"
-#import "RCTTextAttributes.h"
-#import "RCTTextSelection.h"
+#import <React/RCTInputAccessoryView.h>
+#import <React/RCTInputAccessoryViewContent.h>
+#import <React/RCTTextAttributes.h>
+#import <React/RCTTextSelection.h>
 
 @implementation RCTBaseTextInputView {
   __weak RCTBridge *_bridge;
@@ -93,13 +93,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 }
 
 - (BOOL)textOf:(NSAttributedString*)newText equals:(NSAttributedString*)oldText{
-  // When the dictation is running we can't update the attibuted text on the backed up text view
+  // When the dictation is running we can't update the attributed text on the backed up text view
   // because setting the attributed string will kill the dictation. This means that we can't impose
   // the settings on a dictation.
   // Similarly, when the user is in the middle of inputting some text in Japanese/Chinese, there will be styling on the
   // text that we should disregard. See https://developer.apple.com/documentation/uikit/uitextinput/1614489-markedtextrange?language=objc
   // for more info.
-  // If the user added an emoji, the sytem adds a font attribute for the emoji and stores the original font in NSOriginalFont.
+  // If the user added an emoji, the system adds a font attribute for the emoji and stores the original font in NSOriginalFont.
   // Lastly, when entering a password, etc., there will be additional styling on the field as the native text view
   // handles showing the last character for a split second.
   __block BOOL fontHasBeenUpdatedBySystem = false;
@@ -160,7 +160,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
     [self updateLocalData];
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
-    RCTLogWarn(@"Native TextInput(%@) is %lld events ahead of JS - try to make your JS faster.", self.backedTextInputView.attributedText.string, (long long)eventLag);
+    RCTLog(@"Native TextInput(%@) is %lld events ahead of JS - try to make your JS faster.", self.backedTextInputView.attributedText.string, (long long)eventLag);
   }
 }
 
@@ -189,7 +189,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   if (eventLag == 0 && ![previousSelectedTextRange isEqual:selectedTextRange]) {
     [backedTextInputView setSelectedTextRange:selectedTextRange notifyDelegate:NO];
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
-    RCTLogWarn(@"Native TextInput(%@) is %lld events ahead of JS - try to make your JS faster.", backedTextInputView.attributedText.string, (long long)eventLag);
+    RCTLog(@"Native TextInput(%@) is %lld events ahead of JS - try to make your JS faster.", backedTextInputView.attributedText.string, (long long)eventLag);
   }
 }
 
@@ -256,6 +256,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
         // Setting textContentType to an empty string will disable any
         // default behaviour, like the autofill bar for password inputs
         self.backedTextInputView.textContentType = contentTypeMap[type] ?: type;
+    }
+  #endif
+}
+
+
+- (void)setPasswordRules:(NSString *)descriptor
+{
+  #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_12_0
+    if (@available(iOS 12.0, *)) {
+      self.backedTextInputView.passwordRules = [UITextInputPasswordRules passwordRulesWithDescriptor:descriptor];
     }
   #endif
 }

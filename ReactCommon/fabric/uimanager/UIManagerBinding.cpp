@@ -46,22 +46,40 @@ void UIManagerBinding::startSurface(
   parameters["initialProps"] = initalProps;
   parameters["fabric"] = true;
 
-  auto module = getModule(runtime, "AppRegistry");
-  auto method = module.getPropertyAsFunction(runtime, "runApplication");
+  if (runtime.global().hasProperty(runtime, "RN$SurfaceRegistry")) {
+    auto registry =
+        runtime.global().getPropertyAsObject(runtime, "RN$SurfaceRegistry");
+    auto method = registry.getPropertyAsFunction(runtime, "renderSurface");
 
-  method.callWithThis(
-      runtime,
-      module,
-      {jsi::String::createFromUtf8(runtime, moduleName),
-       jsi::valueFromDynamic(runtime, parameters)});
+    method.call(
+        runtime,
+        {jsi::String::createFromUtf8(runtime, moduleName),
+         jsi::valueFromDynamic(runtime, parameters)});
+  } else {
+    auto module = getModule(runtime, "AppRegistry");
+    auto method = module.getPropertyAsFunction(runtime, "runApplication");
+
+    method.callWithThis(
+        runtime,
+        module,
+        {jsi::String::createFromUtf8(runtime, moduleName),
+         jsi::valueFromDynamic(runtime, parameters)});
+  }
 }
 
 void UIManagerBinding::stopSurface(jsi::Runtime &runtime, SurfaceId surfaceId)
     const {
-  auto module = getModule(runtime, "ReactFabric");
-  auto method = module.getPropertyAsFunction(runtime, "unmountComponentAtNode");
+  if (runtime.global().hasProperty(runtime, "RN$stopSurface")) {
+    auto method =
+        runtime.global().getPropertyAsFunction(runtime, "RN$stopSurface");
+    method.call(runtime, {jsi::Value{surfaceId}});
+  } else {
+    auto module = getModule(runtime, "ReactFabric");
+    auto method =
+        module.getPropertyAsFunction(runtime, "unmountComponentAtNode");
 
-  method.callWithThis(runtime, module, {jsi::Value{surfaceId}});
+    method.callWithThis(runtime, module, {jsi::Value{surfaceId}});
+  }
 }
 
 void UIManagerBinding::dispatchEvent(
@@ -123,7 +141,7 @@ jsi::Value UIManagerBinding::get(
               runtime,
               uiManager.createNode(
                   tagFromValue(runtime, arguments[0]),
-                  componentNameFromValue(runtime, arguments[1]),
+                  stringFromValue(runtime, arguments[1]),
                   surfaceIdFromValue(runtime, arguments[2]),
                   RawProps(runtime, arguments[3]),
                   eventTargetFromValue(runtime, arguments[4], arguments[0])));
@@ -144,6 +162,40 @@ jsi::Value UIManagerBinding::get(
           return valueFromShadowNode(
               runtime,
               uiManager.cloneNode(shadowNodeFromValue(runtime, arguments[0])));
+        });
+  }
+
+  if (methodName == "setJSResponder") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        2,
+        [&uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          uiManager.setJSResponder(
+              shadowNodeFromValue(runtime, arguments[0]),
+              arguments[1].getBool());
+
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (methodName == "clearJSResponder") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        0,
+        [&uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          uiManager.clearJSResponder();
+
+          return jsi::Value::undefined();
         });
   }
 
@@ -314,6 +366,25 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "dispatchCommand") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        3,
+        [&uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          uiManager.dispatchCommand(
+              shadowNodeFromValue(runtime, arguments[0]),
+              stringFromValue(runtime, arguments[1]),
+              commandArgsFromValue(runtime, arguments[2]));
+
+          return jsi::Value::undefined();
+        });
+  }
+
   // Legacy API
   if (methodName == "measureLayout") {
     return jsi::Function::createFromHostFunction(
@@ -343,6 +414,34 @@ jsi::Value UIManagerBinding::get(
           onSuccessFunction.call(
               runtime,
               {jsi::Value{runtime, (double)frame.origin.x},
+               jsi::Value{runtime, (double)frame.origin.y},
+               jsi::Value{runtime, (double)frame.size.width},
+               jsi::Value{runtime, (double)frame.size.height}});
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (methodName == "measure") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        2,
+        [&uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          auto layoutMetrics = uiManager.getRelativeLayoutMetrics(
+              *shadowNodeFromValue(runtime, arguments[0]), nullptr);
+          auto frame = layoutMetrics.frame;
+          auto onSuccessFunction =
+              arguments[1].getObject(runtime).getFunction(runtime);
+
+          onSuccessFunction.call(
+              runtime,
+              {0,
+               0,
+               jsi::Value{runtime, (double)frame.origin.x},
                jsi::Value{runtime, (double)frame.origin.y},
                jsi::Value{runtime, (double)frame.size.width},
                jsi::Value{runtime, (double)frame.size.height}});

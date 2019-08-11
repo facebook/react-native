@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
  * and `padding`) of the component.
  * This view must not be a component view; it's just a convenient way
  * to embed/bridge pure native views as component views.
- * Defaults to `nil`. Assing `nil` to remove view as subview.
+ * Defaults to `nil`. Assign `nil` to remove view as subview.
  */
 @property (nonatomic, strong, nullable) UIView *contentView;
 
@@ -70,6 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Enforcing `call super` semantic for overridden methods from `RCTComponentViewProtocol`.
+ * The methods update the instance variables.
  */
 - (void)updateProps:(facebook::react::Props::Shared const &)props
            oldProps:(facebook::react::Props::Shared const &)oldProps NS_REQUIRES_SUPER;

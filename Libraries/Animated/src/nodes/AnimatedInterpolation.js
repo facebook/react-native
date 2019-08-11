@@ -181,7 +181,7 @@ function colorToRgba(input: string): string {
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
-const stringShapeRegex = /[0-9\.-]+/g;
+const stringShapeRegex = /[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?/g;
 
 /**
  * Supports string shapes by extracting numbers so new values can be computed,
@@ -242,10 +242,11 @@ function createInterpolationFromStringOutputRange(
     // ->
     // 'rgba(${interpolations[0](input)}, ${interpolations[1](input)}, ...'
     return outputRange[0].replace(stringShapeRegex, () => {
-      const val = +interpolations[i++](input);
-      const rounded =
-        shouldRound && i < 4 ? Math.round(val) : Math.round(val * 1000) / 1000;
-      return String(rounded);
+      let val = +interpolations[i++](input);
+      if (shouldRound) {
+        val = i < 4 ? Math.round(val) : Math.round(val * 1000) / 1000;
+      }
+      return String(val);
     });
   };
 }
@@ -306,7 +307,9 @@ function checkInfiniteRange(name: string, arr: Array<number>) {
 
 class AnimatedInterpolation extends AnimatedWithChildren {
   // Export for testing.
-  static __createInterpolation = createInterpolation;
+  static __createInterpolation: (
+    config: InterpolationConfigType,
+  ) => (input: number) => number | string = createInterpolation;
 
   _parent: AnimatedNode;
   _config: InterpolationConfigType;
@@ -346,7 +349,7 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     super.__detach();
   }
 
-  __transformDataType(range: Array<any>) {
+  __transformDataType(range: Array<any>): Array<any> {
     return range.map(NativeAnimatedHelper.transformDataType);
   }
 

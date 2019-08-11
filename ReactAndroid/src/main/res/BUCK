@@ -36,4 +36,13 @@ rn_android_resource(
     ],
 )
 
+rn_android_resource(
+    name = "systeminfo",
+    package = "com.facebook.react",
+    res = "systeminfo",
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
 # New resource directories must be added to react-native-github/ReactAndroid/build.gradle

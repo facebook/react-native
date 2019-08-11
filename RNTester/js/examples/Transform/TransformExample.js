@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {Animated, StyleSheet, Text, View} = require('react-native');
 
 class Flip extends React.Component<{}, $FlowFixMeState> {
@@ -27,6 +28,7 @@ class Flip extends React.Component<{}, $FlowFixMeState> {
     Animated.timing(this.state.theta, {
       toValue: 360,
       duration: 5000,
+      useNativeDriver: false,
     }).start(this._animate);
   };
 
@@ -202,7 +204,7 @@ exports.examples = [
     title: 'Translate, Rotate, Scale',
     description:
       "translateX: 100, translateY: 50, rotate: '30deg', scaleX: 2, scaleY: 2",
-    render() {
+    render(): React.Node {
       return (
         <View style={styles.container}>
           <View style={styles.box1} />
@@ -214,7 +216,7 @@ exports.examples = [
     title: 'Scale, Translate, Rotate, ',
     description:
       "scaleX: 2, scaleY: 2, translateX: 100, translateY: 50, rotate: '30deg'",
-    render() {
+    render(): React.Node {
       return (
         <View style={styles.container}>
           <View style={styles.box2} />
@@ -225,7 +227,7 @@ exports.examples = [
   {
     title: 'Rotate',
     description: "rotate: '30deg'",
-    render() {
+    render(): React.Node {
       return (
         <View style={styles.container}>
           <View style={styles.box3step1} />
@@ -236,7 +238,7 @@ exports.examples = [
   {
     title: 'Rotate, Scale',
     description: "rotate: '30deg', scaleX: 2, scaleY: 2",
-    render() {
+    render(): React.Node {
       return (
         <View style={styles.container}>
           <View style={styles.box3step2} />
@@ -248,7 +250,7 @@ exports.examples = [
     title: 'Rotate, Scale, Translate ',
     description:
       "rotate: '30deg', scaleX: 2, scaleY: 2, translateX: 100, translateY: 50",
-    render() {
+    render(): React.Node {
       return (
         <View style={styles.container}>
           <View style={styles.box3step3} />
@@ -259,7 +261,7 @@ exports.examples = [
   {
     title: 'Translate, Scale, Rotate',
     description: "translate: [200, 350], scale: 2.5, rotate: '-0.2rad'",
-    render() {
+    render(): React.Node {
       return (
         <View style={styles.container}>
           <View style={styles.box4} />
@@ -270,7 +272,7 @@ exports.examples = [
   {
     title: 'Translate, Rotate, Scale',
     description: "translate: [-50, 35], rotate: '50deg', scale: 2",
-    render() {
+    render(): React.Node {
       return (
         <View style={styles.container}>
           <View style={[styles.box5, styles.box5Transform]} />

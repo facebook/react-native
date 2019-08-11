@@ -29,7 +29,7 @@ extern const int RCT_PACKAGER_CLIENT_PROTOCOL_VERSION;
 
 @optional
 
-/** By default object will receive its methods on the main queue, unless this method is overriden. */
+/** By default object will receive its methods on the main queue, unless this method is overridden. */
 - (dispatch_queue_t)methodQueue;
 
 @end

@@ -5,20 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTDevMenu.h"
+#import <React/RCTDevMenu.h>
 
-#import "RCTBridge+Private.h"
-#import "RCTDevSettings.h"
-#import "RCTKeyCommands.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
-#import "RCTDefines.h"
+#import <React/RCTBridge+Private.h>
+#import <React/RCTDevSettings.h>
+#import <React/RCTKeyCommands.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
+#import <React/RCTDefines.h>
 #import <React/RCTBundleURLProvider.h>
 
 #if RCT_DEV
 
 #if RCT_ENABLE_INSPECTOR
-#import "RCTInspectorDevServerHelper.h"
+#import <React/RCTInspectorDevServerHelper.h>
 #endif
 
 NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
@@ -241,7 +241,7 @@ RCT_EXPORT_MODULE()
 
     if (devSettings.isNuclideDebuggingAvailable && !devSettings.isDebuggingRemotely) {
       [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Debug with Nuclide" handler:^{
-  #if RCT_ENABLE_INSPECTOR
+  #if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC
         [RCTInspectorDevServerHelper attachDebugger:@"ReactNative" withBundleURL:bridge.bundleURL withView: RCTPresentedViewController()];
   #endif
       }]];
@@ -249,10 +249,19 @@ RCT_EXPORT_MODULE()
   }
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-    return devSettings.isElementInspectorShown ? @"Disable Inspector" : @"Enable Inspector";
+    return devSettings.isElementInspectorShown ? @"Hide Inspector" : @"Show Inspector";
   } handler:^{
     [devSettings toggleElementInspector];
   }]];
+
+  if (devSettings.isHotLoadingAvailable) {
+    [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
+      // Previously known as "Hot Reloading". We won't use this term anymore.
+      return devSettings.isHotLoadingEnabled ? @"Disable Fast Refresh" : @"Enable Fast Refresh";
+    } handler:^{
+      devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled;
+    }]];
+  }
 
   if (devSettings.isLiveReloadAvailable) {
     [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
@@ -277,20 +286,9 @@ RCT_EXPORT_MODULE()
         devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
       }
     }]];
-
-    [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      return devSettings.isLiveReloadEnabled ? @"Disable Reload-on-Save" : @"Enable Reload-on-Save";
-    } handler:^{
-      devSettings.isLiveReloadEnabled = !devSettings.isLiveReloadEnabled;
-    }]];
-  }
-
-  if (devSettings.isHotLoadingAvailable) {
-    [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      return devSettings.isHotLoadingEnabled ? @"Disable Hot Reloading" : @"Enable Hot Reloading";
-    } handler:^{
-      devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled;
-    }]];
+    // "Live reload" which refreshes on every edit was removed in favor of "Fast Refresh".
+    // While native code for "Live reload" is still there, please don't add the option back.
+    // See D15958697 for more context.
   }
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
@@ -314,9 +312,6 @@ RCT_EXPORT_MODULE()
       UITextField * portTextField = textfields[1];
       UITextField * bundleRootTextField = textfields[2];
       NSString * bundleRoot = bundleRootTextField.text;
-      if(bundleRoot.length == 0){
-        bundleRoot = @"index";
-      }
       if(ipTextField.text.length == 0 && portTextField.text.length == 0) {
         [weakSelf setDefaultJSBundle];
         return;
@@ -331,7 +326,10 @@ RCT_EXPORT_MODULE()
                                                           ipTextField.text, portNumber.intValue];
       __strong RCTBridge *strongBridge = bridge;
       if (strongBridge) {
-        strongBridge.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:bundleRoot fallbackResource:nil];
+        NSURL *bundleURL = bundleRoot.length
+          ? [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:bundleRoot fallbackResource:nil]
+          : [strongBridge.delegate sourceURLForBridge:strongBridge];
+        strongBridge.bundleURL = bundleURL;
         [strongBridge reload];
       }
     }]];
@@ -354,10 +352,15 @@ RCT_EXPORT_METHOD(show)
     return;
   }
 
+  NSString *bridgeDescription = _bridge.bridgeDescription;
+  NSString *description = bridgeDescription.length > 0
+    ? [NSString stringWithFormat:@"Running %@", bridgeDescription]
+    : nil;
+
   // On larger devices we don't have an anchor point for the action sheet
   UIAlertControllerStyle style = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? UIAlertControllerStyleActionSheet : UIAlertControllerStyleAlert;
-  _actionSheet = [UIAlertController alertControllerWithTitle:nil
-                                                     message:nil
+  _actionSheet = [UIAlertController alertControllerWithTitle:@"React Native Debug Menu"
+                                                     message:description
                                               preferredStyle:style];
 
   NSArray<RCTDevMenuItem *> *items = [self _menuItemsToPresent];

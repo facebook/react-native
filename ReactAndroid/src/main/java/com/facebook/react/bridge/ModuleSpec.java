@@ -6,9 +6,9 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.module.annotations.ReactModule;
-import javax.annotation.Nullable;
 import javax.inject.Provider;
 
 /**

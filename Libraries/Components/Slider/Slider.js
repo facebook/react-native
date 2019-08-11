@@ -11,7 +11,7 @@
 'use strict';
 
 const Platform = require('../../Utilities/Platform');
-const SliderNativeComponent = require('./SliderNativeComponent');
+import SliderNativeComponent from './SliderNativeComponent';
 const React = require('react');
 const ReactNative = require('../../Renderer/shims/ReactNative');
 const StyleSheet = require('../../StyleSheet/StyleSheet');

@@ -10,12 +10,8 @@
 
 'use strict';
 
-import type {Item} from '../../components/ListExampleShared';
-
-const React = require('react');
-const {Alert, Animated, StyleSheet, View} = require('react-native');
-
 const RNTesterPage = require('../../components/RNTesterPage');
+const React = require('react');
 
 const infoLog = require('../../../../Libraries/Utilities/infoLog');
 
@@ -33,6 +29,9 @@ const {
   pressItem,
   renderSmallSwitchOption,
 } = require('../../components/ListExampleShared');
+const {Alert, Animated, StyleSheet, View} = require('react-native');
+
+import type {Item} from '../../components/ListExampleShared';
 
 const VIEWABILITY_CONFIG = {
   minimumViewTime: 3000,
@@ -55,7 +54,7 @@ type State = {|
 |};
 
 class FlatListExample extends React.PureComponent<Props, State> {
-  state = {
+  state: State = {
     data: genItemData(100),
     debug: false,
     horizontal: false,
@@ -92,14 +91,17 @@ class FlatListExample extends React.PureComponent<Props, State> {
     this._listRef.getNode().recordInteraction(); // e.g. flipping logViewable switch
   }
 
-  render() {
+  render(): React.Node {
     const filterRegex = new RegExp(String(this.state.filterText), 'i');
     const filter = item =>
       filterRegex.test(item.text) || filterRegex.test(item.title);
     const filteredData = this.state.data.filter(filter);
     const flatListItemRendererProps = this._renderItemComponent();
     return (
-      <RNTesterPage noSpacer={true} noScroll={true}>
+      <RNTesterPage
+        noSpacer={true}
+        noScroll={true}
+        title="Simple list of items">
         <View style={styles.container}>
           <View style={styles.searchRow}>
             <View style={styles.options}>
@@ -245,6 +247,7 @@ const styles = StyleSheet.create({
 
 exports.title = '<FlatList>';
 exports.description = 'Performant, scrollable list of data.';
+exports.simpleExampleContainer = true;
 exports.examples = [
   {
     title: 'Simple list of items',

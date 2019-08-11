@@ -5,21 +5,17 @@
 
 package com.facebook.react.devsupport;
 
-import javax.annotation.Nullable;
-
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
+import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.Inspector;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Looper;
-
-import com.facebook.common.logging.FLog;
-import com.facebook.react.bridge.Inspector;
-
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -38,10 +34,7 @@ public class InspectorPackagerConnection {
   private BundleStatusProvider mBundleStatusProvider;
 
   public InspectorPackagerConnection(
-    String url,
-    String packageName,
-    BundleStatusProvider bundleStatusProvider
-  ) {
+      String url, String packageName, BundleStatusProvider bundleStatusProvider) {
     mConnection = new Connection(url);
     mInspectorConnections = new HashMap<>();
     mPackageName = packageName;
@@ -64,8 +57,7 @@ public class InspectorPackagerConnection {
     }
   }
 
-  void handleProxyMessage(JSONObject message)
-      throws JSONException, IOException {
+  void handleProxyMessage(JSONObject message) throws JSONException, IOException {
     String event = message.getString("event");
     switch (event) {
       case "getPages":
@@ -101,26 +93,29 @@ public class InspectorPackagerConnection {
 
     try {
       // TODO: Use strings for id's too
-      inspectorConnection = Inspector.connect(Integer.parseInt(pageId), new Inspector.RemoteConnection() {
-        @Override
-        public void onMessage(String message) {
-          try {
-            sendWrappedEvent(pageId, message);
-          } catch (JSONException e) {
-            FLog.w(TAG, "Couldn't send event to packager", e);
-          }
-        }
+      inspectorConnection =
+          Inspector.connect(
+              Integer.parseInt(pageId),
+              new Inspector.RemoteConnection() {
+                @Override
+                public void onMessage(String message) {
+                  try {
+                    sendWrappedEvent(pageId, message);
+                  } catch (JSONException e) {
+                    FLog.w(TAG, "Couldn't send event to packager", e);
+                  }
+                }
 
-        @Override
-        public void onDisconnect() {
-          try {
-            mInspectorConnections.remove(pageId);
-            sendEvent("disconnect", makePageIdPayload(pageId));
-          } catch (JSONException e) {
-            FLog.w(TAG, "Couldn't send event to packager", e);
-          }
-        }
-      });
+                @Override
+                public void onDisconnect() {
+                  try {
+                    mInspectorConnections.remove(pageId);
+                    sendEvent("disconnect", makePageIdPayload(pageId));
+                  } catch (JSONException e) {
+                    FLog.w(TAG, "Couldn't send event to packager", e);
+                  }
+                }
+              });
       mInspectorConnections.put(pageId, inspectorConnection);
     } catch (Exception e) {
       FLog.w(TAG, "Failed to open page: " + pageId, e);
@@ -172,8 +167,7 @@ public class InspectorPackagerConnection {
     sendEvent("wrappedEvent", payload);
   }
 
-  private void sendEvent(String name, Object payload)
-      throws JSONException {
+  private void sendEvent(String name, Object payload) throws JSONException {
     JSONObject jsonMessage = new JSONObject();
     jsonMessage.put("event", name);
     jsonMessage.put("payload", payload);
@@ -240,11 +234,12 @@ public class InspectorPackagerConnection {
         throw new IllegalStateException("Can't connect closed client");
       }
       if (mHttpClient == null) {
-        mHttpClient = new OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
-            .build();
+        mHttpClient =
+            new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
+                .build();
       }
 
       Request request = new Request.Builder().url(mUrl).build();
@@ -319,14 +314,11 @@ public class InspectorPackagerConnection {
     }
   }
 
-  static public class BundleStatus {
+  public static class BundleStatus {
     public Boolean isLastDownloadSucess;
     public long updateTimestamp = -1;
 
-    public BundleStatus(
-      Boolean isLastDownloadSucess,
-      long updateTimestamp
-    ) {
+    public BundleStatus(Boolean isLastDownloadSucess, long updateTimestamp) {
       this.isLastDownloadSucess = isLastDownloadSucess;
       this.updateTimestamp = updateTimestamp;
     }

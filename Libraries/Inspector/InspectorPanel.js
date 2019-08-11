@@ -51,7 +51,7 @@ type Props = $ReadOnly<{|
 |}>;
 
 class InspectorPanel extends React.Component<Props> {
-  renderWaiting() {
+  renderWaiting(): React.Node {
     if (this.props.inspecting) {
       return (
         <Text style={styles.waitingText}>Tap something to inspect it</Text>
@@ -60,7 +60,7 @@ class InspectorPanel extends React.Component<Props> {
     return <Text style={styles.waitingText}>Nothing is inspected</Text>;
   }
 
-  render() {
+  render(): React.Node {
     let contents;
     if (this.props.inspected) {
       contents = (

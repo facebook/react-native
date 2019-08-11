@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   Animated,
   Image,
@@ -470,31 +471,33 @@ exports.title = '<Touchable*> and onPress';
 exports.examples = [
   {
     title: '<TouchableHighlight>',
-    description:
-      'TouchableHighlight works by adding an extra view with a ' +
+    description: ('TouchableHighlight works by adding an extra view with a ' +
       'black background under the single child view.  This works best when the ' +
       'child view is fully opaque, although it can be made to work as a simple ' +
       'background color change as well with the activeOpacity and ' +
-      'underlayColor props.',
-    render: function() {
+      'underlayColor props.': string),
+    render: function(): React.Node {
       return <TouchableHighlightBox />;
     },
   },
   {
     title: '<TouchableWithoutFeedback>',
-    render: function() {
+    render: function(): React.Node {
       return <TouchableWithoutFeedbackBox />;
     },
   },
   {
     title: 'TouchableNativeFeedback with Animated child',
-    description:
-      'TouchableNativeFeedback can have an AnimatedComponent as a' +
-      'direct child.',
+    description: ('TouchableNativeFeedback can have an AnimatedComponent as a' +
+      'direct child.': string),
     platform: 'android',
-    render: function() {
+    render: function(): React.Node {
       const mScale = new Animated.Value(1);
-      Animated.timing(mScale, {toValue: 0.3, duration: 1000}).start();
+      Animated.timing(mScale, {
+        toValue: 0.3,
+        duration: 1000,
+        useNativeDriver: false,
+      }).start();
       const style = {
         backgroundColor: 'rgb(180, 64, 119)',
         width: 200,
@@ -520,19 +523,17 @@ exports.examples = [
   },
   {
     title: 'Touchable feedback events',
-    description:
-      '<Touchable*> components accept onPress, onPressIn, ' +
-      'onPressOut, and onLongPress as props.',
+    description: ('<Touchable*> components accept onPress, onPressIn, ' +
+      'onPressOut, and onLongPress as props.': string),
     render: function(): React.Element<any> {
       return <TouchableFeedbackEvents />;
     },
   },
   {
     title: 'Touchable delay for events',
-    description:
-      '<Touchable*> components also accept delayPressIn, ' +
+    description: ('<Touchable*> components also accept delayPressIn, ' +
       'delayPressOut, and delayLongPress as props. These props impact the ' +
-      'timing of feedback events.',
+      'timing of feedback events.': string),
     render: function(): React.Element<any> {
       return <TouchableDelayEvents />;
     },
@@ -548,18 +549,16 @@ exports.examples = [
   },
   {
     title: 'Touchable Hit Slop',
-    description:
-      '<Touchable*> components accept hitSlop prop which extends the touch area ' +
-      'without changing the view bounds.',
+    description: ('<Touchable*> components accept hitSlop prop which extends the touch area ' +
+      'without changing the view bounds.': string),
     render: function(): React.Element<any> {
       return <TouchableHitSlop />;
     },
   },
   {
     title: 'Disabled Touchable*',
-    description:
-      '<Touchable*> components accept disabled prop which prevents ' +
-      'any interaction with component',
+    description: ('<Touchable*> components accept disabled prop which prevents ' +
+      'any interaction with component': string),
     render: function(): React.Element<any> {
       return <TouchableDisabled />;
     },

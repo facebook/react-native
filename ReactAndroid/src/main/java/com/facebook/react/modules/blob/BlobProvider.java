@@ -1,8 +1,8 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.modules.blob;
 
@@ -85,10 +85,8 @@ public final class BlobProvider extends ContentProvider {
     ParcelFileDescriptor readSide = pipe[0];
     ParcelFileDescriptor writeSide = pipe[1];
 
-    OutputStream outputStream = new ParcelFileDescriptor.AutoCloseOutputStream(writeSide);
-    try {
+    try (OutputStream outputStream = new ParcelFileDescriptor.AutoCloseOutputStream(writeSide)) {
       outputStream.write(data);
-      outputStream.close();
     } catch (IOException exception) {
       return null;
     }
