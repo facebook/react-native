@@ -110,12 +110,12 @@ android {
 
     flavorDimensions "vm"
     productFlavors {
-      hermes {
-        dimension "vm"
-      }
-      jsc {
-        dimension "vm"
-      }
+        hermes {
+            dimension "vm"
+        }
+        jsc {
+            dimension "vm"
+        }
     }
 
     defaultConfig {
