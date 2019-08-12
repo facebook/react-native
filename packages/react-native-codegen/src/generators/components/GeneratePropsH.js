@@ -180,7 +180,11 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
       return getEnumName(componentName, prop.name);
     default:
       (typeAnnotation: empty);
-      throw new Error('Received invalid typeAnnotation');
+      throw new Error(
+        `Received invalid typeAnnotation for ${componentName} prop ${
+          prop.name
+        }, received ${typeAnnotation.type}`,
+      );
   }
 }
 
