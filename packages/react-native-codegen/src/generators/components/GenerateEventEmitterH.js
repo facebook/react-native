@@ -12,8 +12,11 @@
 
 const nullthrows = require('nullthrows');
 
-const {getCppTypeForAnnotation, toSafeCppString} = require('./CppHelpers.js');
-const {generateStructName} = require('./EventEmitterHelpers.js');
+const {
+  getCppTypeForAnnotation,
+  toSafeCppString,
+  generateStructName,
+} = require('./CppHelpers.js');
 
 import type {
   ComponentShape,

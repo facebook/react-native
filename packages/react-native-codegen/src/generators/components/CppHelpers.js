@@ -80,8 +80,17 @@ function getImports(component: ComponentShape): Set<string> {
   return imports;
 }
 
+function generateStructName(
+  componentName: string,
+  parts: $ReadOnlyArray<string> = [],
+) {
+  const additional = parts.map(toSafeCppString).join('');
+  return `${componentName}${additional}Struct`;
+}
+
 module.exports = {
   getCppTypeForAnnotation,
   getImports,
   toSafeCppString,
+  generateStructName,
 };
