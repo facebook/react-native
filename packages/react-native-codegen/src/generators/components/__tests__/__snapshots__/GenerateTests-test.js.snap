@@ -603,6 +603,34 @@ TEST(NoPropsNoEventsComponentProps_DoesNotDie, etc) {
 }
 `;
 
+exports[`GenerateTests can generate fixture OBJECT_PROPS 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/OBJECT_PROPS/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(ObjectPropsProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<ObjectPropsProps>();
+  auto const &sourceProps = ObjectPropsProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  ObjectPropsProps(sourceProps, rawProps);
+}",
+}
+`;
+
 exports[`GenerateTests can generate fixture POINT_PROP 1`] = `
 Map {
   "Tests.cpp" => "/**

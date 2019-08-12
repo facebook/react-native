@@ -17,6 +17,7 @@ const generator = require('../GeneratePropsJavaInterface.js');
 describe('GeneratePropsJavaInterface', () => {
   Object.keys(fixtures)
     .sort()
+    .filter(fixtureName => fixtureName !== 'OBJECT_PROPS')
     .forEach(fixtureName => {
       const fixture = fixtures[fixtureName];
 
