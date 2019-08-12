@@ -17,7 +17,6 @@ const generator = require('../GeneratePropsJavaDelegate.js');
 describe('GeneratePropsJavaDelegate', () => {
   Object.keys(fixtures)
     .sort()
-    .filter(fixtureName => fixtureName !== 'OBJECT_PROPS')
     .forEach(fixtureName => {
       const fixture = fixtures[fixtureName];
 

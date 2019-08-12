@@ -90,7 +90,7 @@ function getJavaValueForProp(
       return '(ReadableArray) value';
     }
     case 'ObjectTypeAnnotation': {
-      throw new Error('Object type is not implemented');
+      return '(ReadableMap) value';
     }
     case 'StringEnumTypeAnnotation':
       return '(String) value';

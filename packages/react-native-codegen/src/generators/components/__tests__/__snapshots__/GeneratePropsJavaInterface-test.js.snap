@@ -241,6 +241,22 @@ public interface NoPropsNoEventsComponentManagerInterface<T extends View> {
 }
 `;
 
+exports[`GeneratePropsJavaInterface can generate fixture OBJECT_PROPS 1`] = `
+Map {
+  "ObjectPropsManagerInterface.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ReadableMap;
+
+public interface ObjectPropsManagerInterface<T extends View> {
+  void setObjectProp(T view, @Nullable ReadableMap value);
+}
+",
+}
+`;
+
 exports[`GeneratePropsJavaInterface can generate fixture POINT_PROP 1`] = `
 Map {
   "PointPropNativeComponentManagerInterface.java" => "

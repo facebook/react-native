@@ -503,6 +503,37 @@ public class NoPropsNoEventsComponentManagerDelegate<T extends View, U extends B
 }
 `;
 
+exports[`GeneratePropsJavaDelegate can generate fixture OBJECT_PROPS 1`] = `
+Map {
+  "ObjectPropsManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class ObjectPropsManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ObjectPropsManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public ObjectPropsManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"objectProp\\":
+        mViewManager.setObjectProp(view, (ReadableMap) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
 exports[`GeneratePropsJavaDelegate can generate fixture POINT_PROP 1`] = `
 Map {
   "PointPropNativeComponentManagerDelegate.java" => "
