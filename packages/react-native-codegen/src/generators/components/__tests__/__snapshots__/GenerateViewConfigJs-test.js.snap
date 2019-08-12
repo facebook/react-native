@@ -631,6 +631,41 @@ export default nativeComponentName;
 }
 `;
 
+exports[`GenerateViewConfigJs can generate fixture OBJECT_PROPS 1`] = `
+Map {
+  "OBJECT_PROPSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const ObjectPropsViewConfig = {
+  uiViewClassName: 'ObjectProps',
+
+  validAttributes: {
+    objectProp: true,
+  },
+};
+
+let nativeComponentName = 'ObjectProps';
+
+registerGeneratedViewConfig(nativeComponentName, ObjectPropsViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = ObjectPropsViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
 exports[`GenerateViewConfigJs can generate fixture POINT_PROP 1`] = `
 Map {
   "POINT_PROPNativeViewConfig.js" => "
