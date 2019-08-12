@@ -426,11 +426,12 @@ public class ReactEditText extends EditText {
     return getContext().getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS;
   }
 
-  protected void showSoftKeyboard() {
+  protected boolean showSoftKeyboard() {
     // Don't show soft keyboard when a hardware keyboard is attached
     if (!isHardwareKeyboardAvailable()) {
-      mInputMethodManager.showSoftInput(this, 0);
+      return mInputMethodManager.showSoftInput(this, 0);
     }
+    return false;
   }
 
   protected void hideSoftKeyboard() {
