@@ -61,5 +61,5 @@ type NativeProps = $ReadOnly<{|
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(
-  'EventPropsNativeComponent',
+  'EventPropsNativeComponentView',
 ): NativeComponentType<NativeProps>);

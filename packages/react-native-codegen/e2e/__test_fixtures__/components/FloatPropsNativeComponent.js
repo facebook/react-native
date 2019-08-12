@@ -31,5 +31,5 @@ type NativeProps = $ReadOnly<{|
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(
-  'FloatPropsNativeComponent',
+  'FloatPropsNativeComponentView',
 ): NativeComponentType<NativeProps>);

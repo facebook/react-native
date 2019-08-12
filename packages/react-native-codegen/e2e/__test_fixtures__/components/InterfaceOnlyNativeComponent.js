@@ -29,7 +29,7 @@ type NativeProps = $ReadOnly<{|
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(
-  'InterfaceOnlyNativeComponent',
+  'InterfaceOnlyNativeComponentView',
   {
     interfaceOnly: true,
     paperComponentName: 'RCTInterfaceOnlyComponent',

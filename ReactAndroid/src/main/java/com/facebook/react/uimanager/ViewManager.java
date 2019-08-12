@@ -40,8 +40,30 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param stateWrapper
    */
   public void updateProperties(@NonNull T viewToUpdate, ReactStylesDiffMap props) {
-    ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
+    final ViewManagerDelegate<T> delegate = getDelegate();
+    if (delegate != null) {
+      ViewManagerPropertyUpdater.updateProps(delegate, viewToUpdate, props);
+    } else {
+      ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
+    }
     onAfterUpdateTransaction(viewToUpdate);
+  }
+
+  /**
+   * Override this method and return an instance of {@link ViewManagerDelegate} if the props of the
+   * view managed by this view manager should be set via this delegate. The provided instance will
+   * then get calls to {@link ViewManagerDelegate#setProperty(View, String, Object)} for every prop
+   * that must be updated and it's the delegate's responsibility to apply these values to the view.
+   *
+   * <p>By default this method returns {@code null}, which means that the view manager doesn't have
+   * a delegate and the view props should be set internally by the view manager itself.
+   *
+   * @return an instance of {@link ViewManagerDelegate} if the props of the view managed by this
+   *     view manager should be set via this delegate
+   */
+  @Nullable
+  protected ViewManagerDelegate<T> getDelegate() {
+    return null;
   }
 
   /** Creates a view and installs event emitters on it. */

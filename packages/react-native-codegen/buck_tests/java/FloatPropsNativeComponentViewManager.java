@@ -15,8 +15,8 @@ public class FloatPropsNativeComponentViewManager extends SimpleViewManager<View
   }
 
   private void test() {
-    FloatPropsNativeComponentViewManagerDelegate delegate =
-        new FloatPropsNativeComponentViewManagerDelegate<ViewGroup>();
+    FloatPropsNativeComponentViewManagerDelegate<ViewGroup, FloatPropsNativeComponentViewManager>
+        delegate = new FloatPropsNativeComponentViewManagerDelegate<>(this);
   }
 
   @Override

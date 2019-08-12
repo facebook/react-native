@@ -21,5 +21,5 @@ type NativeProps = $ReadOnly<{|
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(
-  'NoPropsNoEventsNativeComponent',
+  'NoPropsNoEventsNativeComponentView',
 ): NativeComponentType<NativeProps>);

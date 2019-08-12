@@ -15,8 +15,8 @@ public class EnumPropNativeComponentViewManager extends SimpleViewManager<ViewGr
   }
 
   private void test() {
-    EnumPropNativeComponentViewManagerDelegate delegate =
-        new EnumPropNativeComponentViewManagerDelegate<ViewGroup>();
+    EnumPropNativeComponentViewManagerDelegate<ViewGroup, EnumPropNativeComponentViewManager>
+        delegate = new EnumPropNativeComponentViewManagerDelegate<>(this);
   }
 
   @Override

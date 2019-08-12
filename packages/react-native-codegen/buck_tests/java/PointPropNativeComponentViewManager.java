@@ -16,8 +16,8 @@ public class PointPropNativeComponentViewManager extends SimpleViewManager<ViewG
   }
 
   private void test() {
-    PointPropNativeComponentViewManagerDelegate delegate =
-        new PointPropNativeComponentViewManagerDelegate<ViewGroup>();
+    PointPropNativeComponentViewManagerDelegate<ViewGroup, PointPropNativeComponentViewManager>
+        delegate = new PointPropNativeComponentViewManagerDelegate<>(this);
   }
 
   @Override

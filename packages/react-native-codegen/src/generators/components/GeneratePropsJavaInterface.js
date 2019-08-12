@@ -173,7 +173,7 @@ module.exports = {
 
       return Object.keys(components).forEach(componentName => {
         const component = components[componentName];
-        const className = `${componentName}ViewManagerInterface`;
+        const className = `${componentName}ManagerInterface`;
         const fileName = `${className}.java`;
 
         const imports = getImports(component);

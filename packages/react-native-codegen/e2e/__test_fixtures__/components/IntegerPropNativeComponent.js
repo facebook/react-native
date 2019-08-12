@@ -28,5 +28,5 @@ type NativeProps = $ReadOnly<{|
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(
-  'IntegerPropNativeComponent',
+  'IntegerPropNativeComponentView',
 ): NativeComponentType<NativeProps>);

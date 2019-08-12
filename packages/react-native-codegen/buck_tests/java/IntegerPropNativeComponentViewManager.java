@@ -15,8 +15,8 @@ public class IntegerPropNativeComponentViewManager extends SimpleViewManager<Vie
   }
 
   private void test() {
-    IntegerPropNativeComponentViewManagerDelegate delegate =
-        new IntegerPropNativeComponentViewManagerDelegate<ViewGroup>();
+    IntegerPropNativeComponentViewManagerDelegate<ViewGroup, IntegerPropNativeComponentViewManager>
+        delegate = new IntegerPropNativeComponentViewManagerDelegate<>(this);
   }
 
   @Override

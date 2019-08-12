@@ -26,13 +26,17 @@ package com.facebook.react.viewmanagers;
 
 ::_IMPORTS_::
 
-public class ::_CLASSNAME_::<T extends ::_EXTEND_CLASSES_::> {
+public class ::_CLASSNAME_::<T extends ::_EXTEND_CLASSES_::, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ::_INTERFACE_CLASSNAME_::<T>> extends BaseViewManagerDelegate<T, U> {
+  public ::_CLASSNAME_::(U viewManager) {
+    super(viewManager);
+  }
   ::_METHODS_::
 }
 `;
 
 const propSetterTemplate = `
-  public void setProperty(::_INTERFACE_CLASSNAME_::<T> viewManager, T view, String propName, Object value) {
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
     ::_PROP_CASES_::
   }
 `;
@@ -104,7 +108,7 @@ function generatePropCasesString(
   const cases = component.props
     .map(prop => {
       return `case "${prop.name}":
-        viewManager.set${toSafeJavaString(
+        mViewManager.set${toSafeJavaString(
           prop.name,
         )}(view, ${getJavaValueForProp(prop, componentName)});
         break;`;
@@ -113,6 +117,8 @@ function generatePropCasesString(
 
   return `switch (propName) {
       ${cases}
+      default:
+        super.setProperty(view, propName, value);
     }`;
 }
 
@@ -192,6 +198,10 @@ function getDelegateImports(component) {
   if (component.commands.length > 0) {
     imports.add('import com.facebook.react.bridge.ReadableArray;');
   }
+  imports.add('import androidx.annotation.Nullable;');
+  imports.add('import com.facebook.react.uimanager.BaseViewManager;');
+  imports.add('import com.facebook.react.uimanager.BaseViewManagerDelegate;');
+  imports.add('import com.facebook.react.uimanager.LayoutShadowNode;');
 
   return imports;
 }
@@ -223,8 +233,8 @@ module.exports = {
 
       return Object.keys(components).forEach(componentName => {
         const component = components[componentName];
-        const className = `${componentName}ViewManagerDelegate`;
-        const interfaceClassName = `${componentName}ViewManagerInterface`;
+        const className = `${componentName}ManagerDelegate`;
+        const interfaceClassName = `${componentName}ManagerInterface`;
         const fileName = `${className}.java`;
 
         const imports = getDelegateImports(component);

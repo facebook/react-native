@@ -15,8 +15,8 @@ public class StringPropNativeComponentViewManager extends SimpleViewManager<View
   }
 
   private void test() {
-    StringPropNativeComponentViewManagerDelegate delegate =
-        new StringPropNativeComponentViewManagerDelegate<ViewGroup>();
+    StringPropNativeComponentViewManagerDelegate<ViewGroup, StringPropNativeComponentViewManager>
+        delegate = new StringPropNativeComponentViewManagerDelegate<>(this);
   }
 
   @Override
