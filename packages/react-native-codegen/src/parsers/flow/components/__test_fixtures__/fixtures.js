@@ -231,6 +231,11 @@ type ModuleProps = $ReadOnly<{|
   enum_optional_key?: WithDefault<'small' | 'large', 'small'>,
   enum_optional_both?: WithDefault<'small' | 'large', 'small'>,
 
+  // Object props
+  object_optional_key?: $ReadOnly<{| prop: string |}>,
+  object_optional_both?: ?$ReadOnly<{| prop: string |}>,
+  object_optional_value: ?$ReadOnly<{| prop: string |}>,
+
   // ImageSource props
   image_required: ImageSource,
   image_optional_value: ?ImageSource,
@@ -336,6 +341,82 @@ type ModuleProps = $ReadOnly<{|
   array_point_optional_key?: $ReadOnlyArray<PointValue>,
   array_point_optional_value: ?$ReadOnlyArray<PointValue>,
   array_point_optional_both?: ?$ReadOnlyArray<PointValue>,
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const OBJECT_PROP_TYPES_NO_EVENTS = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {Int32, Float, WithDefault} from 'CodegenTypes';
+import type {ImageSource} from 'ImageSource';
+import type {ColorValue, PointValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  // Props
+  // Boolean props
+  boolean_required: $ReadOnly<{|prop: boolean|}>,
+  boolean_optional: $ReadOnly<{|prop?: WithDefault<boolean, false>|}>,
+
+  // String props
+  string_required: $ReadOnly<{|prop: string|}>,
+  string_optional: $ReadOnly<{|prop?: WithDefault<string, ''>|}>,
+
+  // Float props
+  float_required: $ReadOnly<{|prop: Float|}>,
+  float_optional: $ReadOnly<{|prop?: WithDefault<Float, 0.0>|}>,
+
+  // Int32 props
+  int_required: $ReadOnly<{|prop: Int32|}>,
+  int_optional: $ReadOnly<{|prop?: WithDefault<Int32, 0>|}>,
+
+  // String enum props
+  enum_optional: $ReadOnly<{|
+    prop?: WithDefault<$ReadOnlyArray<'small' | 'large'>, 'small'>,
+  |}>,
+
+  // ImageSource props
+  image_required: $ReadOnly<{|prop: ImageSource|}>,
+  image_optional_key: $ReadOnly<{|prop?: ImageSource|}>,
+  image_optional_value: $ReadOnly<{|prop: ?ImageSource|}>,
+  image_optional_both: $ReadOnly<{|prop?: ?ImageSource|}>,
+
+  // ColorValue props
+  color_required: $ReadOnly<{|prop: ColorValue|}>,
+  color_optional_key: $ReadOnly<{|prop?: ColorValue|}>,
+  color_optional_value: $ReadOnly<{|prop: ?ColorValue|}>,
+  color_optional_both: $ReadOnly<{|prop?: ?ColorValue|}>,
+
+  // PointValue props
+  point_required: $ReadOnly<{|prop: PointValue|}>,
+  point_optional_key: $ReadOnly<{|prop?: PointValue|}>,
+  point_optional_value: $ReadOnly<{|prop: ?PointValue|}>,
+  point_optional_both: $ReadOnly<{|prop?: ?PointValue|}>,
+
+  // Nested object props
+  object_required: $ReadOnly<{|prop: $ReadOnly<{nestedProp: string}>|}>,
+  object_optional_key?: $ReadOnly<{|prop: $ReadOnly<{nestedProp: string}>|}>,
+  object_optional_value: ?$ReadOnly<{|prop: $ReadOnly<{nestedProp: string}>|}>,
+  object_optional_both?: ?$ReadOnly<{|prop: $ReadOnly<{nestedProp: string}>|}>,
 |}>;
 
 export default (codegenNativeComponent<ModuleProps>(
@@ -724,6 +805,7 @@ export default (codegenNativeComponent<ModuleProps>(
 module.exports = {
   ALL_PROP_TYPES_NO_EVENTS,
   ARRAY_PROP_TYPES_NO_EVENTS,
+  OBJECT_PROP_TYPES_NO_EVENTS,
   ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS,
   ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS_NO_CAST,
   NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION,

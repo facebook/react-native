@@ -216,6 +216,57 @@ Object {
               },
             },
             Object {
+              "name": "object_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": null,
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "object_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": null,
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "object_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": null,
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
               "name": "image_required",
               "optional": false,
               "typeAnnotation": Object {
@@ -4228,6 +4279,501 @@ Object {
             },
           ],
           "props": Array [],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture OBJECT_PROP_TYPES_NO_EVENTS 1`] = `
+Object {
+  "modules": Object {
+    "Module": Object {
+      "components": Object {
+        "Module": Object {
+          "commands": Array [],
+          "events": Array [],
+          "extendsProps": Array [
+            Object {
+              "knownTypeName": "ReactNativeCoreViewProps",
+              "type": "ReactNativeBuiltInType",
+            },
+          ],
+          "props": Array [
+            Object {
+              "name": "boolean_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": false,
+                      "type": "BooleanTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "boolean_optional",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "default": false,
+                      "type": "BooleanTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "string_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": null,
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "string_optional",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "default": "",
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "float_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": 0,
+                      "type": "FloatTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "float_optional",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "default": 0,
+                      "type": "FloatTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "int_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": 0,
+                      "type": "Int32TypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "int_optional",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "default": 0,
+                      "type": "Int32TypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "enum_optional",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "elementType": Object {
+                        "default": "small",
+                        "options": Array [
+                          Object {
+                            "name": "small",
+                          },
+                          Object {
+                            "name": "large",
+                          },
+                        ],
+                        "type": "StringEnumTypeAnnotation",
+                      },
+                      "type": "ArrayTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "image_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "name": "ImageSourcePrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "image_optional_key",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "ImageSourcePrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "image_optional_value",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "ImageSourcePrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "image_optional_both",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "ImageSourcePrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "color_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "name": "ColorPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "color_optional_key",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "ColorPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "color_optional_value",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "ColorPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "color_optional_both",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "ColorPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "point_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "name": "PointPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "point_optional_key",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "PointPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "point_optional_value",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "PointPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "point_optional_both",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "PointPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "object_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "properties": Array [
+                        Object {
+                          "name": "nestedProp",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "default": null,
+                            "type": "StringTypeAnnotation",
+                          },
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "object_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "properties": Array [
+                        Object {
+                          "name": "nestedProp",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "default": null,
+                            "type": "StringTypeAnnotation",
+                          },
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "object_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "properties": Array [
+                        Object {
+                          "name": "nestedProp",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "default": null,
+                            "type": "StringTypeAnnotation",
+                          },
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "object_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "properties": Array [
+                        Object {
+                          "name": "nestedProp",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "default": null,
+                            "type": "StringTypeAnnotation",
+                          },
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+          ],
         },
       },
     },

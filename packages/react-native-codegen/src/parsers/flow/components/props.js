@@ -106,6 +106,18 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue, types) {
     };
   }
 
+  if (
+    typeAnnotation.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.id.name === '$ReadOnly'
+  ) {
+    return {
+      type: 'ObjectTypeAnnotation',
+      properties: typeAnnotation.typeParameters.params[0].properties.map(prop =>
+        buildPropSchema(prop, types),
+      ),
+    };
+  }
+
   const type =
     typeAnnotation.type === 'GenericTypeAnnotation'
       ? typeAnnotation.id.name
@@ -177,7 +189,7 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue, types) {
       throw new Error(`A default enum value is required for "${name}"`);
     default:
       (type: empty);
-      throw new Error(`Unknown prop type for "${name}"`);
+      throw new Error(`Unknown prop type for "${name}": "${type}"`);
   }
 }
 
