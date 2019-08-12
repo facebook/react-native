@@ -523,6 +523,133 @@ const ARRAY_PROPS: SchemaType = {
   },
 };
 
+const OBJECT_PROPS: SchemaType = {
+  modules: {
+    ObjectPropsNativeComponent: {
+      components: {
+        ObjectProps: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'objectProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'stringProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                      default: '',
+                    },
+                  },
+                  {
+                    name: 'booleanProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                      default: false,
+                    },
+                  },
+                  {
+                    name: 'floatProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'FloatTypeAnnotation',
+                      default: 0.0,
+                    },
+                  },
+                  {
+                    name: 'intProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                      default: 0,
+                    },
+                  },
+                  {
+                    name: 'stringEnumProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringEnumTypeAnnotation',
+                      default: 'option1',
+                      options: [
+                        {
+                          name: 'option1',
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'objectArrayProp',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'array',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'ArrayTypeAnnotation',
+                            elementType: {
+                              type: 'StringTypeAnnotation',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'objectPrimitiveRequiredProp',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'image',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'NativePrimitiveTypeAnnotation',
+                            name: 'ImageSourcePrimitive',
+                          },
+                        },
+                        {
+                          name: 'color',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'NativePrimitiveTypeAnnotation',
+                            name: 'ColorPrimitive',
+                          },
+                        },
+                        {
+                          name: 'point',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'NativePrimitiveTypeAnnotation',
+                            name: 'PointPrimitive',
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
 const MULTI_NATIVE_PROP: SchemaType = {
   modules: {
     Slider: {
@@ -1025,6 +1152,7 @@ module.exports = {
   IMAGE_PROP,
   POINT_PROP,
   ARRAY_PROPS,
+  // OBJECT_PROPS,
   MULTI_NATIVE_PROP,
   ENUM_PROP,
   EVENT_PROPS,

@@ -80,6 +80,8 @@ function getReactDiffProcessValue(typeAnnotation) {
         }
       }
       return j.literal(true);
+    case 'ObjectTypeAnnotation':
+      throw new Error('Object type is not implemented');
     default:
       (typeAnnotation: empty);
       throw new Error(

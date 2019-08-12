@@ -68,6 +68,9 @@ function getJavaValueForProp(prop: PropTypeShape, imports): string {
       addNullable(imports);
       return '@Nullable ReadableArray value';
     }
+    case 'ObjectTypeAnnotation': {
+      throw new Error('Object type is not implemented');
+    }
     case 'StringEnumTypeAnnotation':
       addNullable(imports);
       return '@Nullable String value';

@@ -173,6 +173,9 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
       });
       return `std::vector<${itemAnnotation}>`;
     }
+    case 'ObjectTypeAnnotation': {
+      throw new Error('Object type is not implemented');
+    }
     case 'StringEnumTypeAnnotation':
       return getEnumName(componentName, prop.name);
     default:
@@ -227,6 +230,9 @@ function convertDefaultTypeToString(componentName: string, prop): string {
         default:
           return '';
       }
+    }
+    case 'ObjectTypeAnnotation': {
+      throw new Error('Object type is not implemented');
     }
     case 'StringEnumTypeAnnotation':
       return `${getEnumName(componentName, prop.name)}::${toSafeCppString(
