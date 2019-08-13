@@ -37,7 +37,7 @@ import type {RNTesterAction} from './utils/RNTesterActions';
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
 
 type Props = {
-  exampleFromAppetizeParams: string,
+  exampleFromAppetizeParams?: ?string,
 };
 
 YellowBox.ignoreWarnings([

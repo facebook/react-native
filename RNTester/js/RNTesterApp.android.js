@@ -42,7 +42,7 @@ UIManager.setLayoutAnimationEnabledExperimental(true);
 const DRAWER_WIDTH_LEFT = 56;
 
 type Props = {
-  exampleFromAppetizeParams: string,
+  exampleFromAppetizeParams?: ?string,
 };
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
