@@ -63,7 +63,7 @@ function createAnimatedComponent(Component: any, defaultProps: any): any {
     _attachNativeEvents() {
       // Make sure to get the scrollable node for components that implement
       // `ScrollResponder.Mixin`.
-      const scrollableNode = this._component.getScrollableNode
+      const scrollableNode = this._component?.getScrollableNode
         ? this._component.getScrollableNode()
         : this._component;
 
