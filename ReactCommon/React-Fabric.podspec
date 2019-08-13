@@ -19,6 +19,7 @@ end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 folly_version = '2018.10.22.00'
+yoga_version = '~> 1.14'
 folly_dep_name = 'Folly/Fabric'
 boost_compiler_flags = '-Wno-documentation'
 
@@ -141,7 +142,7 @@ Pod::Spec.new do |s|
 
     ss.subspec "view" do |sss|
       sss.dependency             folly_dep_name, folly_version
-      sss.dependency             "yoga",  "#{version}.React"
+      sss.dependency             "Yoga",  yoga_version
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "fabric/components/view/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "**/tests/*"
