@@ -41,7 +41,7 @@ if(WIN32 AND NOT WINRT)
 	add_definitions(-DWITH_OFFICE_TRACING=0)
 endif(WIN32 AND NOT WINRT)
 
-add_subdirectory(folly)
+add_subdirectory(follybuild)
 
 if(NOT ANDROID)
     add_subdirectory(ReactCommon)
