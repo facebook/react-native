@@ -46,9 +46,7 @@
       "platforms": [
         "ios",
         "macos",
-        "android",
-        "windesktop",
-        "uwp"
+        "android"
       ]
     },
     "modulePathIgnorePatterns": [
