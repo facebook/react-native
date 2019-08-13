@@ -11,7 +11,7 @@
 'use strict';
 
 const DeprecatedImageStylePropTypes = require('../../DeprecatedPropTypes/DeprecatedImageStylePropTypes');
-const TextStylePropTypes = require('../../Text/TextStylePropTypes');
+const DeprecatedTextStylePropTypes = require('../../DeprecatedPropTypes/DeprecatedTextStylePropTypes');
 const DeprecatedViewStylePropTypes = require('../../DeprecatedPropTypes/DeprecatedViewStylePropTypes');
 
 const processColor = require('../../StyleSheet/processColor');
@@ -22,7 +22,7 @@ const ReactNativeStyleAttributes = {};
 
 for (const attributeName of Object.keys({
   ...DeprecatedViewStylePropTypes,
-  ...TextStylePropTypes,
+  ...DeprecatedTextStylePropTypes,
   ...DeprecatedImageStylePropTypes,
 })) {
   ReactNativeStyleAttributes[attributeName] = true;
