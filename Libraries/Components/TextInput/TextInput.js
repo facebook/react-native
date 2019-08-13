@@ -10,7 +10,6 @@
 'use strict';
 
 const DeprecatedTextInputPropTypes = require('../../DeprecatedPropTypes/DeprecatedTextInputPropTypes');
-const DocumentSelectionState = require('../../vendor/document/selection/DocumentSelectionState');
 const NativeMethodsMixin = require('../../Renderer/shims/NativeMethodsMixin');
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
@@ -27,11 +26,15 @@ const invariant = require('invariant');
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 const warning = require('fbjs/lib/warning');
 
-import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import type {ViewProps} from '../View/ViewPropTypes';
-import type {SyntheticEvent, ScrollEvent} from '../../Types/CoreEventTypes';
+import type {ScrollEvent} from '../../Types/CoreEventTypes';
 import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {
+  Props,
+  BlurEvent,
+  TextInputEvent,
+  ChangeEvent,
+  SelectionChangeEvent,
+} from './TextInputTypes';
 
 let AndroidTextInput;
 let RCTMultilineTextInputView;
@@ -52,243 +55,6 @@ const onlyMultiline = {
   onTextInput: true,
   children: true,
 };
-
-export type ChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
-    eventCount: number,
-    target: number,
-    text: string,
-  |}>,
->;
-
-export type TextInputEvent = SyntheticEvent<
-  $ReadOnly<{|
-    eventCount: number,
-    previousText: string,
-    range: $ReadOnly<{|
-      start: number,
-      end: number,
-    |}>,
-    target: number,
-    text: string,
-  |}>,
->;
-
-export type ContentSizeChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
-    target: number,
-    contentSize: $ReadOnly<{|
-      width: number,
-      height: number,
-    |}>,
-  |}>,
->;
-
-type TargetEvent = SyntheticEvent<
-  $ReadOnly<{|
-    target: number,
-  |}>,
->;
-
-export type BlurEvent = TargetEvent;
-export type FocusEvent = TargetEvent;
-
-type Selection = $ReadOnly<{|
-  start: number,
-  end: number,
-|}>;
-
-export type SelectionChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
-    selection: Selection,
-    target: number,
-  |}>,
->;
-
-export type KeyPressEvent = SyntheticEvent<
-  $ReadOnly<{|
-    key: string,
-    target?: ?number,
-    eventCount?: ?number,
-  |}>,
->;
-
-export type EditingEvent = SyntheticEvent<
-  $ReadOnly<{|
-    eventCount: number,
-    text: string,
-    target: number,
-  |}>,
->;
-
-type DataDetectorTypesType =
-  | 'phoneNumber'
-  | 'link'
-  | 'address'
-  | 'calendarEvent'
-  | 'none'
-  | 'all';
-
-export type KeyboardType =
-  // Cross Platform
-  | 'default'
-  | 'email-address'
-  | 'numeric'
-  | 'phone-pad'
-  | 'number-pad'
-  | 'decimal-pad'
-  // iOS-only
-  | 'ascii-capable'
-  | 'numbers-and-punctuation'
-  | 'url'
-  | 'name-phone-pad'
-  | 'twitter'
-  | 'web-search'
-  // Android-only
-  | 'visible-password';
-
-export type ReturnKeyType =
-  // Cross Platform
-  | 'done'
-  | 'go'
-  | 'next'
-  | 'search'
-  | 'send'
-  // Android-only
-  | 'none'
-  | 'previous'
-  // iOS-only
-  | 'default'
-  | 'emergency-call'
-  | 'google'
-  | 'join'
-  | 'route'
-  | 'yahoo';
-
-export type AutoCapitalize = 'none' | 'sentences' | 'words' | 'characters';
-
-export type TextContentType =
-  | 'none'
-  | 'URL'
-  | 'addressCity'
-  | 'addressCityAndState'
-  | 'addressState'
-  | 'countryName'
-  | 'creditCardNumber'
-  | 'emailAddress'
-  | 'familyName'
-  | 'fullStreetAddress'
-  | 'givenName'
-  | 'jobTitle'
-  | 'location'
-  | 'middleName'
-  | 'name'
-  | 'namePrefix'
-  | 'nameSuffix'
-  | 'nickname'
-  | 'organizationName'
-  | 'postalCode'
-  | 'streetAddressLine1'
-  | 'streetAddressLine2'
-  | 'sublocality'
-  | 'telephoneNumber'
-  | 'username'
-  | 'password'
-  | 'newPassword'
-  | 'oneTimeCode';
-
-type PasswordRules = string;
-
-type IOSProps = $ReadOnly<{|
-  spellCheck?: ?boolean,
-  keyboardAppearance?: ?('default' | 'light' | 'dark'),
-  enablesReturnKeyAutomatically?: ?boolean,
-  selectionState?: ?DocumentSelectionState,
-  clearButtonMode?: ?('never' | 'while-editing' | 'unless-editing' | 'always'),
-  clearTextOnFocus?: ?boolean,
-  dataDetectorTypes?:
-    | ?DataDetectorTypesType
-    | $ReadOnlyArray<DataDetectorTypesType>,
-  inputAccessoryViewID?: ?string,
-  textContentType?: ?TextContentType,
-  PasswordRules?: ?PasswordRules,
-  scrollEnabled?: ?boolean,
-|}>;
-
-type AndroidProps = $ReadOnly<{|
-  autoCompleteType?: ?(
-    | 'cc-csc'
-    | 'cc-exp'
-    | 'cc-exp-month'
-    | 'cc-exp-year'
-    | 'cc-number'
-    | 'email'
-    | 'name'
-    | 'password'
-    | 'postal-code'
-    | 'street-address'
-    | 'tel'
-    | 'username'
-    | 'off'
-  ),
-  returnKeyLabel?: ?string,
-  numberOfLines?: ?number,
-  disableFullscreenUI?: ?boolean,
-  textBreakStrategy?: ?('simple' | 'highQuality' | 'balanced'),
-  underlineColorAndroid?: ?ColorValue,
-  inlineImageLeft?: ?string,
-  inlineImagePadding?: ?number,
-  importantForAutofill?: ?(
-    | 'auto'
-    | 'no'
-    | 'noExcludeDescendants'
-    | 'yes'
-    | 'yesExcludeDescendants'
-  ),
-  showSoftInputOnFocus?: ?boolean,
-|}>;
-
-type Props = $ReadOnly<{|
-  ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
-  ...IOSProps,
-  ...AndroidProps,
-  autoCapitalize?: ?AutoCapitalize,
-  autoCorrect?: ?boolean,
-  autoFocus?: ?boolean,
-  allowFontScaling?: ?boolean,
-  maxFontSizeMultiplier?: ?number,
-  editable?: ?boolean,
-  keyboardType?: ?KeyboardType,
-  returnKeyType?: ?ReturnKeyType,
-  maxLength?: ?number,
-  multiline?: ?boolean,
-  onBlur?: ?(e: BlurEvent) => mixed,
-  onFocus?: ?(e: FocusEvent) => mixed,
-  onChange?: ?(e: ChangeEvent) => mixed,
-  onChangeText?: ?(text: string) => mixed,
-  onContentSizeChange?: ?(e: ContentSizeChangeEvent) => mixed,
-  onTextInput?: ?(e: TextInputEvent) => mixed,
-  onEndEditing?: ?(e: EditingEvent) => mixed,
-  onSelectionChange?: ?(e: SelectionChangeEvent) => mixed,
-  onSubmitEditing?: ?(e: EditingEvent) => mixed,
-  onKeyPress?: ?(e: KeyPressEvent) => mixed,
-  onScroll?: ?(e: ScrollEvent) => mixed,
-  placeholder?: ?Stringish,
-  placeholderTextColor?: ?ColorValue,
-  secureTextEntry?: ?boolean,
-  selectionColor?: ?ColorValue,
-  selection?: ?$ReadOnly<{|
-    start: number,
-    end?: ?number,
-  |}>,
-  value?: ?Stringish,
-  defaultValue?: ?Stringish,
-  selectTextOnFocus?: ?boolean,
-  blurOnSubmit?: ?boolean,
-  style?: ?TextStyleProp,
-  caretHidden?: ?boolean,
-  contextMenuHidden?: ?boolean,
-|}>;
 
 const emptyFunctionThatReturnsTrue = () => true;
 
