@@ -670,7 +670,7 @@ const COMMANDS_DEFINED_WITH_ALL_TYPES = `
 const codegenNativeCommands = require('codegenNativeCommands');
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {Int32} from 'CodegenTypes';
+import type {Int32, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {NativeComponent} from 'codegenNativeComponent';
 
@@ -678,6 +678,7 @@ interface NativeCommands {
   +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
   +scrollTo: (
     viewRef: React.Ref<'RCTView'>,
+    x: Float,
     y: Int32,
     animated: boolean,
   ) => void;

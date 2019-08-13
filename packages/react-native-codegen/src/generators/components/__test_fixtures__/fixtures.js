@@ -1069,6 +1069,12 @@ const COMMANDS: SchemaType = {
                     },
                   },
                   {
+                    name: 'y',
+                    typeAnnotation: {
+                      type: 'FloatTypeAnnotation',
+                    },
+                  },
+                  {
                     name: 'message',
                     typeAnnotation: {
                       type: 'StringTypeAnnotation',

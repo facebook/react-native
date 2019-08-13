@@ -129,6 +129,8 @@ function getCommandArgJavaType(param) {
   switch (param.typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
       return 'getBoolean';
+    case 'FloatTypeAnnotation':
+      return 'getFloat';
     case 'Int32TypeAnnotation':
       return 'getInt';
     case 'StringTypeAnnotation':

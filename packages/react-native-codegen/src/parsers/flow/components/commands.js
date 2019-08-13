@@ -57,6 +57,11 @@ function buildCommandSchema(property, types: TypeMap) {
           type: 'Int32TypeAnnotation',
         };
         break;
+      case 'Float':
+        returnType = {
+          type: 'FloatTypeAnnotation',
+        };
+        break;
       default:
         (type: empty);
         throw new Error(

@@ -23,7 +23,12 @@ export type CommandsFunctionTypeParamAnnotation = $ReadOnly<{|
 export type CommandsTypeAnnotation =
   | BooleanTypeAnnotation
   | Int32TypeAnnotation
+  | FloatTypeAnnotation
   | StringTypeAnnotation;
+
+export type FloatTypeAnnotation = $ReadOnly<{|
+  type: 'FloatTypeAnnotation',
+|}>;
 
 export type BooleanTypeAnnotation = $ReadOnly<{|
   type: 'BooleanTypeAnnotation',

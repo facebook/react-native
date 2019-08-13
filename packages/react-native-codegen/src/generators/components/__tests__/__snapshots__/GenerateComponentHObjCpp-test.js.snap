@@ -86,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTCommandNativeComponentViewProtocol <NSObject>
 - (void)flashScrollIndicators;
-- (void)allTypes:(NSInteger)x message:(NSString *)message animated:(BOOL)animated;
+- (void)allTypes:(NSInteger)x y:(float)y message:(NSString *)message animated:(BOOL)animated;
 @end
 
 RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
@@ -110,8 +110,8 @@ RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
 
 if ([commandName isEqualToString:@\\"allTypes\\"]) {
 #if RCT_DEBUG
-  if ([args count] != 3) {
-    RCTLogError(@\\"%@ command %@ received %d arguments, expected %d.\\", @\\"CommandNativeComponent\\", commandName, (int)[args count], 3);
+  if ([args count] != 4) {
+    RCTLogError(@\\"%@ command %@ received %d arguments, expected %d.\\", @\\"CommandNativeComponent\\", commandName, (int)[args count], 4);
     return;
   }
 #endif
@@ -126,21 +126,29 @@ if ([commandName isEqualToString:@\\"allTypes\\"]) {
 
 #if RCT_DEBUG
   NSObject *arg1 = args[1];
-  if (!RCTValidateTypeOfViewCommandArgument(arg1, [NSString class], @\\"string\\", @\\"CommandNativeComponent\\", commandName, @\\"2nd\\")) {
+  if (!RCTValidateTypeOfViewCommandArgument(arg1, [NSNumber class], @\\"float\\", @\\"CommandNativeComponent\\", commandName, @\\"2nd\\")) {
     return;
   }
 #endif
-  NSString * message = (NSString *)arg1;
+  float y = [(NSNumber *)arg1 floatValue];
 
 #if RCT_DEBUG
   NSObject *arg2 = args[2];
-  if (!RCTValidateTypeOfViewCommandArgument(arg2, [NSNumber class], @\\"boolean\\", @\\"CommandNativeComponent\\", commandName, @\\"3rd\\")) {
+  if (!RCTValidateTypeOfViewCommandArgument(arg2, [NSString class], @\\"string\\", @\\"CommandNativeComponent\\", commandName, @\\"3rd\\")) {
     return;
   }
 #endif
-  BOOL animated = [(NSNumber *)arg2 boolValue];
+  NSString * message = (NSString *)arg2;
 
-  [componentView allTypes:x message:message animated:animated]
+#if RCT_DEBUG
+  NSObject *arg3 = args[3];
+  if (!RCTValidateTypeOfViewCommandArgument(arg3, [NSNumber class], @\\"boolean\\", @\\"CommandNativeComponent\\", commandName, @\\"4th\\")) {
+    return;
+  }
+#endif
+  BOOL animated = [(NSNumber *)arg3 boolValue];
+
+  [componentView allTypes:x y:y message:message animated:animated]
   return;
 }
 

@@ -1748,6 +1748,12 @@ Object {
               "typeAnnotation": Object {
                 "params": Array [
                   Object {
+                    "name": "x",
+                    "typeAnnotation": Object {
+                      "type": "FloatTypeAnnotation",
+                    },
+                  },
+                  Object {
                     "name": "y",
                     "typeAnnotation": Object {
                       "type": "Int32TypeAnnotation",
