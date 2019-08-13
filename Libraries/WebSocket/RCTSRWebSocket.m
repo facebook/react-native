@@ -597,6 +597,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       }
     }
 
+    [self.delegate webSocket:self didCloseWithCode:code reason:reason wasClean:YES];
     [self _sendFrameWithOpcode:RCTSROpCodeConnectionClose data:payload];
   });
 }
