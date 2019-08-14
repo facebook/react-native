@@ -16,8 +16,8 @@
 
 #import <React/RCTUIImageViewAnimated.h>
 #import <React/RCTImageBlurUtils.h>
-#import <React/RCTImageLoader.h>
 #import <React/RCTImageUtils.h>
+#import <React/RCTImageLoaderProtocol.h>
 
 /**
  * Determines whether an image of `currentSize` should be reloaded for display
@@ -326,7 +326,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     };
 
     _reloadImageCancellationBlock =
-    [[_bridge moduleForClass:[RCTImageLoader class]] loadImageWithURLRequest:source.request
+    [[_bridge moduleForName:@"ImageLoader"] loadImageWithURLRequest:source.request
                                                                         size:imageSize
                                                                        scale:imageScale
                                                                      clipped:NO

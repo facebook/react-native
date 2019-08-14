@@ -12,9 +12,9 @@
 #import <React/RCTConvert.h>
 #import <React/RCTImageSource.h>
 
-#import <React/RCTImageLoader.h>
 #import <React/RCTImageShadowView.h>
 #import <React/RCTImageView.h>
+#import <React/RCTImageLoaderProtocol.h>
 
 @implementation RCTImageViewManager
 
@@ -54,7 +54,7 @@ RCT_EXPORT_METHOD(getSize:(NSURLRequest *)request
                   successBlock:(RCTResponseSenderBlock)successBlock
                   errorBlock:(RCTResponseErrorBlock)errorBlock)
 {
-  [[self.bridge moduleForClass:[RCTImageLoader class]]
+  [[self.bridge moduleForName:@"ImageLoader"]
    getImageSizeForURLRequest:request
    block:^(NSError *error, CGSize size) {
      if (error) {
@@ -69,7 +69,7 @@ RCT_EXPORT_METHOD(getSizeWithHeaders:(RCTImageSource *)source
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  [[self.bridge moduleForClass:[RCTImageLoader class]]
+  [[self.bridge moduleForName:@"ImageLoader"]
    getImageSizeForURLRequest:source.request
    block:^(NSError *error, CGSize size) {
      if (error) {
@@ -89,7 +89,7 @@ RCT_EXPORT_METHOD(prefetchImage:(NSURLRequest *)request
     return;
   }
 
-  [[self.bridge moduleForClass:[RCTImageLoader class]]
+  [[self.bridge moduleForName:@"ImageLoader"]
    loadImageWithURLRequest:request
    callback:^(NSError *error, UIImage *image) {
      if (error) {
@@ -104,7 +104,7 @@ RCT_EXPORT_METHOD(queryCache:(NSArray *)requests
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  resolve([[self.bridge moduleForClass:[RCTImageLoader class]] getImageCacheStatus:requests]);
+  resolve([[self.bridge moduleForName:@"ImageLoader"] getImageCacheStatus:requests]);
 }
 
 @end

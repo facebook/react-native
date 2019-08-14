@@ -16,6 +16,7 @@
 #import <React/RCTImageLoader.h>
 #import <React/RCTImageStoreManager.h>
 #import <React/RCTImageUtils.h>
+#import <React/RCTImageLoaderProtocol.h>
 
 @implementation RCTImageEditingManager
 
@@ -43,7 +44,7 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     [RCTConvert CGSize:cropData[@"size"]]
   };
 
-  [[_bridge moduleForClass:[RCTImageLoader class]]
+  [[_bridge moduleForName:@"ImageLoader"]
    loadImageWithURLRequest:imageRequest callback:^(NSError *error, UIImage *image) {
      if (error) {
        errorCallback(error);

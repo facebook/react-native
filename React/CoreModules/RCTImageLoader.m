@@ -62,6 +62,9 @@ static NSInteger RCTImageBytesForImage(UIImage *image)
 }
 
 @synthesize bridge = _bridge;
+@synthesize maxConcurrentLoadingTasks = _maxConcurrentLoadingTasks;
+@synthesize maxConcurrentDecodingTasks = _maxConcurrentDecodingTasks;
+@synthesize maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes;
 
 RCT_EXPORT_MODULE()
 
