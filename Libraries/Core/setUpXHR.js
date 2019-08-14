@@ -29,7 +29,10 @@ polyfillGlobal('Blob', () => require('../Blob/Blob'));
 polyfillGlobal('File', () => require('../Blob/File'));
 polyfillGlobal('FileReader', () => require('../Blob/FileReader'));
 polyfillGlobal('URL', () => require('../Blob/URL').URL); // flowlint-line untyped-import:off
-polyfillGlobal('URLSearchParams', () => require('../Blob/URL').URLSearchParams); // flowlint-line untyped-import:off
+polyfillGlobal(
+  'URLSearchParams',
+  () => require('../Blob/URLSearchParams').URLSearchParams, // flowlint-line untyped-import:off
+);
 polyfillGlobal(
   'AbortController',
   () => require('abort-controller/dist/abort-controller').AbortController, // flowlint-line untyped-import:off

@@ -53,60 +53,6 @@ if (
  * ```
  */
 
-// Small subset from whatwg-url: https://github.com/jsdom/whatwg-url/tree/master/lib
-// The reference code bloat comes from Unicode issues with URLs, so those won't work here.
-export class URLSearchParams {
-  _searchParams = [];
-
-  constructor(params: any) {
-    if (typeof params === 'object') {
-      Object.keys(params).forEach(key => this.append(key, params[key]));
-    }
-  }
-
-  append(key: string, value: string) {
-    this._searchParams.push([key, value]);
-  }
-
-  delete(name) {
-    throw new Error('not implemented');
-  }
-
-  get(name) {
-    throw new Error('not implemented');
-  }
-
-  getAll(name) {
-    throw new Error('not implemented');
-  }
-
-  has(name) {
-    throw new Error('not implemented');
-  }
-
-  set(name, value) {
-    throw new Error('not implemented');
-  }
-
-  sort() {
-    throw new Error('not implemented');
-  }
-
-  [Symbol.iterator]() {
-    return this._searchParams[Symbol.iterator]();
-  }
-
-  toString() {
-    if (this._searchParams.length === 0) {
-      return '';
-    }
-    const last = this._searchParams.length - 1;
-    return this._searchParams.reduce((acc, curr, index) => {
-      return acc + curr.join('=') + (index === last ? '' : '&');
-    }, '');
-  }
-}
-
 whatwgUrl.createObjectURL = function createObjectURL(blob: Blob) {
   if (BLOB_URL_PREFIX === null) {
     throw new Error('Cannot create URL for blob!');
