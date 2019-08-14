@@ -623,7 +623,7 @@ Object {
                           },
                           Object {
                             "name": "patch",
-                            "optional": false,
+                            "optional": true,
                             "typeAnnotation": Object {
                               "type": "NumberTypeAnnotation",
                             },

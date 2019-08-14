@@ -31,7 +31,7 @@ function getObjectProperties(
   types: TypeMap,
 ): $ReadOnlyArray<ObjectParamTypeAnnotation> {
   return objectParam.properties.map(objectTypeProperty => {
-    let optional = false;
+    let optional = objectTypeProperty.optional;
     let value = objectTypeProperty.value;
     if (value.type === 'NullableTypeAnnotation') {
       optional = true;
