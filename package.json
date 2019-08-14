@@ -89,6 +89,7 @@
     "abort-controller": "^3.0.0",
     "art": "^0.10.0",
     "base64-js": "^1.1.2",
+    "buffer": "^5.4.0",
     "connect": "^3.6.5",
     "create-react-class": "^15.6.3",
     "escape-string-regexp": "^1.0.5",
@@ -108,7 +109,8 @@
     "regenerator-runtime": "^0.13.2",
     "scheduler": "0.14.0",
     "stacktrace-parser": "^0.1.3",
-    "whatwg-fetch": "^3.0.0"
+    "whatwg-fetch": "^3.0.0",
+    "whatwg-url-without-unicode": "^7.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
