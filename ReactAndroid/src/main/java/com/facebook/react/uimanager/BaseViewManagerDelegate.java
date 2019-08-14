@@ -4,6 +4,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.yoga.YogaConstants;
 
 /**
  * This is a base implementation of {@link ViewManagerDelegate} which supports setting properties
@@ -44,6 +45,26 @@ public abstract class BaseViewManagerDelegate<
         break;
       case ViewProps.BACKGROUND_COLOR:
         mViewManager.setBackgroundColor(view, value == null ? 0 : ((Double) value).intValue());
+        break;
+      case ViewProps.BORDER_RADIUS:
+        mViewManager.setBorderRadius(
+            view, value == null ? YogaConstants.UNDEFINED : ((Double) value).floatValue());
+        break;
+      case ViewProps.BORDER_BOTTOM_LEFT_RADIUS:
+        mViewManager.setBorderBottomLeftRadius(
+            view, value == null ? YogaConstants.UNDEFINED : ((Double) value).floatValue());
+        break;
+      case ViewProps.BORDER_BOTTOM_RIGHT_RADIUS:
+        mViewManager.setBorderBottomRightRadius(
+            view, value == null ? YogaConstants.UNDEFINED : ((Double) value).floatValue());
+        break;
+      case ViewProps.BORDER_TOP_LEFT_RADIUS:
+        mViewManager.setBorderTopLeftRadius(
+            view, value == null ? YogaConstants.UNDEFINED : ((Double) value).floatValue());
+        break;
+      case ViewProps.BORDER_TOP_RIGHT_RADIUS:
+        mViewManager.setBorderTopRightRadius(
+            view, value == null ? YogaConstants.UNDEFINED : ((Double) value).floatValue());
         break;
       case ViewProps.ELEVATION:
         mViewManager.setElevation(view, value == null ? 0.0f : ((Double) value).floatValue());

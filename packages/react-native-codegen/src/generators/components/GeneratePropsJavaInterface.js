@@ -47,8 +47,7 @@ function getJavaValueForProp(prop: PropTypeShape, imports): string {
     case 'Int32TypeAnnotation':
       return 'int value';
     case 'FloatTypeAnnotation':
-      addNullable(imports);
-      return 'Float value';
+      return 'float value';
     case 'NativePrimitiveTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':

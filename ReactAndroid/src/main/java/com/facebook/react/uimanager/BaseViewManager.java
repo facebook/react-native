@@ -12,6 +12,7 @@ import android.view.ViewParent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
@@ -19,6 +20,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
@@ -362,5 +364,29 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     return MapBuilder.<String, Object>builder()
         .put("topAccessibilityAction", MapBuilder.of("registrationName", "onAccessibilityAction"))
         .build();
+  }
+
+  protected void setBorderRadius(T view, float borderRadius) {
+    logUnsupportedPropertyWarning(ViewProps.BORDER_RADIUS);
+  }
+
+  protected void setBorderBottomLeftRadius(T view, float borderRadius) {
+    logUnsupportedPropertyWarning(ViewProps.BORDER_BOTTOM_LEFT_RADIUS);
+  }
+
+  protected void setBorderBottomRightRadius(T view, float borderRadius) {
+    logUnsupportedPropertyWarning(ViewProps.BORDER_BOTTOM_RIGHT_RADIUS);
+  }
+
+  protected void setBorderTopLeftRadius(T view, float borderRadius) {
+    logUnsupportedPropertyWarning(ViewProps.BORDER_TOP_LEFT_RADIUS);
+  }
+
+  protected void setBorderTopRightRadius(T view, float borderRadius) {
+    logUnsupportedPropertyWarning(ViewProps.BORDER_TOP_RIGHT_RADIUS);
+  }
+
+  private void logUnsupportedPropertyWarning(String propName) {
+    FLog.w(ReactConstants.TAG, "%s doesn't support property '%s'", getName(), propName);
   }
 }

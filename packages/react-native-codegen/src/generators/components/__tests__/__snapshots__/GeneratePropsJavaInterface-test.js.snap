@@ -147,15 +147,14 @@ Map {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
-import androidx.annotation.Nullable;
 
 public interface FloatPropNativeComponentManagerInterface<T extends View> {
-  void setBlurRadius(T view, Float value);
-  void setBlurRadius2(T view, Float value);
-  void setBlurRadius3(T view, Float value);
-  void setBlurRadius4(T view, Float value);
-  void setBlurRadius5(T view, Float value);
-  void setBlurRadius6(T view, Float value);
+  void setBlurRadius(T view, float value);
+  void setBlurRadius2(T view, float value);
+  void setBlurRadius3(T view, float value);
+  void setBlurRadius4(T view, float value);
+  void setBlurRadius5(T view, float value);
+  void setBlurRadius6(T view, float value);
 }
 ",
 }
