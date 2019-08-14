@@ -424,6 +424,39 @@ export default (codegenNativeComponent<ModuleProps>(
 ): NativeComponent<ModuleProps>);
 `;
 
+const PROPS_ALIASED_LOCALLY = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+export type PropsInFile = $ReadOnly<{|
+  isEnabled: boolean,
+|}>;
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  ...PropsInFile
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
 const EVENTS_DEFINED_INLINE_WITH_ALL_TYPES = `
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -807,6 +840,7 @@ module.exports = {
   ALL_PROP_TYPES_NO_EVENTS,
   ARRAY_PROP_TYPES_NO_EVENTS,
   OBJECT_PROP_TYPES_NO_EVENTS,
+  PROPS_ALIASED_LOCALLY,
   ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS,
   ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS_NO_CAST,
   NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION,

@@ -4903,6 +4903,37 @@ Object {
 }
 `;
 
+exports[`RN Codegen Flow Parser can generate fixture PROPS_ALIASED_LOCALLY 1`] = `
+Object {
+  "modules": Object {
+    "Module": Object {
+      "components": Object {
+        "Module": Object {
+          "commands": Array [],
+          "events": Array [],
+          "extendsProps": Array [
+            Object {
+              "knownTypeName": "ReactNativeCoreViewProps",
+              "type": "ReactNativeBuiltInType",
+            },
+          ],
+          "props": Array [
+            Object {
+              "name": "isEnabled",
+              "optional": false,
+              "typeAnnotation": Object {
+                "default": false,
+                "type": "BooleanTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
 exports[`RN Codegen Flow Parser can generate fixture PROPS_AND_EVENTS_TYPES_EXPORTED 1`] = `
 Object {
   "modules": Object {

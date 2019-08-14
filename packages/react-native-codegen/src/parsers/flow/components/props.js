@@ -15,6 +15,17 @@ import type {TypeMap} from '../utils.js';
 
 const {getValueFromTypes} = require('../utils.js');
 
+function getPropProperties(propsTypeName: string, types: TypeMap) {
+  const typeAlias = types[propsTypeName];
+  try {
+    return typeAlias.right.typeParameters.params[0].properties;
+  } catch (e) {
+    throw new Error(
+      `Failed to find type definition for "${propsTypeName}", please check that you have a valid codegen flow file`,
+    );
+  }
+}
+
 function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
   const extractedTypeAnnotation = getValueFromTypes(typeAnnotation, types);
   if (extractedTypeAnnotation.type === 'NullableTypeAnnotation') {
@@ -293,11 +304,28 @@ function getProps(
   types: TypeMap,
 ): $ReadOnlyArray<PropTypeShape> {
   return typeDefinition
-    .filter(property => property.type === 'ObjectTypeProperty')
-    .map(property => buildPropSchema(property, types))
+    .map(property => {
+      if (property.type === 'ObjectTypeProperty') {
+        return buildPropSchema(property, types);
+      } else if (property.type === 'ObjectTypeSpreadProperty') {
+        return getProps(
+          getPropProperties(property.argument.id.name, types),
+          types[property.argument.id.name],
+        );
+      }
+    })
+    .reduce((acc, item) => {
+      if (Array.isArray(item)) {
+        return acc.concat(item);
+      } else {
+        acc.push(item);
+        return acc;
+      }
+    }, [])
     .filter(Boolean);
 }
 
 module.exports = {
   getProps,
+  getPropProperties,
 };

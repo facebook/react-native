@@ -13,9 +13,9 @@
 import type {ComponentSchemaBuilderConfig} from './schema.js';
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
-const {getProps} = require('./props');
+const {getProps, getPropProperties} = require('./props');
 const {getCommandOptions, getOptions} = require('./options');
-const {getExtendsProps} = require('./extends');
+const {getExtendsProps, removeKnownExtends} = require('./extends');
 
 function findComponentConfig(ast) {
   const foundConfigs = [];
@@ -118,17 +118,6 @@ function findComponentConfig(ast) {
   };
 }
 
-function getPropProperties(propsTypeName, types) {
-  const typeAlias = types[propsTypeName];
-  try {
-    return typeAlias.right.typeParameters.params[0].properties;
-  } catch (e) {
-    throw new Error(
-      `Failed to find type definition for "${propsTypeName}", please check that you have a valid codegen flow file`,
-    );
-  }
-}
-
 function getCommandProperties(commandTypeName, types, commandOptions) {
   if (commandTypeName == null) {
     return [];
@@ -198,10 +187,11 @@ function processComponent(ast, types): ComponentSchemaBuilderConfig {
     commandOptions,
   );
 
-  const extendsProps = getExtendsProps(propProperties);
+  const extendsProps = getExtendsProps(propProperties, types);
   const options = getOptions(optionsExpression);
 
-  const props = getProps(propProperties, types);
+  const nonExtendsProps = removeKnownExtends(propProperties, types);
+  const props = getProps(nonExtendsProps, types);
   const events = getEvents(propProperties, types);
   const commands = getCommands(commandProperties, types);
 
