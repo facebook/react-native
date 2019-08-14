@@ -27,6 +27,7 @@ function getCppTypeForAnnotation(
     | 'BooleanTypeAnnotation'
     | 'StringTypeAnnotation'
     | 'Int32TypeAnnotation'
+    | 'DoubleTypeAnnotation'
     | 'FloatTypeAnnotation',
 ): string {
   switch (type) {
@@ -36,6 +37,8 @@ function getCppTypeForAnnotation(
       return 'std::string';
     case 'Int32TypeAnnotation':
       return 'int';
+    case 'DoubleTypeAnnotation':
+      return 'double';
     case 'FloatTypeAnnotation':
       return 'Float';
     default:

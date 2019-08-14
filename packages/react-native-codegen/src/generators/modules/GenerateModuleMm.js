@@ -80,6 +80,7 @@ function translateReturnTypeToKind(type): string {
     case 'BooleanTypeAnnotation':
       return 'BooleanKind';
     case 'NumberTypeAnnotation':
+    case 'DoubleTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
       return 'NumberKind';

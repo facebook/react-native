@@ -115,6 +115,29 @@ extern const char CommandNativeComponentComponentName[] = \\"CommandNativeCompon
 }
 `;
 
+exports[`GenerateShadowNodeCpp can generate fixture DOUBLE_PROPS 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/DOUBLE_PROPS/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char DoublePropNativeComponentComponentName[] = \\"DoublePropNativeComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateShadowNodeCpp can generate fixture ENUM_PROP 1`] = `
 Map {
   "ShadowNodes.cpp" => "

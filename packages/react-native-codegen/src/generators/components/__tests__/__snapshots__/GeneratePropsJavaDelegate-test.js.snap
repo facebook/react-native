@@ -183,6 +183,51 @@ public class CommandNativeComponentManagerDelegate<T extends View, U extends Bas
 }
 `;
 
+exports[`GeneratePropsJavaDelegate can generate fixture DOUBLE_PROPS 1`] = `
+Map {
+  "DoublePropNativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class DoublePropNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & DoublePropNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public DoublePropNativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"blurRadius\\":
+        mViewManager.setBlurRadius(view, value == null ? Double.NaN : ((Double) value).doubleValue());
+        break;
+      case \\"blurRadius2\\":
+        mViewManager.setBlurRadius2(view, value == null ? 0.001f : ((Double) value).doubleValue());
+        break;
+      case \\"blurRadius3\\":
+        mViewManager.setBlurRadius3(view, value == null ? 2.1f : ((Double) value).doubleValue());
+        break;
+      case \\"blurRadius4\\":
+        mViewManager.setBlurRadius4(view, value == null ? 0f : ((Double) value).doubleValue());
+        break;
+      case \\"blurRadius5\\":
+        mViewManager.setBlurRadius5(view, value == null ? 1f : ((Double) value).doubleValue());
+        break;
+      case \\"blurRadius6\\":
+        mViewManager.setBlurRadius6(view, value == null ? 0f : ((Double) value).doubleValue());
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
 exports[`GeneratePropsJavaDelegate can generate fixture ENUM_PROP 1`] = `
 Map {
   "EnumPropsNativeComponentManagerDelegate.java" => "

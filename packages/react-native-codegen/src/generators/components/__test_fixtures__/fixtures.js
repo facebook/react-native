@@ -323,6 +323,75 @@ const FLOAT_PROPS: SchemaType = {
   },
 };
 
+const DOUBLE_PROPS: SchemaType = {
+  modules: {
+    Switch: {
+      components: {
+        DoublePropNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'blurRadius',
+              optional: false,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: 0.0,
+              },
+            },
+            {
+              name: 'blurRadius2',
+              optional: true,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: 0.001,
+              },
+            },
+            {
+              name: 'blurRadius3',
+              optional: true,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: 2.1,
+              },
+            },
+            {
+              name: 'blurRadius4',
+              optional: true,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: 0,
+              },
+            },
+            {
+              name: 'blurRadius5',
+              optional: true,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: 1,
+              },
+            },
+            {
+              name: 'blurRadius6',
+              optional: true,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: -0.0,
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
 const COLOR_PROP: SchemaType = {
   modules: {
     Switch: {
@@ -1153,6 +1222,7 @@ module.exports = {
   BOOLEAN_PROP,
   STRING_PROP,
   INTEGER_PROPS,
+  DOUBLE_PROPS,
   FLOAT_PROPS,
   COLOR_PROP,
   IMAGE_PROP,

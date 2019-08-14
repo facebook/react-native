@@ -143,6 +143,7 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
     case 'BooleanTypeAnnotation':
     case 'StringTypeAnnotation':
     case 'Int32TypeAnnotation':
+    case 'DoubleTypeAnnotation':
     case 'FloatTypeAnnotation':
       return getCppTypeForAnnotation(typeAnnotation.type);
     case 'NativePrimitiveTypeAnnotation':
@@ -200,9 +201,14 @@ function convertDefaultTypeToString(componentName: string, prop): string {
       return `"${typeAnnotation.default}"`;
     case 'Int32TypeAnnotation':
       return String(typeAnnotation.default);
+    case 'DoubleTypeAnnotation':
+      const defaultDoubleVal = typeAnnotation.default;
+      return parseInt(defaultDoubleVal, 10) === defaultDoubleVal
+        ? typeAnnotation.default.toFixed(1)
+        : String(typeAnnotation.default);
     case 'FloatTypeAnnotation':
-      const defaultVal = typeAnnotation.default;
-      return parseInt(defaultVal, 10) === defaultVal
+      const defaultFloatVal = typeAnnotation.default;
+      return parseInt(defaultFloatVal, 10) === defaultFloatVal
         ? typeAnnotation.default.toFixed(1)
         : String(typeAnnotation.default);
     case 'NativePrimitiveTypeAnnotation':

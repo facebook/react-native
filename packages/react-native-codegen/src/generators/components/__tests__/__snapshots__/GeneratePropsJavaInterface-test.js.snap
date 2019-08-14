@@ -84,6 +84,25 @@ public interface CommandNativeComponentManagerInterface<T extends View> {
 }
 `;
 
+exports[`GeneratePropsJavaInterface can generate fixture DOUBLE_PROPS 1`] = `
+Map {
+  "DoublePropNativeComponentManagerInterface.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+
+public interface DoublePropNativeComponentManagerInterface<T extends View> {
+  void setBlurRadius(T view, double value);
+  void setBlurRadius2(T view, double value);
+  void setBlurRadius3(T view, double value);
+  void setBlurRadius4(T view, double value);
+  void setBlurRadius5(T view, double value);
+  void setBlurRadius6(T view, double value);
+}
+",
+}
+`;
+
 exports[`GeneratePropsJavaInterface can generate fixture ENUM_PROP 1`] = `
 Map {
   "EnumPropsNativeComponentManagerInterface.java" => "

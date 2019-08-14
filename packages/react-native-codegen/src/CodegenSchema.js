@@ -88,6 +88,10 @@ type PropTypeTypeAnnotation =
       default: string | null,
     |}>
   | $ReadOnly<{|
+      type: 'DoubleTypeAnnotation',
+      default: number,
+    |}>
+  | $ReadOnly<{|
       type: 'FloatTypeAnnotation',
       default: number,
     |}>
@@ -148,6 +152,7 @@ export type PrimitiveTypeAnnotationType =
   | 'StringTypeAnnotation'
   | 'NumberTypeAnnotation'
   | 'Int32TypeAnnotation'
+  | 'DoubleTypeAnnotation'
   | 'FloatTypeAnnotation'
   | 'BooleanTypeAnnotation'
   | 'GenericObjectTypeAnnotation';

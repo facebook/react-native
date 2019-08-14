@@ -229,6 +229,43 @@ class CommandNativeComponentProps final : public ViewProps {
 }
 `;
 
+exports[`GeneratePropsH can generate fixture DOUBLE_PROPS 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class DoublePropNativeComponentProps final : public ViewProps {
+ public:
+  DoublePropNativeComponentProps() = default;
+  DoublePropNativeComponentProps(const DoublePropNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  const double blurRadius{0.0};
+  const double blurRadius2{0.001};
+  const double blurRadius3{2.1};
+  const double blurRadius4{0.0};
+  const double blurRadius5{1.0};
+  const double blurRadius6{0.0};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GeneratePropsH can generate fixture ENUM_PROP 1`] = `
 Map {
   "Props.h" => "

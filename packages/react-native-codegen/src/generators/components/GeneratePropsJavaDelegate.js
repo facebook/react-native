@@ -66,6 +66,14 @@ function getJavaValueForProp(
       return `value == null ? ${
         typeAnnotation.default
       } : ((Double) value).intValue()`;
+    case 'DoubleTypeAnnotation':
+      if (prop.optional) {
+        return `value == null ? ${
+          typeAnnotation.default
+        }f : ((Double) value).doubleValue()`;
+      } else {
+        return 'value == null ? Double.NaN : ((Double) value).doubleValue()';
+      }
     case 'FloatTypeAnnotation':
       if (prop.optional) {
         return `value == null ? ${
@@ -129,6 +137,8 @@ function getCommandArgJavaType(param) {
   switch (param.typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
       return 'getBoolean';
+    case 'DoubleTypeAnnotation':
+      return 'getDouble';
     case 'FloatTypeAnnotation':
       return 'getFloat';
     case 'Int32TypeAnnotation':

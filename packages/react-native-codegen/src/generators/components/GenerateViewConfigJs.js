@@ -43,6 +43,7 @@ function getReactDiffProcessValue(typeAnnotation) {
     case 'BooleanTypeAnnotation':
     case 'StringTypeAnnotation':
     case 'Int32TypeAnnotation':
+    case 'DoubleTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'ObjectTypeAnnotation':
     case 'StringEnumTypeAnnotation':

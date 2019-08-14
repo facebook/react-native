@@ -197,6 +197,46 @@ export const Commands = {
 }
 `;
 
+exports[`GenerateViewConfigJs can generate fixture DOUBLE_PROPS 1`] = `
+Map {
+  "DOUBLE_PROPSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const DoublePropNativeComponentViewConfig = {
+  uiViewClassName: 'DoublePropNativeComponent',
+
+  validAttributes: {
+    blurRadius: true,
+    blurRadius2: true,
+    blurRadius3: true,
+    blurRadius4: true,
+    blurRadius5: true,
+    blurRadius6: true,
+  },
+};
+
+let nativeComponentName = 'DoublePropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, DoublePropNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = DoublePropNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
 exports[`GenerateViewConfigJs can generate fixture ENUM_PROP 1`] = `
 Map {
   "ENUM_PROPNativeViewConfig.js" => "
