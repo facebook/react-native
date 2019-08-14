@@ -40,6 +40,7 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_diffic
 NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
   : ObjCTurboModule(\\"SampleTurboModule\\", instance, jsInvoker) {
   methodMap_[\\"difficult\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_difficult};
+  setMethodArgConversionSelector(@\\"difficult\\", 0, @\\"JS_NativeSampleTurboModule_SpecDifficultA:\\");
 }
 
 

@@ -36,7 +36,7 @@ const moduleTemplate = `
 
 Native::_MODULE_NAME_::SpecJSI::Native::_MODULE_NAME_::SpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
   : ObjCTurboModule("::_MODULE_NAME_::", instance, jsInvoker) {
-::_PROPERTIES_MAP_::
+::_PROPERTIES_MAP_::::_CONVERSION_SELECTORS_::
 }`.trim();
 
 const getterTemplate = `
@@ -47,6 +47,9 @@ const getterTemplate = `
 }
 @end
 `.trim();
+
+const argConvertionTemplate =
+  '\n  setMethodArgConversionSelector(@"::_ARG_NAME_::", ::_ARG_NUMBER_::, @"JS_Native::_MODULE_NAME_::_Spec::_SELECTOR_NAME_:::");';
 
 const template = `
 /**
@@ -220,6 +223,28 @@ module.exports = {
                   .replace(/::_ARGS_COUNT_::/g, params.length.toString()),
               )
               .join('\n'),
+          )
+          .replace(
+            '::_CONVERSION_SELECTORS_::',
+            properties
+              .map(({name: propertyName, typeAnnotation: {params}}) =>
+                params
+                  .map((param, index) =>
+                    param.typeAnnotation.type === 'ObjectTypeAnnotation' &&
+                    param.typeAnnotation.properties
+                      ? argConvertionTemplate
+                          .replace(
+                            '::_SELECTOR_NAME_::',
+                            capitalizeFirstLetter(propertyName) +
+                              capitalizeFirstLetter(param.name),
+                          )
+                          .replace('::_ARG_NUMBER_::', index.toString())
+                          .replace('::_ARG_NAME_::', propertyName)
+                      : '',
+                  )
+                  .join(''),
+              )
+              .join(''),
           )
           .replace(/::_MODULE_NAME_::/g, name);
       })
