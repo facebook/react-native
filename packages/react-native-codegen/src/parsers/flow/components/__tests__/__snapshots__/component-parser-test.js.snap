@@ -4926,6 +4926,23 @@ Object {
                 "type": "BooleanTypeAnnotation",
               },
             },
+            Object {
+              "name": "localType",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "isEnabled",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": false,
+                      "type": "BooleanTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
           ],
         },
       },

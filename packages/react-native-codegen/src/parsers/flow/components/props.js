@@ -123,9 +123,12 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue, types) {
   ) {
     return {
       type: 'ObjectTypeAnnotation',
-      properties: typeAnnotation.typeParameters.params[0].properties.map(prop =>
-        buildPropSchema(prop, types),
-      ),
+      properties: flattenProperties(
+        typeAnnotation.typeParameters.params[0].properties,
+        types,
+      )
+        .map(prop => buildPropSchema(prop, types))
+        .filter(Boolean),
     };
   }
 
@@ -299,19 +302,16 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
 // $FlowFixMe there's no flowtype for ASTs
 type PropAST = Object;
 
-function getProps(
+function flattenProperties(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeMap,
-): $ReadOnlyArray<PropTypeShape> {
+) {
   return typeDefinition
     .map(property => {
       if (property.type === 'ObjectTypeProperty') {
-        return buildPropSchema(property, types);
+        return property;
       } else if (property.type === 'ObjectTypeSpreadProperty') {
-        return getProps(
-          getPropProperties(property.argument.id.name, types),
-          types[property.argument.id.name],
-        );
+        return getPropProperties(property.argument.id.name, types);
       }
     })
     .reduce((acc, item) => {
@@ -322,6 +322,15 @@ function getProps(
         return acc;
       }
     }, [])
+    .filter(Boolean);
+}
+
+function getProps(
+  typeDefinition: $ReadOnlyArray<PropAST>,
+  types: TypeMap,
+): $ReadOnlyArray<PropTypeShape> {
+  return flattenProperties(typeDefinition, types)
+    .map(property => buildPropSchema(property, types))
     .filter(Boolean);
 }
 
