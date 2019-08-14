@@ -182,26 +182,30 @@ module.exports = {
           .map(prop => {
             const nativeArgs = prop.typeAnnotation.params
               .map((param, i) => {
+                let paramObjCType;
                 if (
                   param.typeAnnotation.type === 'ObjectTypeAnnotation' &&
                   param.typeAnnotation.properties
                 ) {
+                  const variableName =
+                    capitalizeFirstLetter(prop.name) +
+                    capitalizeFirstLetter(param.name);
                   objectForGeneratingStructs.push({
-                    name:
-                      capitalizeFirstLetter(prop.name) +
-                      capitalizeFirstLetter(param.name),
+                    name: variableName,
                     object: {
                       type: 'ObjectTypeAnnotation',
                       properties: param.typeAnnotation.properties,
                     },
                   });
+                  paramObjCType = `JS::Native::_MODULE_NAME_::::Spec${variableName}&`;
+                } else {
+                  paramObjCType = translatePrimitiveJSTypeToObjCType(
+                    param,
+                    `Unspopported type for param "${param.name}" in ${
+                      prop.name
+                    }. Found: ${param.typeAnnotation.type}`,
+                  );
                 }
-                const paramObjCType = translatePrimitiveJSTypeToObjCType(
-                  param,
-                  `Unspopported type for param "${param.name}" in ${
-                    prop.name
-                  }. Found: ${param.typeAnnotation.type}`,
-                );
                 return `${i === 0 ? '' : param.name}:(${paramObjCType})${
                   param.name
                 }`;

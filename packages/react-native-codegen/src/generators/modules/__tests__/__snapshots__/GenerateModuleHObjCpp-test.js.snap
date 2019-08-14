@@ -149,7 +149,7 @@ inline NSString *JS::NativeSampleTurboModule::SpecDifficultAE::F() const
 
 
 @protocol NativeSampleTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
-- (NSDictionary *) difficult:(NSDictionary *)A;
+- (NSDictionary *) difficult:(JS::NativeSampleTurboModule::SpecDifficultA&)A;
 @end
 
 
