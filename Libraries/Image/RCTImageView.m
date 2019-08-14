@@ -347,6 +347,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 
   if (error) {
+    RCTExecuteOnMainQueue(^{
+      self.image = nil;
+    });
+
     if (_onError) {
       _onError(@{ @"error": error.localizedDescription });
     }
