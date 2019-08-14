@@ -15,7 +15,6 @@ const {flatObjects, capitalizeFirstLetter} = require('./Utils');
 const {generateStructsForConstants} = require('./GenerateStructsForConstants');
 
 const template = `
-#import <RCTTypeSafety/RCTConvertHelpers.h>
 ::_CONSTANTS_::::_STRUCTS_::::_INLINES_::
 `;
 

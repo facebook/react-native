@@ -68,6 +68,7 @@ const template = `
 #import <RCTTypeSafety/RCTTypedModuleConstants.h>
 #import <React/RCTCxxConvert.h>
 #import <React/RCTManagedPointer.h>
+#import <RCTTypeSafety/RCTConvertHelpers.h>
 
 ::_PROTOCOLS_::
 

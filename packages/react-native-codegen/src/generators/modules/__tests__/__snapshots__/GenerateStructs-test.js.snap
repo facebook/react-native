@@ -2,7 +2,6 @@
 
 exports[`GenerateStructs can generate fixture SIMPLE_CONSTANTS 1`] = `
 "
-#import <RCTTypeSafety/RCTConvertHelpers.h>
 
 namespace JS {
   namespace NativeSampleTurboModule {
@@ -143,7 +142,6 @@ inline JS::NativeSampleTurboModule::Constants::Builder::Builder(Constants i) : _
 
 exports[`GenerateStructs can generate fixture SIMPLE_STRUCT 1`] = `
 "
-#import <RCTTypeSafety/RCTConvertHelpers.h>
 
 namespace JS {
   namespace NativeSampleTurboModule {
