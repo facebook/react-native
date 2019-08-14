@@ -12,7 +12,7 @@
 
 import type {
   SchemaType,
-  FunctionTypeAnnotationParamTypeAnnotation,
+  FunctionTypeAnnotationParam,
   FunctionTypeAnnotationReturn,
   ObjectParamTypeAnnotation,
 } from '../../CodegenSchema';
@@ -91,26 +91,29 @@ const constants = `- (facebook::react::ModuleConstants<JS::Native::_MODULE_NAME_
 - (facebook::react::ModuleConstants<JS::Native::_MODULE_NAME_::::Constants::Builder>)getConstants;`;
 
 function translatePrimitiveJSTypeToObjCType(
-  type: FunctionTypeAnnotationParamTypeAnnotation,
+  param: FunctionTypeAnnotationParam,
   error: string,
 ) {
-  switch (type.type) {
+  function wrapIntoNullableIfNeeded(generatedType: string) {
+    return param.nullable ? `${generatedType} _Nullable` : generatedType;
+  }
+  switch (param.typeAnnotation.type) {
     case 'StringTypeAnnotation':
-      return 'NSString *';
+      return wrapIntoNullableIfNeeded('NSString *');
     case 'NumberTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
-      return 'NSNumber *';
+      return param.nullable ? 'NSNumber *' : 'double';
     case 'BooleanTypeAnnotation':
-      return 'BOOL';
+      return param.nullable ? 'NSNumber * _Nullable' : 'BOOL';
     case 'GenericObjectTypeAnnotation':
-      return 'NSDictionary *';
+      return wrapIntoNullableIfNeeded('NSDictionary *');
     case 'ArrayTypeAnnotation':
-      return 'NSArray<id<NSObject>> *';
+      return wrapIntoNullableIfNeeded('NSArray *');
     case 'FunctionTypeAnnotation':
       return 'RCTResponseSenderBlock';
     case 'ObjectTypeAnnotation':
-      return 'NSDictionary *';
+      return wrapIntoNullableIfNeeded('NSDictionary *');
     default:
       throw new Error(error);
   }
@@ -193,7 +196,7 @@ module.exports = {
                   });
                 }
                 const paramObjCType = translatePrimitiveJSTypeToObjCType(
-                  param.typeAnnotation,
+                  param,
                   `Unspopported type for param "${param.name}" in ${
                     prop.name
                   }. Found: ${param.typeAnnotation.type}`,

@@ -14,11 +14,11 @@ import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getBool: () => ?boolean;
-  +getNumber: () => ?number;
-  +getString: () => ?string;
-  +getArray: () => ?Array<any>;
-  +getObject: () => ?Object;
+  +getBool: (a: ?boolean) => ?boolean;
+  +getNumber: (a: ?number) => ?number;
+  +getString: (a: ?number) => ?string;
+  +getArray: (a: ?Array<any>) => ?Array<any>;
+  +getObject: (a: ?Object) => ?Object;
   +getValueWithPromise: () => ?Promise<string>;
 }
 
