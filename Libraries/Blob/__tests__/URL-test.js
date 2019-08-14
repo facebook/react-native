@@ -51,7 +51,7 @@ describe('URL', function() {
 
   it('should support unicode', () => {
     const a = new URL('https://r3---sn-p5qlsnz6.googlevideo.com');
-    expect(a.href).toBe('https://r3---sn-p5qlsnz6.googlevideo.com');
+    expect(a.href).toBe('https://r3---sn-p5qlsnz6.googlevideo.com/');
   });
 
   // https://github.com/facebook/react-native/issues/25717
