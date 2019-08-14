@@ -114,6 +114,15 @@ function tranlsateMethodForImplementation(property): string {
     .slice(1)
     .join(':')
     .concat(':');
+  if (
+    property.name === 'getConstants' &&
+    property.typeAnnotation.returnTypeAnnotation.type ===
+      'ObjectTypeAnnotation' &&
+    property.typeAnnotation.returnTypeAnnotation.properties &&
+    property.typeAnnotation.returnTypeAnnotation.properties.length === 0
+  ) {
+    return '';
+  }
   return propertyTemplate
     .replace(
       /::_KIND_::/g,
@@ -217,10 +226,19 @@ module.exports = {
           .replace(
             '::_PROPERTIES_MAP_::',
             properties
-              .map(({name: propertyName, typeAnnotation: {params}}) =>
-                proprertyDefTemplate
-                  .replace(/::_PROPERTY_NAME_::/g, propertyName)
-                  .replace(/::_ARGS_COUNT_::/g, params.length.toString()),
+              .map(
+                ({
+                  name: propertyName,
+                  typeAnnotation: {params, returnTypeAnnotation},
+                }) =>
+                  propertyName === 'getConstants' &&
+                  returnTypeAnnotation.type === 'ObjectTypeAnnotation' &&
+                  returnTypeAnnotation.properties &&
+                  returnTypeAnnotation.properties.length === 0
+                    ? ''
+                    : proprertyDefTemplate
+                        .replace(/::_PROPERTY_NAME_::/g, propertyName)
+                        .replace(/::_ARGS_COUNT_::/g, params.length.toString()),
               )
               .join('\n'),
           )

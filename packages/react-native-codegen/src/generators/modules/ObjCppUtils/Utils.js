@@ -44,6 +44,11 @@ function flatObjects(
     .filter(
       annotation =>
         (annotation.name === 'GetConstantsReturnType') === forConstants,
+    )
+    .filter(
+      annotation =>
+        annotation.name !== 'GetConstantsReturnType' ||
+        annotation.properties.length > 0,
     );
 
   let flattenObjects: Array<{|

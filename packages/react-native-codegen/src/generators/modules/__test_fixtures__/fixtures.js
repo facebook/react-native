@@ -332,6 +332,19 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
         Sample2TurboModule: {
           properties: [
             {
+              name: 'getConstants',
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                returnTypeAnnotation: {
+                  nullable: false,
+                  type: 'ObjectTypeAnnotation',
+                  properties: [],
+                },
+                params: [],
+                optional: false,
+              },
+            },
+            {
               name: 'voidFunc',
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',

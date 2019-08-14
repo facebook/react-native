@@ -239,6 +239,12 @@ module.exports = {
               )
               .replace('::_ARGS_::', nativeArgs);
             if (prop.name === 'getConstants') {
+              if (
+                prop.typeAnnotation.returnTypeAnnotation.properties &&
+                prop.typeAnnotation.returnTypeAnnotation.properties.length === 0
+              ) {
+                return '';
+              }
               return constants.replace(/::_MODULE_NAME_::/, name);
             }
             return implementation;

@@ -181,6 +181,7 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(id<RCTTurboModule
   : ObjCTurboModule(\\"SampleTurboModule\\", instance, jsInvoker) {
   methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
 }
+
 static facebook::jsi::Value __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   return static_cast<ObjCTurboModule &>(turboModule)
          .invokeObjCMethod(rt, VoidKind, \\"voidFunc\\", @selector(voidFunc), args, count);
@@ -188,6 +189,7 @@ static facebook::jsi::Value __hostFunction_NativeSample2TurboModuleSpecJSI_voidF
 
 NativeSample2TurboModuleSpecJSI::NativeSample2TurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
   : ObjCTurboModule(\\"Sample2TurboModule\\", instance, jsInvoker) {
+
   methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleSpecJSI_voidFunc};
 }
 

@@ -362,6 +362,7 @@ Map {
 
 
 @protocol NativeSample2TurboModuleSpec <RCTBridgeModule, RCTTurboModule>
+
 - (void) voidFunc;
 @end
 
