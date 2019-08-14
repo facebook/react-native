@@ -17,12 +17,6 @@ const StyleSheet = require('../../StyleSheet/StyleSheet');
  * View component and renders its children.
  */
 class UnimplementedView extends React.Component<$FlowFixMeProps> {
-  setNativeProps() {
-    // Do nothing.
-    // This method is required in order to use this view as a Touchable* child.
-    // See ensureComponentIsNative.js for more info
-  }
-
   render(): React.Node {
     // Workaround require cycle from requireNativeComponent
     const View = require('../View/View');

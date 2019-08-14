@@ -14,8 +14,6 @@ const React = require('react');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 
-const ensureComponentIsNative = require('../Components/Touchable/ensureComponentIsNative');
-
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.
  *
@@ -45,7 +43,6 @@ class ImageBackground extends React.Component<$FlowFixMeProps> {
     // Work-around flow
     const viewRef = this._viewRef;
     if (viewRef) {
-      ensureComponentIsNative(viewRef);
       viewRef.setNativeProps(props);
     }
   }
