@@ -209,63 +209,63 @@ inline bool JS::NativeSampleTurboModule::SpecSampleFuncReturnType::a() const
 
 inline double JS::NativeSampleTurboModule::SpecSampleFuncReturnType::b() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"b\\"];
   return RCTBridgingToDouble(p);
 }
 
 
 inline NSString *JS::NativeSampleTurboModule::SpecSampleFuncReturnType::c() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"c\\"];
   return RCTBridgingToString(p);
 }
 
 
 inline JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeD JS::NativeSampleTurboModule::SpecSampleFuncReturnType::d() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"d\\"];
   return JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeD(p);
 }
 
 
 inline bool JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeD::e() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"e\\"];
   return RCTBridgingToBool(p);
 }
 
 
 inline double JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeD::f() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"f\\"];
   return RCTBridgingToDouble(p);
 }
 
 
 inline JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeDG JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeD::g() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"g\\"];
   return JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeDG(p);
 }
 
 
 inline bool JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeDG::h() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"h\\"];
   return RCTBridgingToBool(p);
 }
 
 
 inline double JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeDG::i() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"i\\"];
   return RCTBridgingToDouble(p);
 }
 
 
 inline NSString *JS::NativeSampleTurboModule::SpecSampleFuncReturnTypeDG::j() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"j\\"];
   return RCTBridgingToString(p);
 }
 

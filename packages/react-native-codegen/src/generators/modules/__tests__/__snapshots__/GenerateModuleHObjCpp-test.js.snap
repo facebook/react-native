@@ -86,63 +86,63 @@ namespace JS {
 
 inline bool JS::NativeSampleTurboModule::SpecDifficultA::D() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"D\\"];
   return RCTBridgingToBool(p);
 }
 
 
 inline JS::NativeSampleTurboModule::SpecDifficultAE JS::NativeSampleTurboModule::SpecDifficultA::E() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"E\\"];
   return JS::NativeSampleTurboModule::SpecDifficultAE(p);
 }
 
 
 inline NSString *JS::NativeSampleTurboModule::SpecDifficultA::F() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"F\\"];
   return RCTBridgingToString(p);
 }
 
 
 inline bool JS::NativeSampleTurboModule::SpecDifficultReturnType::D() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"D\\"];
   return RCTBridgingToBool(p);
 }
 
 
 inline double JS::NativeSampleTurboModule::SpecDifficultReturnType::E() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"E\\"];
   return RCTBridgingToDouble(p);
 }
 
 
 inline NSString *JS::NativeSampleTurboModule::SpecDifficultReturnType::F() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"F\\"];
   return RCTBridgingToString(p);
 }
 
 
 inline bool JS::NativeSampleTurboModule::SpecDifficultAE::D() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"D\\"];
   return RCTBridgingToBool(p);
 }
 
 
 inline double JS::NativeSampleTurboModule::SpecDifficultAE::E() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"E\\"];
   return RCTBridgingToDouble(p);
 }
 
 
 inline NSString *JS::NativeSampleTurboModule::SpecDifficultAE::F() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"F\\"];
   return RCTBridgingToString(p);
 }
 

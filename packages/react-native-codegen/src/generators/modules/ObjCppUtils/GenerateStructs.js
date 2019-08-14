@@ -39,7 +39,7 @@ namespace JS {
 const inlineTemplate = `
 inline ::_RETURN_TYPE_::JS::Native::_MODULE_NAME_::::Spec::_STRUCT_NAME_::::::_PROPERTY_NAME_::() const
 {
-  id const p = _v[@"a"];
+  id const p = _v[@"::_PROPERTY_NAME_::"];
   return ::_RETURN_VALUE_::;
 }
 `;
