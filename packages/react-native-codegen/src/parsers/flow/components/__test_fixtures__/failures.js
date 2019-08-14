@@ -305,6 +305,104 @@ export default (codegenNativeComponent<ModuleProps>(
 ): NativeComponent<ModuleProps>);
 `;
 
+const PROPS_CONFLICT_NAMES = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  isEnabled: string,
+
+  isEnabled: boolean,
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const PROPS_CONFLICT_WITH_SPREAD_PROPS = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+type PropsInFile = $ReadOnly<{|
+  isEnabled: boolean,
+|}>;
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  ...PropsInFile,
+  isEnabled: boolean,
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const PROPS_SPREAD_CONFLICTS_WITH_PROPS = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+type PropsInFile = $ReadOnly<{|
+  isEnabled: boolean,
+|}>;
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  isEnabled: boolean,
+  ...PropsInFile,
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
 module.exports = {
   COMMANDS_DEFINED_INLINE,
   COMMANDS_DEFINED_MULTIPLE_TIMES,
@@ -314,4 +412,7 @@ module.exports = {
   COMMANDS_DEFINED_WITH_NULLABLE_REF,
   NULLABLE_WITH_DEFAULT,
   NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE,
+  PROPS_CONFLICT_NAMES,
+  PROPS_CONFLICT_WITH_SPREAD_PROPS,
+  PROPS_SPREAD_CONFLICTS_WITH_PROPS,
 };

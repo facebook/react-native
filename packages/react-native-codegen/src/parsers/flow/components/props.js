@@ -302,6 +302,17 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
 // $FlowFixMe there's no flowtype for ASTs
 type PropAST = Object;
 
+function verifyPropNotAlreadyDefined(
+  props: $ReadOnlyArray<PropAST>,
+  needleProp: PropAST,
+) {
+  const propName = needleProp.key.name;
+  const foundProp = props.some(prop => prop.key.name === propName);
+  if (foundProp) {
+    throw new Error(`A prop was already defined with the name ${propName}`);
+  }
+}
+
 function flattenProperties(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeMap,
@@ -319,8 +330,12 @@ function flattenProperties(
     })
     .reduce((acc, item) => {
       if (Array.isArray(item)) {
+        item.forEach(prop => {
+          verifyPropNotAlreadyDefined(acc, prop);
+        });
         return acc.concat(item);
       } else {
+        verifyPropNotAlreadyDefined(acc, item);
         acc.push(item);
         return acc;
       }
