@@ -311,7 +311,10 @@ function flattenProperties(
       if (property.type === 'ObjectTypeProperty') {
         return property;
       } else if (property.type === 'ObjectTypeSpreadProperty') {
-        return getPropProperties(property.argument.id.name, types);
+        return flattenProperties(
+          getPropProperties(property.argument.id.name, types),
+          types,
+        );
       }
     })
     .reduce((acc, item) => {

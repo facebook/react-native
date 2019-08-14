@@ -4919,6 +4919,14 @@ Object {
           ],
           "props": Array [
             Object {
+              "name": "otherStringProp",
+              "optional": false,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "StringTypeAnnotation",
+              },
+            },
+            Object {
               "name": "isEnabled",
               "optional": false,
               "typeAnnotation": Object {
@@ -4927,16 +4935,40 @@ Object {
               },
             },
             Object {
+              "name": "label",
+              "optional": false,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "StringTypeAnnotation",
+              },
+            },
+            Object {
               "name": "localType",
               "optional": false,
               "typeAnnotation": Object {
                 "properties": Array [
+                  Object {
+                    "name": "otherStringProp",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": null,
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
                   Object {
                     "name": "isEnabled",
                     "optional": false,
                     "typeAnnotation": Object {
                       "default": false,
                       "type": "BooleanTypeAnnotation",
+                    },
+                  },
+                  Object {
+                    "name": "label",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": null,
+                      "type": "StringTypeAnnotation",
                     },
                   },
                 ],

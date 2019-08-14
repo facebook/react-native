@@ -442,8 +442,14 @@ import type {NativeComponent} from 'codegenNativeComponent';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
+type DeepSpread = $ReadOnly<{|
+  otherStringProp: string,
+|}>
+
 export type PropsInFile = $ReadOnly<{|
+  ...DeepSpread,
   isEnabled: boolean,
+  label: string,
 |}>;
 
 export type ModuleProps = $ReadOnly<{|
