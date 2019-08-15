@@ -10,9 +10,11 @@ package com.facebook.react.views.textinput;
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 
 import android.content.Context;
+import android.content.ClipDescription;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -36,6 +38,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.inputmethod.EditorInfoCompat;
+import androidx.core.view.inputmethod.InputContentInfoCompat;
+import androidx.core.view.inputmethod.InputConnectionCompat;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactContext;
@@ -219,13 +224,67 @@ public class ReactEditText extends AppCompatEditText {
     }
   }
 
-  @Override
+    @Override
   public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+
     ReactContext reactContext = getReactContext(this);
-    InputConnection inputConnection = super.onCreateInputConnection(outAttrs);
+    InputConnection ic = super.onCreateInputConnection(outAttrs);
+
+    EditorInfoCompat.setContentMimeTypes(outAttrs, new String [] {"image/png", "image/gif", "image/jpg", "image/jpeg"});
+
+    final InputConnectionCompat.OnCommitContentListener callback =
+      new InputConnectionCompat.OnCommitContentListener() {
+        @Override
+        public boolean onCommitContent(InputContentInfoCompat inputContentInfo, int flags, Bundle opts) {
+          // read and display inputContentInfo asynchronously
+          if (BuildCompat.isAtLeastNMR1() && (flags &
+            InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0) {
+            try {
+              inputContentInfo.requestPermission();
+            }
+            catch (Exception e) {
+              return false;
+            }
+          }
+
+          String uri = null;
+          String linkUri = null;
+          String mime = null;
+
+          // Get the uri to the local content
+          Uri contentUri = inputContentInfo.getContentUri();
+          if (contentUri != null) {
+            uri = contentUri.toString();
+          }
+
+          // Get the optional uri to web link
+          Uri link = inputContentInfo.getLinkUri();
+          if (link != null) {
+            linkUri = link.toString();
+          }
+
+          // Get the mime type of the image
+          ClipDescription description = inputContentInfo.getDescription();
+          if (description != null && description.getMimeTypeCount() > 0) {
+            mime = description.getMimeType(0);
+          }
+
+          if (mImageInputWatcher != null) {
+            mImageInputWatcher.onImageInput(uri, linkUri, mime);
+          }
+
+          // TODO find better place to call this
+          // inputContentInfo.releasePermission();
+
+          return true;
+        }
+      };
+
+    InputConnection inputConnection = InputConnectionCompat.createWrapper(ic, outAttrs, callback);
+
+>>>>>>> Add support for image keyboards to TextInput on Android
     if (inputConnection != null && mOnKeyPress) {
-      inputConnection =
-          new ReactEditTextInputConnectionWrapper(inputConnection, reactContext, this);
+      inputConnection = new ReactEditTextInputConnectionWrapper(inputConnection, reactContext, this);
     }
 
     if (isMultiline() && getBlurOnSubmit()) {

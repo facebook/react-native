@@ -119,6 +119,14 @@ export type EditingEvent = SyntheticEvent<
   |}>,
 >;
 
+export type ImageInputEvent = SyntheticEvent<
+  $Readonly<{|
+    uri: string,
+    linkUri: string,
+    mime: string,
+  |}>,
+>;
+
 type DataDetectorTypesType =
   | 'phoneNumber'
   | 'link'
@@ -585,6 +593,12 @@ export type Props = $ReadOnly<{|
   onScroll?: ?(e: ScrollEvent) => mixed,
 
   /**
+   * Invoked on image input from IME with `{ nativeEvent: { uri, linkUri, data, mime } }`.
+   * @platform android
+   */
+  onImageInput?: ?(e: ImageInputEvent) => mixed,
+
+  /**
    * The string that will be rendered before text input has been entered.
    */
   placeholder?: ?Stringish,
@@ -1019,6 +1033,10 @@ function InternalTextInput(props: Props): React.Node {
     props.onScroll && props.onScroll(event);
   };
 
+  const _onImageInput = (event: ImageInputEvent) => {
+    this.props.onImageInput && this.props.onImageInput(event);
+  }
+
   let textInput = null;
   let additionalTouchableProps: {|
     rejectResponderTermination?: $PropertyType<
@@ -1084,6 +1102,7 @@ function InternalTextInput(props: Props): React.Node {
         onBlur={_onBlur}
         onChange={_onChange}
         onFocus={_onFocus}
+        onImageInput={_onImageInput}
         onScroll={_onScroll}
         onSelectionChange={_onSelectionChange}
         selection={selection}

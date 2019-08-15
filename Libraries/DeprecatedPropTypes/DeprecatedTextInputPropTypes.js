@@ -371,6 +371,11 @@ module.exports = {
   /**
    * The string that will be rendered before text input has been entered.
    */
+  /**
+   * Invoked on image input from IME with `{ nativeEvent: { uri, linkUri, mime } }`.
+   * @platform android
+   */
+  onImageInput: PropTypes.func,
   placeholder: PropTypes.string,
   /**
    * The text color of the placeholder string.
