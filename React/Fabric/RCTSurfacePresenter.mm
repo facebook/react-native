@@ -62,11 +62,15 @@ using namespace facebook::react;
   std::shared_ptr<const ReactNativeConfig> _reactNativeConfig;
   better::shared_mutex _observerListMutex;
   NSMutableArray<id<RCTSurfacePresenterObserver>> *_observers;
+  RCTImageLoader *_imageLoader;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge config:(std::shared_ptr<const ReactNativeConfig>)config
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                        config:(std::shared_ptr<const ReactNativeConfig>)config
+                   imageLoader:(RCTImageLoader *)imageLoader
 {
   if (self = [super init]) {
+    _imageLoader = imageLoader;
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;
     [_batchedBridge setSurfacePresenter:self];
@@ -252,7 +256,12 @@ using namespace facebook::react;
   // * `RCTImageLoader` should be moved to `RCTImageComponentView`.
   // * `ReactNativeConfig` should be set by outside product code.
   _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
-  _contextContainer->insert("RCTImageLoader", wrapManagedObject([_bridge moduleForClass:[RCTImageLoader class]]));
+  // TODO T47869586 petetheheat: Delete else case when TM rollout 100%
+  if (_imageLoader) {
+    _contextContainer->insert("RCTImageLoader", wrapManagedObject(_imageLoader));
+  } else {
+    _contextContainer->insert("RCTImageLoader", wrapManagedObject([_bridge moduleForClass:[RCTImageLoader class]]));
+  }
 
   return _contextContainer;
 }

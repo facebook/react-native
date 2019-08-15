@@ -18,6 +18,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class RCTFabricSurface;
+@class RCTImageLoader;
 @class RCTMountingManager;
 
 /**
@@ -29,7 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTSurfacePresenter : NSObject
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
-                        config:(std::shared_ptr<const facebook::react::ReactNativeConfig>)config;
+                        config:(std::shared_ptr<const facebook::react::ReactNativeConfig>)config
+                   imageLoader:(RCTImageLoader *)imageLoader;
 
 @property (nonatomic, readonly) RCTComponentViewFactory *componentViewFactory;
 @property (nonatomic, readonly) facebook::react::ContextContainer::Shared contextContainer;
