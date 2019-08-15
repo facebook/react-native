@@ -48,4 +48,7 @@ public class ArrayPropsNativeComponentViewManager extends SimpleViewManager<View
 
   @Override
   public void setSizes(ViewGroup view, ReadableArray value) {}
+
+  @Override
+  public void setObject(ViewGroup view, ReadableArray value) {}
 }

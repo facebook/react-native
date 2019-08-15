@@ -36,6 +36,7 @@ type NativeProps = $ReadOnly<{|
   srcs?: $ReadOnlyArray<ImageSource>,
   points?: $ReadOnlyArray<PointValue>,
   sizes?: WithDefault<$ReadOnlyArray<'small' | 'large'>, 'small'>,
+  object?: $ReadOnlyArray<$ReadOnly<{|prop: string|}>>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(
