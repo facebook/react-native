@@ -89,10 +89,11 @@ static inline std::string toString(const ::_STRUCT_NAME_:: &value) {
 `.trim();
 
 const arrayConversionFunction = `static inline void fromRawValue(const RawValue &value, std::vector<::_STRUCT_NAME_::> &result) {
-  auto items = std::vector<better::map<std::string, RawValue>>{value};
+  auto items = (std::vector<RawValue>)value;
   for (const auto &item : items) {
-    auto newItem = fromRawValue(item, ::_STRUCT_NAME_::{})
-    result.push(newItem);
+    ::_STRUCT_NAME_:: newItem;
+    fromRawValue(item, newItem);
+    result.emplace_back(newItem);
   }
 }
 `;

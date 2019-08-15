@@ -94,10 +94,11 @@ static inline std::string toString(const ArrayPropsNativeComponentObjectStruct &
 }
 
 static inline void fromRawValue(const RawValue &value, std::vector<ArrayPropsNativeComponentObjectStruct> &result) {
-  auto items = std::vector<better::map<std::string, RawValue>>{value};
+  auto items = (std::vector<RawValue>)value;
   for (const auto &item : items) {
-    auto newItem = fromRawValue(item, ArrayPropsNativeComponentObjectStruct{})
-    result.push(newItem);
+    ArrayPropsNativeComponentObjectStruct newItem;
+    fromRawValue(item, newItem);
+    result.emplace_back(newItem);
   }
 }
 

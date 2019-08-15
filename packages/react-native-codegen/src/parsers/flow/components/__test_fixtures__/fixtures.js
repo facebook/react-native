@@ -286,6 +286,9 @@ import type {ColorValue, PointValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {NativeComponent} from 'codegenNativeComponent';
 
+type ObjectType = $ReadOnly<{| prop: string |}>;
+type ArrayObjectType = $ReadOnlyArray<$ReadOnly<{| prop: string |}>>;
+
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 
@@ -341,6 +344,12 @@ type ModuleProps = $ReadOnly<{|
   array_point_optional_key?: $ReadOnlyArray<PointValue>,
   array_point_optional_value: ?$ReadOnlyArray<PointValue>,
   array_point_optional_both?: ?$ReadOnlyArray<PointValue>,
+
+  // Object props
+  array_object_required: $ReadOnlyArray<$ReadOnly<{| prop: string |}>>,
+  array_object_optional_key?: $ReadOnlyArray<$ReadOnly<{| prop: string |}>>,
+  array_object_optional_value: ?ArrayObjectType,
+  array_object_optional_both?: ?$ReadOnlyArray<ObjectType>,
 |}>;
 
 export default (codegenNativeComponent<ModuleProps>(

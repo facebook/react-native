@@ -43,6 +43,20 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
     );
   }
 
+  if (extractedTypeAnnotation.type === 'GenericTypeAnnotation') {
+    // Resolve the type alias if it's not defined inline
+    const objectType = getValueFromTypes(extractedTypeAnnotation, types);
+
+    if (objectType.id.name === '$ReadOnly') {
+      return {
+        type: 'ObjectTypeAnnotation',
+        properties: objectType.typeParameters.params[0].properties.map(prop =>
+          buildPropSchema(prop, types),
+        ),
+      };
+    }
+  }
+
   const type =
     extractedTypeAnnotation.type === 'GenericTypeAnnotation'
       ? extractedTypeAnnotation.id.name
@@ -101,7 +115,9 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
   }
 }
 
-function getTypeAnnotation(name, typeAnnotation, defaultValue, types) {
+function getTypeAnnotation(name, annotation, defaultValue, types) {
+  const typeAnnotation = getValueFromTypes(annotation, types);
+
   if (
     typeAnnotation.type === 'GenericTypeAnnotation' &&
     typeAnnotation.id.name === '$ReadOnlyArray'
