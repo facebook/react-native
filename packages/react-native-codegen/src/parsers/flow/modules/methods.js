@@ -34,7 +34,11 @@ function getObjectProperties(
     let optional = objectTypeProperty.optional;
     let value = objectTypeProperty.value;
     if (value.type === 'NullableTypeAnnotation') {
-      optional = true;
+      if (
+        objectTypeProperty.value.typeAnnotation.type !== 'StringTypeAnnotation'
+      ) {
+        optional = true;
+      }
       value = objectTypeProperty.value.typeAnnotation;
     }
     return {
@@ -145,6 +149,11 @@ function getTypeAnnotationForParam(
   types: TypeMap,
 ): FunctionTypeAnnotationParam {
   let param = paramAnnotation;
+  if (param.name === null) {
+    throw new Error(
+      `Unsupported type for ${name}. Please provide a name for every parameter.`,
+    );
+  }
   let paramName = param.name.name;
   let nullable = false;
   if (param.typeAnnotation.type === 'NullableTypeAnnotation') {
