@@ -73,8 +73,7 @@ static inline std::string toString(const ::_ENUM_NAME_:: &value) {
 }
 `.trim();
 
-const structTemplate = `
-struct ::_STRUCT_NAME_:: {
+const structTemplate = `struct ::_STRUCT_NAME_:: {
   ::_FIELDS_::
 };
 
@@ -84,11 +83,19 @@ static inline void fromRawValue(const RawValue &value, ::_STRUCT_NAME_:: &result
   ::_FROM_CASES_::
 }
 
-
 static inline std::string toString(const ::_STRUCT_NAME_:: &value) {
   return "[Object ::_STRUCT_NAME_::]";
 }
 `.trim();
+
+const arrayConversionFunction = `static inline void fromRawValue(const RawValue &value, std::vector<::_STRUCT_NAME_::> &result) {
+  auto items = std::vector<better::map<std::string, RawValue>>{value};
+  for (const auto &item : items) {
+    auto newItem = fromRawValue(item, ::_STRUCT_NAME_::{})
+    result.push(newItem);
+  }
+}
+`;
 
 const arrayEnumTemplate = `
 using ::_ENUM_MASK_:: = uint32_t;
@@ -186,6 +193,10 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
         throw new Error(
           'ArrayTypeAnnotation of type ArrayTypeAnnotation not supported',
         );
+      }
+      if (typeAnnotation.elementType.type === 'ObjectTypeAnnotation') {
+        const structName = generateStructName(componentName, [prop.name]);
+        return `std::vector<${structName}>`;
       }
       if (typeAnnotation.elementType.type === 'StringEnumTypeAnnotation') {
         const enumName = getEnumName(componentName, prop.name);
@@ -488,6 +499,19 @@ function generateStructs(componentName: string, component): string {
         [prop.name],
         prop.typeAnnotation.properties,
       );
+    } else if (
+      prop.typeAnnotation.type === 'ArrayTypeAnnotation' &&
+      prop.typeAnnotation.elementType.type === 'ObjectTypeAnnotation'
+    ) {
+      const properties = prop.typeAnnotation.elementType.properties;
+      generateStruct(structs, componentName, [prop.name], properties);
+      structs.set(
+        `${componentName}ArrayStruct`,
+        arrayConversionFunction.replace(
+          /::_STRUCT_NAME_::/g,
+          generateStructName(componentName, [prop.name]),
+        ),
+      );
     }
   });
 
@@ -533,6 +557,8 @@ function generateStruct(
       case 'ArrayTypeAnnotation':
         return;
       case 'StringEnumTypeAnnotation':
+        return;
+      case 'DoubleTypeAnnotation':
         return;
       case 'ObjectTypeAnnotation':
         const props = property.typeAnnotation.properties;

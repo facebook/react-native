@@ -28,6 +28,7 @@ const ArrayPropsNativeComponentViewConfig = {
     srcs: true,
     points: true,
     sizes: true,
+    object: true,
   },
 };
 

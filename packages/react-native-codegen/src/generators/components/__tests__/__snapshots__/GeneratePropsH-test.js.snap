@@ -76,6 +76,30 @@ static inline std::string toString(const ArrayPropsNativeComponentSizesMask &val
     }
     return result;
 }
+struct ArrayPropsNativeComponentObjectStruct {
+  std::string stringProp;
+};
+
+static inline void fromRawValue(const RawValue &value, ArrayPropsNativeComponentObjectStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto stringProp = map.find(\\"stringProp\\");
+  if (stringProp != map.end()) {
+    fromRawValue(stringProp->second, result.stringProp);
+  }
+}
+
+static inline std::string toString(const ArrayPropsNativeComponentObjectStruct &value) {
+  return \\"[Object ArrayPropsNativeComponentObjectStruct]\\";
+}
+
+static inline void fromRawValue(const RawValue &value, std::vector<ArrayPropsNativeComponentObjectStruct> &result) {
+  auto items = std::vector<better::map<std::string, RawValue>>{value};
+  for (const auto &item : items) {
+    auto newItem = fromRawValue(item, ArrayPropsNativeComponentObjectStruct{})
+    result.push(newItem);
+  }
+}
 
 class ArrayPropsNativeComponentProps final : public ViewProps {
  public:
@@ -92,6 +116,7 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
   const std::vector<ImageSource> srcs{};
   const std::vector<Point> points{};
   const ArrayPropsNativeComponentSizesMask sizes{static_cast<ArrayPropsNativeComponentSizesMask>(ArrayPropsNativeComponentSizes::Small)};
+  const std::vector<ArrayPropsNativeComponentObjectStruct> object{};
 };
 
 } // namespace react
@@ -662,7 +687,6 @@ static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropObje
   }
 }
 
-
 static inline std::string toString(const ObjectPropsObjectPropObjectArrayPropStruct &value) {
   return \\"[Object ObjectPropsObjectPropObjectArrayPropStruct]\\";
 }
@@ -689,7 +713,6 @@ static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropObje
     fromRawValue(point->second, result.point);
   }
 }
-
 
 static inline std::string toString(const ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct &value) {
   return \\"[Object ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct]\\";
@@ -737,7 +760,6 @@ static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropStru
     fromRawValue(objectPrimitiveRequiredProp->second, result.objectPrimitiveRequiredProp);
   }
 }
-
 
 static inline std::string toString(const ObjectPropsObjectPropStruct &value) {
   return \\"[Object ObjectPropsObjectPropStruct]\\";

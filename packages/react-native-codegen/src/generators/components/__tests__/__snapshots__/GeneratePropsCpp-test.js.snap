@@ -28,7 +28,8 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     colors(convertRawProp(rawProps, \\"colors\\", sourceProps.colors, colors)),
     srcs(convertRawProp(rawProps, \\"srcs\\", sourceProps.srcs, srcs)),
     points(convertRawProp(rawProps, \\"points\\", sourceProps.points, points)),
-    sizes(convertRawProp(rawProps, \\"sizes\\", sourceProps.sizes, sizes))
+    sizes(convertRawProp(rawProps, \\"sizes\\", sourceProps.sizes, sizes)),
+    object(convertRawProp(rawProps, \\"object\\", sourceProps.object, object))
       {}
 
 } // namespace react

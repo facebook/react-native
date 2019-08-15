@@ -43,6 +43,9 @@ public class ArrayPropsNativeComponentManagerDelegate<T extends View, U extends 
       case \\"sizes\\":
         mViewManager.setSizes(view, (ReadableArray) value);
         break;
+      case \\"object\\":
+        mViewManager.setObject(view, (ReadableArray) value);
+        break;
       default:
         super.setProperty(view, propName, value);
     }
