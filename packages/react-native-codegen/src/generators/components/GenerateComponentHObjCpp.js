@@ -105,6 +105,8 @@ function getObjCParamType(param: CommandsFunctionTypeParamAnnotation): string {
   switch (param.typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
       return 'BOOL';
+    case 'DoubleTypeAnnotation':
+      return 'double';
     case 'FloatTypeAnnotation':
       return 'float';
     case 'Int32TypeAnnotation':
@@ -122,6 +124,8 @@ function getObjCExpectedKindParamType(
 ): string {
   switch (param.typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
+      return '[NSNumber class]';
+    case 'DoubleTypeAnnotation':
       return '[NSNumber class]';
     case 'FloatTypeAnnotation':
       return '[NSNumber class]';
@@ -141,6 +145,8 @@ function getReadableExpectedKindParamType(
   switch (param.typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
       return 'boolean';
+    case 'DoubleTypeAnnotation':
+      return 'double';
     case 'FloatTypeAnnotation':
       return 'float';
     case 'Int32TypeAnnotation':
@@ -160,6 +166,8 @@ function getObjCRightHandAssignmentParamType(
   switch (param.typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
       return `[(NSNumber *)arg${index} boolValue]`;
+    case 'DoubleTypeAnnotation':
+      return `[(NSNumber *)arg${index} doubleValue]`;
     case 'FloatTypeAnnotation':
       return `[(NSNumber *)arg${index} floatValue]`;
     case 'Int32TypeAnnotation':

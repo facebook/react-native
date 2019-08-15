@@ -142,6 +142,30 @@ Object {
               },
             },
             Object {
+              "name": "double_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "default": 0,
+                "type": "DoubleTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "double_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": 1.1,
+                "type": "DoubleTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "double_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": 1.1,
+                "type": "DoubleTypeAnnotation",
+              },
+            },
+            Object {
               "name": "float_required",
               "optional": false,
               "typeAnnotation": Object {
@@ -503,6 +527,46 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "type": "StringTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_double_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "type": "DoubleTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_double_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "type": "DoubleTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_double_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "type": "DoubleTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_double_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "type": "DoubleTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -923,6 +987,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -1079,6 +1163,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -1151,6 +1240,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -1307,6 +1416,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -1378,6 +1492,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -1534,6 +1668,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -1606,6 +1745,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -1762,6 +1921,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -1843,6 +2007,12 @@ Object {
                     "name": "y",
                     "typeAnnotation": Object {
                       "type": "Int32TypeAnnotation",
+                    },
+                  },
+                  Object {
+                    "name": "z",
+                    "typeAnnotation": Object {
+                      "type": "DoubleTypeAnnotation",
                     },
                   },
                   Object {
@@ -2116,6 +2286,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -2272,6 +2462,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -2343,6 +2538,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -2499,6 +2714,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -2570,6 +2790,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -2726,6 +2966,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -2797,6 +3042,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -2953,6 +3218,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -3025,6 +3295,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -3181,6 +3471,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -3252,6 +3547,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -3408,6 +3723,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -3479,6 +3799,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -3635,6 +3975,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -3706,6 +4051,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -3862,6 +4227,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -3933,6 +4303,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -4089,6 +4479,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -4161,6 +4556,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -4317,6 +4732,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -4455,6 +4875,40 @@ Object {
                     "typeAnnotation": Object {
                       "default": "",
                       "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "double_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": 0,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "double_optional",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "default": 0,
+                      "type": "DoubleTypeAnnotation",
                     },
                   },
                 ],
@@ -5125,6 +5579,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -5281,6 +5755,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -5353,6 +5832,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -5509,6 +6008,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -5580,6 +6084,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -5736,6 +6260,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -5808,6 +6337,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -5964,6 +6513,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",

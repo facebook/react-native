@@ -551,6 +551,8 @@ function generateStruct(
         return;
       case 'Int32TypeAnnotation':
         return;
+      case 'DoubleTypeAnnotation':
+        return;
       case 'FloatTypeAnnotation':
         return;
       case 'NativePrimitiveTypeAnnotation':
@@ -573,7 +575,7 @@ function generateStruct(
       default:
         (property.typeAnnotation.type: empty);
         throw new Error(
-          `Received invalid event property type ${
+          `Received invalid component property type ${
             property.typeAnnotation.type
           }`,
         );

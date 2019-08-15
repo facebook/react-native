@@ -63,7 +63,7 @@ import android.view.View;
 public interface CommandNativeComponentManagerInterface<T extends View> {
   // No props
   void flashScrollIndicators(T view);
-  void allTypes(T view, int x, float y, String message, boolean animated);
+  void allTypes(T view, int x, float y, double z, String message, boolean animated);
 }
 ",
 }

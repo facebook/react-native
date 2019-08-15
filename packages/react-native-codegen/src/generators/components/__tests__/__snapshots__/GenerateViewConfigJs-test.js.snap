@@ -148,8 +148,8 @@ export const Commands = {
         dispatchCommand(ref, \\"flashScrollIndicators\\", []);
     },
 
-    allTypes(ref, x, y, message, animated) {
-        dispatchCommand(ref, \\"allTypes\\", [x, y, message, animated]);
+    allTypes(ref, x, y, z, message, animated) {
+        dispatchCommand(ref, \\"allTypes\\", [x, y, z, message, animated]);
     }
 };
 ",

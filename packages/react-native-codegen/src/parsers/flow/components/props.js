@@ -86,6 +86,10 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
       return {
         type: 'Int32TypeAnnotation',
       };
+    case 'Double':
+      return {
+        type: 'DoubleTypeAnnotation',
+      };
     case 'Float':
       return {
         type: 'FloatTypeAnnotation',
@@ -180,6 +184,11 @@ function getTypeAnnotation(name, annotation, defaultValue, types) {
     case 'Int32':
       return {
         type: 'Int32TypeAnnotation',
+        default: ((defaultValue ? defaultValue : 0): number),
+      };
+    case 'Double':
+      return {
+        type: 'DoubleTypeAnnotation',
         default: ((defaultValue ? defaultValue : 0): number),
       };
     case 'Float':

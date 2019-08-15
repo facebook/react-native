@@ -21,6 +21,11 @@ const EVENT_DEFINITION = `
   string_optional_value: ?string,
   string_optional_both?: ?string,
 
+  double_required: Double,
+  double_optional_key?: Double,
+  double_optional_value: ?Double,
+  double_optional_both?: ?Double,
+
   float_required: Float,
   float_optional_key?: Float,
   float_optional_value: ?Float,
@@ -56,6 +61,7 @@ const EVENT_DEFINITION = `
     object_optional_nested_1_layer?: ?{
       boolean_required: Int32,
       string_optional_key?: string,
+      double_optional_value: ?Double,
       float_optional_value: ?Float,
       int32_optional_both?: ?Int32,
     }
@@ -184,7 +190,7 @@ const ALL_PROP_TYPES_NO_EVENTS = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {Int32, Float, WithDefault} from 'CodegenTypes';
+import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
 import type {ColorValue, ColorArrayValue, PointValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
@@ -216,6 +222,11 @@ type ModuleProps = $ReadOnly<{|
   // Stringish props, null default
   stringish_null_optional_key?: WithDefault<Stringish, null>,
   stringish_null_optional_both?: WithDefault<Stringish, null>,
+
+  // Double props
+  double_required: Double,
+  double_optional_key?: WithDefault<Double, 1.1>,
+  double_optional_both?: WithDefault<Double, 1.1>,
 
   // Float props
   float_required: Float,
@@ -280,7 +291,7 @@ const ARRAY_PROP_TYPES_NO_EVENTS = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {Int32, Float, WithDefault} from 'CodegenTypes';
+import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
 import type {ColorValue, PointValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
@@ -304,6 +315,12 @@ type ModuleProps = $ReadOnly<{|
   array_string_optional_key?: $ReadOnlyArray<string>,
   array_string_optional_value: ?$ReadOnlyArray<string>,
   array_string_optional_both?: ?$ReadOnlyArray<string>,
+
+  // Double props
+  array_double_required: $ReadOnlyArray<Double>,
+  array_double_optional_key?: $ReadOnlyArray<Double>,
+  array_double_optional_value: ?$ReadOnlyArray<Double>,
+  array_double_optional_both?: ?$ReadOnlyArray<Double>,
 
   // Float props
   array_float_required: $ReadOnlyArray<Float>,
@@ -372,7 +389,7 @@ const OBJECT_PROP_TYPES_NO_EVENTS = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {Int32, Float, WithDefault} from 'CodegenTypes';
+import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
 import type {ColorValue, PointValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
@@ -389,6 +406,10 @@ type ModuleProps = $ReadOnly<{|
   // String props
   string_required: $ReadOnly<{|prop: string|}>,
   string_optional: $ReadOnly<{|prop?: WithDefault<string, ''>|}>,
+
+  // Double props
+  double_required: $ReadOnly<{|prop: Double|}>,
+  double_optional: $ReadOnly<{|prop?: WithDefault<Double, 0.0>|}>,
 
   // Float props
   float_required: $ReadOnly<{|prop: Float|}>,
@@ -494,6 +515,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {
   Int32,
+  Double,
   Float,
   BubblingEventHandler,
   DirectEventHandler,
@@ -722,7 +744,7 @@ const COMMANDS_DEFINED_WITH_ALL_TYPES = `
 const codegenNativeCommands = require('codegenNativeCommands');
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {Int32, Float} from 'CodegenTypes';
+import type {Int32, Double, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {NativeComponent} from 'codegenNativeComponent';
 
@@ -732,6 +754,7 @@ interface NativeCommands {
     viewRef: React.Ref<'RCTView'>,
     x: Float,
     y: Int32,
+    z: Double,
     animated: boolean,
   ) => void;
 }

@@ -1164,6 +1164,12 @@ const COMMANDS: SchemaType = {
                     },
                   },
                   {
+                    name: 'z',
+                    typeAnnotation: {
+                      type: 'DoubleTypeAnnotation',
+                    },
+                  },
+                  {
                     name: 'message',
                     typeAnnotation: {
                       type: 'StringTypeAnnotation',
