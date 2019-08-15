@@ -83,7 +83,7 @@ function getBuilderInputFieldDeclaration(
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
       if (property.optional) {
-        return 'id<NSObject> _Nullable' + property.name + ';';
+        return 'id<NSObject> _Nullable ' + property.name + ';';
       }
       return markRequiredIfNecessary('id<NSObject>');
     case 'ArrayTypeAnnotation':
