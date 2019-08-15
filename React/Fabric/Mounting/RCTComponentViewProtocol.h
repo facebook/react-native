@@ -103,6 +103,11 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
            oldLayoutMetrics:(facebook::react::LayoutMetrics const &)oldLayoutMetrics;
 
 /*
+ * Called when receiving a command
+ */
+- (void)handleCommand:(NSString const *)commandName args:(NSArray const *)args;
+
+/*
  * Called right after all update methods were called for a particular component view.
  * Useful for performing updates that require knowledge of several independent aspects of the compound mounting change
  * (e.g. props *and* layout constraints).

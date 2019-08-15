@@ -52,7 +52,7 @@ type Props = $ReadOnly<{|
  * On press down, the opacity of the wrapped view is decreased, dimming it.
  *
  * Opacity is controlled by wrapping the children in an Animated.View, which is
- * added to the view hiearchy.  Be aware that this can affect layout.
+ * added to the view hierarchy.  Be aware that this can affect layout.
  *
  * Example:
  *

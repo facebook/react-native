@@ -10,15 +10,15 @@
 'use strict';
 
 module.exports = {
-  getViewManagerConfig: (viewManagerName: string) => {
+  getViewManagerConfig: (viewManagerName: string): null => {
     console.warn(
       'Attempting to get config for view manager: ' + viewManagerName,
     );
     return null;
   },
-  getConstants: () => ({}),
+  getConstants: (): $TEMPORARY$object<{||}> => ({}),
   getConstantsForViewManager: (viewManagerName: string) => {},
-  getDefaultEventTypes: () => [],
+  getDefaultEventTypes: (): Array<$FlowFixMe> => [],
   playTouchSound: () => {},
   lazilyLoadView: (name: string) => {},
   createView: (

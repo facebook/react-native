@@ -263,7 +263,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       view.setOnClickListener(null);
       view.setClickable(false);
       // Don't set view.setFocusable(false) because we might still want it to be focusable for
-      // accessibiliy reasons
+      // accessibility reasons
     }
   }
 

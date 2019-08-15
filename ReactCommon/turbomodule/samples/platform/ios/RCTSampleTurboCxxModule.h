@@ -15,13 +15,13 @@
  * With jsi::HostObject, this class is no longer necessary, but the system supports it for
  * backward compatibility.
  */
-@interface RCTSampleTurboCxxModule_v1 : RCTCxxModule<RCTTurboModule>
+@interface RCTSampleTurboCxxModule_v1 : RCTCxxModule <RCTTurboModule>
 
 @end
 
 /**
  * Second variant of a sample backward-compatible RCTCxxModule-based module.
  */
-@interface RCTSampleTurboCxxModule_v2 : RCTCxxModule<RCTTurboModule>
+@interface RCTSampleTurboCxxModule_v2 : RCTCxxModule <RCTTurboModule>
 
 @end

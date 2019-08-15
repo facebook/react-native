@@ -22,11 +22,6 @@ if (__DEV__) {
   ReactRefreshRuntime.injectIntoGlobalHook(global);
 
   const Refresh = {
-    // This can be set from the app as a workaround
-    // if you really want a full reload on every change:
-    // if (__DEV__) require.Refresh.forceFullRefresh = true;
-    forceFullRefresh: false,
-
     performFullRefresh() {
       NativeDevSettings.reload();
     },
@@ -41,11 +36,11 @@ if (__DEV__) {
     register: ReactRefreshRuntime.register,
 
     performReactRefresh() {
-      if (Refresh.forceFullRefresh) {
+      if (ReactRefreshRuntime.hasUnrecoverableErrors()) {
         NativeDevSettings.reload();
-      } else {
-        ReactRefreshRuntime.performReactRefresh();
+        return;
       }
+      ReactRefreshRuntime.performReactRefresh();
     },
   };
 

@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {StyleSheet, TextInput, View} = require('react-native');
 
 type Props = {
@@ -26,9 +27,9 @@ type State = {
 };
 
 class RNTesterExampleFilter extends React.Component<Props, State> {
-  state = {filter: ''};
+  state: State = {filter: ''};
 
-  render() {
+  render(): React.Node {
     const filterText = this.state.filter;
     let filterRegex = /.*/;
 

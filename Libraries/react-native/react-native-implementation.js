@@ -299,6 +299,9 @@ module.exports = {
   get unstable_batchedUpdates() {
     return require('../Renderer/shims/ReactNative').unstable_batchedUpdates;
   },
+  get useWindowDimensions() {
+    return require('../Utilities/useWindowDimensions').default;
+  },
   get UTFSequence() {
     return require('../UTFSequence');
   },

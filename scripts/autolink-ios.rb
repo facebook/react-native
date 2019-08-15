@@ -15,7 +15,7 @@ def use_react_native! (options={})
   pod 'RCTRequired', :path => "#{prefix}/Libraries/RCTRequired"
   pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety"
   pod 'React', :path => "#{prefix}/"
-  pod 'React-Core', :path => "#{prefix}/React"
+  pod 'React-Core', :path => "#{prefix}/"
   pod 'React-CoreModules', :path => "#{prefix}/React/CoreModules"
   pod 'React-RCTActionSheet', :path => "#{prefix}/Libraries/ActionSheetIOS"
   pod 'React-RCTAnimation', :path => "#{prefix}/Libraries/NativeAnimation"
@@ -26,10 +26,10 @@ def use_react_native! (options={})
   pod 'React-RCTSettings', :path => "#{prefix}/Libraries/Settings"
   pod 'React-RCTText', :path => "#{prefix}/Libraries/Text"
   pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
-  pod 'React-RCTWebSocket', :path => "#{prefix}/Libraries/WebSocket"
+  pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
 
   unless production
-    pod 'React-DevSupport', :path => "#{prefix}/React"
+    pod 'React-Core/DevSupport', :path => "#{prefix}/"
   end
 
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"

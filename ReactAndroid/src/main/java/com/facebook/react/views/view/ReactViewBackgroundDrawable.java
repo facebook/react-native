@@ -662,14 +662,14 @@ public class ReactViewBackgroundDrawable extends Drawable {
     mCenterDrawPath.addRoundRect(
         mTempRectForCenterDrawPath,
         new float[] {
-          innerTopLeftRadiusX + (innerTopLeftRadiusX > 0 ? extraRadiusForOutline : 0),
-          innerTopLeftRadiusY + (innerTopLeftRadiusY > 0 ? extraRadiusForOutline : 0),
-          innerTopRightRadiusX + (innerTopRightRadiusX > 0 ? extraRadiusForOutline : 0),
-          innerTopRightRadiusY + (innerTopRightRadiusY > 0 ? extraRadiusForOutline : 0),
-          innerBottomRightRadiusX + (innerBottomRightRadiusX > 0 ? extraRadiusForOutline : 0),
-          innerBottomRightRadiusY + (innerBottomRightRadiusY > 0 ? extraRadiusForOutline : 0),
-          innerBottomLeftRadiusX + (innerBottomLeftRadiusX > 0 ? extraRadiusForOutline : 0),
-          innerBottomLeftRadiusY + (innerBottomLeftRadiusY > 0 ? extraRadiusForOutline : 0)
+          innerTopLeftRadiusX + (topLeftRadius > 0 ? extraRadiusForOutline : 0),
+          innerTopLeftRadiusY + (topLeftRadius > 0 ? extraRadiusForOutline : 0),
+          innerTopRightRadiusX + (topRightRadius > 0 ? extraRadiusForOutline : 0),
+          innerTopRightRadiusY + (topRightRadius > 0 ? extraRadiusForOutline : 0),
+          innerBottomRightRadiusX + (bottomRightRadius > 0 ? extraRadiusForOutline : 0),
+          innerBottomRightRadiusY + (bottomRightRadius > 0 ? extraRadiusForOutline : 0),
+          innerBottomLeftRadiusX + (bottomLeftRadius > 0 ? extraRadiusForOutline : 0),
+          innerBottomLeftRadiusY + (bottomLeftRadius > 0 ? extraRadiusForOutline : 0)
         },
         Path.Direction.CW);
 

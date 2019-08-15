@@ -25,14 +25,14 @@ export interface Spec extends TurboModule {
       timeout: number,
       withCredentials: boolean,
     |},
-    callback: (requestId: number) => mixed,
+    callback: (requestId: number) => void,
   ) => void;
   +abortRequest: (requestId: number) => void;
-  +clearCookies: (callback: (result: boolean) => mixed) => void;
+  +clearCookies: (callback: (result: boolean) => void) => void;
 
   // RCTEventEmitter
   +addListener: (eventName: string) => void;
   +removeListeners: (count: number) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('Networking');
+export default (TurboModuleRegistry.getEnforcing<Spec>('Networking'): Spec);

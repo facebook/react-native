@@ -52,6 +52,10 @@ async function symbolicateStackTrace(
   if (scriptURL) {
     let foundInternalSource: boolean = false;
     stackCopy = stack.map((frame: StackFrame) => {
+      if (frame.file == null) {
+        return frame;
+      }
+
       // If the sources exist on disk rather than appearing to come from the packager,
       // replace the location with the packager URL until we reach an internal source
       // which does not have a path (no slashes), indicating a switch from within

@@ -131,6 +131,7 @@ RCT_EXPORT_MODULE()
   // default behavior is to use NSUserDefaults
   NSDictionary *defaultValues = @{
     kRCTDevSettingShakeToShowDevMenu: @YES,
+    kRCTDevSettingHotLoadingEnabled: @YES,
   };
   RCTDevSettingsUserDefaultsDataSource *dataSource = [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
   return [self initWithDataSource:dataSource];

@@ -92,6 +92,52 @@ namespace react {
 }
 `;
 
+exports[`GenerateEventEmitterCpp can generate fixture COMMANDS_AND_PROPS 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/COMMANDS_AND_PROPS/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterCpp can generate fixture DOUBLE_PROPS 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/DOUBLE_PROPS/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateEventEmitterCpp can generate fixture ENUM_PROP 1`] = `
 Map {
   "EventEmitters.cpp" => "
@@ -373,6 +419,29 @@ Map {
  */
 
 #include <react/components/NO_PROPS_NO_EVENTS/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterCpp can generate fixture OBJECT_PROPS 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/OBJECT_PROPS/EventEmitters.h>
 
 namespace facebook {
 namespace react {

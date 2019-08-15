@@ -23,6 +23,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.turbomodule.core.JSCallInvokerHolderImpl;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
@@ -359,24 +360,56 @@ public class CatalystInstanceImpl implements CatalystInstance {
                 listener.onBridgeDestroyed();
               }
             }
-            AsyncTask.execute(
-                new Runnable() {
-                  @Override
-                  public void run() {
-                    // Kill non-UI threads from neutral third party
-                    // potentially expensive, so don't run on UI thread
 
-                    // contextHolder is used as a lock to guard against other users of the JS VM
-                    // having
-                    // the VM destroyed underneath them, so notify them before we resetNative
-                    mJavaScriptContextHolder.clear();
+            final JSIModule turboModuleManager =
+                ReactFeatureFlags.useTurboModules
+                    ? mJSIModuleRegistry.getModule(JSIModuleType.TurboModuleManager)
+                    : null;
 
-                    mHybridData.resetNative();
-                    getReactQueueConfiguration().destroy();
-                    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() end");
-                    ReactMarker.logMarker(ReactMarkerConstants.DESTROY_CATALYST_INSTANCE_END);
-                  }
-                });
+            getReactQueueConfiguration()
+                .getJSQueueThread()
+                .runOnQueue(
+                    new Runnable() {
+                      @Override
+                      public void run() {
+                        // We need to destroy the TurboModuleManager on the JS Thread
+                        if (turboModuleManager != null) {
+                          turboModuleManager.onCatalystInstanceDestroy();
+                        }
+
+                        getReactQueueConfiguration()
+                            .getUIQueueThread()
+                            .runOnQueue(
+                                new Runnable() {
+                                  @Override
+                                  public void run() {
+                                    // AsyncTask.execute must be executed from the UI Thread
+                                    AsyncTask.execute(
+                                        new Runnable() {
+                                          @Override
+                                          public void run() {
+                                            // Kill non-UI threads from neutral third party
+                                            // potentially expensive, so don't run on UI thread
+
+                                            // contextHolder is used as a lock to guard against
+                                            // other users of the JS VM having the VM destroyed
+                                            // underneath them, so notify them before we reset
+                                            // Native
+                                            mJavaScriptContextHolder.clear();
+
+                                            mHybridData.resetNative();
+                                            getReactQueueConfiguration().destroy();
+                                            Log.d(
+                                                ReactConstants.TAG,
+                                                "CatalystInstanceImpl.destroy() end");
+                                            ReactMarker.logMarker(
+                                                ReactMarkerConstants.DESTROY_CATALYST_INSTANCE_END);
+                                          }
+                                        });
+                                  }
+                                });
+                      }
+                    });
           }
         });
 

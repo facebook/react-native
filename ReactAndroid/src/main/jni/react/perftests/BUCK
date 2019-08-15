@@ -10,12 +10,12 @@ rn_xplat_cxx_library(
     platforms = ANDROID,
     soname = "libnativereactperftests.$(ext)",
     visibility = [
-        "fbandroid//instrumentation_tests/com/facebook/react/...",
+        "//fbandroid/instrumentation_tests/com/facebook/react/...",
     ],
     deps = [
-        "fbandroid//native:base",
-        "fbandroid//native/fb:fb",
         "fbsource//xplat/folly:molly",
+        "//fbandroid/native:base",
+        "//fbandroid/native/fb:fb",
         react_native_xplat_target("cxxreact:module"),
     ],
 )

@@ -10,13 +10,13 @@
 
 'use strict';
 
+const BlobManager = require('../Blob/BlobManager');
 const EventTarget = require('event-target-shim');
 const RCTNetworking = require('./RCTNetworking');
 
 const base64 = require('base64-js');
 const invariant = require('invariant');
 const warning = require('fbjs/lib/warning');
-const BlobManager = require('../Blob/BlobManager');
 
 export type NativeResponseType = 'base64' | 'blob' | 'text';
 export type ResponseType =
@@ -73,7 +73,7 @@ const REQUEST_EVENTS = [
 
 const XHR_EVENTS = REQUEST_EVENTS.concat('readystatechange');
 
-class XMLHttpRequestEventTarget extends EventTarget(...REQUEST_EVENTS) {
+class XMLHttpRequestEventTarget extends (EventTarget(...REQUEST_EVENTS): any) {
   onload: ?Function;
   onloadstart: ?Function;
   onprogress: ?Function;
@@ -86,7 +86,7 @@ class XMLHttpRequestEventTarget extends EventTarget(...REQUEST_EVENTS) {
 /**
  * Shared base for platform-specific XMLHttpRequest implementations.
  */
-class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
+class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
   static UNSENT: number = UNSENT;
   static OPENED: number = OPENED;
   static HEADERS_RECEIVED: number = HEADERS_RECEIVED;

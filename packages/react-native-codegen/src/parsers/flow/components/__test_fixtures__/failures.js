@@ -23,16 +23,12 @@ const COMMANDS_DEFINED_INLINE = `
 
 'use strict';
 
-const codegenNativeComponent = require('codegenNativeComponent');
 const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  Int32,
-  BubblingEvent,
-  DirectEvent,
-} from 'CodegenTypes';
-
+import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -40,10 +36,14 @@ export type ModuleProps = $ReadOnly<{|
 |}>;
 
 export const Commands = codegenNativeCommands<{
-  +hotspotUpdate: (ref: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
-}>();
+  +hotspotUpdate: (ref: React.Ref<'RCTView'>, x: Int32, y: Int32) => void,
+}>({
+  supportedCommands: ['hotspotUpdate'],
+});
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
 
 const COMMANDS_DEFINED_MULTIPLE_TIMES = `
@@ -59,19 +59,15 @@ const COMMANDS_DEFINED_MULTIPLE_TIMES = `
 
 'use strict';
 
-const codegenNativeComponent = require('codegenNativeComponent');
 const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  Int32,
-  BubblingEvent,
-  DirectEvent,
-} from 'CodegenTypes';
-
+import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 interface NativeCommands {
-  +hotspotUpdate: (x: Int32, y: Int32) => void;
+  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
 }
 
 export type ModuleProps = $ReadOnly<{|
@@ -79,10 +75,16 @@ export type ModuleProps = $ReadOnly<{|
   // No props or events
 |}>;
 
-export const Commands = codegenNativeCommands<NativeCommands>();
-export const Commands2 = codegenNativeCommands<NativeCommands>();
+export const Commands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['hotspotUpdate'],
+});
+export const Commands2 = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['hotspotUpdate'],
+});
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
 
 const COMMANDS_DEFINED_WITHOUT_REF = `
@@ -98,16 +100,12 @@ const COMMANDS_DEFINED_WITHOUT_REF = `
 
 'use strict';
 
-const codegenNativeComponent = require('codegenNativeComponent');
 const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  Int32,
-  BubblingEvent,
-  DirectEvent,
-} from 'CodegenTypes';
-
+import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 interface NativeCommands {
   +hotspotUpdate: (x: Int32, y: Int32) => void;
@@ -118,10 +116,137 @@ export type ModuleProps = $ReadOnly<{|
   // No props or events
 |}>;
 
+export const Commands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['hotspotUpdate'],
+});
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const COMMANDS_DEFINED_WITH_NULLABLE_REF = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {Int32} from 'CodegenTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+interface NativeCommands {
+  +hotspotUpdate: (viewRef: ?React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+}
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  // No props or events
+|}>;
+
+export const Commands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['hotspotUpdate'],
+});
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const COMMANDS_DEFINED_WITH_MISMATCHED_METHOD_NAMES = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {Int32} from 'CodegenTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+interface NativeCommands {
+  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+  +scrollTo: (
+    viewRef: React.Ref<'RCTView'>,
+    y: Int32,
+    animated: boolean,
+  ) => void;
+}
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  // No props or events
+|}>;
+
+export const Commands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['scrollTo'],
+});
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const COMMANDS_DEFINED_WITHOUT_METHOD_NAMES = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {Int32} from 'CodegenTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+interface NativeCommands {
+  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+  +scrollTo: (
+    viewRef: React.Ref<'RCTView'>,
+    y: Int32,
+    animated: boolean,
+  ) => void;
+}
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  // No props or events
+|}>;
+
 export const Commands = codegenNativeCommands<NativeCommands>();
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
+
 const NULLABLE_WITH_DEFAULT = `
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -137,20 +262,18 @@ const NULLABLE_WITH_DEFAULT = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  WithDefault,
-  Float,
-} from 'CodegenTypes';
-
+import type {WithDefault, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-
+import type {NativeComponent} from 'codegenNativeComponent';
 
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
   nullable_with_default: ?WithDefault<Float, 1.0>,
 |}>;
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
 
 const NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE = `
@@ -168,25 +291,128 @@ const NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  WithDefault,
-  Float,
-} from 'CodegenTypes';
-
+import type {WithDefault, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-
+import type {NativeComponent} from 'codegenNativeComponent';
 
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
   required_key_with_default: WithDefault<Float, 1.0>,
 |}>;
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
+
+const PROPS_CONFLICT_NAMES = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  isEnabled: string,
+
+  isEnabled: boolean,
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const PROPS_CONFLICT_WITH_SPREAD_PROPS = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+type PropsInFile = $ReadOnly<{|
+  isEnabled: boolean,
+|}>;
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  ...PropsInFile,
+  isEnabled: boolean,
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const PROPS_SPREAD_CONFLICTS_WITH_PROPS = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+type PropsInFile = $ReadOnly<{|
+  isEnabled: boolean,
+|}>;
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  isEnabled: boolean,
+  ...PropsInFile,
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
 module.exports = {
   COMMANDS_DEFINED_INLINE,
   COMMANDS_DEFINED_MULTIPLE_TIMES,
+  COMMANDS_DEFINED_WITH_MISMATCHED_METHOD_NAMES,
+  COMMANDS_DEFINED_WITHOUT_METHOD_NAMES,
   COMMANDS_DEFINED_WITHOUT_REF,
+  COMMANDS_DEFINED_WITH_NULLABLE_REF,
   NULLABLE_WITH_DEFAULT,
   NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE,
+  PROPS_CONFLICT_NAMES,
+  PROPS_CONFLICT_WITH_SPREAD_PROPS,
+  PROPS_SPREAD_CONFLICTS_WITH_PROPS,
 };

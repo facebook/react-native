@@ -10,9 +10,9 @@
 
 'use strict';
 
+const RCTNativeAppEventEmitter = require('react-native/Libraries/EventEmitter/RCTNativeAppEventEmitter');
 const React = require('react');
 const ReactNative = require('react-native');
-const RCTNativeAppEventEmitter = require('react-native/Libraries/EventEmitter/RCTNativeAppEventEmitter');
 
 const {View} = ReactNative;
 
@@ -35,7 +35,7 @@ class ReactContentSizeUpdateTest extends React.Component<Props, State> {
   _timeoutID: ?TimeoutID = null;
   _subscription: ?EmitterSubscription = null;
 
-  state = {
+  state: State = {
     height: reactViewHeight,
     width: reactViewWidth,
   };
@@ -70,7 +70,9 @@ class ReactContentSizeUpdateTest extends React.Component<Props, State> {
     });
   }
 
-  rootViewDidChangeIntrinsicSize = (intrinsicSize: State) => {
+  rootViewDidChangeIntrinsicSize: (intrinsicSize: State) => void = (
+    intrinsicSize: State,
+  ) => {
     if (
       intrinsicSize.height === newReactViewHeight &&
       intrinsicSize.width === newReactViewWidth
@@ -79,7 +81,7 @@ class ReactContentSizeUpdateTest extends React.Component<Props, State> {
     }
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View style={{height: this.state.height, width: this.state.width}} />
     );

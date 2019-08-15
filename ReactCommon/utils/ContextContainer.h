@@ -17,7 +17,7 @@ namespace facebook {
 namespace react {
 
 /*
- * General purpose dependecy injection container.
+ * General purpose dependency injection container.
  * Instance types must be copyable.
  */
 class ContextContainer final {

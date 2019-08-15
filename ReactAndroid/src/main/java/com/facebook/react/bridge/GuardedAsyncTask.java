@@ -18,10 +18,15 @@ import android.os.AsyncTask;
  */
 public abstract class GuardedAsyncTask<Params, Progress> extends AsyncTask<Params, Progress, Void> {
 
-  private final ReactContext mReactContext;
+  private final NativeModuleCallExceptionHandler mExceptionHandler;
 
+  @Deprecated
   protected GuardedAsyncTask(ReactContext reactContext) {
-    mReactContext = reactContext;
+    this(reactContext.getExceptionHandler());
+  }
+
+  protected GuardedAsyncTask(NativeModuleCallExceptionHandler exceptionHandler) {
+    mExceptionHandler = exceptionHandler;
   }
 
   @Override
@@ -29,7 +34,7 @@ public abstract class GuardedAsyncTask<Params, Progress> extends AsyncTask<Param
     try {
       doInBackgroundGuarded(params);
     } catch (RuntimeException e) {
-      mReactContext.handleException(e);
+      mExceptionHandler.handleException(e);
     }
     return null;
   }

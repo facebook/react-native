@@ -36,6 +36,15 @@ public class ViewManagerPropertyUpdater {
     SHADOW_NODE_SETTER_MAP.clear();
   }
 
+  public static <T extends ViewManagerDelegate<V>, V extends View> void updateProps(
+      T delegate, V v, ReactStylesDiffMap props) {
+    Iterator<Map.Entry<String, Object>> iterator = props.mBackingMap.getEntryIterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, Object> entry = iterator.next();
+      delegate.setProperty(v, entry.getKey(), entry.getValue());
+    }
+  }
+
   public static <T extends ViewManager, V extends View> void updateProps(
       T manager, V v, ReactStylesDiffMap props) {
     ViewManagerSetter<T, V> setter = findManagerSetter(manager.getClass());

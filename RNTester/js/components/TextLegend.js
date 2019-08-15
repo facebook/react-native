@@ -11,17 +11,23 @@
 'use strict';
 
 const React = require('react');
+
 const {Picker, Text, View} = require('react-native');
 
 class TextLegend extends React.Component<*, *> {
-  state = {
+  state: $TEMPORARY$object<{|
+    alignment: $TEMPORARY$string<'left'>,
+    fontSize: number,
+    language: $TEMPORARY$string<'english'>,
+    textMetrics: Array<any>,
+  |}> = {
     textMetrics: [],
     language: 'english',
     alignment: 'left',
     fontSize: 50,
   };
 
-  render() {
+  render(): React.Node {
     const PANGRAMS = {
       arabic:
         'صِف خَلقَ خَودِ كَمِثلِ الشَمسِ إِذ بَزَغَت — يَحظى الضَجيعُ بِها نَجلاءَ مِعطارِ',

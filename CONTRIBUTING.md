@@ -83,7 +83,7 @@ Code-level contributions to React Native generally come in the form of [pull req
 7. Create a pull request to the React Native repository.
 8. Review and address comments on your pull request.
     1. A bot may comment with suggestions. Generally we ask you to resolve these first before a maintainer will review your code.
-9. If you haven't already, complete the Contributor License Agreement ("CLA").
+9. If you haven't already, please complete the [Contributor License Agreement](https://github.com/facebook/react-native/wiki/Contributor-License-Agreement) ("CLA"). **[Complete your CLA here.](https://code.facebook.com/cla)**
 
 If all goes well, your pull request will be merged. If it is not merged, maintainers will do their best to explain the reason why.
 

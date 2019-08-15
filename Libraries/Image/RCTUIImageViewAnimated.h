@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTAnimatedImage.h"
+#import <React/RCTAnimatedImage.h>
 
 @interface RCTUIImageViewAnimated : UIImageView
 

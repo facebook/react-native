@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "ARTPattern.h"
+#import <React/ARTPattern.h>
 
 #import <React/RCTLog.h>
 

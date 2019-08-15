@@ -82,8 +82,48 @@ import type {
   DirectEventHandler,
   WithDefault,
 } from 'CodegenTypes';
-
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  // Props
+  boolean_default_true_optional_both?: WithDefault<boolean, true>,
+
+  // Events
+  onDirectEventDefinedInlineNull: DirectEventHandler<null>,
+  onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>('Module', {
+  interfaceOnly: true,
+  paperComponentName: 'RCTModule',
+}): NativeComponent<ModuleProps>);
+`;
+
+const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS_NO_CAST = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {
+  BubblingEventHandler,
+  DirectEventHandler,
+  WithDefault,
+} from 'CodegenTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -118,14 +158,15 @@ const NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION = `
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 |}>;
 
-export default codegenNativeComponent<ModuleProps>('Module', {
+export default (codegenNativeComponent<ModuleProps>('Module', {
   deprecatedViewConfigName: 'DeprecateModuleName',
-});
+}): NativeComponent<ModuleProps>);
 `;
 
 const ALL_PROP_TYPES_NO_EVENTS = `
@@ -143,15 +184,11 @@ const ALL_PROP_TYPES_NO_EVENTS = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  Int32,
-  Float,
-  WithDefault,
-} from 'CodegenTypes';
-
-import type {ColorValue, ColorArrayValue, PointValue} from 'StyleSheetTypes';
+import type {Int32, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
+import type {ColorValue, ColorArrayValue, PointValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -191,8 +228,13 @@ type ModuleProps = $ReadOnly<{|
   int32_optional_both?: WithDefault<Int32, 1>,
 
   // String enum props
-  enum_optional_key?: WithDefault<('small' | 'large'), 'small'>,
-  enum_optional_both?: WithDefault<('small' | 'large'), 'small'>,
+  enum_optional_key?: WithDefault<'small' | 'large', 'small'>,
+  enum_optional_both?: WithDefault<'small' | 'large', 'small'>,
+
+  // Object props
+  object_optional_key?: $ReadOnly<{| prop: string |}>,
+  object_optional_both?: ?$ReadOnly<{| prop: string |}>,
+  object_optional_value: ?$ReadOnly<{| prop: string |}>,
 
   // ImageSource props
   image_required: ImageSource,
@@ -218,7 +260,9 @@ type ModuleProps = $ReadOnly<{|
   point_optional_both?: ?PointValue,
 |}>;
 
-export default codegenNativeComponent<ModuleProps, Options>('Module');
+export default (codegenNativeComponent<ModuleProps, Options>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
 
 const ARRAY_PROP_TYPES_NO_EVENTS = `
@@ -236,15 +280,14 @@ const ARRAY_PROP_TYPES_NO_EVENTS = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  Int32,
-  Float,
-  WithDefault,
-} from 'CodegenTypes';
-
-import type {ColorValue, PointValue} from 'StyleSheetTypes';
+import type {Int32, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
+import type {ColorValue, PointValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+type ObjectType = $ReadOnly<{| prop: string |}>;
+type ArrayObjectType = $ReadOnlyArray<$ReadOnly<{| prop: string |}>>;
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -275,8 +318,14 @@ type ModuleProps = $ReadOnly<{|
   array_int32_optional_both?: ?$ReadOnlyArray<Int32>,
 
   // String enum props
-  array_enum_optional_key?: WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
-  array_enum_optional_both?: WithDefault<$ReadOnlyArray<('small' | 'large')>, 'small'>,
+  array_enum_optional_key?: WithDefault<
+    $ReadOnlyArray<'small' | 'large'>,
+    'small',
+  >,
+  array_enum_optional_both?: WithDefault<
+    $ReadOnlyArray<'small' | 'large'>,
+    'small',
+  >,
 
   // ImageSource props
   array_image_required: $ReadOnlyArray<ImageSource>,
@@ -295,9 +344,136 @@ type ModuleProps = $ReadOnly<{|
   array_point_optional_key?: $ReadOnlyArray<PointValue>,
   array_point_optional_value: ?$ReadOnlyArray<PointValue>,
   array_point_optional_both?: ?$ReadOnlyArray<PointValue>,
+
+  // Object props
+  array_object_required: $ReadOnlyArray<$ReadOnly<{| prop: string |}>>,
+  array_object_optional_key?: $ReadOnlyArray<$ReadOnly<{| prop: string |}>>,
+  array_object_optional_value: ?ArrayObjectType,
+  array_object_optional_both?: ?$ReadOnlyArray<ObjectType>,
 |}>;
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const OBJECT_PROP_TYPES_NO_EVENTS = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {Int32, Float, WithDefault} from 'CodegenTypes';
+import type {ImageSource} from 'ImageSource';
+import type {ColorValue, PointValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  // Props
+  // Boolean props
+  boolean_required: $ReadOnly<{|prop: boolean|}>,
+  boolean_optional: $ReadOnly<{|prop?: WithDefault<boolean, false>|}>,
+
+  // String props
+  string_required: $ReadOnly<{|prop: string|}>,
+  string_optional: $ReadOnly<{|prop?: WithDefault<string, ''>|}>,
+
+  // Float props
+  float_required: $ReadOnly<{|prop: Float|}>,
+  float_optional: $ReadOnly<{|prop?: WithDefault<Float, 0.0>|}>,
+
+  // Int32 props
+  int_required: $ReadOnly<{|prop: Int32|}>,
+  int_optional: $ReadOnly<{|prop?: WithDefault<Int32, 0>|}>,
+
+  // String enum props
+  enum_optional: $ReadOnly<{|
+    prop?: WithDefault<$ReadOnlyArray<'small' | 'large'>, 'small'>,
+  |}>,
+
+  // ImageSource props
+  image_required: $ReadOnly<{|prop: ImageSource|}>,
+  image_optional_key: $ReadOnly<{|prop?: ImageSource|}>,
+  image_optional_value: $ReadOnly<{|prop: ?ImageSource|}>,
+  image_optional_both: $ReadOnly<{|prop?: ?ImageSource|}>,
+
+  // ColorValue props
+  color_required: $ReadOnly<{|prop: ColorValue|}>,
+  color_optional_key: $ReadOnly<{|prop?: ColorValue|}>,
+  color_optional_value: $ReadOnly<{|prop: ?ColorValue|}>,
+  color_optional_both: $ReadOnly<{|prop?: ?ColorValue|}>,
+
+  // PointValue props
+  point_required: $ReadOnly<{|prop: PointValue|}>,
+  point_optional_key: $ReadOnly<{|prop?: PointValue|}>,
+  point_optional_value: $ReadOnly<{|prop: ?PointValue|}>,
+  point_optional_both: $ReadOnly<{|prop?: ?PointValue|}>,
+
+  // Nested object props
+  object_required: $ReadOnly<{|prop: $ReadOnly<{nestedProp: string}>|}>,
+  object_optional_key?: $ReadOnly<{|prop: $ReadOnly<{nestedProp: string}>|}>,
+  object_optional_value: ?$ReadOnly<{|prop: $ReadOnly<{nestedProp: string}>|}>,
+  object_optional_both?: ?$ReadOnly<{|prop: $ReadOnly<{nestedProp: string}>|}>,
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const PROPS_ALIASED_LOCALLY = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+type DeepSpread = $ReadOnly<{|
+  otherStringProp: string,
+|}>
+
+export type PropsInFile = $ReadOnly<{|
+  ...DeepSpread,
+  isEnabled: boolean,
+  label: string,
+|}>;
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  ...PropsInFile
+
+  localType: $ReadOnly<{|
+    ...PropsInFile
+  |}>
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
 
 const EVENTS_DEFINED_INLINE_WITH_ALL_TYPES = `
@@ -313,6 +489,7 @@ const EVENTS_DEFINED_INLINE_WITH_ALL_TYPES = `
 
 'use strict';
 
+import type {NativeComponent} from 'codegenNativeComponent';
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {
@@ -402,8 +579,9 @@ type ModuleProps = $ReadOnly<{|
     >,
 |}>;
 
-export default codegenNativeComponent<ModuleProps>('Module');
-
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
 
 const EVENTS_DEFINED_AS_NULL_INLINE = `
@@ -421,14 +599,9 @@ const EVENTS_DEFINED_AS_NULL_INLINE = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  BubblingEventHandler,
-  DirectEventHandler,
-} from 'CodegenTypese';
-
+import type {BubblingEventHandler, DirectEventHandler} from 'CodegenTypese';
 import type {ViewProps} from 'ViewPropTypes';
-
-const codegenNativeComponent = require('codegenNativeComponent');
+import type {NativeComponent} from 'codegenNativeComponent';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -436,28 +609,28 @@ type ModuleProps = $ReadOnly<{|
   // No props
 
   // Events defined inline
-  onDirectEventDefinedInlineNull:DirectEventHandler<null>,
+  onDirectEventDefinedInlineNull: DirectEventHandler<null>,
   onDirectEventDefinedInlineNullOptionalKey?: DirectEventHandler<null>,
   onDirectEventDefinedInlineNullOptionalValue: ?DirectEventHandler<null>,
   onDirectEventDefinedInlineNullOptionalBoth?: DirectEventHandler<null>,
-  onDirectEventDefinedInlineNullWithPaperName?: ?
-    DirectEventHandler<
-      null,
-      'paperDirectEventDefinedInlineNullWithPaperName',
-    >,
+  onDirectEventDefinedInlineNullWithPaperName?: ?DirectEventHandler<
+    null,
+    'paperDirectEventDefinedInlineNullWithPaperName',
+  >,
 
   onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
   onBubblingEventDefinedInlineNullOptionalKey?: BubblingEventHandler<null>,
   onBubblingEventDefinedInlineNullOptionalValue: ?BubblingEventHandler<null>,
   onBubblingEventDefinedInlineNullOptionalBoth?: ?BubblingEventHandler<null>,
-  onBubblingEventDefinedInlineNullWithPaperName?: ?
-    BubblingEventHandler<
-      null,
-      'paperBubblingEventDefinedInlineNullWithPaperName',
-    >,
+  onBubblingEventDefinedInlineNullWithPaperName?: ?BubblingEventHandler<
+    null,
+    'paperBubblingEventDefinedInlineNullWithPaperName',
+  >,
 |}>;
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
 
 const PROPS_AND_EVENTS_TYPES_EXPORTED = `
@@ -477,8 +650,8 @@ import type {
   BubblingEventHandler,
   DirectEventHandler,
 } from 'CodegenTypes';
-
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -498,7 +671,39 @@ export type ModuleProps = $ReadOnly<{|
   onDirectEventDefinedInlineWithPaperName: DirectEventHandler<EventInFile, 'paperDirectEventDefinedInlineWithPaperName'>,
 |}>;
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const PROPS_AS_EXTERNAL_TYPES = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {NativeComponent} from 'codegenNativeComponent';
+
+export type String = string;
+export type AnotherArray = $ReadOnlyArray<String>;
+
+export type ModuleProps = $ReadOnly<{|
+  disable: String,
+  array: AnotherArray,
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
 
 const COMMANDS_DEFINED_WITH_ALL_TYPES = `
@@ -514,20 +719,21 @@ const COMMANDS_DEFINED_WITH_ALL_TYPES = `
 
 'use strict';
 
-const codegenNativeComponent = require('codegenNativeComponent');
 const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {
-  Int32,
-  BubblingEventHandler,
-  DirectEventHandler,
-} from 'CodegenTypes';
-
+import type {Int32, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
-  +scrollTo: (viewRef: React.Ref<'RCTView'>, y: Int32, animated: boolean) => void;
+  +scrollTo: (
+    viewRef: React.Ref<'RCTView'>,
+    x: Float,
+    y: Int32,
+    animated: boolean,
+  ) => void;
 }
 
 export type ModuleProps = $ReadOnly<{|
@@ -535,18 +741,133 @@ export type ModuleProps = $ReadOnly<{|
   // No props or events
 |}>;
 
-export const Commands = codegenNativeCommands<NativeCommands>();
+export const Commands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['hotspotUpdate', 'scrollTo'],
+});
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const COMMANDS_WITH_EXTERNAL_TYPES = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type {Int32} from 'CodegenTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+export type Boolean = boolean;
+export type Int = Int32;
+export type Void = void;
+
+export type ScrollTo = (
+  viewRef: React.Ref<'RCTView'>,
+  y: Int,
+  animated: Boolean,
+) => Void;
+
+interface NativeCommands {
+  +scrollTo: ScrollTo;
+}
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  // No props or events
+|}>;
+
+export const Commands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['scrollTo'],
+});
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const COMMANDS_AND_EVENTS_TYPES_EXPORTED = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import type {
+  BubblingEventHandler,
+  DirectEventHandler,
+} from 'CodegenTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+export type EventInFile = $ReadOnly<{|
+  ${EVENT_DEFINITION}
+|}>;
+
+export type Boolean = boolean;
+export type Int = Int32;
+export type Void = void;
+
+export type ScrollTo = (viewRef: React.Ref<'RCTView'>, y: Int, animated: Boolean) => Void
+
+interface NativeCommands {
+  +scrollTo: ScrollTo;
+}
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  // No props
+
+  // Events defined inline
+  onBubblingEventDefinedInline: BubblingEventHandler<EventInFile>,
+  onBubblingEventDefinedInlineWithPaperName: BubblingEventHandler<EventInFile, 'paperBubblingEventDefinedInlineWithPaperName'>,
+  onDirectEventDefinedInline: DirectEventHandler<EventInFile>,
+  onDirectEventDefinedInlineWithPaperName: DirectEventHandler<EventInFile, 'paperDirectEventDefinedInlineWithPaperName'>,
+|}>;
+
+export const Commands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['scrollTo']
+});
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
 `;
 
 module.exports = {
   ALL_PROP_TYPES_NO_EVENTS,
   ARRAY_PROP_TYPES_NO_EVENTS,
+  OBJECT_PROP_TYPES_NO_EVENTS,
+  PROPS_ALIASED_LOCALLY,
   ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS,
+  ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS_NO_CAST,
   NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION,
   EVENTS_DEFINED_INLINE_WITH_ALL_TYPES,
   EVENTS_DEFINED_AS_NULL_INLINE,
   PROPS_AND_EVENTS_TYPES_EXPORTED,
+  COMMANDS_AND_EVENTS_TYPES_EXPORTED,
   COMMANDS_DEFINED_WITH_ALL_TYPES,
+  PROPS_AS_EXTERNAL_TYPES,
+  COMMANDS_WITH_EXTERNAL_TYPES,
 };

@@ -55,7 +55,7 @@ if (__DEV__) {
     }
 
     if (!Platform.isTesting) {
-      const logToConsole = require('./Devtools/logToConsole');
+      const HMRClient = require('../Utilities/HMRClient');
       [
         'trace',
         'info',
@@ -69,7 +69,7 @@ if (__DEV__) {
         const originalFunction = console[level];
         // $FlowFixMe Overwrite console methods
         console[level] = function(...args) {
-          logToConsole(level, args);
+          HMRClient.log(level, args);
           originalFunction.apply(console, args);
         };
       });

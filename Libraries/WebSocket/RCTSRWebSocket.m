@@ -16,7 +16,7 @@
 
 #if !TARGET_OS_UIKITFORMAC
 
-#import "RCTSRWebSocket.h"
+#import <React/RCTSRWebSocket.h>
 
 #import <Availability.h>
 #import <Endian.h>

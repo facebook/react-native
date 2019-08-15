@@ -23,10 +23,10 @@ type DialogAction = string;
 type DialogButtonKey = number;
 export type DialogOptions = {|
   title?: string,
-  message?: Stringish,
-  buttonPositive?: Stringish,
-  buttonNegative?: Stringish,
-  buttonNeutral?: Stringish,
+  message?: string,
+  buttonPositive?: string,
+  buttonNegative?: string,
+  buttonNeutral?: string,
   items?: Array<string>,
   cancelable?: boolean,
 |};
@@ -41,9 +41,9 @@ export interface Spec extends TurboModule {
   |};
   +showAlert: (
     config: DialogOptions,
-    onError: (string) => void,
+    onError: (error: string) => void,
     onAction: (action: DialogAction, buttonKey?: DialogButtonKey) => void,
   ) => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('DialogManagerAndroid');
+export default (TurboModuleRegistry.get<Spec>('DialogManagerAndroid'): ?Spec);

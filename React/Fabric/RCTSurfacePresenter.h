@@ -11,6 +11,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTPrimitives.h>
+#import <React/RCTSurfacePresenterStub.h>
 #import <react/config/ReactNativeConfig.h>
 #import <react/utils/ContextContainer.h>
 
@@ -18,16 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class RCTFabricSurface;
 @class RCTMountingManager;
-
-@protocol RCTSurfacePresenterObserver <NSObject>
-
-@optional
-
-- (void)willMountComponentsWithRootTag:(ReactTag)rootTag;
-
-- (void)didMountComponentsWithRootTag:(ReactTag)rootTag;
-
-@end
 
 /**
  * Coordinates presenting of React Native Surfaces and represents application
@@ -45,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface RCTSurfacePresenter (Surface)
+@interface RCTSurfacePresenter (Surface) <RCTSurfacePresenterStub>
 
 /**
  * Surface uses these methods to register itself in the Presenter.
@@ -57,8 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)startSurface:(RCTFabricSurface *)surface;
 - (void)unregisterSurface:(RCTFabricSurface *)surface;
-- (void)setProps:(NSDictionary *)props
-         surface:(RCTFabricSurface *)surface;
+- (void)setProps:(NSDictionary *)props surface:(RCTFabricSurface *)surface;
 
 - (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;
 
@@ -72,21 +62,13 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Sets `minimumSize` and `maximumSize` layout constraints for the Surface.
  */
-- (void)setMinimumSize:(CGSize)minimumSize
-           maximumSize:(CGSize)maximumSize
-               surface:(RCTFabricSurface *)surface;
+- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize surface:(RCTFabricSurface *)surface;
 
 - (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
 
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer;
 
 - (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer;
-
-@end
-
-@interface RCTBridge (Deprecated)
-
-@property (nonatomic) RCTSurfacePresenter *surfacePresenter;
 
 @end
 

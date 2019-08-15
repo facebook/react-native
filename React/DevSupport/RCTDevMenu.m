@@ -5,20 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTDevMenu.h"
+#import <React/RCTDevMenu.h>
 
-#import "RCTBridge+Private.h"
-#import "RCTDevSettings.h"
-#import "RCTKeyCommands.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
-#import "RCTDefines.h"
+#import <React/RCTBridge+Private.h>
+#import <React/RCTDevSettings.h>
+#import <React/RCTKeyCommands.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
+#import <React/RCTDefines.h>
 #import <React/RCTBundleURLProvider.h>
 
 #if RCT_DEV
 
 #if RCT_ENABLE_INSPECTOR
-#import "RCTInspectorDevServerHelper.h"
+#import <React/RCTInspectorDevServerHelper.h>
 #endif
 
 NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
@@ -286,17 +286,8 @@ RCT_EXPORT_MODULE()
         devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
       }
     }]];
-
     // "Live reload" which refreshes on every edit was removed in favor of "Fast Refresh".
     // While native code for "Live reload" is still there, please don't add the option back.
-    //
-    // If for some reason you really need a full reload on every edit,
-    // you can put this into your application entry point as an escape hatch:
-    //
-    // if (__DEV__) {
-    //   require.Refresh.forceFullRefresh = true;
-    // }
-    //
     // See D15958697 for more context.
   }
 

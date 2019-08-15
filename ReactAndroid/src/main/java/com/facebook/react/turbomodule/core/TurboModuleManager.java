@@ -91,5 +91,15 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   public void initialize() {}
 
   @Override
-  public void onCatalystInstanceDestroy() {}
+  public void onCatalystInstanceDestroy() {
+    for (TurboModule turboModule : mTurboModules.values()) {
+      // TODO(T48014458): Rename this to invalidate()
+      ((NativeModule) turboModule).onCatalystInstanceDestroy();
+    }
+
+    mTurboModules.clear();
+
+    // Delete the native part of this hybrid class.
+    mHybridData.resetNative();
+  }
 }

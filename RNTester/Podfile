@@ -2,10 +2,12 @@ platform :ios, '9.0'
 
 require_relative '../scripts/autolink-ios'
 
-def pods()
-  # Uncomment for Swift
-  # use_frameworks!
+if ENV['USE_FRAMEWORKS'] == '1'
+  puts "Installing pods with use_frameworks!"
+  use_frameworks!
+end
 
+def pods()
   project 'RNTesterPods.xcodeproj'
 
   # Enable TurboModule

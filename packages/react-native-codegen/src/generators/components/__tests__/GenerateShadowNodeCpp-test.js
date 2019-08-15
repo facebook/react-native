@@ -21,7 +21,9 @@ describe('GenerateShadowNodeCpp', () => {
       const fixture = fixtures[fixtureName];
 
       it(`can generate fixture ${fixtureName}`, () => {
-        expect(generator.generate(fixtureName, fixture)).toMatchSnapshot();
+        expect(
+          generator.generate(fixtureName, fixture, 'SampleSpec'),
+        ).toMatchSnapshot();
       });
     });
 });

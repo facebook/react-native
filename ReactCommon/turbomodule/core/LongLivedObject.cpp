@@ -11,7 +11,7 @@ namespace facebook {
 namespace react {
 
 // LongLivedObjectCollection
-LongLivedObjectCollection& LongLivedObjectCollection::get() {
+LongLivedObjectCollection &LongLivedObjectCollection::get() {
   static LongLivedObjectCollection instance;
   return instance;
 }

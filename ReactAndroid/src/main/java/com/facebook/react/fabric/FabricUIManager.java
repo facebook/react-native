@@ -29,6 +29,8 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
@@ -117,6 +119,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private long mFinishTransactionTime = 0l;
   private long mFinishTransactionCPPTime = 0l;
 
+  // C++ keeps track of commit numbers for telemetry purposes. We don't want to incur a JNI
+  // round-trip cost just for this, so commits from C++ are numbered 0+ and synchronous commits
+  // are 10k+. Since these are only used for perf tracking, it's unlikely for the number of commits
+  // from C++ to exceed 9,999 and it should be obvious what's going on when analyzing performance.
+  private int mCurrentSynchronousCommitNumber = 10000;
+
   public FabricUIManager(
       ReactApplicationContext reactContext,
       ViewManagerRegistry viewManagerRegistry,
@@ -130,11 +138,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mReactApplicationContext.addLifecycleEventListener(this);
   }
 
+  // TODO (T47819352): Rename this to startSurface for consistency with xplat/iOS
   @Override
   public <T extends View> int addRootView(
       final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
-    // TODO T31905686: Refactor both addRootView methods into one method
+    // TODO T31905686: Combine with startSurface below
     ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, rootView.getContext());
     mMountingManager.addRootView(rootTag, rootView);
@@ -150,7 +159,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return rootTag;
   }
 
-  public <T extends View> int addRootView(
+  public <T extends View> int startSurface(
       final T rootView,
       final String moduleName,
       final WritableMap initialProps,
@@ -182,14 +191,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mEventDispatcher.dispatchAllEvents();
   }
 
-  @Override
-  public void removeRootView(int reactRootTag) {
-    // TODO T31905686: integrate with the unmounting of Fabric React Renderer.
-    mMountingManager.removeRootView(reactRootTag);
-    mReactContextForRootTag.remove(reactRootTag);
-    if (DEBUG) {
-      FLog.d(TAG, "Removing surface for reactTag: ", reactRootTag);
-    }
+  public void stopSurface(int surfaceID) {
+    mBinding.stopSurface(surfaceID);
   }
 
   @Override
@@ -216,7 +219,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       int reactTag,
       final String componentName,
       @Nullable ReadableMap props,
-      Object stateWrapper,
+      @Nullable Object stateWrapper,
       boolean isLayoutable) {
     ThemedReactContext context = mReactContextForRootTag.get(rootTag);
     String component = getFabricComponentName(componentName);
@@ -236,13 +239,25 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @DoNotStrip
   @SuppressWarnings("unused")
   private MountItem createMountItem(
-      String componentName, int reactRootTag, int reactTag, boolean isLayoutable) {
+      String componentName,
+      @Nullable ReadableMap props,
+      @Nullable Object stateWrapper,
+      int reactRootTag,
+      int reactTag,
+      boolean isLayoutable) {
     String component = getFabricComponentName(componentName);
     ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
     if (reactContext == null) {
       throw new IllegalArgumentException("Unable to find ReactContext for root: " + reactRootTag);
     }
-    return new CreateMountItem(reactContext, reactRootTag, reactTag, component, isLayoutable);
+    return new CreateMountItem(
+        reactContext,
+        reactRootTag,
+        reactTag,
+        component,
+        props,
+        (StateWrapper) stateWrapper,
+        isLayoutable);
   }
 
   @DoNotStrip
@@ -296,8 +311,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @DoNotStrip
   @SuppressWarnings("unused")
-  private MountItem createBatchMountItem(MountItem[] items, int size) {
-    return new BatchMountItem(items, size);
+  private MountItem createBatchMountItem(MountItem[] items, int size, int commitNumber) {
+    return new BatchMountItem(items, size, commitNumber);
   }
 
   @DoNotStrip
@@ -327,11 +342,18 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props) {
     long time = SystemClock.uptimeMillis();
+    int commitNumber = mCurrentSynchronousCommitNumber++;
     try {
-      scheduleMountItem(updatePropsMountItem(reactTag, props), time, 0, time, time);
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
+      scheduleMountItem(
+          updatePropsMountItem(reactTag, props), commitNumber, time, 0, 0, 0, 0, 0, 0);
     } catch (Exception ex) {
       // ignore exceptions for now
       // TODO T42943890: Fix animations in Fabric and remove this try/catch
+    } finally {
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_END, null, commitNumber);
     }
   }
 
@@ -343,19 +365,55 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @SuppressWarnings("unused")
   private void scheduleMountItem(
       final MountItem mountItem,
+      int commitNumber,
       long commitStartTime,
-      long layoutTime,
+      long diffStartTime,
+      long diffEndTime,
+      long layoutStartTime,
+      long layoutEndTime,
       long finishTransactionStartTime,
       long finishTransactionEndTime) {
-
     // TODO T31905686: support multithreading
-    mCommitStartTime = commitStartTime;
-    mLayoutTime = layoutTime;
-    mFinishTransactionCPPTime = finishTransactionEndTime - finishTransactionStartTime;
-    mFinishTransactionTime = SystemClock.uptimeMillis() - finishTransactionStartTime;
-    mDispatchViewUpdatesTime = SystemClock.uptimeMillis();
+    // When Binding.cpp calls scheduleMountItems during a commit phase, it always calls with
+    // a BatchMountItem. No other sites call into this with a BatchMountItem, and Binding.cpp only
+    // calls scheduleMountItems with a BatchMountItem.
+    boolean isBatchMountItem = mountItem instanceof BatchMountItem;
+
+    if (isBatchMountItem) {
+      mCommitStartTime = commitStartTime;
+      mLayoutTime = layoutEndTime - layoutStartTime;
+      mFinishTransactionCPPTime = finishTransactionEndTime - finishTransactionStartTime;
+      mFinishTransactionTime = SystemClock.uptimeMillis() - finishTransactionStartTime;
+      mDispatchViewUpdatesTime = SystemClock.uptimeMillis();
+    }
+
     synchronized (mMountItemsLock) {
       mMountItems.add(mountItem);
+    }
+
+    // Post markers outside of lock
+    if (isBatchMountItem) {
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_COMMIT_START, null, commitNumber, mCommitStartTime);
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_FINISH_TRANSACTION_START,
+          null,
+          commitNumber,
+          finishTransactionStartTime);
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_FINISH_TRANSACTION_END,
+          null,
+          commitNumber,
+          finishTransactionEndTime);
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_DIFF_START, null, commitNumber, diffStartTime);
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_DIFF_END, null, commitNumber, diffEndTime);
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_LAYOUT_START, null, commitNumber, layoutStartTime);
+      ReactMarker.logFabricMarker(
+          ReactMarkerConstants.FABRIC_LAYOUT_END, null, commitNumber, layoutEndTime);
+      ReactMarker.logFabricMarker(ReactMarkerConstants.FABRIC_COMMIT_END, null, commitNumber);
     }
 
     if (UiThreadUtil.isOnUiThread()) {
@@ -403,6 +461,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     long batchedExecutionStartTime = SystemClock.uptimeMillis();
     for (MountItem mountItem : mountItemsToDispatch) {
+      if (DEBUG) {
+        FLog.d(TAG, "dispatchMountItems: Executing mountItem: " + mountItem);
+      }
       mountItem.execute(mMountingManager);
     }
     mBatchedExecutionTime = SystemClock.uptimeMillis() - batchedExecutionStartTime;
@@ -498,14 +559,42 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
   }
 
-  @Override
-  public void setJSResponder(int reactTag, boolean blockNativeResponder) {
-    // do nothing for now.
+  /**
+   * Set the JS responder for the view associated with the tags received as a parameter.
+   *
+   * @param reactTag React tag of the first parent of the view that is NOT virtual
+   * @param initialReactTag React tag of the JS view that initiated the touch operation
+   * @param blockNativeResponder If native responder should be blocked or not
+   */
+  @DoNotStrip
+  public void setJSResponder(
+      final int reactTag, final int initialReactTag, final boolean blockNativeResponder) {
+    synchronized (mMountItemsLock) {
+      mMountItems.add(
+          new MountItem() {
+            @Override
+            public void execute(MountingManager mountingManager) {
+              mountingManager.setJSResponder(reactTag, initialReactTag, blockNativeResponder);
+            }
+          });
+    }
   }
 
-  @Override
+  /**
+   * Clears the JS Responder specified by {@link #setJSResponder(int, int, boolean)}. After this
+   * method is called, all the touch events are going to be handled by JS.
+   */
+  @DoNotStrip
   public void clearJSResponder() {
-    // do nothing for now.
+    synchronized (mMountItemsLock) {
+      mMountItems.add(
+          new MountItem() {
+            @Override
+            public void execute(MountingManager mountingManager) {
+              mountingManager.clearJSResponder();
+            }
+          });
+    }
   }
 
   @Override

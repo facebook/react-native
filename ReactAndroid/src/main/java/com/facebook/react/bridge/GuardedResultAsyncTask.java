@@ -14,10 +14,15 @@ import android.os.AsyncTask;
  */
 public abstract class GuardedResultAsyncTask<Result> extends AsyncTask<Void, Void, Result> {
 
-  private final ReactContext mReactContext;
+  private final NativeModuleCallExceptionHandler mExceptionHandler;
 
+  @Deprecated
   protected GuardedResultAsyncTask(ReactContext reactContext) {
-    mReactContext = reactContext;
+    this(reactContext.getExceptionHandler());
+  }
+
+  protected GuardedResultAsyncTask(NativeModuleCallExceptionHandler exceptionHandler) {
+    mExceptionHandler = exceptionHandler;
   }
 
   @Override
@@ -25,7 +30,7 @@ public abstract class GuardedResultAsyncTask<Result> extends AsyncTask<Void, Voi
     try {
       return doInBackgroundGuarded();
     } catch (RuntimeException e) {
-      mReactContext.handleException(e);
+      mExceptionHandler.handleException(e);
       throw e;
     }
   }
@@ -35,7 +40,7 @@ public abstract class GuardedResultAsyncTask<Result> extends AsyncTask<Void, Voi
     try {
       onPostExecuteGuarded(result);
     } catch (RuntimeException e) {
-      mReactContext.handleException(e);
+      mExceptionHandler.handleException(e);
     }
   }
 

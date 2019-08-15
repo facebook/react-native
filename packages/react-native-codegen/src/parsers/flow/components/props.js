@@ -11,27 +11,56 @@
 'use strict';
 
 import type {PropTypeShape} from '../../../CodegenSchema.js';
+import type {TypeMap} from '../utils.js';
 
-function getTypeAnnotationForArray(name, typeAnnotation, defaultValue) {
-  if (typeAnnotation.type === 'NullableTypeAnnotation') {
+const {getValueFromTypes} = require('../utils.js');
+
+function getPropProperties(propsTypeName: string, types: TypeMap) {
+  const typeAlias = types[propsTypeName];
+  try {
+    return typeAlias.right.typeParameters.params[0].properties;
+  } catch (e) {
+    throw new Error(
+      `Failed to find type definition for "${propsTypeName}", please check that you have a valid codegen flow file`,
+    );
+  }
+}
+
+function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
+  const extractedTypeAnnotation = getValueFromTypes(typeAnnotation, types);
+  if (extractedTypeAnnotation.type === 'NullableTypeAnnotation') {
     throw new Error(
       'Nested optionals such as "$ReadOnlyArray<?boolean>" are not supported, please declare optionals at the top level of value definitions as in "?$ReadOnlyArray<boolean>"',
     );
   }
 
   if (
-    typeAnnotation.type === 'GenericTypeAnnotation' &&
-    typeAnnotation.id.name === 'WithDefault'
+    extractedTypeAnnotation.type === 'GenericTypeAnnotation' &&
+    extractedTypeAnnotation.id.name === 'WithDefault'
   ) {
     throw new Error(
       'Nested defaults such as "$ReadOnlyArray<WithDefault<boolean, false>>" are not supported, please declare defaults at the top level of value definitions as in "WithDefault<$ReadOnlyArray<boolean>, false>"',
     );
   }
 
+  if (extractedTypeAnnotation.type === 'GenericTypeAnnotation') {
+    // Resolve the type alias if it's not defined inline
+    const objectType = getValueFromTypes(extractedTypeAnnotation, types);
+
+    if (objectType.id.name === '$ReadOnly') {
+      return {
+        type: 'ObjectTypeAnnotation',
+        properties: objectType.typeParameters.params[0].properties.map(prop =>
+          buildPropSchema(prop, types),
+        ),
+      };
+    }
+  }
+
   const type =
-    typeAnnotation.type === 'GenericTypeAnnotation'
-      ? typeAnnotation.id.name
-      : typeAnnotation.type;
+    extractedTypeAnnotation.type === 'GenericTypeAnnotation'
+      ? extractedTypeAnnotation.id.name
+      : extractedTypeAnnotation.type;
 
   switch (type) {
     case 'ImageSource':
@@ -76,7 +105,9 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue) {
       return {
         type: 'StringEnumTypeAnnotation',
         default: defaultValue,
-        options: typeAnnotation.types.map(option => ({name: option.value})),
+        options: extractedTypeAnnotation.types.map(option => ({
+          name: option.value,
+        })),
       };
     default:
       (type: empty);
@@ -84,7 +115,9 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue) {
   }
 }
 
-function getTypeAnnotation(name, typeAnnotation, defaultValue) {
+function getTypeAnnotation(name, annotation, defaultValue, types) {
+  const typeAnnotation = getValueFromTypes(annotation, types);
+
   if (
     typeAnnotation.type === 'GenericTypeAnnotation' &&
     typeAnnotation.id.name === '$ReadOnlyArray'
@@ -95,7 +128,23 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
         name,
         typeAnnotation.typeParameters.params[0],
         defaultValue,
+        types,
       ),
+    };
+  }
+
+  if (
+    typeAnnotation.type === 'GenericTypeAnnotation' &&
+    typeAnnotation.id.name === '$ReadOnly'
+  ) {
+    return {
+      type: 'ObjectTypeAnnotation',
+      properties: flattenProperties(
+        typeAnnotation.typeParameters.params[0].properties,
+        types,
+      )
+        .map(prop => buildPropSchema(prop, types))
+        .filter(Boolean),
     };
   }
 
@@ -170,14 +219,14 @@ function getTypeAnnotation(name, typeAnnotation, defaultValue) {
       throw new Error(`A default enum value is required for "${name}"`);
     default:
       (type: empty);
-      throw new Error(`Unknown prop type for "${name}"`);
+      throw new Error(`Unknown prop type for "${name}": "${type}"`);
   }
 }
 
-function buildPropSchema(property): ?PropTypeShape {
+function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
   const name = property.key.name;
 
-  const {value} = property;
+  const value = getValueFromTypes(property.value, types);
   let typeAnnotation =
     value.type === 'NullableTypeAnnotation' ? value.typeAnnotation : value;
 
@@ -257,22 +306,69 @@ function buildPropSchema(property): ?PropTypeShape {
   return {
     name,
     optional,
-    typeAnnotation: getTypeAnnotation(name, typeAnnotation, defaultValue),
+    typeAnnotation: getTypeAnnotation(
+      name,
+      typeAnnotation,
+      defaultValue,
+      types,
+    ),
   };
 }
 
 // $FlowFixMe there's no flowtype for ASTs
 type PropAST = Object;
 
+function verifyPropNotAlreadyDefined(
+  props: $ReadOnlyArray<PropAST>,
+  needleProp: PropAST,
+) {
+  const propName = needleProp.key.name;
+  const foundProp = props.some(prop => prop.key.name === propName);
+  if (foundProp) {
+    throw new Error(`A prop was already defined with the name ${propName}`);
+  }
+}
+
+function flattenProperties(
+  typeDefinition: $ReadOnlyArray<PropAST>,
+  types: TypeMap,
+) {
+  return typeDefinition
+    .map(property => {
+      if (property.type === 'ObjectTypeProperty') {
+        return property;
+      } else if (property.type === 'ObjectTypeSpreadProperty') {
+        return flattenProperties(
+          getPropProperties(property.argument.id.name, types),
+          types,
+        );
+      }
+    })
+    .reduce((acc, item) => {
+      if (Array.isArray(item)) {
+        item.forEach(prop => {
+          verifyPropNotAlreadyDefined(acc, prop);
+        });
+        return acc.concat(item);
+      } else {
+        verifyPropNotAlreadyDefined(acc, item);
+        acc.push(item);
+        return acc;
+      }
+    }, [])
+    .filter(Boolean);
+}
+
 function getProps(
   typeDefinition: $ReadOnlyArray<PropAST>,
+  types: TypeMap,
 ): $ReadOnlyArray<PropTypeShape> {
-  return typeDefinition
-    .filter(property => property.type === 'ObjectTypeProperty')
-    .map(buildPropSchema)
+  return flattenProperties(typeDefinition, types)
+    .map(property => buildPropSchema(property, types))
     .filter(Boolean);
 }
 
 module.exports = {
   getProps,
+  getPropProperties,
 };

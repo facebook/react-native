@@ -13,14 +13,14 @@
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 
-import AndroidSwipeRefreshLayoutNativeComponent from './AndroidSwipeRefreshLayoutNativeComponent';
-import PullToRefreshViewNativeComponent from './PullToRefreshViewNativeComponent';
 const nullthrows = require('nullthrows');
 
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
+import AndroidSwipeRefreshLayoutNativeComponent from './AndroidSwipeRefreshLayoutNativeComponent';
+import PullToRefreshViewNativeComponent from './PullToRefreshViewNativeComponent';
 
-let RefreshLayoutConsts;
+let RefreshLayoutConsts: any;
 if (Platform.OS === 'android') {
   const AndroidSwipeRefreshLayout = require('../../ReactNative/UIManager').getViewManagerConfig(
     'AndroidSwipeRefreshLayout',
@@ -135,7 +135,7 @@ export type RefreshControlProps = $ReadOnly<{|
  * in the `onRefresh` function otherwise the refresh indicator will stop immediately.
  */
 class RefreshControl extends React.Component<RefreshControlProps> {
-  static SIZE = RefreshLayoutConsts.SIZE;
+  static SIZE: any = RefreshLayoutConsts.SIZE;
 
   _setNativePropsOnRef: ?({refreshing: boolean}) => void;
   _lastNativeRefreshing = false;
@@ -161,7 +161,7 @@ class RefreshControl extends React.Component<RefreshControlProps> {
     }
   }
 
-  render() {
+  render(): React.Node {
     const setRef = ref =>
       (this._setNativePropsOnRef = ref ? ref.setNativeProps.bind(ref) : null);
     if (Platform.OS === 'ios') {

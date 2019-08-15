@@ -9,15 +9,14 @@
  */
 'use strict';
 
+const BatchedBridge = require('../../BatchedBridge/BatchedBridge');
 const Platform = require('../../Utilities/Platform');
 const Systrace = require('../../Performance/Systrace');
 
 const invariant = require('invariant');
-const BatchedBridge = require('../../BatchedBridge/BatchedBridge');
-
-import NativeTiming from './NativeTiming';
 
 import type {ExtendedError} from '../Devtools/parseErrorStack';
+import NativeTiming from './NativeTiming';
 
 let _performanceNow = null;
 function performanceNow() {
@@ -498,7 +497,22 @@ function setSendIdleEvents(sendIdleEvents: boolean): void {
   NativeTiming.setSendIdleEvents(sendIdleEvents);
 }
 
-let ExportedJSTimers;
+let ExportedJSTimers: $TEMPORARY$object<{|
+  callIdleCallbacks: (frameTime: number) => any | void,
+  callImmediates: () => void,
+  callTimers: (timersToCall: Array<number>) => any | void,
+  cancelAnimationFrame: (timerID: number) => void,
+  cancelIdleCallback: (timerID: number) => void,
+  clearImmediate: (timerID: number) => void,
+  clearInterval: (timerID: number) => void,
+  clearTimeout: (timerID: number) => void,
+  emitTimeDriftWarning: (warningMessage: string) => any | void,
+  requestAnimationFrame: (func: any) => any | number,
+  requestIdleCallback: (func: any, options: ?any) => any | number,
+  setImmediate: (func: any, ...args: any) => number,
+  setInterval: (func: any, duration: number, ...args: any) => number,
+  setTimeout: (func: any, duration: number, ...args: any) => number,
+|}>;
 if (!NativeTiming) {
   console.warn("Timing native module is not available, can't set timers.");
   // $FlowFixMe: we can assume timers are generally available

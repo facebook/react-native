@@ -177,6 +177,8 @@
     return;
   }
 
+  _imageView.image = nil;
+
   std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onError();
 }
 

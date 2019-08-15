@@ -34,6 +34,7 @@
 #import <react/uimanager/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
+#import <react/utils/RuntimeExecutor.h>
 
 #import "MainRunLoopEventBeat.h"
 #import "RCTConversions.h"
@@ -248,10 +249,10 @@ using namespace facebook::react;
   _contextContainer = std::make_shared<ContextContainer>();
   // Please do not add stuff here; `SurfacePresenter` must not alter `ContextContainer`.
   // Those two pieces eventually should be moved out there:
-  // * `RCTImageLoader` should be moved to `RNImageComponentView`.
+  // * `RCTImageLoader` should be moved to `RCTImageComponentView`.
   // * `ReactNativeConfig` should be set by outside product code.
   _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
-  _contextContainer->insert("RCTImageLoader", wrapManagedObject([_bridge imageLoader]));
+  _contextContainer->insert("RCTImageLoader", wrapManagedObject([_bridge moduleForClass:[RCTImageLoader class]]));
 
   return _contextContainer;
 }
@@ -319,6 +320,17 @@ using namespace facebook::react;
   [surface _setStage:RCTSurfaceStagePrepared];
 
   [_mountingManager scheduleTransaction:mountingCoordinator];
+}
+
+- (void)schedulerDidDispatchCommand:(facebook::react::ShadowView const &)shadowView
+                        commandName:(std::string const &)commandName
+                               args:(folly::dynamic const)args
+{
+  ReactTag tag = shadowView.tag;
+  NSString *commandStr = [[NSString alloc] initWithUTF8String:commandName.c_str()];
+  NSArray *argsArray = convertFollyDynamicToId(args);
+
+  [self->_mountingManager dispatchCommand:tag commandName:commandStr args:argsArray];
 }
 
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
@@ -397,20 +409,6 @@ using namespace facebook::react;
 
     [self _startAllSurfaces];
   }
-}
-
-@end
-
-@implementation RCTBridge (Deprecated)
-
-- (void)setSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
-{
-  objc_setAssociatedObject(self, @selector(surfacePresenter), surfacePresenter, OBJC_ASSOCIATION_ASSIGN);
-}
-
-- (RCTSurfacePresenter *)surfacePresenter
-{
-  return objc_getAssociatedObject(self, @selector(surfacePresenter));
 }
 
 @end

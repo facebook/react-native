@@ -10,21 +10,22 @@
 
 'use strict';
 
-const React = require('react');
-const {StyleSheet, Switch, Text, View} = require('react-native');
 const RNTesterStatePersister = require('../utils/RNTesterStatePersister');
+const React = require('react');
+
+const {StyleSheet, Switch, Text, View} = require('react-native');
 
 class RNTesterSettingSwitchRow extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  UNSAFE_componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps: $FlowFixMeProps) {
     const {onEnable, onDisable, persister} = this.props;
     if (newProps.persister.state !== persister.state) {
       newProps.persister.state ? onEnable() : onDisable();
     }
   }
-  render() {
+  render(): React.Node {
     const {label, persister} = this.props;
     return (
       <View style={styles.row}>

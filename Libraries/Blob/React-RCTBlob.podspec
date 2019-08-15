@@ -26,11 +26,13 @@ Pod::Spec.new do |s|
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.source                 = source
-  s.source_files           = "*.{h,m,mm}"
+  # RCTBlobCollector.h is not included in the React module as it has C++ code
+  s.source_files           = "*.{m,mm}", "RCTBlobCollector.h"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
-  s.header_dir             = "React"
+  s.header_dir             = "RCTBlob"
 
-  s.dependency "React-Core", version
+  s.dependency "React-Core/RCTBlobHeaders", version
+  s.dependency "React-Core/RCTWebSocket", version
   s.dependency "React-RCTNetwork", version
-  s.dependency "React-RCTWebSocket", version
+  s.dependency "React-jsi", version
 end

@@ -52,15 +52,8 @@
     <CheckBoxPreference
         android:key="start_sampling_profiler_on_init"
         android:title="Start Sampling Profiler on init"
-        android:summary="If true the Sampling Profiler will start on initialization of JS. Useful for profiling startup of the app. Reload JS after setting."
-        android:defaultValue="false"
-        />
-    <EditTextPreference
-        android:key="sampling_profiler_sample_interval"
-        android:title="Sample interval for Sampling Profiler"
-        android:summary="Sample interval in microseconds for the Sampling Profiler (default: 1000). Reload JS after setting."
-        android:defaultValue="1000"
-        android:inputType="number"
+        android:summary="If true the Sampling Profiler will start on initialization of JS. Useful for profiling startup of the app. Reload JS or restart the app after changing this setting."
+        android:defaultValue="0"
         />
   </PreferenceCategory>
 </PreferenceScreen>

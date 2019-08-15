@@ -5,14 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTWebSocketModule.h"
+#import <React/RCTWebSocketModule.h>
 
 #import <objc/runtime.h>
 
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 
-#import "RCTSRWebSocket.h"
+#import <React/RCTSRWebSocket.h>
 
 @implementation RCTSRWebSocket (React)
 

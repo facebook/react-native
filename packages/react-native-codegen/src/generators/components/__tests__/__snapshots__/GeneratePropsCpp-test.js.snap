@@ -28,7 +28,8 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     colors(convertRawProp(rawProps, \\"colors\\", sourceProps.colors, colors)),
     srcs(convertRawProp(rawProps, \\"srcs\\", sourceProps.srcs, srcs)),
     points(convertRawProp(rawProps, \\"points\\", sourceProps.points, points)),
-    sizes(convertRawProp(rawProps, \\"sizes\\", sourceProps.sizes, sizes))
+    sizes(convertRawProp(rawProps, \\"sizes\\", sourceProps.sizes, sizes)),
+    object(convertRawProp(rawProps, \\"object\\", sourceProps.object, object))
       {}
 
 } // namespace react
@@ -116,6 +117,69 @@ CommandNativeComponentProps::CommandNativeComponentProps(
     const RawProps &rawProps): ViewProps(sourceProps, rawProps)
 
     
+      {}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsCpp can generate fixture COMMANDS_AND_PROPS 1`] = `
+Map {
+  "Props.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/COMMANDS_AND_PROPS/Props.h>
+#include <react/core/propsConversions.h>
+
+namespace facebook {
+namespace react {
+
+CommandNativeComponentProps::CommandNativeComponentProps(
+    const CommandNativeComponentProps &sourceProps,
+    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
+
+    accessibilityHint(convertRawProp(rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, accessibilityHint))
+      {}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsCpp can generate fixture DOUBLE_PROPS 1`] = `
+Map {
+  "Props.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/DOUBLE_PROPS/Props.h>
+#include <react/core/propsConversions.h>
+
+namespace facebook {
+namespace react {
+
+DoublePropNativeComponentProps::DoublePropNativeComponentProps(
+    const DoublePropNativeComponentProps &sourceProps,
+    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
+
+    blurRadius(convertRawProp(rawProps, \\"blurRadius\\", sourceProps.blurRadius, blurRadius)),
+    blurRadius2(convertRawProp(rawProps, \\"blurRadius2\\", sourceProps.blurRadius2, blurRadius2)),
+    blurRadius3(convertRawProp(rawProps, \\"blurRadius3\\", sourceProps.blurRadius3, blurRadius3)),
+    blurRadius4(convertRawProp(rawProps, \\"blurRadius4\\", sourceProps.blurRadius4, blurRadius4)),
+    blurRadius5(convertRawProp(rawProps, \\"blurRadius5\\", sourceProps.blurRadius5, blurRadius5)),
+    blurRadius6(convertRawProp(rawProps, \\"blurRadius6\\", sourceProps.blurRadius6, blurRadius6))
       {}
 
 } // namespace react
@@ -418,6 +482,36 @@ NoPropsNoEventsComponentProps::NoPropsNoEventsComponentProps(
     const RawProps &rawProps): ViewProps(sourceProps, rawProps)
 
     
+      {}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsCpp can generate fixture OBJECT_PROPS 1`] = `
+Map {
+  "Props.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/OBJECT_PROPS/Props.h>
+#include <react/components/image/conversions.h>
+#include <react/core/propsConversions.h>
+
+namespace facebook {
+namespace react {
+
+ObjectPropsProps::ObjectPropsProps(
+    const ObjectPropsProps &sourceProps,
+    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
+
+    objectProp(convertRawProp(rawProps, \\"objectProp\\", sourceProps.objectProp, objectProp))
       {}
 
 } // namespace react

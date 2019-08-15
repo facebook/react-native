@@ -10,7 +10,7 @@
 /** @file CoreClasses.h
  *
  * In CoreClasses.h wrappers for the core classes (jobject, jclass, and jstring) is defined
- * to provide access to corresponding JNI functions + some conveniance.
+ * to provide access to corresponding JNI functions + some convenience.
  */
 
 #include "References-forward.h"

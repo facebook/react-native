@@ -40,4 +40,7 @@ module.exports = {
   get flattenStyle() {
     return require('../StyleSheet/flattenStyle');
   },
+  get ReactFiberErrorDialog() {
+    return require('../Core/ReactFiberErrorDialog');
+  },
 };

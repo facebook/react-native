@@ -7,9 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTGenericDelegateSplitter.h>
 #import <React/RCTScrollableProtocol.h>
 #import <React/RCTViewComponentView.h>
-#import <React/RNGenericDelegateSplitter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -43,7 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
 /*
  * Returns a delegate splitter that can be used to subscribe for UIScrollView delegate.
  */
-@property (nonatomic, strong, readonly) RNGenericDelegateSplitter<id<UIScrollViewDelegate>> *scrollViewDelegateSplitter;
+@property (nonatomic, strong, readonly)
+    RCTGenericDelegateSplitter<id<UIScrollViewDelegate>> *scrollViewDelegateSplitter;
 
 @end
 

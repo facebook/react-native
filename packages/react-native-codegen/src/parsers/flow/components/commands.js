@@ -11,18 +11,22 @@
 'use strict';
 
 import type {CommandTypeShape} from '../../../CodegenSchema.js';
+import type {TypeMap} from '../utils.js';
+
+const {getValueFromTypes} = require('../utils.js');
 
 type EventTypeAST = Object;
 
-function buildCommandSchema(property) {
+function buildCommandSchema(property, types: TypeMap) {
   const name = property.key.name;
   const optional = property.optional;
-  const value = property.value;
+  const value = getValueFromTypes(property.value, types);
 
   const firstParam = value.params[0].typeAnnotation;
 
   if (
     !(
+      firstParam.id != null &&
       firstParam.id.type === 'QualifiedTypeIdentifier' &&
       firstParam.id.qualification.name === 'React' &&
       firstParam.id.id.name === 'Ref'
@@ -35,10 +39,11 @@ function buildCommandSchema(property) {
 
   const params = value.params.slice(1).map(param => {
     const paramName = param.name.name;
+    const paramValue = getValueFromTypes(param.typeAnnotation, types);
     const type =
-      param.typeAnnotation.type === 'GenericTypeAnnotation'
-        ? param.typeAnnotation.id.name
-        : param.typeAnnotation.type;
+      paramValue.type === 'GenericTypeAnnotation'
+        ? paramValue.id.name
+        : paramValue.type;
     let returnType;
 
     switch (type) {
@@ -50,6 +55,11 @@ function buildCommandSchema(property) {
       case 'Int32':
         returnType = {
           type: 'Int32TypeAnnotation',
+        };
+        break;
+      case 'Float':
+        returnType = {
+          type: 'FloatTypeAnnotation',
         };
         break;
       default:
@@ -77,10 +87,11 @@ function buildCommandSchema(property) {
 
 function getCommands(
   commandTypeAST: $ReadOnlyArray<EventTypeAST>,
+  types: TypeMap,
 ): $ReadOnlyArray<CommandTypeShape> {
   return commandTypeAST
     .filter(property => property.type === 'ObjectTypeProperty')
-    .map(buildCommandSchema)
+    .map(property => buildCommandSchema(property, types))
     .filter(Boolean);
 }
 
