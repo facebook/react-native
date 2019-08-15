@@ -22,7 +22,10 @@ rn_android_library(
 
 rn_xplat_cxx_library(
     name = "jni_hermes_samplingprofiler",
-    srcs = ["HermesSamplingProfiler.cpp"],
+    srcs = [
+        "HermesSamplingProfiler.cpp",
+        "OnLoad.cpp",
+    ],
     headers = ["HermesSamplingProfiler.h"],
     header_namespace = "",
     #allow_jni_merging = True,
