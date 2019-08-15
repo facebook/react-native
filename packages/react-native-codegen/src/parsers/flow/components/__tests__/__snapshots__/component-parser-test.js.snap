@@ -5515,6 +5515,42 @@ Object {
                 "type": "ObjectTypeAnnotation",
               },
             },
+            Object {
+              "name": "localArr",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "properties": Array [
+                    Object {
+                      "name": "otherStringProp",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "default": null,
+                        "type": "StringTypeAnnotation",
+                      },
+                    },
+                    Object {
+                      "name": "isEnabled",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "default": false,
+                        "type": "BooleanTypeAnnotation",
+                      },
+                    },
+                    Object {
+                      "name": "label",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "default": null,
+                        "type": "StringTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
           ],
         },
       },

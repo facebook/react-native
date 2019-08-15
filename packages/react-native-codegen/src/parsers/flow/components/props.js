@@ -50,9 +50,12 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
     if (objectType.id.name === '$ReadOnly') {
       return {
         type: 'ObjectTypeAnnotation',
-        properties: objectType.typeParameters.params[0].properties.map(prop =>
-          buildPropSchema(prop, types),
-        ),
+        properties: flattenProperties(
+          objectType.typeParameters.params[0].properties,
+          types,
+        )
+          .map(prop => buildPropSchema(prop, types))
+          .filter(Boolean),
       };
     }
   }

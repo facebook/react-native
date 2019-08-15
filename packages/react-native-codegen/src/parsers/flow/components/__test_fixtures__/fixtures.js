@@ -490,6 +490,8 @@ export type ModuleProps = $ReadOnly<{|
   localType: $ReadOnly<{|
     ...PropsInFile
   |}>
+
+  localArr: $ReadOnlyArray<PropsInFile>
 |}>;
 
 export default (codegenNativeComponent<ModuleProps>(
