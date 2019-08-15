@@ -618,6 +618,146 @@ class NoPropsNoEventsComponentProps final : public ViewProps {
 }
 `;
 
+exports[`GeneratePropsH can generate fixture OBJECT_PROPS 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/image/conversions.h>
+#include <react/components/view/ViewProps.h>
+#include <react/core/propsConversions.h>
+
+namespace facebook {
+namespace react {
+
+enum class ObjectPropsStringEnumProp { Option1 };
+
+static inline void fromRawValue(const RawValue &value, ObjectPropsStringEnumProp &result) {
+  auto string = (std::string)value;
+  if (string == \\"option1\\") { result = ObjectPropsStringEnumProp::Option1; return; }
+  abort();
+}
+
+static inline std::string toString(const ObjectPropsStringEnumProp &value) {
+  switch (value) {
+    case ObjectPropsStringEnumProp::Option1: return \\"option1\\";
+  }
+}
+struct ObjectPropsObjectPropObjectArrayPropStruct {
+  std::vector<std::string> array;
+};
+
+static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropObjectArrayPropStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto array = map.find(\\"array\\");
+  if (array != map.end()) {
+    fromRawValue(array->second, result.array);
+  }
+}
+
+
+static inline std::string toString(const ObjectPropsObjectPropObjectArrayPropStruct &value) {
+  return \\"[Object ObjectPropsObjectPropObjectArrayPropStruct]\\";
+}
+
+struct ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct {
+  ImageSource image;
+  SharedColor color;
+  Point point;
+};
+
+static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto image = map.find(\\"image\\");
+  if (image != map.end()) {
+    fromRawValue(image->second, result.image);
+  }
+  auto color = map.find(\\"color\\");
+  if (color != map.end()) {
+    fromRawValue(color->second, result.color);
+  }
+  auto point = map.find(\\"point\\");
+  if (point != map.end()) {
+    fromRawValue(point->second, result.point);
+  }
+}
+
+
+static inline std::string toString(const ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct &value) {
+  return \\"[Object ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct]\\";
+}
+
+struct ObjectPropsObjectPropStruct {
+  std::string stringProp;
+  bool booleanProp;
+  Float floatProp;
+  int intProp;
+  ObjectPropsStringEnumProp stringEnumProp;
+  ObjectPropsObjectArrayPropStruct objectArrayProp;
+  ObjectPropsObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp;
+};
+
+static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto stringProp = map.find(\\"stringProp\\");
+  if (stringProp != map.end()) {
+    fromRawValue(stringProp->second, result.stringProp);
+  }
+  auto booleanProp = map.find(\\"booleanProp\\");
+  if (booleanProp != map.end()) {
+    fromRawValue(booleanProp->second, result.booleanProp);
+  }
+  auto floatProp = map.find(\\"floatProp\\");
+  if (floatProp != map.end()) {
+    fromRawValue(floatProp->second, result.floatProp);
+  }
+  auto intProp = map.find(\\"intProp\\");
+  if (intProp != map.end()) {
+    fromRawValue(intProp->second, result.intProp);
+  }
+  auto stringEnumProp = map.find(\\"stringEnumProp\\");
+  if (stringEnumProp != map.end()) {
+    fromRawValue(stringEnumProp->second, result.stringEnumProp);
+  }
+  auto objectArrayProp = map.find(\\"objectArrayProp\\");
+  if (objectArrayProp != map.end()) {
+    fromRawValue(objectArrayProp->second, result.objectArrayProp);
+  }
+  auto objectPrimitiveRequiredProp = map.find(\\"objectPrimitiveRequiredProp\\");
+  if (objectPrimitiveRequiredProp != map.end()) {
+    fromRawValue(objectPrimitiveRequiredProp->second, result.objectPrimitiveRequiredProp);
+  }
+}
+
+
+static inline std::string toString(const ObjectPropsObjectPropStruct &value) {
+  return \\"[Object ObjectPropsObjectPropStruct]\\";
+}
+class ObjectPropsProps final : public ViewProps {
+ public:
+  ObjectPropsProps() = default;
+  ObjectPropsProps(const ObjectPropsProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  const ObjectPropsObjectPropStruct objectProp{};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GeneratePropsH can generate fixture POINT_PROP 1`] = `
 Map {
   "Props.h" => "

@@ -9,7 +9,7 @@
  */
 
 'use strict';
-import type {ComponentShape} from '../../CodegenSchema';
+import type {PropTypeShape} from '../../CodegenSchema';
 
 function upperCaseFirst(inString: string): string {
   return inString[0].toUpperCase() + inString.slice(1);
@@ -47,7 +47,7 @@ function getCppTypeForAnnotation(
   }
 }
 
-function getImports(component: ComponentShape): Set<string> {
+function getImports(properties: $ReadOnlyArray<PropTypeShape>): Set<string> {
   const imports: Set<string> = new Set();
 
   function addImportsForNativeName(name) {
@@ -65,7 +65,7 @@ function getImports(component: ComponentShape): Set<string> {
     }
   }
 
-  component.props.forEach(prop => {
+  properties.forEach(prop => {
     const typeAnnotation = prop.typeAnnotation;
 
     if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
@@ -77,6 +77,11 @@ function getImports(component: ComponentShape): Set<string> {
       typeAnnotation.elementType.type === 'NativePrimitiveTypeAnnotation'
     ) {
       addImportsForNativeName(typeAnnotation.elementType.name);
+    }
+
+    if (typeAnnotation.type === 'ObjectTypeAnnotation') {
+      const objectImports = getImports(typeAnnotation.properties);
+      objectImports.forEach(imports.add, imports);
     }
   });
 

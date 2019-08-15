@@ -489,6 +489,36 @@ NoPropsNoEventsComponentProps::NoPropsNoEventsComponentProps(
 }
 `;
 
+exports[`GeneratePropsCpp can generate fixture OBJECT_PROPS 1`] = `
+Map {
+  "Props.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/OBJECT_PROPS/Props.h>
+#include <react/components/image/conversions.h>
+#include <react/core/propsConversions.h>
+
+namespace facebook {
+namespace react {
+
+ObjectPropsProps::ObjectPropsProps(
+    const ObjectPropsProps &sourceProps,
+    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
+
+    objectProp(convertRawProp(rawProps, \\"objectProp\\", sourceProps.objectProp, objectProp))
+      {}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GeneratePropsCpp can generate fixture POINT_PROP 1`] = `
 Map {
   "Props.cpp" => "

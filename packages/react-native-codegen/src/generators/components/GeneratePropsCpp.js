@@ -107,7 +107,7 @@ module.exports = {
             const propsString = generatePropsString(component);
             const extendString = getClassExtendString(component);
 
-            const imports = getImports(component);
+            const imports = getImports(component.props);
             imports.forEach(allImports.add, allImports);
 
             const replacedTemplate = componentTemplate

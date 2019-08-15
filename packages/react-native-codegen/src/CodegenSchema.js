@@ -112,7 +112,7 @@ type PropTypeTypeAnnotation =
     |}>
   | $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
-      properties: ?$ReadOnlyArray<PropTypeShape>,
+      properties: $ReadOnlyArray<PropTypeShape>,
     |}>
   | $ReadOnly<{|
       type: 'ArrayTypeAnnotation',

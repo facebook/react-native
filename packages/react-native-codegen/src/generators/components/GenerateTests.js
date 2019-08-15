@@ -157,7 +157,7 @@ module.exports = {
             const component = components[componentName];
             const name = `${componentName}Props`;
 
-            const imports = getImports(component);
+            const imports = getImports(component.props);
             imports.forEach(allImports.add, allImports);
 
             return generateTestsString(name, component);

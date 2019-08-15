@@ -642,6 +642,7 @@ Map {
 
 #include <gtest/gtest.h>
 #include <react/components/OBJECT_PROPS/Props.h>
+#include <react/components/image/conversions.h>
 #include <react/core/RawProps.h>
 #include <react/core/RawPropsParser.h>
 #include <react/core/propsConversions.h>
