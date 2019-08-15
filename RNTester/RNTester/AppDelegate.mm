@@ -62,7 +62,8 @@
                                                            config:nil
                                                       imageLoader:RCTTurboModuleEnabled() ?
                                                                   [_bridge moduleForName:@"RCTImageLoader"
-                                                                  lazilyLoadIfNecessary:YES] : nil];
+                                                                  lazilyLoadIfNecessary:YES] : nil
+                                                  runtimeExecutor:nullptr];
 
   _bridge.surfacePresenter = _surfacePresenter;
 

@@ -34,7 +34,6 @@
 #import <react/uimanager/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
-#import <react/utils/RuntimeExecutor.h>
 
 #import "MainRunLoopEventBeat.h"
 #import "RCTConversions.h"
@@ -63,14 +62,17 @@ using namespace facebook::react;
   better::shared_mutex _observerListMutex;
   NSMutableArray<id<RCTSurfacePresenterObserver>> *_observers;
   RCTImageLoader *_imageLoader;
+  RuntimeExecutor _runtimeExecutor;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                         config:(std::shared_ptr<const ReactNativeConfig>)config
                    imageLoader:(RCTImageLoader *)imageLoader
+               runtimeExecutor:(RuntimeExecutor)runtimeExecutor
 {
   if (self = [super init]) {
     _imageLoader = imageLoader;
+    _runtimeExecutor = runtimeExecutor;
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;
     [_batchedBridge setSurfacePresenter:self];
@@ -199,7 +201,7 @@ using namespace facebook::react;
         createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
   };
 
-  auto runtimeExecutor = [self _runtimeExecutor];
+  auto runtimeExecutor = [self getRuntimeExecutor];
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = self.contextContainer;
@@ -222,8 +224,12 @@ using namespace facebook::react;
 
 @synthesize contextContainer = _contextContainer;
 
-- (RuntimeExecutor)_runtimeExecutor
+- (RuntimeExecutor)getRuntimeExecutor
 {
+  if (_runtimeExecutor) {
+    return _runtimeExecutor;
+  }
+
   auto messageQueueThread = _batchedBridge.jsMessageThread;
   if (messageQueueThread) {
     // Make sure initializeBridge completed
