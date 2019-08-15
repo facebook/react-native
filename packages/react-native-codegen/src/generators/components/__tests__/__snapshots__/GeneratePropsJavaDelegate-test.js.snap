@@ -130,7 +130,7 @@ public class CommandNativeComponentManagerDelegate<T extends View, U extends Bas
   }
   @Override
   public void setProperty(T view, String propName, @Nullable Object value) {
-    // No props
+    super.setProperty(view, propName, value);
   }
 
   public void receiveCommand(CommandNativeComponentManagerInterface<T> viewManager, T view, String commandName, ReadableArray args) {
@@ -335,7 +335,7 @@ public class InterfaceOnlyComponentManagerDelegate<T extends View, U extends Bas
   }
   @Override
   public void setProperty(T view, String propName, @Nullable Object value) {
-    // No props
+    super.setProperty(view, propName, value);
   }
 }
 ",
@@ -541,7 +541,7 @@ public class NoPropsNoEventsComponentManagerDelegate<T extends View, U extends B
   }
   @Override
   public void setProperty(T view, String propName, @Nullable Object value) {
-    // No props
+    super.setProperty(view, propName, value);
   }
 }
 ",

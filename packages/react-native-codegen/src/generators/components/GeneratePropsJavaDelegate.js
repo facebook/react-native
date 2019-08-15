@@ -113,7 +113,7 @@ function generatePropCasesString(
   componentName: string,
 ) {
   if (component.props.length === 0) {
-    return '// No props';
+    return 'super.setProperty(view, propName, value);';
   }
 
   const cases = component.props
