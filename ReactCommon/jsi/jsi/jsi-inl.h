@@ -1,4 +1,8 @@
+<<<<<<< HEAD:ReactCommon/jsi/jsi/jsi-inl.h
 /*
+=======
+/**
+>>>>>>> v0.60.0:ReactCommon/jsi/jsi/jsi-inl.h
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE

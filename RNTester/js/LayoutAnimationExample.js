@@ -11,8 +11,13 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {LayoutAnimation, StyleSheet, Text, View, TouchableOpacity} = ReactNative;
+const {
+  LayoutAnimation,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} = require('react-native');
 
 class AddRemoveExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -20,7 +25,9 @@ class AddRemoveExample extends React.Component<{}, $FlowFixMeState> {
   };
 
   UNSAFE_componentWillUpdate() {
-    LayoutAnimation.easeInEaseOut();
+    LayoutAnimation.easeInEaseOut(args =>
+      console.log('AddRemoveExample completed', args),
+    );
   }
 
   _onPressAddView = () => {
@@ -73,7 +80,9 @@ class CrossFadeExample extends React.Component<{}, $FlowFixMeState> {
   };
 
   _onPressToggle = () => {
-    LayoutAnimation.easeInEaseOut();
+    LayoutAnimation.easeInEaseOut(args =>
+      console.log('CrossFadeExample completed', args),
+    );
     this.setState(state => ({toggled: !state.toggled}));
   };
 
@@ -116,12 +125,15 @@ class LayoutUpdateExample extends React.Component<{}, $FlowFixMeState> {
     this._clearTimeout();
     this.setState({width: 150});
 
-    LayoutAnimation.configureNext({
-      duration: 1000,
-      update: {
-        type: LayoutAnimation.Types.linear,
+    LayoutAnimation.configureNext(
+      {
+        duration: 1000,
+        update: {
+          type: LayoutAnimation.Types.linear,
+        },
       },
-    });
+      args => console.log('LayoutUpdateExample completed', args),
+    );
 
     this.timeout = setTimeout(() => this.setState({width: 100}), 500);
   };

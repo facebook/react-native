@@ -10,9 +10,14 @@
 
 'use strict';
 
+<<<<<<< HEAD
 const NativeEventEmitter = require('NativeEventEmitter');
 const Platform = require('Platform'); // TODO(macOS ISS#2323203)
 const RCTPushNotificationManager = require('NativeModules')
+=======
+const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
+const RCTPushNotificationManager = require('../BatchedBridge/NativeModules')
+>>>>>>> v0.60.0
   .PushNotificationManager;
 const invariant = require('invariant');
 
@@ -38,7 +43,7 @@ export type FetchResult = {
 /**
  * An event emitted by PushNotificationIOS.
  */
-export type PushNotificationEventName = $Enum<{
+export type PushNotificationEventName = $Keys<{
   /**
    * Fired when a remote notification is received. The handler will be invoked
    * with an instance of `PushNotificationIOS`.

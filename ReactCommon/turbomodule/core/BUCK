@@ -3,7 +3,9 @@ load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_tar
 
 rn_xplat_cxx_library(
     name = "core",
-    srcs = glob(["*.cpp"]),
+    srcs = glob(
+        ["*.cpp"],
+    ),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
@@ -39,10 +41,10 @@ rn_xplat_cxx_library(
     fbobjc_preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags(),
     force_static = True,
     ios_deps = [
-        "xplat//FBBaseLite:FBBaseLite",
-        "xplat//js/react-native-github:RCTCxxBridge",
-        "xplat//js/react-native-github:RCTCxxModule",
-        "xplat//js/react-native-github:ReactInternal",
+        "fbsource//xplat/FBBaseLite:FBBaseLite",
+        "fbsource//xplat/js/react-native-github:RCTCxxBridge",
+        "fbsource//xplat/js/react-native-github:RCTCxxModule",
+        "fbsource//xplat/js/react-native-github:ReactInternal",
     ],
     ios_exported_headers = subdir_glob(
         [
@@ -68,16 +70,17 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "xplat//fbsystrace:fbsystrace",
-        "xplat//folly:headers_only",
-        "xplat//folly:memory",
-        "xplat//folly:molly",
-        "xplat//jsi:JSIDynamic",
-        "xplat//third-party/glog:glog",
+        "fbsource//xplat/fbsystrace:fbsystrace",
+        "fbsource//xplat/folly:headers_only",
+        "fbsource//xplat/folly:memory",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/jsi:JSIDynamic",
+        "fbsource//xplat/third-party/glog:glog",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),
+        react_native_xplat_target("jscallinvoker:jscallinvoker"),
     ],
     exported_deps = [
-        "xplat//jsi:jsi",
+        "fbsource//xplat/jsi:jsi",
     ],
 )

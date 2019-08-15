@@ -11,6 +11,7 @@
 #import <React/UIView+React.h>
 
 #import "RCTBackedTextInputDelegateAdapter.h"
+#import "RCTTextAttributes.h"
 
 @implementation RCTUITextView
 {
@@ -20,6 +21,8 @@
 #endif // TODO(macOS ISS#2323203)
   RCTBackedTextViewDelegateAdapter *_textInputDelegateAdapter;
 }
+
+@synthesize reactTextAttributes = _reactTextAttributes;
 
 static UIFont *defaultPlaceholderFont()
 {
@@ -62,6 +65,15 @@ static UIColor *defaultPlaceholderColor()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark - Accessibility
+
+- (void)setIsAccessibilityElement:(BOOL)isAccessibilityElement
+{
+  // UITextView is accessible by default (some nested views are) and disabling that is not supported.
+  // On iOS accessible elements cannot be nested, therefore enabling accessibility for some container view
+  // (even in a case where this view is a part of public API of TextInput on iOS) shadows some features implemented inside the component.
+}
+
 - (NSString *)accessibilityLabel
 {
   NSMutableString *accessibilityLabel = [NSMutableString new];
@@ -86,11 +98,15 @@ static UIColor *defaultPlaceholderColor()
 - (void)setPlaceholder:(NSString *)placeholder
 {
   _placeholder = placeholder;
+<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   _placeholderView.text = _placeholder;
 #else // [TODO(macOS ISS#2323203)
   [self setNeedsDisplay:YES];
 #endif // ]TODO(macOS ISS#2323203)
+=======
+  _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self placeholderEffectiveTextAttributes]];
+>>>>>>> v0.60.0
 }
 
 - (void)setPlaceholderColor:(UIColor *)placeholderColor
@@ -157,7 +173,25 @@ static UIColor *defaultPlaceholderColor()
   return success;
 }
 
+<<<<<<< HEAD
 #endif // ]TODO(macOS ISS#2323203)
+=======
+- (void)setReactTextAttributes:(RCTTextAttributes *)reactTextAttributes
+{
+  if ([reactTextAttributes isEqual:_reactTextAttributes]) {
+    return;
+  }
+  self.typingAttributes = reactTextAttributes.effectiveTextAttributes;
+  _reactTextAttributes = reactTextAttributes;
+  // Update placeholder text attributes
+  [self setPlaceholder:_placeholder];
+}
+
+- (RCTTextAttributes *)reactTextAttributes
+{
+  return _reactTextAttributes;
+}
+>>>>>>> v0.60.0
 
 - (void)textDidChange
 {
@@ -325,8 +359,13 @@ static UIColor *defaultPlaceholderColor()
   UIEdgeInsets textContainerInset = self.textContainerInsets;
 #endif // ]TODO(macOS ISS#2323203)
   NSString *placeholder = self.placeholder ?: @"";
+<<<<<<< HEAD
   CGSize placeholderSize = [placeholder sizeWithAttributes:@{NSFontAttributeName: self.font ?: defaultPlaceholderFont()}];
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+=======
+  CGSize maxPlaceholderSize = CGSizeMake(UIEdgeInsetsInsetRect(self.bounds, textContainerInset).size.width, CGFLOAT_MAX);
+  CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize options:NSStringDrawingUsesLineFragmentOrigin attributes:[self placeholderEffectiveTextAttributes] context:nil].size;
+>>>>>>> v0.60.0
   placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
 #else // [TODO(macOS ISS#2323203)
   CGFloat scale = self.window.backingScaleFactor;
@@ -342,10 +381,14 @@ static UIColor *defaultPlaceholderColor()
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   CGSize contentSize = super.contentSize;
+<<<<<<< HEAD
 #else // [TODO(macOS ISS#2323203)
   CGSize contentSize = super.intrinsicContentSize;
 #endif // ]TODO(macOS ISS#2323203)
   CGSize placeholderSize = self.placeholderSize;
+=======
+  CGSize placeholderSize = _placeholderView.isHidden ? CGSizeZero : self.placeholderSize;
+>>>>>>> v0.60.0
   // When a text input is empty, it actually displays a placehoder.
   // So, we have to consider `placeholderSize` as a minimum `contentSize`.
   // Returning size DOES contain `textContainerInset` (aka `padding`).
@@ -375,12 +418,13 @@ static UIColor *defaultPlaceholderColor()
 - (CGSize)sizeThatFits:(CGSize)size
 {
   // Returned fitting size depends on text size and placeholder size.
-  CGSize textSize = [self fixedSizeThatFits:size];
+  CGSize textSize = [super sizeThatFits:size];
   CGSize placeholderSize = self.placeholderSize;
   // Returning size DOES contain `textContainerInset` (aka `padding`).
   return CGSizeMake(MAX(textSize.width, placeholderSize.width), MAX(textSize.height, placeholderSize.height));
 }
 
+<<<<<<< HEAD
 - (CGSize)fixedSizeThatFits:(CGSize)size
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
@@ -412,6 +456,8 @@ static UIColor *defaultPlaceholderColor()
 #endif // ]TODO(macOS ISS#2323203)
 }
 
+=======
+>>>>>>> v0.60.0
 #pragma mark - Context Menu
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
@@ -445,6 +491,21 @@ static UIColor *defaultPlaceholderColor()
   }
 }
 #endif // ]TODO(OSS Candidate ISS#2710739)
+
+- (NSDictionary<NSAttributedStringKey, id> *)placeholderEffectiveTextAttributes
+{
+  NSMutableDictionary<NSAttributedStringKey, id> *effectiveTextAttributes = [NSMutableDictionary dictionaryWithDictionary:@{
+                                                                                                                            NSFontAttributeName: _reactTextAttributes.effectiveFont ?: defaultPlaceholderFont(),
+                                                                                                                            NSForegroundColorAttributeName: self.placeholderColor ?: defaultPlaceholderColor(),
+                                                                                                                            NSKernAttributeName:isnan(_reactTextAttributes.letterSpacing) ? @0 : @(_reactTextAttributes.letterSpacing)
+                                                                                                                            }];
+  NSParagraphStyle *paragraphStyle = [_reactTextAttributes effectiveParagraphStyle];
+  if (paragraphStyle) {
+    effectiveTextAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+  }
+  
+  return [effectiveTextAttributes copy];
+}
 
 #pragma mark - Utility Methods
 

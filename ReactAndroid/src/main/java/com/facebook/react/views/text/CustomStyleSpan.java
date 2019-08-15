@@ -8,13 +8,14 @@
 
 package com.facebook.react.views.text;
 
-import javax.annotation.Nullable;
-
 import android.content.res.AssetManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
 
@@ -54,7 +55,7 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       int fontStyle,
       int fontWeight,
       @Nullable String fontFamily,
-      AssetManager assetManager) {
+      @NonNull AssetManager assetManager) {
     mStyle = fontStyle;
     mWeight = fontWeight;
     mFontFamily = fontFamily;
@@ -68,8 +69,13 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   }
 
   @Override
+<<<<<<< HEAD
   public void updateMeasureState(TextPaint paint) {
     apply(paint, mStyle, mWeight, mFontFamily,mFontPath, mAssetManager);
+=======
+  public void updateMeasureState(@NonNull TextPaint paint) {
+    apply(paint, mStyle, mWeight, mFontFamily, mAssetManager);
+>>>>>>> v0.60.0
   }
 
   /**
@@ -126,10 +132,15 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       want |= Typeface.ITALIC;
     }
 
+<<<<<<< HEAD
     if (path != null && family != null) {
       typeface = ReactFontManager.getInstance().getTypeface(path, family, want);
     } else if (family != null) {
       typeface = ReactFontManager.getInstance().getTypeface(family, want, assetManager);
+=======
+    if (family != null) {
+      typeface = ReactFontManager.getInstance().getTypeface(family, want, weight, assetManager);
+>>>>>>> v0.60.0
     } else if (typeface != null) {
       // TODO(t9055065): Fix custom fonts getting applied to text children with different style
       typeface = Typeface.create(typeface, want);
@@ -142,5 +153,4 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     }
     paint.setSubpixelText(true);
   }
-
 }

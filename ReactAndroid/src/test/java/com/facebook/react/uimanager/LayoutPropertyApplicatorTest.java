@@ -42,7 +42,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @PrepareForTest({PixelUtil.class})
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class LayoutPropertyApplicatorTest {
 
   @Rule

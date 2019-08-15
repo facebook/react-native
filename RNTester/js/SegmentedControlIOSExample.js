@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {SegmentedControlIOS, Text, View, StyleSheet} = ReactNative;
+const {SegmentedControlIOS, Text, View, StyleSheet} = require('react-native');
 
 class BasicSegmentedControlExample extends React.Component<{}> {
   render() {

@@ -13,6 +13,7 @@
 
 'use strict';
 
+<<<<<<< HEAD
 const React = require('React');
 const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
@@ -25,6 +26,19 @@ import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {TextStyleProp} from 'StyleSheet';
 import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
+=======
+const React = require('react');
+const ReactNative = require('../../Renderer/shims/ReactNative');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const View = require('../View/View');
+const processColor = require('../../StyleSheet/processColor');
+const RCTPickerNativeComponent = require('./RCTPickerNativeComponent');
+
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
+>>>>>>> v0.60.0
 
 type PickerIOSChangeEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -92,16 +106,18 @@ class PickerIOS extends React.Component<Props, State> {
   static getDerivedStateFromProps(props: Props): State {
     let selectedIndex = 0;
     const items = [];
-    React.Children.toArray(props.children).forEach(function(child, index) {
-      if (child.props.value === props.selectedValue) {
-        selectedIndex = index;
-      }
-      items.push({
-        value: child.props.value,
-        label: child.props.label,
-        textColor: processColor(child.props.color),
+    React.Children.toArray(props.children)
+      .filter(child => child !== null)
+      .forEach(function(child, index) {
+        if (child.props.value === props.selectedValue) {
+          selectedIndex = index;
+        }
+        items.push({
+          value: child.props.value,
+          label: child.props.label,
+          textColor: processColor(child.props.color),
+        });
       });
-    });
     return {selectedIndex, items};
   }
 

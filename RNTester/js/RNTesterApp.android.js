@@ -10,16 +10,20 @@
 
 'use strict';
 
-const AppRegistry = require('AppRegistry');
-const AsyncStorage = require('AsyncStorage');
-const BackHandler = require('BackHandler');
-const Dimensions = require('Dimensions');
-const DrawerLayoutAndroid = require('DrawerLayoutAndroid');
-const Linking = require('Linking');
 const React = require('react');
-const StatusBar = require('StatusBar');
-const StyleSheet = require('StyleSheet');
-const ToolbarAndroid = require('ToolbarAndroid');
+const {
+  AppRegistry,
+  AsyncStorage,
+  BackHandler,
+  Dimensions,
+  DrawerLayoutAndroid,
+  Linking,
+  StatusBar,
+  StyleSheet,
+  ToolbarAndroid,
+  UIManager,
+  View,
+} = require('react-native');
 const RNTesterActions = require('./RNTesterActions');
 const RNTesterExampleContainer = require('./RNTesterExampleContainer');
 const RNTesterExampleList = require('./RNTesterExampleList');
@@ -27,11 +31,9 @@ const RNTesterExampleList = require('./RNTesterExampleList');
  * making Flow check .android.js files. */
 const RNTesterList = require('./RNTesterList');
 const RNTesterNavigationReducer = require('./RNTesterNavigationReducer');
-const UIManager = require('UIManager');
 const URIActionMap = require('./URIActionMap');
-const View = require('View');
 
-const nativeImageSource = require('nativeImageSource');
+const nativeImageSource = require('../../Libraries/Image/nativeImageSource');
 
 import type {RNTesterNavigationState} from './RNTesterNavigationReducer';
 

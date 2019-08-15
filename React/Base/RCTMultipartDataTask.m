@@ -11,6 +11,7 @@
 
 @end
 
+<<<<<<< HEAD
 // We need this ugly runtime check because [streamTask captureStreams] below fails on iOS version
 // earlier than 9.0. Unfortunately none of the proper ways of checking worked:
 //
@@ -29,6 +30,8 @@ static BOOL isStreamTaskSupported() {
 #endif // ]TODO(macOS ISS#2323203)
 }
 
+=======
+>>>>>>> v0.60.0
 @implementation RCTMultipartDataTask {
   NSURL *_url;
   RCTMultipartDataTaskCallback _partHandler;
@@ -56,9 +59,7 @@ static BOOL isStreamTaskSupported() {
   NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]
                                                         delegate:self delegateQueue:nil];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:_url];
-  if (isStreamTaskSupported()) {
-    [request addValue:@"multipart/mixed" forHTTPHeaderField:@"Accept"];
-  }
+  [request addValue:@"multipart/mixed" forHTTPHeaderField:@"Accept"];
   NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request];
   [dataTask resume];
   [session finishTasksAndInvalidate];

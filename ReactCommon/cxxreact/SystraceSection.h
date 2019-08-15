@@ -27,6 +27,7 @@ void SystraceEndSection(const char* name, const char* args, std::chrono::nanosec
 struct SystraceSection {
 public:
   template<typename... ConvertsToStringPiece>
+<<<<<<< HEAD
   explicit SystraceSection(const char* name, ConvertsToStringPiece&&... args)
 #ifdef WITH_FBSYSTRACE
     : m_section(TRACE_TAG_REACT_CXX_BRIDGE, name, std::forward<ConvertsToStringPiece>(args)...)
@@ -42,6 +43,12 @@ public:
   {
     SystraceEndSection(m_name.c_str(), m_args.c_str(), std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-m_start));
   }
+=======
+  explicit
+  ConcreteSystraceSection(__unused const char* name, __unused ConvertsToStringPiece&&... args)
+    : m_section(TRACE_TAG_REACT_CXX_BRIDGE, name, args...)
+  {}
+>>>>>>> v0.60.0
 
 private:
   std::string concatArgs() noexcept
@@ -66,6 +73,7 @@ private:
   std::chrono::time_point<std::chrono::steady_clock> m_start;
 #endif
 };
+<<<<<<< HEAD
 
 // Some placeholder definitions to satisfy linker.. as we are enabling some unintented code paths when enabling these macros.
 #if defined(WITH_OFFICE_TRACING)
@@ -73,6 +81,16 @@ private:
 struct FbSystraceAsyncFlow{
     static void begin(uint64_t /*tag*/, const char* /*name*/, int /*cookie*/) {}
     static void end(uint64_t /*tag*/, const char* /*name*/, int /*cookie*/) {}
+=======
+using SystraceSection = ConcreteSystraceSection;
+#else
+struct DummySystraceSection {
+public:
+  template<typename... ConvertsToStringPiece>
+  explicit
+  DummySystraceSection(__unused const char* name, __unused ConvertsToStringPiece&&... args)
+    {}
+>>>>>>> v0.60.0
 };
 #endif
 

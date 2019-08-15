@@ -13,9 +13,9 @@
 
 'use strict';
 
-const _shouldPolyfillES6Collection = require('_shouldPolyfillES6Collection');
-const guid = require('guid');
-const toIterator = require('toIterator');
+const _shouldPolyfillES6Collection = require('./_shouldPolyfillES6Collection');
+const guid = require('./guid');
+const toIterator = require('./toIterator');
 
 module.exports = (function(global, undefined) {
   // Since our implementation is spec-compliant for the most part we can safely
@@ -25,9 +25,6 @@ module.exports = (function(global, undefined) {
   if (!_shouldPolyfillES6Collection('Map')) {
     return global.Map;
   }
-
-  // In case this module has not already been evaluated, import it now.
-  require('./_wrapObjectFreezeAndFriends');
 
   const hasOwn = Object.prototype.hasOwnProperty;
 

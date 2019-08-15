@@ -10,19 +10,20 @@
 
 'use strict';
 
-const React = require('React');
-const Platform = require('Platform');
+const React = require('react');
+const Platform = require('../../Utilities/Platform');
 
-const processColor = require('processColor');
+const processColor = require('../../StyleSheet/processColor');
 
-const StatusBarManager = require('NativeModules').StatusBarManager;
+const StatusBarManager = require('../../BatchedBridge/NativeModules')
+  .StatusBarManager;
 
 import type {ColorValue} from 'StyleSheetTypes'; // TODO(macOS ISS#2323203)
 
 /**
  * Status bar style
  */
-export type StatusBarStyle = $Enum<{
+export type StatusBarStyle = $Keys<{
   /**
    * Default status bar style (dark for iOS, light for Android)
    */
@@ -40,7 +41,7 @@ export type StatusBarStyle = $Enum<{
 /**
  * Status bar animation
  */
-export type StatusBarAnimation = $Enum<{
+export type StatusBarAnimation = $Keys<{
   /**
    * No animation
    */

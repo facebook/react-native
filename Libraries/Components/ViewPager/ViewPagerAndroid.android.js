@@ -10,16 +10,16 @@
 
 'use strict';
 
-const React = require('React');
-const ReactNative = require('ReactNative');
-const UIManager = require('UIManager');
+const React = require('react');
+const ReactNative = require('../../Renderer/shims/ReactNative');
+const UIManager = require('../../ReactNative/UIManager');
 
-const dismissKeyboard = require('dismissKeyboard');
+const dismissKeyboard = require('../../Utilities/dismissKeyboard');
 
-const NativeAndroidViewPager = require('AndroidViewPagerNativeComponent');
+const NativeAndroidViewPager = require('./AndroidViewPagerNativeComponent');
 
-import type {SyntheticEvent} from 'CoreEventTypes';
-import type {ViewStyleProp} from 'StyleSheet';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 
 const VIEWPAGER_REF = 'viewPager';
 
@@ -44,7 +44,7 @@ type PageSelectedEvent = SyntheticEvent<
   |}>,
 >;
 
-export type ViewPagerScrollState = $Enum<{
+export type ViewPagerScrollState = $Keys<{
   idle: string,
   dragging: string,
   settling: string,

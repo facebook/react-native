@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+<<<<<<< HEAD
 		183C72CD2147284A002F37BC /* RCTTextUIKit.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 18597AC8214081EB008515EB /* RCTTextUIKit.h */; };
 		183C72CE21472859002F37BC /* RCTTextUIKit.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 18597AC8214081EB008515EB /* RCTTextUIKit.h */; };
 		183C72CF21472866002F37BC /* RCTTextUIKit.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 18597AC8214081EB008515EB /* RCTTextUIKit.h */; };
@@ -57,6 +58,9 @@
 		18F3BA092142F31900AD247D /* RCTUITextField.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B105200FEBA9008D9D16 /* RCTUITextField.h */; };
 		18F3BA0A2142F31900AD247D /* RCTVirtualTextShadowView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B12C200FEBAA008D9D16 /* RCTVirtualTextShadowView.h */; };
 		18F3BA0B2142F31900AD247D /* RCTVirtualTextViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B12D200FEBAA008D9D16 /* RCTVirtualTextViewManager.h */; };
+=======
+		19461666225DC3B300E4E008 /* RCTTextRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 19461664225DC3B300E4E008 /* RCTTextRenderer.m */; };
+>>>>>>> v0.60.0
 		5956B130200FEBAA008D9D16 /* RCTRawTextShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5956B0FD200FEBA9008D9D16 /* RCTRawTextShadowView.m */; };
 		5956B131200FEBAA008D9D16 /* RCTRawTextViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5956B0FE200FEBA9008D9D16 /* RCTRawTextViewManager.m */; };
 		5956B132200FEBAA008D9D16 /* RCTSinglelineTextInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5956B101200FEBA9008D9D16 /* RCTSinglelineTextInputView.m */; };
@@ -295,7 +299,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+<<<<<<< HEAD
 		18597AC8214081EB008515EB /* RCTTextUIKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTTextUIKit.h; sourceTree = "<group>"; };
+=======
+		19461664225DC3B300E4E008 /* RCTTextRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTTextRenderer.m; sourceTree = "<group>"; };
+		19461665225DC3B300E4E008 /* RCTTextRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTTextRenderer.h; sourceTree = "<group>"; };
+>>>>>>> v0.60.0
 		2D2A287B1D9B048500D4039D /* libRCTText-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTText-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		58B5119B1A9E6C1200147675 /* libRCTText.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTText.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		58B5119B1A9E6C1200147676 /* libRCTText.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTText.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -472,6 +481,8 @@
 			children = (
 				5956B129200FEBAA008D9D16 /* NSTextStorage+FontScaling.h */,
 				5956B125200FEBAA008D9D16 /* NSTextStorage+FontScaling.m */,
+				19461665225DC3B300E4E008 /* RCTTextRenderer.h */,
+				19461664225DC3B300E4E008 /* RCTTextRenderer.m */,
 				5956B126200FEBAA008D9D16 /* RCTTextShadowView.h */,
 				5956B122200FEBAA008D9D16 /* RCTTextShadowView.m */,
 				5956B123200FEBAA008D9D16 /* RCTTextView.h */,
@@ -588,6 +599,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 58B511921A9E6C1200147676;
@@ -654,6 +666,7 @@
 				5956B142200FEBAA008D9D16 /* RCTTextViewManager.m in Sources */,
 				5956B135200FEBAA008D9D16 /* RCTBaseTextInputView.m in Sources */,
 				5956B144200FEBAA008D9D16 /* RCTVirtualTextViewManager.m in Sources */,
+				19461666225DC3B300E4E008 /* RCTTextRenderer.m in Sources */,
 				5C245F39205E216A00D936E9 /* RCTInputAccessoryShadowView.m in Sources */,
 				5956B13B200FEBAA008D9D16 /* RCTMultilineTextInputViewManager.m in Sources */,
 				5956B134200FEBAA008D9D16 /* RCTSinglelineTextInputViewManager.m in Sources */,

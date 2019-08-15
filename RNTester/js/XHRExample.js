@@ -18,7 +18,7 @@ const XHRExampleFormData = require('./XHRExampleFormData');
 const XHRExampleHeaders = require('./XHRExampleHeaders');
 const XHRExampleFetch = require('./XHRExampleFetch');
 const XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
-const XHRExampleCookies = require('./XHRExampleCookies');
+const XHRExampleAbortController = require('./XHRExampleAbortController');
 
 exports.framework = 'React';
 exports.title = 'XMLHttpRequest';
@@ -63,9 +63,9 @@ exports.examples = [
     },
   },
   {
-    title: 'Cookies',
+    title: 'Abort Test',
     render() {
-      return <XHRExampleCookies />;
+      return <XHRExampleAbortController />;
     },
   },
 ];

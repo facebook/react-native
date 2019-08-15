@@ -55,16 +55,19 @@ REACT_NATIVE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # in node_modules.
 PROJECT_ROOT=${PROJECT_ROOT:-"$REACT_NATIVE_DIR/../.."}
 
-cd $PROJECT_ROOT
+cd "$PROJECT_ROOT" || exit
 
 # Define NVM_DIR and source the nvm.sh setup script
 [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
 
 # Define entry file
-if [[ -s "index.ios.js" ]]; then
-  ENTRY_FILE=${1:-index.ios.js}
-else
-  ENTRY_FILE=${1:-index.js}
+if [[ "$ENTRY_FILE" ]]; then
+  # Use ENTRY_FILE defined by user
+  :
+elif [[ -s "index.ios.js" ]]; then
+   ENTRY_FILE=${1:-index.ios.js}
+ else
+   ENTRY_FILE=${1:-index.js}
 fi
 
 if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
@@ -88,7 +91,9 @@ if [[ ! -x node && -d ${HOME}/.anyenv/bin ]]; then
   fi
 fi
 
-[ -z "$NODE_BINARY" ] && export NODE_BINARY="node"
+# check and assign NODE_BINARY env
+# shellcheck source=/dev/null
+source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
 
 [ -z "$NODE_ARGS" ] && export NODE_ARGS=""
 
@@ -102,6 +107,7 @@ else
   CONFIG_ARG="--config $BUNDLE_CONFIG"
 fi
 
+<<<<<<< HEAD
 nodejs_not_found()
 {
   echo "error: Can't find '$NODE_BINARY' binary to build React Native bundle" >&2
@@ -127,6 +133,8 @@ if [[ "$CONFIGURATION" = "Debug" && ! "$PLATFORM_NAME" == *simulator && ! "$PLAT
   echo "$IP" > "$DEST/ip.txt"
 fi
 
+=======
+>>>>>>> v0.60.0
 BUNDLE_FILE="$DEST/main.jsbundle"
 
 case "$PLATFORM_NAME" in

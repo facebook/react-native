@@ -20,10 +20,6 @@ AccessibilityProps::AccessibilityProps(
     const RawProps &rawProps)
     : accessible(
           convertRawProp(rawProps, "accessible", sourceProps.accessible)),
-      accessibilityTraits(convertRawProp(
-          rawProps,
-          "accessibilityTraits",
-          sourceProps.accessibilityTraits)),
       accessibilityLabel(convertRawProp(
           rawProps,
           "accessibilityLabel",
@@ -55,7 +51,6 @@ AccessibilityProps::AccessibilityProps(
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList AccessibilityProps::getDebugProps() const {
   const auto &defaultProps = AccessibilityProps();
-  LOG(INFO) << "Call AccessibilityProps::getDebugProps with testId " << testId;
   return SharedDebugStringConvertibleList{
       debugStringConvertibleItem("testId", testId, defaultProps.testId),
   };

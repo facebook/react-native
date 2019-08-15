@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {RNTesterExample} from 'RNTesterTypes';
+import type {RNTesterExample} from './Shared/RNTesterTypes';
 
 const ComponentExamples: Array<RNTesterExample> = [
   {
@@ -34,24 +34,16 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('./ImageExample'),
   },
   {
-    key: 'ListViewExample',
-    module: require('./ListViewExample'),
-  },
-  {
-    key: 'ListViewGridLayoutExample',
-    module: require('./ListViewGridLayoutExample'),
-  },
-  {
-    key: 'ListViewPagingExample',
-    module: require('./ListViewPagingExample'),
-  },
-  {
     key: 'ModalExample',
     module: require('./ModalExample'),
   },
   {
     key: 'MultiColumnExample',
     module: require('./MultiColumnExample'),
+  },
+  {
+    key: 'NewAppScreenExample',
+    module: require('./NewAppScreenExample'),
   },
   {
     key: 'PickerExample',
@@ -82,14 +74,6 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'StatusBarExample',
     module: require('./StatusBarExample'),
-  },
-  {
-    key: 'SwipeableFlatListExample',
-    module: require('./SwipeableFlatListExample'),
-  },
-  {
-    key: 'SwipeableListViewExample',
-    module: require('./SwipeableListViewExample'),
   },
   {
     key: 'SwitchExample',
@@ -127,13 +111,13 @@ const ComponentExamples: Array<RNTesterExample> = [
      * when making Flow check .android.js files. */
     module: require('./ViewPagerAndroidExample'),
   },
-  {
-    key: 'WebViewExample',
-    module: require('./WebViewExample'),
-  },
 ];
 
 const APIExamples: Array<RNTesterExample> = [
+  {
+    key: 'AccessibilityExample',
+    module: require('./AccessibilityExample'),
+  },
   {
     key: 'AccessibilityAndroidExample',
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
@@ -165,16 +149,16 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('./ClipboardExample'),
   },
   {
+    key: 'CrashExample',
+    module: require('./CrashExample'),
+  },
+  {
     key: 'DatePickerAndroidExample',
     module: require('./DatePickerAndroidExample'),
   },
   {
     key: 'Dimensions',
     module: require('./DimensionsExample'),
-  },
-  {
-    key: 'GeolocationExample',
-    module: require('./GeolocationExample'),
   },
   {
     key: 'ImageEditingExample',
@@ -199,10 +183,6 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'NativeAnimationsExample',
     module: require('./NativeAnimationsExample'),
-  },
-  {
-    key: 'NetInfoExample',
-    module: require('./NetInfoExample'),
   },
   {
     key: 'OrientationChangeExample',

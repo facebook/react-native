@@ -28,11 +28,13 @@ namespace react {
 template <
     const char *concreteComponentName,
     typename ViewPropsT = ViewProps,
-    typename ViewEventEmitterT = ViewEventEmitter>
+    typename ViewEventEmitterT = ViewEventEmitter,
+    typename... Ts>
 class ConcreteViewShadowNode : public ConcreteShadowNode<
                                    concreteComponentName,
                                    ViewPropsT,
-                                   ViewEventEmitterT>,
+                                   ViewEventEmitterT,
+                                   Ts...>,
                                public AccessibleShadowNode,
                                public YogaLayoutableShadowNode {
   static_assert(
@@ -46,14 +48,17 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       "ViewPropsT must be a descendant of AccessibilityProps");
 
  public:
-  using BaseShadowNode =
-      ConcreteShadowNode<concreteComponentName, ViewPropsT, ViewEventEmitterT>;
+  using BaseShadowNode = ConcreteShadowNode<
+      concreteComponentName,
+      ViewPropsT,
+      ViewEventEmitterT,
+      Ts...>;
   using ConcreteViewProps = ViewPropsT;
 
   ConcreteViewShadowNode(
       const ShadowNodeFragment &fragment,
-      const ShadowNodeCloneFunction &cloneFunction)
-      : BaseShadowNode(fragment, cloneFunction),
+      const ComponentDescriptor &componentDescriptor)
+      : BaseShadowNode(fragment, componentDescriptor),
         AccessibleShadowNode(
             std::static_pointer_cast<const ConcreteViewProps>(fragment.props)),
         YogaLayoutableShadowNode() {
@@ -110,6 +115,10 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
         clonedChildShadowNode,
         suggestedIndex);
     return clonedChildShadowNode.get();
+  }
+
+  Transform getTransform() const override {
+    return BaseShadowNode::getProps()->transform;
   }
 
 #pragma mark - DebugStringConvertible

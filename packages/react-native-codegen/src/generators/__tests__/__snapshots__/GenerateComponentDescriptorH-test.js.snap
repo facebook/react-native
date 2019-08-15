@@ -1,5 +1,83 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`GenerateComponentDescriptorH can generate a array props 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/ARRAY_PROPS/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+using ArrayPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<ArrayPropsNativeComponentShadowNode>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateComponentDescriptorH can generate a native primitive image prop 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/IMAGE_PROP/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+using ImagePropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<ImagePropNativeComponentShadowNode>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateComponentDescriptorH can generate a native primitive point prop 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/IMAGE_PROP/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+using PointPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<PointPropNativeComponentShadowNode>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateComponentDescriptorH can generate a single boolean prop 1`] = `
 Map {
   "ComponentDescriptors.h" => "
@@ -12,7 +90,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_BOOLEAN_PROP/ShadowNodes.h>
+#include <react/components/BOOLEAN_PROP/ShadowNodes.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
@@ -38,7 +116,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_COLOR_PROP/ShadowNodes.h>
+#include <react/components/COLOR_PROP/ShadowNodes.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
@@ -64,7 +142,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_STRING_PROPS/ShadowNodes.h>
+#include <react/components/STRING_PROPS/ShadowNodes.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
@@ -90,7 +168,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_ENUM_PROP/ShadowNodes.h>
+#include <react/components/ENUM_PROP/ShadowNodes.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
@@ -116,7 +194,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_EVENT_PROPS/ShadowNodes.h>
+#include <react/components/EVENT_PROPS/ShadowNodes.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
@@ -142,7 +220,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_FLOAT_PROPS/ShadowNodes.h>
+#include <react/components/FLOAT_PROPS/ShadowNodes.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
@@ -168,13 +246,39 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_INTEGER_PROPS/ShadowNodes.h>
+#include <react/components/INTEGER_PROPS/ShadowNodes.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
 
 using IntegerPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<IntegerPropNativeComponentShadowNode>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateComponentDescriptorH can generate multiple native props 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/MULTI_NATIVE_PROP/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+using ImageColorPropNativeComponentComponentDescriptor = ConcreteComponentDescriptor<ImageColorPropNativeComponentShadowNode>;
 
 } // namespace react
 } // namespace facebook

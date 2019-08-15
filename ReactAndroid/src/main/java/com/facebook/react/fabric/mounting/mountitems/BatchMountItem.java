@@ -6,9 +6,14 @@
  */
 package com.facebook.react.fabric.mounting.mountitems;
 
+import static com.facebook.react.fabric.FabricUIManager.DEBUG;
+import static com.facebook.react.fabric.FabricUIManager.TAG;
+
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.systrace.Systrace;
+
+import com.facebook.common.logging.FLog;
 
 /**
  * This class represents a batch of {@link MountItem}s
@@ -40,13 +45,21 @@ public class BatchMountItem implements MountItem {
   @Override
   public void execute(MountingManager mountingManager) {
     Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::mountViews (" + mSize + " items)");
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::mountViews - " + mSize + " items");
 
     for (int mountItemIndex = 0; mountItemIndex < mSize; mountItemIndex++) {
       MountItem mountItem = mMountItems[mountItemIndex];
+      if (DEBUG) {
+        FLog.d(TAG, "Executing mountItem: " + mountItem);
+      }
       mountItem.execute(mountingManager);
     }
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+  }
+
+  @Override
+  public String toString() {
+    return "BatchMountItem - size " + mMountItems.length;
   }
 }

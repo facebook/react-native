@@ -20,17 +20,24 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.shell.MainReactPackage;
+<<<<<<< HEAD
 import com.facebook.react.v8executor.V8ExecutorFactory;
 import com.facebook.react.jscexecutor.JSCExecutorFactory;
+=======
+import com.facebook.react.views.text.ReactFontManager;
+>>>>>>> v0.60.0
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+<<<<<<< HEAD
 import javax.annotation.Nullable;
 
 import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriendlyDeviceName;
 
+=======
+>>>>>>> v0.60.0
 public class RNTesterApplication extends Application implements ReactApplication {
  private static final String JSE_CACHING_DIRECTORY_NAME = "cache";
 
@@ -57,7 +64,7 @@ public class RNTesterApplication extends Application implements ReactApplication
     }
 
     @Override
-    public @Nullable String getBundleAssetName() {
+    public String getBundleAssetName() {
       return "RNTesterApp.android.bundle";
     }
 
@@ -97,6 +104,12 @@ public class RNTesterApplication extends Application implements ReactApplication
       }
     }
   };
+
+  @Override
+  public void onCreate() {
+    ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik);
+    super.onCreate();
+  }
 
   @Override
   public ReactNativeHost getReactNativeHost() {

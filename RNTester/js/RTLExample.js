@@ -10,21 +10,20 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   Alert,
   Animated,
   I18nManager,
   Image,
   PixelRatio,
+  Platform,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
   Switch,
   View,
   Button,
-} = ReactNative;
-const Platform = require('Platform');
+} = require('react-native');
 
 type State = {
   toggleStatus: any,

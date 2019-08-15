@@ -9,16 +9,19 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const React = require('React');
-const RecordingModule = require('NativeModules')
-  .SwipeRefreshLayoutRecordingModule;
-const ScrollView = require('ScrollView');
-const StyleSheet = require('StyleSheet');
-const RefreshControl = require('RefreshControl');
-const Text = require('Text');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-const View = require('View');
+const React = require('react');
+const {
+  NativeModules,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} = require('react-native');
+const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
+
+const {SwipeRefreshLayoutRecordingModule: RecordingModule} = NativeModules;
 
 class Row extends React.Component {
   state = {

@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/components/slider/SliderMeasurementsManager.h>
 #include <react/components/slider/SliderShadowNode.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
@@ -20,13 +21,13 @@ class SliderComponentDescriptor final
     : public ConcreteComponentDescriptor<SliderShadowNode> {
  public:
   SliderComponentDescriptor(
-      SharedEventDispatcher eventDispatcher,
-      const SharedContextContainer &contextContainer)
+      EventDispatcher::Shared eventDispatcher,
+      ContextContainer::Shared const &contextContainer)
       : ConcreteComponentDescriptor(eventDispatcher),
-        imageManager_(
-            contextContainer
-                ? contextContainer->getInstance<SharedImageManager>(
-                      "ImageManager")
+        imageManager_(std::make_shared<ImageManager>(contextContainer)),
+        measurementsManager_(
+            SliderMeasurementsManager::shouldMeasureSlider()
+                ? std::make_shared<SliderMeasurementsManager>(contextContainer)
                 : nullptr) {}
 
   void adopt(UnsharedShadowNode shadowNode) const override {
@@ -39,10 +40,21 @@ class SliderComponentDescriptor final
     // `SliderShadowNode` uses `ImageManager` to initiate image loading and
     // communicate the loading state and results to mounting layer.
     sliderShadowNode->setImageManager(imageManager_);
+
+    if (measurementsManager_) {
+      // `SliderShadowNode` uses `SliderMeasurementsManager` to
+      // provide measurements to Yoga.
+      sliderShadowNode->setSliderMeasurementsManager(measurementsManager_);
+
+      // All `SliderShadowNode`s must have leaf Yoga nodes with properly
+      // setup measure function.
+      sliderShadowNode->enableMeasurement();
+    }
   }
 
  private:
   const SharedImageManager imageManager_;
+  const std::shared_ptr<SliderMeasurementsManager> measurementsManager_;
 };
 
 } // namespace react

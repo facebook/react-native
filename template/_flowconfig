@@ -11,13 +11,20 @@
 ; Ignore duplicate module providers
 ; For RN Apps installed via npm, "Libraries" folder is inside
 ; "node_modules/react-native" but in the source repo it is in the root
-.*/Libraries/react-native/React.js
+node_modules/react-native/Libraries/react-native/React.js
 
 ; Ignore polyfills
-.*/Libraries/polyfills/.*
+node_modules/react-native/Libraries/polyfills/.*
 
-; Ignore metro
-.*/node_modules/metro/.*
+; These should not be required directly
+; require from fbjs/lib instead: require('fbjs/lib/warning')
+node_modules/warning/.*
+
+; Flow doesn't support platforms
+.*/Libraries/Utilities/HMRLoadingView.js
+
+[untyped]
+.*/node_modules/@react-native-community/cli/.*/.*
 
 [include]
 
@@ -31,6 +38,10 @@ emoji=true
 esproposal.optional_chaining=enable
 esproposal.nullish_coalescing=enable
 
+module.file_ext=.js
+module.file_ext=.json
+module.file_ext=.ios.js
+
 module.system=haste
 module.system.haste.use_name_reducers=true
 # get basename
@@ -43,27 +54,46 @@ module.system.haste.name_reducers='^\(.*\)\.android$' -> '\1'
 module.system.haste.name_reducers='^\(.*\)\.native$' -> '\1'
 module.system.haste.paths.blacklist=.*/__tests__/.*
 module.system.haste.paths.blacklist=.*/__mocks__/.*
-module.system.haste.paths.blacklist=<PROJECT_ROOT>/node_modules/react-native/Libraries/Animated/src/polyfills/.*
 module.system.haste.paths.whitelist=<PROJECT_ROOT>/node_modules/react-native/Libraries/.*
+module.system.haste.paths.whitelist=<PROJECT_ROOT>/node_modules/react-native/RNTester/.*
+module.system.haste.paths.whitelist=<PROJECT_ROOT>/node_modules/react-native/IntegrationTests/.*
+module.system.haste.paths.blacklist=<PROJECT_ROOT>/node_modules/react-native/Libraries/react-native/react-native-implementation.js
+module.system.haste.paths.blacklist=<PROJECT_ROOT>/node_modules/react-native/Libraries/Animated/src/polyfills/.*
 
 munge_underscores=true
 
 module.name_mapper='^[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\)$' -> 'RelativeImageStub'
-
-module.file_ext=.js
-module.file_ext=.jsx
-module.file_ext=.json
-module.file_ext=.native.js
 
 suppress_type=$FlowIssue
 suppress_type=$FlowFixMe
 suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)
-suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native[a-z,_]*\\)?)\\)?:? #[0-9]+
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
+suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)
+suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)?:? #[0-9]+
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
+[lints]
+sketchy-null-number=warn
+sketchy-null-mixed=warn
+sketchy-number=warn
+untyped-type-import=warn
+nonstrict-import=warn
+deprecated-type=warn
+unsafe-getters-setters=warn
+inexact-spread=warn
+unnecessary-invariant=warn
+signature-verification-failure=warn
+deprecated-utility=error
+
+[strict]
+deprecated-type
+nonstrict-import
+sketchy-null
+unclear-type
+unsafe-getters-setters
+untyped-import
+untyped-type-import
+
 [version]
-^0.92.0
+^0.98.0

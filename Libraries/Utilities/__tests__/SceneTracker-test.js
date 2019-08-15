@@ -10,7 +10,7 @@
 
 'use strict';
 
-const SceneTracker = require('SceneTracker');
+const SceneTracker = require('../SceneTracker');
 
 describe('setActiveScene', function() {
   it('can handle multiple listeners and unsubscribe', function() {

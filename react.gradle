@@ -15,6 +15,22 @@ def reactRoot = file(config.root ?: "../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
 
+def reactNativeDevServerPort() {
+    def value = project.getProperties().get("reactNativeDevServerPort")
+    return value != null ? value : "8081"
+}
+
+def reactNativeInspectorProxyPort() {
+    def value = project.getProperties().get("reactNativeInspectorProxyPort")
+    return value != null ? value : reactNativeDevServerPort()
+}
+
+android {
+    buildTypes.all {
+        resValue "integer", "react_native_dev_server_port", reactNativeDevServerPort()
+        resValue "integer", "react_native_inspector_proxy_port", reactNativeInspectorProxyPort()
+    }
+}
 
 afterEvaluate {
     def isAndroidLibrary = plugins.hasPlugin("com.android.library")
@@ -76,9 +92,11 @@ afterEvaluate {
                     "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraArgs)
             }
 
-            enabled config."bundleIn${targetName}" ||
-                config."bundleIn${variant.buildType.name.capitalize()}" ?:
-                targetName.toLowerCase().contains("release")
+            enabled config."bundleIn${targetName}" != null
+              ? config."bundleIn${targetName}"
+              : config."bundleIn${variant.buildType.name.capitalize()}" != null
+                ? config."bundleIn${variant.buildType.name.capitalize()}"
+                : targetName.toLowerCase().contains("release")
         }
 
         // Expose a minimal interface on the application variant and the task itself:
@@ -144,6 +162,11 @@ afterEvaluate {
 
                 // Workaround for Android Gradle Plugin 3.2+ new asset directory
                 into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
+                    from(jsBundleDir)
+                }
+
+                // Workaround for Android Gradle Plugin 3.4+ new asset directory
+                into ("merged_assets/${variant.name}/out") {
                     from(jsBundleDir)
                 }
             }

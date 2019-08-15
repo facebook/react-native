@@ -10,10 +10,15 @@
 
 'use strict';
 
+<<<<<<< HEAD
 var React = require('react');
 var ReactNative = require('react-native');
 var Platform = require('Platform');
 var {PickerIOS, Text, View} = ReactNative;
+=======
+const React = require('react');
+const {PickerIOS, Text, View} = require('react-native');
+>>>>>>> v0.60.0
 
 const PickerItemIOS = PickerIOS.Item;
 

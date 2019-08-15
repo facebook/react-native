@@ -10,13 +10,10 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
-const Text = require('Text');
-
-const renderApplication = require('renderApplication');
+const React = require('react');
+const {StyleSheet, Text, View} = require('react-native');
+const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
+const renderApplication = require('react-native/Libraries/ReactNative/renderApplication');
 
 type FlexTestAppProps = $ReadOnly<{||}>;
 class FlexTestApp extends React.Component<FlexTestAppProps> {
@@ -90,9 +87,7 @@ const FlexWithTextStyles = StyleSheet.create({
 });
 
 type AbsolutePositionTestAppProps = $ReadOnly<{||}>;
-class AbsolutePositionTestApp extends React.Component<
-  AbsolutePositionTestAppProps,
-> {
+class AbsolutePositionTestApp extends React.Component<AbsolutePositionTestAppProps> {
   render() {
     return (
       <View
@@ -115,9 +110,7 @@ const AbsolutePositionTestAppStyles = StyleSheet.create({
 });
 
 type AbsolutePositionBottomRightTestAppProps = $ReadOnly<{||}>;
-class AbsolutePositionBottomRightTestApp extends React.Component<
-  AbsolutePositionBottomRightTestAppProps,
-> {
+class AbsolutePositionBottomRightTestApp extends React.Component<AbsolutePositionBottomRightTestAppProps> {
   render() {
     return (
       <View

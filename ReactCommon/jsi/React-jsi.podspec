@@ -31,10 +31,16 @@ Pod::Spec.new do |s|
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.source                 = source
   s.source_files           = "**/*.{cpp,h}"
+<<<<<<< HEAD
   s.exclude_files          = "**/test/*"
   s.framework              = "JavaScriptCore"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\" \"$(PODS_ROOT)/DoubleConversion\"" }
+=======
+  s.framework              = "JavaScriptCore"
+  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\"" }
+>>>>>>> v0.60.0
   s.header_dir             = "jsi"
   s.default_subspec        = "Default"
 

@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const URL = require('URL').URL;
+const URL = require('../URL').URL;
 
 describe('URL', function() {
   it('should pass Mozilla Dev Network examples', () => {

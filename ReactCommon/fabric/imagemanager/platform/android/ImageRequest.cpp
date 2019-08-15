@@ -25,11 +25,16 @@ ImageRequest::~ImageRequest() {
   // Not implemented.
 }
 
-const ImageResponseObserverCoordinator *ImageRequest::getObserverCoordinator()
+const ImageResponseObserverCoordinator &ImageRequest::getObserverCoordinator()
     const {
   // Not implemented
   abort();
 }
 
+const std::shared_ptr<const ImageResponseObserverCoordinator>
+    &ImageRequest::getSharedObserverCoordinator() const {
+  // Not implemented
+  abort();
+}
 } // namespace react
 } // namespace facebook

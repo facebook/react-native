@@ -1,4 +1,8 @@
+<<<<<<< HEAD:ReactCommon/jsi/jsi/jsi.h
 /*
+=======
+/**
+>>>>>>> v0.60.0:ReactCommon/jsi/jsi/jsi.h
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -51,7 +55,11 @@ class StringBuffer : public Buffer {
   std::string s_;
 };
 
+<<<<<<< HEAD:ReactCommon/jsi/jsi/jsi.h
 /// PreparedJavaScript is a base class representing JavaScript which is in a form
+=======
+/// PreparedJavaScript is a base class repesenting JavaScript which is in a form
+>>>>>>> v0.60.0:ReactCommon/jsi/jsi/jsi.h
 /// optimized for execution, in a runtime-specific way. Construct one via
 /// jsi::Runtime::prepareJavaScript().
 /// ** This is an experimental API that is subject to change. **
@@ -347,7 +355,11 @@ class PropNameID : public Pointer {
   using Pointer::Pointer;
 
   PropNameID(Runtime& runtime, const PropNameID& other)
+<<<<<<< HEAD:ReactCommon/jsi/jsi/jsi.h
       : Pointer(runtime.clonePropNameID(other.ptr_)) {}
+=======
+      : PropNameID(runtime.clonePropNameID(other.ptr_)) {}
+>>>>>>> v0.60.0:ReactCommon/jsi/jsi/jsi.h
 
   PropNameID(PropNameID&& other) = default;
   PropNameID& operator=(PropNameID&& other) = default;
@@ -919,7 +931,11 @@ class Value {
         std::is_base_of<Symbol, T>::value ||
             std::is_base_of<String, T>::value ||
             std::is_base_of<Object, T>::value,
+<<<<<<< HEAD:ReactCommon/jsi/jsi/jsi.h
         "Value cannot be implicitly move-constructed from this type");
+=======
+        "Value cannot be implictly move-constructed from this type");
+>>>>>>> v0.60.0:ReactCommon/jsi/jsi/jsi.h
     new (&data_.pointer) T(std::move(other));
   }
 

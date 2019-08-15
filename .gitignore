@@ -75,6 +75,7 @@ package-lock.json
 /ReactCommon/**/*.xcodeproj
 RNTester/build
 
+<<<<<<< HEAD
 
 *.nupkg
 
@@ -90,3 +91,8 @@ ReactAndroid/bin/
 # binary files generated during ReactAndroid build.
 RNTester/android/app/bin/
 processor/bin/
+=======
+# CocoaPods
+/template/ios/Pods/
+/template/ios/Podfile.lock
+>>>>>>> v0.60.0

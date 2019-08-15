@@ -11,8 +11,13 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {StyleSheet, View, Text, TouchableHighlight, Alert} = ReactNative;
+const {
+  StyleSheet,
+  View,
+  Text,
+  TouchableHighlight,
+  Alert,
+} = require('react-native');
 
 const {SimpleAlertExampleBlock} = require('./AlertExample');
 

@@ -10,13 +10,20 @@
 
 'use strict';
 
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
+<<<<<<< HEAD
 import type {SyntheticEvent} from 'CoreEventTypes';
 import type {ImageSource} from 'ImageSource';
 import type {ViewProps} from 'ViewPropTypes';
 import type {NativeComponent} from 'ReactNative';
 import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
+=======
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {ImageSource} from '../../Image/ImageSource';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {NativeComponent} from '../../Renderer/shims/ReactNative';
+>>>>>>> v0.60.0
 
 type Action = $ReadOnly<{|
   title: string,

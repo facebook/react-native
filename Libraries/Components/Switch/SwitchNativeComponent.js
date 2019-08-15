@@ -10,14 +10,19 @@
 
 'use strict';
 
-const Platform = require('Platform');
-const ReactNative = require('ReactNative');
+const Platform = require('../../Utilities/Platform');
+const ReactNative = require('../../Renderer/shims/ReactNative');
 
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
+<<<<<<< HEAD
 import type {SwitchChangeEvent} from 'CoreEventTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {SemanticOrDynamicColorType} from 'normalizeColor'; // TODO(macOS ISS#2323203)
+=======
+import type {SwitchChangeEvent} from '../../Types/CoreEventTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+>>>>>>> v0.60.0
 
 type SwitchProps = $ReadOnly<{|
   ...ViewProps,

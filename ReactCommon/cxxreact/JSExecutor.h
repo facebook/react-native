@@ -127,6 +127,7 @@ public:
    */
   virtual std::string getDescription() = 0;
 
+<<<<<<< HEAD
   virtual void handleMemoryPressure(int /* pressureLevel */) {}
 
   /**
@@ -137,9 +138,14 @@ public:
   virtual int64_t getPeakJsMemoryUsage() const noexcept {
     return -1;
   }
+=======
+  virtual void handleMemoryPressure(__unused int pressureLevel) {}
+>>>>>>> v0.60.0
 
   virtual void destroy() {}
   virtual ~JSExecutor() {}
+
+  virtual void flush() {}
 
   static std::string getSyntheticBundlePath(
       uint32_t bundleId,

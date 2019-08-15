@@ -195,7 +195,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 }
 
 // analogous to InspectorPackagerConnection.Connection.onFailure(...)
-- (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
+- (void)webSocket:(__unused RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
   if (_webSocket) {
     [self abort:@"Websocket exception"
@@ -207,7 +207,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 }
 
 // analogous to InspectorPackagerConnection.Connection.onMessage(...)
-- (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)opaqueMessage
+- (void)webSocket:(__unused RCTSRWebSocket *)webSocket didReceiveMessage:(id)opaqueMessage
 {
   // warn but don't die on unrecognized messages
   if (![opaqueMessage isKindOfClass:[NSString class]]) {
@@ -228,9 +228,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 }
 
 // analogous to InspectorPackagerConnection.Connection.onClosed(...)
-- (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code
-                                                        reason:(NSString *)reason
-                                                      wasClean:(BOOL)wasClean
+- (void)webSocket:(__unused RCTSRWebSocket *)webSocket didCloseWithCode:(__unused NSInteger)code
+                                                        reason:(__unused NSString *)reason
+                                                      wasClean:(__unused BOOL)wasClean
 {
   _webSocket = nil;
   [self closeAllConnections];

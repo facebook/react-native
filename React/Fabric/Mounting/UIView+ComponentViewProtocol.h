@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface UIView (ComponentViewProtocol)
 
++ (std::vector<facebook::react::ComponentDescriptorProvider>)supplementalComponentDescriptorProviders;
+
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;
@@ -27,10 +29,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateLocalData:(facebook::react::SharedLocalData)localData
            oldLocalData:(facebook::react::SharedLocalData)oldLocalData;
 
+- (void)updateState:(facebook::react::State::Shared)state oldState:(facebook::react::State::Shared)oldState;
+
 - (void)updateLayoutMetrics:(facebook::react::LayoutMetrics)layoutMetrics
            oldLayoutMetrics:(facebook::react::LayoutMetrics)oldLayoutMetrics;
 
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask;
+
 - (void)prepareForRecycle;
+
+- (facebook::react::SharedProps)props;
 
 @end
 

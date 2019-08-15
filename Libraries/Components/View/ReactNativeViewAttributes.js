@@ -10,7 +10,7 @@
 
 'use strict';
 
-const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeStyleAttributes = require('./ReactNativeStyleAttributes');
 
 const ReactNativeViewAttributes = {};
 
@@ -19,6 +19,7 @@ ReactNativeViewAttributes.UIView = {
   accessible: true,
   accessibilityActions: true,
   accessibilityLabel: true,
+<<<<<<< HEAD
   accessibilityHint: true, // TODO(OSS Candidate ISS#2710739)
   accessibilityComponentType: true,
   accessibilityLiveRegion: true,
@@ -27,6 +28,12 @@ ReactNativeViewAttributes.UIView = {
   accessibilityTraits: true,
   acceptsKeyboardFocus: true, // TODO(macOS ISS#2323203)
   enableFocusRing: true, // TODO(macOS ISS#2323203)
+=======
+  accessibilityLiveRegion: true,
+  accessibilityRole: true,
+  accessibilityStates: true,
+  accessibilityHint: true,
+>>>>>>> v0.60.0
   importantForAccessibility: true,
   nativeID: true,
   testID: true,

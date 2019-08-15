@@ -10,10 +10,14 @@
 
 'use strict';
 
-const Platform = require('Platform');
+const Platform = require('../Utilities/Platform');
 
+<<<<<<< HEAD
 const normalizeColor = require('normalizeColor');
 import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
+=======
+const normalizeColor = require('../Color/normalizeColor');
+>>>>>>> v0.60.0
 
 /* eslint no-bitwise: 0 */
 function processColor(

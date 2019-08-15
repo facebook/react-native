@@ -67,6 +67,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)enforceTextAttributesIfNeeded
 {
+<<<<<<< HEAD
   if (![self ignoresTextAttributes]) { // TODO(OSS Candidate ISS#2710739)
     id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
     if (backedTextInputView.attributedText.string.length != 0) {
@@ -77,6 +78,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     backedTextInputView.textColor = _textAttributes.effectiveForegroundColor;
     backedTextInputView.textAlignment = _textAttributes.alignment;
   } // TODO(OSS Candidate ISS#2710739)
+=======
+  id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
+  backedTextInputView.reactTextAttributes = _textAttributes;
+>>>>>>> v0.60.0
 }
 
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
@@ -274,7 +279,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                              };
 
           #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+<<<<<<< HEAD
             if (@available(iOS 11.0, tvOS 12.0, *)) {
+=======
+            if (@available(iOS 11.0, tvOS 11.0, *)) {
+>>>>>>> v0.60.0
               NSDictionary<NSString *, NSString *> * iOS11extras = @{@"username": UITextContentTypeUsername,
                                                                      @"password": UITextContentTypePassword};
 
@@ -345,6 +354,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     self.backedTextInputView.attributedText = originalText;
   }
 #endif // TODO(macOS ISS#2323203)
+}
+
+- (BOOL)secureTextEntry {
+  return self.backedTextInputView.secureTextEntry;
+}
+
+- (void)setSecureTextEntry:(BOOL)secureTextEntry {
+  UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
+
+  if (textInputView.secureTextEntry != secureTextEntry) {
+    textInputView.secureTextEntry = secureTextEntry;
+
+    // Fix #5859, see https://stackoverflow.com/questions/14220187/uitextfield-has-trailing-whitespace-after-securetextentry-toggle/22537788#22537788
+    NSAttributedString *originalText = [textInputView.attributedText copy];
+    self.backedTextInputView.attributedText = [NSAttributedString new];
+    self.backedTextInputView.attributedText = originalText;
+  }
+
 }
 
 #pragma mark - RCTBackedTextInputDelegate
@@ -425,7 +452,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 
   if (_maxLength) {
-    NSUInteger allowedLength = _maxLength.integerValue - backedTextInputView.attributedText.string.length + range.length;
+    NSInteger allowedLength = MAX(_maxLength.integerValue - (NSInteger)backedTextInputView.attributedText.string.length + (NSInteger)range.length, 0);
 
     if (text.length > allowedLength) {
       // If we typed/pasted more than one character, limit the text inputted.
@@ -455,6 +482,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     }
   }
 
+<<<<<<< HEAD
   if (range.location + range.length > [[self predictedText] length]) { // TODO(OSS Candidate ISS#2710739)
     // predictedText got out of sync in a bad way, so let's just force sync it.  Haven't been able to repro this, but
     // it's causing a real crash here: #6523822
@@ -468,6 +496,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     [self setPredictedText:text]; // TODO(OSS Candidate ISS#2710739)
   } else {
     [self setPredictedText:[predictedText stringByReplacingCharactersInRange:range withString:text]]; // TODO(OSS Candidate ISS#2710739)
+=======
+  NSString *previousText = backedTextInputView.attributedText.string ?: @"";
+
+  if (range.location + range.length > backedTextInputView.attributedText.string.length) {
+    _predictedText = backedTextInputView.attributedText.string;
+  } else {
+    _predictedText = [backedTextInputView.attributedText.string stringByReplacingCharactersInRange:range withString:text];
+>>>>>>> v0.60.0
   }
 
   if (_onTextInput) {
@@ -491,8 +527,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
 
-  // Detect when `backedTextInputView` updates happend that didn't invoke `shouldChangeTextInRange`
-  // (e.g. typing simplified chinese in pinyin will insert and remove spaces without
+  // Detect when `backedTextInputView` updates happened that didn't invoke `shouldChangeTextInRange`
+  // (e.g. typing simplified Chinese in pinyin will insert and remove spaces without
   // calling shouldChangeTextInRange).  This will cause JS to get out of sync so we
   // update the mismatched range.
   NSRange currentRange;
@@ -502,7 +538,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     [self textInputShouldChangeTextInRange:predictionRange replacementText:replacement];
     // JS will assume the selection changed based on the location of our shouldChangeTextInRange, so reset it.
     [self textInputDidChangeSelection];
+<<<<<<< HEAD
     [self setPredictedText:backedTextInputView.attributedText.string]; // TODO(OSS Candidate ISS#2710739)
+=======
+>>>>>>> v0.60.0
   }
 
   _nativeEventCount++;

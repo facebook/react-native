@@ -13,6 +13,7 @@
 @interface RCTDatePicker ()
 
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
+@property (nonatomic, assign) NSInteger reactMinuteInterval;
 
 @end
 
@@ -24,10 +25,14 @@
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     [self addTarget:self action:@selector(didChange)
                forControlEvents:UIControlEventValueChanged];
+<<<<<<< HEAD
 #else // [TODO(macOS ISS#2323203)
     self.target = self;
     self.action = @selector(didChange);
 #endif // ]TODO(macOS ISS#2323203)
+=======
+    _reactMinuteInterval = 1;
+>>>>>>> v0.60.0
   }
   return self;
 }
@@ -45,6 +50,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 #endif // ]TODO(macOS ISS#2323203)
                  });
   }
+}
+
+- (void)setDatePickerMode:(UIDatePickerMode)datePickerMode
+{
+  [super setDatePickerMode:datePickerMode];
+  // We need to set minuteInterval after setting datePickerMode, otherwise minuteInterval is invalid in time mode.
+  self.minuteInterval = _reactMinuteInterval;
+}
+
+- (void)setMinuteInterval:(NSInteger)minuteInterval
+{
+  [super setMinuteInterval:minuteInterval];
+  _reactMinuteInterval = minuteInterval;
 }
 
 @end

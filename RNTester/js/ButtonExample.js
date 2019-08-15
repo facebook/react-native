@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Alert, Button, View, StyleSheet} = ReactNative;
+const {Alert, Button, View, StyleSheet} = require('react-native');
 
 function onButtonPress(buttonName) {
   Alert.alert(`${buttonName} has been pressed!`);

@@ -23,10 +23,17 @@ LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
 LOCAL_LDLIBS += -landroid
 
 # The dynamic libraries (.so files) that this module depends on.
+<<<<<<< HEAD
 LOCAL_SHARED_LIBRARIES := libfolly_json libfb libglog_init libyoga libprivatedata
 
 # The static libraries (.a files) that this module depends on.
 LOCAL_STATIC_LIBRARIES := libreactnative jsi
+=======
+LOCAL_SHARED_LIBRARIES := libfolly_json libfb libglog_init libyoga
+
+# The static libraries (.a files) that this module depends on.
+LOCAL_STATIC_LIBRARIES := libreactnative libjscallinvokerholder
+>>>>>>> v0.60.0
 
 # Name of this module.
 #
@@ -95,6 +102,9 @@ endif
 $(call import-module,yogajni)
 $(call import-module,jsi)
 $(call import-module,jsiexecutor)
+$(call import-module,jscallinvoker)
+
+include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
 
 # TODO(ramanpreet):
 #   Why doesn't this import-module call generate a jscexecutor.so file?

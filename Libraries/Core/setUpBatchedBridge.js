@@ -14,29 +14,38 @@
  * InitializeCore to ensure that the JS environment has been initialized.
  * You can use this module directly, or just require InitializeCore.
  */
-const BatchedBridge = require('BatchedBridge');
-BatchedBridge.registerLazyCallableModule('Systrace', () => require('Systrace'));
-BatchedBridge.registerLazyCallableModule('JSTimers', () => require('JSTimers'));
+const BatchedBridge = require('../BatchedBridge/BatchedBridge');
+BatchedBridge.registerLazyCallableModule('Systrace', () =>
+  require('../Performance/Systrace'),
+);
+BatchedBridge.registerLazyCallableModule('JSTimers', () =>
+  require('./Timers/JSTimers'),
+);
 BatchedBridge.registerLazyCallableModule('HeapCapture', () =>
-  require('HeapCapture'),
+  require('../Utilities/HeapCapture'),
 );
 BatchedBridge.registerLazyCallableModule('SamplingProfiler', () =>
-  require('SamplingProfiler'),
+  require('../Performance/SamplingProfiler'),
 );
-BatchedBridge.registerLazyCallableModule('RCTLog', () => require('RCTLog'));
+BatchedBridge.registerLazyCallableModule('RCTLog', () =>
+  require('../Utilities/RCTLog'),
+);
 BatchedBridge.registerLazyCallableModule('RCTDeviceEventEmitter', () =>
-  require('RCTDeviceEventEmitter'),
+  require('../EventEmitter/RCTDeviceEventEmitter'),
 );
 BatchedBridge.registerLazyCallableModule('RCTNativeAppEventEmitter', () =>
-  require('RCTNativeAppEventEmitter'),
+  require('../EventEmitter/RCTNativeAppEventEmitter'),
 );
-BatchedBridge.registerLazyCallableModule('PerformanceLogger', () =>
-  require('PerformanceLogger'),
+BatchedBridge.registerLazyCallableModule('GlobalPerformanceLogger', () =>
+  require('../Utilities/GlobalPerformanceLogger'),
 );
 BatchedBridge.registerLazyCallableModule('JSDevSupportModule', () =>
-  require('JSDevSupportModule'),
+  require('../Utilities/JSDevSupportModule'),
 );
 
 if (__DEV__ && !global.__RCTProfileIsProfiling) {
-  BatchedBridge.registerCallableModule('HMRClient', require('HMRClient'));
+  BatchedBridge.registerCallableModule(
+    'HMRClient',
+    require('../Utilities/HMRClient'),
+  );
 }

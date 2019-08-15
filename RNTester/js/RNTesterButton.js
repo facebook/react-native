@@ -13,7 +13,7 @@
 const React = require('react');
 const {StyleSheet, Text, TouchableHighlight} = require('react-native');
 
-import type {PressEvent} from 'CoreEventTypes';
+import type {PressEvent} from '../../Libraries/Types/CoreEventTypes';
 
 type Props = $ReadOnly<{|
   children?: React.Node,

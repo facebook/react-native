@@ -126,20 +126,29 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 
   // Whether the latest change of props requires the image to be reloaded
   BOOL _needsReload;
+<<<<<<< HEAD
   
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   // Whether observing changes to the window's backing scale
   BOOL _subscribedToWindowBackingNotifications;
 #endif // ]TODO(macOS ISS#2323203)
+=======
+
+   UIImageView *_imageView;
+>>>>>>> v0.60.0
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
+<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if ((self = [super init])) {
 #else // [TODO(macOS ISS#2323203)
   if ((self = [super initWithFrame:NSZeroRect])) {
 #endif // ]TODO(macOS ISS#2323203)
+=======
+  if ((self = [super initWithFrame:CGRectZero])) {
+>>>>>>> v0.60.0
     _bridge = bridge;
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
     self.wantsLayer = YES;
@@ -155,7 +164,13 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
                selector:@selector(clearImageIfDetached)
                    name:UIApplicationDidEnterBackgroundNotification
                  object:nil];
+<<<<<<< HEAD
 #endif // TODO(macOS ISS#2323203)
+=======
+    _imageView = [[UIImageView alloc] init];
+    _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self addSubview:_imageView];
+>>>>>>> v0.60.0
   }
   return self;
 }
@@ -167,15 +182,21 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
+<<<<<<< HEAD
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(NSRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 #endif // ]TODO(macOS ISS#2323203)
+=======
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
+>>>>>>> v0.60.0
 
 - (void)updateWithImage:(UIImage *)image
 {
   if (!image) {
-    super.image = nil;
+    _imageView.image = nil;
     return;
   }
 
@@ -208,10 +229,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   }
 
   // Apply trilinear filtering to smooth out mis-sized images
-  self.layer.minificationFilter = kCAFilterTrilinear;
-  self.layer.magnificationFilter = kCAFilterTrilinear;
+  _imageView.layer.minificationFilter = kCAFilterTrilinear;
+  _imageView.layer.magnificationFilter = kCAFilterTrilinear;
 
-  super.image = image;
+  _imageView.image = image;
 }
 
 - (void)setImage:(UIImage *)image
@@ -225,6 +246,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 #endif // ]TODO(macOS ISS#2323203)
     [self updateWithImage:image];
   }
+}
+
+- (UIImage *)image {
+  return _imageView.image;
 }
 
 - (void)setBlurRadius:(CGFloat)blurRadius
@@ -274,6 +299,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
     if (_resizeMode == RCTResizeModeRepeat) {
       // Repeat resize mode is handled by the UIImage. Use scale to fill
       // so the repeated image fills the UIImageView.
+<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
       self.contentMode = UIViewContentModeScaleToFill;
 #else // [TODO(macOS ISS#2323203)
@@ -289,6 +315,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
       }
       self.imageScaling = (NSImageScaling)resizeMode;
 #endif // ]TODO(macOS ISS#2323203)
+=======
+      _imageView.contentMode = UIViewContentModeScaleToFill;
+    } else {
+      _imageView.contentMode = (UIViewContentMode)resizeMode;
+>>>>>>> v0.60.0
     }
 
     if ([self shouldReloadImageSourceAfterResize]) {
@@ -311,7 +342,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 - (void)clearImage
 {
   [self cancelImageLoad];
-  [self.layer removeAnimationForKey:@"contents"];
+  [_imageView.layer removeAnimationForKey:@"contents"];
   self.image = nil;
   _imageSource = nil;
 }
@@ -460,10 +491,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
       self->_pendingImageSource = nil;
     }
 
+    [self->_imageView.layer removeAnimationForKey:@"contents"];
     if (image.reactKeyframeAnimation) {
-      [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
+      CGImageRef posterImageRef = (__bridge CGImageRef)[image.reactKeyframeAnimation.values firstObject];
+      if (!posterImageRef) {
+        return;
+      }
+      // Apply renderingMode to animated image.
+      self->_imageView.image = [[UIImage imageWithCGImage:posterImageRef] imageWithRenderingMode:self->_renderingMode];
+      [self->_imageView.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
     } else {
-      [self.layer removeAnimationForKey:@"contents"];
       self.image = image;
     }
 
@@ -540,8 +577,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
       return;
     }
 
-    // Don't reload if the current image size is the maximum size of the image source
-    CGSize imageSourceSize = _imageSource.size;
+    // Don't reload if the current image size is the maximum size of either the pending image source or image source
+    CGSize imageSourceSize = (_imageSource ? _imageSource : _pendingImageSource).size;
     if (imageSize.width * imageScale == imageSourceSize.width * _imageSource.scale &&
         imageSize.height * imageScale == imageSourceSize.height * _imageSource.scale) {
       return;

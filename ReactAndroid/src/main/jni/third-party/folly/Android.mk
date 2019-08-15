@@ -47,6 +47,51 @@ LOCAL_STATIC_LIBRARIES := libboost
 
 include $(BUILD_SHARED_LIBRARY)
 
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES := \
+  folly/ExceptionWrapper.cpp \
+  folly/Executor.cpp \
+  folly/SharedMutex.cpp \
+  folly/concurrency/CacheLocality.cpp \
+  folly/detail/AtFork.cpp \
+  folly/detail/Futex.cpp \
+  folly/detail/MemoryIdler.cpp \
+  folly/detail/StaticSingletonManager.cpp \
+  folly/detail/ThreadLocalDetail.cpp \
+  folly/executors/InlineExecutor.cpp \
+  folly/executors/TimedDrivableExecutor.cpp \
+  folly/io/async/Request.cpp \
+  folly/memory/MallctlHelper.cpp \
+  folly/portability/SysMembarrier.cpp \
+  folly/synchronization/AsymmetricMemoryBarrier.cpp \
+  folly/synchronization/HazPtr.cpp \
+  folly/synchronization/ParkingLot.cpp \
+  folly/synchronization/WaitOptions.cpp
+
+LOCAL_C_INCLUDES := $(LOCAL_PATH)
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
+
+LOCAL_CFLAGS += -fexceptions -fno-omit-frame-pointer -frtti -Wno-sign-compare
+
+FOLLY_FLAGS += \
+  -DFOLLY_FUTURE_USING_FIBER=0
+
+LOCAL_CFLAGS += $(FOLLY_FLAGS)
+
+LOCAL_EXPORT_CPPFLAGS := $(FOLLY_FLAGS)
+
+LOCAL_MODULE := libfolly_futures
+
+LOCAL_SHARED_LIBRARIES := libglog libdouble-conversion libfolly_json
+# Boost is header-only library we pretend to link is statically as
+# this way android makefile will automatically setup path to boost header
+# file, but except from that this will have no effect, as no c/cpp files
+# are part of this static library
+LOCAL_STATIC_LIBRARIES := libboost
+
+include $(BUILD_SHARED_LIBRARY)
+
 $(call import-module,glog)
 $(call import-module,double-conversion)
 $(call import-module,boost)

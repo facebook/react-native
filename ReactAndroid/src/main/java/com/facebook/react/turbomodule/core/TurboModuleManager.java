@@ -13,6 +13,7 @@ import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.queue.MessageQueueThread;
+import com.facebook.react.turbomodule.core.interfaces.JSCallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.soloader.SoLoader;
 
@@ -27,40 +28,30 @@ public class TurboModuleManager implements JSIModule {
   }
 
   private final ReactApplicationContext mReactApplicationContext;
+  private final TurboModuleManagerDelegate mTurbomoduleManagerDelegate;
 
   @DoNotStrip
   @SuppressWarnings("unused")
   private final HybridData mHybridData;
-  private final ModuleProvider mModuleProvider;
 
   public TurboModuleManager(
-      ReactApplicationContext reactApplicationContext, JavaScriptContextHolder jsContext, ModuleProvider moduleProvider) {
+      ReactApplicationContext reactApplicationContext, JavaScriptContextHolder jsContext, TurboModuleManagerDelegate tmmDelegate, JSCallInvokerHolder instanceHolder) {
     mReactApplicationContext = reactApplicationContext;
-    MessageQueueThread jsMessageQueueThread =
-        mReactApplicationContext
-            .getCatalystInstance()
-            .getReactQueueConfiguration()
-            .getJSQueueThread();
-    mHybridData = initHybrid(jsContext.get(), jsMessageQueueThread);
-    mModuleProvider = moduleProvider;
+    mHybridData = initHybrid(jsContext.get(), (JSCallInvokerHolderImpl) instanceHolder, tmmDelegate);
+    mTurbomoduleManagerDelegate = tmmDelegate;
   }
-
   @DoNotStrip
   @SuppressWarnings("unused")
-    protected TurboModule getJavaModule(String name) {
-    return mModuleProvider.getModule(name, mReactApplicationContext);
+  private TurboModule getJavaModule(String name) {
+    return mTurbomoduleManagerDelegate.getModule(name);
   }
 
-  protected native HybridData initHybrid(long jsContext, MessageQueueThread jsQueue);
+  private native HybridData initHybrid(long jsContext, JSCallInvokerHolderImpl jsQueue, TurboModuleManagerDelegate tmmDelegate);
 
-  protected native void installJSIBindings();
+  private native void installJSIBindings();
 
   public void installBindings() {
     installJSIBindings();
-  }
-
-  protected ReactApplicationContext getReactApplicationContext() {
-    return mReactApplicationContext;
   }
 
   @Override

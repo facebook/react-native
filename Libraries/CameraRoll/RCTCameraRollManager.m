@@ -27,7 +27,7 @@
 
 RCT_ENUM_CONVERTER(PHAssetCollectionSubtype, (@{
    @"album": @(PHAssetCollectionSubtypeAny),
-   @"all": @(PHAssetCollectionSubtypeAny),
+   @"all": @(PHAssetCollectionSubtypeSmartAlbumUserLibrary),
    @"event": @(PHAssetCollectionSubtypeAlbumSyncedEvent),
    @"faces": @(PHAssetCollectionSubtypeAlbumSyncedFaces),
    @"library": @(PHAssetCollectionSubtypeSmartAlbumUserLibrary),

@@ -9,16 +9,18 @@
 
 'use strict';
 
-const Image = require('Image');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const TextInput = require('TextInput');
-const TouchableBounce = require('TouchableBounce');
-const TouchableHighlight = require('TouchableHighlight');
-const TouchableOpacity = require('TouchableOpacity');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-const View = require('View');
+const React = require('react');
+const {
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableHighlight,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} = require('react-native');
+const TouchableBounce = require('react-native/Libraries/Components/Touchable/TouchableBounce');
 
 /**
  * All the views implemented on Android, each with the testID property set.

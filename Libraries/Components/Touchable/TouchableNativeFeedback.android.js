@@ -10,21 +10,25 @@
 
 'use strict';
 
-const Platform = require('Platform');
-const React = require('React');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
 const PropTypes = require('prop-types');
-const ReactNative = require('ReactNative');
-const Touchable = require('Touchable');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-const UIManager = require('UIManager');
-const View = require('View');
+const ReactNative = require('../../Renderer/shims/ReactNative');
+const Touchable = require('./Touchable');
+const TouchableWithoutFeedback = require('./TouchableWithoutFeedback');
+const UIManager = require('../../ReactNative/UIManager');
+const View = require('../View/View');
 
 const createReactClass = require('create-react-class');
-const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-const processColor = require('processColor');
+const ensurePositiveDelayProps = require('./ensurePositiveDelayProps');
+const processColor = require('../../StyleSheet/processColor');
 
+<<<<<<< HEAD
 import type {PressEvent} from 'CoreEventTypes';
 import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
+=======
+import type {PressEvent} from '../../Types/CoreEventTypes';
+>>>>>>> v0.60.0
 
 const rippleBackgroundPropType = PropTypes.shape({
   type: PropTypes.oneOf(['RippleAndroid']),
@@ -93,6 +97,31 @@ const TouchableNativeFeedback = createReactClass({
      * TV preferred focus (see documentation for the View component).
      */
     hasTVPreferredFocus: PropTypes.bool,
+
+    /**
+     * TV next focus down (see documentation for the View component).
+     */
+    nextFocusDown: PropTypes.number,
+
+    /**
+     * TV next focus forward (see documentation for the View component).
+     */
+    nextFocusForward: PropTypes.number,
+
+    /**
+     * TV next focus left (see documentation for the View component).
+     */
+    nextFocusLeft: PropTypes.number,
+
+    /**
+     * TV next focus right (see documentation for the View component).
+     */
+    nextFocusRight: PropTypes.number,
+
+    /**
+     * TV next focus up (see documentation for the View component).
+     */
+    nextFocusUp: PropTypes.number,
 
     /**
      * Set to true to add the ripple effect to the foreground of the view, instead of the
@@ -188,18 +217,9 @@ const TouchableNativeFeedback = createReactClass({
   touchableHandleActivePressIn: function(e: PressEvent) {
     this.props.onPressIn && this.props.onPressIn(e);
     this._dispatchPressedStateChange(true);
-    /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
-     * suppresses an error found when Flow v0.89 was deployed. To see the
-     * error, delete this comment and run Flow. */
     if (this.pressInLocation) {
       this._dispatchHotspotUpdate(
-        /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
-         * suppresses an error found when Flow v0.89 was deployed. To see the
-         * error, delete this comment and run Flow. */
         this.pressInLocation.locationX,
-        /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
-         * suppresses an error found when Flow v0.89 was deployed. To see the
-         * error, delete this comment and run Flow. */
         this.pressInLocation.locationY,
       );
     }
@@ -306,7 +326,17 @@ const TouchableNativeFeedback = createReactClass({
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,
       isTVSelectable: true,
+      nextFocusDown: this.props.nextFocusDown,
+      nextFocusForward: this.props.nextFocusForward,
+      nextFocusLeft: this.props.nextFocusLeft,
+      nextFocusRight: this.props.nextFocusRight,
+      nextFocusUp: this.props.nextFocusUp,
       hasTVPreferredFocus: this.props.hasTVPreferredFocus,
+      clickable:
+        this.props.clickable !== false &&
+        this.props.onPress !== undefined &&
+        !this.props.disabled,
+      onClick: this.touchableHandlePress,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this
         .touchableHandleResponderTerminationRequest,

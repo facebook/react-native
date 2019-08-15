@@ -126,6 +126,24 @@ bool Instance::isIndexedRAMBundle(const char *sourcePath) {
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
 
+bool Instance::isIndexedRAMBundle(std::unique_ptr<const JSBigString>* script) {
+  BundleHeader header;
+  strncpy(reinterpret_cast<char *>(&header), script->get()->c_str(), sizeof(header));
+
+  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
+}
+
+void Instance::loadRAMBundleFromString(std::unique_ptr<const JSBigString> script, const std::string& sourceURL) {
+  auto bundle = folly::make_unique<JSIndexedRAMBundle>(std::move(script));
+  auto startupScript = bundle->getStartupCode();
+  auto registry = RAMBundleRegistry::singleBundleRegistry(std::move(bundle));
+  loadRAMBundle(
+    std::move(registry),
+    std::move(startupScript),
+    sourceURL,
+    true);
+}
+
 void Instance::loadRAMBundleFromFile(const std::string& sourcePath,
                            const std::string& sourceURL,
                            bool loadSynchronously) {
@@ -206,8 +224,16 @@ void Instance::handleMemoryPressure(int pressureLevel) {
   nativeToJsBridge_->handleMemoryPressure(pressureLevel);
 }
 
+<<<<<<< HEAD
 int64_t Instance::getPeakJsMemoryUsage() const noexcept {
   return nativeToJsBridge_->getPeakJsMemoryUsage();
+=======
+void Instance::invokeAsync(std::function<void()>&& func) {
+  nativeToJsBridge_->runOnExecutorQueue([func=std::move(func)](JSExecutor *executor) {
+    func();
+    executor->flush();
+  });
+>>>>>>> v0.60.0
 }
 
 } // namespace react

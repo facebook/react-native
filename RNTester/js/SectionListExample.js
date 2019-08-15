@@ -11,12 +11,18 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Alert, Animated, Button, StyleSheet, Text, View} = ReactNative;
+const {
+  Alert,
+  Animated,
+  Button,
+  StyleSheet,
+  Text,
+  View,
+} = require('react-native');
 
 const RNTesterPage = require('./RNTesterPage');
 
-const infoLog = require('infoLog');
+const infoLog = require('../../Libraries/Utilities/infoLog');
 
 const {
   HeaderComponent,
@@ -149,7 +155,7 @@ class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
           )}
           debug={this.state.debug}
           inverted={this.state.inverted}
-          enableVirtualization={this.state.virtualized}
+          disableVirtualization={!this.state.virtualized}
           onRefresh={() => Alert.alert('onRefresh: nothing to refresh :P')}
           onScroll={this._scrollSinkY}
           onViewableItemsChanged={this._onViewableItemsChanged}

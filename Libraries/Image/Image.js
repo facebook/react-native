@@ -12,23 +12,23 @@
 
 'use strict';
 
-const DeprecatedImagePropType = require('DeprecatedImagePropType');
-const NativeModules = require('NativeModules');
-const React = require('React');
-const ReactNative = require('ReactNative'); // eslint-disable-line no-unused-vars
-const StyleSheet = require('StyleSheet');
+const DeprecatedImagePropType = require('../DeprecatedPropTypes/DeprecatedImagePropType');
+const NativeModules = require('../BatchedBridge/NativeModules');
+const React = require('react');
+const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
+const StyleSheet = require('../StyleSheet/StyleSheet');
 
-const flattenStyle = require('flattenStyle');
-const requireNativeComponent = require('requireNativeComponent');
-const resolveAssetSource = require('resolveAssetSource');
+const flattenStyle = require('../StyleSheet/flattenStyle');
+const requireNativeComponent = require('../ReactNative/requireNativeComponent');
+const resolveAssetSource = require('./resolveAssetSource');
 
 const ImageViewManager = NativeModules.ImageViewManager;
 
 const RCTImageView = requireNativeComponent('RCTImageView');
 
-import type {ImageProps as ImagePropsType} from 'ImageProps';
+import type {ImageProps as ImagePropsType} from './ImageProps';
 
-import type {ImageStyleProp} from 'StyleSheet';
+import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
 
 function getSize(
   uri: string,
@@ -45,20 +45,37 @@ function getSize(
   );
 }
 
+function getSizeWithHeaders(
+  uri: string,
+  headers: {[string]: string},
+  success: (width: number, height: number) => void,
+  failure?: (error: any) => void,
+) {
+  return ImageViewManager.getSizeWithHeaders({uri, headers})
+    .then(function(sizes) {
+      success(sizes.width, sizes.height);
+    })
+    .catch(
+      failure ||
+        function() {
+          console.warn('Failed to get size for image: ' + uri);
+        },
+    );
+}
+
 function prefetch(url: string) {
   return ImageViewManager.prefetchImage(url);
 }
 
 async function queryCache(
   urls: Array<string>,
-): Promise<Map<string, 'memory' | 'disk'>> {
+): Promise<{[string]: 'memory' | 'disk' | 'disk/memory'}> {
   return await ImageViewManager.queryCache(urls);
 }
 
-declare class ImageComponentType extends ReactNative.NativeComponent<
-  ImagePropsType,
-> {
+declare class ImageComponentType extends ReactNative.NativeComponent<ImagePropsType> {
   static getSize: typeof getSize;
+  static getSizeWithHeaders: typeof getSizeWithHeaders;
   static prefetch: typeof prefetch;
   static queryCache: typeof queryCache;
   static resolveAssetSource: typeof resolveAssetSource;
@@ -138,6 +155,17 @@ Image.displayName = 'Image';
  * error found when Flow v0.89 was deployed. To see the error, delete this
  * comment and run Flow. */
 Image.getSize = getSize;
+
+/**
+ * Retrieve the width and height (in pixels) of an image prior to displaying it
+ * with the ability to provide the headers for the request.
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#getsizewithheaders
+ */
+/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+Image.getSizeWithHeaders = getSizeWithHeaders;
 
 /**
  * Prefetches a remote image for later use by downloading it to the disk

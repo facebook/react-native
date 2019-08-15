@@ -7,12 +7,12 @@
 
 package com.facebook.react.packagerconnection;
 
-import javax.annotation.Nullable;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+
+import javax.annotation.Nullable;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -24,10 +24,12 @@ public class PackagerConnectionSettings {
 
   private final SharedPreferences mPreferences;
   private final String mPackageName;
+  private final Context mAppContext;
 
   public PackagerConnectionSettings(Context applicationContext) {
     mPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     mPackageName = applicationContext.getPackageName();
+    mAppContext = applicationContext;
   }
 
   public String getDebugServerHost() {
@@ -39,12 +41,12 @@ public class PackagerConnectionSettings {
       return Assertions.assertNotNull(hostFromSettings);
     }
 
-    String host = AndroidInfoHelpers.getServerHost();
+    String host = AndroidInfoHelpers.getServerHost(mAppContext);
 
     if (host.equals(AndroidInfoHelpers.DEVICE_LOCALHOST)) {
       FLog.w(
         TAG,
-        "You seem to be running on device. Run 'adb reverse tcp:8081 tcp:8081' " +
+        "You seem to be running on device. Run '" + AndroidInfoHelpers.getAdbReverseTcpCommand(mAppContext) + "' " +
           "to forward the debug server's port to the device.");
     }
 
@@ -52,7 +54,7 @@ public class PackagerConnectionSettings {
   }
 
   public String getInspectorServerHost() {
-    return AndroidInfoHelpers.getInspectorProxyHost();
+    return AndroidInfoHelpers.getInspectorProxyHost(mAppContext);
   }
 
   public @Nullable String getPackageName() {

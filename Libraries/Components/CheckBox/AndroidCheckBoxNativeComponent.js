@@ -9,11 +9,11 @@
  */
 'use strict';
 
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
-import type {ViewProps} from 'ViewPropTypes';
-import type {SyntheticEvent} from 'CoreEventTypes';
-import type {NativeComponent} from 'ReactNative';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 
 type CheckBoxEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -42,6 +42,7 @@ type NativeProps = $ReadOnly<{|
 
   on?: ?boolean,
   enabled?: boolean,
+  tintColors: {|true: ?number, false: ?number|} | typeof undefined,
 |}>;
 
 type CheckBoxNativeType = Class<NativeComponent<NativeProps>>;

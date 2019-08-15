@@ -10,15 +10,12 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
-  AccessibilityInfo,
   StyleSheet,
   Text,
   View,
-  ToastAndroid,
   TouchableWithoutFeedback,
-} = ReactNative;
+} = require('react-native');
 
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');
@@ -35,32 +32,6 @@ class AccessibilityAndroidExample extends React.Component {
     count: 0,
     backgroundImportantForAcc: 0,
     forgroundImportantForAcc: 0,
-    screenReaderEnabled: false,
-  };
-
-  componentDidMount() {
-    AccessibilityInfo.addEventListener(
-      'change',
-      this._handleScreenReaderToggled,
-    );
-    AccessibilityInfo.fetch().done(isEnabled => {
-      this.setState({
-        screenReaderEnabled: isEnabled,
-      });
-    });
-  }
-
-  componentWillUnmount() {
-    AccessibilityInfo.removeEventListener(
-      'change',
-      this._handleScreenReaderToggled,
-    );
-  }
-
-  _handleScreenReaderToggled = isEnabled => {
-    this.setState({
-      screenReaderEnabled: isEnabled,
-    });
   };
 
   _addOne = () => {
@@ -83,6 +54,7 @@ class AccessibilityAndroidExample extends React.Component {
 
   render() {
     return (
+<<<<<<< HEAD
       <RNTesterPage title={'Accessibility'}>
         <RNTesterBlock title="Nonaccessible view with TextViews">
           <View>
@@ -211,6 +183,9 @@ class AccessibilityAndroidExample extends React.Component {
           </View>
         </RNTesterBlock>
 
+=======
+      <RNTesterPage title={'Accessibility Android APIs'}>
+>>>>>>> v0.60.0
         <RNTesterBlock title="LiveRegion">
           <TouchableWithoutFeedback onPress={this._addOne}>
             <View style={styles.embedded}>
@@ -219,13 +194,6 @@ class AccessibilityAndroidExample extends React.Component {
           </TouchableWithoutFeedback>
           <Text accessibilityLiveRegion="polite">
             Clicked {this.state.count} times
-          </Text>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Check if the screen reader is enabled">
-          <Text>
-            The screen reader is{' '}
-            {this.state.screenReaderEnabled ? 'enabled' : 'disabled'}.
           </Text>
         </RNTesterBlock>
 
@@ -328,8 +296,8 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = 'Accessibility';
-exports.description = 'Examples of using Accessibility API.';
+exports.title = 'AccessibilityAndroid';
+exports.description = 'Android specific Accessibility APIs.';
 exports.examples = [
   {
     title: 'Accessibility elements',

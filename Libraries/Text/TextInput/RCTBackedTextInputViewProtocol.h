@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_END
 #endif // ]TODO(macOS ISS#2323203)
 
 @protocol RCTBackedTextInputDelegate;
+@class RCTTextAttributes;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif // TODO(macOS ISS#2323203)
 @property (nonatomic, weak, nullable) id<RCTBackedTextInputDelegate> textInputDelegate;
 @property (nonatomic, readonly) CGSize contentSize;
+@property (nonatomic, strong, nullable) RCTTextAttributes *reactTextAttributes;
 
 // This protocol disallows direct access to `selectedTextRange` property because
 // unwise usage of it can break the `delegate` behavior. So, we always have to

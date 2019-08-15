@@ -34,11 +34,21 @@ bool Fragment::operator!=(const Fragment &rhs) const {
 
 void AttributedString::appendFragment(const Fragment &fragment) {
   ensureUnsealed();
+
+  if (fragment.string.empty()) {
+    return;
+  }
+
   fragments_.push_back(fragment);
 }
 
 void AttributedString::prependFragment(const Fragment &fragment) {
   ensureUnsealed();
+
+  if (fragment.string.empty()) {
+    return;
+  }
+
   fragments_.insert(fragments_.begin(), fragment);
 }
 
@@ -60,7 +70,7 @@ void AttributedString::prependAttributedString(
       attributedString.fragments_.end());
 }
 
-const std::vector<Fragment> &AttributedString::getFragments() const {
+const Fragments &AttributedString::getFragments() const {
   return fragments_;
 }
 
@@ -70,6 +80,10 @@ std::string AttributedString::getString() const {
     string += fragment.string;
   }
   return string;
+}
+
+bool AttributedString::isEmpty() const {
+  return fragments_.empty();
 }
 
 bool AttributedString::operator==(const AttributedString &rhs) const {

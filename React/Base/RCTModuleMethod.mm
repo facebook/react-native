@@ -90,8 +90,9 @@ static BOOL RCTParseSelectorPart(const char **input, NSMutableString *selector)
 
 static BOOL RCTParseUnused(const char **input)
 {
-  return RCTReadString(input, "__unused") ||
-         RCTReadString(input, "__attribute__((unused))");
+  return RCTReadString(input, "__attribute__((unused))") ||
+         RCTReadString(input, "__attribute__((__unused__))") ||
+         RCTReadString(input, "__unused");
 }
 
 static RCTNullability RCTParseNullability(const char **input)
@@ -106,9 +107,11 @@ static RCTNullability RCTParseNullability(const char **input)
 
 static RCTNullability RCTParseNullabilityPostfix(const char **input)
 {
-  if (RCTReadString(input, "_Nullable")) {
+  if (RCTReadString(input, "_Nullable") ||
+      RCTReadString(input, "__nullable")) {
     return RCTNullable;
-  } else if (RCTReadString(input, "_Nonnull")) {
+  } else if (RCTReadString(input, "_Nonnull") ||
+             RCTReadString(input, "__nonnull")) {
     return RCTNonnullable;
   }
   return RCTNullabilityUnspecified;
@@ -127,7 +130,6 @@ static BOOL checkCallbackMultipleInvocations(BOOL *didInvoke) {
 }
 #endif
 
-extern NSString *RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **arguments);
 NSString *RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **arguments)
 {
   RCTSkipWhitespace(&input);
@@ -142,17 +144,34 @@ NSString *RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *
     // Parse type
     if (RCTReadChar(&input, '(')) {
       RCTSkipWhitespace(&input);
-
-      BOOL unused = RCTParseUnused(&input);
-      RCTSkipWhitespace(&input);
-
+      
+      // 5 cases that both nullable and __unused exist
+      // 1: foo:(nullable __unused id)foo 2: foo:(nullable id __unused)foo
+      // 3: foo:(__unused id _Nullable)foo 4: foo:(id __unused _Nullable)foo
+      // 5: foo:(id _Nullable __unused)foo
       RCTNullability nullability = RCTParseNullability(&input);
+      RCTSkipWhitespace(&input);
+      
+      BOOL unused = RCTParseUnused(&input);
       RCTSkipWhitespace(&input);
 
       NSString *type = RCTParseType(&input);
       RCTSkipWhitespace(&input);
+      
       if (nullability == RCTNullabilityUnspecified) {
         nullability = RCTParseNullabilityPostfix(&input);
+        RCTSkipWhitespace(&input);
+        if (!unused) {
+          unused = RCTParseUnused(&input);
+          RCTSkipWhitespace(&input);
+          if (unused && nullability == RCTNullabilityUnspecified) {
+            nullability = RCTParseNullabilityPostfix(&input);
+            RCTSkipWhitespace(&input);
+          }
+        }
+      } else if (!unused) {
+        unused = RCTParseUnused(&input);
+        RCTSkipWhitespace(&input);
       }
       [args addObject:[[RCTMethodArgument alloc] initWithType:type
                                                   nullability:nullability
@@ -550,7 +569,6 @@ RCT_EXTERN_C_END
   [_invocation invokeWithTarget:module];
 #endif
 
-  index = 2;
   [_retainedObjects removeAllObjects];
 
   if (_methodInfo->isSync) {

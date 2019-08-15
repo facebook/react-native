@@ -13,117 +13,117 @@
 console.disableYellowBox = true;
 
 // Include callable JS modules first, in case one of the other ones below throws
-require('ProgressBarTestModule');
-require('ViewRenderingTestModule');
-require('TestJavaToJSArgumentsModule');
-require('TestJSLocaleModule');
-require('TestJSToJavaParametersModule');
-require('TestJavaToJSReturnValuesModule');
-require('UIManagerTestModule');
+require('./ProgressBarTestModule');
+require('./ViewRenderingTestModule');
+require('./TestJavaToJSArgumentsModule');
+require('./TestJSLocaleModule');
+require('./TestJSToJavaParametersModule');
+require('./TestJavaToJSReturnValuesModule');
+require('./UIManagerTestModule');
 
-require('CatalystRootViewTestModule');
-require('DatePickerDialogTestModule');
-require('MeasureLayoutTestModule');
-require('PickerAndroidTestModule');
-require('ScrollViewTestModule');
-require('ShareTestModule');
-require('SwipeRefreshLayoutTestModule');
-require('TextInputTestModule');
-require('TimePickerDialogTestModule');
+require('./CatalystRootViewTestModule');
+require('./DatePickerDialogTestModule');
+require('./MeasureLayoutTestModule');
+require('./PickerAndroidTestModule');
+require('./ScrollViewTestModule');
+require('./ShareTestModule');
+require('./SwipeRefreshLayoutTestModule');
+require('./TextInputTestModule');
+require('./TimePickerDialogTestModule');
 
 // Define catalyst test apps used in integration tests
-const AppRegistry = require('AppRegistry');
+const {AppRegistry} = require('react-native');
 
 const apps = [
   {
     appKey: 'AnimatedTransformTestApp',
     component: () =>
-      require('AnimatedTransformTestModule').AnimatedTransformTestApp,
+      require('./AnimatedTransformTestModule').AnimatedTransformTestApp,
   },
   {
     appKey: 'CatalystRootViewTestApp',
     component: () =>
-      require('CatalystRootViewTestModule').CatalystRootViewTestApp,
+      require('./CatalystRootViewTestModule').CatalystRootViewTestApp,
   },
   {
     appKey: 'DatePickerDialogTestApp',
     component: () =>
-      require('DatePickerDialogTestModule').DatePickerDialogTestApp,
+      require('./DatePickerDialogTestModule').DatePickerDialogTestApp,
   },
   {
     appKey: 'JSResponderTestApp',
-    component: () => require('JSResponderTestApp'),
+    component: () => require('./JSResponderTestApp'),
   },
   {
     appKey: 'HorizontalScrollViewTestApp',
     component: () =>
-      require('ScrollViewTestModule').HorizontalScrollViewTestApp,
+      require('./ScrollViewTestModule').HorizontalScrollViewTestApp,
   },
   {
     appKey: 'ImageOverlayColorTestApp',
-    component: () => require('ImageOverlayColorTestApp'),
+    component: () => require('./ImageOverlayColorTestApp'),
   },
   {
     appKey: 'ImageErrorTestApp',
-    component: () => require('ImageErrorTestApp'),
+    component: () => require('./ImageErrorTestApp'),
   },
   {
     appKey: 'InitialPropsTestApp',
-    component: () => require('InitialPropsTestApp'),
+    component: () => require('./InitialPropsTestApp'),
   },
   {
     appKey: 'LayoutEventsTestApp',
-    component: () => require('LayoutEventsTestApp'),
+    component: () => require('./LayoutEventsTestApp'),
   },
   {
     appKey: 'MeasureLayoutTestApp',
-    component: () => require('MeasureLayoutTestModule').MeasureLayoutTestApp,
+    component: () => require('./MeasureLayoutTestModule').MeasureLayoutTestApp,
   },
   {
     appKey: 'MultitouchHandlingTestAppModule',
-    component: () => require('MultitouchHandlingTestAppModule'),
+    component: () => require('./MultitouchHandlingTestAppModule'),
   },
   {
     appKey: 'NativeIdTestApp',
-    component: () => require('NativeIdTestModule').NativeIdTestApp,
+    component: () => require('./NativeIdTestModule').NativeIdTestApp,
   },
   {
     appKey: 'PickerAndroidTestApp',
-    component: () => require('PickerAndroidTestModule').PickerAndroidTestApp,
+    component: () => require('./PickerAndroidTestModule').PickerAndroidTestApp,
   },
   {
     appKey: 'ScrollViewTestApp',
-    component: () => require('ScrollViewTestModule').ScrollViewTestApp,
+    component: () => require('./ScrollViewTestModule').ScrollViewTestApp,
   },
   {
     appKey: 'ShareTestApp',
-    component: () => require('ShareTestModule').ShareTestApp,
+    component: () => require('./ShareTestModule').ShareTestApp,
   },
   {
     appKey: 'SubviewsClippingTestApp',
-    component: () => require('SubviewsClippingTestModule').App,
+    component: () => require('./SubviewsClippingTestModule').App,
   },
   {
     appKey: 'SwipeRefreshLayoutTestApp',
     component: () =>
-      require('SwipeRefreshLayoutTestModule').SwipeRefreshLayoutTestApp,
+      require('./SwipeRefreshLayoutTestModule').SwipeRefreshLayoutTestApp,
   },
   {
     appKey: 'TextInputTestApp',
-    component: () => require('TextInputTestModule').TextInputTestApp,
+    component: () => require('./TextInputTestModule').TextInputTestApp,
   },
   {
     appKey: 'TestIdTestApp',
-    component: () => require('TestIdTestModule').TestIdTestApp,
+    component: () => require('./TestIdTestModule').TestIdTestApp,
   },
   {
     appKey: 'TimePickerDialogTestApp',
     component: () =>
-      require('TimePickerDialogTestModule').TimePickerDialogTestApp,
+      require('./TimePickerDialogTestModule').TimePickerDialogTestApp,
   },
   {
     appKey: 'TouchBubblingTestAppModule',
-    component: () => require('TouchBubblingTestAppModule'),
+    component: () => require('./TouchBubblingTestAppModule'),
   },
 ];
 

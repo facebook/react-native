@@ -1,4 +1,8 @@
+<<<<<<< HEAD:ReactCommon/jsi/jsi/jsi.cpp
 /*
+=======
+/**
+>>>>>>> v0.60.0:ReactCommon/jsi/jsi/jsi.cpp
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -85,6 +89,7 @@ Instrumentation& Runtime::instrumentation() {
       return false;
     }
 
+<<<<<<< HEAD:ReactCommon/jsi/jsi/jsi.cpp
     void writeBridgeTrafficTraceToFile(const std::string&) const override {
       std::abort();
     }
@@ -93,6 +98,8 @@ Instrumentation& Runtime::instrumentation() {
       std::abort();
     }
 
+=======
+>>>>>>> v0.60.0:ReactCommon/jsi/jsi/jsi.cpp
     void dumpProfilerSymbolsToFile(const std::string&) const override {
       std::abort();
     }

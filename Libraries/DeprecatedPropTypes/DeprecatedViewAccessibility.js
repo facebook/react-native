@@ -11,31 +11,6 @@
 'use strict';
 
 module.exports = {
-  DeprecatedAccessibilityTraits: [
-    'none',
-    'button',
-    'link',
-    'header',
-    'search',
-    'image',
-    'selected',
-    'plays',
-    'key',
-    'text',
-    'summary',
-    'disabled',
-    'frequentUpdates',
-    'startsMedia',
-    'adjustable',
-    'allowsDirectInteraction',
-    'pageTurn',
-  ],
-  DeprecatedAccessibilityComponentTypes: [
-    'none',
-    'button',
-    'radiobutton_checked',
-    'radiobutton_unchecked',
-  ],
   // This must be kept in sync with the AccessibilityRolesMask in RCTViewManager.m
   DeprecatedAccessibilityRoles: [
     'none',
@@ -75,5 +50,9 @@ module.exports = {
     'busy',
     'expanded',
     'collapsed',
+<<<<<<< HEAD
+=======
+    'hasPopup',
+>>>>>>> v0.60.0
   ],
 };

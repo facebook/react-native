@@ -36,6 +36,7 @@ LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture -Wno-unused-varia
 LOCAL_STATIC_LIBRARIES := boost jsi
 LOCAL_SHARED_LIBRARIES := libfb libfolly_json libglog 
 
+<<<<<<< HEAD
 LOCAL_V8_FILES := \
     File.cpp \
     V8NativeModules.cpp \
@@ -46,6 +47,10 @@ ifeq ($(JS_ENGINE), V8)
   LOCAL_STATIC_LIBRARIES := v8helpers
   LOCAL_SHARED_LIBRARIES += libv8 libv8platform libv8base
 endif
+=======
+LOCAL_STATIC_LIBRARIES := boost jsi
+LOCAL_SHARED_LIBRARIES := jsinspector libfolly_json glog
+>>>>>>> v0.60.0
 
 include $(BUILD_STATIC_LIBRARY)
 

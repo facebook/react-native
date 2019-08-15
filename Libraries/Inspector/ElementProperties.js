@@ -10,20 +10,20 @@
 
 'use strict';
 
-const BoxInspector = require('BoxInspector');
-const React = require('React');
-const StyleInspector = require('StyleInspector');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const TouchableHighlight = require('TouchableHighlight');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-const View = require('View');
+const BoxInspector = require('./BoxInspector');
+const React = require('react');
+const StyleInspector = require('./StyleInspector');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Text = require('../Text/Text');
+const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
+const TouchableWithoutFeedback = require('../Components/Touchable/TouchableWithoutFeedback');
+const View = require('../Components/View/View');
 
-const flattenStyle = require('flattenStyle');
-const mapWithSeparator = require('mapWithSeparator');
-const openFileInEditor = require('openFileInEditor');
+const flattenStyle = require('../StyleSheet/flattenStyle');
+const mapWithSeparator = require('../Utilities/mapWithSeparator');
+const openFileInEditor = require('../Core/Devtools/openFileInEditor');
 
-import type {ViewStyleProp} from 'StyleSheet';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 
 type Props = $ReadOnly<{|
   hierarchy: Array<{|name: string|}>,

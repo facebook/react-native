@@ -10,6 +10,7 @@
 
 'use strict';
 
+<<<<<<< HEAD
 export type AccessibilityTrait =
   | 'none'
   | 'button'
@@ -40,6 +41,9 @@ export type AccessibilityComponentType =
   | 'button'
   | 'radiobutton_checked'
   | 'radiobutton_unchecked';
+=======
+import type {SyntheticEvent} from 'CoreEventTypes';
+>>>>>>> v0.60.0
 
 // [TODO(android ISS)
 export type AccessibilityNodeInfoProp = {
@@ -75,6 +79,7 @@ export type AccessibilityRole =
   | 'tablist'
   | 'timer'
   | 'toolbar';
+<<<<<<< HEAD
 
 export type AccessibilityState =
   | 'selected'
@@ -156,3 +161,30 @@ module.exports = {
     'collapsed',
   ],
 };
+=======
+
+// This must be kept in sync with the AccessibilityStatesMask in RCTViewManager.m
+export type AccessibilityStates = $ReadOnlyArray<
+  | 'disabled'
+  | 'selected'
+  | 'checked'
+  | 'unchecked'
+  | 'busy'
+  | 'expanded'
+  | 'collapsed'
+  | 'hasPopup',
+>;
+
+// the info associated with an accessibility action
+export type AccessibilityActionInfo = $ReadOnly<{
+  name: string,
+  label?: string,
+}>;
+
+// The info included in the event sent to onAccessibilityAction
+export type AccessibilityActionEvent = SyntheticEvent<
+  $ReadOnly<{
+    actionName: string,
+  }>,
+>;
+>>>>>>> v0.60.0

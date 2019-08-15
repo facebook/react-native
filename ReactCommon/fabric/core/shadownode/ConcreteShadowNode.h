@@ -7,8 +7,10 @@
 
 #pragma once
 
+#include <react/core/ConcreteState.h>
 #include <react/core/Props.h>
 #include <react/core/ShadowNode.h>
+#include <react/core/StateData.h>
 
 namespace facebook {
 namespace react {
@@ -22,7 +24,8 @@ namespace react {
 template <
     const char *concreteComponentName,
     typename PropsT,
-    typename EventEmitterT = EventEmitter>
+    typename EventEmitterT = EventEmitter,
+    typename StateDataT = StateData>
 class ConcreteShadowNode : public ShadowNode {
   static_assert(
       std::is_base_of<Props, PropsT>::value,
@@ -36,6 +39,8 @@ class ConcreteShadowNode : public ShadowNode {
   using ConcreteEventEmitter = EventEmitterT;
   using SharedConcreteEventEmitter = std::shared_ptr<const EventEmitterT>;
   using SharedConcreteShadowNode = std::shared_ptr<const ConcreteShadowNode>;
+  using ConcreteState = ConcreteState<StateDataT>;
+  using ConcreteStateData = StateDataT;
 
   static ComponentName Name() {
     return ComponentName(concreteComponentName);
@@ -60,6 +65,12 @@ class ConcreteShadowNode : public ShadowNode {
     return defaultSharedProps;
   }
 
+  static ConcreteStateData initialStateData(
+      ShadowNodeFragment const &fragment,
+      ComponentDescriptor const &componentDescriptor) {
+    return {};
+  }
+
   ComponentName getComponentName() const override {
     return ComponentName(concreteComponentName);
   }
@@ -74,11 +85,32 @@ class ConcreteShadowNode : public ShadowNode {
   }
 
   /*
+   * Returns a concrete state data associated with the node.
+   * Thread-safe after the node is sealed.
+   */
+  ConcreteStateData const &getStateData() const {
+    return std::static_pointer_cast<const ConcreteState>(state_)->getData();
+  }
+
+  /*
+   * Creates and assigns a new state object containing given state data.
+   * Can be called only before the node is sealed (usually during construction).
+   */
+  void setStateData(ConcreteStateData &&data) {
+    ensureUnsealed();
+    state_ = std::make_shared<ConcreteState const>(std::move(data), *state_);
+  }
+
+  /*
    * Returns subset of children that are inherited from `SpecificShadowNodeT`.
    */
   template <typename SpecificShadowNodeT>
-  std::vector<SpecificShadowNodeT *> getChildrenSlice() const {
-    std::vector<SpecificShadowNodeT *> children;
+  better::
+      small_vector<SpecificShadowNodeT *, kShadowNodeChildrenSmallVectorSize>
+      getChildrenSlice() const {
+    better::
+        small_vector<SpecificShadowNodeT *, kShadowNodeChildrenSmallVectorSize>
+            children;
     for (const auto &childShadowNode : getChildren()) {
       auto specificChildShadowNode =
           dynamic_cast<const SpecificShadowNodeT *>(childShadowNode.get());

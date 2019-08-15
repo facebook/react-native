@@ -10,17 +10,14 @@
 
 'use strict';
 
-const EventEmitter = require('EventEmitter');
-const EventEmitterWithHolding = require('EventEmitterWithHolding');
-const EventHolder = require('EventHolder');
+const EventEmitter = require('./EventEmitter');
+const EventEmitterWithHolding = require('./EventEmitterWithHolding');
+const EventHolder = require('./EventHolder');
 
 const invariant = require('invariant');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const keyOf = require('fbjs/lib/keyOf');
 
-import type EmitterSubscription from 'EmitterSubscription';
+import type EmitterSubscription from './EmitterSubscription';
 
 const TYPES_KEY = keyOf({__types: true});
 
@@ -123,7 +120,7 @@ const EventEmitterMixin = {
     if (!this.__eventEmitter) {
       let emitter = new EventEmitter();
       if (__DEV__) {
-        const EventValidator = require('EventValidator');
+        const EventValidator = require('./EventValidator');
         emitter = EventValidator.addValidation(emitter, this.__types);
       }
 

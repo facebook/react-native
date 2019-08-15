@@ -26,6 +26,11 @@ public class ReactTextUpdate {
   private final float mPaddingBottom;
   private final int mTextAlign;
   private final int mTextBreakStrategy;
+<<<<<<< HEAD
+=======
+  private final int mSelectionStart;
+  private final int mSelectionEnd;
+>>>>>>> v0.60.0
   private final int mJustificationMode;
 
   /**
@@ -51,7 +56,13 @@ public class ReactTextUpdate {
         paddingBottom,
         textAlign,
         Layout.BREAK_STRATEGY_HIGH_QUALITY,
+<<<<<<< HEAD
         Layout.JUSTIFICATION_MODE_NONE);
+=======
+        Layout.JUSTIFICATION_MODE_NONE,
+        -1,
+        -1);
+>>>>>>> v0.60.0
   }
 
   public ReactTextUpdate(
@@ -65,6 +76,36 @@ public class ReactTextUpdate {
     int textAlign,
     int textBreakStrategy,
     int justificationMode) {
+<<<<<<< HEAD
+=======
+    this(text,
+        jsEventCounter,
+        containsImages,
+        paddingStart,
+        paddingTop,
+        paddingEnd,
+        paddingBottom,
+        textAlign,
+        textBreakStrategy,
+        justificationMode,
+        -1,
+        -1);
+  }
+
+  public ReactTextUpdate(
+    Spannable text,
+    int jsEventCounter,
+    boolean containsImages,
+    float paddingStart,
+    float paddingTop,
+    float paddingEnd,
+    float paddingBottom,
+    int textAlign,
+    int textBreakStrategy,
+    int justificationMode,
+    int selectionStart,
+    int selectionEnd) {
+>>>>>>> v0.60.0
     mText = text;
     mJsEventCounter = jsEventCounter;
     mContainsImages = containsImages;
@@ -74,6 +115,11 @@ public class ReactTextUpdate {
     mPaddingBottom = paddingBottom;
     mTextAlign = textAlign;
     mTextBreakStrategy = textBreakStrategy;
+<<<<<<< HEAD
+=======
+    mSelectionStart = selectionStart;
+    mSelectionEnd = selectionEnd;
+>>>>>>> v0.60.0
     mJustificationMode = justificationMode;
   }
 
@@ -116,4 +162,15 @@ public class ReactTextUpdate {
   public int getJustificationMode() {
     return mJustificationMode;
   }
+<<<<<<< HEAD
+=======
+
+  public int getSelectionStart() {
+    return mSelectionStart;
+  }
+
+  public int getSelectionEnd() {
+    return mSelectionEnd;
+  }
+>>>>>>> v0.60.0
 }

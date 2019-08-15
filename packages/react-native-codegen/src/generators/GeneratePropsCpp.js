@@ -11,6 +11,7 @@
 'use strict';
 
 import type {ComponentShape, SchemaType} from '../CodegenSchema';
+const {getImports} = require('./CppHelpers');
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
@@ -24,7 +25,7 @@ const template = `
  */
 
 #include <react/components/::_LIBRARY_::/Props.h>
-#include <react/core/propsConversions.h>
+::_IMPORTS_::
 
 namespace facebook {
 namespace react {
@@ -51,7 +52,7 @@ function generatePropsString(component: ComponentShape) {
         prop.name
       }", sourceProps.${prop.name}, ${prop.name}))`;
     })
-    .join(',\n');
+    .join(',\n' + '    ');
 }
 
 function getClassExtendString(component): string {
@@ -82,6 +83,9 @@ function getClassExtendString(component): string {
 module.exports = {
   generate(libraryName: string, schema: SchemaType): FilesOutput {
     const fileName = 'Props.cpp';
+    const allImports: Set<string> = new Set([
+      '#include <react/core/propsConversions.h>',
+    ]);
 
     const componentProps = Object.keys(schema.modules)
       .map(moduleName => {
@@ -99,6 +103,9 @@ module.exports = {
             const propsString = generatePropsString(component);
             const extendString = getClassExtendString(component);
 
+            const imports = getImports(component);
+            imports.forEach(allImports.add, allImports);
+
             const replacedTemplate = componentTemplate
               .replace(/::_CLASSNAME_::/g, newName)
               .replace('::_EXTEND_CLASSES_::', extendString)
@@ -113,7 +120,15 @@ module.exports = {
 
     const replacedTemplate = template
       .replace(/::_COMPONENT_CLASSES_::/g, componentProps)
-      .replace('::_LIBRARY_::', libraryName);
+      .replace('::_LIBRARY_::', libraryName)
+      .replace(
+        '::_IMPORTS_::',
+
+        Array.from(allImports)
+          .sort()
+          .join('\n')
+          .trim(),
+      );
 
     return new Map([[fileName, replacedTemplate]]);
   },

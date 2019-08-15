@@ -9,12 +9,10 @@
 
 'use strict';
 
-const React = require('React');
-const Image = require('Image');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
+const React = require('react');
+const {Image, NativeModules, StyleSheet, View} = require('react-native');
 
-const RecordingModule = require('NativeModules').Recording;
+const {Recording: RecordingModule} = NativeModules;
 
 class ImageErrorTestApp extends React.Component {
   onError = e => {

@@ -1,41 +1,24 @@
 platform :ios, '9.0'
 
+require_relative '../scripts/autolink-ios'
+
 target 'RNTester' do
   # Uncomment for Swift
   # use_frameworks!
 
   project 'RNTesterPods.xcodeproj'
+  
+  # Enable TurboModule
+  use_react_native!(path: "..", turbo_modules_enabled: true)
+  pod 'React-turbomodule-samples', :path => '../ReactCommon/turbomodule/samples'
 
-  pod 'React', :path => '../', :subspecs => [
-    'ART',
-    'Core',
-    'CxxBridge',
-    'DevSupport',
-    'RCTActionSheet',
-    'RCTAnimation',
-    'RCTBlob',
-    'RCTCameraRoll',
-    'RCTGeolocation',
-    'RCTImage',
-    'RCTLinkingIOS',
-    'RCTNetwork',
-    'RCTPushNotification',
-    'RCTSettings',
-    'RCTText',
-    'RCTVibration',
-    'RCTWebSocket',
+  # Additional Pods which aren't included in the default Podfile
+  pod 'React-RCTCameraRoll', :path => '../Libraries/CameraRoll'
+  pod 'React-ART', :path => '../Libraries/ART'
+  pod 'React-RCTPushNotification', :path => '../Libraries/PushNotificationIOS'
 
-    # Below this line is Fabric (experimental) specific.
-    # Currently they are disabled due to missing pre-reqs, e.g. upgrading Folly.
-    # 'RCTFabric',
-    # 'RCTFabricSample', # This is RNTesterPods specific sample.
-  ]
-
-  pod 'yoga', :path => '../ReactCommon/yoga'
-
-  # Third party deps podspec link
-  pod 'DoubleConversion', :podspec => '../third-party-podspecs/DoubleConversion.podspec'
-  pod 'glog', :podspec => '../third-party-podspecs/glog.podspec'
-  pod 'Folly', :podspec => '../third-party-podspecs/Folly.podspec'
-
+  # Additional Pods which are classed as unstable
+  #
+  # To use fabric: add `fabric_enabled` option to the use_react_native method above, like below
+  # use_react_native!(path: "..", turbo_modules_enabled: true, fabric_enabled: true)
 end

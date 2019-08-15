@@ -10,6 +10,7 @@ package com.facebook.react.bridge;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.turbomodule.core.interfaces.JSCallInvokerHolder;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -105,6 +106,7 @@ public interface CatalystInstance
   void addJSIModules(List<JSIModuleSpec> jsiModules);
 
   /**
+<<<<<<< HEAD
    * Get the C pointer (as a long) of the underneath Instance.
    */
   long getPointerOfInstancePointer();
@@ -113,4 +115,10 @@ public interface CatalystInstance
     void onModuleRegistryCreated(CatalystInstance catalystInstance);
   }
 
+=======
+   * Returns a hybrid object that contains a pointer to JSCallInvoker.
+   * Required for TurboModuleManager initialization.
+   */
+  JSCallInvokerHolder getJSCallInvokerHolder();
+>>>>>>> v0.60.0
 }

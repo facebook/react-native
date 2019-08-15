@@ -66,7 +66,13 @@ public:
                             uint64_t bundleVersion, std::string bundleURL, bool loadSynchronously,
                             std::string&& bytecodeFileName);
   static bool isIndexedRAMBundle(const char *sourcePath);
+<<<<<<< HEAD
   virtual void loadRAMBundleFromFile(const std::string& sourcePath,
+=======
+  static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString>* string);
+  void loadRAMBundleFromString(std::unique_ptr<const JSBigString> script, const std::string& sourceURL);
+  void loadRAMBundleFromFile(const std::string& sourcePath,
+>>>>>>> v0.60.0
                              const std::string& sourceURL,
                              bool loadSynchronously);
   virtual void loadRAMBundle(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
@@ -98,7 +104,13 @@ public:
    */
   int64_t getPeakJsMemoryUsage() const noexcept;
 
+<<<<<<< HEAD
 protected:
+=======
+  void invokeAsync(std::function<void()>&& func);
+
+private:
+>>>>>>> v0.60.0
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);
   virtual void loadApplication(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                        std::unique_ptr<const JSBigString> bundle,

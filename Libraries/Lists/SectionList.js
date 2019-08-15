@@ -9,16 +9,20 @@
  */
 'use strict';
 
-const Platform = require('Platform');
-const React = require('React');
-const ScrollView = require('ScrollView');
-const VirtualizedSectionList = require('VirtualizedSectionList');
+const Platform = require('../Utilities/Platform');
+const React = require('react');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const VirtualizedSectionList = require('./VirtualizedSectionList');
 
-import type {ViewToken} from 'ViewabilityHelper';
-import type {Props as VirtualizedSectionListProps} from 'VirtualizedSectionList';
+import type {ViewToken} from './ViewabilityHelper';
+import type {
+  SectionBase as _SectionBase,
+  Props as VirtualizedSectionListProps,
+} from './VirtualizedSectionList';
 
 type Item = any;
 
+<<<<<<< HEAD
 export type SectionBase<SectionItemT> = {
   /**
    * The data for rendering items in this section.
@@ -48,6 +52,9 @@ export type SectionBase<SectionItemT> = {
   // TODO: support more optional/override props
   // onViewableItemsChanged?: ...
 };
+=======
+export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
+>>>>>>> v0.60.0
 
 type RequiredProps<SectionT: SectionBase<any>> = {
   /**
@@ -328,10 +335,17 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
   }
 
   render() {
-    /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.66 was deployed. To see the error delete this
-     * comment and run Flow. */
-    return <VirtualizedSectionList {...this.props} ref={this._captureRef} />;
+    return (
+      /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.66 was deployed. To see the error delete this
+       * comment and run Flow. */
+      <VirtualizedSectionList
+        {...this.props}
+        ref={this._captureRef}
+        getItemCount={items => items.length}
+        getItem={(items, index) => items[index]}
+      />
+    );
   }
 
   _wrapperListRef: ?React.ElementRef<typeof VirtualizedSectionList>;

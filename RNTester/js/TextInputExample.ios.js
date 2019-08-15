@@ -10,11 +10,18 @@
 
 'use strict';
 
-const Button = require('Button');
-const InputAccessoryView = require('InputAccessoryView');
 const React = require('react');
-const ReactNative = require('react-native');
-const {Text, TextInput, View, StyleSheet, Slider, Switch, Alert} = ReactNative;
+const {
+  Button,
+  InputAccessoryView,
+  Text,
+  TextInput,
+  View,
+  StyleSheet,
+  Slider,
+  Switch,
+  Alert,
+} = require('react-native');
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render() {
@@ -530,6 +537,11 @@ const styles = StyleSheet.create({
     padding: 4,
     marginBottom: 4,
   },
+  multilinePlaceholderStyles: {
+    letterSpacing: 10,
+    lineHeight: 20,
+    textAlign: 'center',
+  },
   multilineExpandable: {
     height: 'auto',
     maxHeight: 100,
@@ -540,6 +552,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Cochin',
     height: 60,
+  },
+  singlelinePlaceholderStyles: {
+    letterSpacing: 10,
+    textAlign: 'center',
   },
   eventLabel: {
     margin: 3,
@@ -813,9 +829,8 @@ exports.examples = [
       ];
       const examples = clearButtonModes.map(mode => {
         return (
-          <WithLabel label={mode}>
+          <WithLabel key={mode} label={mode}>
             <TextInput
-              key={mode}
               style={styles.default}
               clearButtonMode={mode}
               defaultValue={mode}
@@ -1124,4 +1139,29 @@ exports.examples = [
       );
     },
   },
+<<<<<<< HEAD
+=======
+  {
+    title: 'TextInput Placeholder Styles',
+    render: function() {
+      return (
+        <View>
+          <WithLabel label="letterSpacing: 10 lineHeight: 20 textAlign: 'center'">
+            <TextInput
+              placeholder="multiline text input"
+              multiline={true}
+              style={[styles.multiline, styles.multilinePlaceholderStyles]}
+            />
+          </WithLabel>
+          <WithLabel label="letterSpacing: 10 textAlign: 'center'">
+            <TextInput
+              placeholder="singleline"
+              style={[styles.default, styles.singlelinePlaceholderStyles]}
+            />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
+>>>>>>> v0.60.0
 ];

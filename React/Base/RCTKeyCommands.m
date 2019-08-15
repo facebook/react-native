@@ -14,11 +14,6 @@
 
 #if RCT_DEV
 
-static BOOL RCTIsIOS8OrEarlier()
-{
-  return [UIDevice currentDevice].systemVersion.floatValue < 9;
-}
-
 @interface RCTKeyCommand : NSObject <NSCopying>
 
 @property (nonatomic, strong) UIKeyCommand *keyCommand;
@@ -119,7 +114,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // NOTE: throttle the key handler because on iOS 9 the handleKeyCommand:
   // method gets called repeatedly if the command key is held down.
   static NSTimeInterval lastCommand = 0;
-  if (RCTIsIOS8OrEarlier() || CACurrentMediaTime() - lastCommand > 0.5) {
+  if (CACurrentMediaTime() - lastCommand > 0.5) {
     for (RCTKeyCommand *command in [RCTKeyCommands sharedInstance].commands) {
       if ([command.keyCommand.input isEqualToString:key.input] &&
           command.keyCommand.modifierFlags == key.modifierFlags) {
@@ -171,7 +166,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
           // NOTE: throttle the key handler because on iOS 9 the handleKeyCommand:
           // method gets called repeatedly if the command key is held down.
-          if (RCTIsIOS8OrEarlier() || CACurrentMediaTime() - lastDoubleCommand > 0.5) {
+          if (CACurrentMediaTime() - lastDoubleCommand > 0.5) {
             command.block(key);
             lastDoubleCommand = CACurrentMediaTime();
           }
@@ -189,44 +184,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @end
 
-@implementation UIApplication (RCTKeyCommands)
-
-// Required for iOS 8.x
-- (BOOL)RCT_sendAction:(SEL)action to:(id)target from:(id)sender forEvent:(UIEvent *)event
-{
-  if (action == @selector(RCT_handleKeyCommand:)) {
-    [self RCT_handleKeyCommand:sender];
-    return YES;
-  } else if (action == @selector(RCT_handleDoublePressKeyCommand:)) {
-    [self RCT_handleDoublePressKeyCommand:sender];
-    return YES;
-  }
-  return [self RCT_sendAction:action to:target from:sender forEvent:event];
-}
-
-@end
-
 @implementation RCTKeyCommands
 
 + (void)initialize
 {
-  if (RCTIsIOS8OrEarlier()) {
-
-    // swizzle UIApplication
-    RCTSwapInstanceMethods([UIApplication class],
-                           @selector(keyCommands),
-                           @selector(RCT_keyCommands));
-
-    RCTSwapInstanceMethods([UIApplication class],
-                           @selector(sendAction:to:from:forEvent:),
-                           @selector(RCT_sendAction:to:from:forEvent:));
-  } else {
-
-    // swizzle UIResponder
-    RCTSwapInstanceMethods([UIResponder class],
-                           @selector(keyCommands),
-                           @selector(RCT_keyCommands));
-  }
+  // swizzle UIResponder
+  RCTSwapInstanceMethods([UIResponder class],
+                         @selector(keyCommands),
+                         @selector(RCT_keyCommands));
 }
 
 + (instancetype)sharedInstance
@@ -253,17 +218,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                              action:(void (^)(UIKeyCommand *))block
 {
   RCTAssertMainQueue();
-
-  if (input.length && flags && RCTIsIOS8OrEarlier()) {
-
-    // Workaround around the first cmd not working: http://openradar.appspot.com/19613391
-    // You can register just the cmd key and do nothing. This ensures that
-    // command-key modified commands will work first time. Fixed in iOS 9.
-
-    [self registerKeyCommandWithInput:@""
-                        modifierFlags:flags
-                               action:nil];
-  }
 
   UIKeyCommand *command = [UIKeyCommand keyCommandWithInput:input
                                               modifierFlags:flags
@@ -305,17 +259,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                              action:(void (^)(UIKeyCommand *))block
 {
   RCTAssertMainQueue();
-
-  if (input.length && flags && RCTIsIOS8OrEarlier()) {
-
-    // Workaround around the first cmd not working: http://openradar.appspot.com/19613391
-    // You can register just the cmd key and do nothing. This ensures that
-    // command-key modified commands will work first time. Fixed in iOS 9.
-
-    [self registerDoublePressKeyCommandWithInput:@""
-                        modifierFlags:flags
-                               action:nil];
-  }
 
   UIKeyCommand *command = [UIKeyCommand keyCommandWithInput:input
                                               modifierFlags:flags

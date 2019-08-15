@@ -58,6 +58,14 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
   }
 }
 
+static NSString *RCTNativeIDRegistryKey(NSString *nativeID, NSNumber *rootTag)
+{
+  if (!nativeID || !rootTag) {
+    return @"";
+  }
+  return [NSString stringWithFormat:@"%@-%@", rootTag, nativeID];
+}
+
 NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification = @"RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification";
 
 @implementation RCTUIManager
@@ -70,7 +78,12 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
   RCTLayoutAnimationGroup *_layoutAnimationGroup; // Main thread only
 
   NSMutableDictionary<NSNumber *, RCTShadowView *> *_shadowViewRegistry; // RCT thread only
+<<<<<<< HEAD
   NSMutableDictionary<NSNumber *, RCTPlatformView *> *_viewRegistry; // Main thread only // TODO(macOS ISS#2323203)
+=======
+  NSMutableDictionary<NSNumber *, UIView *> *_viewRegistry; // Main thread only
+  NSMapTable<NSString *, UIView *> *_nativeIDRegistry;
+>>>>>>> v0.60.0
 
   NSMapTable<RCTShadowView *, NSArray<NSString *> *> *_shadowViewsWithUpdatedProps; // UIManager queue only.
   NSHashTable<RCTShadowView *> *_shadowViewsWithUpdatedChildren; // UIManager queue only.
@@ -116,6 +129,7 @@ RCT_EXPORT_MODULE()
     self->_rootViewTags = nil;
     self->_shadowViewRegistry = nil;
     self->_viewRegistry = nil;
+    self->_nativeIDRegistry = nil;
     self->_bridge = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -141,13 +155,22 @@ RCT_EXPORT_MODULE()
   return _viewRegistry;
 }
 
+- (NSMapTable *)nativeIDRegistry
+{
+  if (!_nativeIDRegistry) {
+    _nativeIDRegistry = [NSMapTable strongToWeakObjectsMapTable];
+  }
+  return _nativeIDRegistry;
+}
+
 - (void)setBridge:(RCTBridge *)bridge
 {
-  RCTAssert(_bridge == nil, @"Should not re-use same UIIManager instance");
+  RCTAssert(_bridge == nil, @"Should not re-use same UIManager instance");
   _bridge = bridge;
 
   _shadowViewRegistry = [NSMutableDictionary new];
   _viewRegistry = [NSMutableDictionary new];
+  _nativeIDRegistry = [NSMapTable strongToWeakObjectsMapTable];
 
   _shadowViewsWithUpdatedProps = [NSMapTable weakToStrongObjectsMapTable];
   _shadowViewsWithUpdatedChildren = [NSHashTable weakObjectsHashTable];
@@ -168,6 +191,7 @@ RCT_EXPORT_MODULE()
     }
   }
 
+<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
@@ -175,6 +199,16 @@ RCT_EXPORT_MODULE()
                                              object:_bridge.accessibilityManager];
 #endif // TODO(macOS ISS#2323203)
 #if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+=======
+  // This dispatch_async avoids a deadlock while configuring native modules
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didReceiveNewContentSizeMultiplier)
+                                                 name:RCTAccessibilityManagerDidUpdateMultiplierNotification
+                                               object:self->_bridge.accessibilityManager];
+  });
+#if !TARGET_OS_TV
+>>>>>>> v0.60.0
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(namedOrientationDidChange)
                                                name:UIDeviceOrientationDidChangeNotification
@@ -386,6 +420,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   } forTag:view.reactTag];
 }
 
+<<<<<<< HEAD
 /**
  * TODO(yuwang): implement the nativeID functionality in a more efficient way
  *               instead of searching the whole view tree
@@ -398,19 +433,40 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 }
 
 - (RCTUIView *)_lookupViewForNativeID:(NSString *)nativeID inView:(RCTUIView *)view // TODO(macOS ISS#3536887)
+=======
+- (UIView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag
 {
-  RCTAssertMainQueue();
-  if (view != nil && [nativeID isEqualToString:view.nativeID]) {
-    return view;
+  if (!nativeID || !rootTag) {
+    return nil;
   }
+  UIView *view;
+  @synchronized(self) {
+    view = [_nativeIDRegistry objectForKey:RCTNativeIDRegistryKey(nativeID, rootTag)];
+  }
+  return view;
+}
+
+- (void)setNativeID:(NSString *)nativeID forView:(UIView *)view
+>>>>>>> v0.60.0
+{
+  if (!nativeID || !view) {
+    return;
+  }
+<<<<<<< HEAD
 
   for (RCTUIView *subview in view.subviews) { // TODO(macOS ISS#3536887)
     RCTUIView *targetView = [self _lookupViewForNativeID:nativeID inView:subview]; // TODO(macOS ISS#3536887)
     if (targetView != nil) {
       return targetView;
+=======
+  __weak RCTUIManager *weakSelf = self;
+  RCTExecuteOnUIManagerQueue(^{
+    NSNumber *rootTag = [weakSelf shadowViewForReactTag:view.reactTag].rootView.reactTag;
+    @synchronized(weakSelf) {
+      [weakSelf.nativeIDRegistry setObject:view forKey:RCTNativeIDRegistryKey(nativeID, rootTag)];
+>>>>>>> v0.60.0
     }
-  }
-  return nil;
+  });
 }
 
 - (void)setSize:(CGSize)size forView:(RCTUIView *)view // TODO(macOS ISS#3536887)
@@ -604,7 +660,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
       if (view.reactLayoutDirection != layoutDirection) {
         view.reactLayoutDirection = layoutDirection;
       }
-      
+
       if (view.isHidden != isHidden) {
         view.hidden = isHidden;
       }
@@ -1214,7 +1270,11 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     [tags addObject:shadowView.reactTag];
   }
 
+<<<<<<< HEAD
   [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+=======
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+>>>>>>> v0.60.0
     for (NSNumber *tag in tags) {
       RCTUIView<RCTComponent> *view = viewRegistry[tag]; // TODO(macOS ISS#3536887)
       [view didUpdateReactSubviews];
@@ -1239,7 +1299,11 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     [tags setObject:props forKey:shadowView.reactTag];
   }
 
+<<<<<<< HEAD
   [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
+=======
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+>>>>>>> v0.60.0
     for (NSNumber *tag in tags) {
       RCTUIView<RCTComponent> *view = viewRegistry[tag]; // TODO(macOS ISS#3536887)
       [view didSetProps:[tags objectForKey:tag]];
@@ -1388,6 +1452,7 @@ RCT_EXPORT_METHOD(measureLayoutRelativeToParent:(nonnull NSNumber *)reactTag
   RCTMeasureLayout(shadowView, shadowView.reactSuperview, callback);
 }
 
+<<<<<<< HEAD
 RCT_EXPORT_METHOD(takeSnapshot:(id /* NSString or NSNumber */)target
                   withOptions:(NSDictionary *)options
                   resolve:(RCTPromiseResolveBlock)resolve
@@ -1459,6 +1524,8 @@ RCT_EXPORT_METHOD(takeSnapshot:(id /* NSString or NSNumber */)target
   }];
 }
 
+=======
+>>>>>>> v0.60.0
 /**
  * JS sets what *it* considers to be the responder. Later, scroll views can use
  * this in order to determine if scrolling is appropriate.
@@ -1578,15 +1645,15 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView:(NSString *)name)
     return @{};
   }
 
-  id module = [self.bridge moduleForName:moduleName];
+  id module = [self.bridge moduleForName:moduleName lazilyLoadIfNecessary:RCTTurboModuleEnabled()];
   if (module == nil) {
     // There is all sorts of code in this codebase that drops prefixes.
     //
     // If we didn't find a module, it's possible because it's stored under a key
     // which had RCT Prefixes stripped. Lets check one more time...
-    module = [self.bridge moduleForName:RCTDropReactPrefixes(moduleName)];
+    module = [self.bridge moduleForName:RCTDropReactPrefixes(moduleName) lazilyLoadIfNecessary:RCTTurboModuleEnabled()];
   }
-  
+
   if (!module) {
     return @{};
   }

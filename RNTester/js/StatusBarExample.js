@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   StatusBar,
   StyleSheet,
@@ -19,7 +18,7 @@ const {
   TouchableHighlight,
   View,
   Modal,
-} = ReactNative;
+} = require('react-native');
 
 const colors = ['#ff0000', '#00ff00', '#0000ff', 'rgba(0, 0, 0, 0.4)'];
 
@@ -87,10 +86,8 @@ class StatusBarHiddenExample extends React.Component<{}, $FlowFixMeState> {
           onPress={this._onChangeTransition}>
           <View style={styles.button}>
             <Text>
-              showHideTransition (ios only): '{getValue(
-                showHideTransitions,
-                this._showHideTransitionIndex,
-              )}'
+              showHideTransition (ios only): '
+              {getValue(showHideTransitions, this._showHideTransitionIndex)}'
             </Text>
           </View>
         </TouchableHighlight>

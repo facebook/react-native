@@ -27,29 +27,29 @@
 
 const start = Date.now();
 
-require('setUpGlobals');
-require('polyfillES6Collections');
-require('setUpSystrace');
-require('setUpErrorHandling');
-require('checkNativeVersion');
-require('polyfillPromise');
-require('setUpRegeneratorRuntime');
-require('setUpTimers');
-require('setUpXHR');
-require('setUpAlert');
-require('setUpGeolocation');
-require('setUpBatchedBridge');
-require('setUpSegmentFetcher');
+require('./setUpGlobals');
+require('./polyfillES6Collections');
+require('./setUpSystrace');
+require('./setUpErrorHandling');
+require('./polyfillPromise');
+require('./setUpRegeneratorRuntime');
+require('./setUpTimers');
+require('./setUpXHR');
+require('./setUpAlert');
+require('./setUpNavigator');
+require('./setUpBatchedBridge');
+require('./setUpSegmentFetcher');
 if (__DEV__) {
-  require('setUpDeveloperTools');
+  require('./checkNativeVersion');
+  require('./setUpDeveloperTools');
 }
 
-const PerformanceLogger = require('PerformanceLogger');
-// We could just call PerformanceLogger.markPoint at the top of the file,
-// but then we'd be excluding the time it took to require PerformanceLogger.
+const GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');
+// We could just call GlobalPerformanceLogger.markPoint at the top of the file,
+// but then we'd be excluding the time it took to require the logger.
 // Instead, we just use Date.now and backdate the timestamp.
-PerformanceLogger.markPoint(
+GlobalPerformanceLogger.markPoint(
   'initializeCore_start',
-  PerformanceLogger.currentTimestamp() - (Date.now() - start),
+  GlobalPerformanceLogger.currentTimestamp() - (Date.now() - start),
 );
-PerformanceLogger.markPoint('initializeCore_end');
+GlobalPerformanceLogger.markPoint('initializeCore_end');

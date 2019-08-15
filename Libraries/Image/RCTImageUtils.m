@@ -343,6 +343,10 @@ NSDictionary<NSString *, id> *__nullable RCTGetImageMetadata(NSData *data)
 
 NSData *__nullable RCTGetImageData(UIImage *image, float quality)
 {
+  CGImageRef cgImage = image.CGImage;
+  if (!cgImage) {
+    return NULL;
+  }
   NSMutableDictionary *properties = [[NSMutableDictionary alloc] initWithDictionary:@{
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     (id)kCGImagePropertyOrientation : @(CGImagePropertyOrientationFromUIImageOrientation(image.imageOrientation))
@@ -350,11 +354,14 @@ NSData *__nullable RCTGetImageData(UIImage *image, float quality)
   }];
   CGImageDestinationRef destination;
   CFMutableDataRef imageData = CFDataCreateMutable(NULL, 0);
+<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   CGImageRef cgImage = image.CGImage;
 #else // [TODO(macOS ISS#2323203)
   CGImageRef cgImage = [image CGImageForProposedRect:NULL context:NULL hints:NULL];
 #endif // ]TODO(macOS ISS#2323203)
+=======
+>>>>>>> v0.60.0
   if (RCTImageHasAlpha(cgImage)) {
     // get png data
     destination = CGImageDestinationCreateWithData(imageData, kUTTypePNG, 1, NULL);
@@ -363,9 +370,12 @@ NSData *__nullable RCTGetImageData(UIImage *image, float quality)
     destination = CGImageDestinationCreateWithData(imageData, kUTTypeJPEG, 1, NULL);
     [properties setValue:@(quality) forKey:(id)kCGImageDestinationLossyCompressionQuality];
   }
+  if (!destination) {
+    CFRelease(imageData);
+    return NULL;
+  }
   CGImageDestinationAddImage(destination, cgImage, (__bridge CFDictionaryRef)properties);
-  if (!CGImageDestinationFinalize(destination))
-  {
+  if (!CGImageDestinationFinalize(destination)) {
     CFRelease(imageData);
     imageData = NULL;
   }

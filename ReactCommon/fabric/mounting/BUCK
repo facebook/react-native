@@ -27,6 +27,7 @@ rn_xplat_cxx_library(
     exported_headers = subdir_glob(
         [
             ("", "*.h"),
+            ("stubs", "*.h"),
         ],
         prefix = "react/mounting",
     ),
@@ -49,15 +50,17 @@ rn_xplat_cxx_library(
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
-        "xplat//fbsystrace:fbsystrace",
-        "xplat//folly:headers_only",
-        "xplat//folly:memory",
-        "xplat//folly:molly",
-        "xplat//third-party/glog:glog",
+        "fbsource//xplat/fbsystrace:fbsystrace",
+        "fbsource//xplat/folly:headers_only",
+        "fbsource//xplat/folly:memory",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/third-party/glog:glog",
         react_native_xplat_target("better:better"),
+        react_native_xplat_target("fabric/components/root:root"),
+        react_native_xplat_target("fabric/components/view:view"),
         react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/debug:debug"),
-        react_native_xplat_target("fabric/events:events"),
+        react_native_xplat_target("utils:utils"),
     ],
 )
 
@@ -74,8 +77,8 @@ fb_xplat_cxx_test(
     contacts = ["oncall+react_native@xmail.facebook.com"],
     platforms = (ANDROID, APPLE),
     deps = [
-        "xplat//folly:molly",
-        "xplat//third-party/gmock:gtest",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/third-party/gmock:gtest",
         ":mounting",
     ],
 )
