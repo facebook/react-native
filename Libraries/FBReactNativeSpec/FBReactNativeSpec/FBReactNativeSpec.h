@@ -882,21 +882,6 @@ namespace JS {
 
 namespace JS {
   namespace NativeExceptionsManager {
-    struct ExceptionDataExtraData {
-
-      ExceptionDataExtraData(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeExceptionsManager_ExceptionDataExtraData)
-+ (RCTManagedPointer *)JS_NativeExceptionsManager_ExceptionDataExtraData:(id)json;
-@end
-
-namespace JS {
-  namespace NativeExceptionsManager {
     struct ExceptionData {
       NSString *message() const;
       NSString *originalMessage() const;
@@ -905,7 +890,7 @@ namespace JS {
       facebook::react::LazyVector<JS::NativeExceptionsManager::StackFrame> stack() const;
       double id_() const;
       bool isFatal() const;
-      folly::Optional<JS::NativeExceptionsManager::ExceptionDataExtraData> extraData() const;
+      id<NSObject> _Nullable extraData() const;
 
       ExceptionData(NSDictionary *const v) : _v(v) {}
     private:
@@ -1095,6 +1080,21 @@ namespace facebook {
     class JSI_EXPORT NativeI18nManagerSpecJSI : public ObjCTurboModule {
     public:
       NativeI18nManagerSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
+@protocol NativeImageLoaderSpec <RCTBridgeModule, RCTTurboModule>
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'ImageLoader'
+     */
+
+    class JSI_EXPORT NativeImageLoaderSpecJSI : public ObjCTurboModule {
+    public:
+      NativeImageLoaderSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
 
     };
   } // namespace react
@@ -2682,7 +2682,6 @@ inline folly::Optional<bool> JS::NativeExceptionsManager::StackFrame::collapse()
   id const p = _v[@"collapse"];
   return RCTBridgingToOptionalBool(p);
 }
-
 inline NSString *JS::NativeExceptionsManager::ExceptionData::message() const
 {
   id const p = _v[@"message"];
@@ -2718,10 +2717,10 @@ inline bool JS::NativeExceptionsManager::ExceptionData::isFatal() const
   id const p = _v[@"isFatal"];
   return RCTBridgingToBool(p);
 }
-inline folly::Optional<JS::NativeExceptionsManager::ExceptionDataExtraData> JS::NativeExceptionsManager::ExceptionData::extraData() const
+inline id<NSObject> _Nullable JS::NativeExceptionsManager::ExceptionData::extraData() const
 {
   id const p = _v[@"extraData"];
-  return (p == nil ? folly::none : folly::make_optional(JS::NativeExceptionsManager::ExceptionDataExtraData(p)));
+  return p;
 }
 inline folly::Optional<bool> JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions::debug() const
 {

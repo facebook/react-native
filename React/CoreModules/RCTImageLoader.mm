@@ -5,26 +5,32 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <stdatomic.h>
 #import <objc/runtime.h>
+#import <atomic>
 
 #import <ImageIO/ImageIO.h>
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
+#import <React/RCTImageCache.h>
 #import <React/RCTImageLoader.h>
+#import <React/RCTImageUtils.h>
 #import <React/RCTLog.h>
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
 
-#import <React/RCTImageCache.h>
-#import <React/RCTImageUtils.h>
+#import "CoreModulesPlugins.h"
 
 static NSInteger RCTImageBytesForImage(UIImage *image)
 {
   NSInteger singleImageBytes = image.size.width * image.size.height * image.scale * image.scale * 4;
   return image.images ? image.images.count * singleImageBytes : singleImageBytes;
 }
+
+@interface RCTImageLoader() <NativeImageLoaderSpec>
+
+@end
 
 @implementation UIImage (React)
 
@@ -385,7 +391,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   BOOL cacheResult = [loadHandler respondsToSelector:@selector(shouldCacheLoadedImages)] ?
   [loadHandler shouldCacheLoadedImages] : YES;
 
-  __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
+  auto cancelled = std::make_shared<std::atomic<int>>(0);
   __block dispatch_block_t cancelLoad = nil;
   __block NSLock *cancelLoadLock = [NSLock new];
   void (^completionHandler)(NSError *, id, NSURLResponse *) = ^(NSError *error, id imageOrData, NSURLResponse *response) {
@@ -399,11 +405,11 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       // Most loaders do not return on the main thread, so caller is probably not
       // expecting it, and may do expensive post-processing in the callback
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        if (!atomic_load(&cancelled)) {
+        if (!std::atomic_load(cancelled.get())) {
           completionBlock(error, imageOrData, cacheResult, response);
         }
       });
-    } else if (!atomic_load(&cancelled)) {
+    } else if (!std::atomic_load(cancelled.get())) {
       completionBlock(error, imageOrData, cacheResult, response);
     }
   };
@@ -430,8 +436,8 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   __weak RCTImageLoader *weakSelf = self;
   dispatch_async(_URLRequestQueue, ^{
     __typeof(self) strongSelf = weakSelf;
-    if (atomic_load(&cancelled) || !strongSelf) {
-      return;
+  if (atomic_load(cancelled.get()) || !strongSelf) {
+    return;
     }
 
     if (loadHandler) {
@@ -471,7 +477,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   });
 
   return ^{
-    BOOL alreadyCancelled = atomic_fetch_or(&cancelled, 1);
+    BOOL alreadyCancelled = atomic_fetch_or(cancelled.get(), 1);
     if (alreadyCancelled) {
       return;
     }
@@ -605,11 +611,11 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                           partialLoadBlock:(RCTImageLoaderPartialLoadBlock)partialLoadBlock
                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
-  __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
+  auto cancelled = std::make_shared<std::atomic<int>>(0);
   __block dispatch_block_t cancelLoad = nil;
   __block NSLock *cancelLoadLock = [NSLock new];
   dispatch_block_t cancellationBlock = ^{
-    BOOL alreadyCancelled = atomic_fetch_or(&cancelled, 1);
+    BOOL alreadyCancelled = atomic_fetch_or(cancelled.get(), 1);
     if (alreadyCancelled) {
       return;
     }
@@ -625,7 +631,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   __weak RCTImageLoader *weakSelf = self;
   void (^completionHandler)(NSError *, id, BOOL, NSURLResponse *) = ^(NSError *error, id imageOrData, BOOL cacheResult, NSURLResponse *response) {
     __typeof(self) strongSelf = weakSelf;
-    if (atomic_load(&cancelled) || !strongSelf) {
+    if (std::atomic_load(cancelled.get()) || !strongSelf) {
       return;
     }
 
@@ -685,17 +691,17 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     return ^{};
   }
 
-  __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
+  auto cancelled = std::make_shared<std::atomic<int>>(0);
   void (^completionHandler)(NSError *, UIImage *) = ^(NSError *error, UIImage *image) {
     if (RCTIsMainQueue()) {
       // Most loaders do not return on the main thread, so caller is probably not
       // expecting it, and may do expensive post-processing in the callback
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        if (!atomic_load(&cancelled)) {
+        if (!std::atomic_load(cancelled.get())) {
           completionBlock(error, clipped ? RCTResizeImageIfNeeded(image, size, scale, resizeMode) : image);
         }
       });
-    } else if (!atomic_load(&cancelled)) {
+    } else if (!std::atomic_load(cancelled.get())) {
       completionBlock(error, clipped ? RCTResizeImageIfNeeded(image, size, scale, resizeMode) : image);
     }
   };
@@ -717,7 +723,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
       // Do actual decompression on a concurrent background queue
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        if (!atomic_load(&cancelled)) {
+        if (!std::atomic_load(cancelled.get())) {
 
           // Decompress the image data (this may be CPU and memory intensive)
           UIImage *image = RCTDecodeImageWithData(data, size, scale, resizeMode);
@@ -774,7 +780,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     });
 
     return ^{
-      atomic_store(&cancelled, YES);
+      std::atomic_store(cancelled.get(), 1);
     };
   }
 }
@@ -795,8 +801,8 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         case kCGImagePropertyOrientationRightMirrored:
           // swap width and height
           size = (CGSize){
-            [meta[(id)kCGImagePropertyPixelHeight] doubleValue],
-            [meta[(id)kCGImagePropertyPixelWidth] doubleValue],
+            [meta[(id)kCGImagePropertyPixelHeight] floatValue],
+            [meta[(id)kCGImagePropertyPixelWidth] floatValue],
           };
           break;
         case kCGImagePropertyOrientationUp:
@@ -805,8 +811,8 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         case kCGImagePropertyOrientationDownMirrored:
         default:
           size = (CGSize){
-            [meta[(id)kCGImagePropertyPixelWidth] doubleValue],
-            [meta[(id)kCGImagePropertyPixelHeight] doubleValue],
+            [meta[(id)kCGImagePropertyPixelWidth] floatValue],
+            [meta[(id)kCGImagePropertyPixelHeight] floatValue],
           };
           break;
       }
@@ -937,6 +943,12 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   }
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
+  (std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeImageLoaderSpecJSI>(self, jsInvoker);
+}
+
 @end
 
 /**
@@ -953,3 +965,8 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 }
 
 @end
+
+Class RCTImageLoaderCls(void)
+{
+  return RCTImageLoader.class;
+}

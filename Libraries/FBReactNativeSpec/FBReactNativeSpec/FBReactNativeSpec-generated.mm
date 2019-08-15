@@ -855,12 +855,6 @@ namespace facebook {
   return facebook::react::managedPointer<JS::NativeExceptionsManager::StackFrame>(json);
 }
 @end
-@implementation RCTCxxConvert (NativeExceptionsManager_ExceptionDataExtraData)
-+ (RCTManagedPointer *)JS_NativeExceptionsManager_ExceptionDataExtraData:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeExceptionsManager::ExceptionDataExtraData>(json);
-}
-@end
 @implementation RCTCxxConvert (NativeExceptionsManager_ExceptionData)
 + (RCTManagedPointer *)JS_NativeExceptionsManager_ExceptionData:(id)json
 {
@@ -1080,6 +1074,19 @@ namespace facebook {
         
         methodMap_["getConstants"] = MethodMetadata {0, __hostFunction_NativeI18nManagerSpecJSI_getConstants};
         
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
+
+    NativeImageLoaderSpecJSI::NativeImageLoaderSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+      : ObjCTurboModule("ImageLoader", instance, jsInvoker) {
         
 
     }
