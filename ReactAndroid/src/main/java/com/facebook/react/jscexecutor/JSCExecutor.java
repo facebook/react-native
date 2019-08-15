@@ -12,11 +12,15 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.soloader.SoLoader;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 
 @DoNotStrip
 /* package */ class JSCExecutor extends JavaScriptExecutor {
   static {
+    ReactMarker.logMarker(ReactMarkerConstants.LOAD_JSC_SO_FILE_START);
     SoLoader.loadLibrary("jscexecutor");
+    ReactMarker.logMarker(ReactMarkerConstants.LOAD_JSC_SO_FILE_END);
   }
 
   /* package */ JSCExecutor(ReadableNativeMap jscConfig) {

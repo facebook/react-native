@@ -275,8 +275,7 @@ task cleanReactNdkLib(type: Exec) {
 task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
     from("$buildDir/react-ndk/all")
     into("$buildDir/react-ndk/exported")
-    // exclude("**/libjsc.so")
-    // exclude("**/libjscexecutor.so")
+    exclude("**/libjsc.so")
     exclude("**/libhermes.so")
     exclude("**/libc++_shared.so")
     if (VERSION_NAME.contains("-release") == true) {
