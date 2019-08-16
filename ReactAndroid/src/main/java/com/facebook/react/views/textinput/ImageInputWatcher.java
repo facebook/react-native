@@ -8,5 +8,5 @@
 package com.facebook.react.views.textinput;
 
 public interface ImageInputWatcher {
-  public void onImageInput(String uri, String linkUri, String mime);
+  public void onImageInput(String uri, String linkUri, String data, String mime);
 }

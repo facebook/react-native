@@ -18,20 +18,23 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
  */
 public class ReactTextInputImageEvent extends Event<ReactTextInputImageEvent> {
 
-  public static final String EVENT_NAME = "topImage";
+  public static final String EVENT_NAME = "topImageInput";
 
   private String mUri;
   private String mLinkUri;
+  private String mData;
   private String mMime;
 
   public ReactTextInputImageEvent(
       int viewId,
       String uri,
       String linkUri,
+      String data,
       String mime) {
     super(viewId);
     mUri = uri;
     mLinkUri = linkUri;
+    mData = data;
     mMime = mime;
   }
 
@@ -49,6 +52,7 @@ public class ReactTextInputImageEvent extends Event<ReactTextInputImageEvent> {
     WritableMap eventData = Arguments.createMap();
     eventData.putString("uri", mUri);
     eventData.putString("linkUri", mLinkUri);
+    eventData.putString("data", mData);
     eventData.putString("mime", mMime);
     eventData.putInt("target", getViewTag());
     return eventData;

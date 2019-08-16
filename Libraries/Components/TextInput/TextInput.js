@@ -120,9 +120,10 @@ export type EditingEvent = SyntheticEvent<
 >;
 
 export type ImageInputEvent = SyntheticEvent<
-  $Readonly<{|
+  $ReadOnly<{|
     uri: string,
     linkUri: string,
+    data: string,
     mime: string,
   |}>,
 >;
@@ -1034,8 +1035,8 @@ function InternalTextInput(props: Props): React.Node {
   };
 
   const _onImageInput = (event: ImageInputEvent) => {
-    this.props.onImageInput && this.props.onImageInput(event);
-  }
+    props.onImageInput && props.onImageInput(event);
+  };
 
   let textInput = null;
   let additionalTouchableProps: {|

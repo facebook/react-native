@@ -166,11 +166,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of("bubbled", "onKeyPress", "captured", "onKeyPressCapture")))
-        .put(
-            "topImageInput",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onImageInput", "captured", "onImageInputCapture")))
         .build();
   }
 
@@ -181,6 +176,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         .put(
             ScrollEventType.getJSEventName(ScrollEventType.SCROLL),
             MapBuilder.of("registrationName", "onScroll"))
+        .put("topImageInput", MapBuilder.of("registrationName", "onImageInput"))
         .build();
   }
 
@@ -1194,12 +1190,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
 
     @Override
-    public void onImageInput(String uri, String linkUri, String mime) {
+    public void onImageInput(String uri, String linkUri, String data, String mime) {
       if (uri != null) {
         ReactTextInputImageEvent event = new ReactTextInputImageEvent(
           mReactEditText.getId(),
           uri,
           linkUri,
+          data,
           mime);
 
         mEventDispatcher.dispatchEvent(event);
