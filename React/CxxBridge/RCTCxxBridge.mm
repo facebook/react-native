@@ -387,19 +387,12 @@ struct RCTInstanceCallback : public InstanceCallback {
     dispatch_group_leave(prepareBridge);
   } onProgress:^(RCTLoadingProgress *progressData) {
 #if RCT_DEV && __has_include("RCTDevLoadingView.h")
-<<<<<<< HEAD
     if ([[self devSettings] isDevModeEnabled]) { // TODO(OSS Candidate ISS#2710739)
       // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
       RCTDevLoadingView *loadingView = [weakSelf moduleForName:RCTBridgeModuleNameForClass([RCTDevLoadingView class])
                                         lazilyLoadIfNecessary:NO];
       [loadingView updateProgress:progressData];
     } // TODO(OSS Candidate ISS#2710739)
-=======
-    // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
-    RCTDevLoadingView *loadingView = [weakSelf moduleForName:RCTBridgeModuleNameForClass([RCTDevLoadingView class])
-                                       lazilyLoadIfNecessary:NO];
-    [loadingView updateProgress:progressData];
->>>>>>> v0.60.0
 #endif
   }];
 

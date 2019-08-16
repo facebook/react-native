@@ -16,13 +16,9 @@
 #import "UIView+React.h"
 #import "RCTI18nUtil.h"
 
-<<<<<<< HEAD
-@implementation RCTPlatformView (RCTViewUnmounting) // TODO(macOS ISS#2323203)
-=======
 UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
 
-@implementation UIView (RCTViewUnmounting)
->>>>>>> v0.60.0
+@implementation RCTPlatformView (RCTViewUnmounting)
 
 - (void)react_remountAllSubviews
 {
@@ -110,15 +106,12 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS I
 @implementation RCTView
 {
   UIColor *_backgroundColor;
-<<<<<<< HEAD
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   NSTrackingArea *_trackingArea;
   BOOL _hasMouseOver;
 #endif // ]TODO(macOS ISS#2323203)
-=======
   NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsNameMap;
   NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsLabelMap;
->>>>>>> v0.60.0
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -184,9 +177,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return RCTRecursiveAccessibilityLabel(self);
 }
 
-<<<<<<< HEAD
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-=======
 -(void)setAccessibilityActions:(NSArray *)actions
 {
   if (!actions) {
@@ -205,7 +195,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   _accessibilityActions = [actions copy];
 }
 
->>>>>>> v0.60.0
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
   if (!self.accessibilityActions.count) {
@@ -395,19 +385,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return NO;
 }
 
-<<<<<<< HEAD
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-- (BOOL)isAccessibilitySelectorAllowed:(SEL)selector
-{
-  if (selector == @selector(accessibilityPerformPress)) {
-    return _onAccessibilityTap ? YES : NO;
-  }
-  return [super isAccessibilitySelectorAllowed:selector];
-}
-#endif
-
-#if !TARGET_OS_OSX // ]TODO(macOS ISS#2323203)
-=======
 - (BOOL)performAccessibilityAction:(NSString *) name
 {
   if (_onAccessibilityAction && accessibilityActionsNameMap[name]) {
@@ -420,7 +397,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return NO;
 }
 
->>>>>>> v0.60.0
+#if !TARGET_OS_OSX // ]TODO(macOS ISS#2323203)
 - (BOOL)accessibilityActivate
 #else // [TODO(macOS ISS#2323203)
 - (BOOL)accessibilityPerformPress
@@ -958,26 +935,7 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
     );
   });
 
-<<<<<<< HEAD
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-  CGFloat scale = image.scale;
-#else // TODO(macOS ISS#2323203)
-  CGFloat scale = scaleFactor;
-#endif // ]TODO(macOS ISS#2323203)
-  if (RCTRunningInTestEnvironment()) {
-    const CGSize size = self.bounds.size;
-    if (size.width > 0 && size.height > 0) { // TODO(OSS Candidate ISS#2710739)
-      UIGraphicsBeginImageContextWithOptions(size, NO, scale); // TODO(macOS ISS#2323203)
-      [image drawInRect:(CGRect){CGPointZero, size}];
-      image = UIGraphicsGetImageFromCurrentImageContext();
-      UIGraphicsEndImageContext();
-    } // TODO(OSS Candidate ISS#2710739)
-    contentsCenter = CGRectMake(0, 0, 1, 1);
-  }
-
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-=======
->>>>>>> v0.60.0
   layer.contents = (id)image.CGImage;
   layer.contentsScale = image.scale;
 #else // [TODO(macOS ISS#2323203)

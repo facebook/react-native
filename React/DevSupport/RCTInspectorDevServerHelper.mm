@@ -32,12 +32,8 @@ static NSString *getServerHost(NSURL *bundleURL, NSNumber *port)
 
 static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 {
-<<<<<<< HEAD
-  NSNumber *inspectorProxyPort = @8082;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-=======
   NSNumber *inspectorProxyPort = @8081;
->>>>>>> v0.60.0
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
 #else // [TODO(macOS ISS#2323203)
   NSString *escapedDeviceName = @"";

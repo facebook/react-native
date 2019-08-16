@@ -830,13 +830,10 @@ RCT_EXPORT_MODULE()
             self->_extraDataViewController = [RCTRedBoxExtraDataViewController new];
             self->_extraDataViewController.actionDelegate = self;
         }
-<<<<<<< HEAD
 #endif // TODO(macOS ISS#2323203)
-=======
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
->>>>>>> v0.60.0
         [self->_bridge.eventDispatcher sendDeviceEventWithName:@"collectRedBoxExtraData" body:nil];
 #pragma clang diagnostic pop
 

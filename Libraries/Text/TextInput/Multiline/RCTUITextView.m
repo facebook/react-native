@@ -98,15 +98,12 @@ static UIColor *defaultPlaceholderColor()
 - (void)setPlaceholder:(NSString *)placeholder
 {
   _placeholder = placeholder;
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   _placeholderView.text = _placeholder;
+  _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self placeholderEffectiveTextAttributes]];
 #else // [TODO(macOS ISS#2323203)
   [self setNeedsDisplay:YES];
 #endif // ]TODO(macOS ISS#2323203)
-=======
-  _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self placeholderEffectiveTextAttributes]];
->>>>>>> v0.60.0
 }
 
 - (void)setPlaceholderColor:(UIColor *)placeholderColor
@@ -172,10 +169,8 @@ static UIColor *defaultPlaceholderColor()
 
   return success;
 }
-
-<<<<<<< HEAD
 #endif // ]TODO(macOS ISS#2323203)
-=======
+
 - (void)setReactTextAttributes:(RCTTextAttributes *)reactTextAttributes
 {
   if ([reactTextAttributes isEqual:_reactTextAttributes]) {
@@ -191,7 +186,6 @@ static UIColor *defaultPlaceholderColor()
 {
   return _reactTextAttributes;
 }
->>>>>>> v0.60.0
 
 - (void)textDidChange
 {
@@ -359,16 +353,14 @@ static UIColor *defaultPlaceholderColor()
   UIEdgeInsets textContainerInset = self.textContainerInsets;
 #endif // ]TODO(macOS ISS#2323203)
   NSString *placeholder = self.placeholder ?: @"";
-<<<<<<< HEAD
-  CGSize placeholderSize = [placeholder sizeWithAttributes:@{NSFontAttributeName: self.font ?: defaultPlaceholderFont()}];
+  
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-=======
   CGSize maxPlaceholderSize = CGSizeMake(UIEdgeInsetsInsetRect(self.bounds, textContainerInset).size.width, CGFLOAT_MAX);
   CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize options:NSStringDrawingUsesLineFragmentOrigin attributes:[self placeholderEffectiveTextAttributes] context:nil].size;
->>>>>>> v0.60.0
   placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
 #else // [TODO(macOS ISS#2323203)
   CGFloat scale = self.window.backingScaleFactor;
+  CGSize placeholderSize = [placeholder sizeWithAttributes:@{NSFontAttributeName: self.font ?: defaultPlaceholderFont()}];
   placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width, scale), RCTCeilPixelValue(placeholderSize.height, scale));
 #endif // ]TODO(macOS ISS#2323203)
   placeholderSize.width += textContainerInset.left + textContainerInset.right;
@@ -381,14 +373,10 @@ static UIColor *defaultPlaceholderColor()
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   CGSize contentSize = super.contentSize;
-<<<<<<< HEAD
 #else // [TODO(macOS ISS#2323203)
   CGSize contentSize = super.intrinsicContentSize;
 #endif // ]TODO(macOS ISS#2323203)
-  CGSize placeholderSize = self.placeholderSize;
-=======
   CGSize placeholderSize = _placeholderView.isHidden ? CGSizeZero : self.placeholderSize;
->>>>>>> v0.60.0
   // When a text input is empty, it actually displays a placehoder.
   // So, we have to consider `placeholderSize` as a minimum `contentSize`.
   // Returning size DOES contain `textContainerInset` (aka `padding`).
@@ -424,40 +412,6 @@ static UIColor *defaultPlaceholderColor()
   return CGSizeMake(MAX(textSize.width, placeholderSize.width), MAX(textSize.height, placeholderSize.height));
 }
 
-<<<<<<< HEAD
-- (CGSize)fixedSizeThatFits:(CGSize)size
-{
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  // UITextView on iOS 8 has a bug that automatically scrolls to the top
-  // when calling `sizeThatFits:`. Use a copy so that self is not screwed up.
-  static BOOL useCustomImplementation = NO;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    useCustomImplementation = ![[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){9,0,0}];
-  });
-
-  if (!useCustomImplementation) {
-    return [super sizeThatFits:size];
-  }
-
-  if (!_detachedTextView) {
-    _detachedTextView = [UITextView new];
-  }
-
-  _detachedTextView.attributedText = self.attributedText;
-  _detachedTextView.font = self.font;
-  _detachedTextView.textContainerInset = self.textContainerInset;
-
-  return [_detachedTextView sizeThatFits:size];
-#else // [TODO(macOS ISS#2323203)
-  (void) [self.layoutManager glyphRangeForTextContainer:self.textContainer];
-  NSRect rect = [self.layoutManager usedRectForTextContainer:self.textContainer];
-  return CGSizeMake(MIN(rect.size.width, size.width), rect.size.height);
-#endif // ]TODO(macOS ISS#2323203)
-}
-
-=======
->>>>>>> v0.60.0
 #pragma mark - Context Menu
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)

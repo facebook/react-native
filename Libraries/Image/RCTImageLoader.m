@@ -745,29 +745,17 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
           // Decompress the image data (this may be CPU and memory intensive)
           UIImage *image = RCTDecodeImageWithData(data, size, scale, resizeMode);
 
-<<<<<<< HEAD
 #if !TARGET_OS_OSX && RCT_DEV // TODO(macOS ISS#2323203)
-                    if ([[self->_bridge devSettings] isDevModeEnabled]) { // TODO(OSS Candidate ISS#2710739)
-                      CGSize imagePixelSize = RCTSizeInPixels(image.size, image.scale);
-                      CGSize screenPixelSize = RCTSizeInPixels(RCTScreenSize(), RCTScreenScale());
-                      if (imagePixelSize.width * imagePixelSize.height >
-                          screenPixelSize.width * screenPixelSize.height) {
-                          RCTLogInfo(@"[PERF ASSETS] Loading image at size %@, which is larger "
-                                     "than the screen size %@", NSStringFromCGSize(imagePixelSize),
-                                     NSStringFromCGSize(screenPixelSize));
-                      }
-                    }
-=======
-#if RCT_DEV
-          CGSize imagePixelSize = RCTSizeInPixels(image.size, image.scale);
-          CGSize screenPixelSize = RCTSizeInPixels(RCTScreenSize(), RCTScreenScale());
-          if (imagePixelSize.width * imagePixelSize.height >
-              screenPixelSize.width * screenPixelSize.height) {
-            RCTLogInfo(@"[PERF ASSETS] Loading image at size %@, which is larger "
-                       "than the screen size %@", NSStringFromCGSize(imagePixelSize),
-                       NSStringFromCGSize(screenPixelSize));
+          if ([[self->_bridge devSettings] isDevModeEnabled]) { // TODO(OSS Candidate ISS#2710739)
+            CGSize imagePixelSize = RCTSizeInPixels(image.size, image.scale);
+            CGSize screenPixelSize = RCTSizeInPixels(RCTScreenSize(), RCTScreenScale());
+            if (imagePixelSize.width * imagePixelSize.height >
+                screenPixelSize.width * screenPixelSize.height) {
+                RCTLogInfo(@"[PERF ASSETS] Loading image at size %@, which is larger "
+                            "than the screen size %@", NSStringFromCGSize(imagePixelSize),
+                            NSStringFromCGSize(screenPixelSize));
+            }
           }
->>>>>>> v0.60.0
 #endif
 
           if (image) {
@@ -819,54 +807,6 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 - (RCTImageLoaderCancellationBlock)getImageSizeForURLRequest:(NSURLRequest *)imageURLRequest
                                                        block:(void(^)(NSError *error, CGSize size))callback
 {
-<<<<<<< HEAD
-    void (^completion)(NSError *, id, BOOL, NSURLResponse *) = ^(NSError *error, id imageOrData, BOOL cacheResult, NSURLResponse *response) {
-        CGSize size;
-        if ([imageOrData isKindOfClass:[NSData class]]) {
-            NSDictionary *meta = RCTGetImageMetadata(imageOrData);
-
-            NSInteger imageOrientation = [meta[(id)kCGImagePropertyOrientation] integerValue];
-            switch (imageOrientation) {
-                case kCGImagePropertyOrientationLeft:
-                case kCGImagePropertyOrientationRight:
-                case kCGImagePropertyOrientationLeftMirrored:
-                case kCGImagePropertyOrientationRightMirrored:
-                    // swap width and height
-                    size = (CGSize){
-                      [meta[(id)kCGImagePropertyPixelHeight] doubleValue],
-                      [meta[(id)kCGImagePropertyPixelWidth] doubleValue],
-                    };
-                    break;
-                case kCGImagePropertyOrientationUp:
-                case kCGImagePropertyOrientationDown:
-                case kCGImagePropertyOrientationUpMirrored:
-                case kCGImagePropertyOrientationDownMirrored:
-                default:
-                    size = (CGSize){
-                      [meta[(id)kCGImagePropertyPixelWidth] doubleValue],
-                      [meta[(id)kCGImagePropertyPixelHeight] doubleValue],
-                    };
-                    break;
-            }
-        } else {
-            UIImage *image = imageOrData;
-            CGFloat imageScale = UIImageGetScale(image); // TODO(macOS ISS#2323203)
-            size = (CGSize){
-                image.size.width * imageScale, // TODO(macOS ISS#2323203)
-                image.size.height * imageScale, // TODO(macOS ISS#2323203)
-            };
-        }
-        callback(error, size);
-    };
-
-    return [self _loadImageOrDataWithURLRequest:imageURLRequest
-                                           size:CGSizeZero
-                                          scale:1
-                                     resizeMode:RCTResizeModeStretch
-                                  progressBlock:NULL
-                               partialLoadBlock:NULL
-                                completionBlock:completion];
-=======
   void (^completion)(NSError *, id, BOOL, NSURLResponse *) = ^(NSError *error, id imageOrData, BOOL cacheResult, NSURLResponse *response) {
     CGSize size;
     if ([imageOrData isKindOfClass:[NSData class]]) {
@@ -897,9 +837,10 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       }
     } else {
       UIImage *image = imageOrData;
+      CGFloat imageScale = UIImageGetScale(image); // TODO(macOS ISS#2323203)
       size = (CGSize){
-        image.size.width * image.scale,
-        image.size.height * image.scale,
+          image.size.width * imageScale, // TODO(macOS ISS#2323203)
+          image.size.height * imageScale, // TODO(macOS ISS#2323203)
       };
     }
     callback(error, size);
@@ -912,7 +853,6 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                 progressBlock:NULL
                              partialLoadBlock:NULL
                               completionBlock:completion];
->>>>>>> v0.60.0
 }
 
 - (NSDictionary *)getImageCacheStatus:(NSArray *)requests
@@ -993,27 +933,15 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       return;
     }
 
-<<<<<<< HEAD
-        NSString *mimeType = nil;
-        NSData *imageData = nil;
-        if (RCTUIImageHasAlpha(image)) { // TODO(macOS ISS#2323203)
-            mimeType = @"image/png";
-            imageData = UIImagePNGRepresentation(image);
-        } else {
-            mimeType = @"image/jpeg";
-            imageData = UIImageJPEGRepresentation(image, 1.0);
-        }
-=======
     NSString *mimeType = nil;
     NSData *imageData = nil;
-    if (RCTImageHasAlpha(image.CGImage)) {
-      mimeType = @"image/png";
-      imageData = UIImagePNGRepresentation(image);
+    if (RCTUIImageHasAlpha(image)) { // TODO(macOS ISS#2323203)
+        mimeType = @"image/png";
+        imageData = UIImagePNGRepresentation(image);
     } else {
-      mimeType = @"image/jpeg";
-      imageData = UIImageJPEGRepresentation(image, 1.0);
+        mimeType = @"image/jpeg";
+        imageData = UIImageJPEGRepresentation(image, 1.0);
     }
->>>>>>> v0.60.0
 
     NSURLResponse *response = [[NSURLResponse alloc] initWithURL:request.URL
                                                         MIMEType:mimeType

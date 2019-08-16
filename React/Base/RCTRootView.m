@@ -375,7 +375,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
   _intrinsicContentSize = intrinsicContentSize;
 
-<<<<<<< HEAD
   [self invalidateIntrinsicContentSize];
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   [self.superview setNeedsLayout];
@@ -383,8 +382,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 	[self.superview setNeedsLayout:YES];
 #endif // ]TODO(macOS ISS#2323203)
 
-=======
->>>>>>> v0.60.0
   // Don't notify the delegate if the content remains invisible or its size has not changed
   if (bothSizesHaveAZeroDimension || sizesAreEqual) {
     return;

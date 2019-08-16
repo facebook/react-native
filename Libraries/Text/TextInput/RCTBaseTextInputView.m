@@ -67,21 +67,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)enforceTextAttributesIfNeeded
 {
-<<<<<<< HEAD
   if (![self ignoresTextAttributes]) { // TODO(OSS Candidate ISS#2710739)
     id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
     if (backedTextInputView.attributedText.string.length != 0) {
       return;
     }
 
-    backedTextInputView.font = _textAttributes.effectiveFont;
-    backedTextInputView.textColor = _textAttributes.effectiveForegroundColor;
-    backedTextInputView.textAlignment = _textAttributes.alignment;
+    backedTextInputView.reactTextAttributes = _textAttributes;
   } // TODO(OSS Candidate ISS#2710739)
-=======
-  id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
-  backedTextInputView.reactTextAttributes = _textAttributes;
->>>>>>> v0.60.0
 }
 
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
@@ -279,11 +272,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                              };
 
           #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-<<<<<<< HEAD
-            if (@available(iOS 11.0, tvOS 12.0, *)) {
-=======
             if (@available(iOS 11.0, tvOS 11.0, *)) {
->>>>>>> v0.60.0
               NSDictionary<NSString *, NSString *> * iOS11extras = @{@"username": UITextContentTypeUsername,
                                                                      @"password": UITextContentTypePassword};
 
@@ -482,28 +471,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     }
   }
 
-<<<<<<< HEAD
-  if (range.location + range.length > [[self predictedText] length]) { // TODO(OSS Candidate ISS#2710739)
-    // predictedText got out of sync in a bad way, so let's just force sync it.  Haven't been able to repro this, but
-    // it's causing a real crash here: #6523822
-    [self setPredictedText:backedTextInputView.attributedText.string]; // TODO(OSS Candidate ISS#2710739)
-  }
-
-  NSString *predictedText = [self predictedText]; // TODO(OSS Candidate ISS#2710739)
-  NSString *previousText = [predictedText substringWithRange:range] ?: @"";
-
-  if (!_predictedText || backedTextInputView.attributedText.string.length == 0) {
-    [self setPredictedText:text]; // TODO(OSS Candidate ISS#2710739)
-  } else {
-    [self setPredictedText:[predictedText stringByReplacingCharactersInRange:range withString:text]]; // TODO(OSS Candidate ISS#2710739)
-=======
   NSString *previousText = backedTextInputView.attributedText.string ?: @"";
 
   if (range.location + range.length > backedTextInputView.attributedText.string.length) {
     _predictedText = backedTextInputView.attributedText.string;
   } else {
     _predictedText = [backedTextInputView.attributedText.string stringByReplacingCharactersInRange:range withString:text];
->>>>>>> v0.60.0
   }
 
   if (_onTextInput) {
@@ -538,10 +511,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     [self textInputShouldChangeTextInRange:predictionRange replacementText:replacement];
     // JS will assume the selection changed based on the location of our shouldChangeTextInRange, so reset it.
     [self textInputDidChangeSelection];
-<<<<<<< HEAD
     [self setPredictedText:backedTextInputView.attributedText.string]; // TODO(OSS Candidate ISS#2710739)
-=======
->>>>>>> v0.60.0
   }
 
   _nativeEventCount++;

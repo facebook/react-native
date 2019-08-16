@@ -35,11 +35,7 @@
 
 @implementation RCTTextView
 {
-<<<<<<< HEAD
-  CAShapeLayer *_highlightLayer;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-=======
->>>>>>> v0.60.0
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
 #endif // TODO(macOS ISS#2323203)
 
@@ -66,12 +62,8 @@
     self.accessibilityRole = NSAccessibilityStaticTextRole;
 #endif // ]TODO(macOS ISS#2323203)
     self.opaque = NO;
-<<<<<<< HEAD
     RCTUIViewSetContentModeRedraw(self); // TODO(macOS ISS#2323203) and TODO(macOS ISS#3536887)
-=======
-    self.contentMode = UIViewContentModeRedraw;
     _renderer = [RCTTextRenderer new];
->>>>>>> v0.60.0
   }
   return self;
 }
@@ -245,24 +237,6 @@
                            inRange:characterRange
                            options:0
                         usingBlock:
-<<<<<<< HEAD
-    ^(NSNumber *value, NSRange range, __unused BOOL *stop) {
-      if (!value.boolValue) {
-        return;
-      }
-
-      [layoutManager enumerateEnclosingRectsForGlyphRange:range
-                                 withinSelectedGlyphRange:range
-                                          inTextContainer:textContainer
-                                               usingBlock:
-        ^(CGRect enclosingRect, __unused BOOL *anotherStop) {
-          UIBezierPath *path = UIBezierPathWithRoundedRect(CGRectInset(enclosingRect, -2, -2), /*cornerRadius:*/2); // TODO(macOS ISS#2323203)
-          if (highlightPath) {
-            UIBezierPathAppendPath(highlightPath, path); // TODO(macOS ISS#2323203)
-          } else {
-            highlightPath = path;
-          }
-=======
    ^(NSNumber *value, NSRange range, __unused BOOL *stop) {
      if (!value.boolValue) {
        return;
@@ -275,10 +249,9 @@
       ^(CGRect enclosingRect, __unused BOOL *anotherStop) {
         UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) cornerRadius:2];
         if (highlightPath) {
-          [highlightPath appendPath:path];
+          UIBezierPathAppendPath(highlightPath, path); // TODO(macOS ISS#2323203)
         } else {
           highlightPath = path;
->>>>>>> v0.60.0
         }
       }
       ];

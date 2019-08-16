@@ -796,47 +796,32 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
 #endif // ]TODO(macOS ISS#2323203)
 
   UIImage *image = nil;
-<<<<<<< HEAD
-  if (bundle) {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-    image = [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
-#else // [TODO(macOS ISS#2323203)
-    image = (bundleImageURL == nil) ? [bundle imageForResource:imageName] : [[NSImage alloc] initWithContentsOfURL:bundleImageURL];
-#endif // ]TODO(macOS ISS#2323203)
-  } else {
-    image = [UIImage imageNamed:imageName];
-=======
   if (imageName) {
     if (bundle) {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
       image = [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
+#else // [TODO(macOS ISS#2323203)
+      image = (bundleImageURL == nil) ? [bundle imageForResource:imageName] : [[NSImage alloc] initWithContentsOfURL:bundleImageURL];
+#endif // ]TODO(macOS ISS#2323203)
     } else {
       image = [UIImage imageNamed:imageName];
     }
->>>>>>> v0.60.0
   }
 
   if (!image) {
     // Attempt to load from the file system
-<<<<<<< HEAD
-    NSString *filePath = [NSString stringWithUTF8String:[imageURL fileSystemRepresentation]];
-    if (filePath.pathExtension.length == 0) {
-      filePath = [filePath stringByAppendingPathExtension:@"png"];
-    }
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-    image = [UIImage imageWithContentsOfFile:filePath];
-#else // TODO(macOS ISS#2323203)
-    image = [[NSImage alloc] initWithContentsOfFile:filePath]; // TODO(macOS ISS#2323203)
-#endif // TODO(macOS ISS#2323203)
-=======
     const char* fileSystemCString = [imageURL fileSystemRepresentation];
     if (fileSystemCString != NULL) {
       NSString *filePath = [NSString stringWithUTF8String:fileSystemCString];
       if (filePath.pathExtension.length == 0) {
         filePath = [filePath stringByAppendingPathExtension:@"png"];
       }
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
       image = [UIImage imageWithContentsOfFile:filePath];
+#else // TODO(macOS ISS#2323203)
+      image = [[NSImage alloc] initWithContentsOfFile:filePath]; // TODO(macOS ISS#2323203)
+#endif // TODO(macOS ISS#2323203)
     }
->>>>>>> v0.60.0
   }
 
   if (!image && !bundle) {

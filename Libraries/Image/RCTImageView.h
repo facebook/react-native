@@ -5,19 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-<<<<<<< HEAD
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
-
-=======
 #import <UIKit/UIKit.h>
 #import <React/RCTView.h>
->>>>>>> v0.60.0
 #import <React/RCTResizeMode.h>
 
 @class RCTBridge;
 @class RCTImageSource;
 
-<<<<<<< HEAD
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 typedef NS_ENUM(NSInteger, UIImageRenderingMode) {
     UIImageRenderingModeAlwaysOriginal,
@@ -25,14 +20,7 @@ typedef NS_ENUM(NSInteger, UIImageRenderingMode) {
 };
 #endif
 
-#if !TARGET_OS_OSX // ]TODO(macOS ISS#2323203)
-@interface RCTImageView : UIImageView
-#else // [TODO(macOS ISS#2323203)
-@interface RCTImageView : NSImageView
-#endif // ]TODO(macOS ISS#2323203)
-=======
 @interface RCTImageView : RCTView
->>>>>>> v0.60.0
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 

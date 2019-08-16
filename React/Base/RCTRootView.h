@@ -115,11 +115,7 @@ NSString *const RCTContentDidAppearNotification;
  * with a blank screen. By default this is nil, but you can override it with
  * (for example) a UIActivityIndicatorView or a placeholder image.
  */
-<<<<<<< HEAD
 @property (nonatomic, strong) RCTUIView *loadingView; // TODO(macOS ISS#3536887)
-=======
-@property (nonatomic, strong, nullable) UIView *loadingView;
->>>>>>> v0.60.0
 
 /**
  * Calling this will result in emitting a "touches cancelled" event to js,

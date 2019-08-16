@@ -142,15 +142,12 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
     if (defaultFontHandler) {
       NSString *fontWeightDescription = FontWeightDescriptionFromUIFontWeight(weight);
       font = defaultFontHandler(size, fontWeightDescription);
-<<<<<<< HEAD
 #pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
 #pragma clang diagnostic ignored "-Wunguarded-availability" // TODO(OSS Candidate ISS#2710739)
     } else if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
       // Only supported on iOS8.2/macOS10.11 and above
       font = [UIFont systemFontOfSize:size weight:weight];
 #pragma clang diagnostic pop // TODO(OSS Candidate ISS#2710739)
-=======
->>>>>>> v0.60.0
     } else {
       font = [UIFont systemFontOfSize:size weight:weight];
     }

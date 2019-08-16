@@ -343,7 +343,11 @@ NSDictionary<NSString *, id> *__nullable RCTGetImageMetadata(NSData *data)
 
 NSData *__nullable RCTGetImageData(UIImage *image, float quality)
 {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   CGImageRef cgImage = image.CGImage;
+#else // [TODO(macOS ISS#2323203)
+  CGImageRef cgImage = [image CGImageForProposedRect:NULL context:NULL hints:NULL];
+#endif // ]TODO(macOS ISS#2323203)
   if (!cgImage) {
     return NULL;
   }
@@ -354,14 +358,7 @@ NSData *__nullable RCTGetImageData(UIImage *image, float quality)
   }];
   CGImageDestinationRef destination;
   CFMutableDataRef imageData = CFDataCreateMutable(NULL, 0);
-<<<<<<< HEAD
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  CGImageRef cgImage = image.CGImage;
-#else // [TODO(macOS ISS#2323203)
-  CGImageRef cgImage = [image CGImageForProposedRect:NULL context:NULL hints:NULL];
-#endif // ]TODO(macOS ISS#2323203)
-=======
->>>>>>> v0.60.0
+
   if (RCTImageHasAlpha(cgImage)) {
     // get png data
     destination = CGImageDestinationCreateWithData(imageData, kUTTypePNG, 1, NULL);
