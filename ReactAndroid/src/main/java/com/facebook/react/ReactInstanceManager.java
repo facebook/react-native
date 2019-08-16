@@ -56,7 +56,6 @@ import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
-import com.facebook.react.bridge.NativeDeltaClient;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
@@ -279,8 +278,8 @@ public class ReactInstanceManager {
       }
 
       @Override
-      public void onJSBundleLoadedFromServer(@Nullable NativeDeltaClient nativeDeltaClient) {
-        ReactInstanceManager.this.onJSBundleLoadedFromServer(nativeDeltaClient);
+      public void onJSBundleLoadedFromServer() {
+        ReactInstanceManager.this.onJSBundleLoadedFromServer();
       }
 
       @Override
@@ -389,7 +388,7 @@ public class ReactInstanceManager {
                               && !devSettings.isRemoteJSDebugEnabled()) {
                             // If there is a up-to-date bundle downloaded from server,
                             // with remote JS debugging disabled, always use that.
-                            onJSBundleLoadedFromServer(null);
+                            onJSBundleLoadedFromServer();
                           } else {
                             // If dev server is down, disable the remote JS debugging.
                             devSettings.setRemoteJSDebugEnabled(false);
@@ -883,15 +882,12 @@ public class ReactInstanceManager {
   }
 
   @ThreadConfined(UI)
-  private void onJSBundleLoadedFromServer(@Nullable NativeDeltaClient nativeDeltaClient) {
+  private void onJSBundleLoadedFromServer() {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.onJSBundleLoadedFromServer()");
 
     JSBundleLoader bundleLoader =
-        nativeDeltaClient == null
-            ? JSBundleLoader.createCachedBundleFromNetworkLoader(
-                mDevSupportManager.getSourceUrl(), mDevSupportManager.getDownloadedJSBundleFile())
-            : JSBundleLoader.createDeltaFromNetworkLoader(
-                mDevSupportManager.getSourceUrl(), nativeDeltaClient);
+        JSBundleLoader.createCachedBundleFromNetworkLoader(
+            mDevSupportManager.getSourceUrl(), mDevSupportManager.getDownloadedJSBundleFile());
 
     recreateReactContextInBackground(mJavaScriptExecutorFactory, bundleLoader);
   }

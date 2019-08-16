@@ -10,7 +10,6 @@ import android.app.Activity;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
-import com.facebook.react.bridge.NativeDeltaClient;
 
 /**
  * Interface used by {@link DevSupportManager} for accessing some fields and methods of {@link
@@ -22,7 +21,7 @@ public interface ReactInstanceManagerDevHelper {
   void onReloadWithJSDebugger(JavaJSExecutor.Factory proxyExecutorFactory);
 
   /** Notify react instance manager about new JS bundle version downloaded from the server. */
-  void onJSBundleLoadedFromServer(@Nullable NativeDeltaClient nativeDeltaClient);
+  void onJSBundleLoadedFromServer();
 
   /** Request to toggle the react element inspector. */
   void toggleElementInspector();

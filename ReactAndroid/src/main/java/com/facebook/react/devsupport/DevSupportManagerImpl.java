@@ -30,7 +30,6 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
-import com.facebook.react.bridge.NativeDeltaClient;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -1026,7 +1025,7 @@ public class DevSupportManagerImpl
     mDevServerHelper.downloadBundleFromURL(
         new DevBundleDownloadListener() {
           @Override
-          public void onSuccess(final @Nullable NativeDeltaClient nativeDeltaClient) {
+          public void onSuccess() {
             mDevLoadingViewController.hide();
             mDevLoadingViewVisible = false;
             synchronized (DevSupportManagerImpl.this) {
@@ -1034,7 +1033,7 @@ public class DevSupportManagerImpl
               mBundleStatus.updateTimestamp = System.currentTimeMillis();
             }
             if (mBundleDownloadListener != null) {
-              mBundleDownloadListener.onSuccess(nativeDeltaClient);
+              mBundleDownloadListener.onSuccess();
             }
             UiThreadUtil.runOnUiThread(
                 new Runnable() {
@@ -1042,7 +1041,7 @@ public class DevSupportManagerImpl
                   public void run() {
                     ReactMarker.logMarker(
                         ReactMarkerConstants.DOWNLOAD_END, bundleInfo.toJSONString());
-                    mReactInstanceManagerHelper.onJSBundleLoadedFromServer(nativeDeltaClient);
+                    mReactInstanceManagerHelper.onJSBundleLoadedFromServer();
                   }
                 });
           }
