@@ -722,18 +722,9 @@ const TouchableMixin = {
     this.longPressDelayTimeout = null;
     const curState = this.state.touchable.touchState;
     if (
-      curState !== States.RESPONDER_ACTIVE_PRESS_IN &&
-      curState !== States.RESPONDER_ACTIVE_LONG_PRESS_IN
+      curState === States.RESPONDER_ACTIVE_PRESS_IN ||
+      curState === States.RESPONDER_ACTIVE_LONG_PRESS_IN
     ) {
-      console.error(
-        'Attempted to transition from state `' +
-          curState +
-          '` to `' +
-          States.RESPONDER_ACTIVE_LONG_PRESS_IN +
-          '`, which is not supported. This is ' +
-          'most likely due to `Touchable.longPressDelayTimeout` not being cancelled.',
-      );
-    } else {
       this._receiveSignal(Signals.LONG_PRESS_DETECTED, e);
     }
   },
