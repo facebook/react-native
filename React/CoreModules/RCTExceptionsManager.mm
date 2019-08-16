@@ -7,11 +7,18 @@
 
 #import "RCTExceptionsManager.h"
 
-#import "RCTConvert.h"
-#import "RCTDefines.h"
-#import "RCTLog.h"
-#import "RCTRedBox.h"
-#import "RCTRootView.h"
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <React/RCTConvert.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+#import <React/RCTRedBox.h>
+#import <React/RCTRootView.h>
+
+#import "CoreModulesPlugins.h"
+
+@interface RCTExceptionsManager() <NativeExceptionsManagerSpec>
+
+@end
 
 @implementation RCTExceptionsManager
 
@@ -29,23 +36,23 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
                   stack:(NSArray<NSDictionary *> *)stack
-                  exceptionId:(nonnull NSNumber *)exceptionId)
+                  exceptionId:(double)exceptionId)
 {
   [_bridge.redBox showErrorMessage:message withStack:stack];
 
   if (_delegate) {
-    [_delegate handleSoftJSExceptionWithMessage:message stack:stack exceptionId:exceptionId];
+    [_delegate handleSoftJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
   }
 }
 
 RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
                   stack:(NSArray<NSDictionary *> *)stack
-                  exceptionId:(nonnull NSNumber *)exceptionId)
+                  exceptionId:(double) exceptionId)
 {
   [_bridge.redBox showErrorMessage:message withStack:stack];
 
   if (_delegate) {
-    [_delegate handleFatalJSExceptionWithMessage:message stack:stack exceptionId:exceptionId];
+    [_delegate handleFatalJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
   }
 
   static NSUInteger reloadRetries = 0;
@@ -61,12 +68,12 @@ RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
 
 RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
                   stack:(NSArray<NSDictionary *> *)stack
-                  exceptionId:(nonnull NSNumber *)exceptionId)
+                  exceptionId:(double)exceptionId)
 {
   [_bridge.redBox updateErrorMessage:message withStack:stack];
 
   if (_delegate && [_delegate respondsToSelector:@selector(updateJSExceptionWithMessage:stack:exceptionId:)]) {
-    [_delegate updateJSExceptionWithMessage:message stack:stack exceptionId:exceptionId];
+    [_delegate updateJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
   }
 }
 
@@ -74,7 +81,28 @@ RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
 RCT_EXPORT_METHOD(reportUnhandledException:(NSString *)message
                   stack:(NSArray<NSDictionary *> *)stack)
 {
-  [self reportFatalException:message stack:stack exceptionId:@-1];
+  [self reportFatalException:message stack:stack exceptionId:-1];
+}
+
+RCT_EXPORT_METHOD(dismissRedbox)
+{
+
+}
+
+RCT_EXPORT_METHOD(reportException:(JS::NativeExceptionsManager::ExceptionData &)data)
+{
+
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
+(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeExceptionsManagerSpecJSI>(self, jsInvoker);
 }
 
 @end
+
+Class RCTExceptionsManagerCls(void)
+{
+  return RCTExceptionsManager.class;
+}

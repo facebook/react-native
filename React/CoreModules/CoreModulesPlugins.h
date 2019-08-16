@@ -29,6 +29,7 @@ extern "C" {
 Class RCTCoreModulesClassProvider(const char *name);
 
 // Lookup functions
+Class RCTExceptionsManagerCls(void);
 Class RCTImageLoaderCls(void);
 Class RCTPlatformCls(void);
 
