@@ -70,7 +70,7 @@ When developing E2E tests, you may want to run in development mode, so that chan
     detox build -c ios.sim.debug
     detox test -c ios.sim.debug
 
-You will also need to have Metro Bundler running in another terminal. Note that if you've previously run the E2E tests in release mode, you may need to delete the `RNTester/build` folder before rerunning `detox build`.
+You will also need to have Metro running in another terminal. Note that if you've previously run the E2E tests in release mode, you may need to delete the `RNTester/build` folder before rerunning `detox build`.
 
 ## Building from source
 
