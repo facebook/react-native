@@ -10,16 +10,6 @@
 
 'use strict';
 
-<<<<<<< HEAD
-const Platform = require('Platform');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const TouchableHighlight = require('TouchableHighlight'); // [TODO(windows ISS)
-const TouchableNativeFeedback = require('TouchableNativeFeedback');
-const TouchableOpacity = require('TouchableOpacity');
-const View = require('View');
-=======
 const Platform = require('../Utilities/Platform');
 const React = require('react');
 const StyleSheet = require('../StyleSheet/StyleSheet');
@@ -27,7 +17,6 @@ const Text = require('../Text/Text');
 const TouchableNativeFeedback = require('./Touchable/TouchableNativeFeedback');
 const TouchableOpacity = require('./Touchable/TouchableOpacity');
 const View = require('./View/View');
->>>>>>> v0.60.0
 
 const invariant = require('invariant');
 

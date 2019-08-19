@@ -343,18 +343,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
  */
 - (void)setContentOffset:(CGPoint)contentOffset
 {
-<<<<<<< HEAD
   RCTUIView *contentView = nil; // TODO(macOS ISS#3536887)
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   contentView = (RCTUIView *) self.documentView;	// NSScrollView's documentView must be of type UIView/RCTView and TODO(macOS ISS#3536887)
 #else
   contentView = [self contentView];
 #endif // ]TODO(macOS ISS#2323203)
-  if (contentView && _centerContent) {
-=======
-  UIView *contentView = [self contentView];
   if (contentView && _centerContent && !CGSizeEqualToSize(contentView.frame.size, CGSizeZero)) {
->>>>>>> v0.60.0
     CGSize subviewSize = contentView.frame.size;
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
     CGSize scrollViewSize = self.contentView.bounds.size;
@@ -438,7 +433,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 }
 #endif //TARGET_OS_TV
 
-<<<<<<< HEAD
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 - (BOOL)canBecomeFirstResponder
 {
@@ -467,13 +461,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 }
 #endif // ]TODO(macOS ISS#2323203)
 
-=======
 - (BOOL)shouldGroupAccessibilityChildren
 {
   return YES;
 }
 
->>>>>>> v0.60.0
 @end
 
 @interface RCTScrollView () <RCTUIManagerObserver>
@@ -816,12 +808,10 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(RCTPlatformVie
                                 fmax(_scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom + fmax(_scrollView.contentInset.top, 0), 0.01)); // Make width and height greater than 0
     // Ensure at least one scroll event will fire
     _allowNextScrollNoMatterWhat = YES;
-<<<<<<< HEAD
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
     (void) animated;
     _scrollView.contentOffset = offset;
 #else // ]TODO(macOS ISS#2323203)
-=======
     if (!CGRectContainsPoint(maxRect, offset) && !self.scrollToOverflowEnabled) {
       CGFloat x = fmax(offset.x, CGRectGetMinX(maxRect));
       x = fmin(x, CGRectGetMaxX(maxRect));
@@ -829,7 +819,6 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(RCTPlatformVie
       y = fmin(y, CGRectGetMaxY(maxRect));
       offset = CGPointMake(x, y);
     }
->>>>>>> v0.60.0
     [_scrollView setContentOffset:offset animated:animated];
 #endif // TODO(macOS ISS#2323203)
   }
@@ -1323,11 +1312,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 - (void)uiManagerWillPerformMounting:(RCTUIManager *)manager
 {
   RCTAssertUIManagerQueue();
-<<<<<<< HEAD
-  [manager prependUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
-=======
-  [manager prependUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
->>>>>>> v0.60.0
+  [manager prependUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
     BOOL horz = [self isHorizontal:self->_scrollView];
     NSUInteger minIdx = [self->_maintainVisibleContentPosition[@"minIndexForVisible"] integerValue];
     for (NSUInteger ii = minIdx; ii < self.contentView.subviews.count; ++ii) { // TODO(OSS Candidate ISS#2710739) use property instead of ivar for mac
@@ -1344,11 +1329,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
       }
     }
   }];
-<<<<<<< HEAD
-  [manager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
-=======
-  [manager addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
->>>>>>> v0.60.0
+  [manager addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
     if (self->_maintainVisibleContentPosition == nil) {
       return; // The prop might have changed in the previous UIBlocks, so need to abort here.
     }

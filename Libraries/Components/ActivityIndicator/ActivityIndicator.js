@@ -17,14 +17,9 @@ const View = require('../View/View');
 
 const RCTActivityIndicatorViewNativeComponent = require('./RCTActivityIndicatorViewNativeComponent');
 
-<<<<<<< HEAD
-import type {NativeComponent} from 'ReactNative';
-import type {ViewProps} from 'ViewPropTypes';
-import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
-=======
 import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 import type {ViewProps} from '../View/ViewPropTypes';
->>>>>>> v0.60.0
+import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
 
 const RCTActivityIndicator =
   Platform.OS === 'android'

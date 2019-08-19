@@ -77,7 +77,6 @@
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
 }
 
-<<<<<<< HEAD
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 @dynamic delegate;
 
@@ -93,9 +92,8 @@ static UIColor *defaultPlaceholderTextColor()
 }
 
 #endif // ]TODO(macOS ISS#2323203)
-=======
+
 @synthesize reactTextAttributes = _reactTextAttributes;
->>>>>>> v0.60.0
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -233,7 +231,6 @@ static UIColor *defaultPlaceholderTextColor()
   [self _updatePlaceholder];
 }
 
-<<<<<<< HEAD
 - (NSString*)placeholder // [TODO(macOS ISS#2323203)
 {
 #if !TARGET_OS_OSX
@@ -243,10 +240,7 @@ static UIColor *defaultPlaceholderTextColor()
 #endif
 } // ]TODO(macOS ISS#2323203)
 
-- (void)_updatePlaceholder
-=======
 - (void)setReactTextAttributes:(RCTTextAttributes *)reactTextAttributes
->>>>>>> v0.60.0
 {
   if ([reactTextAttributes isEqual:_reactTextAttributes]) {
     return;
@@ -256,7 +250,6 @@ static UIColor *defaultPlaceholderTextColor()
   [self _updatePlaceholder];
 }
 
-<<<<<<< HEAD
   NSMutableDictionary *attributes = [NSMutableDictionary new];
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if (_placeholderColor) {
@@ -272,7 +265,8 @@ static UIColor *defaultPlaceholderTextColor()
   self.placeholderAttributedString = [[NSAttributedString alloc] initWithString:self.placeholder
                                                                      attributes:attributes];
 #endif // ]TODO(macOS ISS#2323203)
-=======
+}
+
 - (RCTTextAttributes *)reactTextAttributes
 {
   return _reactTextAttributes;
@@ -286,7 +280,6 @@ static UIColor *defaultPlaceholderTextColor()
 
   self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
                                                                attributes:[self placeholderEffectiveTextAttributes]];
->>>>>>> v0.60.0
 }
 
 - (BOOL)isEditable
@@ -496,13 +489,9 @@ static UIColor *defaultPlaceholderTextColor()
 {
   // Note: `placeholder` defines intrinsic size for `<TextInput>`.
   NSString *text = self.placeholder ?: @"";
-<<<<<<< HEAD
-  CGSize size = [text sizeWithAttributes:@{NSFontAttributeName: self.font}];
+  CGSize size = [text sizeWithAttributes:[self placeholderEffectiveTextAttributes]];
   
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-=======
-  CGSize size = [text sizeWithAttributes:[self placeholderEffectiveTextAttributes]];
->>>>>>> v0.60.0
   size = CGSizeMake(RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height));
 #else // [TODO(macOS ISS#2323203)
   CGFloat scale = self.window.backingScaleFactor;
