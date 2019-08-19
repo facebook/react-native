@@ -55,6 +55,37 @@ public class ArrayPropsNativeComponentManagerDelegate<T extends View, U extends 
 }
 `;
 
+exports[`GeneratePropsJavaDelegate can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
+Map {
+  "ArrayPropsNativeComponentManagerDelegate.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.LayoutShadowNode;
+
+public class ArrayPropsNativeComponentManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ArrayPropsNativeComponentManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public ArrayPropsNativeComponentManagerDelegate(U viewManager) {
+    super(viewManager);
+  }
+  @Override
+  public void setProperty(T view, String propName, @Nullable Object value) {
+    switch (propName) {
+      case \\"nativePrimitives\\":
+        mViewManager.setNativePrimitives(view, (ReadableArray) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
+  }
+}
+",
+}
+`;
+
 exports[`GeneratePropsJavaDelegate can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "BooleanPropNativeComponentManagerDelegate.java" => "

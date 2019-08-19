@@ -43,6 +43,41 @@ export default nativeComponentName;
 }
 `;
 
+exports[`GenerateViewConfigJs can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
+Map {
+  "ARRAY_PROPS_WITH_NESTED_OBJECTNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const ArrayPropsNativeComponentViewConfig = {
+  uiViewClassName: 'ArrayPropsNativeComponent',
+
+  validAttributes: {
+    nativePrimitives: true,
+  },
+};
+
+let nativeComponentName = 'ArrayPropsNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, ArrayPropsNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = ArrayPropsNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
 exports[`GenerateViewConfigJs can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "BOOLEAN_PROPNativeViewConfig.js" => "

@@ -612,6 +612,72 @@ const ARRAY_PROPS: SchemaType = {
   },
 };
 
+const ARRAY_PROPS_WITH_NESTED_OBJECT: SchemaType = {
+  modules: {
+    Slider: {
+      components: {
+        ArrayPropsNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'nativePrimitives',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      name: 'colors',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'NativePrimitiveTypeAnnotation',
+                          name: 'ColorPrimitive',
+                        },
+                      },
+                    },
+                    {
+                      name: 'srcs',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'NativePrimitiveTypeAnnotation',
+                          name: 'ImageSourcePrimitive',
+                        },
+                      },
+                    },
+                    {
+                      name: 'points',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'NativePrimitiveTypeAnnotation',
+                          name: 'PointPrimitive',
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
 const OBJECT_PROPS: SchemaType = {
   modules: {
     ObjectPropsNativeComponent: {
@@ -1254,6 +1320,7 @@ module.exports = {
   IMAGE_PROP,
   POINT_PROP,
   ARRAY_PROPS,
+  ARRAY_PROPS_WITH_NESTED_OBJECT,
   OBJECT_PROPS,
   MULTI_NATIVE_PROP,
   ENUM_PROP,

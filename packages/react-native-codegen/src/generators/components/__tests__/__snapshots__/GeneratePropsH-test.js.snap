@@ -126,6 +126,75 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
 }
 `;
 
+exports[`GeneratePropsH can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+#include <vector>
+
+namespace facebook {
+namespace react {
+
+struct ArrayPropsNativeComponentNativePrimitivesStruct {
+  std::vector<SharedColor> colors;
+  std::vector<ImageSource> srcs;
+  std::vector<Point> points;
+};
+
+static inline void fromRawValue(const RawValue &value, ArrayPropsNativeComponentNativePrimitivesStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto colors = map.find(\\"colors\\");
+  if (colors != map.end()) {
+    fromRawValue(colors->second, result.colors);
+  }
+  auto srcs = map.find(\\"srcs\\");
+  if (srcs != map.end()) {
+    fromRawValue(srcs->second, result.srcs);
+  }
+  auto points = map.find(\\"points\\");
+  if (points != map.end()) {
+    fromRawValue(points->second, result.points);
+  }
+}
+
+static inline std::string toString(const ArrayPropsNativeComponentNativePrimitivesStruct &value) {
+  return \\"[Object ArrayPropsNativeComponentNativePrimitivesStruct]\\";
+}
+
+static inline void fromRawValue(const RawValue &value, std::vector<ArrayPropsNativeComponentNativePrimitivesStruct> &result) {
+  auto items = (std::vector<RawValue>)value;
+  for (const auto &item : items) {
+    ArrayPropsNativeComponentNativePrimitivesStruct newItem;
+    fromRawValue(item, newItem);
+    result.emplace_back(newItem);
+  }
+}
+
+class ArrayPropsNativeComponentProps final : public ViewProps {
+ public:
+  ArrayPropsNativeComponentProps() = default;
+  ArrayPropsNativeComponentProps(const ArrayPropsNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  const std::vector<ArrayPropsNativeComponentNativePrimitivesStruct> nativePrimitives{};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GeneratePropsH can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "Props.h" => "

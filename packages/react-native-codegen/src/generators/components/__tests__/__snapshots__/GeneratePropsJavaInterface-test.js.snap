@@ -24,6 +24,22 @@ public interface ArrayPropsNativeComponentManagerInterface<T extends View> {
 }
 `;
 
+exports[`GeneratePropsJavaInterface can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
+Map {
+  "ArrayPropsNativeComponentManagerInterface.java" => "
+package com.facebook.react.viewmanagers;
+
+import android.view.View;
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ReadableArray;
+
+public interface ArrayPropsNativeComponentManagerInterface<T extends View> {
+  void setNativePrimitives(T view, @Nullable ReadableArray value);
+}
+",
+}
+`;
+
 exports[`GeneratePropsJavaInterface can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "BooleanPropNativeComponentManagerInterface.java" => "
