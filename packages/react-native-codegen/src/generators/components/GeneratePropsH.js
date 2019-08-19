@@ -494,6 +494,16 @@ function getLocalImports(
       addImportsForNativeName(typeAnnotation.elementType.name);
     }
 
+    if (
+      typeAnnotation.type === 'ArrayTypeAnnotation' &&
+      typeAnnotation.elementType.type === 'ObjectTypeAnnotation'
+    ) {
+      const localImports = getLocalImports(
+        typeAnnotation.elementType.properties,
+      );
+      localImports.forEach(imports.add, imports);
+    }
+
     if (typeAnnotation.type === 'ObjectTypeAnnotation') {
       imports.add('#include <react/core/propsConversions.h>');
       const objectImports = getImports(typeAnnotation.properties);
