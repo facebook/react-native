@@ -12,18 +12,11 @@
 
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
-<<<<<<< HEAD
-import type {NativeComponent} from 'ReactNative';
-import type {SyntheticEvent} from 'CoreEventTypes';
-import type {ViewStyleProp} from 'StyleSheet';
-import type React from 'React';
-import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
-=======
 import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {Element, Node} from 'react';
->>>>>>> v0.60.0
+import type {SemanticOrDynamicColorType} from '../../Color/normalizeColor'; // ]TODO(macOS ISS#2323203)
 
 type ColorValue = null | string | SemanticOrDynamicColorType;
 

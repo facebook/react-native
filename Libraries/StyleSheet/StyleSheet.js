@@ -9,16 +9,10 @@
  */
 'use strict';
 
-<<<<<<< HEAD
-const PixelRatio = require('PixelRatio');
-const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-const StyleSheetValidation = require('StyleSheetValidation');
-const Platform = require('Platform'); // TODO(macOS ISS#2323203)
-=======
 const PixelRatio = require('../Utilities/PixelRatio');
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
 const StyleSheetValidation = require('./StyleSheetValidation');
->>>>>>> v0.60.0
+const Platform = require('../Utilities/Platform'); // TODO(macOS ISS#2323203)
 
 const flatten = require('./flattenStyle');
 

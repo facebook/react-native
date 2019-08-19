@@ -10,22 +10,6 @@
 
 'use strict';
 
-<<<<<<< HEAD
-const Dimensions = require('Dimensions');
-const React = require('React');
-const FlatList = require('FlatList');
-const SafeAreaView = require('SafeAreaView');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
-const YellowBoxButton = require('YellowBoxButton');
-const YellowBoxInspector = require('YellowBoxInspector');
-const YellowBoxListRow = require('YellowBoxListRow');
-const YellowBoxStyle = require('YellowBoxStyle');
-const Platform = require('Platform'); // TODO(windows ISS)
-
-import type {Category} from 'YellowBoxCategory';
-import type {Registry} from 'YellowBoxRegistry';
-=======
 const Dimensions = require('../../Utilities/Dimensions');
 const React = require('react');
 const FlatList = require('../../Lists/FlatList');
@@ -36,10 +20,10 @@ const YellowBoxButton = require('./YellowBoxButton');
 const YellowBoxInspector = require('./YellowBoxInspector');
 const YellowBoxListRow = require('./YellowBoxListRow');
 const YellowBoxStyle = require('./YellowBoxStyle');
+const Platform = require('../../Utilities/Platform'); // TODO(windows ISS)
 
 import type {Category} from '../Data/YellowBoxCategory';
 import type {Registry} from '../Data/YellowBoxRegistry';
->>>>>>> v0.60.0
 
 type Props = $ReadOnly<{|
   onDismiss: (category: Category) => void,

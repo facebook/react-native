@@ -151,19 +151,16 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Build React Native from source
-<<<<<<< HEAD
     if (isSDXPlatform()) {
         implementation project(':react-native:ReactAndroid')
     }
     else {
         implementation project(':ReactAndroid')
-=======
-    implementation project(':ReactAndroid')
+    }
 
     if (useIntlJsc) {
         implementation 'org.webkit:android-jsc-intl:+'
     } else {
         implementation 'org.webkit:android-jsc:+'
->>>>>>> v0.60.0
     }
 }

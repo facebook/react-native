@@ -11,16 +11,10 @@
 
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
-<<<<<<< HEAD
-import type {SyntheticEvent} from 'CoreEventTypes';
-import type {TextStyleProp} from 'StyleSheet';
-import type {NativeComponent} from 'ReactNative';
-import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
-=======
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {NativeComponent} from '../../Renderer/shims/ReactNative';
->>>>>>> v0.60.0
+import type {SemanticOrDynamicColorType} from '../../Color/normalizeColor'; // ]TODO(macOS ISS#2323203)
 
 type PickerIOSChangeEvent = SyntheticEvent<
   $ReadOnly<{|

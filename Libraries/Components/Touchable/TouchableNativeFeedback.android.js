@@ -23,12 +23,8 @@ const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('./ensurePositiveDelayProps');
 const processColor = require('../../StyleSheet/processColor');
 
-<<<<<<< HEAD
-import type {PressEvent} from 'CoreEventTypes';
-import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
-=======
 import type {PressEvent} from '../../Types/CoreEventTypes';
->>>>>>> v0.60.0
+import type {SemanticOrDynamicColorType} from '../../Color/normalizeColor'; // ]TODO(macOS ISS#2323203)
 
 const rippleBackgroundPropType = PropTypes.shape({
   type: PropTypes.oneOf(['RippleAndroid']),

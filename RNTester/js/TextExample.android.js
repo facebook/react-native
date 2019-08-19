@@ -668,8 +668,6 @@ class TextExample extends React.Component<{}> {
         <RNTesterBlock title="Substring Emoji (should only see 'test')">
           <Text>{'test🙃'.substring(0, 5)}</Text>
         </RNTesterBlock>
-<<<<<<< HEAD
-=======
         <RNTesterBlock title="Text linkify">
           <Text dataDetectorType="phoneNumber">Phone number: 123-123-1234</Text>
           <Text dataDetectorType="link">Link: https://www.facebook.com</Text>
@@ -683,7 +681,6 @@ class TextExample extends React.Component<{}> {
             employee@facebook.com
           </Text>
         </RNTesterBlock>
->>>>>>> v0.60.0
       </RNTesterPage>
     );
   }

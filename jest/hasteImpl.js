@@ -13,37 +13,6 @@
 const path = require('path');
 const cli = require('@react-native-community/cli');
 
-<<<<<<< HEAD
-const REACT_NATIVE_CI = process.cwd() === path.resolve(__dirname, '..');
-
-let pluginsPath;
-
-if (REACT_NATIVE_CI) {
-  pluginsPath = '..';
-} else {
-  pluginsPath = '../../../';
-}
-
-function getPlugins() {
-  try {
-    // @todo do not rely on private files
-    /* $FlowFixMe */
-    const findPlugins = require('@react-native-community/cli/build/core/findPlugins')
-      .default;
-
-    return findPlugins(path.resolve(__dirname, pluginsPath));
-  } catch (e) {
-    return {
-      haste: {
-        providesModuleNodeModules: [],
-        platforms: [],
-      },
-    };
-  }
-}
-
-const plugins = getPlugins();
-=======
 // Use duck-typing because of Facebook-internal infra that doesn't have the cli package.
 const {haste} = (cli.loadConfig && cli.loadConfig()) || {
   haste: {
@@ -51,7 +20,6 @@ const {haste} = (cli.loadConfig && cli.loadConfig()) || {
     platforms: ['ios', 'android'],
   },
 };
->>>>>>> v0.60.0
 
 // Detect out-of-tree platforms and add them to the whitelists
 const pluginRoots /*: Array<string> */ = haste.providesModuleNodeModules.map(
@@ -83,13 +51,8 @@ const NAME_REDUCERS /*: Array<[RegExp, string]> */ = [
   [/^(?:.*[\\\/])?([a-zA-Z0-9$_.-]+)$/, '$1'],
   // strip .js/.js.flow suffix
   [/^(.*)\.js(\.flow)?$/, '$1'],
-<<<<<<< HEAD
-  // strip platform suffix
-  [/^(.*)\.(android|ios|native|macos)$/, '$1'],
-=======
   // strip native suffix
   [/^(.*)\.(native)$/, '$1'],
->>>>>>> v0.60.0
   // strip plugin platform suffixes
   ...pluginNameReducers,
 ];

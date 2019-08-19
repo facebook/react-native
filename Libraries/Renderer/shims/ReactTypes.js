@@ -14,14 +14,9 @@ export type ReactNode =
   | ReactText
   | ReactFragment
   | ReactProvider<any>
-<<<<<<< HEAD
-  | ReactConsumer<any>;
-/* eslint-enable no-use-before-define */
-=======
   | ReactConsumer<any>
   | ReactEventComponent
   | ReactEventTarget;
->>>>>>> v0.60.0
 
 export type ReactEmpty = null | void | boolean;
 

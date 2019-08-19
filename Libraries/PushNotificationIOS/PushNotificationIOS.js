@@ -10,14 +10,9 @@
 
 'use strict';
 
-<<<<<<< HEAD
-const NativeEventEmitter = require('NativeEventEmitter');
-const Platform = require('Platform'); // TODO(macOS ISS#2323203)
-const RCTPushNotificationManager = require('NativeModules')
-=======
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
+const Platform = require('../Utilities/Platform'); // TODO(macOS ISS#2323203)
 const RCTPushNotificationManager = require('../BatchedBridge/NativeModules')
->>>>>>> v0.60.0
   .PushNotificationManager;
 const invariant = require('invariant');
 

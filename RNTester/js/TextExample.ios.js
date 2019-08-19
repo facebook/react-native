@@ -492,8 +492,6 @@ exports.examples = [
     },
   },
   {
-<<<<<<< HEAD
-=======
     title: 'Transparent Background Color',
     render: function() {
       return (
@@ -507,7 +505,6 @@ exports.examples = [
     },
   },
   {
->>>>>>> v0.60.0
     title: 'Text metrics',
     render: function() {
       return <TextRenderInfoExample />;

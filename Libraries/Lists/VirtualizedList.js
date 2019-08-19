@@ -9,14 +9,9 @@
  */
 'use strict';
 
-<<<<<<< HEAD
-const Batchinator = require('Batchinator');
-const FillRateHelper = require('FillRateHelper');
-const Platform = require('Platform'); // TODO(macOS ISS#2323203)
-=======
 const Batchinator = require('../Interaction/Batchinator');
 const FillRateHelper = require('./FillRateHelper');
->>>>>>> v0.60.0
+const Platform = require('../Utilities/Platform'); // TODO(macOS ISS#2323203)
 const PropTypes = require('prop-types');
 const React = require('react');
 const ReactNative = require('../Renderer/shims/ReactNative');

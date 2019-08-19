@@ -224,16 +224,15 @@ void Instance::handleMemoryPressure(int pressureLevel) {
   nativeToJsBridge_->handleMemoryPressure(pressureLevel);
 }
 
-<<<<<<< HEAD
-int64_t Instance::getPeakJsMemoryUsage() const noexcept {
-  return nativeToJsBridge_->getPeakJsMemoryUsage();
-=======
 void Instance::invokeAsync(std::function<void()>&& func) {
   nativeToJsBridge_->runOnExecutorQueue([func=std::move(func)](JSExecutor *executor) {
     func();
     executor->flush();
   });
->>>>>>> v0.60.0
+}
+
+int64_t Instance::getPeakJsMemoryUsage() const noexcept { // ISS
+  return nativeToJsBridge_->getPeakJsMemoryUsage();
 }
 
 } // namespace react
