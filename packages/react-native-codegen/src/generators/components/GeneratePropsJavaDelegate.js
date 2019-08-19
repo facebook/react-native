@@ -135,18 +135,18 @@ function generatePropCasesString(
     }`;
 }
 
-function getCommandArgJavaType(param) {
+function getCommandArgJavaType(param, index) {
   switch (param.typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
-      return 'getBoolean';
+      return `args.getBoolean(${index})`;
     case 'DoubleTypeAnnotation':
-      return 'getDouble';
+      return `args.getDouble(${index})`;
     case 'FloatTypeAnnotation':
-      return 'getFloat';
+      return `(float) args.getDouble(${index})`;
     case 'Int32TypeAnnotation':
-      return 'getInt';
+      return `args.getInt(${index})`;
     case 'StringTypeAnnotation':
-      return 'getString';
+      return `args.getString(${index})`;
     default:
       (param.typeAnnotation.type: empty);
       throw new Error('Receieved invalid typeAnnotation');
@@ -156,11 +156,7 @@ function getCommandArgJavaType(param) {
 function getCommandArguments(command: CommandTypeShape): string {
   return [
     'view',
-    ...command.typeAnnotation.params.map((param, index) => {
-      const commandArgJavaType = getCommandArgJavaType(param);
-
-      return `args.${commandArgJavaType}(${index})`;
-    }),
+    ...command.typeAnnotation.params.map(getCommandArgJavaType),
   ].join(', ');
 }
 
