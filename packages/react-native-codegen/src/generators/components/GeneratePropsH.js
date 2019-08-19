@@ -220,7 +220,7 @@ function getNativeTypeFromAnnotation(
           typeAnnotation: typeAnnotation.elementType,
           name: componentName,
         },
-        nameParts,
+        nameParts.concat([prop.name]),
       );
       return `std::vector<${itemAnnotation}>`;
     }
@@ -527,37 +527,71 @@ function getLocalImports(
   return imports;
 }
 
-function generateStructs(componentName: string, component): string {
-  const structs: StructsMap = new Map();
-  component.props.forEach(prop => {
-    if (prop.typeAnnotation.type === 'ObjectTypeAnnotation') {
-      generateStruct(
-        structs,
-        componentName,
-        [prop.name],
-        prop.typeAnnotation.properties,
-      );
-    } else if (
-      prop.typeAnnotation.type === 'ArrayTypeAnnotation' &&
-      prop.typeAnnotation.elementType.type === 'ObjectTypeAnnotation'
-    ) {
-      const properties = prop.typeAnnotation.elementType.properties;
-      generateStruct(structs, componentName, [prop.name], properties);
-      structs.set(
-        `${componentName}ArrayStruct`,
-        arrayConversionFunction.replace(
-          /::_STRUCT_NAME_::/g,
-          generateStructName(componentName, [prop.name]),
-        ),
-      );
-    }
-  });
-
+function generateStructsForComponent(componentName: string, component): string {
+  const structs = generateStructs(componentName, component.props, []);
   const structArray = Array.from(structs.values());
   if (structArray.length < 1) {
     return '';
   }
   return structArray.join('\n\n');
+}
+
+function generateStructs(
+  componentName: string,
+  properties,
+  nameParts,
+): StructsMap {
+  const structs: StructsMap = new Map();
+  properties.forEach(prop => {
+    const typeAnnotation = prop.typeAnnotation;
+    if (typeAnnotation.type === 'ObjectTypeAnnotation') {
+      generateStruct(
+        structs,
+        componentName,
+        nameParts.concat([prop.name]),
+        typeAnnotation.properties,
+      );
+    }
+
+    if (
+      prop.typeAnnotation.type === 'ArrayTypeAnnotation' &&
+      prop.typeAnnotation.elementType.type === 'ObjectTypeAnnotation'
+    ) {
+      // Recursively visit all of the object properties.
+      // Note: this is depth first so that the nested structs are ordered first.
+      const elementProperties = prop.typeAnnotation.elementType.properties;
+      const nestedStructs = generateStructs(
+        componentName,
+        elementProperties,
+        nameParts.concat([prop.name]),
+      );
+      nestedStructs.forEach(function(value, key) {
+        structs.set(key, value);
+      });
+
+      // Generate this struct and its conversion function.
+      generateStruct(
+        structs,
+        componentName,
+        nameParts.concat([prop.name]),
+        elementProperties,
+      );
+
+      // Generate the conversion function for std:vector<Object>.
+      // Note: This needs to be at the end since it references the struct above.
+      structs.set(
+        `${[componentName, ...nameParts.concat([prop.name])].join(
+          '',
+        )}ArrayStruct`,
+        arrayConversionFunction.replace(
+          /::_STRUCT_NAME_::/g,
+          generateStructName(componentName, nameParts.concat([prop.name])),
+        ),
+      );
+    }
+  });
+
+  return structs;
 }
 
 function generateStruct(
@@ -661,7 +695,10 @@ module.exports = {
             const component = components[componentName];
 
             const newName = `${componentName}Props`;
-            const structString = generateStructs(componentName, component);
+            const structString = generateStructsForComponent(
+              componentName,
+              component,
+            );
             const enumString = generateEnumString(componentName, component);
             const propsString = generatePropsString(
               componentName,
