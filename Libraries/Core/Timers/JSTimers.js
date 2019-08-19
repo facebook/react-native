@@ -218,8 +218,8 @@ function _freeCallback(timerID: number) {
   const index = timerIDs.indexOf(timerID);
   // See corresponding comment in `callTimers` for reasoning behind this
   if (index !== -1) {
-    _clearIndex(index);
     const type = types[index];
+    _clearIndex(index);
     if (type !== 'setImmediate' && type !== 'requestIdleCallback') {
       deleteTimer(timerID);
     }
