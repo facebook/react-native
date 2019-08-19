@@ -192,6 +192,7 @@ Map {
  */
 #pragma once
 
+#include <react/components/image/conversions.h>
 #include <react/components/view/ViewProps.h>
 #include <react/graphics/Color.h>
 #include <react/graphics/Geometry.h>

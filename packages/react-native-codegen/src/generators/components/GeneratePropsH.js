@@ -509,9 +509,10 @@ function getLocalImports(
       typeAnnotation.type === 'ArrayTypeAnnotation' &&
       typeAnnotation.elementType.type === 'ObjectTypeAnnotation'
     ) {
-      const localImports = getLocalImports(
-        typeAnnotation.elementType.properties,
-      );
+      const objectProps = typeAnnotation.elementType.properties;
+      const objectImports = getImports(objectProps);
+      const localImports = getLocalImports(objectProps);
+      objectImports.forEach(imports.add, imports);
       localImports.forEach(imports.add, imports);
     }
 
