@@ -545,6 +545,18 @@ function generateStructs(
   properties.forEach(prop => {
     const typeAnnotation = prop.typeAnnotation;
     if (typeAnnotation.type === 'ObjectTypeAnnotation') {
+      // Recursively visit all of the object properties.
+      // Note: this is depth first so that the nested structs are ordered first.
+      const elementProperties = typeAnnotation.properties;
+      const nestedStructs = generateStructs(
+        componentName,
+        elementProperties,
+        nameParts.concat([prop.name]),
+      );
+      nestedStructs.forEach(function(value, key) {
+        structs.set(key, value);
+      });
+
       generateStruct(
         structs,
         componentName,

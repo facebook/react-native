@@ -884,6 +884,33 @@ static inline std::string toString(const ObjectPropsObjectPropNestedPropAStruct 
   return \\"[Object ObjectPropsObjectPropNestedPropAStruct]\\";
 }
 
+struct ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct {
+  std::string stringProp;
+};
+
+static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto stringProp = map.find(\\"stringProp\\");
+  if (stringProp != map.end()) {
+    fromRawValue(stringProp->second, result.stringProp);
+  }
+}
+
+static inline std::string toString(const ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct &value) {
+  return \\"[Object ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct]\\";
+}
+
+static inline void fromRawValue(const RawValue &value, std::vector<ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct> &result) {
+  auto items = (std::vector<RawValue>)value;
+  for (const auto &item : items) {
+    ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct newItem;
+    fromRawValue(item, newItem);
+    result.emplace_back(newItem);
+  }
+}
+
+
 struct ObjectPropsObjectPropNestedArrayAsPropertyStruct {
   std::vector<ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct> arrayProp;
 };
