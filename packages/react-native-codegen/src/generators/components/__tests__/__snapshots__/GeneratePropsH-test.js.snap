@@ -884,6 +884,23 @@ static inline std::string toString(const ObjectPropsObjectPropNestedPropAStruct 
   return \\"[Object ObjectPropsObjectPropNestedPropAStruct]\\";
 }
 
+struct ObjectPropsObjectPropNestedArrayAsPropertyStruct {
+  std::vector<ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct> arrayProp;
+};
+
+static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropNestedArrayAsPropertyStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto arrayProp = map.find(\\"arrayProp\\");
+  if (arrayProp != map.end()) {
+    fromRawValue(arrayProp->second, result.arrayProp);
+  }
+}
+
+static inline std::string toString(const ObjectPropsObjectPropNestedArrayAsPropertyStruct &value) {
+  return \\"[Object ObjectPropsObjectPropNestedArrayAsPropertyStruct]\\";
+}
+
 struct ObjectPropsObjectPropStruct {
   std::string stringProp;
   bool booleanProp;
@@ -893,6 +910,7 @@ struct ObjectPropsObjectPropStruct {
   ObjectPropsObjectPropObjectArrayPropStruct objectArrayProp;
   ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp;
   ObjectPropsObjectPropNestedPropAStruct nestedPropA;
+  ObjectPropsObjectPropNestedArrayAsPropertyStruct nestedArrayAsProperty;
 };
 
 static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropStruct &result) {
@@ -929,6 +947,10 @@ static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropStru
   auto nestedPropA = map.find(\\"nestedPropA\\");
   if (nestedPropA != map.end()) {
     fromRawValue(nestedPropA->second, result.nestedPropA);
+  }
+  auto nestedArrayAsProperty = map.find(\\"nestedArrayAsProperty\\");
+  if (nestedArrayAsProperty != map.end()) {
+    fromRawValue(nestedArrayAsProperty->second, result.nestedArrayAsProperty);
   }
 }
 
