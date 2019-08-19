@@ -139,11 +139,7 @@ exports.examples = [
                 automaticallyAdjustContentInsets={false}
                 style={styles.scrollView}
                 scrollEnabled={this.state.scrollEnabled}>
-<<<<<<< HEAD
-                {THUMB_URLS.map(createThumbRow)}
-=======
                 {ITEMS.map(createItemRow)}
->>>>>>> v0.60.0
               </ScrollView>
               <Text>
                 {'Scrolling enabled = ' + this.state.scrollEnabled.toString()}

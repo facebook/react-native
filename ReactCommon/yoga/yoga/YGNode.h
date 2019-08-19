@@ -24,12 +24,7 @@ private:
   bool hasNewLayout_ : 1;
   bool isReferenceBaseline_ : 1;
   bool isDirty_ : 1;
-<<<<<<< HEAD
-  YGNodeType nodeType_ = {};
-  YGMeasureFunc measure_ = nullptr;
-  YGBaselineFunc baseline_ = nullptr;
-=======
-  YGNodeType nodeType_ : 1;
+  YGNodeType nodeType_ = {}; // ISS
   bool measureUsesContext_ : 1;
   bool baselineUsesContext_ : 1;
   bool printUsesContext_ : 1;
@@ -46,7 +41,6 @@ private:
     YGPrintFunc noContext;
     PrintWithContextFn withContext;
   } print_ = {nullptr};
->>>>>>> v0.60.0
   YGDirtiedFunc dirtied_ = nullptr;
   YGStyle style_ = {};
   YGLayout layout_ = {};

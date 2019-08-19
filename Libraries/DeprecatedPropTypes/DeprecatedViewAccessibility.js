@@ -50,9 +50,6 @@ module.exports = {
     'busy',
     'expanded',
     'collapsed',
-<<<<<<< HEAD
-=======
     'hasPopup',
->>>>>>> v0.60.0
   ],
 };

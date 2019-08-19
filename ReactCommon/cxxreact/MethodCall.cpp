@@ -53,11 +53,7 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) {
       throw std::invalid_argument(
         folly::to<std::string>(errorPrefix, "invalid callId", jsonData[REQUEST_CALLID].typeName()));
     }
-<<<<<<< HEAD
-    callId = static_cast<int>(jsonData[REQUEST_CALLID].asInt());
-=======
     callId = (int)jsonData[REQUEST_CALLID].asInt();
->>>>>>> v0.60.0
   }
 
   std::vector<MethodCall> methodCalls;

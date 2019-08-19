@@ -11,19 +11,14 @@
 'use strict';
 
 const React = require('react');
-<<<<<<< HEAD
-const ReactNative = require('react-native');
-const Platform = require('Platform');
-const {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
-=======
 const {
   Image,
   LayoutAnimation,
+  Platform,
   StyleSheet,
   Text,
   View,
 } = require('react-native');
->>>>>>> v0.60.0
 
 import type {
   ViewLayout,

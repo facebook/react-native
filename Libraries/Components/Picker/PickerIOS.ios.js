@@ -13,20 +13,6 @@
 
 'use strict';
 
-<<<<<<< HEAD
-const React = require('React');
-const ReactNative = require('ReactNative');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
-const processColor = require('processColor');
-const RCTPickerNativeComponent = require('RCTPickerNativeComponent');
-
-import type {SyntheticEvent} from 'CoreEventTypes';
-import type {ColorValue} from 'StyleSheetTypes';
-import type {ViewProps} from 'ViewPropTypes';
-import type {TextStyleProp} from 'StyleSheet';
-import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
-=======
 const React = require('react');
 const ReactNative = require('../../Renderer/shims/ReactNative');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
@@ -38,7 +24,7 @@ import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
->>>>>>> v0.60.0
+import type {SemanticOrDynamicColorType} from '../../Color/normalizeColor'; // ]TODO(macOS ISS#2323203)
 
 type PickerIOSChangeEvent = SyntheticEvent<
   $ReadOnly<{|

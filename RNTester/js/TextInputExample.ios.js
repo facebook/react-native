@@ -1139,8 +1139,6 @@ exports.examples = [
       );
     },
   },
-<<<<<<< HEAD
-=======
   {
     title: 'TextInput Placeholder Styles',
     render: function() {
@@ -1163,5 +1161,4 @@ exports.examples = [
       );
     },
   },
->>>>>>> v0.60.0
 ];

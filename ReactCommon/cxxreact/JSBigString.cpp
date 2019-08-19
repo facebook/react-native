@@ -50,8 +50,6 @@ JSBigFileString::~JSBigFileString() {
   close(m_fd);
 }
 
-<<<<<<< HEAD
-=======
 #ifdef WITH_FBREMAP
 // Read and advance the pointer.
 static uint16_t read16(char *&data) {
@@ -112,7 +110,6 @@ static off_t maybeRemap(char *data, size_t size, int fd) {
 }
 #endif // WITH_FBREMAP
 
->>>>>>> v0.60.0
 const char *JSBigFileString::c_str() const {
   if (!m_data) {
     m_data =

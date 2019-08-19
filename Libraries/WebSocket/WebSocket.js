@@ -201,25 +201,10 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
   }
 
   _close(code?: number, reason?: string): void {
-<<<<<<< HEAD
-    if (
-      Platform.OS === 'android' ||
-      Platform.OS === 'win32' ||
-      Platform.OS === 'windesktop'
-    ) {
-      // See https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
-      const statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
-      const closeReason = typeof reason === 'string' ? reason : '';
-      WebSocketModule.close(statusCode, closeReason, this._socketId);
-    } else {
-      WebSocketModule.close(this._socketId);
-    }
-=======
     // See https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
     const statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
     const closeReason = typeof reason === 'string' ? reason : '';
     WebSocketModule.close(statusCode, closeReason, this._socketId);
->>>>>>> v0.60.0
 
     if (BlobManager.isAvailable && this._binaryType === 'blob') {
       BlobManager.removeWebSocketHandler(this._socketId);

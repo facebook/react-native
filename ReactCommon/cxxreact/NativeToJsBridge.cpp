@@ -43,11 +43,7 @@ public:
   }
 
   void callNativeModules(
-<<<<<<< HEAD
-      JSExecutor& /*executor*/, folly::dynamic&& calls, bool isEndOfBatch) override {
-=======
       __unused JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) override {
->>>>>>> v0.60.0
 
     CHECK(m_registry || calls.empty()) <<
       "native module calls cannot be completed with no native modules";
@@ -72,11 +68,7 @@ public:
   }
 
   MethodCallResult callSerializableNativeHook(
-<<<<<<< HEAD
-      JSExecutor& /*executor*/, unsigned int moduleId, unsigned int methodId,
-=======
       __unused JSExecutor& executor, unsigned int moduleId, unsigned int methodId,
->>>>>>> v0.60.0
       folly::dynamic&& args) override {
     return m_registry->callSerializableNativeHook(moduleId, methodId, std::move(args));
   }
@@ -92,28 +84,16 @@ private:
 };
 
 NativeToJsBridge::NativeToJsBridge(
-<<<<<<< HEAD
-    JSExecutorFactory* jsExecutorFactory,
-    std::shared_ptr<ExecutorDelegate> delegate,
+    JSExecutorFactory *jsExecutorFactory,
     std::shared_ptr<ModuleRegistry> registry,
     std::shared_ptr<MessageQueueThread> jsQueue,
     std::shared_ptr<InstanceCallback> callback,
     std::shared_ptr<JSEConfigParams> jseConfigParams)
-    : m_destroyed(std::make_shared<bool>(false))
-    , m_delegate(delegate ? delegate : std::make_shared<JsToNativeBridge>(registry, callback))
-    , m_executor(jsExecutorFactory->createJSExecutor(m_delegate, jsQueue, std::move(jseConfigParams)))
-    , m_executorMessageQueueThread(std::move(jsQueue)) {}
-=======
-    JSExecutorFactory *jsExecutorFactory,
-    std::shared_ptr<ModuleRegistry> registry,
-    std::shared_ptr<MessageQueueThread> jsQueue,
-    std::shared_ptr<InstanceCallback> callback)
     : m_destroyed(std::make_shared<bool>(false)),
-      m_delegate(std::make_shared<JsToNativeBridge>(registry, callback)),
-      m_executor(jsExecutorFactory->createJSExecutor(m_delegate, jsQueue)),
+      m_delegate(delegate ? delegate : std::make_shared<JsToNativeBridge>(registry, callback)),
+      m_executor(jsExecutorFactory->createJSExecutor(m_delegate, jsQueue, std::move(jseConfigParams))),
       m_executorMessageQueueThread(std::move(jsQueue)),
       m_inspectable(m_executor->isInspectable()) {}
->>>>>>> v0.60.0
 
 // This must be called on the same thread on which the constructor was called.
 NativeToJsBridge::~NativeToJsBridge() {
