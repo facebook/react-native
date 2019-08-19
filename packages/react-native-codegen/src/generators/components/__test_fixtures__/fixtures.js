@@ -604,6 +604,41 @@ const ARRAY_PROPS: SchemaType = {
                 },
               },
             },
+            {
+              name: 'array',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      // This needs to stay the same as the object above
+                      // to confirm that the structs are generated
+                      // with unique non-colliding names
+                      name: 'object',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ObjectTypeAnnotation',
+                          properties: [
+                            {
+                              name: 'stringProp',
+                              optional: true,
+                              typeAnnotation: {
+                                type: 'StringTypeAnnotation',
+                                default: '',
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
           ],
           commands: [],
         },

@@ -29,6 +29,7 @@ const ArrayPropsNativeComponentViewConfig = {
     points: true,
     sizes: true,
     object: true,
+    array: true,
   },
 };
 

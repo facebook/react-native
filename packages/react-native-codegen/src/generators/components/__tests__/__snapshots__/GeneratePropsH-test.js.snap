@@ -93,10 +93,10 @@ static inline std::string toString(const ArrayPropsNativeComponentObjectStruct &
   return \\"[Object ArrayPropsNativeComponentObjectStruct]\\";
 }
 
-static inline void fromRawValue(const RawValue &value, std::vector<ArrayPropsNativeComponentObjectStruct> &result) {
+static inline void fromRawValue(const RawValue &value, std::vector<ArrayPropsNativeComponentArrayStruct> &result) {
   auto items = (std::vector<RawValue>)value;
   for (const auto &item : items) {
-    ArrayPropsNativeComponentObjectStruct newItem;
+    ArrayPropsNativeComponentArrayStruct newItem;
     fromRawValue(item, newItem);
     result.emplace_back(newItem);
   }
@@ -118,6 +118,7 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
   const std::vector<Point> points{};
   const ArrayPropsNativeComponentSizesMask sizes{static_cast<ArrayPropsNativeComponentSizesMask>(ArrayPropsNativeComponentSizes::Small)};
   const std::vector<ArrayPropsNativeComponentObjectStruct> object{};
+  const std::vector<ArrayPropsNativeComponentArrayStruct> array{};
 };
 
 } // namespace react
