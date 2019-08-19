@@ -794,6 +794,32 @@ const OBJECT_PROPS: SchemaType = {
                       ],
                     },
                   },
+                  {
+                    name: 'nestedPropA',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'nestedPropB',
+                          optional: false,
+                          typeAnnotation: {
+                            type: 'ObjectTypeAnnotation',
+                            properties: [
+                              {
+                                name: 'nestedPropC',
+                                optional: true,
+                                typeAnnotation: {
+                                  type: 'StringTypeAnnotation',
+                                  default: '',
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  },
                 ],
               },
             },
