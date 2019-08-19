@@ -171,7 +171,11 @@ function getClassExtendString(component): string {
   return extendString;
 }
 
-function getNativeTypeFromAnnotation(componentName: string, prop): string {
+function getNativeTypeFromAnnotation(
+  componentName: string,
+  prop,
+  nameParts: $ReadOnlyArray<string>,
+): string {
   const typeAnnotation = prop.typeAnnotation;
 
   switch (typeAnnotation.type) {
@@ -200,21 +204,28 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
         );
       }
       if (typeAnnotation.elementType.type === 'ObjectTypeAnnotation') {
-        const structName = generateStructName(componentName, [prop.name]);
+        const structName = generateStructName(
+          componentName,
+          nameParts.concat([prop.name]),
+        );
         return `std::vector<${structName}>`;
       }
       if (typeAnnotation.elementType.type === 'StringEnumTypeAnnotation') {
         const enumName = getEnumName(componentName, prop.name);
         return getEnumMaskName(enumName);
       }
-      const itemAnnotation = getNativeTypeFromAnnotation(componentName, {
-        typeAnnotation: typeAnnotation.elementType,
-        name: componentName,
-      });
+      const itemAnnotation = getNativeTypeFromAnnotation(
+        componentName,
+        {
+          typeAnnotation: typeAnnotation.elementType,
+          name: componentName,
+        },
+        nameParts,
+      );
       return `std::vector<${itemAnnotation}>`;
     }
     case 'ObjectTypeAnnotation': {
-      return generateStructName(componentName, [prop.name]);
+      return generateStructName(componentName, nameParts.concat([prop.name]));
     }
     case 'StringEnumTypeAnnotation':
       return getEnumName(componentName, prop.name);
@@ -416,7 +427,7 @@ function generatePropsString(
 ) {
   return props
     .map(prop => {
-      const nativeType = getNativeTypeFromAnnotation(componentName, prop);
+      const nativeType = getNativeTypeFromAnnotation(componentName, prop, []);
       const defaultValue = convertDefaultTypeToString(componentName, prop);
 
       return `const ${nativeType} ${prop.name}{${defaultValue}};`;
@@ -563,7 +574,7 @@ function generateStruct(
       return `${getNativeTypeFromAnnotation(
         componentName,
         property,
-        // structNameParts,
+        structNameParts,
       )} ${property.name};`;
     })
     .join('\n' + '  ');

@@ -795,38 +795,38 @@ static inline std::string toString(const ObjectPropsObjectPropObjectPrimitiveReq
   return \\"[Object ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct]\\";
 }
 
-struct ObjectPropsObjectPropNestedObjectPropNestedObjectInObjectPropStruct {
-  std::string stringProp;
+struct ObjectPropsObjectPropNestedPropANestedPropBStruct {
+  std::string nestedPropC;
 };
 
-static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropNestedObjectPropNestedObjectInObjectPropStruct &result) {
+static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropNestedPropANestedPropBStruct &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
-  auto stringProp = map.find(\\"stringProp\\");
-  if (stringProp != map.end()) {
-    fromRawValue(stringProp->second, result.stringProp);
+  auto nestedPropC = map.find(\\"nestedPropC\\");
+  if (nestedPropC != map.end()) {
+    fromRawValue(nestedPropC->second, result.nestedPropC);
   }
 }
 
-static inline std::string toString(const ObjectPropsObjectPropNestedObjectPropNestedObjectInObjectPropStruct &value) {
-  return \\"[Object ObjectPropsObjectPropNestedObjectPropNestedObjectInObjectPropStruct]\\";
+static inline std::string toString(const ObjectPropsObjectPropNestedPropANestedPropBStruct &value) {
+  return \\"[Object ObjectPropsObjectPropNestedPropANestedPropBStruct]\\";
 }
 
-struct ObjectPropsObjectPropNestedObjectPropStruct {
-  ObjectPropsNestedObjectInObjectPropStruct nestedObjectInObjectProp;
+struct ObjectPropsObjectPropNestedPropAStruct {
+  ObjectPropsObjectPropNestedPropANestedPropBStruct nestedPropB;
 };
 
-static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropNestedObjectPropStruct &result) {
+static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropNestedPropAStruct &result) {
   auto map = (better::map<std::string, RawValue>)value;
 
-  auto nestedObjectInObjectProp = map.find(\\"nestedObjectInObjectProp\\");
-  if (nestedObjectInObjectProp != map.end()) {
-    fromRawValue(nestedObjectInObjectProp->second, result.nestedObjectInObjectProp);
+  auto nestedPropB = map.find(\\"nestedPropB\\");
+  if (nestedPropB != map.end()) {
+    fromRawValue(nestedPropB->second, result.nestedPropB);
   }
 }
 
-static inline std::string toString(const ObjectPropsObjectPropNestedObjectPropStruct &value) {
-  return \\"[Object ObjectPropsObjectPropNestedObjectPropStruct]\\";
+static inline std::string toString(const ObjectPropsObjectPropNestedPropAStruct &value) {
+  return \\"[Object ObjectPropsObjectPropNestedPropAStruct]\\";
 }
 
 struct ObjectPropsObjectPropStruct {
@@ -835,9 +835,9 @@ struct ObjectPropsObjectPropStruct {
   Float floatProp;
   int intProp;
   ObjectPropsStringEnumProp stringEnumProp;
-  ObjectPropsObjectArrayPropStruct objectArrayProp;
-  ObjectPropsObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp;
-  ObjectPropsNestedObjectPropStruct nestedObjectProp;
+  ObjectPropsObjectPropObjectArrayPropStruct objectArrayProp;
+  ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp;
+  ObjectPropsObjectPropNestedPropAStruct nestedPropA;
 };
 
 static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropStruct &result) {
@@ -871,9 +871,9 @@ static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropStru
   if (objectPrimitiveRequiredProp != map.end()) {
     fromRawValue(objectPrimitiveRequiredProp->second, result.objectPrimitiveRequiredProp);
   }
-  auto nestedObjectProp = map.find(\\"nestedObjectProp\\");
-  if (nestedObjectProp != map.end()) {
-    fromRawValue(nestedObjectProp->second, result.nestedObjectProp);
+  auto nestedPropA = map.find(\\"nestedPropA\\");
+  if (nestedPropA != map.end()) {
+    fromRawValue(nestedPropA->second, result.nestedPropA);
   }
 }
 
