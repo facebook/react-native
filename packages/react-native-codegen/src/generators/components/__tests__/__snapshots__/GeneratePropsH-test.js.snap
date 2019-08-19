@@ -658,6 +658,10 @@ Map {
 #include <react/components/image/conversions.h>
 #include <react/components/view/ViewProps.h>
 #include <react/core/propsConversions.h>
+#include <react/graphics/Color.h>
+#include <react/graphics/Geometry.h>
+#include <react/imagemanager/primitives.h>
+#include <vector>
 
 namespace facebook {
 namespace react {

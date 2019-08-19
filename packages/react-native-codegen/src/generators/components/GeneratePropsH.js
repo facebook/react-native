@@ -17,7 +17,11 @@ const {
   getImports,
 } = require('./CppHelpers.js');
 
-import type {PropTypeShape, SchemaType} from '../../CodegenSchema';
+import type {
+  ExtendsPropsShape,
+  PropTypeShape,
+  SchemaType,
+} from '../../CodegenSchema';
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
@@ -420,10 +424,12 @@ function generatePropsString(
     .join('\n' + '  ');
 }
 
-function getLocalImports(component): Set<string> {
+function getExtendsImports(
+  extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+): Set<string> {
   const imports: Set<string> = new Set();
 
-  component.extendsProps.forEach(extendProps => {
+  extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
       case 'ReactNativeBuiltInType':
         switch (extendProps.knownTypeName) {
@@ -439,6 +445,14 @@ function getLocalImports(component): Set<string> {
         throw new Error('Invalid extended type');
     }
   });
+
+  return imports;
+}
+
+function getLocalImports(
+  properties: $ReadOnlyArray<PropTypeShape>,
+): Set<string> {
+  const imports: Set<string> = new Set();
 
   function addImportsForNativeName(name) {
     switch (name) {
@@ -459,7 +473,7 @@ function getLocalImports(component): Set<string> {
     }
   }
 
-  component.props.forEach(prop => {
+  properties.forEach(prop => {
     const typeAnnotation = prop.typeAnnotation;
 
     if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
@@ -483,7 +497,9 @@ function getLocalImports(component): Set<string> {
     if (typeAnnotation.type === 'ObjectTypeAnnotation') {
       imports.add('#include <react/core/propsConversions.h>');
       const objectImports = getImports(typeAnnotation.properties);
+      const localImports = getLocalImports(typeAnnotation.properties);
       objectImports.forEach(imports.add, imports);
+      localImports.forEach(imports.add, imports);
     }
   });
 
@@ -631,8 +647,10 @@ module.exports = {
               component.props,
             );
             const extendString = getClassExtendString(component);
-            const imports = getLocalImports(component);
+            const extendsImports = getExtendsImports(component.extendsProps);
+            const imports = getLocalImports(component.props);
 
+            extendsImports.forEach(allImports.add, allImports);
             imports.forEach(allImports.add, allImports);
 
             const replacedTemplate = classTemplate
