@@ -168,12 +168,14 @@ public class CommandNativeComponentManagerDelegate<T extends View, U extends Bas
   }
 
   public void receiveCommand(CommandNativeComponentManagerInterface<T> viewManager, T view, String commandName, ReadableArray args) {
-    case \\"flashScrollIndicators\\":
-      viewManager.flashScrollIndicators(view);
-      break;
-    case \\"allTypes\\":
-      viewManager.allTypes(view, args.getInt(0), args.getFloat(1), args.getDouble(2), args.getString(3), args.getBoolean(4));
-      break;
+    switch (commandName) {
+      case \\"flashScrollIndicators\\":
+        viewManager.flashScrollIndicators(view);
+        break;
+      case \\"allTypes\\":
+        viewManager.allTypes(view, args.getInt(0), args.getFloat(1), args.getDouble(2), args.getString(3), args.getBoolean(4));
+        break;
+    }
   }
 }
 ",
@@ -208,9 +210,11 @@ public class CommandNativeComponentManagerDelegate<T extends View, U extends Bas
   }
 
   public void receiveCommand(CommandNativeComponentManagerInterface<T> viewManager, T view, String commandName, ReadableArray args) {
-    case \\"hotspotUpdate\\":
-      viewManager.hotspotUpdate(view, args.getInt(0), args.getInt(1));
-      break;
+    switch (commandName) {
+      case \\"hotspotUpdate\\":
+        viewManager.hotspotUpdate(view, args.getInt(0), args.getInt(1));
+        break;
+    }
   }
 }
 ",
