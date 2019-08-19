@@ -383,7 +383,7 @@ RCT_EXPORT_METHOD(deleteTimer:(nonnull NSNumber *)timerID)
   @synchronized (_timers) {
     [_timers removeObjectForKey:timerID];
   }
-  if (![self hasPendingTimers]) {
+  if (!_sendIdleEvents && ![self hasPendingTimers]) {
     [self stopTimers];
   }
 }
