@@ -72,7 +72,7 @@ const links = [
 
 const LinkList = (): Node => (
   <View style={styles.container}>
-    {links.map(({ id, title, link, description }) => {
+    {links.map(({id, title, link, description}) => {
       return (
         <React.Fragment key={id}>
           <View style={styles.separator} />
