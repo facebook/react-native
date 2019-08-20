@@ -38,7 +38,7 @@ public:
     return m_registry;
   }
   
-  bool isBatchActive() override {
+  bool isBatchActive() {
     return m_batchHadNativeModuleCalls;
   }
 
@@ -58,7 +58,7 @@ public:
     if (isEndOfBatch) {
       // onBatchComplete will be called on the native (module) queue, but
       // decrementPendingJSCalls will be called sync. Be aware that the bridge may still
-      // be processing native calls when the birdge idle signaler fires.
+      // be processing native calls when the bridge idle signaler fires.
       if (m_batchHadNativeModuleCalls) {
         m_callback->onBatchComplete();
         m_batchHadNativeModuleCalls = false;
@@ -85,13 +85,13 @@ private:
 
 NativeToJsBridge::NativeToJsBridge(
     JSExecutorFactory *jsExecutorFactory,
+    std::shared_ptr<ExecutorDelegate> delegate, // TODO(OSS Candidate ISS#2710739)
     std::shared_ptr<ModuleRegistry> registry,
     std::shared_ptr<MessageQueueThread> jsQueue,
-    std::shared_ptr<InstanceCallback> callback,
-    std::shared_ptr<JSEConfigParams> jseConfigParams)
+    std::shared_ptr<InstanceCallback> callback)
     : m_destroyed(std::make_shared<bool>(false)),
-      m_delegate(delegate ? delegate : std::make_shared<JsToNativeBridge>(registry, callback)),
-      m_executor(jsExecutorFactory->createJSExecutor(m_delegate, jsQueue, std::move(jseConfigParams))),
+      m_delegate(delegate ? delegate : (std::make_shared<JsToNativeBridge>(registry, callback))),
+      m_executor(jsExecutorFactory->createJSExecutor(m_delegate, jsQueue)),
       m_executorMessageQueueThread(std::move(jsQueue)),
       m_inspectable(m_executor->isInspectable()) {}
 
@@ -104,9 +104,9 @@ NativeToJsBridge::~NativeToJsBridge() {
 void NativeToJsBridge::loadApplication(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> startupScript,
-    uint64_t bundleVersion,
+    uint64_t bundleVersion, // TODO(OSS Candidate ISS#2710739)
     std::string startupScriptSourceURL,
-    std::string&& bytecodeFileName) {
+    std::string&& bytecodeFileName) { // TODO(OSS Candidate ISS#2710739)
 
   runOnExecutorQueue(
       [this,
@@ -122,9 +122,9 @@ void NativeToJsBridge::loadApplication(
     }
     try {
       executor->loadApplicationScript(std::move(*startupScript),
-                                      bundleVersion,
+                                      bundleVersion, // TODO(OSS Candidate ISS#2710739)
                                       std::move(startupScriptSourceURL),
-                                      std::move(bytecodeFileName));
+                                      std::move(bytecodeFileName)); // TODO(OSS Candidate ISS#2710739)
     } catch (...) {
       m_applicationScriptHasFailure = true;
       throw;
@@ -143,9 +143,9 @@ void NativeToJsBridge::loadApplicationSync(
   }
   try {
     m_executor->loadApplicationScript(std::move(startupScript),
-                                          bundleVersion,
+                                          bundleVersion, // TODO(OSS Candidate ISS#2710739)
                                           std::move(startupScriptSourceURL),
-                                          std::move(bytecodeFileName));
+                                          std::move(bytecodeFileName)); // TODO(OSS Candidate ISS#2710739)
   } catch (...) {
     m_applicationScriptHasFailure = true;
     throw;
@@ -181,7 +181,6 @@ void NativeToJsBridge::callFunction(
       #else
       (void)(systraceCookie);
       #endif
-      SystraceSection s("NativeToJsBridge::callFunction", "module", module, "method", method);
       // This is safe because we are running on the executor's thread: it won't
       // destruct until after it's been unregistered (which we check above) and
       // that will happen on this thread
@@ -249,10 +248,6 @@ void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {
   runOnExecutorQueue([=] (JSExecutor* executor) {
     executor->handleMemoryPressure(pressureLevel);
   });
-}
-
-int64_t NativeToJsBridge::getPeakJsMemoryUsage() const noexcept {
-  return m_executor->getPeakJsMemoryUsage();
 }
 
 void NativeToJsBridge::destroy() {

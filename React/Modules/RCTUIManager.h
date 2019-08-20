@@ -142,7 +142,7 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
  * @param nativeID the id reference to native component relative to root view.
  * @param view the view that is tagged with nativeID as its nativeID prop.
  */
-- (void)setNativeID:(NSString *)nativeID forView:(UIView *)view;
+- (void)setNativeID:(NSString *)nativeID forView:(RCTUIView *)view; // TODO(macOS ISS#2323203)
 
 /**
  * The view that is currently first responder, according to the JS context.

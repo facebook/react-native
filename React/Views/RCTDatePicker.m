@@ -49,17 +49,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (void)setDatePickerMode:(UIDatePickerMode)datePickerMode
 {
   [super setDatePickerMode:datePickerMode];
   // We need to set minuteInterval after setting datePickerMode, otherwise minuteInterval is invalid in time mode.
   self.minuteInterval = _reactMinuteInterval;
 }
+#endif // TODO(macOS ISS#2323203)
 
+
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (void)setMinuteInterval:(NSInteger)minuteInterval
 {
   [super setMinuteInterval:minuteInterval];
   _reactMinuteInterval = minuteInterval;
 }
+#endif // TODO(macOS ISS#2323203)
 
 @end

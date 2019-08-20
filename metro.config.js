@@ -16,7 +16,6 @@ const fs = require('fs');
  * This cli config is needed for development purposes, e.g. for running
  * integration tests during local development or on CI services.
  */
-<<<<<<< HEAD:rn-cli.config.js
 
 // In sdx repo we need to use metro-resources to handle all the rush symlinking
 if (
@@ -64,11 +63,3 @@ if (
     },
   };
 }
-=======
-module.exports = {
-  extraNodeModules: {
-    'react-native': __dirname,
-  },
-  getPolyfills,
-};
->>>>>>> v0.60.0:metro.config.js

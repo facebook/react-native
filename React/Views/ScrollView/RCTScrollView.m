@@ -327,11 +327,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (BOOL)touchesShouldCancelInContentView:(__unused RCTUIView *)view // TODO(macOS ISS#3536887)
 {
   BOOL shouldDisableScrollInteraction = [self _shouldDisableScrollInteraction];
-  
+
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   if (shouldDisableScrollInteraction == NO) {
     [super touchesShouldCancelInContentView:view];
   }
-  
+#endif // [TODO(macOS ISS#2323203)
+
   return !shouldDisableScrollInteraction;
 }
 
@@ -389,11 +391,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (CGSizeEqualToSize(contentSize, CGSizeZero)) {
     self.contentOffset = originalOffset;
   } else {
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
     if (@available(iOS 11.0, *)) {
       if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, self.adjustedContentInset)) {
         contentInset = self.adjustedContentInset;
       }
     }
+#endif // [TODO(macOS ISS#2323203)
     CGSize boundsSize = self.bounds.size;
     CGFloat xMaxOffset = contentSize.width - boundsSize.width + contentInset.right;
     CGFloat yMaxOffset = contentSize.height - boundsSize.height + contentInset.bottom;

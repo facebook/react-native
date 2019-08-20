@@ -1609,14 +1609,12 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
             0, availableHeight - marginAxisColumn - paddingAndBorderAxisColumn);
 
   // Measure the text under the current constraints.
-  const YGSize measuredSize = marker::MarkerSection<YGMarkerMeasure>::wrap(
-      node,
-      node->getMeasure(),
-      node,
+  const YGSize measuredSize = node->measure(
       innerWidth,
       widthMeasureMode,
       innerHeight,
-      heightMeasureMode);
+      heightMeasureMode,
+      layoutContext);
 
   if (widthMeasureMode == YGMeasureModeExactly &&
       heightMeasureMode == YGMeasureModeExactly) {

@@ -122,16 +122,8 @@ const TouchableWithoutFeedback = ((createReactClass({
     accessibilityStates: PropTypes.arrayOf(
       PropTypes.oneOf(DeprecatedAccessibilityStates),
     ),
-<<<<<<< HEAD
-    accessibilityTraits: PropTypes.oneOfType([
-      PropTypes.oneOf(DeprecatedAccessibilityTraits),
-      PropTypes.arrayOf(PropTypes.oneOf(DeprecatedAccessibilityTraits)),
-    ]),
     onAccessibilityTap: PropTypes.func, // TODO(OSS Candidate ISS#2710739)
     tabIndex: PropTypes.number, // TODO(macOS/win ISS#2323203)
-
-=======
->>>>>>> v0.60.0
     /**
      * When `accessible` is true (which is the default) this may be called when
      * the OS-specific concept of "focus" occurs. Some platforms may not have
@@ -320,7 +312,6 @@ const TouchableWithoutFeedback = ((createReactClass({
     return (React: any).cloneElement(child, {
       ...overrides,
       accessible: this.props.accessible !== false,
-<<<<<<< HEAD
       accessibilityLabel: this.props.accessibilityLabel,
       accessibilityHint: this.props.accessibilityHint,
       accessibilityComponentType: this.props.accessibilityComponentType,
@@ -339,11 +330,8 @@ const TouchableWithoutFeedback = ((createReactClass({
       testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,
-=======
       clickable:
-        this.props.clickable !== false && this.props.onPress !== undefined,
-      onClick: this.touchableHandlePress,
->>>>>>> v0.60.0
+      this.props.clickable !== false && this.props.onPress !== undefined,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this
         .touchableHandleResponderTerminationRequest,
@@ -352,8 +340,6 @@ const TouchableWithoutFeedback = ((createReactClass({
       onResponderRelease: this.touchableHandleResponderRelease,
       onResponderTerminate: this.touchableHandleResponderTerminate,
       tooltip: this.props.tooltip, // TODO(macOS/win ISS#2323203)
-      clickable:
-        this.props.clickable !== false && this.props.onPress !== undefined, // TODO(android ISS)
       onClick: this.touchableHandlePress, // TODO(android ISS)
       onMouseEnter: this.props.onMouseEnter, // [TODO(macOS ISS#2323203)
       onMouseLeave: this.props.onMouseLeave, // [TODO(macOS ISS#2323203)

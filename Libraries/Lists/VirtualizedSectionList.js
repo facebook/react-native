@@ -15,16 +15,11 @@ const VirtualizedList = require('./VirtualizedList');
 
 const invariant = require('invariant');
 
-<<<<<<< HEAD
-import type {ViewToken} from 'ViewabilityHelper';
+import type {ViewToken} from './ViewabilityHelper';
 import type {
   Props as VirtualizedListProps,
   SelectedRowIndexPathType, // TODO(macOS ISS#2323203)
-} from 'VirtualizedList';
-=======
-import type {ViewToken} from './ViewabilityHelper';
-import type {Props as VirtualizedListProps} from './VirtualizedList';
->>>>>>> v0.60.0
+} from './VirtualizedList';
 
 type Item = any;
 
@@ -43,12 +38,8 @@ export type SectionBase<SectionItemT> = {
   renderItem?: ?(info: {
     item: SectionItemT,
     index: number,
-<<<<<<< HEAD
     isSelected?: boolean, // TODO(macOS ISS#2323203)
-    section: SectionBase,
-=======
     section: SectionBase<SectionItemT>,
->>>>>>> v0.60.0
     separators: {
       highlight: () => void,
       unhighlight: () => void,

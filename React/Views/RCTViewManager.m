@@ -253,9 +253,8 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityStates, NSArray<NSString *>, RCTView)
   } else {
     view.reactAccessibilityElement.accessibilityStates = nil;
   }
-}
-#else
 #endif
+}
 
 RCT_CUSTOM_VIEW_PROPERTY(nativeID, NSString *, RCTView)
 {

@@ -22,39 +22,7 @@ import type {
 
 type Item = any;
 
-<<<<<<< HEAD
-export type SectionBase<SectionItemT> = {
-  /**
-   * The data for rendering items in this section.
-   */
-  data: $ReadOnlyArray<SectionItemT>,
-  /**
-   * Optional key to keep track of section re-ordering. If you don't plan on re-ordering sections,
-   * the array index will be used by default.
-   */
-  key?: string,
-
-  // Optional props will override list-wide props just for this section.
-  renderItem?: ?(info: {
-    item: SectionItemT,
-    index: number,
-    isSelected?: boolean, // TODO(macOS ISS#2323203)
-    section: SectionBase<SectionItemT>,
-    separators: {
-      highlight: () => void,
-      unhighlight: () => void,
-      updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
-    },
-  }) => ?React.Element<any>,
-  ItemSeparatorComponent?: ?React.ComponentType<any>,
-  keyExtractor?: (item: SectionItemT) => string,
-
-  // TODO: support more optional/override props
-  // onViewableItemsChanged?: ...
-};
-=======
 export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
->>>>>>> v0.60.0
 
 type RequiredProps<SectionT: SectionBase<any>> = {
   /**

@@ -107,34 +107,6 @@ else
   CONFIG_ARG="--config $BUNDLE_CONFIG"
 fi
 
-<<<<<<< HEAD
-nodejs_not_found()
-{
-  echo "error: Can't find '$NODE_BINARY' binary to build React Native bundle" >&2
-  echo "If you have non-standard nodejs installation, select your project in Xcode," >&2
-  echo "find 'Build Phases' - 'Bundle React Native code and images'" >&2
-  echo "and change NODE_BINARY to absolute path to your node executable" >&2
-  echo "(you can find it by invoking 'which node' in the terminal)" >&2
-  exit 2
-}
-
-type "$NODE_BINARY" >/dev/null 2>&1 || nodejs_not_found
-
-# Print commands before executing them (useful for troubleshooting)
-set -x
-DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
-
-if [[ "$CONFIGURATION" = "Debug" && ! "$PLATFORM_NAME" == *simulator && ! "$PLATFORM_NAME" == macosx ]]; then
-  IP=$(ipconfig getifaddr en0)
-  if [ -z "$IP" ]; then
-    IP=$(ifconfig | grep 'inet ' | grep -v ' 127.' | cut -d\   -f2  | awk 'NR==1{print $1}')
-  fi
-
-  echo "$IP" > "$DEST/ip.txt"
-fi
-
-=======
->>>>>>> v0.60.0
 BUNDLE_FILE="$DEST/main.jsbundle"
 
 case "$PLATFORM_NAME" in

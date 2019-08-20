@@ -16,7 +16,9 @@
 #import "UIView+React.h"
 #import "RCTI18nUtil.h"
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
+#endif // TODO(macOS ISS#2323203)
 
 @implementation RCTPlatformView (RCTViewUnmounting)
 
@@ -235,6 +237,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (NSString *)accessibilityValue
 {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if ((self.accessibilityTraits & SwitchAccessibilityTrait) == SwitchAccessibilityTrait) {
     for (NSString *state in self.accessibilityStates) {
       if ([state isEqualToString:@"checked"]) {
@@ -244,6 +247,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
       }
     }
   }
+#endif // TODO(macOS ISS#2323203)
   NSMutableArray *valueComponents = [NSMutableArray new];
   static NSDictionary<NSString *, NSString *> *roleDescriptions = nil;
   static dispatch_once_t onceToken1;
@@ -939,8 +943,8 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
   layer.contents = (id)image.CGImage;
   layer.contentsScale = image.scale;
 #else // [TODO(macOS ISS#2323203)
-  layer.contents = [image layerContentsForContentsScale:scale];
-  layer.contentsScale = scale;
+  layer.contents = [image layerContentsForContentsScale:scaleFactor];
+  layer.contentsScale = scaleFactor;
 #endif // ]TODO(macOS ISS#2323203)
   layer.needsDisplayOnBoundsChange = YES;
   layer.magnificationFilter = kCAFilterNearest;

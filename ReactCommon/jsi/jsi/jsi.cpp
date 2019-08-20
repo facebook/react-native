@@ -84,6 +84,14 @@ Instrumentation& Runtime::instrumentation() {
     bool createSnapshotToStream(std::ostream&, bool) override {
       return false;
     }
+    
+    void writeBridgeTrafficTraceToFile(const std::string&) const override {
+      std::abort();
+    }
+
+    void writeBasicBlockProfileTraceToFile(const std::string&) const override {
+      std::abort();
+    }
 
     void dumpProfilerSymbolsToFile(const std::string&) const override {
       std::abort();

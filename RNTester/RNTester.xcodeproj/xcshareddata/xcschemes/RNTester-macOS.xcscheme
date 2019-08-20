@@ -29,7 +29,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "641DD8E51F16AA8500B6415F"
-               BuildableName = "RNTesterBundle-macOS.bundle"
+               BuildableName = "RNTesterBundle-macOS"
                BlueprintName = "RNTesterBundle-macOS"
                ReferencedContainer = "container:RNTester.xcodeproj">
             </BuildableReference>

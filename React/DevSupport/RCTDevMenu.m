@@ -333,6 +333,7 @@ RCT_EXPORT_MODULE()
   [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
     return @"Change packager location";
   } handler:^{
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     UIAlertController * alertController = [UIAlertController alertControllerWithTitle: @"Change packager location"
                                                                               message: @"Input packager IP, port and entrypoint"
                                                                        preferredStyle:UIAlertControllerStyleAlert];
@@ -379,8 +380,15 @@ RCT_EXPORT_MODULE()
       return;
     }]];
     [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
+#else // [TODO(macOS ISS#2323203)
+  NSAlert *alert = [[NSAlert alloc] init];
+  [alert setMessageText:@"Change packager location"];
+  [alert setInformativeText:@"Input packager IP, port and entrypoint"];
+  [alert addButtonWithTitle:@"Use bundled JS"];
+  [alert setAlertStyle:NSWarningAlertStyle];
+  [alert beginSheetModalForWindow:[NSApp keyWindow] completionHandler:nil];
+#endif // ]TODO(macOS ISS#2323203)
   }]];
-
   [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
     return @"Toggle Inspector";
   } handler:^{

@@ -209,7 +209,6 @@ const TouchableBounce = ((createReactClass({
         onResponderGrant={this.touchableHandleResponderGrant}
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
-<<<<<<< HEAD
         /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
          * error found when Flow v0.89 was deployed. To see the error, delete
          * this comment and run Flow. */
@@ -228,9 +227,6 @@ const TouchableBounce = ((createReactClass({
         onDrop={this.props.onDrop}
         draggedTypes={this.props.draggedTypes} // ]TODO(macOS ISS#2323203)
       >
-=======
-        onResponderTerminate={this.touchableHandleResponderTerminate}>
->>>>>>> v0.60.0
         {this.props.children}
         {Touchable.renderDebugView({
           color: 'orange',

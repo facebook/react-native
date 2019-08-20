@@ -250,6 +250,17 @@ static UIColor *defaultPlaceholderTextColor()
   [self _updatePlaceholder];
 }
 
+- (RCTTextAttributes *)reactTextAttributes
+{
+  return _reactTextAttributes;
+}
+
+- (void)_updatePlaceholder
+{
+  if (self.placeholder == nil) {
+    return;
+  }
+
   NSMutableDictionary *attributes = [NSMutableDictionary new];
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if (_placeholderColor) {
@@ -265,21 +276,6 @@ static UIColor *defaultPlaceholderTextColor()
   self.placeholderAttributedString = [[NSAttributedString alloc] initWithString:self.placeholder
                                                                      attributes:attributes];
 #endif // ]TODO(macOS ISS#2323203)
-}
-
-- (RCTTextAttributes *)reactTextAttributes
-{
-  return _reactTextAttributes;
-}
-
-- (void)_updatePlaceholder
-{
-  if (self.placeholder == nil) {
-    return;
-  }
-
-  self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
-                                                               attributes:[self placeholderEffectiveTextAttributes]];
 }
 
 - (BOOL)isEditable

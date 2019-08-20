@@ -366,7 +366,7 @@
   [string appendString:self.description];
   [string appendString:@"\n"];
 
-  for (UIView *subview in self.subviews) {
+  for (RCTPlatformView *subview in self.subviews) {
     [subview react_addRecursiveDescriptionToString:string atLevel:level + 1];
   }
 }

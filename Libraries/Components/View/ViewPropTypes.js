@@ -10,33 +10,17 @@
 
 'use strict';
 
-<<<<<<< HEAD
-import type {
-  PressEvent,
-  Layout,
-  LayoutEvent,
-  SyntheticEvent,
-} from 'CoreEventTypes';
-import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
-import type React from 'React';
-import type {ViewStyleProp} from 'StyleSheet';
-import type {TVViewProps} from 'TVViewPropTypes';
-import type {
-  AccessibilityComponentType,
-  AccessibilityTrait,
-  AccessibilityNodeInfoProp, // TODO(android ISS)
-=======
 import type {PressEvent, Layout, LayoutEvent} from '../../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {TVViewProps} from '../AppleTV/TVViewPropTypes';
 import type {
->>>>>>> v0.60.0
   AccessibilityRole,
   AccessibilityStates,
   AccessibilityActionEvent,
   AccessibilityActionInfo,
+  AccessibilityNodeInfoProp, // TODO(android ISS)
 } from './ViewAccessibility';
 
 // [TODO(macOS ISS#2323203)
@@ -289,7 +273,6 @@ type AndroidViewProps = $ReadOnly<{|
   needsOffscreenAlphaCompositing?: ?boolean,
 
   /**
-<<<<<<< HEAD
    * When `true`, indicates that the view is clickable. By default,
    * all the touchable elements are clickable.
    *
@@ -317,8 +300,6 @@ type AndroidViewProps = $ReadOnly<{|
   accessibilityComponentType?: ?AccessibilityComponentType,
 
   /**
-=======
->>>>>>> v0.60.0
    * Indicates to accessibility services whether the user should be notified
    * when this view changes. Works for Android API >= 19 only.
    *
@@ -345,12 +326,9 @@ type AndroidViewProps = $ReadOnly<{|
    * See http://facebook.github.io/react-native/docs/view.html#importantforaccessibility
    */
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
-<<<<<<< HEAD
 
   accessibilityNodeInfo?: AccessibilityNodeInfoProp, // TODO(android ISS)
 |}>;
-=======
->>>>>>> v0.60.0
 
   /**
    * TV next focus down (see documentation for the View component).

@@ -19,21 +19,12 @@ ReactNativeViewAttributes.UIView = {
   accessible: true,
   accessibilityActions: true,
   accessibilityLabel: true,
-<<<<<<< HEAD
-  accessibilityHint: true, // TODO(OSS Candidate ISS#2710739)
-  accessibilityComponentType: true,
-  accessibilityLiveRegion: true,
-  accessibilityRole: true,
-  accessibilityStates: true,
-  accessibilityTraits: true,
-  acceptsKeyboardFocus: true, // TODO(macOS ISS#2323203)
-  enableFocusRing: true, // TODO(macOS ISS#2323203)
-=======
   accessibilityLiveRegion: true,
   accessibilityRole: true,
   accessibilityStates: true,
   accessibilityHint: true,
->>>>>>> v0.60.0
+  acceptsKeyboardFocus: true, // TODO(macOS ISS#2323203)
+  enableFocusRing: true, // TODO(macOS ISS#2323203)
   importantForAccessibility: true,
   nativeID: true,
   testID: true,

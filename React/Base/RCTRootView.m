@@ -386,9 +386,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (bothSizesHaveAZeroDimension || sizesAreEqual) {
     return;
   }
-  
-  [self invalidateIntrinsicContentSize];
-  [self.superview setNeedsLayout];
 
   [_delegate rootViewDidChangeIntrinsicSize:self];
 }

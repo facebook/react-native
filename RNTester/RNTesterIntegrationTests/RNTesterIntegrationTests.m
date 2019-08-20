@@ -77,13 +77,4 @@ RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest) // Requires a WebSocket test server, 
 RCT_TEST(AccessibilityManagerTest)
 #endif
 
-<<<<<<< HEAD
-#if !TARGET_OS_TV // tvOS does not fully support WebView
-#if !TARGET_OS_OSX // VSO#2332957: macOS WebViewTest fails
-RCT_TEST(WebViewTest)
-#endif
-#endif
-
-=======
->>>>>>> v0.60.0
 @end

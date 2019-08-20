@@ -220,13 +220,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _reactInstance ? _reactInstance->isInspectable() : NO;
 }
 
-// [TODO(OSS Candidate ISS#2710739)
-- (std::shared_ptr<facebook::react::Instance>)reactInstance
-{
-  return _reactInstance;
-}
-// ]TODO(OSS Candidate ISS#2710739)
-
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
 {
   RCTAssertParam(bridge);
