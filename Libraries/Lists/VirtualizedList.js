@@ -33,6 +33,9 @@ import type {
   ViewToken,
   ViewabilityConfigCallbackPair,
 } from './ViewabilityHelper';
+import type {
+  LayoutEvent,
+} from 'react-native/Libraries/Types/CoreEventTypes';
 
 type Item = any;
 
@@ -96,6 +99,10 @@ type OptionalProps = {
    * `data` prop, stick it here and treat it immutably.
    */
   extraData?: any,
+  /**
+   * `flattenParentProps` will not send this.props in parentProps to CellRenderer
+   */
+  flattenParentProps?: ?boolean,
   getItemLayout?: (
     data: any,
     index: number,
@@ -166,7 +173,7 @@ type OptionalProps = {
   maxToRenderPerBatch: number,
   onEndReached?: ?(info: {distanceFromEnd: number}) => void,
   onEndReachedThreshold?: ?number, // units of visible length
-  onLayout?: ?Function,
+  onLayout?: ?(e: LayoutEvent) => void,
   /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
    * sure to also set the `refreshing` prop correctly.
@@ -689,7 +696,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         this._frames = storedState.frames;
       }
     }
-
+    let virtualizedList = this;
+    this._onCellLayout = function (e) {
+      virtualizedList._onCellLayoutGen(e, this.cellKey, this.index)
+    }
     this.state = initialState;
   }
 
@@ -753,9 +763,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       keyExtractor,
       getItemLayout,
       renderItem,
-      ListItemComponent,
       extraData,
       debug,
+      ListItemComponent,
+      flattenParentProps,
     } = this.props;
     const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
     const end = getItemCount(data) - 1;
@@ -783,11 +794,18 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           onUpdateSeparators={this._onUpdateSeparators}
           onLayout={this._onCellLayout}
           onUnmount={this._onCellUnmount}
-          getItemLayout={getItemLayout}
-          renderItem={renderItem}
-          ListItemComponent={ListItemComponent}
+          {...flattenParentProps && {
+            flatParentProps: true,
+            getItemLayout,
+            renderItem,
+            ListItemComponent,
+            debug,
+          }}
+          {...!flattenParentProps && {
+            flatParentProps: false,
+            parentProps: this.props,
+          }}
           extraData={extraData}
-          debug={debug}
           ref={ref => {
             this._cellRefs[key] = ref;
           }}
@@ -1193,7 +1211,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   };
 
-  _onCellLayout = (e, cellKey, index): void => {
+  _onCellLayout: (e: LayoutEvent) => void
+  _onCellLayoutGen = (e, cellKey, index): void => {
     const layout = e.nativeEvent.layout;
     const next = {
       offset: this._selectOffset(layout),
@@ -1760,7 +1779,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 }
 
-type CellRendererProps = {
+type CellRendererBaseProps = {
   CellRendererComponent?: ?React.ComponentType<any>,
   ItemSeparatorComponent: ?React.ComponentType<*>,
   cellKey: string,
@@ -1769,15 +1788,31 @@ type CellRendererProps = {
   index: number,
   inversionStyle: ViewStyleProp,
   item: Item,
-  onLayout: (event: Object, key: string, index: number) => void, // This is extracted by ScrollViewStickyHeader
+  onLayout: (event: LayoutEvent) => void, // This is extracted by ScrollViewStickyHeader
   onUnmount: (cellKey: string) => void,
   onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
   prevCellKey: ?string,
-  getItemLayout?: ?Function,
-  renderItem: $PropertyType<OptionalProps, 'renderItem'>,
-  ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
+};
+
+type FlattenedParentProps = CellRendererBaseProps & {
+  flatParentProps: true,
+  getItemLayout?: $PropertyType<OptionalProps, 'getItemLayout'>,
+  renderItem?: $PropertyType<OptionalProps, 'renderItem'>,
+  ListItemComponent: $PropertyType<OptionalProps, 'ListItemComponent'>,
   debug: ?boolean,
 };
+
+type UnFlattenedParentProps = CellRendererBaseProps & {
+  flatParentProps?: false,
+  parentProps: {
+    getItemLayout?: $PropertyType<OptionalProps, 'getItemLayout'>,
+    renderItem?: $PropertyType<OptionalProps, 'renderItem'>,
+    ListItemComponent?: $PropertyType<OptionalProps, 'ListItemComponent'>,
+    debug: ?boolean,
+  },
+};
+
+type CellRendererProps = FlattenedParentProps | UnFlattenedParentProps;
 
 type CellRendererState = {
   separatorProps: $ReadOnly<{|
@@ -1859,7 +1894,7 @@ class CellRenderer extends React.Component<
 
   _onLayout = (e): void =>
     this.props.onLayout &&
-    this.props.onLayout(e, this.props.cellKey, this.props.index);
+    this.props.onLayout(e);
 
   _renderElement(renderItem, ListItemComponent, item, index) {
     if (renderItem && ListItemComponent) {
@@ -1895,16 +1930,30 @@ class CellRenderer extends React.Component<
     const {
       CellRendererComponent,
       ItemSeparatorComponent,
-      ListItemComponent,
       fillRateHelper,
       horizontal,
       item,
       index,
       inversionStyle,
-      renderItem,
-      getItemLayout,
-      debug,
+      flatParentProps,
     } = this.props;
+
+    let ListItemComponent: $PropertyType<OptionalProps, 'ListEmptyComponent'>;
+    let renderItem: $PropertyType<OptionalProps, 'renderItem'>;
+    let debug: $PropertyType<OptionalProps, 'debug'>;
+    let getItemLayout: $PropertyType<OptionalProps, 'getItemLayout'>;
+    if (this.props.flatParentProps === true) {
+      ListItemComponent = this.props.ListItemComponent;
+      renderItem = this.props.renderItem;
+      debug = this.props.debug;
+      getItemLayout = this.props.getItemLayout;
+    } else {
+      const parentProps = this.props.parentProps;
+      ListItemComponent = parentProps.ListItemComponent;
+      renderItem = parentProps.renderItem;
+      debug = parentProps.debug;
+      getItemLayout = parentProps.getItemLayout;
+    }
 
     const element = this._renderElement(
       renderItem,
