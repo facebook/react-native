@@ -99,9 +99,9 @@ type OptionalProps = {
    */
   extraData?: any,
   /**
-   * `flattenParentProps` will not send this.props in parentProps to CellRenderer
+   * `experimentalVirtualizedListOpt` will not send this.props in parentProps to CellRenderer
    */
-  flattenParentProps?: ?boolean,
+  experimentalVirtualizedListOpt?: ?boolean,
   getItemLayout?: (
     data: any,
     index: number,
@@ -761,7 +761,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       extraData,
       debug,
       ListItemComponent,
-      flattenParentProps,
+      experimentalVirtualizedListOpt,
     } = this.props;
     const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
     const end = getItemCount(data) - 1;
@@ -788,16 +788,16 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           prevCellKey={prevCellKey}
           onUpdateSeparators={this._onUpdateSeparators}
           onUnmount={this._onCellUnmount}
-          {...flattenParentProps && {
-            flatParentProps: true,
+          {...experimentalVirtualizedListOpt && {
+            experimentalVirtualizedListOpt: true,
             getItemLayout,
             renderItem,
             ListItemComponent,
             onLayout: this._onCellLayout,
             debug,
           }}
-          {...!flattenParentProps && {
-            flatParentProps: false,
+          {...!experimentalVirtualizedListOpt && {
+            experimentalVirtualizedListOpt: false,
             onLayout: e => this._onCellLayout(e, key, ii),
             parentProps: this.props,
           }}
@@ -1084,7 +1084,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         </ScrollView.Context.Consumer>
       );
     }
-    if (this.props.flattenParentProps) {
+    if (this.props.experimentalVirtualizedListOpt) {
       ret = (
         <ExperimentalVirtualizedListOptContext.Provider value={true}>
           {ret}
@@ -1796,7 +1796,7 @@ type CellRendererBaseProps = {
 };
 
 type FlattenedParentProps = CellRendererBaseProps & {
-  flatParentProps: true,
+  experimentalVirtualizedListOpt: true,
   getItemLayout?: $PropertyType<OptionalProps, 'getItemLayout'>,
   renderItem?: $PropertyType<OptionalProps, 'renderItem'>,
   ListItemComponent: $PropertyType<OptionalProps, 'ListItemComponent'>,
@@ -1805,7 +1805,7 @@ type FlattenedParentProps = CellRendererBaseProps & {
 };
 
 type UnFlattenedParentProps = CellRendererBaseProps & {
-  flatParentProps?: false,
+  experimentalVirtualizedListOpt?: false,
   onLayout: (event: LayoutEvent) => void, // This is extracted by ScrollViewStickyHeader
   parentProps: {
     getItemLayout?: $PropertyType<OptionalProps, 'getItemLayout'>,
@@ -1896,7 +1896,7 @@ class CellRenderer extends React.Component<
   }
 
   _onLayout = (e): void => {
-    if (this.props.flatParentProps) {
+    if (this.props.experimentalVirtualizedListOpt) {
       this.props.onLayout &&
         this.props.onLayout(e, this.props.cellKey, this.props.index);
     } else {
@@ -1949,7 +1949,7 @@ class CellRenderer extends React.Component<
     let renderItem: $PropertyType<OptionalProps, 'renderItem'>;
     let debug: $PropertyType<OptionalProps, 'debug'>;
     let getItemLayout: $PropertyType<OptionalProps, 'getItemLayout'>;
-    if (this.props.flatParentProps === true) {
+    if (this.props.experimentalVirtualizedListOpt === true) {
       ListItemComponent = this.props.ListItemComponent;
       renderItem = this.props.renderItem;
       debug = this.props.debug;
