@@ -1,137 +1,136 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
 import static com.facebook.infer.annotation.Assertions.assertNotNull;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
+import androidx.annotation.Nullable;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.SystraceMessage;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import javax.annotation.Nullable;
 
 public class JavaMethodWrapper implements NativeModule.NativeMethod {
 
-  private static abstract class ArgumentExtractor<T> {
+  private abstract static class ArgumentExtractor<T> {
     public int getJSArgumentsNeeded() {
       return 1;
     }
 
     public abstract @Nullable T extractArgument(
-      JSInstance jsInstance, ReadableArray jsArguments, int atIndex);
+        JSInstance jsInstance, ReadableArray jsArguments, int atIndex);
   }
 
-  static final private ArgumentExtractor<Boolean> ARGUMENT_EXTRACTOR_BOOLEAN =
-    new ArgumentExtractor<Boolean>() {
-      @Override
-      public Boolean extractArgument(
-        JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
-        return jsArguments.getBoolean(atIndex);
-      }
-    };
-
-  static final private ArgumentExtractor<Double> ARGUMENT_EXTRACTOR_DOUBLE =
-    new ArgumentExtractor<Double>() {
-      @Override
-      public Double extractArgument(
-        JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
-        return jsArguments.getDouble(atIndex);
-      }
-    };
-
-  static final private ArgumentExtractor<Float> ARGUMENT_EXTRACTOR_FLOAT =
-    new ArgumentExtractor<Float>() {
-      @Override
-      public Float extractArgument(
-        JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
-        return (float) jsArguments.getDouble(atIndex);
-      }
-    };
-
-  static final private ArgumentExtractor<Integer> ARGUMENT_EXTRACTOR_INTEGER =
-    new ArgumentExtractor<Integer>() {
-      @Override
-      public Integer extractArgument(
-        JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
-        return (int) jsArguments.getDouble(atIndex);
-      }
-    };
-
-  static final private ArgumentExtractor<String> ARGUMENT_EXTRACTOR_STRING =
-    new ArgumentExtractor<String>() {
-      @Override
-      public String extractArgument(
-        JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
-        return jsArguments.getString(atIndex);
-      }
-    };
-
-  static final private ArgumentExtractor<ReadableArray> ARGUMENT_EXTRACTOR_ARRAY =
-    new ArgumentExtractor<ReadableArray>() {
-      @Override
-      public ReadableArray extractArgument(
-        JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
-        return jsArguments.getArray(atIndex);
-      }
-    };
-
-  static final private ArgumentExtractor<Dynamic> ARGUMENT_EXTRACTOR_DYNAMIC =
-    new ArgumentExtractor<Dynamic>() {
-      @Override
-      public Dynamic extractArgument(
-        JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
-        return DynamicFromArray.create(jsArguments, atIndex);
-      }
-    };
-
-  static final private ArgumentExtractor<ReadableMap> ARGUMENT_EXTRACTOR_MAP =
-    new ArgumentExtractor<ReadableMap>() {
-      @Override
-      public ReadableMap extractArgument(
-        JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
-        return jsArguments.getMap(atIndex);
-      }
-    };
-
-  static final private ArgumentExtractor<Callback> ARGUMENT_EXTRACTOR_CALLBACK =
-    new ArgumentExtractor<Callback>() {
-      @Override
-      public @Nullable Callback extractArgument(
-        JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
-        if (jsArguments.isNull(atIndex)) {
-          return null;
-        } else {
-          int id = (int) jsArguments.getDouble(atIndex);
-          return new com.facebook.react.bridge.CallbackImpl(jsInstance, id);
+  private static final ArgumentExtractor<Boolean> ARGUMENT_EXTRACTOR_BOOLEAN =
+      new ArgumentExtractor<Boolean>() {
+        @Override
+        public Boolean extractArgument(
+            JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
+          return jsArguments.getBoolean(atIndex);
         }
-      }
-    };
+      };
 
-  static final private ArgumentExtractor<Promise> ARGUMENT_EXTRACTOR_PROMISE =
-    new ArgumentExtractor<Promise>() {
-      @Override
-      public int getJSArgumentsNeeded() {
-        return 2;
-      }
+  private static final ArgumentExtractor<Double> ARGUMENT_EXTRACTOR_DOUBLE =
+      new ArgumentExtractor<Double>() {
+        @Override
+        public Double extractArgument(
+            JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
+          return jsArguments.getDouble(atIndex);
+        }
+      };
 
-      @Override
-      public Promise extractArgument(
-        JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
-        Callback resolve = ARGUMENT_EXTRACTOR_CALLBACK
-          .extractArgument(jsInstance, jsArguments, atIndex);
-        Callback reject = ARGUMENT_EXTRACTOR_CALLBACK
-          .extractArgument(jsInstance, jsArguments, atIndex + 1);
-        return new PromiseImpl(resolve, reject);
-      }
-    };
+  private static final ArgumentExtractor<Float> ARGUMENT_EXTRACTOR_FLOAT =
+      new ArgumentExtractor<Float>() {
+        @Override
+        public Float extractArgument(
+            JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
+          return (float) jsArguments.getDouble(atIndex);
+        }
+      };
+
+  private static final ArgumentExtractor<Integer> ARGUMENT_EXTRACTOR_INTEGER =
+      new ArgumentExtractor<Integer>() {
+        @Override
+        public Integer extractArgument(
+            JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
+          return (int) jsArguments.getDouble(atIndex);
+        }
+      };
+
+  private static final ArgumentExtractor<String> ARGUMENT_EXTRACTOR_STRING =
+      new ArgumentExtractor<String>() {
+        @Override
+        public String extractArgument(
+            JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
+          return jsArguments.getString(atIndex);
+        }
+      };
+
+  private static final ArgumentExtractor<ReadableArray> ARGUMENT_EXTRACTOR_ARRAY =
+      new ArgumentExtractor<ReadableArray>() {
+        @Override
+        public ReadableArray extractArgument(
+            JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
+          return jsArguments.getArray(atIndex);
+        }
+      };
+
+  private static final ArgumentExtractor<Dynamic> ARGUMENT_EXTRACTOR_DYNAMIC =
+      new ArgumentExtractor<Dynamic>() {
+        @Override
+        public Dynamic extractArgument(
+            JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
+          return DynamicFromArray.create(jsArguments, atIndex);
+        }
+      };
+
+  private static final ArgumentExtractor<ReadableMap> ARGUMENT_EXTRACTOR_MAP =
+      new ArgumentExtractor<ReadableMap>() {
+        @Override
+        public ReadableMap extractArgument(
+            JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
+          return jsArguments.getMap(atIndex);
+        }
+      };
+
+  private static final ArgumentExtractor<Callback> ARGUMENT_EXTRACTOR_CALLBACK =
+      new ArgumentExtractor<Callback>() {
+        @Override
+        public @Nullable Callback extractArgument(
+            JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
+          if (jsArguments.isNull(atIndex)) {
+            return null;
+          } else {
+            int id = (int) jsArguments.getDouble(atIndex);
+            return new com.facebook.react.bridge.CallbackImpl(jsInstance, id);
+          }
+        }
+      };
+
+  private static final ArgumentExtractor<Promise> ARGUMENT_EXTRACTOR_PROMISE =
+      new ArgumentExtractor<Promise>() {
+        @Override
+        public int getJSArgumentsNeeded() {
+          return 2;
+        }
+
+        @Override
+        public Promise extractArgument(
+            JSInstance jsInstance, ReadableArray jsArguments, int atIndex) {
+          Callback resolve =
+              ARGUMENT_EXTRACTOR_CALLBACK.extractArgument(jsInstance, jsArguments, atIndex);
+          Callback reject =
+              ARGUMENT_EXTRACTOR_CALLBACK.extractArgument(jsInstance, jsArguments, atIndex + 1);
+          return new PromiseImpl(resolve, reject);
+        }
+      };
 
   private static final boolean DEBUG =
       PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.BRIDGE_CALLS);
@@ -152,8 +151,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     } else if (paramClass == Dynamic.class) {
       return 'Y';
     } else {
-      throw new RuntimeException(
-        "Got unknown param class: " + paramClass.getSimpleName());
+      throw new RuntimeException("Got unknown param class: " + paramClass.getSimpleName());
     }
   }
 
@@ -170,8 +168,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
     } else if (returnClass == WritableArray.class) {
       return 'A';
     } else {
-      throw new RuntimeException(
-        "Got unknown return class: " + returnClass.getSimpleName());
+      throw new RuntimeException("Got unknown return class: " + returnClass.getSimpleName());
     }
   }
 
@@ -229,15 +226,13 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
       return;
     }
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "processArguments")
-      .arg("method", mModuleWrapper.getName() + "." + mMethod.getName())
-      .flush();
+        .arg("method", mModuleWrapper.getName() + "." + mMethod.getName())
+        .flush();
     try {
       mArgumentsProcessed = true;
       mArgumentExtractors = buildArgumentExtractors(mParameterTypes);
-      mSignature = buildSignature(
-          mMethod,
-          mParameterTypes,
-          (mType.equals(BaseJavaModule.METHOD_TYPE_SYNC)));
+      mSignature =
+          buildSignature(mMethod, mParameterTypes, (mType.equals(BaseJavaModule.METHOD_TYPE_SYNC)));
       // Since native methods are invoked from a message queue executed on a single thread, it is
       // safe to allocate only one arguments object per method that can be reused across calls
       mArguments = new Object[mParameterTypes.length];
@@ -272,7 +267,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
       Class paramClass = paramTypes[i];
       if (paramClass == Promise.class) {
         Assertions.assertCondition(
-          i == paramTypes.length - 1, "Promise must be used as last parameter only");
+            i == paramTypes.length - 1, "Promise must be used as last parameter only");
       }
       builder.append(paramTypeToChar(paramClass));
     }
@@ -299,7 +294,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
       } else if (argumentClass == Promise.class) {
         argumentExtractors[i] = ARGUMENT_EXTRACTOR_PROMISE;
         Assertions.assertCondition(
-          i == paramTypes.length - 1, "Promise must be used as last parameter only");
+            i == paramTypes.length - 1, "Promise must be used as last parameter only");
       } else if (argumentClass == ReadableMap.class) {
         argumentExtractors[i] = ARGUMENT_EXTRACTOR_MAP;
       } else if (argumentClass == ReadableArray.class) {
@@ -307,8 +302,7 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
       } else if (argumentClass == Dynamic.class) {
         argumentExtractors[i] = ARGUMENT_EXTRACTOR_DYNAMIC;
       } else {
-        throw new RuntimeException(
-          "Got unknown argument class: " + argumentClass.getSimpleName());
+        throw new RuntimeException("Got unknown argument class: " + argumentClass.getSimpleName());
       }
     }
     return argumentExtractors;
@@ -323,16 +317,17 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
   }
 
   private String getAffectedRange(int startIndex, int jsArgumentsNeeded) {
-    return jsArgumentsNeeded > 1 ?
-      "" + startIndex + "-" + (startIndex + jsArgumentsNeeded - 1) : "" + startIndex;
+    return jsArgumentsNeeded > 1
+        ? "" + startIndex + "-" + (startIndex + jsArgumentsNeeded - 1)
+        : "" + startIndex;
   }
 
   @Override
   public void invoke(JSInstance jsInstance, ReadableArray parameters) {
     String traceName = mModuleWrapper.getName() + "." + mMethod.getName();
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "callJavaModuleMethod")
-      .arg("method", traceName)
-      .flush();
+        .arg("method", traceName)
+        .flush();
     if (DEBUG) {
       PrinterHolder.getPrinter()
           .logMessage(
@@ -350,22 +345,26 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
       }
       if (mJSArgumentsNeeded != parameters.size()) {
         throw new NativeArgumentsParseException(
-          traceName + " got " + parameters.size() + " arguments, expected " + mJSArgumentsNeeded);
+            traceName + " got " + parameters.size() + " arguments, expected " + mJSArgumentsNeeded);
       }
 
       int i = 0, jsArgumentsConsumed = 0;
       try {
         for (; i < mArgumentExtractors.length; i++) {
-          mArguments[i] = mArgumentExtractors[i].extractArgument(
-            jsInstance, parameters, jsArgumentsConsumed);
+          mArguments[i] =
+              mArgumentExtractors[i].extractArgument(jsInstance, parameters, jsArgumentsConsumed);
           jsArgumentsConsumed += mArgumentExtractors[i].getJSArgumentsNeeded();
         }
       } catch (UnexpectedNativeTypeException e) {
         throw new NativeArgumentsParseException(
-          e.getMessage() + " (constructing arguments for " + traceName + " at argument index " +
-            getAffectedRange(jsArgumentsConsumed, mArgumentExtractors[i].getJSArgumentsNeeded()) +
-            ")",
-          e);
+            e.getMessage()
+                + " (constructing arguments for "
+                + traceName
+                + " at argument index "
+                + getAffectedRange(
+                    jsArgumentsConsumed, mArgumentExtractors[i].getJSArgumentsNeeded())
+                + ")",
+            e);
       }
 
       try {
@@ -388,10 +387,9 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
   }
 
   /**
-   * Determines how the method is exported in JavaScript:
-   * METHOD_TYPE_ASYNC for regular methods
-   * METHOD_TYPE_PROMISE for methods that return a promise object to the caller.
-   * METHOD_TYPE_SYNC for sync methods
+   * Determines how the method is exported in JavaScript: METHOD_TYPE_ASYNC for regular methods
+   * METHOD_TYPE_PROMISE for methods that return a promise object to the caller. METHOD_TYPE_SYNC
+   * for sync methods
    */
   @Override
   public String getType() {

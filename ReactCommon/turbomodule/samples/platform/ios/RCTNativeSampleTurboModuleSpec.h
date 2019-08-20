@@ -13,20 +13,12 @@
 
 #import <React/RCTBridgeModule.h>
 
-#ifdef RN_TURBO_MODULE_ENABLED
-#import <jsireact/RCTTurboModule.h>
-#endif
+#import <ReactCommon/RCTTurboModule.h>
 
 /**
  * The ObjC protocol based on the JS Flow type for SampleTurboModule.
  */
-@protocol NativeSampleTurboModuleSpec <
-    RCTBridgeModule
-#ifdef RN_TURBO_MODULE_ENABLED
-    ,
-    RCTTurboModule
-#endif
-    >
+@protocol NativeSampleTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)voidFunc;
 - (NSNumber *)getBool:(BOOL)arg;
@@ -34,19 +26,13 @@
 - (NSString *)getString:(NSString *)arg;
 - (NSArray<id<NSObject>> *)getArray:(NSArray *)arg;
 - (NSDictionary *)getObject:(NSDictionary *)arg;
-- (NSDictionary *)getValue:(double)x
-                         y:(NSString *)y
-                         z:(NSDictionary *)z;
+- (NSDictionary *)getValue:(double)x y:(NSString *)y z:(NSDictionary *)z;
 - (void)getValueWithCallback:(RCTResponseSenderBlock)callback;
-- (void)getValueWithPromise:(BOOL)error
-                    resolve:(RCTPromiseResolveBlock)resolve
-                     reject:(RCTPromiseRejectBlock)reject;
+- (void)getValueWithPromise:(BOOL)error resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 - (NSDictionary *)constantsToExport;
 - (NSDictionary *)getConstants;
 
 @end
-
-#ifdef RN_TURBO_MODULE_ENABLED
 
 namespace facebook {
 namespace react {
@@ -55,11 +41,9 @@ namespace react {
  * The iOS TurboModule impl specific to SampleTurboModule.
  */
 class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
-public:
+ public:
   NativeSampleTurboModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
 };
 
 } // namespace react
 } // namespace facebook
-
-#endif

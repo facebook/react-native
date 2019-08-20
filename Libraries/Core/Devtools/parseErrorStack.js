@@ -15,6 +15,8 @@ import type {StackFrame} from '../NativeExceptionsManager';
 export type ExtendedError = Error & {
   framesToPop?: number,
   jsEngine?: string,
+  preventSymbolication?: boolean,
+  componentStack?: string,
 };
 
 function parseErrorStack(e: ExtendedError): Array<StackFrame> {

@@ -1,16 +1,16 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.views.text;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import javax.annotation.Nullable;
 
 /**
  * {@link ReactShadowNode} class for pure raw text node (aka {@code textContent} in terms of DOM).
@@ -22,7 +22,7 @@ public class ReactRawTextShadowNode extends ReactShadowNodeImpl {
 
   private @Nullable String mText = null;
 
-  public ReactRawTextShadowNode() { }
+  public ReactRawTextShadowNode() {}
 
   @ReactProp(name = PROP_TEXT)
   public void setText(@Nullable String text) {

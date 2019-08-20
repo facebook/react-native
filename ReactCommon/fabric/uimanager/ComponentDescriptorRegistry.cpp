@@ -101,7 +101,7 @@ static std::string componentNameByReactViewName(std::string viewName) {
     return "ActivityIndicatorView";
   }
 
-  // We need this temporarly for testing purposes until we have proper
+  // We need this temporarily for testing purposes until we have proper
   // implementation of core components.
   if (viewName == "SinglelineTextInputView" ||
       viewName == "MultilineTextInputView" || viewName == "AndroidTextInput" ||
@@ -143,16 +143,26 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
     Tag tag,
     std::string const &viewName,
     SurfaceId surfaceId,
-    folly::dynamic const &props,
+    folly::dynamic const &propsDynamic,
     SharedEventTarget const &eventTarget) const {
   auto unifiedComponentName = componentNameByReactViewName(viewName);
   auto const &componentDescriptor = this->at(unifiedComponentName);
+
+  auto const eventEmitter =
+      componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
+  auto const props =
+      componentDescriptor.cloneProps(nullptr, RawProps(propsDynamic));
+  auto const state = componentDescriptor.createInitialState(
+      ShadowNodeFragment{surfaceId, tag, props, eventEmitter});
+
   return componentDescriptor.createShadowNode({
       /* .tag = */ tag,
       /* .surfaceId = */ surfaceId,
-      /* .props = */ componentDescriptor.cloneProps(nullptr, RawProps(props)),
-      /* .eventEmitter = */
-      componentDescriptor.createEventEmitter(std::move(eventTarget), tag),
+      /* .props = */ props,
+      /* .eventEmitter = */ eventEmitter,
+      /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
+      /* .localData = */ ShadowNodeFragment::localDataPlaceholder(),
+      /* .state = */ state,
   });
 }
 

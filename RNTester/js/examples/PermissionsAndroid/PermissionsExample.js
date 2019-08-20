@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   PermissionsAndroid,
   Picker,
@@ -108,7 +109,7 @@ exports.examples = [
     title: 'Permissions Example',
     description:
       'Short example of how to use the runtime permissions API introduced in Android M.',
-    render: () => <PermissionsExample />,
+    render: (): React.Node => <PermissionsExample />,
   },
 ];
 

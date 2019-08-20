@@ -232,7 +232,7 @@ RCT_EXPORT_MODULE()
 {
   NSNumber *m = self.multipliers[category];
   if (m.doubleValue <= 0.0) {
-    RCTLogError(@"Can't determinte multiplier for category %@. Using 1.0.", category);
+    RCTLogError(@"Can't determine multiplier for category %@. Using 1.0.", category);
     m = @1.0;
   }
   return m.doubleValue;

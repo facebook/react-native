@@ -1,18 +1,18 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.views.checkbox;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import androidx.core.widget.CompoundButtonCompat;
-import androidx.appcompat.widget.TintContextWrapper;
 import android.util.TypedValue;
 import android.widget.CompoundButton;
-
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.TintContextWrapper;
+import androidx.core.widget.CompoundButtonCompat;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.SimpleViewManager;
@@ -20,8 +20,6 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-
-import javax.annotation.Nullable;
 
 /** View manager for {@link ReactCheckBox} components. */
 public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {
@@ -34,7 +32,8 @@ public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
           ReactContext reactContext = getReactContext(buttonView);
           reactContext
-              .getNativeModule(UIManagerModule.class).getEventDispatcher()
+              .getNativeModule(UIManagerModule.class)
+              .getEventDispatcher()
               .dispatchEvent(new ReactCheckBoxEvent(buttonView.getId(), isChecked));
         }
 
@@ -88,8 +87,8 @@ public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {
 
   /**
    * The appcompat-v7 BUCK dep is listed as a provided_dep, which complains that
-   * com.facebook.react.R doesn't exist. Since the attributes are provided from a parent, we can access
-   * those attributes dynamically.
+   * com.facebook.react.R doesn't exist. Since the attributes are provided from a parent, we can
+   * access those attributes dynamically.
    */
   private static int getIdentifier(Context context, String name) {
     return context.getResources().getIdentifier(name, "attr", context.getPackageName());
@@ -98,25 +97,26 @@ public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {
   @ReactProp(name = "tintColors")
   public void setTintColors(ReactCheckBox view, @Nullable ReadableMap colorsMap) {
     String defaultColorIdOfCheckedState = "colorAccent";
-    int trueColor = colorsMap == null || !colorsMap.hasKey("true") ?
-            getThemeColor(view.getContext(), defaultColorIdOfCheckedState) : colorsMap.getInt("true");
+    int trueColor =
+        colorsMap == null || !colorsMap.hasKey("true")
+            ? getThemeColor(view.getContext(), defaultColorIdOfCheckedState)
+            : colorsMap.getInt("true");
 
     String defaultColorIdOfUncheckedState = "colorPrimaryDark";
-    int falseColor = colorsMap == null || !colorsMap.hasKey("false") ?
-            getThemeColor(view.getContext(), defaultColorIdOfUncheckedState) : colorsMap.getInt("false");
+    int falseColor =
+        colorsMap == null || !colorsMap.hasKey("false")
+            ? getThemeColor(view.getContext(), defaultColorIdOfUncheckedState)
+            : colorsMap.getInt("false");
 
-    ColorStateList csl = new ColorStateList(
-            new int[][]{
-                    new int[]{android.R.attr.state_checked},
-                    new int[]{-android.R.attr.state_checked}
+    ColorStateList csl =
+        new ColorStateList(
+            new int[][] {
+              new int[] {android.R.attr.state_checked}, new int[] {-android.R.attr.state_checked}
             },
-            new int[]{
-                    trueColor,
-                    falseColor,
-            }
-    );
+            new int[] {
+              trueColor, falseColor,
+            });
 
     CompoundButtonCompat.setButtonTintList(view, csl);
   }
-
 }

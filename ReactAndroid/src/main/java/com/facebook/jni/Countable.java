@@ -11,11 +11,11 @@ import com.facebook.soloader.SoLoader;
 /**
  * A Java Object that has native memory allocated corresponding to this instance.
  *
- * NB: THREAD SAFETY (this comment also exists at Countable.cpp)
+ * <p>NB: THREAD SAFETY (this comment also exists at Countable.cpp)
  *
- * {@link #dispose} deletes the corresponding native object on whatever thread the method is called
- * on. In the common case when this is called by Countable#finalize(), this will be called on the
- * system finalizer thread. If you manually call dispose on the Java object, the native object
+ * <p>{@link #dispose} deletes the corresponding native object on whatever thread the method is
+ * called on. In the common case when this is called by Countable#finalize(), this will be called on
+ * the system finalizer thread. If you manually call dispose on the Java object, the native object
  * will be deleted synchronously on that thread.
  */
 @DoNotStrip
@@ -26,8 +26,7 @@ public class Countable {
   }
 
   // Private C++ instance
-  @DoNotStrip
-  private long mInstance = 0;
+  @DoNotStrip private long mInstance = 0;
 
   public native void dispose();
 

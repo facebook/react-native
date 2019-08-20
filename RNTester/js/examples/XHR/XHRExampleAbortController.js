@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {Alert, Button, View} = require('react-native');
 
 class XHRExampleAbortController extends React.Component<{}, {}> {
@@ -35,7 +36,7 @@ class XHRExampleAbortController extends React.Component<{}, {}> {
     clearTimeout(this._timeout);
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Button

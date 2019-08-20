@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {StyleSheet, Text, TouchableHighlight} = require('react-native');
 
 import type {PressEvent} from '../../../Libraries/Types/CoreEventTypes';
@@ -21,7 +22,7 @@ type Props = $ReadOnly<{|
 |}>;
 
 class RNTesterButton extends React.Component<Props> {
-  render() {
+  render(): React.Node {
     return (
       <TouchableHighlight
         onPress={this.props.onPress}

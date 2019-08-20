@@ -32,10 +32,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)scheduleTransaction:(facebook::react::MountingCoordinator::Shared const &)mountingCoordinator;
 
+/**
+ * Dispatch a command to be performed on the main thread.
+ * Can be called from any thread.
+ */
+- (void)dispatchCommand:(ReactTag)reactTag commandName:(NSString *)commandName args:(NSArray *)args;
+
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
                              changedProps:(NSDictionary *)props
                       componentDescriptor:(const facebook::react::ComponentDescriptor &)componentDescriptor;
-
 @end
 
 NS_ASSUME_NONNULL_END

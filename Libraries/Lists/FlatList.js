@@ -441,13 +441,13 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   /**
    * Provides a handle to the underlying scroll responder.
    */
-  getScrollResponder() {
+  getScrollResponder(): any {
     if (this._listRef) {
       return this._listRef.getScrollResponder();
     }
   }
 
-  getScrollableNode() {
+  getScrollableNode(): any {
     if (this._listRef) {
       return this._listRef.getScrollableNode();
     }
@@ -671,7 +671,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     };
   };
 
-  render() {
+  render(): React.Node {
     return (
       <VirtualizedList
         {...this.props}

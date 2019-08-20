@@ -12,18 +12,17 @@
 'use strict';
 
 const React = require('react');
-
-const TestRenderer = require('react-test-renderer');
 const ShallowRenderer = require('react-test-renderer/shallow');
+const TestRenderer = require('react-test-renderer');
 
 const renderer = new ShallowRenderer();
 
-export const shallow = (Component: React.Element<any>) => {
+export const shallow = (Component: React.Element<any>): any => {
   const Wrapper = (): React.Element<any> => Component;
 
   return renderer.render(<Wrapper />);
 };
 
-export const create = (Component: React.Element<any>) => {
+export const create = (Component: React.Element<any>): any => {
   return TestRenderer.create(Component);
 };

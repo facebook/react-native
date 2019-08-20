@@ -61,11 +61,18 @@ using namespace facebook::react;
   std::shared_ptr<const ReactNativeConfig> _reactNativeConfig;
   better::shared_mutex _observerListMutex;
   NSMutableArray<id<RCTSurfacePresenterObserver>> *_observers;
+  RCTImageLoader *_imageLoader;
+  RuntimeExecutor _runtimeExecutor;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge config:(std::shared_ptr<const ReactNativeConfig>)config
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                        config:(std::shared_ptr<const ReactNativeConfig>)config
+                   imageLoader:(RCTImageLoader *)imageLoader
+               runtimeExecutor:(RuntimeExecutor)runtimeExecutor
 {
   if (self = [super init]) {
+    _imageLoader = imageLoader;
+    _runtimeExecutor = runtimeExecutor;
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;
     [_batchedBridge setSurfacePresenter:self];
@@ -194,7 +201,7 @@ using namespace facebook::react;
         createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
   };
 
-  auto runtimeExecutor = [self _runtimeExecutor];
+  auto runtimeExecutor = [self getRuntimeExecutor];
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = self.contextContainer;
@@ -217,8 +224,12 @@ using namespace facebook::react;
 
 @synthesize contextContainer = _contextContainer;
 
-- (RuntimeExecutor)_runtimeExecutor
+- (RuntimeExecutor)getRuntimeExecutor
 {
+  if (_runtimeExecutor) {
+    return _runtimeExecutor;
+  }
+
   auto messageQueueThread = _batchedBridge.jsMessageThread;
   if (messageQueueThread) {
     // Make sure initializeBridge completed
@@ -248,10 +259,15 @@ using namespace facebook::react;
   _contextContainer = std::make_shared<ContextContainer>();
   // Please do not add stuff here; `SurfacePresenter` must not alter `ContextContainer`.
   // Those two pieces eventually should be moved out there:
-  // * `RCTImageLoader` should be moved to `RNImageComponentView`.
+  // * `RCTImageLoader` should be moved to `RCTImageComponentView`.
   // * `ReactNativeConfig` should be set by outside product code.
   _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
-  _contextContainer->insert("RCTImageLoader", wrapManagedObject([_bridge imageLoader]));
+  // TODO T47869586 petetheheat: Delete else case when TM rollout 100%
+  if (_imageLoader) {
+    _contextContainer->insert("RCTImageLoader", wrapManagedObject(_imageLoader));
+  } else {
+    _contextContainer->insert("RCTImageLoader", wrapManagedObject([_bridge moduleForClass:[RCTImageLoader class]]));
+  }
 
   return _contextContainer;
 }
@@ -319,6 +335,17 @@ using namespace facebook::react;
   [surface _setStage:RCTSurfaceStagePrepared];
 
   [_mountingManager scheduleTransaction:mountingCoordinator];
+}
+
+- (void)schedulerDidDispatchCommand:(facebook::react::ShadowView const &)shadowView
+                        commandName:(std::string const &)commandName
+                               args:(folly::dynamic const)args
+{
+  ReactTag tag = shadowView.tag;
+  NSString *commandStr = [[NSString alloc] initWithUTF8String:commandName.c_str()];
+  NSArray *argsArray = convertFollyDynamicToId(args);
+
+  [self->_mountingManager dispatchCommand:tag commandName:commandStr args:argsArray];
 }
 
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
@@ -397,20 +424,6 @@ using namespace facebook::react;
 
     [self _startAllSurfaces];
   }
-}
-
-@end
-
-@implementation RCTBridge (Deprecated)
-
-- (void)setSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
-{
-  objc_setAssociatedObject(self, @selector(surfacePresenter), surfacePresenter, OBJC_ASSOCIATION_ASSIGN);
-}
-
-- (RCTSurfacePresenter *)surfacePresenter
-{
-  return objc_getAssociatedObject(self, @selector(surfacePresenter));
 }
 
 @end

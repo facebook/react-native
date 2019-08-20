@@ -5,17 +5,11 @@
 
 package com.facebook.react.uimanager;
 
+import android.view.View;
+import com.facebook.common.logging.FLog;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import android.view.View;
-
-import com.facebook.common.logging.FLog;
-import com.facebook.react.bridge.Dynamic;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
 public class ViewManagerPropertyUpdater {
   public interface Settable {
@@ -40,6 +34,15 @@ public class ViewManagerPropertyUpdater {
     ViewManagersPropertyCache.clear();
     VIEW_MANAGER_SETTER_MAP.clear();
     SHADOW_NODE_SETTER_MAP.clear();
+  }
+
+  public static <T extends ViewManagerDelegate<V>, V extends View> void updateProps(
+      T delegate, V v, ReactStylesDiffMap props) {
+    Iterator<Map.Entry<String, Object>> iterator = props.mBackingMap.getEntryIterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, Object> entry = iterator.next();
+      delegate.setProperty(v, entry.getKey(), entry.getValue());
+    }
   }
 
   public static <T extends ViewManager, V extends View> void updateProps(

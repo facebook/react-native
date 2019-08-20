@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.tests;
 
 import android.content.res.Resources;
@@ -32,9 +31,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Test to verify that Progress bar renders as a view of the right size
- */
+/** Test to verify that Progress bar renders as a view of the right size */
 public class ProgressBarTestCase extends ReactIntegrationTestCase {
 
   // Has same order of progressBars in ProgressBarTestModule
@@ -49,7 +46,7 @@ public class ProgressBarTestCase extends ReactIntegrationTestCase {
     styles.put("Inverse", android.R.attr.progressBarStyleInverse);
     styles.put("SmallInverse", android.R.attr.progressBarStyleSmallInverse);
     styles.put("LargeInverse", android.R.attr.progressBarStyleLargeInverse);
-}
+  }
 
   private static interface ProgressBarTestModule extends JavaScriptModule {
     public void renderProgressBarApplication(int rootTag);
@@ -63,11 +60,9 @@ public class ProgressBarTestCase extends ReactIntegrationTestCase {
   protected void setUp() throws Exception {
     super.setUp();
 
-    List<ViewManager> viewManagers = Arrays.<ViewManager>asList(
-        new ReactViewManager(),
-        new ReactProgressBarViewManager());
-    mUIManager =
-        new UIManagerModule(getContext(), viewManagers, 0);
+    List<ViewManager> viewManagers =
+        Arrays.<ViewManager>asList(new ReactViewManager(), new ReactProgressBarViewManager());
+    mUIManager = new UIManagerModule(getContext(), viewManagers, 0);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -77,13 +72,14 @@ public class ProgressBarTestCase extends ReactIntegrationTestCase {
         });
     waitForIdleSync();
 
-    mInstance = ReactTestHelper.catalystInstanceBuilder(this)
-        .addNativeModule(mUIManager)
-        .addNativeModule(new AndroidInfoModule(getContext()))
-        .addNativeModule(new DeviceInfoModule(getContext()))
-        .addNativeModule(new AppStateModule(getContext()))
-        .addNativeModule(new FakeWebSocketModule())
-        .build();
+    mInstance =
+        ReactTestHelper.catalystInstanceBuilder(this)
+            .addNativeModule(mUIManager)
+            .addNativeModule(new AndroidInfoModule(getContext()))
+            .addNativeModule(new DeviceInfoModule(getContext()))
+            .addNativeModule(new AppStateModule(getContext()))
+            .addNativeModule(new FakeWebSocketModule())
+            .build();
 
     mRootView = new ReactRootView(getContext());
     DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
@@ -94,16 +90,13 @@ public class ProgressBarTestCase extends ReactIntegrationTestCase {
     waitForBridgeAndUIIdle();
   }
 
-  /**
-   * Test that the sizes of the progressBars are setup correctly
-   */
+  /** Test that the sizes of the progressBars are setup correctly */
   public void testProgressBarSizes() {
     for (String style : styleList) {
-      ProgressBar newProgressBar =
-          new ProgressBar(getContext(), null, styles.get(style));
-      final int spec = View.MeasureSpec.makeMeasureSpec(
-          ViewGroup.LayoutParams.WRAP_CONTENT,
-          View.MeasureSpec.UNSPECIFIED);
+      ProgressBar newProgressBar = new ProgressBar(getContext(), null, styles.get(style));
+      final int spec =
+          View.MeasureSpec.makeMeasureSpec(
+              ViewGroup.LayoutParams.WRAP_CONTENT, View.MeasureSpec.UNSPECIFIED);
       newProgressBar.measure(spec, spec);
       final int expectedHeight = newProgressBar.getMeasuredHeight();
 

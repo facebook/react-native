@@ -10,38 +10,44 @@
 
 'use strict';
 
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+import {requireNativeComponent} from 'react-native';
 
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {
+  DirectEventHandler,
+  Int32,
+  WithDefault,
+} from '../../Types/CodegenTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {NativeComponent} from '../../Renderer/shims/ReactNative';
+import type {ViewProps} from '../../Components/View/ViewPropTypes';
 
-type PickerAndroidChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
-    position: number,
-  |}>,
->;
-
-type Item = $ReadOnly<{|
+type PickerItem = $ReadOnly<{|
   label: string,
-  value: ?(number | string),
-  color?: ?number,
+  color?: ?Int32,
+|}>;
+
+type PickerItemSelectEvent = $ReadOnly<{|
+  position: Int32,
 |}>;
 
 type NativeProps = $ReadOnly<{|
-  enabled?: ?boolean,
-  items: $ReadOnlyArray<Item>,
-  mode?: ?('dialog' | 'dropdown'),
-  onSelect?: (event: PickerAndroidChangeEvent) => void,
-  selected: number,
-  prompt?: ?string,
-  testID?: string,
+  ...ViewProps,
   style?: ?TextStyleProp,
-  accessibilityLabel?: ?string,
+
+  // Props
+  color?: ?ColorValue,
+  enabled?: WithDefault<boolean, true>,
+  items: $ReadOnlyArray<PickerItem>,
+  prompt?: WithDefault<string, ''>,
+  selected: Int32,
+
+  // Events
+  onSelect?: DirectEventHandler<PickerItemSelectEvent>,
 |}>;
 
-type DialogPickerNativeType = Class<NativeComponent<NativeProps>>;
+type ReactPicker = Class<NativeComponent<NativeProps>>;
 
 module.exports = ((requireNativeComponent(
   'AndroidDialogPicker',
-): any): DialogPickerNativeType);
+): any): ReactPicker);

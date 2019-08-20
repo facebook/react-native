@@ -18,7 +18,7 @@ function renderMyListItem(info: {item: {title: string}, index: number}) {
 }
 
 module.exports = {
-  testEverythingIsFine() {
+  testEverythingIsFine(): React.Node {
     const data = [
       {
         title: 'Title Text',
@@ -28,7 +28,7 @@ module.exports = {
     return <FlatList renderItem={renderMyListItem} data={data} />;
   },
 
-  testBadDataWithTypicalItem() {
+  testBadDataWithTypicalItem(): React.Node {
     const data = [
       {
         // $FlowExpectedError - bad title type 6, should be string
@@ -39,7 +39,7 @@ module.exports = {
     return <FlatList renderItem={renderMyListItem} data={data} />;
   },
 
-  testMissingFieldWithTypicalItem() {
+  testMissingFieldWithTypicalItem(): React.Node {
     const data = [
       {
         key: 1,
@@ -49,7 +49,7 @@ module.exports = {
     return <FlatList renderItem={renderMyListItem} data={data} />;
   },
 
-  testGoodDataWithBadCustomRenderItemFunction() {
+  testGoodDataWithBadCustomRenderItemFunction(): React.Node {
     const data = [
       {
         widget: 6,
@@ -71,7 +71,7 @@ module.exports = {
     );
   },
 
-  testBadRenderItemFunction() {
+  testBadRenderItemFunction(): $TEMPORARY$array<React.Node> {
     const data = [
       {
         title: 'foo',
@@ -99,7 +99,7 @@ module.exports = {
     ];
   },
 
-  testOtherBadProps() {
+  testOtherBadProps(): $TEMPORARY$array<React.Node> {
     return [
       // $FlowExpectedError - bad numColumns type "lots"
       <FlatList renderItem={renderMyListItem} data={[]} numColumns="lots" />,

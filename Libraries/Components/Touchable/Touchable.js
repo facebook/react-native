@@ -23,8 +23,8 @@ const View = require('../View/View');
 const keyMirror = require('fbjs/lib/keyMirror');
 const normalizeColor = require('../../Color/normalizeColor');
 
-import type {PressEvent} from '../../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {PressEvent} from '../../Types/CoreEventTypes';
 
 const extractSingleTouch = nativeEvent => {
   const touches = nativeEvent.touches;
@@ -409,7 +409,9 @@ const TouchableMixin = {
    * @return {object} State object to be placed inside of
    * `this.state.touchable`.
    */
-  touchableGetInitialState: function() {
+  touchableGetInitialState: function(): $TEMPORARY$object<{|
+    touchable: $TEMPORARY$object<{|responderID: null, touchState: void|}>,
+  |}> {
     return {
       touchable: {touchState: undefined, responderID: null},
     };
@@ -419,21 +421,21 @@ const TouchableMixin = {
   /**
    * Must return true if embedded in a native platform scroll view.
    */
-  touchableHandleResponderTerminationRequest: function() {
+  touchableHandleResponderTerminationRequest: function(): any {
     return !this.props.rejectResponderTermination;
   },
 
   /**
    * Must return true to start the process of `Touchable`.
    */
-  touchableHandleStartShouldSetResponder: function() {
+  touchableHandleStartShouldSetResponder: function(): any {
     return !this.props.disabled;
   },
 
   /**
    * Return true to cancel press on long press.
    */
-  touchableLongPressCancelsPress: function() {
+  touchableLongPressCancelsPress: function(): boolean {
     return true;
   },
 
@@ -720,18 +722,9 @@ const TouchableMixin = {
     this.longPressDelayTimeout = null;
     const curState = this.state.touchable.touchState;
     if (
-      curState !== States.RESPONDER_ACTIVE_PRESS_IN &&
-      curState !== States.RESPONDER_ACTIVE_LONG_PRESS_IN
+      curState === States.RESPONDER_ACTIVE_PRESS_IN ||
+      curState === States.RESPONDER_ACTIVE_LONG_PRESS_IN
     ) {
-      console.error(
-        'Attempted to transition from state `' +
-          curState +
-          '` to `' +
-          States.RESPONDER_ACTIVE_LONG_PRESS_IN +
-          '`, which is not supported. This is ' +
-          'most likely due to `Touchable.longPressDelayTimeout` not being cancelled.',
-      );
-    } else {
       this._receiveSignal(Signals.LONG_PRESS_DETECTED, e);
     }
   },
@@ -784,7 +777,7 @@ const TouchableMixin = {
     this.longPressDelayTimeout = null;
   },
 
-  _isHighlight: function(state: State) {
+  _isHighlight: function(state: State): boolean {
     return (
       state === States.RESPONDER_ACTIVE_PRESS_IN ||
       state === States.RESPONDER_ACTIVE_LONG_PRESS_IN
@@ -805,7 +798,7 @@ const TouchableMixin = {
     aY: number,
     bX: number,
     bY: number,
-  ) {
+  ): number {
     const deltaX = aX - bX;
     const deltaY = aY - bY;
     return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
@@ -907,7 +900,7 @@ const TouchableMixin = {
     }
   },
 
-  withoutDefaultFocusAndBlur: {},
+  withoutDefaultFocusAndBlur: ({}: $TEMPORARY$object<{||}>),
 };
 
 /**
@@ -935,7 +928,7 @@ const Touchable = {
   }: {
     color: string | number,
     hitSlop: EdgeInsetsProp,
-  }) => {
+  }): null | React.Node => {
     if (!Touchable.TOUCH_TARGET_DEBUG) {
       return null;
     }

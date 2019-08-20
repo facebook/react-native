@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   Animated,
   Image,
@@ -54,7 +55,7 @@ class AnimatedMaskExample extends React.Component<Props> {
     ).start();
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.exampleWrapperStyle}>
         <MaskedViewIOS
@@ -93,7 +94,7 @@ class ChangingChildrenMaskExample extends React.Component<
   Props,
   ChangingChildrenState,
 > {
-  state = {
+  state: ChangingChildrenState = {
     alternateChildren: true,
   };
 
@@ -105,7 +106,7 @@ class ChangingChildrenMaskExample extends React.Component<
     }, 1000);
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.exampleWrapperStyle}>
         <MaskedViewIOS

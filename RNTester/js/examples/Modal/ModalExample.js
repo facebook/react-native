@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   Modal,
   Picker,
@@ -236,7 +237,7 @@ exports.examples = [
   {
     title: 'Modal Presentation',
     description: 'Modals can be presented with or without animation',
-    render: () => <ModalExample />,
+    render: (): React.Node => <ModalExample />,
   },
 ];
 

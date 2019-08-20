@@ -11,6 +11,7 @@
     "@typescript-eslint/eslint-plugin": "^1.5.0",
     "@typescript-eslint/parser": "^1.5.0",
     "babel-eslint": "10.0.1",
+    "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-eslint-comments": "^3.1.1",
     "eslint-plugin-flowtype": "2.50.3",
     "eslint-plugin-jest": "22.4.1",

@@ -68,7 +68,7 @@ class EventEmitter {
 #endif
 
   /*
-   * Initates an event delivery process.
+   * Initiates an event delivery process.
    * Is used by particular subclasses only.
    */
   void dispatchEvent(

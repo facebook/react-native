@@ -9,6 +9,7 @@
 
 #include <glog/logging.h>
 #include <react/core/ShadowNode.h>
+#include <react/core/ShadowNodeFragment.h>
 #include <react/core/State.h>
 #include <react/core/StateTarget.h>
 #include <react/core/StateUpdate.h>
@@ -30,7 +31,9 @@ void State::commit(const ShadowNode &shadowNode) const {
 }
 
 State::Shared State::getCommitedState() const {
-  return stateCoordinator_->getTarget().getShadowNode().getState();
+  auto target = stateCoordinator_->getTarget();
+  return target ? target.getShadowNode().getState()
+                : ShadowNodeFragment::statePlaceholder();
 }
 
 #ifdef ANDROID

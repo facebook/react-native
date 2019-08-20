@@ -1,38 +1,33 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.turbomodule.core;
 
+import androidx.annotation.Nullable;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.turbomodule.core.interfaces.JSCallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.soloader.SoLoader;
 import java.util.*;
-import javax.annotation.Nullable;
 
 /**
-* This is the main class and entry point for TurboModules.
-* Note that this is a hybrid class, and has a C++ counterpart
-* This class installs the JSI bindings. It also implements the method to get a Java module, that the C++ counterpart calls.
-*/
+ * This is the main class and entry point for TurboModules. Note that this is a hybrid class, and
+ * has a C++ counterpart This class installs the JSI bindings. It also implements the method to get
+ * a Java module, that the C++ counterpart calls.
+ */
 public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   static {
     SoLoader.loadLibrary("turbomodulejsijni");
   }
 
-  private final ReactApplicationContext mReactApplicationContext;
   private final TurboModuleManagerDelegate mTurbomoduleManagerDelegate;
 
   private final Map<String, TurboModule> mTurboModules = new HashMap<>();
@@ -42,11 +37,14 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   private final HybridData mHybridData;
 
   public TurboModuleManager(
-      ReactApplicationContext reactApplicationContext, JavaScriptContextHolder jsContext, TurboModuleManagerDelegate tmmDelegate, JSCallInvokerHolder instanceHolder) {
-    mReactApplicationContext = reactApplicationContext;
-    mHybridData = initHybrid(jsContext.get(), (JSCallInvokerHolderImpl) instanceHolder, tmmDelegate);
+      JavaScriptContextHolder jsContext,
+      TurboModuleManagerDelegate tmmDelegate,
+      JSCallInvokerHolder instanceHolder) {
+    mHybridData =
+        initHybrid(jsContext.get(), (JSCallInvokerHolderImpl) instanceHolder, tmmDelegate);
     mTurbomoduleManagerDelegate = tmmDelegate;
   }
+
   @DoNotStrip
   @Nullable
   protected TurboModule getJavaModule(String name) {
@@ -58,7 +56,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
          * TurboModuleManager is initialized after ReactApplicationContext has been setup.
          * Therefore, it's safe to call initialize on the TurboModule.
          */
-        ((NativeModule)turboModule).initialize();
+        ((NativeModule) turboModule).initialize();
 
         mTurboModules.put(name, turboModule);
       }
@@ -80,7 +78,8 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     return mTurboModules.containsKey(name);
   }
 
-  private native HybridData initHybrid(long jsContext, JSCallInvokerHolderImpl jsQueue, TurboModuleManagerDelegate tmmDelegate);
+  private native HybridData initHybrid(
+      long jsContext, JSCallInvokerHolderImpl jsQueue, TurboModuleManagerDelegate tmmDelegate);
 
   private native void installJSIBindings();
 
@@ -92,5 +91,15 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   public void initialize() {}
 
   @Override
-  public void onCatalystInstanceDestroy() {}
+  public void onCatalystInstanceDestroy() {
+    for (TurboModule turboModule : mTurboModules.values()) {
+      // TODO(T48014458): Rename this to invalidate()
+      ((NativeModule) turboModule).onCatalystInstanceDestroy();
+    }
+
+    mTurboModules.clear();
+
+    // Delete the native part of this hybrid class.
+    mHybridData.resetNative();
+  }
 }

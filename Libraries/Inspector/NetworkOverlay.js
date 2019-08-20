@@ -103,7 +103,7 @@ class NetworkOverlay extends React.Component<Props, State> {
   // Map of `xhr._index` -> `index in `this.state.requests`.
   _xhrIdMap: {[key: number]: number} = {};
 
-  state = {
+  state: State = {
     detailRowId: null,
     requests: [],
   };

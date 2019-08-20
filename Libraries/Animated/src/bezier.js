@@ -84,7 +84,7 @@ module.exports = function bezier(
   mY1: number,
   mX2: number,
   mY2: number,
-) {
+): (x: number) => number {
   if (!(mX1 >= 0 && mX1 <= 1 && mX2 >= 0 && mX2 <= 1)) {
     throw new Error('bezier x values must be in [0, 1] range');
   }

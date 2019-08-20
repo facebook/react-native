@@ -151,7 +151,7 @@ export type ImageStyle = ____ImageStyle_Internal;
  */
 export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
 
-let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
+let hairlineWidth: number = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
@@ -279,7 +279,7 @@ module.exports = {
    * > **NOTE**: Exercise caution as abusing this can tax you in terms of
    * > optimizations.
    * >
-   * > IDs enable optimizations through the bridge and memory in general. Refering
+   * > IDs enable optimizations through the bridge and memory in general. Referring
    * > to style objects directly will deprive you of these optimizations.
    *
    * Example:

@@ -290,7 +290,7 @@
   return UIEdgeInsetsInsetRect(self.bounds, self.reactCompoundInsets);
 }
 
-#pragma mark - Accessiblity
+#pragma mark - Accessibility
 
 - (UIView *)reactAccessibilityElement
 {

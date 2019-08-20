@@ -25,7 +25,7 @@ module.exports = {
   get ART() {
     warnOnce(
       'art-moved',
-      'React Native Art has been extracted from react-native core and will be removed in a future release. ' +
+      'React Native ART has been extracted from react-native core and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/art' instead of 'react-native'. " +
         'See https://github.com/react-native-community/art',
     );
@@ -44,6 +44,12 @@ module.exports = {
     return require('../Components/CheckBox/CheckBox');
   },
   get DatePickerIOS() {
+    warnOnce(
+      'DatePickerIOS-merged',
+      'DatePickerIOS has been merged with DatePickerAndroid and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-datetimepicker',
+    );
     return require('../Components/DatePicker/DatePickerIOS');
   },
   get DrawerLayoutAndroid() {
@@ -168,7 +174,7 @@ module.exports = {
   get AsyncStorage() {
     warnOnce(
       'async-storage-moved',
-      'Async Storage has been extracted from react-native core and will be removed in a future release. ' +
+      'AsyncStorage has been extracted from react-native core and will be removed in a future release. ' +
         "It can now be installed and imported from '@react-native-community/async-storage' instead of 'react-native'. " +
         'See https://github.com/react-native-community/react-native-async-storage',
     );
@@ -181,6 +187,12 @@ module.exports = {
     return require('../Components/Clipboard/Clipboard');
   },
   get DatePickerAndroid() {
+    warnOnce(
+      'DatePickerAndroid-merged',
+      'DatePickerAndroid has been merged with DatePickerIOS and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-datetimepicker',
+    );
     return require('../Components/DatePickerAndroid/DatePickerAndroid');
   },
   get DeviceInfo() {
@@ -264,6 +276,12 @@ module.exports = {
     return require('../Performance/Systrace');
   },
   get TimePickerAndroid() {
+    warnOnce(
+      'TimePickerAndroid-merged',
+      'TimePickerAndroid has been merged with DatePickerIOS and DatePickerAndroid and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-datetimepicker',
+    );
     return require('../Components/TimePickerAndroid/TimePickerAndroid');
   },
   get ToastAndroid() {
@@ -280,6 +298,9 @@ module.exports = {
   },
   get unstable_batchedUpdates() {
     return require('../Renderer/shims/ReactNative').unstable_batchedUpdates;
+  },
+  get useWindowDimensions() {
+    return require('../Utilities/useWindowDimensions').default;
   },
   get UTFSequence() {
     return require('../UTFSequence');
@@ -309,6 +330,9 @@ module.exports = {
   },
   get requireNativeComponent() {
     return require('../ReactNative/requireNativeComponent');
+  },
+  get unstable_RootTagContext() {
+    return require('../ReactNative/RootTagContext');
   },
 
   // Prop Types

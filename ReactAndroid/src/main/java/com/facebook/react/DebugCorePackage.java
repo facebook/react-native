@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react;
 
 import com.facebook.react.bridge.ModuleSpec;
@@ -24,15 +23,13 @@ import javax.inject.Provider;
  * view managers from).
  */
 @ReactModuleList(
-  nativeModules = {
-    JSCHeapCapture.class,
-    JSDevSupport.class,
-  }
-)
+    nativeModules = {
+      JSCHeapCapture.class,
+      JSDevSupport.class,
+    })
 /* package */ class DebugCorePackage extends LazyReactPackage {
 
-  DebugCorePackage() {
-  }
+  DebugCorePackage() {}
 
   @Override
   public List<ModuleSpec> getNativeModules(final ReactApplicationContext reactContext) {

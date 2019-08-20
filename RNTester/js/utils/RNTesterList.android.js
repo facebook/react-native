@@ -34,6 +34,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('../examples/Image/ImageExample'),
   },
   {
+    key: 'JSResponderHandlerExample',
+    module: require('../examples/JSResponderHandlerExample/JSResponderHandlerExample'),
+  },
+  {
     key: 'KeyboardAvoidingViewExample',
     module: require('../examples/KeyboardAvoidingView/KeyboardAvoidingViewExample'),
   },
@@ -60,6 +64,10 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'RefreshControlExample',
     module: require('../examples/RefreshControl/RefreshControlExample'),
+  },
+  {
+    key: 'ScrollViewExample',
+    module: require('../examples/ScrollView/ScrollViewExample'),
   },
   {
     key: 'ScrollViewSimpleExample',

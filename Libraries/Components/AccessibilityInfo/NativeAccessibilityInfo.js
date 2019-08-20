@@ -24,4 +24,4 @@ export interface Spec extends TurboModule {
   +announceForAccessibility: (announcement: string) => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('AccessibilityInfo');
+export default (TurboModuleRegistry.get<Spec>('AccessibilityInfo'): ?Spec);

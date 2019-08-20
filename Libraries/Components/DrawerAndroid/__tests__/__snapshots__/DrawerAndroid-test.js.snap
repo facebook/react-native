@@ -3,13 +3,12 @@
 exports[`<DrawerLayoutAndroid /> should render as <DrawerLayoutAndroid> when mocked 1`] = `
 <AndroidDrawerLayout
   drawerBackgroundColor="white"
-  drawerPosition={10}
+  drawerPosition="left"
   drawerWidth={300}
   onDrawerClose={[Function]}
   onDrawerOpen={[Function]}
   onDrawerSlide={[Function]}
   onDrawerStateChanged={[Function]}
-  renderNavigationView={[Function]}
   style={
     Array [
       Object {
@@ -56,13 +55,12 @@ exports[`<DrawerLayoutAndroid /> should render as <DrawerLayoutAndroid> when moc
 exports[`<DrawerLayoutAndroid /> should render as <DrawerLayoutAndroid> when not mocked 1`] = `
 <AndroidDrawerLayout
   drawerBackgroundColor="white"
-  drawerPosition={10}
+  drawerPosition="left"
   drawerWidth={300}
   onDrawerClose={[Function]}
   onDrawerOpen={[Function]}
   onDrawerSlide={[Function]}
   onDrawerStateChanged={[Function]}
-  renderNavigationView={[Function]}
   style={
     Array [
       Object {
@@ -109,7 +107,7 @@ exports[`<DrawerLayoutAndroid /> should render as <DrawerLayoutAndroid> when not
 exports[`<DrawerLayoutAndroid /> should shallow render as <DrawerLayoutAndroid> when mocked 1`] = `
 <DrawerLayoutAndroid
   drawerBackgroundColor="white"
-  drawerPosition={10}
+  drawerPosition="left"
   drawerWidth={300}
   renderNavigationView={[Function]}
 />
@@ -118,7 +116,7 @@ exports[`<DrawerLayoutAndroid /> should shallow render as <DrawerLayoutAndroid> 
 exports[`<DrawerLayoutAndroid /> should shallow render as <DrawerLayoutAndroid> when not mocked 1`] = `
 <DrawerLayoutAndroid
   drawerBackgroundColor="white"
-  drawerPosition={10}
+  drawerPosition="left"
   drawerWidth={300}
   renderNavigationView={[Function]}
 />

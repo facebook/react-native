@@ -18,7 +18,9 @@
 namespace facebook {
 namespace react {
 
-Scheduler::Scheduler(SchedulerToolbox schedulerToolbox) {
+Scheduler::Scheduler(
+    SchedulerToolbox schedulerToolbox,
+    SchedulerDelegate *delegate) {
   runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
 
   reactNativeConfig_ =
@@ -55,6 +57,8 @@ Scheduler::Scheduler(SchedulerToolbox schedulerToolbox) {
 
   rootComponentDescriptor_ =
       std::make_unique<const RootComponentDescriptor>(eventDispatcher);
+
+  delegate_ = delegate;
 
   uiManagerRef.setDelegate(this);
   uiManagerRef.setShadowTreeRegistry(&shadowTreeRegistry_);
@@ -255,6 +259,43 @@ void Scheduler::uiManagerDidCreateShadowNode(
     auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
         shadowNode->getSurfaceId(), shadowView);
+  }
+}
+
+void Scheduler::uiManagerDidDispatchCommand(
+    const SharedShadowNode &shadowNode,
+    std::string const &commandName,
+    folly::dynamic const args) {
+  SystraceSection s("Scheduler::uiManagerDispatchCommand");
+
+  if (delegate_) {
+    auto shadowView = ShadowView(*shadowNode);
+    delegate_->schedulerDidDispatchCommand(shadowView, commandName, args);
+  }
+}
+
+/*
+ * Set JS responder for a view
+ */
+void Scheduler::uiManagerDidSetJSResponder(
+    SurfaceId surfaceId,
+    const SharedShadowNode &shadowNode,
+    bool blockNativeResponder) {
+  if (delegate_) {
+    // TODO: the first shadowView paramenter, should be the first parent that
+    // is non virtual.
+    auto shadowView = ShadowView(*shadowNode);
+    delegate_->schedulerDidSetJSResponder(
+        surfaceId, shadowView, shadowView, blockNativeResponder);
+  }
+}
+
+/*
+ * Clear the JSResponder for a view
+ */
+void Scheduler::uiManagerDidClearJSResponder() {
+  if (delegate_) {
+    delegate_->schedulerDidClearJSResponder();
   }
 }
 

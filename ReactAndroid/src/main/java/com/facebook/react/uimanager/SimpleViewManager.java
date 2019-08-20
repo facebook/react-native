@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
 
 import android.view.View;
@@ -17,8 +16,8 @@ import android.view.View;
  *
  * @param <T> the view handled by this manager
  */
-public abstract class SimpleViewManager<T extends View> extends
-    BaseViewManager<T, LayoutShadowNode> {
+public abstract class SimpleViewManager<T extends View>
+    extends BaseViewManager<T, LayoutShadowNode> {
 
   @Override
   public LayoutShadowNode createShadowNodeInstance() {
@@ -31,6 +30,5 @@ public abstract class SimpleViewManager<T extends View> extends
   }
 
   @Override
-  public void updateExtraData(T root, Object extraData) {
-  }
+  public void updateExtraData(T root, Object extraData) {}
 }

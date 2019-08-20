@@ -11,9 +11,10 @@
 'use strict';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
 import type {
-  DirectEvent,
+  DirectEventHandler,
   Float,
   Int32,
   WithDefault,
@@ -27,7 +28,7 @@ type NativeProps = $ReadOnly<{|
   /**
    * Whether the pull to refresh functionality is enabled.
    */
-  enabled?: ?WithDefault<boolean, false>,
+  enabled?: WithDefault<boolean, false>,
   /**
    * The colors (at least one) that will be used to draw the refresh indicator.
    */
@@ -45,23 +46,25 @@ type NativeProps = $ReadOnly<{|
    * Also, 1 isn't actually a safe default. We are able to set this here
    * because native code isn't currently consuming the generated artifact.
    * This will end up being
-   * size?: ?WithDefault<'default' | 'large', 'default'>,
+   * size?: WithDefault<'default' | 'large', 'default'>,
    */
-  size?: ?WithDefault<Int32, 1>,
+  size?: WithDefault<Int32, 1>,
   /**
    * Progress view top offset
    */
-  progressViewOffset?: ?WithDefault<Float, 0>,
+  progressViewOffset?: WithDefault<Float, 0>,
 
   /**
    * Called when the view starts refreshing.
    */
-  onRefresh?: ?(event: DirectEvent<null>) => mixed,
+  onRefresh?: ?DirectEventHandler<null>,
 
   /**
    * Whether the view should be indicating an active refresh.
    */
-  refreshing: WithDefault<boolean, false>,
+  refreshing: boolean,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('AndroidSwipeRefreshLayout');
+export default (codegenNativeComponent<NativeProps>(
+  'AndroidSwipeRefreshLayout',
+): NativeComponentType<NativeProps>);

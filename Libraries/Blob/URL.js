@@ -130,7 +130,12 @@ export class URL {
 
   constructor(url: string, base: string) {
     let baseUrl = null;
-    if (base) {
+    if (!base || validateBaseUrl(url)) {
+      this._url = url;
+      if (!this._url.endsWith('/')) {
+        this._url += '/';
+      }
+    } else {
       if (typeof base === 'string') {
         baseUrl = base;
         if (!validateBaseUrl(baseUrl)) {
@@ -146,11 +151,6 @@ export class URL {
         url = '';
       }
       this._url = `${baseUrl}${url}`;
-    } else {
-      this._url = url;
-      if (!this._url.endsWith('/')) {
-        this._url += '/';
-      }
     }
   }
 

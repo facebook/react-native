@@ -131,6 +131,7 @@ RCT_EXPORT_MODULE()
   // default behavior is to use NSUserDefaults
   NSDictionary *defaultValues = @{
     kRCTDevSettingShakeToShowDevMenu: @YES,
+    kRCTDevSettingHotLoadingEnabled: @YES,
   };
   RCTDevSettingsUserDefaultsDataSource *dataSource = [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
   return [self initWithDataSource:dataSource];
@@ -173,7 +174,7 @@ RCT_EXPORT_MODULE()
    forMethod:@"reload"];
 #endif
 
-#if RCT_ENABLE_INSPECTOR
+#if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC
   // we need this dispatch back to the main thread because even though this
   // is executed on the main thread, at this point the bridge is not yet
   // finished with its initialisation. But it does finish by the time it

@@ -456,7 +456,7 @@ static UIImage *RCTGetSolidBorderImage(RCTCornerRadii cornerRadii,
 //         +------------------+
 //
 //
-// Note that this approach will produce discontinous colour changes at the edge
+// Note that this approach will produce discontinuous colour changes at the edge
 // (which is okay). The reason is that Quartz does not currently support drawing
 // of gradients _along_ a path (NB: clipping a path and drawing a linear gradient
 // is _not_ equivalent).

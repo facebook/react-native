@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTPushNotificationManager.h"
+#import <React/RCTPushNotificationManager.h>
 
 #import <UserNotifications/UserNotifications.h>
 
@@ -23,7 +23,7 @@ static NSString *const kRemoteNotificationRegistrationFailed = @"RemoteNotificat
 
 static NSString *const kErrorUnableToRequestPermissions = @"E_UNABLE_TO_REQUEST_PERMISSIONS";
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
 @implementation RCTConvert (NSCalendarUnit)
 
 RCT_ENUM_CONVERTER(NSCalendarUnit,
@@ -74,14 +74,14 @@ RCT_ENUM_CONVERTER(UIBackgroundFetchResult, (@{
 }), UIBackgroundFetchResultNoData, integerValue)
 
 @end
-#endif //TARGET_OS_TV
+#endif //TARGET_OS_TV / TARGET_OS_UIKITFORMAC
 
 @implementation RCTPushNotificationManager
 {
   RCTPromiseResolveBlock _requestPermissionsResolveBlock;
 }
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
 
 static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notification)
 {
@@ -125,7 +125,7 @@ static NSDictionary *RCTFormatUNNotification(UNNotification *notification)
   return formattedNotification;
 }
 
-#endif //TARGET_OS_TV
+#endif //TARGET_OS_TV / TARGET_OS_UIKITFORMAC
 
 RCT_EXPORT_MODULE()
 
@@ -134,7 +134,7 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
 - (void)startObserving
 {
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -464,13 +464,13 @@ RCT_EXPORT_METHOD(getDeliveredNotifications:(RCTResponseSenderBlock)callback)
   }
 }
 
-#else //TARGET_OS_TV
+#else //TARGET_OS_TV / TARGET_OS_UIKITFORMAC
 
 - (NSArray<NSString *> *)supportedEvents
 {
   return @[];
 }
 
-#endif //TARGET_OS_TV
+#endif //TARGET_OS_TV / TARGET_OS_UIKITFORMAC
 
 @end

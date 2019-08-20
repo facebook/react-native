@@ -10,11 +10,12 @@
 
 'use strict';
 
-import type {DirectEvent, WithDefault} from '../../Types/CodegenTypes';
+import type {DirectEventHandler, WithDefault} from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -30,19 +31,19 @@ type NativeProps = $ReadOnly<{|
   /**
    * The title displayed under the refresh indicator.
    */
-  title?: ?WithDefault<string, null>,
+  title?: WithDefault<string, null>,
 
   /**
    * Called when the view starts refreshing.
    */
-  onRefresh?: ?(event: DirectEvent<null>) => mixed,
+  onRefresh?: ?DirectEventHandler<null>,
 
   /**
    * Whether the view should be indicating an active refresh.
    */
-  refreshing: WithDefault<boolean, false>,
+  refreshing: boolean,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('PullToRefreshView', {
+export default (codegenNativeComponent<NativeProps>('PullToRefreshView', {
   paperComponentName: 'RCTRefreshControl',
-});
+}): NativeComponentType<NativeProps>);

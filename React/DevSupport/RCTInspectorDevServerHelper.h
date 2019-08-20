@@ -9,7 +9,7 @@
 #import <React/RCTDefines.h>
 #import <React/RCTInspectorPackagerConnection.h>
 
-#if RCT_DEV
+#if RCT_DEV && !TARGET_OS_UIKITFORMAC
 
 @interface RCTInspectorDevServerHelper : NSObject
 

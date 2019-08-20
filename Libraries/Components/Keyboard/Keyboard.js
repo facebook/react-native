@@ -11,9 +11,10 @@
 'use strict';
 
 const LayoutAnimation = require('../../LayoutAnimation/LayoutAnimation');
-const invariant = require('invariant');
 const NativeEventEmitter = require('../../EventEmitter/NativeEventEmitter');
+
 const dismissKeyboard = require('../../Utilities/dismissKeyboard');
+const invariant = require('invariant');
 
 import NativeKeyboardObserver from './NativeKeyboardObserver';
 const KeyboardEventEmitter = new NativeEventEmitter(NativeKeyboardObserver);
@@ -108,7 +109,21 @@ type KeyboardEventListener = (e: KeyboardEvent) => void;
  *```
  */
 
-let Keyboard = {
+let Keyboard:
+  | NativeEventEmitter
+  | $TEMPORARY$object<{|
+      addListener: (
+        eventName: KeyboardEventName,
+        callback: KeyboardEventListener,
+      ) => $FlowFixMe,
+      dismiss: () => $FlowFixMe,
+      removeAllListeners: (eventName: KeyboardEventName) => $FlowFixMe,
+      removeListener: (
+        eventName: KeyboardEventName,
+        callback: KeyboardEventListener,
+      ) => $FlowFixMe,
+      scheduleLayoutAnimation: (event: KeyboardEvent) => $FlowFixMe,
+    |}> = {
   /**
    * The `addListener` function connects a JavaScript function to an identified native
    * keyboard notification event.

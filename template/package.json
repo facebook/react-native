@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest"
   },
@@ -11,8 +13,8 @@
     "react-native": "1000.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.3.3",
-    "@babel/runtime": "^7.3.1",
+    "@babel/core": "^7.5.0",
+    "@babel/runtime": "^7.5.0",
     "@react-native-community/eslint-config": "^0.0.3",
     "babel-jest": "^24.1.0",
     "jest": "^24.1.0",

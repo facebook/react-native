@@ -18,7 +18,7 @@ const {Image, StyleSheet, Text, View} = ReactNative;
 
 type Props = $ReadOnly<{||}>;
 class ImageCapInsetsExample extends React.Component<Props> {
-  render() {
+  render(): React.Node {
     return (
       <View>
         <View style={styles.background}>

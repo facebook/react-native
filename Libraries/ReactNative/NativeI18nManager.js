@@ -23,4 +23,4 @@ export interface Spec extends TurboModule {
   swapLeftAndRightInRTL: (flipStyles: boolean) => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('I18nManager');
+export default (TurboModuleRegistry.get<Spec>('I18nManager'): ?Spec);

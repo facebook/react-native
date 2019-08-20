@@ -18,4 +18,4 @@ export interface Spec extends TurboModule {
   +removeListeners: (count: number) => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('KeyboardObserver');
+export default (TurboModuleRegistry.get<Spec>('KeyboardObserver'): ?Spec);

@@ -1,13 +1,10 @@
 package com.facebook.react.views.view;
 
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
-/**
- * Represents a Click on the ReactViewGroup
- */
+/** Represents a Click on the ReactViewGroup */
 public class ViewGroupClickEvent extends Event<ViewGroupClickEvent> {
   private static final String EVENT_NAME = "topClick";
 

@@ -36,7 +36,7 @@ class AppEventsTest extends React.Component<{}, State> {
     this.setState({sent: event});
   }
 
-  receiveEvent = (event: any) => {
+  receiveEvent: (event: any) => void = (event: any) => {
     if (deepDiffer(event.data, TEST_PAYLOAD)) {
       throw new Error('Received wrong event: ' + JSON.stringify(event));
     }
@@ -46,7 +46,7 @@ class AppEventsTest extends React.Component<{}, State> {
     });
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.container}>
         <Text>{JSON.stringify(this.state, null, '  ')}</Text>

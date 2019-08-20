@@ -5,13 +5,11 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import androidx.test.runner.AndroidJUnit4;
 import com.facebook.react.bridge.NoSuchKeyException;
 import com.facebook.react.bridge.UnexpectedNativeTypeException;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

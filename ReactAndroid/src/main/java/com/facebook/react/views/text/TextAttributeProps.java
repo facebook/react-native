@@ -1,23 +1,22 @@
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.text;
 
 import android.graphics.Typeface;
 import android.os.Build;
 import android.text.Layout;
 import android.view.Gravity;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaDirection;
-import javax.annotation.Nullable;
 
 public class TextAttributeProps {
 
@@ -49,9 +48,9 @@ public class TextAttributeProps {
   protected float mLetterSpacingInput = Float.NaN;
   protected int mTextAlign = Gravity.NO_GRAVITY;
   protected int mTextBreakStrategy =
-    (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
+      (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
   protected int mJustificationMode =
-          (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
+      (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
   protected TextTransform mTextTransform = TextTransform.UNSET;
 
   protected float mTextShadowOffsetDx = 0;
@@ -64,8 +63,8 @@ public class TextAttributeProps {
   protected boolean mIncludeFontPadding = true;
 
   /**
-   * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}.
-   * mFontWeight can be {@link Typeface#NORMAL} or {@link Typeface#BOLD}.
+   * mFontStyle can be {@link Typeface#NORMAL} or {@link Typeface#ITALIC}. mFontWeight can be {@link
+   * Typeface#NORMAL} or {@link Typeface#BOLD}.
    */
   protected int mFontStyle = UNSET;
 
@@ -74,7 +73,10 @@ public class TextAttributeProps {
    * NB: If a font family is used that does not have a style in a certain Android version (ie.
    * monospace bold pre Android 5.0), that style (ie. bold) will not be inherited by nested Text
    * nodes. To retain that style, you have to add it to those nodes explicitly.
-   * Example, Android 4.4:
+   *
+   * <p>Example, Android 4.4:
+   *
+   * <pre>
    * <Text style={{fontFamily="serif" fontWeight="bold"}}>Bold Text</Text>
    *   <Text style={{fontFamily="sans-serif"}}>Bold Text</Text>
    *     <Text style={{fontFamily="serif}}>Bold Text</Text>
@@ -86,6 +88,7 @@ public class TextAttributeProps {
    * <Text style={{fontFamily="monospace" fontWeight="bold"}}>Not Bold Text</Text>
    *   <Text style={{fontFamily="sans-serif" fontWeight="bold"}}>Bold Text</Text>
    *     <Text style={{fontFamily="serif}}>Bold Text</Text>
+   * </pre>
    */
   protected @Nullable String mFontFamily = null;
 
@@ -93,7 +96,6 @@ public class TextAttributeProps {
   protected float mHeightOfTallestInlineImage = Float.NaN;
 
   private final ReactStylesDiffMap mProps;
-
 
   public TextAttributeProps(ReactStylesDiffMap props) {
     mProps = props;
@@ -105,7 +107,10 @@ public class TextAttributeProps {
     setFontSize(getFloatProp(ViewProps.FONT_SIZE, UNSET));
     setColor(props.hasKey(ViewProps.COLOR) ? props.getInt(ViewProps.COLOR, 0) : null);
     setColor(props.hasKey("foregroundColor") ? props.getInt("foregroundColor", 0) : null);
-    setBackgroundColor(props.hasKey(ViewProps.BACKGROUND_COLOR) ? props.getInt(ViewProps.BACKGROUND_COLOR, 0) : null);
+    setBackgroundColor(
+        props.hasKey(ViewProps.BACKGROUND_COLOR)
+            ? props.getInt(ViewProps.BACKGROUND_COLOR, 0)
+            : null);
     setFontFamily(getStringProp(ViewProps.FONT_FAMILY));
     setFontWeight(getStringProp(ViewProps.FONT_WEIGHT));
     setFontStyle(getStringProp(ViewProps.FONT_STYLE));
@@ -154,9 +159,9 @@ public class TextAttributeProps {
   // and the height of the inline images.
   public float getEffectiveLineHeight() {
     boolean useInlineViewHeight =
-      !Float.isNaN(mLineHeight)
-        && !Float.isNaN(mHeightOfTallestInlineImage)
-        && mHeightOfTallestInlineImage > mLineHeight;
+        !Float.isNaN(mLineHeight)
+            && !Float.isNaN(mHeightOfTallestInlineImage)
+            && mHeightOfTallestInlineImage > mLineHeight;
     return useInlineViewHeight ? mHeightOfTallestInlineImage : mLineHeight;
   }
 
@@ -183,17 +188,18 @@ public class TextAttributeProps {
       mLineHeight = Float.NaN;
     } else {
       mLineHeight =
-        mAllowFontScaling
-          ? PixelUtil.toPixelFromSP(lineHeight)
-          : PixelUtil.toPixelFromDIP(lineHeight);
+          mAllowFontScaling
+              ? PixelUtil.toPixelFromSP(lineHeight)
+              : PixelUtil.toPixelFromDIP(lineHeight);
     }
   }
 
   public void setLetterSpacing(float letterSpacing) {
     mLetterSpacingInput = letterSpacing;
-    mLetterSpacing = mAllowFontScaling
-      ? PixelUtil.toPixelFromSP(mLetterSpacingInput)
-      : PixelUtil.toPixelFromDIP(mLetterSpacingInput);
+    mLetterSpacing =
+        mAllowFontScaling
+            ? PixelUtil.toPixelFromSP(mLetterSpacingInput)
+            : PixelUtil.toPixelFromDIP(mLetterSpacingInput);
   }
 
   public void setAllowFontScaling(boolean allowFontScaling) {
@@ -227,7 +233,6 @@ public class TextAttributeProps {
       } else {
         throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
       }
-
     }
   }
 
@@ -235,9 +240,9 @@ public class TextAttributeProps {
     mFontSizeInput = fontSize;
     if (fontSize != UNSET) {
       fontSize =
-        mAllowFontScaling
-          ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
-          : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
+          mAllowFontScaling
+              ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
+              : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
     }
     mFontSize = (int) fontSize;
   }
@@ -250,13 +255,14 @@ public class TextAttributeProps {
   }
 
   public void setBackgroundColor(Integer color) {
-    //TODO: Don't apply background color to anchor TextView since it will be applied on the View directly
-    //if (!isVirtualAnchor()) {
-      mIsBackgroundColorSet = (color != null);
-      if (mIsBackgroundColorSet) {
-        mBackgroundColor = color;
-      }
-    //}
+    // TODO: Don't apply background color to anchor TextView since it will be applied on the View
+    // directly
+    // if (!isVirtualAnchor()) {
+    mIsBackgroundColorSet = (color != null);
+    if (mIsBackgroundColorSet) {
+      mBackgroundColor = color;
+    }
+    // }
   }
 
   public void setFontFamily(@Nullable String fontFamily) {
@@ -264,17 +270,17 @@ public class TextAttributeProps {
   }
 
   /**
-   /* This code is duplicated in ReactTextInputManager
-   /* TODO: Factor into a common place they can both use
+   * /* This code is duplicated in ReactTextInputManager /* TODO: Factor into a common place they
+   * can both use
    */
   public void setFontWeight(@Nullable String fontWeightString) {
     int fontWeightNumeric =
-      fontWeightString != null ? parseNumericFontWeight(fontWeightString) : -1;
+        fontWeightString != null ? parseNumericFontWeight(fontWeightString) : -1;
     int fontWeight = UNSET;
     if (fontWeightNumeric >= 500 || "bold".equals(fontWeightString)) {
       fontWeight = Typeface.BOLD;
     } else if ("normal".equals(fontWeightString)
-      || (fontWeightNumeric != -1 && fontWeightNumeric < 500)) {
+        || (fontWeightNumeric != -1 && fontWeightNumeric < 500)) {
       fontWeight = Typeface.NORMAL;
     }
     if (fontWeight != mFontWeight) {
@@ -283,8 +289,8 @@ public class TextAttributeProps {
   }
 
   /**
-   /* This code is duplicated in ReactTextInputManager
-   /* TODO: Factor into a common place they can both use
+   * /* This code is duplicated in ReactTextInputManager /* TODO: Factor into a common place they
+   * can both use
    */
   public void setFontStyle(@Nullable String fontStyleString) {
     int fontStyle = UNSET;
@@ -306,10 +312,10 @@ public class TextAttributeProps {
     mIsUnderlineTextDecorationSet = false;
     mIsLineThroughTextDecorationSet = false;
     if (textDecorationLineString != null) {
-      for (String textDecorationLineSubString : textDecorationLineString.split(" ")) {
+      for (String textDecorationLineSubString : textDecorationLineString.split("-")) {
         if ("underline".equals(textDecorationLineSubString)) {
           mIsUnderlineTextDecorationSet = true;
-        } else if ("line-through".equals(textDecorationLineSubString)) {
+        } else if ("strikethrough".equals(textDecorationLineSubString)) {
           mIsLineThroughTextDecorationSet = true;
         }
       }
@@ -329,7 +335,7 @@ public class TextAttributeProps {
       mTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
     } else {
       throw new JSApplicationIllegalArgumentException(
-        "Invalid textBreakStrategy: " + textBreakStrategy);
+          "Invalid textBreakStrategy: " + textBreakStrategy);
     }
   }
 
@@ -339,14 +345,14 @@ public class TextAttributeProps {
 
     if (offsetMap != null) {
       if (offsetMap.hasKey(PROP_SHADOW_OFFSET_WIDTH)
-        && !offsetMap.isNull(PROP_SHADOW_OFFSET_WIDTH)) {
+          && !offsetMap.isNull(PROP_SHADOW_OFFSET_WIDTH)) {
         mTextShadowOffsetDx =
-          PixelUtil.toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_WIDTH));
+            PixelUtil.toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_WIDTH));
       }
       if (offsetMap.hasKey(PROP_SHADOW_OFFSET_HEIGHT)
-        && !offsetMap.isNull(PROP_SHADOW_OFFSET_HEIGHT)) {
+          && !offsetMap.isNull(PROP_SHADOW_OFFSET_HEIGHT)) {
         mTextShadowOffsetDy =
-          PixelUtil.toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_HEIGHT));
+            PixelUtil.toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_HEIGHT));
       }
     }
   }
@@ -360,7 +366,6 @@ public class TextAttributeProps {
   public void setTextShadowColor(int textShadowColor) {
     if (textShadowColor != mTextShadowColor) {
       mTextShadowColor = textShadowColor;
-
     }
   }
 
@@ -382,20 +387,20 @@ public class TextAttributeProps {
    * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
    * return the weight.
    *
-   * This code is duplicated in ReactTextInputManager
-   * TODO: Factor into a common place they can both use
+   * <p>This code is duplicated in ReactTextInputManager TODO: Factor into a common place they can
+   * both use
    */
   private static int parseNumericFontWeight(String fontWeightString) {
     // This should be much faster than using regex to verify input and Integer.parseInt
     return fontWeightString.length() == 3
-      && fontWeightString.endsWith("00")
-      && fontWeightString.charAt(0) <= '9'
-      && fontWeightString.charAt(0) >= '1'
-      ? 100 * (fontWeightString.charAt(0) - '0')
-      : -1;
+            && fontWeightString.endsWith("00")
+            && fontWeightString.charAt(0) <= '9'
+            && fontWeightString.charAt(0) >= '1'
+        ? 100 * (fontWeightString.charAt(0) - '0')
+        : -1;
   }
 
-  //TODO T31905686 remove this from here and add support to RTL
+  // TODO T31905686 remove this from here and add support to RTL
   private YogaDirection getLayoutDirection() {
     return YogaDirection.LTR;
   }

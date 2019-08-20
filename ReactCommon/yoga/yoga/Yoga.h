@@ -330,7 +330,7 @@ WIN_EXPORT bool YGConfigIsExperimentalFeatureEnabled(
     YGConfigRef config,
     YGExperimentalFeature feature);
 
-// Using the web defaults is the prefered configuration for new projects. Usage
+// Using the web defaults is the preferred configuration for new projects. Usage
 // of non web defaults should be considered as legacy.
 WIN_EXPORT void YGConfigSetUseWebDefaults(YGConfigRef config, bool enabled);
 WIN_EXPORT bool YGConfigGetUseWebDefaults(YGConfigRef config);

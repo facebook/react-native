@@ -29,6 +29,8 @@ function stringifySafe(arg: any): string {
     } catch (e) {
       ret = '[function unknown]';
     }
+  } else if (arg instanceof Error) {
+    ret = arg.name + ': ' + arg.message;
   } else {
     // Perform a try catch, just in case the object has a circular
     // reference or stringify throws for some other reason.

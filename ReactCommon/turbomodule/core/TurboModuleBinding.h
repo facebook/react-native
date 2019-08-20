@@ -9,8 +9,8 @@
 
 #include <string>
 
+#include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
-#include <jsireact/TurboModule.h>
 
 namespace facebook {
 namespace react {
@@ -21,7 +21,7 @@ class JSCallInvoker;
  * Represents the JavaScript binding for the TurboModule system.
  */
 class TurboModuleBinding {
-public:
+ public:
   /*
    * Installs TurboModuleBinding into JavaScript runtime.
    * Thread synchronization must be enforced externally.
@@ -43,15 +43,15 @@ public:
    */
   std::shared_ptr<TurboModule> getModule(const std::string &name);
 
-private:
+ private:
   /**
    * A lookup function exposed to JS to get an instance of a TurboModule
    * for the given name.
    */
   jsi::Value jsProxy(
-      jsi::Runtime& runtime,
-      const jsi::Value& thisVal,
-      const jsi::Value* args,
+      jsi::Runtime &runtime,
+      const jsi::Value &thisVal,
+      const jsi::Value *args,
       size_t count);
 
   TurboModuleProviderFunctionType moduleProvider_;
