@@ -19,6 +19,7 @@ const ScrollView = require('../Components/ScrollView/ScrollView');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const View = require('../Components/View/View');
 const ViewabilityHelper = require('./ViewabilityHelper');
+const ExperimentalVirtualizedListOptContext = require('./ExperimentalVirtualizedListOptContext');
 
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const infoLog = require('../Utilities/infoLog');
@@ -33,9 +34,7 @@ import type {
   ViewToken,
   ViewabilityConfigCallbackPair,
 } from './ViewabilityHelper';
-import type {
-  LayoutEvent,
-} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {LayoutEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 type Item = any;
 
@@ -696,10 +695,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         this._frames = storedState.frames;
       }
     }
-    let virtualizedList = this;
-    this._onCellLayout = function (e) {
-      virtualizedList._onCellLayoutGen(e, this.cellKey, this.index)
-    }
     this.state = initialState;
   }
 
@@ -792,17 +787,18 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           key={key}
           prevCellKey={prevCellKey}
           onUpdateSeparators={this._onUpdateSeparators}
-          onLayout={this._onCellLayout}
           onUnmount={this._onCellUnmount}
           {...flattenParentProps && {
             flatParentProps: true,
             getItemLayout,
             renderItem,
             ListItemComponent,
+            onLayout: this._onCellLayout,
             debug,
           }}
           {...!flattenParentProps && {
             flatParentProps: false,
+            onLayout: e => this._onCellLayout(e, key, ii),
             parentProps: this.props,
           }}
           extraData={extraData}
@@ -1088,6 +1084,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         </ScrollView.Context.Consumer>
       );
     }
+    if (this.props.flattenParentProps) {
+      ret = (
+        <ExperimentalVirtualizedListOptContext.Provider value={true}>
+          {ret}
+        </ExperimentalVirtualizedListOptContext.Provider>
+      );
+    }
     if (this.props.debug) {
       return (
         <View style={styles.debug}>
@@ -1211,8 +1214,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   };
 
-  _onCellLayout: (e: LayoutEvent) => void
-  _onCellLayoutGen = (e, cellKey, index): void => {
+  _onCellLayout = (e, cellKey, index): void => {
     const layout = e.nativeEvent.layout;
     const next = {
       offset: this._selectOffset(layout),
@@ -1788,7 +1790,6 @@ type CellRendererBaseProps = {
   index: number,
   inversionStyle: ViewStyleProp,
   item: Item,
-  onLayout: (event: LayoutEvent) => void, // This is extracted by ScrollViewStickyHeader
   onUnmount: (cellKey: string) => void,
   onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
   prevCellKey: ?string,
@@ -1799,11 +1800,13 @@ type FlattenedParentProps = CellRendererBaseProps & {
   getItemLayout?: $PropertyType<OptionalProps, 'getItemLayout'>,
   renderItem?: $PropertyType<OptionalProps, 'renderItem'>,
   ListItemComponent: $PropertyType<OptionalProps, 'ListItemComponent'>,
+  onLayout: (event: LayoutEvent, key: string, index: number) => void, // This is extracted by ScrollViewStickyHeader
   debug: ?boolean,
 };
 
 type UnFlattenedParentProps = CellRendererBaseProps & {
   flatParentProps?: false,
+  onLayout: (event: LayoutEvent) => void, // This is extracted by ScrollViewStickyHeader
   parentProps: {
     getItemLayout?: $PropertyType<OptionalProps, 'getItemLayout'>,
     renderItem?: $PropertyType<OptionalProps, 'renderItem'>,
@@ -1892,9 +1895,14 @@ class CellRenderer extends React.Component<
     this.props.onUnmount(this.props.cellKey);
   }
 
-  _onLayout = (e): void =>
-    this.props.onLayout &&
-    this.props.onLayout(e);
+  _onLayout = (e): void => {
+    if (this.props.flatParentProps) {
+      this.props.onLayout &&
+        this.props.onLayout(e, this.props.cellKey, this.props.index);
+    } else {
+      this.props.onLayout && this.props.onLayout(e);
+    }
+  };
 
   _renderElement(renderItem, ListItemComponent, item, index) {
     if (renderItem && ListItemComponent) {
@@ -1935,7 +1943,6 @@ class CellRenderer extends React.Component<
       item,
       index,
       inversionStyle,
-      flatParentProps,
     } = this.props;
 
     let ListItemComponent: $PropertyType<OptionalProps, 'ListEmptyComponent'>;
