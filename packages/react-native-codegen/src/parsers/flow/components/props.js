@@ -118,7 +118,7 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
       };
     default:
       (type: empty);
-      throw new Error(`Unknown prop type for "${name}"`);
+      throw new Error(`Unknown prop type for "${name}": ${type}`);
   }
 }
 
