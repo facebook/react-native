@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -6,6 +6,7 @@
  */
 #pragma once
 
+#include <iosfwd>
 #include <string>
 
 #include <jsi/jsi.h>
@@ -54,6 +55,15 @@ class Instrumentation {
   ///
   /// \return true iff the heap capture succeeded
   virtual bool createSnapshotToFile(const std::string& path, bool compact) = 0;
+
+  /// Captures the heap to an output stream
+  ///
+  /// \param os output stream to write to.
+  ///
+  /// \param compact Whether the JSON should be compact or pretty
+  ///
+  /// \return true iff the heap capture succeeded.
+  virtual bool createSnapshotToStream(std::ostream& os, bool compact) = 0;
 
   /// Write a trace of bridge traffic to the given file name.
   virtual void writeBridgeTrafficTraceToFile(

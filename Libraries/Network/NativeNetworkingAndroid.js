@@ -28,11 +28,11 @@ export interface Spec extends TurboModule {
     withCredentials: boolean,
   ) => void;
   +abortRequest: (requestId: number) => void;
-  +clearCookies: (callback: (result: boolean) => mixed) => void;
+  +clearCookies: (callback: (result: boolean) => void) => void;
 
   // RCTEventEmitter
   +addListener: (eventName: string) => void;
   +removeListeners: (count: number) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('Networking');
+export default (TurboModuleRegistry.getEnforcing<Spec>('Networking'): Spec);

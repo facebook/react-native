@@ -1,13 +1,13 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.core;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -33,16 +33,32 @@ public class HeadlessJsTaskSupportModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void notifyTaskRetry(int taskId, Promise promise) {
+    HeadlessJsTaskContext headlessJsTaskContext =
+        HeadlessJsTaskContext.getInstance(getReactApplicationContext());
+    if (headlessJsTaskContext.isTaskRunning(taskId)) {
+      final boolean retryPosted = headlessJsTaskContext.retryTask(taskId);
+      promise.resolve(retryPosted);
+    } else {
+      FLog.w(
+          HeadlessJsTaskSupportModule.class,
+          "Tried to retry non-active task with id %d. Did it time out?",
+          taskId);
+      promise.resolve(false);
+    }
+  }
+
+  @ReactMethod
   public void notifyTaskFinished(int taskId) {
     HeadlessJsTaskContext headlessJsTaskContext =
-      HeadlessJsTaskContext.getInstance(getReactApplicationContext());
+        HeadlessJsTaskContext.getInstance(getReactApplicationContext());
     if (headlessJsTaskContext.isTaskRunning(taskId)) {
       headlessJsTaskContext.finishTask(taskId);
     } else {
       FLog.w(
-        HeadlessJsTaskSupportModule.class,
-        "Tried to finish non-active task with id %d. Did it time out?",
-        taskId);
+          HeadlessJsTaskSupportModule.class,
+          "Tried to finish non-active task with id %d. Did it time out?",
+          taskId);
     }
   }
 }

@@ -14,4 +14,4 @@ const View = require('../../../Components/View/View');
 
 const createAnimatedComponent = require('../createAnimatedComponent');
 
-module.exports = createAnimatedComponent(View);
+module.exports = (createAnimatedComponent(View): $FlowFixMe);

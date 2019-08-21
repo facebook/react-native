@@ -42,7 +42,7 @@ UIManager.setLayoutAnimationEnabledExperimental(true);
 const DRAWER_WIDTH_LEFT = 56;
 
 type Props = {
-  exampleFromAppetizeParams: string,
+  exampleFromAppetizeParams?: ?string,
 };
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
@@ -105,7 +105,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     }
     return (
       <DrawerLayoutAndroid
-        drawerPosition={DrawerLayoutAndroid.positions.Left}
+        drawerPosition="left"
         drawerWidth={Dimensions.get('window').width - DRAWER_WIDTH_LEFT}
         keyboardDismissMode="on-drag"
         onDrawerOpen={() => {

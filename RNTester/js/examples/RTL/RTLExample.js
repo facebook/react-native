@@ -10,6 +10,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   Alert,
   Animated,
@@ -657,18 +658,16 @@ exports.examples = [
   },
   {
     title: 'Default Text Alignment',
-    description:
-      'In iOS, it depends on active language. ' +
-      'In Android, it depends on the text content.',
+    description: ('In iOS, it depends on active language. ' +
+      'In Android, it depends on the text content.': string),
     render: function(): React.Element<any> {
       return <TextAlignmentExample style={styles.fontSizeSmall} />;
     },
   },
   {
     title: "Using textAlign: 'left'",
-    description:
-      'In iOS/Android, text alignment flips regardless of ' +
-      'languages or text content.',
+    description: ('In iOS/Android, text alignment flips regardless of ' +
+      'languages or text content.': string),
     render: function(): React.Element<any> {
       return (
         <TextAlignmentExample
@@ -679,9 +678,8 @@ exports.examples = [
   },
   {
     title: "Using textAlign: 'right'",
-    description:
-      'In iOS/Android, text alignment flips regardless of ' +
-      'languages or text content.',
+    description: ('In iOS/Android, text alignment flips regardless of ' +
+      'languages or text content.': string),
     render: function(): React.Element<any> {
       return (
         <TextAlignmentExample

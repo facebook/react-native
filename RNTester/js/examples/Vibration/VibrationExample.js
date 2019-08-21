@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   StyleSheet,
   View,
@@ -48,7 +49,7 @@ subsequent args: duration to wait before next vibration.
 exports.examples = [
   {
     title: 'Pattern Descriptions',
-    render() {
+    render(): React.Node {
       return (
         <View style={styles.wrapper}>
           <Text>{patternDescription}</Text>
@@ -58,7 +59,7 @@ exports.examples = [
   },
   {
     title: 'Vibration.vibrate()',
-    render() {
+    render(): React.Node {
       return (
         <TouchableHighlight
           style={styles.wrapper}
@@ -72,7 +73,7 @@ exports.examples = [
   },
   {
     title: `Vibration.vibrate(${patternLiteral})`,
-    render() {
+    render(): React.Node {
       return (
         <TouchableHighlight
           style={styles.wrapper}
@@ -86,7 +87,7 @@ exports.examples = [
   },
   {
     title: `Vibration.vibrate(${patternLiteral}, true)`,
-    render() {
+    render(): React.Node {
       return (
         <TouchableHighlight
           style={styles.wrapper}
@@ -100,7 +101,7 @@ exports.examples = [
   },
   {
     title: 'Vibration.cancel()',
-    render() {
+    render(): React.Node {
       return (
         <TouchableHighlight
           style={styles.wrapper}

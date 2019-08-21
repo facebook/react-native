@@ -18,4 +18,6 @@ export interface Spec extends TurboModule {
   +readAsText: (data: Object, encoding: string) => Promise<string>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('FileReaderModule');
+export default (TurboModuleRegistry.getEnforcing<Spec>(
+  'FileReaderModule',
+): Spec);

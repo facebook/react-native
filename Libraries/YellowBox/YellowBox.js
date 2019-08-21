@@ -138,7 +138,7 @@ if (__DEV__) {
     YellowBoxRegistry.add({args, framesToPop: 2});
   };
 } else {
-  YellowBox = class extends React.Component<Props> {
+  YellowBox = class extends React.Component<Props, State> {
     static ignoreWarnings(patterns: $ReadOnlyArray<IgnorePattern>): void {
       // Do nothing.
     }
@@ -157,4 +157,8 @@ if (__DEV__) {
   };
 }
 
-module.exports = YellowBox;
+module.exports = (YellowBox: Class<React.Component<Props, State>> & {
+  ignoreWarnings($ReadOnlyArray<IgnorePattern>): void,
+  install(): void,
+  uninstall(): void,
+});

@@ -409,6 +409,8 @@ const TouchableHighlight = ((createReactClass({
         accessibilityRole={this.props.accessibilityRole}
         accessibilityStates={this.props.accessibilityStates}
         accessibilityState={this.props.accessibilityState}
+        accessibilityActions={this.props.accessibilityActions}
+        onAccessibilityAction={this.props.onAccessibilityAction}
         style={StyleSheet.compose(
           this.props.style,
           this.state.extraUnderlayStyle,
@@ -423,8 +425,8 @@ const TouchableHighlight = ((createReactClass({
         nextFocusLeft={this.props.nextFocusLeft}
         nextFocusRight={this.props.nextFocusRight}
         nextFocusUp={this.props.nextFocusUp}
-        clickable={
-          this.props.clickable !== false && this.props.onPress !== undefined
+        focusable={
+          this.props.focusable !== false && this.props.onPress !== undefined
         }
         onClick={this.touchableHandlePress}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}

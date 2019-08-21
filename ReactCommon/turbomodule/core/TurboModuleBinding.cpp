@@ -9,8 +9,8 @@
 
 #include <string>
 
+#include <ReactCommon/LongLivedObject.h>
 #include <cxxreact/SystraceSection.h>
-#include <jsireact/LongLivedObject.h>
 
 using namespace facebook;
 
@@ -20,8 +20,9 @@ namespace react {
 /**
  * Public API to install the TurboModule system.
  */
-TurboModuleBinding::TurboModuleBinding(const TurboModuleProviderFunctionType &moduleProvider)
-  : moduleProvider_(moduleProvider) {}
+TurboModuleBinding::TurboModuleBinding(
+    const TurboModuleProviderFunctionType &moduleProvider)
+    : moduleProvider_(moduleProvider) {}
 
 void TurboModuleBinding::install(
     jsi::Runtime &runtime,
@@ -33,16 +34,27 @@ void TurboModuleBinding::install(
           runtime,
           jsi::PropNameID::forAscii(runtime, "__turboModuleProxy"),
           1,
-          [binding](jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+          [binding](
+              jsi::Runtime &rt,
+              const jsi::Value &thisVal,
+              const jsi::Value *args,
+              size_t count) {
             return binding->jsProxy(rt, thisVal, args, count);
           }));
 }
 
 void TurboModuleBinding::invalidate() const {
-  LongLivedObjectCollection::get().clear();
+  // TODO (T45804587): Revisit this invalidation logic.
+  // The issue was that Promise resolve/reject functions that are invoked in
+  // some distance future might end up accessing PromiseWrapper that was already
+  // destroyed, if the binding invalidation removed it from the
+  // LongLivedObjectCollection.
+
+  // LongLivedObjectCollection::get().clear();
 }
 
-std::shared_ptr<TurboModule> TurboModuleBinding::getModule(const std::string &name) {
+std::shared_ptr<TurboModule> TurboModuleBinding::getModule(
+    const std::string &name) {
   std::shared_ptr<TurboModule> module = nullptr;
   {
     SystraceSection s("TurboModuleBinding::getModule", "module", name);
@@ -52,12 +64,13 @@ std::shared_ptr<TurboModule> TurboModuleBinding::getModule(const std::string &na
 }
 
 jsi::Value TurboModuleBinding::jsProxy(
-    jsi::Runtime& runtime,
-    const jsi::Value& thisVal,
-    const jsi::Value* args,
+    jsi::Runtime &runtime,
+    const jsi::Value &thisVal,
+    const jsi::Value *args,
     size_t count) {
   if (count != 1) {
-    throw std::invalid_argument("TurboModuleBinding::jsProxy arg count must be 1");
+    throw std::invalid_argument(
+        "TurboModuleBinding::jsProxy arg count must be 1");
   }
   std::string moduleName = args[0].getString(runtime).utf8(runtime);
   std::shared_ptr<TurboModule> module = getModule(moduleName);

@@ -10,9 +10,10 @@
 
 'use strict';
 
-const React = require('react');
-const {Animated, Easing, StyleSheet, Text, View} = require('react-native');
 const RNTesterButton = require('../../components/RNTesterButton');
+const React = require('react');
+
+const {Animated, Easing, StyleSheet, Text, View} = require('react-native');
 
 const styles = StyleSheet.create({
   content: {
@@ -32,19 +33,17 @@ const styles = StyleSheet.create({
 
 exports.framework = 'React';
 exports.title = 'Animated - Examples';
-exports.description =
-  'Animated provides a powerful ' +
+exports.description = ('Animated provides a powerful ' +
   'and easy-to-use API for building modern, ' +
-  'interactive user experiences.';
+  'interactive user experiences.': string);
 
 exports.examples = [
   {
     title: 'FadeInView',
-    description:
-      'Uses a simple timing animation to ' +
+    description: ('Uses a simple timing animation to ' +
       'bring opacity from 0 to 1 when the component ' +
-      'mounts.',
-    render: function() {
+      'mounts.': string),
+    render: function(): React.Node {
       class FadeInView extends React.Component<$FlowFixMeProps, any> {
         constructor(props) {
           super(props);
@@ -57,8 +56,13 @@ exports.examples = [
             // Uses easing functions
             this.state.fadeAnim, // The value to drive
             {
-              toValue: 1, // Target
-              duration: 2000, // Configuration
+              // Target
+              toValue: 1,
+
+              // Configuration
+              duration: 2000,
+
+              useNativeDriver: false,
             },
           ).start(); // Don't forget start!
         }
@@ -108,23 +112,31 @@ exports.examples = [
   },
   {
     title: 'Transform Bounce',
-    description:
-      'One `Animated.Value` is driven by a ' +
+    description: ('One `Animated.Value` is driven by a ' +
       'spring with custom constants and mapped to an ' +
       'ordered set of transforms.  Each transform has ' +
       'an interpolation to convert the value into the ' +
-      'right range and units.',
-    render: function() {
+      'right range and units.': string),
+    render: function(): React.Node {
       this.anim = this.anim || new Animated.Value(0);
       return (
         <View>
           <RNTesterButton
             onPress={() => {
               Animated.spring(this.anim, {
-                toValue: 0, // Returns to the start
-                velocity: 3, // Velocity makes it move
-                tension: -10, // Slow
-                friction: 1, // Oscillate a lot
+                // Returns to the start
+                toValue: 0,
+
+                // Velocity makes it move
+                velocity: 3,
+
+                // Slow
+                tension: -10,
+
+                // Oscillate a lot
+                friction: 1,
+
+                useNativeDriver: false,
               }).start();
             }}>
             Press to Fling it!
@@ -167,10 +179,9 @@ exports.examples = [
   },
   {
     title: 'Composite Animations with Easing',
-    description:
-      'Sequence, parallel, delay, and ' +
-      'stagger with different easing functions.',
-    render: function() {
+    description: ('Sequence, parallel, delay, and ' +
+      'stagger with different easing functions.': string),
+    render: function(): React.Node {
       this.anims = this.anims || [1, 2, 3].map(() => new Animated.Value(0));
       return (
         <View>
@@ -182,18 +193,35 @@ exports.examples = [
                 timing(this.anims[0], {
                   toValue: 200,
                   easing: Easing.linear,
+                  useNativeDriver: false,
                 }),
                 Animated.delay(400), // Use with sequence
                 timing(this.anims[0], {
                   toValue: 0,
-                  easing: Easing.elastic(2), // Springy
+
+                  // Springy
+                  easing: Easing.elastic(2),
+
+                  useNativeDriver: false,
                 }),
                 Animated.delay(400),
                 Animated.stagger(
                   200,
                   this.anims
-                    .map(anim => timing(anim, {toValue: 200}))
-                    .concat(this.anims.map(anim => timing(anim, {toValue: 0}))),
+                    .map(anim =>
+                      timing(anim, {
+                        toValue: 200,
+                        useNativeDriver: false,
+                      }),
+                    )
+                    .concat(
+                      this.anims.map(anim =>
+                        timing(anim, {
+                          toValue: 0,
+                          useNativeDriver: false,
+                        }),
+                      ),
+                    ),
                 ),
                 Animated.delay(400),
                 Animated.parallel(
@@ -206,6 +234,7 @@ exports.examples = [
                       toValue: 320,
                       easing,
                       duration: 3000,
+                      useNativeDriver: false,
                     }),
                   ),
                 ),
@@ -215,8 +244,12 @@ exports.examples = [
                   this.anims.map(anim =>
                     timing(anim, {
                       toValue: 0,
-                      easing: Easing.bounce, // Like a ball
+
+                      // Like a ball
+                      easing: Easing.bounce,
+
                       duration: 2000,
+                      useNativeDriver: false,
                     }),
                   ),
                 ),
@@ -243,17 +276,26 @@ exports.examples = [
   {
     title: 'Rotating Images',
     description: 'Simple Animated.Image rotation.',
-    render: function() {
+    render: function(): React.Node {
       this.anim = this.anim || new Animated.Value(0);
       return (
         <View>
           <RNTesterButton
             onPress={() => {
               Animated.spring(this.anim, {
-                toValue: 0, // Returns to the start
-                velocity: 3, // Velocity makes it move
-                tension: -10, // Slow
-                friction: 1, // Oscillate a lot
+                // Returns to the start
+                toValue: 0,
+
+                // Velocity makes it move
+                velocity: 3,
+
+                // Slow
+                tension: -10,
+
+                // Oscillate a lot
+                friction: 1,
+
+                useNativeDriver: false,
               }).start();
             }}>
             Press to Spin it!
@@ -295,10 +337,11 @@ exports.examples = [
   },
   {
     title: 'Continuous Interactions',
-    description:
-      'Gesture events, chaining, 2D ' +
+    description: ('Gesture events, chaining, 2D ' +
       'values, interrupting and transitioning ' +
-      'animations, etc.',
-    render: () => <Text>Checkout the Gratuitous Animation App!</Text>,
+      'animations, etc.': string),
+    render: (): React.Node => (
+      <Text>Checkout the Gratuitous Animation App!</Text>
+    ),
   },
 ];

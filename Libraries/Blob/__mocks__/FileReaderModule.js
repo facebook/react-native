@@ -8,10 +8,10 @@
  * @format
  */
 const FileReaderModule = {
-  async readAsText() {
+  async readAsText(): Promise<string> {
     return '';
   },
-  async readAsDataURL() {
+  async readAsDataURL(): Promise<string> {
     return 'data:text/plain;base64,NDI=';
   },
 };

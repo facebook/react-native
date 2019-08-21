@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   StyleSheet,
   Text,
@@ -19,15 +20,14 @@ const {
 } = require('react-native');
 
 exports.title = '<View>';
-exports.description =
-  'Basic building block of all UI, examples that ' +
-  'demonstrate some of the many styles available.';
+exports.description = ('Basic building block of all UI, examples that ' +
+  'demonstrate some of the many styles available.': string);
 
 exports.displayName = 'ViewExample';
 exports.examples = [
   {
     title: 'Background Color',
-    render() {
+    render(): React.Node {
       return (
         <View style={{backgroundColor: '#527FE4', padding: 5}}>
           <Text style={{fontSize: 11}}>Blue background</Text>
@@ -37,7 +37,7 @@ exports.examples = [
   },
   {
     title: 'Border',
-    render() {
+    render(): React.Node {
       return (
         <View style={{borderColor: '#527FE4', borderWidth: 5, padding: 10}}>
           <Text style={{fontSize: 11}}>5px blue border</Text>
@@ -47,7 +47,7 @@ exports.examples = [
   },
   {
     title: 'Padding/Margin',
-    render() {
+    render(): React.Node {
       const styles = StyleSheet.create({
         box: {
           backgroundColor: '#527FE4',
@@ -77,7 +77,7 @@ exports.examples = [
   },
   {
     title: 'Border Radius',
-    render() {
+    render(): React.Node {
       return (
         <View style={{borderWidth: 0.5, borderRadius: 5, padding: 5}}>
           <Text style={{fontSize: 11}}>
@@ -90,7 +90,7 @@ exports.examples = [
   },
   {
     title: 'Border Style',
-    render() {
+    render(): React.Node {
       type Props = $ReadOnly<{||}>;
       type State = {|
         showBorder: boolean,
@@ -149,7 +149,7 @@ exports.examples = [
   },
   {
     title: 'Circle with Border Radius',
-    render() {
+    render(): React.Node {
       return (
         <View
           style={{borderRadius: 10, borderWidth: 1, width: 20, height: 20}}
@@ -159,7 +159,7 @@ exports.examples = [
   },
   {
     title: 'Overflow',
-    render() {
+    render(): React.Node {
       const styles = StyleSheet.create({
         container: {
           borderWidth: StyleSheet.hairlineWidth,
@@ -199,7 +199,7 @@ exports.examples = [
   },
   {
     title: 'Opacity',
-    render() {
+    render(): React.Node {
       return (
         <View>
           <View style={{opacity: 0}}>
@@ -229,7 +229,7 @@ exports.examples = [
   },
   {
     title: 'Offscreen Alpha Compositing',
-    render() {
+    render(): React.Node {
       type Props = $ReadOnly<{||}>;
       type State = {|
         active: boolean,
@@ -316,7 +316,7 @@ exports.examples = [
   },
   {
     title: 'ZIndex',
-    render() {
+    render(): React.Node {
       type Props = $ReadOnly<{||}>;
       type State = {|
         flipped: boolean,
@@ -402,7 +402,7 @@ exports.examples = [
   },
   {
     title: 'BackfaceVisibility',
-    render: function() {
+    render: function(): React.Node {
       return (
         <>
           <Text style={{paddingBottom: 10}}>

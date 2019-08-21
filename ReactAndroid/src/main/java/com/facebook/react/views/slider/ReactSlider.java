@@ -8,9 +8,9 @@ package com.facebook.react.views.slider;
 
 import android.content.Context;
 import android.os.Build;
-import androidx.appcompat.widget.AppCompatSeekBar;
 import android.util.AttributeSet;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatSeekBar;
 
 /**
  * Slider that behaves more like the iOS one, for consistency.

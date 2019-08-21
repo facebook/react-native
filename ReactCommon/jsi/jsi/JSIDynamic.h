@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -13,10 +13,12 @@ namespace facebook {
 namespace jsi {
 
 facebook::jsi::Value valueFromDynamic(
-  facebook::jsi::Runtime& runtime, const folly::dynamic& dyn);
+    facebook::jsi::Runtime& runtime,
+    const folly::dynamic& dyn);
 
-folly::dynamic dynamicFromValue(facebook::jsi::Runtime& runtime,
-                                const facebook::jsi::Value& value);
+folly::dynamic dynamicFromValue(
+    facebook::jsi::Runtime& runtime,
+    const facebook::jsi::Value& value);
 
-}
-}
+} // namespace jsi
+} // namespace facebook

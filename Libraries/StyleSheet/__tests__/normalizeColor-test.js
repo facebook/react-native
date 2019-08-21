@@ -28,7 +28,7 @@ describe('normalizeColor', function() {
     expect(normalizeColor(0xffffffff + 1)).toBe(null);
   });
 
-  it('should temporarly accept floating point values for rgb', function() {
+  it('should temporarily accept floating point values for rgb', function() {
     expect(normalizeColor('rgb(1.1, 2.1, 3.1)')).toBe(0x010203ff);
     expect(normalizeColor('rgba(1.1, 2.1, 3.1, 1.0)')).toBe(0x010203ff);
   });

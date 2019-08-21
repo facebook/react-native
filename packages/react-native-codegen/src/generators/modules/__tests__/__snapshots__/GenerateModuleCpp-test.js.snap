@@ -1,0 +1,222 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GenerateModuleCpp can generate fixture COMPLEX_OBJECTS 1`] = `
+Map {
+  "NativeModules.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/modules/COMPLEX_OBJECTS/NativeModules.h>
+
+namespace facebook {
+namespace react {
+
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_difficult(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->difficult(rt, args[0].getObject(rt));
+}
+
+NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+  : TurboModule(\\"SampleTurboModule\\", jsInvoker) {
+  methodMap_[\\"difficult\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_difficult};
+}
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateModuleCpp can generate fixture EMPTY_NATIVE_MODULES 1`] = `
+Map {
+  "NativeModules.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/modules/EMPTY_NATIVE_MODULES/NativeModules.h>
+
+namespace facebook {
+namespace react {
+
+
+
+NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+  : TurboModule(\\"SampleTurboModule\\", jsInvoker) {
+
+}
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateModuleCpp can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
+Map {
+  "NativeModules.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/modules/SIMPLE_NATIVE_MODULES/NativeModules.h>
+
+namespace facebook {
+namespace react {
+
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getConstants(rt);
+}
+
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->voidFunc(rt);
+  return jsi::Value::undefined();
+}
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getBool(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getBool(rt, args[0].getBool());
+}
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNumber(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNumber(rt, args[0].getNumber());
+}
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getString(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getString(rt, args[0].getString(rt));
+}
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getArray(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getArray(rt, args[0].getObject(rt).getArray(rt));
+}
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getObject(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getObject(rt, args[0].getObject(rt));
+}
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValue(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValue(rt, args[0].getNumber(), args[1].getString(rt), args[2].getObject(rt));
+}
+
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithCallback(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValueWithCallback(rt, std::move(args[0].getObject(rt).getFunction(rt)));
+  return jsi::Value::undefined();
+}
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithPromise(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValueWithPromise(rt, args[0].getBool());
+}
+
+NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+  : TurboModule(\\"SampleTurboModule\\", jsInvoker) {
+  methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getConstants};
+  methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc};
+  methodMap_[\\"getBool\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getBool};
+  methodMap_[\\"getNumber\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNumber};
+  methodMap_[\\"getString\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getString};
+  methodMap_[\\"getArray\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getArray};
+  methodMap_[\\"getObject\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getObject};
+  methodMap_[\\"getValue\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValue};
+  methodMap_[\\"getValueWithCallback\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithCallback};
+  methodMap_[\\"getValueWithPromise\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithPromise};
+}
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateModuleCpp can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
+Map {
+  "NativeModules.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/modules/TWO_MODULES_DIFFERENT_FILES/NativeModules.h>
+
+namespace facebook {
+namespace react {
+
+
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->voidFunc(rt);
+  return jsi::Value::undefined();
+}
+
+NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+  : TurboModule(\\"SampleTurboModule\\", jsInvoker) {
+  methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc};
+}
+static jsi::Value __hostFunction_NativeSample2TurboModuleCxxSpecJSI_getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSample2TurboModuleCxxSpecJSI *>(&turboModule)->getConstants(rt);
+}
+
+static jsi::Value __hostFunction_NativeSample2TurboModuleCxxSpecJSI_voidFunc(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  static_cast<NativeSample2TurboModuleCxxSpecJSI *>(&turboModule)->voidFunc(rt);
+  return jsi::Value::undefined();
+}
+
+NativeSample2TurboModuleCxxSpecJSI::NativeSample2TurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+  : TurboModule(\\"Sample2TurboModule\\", jsInvoker) {
+  methodMap_[\\"getConstants\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleCxxSpecJSI_getConstants};
+  methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleCxxSpecJSI_voidFunc};
+}
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateModuleCpp can generate fixture TWO_MODULES_SAME_FILE 1`] = `
+Map {
+  "NativeModules.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/modules/TWO_MODULES_SAME_FILE/NativeModules.h>
+
+namespace facebook {
+namespace react {
+
+
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->voidFunc(rt);
+  return jsi::Value::undefined();
+}
+
+NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+  : TurboModule(\\"SampleTurboModule\\", jsInvoker) {
+  methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc};
+}
+
+static jsi::Value __hostFunction_NativeSample2TurboModuleCxxSpecJSI_voidFunc(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  static_cast<NativeSample2TurboModuleCxxSpecJSI *>(&turboModule)->voidFunc(rt);
+  return jsi::Value::undefined();
+}
+
+NativeSample2TurboModuleCxxSpecJSI::NativeSample2TurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+  : TurboModule(\\"Sample2TurboModule\\", jsInvoker) {
+  methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSample2TurboModuleCxxSpecJSI_voidFunc};
+}
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;

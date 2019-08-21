@@ -21,18 +21,25 @@ class Instance;
 
 class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
  public:
-  constexpr static const char* const kJavaDescriptor =
+  constexpr static const char *const kJavaDescriptor =
       "Lcom/facebook/react/fabric/Binding;";
 
   static void registerNatives();
 
   jni::global_ref<jobject> javaUIManager_;
+  std::mutex javaUIManagerMutex_;
 
   std::shared_ptr<Scheduler> scheduler_;
+  std::mutex schedulerMutex_;
+
+  std::recursive_mutex commitMutex_;
 
   float pointScaleFactor_ = 1;
 
  private:
+  jni::global_ref<jobject> getJavaUIManager();
+  std::shared_ptr<Scheduler> getScheduler();
+
   void setConstraints(
       jint surfaceId,
       jfloat minWidth,
@@ -55,6 +62,15 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
       jni::alias_ref<jstring> moduleName,
       NativeMap *initialProps);
 
+  void startSurfaceWithConstraints(
+      jint surfaceId,
+      jni::alias_ref<jstring> moduleName,
+      NativeMap *initialProps,
+      jfloat minWidth,
+      jfloat maxWidth,
+      jfloat minHeight,
+      jfloat maxHeight);
+
   void renderTemplateToSurface(jint surfaceId, jstring uiTemplate);
 
   void stopSurface(jint surfaceId);
@@ -66,7 +82,20 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
       const SurfaceId surfaceId,
       const ShadowView &shadowView);
 
+  void schedulerDidDispatchCommand(
+    const ShadowView &shadowView,
+    std::string const &commandName,
+    folly::dynamic const args);
+
   void setPixelDensity(float pointScaleFactor);
+
+  void schedulerDidSetJSResponder(
+     SurfaceId surfaceId,
+     const ShadowView &shadowView,
+     const ShadowView &initialShadowView,
+     bool blockNativeResponder);
+
+  void schedulerDidClearJSResponder();
 
   void uninstallFabricUIManager();
 };

@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {StyleSheet, Text, TouchableHighlight, View} = require('react-native');
 
 class RootViewSizeFlexibilityExampleApp extends React.Component<
@@ -26,7 +27,7 @@ class RootViewSizeFlexibilityExampleApp extends React.Component<
     this.setState({toggled: !this.state.toggled});
   }
 
-  render() {
+  render(): React.Node {
     const viewStyle = this.state.toggled
       ? styles.bigContainer
       : styles.smallContainer;

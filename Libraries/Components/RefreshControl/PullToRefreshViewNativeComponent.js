@@ -10,16 +10,12 @@
 
 'use strict';
 
-import type {
-  BubblingEvent,
-  WithDefault,
-  CodegenNativeComponent,
-} from '../../Types/CodegenTypes';
-
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
-
+import type {DirectEventHandler, WithDefault} from '../../Types/CodegenTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
+
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -35,26 +31,19 @@ type NativeProps = $ReadOnly<{|
   /**
    * The title displayed under the refresh indicator.
    */
-  title?: ?WithDefault<string, ''>,
+  title?: WithDefault<string, null>,
 
   /**
    * Called when the view starts refreshing.
    */
-  onRefresh?: ?(event: BubblingEvent<null>) => mixed,
+  onRefresh?: ?DirectEventHandler<null>,
 
   /**
    * Whether the view should be indicating an active refresh.
    */
-  refreshing: WithDefault<boolean, false>,
+  refreshing: boolean,
 |}>;
 
-type PullToRefreshViewType = CodegenNativeComponent<
-  'PullToRefreshView',
-  NativeProps,
->;
-
-// TODO: Switch this over to require('./PullToRefreshNativeViewConfig')
-// once the native components are renamed in paper and fabric
-module.exports = ((requireNativeComponent(
-  'RCTRefreshControl',
-): any): PullToRefreshViewType);
+export default (codegenNativeComponent<NativeProps>('PullToRefreshView', {
+  paperComponentName: 'RCTRefreshControl',
+}): NativeComponentType<NativeProps>);

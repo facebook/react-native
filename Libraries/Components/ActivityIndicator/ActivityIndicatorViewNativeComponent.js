@@ -10,15 +10,13 @@
 
 'use strict';
 
-import type {
-  WithDefault,
-  CodegenNativeComponent,
-} from '../../Types/CodegenTypes';
+import type {WithDefault} from '../../Types/CodegenTypes';
 
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -28,14 +26,14 @@ type NativeProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/activityindicator.html#hideswhenstopped
    */
-  hidesWhenStopped?: ?WithDefault<boolean, false>,
+  hidesWhenStopped?: WithDefault<boolean, false>,
 
   /**
    * Whether to show the indicator (true, the default) or hide it (false).
    *
    * See http://facebook.github.io/react-native/docs/activityindicator.html#animating
    */
-  animating?: ?WithDefault<boolean, false>,
+  animating?: WithDefault<boolean, false>,
 
   /**
    * The foreground color of the spinner (default is gray).
@@ -50,19 +48,9 @@ type NativeProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/activityindicator.html#size
    */
-  size?: ?WithDefault<'small' | 'large', 'small'>,
+  size?: WithDefault<'small' | 'large', 'small'>,
 |}>;
 
-type Options = {
-  isDeprecatedPaperComponentNameRCT: true,
-};
-
-type ActivityIndicatorNativeType = CodegenNativeComponent<
-  'ActivityIndicatorView',
-  NativeProps,
-  Options,
->;
-
-module.exports = ((requireNativeComponent(
-  'RCTActivityIndicatorView',
-): any): ActivityIndicatorNativeType);
+export default (codegenNativeComponent<NativeProps>('ActivityIndicatorView', {
+  paperComponentName: 'RCTActivityIndicatorView',
+}): NativeComponentType<NativeProps>);

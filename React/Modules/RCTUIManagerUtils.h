@@ -85,7 +85,7 @@ RCT_EXTERN BOOL RCTIsPseudoUIManagerQueue(void);
 RCT_EXTERN void RCTExecuteOnUIManagerQueue(dispatch_block_t block);
 
 /**
- * *Synchorously* executes the specified block on the UIManager queue.
+ * *Synchronously* executes the specified block on the UIManager queue.
  * Unlike `dispatch_sync()` this will execute the block immediately
  * if we're already on the UIManager queue.
  * Please do not use this unless you really know what you're doing.

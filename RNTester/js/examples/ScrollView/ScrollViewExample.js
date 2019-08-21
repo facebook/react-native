@@ -10,6 +10,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   Platform,
   ScrollView,
@@ -30,7 +31,7 @@ exports.examples = [
     title: '<ScrollView>\n',
     description:
       'To make content scrollable, wrap it within a <ScrollView> component',
-    render: function() {
+    render: function(): React.Node {
       let _scrollView: ScrollView;
       return (
         <View>
@@ -73,7 +74,7 @@ exports.examples = [
     title: '<ScrollView> (horizontal = true)\n',
     description:
       "You can display <ScrollView>'s child components horizontally rather than vertically",
-    render: function() {
+    render: function(): React.Node {
       function renderScrollView(
         title: string,
         additionalStyles: ViewStyleProp,
@@ -127,7 +128,7 @@ exports.examples = [
   {
     title: '<ScrollView> enable & disable\n',
     description: 'ScrollView scrolling behaviour can be disabled and enabled',
-    render: function() {
+    render: function(): React.Node {
       class EnableDisableList extends React.Component<{}, *> {
         state = {
           scrollEnabled: true,

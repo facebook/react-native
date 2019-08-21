@@ -34,6 +34,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('../examples/Image/ImageExample'),
   },
   {
+    key: 'JSResponderHandlerExample',
+    module: require('../examples/JSResponderHandlerExample/JSResponderHandlerExample'),
+  },
+  {
     key: 'KeyboardAvoidingViewExample',
     module: require('../examples/KeyboardAvoidingView/KeyboardAvoidingViewExample'),
   },
@@ -62,8 +66,16 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('../examples/RefreshControl/RefreshControlExample'),
   },
   {
+    key: 'ScrollViewExample',
+    module: require('../examples/ScrollView/ScrollViewExample'),
+  },
+  {
     key: 'ScrollViewSimpleExample',
     module: require('../examples/ScrollView/ScrollViewSimpleExample'),
+  },
+  {
+    key: 'ScrollViewAnimatedExample',
+    module: require('../examples/ScrollView/ScrollViewAnimatedExample'),
   },
   {
     key: 'SectionListExample',
@@ -96,10 +108,6 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'ViewExample',
     module: require('../examples/View/ViewExample'),
-  },
-  {
-    key: 'ViewPagerAndroidExample',
-    module: require('../examples/ViewPagerAndroid/ViewPagerAndroidExample'),
   },
 ];
 

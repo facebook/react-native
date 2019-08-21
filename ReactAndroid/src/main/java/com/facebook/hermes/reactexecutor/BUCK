@@ -1,0 +1,54 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_android_library", "rn_xplat_cxx_library")
+
+rn_android_library(
+    name = "reactexecutor",
+    srcs = [
+        "HermesExecutor.java",
+        "HermesExecutorFactory.java",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_target("java/com/facebook/hermes/instrumentation:instrumentation"),
+        react_native_target("java/com/facebook/react/bridge:bridge"),
+        ":jni",
+        ":runtimeconfig",
+    ],
+)
+
+rn_android_library(
+    name = "runtimeconfig",
+    srcs = [
+        "RuntimeConfig.java",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_target("java/com/facebook/hermes/instrumentation:instrumentation"),
+    ],
+)
+
+rn_xplat_cxx_library(
+    name = "jni-interface",
+    srcs = [],
+    header_namespace = "hermes/reactexecutor",
+    exported_headers = glob(["*.h"]),
+    visibility = ["PUBLIC"],
+)
+
+rn_xplat_cxx_library(
+    name = "jni",
+    srcs = ["OnLoad.cpp"],
+    headers = [],
+    header_namespace = "",
+    compiler_flags = ["-fexceptions"],
+    soname = "libhermes-executor.$(ext)",
+    visibility = [
+        react_native_target("java/com/facebook/hermes/reactexecutor:reactexecutor"),
+    ],
+)

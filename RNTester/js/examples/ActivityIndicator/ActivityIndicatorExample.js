@@ -9,9 +9,9 @@
  */
 
 'use strict';
-
-import React, {Component} from 'react';
+import type {Node} from 'React';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
+import React, {Component} from 'react';
 
 type State = {|animating: boolean|};
 type Props = $ReadOnly<{||}>;
@@ -77,7 +77,7 @@ exports.description = 'Animated loading indicators.';
 exports.examples = [
   {
     title: 'Default (small, white)',
-    render() {
+    render(): Node {
       return (
         <ActivityIndicator
           style={[styles.centering, styles.gray]}
@@ -88,7 +88,7 @@ exports.examples = [
   },
   {
     title: 'Gray',
-    render() {
+    render(): Node {
       return (
         <View>
           <ActivityIndicator style={[styles.centering]} />
@@ -99,7 +99,7 @@ exports.examples = [
   },
   {
     title: 'Custom colors',
-    render() {
+    render(): Node {
       return (
         <View style={styles.horizontal}>
           <ActivityIndicator color="#0000ff" />
@@ -112,7 +112,7 @@ exports.examples = [
   },
   {
     title: 'Large',
-    render() {
+    render(): Node {
       return (
         <ActivityIndicator
           style={[styles.centering, styles.gray]}
@@ -124,7 +124,7 @@ exports.examples = [
   },
   {
     title: 'Large, custom colors',
-    render() {
+    render(): Node {
       return (
         <View style={styles.horizontal}>
           <ActivityIndicator size="large" color="#0000ff" />
@@ -137,13 +137,13 @@ exports.examples = [
   },
   {
     title: 'Start/stop',
-    render() {
+    render(): Node {
       return <ToggleAnimatingActivityIndicator />;
     },
   },
   {
     title: 'Custom size',
-    render() {
+    render(): Node {
       return (
         <ActivityIndicator
           style={[styles.centering, {transform: [{scale: 1.5}]}]}
@@ -155,7 +155,7 @@ exports.examples = [
   {
     platform: 'android',
     title: 'Custom size (size: 75)',
-    render() {
+    render(): Node {
       return <ActivityIndicator style={styles.centering} size={75} />;
     },
   },

@@ -10,28 +10,42 @@
 'use strict';
 
 import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
+import type {EventConfig} from './AnimatedEvent';
+import NativeAnimatedModule from './NativeAnimatedModule';
 import type {
   EventMapping,
   AnimatedNodeConfig,
   AnimatingNodeConfig,
 } from './NativeAnimatedModule';
-import NativeAnimatedModule from './NativeAnimatedModule';
-import invariant from 'invariant';
-
 import type {AnimationConfig, EndCallback} from './animations/Animation';
 import type {InterpolationConfigType} from './nodes/AnimatedInterpolation';
-import type {EventConfig} from './AnimatedEvent';
+import invariant from 'invariant';
 
 let __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
 let __nativeAnimationIdCount = 1; /* used for started animations */
 
 let nativeEventEmitter;
 
+let queueConnections = false;
+let queue = [];
+
 /**
- * Simple wrappers around NativeAnimatedModule to provide flow and autocmplete support for
+ * Simple wrappers around NativeAnimatedModule to provide flow and autocomplete support for
  * the native module methods
  */
 const API = {
+  enableQueue: function(): void {
+    queueConnections = true;
+  },
+  disableQueue: function(): void {
+    invariant(NativeAnimatedModule, 'Native animated module is not available');
+    queueConnections = false;
+    for (let q = 0, l = queue.length; q < l; q++) {
+      const args = queue[q];
+      NativeAnimatedModule.connectAnimatedNodes(args[0], args[1]);
+    }
+    queue.length = 0;
+  },
   createAnimatedNode: function(tag: ?number, config: AnimatedNodeConfig): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     NativeAnimatedModule.createAnimatedNode(tag, config);
@@ -46,6 +60,10 @@ const API = {
   },
   connectAnimatedNodes: function(parentTag: ?number, childTag: ?number): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
+    if (queueConnections) {
+      queue.push([parentTag, childTag]);
+      return;
+    }
     NativeAnimatedModule.connectAnimatedNodes(parentTag, childTag);
   },
   disconnectAnimatedNodes: function(
@@ -171,6 +189,7 @@ const TRANSFORM_WHITELIST = {
   rotate: true,
   rotateX: true,
   rotateY: true,
+  rotateZ: true,
   perspective: true,
 };
 
@@ -197,7 +216,7 @@ function addWhitelistedInterpolationParam(param: string): void {
 function validateTransform(
   configs: Array<
     | {type: 'animated', property: string, nodeTag: ?number}
-    | {type: 'static', property: string, value: number},
+    | {type: 'static', property: string, value: number | string},
   >,
 ): void {
   configs.forEach(config => {
@@ -263,7 +282,7 @@ function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
   return config.useNativeDriver || false;
 }
 
-function transformDataType(value: number | string): number {
+function transformDataType(value: number | string): number | string {
   // Change the string type to number type so we can reuse the same logic in
   // iOS and Android platform
   if (typeof value !== 'string') {
@@ -274,8 +293,7 @@ function transformDataType(value: number | string): number {
     const radians = (degrees * Math.PI) / 180.0;
     return radians;
   } else {
-    // Assume radians
-    return parseFloat(value) || 0;
+    return value;
   }
 }
 
@@ -293,7 +311,7 @@ module.exports = {
   shouldUseNativeDriver,
   transformDataType,
   // $FlowExpectedError - unsafe getter lint suppresion
-  get nativeEventEmitter() {
+  get nativeEventEmitter(): NativeEventEmitter {
     if (!nativeEventEmitter) {
       nativeEventEmitter = new NativeEventEmitter(NativeAnimatedModule);
     }

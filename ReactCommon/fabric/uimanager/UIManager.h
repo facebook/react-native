@@ -36,7 +36,7 @@ class UIManager {
 
   SharedShadowNode createNode(
       Tag tag,
-      const std::string &name,
+      std::string const &componentName,
       SurfaceId surfaceId,
       const RawProps &props,
       SharedEventTarget eventTarget) const;
@@ -58,6 +58,12 @@ class UIManager {
       const SharedShadowNode &shadowNode,
       const RawProps &rawProps) const;
 
+  void setJSResponder(
+      const SharedShadowNode &shadowNode,
+      const bool blockNativeResponder) const;
+
+  void clearJSResponder() const;
+
   /*
    * Returns layout metrics of given `shadowNode` relative to
    * `ancestorShadowNode` (relative to the root node in case if provided
@@ -74,6 +80,11 @@ class UIManager {
   void updateState(
       const SharedShadowNode &shadowNode,
       const StateData::Shared &rawStateData) const;
+
+  void dispatchCommand(
+      const SharedShadowNode &shadowNode,
+      std::string const &commandName,
+      folly::dynamic const args) const;
 
   ShadowTreeRegistry *shadowTreeRegistry_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;

@@ -5,9 +5,7 @@
 
 package com.facebook.react.views.text;
 
-/**
- * A virtual text node.
- */
+/** A virtual text node. */
 public class ReactVirtualTextShadowNode extends ReactBaseTextShadowNode {
 
   @Override
@@ -15,6 +13,5 @@ public class ReactVirtualTextShadowNode extends ReactBaseTextShadowNode {
     return true;
   }
 
-  public ReactVirtualTextShadowNode() { }
-
+  public ReactVirtualTextShadowNode() {}
 }

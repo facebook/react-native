@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTMultilineTextInputView.h"
+#import <React/RCTMultilineTextInputView.h>
 
 #import <React/RCTUtils.h>
 
-#import "RCTUITextView.h"
+#import <React/RCTUITextView.h>
 
 @implementation RCTMultilineTextInputView
 {

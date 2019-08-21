@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTBaseTextViewManager.h"
+#import <React/RCTBaseTextViewManager.h>
 
 @implementation RCTBaseTextViewManager
 

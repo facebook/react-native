@@ -25,4 +25,4 @@ export interface Spec extends TurboModule {
   +setIsShakeToShowDevMenuEnabled: (enabled: boolean) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('DevSettings');
+export default (TurboModuleRegistry.getEnforcing<Spec>('DevSettings'): Spec);

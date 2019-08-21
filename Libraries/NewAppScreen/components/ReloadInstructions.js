@@ -8,8 +8,9 @@
  * @format
  */
 
-import React from 'react';
+import type {Node} from 'react';
 import {Platform, StyleSheet, Text} from 'react-native';
+import React from 'react';
 
 const styles = StyleSheet.create({
   highlight: {
@@ -17,10 +18,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const ReloadInstructions = Platform.select({
+const ReloadInstructions: () => Node = Platform.select({
   ios: () => (
     <Text>
-      Press <Text style={styles.highlight}>Cmd+R</Text> in the simulator to
+      Press <Text style={styles.highlight}>Cmd + R</Text> in the simulator to
       reload your app's code.
     </Text>
   ),

@@ -1,21 +1,18 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.debug;
 
-import javax.annotation.Nullable;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.module.annotations.ReactModule;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Module that exposes the URL to the source code map (used for exception stack trace parsing) to JS
@@ -41,9 +38,9 @@ public class SourceCodeModule extends BaseJavaModule {
     HashMap<String, Object> constants = new HashMap<>();
 
     String sourceURL =
-      Assertions.assertNotNull(
-        mReactContext.getCatalystInstance().getSourceURL(),
-        "No source URL loaded, have you initialised the instance?");
+        Assertions.assertNotNull(
+            mReactContext.getCatalystInstance().getSourceURL(),
+            "No source URL loaded, have you initialised the instance?");
 
     constants.put("scriptURL", sourceURL);
     return constants;

@@ -30,4 +30,4 @@ export interface Spec extends TurboModule {
   +open: (options: TimePickerOptions) => Promise<TimePickerResult>;
 }
 
-export default TurboModuleRegistry.get<Spec>('TimePickerAndroid');
+export default (TurboModuleRegistry.get<Spec>('TimePickerAndroid'): ?Spec);

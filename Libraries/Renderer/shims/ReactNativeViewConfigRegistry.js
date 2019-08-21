@@ -8,18 +8,20 @@
  * @flow strict-local
  */
 
+/* eslint-disable react-internal/warning-and-invariant-args */
+
 'use strict';
+
+const invariant = require('invariant');
 
 import type {
   ReactNativeBaseComponentViewConfig,
   ViewConfigGetter,
 } from './ReactNativeTypes';
 
-const invariant = require('invariant');
-
 // Event configs
-const customBubblingEventTypes = {};
-const customDirectEventTypes = {};
+const customBubblingEventTypes: {...} = {};
+const customDirectEventTypes: {...} = {};
 
 exports.customBubblingEventTypes = customBubblingEventTypes;
 exports.customDirectEventTypes = customDirectEventTypes;
@@ -66,7 +68,6 @@ function processEventTypes(
  * Registers a native view/component by name.
  * A callback is provided to load the view config from UIManager.
  * The callback is deferred until the view is actually rendered.
- * This is done to avoid causing Prepack deopts.
  */
 exports.register = function(name: string, callback: ViewConfigGetter): string {
   invariant(

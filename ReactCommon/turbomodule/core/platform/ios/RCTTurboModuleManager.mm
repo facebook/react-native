@@ -7,6 +7,7 @@
 
 #import "RCTTurboModuleManager.h"
 
+#import <atomic>
 #import <cassert>
 #import <mutex>
 
@@ -15,9 +16,9 @@
 #import <React/RCTCxxModule.h>
 #import <React/RCTLog.h>
 #import <React/RCTPerformanceLogger.h>
-#import <jsireact/BridgeJSCallInvoker.h>
-#import <jsireact/TurboCxxModule.h>
-#import <jsireact/TurboModuleBinding.h>
+#import <ReactCommon/BridgeJSCallInvoker.h>
+#import <ReactCommon/TurboCxxModule.h>
+#import <ReactCommon/TurboModuleBinding.h>
 
 using namespace facebook;
 
@@ -39,7 +40,7 @@ static Class getFallbackClassFromName(const char *name)
   __weak id<RCTTurboModuleManagerDelegate> _delegate;
   __weak RCTBridge *_bridge;
   /**
-   * TODO(rsnara):
+   * TODO(T48018690):
    * All modules are currently long-lived.
    * We need to come up with a mechanism to allow modules to specify whether
    * they want to be long-lived or short-lived.
@@ -48,7 +49,7 @@ static Class getFallbackClassFromName(const char *name)
   std::unordered_map<std::string, std::shared_ptr<react::TurboModule>> _turboModuleCache;
 
   /**
-   * _rctTurboModuleCache can be accessed by muitiple threads at once via
+   * _rctTurboModuleCache can be accessed by multiple threads at once via
    * the provideRCTTurboModule method. This can lead to races. Therefore, we
    * need to protect access to this unordered_map.
    *
@@ -58,6 +59,7 @@ static Class getFallbackClassFromName(const char *name)
    * JS thread.
    */
   std::mutex _rctTurboModuleCacheLock;
+  std::atomic<bool> _invalidating;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge delegate:(id<RCTTurboModuleManagerDelegate>)delegate
@@ -66,10 +68,15 @@ static Class getFallbackClassFromName(const char *name)
     _jsInvoker = std::make_shared<react::BridgeJSCallInvoker>(bridge.reactInstance);
     _delegate = delegate;
     _bridge = bridge;
+    _invalidating = false;
 
     // Necessary to allow NativeModules to lookup TurboModules
     [bridge setRCTTurboModuleLookupDelegate:self];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(bridgeWillInvalidateModules:)
+                                                 name:RCTBridgeWillInvalidateModulesNotification
+                                               object:_bridge.parentBridge];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeDidInvalidateModules:)
                                                  name:RCTBridgeDidInvalidateModulesNotification
@@ -211,37 +218,51 @@ static Class getFallbackClassFromName(const char *name)
  */
 - (id<RCTTurboModule>)provideRCTTurboModule:(const char *)moduleName
 {
-  std::lock_guard<std::mutex> guard{_rctTurboModuleCacheLock};
-
-  auto rctTurboModuleCacheLookup = _rctTurboModuleCache.find(moduleName);
-  if (rctTurboModuleCacheLookup != _rctTurboModuleCache.end()) {
-    return rctTurboModuleCacheLookup->second;
-  }
-
-  /**
-   * Step 2a: Resolve platform-specific class.
-   */
   Class moduleClass;
-  if ([_delegate respondsToSelector:@selector(getModuleClassFromName:)]) {
-    moduleClass = [_delegate getModuleClassFromName:moduleName];
-  }
-
-  if (!moduleClass) {
-    moduleClass = getFallbackClassFromName(moduleName);
-  }
-
-  if (![moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
-    return nil;
-  }
-
-  /**
-   * Step 2b: Ask hosting application/delegate to instantiate this class
-   */
   id<RCTTurboModule> module = nil;
-  if ([_delegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
-    module = [_delegate getModuleInstanceFromClass:moduleClass];
-  } else {
-    module = [moduleClass new];
+
+  {
+    std::unique_lock<std::mutex> lock(_rctTurboModuleCacheLock);
+
+    auto rctTurboModuleCacheLookup = _rctTurboModuleCache.find(moduleName);
+    if (rctTurboModuleCacheLookup != _rctTurboModuleCache.end()) {
+      return rctTurboModuleCacheLookup->second;
+    }
+
+    if (_invalidating) {
+      // Don't allow creating new instances while invalidating.
+      return nil;
+    }
+
+    /**
+     * Step 2a: Resolve platform-specific class.
+     */
+    if ([_delegate respondsToSelector:@selector(getModuleClassFromName:)]) {
+      moduleClass = [_delegate getModuleClassFromName:moduleName];
+    }
+
+    if (!moduleClass) {
+      moduleClass = getFallbackClassFromName(moduleName);
+    }
+
+    if (![moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
+      return nil;
+    }
+
+    /**
+     * Step 2b: Ask hosting application/delegate to instantiate this class
+     */
+    if ([_delegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
+      module = [_delegate getModuleInstanceFromClass:moduleClass];
+    } else {
+      module = [moduleClass new];
+    }
+
+    if ([module respondsToSelector:@selector(setTurboModuleLookupDelegate:)]) {
+      [module setTurboModuleLookupDelegate:self];
+    }
+
+    _rctTurboModuleCache.insert({moduleName, module});
   }
 
   /**
@@ -263,6 +284,10 @@ static Class getFallbackClassFromName(const char *name)
      */
     @try {
       /**
+       * If module requiresMainQueueSetup, dispatch to main queue. Bridge setup
+       * may call APIs which are main queue only, which crash if called from
+       * JS thread.
+       *
        * RCTBridgeModule declares the bridge property as readonly.
        * Therefore, when authors of NativeModules synthesize the bridge
        * via @synthesize bridge = bridge;, the ObjC runtime generates
@@ -270,7 +295,16 @@ static Class getFallbackClassFromName(const char *name)
        * generated, so we have have to rely on the KVC API of ObjC to set
        * the bridge property of these NativeModules.
        */
-      [(id)module setValue:_bridge forKey:@"bridge"];
+      if ([[module class] respondsToSelector:@selector(requiresMainQueueSetup)] &&
+          [[module class] requiresMainQueueSetup]) {
+        __weak __typeof(self) weakSelf = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+          __strong __typeof(self) strongSelf = weakSelf;
+          [(id)module setValue:strongSelf->_bridge forKey:@"bridge"];
+        });
+      } else {
+        [(id)module setValue:_bridge forKey:@"bridge"];
+      }
     } @catch (NSException *exception) {
       RCTLogError(
           @"%@ has no setter or ivar for its bridge, which is not "
@@ -280,11 +314,29 @@ static Class getFallbackClassFromName(const char *name)
     }
   }
 
-  if ([module respondsToSelector:@selector(setTurboModuleLookupDelegate:)]) {
-    [module setTurboModuleLookupDelegate:self];
+  /**
+   * Some modules need their own queues, but don't provide any, so we need to create it for them.
+   * These modules typically have the following:
+   *   `@synthesize methodQueue = _methodQueue`
+   */
+  if ([module respondsToSelector:@selector(methodQueue)]) {
+    dispatch_queue_t methodQueue = [module performSelector:@selector(methodQueue)];
+    if (!methodQueue) {
+      NSString *moduleClassName = NSStringFromClass(module.class);
+      NSString *queueName = [NSString stringWithFormat:@"com.facebook.react.%@Queue", moduleClassName];
+      methodQueue = dispatch_queue_create(queueName.UTF8String, DISPATCH_QUEUE_SERIAL);
+      @try {
+        [(id)module setValue:methodQueue forKey:@"methodQueue"];
+      } @catch (NSException *exception) {
+        RCTLogError(
+            @"TM: %@ is returning nil for its methodQueue, which is not "
+             "permitted. You must either return a pre-initialized "
+             "queue, or @synthesize the methodQueue to let the bridge "
+             "create a queue for you.",
+            moduleClassName);
+      }
+    }
   }
-
-  _rctTurboModuleCache.insert({moduleName, module});
 
   /**
    * Broadcast that this TurboModule was created.
@@ -336,28 +388,66 @@ static Class getFallbackClassFromName(const char *name)
 
 - (BOOL)moduleIsInitialized:(const char *)moduleName
 {
+  std::unique_lock<std::mutex> lock(_rctTurboModuleCacheLock);
   return _rctTurboModuleCache.find(std::string(moduleName)) != _rctTurboModuleCache.end();
 }
 
 #pragma mark Invalidation logic
 
-- (void)bridgeDidInvalidateModules:(NSNotification *)notification
+- (void)bridgeWillInvalidateModules:(NSNotification *)notification
 {
-  // Rely on this notification to invalidate all known TurboModule ObjC instances, synchronously.
   RCTBridge *bridge = notification.userInfo[@"bridge"];
   if (bridge != _bridge) {
     return;
   }
 
+  _invalidating = true;
+}
+
+- (void)bridgeDidInvalidateModules:(NSNotification *)notification
+{
+  RCTBridge *bridge = notification.userInfo[@"bridge"];
+  if (bridge != _bridge) {
+    return;
+  }
+
+  std::unordered_map<std::string, id<RCTTurboModule>> rctCacheCopy;
+  {
+    std::unique_lock<std::mutex> lock(_rctTurboModuleCacheLock);
+    rctCacheCopy.insert(_rctTurboModuleCache.begin(), _rctTurboModuleCache.end());
+  }
+
   // Backward-compatibility: RCTInvalidating handling.
-  for (const auto &p : _rctTurboModuleCache) {
+  dispatch_group_t moduleInvalidationGroup = dispatch_group_create();
+  for (const auto &p : rctCacheCopy) {
     id<RCTTurboModule> module = p.second;
     if ([module respondsToSelector:@selector(invalidate)]) {
+      if ([module respondsToSelector:@selector(methodQueue)]) {
+        dispatch_queue_t methodQueue = [module performSelector:@selector(methodQueue)];
+        if (methodQueue) {
+          dispatch_group_enter(moduleInvalidationGroup);
+          [bridge
+              dispatchBlock:^{
+                [((id<RCTInvalidating>)module) invalidate];
+                dispatch_group_leave(moduleInvalidationGroup);
+              }
+                      queue:methodQueue];
+          continue;
+        }
+      }
       [((id<RCTInvalidating>)module) invalidate];
     }
   }
 
-  _rctTurboModuleCache.clear();
+  if (dispatch_group_wait(moduleInvalidationGroup, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC))) {
+    RCTLogError(@"TurboModuleManager: Timed out waiting for modules to be invalidated");
+  }
+
+  {
+    std::unique_lock<std::mutex> lock(_rctTurboModuleCacheLock);
+    _rctTurboModuleCache.clear();
+  }
+
   _turboModuleCache.clear();
 
   _binding->invalidate();

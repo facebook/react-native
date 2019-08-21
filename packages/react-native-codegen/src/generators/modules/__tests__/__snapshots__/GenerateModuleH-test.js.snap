@@ -1,0 +1,189 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GenerateModuleCpp can generate fixture COMPLEX_OBJECTS 1`] = `
+Map {
+  "NativeModules.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <ReactCommon/TurboModule.h>
+
+namespace facebook {
+namespace react {
+
+class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
+protected:
+  NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+
+public:
+virtual jsi::Object difficult(jsi::Runtime &rt, const jsi::Object &A) = 0;
+
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateModuleCpp can generate fixture EMPTY_NATIVE_MODULES 1`] = `
+Map {
+  "NativeModules.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <ReactCommon/TurboModule.h>
+
+namespace facebook {
+namespace react {
+
+class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
+protected:
+  NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+
+public:
+
+
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateModuleCpp can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
+Map {
+  "NativeModules.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <ReactCommon/TurboModule.h>
+
+namespace facebook {
+namespace react {
+
+class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
+protected:
+  NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+
+public:
+virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
+virtual void voidFunc(jsi::Runtime &rt) = 0;
+virtual bool getBool(jsi::Runtime &rt, bool arg) = 0;
+virtual double getNumber(jsi::Runtime &rt, double arg) = 0;
+virtual jsi::String getString(jsi::Runtime &rt, const jsi::String &arg) = 0;
+virtual jsi::Array getArray(jsi::Runtime &rt, const jsi::Array &arg) = 0;
+virtual jsi::Object getObject(jsi::Runtime &rt, const jsi::Object &arg) = 0;
+virtual jsi::Object getValue(jsi::Runtime &rt, double x, const jsi::String &y, const jsi::Object &z) = 0;
+virtual void getValueWithCallback(jsi::Runtime &rt, const jsi::Function &callback) = 0;
+virtual jsi::Value getValueWithPromise(jsi::Runtime &rt, bool error) = 0;
+
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateModuleCpp can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
+Map {
+  "NativeModules.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <ReactCommon/TurboModule.h>
+
+namespace facebook {
+namespace react {
+
+class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
+protected:
+  NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+
+public:
+virtual void voidFunc(jsi::Runtime &rt) = 0;
+
+};
+
+class JSI_EXPORT NativeSample2TurboModuleCxxSpecJSI : public TurboModule {
+protected:
+  NativeSample2TurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+
+public:
+virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
+virtual void voidFunc(jsi::Runtime &rt) = 0;
+
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateModuleCpp can generate fixture TWO_MODULES_SAME_FILE 1`] = `
+Map {
+  "NativeModules.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <ReactCommon/TurboModule.h>
+
+namespace facebook {
+namespace react {
+
+class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
+protected:
+  NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+
+public:
+virtual void voidFunc(jsi::Runtime &rt) = 0;
+
+};
+
+class JSI_EXPORT NativeSample2TurboModuleCxxSpecJSI : public TurboModule {
+protected:
+  NativeSample2TurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+
+public:
+virtual void voidFunc(jsi::Runtime &rt) = 0;
+
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;

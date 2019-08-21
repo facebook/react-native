@@ -107,10 +107,8 @@ using namespace facebook::react;
       NSStringFromClass([self class]));
 #endif
 
-  auto const &oldViewProps = *std::static_pointer_cast<ViewProps const>(oldProps ?: _props);
+  auto const &oldViewProps = *std::static_pointer_cast<ViewProps const>(_props);
   auto const &newViewProps = *std::static_pointer_cast<ViewProps const>(props);
-
-  _props = std::static_pointer_cast<ViewProps const>(props);
 
   BOOL needsInvalidateLayer = NO;
 
@@ -122,7 +120,7 @@ using namespace facebook::react;
 
   // `backgroundColor`
   if (oldViewProps.backgroundColor != newViewProps.backgroundColor) {
-    _backgroundColor = RCTUIColorFromSharedColor(newViewProps.backgroundColor);
+    self.backgroundColor = RCTUIColorFromSharedColor(newViewProps.backgroundColor);
     needsInvalidateLayer = YES;
   }
 
@@ -241,6 +239,8 @@ using namespace facebook::react;
   }
 
   _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
+
+  _props = std::static_pointer_cast<ViewProps const>(props);
 }
 
 - (void)updateEventEmitter:(EventEmitter::Shared const &)eventEmitter
@@ -459,7 +459,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     CGFloat cornerRadius = 0;
     if (self.clipsToBounds) {
       if (borderMetrics.borderRadii.isUniform()) {
-        // In this case we can simply use `cornerRadius` exclusivly.
+        // In this case we can simply use `cornerRadius` exclusively.
         cornerRadius = borderMetrics.borderRadii.topLeft;
       } else {
         // In this case we have to generate masking layer manually.

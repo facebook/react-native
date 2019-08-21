@@ -12,11 +12,14 @@
 set -x
 DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
-# Enables iOS devices to get the IP address of the machine running Metro Bundler
+# Enables iOS devices to get the IP address of the machine running Metro
 if [[ "$CONFIGURATION" = *Debug* && ! "$PLATFORM_NAME" == *simulator ]]; then
   IP=$(ipconfig getifaddr en0)
   if [ -z "$IP" ]; then
-    IP=$(ifconfig | grep 'inet ' | grep -v ' 127.' | cut -d\   -f2  | awk 'NR==1{print $1}')
+    IP=$(ipconfig getifaddr en1)
+  fi
+  if [ -z "$IP" ]; then
+    IP=$(ifconfig | grep 'inet ' | grep -v ' 127.' | grep -v ' 169.254.' |cut -d\   -f2  | awk 'NR==1{print $1}')
   fi
 
   echo "$IP" > "$DEST/ip.txt"

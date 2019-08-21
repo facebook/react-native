@@ -25,4 +25,4 @@ export interface Spec extends TurboModule {
   ) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SegmentFetcher');
+export default (TurboModuleRegistry.getEnforcing<Spec>('SegmentFetcher'): Spec);

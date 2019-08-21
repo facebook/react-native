@@ -13,6 +13,7 @@ import static com.facebook.react.uimanager.events.TouchesHelper.TOP_TOUCH_END_KE
 import static com.facebook.react.uimanager.events.TouchesHelper.TOUCHES_KEY;
 
 import android.util.Pair;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
@@ -24,7 +25,6 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.systrace.Systrace;
 import java.util.HashSet;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 public class FabricEventEmitter implements RCTEventEmitter {
 

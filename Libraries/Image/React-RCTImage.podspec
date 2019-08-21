@@ -27,10 +27,10 @@ Pod::Spec.new do |s|
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.source                 = source
-  s.source_files           = "*.{h,m}"
+  s.source_files           = "*.{m}"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
-  s.header_dir             = "React"
+  s.header_dir             = "RCTImage"
 
-  s.dependency "React-Core", version
+  s.dependency "React-Core/RCTImageHeaders", version
   s.dependency "React-RCTNetwork", version
 end

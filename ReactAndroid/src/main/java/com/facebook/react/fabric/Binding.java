@@ -41,6 +41,15 @@ public class Binding {
 
   public native void startSurface(int surfaceId, String moduleName, NativeMap initialProps);
 
+  public native void startSurfaceWithConstraints(
+      int surfaceId,
+      String moduleName,
+      NativeMap initialProps,
+      float minWidth,
+      float maxWidth,
+      float minHeight,
+      float maxHeight);
+
   public native void renderTemplateToSurface(int surfaceId, String uiTemplate);
 
   public native void stopSurface(int surfaceId);
@@ -51,17 +60,22 @@ public class Binding {
       int surfaceId, float minWidth, float maxWidth, float minHeight, float maxHeight);
 
   public void register(
-       JavaScriptContextHolder jsContext,
-       FabricUIManager fabricUIManager,
-       EventBeatManager eventBeatManager,
-       MessageQueueThread jsMessageQueueThread,
-       ComponentFactoryDelegate componentFactoryDelegate,
-       ReactNativeConfig reactNativeConfig) {
+      JavaScriptContextHolder jsContext,
+      FabricUIManager fabricUIManager,
+      EventBeatManager eventBeatManager,
+      MessageQueueThread jsMessageQueueThread,
+      ComponentFactoryDelegate componentFactoryDelegate,
+      ReactNativeConfig reactNativeConfig) {
     fabricUIManager.setBinding(this);
-     installFabricUIManager(
-       jsContext.get(), fabricUIManager, eventBeatManager, jsMessageQueueThread, componentFactoryDelegate, reactNativeConfig);
-     setPixelDensity(PixelUtil.getDisplayMetricDensity());
-   }
+    installFabricUIManager(
+        jsContext.get(),
+        fabricUIManager,
+        eventBeatManager,
+        jsMessageQueueThread,
+        componentFactoryDelegate,
+        reactNativeConfig);
+    setPixelDensity(PixelUtil.getDisplayMetricDensity());
+  }
 
   private native void uninstallFabricUIManager();
 

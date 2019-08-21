@@ -34,6 +34,29 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     // Preemptive allocation of native views on iOS does not require this call.
   }
 
+  void schedulerDidDispatchCommand(
+      const ShadowView &shadowView,
+      const std::string &commandName,
+      const folly::dynamic args) override
+  {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerDidDispatchCommand:shadowView commandName:commandName args:args];
+  }
+
+  void schedulerDidSetJSResponder(
+      SurfaceId surfaceId,
+      const ShadowView &shadowView,
+      const ShadowView &initialShadowView,
+      bool blockNativeResponder) override
+  {
+    // Does nothing for now.
+  }
+
+  void schedulerDidClearJSResponder() override
+  {
+    // Does nothing for now.
+  }
+
  private:
   void *scheduler_;
 };
@@ -43,13 +66,11 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
   std::shared_ptr<SchedulerDelegateProxy> _delegateProxy;
 }
 
-- (instancetype)initWithContextContainer:(ContextContainer::Shared)contextContainer
-                componentRegistryFactory:(ComponentRegistryFactory)componentRegistryFactory
+- (instancetype)initWithToolbox:(facebook::react::SchedulerToolbox)toolbox
 {
   if (self = [super init]) {
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
-    _scheduler = std::make_shared<Scheduler>(contextContainer, componentRegistryFactory);
-    _scheduler->setDelegate(_delegateProxy.get());
+    _scheduler = std::make_shared<Scheduler>(toolbox, _delegateProxy.get());
   }
 
   return self;
@@ -64,7 +85,7 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
                        moduleName:(NSString *)moduleName
                      initialProps:(NSDictionary *)initialProps
                 layoutConstraints:(LayoutConstraints)layoutConstraints
-                    layoutContext:(LayoutContext)layoutContext;
+                    layoutContext:(LayoutContext)layoutContext
 {
   SystraceSection s("-[RCTScheduler startSurfaceWithSurfaceId:...]");
 

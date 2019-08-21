@@ -110,7 +110,7 @@ const stagger = function(
   return emptyAnimation;
 };
 
-type LoopAnimationConfig = {iterations: number};
+type LoopAnimationConfig = {iterations: number, resetBeforeIteration?: boolean};
 
 const loop = function(
   animation: CompositeAnimation,

@@ -10,8 +10,9 @@
 
 'use strict';
 
-const EventTarget = require('event-target-shim');
 const Blob = require('./Blob');
+const EventTarget = require('event-target-shim');
+
 import NativeFileReaderModule from './NativeFileReaderModule';
 
 type ReadyState =
@@ -34,14 +35,14 @@ const EMPTY = 0;
 const LOADING = 1;
 const DONE = 2;
 
-class FileReader extends EventTarget(...READER_EVENTS) {
-  static EMPTY = EMPTY;
-  static LOADING = LOADING;
-  static DONE = DONE;
+class FileReader extends (EventTarget(...READER_EVENTS): any) {
+  static EMPTY: number = EMPTY;
+  static LOADING: number = LOADING;
+  static DONE: number = DONE;
 
-  EMPTY = EMPTY;
-  LOADING = LOADING;
-  DONE = DONE;
+  EMPTY: number = EMPTY;
+  LOADING: number = LOADING;
+  DONE: number = DONE;
 
   _readyState: ReadyState;
   _error: ?Error;

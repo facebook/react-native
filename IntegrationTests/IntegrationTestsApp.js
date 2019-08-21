@@ -36,6 +36,7 @@ const TESTS = [
   require('./SyncMethodTest'),
   require('./WebSocketTest'),
   require('./AccessibilityManagerTest'),
+  require('./GlobalEvalWithSourceUrlTest'),
 ];
 
 TESTS.forEach(

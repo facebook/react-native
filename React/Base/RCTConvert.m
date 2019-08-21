@@ -53,20 +53,11 @@ RCT_NUMBER_CONVERTER(NSUInteger, unsignedIntegerValue)
 
 RCT_JSON_CONVERTER(NSArray)
 RCT_JSON_CONVERTER(NSDictionary)
+RCT_JSON_CONVERTER(NSString)
 RCT_JSON_CONVERTER(NSNumber)
 
 RCT_CUSTOM_CONVERTER(NSSet *, NSSet, [NSSet setWithArray:json])
 RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncoding])
-
-+ (NSString *)NSString:(id)json
-{
-  if ([json isKindOfClass:NSString.class]) {
-    return json;
-  } else if (json && json != (id)kCFNull) {
-    return [NSString stringWithFormat:@"%@",json];
-  }
-  return nil;
-}
 
 + (NSIndexSet *)NSIndexSet:(id)json
 {

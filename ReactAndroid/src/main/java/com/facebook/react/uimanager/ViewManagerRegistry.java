@@ -1,16 +1,15 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.common.MapBuilder;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * Class that stores the mapping between native view name used in JS and the corresponding instance

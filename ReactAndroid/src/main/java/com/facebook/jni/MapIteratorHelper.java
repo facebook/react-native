@@ -1,24 +1,21 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.jni;
 
-import javax.annotation.Nullable;
-
+import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.facebook.proguard.annotations.DoNotStrip;
-
 /**
- * To iterate over a Map from C++ requires four calls per entry: hasNext(),
- * next(), getKey(), getValue().  This helper reduces it to one call and two
- * field gets per entry.  It does not use a generic argument, since in C++, the
- * types will be erased, anyway.  This is *not* a {@link java.util.Iterator}.
+ * To iterate over a Map from C++ requires four calls per entry: hasNext(), next(), getKey(),
+ * getValue(). This helper reduces it to one call and two field gets per entry. It does not use a
+ * generic argument, since in C++, the types will be erased, anyway. This is *not* a {@link
+ * java.util.Iterator}.
  */
 @DoNotStrip
 public class MapIteratorHelper {
@@ -32,8 +29,8 @@ public class MapIteratorHelper {
   }
 
   /**
-   * Moves the helper to the next entry in the map, if any.  Returns true iff
-   * there is an entry to read.
+   * Moves the helper to the next entry in the map, if any. Returns true iff there is an entry to
+   * read.
    */
   @DoNotStrip
   boolean hasNext() {
