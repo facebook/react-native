@@ -63,6 +63,71 @@ export const Commands = {
 };"
 `;
 
+exports[`Babel plugin inline view configs can inline config for FullTypedNativeComponent.js 1`] = `
+"// @flow
+const codegenNativeCommands = require('codegenNativeCommands');
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+import type { NativeComponent } from 'ReactNative';
+import type { Int32, BubblingEventHandler, DirectEventHandler, WithDefault } from 'CodegenFlowtypes';
+import type { ViewProps } from 'ViewPropTypes';
+interface NativeCommands {
+  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void,
+  +scrollTo: (viewRef: React.Ref<'RCTView'>, y: Int32, animated: boolean) => void,
+}
+type ModuleProps = $ReadOnly<{| ...ViewProps,
+  // Props
+  boolean_default_true_optional_both?: WithDefault<boolean, true>,
+  // Events
+  onDirectEventDefinedInlineNull: DirectEventHandler<null>,
+  onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
+|}>;
+type NativeComponentType = Class<NativeComponent<NativeProps>>;
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const {
+  dispatchCommand
+} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
+
+const ModuleViewConfig = {
+  uiViewClassName: 'RCTModule',
+  bubblingEventTypes: {
+    topBubblingEventDefinedInlineNull: {
+      phasedRegistrationNames: {
+        captured: 'onBubblingEventDefinedInlineNullCapture',
+        bubbled: 'onBubblingEventDefinedInlineNull'
+      }
+    }
+  },
+  directEventTypes: {
+    topDirectEventDefinedInlineNull: {
+      registrationName: 'onDirectEventDefinedInlineNull'
+    }
+  },
+  validAttributes: {
+    boolean_default_true_optional_both: true,
+    onDirectEventDefinedInlineNull: true,
+    onBubblingEventDefinedInlineNull: true
+  }
+};
+let nativeComponentName = 'RCTModule';
+registerGeneratedViewConfig(nativeComponentName, ModuleViewConfig);
+export const __INTERNAL_VIEW_CONFIG = ModuleViewConfig;
+export default nativeComponentName;
+export const Commands = {
+  hotspotUpdate(ref, x, y) {
+    dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
+  },
+
+  scrollTo(ref, y, animated) {
+    dispatchCommand(ref, \\"scrollTo\\", [y, animated]);
+  }
+
+};"
+`;
+
 exports[`Babel plugin inline view configs can inline config for NotANativeComponent.js 1`] = `
 "const requireNativeComponent = require('requireNativeComponent');
 

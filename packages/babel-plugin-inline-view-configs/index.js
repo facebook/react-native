@@ -41,6 +41,14 @@ function isCodegenDeclaration(declaration) {
     declaration.callee.name === 'codegenNativeComponent'
   ) {
     return true;
+  } else if (
+    declaration.type === 'TypeCastExpression' &&
+    declaration.expression &&
+    declaration.expression.callee &&
+    declaration.expression.callee.name &&
+    declaration.expression.callee.name === 'codegenNativeComponent'
+  ) {
+    return true;
   }
 
   return false;

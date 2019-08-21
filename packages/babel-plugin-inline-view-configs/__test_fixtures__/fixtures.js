@@ -56,7 +56,52 @@ export default codegenNativeComponent<ModuleProps>('Module', {
 });
 `;
 
+const FULL_NATIVE_COMPONENT_WITH_TYPE_EXPORT = `
+// @flow
+
+const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
+import type {NativeComponent} from 'ReactNative';
+
+import type {
+  Int32,
+  BubblingEventHandler,
+  DirectEventHandler,
+  WithDefault,
+} from 'CodegenFlowtypes';
+
+import type {ViewProps} from 'ViewPropTypes';
+
+interface NativeCommands {
+  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+  +scrollTo: (viewRef: React.Ref<'RCTView'>, y: Int32, animated: boolean) => void;
+}
+
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  // Props
+  boolean_default_true_optional_both?: WithDefault<boolean, true>,
+
+  // Events
+  onDirectEventDefinedInlineNull: DirectEventHandler<null>,
+  onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
+|}>;
+
+export const Commands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['hotspotUpdate', 'scrollTo'],
+});
+
+type NativeComponentType = Class<NativeComponent<NativeProps>>;
+
+export default (codegenNativeComponent<ModuleProps>('Module', {
+  interfaceOnly: true,
+  paperComponentName: 'RCTModule',
+}): NativeComponentType);
+`;
+
 module.exports = {
   'NotANativeComponent.js': NOT_A_NATIVE_COMPONENT,
   'FullNativeComponent.js': FULL_NATIVE_COMPONENT,
+  'FullTypedNativeComponent.js': FULL_NATIVE_COMPONENT_WITH_TYPE_EXPORT,
 };
