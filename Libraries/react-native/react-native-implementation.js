@@ -302,6 +302,9 @@ module.exports = {
   get unstable_batchedUpdates() {
     return require('../Renderer/shims/ReactNative').unstable_batchedUpdates;
   },
+  get useColorScheme() {
+    return require('../Utilities/useColorScheme').default;
+  },
   get useWindowDimensions() {
     return require('../Utilities/useWindowDimensions').default;
   },
