@@ -630,7 +630,9 @@ jsi::String JSCRuntime::createStringFromUtf8(
     size_t length) {
   std::string tmp(reinterpret_cast<const char*>(str), length);
   JSStringRef stringRef = JSStringCreateWithUTF8CString(tmp.c_str());
-  return createString(stringRef);
+  auto result = createString(stringRef);
+  JSStringRelease(stringRef);
+  return result;
 }
 
 std::string JSCRuntime::utf8(const jsi::String& str) {
