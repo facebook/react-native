@@ -38,8 +38,12 @@ rn_apple_library(
         ["-D PIC_MODIFIER=@PLT"],
     )],
     plugins = react_module_plugin_providers(
-                name = "ExceptionsManager",
-                native_class_func = "RCTExceptionsManagerCls",
+                  name = "DeviceInfo",
+                  native_class_func = "RCTDeviceInfoCls",
+              ) +
+              react_module_plugin_providers(
+                  name = "ExceptionsManager",
+                  native_class_func = "RCTExceptionsManagerCls",
               ) +
               react_module_plugin_providers(
                   name = "ImageLoader",

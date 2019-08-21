@@ -7,11 +7,19 @@
 
 #import "RCTDeviceInfo.h"
 
-#import "RCTAccessibilityManager.h"
-#import "RCTAssert.h"
-#import "RCTEventDispatcher.h"
-#import "RCTUIUtils.h"
-#import "RCTUtils.h"
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <React/RCTAccessibilityManager.h>
+#import <React/RCTAssert.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTUIUtils.h>
+#import <React/RCTUtils.h>
+
+#import "CoreModulesPlugins.h"
+
+using namespace facebook::react;
+
+@interface RCTDeviceInfo () <NativeDeviceInfoSpec>
+@end
 
 @implementation RCTDeviceInfo {
 #if !TARGET_OS_TV
@@ -83,16 +91,15 @@ static BOOL RCTIsIPhoneX() {
 static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 {
   RCTAssertMainQueue();
-
   RCTDimensions dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier);
-  typeof (dimensions.window) window = dimensions.window;
+  __typeof (dimensions.window) window = dimensions.window;
   NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
       @"width": @(window.width),
       @"height": @(window.height),
       @"scale": @(window.scale),
       @"fontScale": @(window.fontScale)
   };
-  typeof (dimensions.screen) screen = dimensions.screen;
+  __typeof(dimensions.screen) screen = dimensions.screen;
   NSDictionary<NSString *, NSNumber *> *dimsScreen = @{
       @"width": @(screen.width),
       @"height": @(screen.height),
@@ -152,7 +159,7 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
 - (void)interfaceOrientationDidChange
 {
-  __weak typeof(self) weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   RCTExecuteOnMainQueue(^{
     [weakSelf _interfaceOrientationDidChange];
   });
@@ -181,7 +188,7 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
 - (void)interfaceFrameDidChange
 {
-  __weak typeof(self) weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   RCTExecuteOnMainQueue(^{
     [weakSelf _interfaceFrameDidChange];
   });
@@ -205,5 +212,13 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
 #endif // TARGET_OS_TV
 
+- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<JSCallInvoker>)jsInvoker
+{
+  return std::make_shared<NativeDeviceInfoSpecJSI>(self, jsInvoker);
+}
 
 @end
+
+Class RCTDeviceInfoCls(void) {
+  return RCTDeviceInfo.class;
+}
