@@ -483,7 +483,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
         return;
       }
       // Apply renderingMode to animated image.
+#if TARGET_OS_OSX // TODO(macOS ISS#2323203)
+      // NSImages don't have rendering modes, so ignore
+      self->_imageView.image = [[NSImage alloc] initWithCGImage:posterImageRef size:NSZeroSize /* shorthand for same size as CGImageRef */];
+#else // TODO(macOS ISS#2323203)
       self->_imageView.image = [[UIImage imageWithCGImage:posterImageRef] imageWithRenderingMode:self->_renderingMode];
+#endif // TODO(macOS ISS#2323203)
       [self->_imageView.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
     } else {
       self.image = image;

@@ -22,7 +22,11 @@ typedef NS_ENUM(NSInteger, UIImageRenderingMode) {
 };
 #endif
 
-@interface RCTImageView : RCTView
+#if !TARGET_OS_OSX // ]TODO(macOS ISS#2323203)
+@interface RCTImageView : UIImageView
+#else // [TODO(macOS ISS#2323203)
+@interface RCTImageView : NSImageView
+#endif // ]TODO(macOS ISS#2323203)
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
