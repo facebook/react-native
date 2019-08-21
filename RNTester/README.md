@@ -25,14 +25,14 @@ You'll need to have all the [prerequisites](https://github.com/facebook/react-na
 Start an Android emulator ([Genymotion](https://www.genymotion.com) is recommended).
 
     cd react-native
-    ./gradlew :RNTester:android:app:installDebug
+    ./gradlew :RNTester:android:app:installJscDebug
     ./scripts/packager.sh
 
 _Note: Building for the first time can take a while._
 
 Open the RNTester app in your emulator.
-
-See [Running on Device](https://facebook.github.io/react-native/docs/running-on-device.html) in case you want to use a physical device.
+If you want to use a physical device, run `adb devices`, then `adb -s <device name> reverse tcp:8081 tcp:8081`.
+See [Running on Device](https://facebook.github.io/react-native/docs/running-on-device.html) for additional instructions on using a physical device.
 
 ### Running with Buck
 
