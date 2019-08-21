@@ -85,7 +85,7 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
                        moduleName:(NSString *)moduleName
                      initialProps:(NSDictionary *)initialProps
                 layoutConstraints:(LayoutConstraints)layoutConstraints
-                    layoutContext:(LayoutContext)layoutContext;
+                    layoutContext:(LayoutContext)layoutContext
 {
   SystraceSection s("-[RCTScheduler startSurfaceWithSurfaceId:...]");
 
