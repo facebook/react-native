@@ -165,6 +165,9 @@ module.exports = {
   get Animated() {
     return require('../Animated/src/Animated');
   },
+  get Appearance() {
+    return require('../Utilities/Appearance');
+  },
   get AppRegistry() {
     return require('../ReactNative/AppRegistry');
   },

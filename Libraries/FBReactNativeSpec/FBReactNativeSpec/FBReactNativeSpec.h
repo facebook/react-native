@@ -434,6 +434,42 @@ namespace facebook {
 } // namespace facebook
 
 namespace JS {
+  namespace NativeAppearance {
+    struct AppearancePreferences {
+      NSString *colorScheme() const;
+
+      AppearancePreferences(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAppearance_AppearancePreferences)
++ (RCTManagedPointer *)JS_NativeAppearance_AppearancePreferences:(id)json;
+@end
+@protocol NativeAppearanceSpec <RCTBridgeModule, RCTTurboModule>
+
+- (NSDictionary *)getPreferences;
+- (void)addListener:(NSString *)eventName;
+- (void)removeListeners:(double)count;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'Appearance'
+     */
+
+    class JSI_EXPORT NativeAppearanceSpecJSI : public ObjCTurboModule {
+    public:
+      NativeAppearanceSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace JS {
   namespace NativeAsyncStorage {
     struct SpecMultiGetCallbackErrorsElement {
       NSString *message() const;
@@ -2553,6 +2589,11 @@ inline JS::NativeAppState::Constants::Builder::Builder(const Input i) : _factory
 inline JS::NativeAppState::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
+inline NSString *JS::NativeAppearance::AppearancePreferences::colorScheme() const
+{
+  id const p = _v[@"colorScheme"];
+  return RCTBridgingToString(p);
+}
 inline NSString *JS::NativeAsyncStorage::SpecMultiGetCallbackErrorsElement::message() const
 {
   id const p = _v[@"message"];

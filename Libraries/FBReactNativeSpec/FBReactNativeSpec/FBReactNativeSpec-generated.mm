@@ -452,6 +452,46 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
+@implementation RCTCxxConvert (NativeAppearance_AppearancePreferences)
++ (RCTManagedPointer *)JS_NativeAppearance_AppearancePreferences:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeAppearance::AppearancePreferences>(json);
+}
+@end
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeAppearanceSpecJSI_getPreferences(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, "getPreferences", @selector(getPreferences), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAppearanceSpecJSI_addListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "addListener", @selector(addListener:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeAppearanceSpecJSI_removeListeners(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "removeListeners", @selector(removeListeners:), args, count);
+    }
+
+
+    NativeAppearanceSpecJSI::NativeAppearanceSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
+      : ObjCTurboModule("Appearance", instance, jsInvoker) {
+        
+        methodMap_["getPreferences"] = MethodMetadata {0, __hostFunction_NativeAppearanceSpecJSI_getPreferences};
+        
+        
+        methodMap_["addListener"] = MethodMetadata {1, __hostFunction_NativeAppearanceSpecJSI_addListener};
+        
+        
+        methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeAppearanceSpecJSI_removeListeners};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
 @implementation RCTCxxConvert (NativeAsyncStorage_SpecMultiGetCallbackErrorsElement)
 + (RCTManagedPointer *)JS_NativeAsyncStorage_SpecMultiGetCallbackErrorsElement:(id)json
 {
