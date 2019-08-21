@@ -498,7 +498,7 @@ public class ReactInstanceManager {
 
   /**
    * Call this from {@link Activity#onPause()}. This notifies any listening modules so they can do
-   * any necessary cleanup. The passed Activity is the current Activity being paused. This will
+   * any necessary cleanup. The passed Activity is the current Activity being paused. This may not
    * always be the foreground activity that would be returned by
    * {@link ReactContext#getCurrentActivity()}.
    *
@@ -507,12 +507,9 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   public void onHostPause(Activity activity) {
     Assertions.assertNotNull(mCurrentActivity);
-    Assertions.assertCondition(
-      activity == mCurrentActivity,
-      "Pausing an activity that is not the current activity, this is incorrect! " +
-        "Current activity: " + mCurrentActivity.getClass().getSimpleName() + " " +
-        "Paused activity: " + activity.getClass().getSimpleName());
-    onHostPause();
+    if (activity == mCurrentActivity) {
+      onHostPause();
+    }
   }
 
   /**
