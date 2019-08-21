@@ -368,7 +368,6 @@
 		18632C851EF4B0030010A3BB /* RCTDevMenu.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13A0C2871B74F71200B29F6F /* RCTDevMenu.h */; };
 		18632C861EF4B0030010A3BB /* RCTPackagerClient.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD0B1EA8E351008DFB7A /* RCTPackagerClient.h */; };
 		18632C871EF4B0030010A3BB /* RCTPackagerConnection.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD0F1EA8E351008DFB7A /* RCTPackagerConnection.h */; };
-		18632C891EF4B0030010A3BB /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
 		18632C8A1EF4B0030010A3BB /* RCTInspector.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 6577348A1EE8354A00A0E9EA /* RCTInspector.h */; };
 		18632C8B1EF4B0030010A3BB /* RCTInspectorPackagerConnection.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 6577348C1EE8354A00A0E9EA /* RCTInspectorPackagerConnection.h */; };
 		18632C8D1EF4B0030010A3BB /* RCTAlertManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13B07FE71A69327A00A75B9A /* RCTAlertManager.h */; };
@@ -379,7 +378,6 @@
 		18632C941EF4B0030010A3BB /* RCTExceptionsManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13B07FE91A69327A00A75B9A /* RCTExceptionsManager.h */; };
 		18632C951EF4B0030010A3BB /* RCTI18nManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = B233E6E81D2D843200BC68BA /* RCTI18nManager.h */; };
 		18632C961EF4B0030010A3BB /* RCTI18nUtil.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 352DCFEE1D19F4C20056D623 /* RCTI18nUtil.h */; };
-		18632C971EF4B0040010A3BB /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
 		18632C981EF4B0040010A3BB /* RCTKeyboardObserver.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13D9FEEC1CDCD93000158BD7 /* RCTKeyboardObserver.h */; };
 		18632C991EF4B0040010A3BB /* RCTRedBox.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13F17A831B8493E5007D4C75 /* RCTRedBox.h */; };
 		18632C9A1EF4B0040010A3BB /* RCTSourceCode.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 000E6CE91AB0E97F000CDF4D /* RCTSourceCode.h */; };
@@ -409,10 +407,7 @@
 		18632CC61EF4B0040010A3BB /* RCTShadowView+Layout.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 590D7BFB1EBD458B00D8A370 /* RCTShadowView+Layout.h */; };
 		18632CCF1EF4B0040010A3BB /* RCTTextDecorationLineType.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = E3BBC8EB1ADE6F47001BBD81 /* RCTTextDecorationLineType.h */; };
 		18632CD11EF4B0040010A3BB /* RCTView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13E0674F1A70F44B002CDEE1 /* RCTView.h */; };
-		18632CD21EF4B0040010A3BB /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
 		18632CD31EF4B0040010A3BB /* RCTViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13E0674D1A70F44B002CDEE1 /* RCTViewManager.h */; };
-		18632CD41EF4B0040010A3BB /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
-		18632CD51EF4B0040010A3BB /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
 		18632CD71EF4B0040010A3BB /* UIView+Private.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 83F15A171B7CC46900F10295 /* UIView+Private.h */; };
 		18632CD81EF4B0040010A3BB /* UIView+React.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13E067531A70F44B002CDEE1 /* UIView+React.h */; };
 		187682D62023E243005F19DF /* RCTTouchHandler.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 83CBBA961A6020BB00E9B192 /* RCTTouchHandler.h */; };
@@ -1616,9 +1611,10 @@
 		9F0D8930224166060053729F /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D892F224166050053729F /* Unicode.cpp */; };
 		9F0D8931224166060053729F /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D892F224166050053729F /* Unicode.cpp */; };
 		9F0D8932224166060053729F /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D892F224166050053729F /* Unicode.cpp */; };
-		9F5C182E230C672500E3E5A7 /* RCTSurfacePresenterStub.h in Headers */ = {isa = PBXBuildFile; fileRef = 589515DF2231AD9C0036BDE0 /* RCTSurfacePresenterStub.h */; };
 		9F5C182F230C67C700E3E5A7 /* RCTSurfacePresenterStub.h in Headers */ = {isa = PBXBuildFile; fileRef = 589515DF2231AD9C0036BDE0 /* RCTSurfacePresenterStub.h */; };
 		9F5C1830230C67CA00E3E5A7 /* RCTSurfacePresenterStub.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EEEA8DE2239002200A8C82D /* RCTSurfacePresenterStub.m */; };
+		9F5C1840230DB54100E3E5A7 /* RCTSurfacePresenterStub.h in Headers */ = {isa = PBXBuildFile; fileRef = 589515DF2231AD9C0036BDE0 /* RCTSurfacePresenterStub.h */; };
+		9F5C1841230DB6F300E3E5A7 /* RCTSurfacePresenterStub.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 589515DF2231AD9C0036BDE0 /* RCTSurfacePresenterStub.h */; };
 		9FB7D34C224954A600F31D11 /* libjsinspector-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F2AC95E2239D788005C9C14 /* libjsinspector-macOS.a */; };
 		9FB7D34D224954B300F31D11 /* libjsi-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D78224303D900E7F88E /* libjsi-macOS.a */; };
 		9FB7D34E224954CC00F31D11 /* libjsiexecutor-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D94224305AA00E7F88E /* libjsiexecutor-macOS.a */; };
@@ -2083,6 +2079,7 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				9F5C1841230DB6F300E3E5A7 /* RCTSurfacePresenterStub.h in Copy Headers */,
 				385362722283369800B0989C /* RCTSRWebSocket.h in Copy Headers */,
 				181B13D021652D7400D3B7D2 /* RCTLinkingManager.h in Copy Headers */,
 				1879ECFA21E85F0D00D98372 /* RCTDynamicColor.h in Copy Headers */,
@@ -2143,7 +2140,6 @@
 				18632C851EF4B0030010A3BB /* RCTDevMenu.h in Copy Headers */,
 				18632C861EF4B0030010A3BB /* RCTPackagerClient.h in Copy Headers */,
 				18632C871EF4B0030010A3BB /* RCTPackagerConnection.h in Copy Headers */,
-				18632C891EF4B0030010A3BB /* (null) in Copy Headers */,
 				18632C8A1EF4B0030010A3BB /* RCTInspector.h in Copy Headers */,
 				18632C8B1EF4B0030010A3BB /* RCTInspectorPackagerConnection.h in Copy Headers */,
 				18632C8D1EF4B0030010A3BB /* RCTAlertManager.h in Copy Headers */,
@@ -2154,7 +2150,6 @@
 				18632C941EF4B0030010A3BB /* RCTExceptionsManager.h in Copy Headers */,
 				18632C951EF4B0030010A3BB /* RCTI18nManager.h in Copy Headers */,
 				18632C961EF4B0030010A3BB /* RCTI18nUtil.h in Copy Headers */,
-				18632C971EF4B0040010A3BB /* (null) in Copy Headers */,
 				18632C981EF4B0040010A3BB /* RCTKeyboardObserver.h in Copy Headers */,
 				18632C991EF4B0040010A3BB /* RCTRedBox.h in Copy Headers */,
 				18632C9A1EF4B0040010A3BB /* RCTSourceCode.h in Copy Headers */,
@@ -2184,10 +2179,7 @@
 				18632CC61EF4B0040010A3BB /* RCTShadowView+Layout.h in Copy Headers */,
 				18632CCF1EF4B0040010A3BB /* RCTTextDecorationLineType.h in Copy Headers */,
 				18632CD11EF4B0040010A3BB /* RCTView.h in Copy Headers */,
-				18632CD21EF4B0040010A3BB /* (null) in Copy Headers */,
 				18632CD31EF4B0040010A3BB /* RCTViewManager.h in Copy Headers */,
-				18632CD41EF4B0040010A3BB /* (null) in Copy Headers */,
-				18632CD51EF4B0040010A3BB /* (null) in Copy Headers */,
 				18632CD71EF4B0040010A3BB /* UIView+Private.h in Copy Headers */,
 				18632CD81EF4B0040010A3BB /* UIView+React.h in Copy Headers */,
 			);
@@ -4237,7 +4229,7 @@
 				1854FE981EF484550008DADC /* RCTDevSettings.h in Headers */,
 				1854FEAC1EF484550008DADC /* RCTTiming.h in Headers */,
 				F20481882092E7EA00942480 /* (null) in Headers */,
-				9F5C182E230C672500E3E5A7 /* RCTSurfacePresenterStub.h in Headers */,
+				9F5C1840230DB54100E3E5A7 /* RCTSurfacePresenterStub.h in Headers */,
 				1854FEA81EF484550008DADC /* RCTSourceCode.h in Headers */,
 				18F3B9B02142F03200AD247D /* RCTKeyCommands.h in Headers */,
 				1854FEA61EF484550008DADC /* RCTRedBox.h in Headers */,

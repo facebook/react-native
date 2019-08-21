@@ -132,7 +132,11 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
   BOOL _subscribedToWindowBackingNotifications;
 #endif // ]TODO(macOS ISS#2323203)
 
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  NSImageView *_imageView;
+#else
   UIImageView *_imageView;
+#endif // [TODO(macOS ISS#2323203)
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
