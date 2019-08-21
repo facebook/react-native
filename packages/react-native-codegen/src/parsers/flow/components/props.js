@@ -229,6 +229,10 @@ function getTypeAnnotation(name, annotation, defaultValue, types) {
         };
       }
       throw new Error(`A default enum value is required for "${name}"`);
+    case 'NumberTypeAnnotation':
+      throw new Error(
+        `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
+      );
     default:
       (type: empty);
       throw new Error(`Unknown prop type for "${name}": "${type}"`);
