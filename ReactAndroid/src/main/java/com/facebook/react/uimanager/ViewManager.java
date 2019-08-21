@@ -35,9 +35,6 @@ import javax.annotation.Nullable;
 public abstract class ViewManager<T extends View, C extends ReactShadowNode>
   extends BaseJavaModule {
 
-<<<<<<< HEAD
-  public final void updateProperties(@Nonnull T viewToUpdate, ReactStylesDiffMap props) {
-=======
   /**
    * For the vast majority of ViewManagers, you will not need to override this. Only
    * override this if you really know what you're doing and have a very unique use-case.
@@ -46,7 +43,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param props
    */
   public void updateProperties(@Nonnull T viewToUpdate, ReactStylesDiffMap props) {
->>>>>>> v0.60.0
+
     ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
     onAfterUpdateTransaction(viewToUpdate);
   }
@@ -54,11 +51,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
   /**
    * Creates a view and installs event emitters on it.
    */
-<<<<<<< HEAD
-  public final @Nonnull T createView(
-=======
   private final @Nonnull T createView(
->>>>>>> v0.60.0
       @Nonnull ThemedReactContext reactContext,
       JSResponderHandler jsResponderHandler) {
     return this.createViewWithProps(reactContext, null, jsResponderHandler);
@@ -116,8 +109,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param reactContext
    */
   protected abstract @Nonnull T createViewInstance(@Nonnull ThemedReactContext reactContext);
-<<<<<<< HEAD
-=======
 
   /**
    * Subclasses should return a new View instance of the proper type.
@@ -132,7 +123,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     }
     return view;
   }
->>>>>>> v0.60.0
 
   /**
    * Called when view is detached from view hierarchy and allows for some additional cleanup by
@@ -249,12 +239,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * Subclasses can implement this method to receive state updates shared between all instances
    * of this component type.
    */
-<<<<<<< HEAD
-  public @Nullable Object updateLocalData(@Nonnull T view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
-    return null;
-=======
   public void updateState(@Nonnull T view, StateWrapper stateWrapper) {
->>>>>>> v0.60.0
   }
 
   public long measure(

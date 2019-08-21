@@ -69,13 +69,8 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   }
 
   @Override
-<<<<<<< HEAD
-  public void updateMeasureState(TextPaint paint) {
-    apply(paint, mStyle, mWeight, mFontFamily,mFontPath, mAssetManager);
-=======
   public void updateMeasureState(@NonNull TextPaint paint) {
     apply(paint, mStyle, mWeight, mFontFamily, mAssetManager);
->>>>>>> v0.60.0
   }
 
   /**
@@ -132,15 +127,8 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       want |= Typeface.ITALIC;
     }
 
-<<<<<<< HEAD
-    if (path != null && family != null) {
-      typeface = ReactFontManager.getInstance().getTypeface(path, family, want);
-    } else if (family != null) {
-      typeface = ReactFontManager.getInstance().getTypeface(family, want, assetManager);
-=======
     if (family != null) {
       typeface = ReactFontManager.getInstance().getTypeface(family, want, weight, assetManager);
->>>>>>> v0.60.0
     } else if (typeface != null) {
       // TODO(t9055065): Fix custom fonts getting applied to text children with different style
       typeface = Typeface.create(typeface, want);

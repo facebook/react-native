@@ -1088,21 +1088,11 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_END);
     ReactMarker.logMarker(SETUP_REACT_CONTEXT_START);
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "setupReactContext");
-<<<<<<< HEAD
     synchronized (mReactContextLock) {
       mCurrentReactContext = Assertions.assertNotNull(reactContext);
     }
     final CatalystInstance catalystInstance =
       Assertions.assertNotNull(reactContext.getCatalystInstance());
-=======
-    synchronized (mAttachedReactRoots) {
-      synchronized (mReactContextLock) {
-        mCurrentReactContext = Assertions.assertNotNull(reactContext);
-      }
-
-      CatalystInstance catalystInstance =
-          Assertions.assertNotNull(reactContext.getCatalystInstance());
->>>>>>> v0.60.0
 
       catalystInstance.initialize();
       mDevSupportManager.onNewReactContextCreated(reactContext);
@@ -1112,15 +1102,10 @@ public class ReactInstanceManager {
     // Do not attach root views if the context is created synchronously on UI thread.
     if (!mIsContextCreatedOnUIThread) {
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
-<<<<<<< HEAD
-      synchronized (mAttachedRootViews) {
-        for (ReactRootView rootView : mAttachedRootViews) {
-          attachRootViewToInstance(rootView);
+      synchronized (mAttachedReactRoots) {
+        for (ReactRoot mAttachedReactRoots : mAttachedReactRoots) {
+          attachRootViewToInstance(mAttachedReactRoots);
         }
-=======
-      for (ReactRoot reactRoot : mAttachedReactRoots) {
-        attachRootViewToInstance(reactRoot);
->>>>>>> v0.60.0
       }
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
     }

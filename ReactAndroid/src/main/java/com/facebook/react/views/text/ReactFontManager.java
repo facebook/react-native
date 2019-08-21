@@ -7,12 +7,6 @@
 
 package com.facebook.react.views.text;
 
-<<<<<<< HEAD
-import javax.annotation.Nullable;
-
-import java.io.File;
-=======
->>>>>>> v0.60.0
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,21 +40,12 @@ public class ReactFontManager {
 
   private static ReactFontManager sReactFontManagerInstance;
 
-<<<<<<< HEAD
-  private Map<String, FontFamily> mFontCache;
-  private Map<String, Typeface> mFontFileName_TypefaceCache;
-
-  private ReactFontManager() {
-    mFontCache = new HashMap<>();
-    mFontFileName_TypefaceCache = new HashMap<>();
-=======
   final private Map<String, FontFamily> mFontCache;
   final private Map<String, Typeface> mCustomTypefaceCache;
 
   private ReactFontManager() {
     mFontCache = new HashMap<>();
     mCustomTypefaceCache = new HashMap<>();
->>>>>>> v0.60.0
   }
 
   public static ReactFontManager getInstance() {
@@ -107,22 +92,6 @@ public class ReactFontManager {
     return typeface;
   }
 
-<<<<<<< HEAD
-  public
-  @Nullable Typeface getTypeface(
-    String fontPath,
-    String fontFamilyName,
-    int style) {
-    String fileName = fontPath.substring(fontPath.lastIndexOf(File.separator) + 1);
-    Typeface typeface = mFontFileName_TypefaceCache.get(fileName);
-    if (typeface == null) {
-      typeface = createTypeface(fontPath, fontFamilyName, style);
-      if (typeface != null) {
-        mFontFileName_TypefaceCache.put(fileName, typeface);
-      }
-    }
-    return typeface;
-=======
   /*
    * This method allows you to load custom fonts from res/font folder as provided font family name.
    * Fonts may be one of .ttf, .otf or XML (https://developer.android.com/guide/topics/ui/look-and-feel/fonts-in-xml).
@@ -135,7 +104,6 @@ public class ReactFontManager {
     if (font != null) {
       mCustomTypefaceCache.put(fontFamily, font);
     }
->>>>>>> v0.60.0
   }
 
   /**

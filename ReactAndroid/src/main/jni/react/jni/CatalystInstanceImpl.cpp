@@ -277,10 +277,10 @@ void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
   instance_->handleMemoryPressure(pressureLevel);
 }
 
-<<<<<<< HEAD
 jlong CatalystInstanceImpl::getPointerOfInstancePointer() {
   return (jlong) (intptr_t) (&instance_);
-=======
+}
+
 jni::alias_ref<JSCallInvokerHolder::javaobject> CatalystInstanceImpl::getJSCallInvokerHolder() {
   if (!javaInstanceHolder_) {
     jsCallInvoker_ = std::make_shared<BridgeJSCallInvoker>(instance_);
@@ -288,7 +288,6 @@ jni::alias_ref<JSCallInvokerHolder::javaobject> CatalystInstanceImpl::getJSCallI
   }
 
   return javaInstanceHolder_;
->>>>>>> v0.60.0
 }
 
 }}

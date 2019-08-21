@@ -23,17 +23,11 @@ LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
 LOCAL_LDLIBS += -landroid
 
 # The dynamic libraries (.so files) that this module depends on.
-<<<<<<< HEAD
+
 LOCAL_SHARED_LIBRARIES := libfolly_json libfb libglog_init libyoga libprivatedata
 
 # The static libraries (.a files) that this module depends on.
-LOCAL_STATIC_LIBRARIES := libreactnative jsi
-=======
-LOCAL_SHARED_LIBRARIES := libfolly_json libfb libglog_init libyoga
-
-# The static libraries (.a files) that this module depends on.
-LOCAL_STATIC_LIBRARIES := libreactnative libjscallinvokerholder
->>>>>>> v0.60.0
+LOCAL_STATIC_LIBRARIES := libreactnative jsi libjscallinvokerholder
 
 # Name of this module.
 #

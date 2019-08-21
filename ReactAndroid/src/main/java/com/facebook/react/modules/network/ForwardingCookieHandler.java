@@ -182,8 +182,6 @@ public class ForwardingCookieHandler extends CookieHandler {
       } catch (IllegalArgumentException ex) {
         // https://bugs.chromium.org/p/chromium/issues/detail?id=559720
         return null;
-<<<<<<< HEAD
-=======
       } catch (Exception exception) {
         String message = exception.getMessage();
         // We cannot catch MissingWebViewPackageException as it is in a private / system API
@@ -195,7 +193,6 @@ public class ForwardingCookieHandler extends CookieHandler {
         } else {
           throw exception;
         }
->>>>>>> v0.60.0
       }
 
       if (USES_LEGACY_STORE) {

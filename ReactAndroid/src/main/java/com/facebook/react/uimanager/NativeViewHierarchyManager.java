@@ -861,7 +861,7 @@ public class NativeViewHierarchyManager {
     view.sendAccessibilityEvent(eventType);
   }
 
-  public void performAccessibilityAction(int tag, int action) {
+  /*public void performAccessibilityAction(int tag, int action) {
     View view = mTagsToViews.get(tag);
     if (view == null) {
       throw new JSApplicationIllegalArgumentException("Could not find view with tag " + tag);
@@ -875,5 +875,5 @@ public class NativeViewHierarchyManager {
       throw new JSApplicationIllegalArgumentException("Could not find view with tag " + tag);
     }
     AccessibilityHelper.announceForAccessibility(view, announcement);
-  }
+  }*/
 }

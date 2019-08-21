@@ -10,12 +10,9 @@ package com.facebook.react.views.text;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-<<<<<<< HEAD
-import android.support.v7.widget.AppCompatTextView;
-=======
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.TintContextWrapper;
->>>>>>> v0.60.0
+
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.Spanned;
@@ -25,10 +22,7 @@ import android.text.util.Linkify;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-<<<<<<< HEAD
-=======
 
->>>>>>> v0.60.0
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
@@ -43,13 +37,10 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import javax.annotation.Nullable;
 
-<<<<<<< HEAD
-=======
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
->>>>>>> v0.60.0
 public class ReactTextView extends AppCompatTextView implements ReactCompoundView {
 
   private static final ViewGroup.LayoutParams EMPTY_LAYOUT_PARAMS =
@@ -289,12 +280,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         setJustificationMode(update.getJustificationMode());
       }
     }
-<<<<<<< HEAD
-=======
 
     // Ensure onLayout is called so the inline views can be repositioned.
     requestLayout();
->>>>>>> v0.60.0
   }
 
   @Override

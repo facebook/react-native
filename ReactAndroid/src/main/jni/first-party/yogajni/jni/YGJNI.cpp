@@ -418,34 +418,15 @@ static int YGJNILogFunc(
     const YGConfigRef config,
     const YGNodeRef node,
     YGLogLevel level,
-    void* layoutContext,
-    const char* format,
+    void *layoutContext,
+    const char *format,
     va_list args) {
-  char buffer[256] = {0};
-  int result = vsnprintf_safe(buffer, sizeof(buffer), format, args);
+  int result = vsnprintf_safe(NULL, 0, format, args);
+  std::vector<char> buffer(1 + result);
+  vsnprintf_safe(buffer.data(), buffer.size(), format, args);
 
-<<<<<<< HEAD
-  static auto logFunc =
-      findClassStatic("com/facebook/yoga/YogaLogger")
-          ->getMethod<void(
-              local_ref<JYogaNode>, local_ref<JYogaLogLevel>, jstring)>("log");
-
-  static auto logLevelFromInt =
-      JYogaLogLevel::javaClassStatic()
-          ->getStaticMethod<JYogaLogLevel::javaobject(jint)>("fromInt");
-
-  if (auto obj = YGNodeJobject(node)->lockLocal()) {
-    auto jlogger =
-        reinterpret_cast<global_ref<jobject>*>(YGConfigGetContext(config));
-    logFunc(
-        jlogger->get(),
-        obj,
-        logLevelFromInt(
-            JYogaLogLevel::javaClassStatic(), static_cast<jint>(level)),
-        Environment::current()->NewStringUTF(buffer));
-=======
   auto jloggerPtr =
-      static_cast<global_ref<JYogaLogger>*>(YGConfigGetContext(config));
+      static_cast<global_ref<JYogaLogger> *>(YGConfigGetContext(config));
   if (jloggerPtr != nullptr) {
     if (auto obj = YGNodeJobject(node, layoutContext)) {
       (*jloggerPtr)
@@ -454,7 +435,6 @@ static int YGJNILogFunc(
               JYogaLogLevel::fromInt(level),
               Environment::current()->NewStringUTF(buffer.data()));
     }
->>>>>>> v0.60.0
   }
 
   return result;

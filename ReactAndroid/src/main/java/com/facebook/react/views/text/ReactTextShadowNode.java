@@ -115,12 +115,10 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 builder.setJustificationMode(mJustificationMode);
               }
-<<<<<<< HEAD
-=======
+
               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                   builder.setUseLineSpacingFromFallbacks(true);
               }
->>>>>>> v0.60.0
               layout = builder.build();
             }
 
