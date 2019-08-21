@@ -497,7 +497,7 @@ function setSendIdleEvents(sendIdleEvents: boolean): void {
   NativeTiming.setSendIdleEvents(sendIdleEvents);
 }
 
-let ExportedJSTimers: $TEMPORARY$object<{|
+let ExportedJSTimers: {|
   callIdleCallbacks: (frameTime: number) => any | void,
   callImmediates: () => void,
   callTimers: (timersToCall: Array<number>) => any | void,
@@ -512,7 +512,7 @@ let ExportedJSTimers: $TEMPORARY$object<{|
   setImmediate: (func: any, ...args: any) => number,
   setInterval: (func: any, duration: number, ...args: any) => number,
   setTimeout: (func: any, duration: number, ...args: any) => number,
-|}>;
+|};
 if (!NativeTiming) {
   console.warn("Timing native module is not available, can't set timers.");
   // $FlowFixMe: we can assume timers are generally available

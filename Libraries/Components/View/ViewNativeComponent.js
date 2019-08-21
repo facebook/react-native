@@ -25,8 +25,8 @@ export type ViewNativeComponentType = Class<
 
 let NativeViewComponent;
 let viewConfig:
-  | $TEMPORARY$object<{||}>
-  | $TEMPORARY$object<{|
+  | {...}
+  | {|
       bubblingEventTypes?: $ReadOnly<{
         [eventName: string]: $ReadOnly<{|
           phasedRegistrationNames: $ReadOnly<{|
@@ -47,7 +47,7 @@ let viewConfig:
               process?: (arg1: any) => any,
             |}>,
       },
-    |}>;
+    |};
 
 // Only use the JS view config in DEV
 if (__DEV__) {

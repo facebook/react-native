@@ -170,7 +170,7 @@ class WindowedListView extends React.Component<Props, State> {
   _scrollRef: ?ScrollView;
   _viewabilityHelper: ViewabilityHelper;
 
-  static defaultProps: $TEMPORARY$object<{|
+  static defaultProps: {|
     disableIncrementalRendering: boolean,
     initialNumToRender: number,
     maxNumToRender: number,
@@ -178,7 +178,7 @@ class WindowedListView extends React.Component<Props, State> {
     recomputeRowsBatchingPeriod: number,
     renderScrollComponent: (props: any) => React.Node,
     viewablePercentThreshold: number,
-  |}> = {
+  |} = {
     initialNumToRender: 10,
     maxNumToRender: 30,
     numToRenderAhead: 10,

@@ -15,8 +15,8 @@ const ReactNativeViewConfig = {
   uiViewClassName: 'RCTView',
   baseModuleName: null,
   Manager: 'ViewManager',
-  Commands: ({}: $TEMPORARY$object<{||}>),
-  Constants: ({}: $TEMPORARY$object<{||}>),
+  Commands: ({}: {...}),
+  Constants: ({}: {...}),
   bubblingEventTypes: {
     ...ReactNativeViewViewConfigAndroid.bubblingEventTypes,
     topBlur: {

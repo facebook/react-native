@@ -337,7 +337,7 @@ const APIExamples: Array<RNTesterExample> = [
   },
 ];
 
-const Modules: $TEMPORARY$object<{||}> = {};
+const Modules: {...} = {};
 
 APIExamples.concat(ComponentExamples).forEach(Example => {
   Modules[Example.key] = Example.module;

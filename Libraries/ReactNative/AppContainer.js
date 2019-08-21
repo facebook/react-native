@@ -44,7 +44,7 @@ class AppContainer extends React.Component<Props, State> {
 
   static childContextTypes:
     | any
-    | $TEMPORARY$object<{|rootTag: React$PropType$Primitive<number>|}> = {
+    | {|rootTag: React$PropType$Primitive<number>|} = {
     rootTag: PropTypes.number,
   };
 

@@ -36,7 +36,7 @@ type State = {
 };
 
 class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
-  state: $FlowFixMe | $TEMPORARY$object<{||}> = {};
+  state: $FlowFixMe | {...} = {};
 
   shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
     const results: Array<?boolean> = TESTS.map(x => nextState[x]);
