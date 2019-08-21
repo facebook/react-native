@@ -43,7 +43,7 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     [RCTConvert CGSize:cropData[@"size"]]
   };
 
-  [[_bridge moduleForName:@"ImageLoader"]
+  [[_bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES]
    loadImageWithURLRequest:imageRequest callback:^(NSError *error, UIImage *image) {
      if (error) {
        errorCallback(error);
