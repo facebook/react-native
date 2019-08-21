@@ -10,28 +10,19 @@ import android.view.View;
 import android.view.ViewParent;
 import androidx.core.view.ViewCompat;
 
-import java.util.HashMap;
-
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
-<<<<<<< HEAD
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.uimanager.AccessibilityDelegateUtil.AccessibilityRole;
-=======
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
->>>>>>> v0.60.0
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
-import javax.annotation.Nonnull;
-<<<<<<< HEAD
-import javax.annotation.Nullable;
-
-=======
 import java.util.Map;
->>>>>>> v0.60.0
+import java.util.HashMap;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -143,17 +134,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = PROP_ACCESSIBILITY_LABEL)
   public void setAccessibilityLabel(@Nonnull T view, String accessibilityLabel) {
-<<<<<<< HEAD
-    view.setContentDescription(accessibilityLabel);
-  }
-
-  @ReactProp(name = PROP_ACCESSIBILITY_COMPONENT_TYPE)
-  public void setAccessibilityComponentType(@Nonnull T view, String accessibilityComponentType) {
-    AccessibilityHelper.updateAccessibilityComponentType(view, accessibilityComponentType);
-=======
     view.setTag(R.id.accessibility_label, accessibilityLabel);
     updateViewContentDescription(view);
->>>>>>> v0.60.0
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_HINT)
@@ -172,11 +154,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = PROP_ACCESSIBILITY_STATES)
   public void setViewStates(@Nonnull T view, @Nullable ReadableArray accessibilityStates) {
-<<<<<<< HEAD
-    view.setSelected(false);
-    view.setEnabled(true);
-=======
->>>>>>> v0.60.0
     if (accessibilityStates == null) {
       return;
     }
@@ -340,11 +317,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   private void updateViewAccessibility(@Nonnull T view) {
-<<<<<<< HEAD
-    AccessibilityDelegateUtil.setDelegate(view);
-=======
     ReactAccessibilityDelegate.setDelegate(view);
->>>>>>> v0.60.0
   }
 
   @Override

@@ -64,16 +64,6 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     }
   }
 
-<<<<<<< HEAD
-  // Focus or blur call on native components (through NativeMethodsMixin) redirects to TextInputState.js
-  // which dispatches focusTextInput or blurTextInput commands. These commands are mapped to FOCUS_TEXT_INPUT=1
-  // and BLUR_TEXT_INPUT=2 in ReactTextInputManager, hence these constants value should be in sync with ReactTextInputManager.
-  private static final int FOCUS_TEXT_INPUT = 1;
-  private static final int BLUR_TEXT_INPUT = 2;
-  private static final int CMD_HOTSPOT_UPDATE = 3;
-  private static final int CMD_SET_PRESSED = 4;
-  
-=======
   @ReactProp(name = "nextFocusDown", defaultInt = View.NO_ID)
   public void nextFocusDown(ReactViewGroup view, int viewId) {
     view.setNextFocusDownId(viewId);
@@ -99,7 +89,6 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setNextFocusUpId(viewId);
   }
 
->>>>>>> v0.60.0
   @ReactPropGroup(names = {
       ViewProps.BORDER_RADIUS,
       ViewProps.BORDER_TOP_LEFT_RADIUS,
@@ -266,15 +255,6 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
   public void setClickable(final ReactViewGroup view, boolean clickable) {
     if (clickable) {
       view.setOnClickListener(
-<<<<<<< HEAD
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            final EventDispatcher mEventDispatcher = ((ReactContext)view.getContext()).getNativeModule(UIManagerModule.class)
-                                                                                      .getEventDispatcher();
-            mEventDispatcher.dispatchEvent(new ViewGroupClickEvent(view.getId()));
-          }});
-=======
               new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -282,7 +262,6 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
                           .getEventDispatcher();
                   mEventDispatcher.dispatchEvent(new ViewGroupClickEvent(view.getId()));
                 }});
->>>>>>> v0.60.0
 
       // Clickable elements are focusable. On API 26, this is taken care by setClickable.
       // Explicitly calling setFocusable here for backward compatibility.
@@ -291,10 +270,6 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     else {
       view.setOnClickListener(null);
       view.setClickable(false);
-<<<<<<< HEAD
-      view.setFocusable(false);
-=======
->>>>>>> v0.60.0
     }
   }
 

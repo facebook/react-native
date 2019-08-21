@@ -128,11 +128,7 @@ task prepareGlog(dependsOn: createNativeDepsDirectories, type: Copy) {
 
     doLast {
         copy {
-<<<<<<< HEAD
-            from fileTree(dir: "$thirdPartyNdkDir/glog", includes: ["stl_logging.h", "logging.h", "raw_logging.h", "vlog_is_on.h", "**/glog/log_severity.h"]).files
-=======
             from(fileTree(dir: "$thirdPartyNdkDir/glog", includes: ["stl_logging.h", "logging.h", "raw_logging.h", "vlog_is_on.h", "**/src/glog/log_severity.h"]).files)
->>>>>>> v0.60.0
             includeEmptyDirs = false
             into("$thirdPartyNdkDir/glog/exported/glog")
         }
@@ -140,63 +136,39 @@ task prepareGlog(dependsOn: createNativeDepsDirectories, type: Copy) {
 }
 
 // Create Android.mk library module based on jsc from npm
-<<<<<<< HEAD
-task prepareJSC(dependsOn: JSEngineUsed=='V8' ? [] : [downloadJSC]) {
-    if (JSEngineUsed=='JSC'){
-        doLast {
-            def jscTar = tarTree(downloadJSC.dest)
-            def jscAAR = jscTar.matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
-            def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
-
-            def headerFiles = jscTar.matching({ it.include "**/include/*.h" })
-
-            copy {
-                from(soFiles)
-                from(headerFiles)
-                from("src/main/jni/third-party/jsc/Android.mk")
-                filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
-                includeEmptyDirs(false)
-                into("$thirdPartyNdkDir/jsc")
-            }
-=======
 task prepareJSC {
-    doLast {
-        def jscPackageRoot = file("$projectDir/../node_modules/jsc-android/dist")
-        if (!jscPackageRoot.exists()) {
-            // For an app to build from RN source, the jsc-android is located at /path/to/app/node_modules
-            // and $projectDir may located at /path/to/app/node_modules/react-native/ReactAndroid
-            jscPackageRoot = file("$projectDir/../../jsc-android/dist")
-        }
-        def jscAAR = fileTree(jscPackageRoot).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
-        def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
+	if (JSEngineUsed=='JSC'){
+		doLast {
+			def jscPackageRoot = file("$projectDir/../node_modules/jsc-android/dist")
+			if (!jscPackageRoot.exists()) {
+				// For an app to build from RN source, the jsc-android is located at /path/to/app/node_modules
+				// and $projectDir may located at /path/to/app/node_modules/react-native/ReactAndroid
+				jscPackageRoot = file("$projectDir/../../jsc-android/dist")
+			}
+			def jscAAR = fileTree(jscPackageRoot).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
+			def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
 
-        def headerFiles = fileTree(jscPackageRoot).matching({ it.include "**/include/*.h" })
+			def headerFiles = fileTree(jscPackageRoot).matching({ it.include "**/include/*.h" })
 
-        copy {
-            from(soFiles)
-            from(headerFiles)
-            from("src/main/jni/third-party/jsc/Android.mk")
+			copy {
+				from(soFiles)
+				from(headerFiles)
+				from("src/main/jni/third-party/jsc/Android.mk")
 
-            filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
+				filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
 
-            includeEmptyDirs(false)
-            into("$thirdPartyNdkDir/jsc")
->>>>>>> v0.60.0
-        }
-    }
+				includeEmptyDirs(false)
+				into("$thirdPartyNdkDir/jsc")
+
+			}
+		}
+	}
 }
 
 task downloadNdkBuildDependencies {
     if (!boostPath) {
         dependsOn(downloadBoost)
     }
-<<<<<<< HEAD
-    dependsOn(downloadJSC)
-=======
-    dependsOn(downloadDoubleConversion)
-    dependsOn(downloadFolly)
-    dependsOn(downloadGlog)
->>>>>>> v0.60.0
 }
 
 def getNdkBuildName() {
@@ -300,7 +272,6 @@ task cleanReactNdkLib(type: Exec) {
 
 // usage : gradlew -Pparam="excludeLibs" <taskname>
 task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
-<<<<<<< HEAD
     def arg = project.hasProperty('param') ? project.property('param') : 'noArg'
     from "$buildDir/react-ndk/all"
     from("$thirdPartyNdkDir/jsc/jni")
@@ -310,11 +281,6 @@ task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
         exclude '**/libjsc.so'
     }
     into "$buildDir/react-ndk/exported"
-=======
-    from("$buildDir/react-ndk/all")
-    into("$buildDir/react-ndk/exported")
-    exclude("**/libjsc.so")
->>>>>>> v0.60.0
 }
 
 task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
@@ -380,16 +346,6 @@ android {
 }
 
 dependencies {
-    if (System.getenv("BUCK_BUILD") != "1")
-    {
-        if (isSDXPlatform()) {
-            annotationProcessor project(':react-native:processor');
-        }
-        else {
-            annotationProcessor project(':processor');
-        }
-    }
-
     api("com.facebook.infer.annotation:infer-annotation:0.11.2")
     api("javax.inject:javax.inject:1")
     api("androidx.appcompat:appcompat:1.0.2")
@@ -400,9 +356,6 @@ dependencies {
     api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
     api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
     api("com.squareup.okio:okio:1.15.0")
-    if(JSEngineUsed=='JSC'){
-        compile 'org.webkit:android-jsc:r174650'
-    }
 
     testImplementation("junit:junit:${JUNIT_VERSION}")
     testImplementation("org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}")

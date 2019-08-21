@@ -34,9 +34,26 @@ struct InstanceCallback {
   virtual void decrementPendingJSCalls() {}
 };
 
+enum class CachingType {
+  NoCaching,
+  PartialCaching,
+  PartialCachingWithNoLazy,
+  FullCaching,
+  FullCachingWithNoLazy
+};
+
+struct JSEConfigParams {
+  std::string cachePath;
+  CachingType cacheType;
+  int loggingLevel;
+};
+
 class RN_EXPORT Instance {
 public:
   ~Instance();
+
+  virtual void setModuleRegistry(std::shared_ptr<ModuleRegistry> moduleRegistry);
+
   virtual void initializeBridge(std::unique_ptr<InstanceCallback> callback,
                         std::shared_ptr<ExecutorDelegateFactory> edf, // if nullptr, will use default delegate (JsToNativeBridge) // TODO(OSS Candidate ISS#2710739)
                         std::shared_ptr<JSExecutorFactory> jsef,

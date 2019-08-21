@@ -18,13 +18,14 @@ buildscript {
     }
 }
 
-def isSDXPlatform() {
-    if (parent == null) {
-        return false;
-    }
+//fun isSDXPlatform():Boolean {
+//    if (parent == null) {
+//        return false;
+//    }
 
-    return true;
-}
+//    return true;
+//}
+
 
 allprojects {
     repositories {
