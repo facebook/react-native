@@ -724,6 +724,41 @@ void Binding::schedulerDidDispatchCommand(
   dispatchCommand(localJavaUIManager, shadowView.tag, command.get(), argsArray.get());
 }
 
+void Binding::schedulerDidSetJSResponder(
+    SurfaceId surfaceId,
+    const ShadowView &shadowView,
+    const ShadowView &initialShadowView,
+    bool blockNativeResponder) {
+
+  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
+  if (!localJavaUIManager) {
+    LOG(ERROR) << "Binding::schedulerSetJSResponder: JavaUIManager disappeared";
+    return;
+  }
+
+  static auto setJSResponder =
+      jni::findClassStatic(UIManagerJavaDescriptor)
+          ->getMethod<void(
+              jint, jint, jboolean)>(
+              "setJSResponder");
+
+  setJSResponder(localJavaUIManager, shadowView.tag, initialShadowView.tag, (jboolean) blockNativeResponder);
+}
+
+void Binding::schedulerDidClearJSResponder() {
+  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
+  if (!localJavaUIManager) {
+    LOG(ERROR) << "Binding::schedulerClearJSResponder: JavaUIManager disappeared";
+    return;
+  }
+
+  static auto clearJSResponder =
+      jni::findClassStatic(UIManagerJavaDescriptor)
+          ->getMethod<void()>("clearJSResponder");
+
+  clearJSResponder(localJavaUIManager);
+}
+
 void Binding::registerNatives() {
   registerHybrid(
       {makeNativeMethod("initHybrid", Binding::initHybrid),

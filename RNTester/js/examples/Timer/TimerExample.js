@@ -10,10 +10,12 @@
 
 'use strict';
 
-const React = require('react');
-const {Alert, Platform, ToastAndroid, Text, View} = require('react-native');
 const RNTesterButton = require('../../components/RNTesterButton');
+const React = require('react');
+
 const performanceNow = require('fbjs/lib/performanceNow');
+
+const {Alert, Platform, ToastAndroid, Text, View} = require('react-native');
 
 function burnCPU(milliseconds) {
   const start = performanceNow();
@@ -267,11 +269,10 @@ exports.description = 'A demonstration of Timers in React Native.';
 exports.examples = [
   {
     title: 'this.setTimeout(fn, t)',
-    description:
-      'Execute function fn t milliseconds in the future.  If ' +
+    description: ('Execute function fn t milliseconds in the future.  If ' +
       't === 0, it will be enqueued immediately in the next event loop.  ' +
-      'Larger values will fire on the closest frame.',
-    render: function() {
+      'Larger values will fire on the closest frame.': string),
+    render: function(): React.Node {
       return (
         <View>
           <TimerTester type="setTimeout" dt={0} />
@@ -284,7 +285,7 @@ exports.examples = [
   {
     title: 'this.requestAnimationFrame(fn)',
     description: 'Execute function fn on the next frame.',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <TimerTester type="requestAnimationFrame" />
@@ -295,7 +296,7 @@ exports.examples = [
   {
     title: 'this.requestIdleCallback(fn)',
     description: 'Execute function fn on the next JS frame that has idle time',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <RequestIdleCallbackTester />
@@ -306,7 +307,7 @@ exports.examples = [
   {
     title: 'this.setImmediate(fn)',
     description: 'Execute function fn at the end of the current JS event loop.',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <TimerTester type="setImmediate" />
@@ -316,10 +317,9 @@ exports.examples = [
   },
   {
     title: 'this.setInterval(fn, t)',
-    description:
-      'Execute function fn every t milliseconds until cancelled ' +
-      'or component is unmounted.',
-    render: function() {
+    description: ('Execute function fn every t milliseconds until cancelled ' +
+      'or component is unmounted.': string),
+    render: function(): React.Node {
       type IntervalExampleProps = $ReadOnly<{||}>;
       type IntervalExampleState = {|
         showTimer: boolean,

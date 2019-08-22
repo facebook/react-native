@@ -15,7 +15,8 @@ bool YGLayout::operator==(YGLayout layout) const {
       YGFloatArrayEqual(margin, layout.margin) &&
       YGFloatArrayEqual(border, layout.border) &&
       YGFloatArrayEqual(padding, layout.padding) &&
-      direction == layout.direction && hadOverflow == layout.hadOverflow &&
+      direction() == layout.direction() &&
+      hadOverflow() == layout.hadOverflow() &&
       lastOwnerDirection == layout.lastOwnerDirection &&
       nextCachedMeasurementsIndex == layout.nextCachedMeasurementsIndex &&
       cachedLayout == layout.cachedLayout &&

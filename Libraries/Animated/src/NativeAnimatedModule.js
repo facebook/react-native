@@ -14,7 +14,7 @@ import type {TurboModule} from '../../TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
 
 type EndResult = {finished: boolean};
-type EndCallback = (result: EndResult) => void | Promise<void>;
+type EndCallback = (result: EndResult) => void;
 
 export type EventMapping = {|
   nativeEventPath: Array<string>,
@@ -67,4 +67,4 @@ export interface Spec extends TurboModule {
   +removeListeners: (count: number) => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('NativeAnimatedModule');
+export default (TurboModuleRegistry.get<Spec>('NativeAnimatedModule'): ?Spec);

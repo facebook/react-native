@@ -37,7 +37,7 @@
 - (instancetype)initWithId:(NSNumber *)animationId
                     config:(NSDictionary *)config
                    forNode:(RCTValueAnimatedNode *)valueNode
-                  callBack:(nullable RCTResponseSenderBlock)callback;
+                  callBack:(nullable RCTResponseSenderBlock)callback
 {
   if ((self = [super init])) {
     _callback = [callback copy];

@@ -13,14 +13,13 @@ const React = require('react');
 const View = require('../View/View');
 
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 
 type Props = $ReadOnly<{|
   ...ViewProps,
   emulateUnlessSupported?: boolean,
 |}>;
 
-let exported;
+let exported: Class<React$Component<Props>>;
 
 /**
  * Renders nested content and automatically applies paddings reflect the portion
@@ -62,7 +61,7 @@ if (Platform.OS === 'android') {
 
   const SafeAreaViewRef = React.forwardRef(SafeAreaView);
   SafeAreaViewRef.displayName = 'SafeAreaView';
-  exported = ((SafeAreaViewRef: any): Class<NativeComponent<Props>>);
+  exported = ((SafeAreaViewRef: any): Class<React.Component<Props>>);
 }
 
 module.exports = exported;

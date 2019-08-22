@@ -15,8 +15,9 @@ public class NoPropsNoEventsNativeComponentViewManager extends SimpleViewManager
   }
 
   private void test() {
-    NoPropsNoEventsNativeComponentViewManagerDelegate delegate =
-        new NoPropsNoEventsNativeComponentViewManagerDelegate<ViewGroup>();
+    NoPropsNoEventsNativeComponentViewManagerDelegate<
+            ViewGroup, NoPropsNoEventsNativeComponentViewManager>
+        delegate = new NoPropsNoEventsNativeComponentViewManagerDelegate<>(this);
   }
 
   @Override

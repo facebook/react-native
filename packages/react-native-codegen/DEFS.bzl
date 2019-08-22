@@ -17,10 +17,70 @@ load(
     "rn_xplat_cxx_library",
 )
 
-def rn_codegen(
+def rn_codegen_modules(
+        native_module_spec_name,
         name = "",
         schema_target = ""):
-    generate_fixtures_rule_name = "generate_fixtures-{}".format(name)
+    generate_fixtures_rule_name = "generate_fixtures_modules-{}".format(name)
+    generate_module_hobjcpp_name = "generate_module_hobjcpp-{}".format(name)
+    generate_module_mm_name = "generate_module_mm-{}".format(name)
+
+    fb_native.genrule(
+        name = generate_fixtures_rule_name,
+        srcs = native.glob(["src/generators/**/*.js"]),
+        cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:rn_codegen) $(location {}) {} $OUT {}".format(schema_target, name, native_module_spec_name),
+        out = "codegenfiles-{}".format(name),
+    )
+
+    fb_native.genrule(
+        name = generate_module_hobjcpp_name,
+        cmd = "cp $(location :{})/{}.h $OUT".format(generate_fixtures_rule_name, native_module_spec_name),
+        out = "{}.h".format(native_module_spec_name),
+    )
+
+    fb_native.genrule(
+        name = generate_module_mm_name,
+        cmd = "cp $(location :{})/{}-generated.mm $OUT".format(generate_fixtures_rule_name, native_module_spec_name),
+        out = "{}-generated.mm".format(native_module_spec_name),
+    )
+
+    rn_xplat_cxx_library(
+        name = "generated_objcpp_modules-{}".format(name),
+        ios_srcs = [
+            ":{}".format(generate_module_mm_name),
+        ],
+        ios_headers = [
+            ":{}".format(generate_module_hobjcpp_name),
+        ],
+        ios_exported_headers = {
+            "{}.h".format(native_module_spec_name): ":{}".format(generate_module_hobjcpp_name),
+            "{}-generated.mm".format(native_module_spec_name): ":{}".format(generate_module_mm_name),
+        },
+        header_namespace = native_module_spec_name,
+        compiler_flags = [
+            "-fexceptions",
+            "-frtti",
+            "-std=c++14",
+            "-Wall",
+        ],
+        fbobjc_compiler_flags = get_apple_compiler_flags(),
+        fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+        platforms = (APPLE),
+        apple_sdks = (IOS),
+        preprocessor_flags = [
+            "-DLOG_TAG=\"ReactNative\"",
+            "-DWITH_FBSYSTRACE=1",
+        ],
+        visibility = ["PUBLIC"],
+        deps = [
+            "fbsource//xplat/js:React",
+        ],
+    )
+
+def rn_codegen_components(
+        name = "",
+        schema_target = ""):
+    generate_fixtures_rule_name = "generate_fixtures_components-{}".format(name)
     generate_component_descriptor_h_name = "generate_component_descriptor_h-{}".format(name)
     generate_component_hobjcpp_name = "generate_component_hobjcpp-{}".format(name)
     generate_event_emitter_cpp_name = "generate_event_emitter_cpp-{}".format(name)
@@ -30,17 +90,13 @@ def rn_codegen(
     generate_tests_cpp_name = "generate_tests_cpp-{}".format(name)
     generate_shadow_node_cpp_name = "generated_shadow_node_cpp-{}".format(name)
     generate_shadow_node_h_name = "generated_shadow_node_h-{}".format(name)
-    generate_module_h_name = "generate_module_h-{}".format(name)
-    generate_module_cpp_name = "generate_module_cpp-{}".format(name)
-    generate_module_hobjcpp_name = "generate_module_hobjcpp-{}".format(name)
-    generate_module_mm_name = "generate_module_mm-{}".format(name)
     copy_generated_java_files = "copy_generated_java_files-{}".format(name)
     zip_generated_java_files = "zip_generated_java_files-{}".format(name)
 
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = native.glob(["src/generators/**/*.js"]),
-        cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:rn_codegen) $(location {}) {} $OUT".format(schema_target, name),
+        cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:rn_codegen) $(location {}) {} $OUT {}".format(schema_target, name, name),
         out = "codegenfiles-{}".format(name),
     )
 
@@ -52,8 +108,8 @@ def rn_codegen(
 
     fb_native.genrule(
         name = generate_component_hobjcpp_name,
-        cmd = "cp $(location :{})/ComponentViewHelpers.h $OUT".format(generate_fixtures_rule_name),
-        out = "ComponentViewHelpers.h",
+        cmd = "cp $(location :{})/RCTComponentViewHelpers.h $OUT".format(generate_fixtures_rule_name),
+        out = "RCTComponentViewHelpers.h",
     )
 
     fb_native.genrule(
@@ -109,30 +165,6 @@ def rn_codegen(
         name = generate_shadow_node_h_name,
         cmd = "cp $(location :{})/ShadowNodes.h $OUT".format(generate_fixtures_rule_name),
         out = "ShadowNodes.h",
-    )
-
-    fb_native.genrule(
-        name = generate_module_h_name,
-        cmd = "cp $(location :{})/NativeModules.h $OUT".format(generate_fixtures_rule_name),
-        out = "NativeModules.h",
-    )
-
-    fb_native.genrule(
-        name = generate_module_cpp_name,
-        cmd = "cp $(location :{})/NativeModules.cpp $OUT".format(generate_fixtures_rule_name),
-        out = "NativeModules.cpp",
-    )
-
-    fb_native.genrule(
-        name = generate_module_hobjcpp_name,
-        cmd = "cp $(location :{})/RCTNativeModules.h $OUT".format(generate_fixtures_rule_name),
-        out = "RCTNativeModules.h",
-    )
-
-    fb_native.genrule(
-        name = generate_module_mm_name,
-        cmd = "cp $(location :{})/RCTNativeModules.mm $OUT".format(generate_fixtures_rule_name),
-        out = "RCTNativeModules.mm",
     )
 
     # libs
@@ -193,49 +225,6 @@ def rn_codegen(
         ],
     )
 
-    rn_xplat_cxx_library(
-        name = "generated_modules-{}".format(name),
-        tests = [":generated_tests-{}".format(name)],
-        ios_srcs = [
-            ":{}".format(generate_module_mm_name),
-        ],
-        srcs = [
-            ":{}".format(generate_module_cpp_name),
-        ],
-        headers = [
-            ":{}".format(generate_module_h_name),
-        ],
-        ios_headers = [
-            ":{}".format(generate_module_hobjcpp_name),
-        ],
-        exported_headers = {
-            "NativeModules.cpp": ":{}".format(generate_module_cpp_name),
-            "NativeModules.h": ":{}".format(generate_module_h_name),
-        },
-        ios_exported_headers = {
-            "RCTNativeModules.h": ":{}".format(generate_module_hobjcpp_name),
-            "RCTNativeModules.mm": ":{}".format(generate_module_mm_name),
-        },
-        header_namespace = "react/modules/{}".format(name),
-        compiler_flags = [
-            "-fexceptions",
-            "-frtti",
-            "-std=c++14",
-            "-Wall",
-        ],
-        fbobjc_compiler_flags = get_apple_compiler_flags(),
-        fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
-        platforms = (ANDROID, APPLE),
-        preprocessor_flags = [
-            "-DLOG_TAG=\"ReactNative\"",
-            "-DWITH_FBSYSTRACE=1",
-        ],
-        visibility = ["PUBLIC"],
-        exported_deps = [
-            react_native_xplat_target("turbomodule/core:core"),
-        ],
-    )
-
     rn_android_library(
         name = "generated_components_java-{}".format(name),
         srcs = [
@@ -245,6 +234,7 @@ def rn_codegen(
         deps = [
             react_native_dep("third-party/android/androidx:annotation"),
             react_native_target("java/com/facebook/react/bridge:bridge"),
+            react_native_target("java/com/facebook/react/uimanager:uimanager"),
         ],
     )
 
@@ -266,5 +256,63 @@ def rn_codegen(
         deps = [
             "fbsource//xplat/third-party/gmock:gtest",
             ":generated_components-{}".format(name),
+        ],
+    )
+
+def rn_codegen_cxx_modules(
+        name = "",
+        schema_target = ""):
+    generate_fixtures_rule_name = "generate_fixtures_cxx-{}".format(name)
+    generate_module_h_name = "generate_module_h-{}".format(name)
+    generate_module_cpp_name = "generate_module_cpp-{}".format(name)
+
+    fb_native.genrule(
+        name = generate_fixtures_rule_name,
+        srcs = native.glob(["src/generators/**/*.js"]),
+        cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:rn_codegen) $(location {}) {} $OUT {}".format(schema_target, name, name),
+        out = "codegenfiles-{}".format(name),
+    )
+
+    fb_native.genrule(
+        name = generate_module_h_name,
+        cmd = "cp $(location :{})/NativeModules.h $OUT".format(generate_fixtures_rule_name),
+        out = "NativeModules.h",
+    )
+
+    fb_native.genrule(
+        name = generate_module_cpp_name,
+        cmd = "cp $(location :{})/NativeModules.cpp $OUT".format(generate_fixtures_rule_name),
+        out = "NativeModules.cpp",
+    )
+
+    rn_xplat_cxx_library(
+        name = "generated_cxx_modules-{}".format(name),
+        srcs = [
+            ":{}".format(generate_module_cpp_name),
+        ],
+        headers = [
+            ":{}".format(generate_module_h_name),
+        ],
+        exported_headers = {
+            "NativeModules.cpp": ":{}".format(generate_module_cpp_name),
+            "NativeModules.h": ":{}".format(generate_module_h_name),
+        },
+        header_namespace = "react/modules/{}".format(name),
+        compiler_flags = [
+            "-fexceptions",
+            "-frtti",
+            "-std=c++14",
+            "-Wall",
+        ],
+        fbobjc_compiler_flags = get_apple_compiler_flags(),
+        fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+        platforms = (ANDROID, APPLE),
+        preprocessor_flags = [
+            "-DLOG_TAG=\"ReactNative\"",
+            "-DWITH_FBSYSTRACE=1",
+        ],
+        visibility = ["PUBLIC"],
+        exported_deps = [
+            react_native_xplat_target("turbomodule/core:core"),
         ],
     )

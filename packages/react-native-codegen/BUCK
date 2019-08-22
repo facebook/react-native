@@ -3,8 +3,25 @@ load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("@fbsource//tools/build_defs:fb_xplat_cxx_binary.bzl", "fb_xplat_cxx_binary")
 load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_xplat_cxx_library")
 load("@fbsource//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
-load("@fbsource//xplat/js/react-native-github/packages/react-native-codegen:DEFS.bzl", "rn_codegen")
+load("@fbsource//xplat/js/react-native-github/packages/react-native-codegen:DEFS.bzl", "rn_codegen_components", "rn_codegen_modules")
 load("//tools/build_defs/oss:rn_defs.bzl", "react_native_target")
+
+fb_native.sh_binary(
+    name = "codegen_rn_modules_tests",
+    main = "src/cli/verify_with_old_codegen.sh",
+    visibility = ["PUBLIC"],
+    resources = [
+        "fbsource//xplat/js:setup_env",
+        "src/cli/verify_with_old_codegen.js",
+        "src/cli/verify_with_old_codegen.sh",
+    ],
+)
+
+fb_native.sh_test(
+    name = "verify_all_modules_with_old_codegen",
+    test = "src/cli/verify_all_modules_with_old_codegen.sh",
+    visibility = ["PUBLIC"],
+)
 
 fb_native.sh_binary(
     name = "write_to_json",
@@ -46,8 +63,14 @@ fb_native.genrule(
     out = "schema-codegen_tests.json",
 )
 
-rn_codegen(
+rn_codegen_components(
     name = "codegen_tests",
+    schema_target = ":codegen_tests_schema",
+)
+
+rn_codegen_modules(
+    name = "codegen_tests",
+    native_module_spec_name = "FBReactNativeTestSpec",
     schema_target = ":codegen_tests_schema",
 )
 
@@ -129,9 +152,8 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "fbsource//xplat/js:React",
         ":generated_components-codegen_tests",
-        ":generated_modules-codegen_tests",
+        ":generated_objcpp_modules-codegen_tests",
     ],
 )
 

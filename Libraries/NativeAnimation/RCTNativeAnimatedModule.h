@@ -8,13 +8,13 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTEventEmitter.h>
-#import <React/RNSurfacePresenterStub.h>
+#import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
 #import <React/RCTUIManagerUtils.h>
 
 #import "RCTValueAnimatedNode.h"
 
-@interface RCTNativeAnimatedModule : RCTEventEmitter <RCTBridgeModule, RCTValueAnimatedNodeObserver, RCTEventDispatcherObserver, RCTUIManagerObserver, RNSurfacePresenterObserver>
+@interface RCTNativeAnimatedModule : RCTEventEmitter <RCTBridgeModule, RCTValueAnimatedNodeObserver, RCTEventDispatcherObserver, RCTUIManagerObserver, RCTSurfacePresenterObserver>
 
 @end

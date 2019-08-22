@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {Clipboard, View, Text, StyleSheet} = require('react-native');
 
 type Props = $ReadOnly<{||}>;
@@ -60,7 +61,7 @@ exports.description = 'Show Clipboard contents.';
 exports.examples = [
   {
     title: 'Clipboard.setString() and getString()',
-    render() {
+    render(): React.Node {
       return <ClipboardExample />;
     },
   },

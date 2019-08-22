@@ -18,6 +18,7 @@ import type {
 } from '../../Types/CodegenTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ImageSource} from '../../Image/ImageSource';
@@ -53,7 +54,7 @@ type NativeProps = $ReadOnly<{|
   onSlidingComplete?: ?DirectEventHandler<Event, 'paperSlidingComplete'>,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('Slider', {
+export default (codegenNativeComponent<NativeProps>('Slider', {
   interfaceOnly: true,
   paperComponentName: 'RCTSlider',
-});
+}): NativeComponentType<NativeProps>);

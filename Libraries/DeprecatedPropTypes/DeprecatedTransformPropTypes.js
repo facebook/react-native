@@ -41,7 +41,7 @@ const DecomposedMatrixPropType = function(
 };
 
 const DeprecatedTransformPropTypes = {
-  transform: ReactPropTypes.arrayOf(
+  transform: (ReactPropTypes.arrayOf(
     ReactPropTypes.oneOfType([
       ReactPropTypes.shape({perspective: ReactPropTypes.number}),
       ReactPropTypes.shape({rotate: ReactPropTypes.string}),
@@ -56,29 +56,44 @@ const DeprecatedTransformPropTypes = {
       ReactPropTypes.shape({skewX: ReactPropTypes.string}),
       ReactPropTypes.shape({skewY: ReactPropTypes.string}),
     ]),
-  ),
+  ): React$PropType$Primitive<
+    Array<
+      | {perspective?: number}
+      | {rotate?: string}
+      | {rotateX?: string}
+      | {rotateY?: string}
+      | {rotateZ?: string}
+      | {scale?: number}
+      | {scaleX?: number}
+      | {scaleY?: number}
+      | {translateX?: number}
+      | {translateY?: number}
+      | {skewX?: string}
+      | {skewY?: string},
+    >,
+  >),
   transformMatrix: TransformMatrixPropType,
   decomposedMatrix: DecomposedMatrixPropType,
-  scaleX: deprecatedPropType(
+  scaleX: (deprecatedPropType(
     ReactPropTypes.number,
     'Use the transform prop instead.',
-  ),
-  scaleY: deprecatedPropType(
+  ): ReactPropsCheckType),
+  scaleY: (deprecatedPropType(
     ReactPropTypes.number,
     'Use the transform prop instead.',
-  ),
-  rotation: deprecatedPropType(
+  ): ReactPropsCheckType),
+  rotation: (deprecatedPropType(
     ReactPropTypes.number,
     'Use the transform prop instead.',
-  ),
-  translateX: deprecatedPropType(
+  ): ReactPropsCheckType),
+  translateX: (deprecatedPropType(
     ReactPropTypes.number,
     'Use the transform prop instead.',
-  ),
-  translateY: deprecatedPropType(
+  ): ReactPropsCheckType),
+  translateY: (deprecatedPropType(
     ReactPropTypes.number,
     'Use the transform prop instead.',
-  ),
+  ): ReactPropsCheckType),
 };
 
 module.exports = DeprecatedTransformPropTypes;

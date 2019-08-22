@@ -27,20 +27,19 @@ const requireNativeComponent = require('../../ReactNative/requireNativeComponent
 const resolveAssetSource = require('../../Image/resolveAssetSource');
 const splitLayoutProps = require('../../StyleSheet/splitLayoutProps');
 
+import type {NativeMethodsMixinType} from '../../Renderer/shims/ReactNativeTypes';
+import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {PointProp} from '../../StyleSheet/PointPropType';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {
   PressEvent,
   ScrollEvent,
   LayoutEvent,
 } from '../../Types/CoreEventTypes';
-import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
-import type {NativeMethodsMixinType} from '../../Renderer/shims/ReactNativeTypes';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ViewProps} from '../View/ViewPropTypes';
-import type {PointProp} from '../../StyleSheet/PointPropType';
-import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
-
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {State as ScrollResponderState} from '../ScrollResponder';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
 
 let AndroidScrollView;
 let AndroidHorizontalScrollContentView;
@@ -628,7 +627,7 @@ const standardVerticalContext: ContextType = Object.freeze({horizontal: false});
  * supports out of the box.
  */
 class ScrollView extends React.Component<Props, State> {
-  static Context = Context;
+  static Context: React$Context<ContextType> = Context;
   /**
    * Part 1: Removing ScrollResponder.Mixin:
    *
@@ -688,7 +687,7 @@ class ScrollView extends React.Component<Props, State> {
   _stickyHeaderRefs: Map<string, StickyHeaderComponentType> = new Map();
   _headerLayoutYs: Map<string, number> = new Map();
 
-  state = {
+  state: State = {
     layoutHeight: null,
     ...ScrollResponder.Mixin.scrollResponderMixinGetInitialState(),
   };
@@ -941,7 +940,7 @@ class ScrollView extends React.Component<Props, State> {
     this._innerViewRef = ref;
   };
 
-  render() {
+  render(): React.Node | React.Element<string> {
     let ScrollViewClass;
     let ScrollContentContainerViewClass;
     if (Platform.OS === 'android') {

@@ -650,13 +650,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mUIImplementation.viewIsDescendantOf(reactTag, ancestorReactTag, callback);
   }
 
-  @Override
   @ReactMethod
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
     mUIImplementation.setJSResponder(reactTag, blockNativeResponder);
   }
 
-  @Override
   @ReactMethod
   public void clearJSResponder() {
     mUIImplementation.clearJSResponder();

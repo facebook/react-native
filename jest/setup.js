@@ -172,9 +172,6 @@ jest
 
     return ReactNative;
   })
-  .mock('../Libraries/Components/Touchable/ensureComponentIsNative', () => () =>
-    true,
-  )
   // Mock modules defined by the native layer (ex: Objective-C, Java)
   .mock('../Libraries/BatchedBridge/NativeModules', () => ({
     AlertManager: {

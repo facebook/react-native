@@ -12,4 +12,4 @@
 
 const React = require('react');
 
-module.exports = React.createContext<number>(0);
+module.exports = (React.createContext<number>(0): React$Context<number>);

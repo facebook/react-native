@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {Alert, Button, View, StyleSheet} = require('react-native');
 
 function onButtonPress(buttonName) {
@@ -25,11 +26,10 @@ exports.description = 'Simple React Native button component.';
 exports.examples = [
   {
     title: 'Simple Button',
-    description:
-      'The title and onPress handler are required. It is ' +
+    description: ('The title and onPress handler are required. It is ' +
       'recommended to set accessibilityLabel to help make your app usable by ' +
-      'everyone.',
-    render: function() {
+      'everyone.': string),
+    render: function(): React.Node {
       return (
         <Button
           onPress={() => onButtonPress('Simple')}
@@ -42,11 +42,10 @@ exports.examples = [
   },
   {
     title: 'Adjusted color',
-    description:
-      'Adjusts the color in a way that looks standard on each ' +
+    description: ('Adjusts the color in a way that looks standard on each ' +
       'platform. On iOS, the color prop controls the color of the text. On ' +
-      'Android, the color adjusts the background color of the button.',
-    render: function() {
+      'Android, the color adjusts the background color of the button.': string),
+    render: function(): React.Node {
       return (
         <Button
           onPress={() => onButtonPress('Purple')}
@@ -60,9 +59,9 @@ exports.examples = [
   },
   {
     title: 'Fit to text layout',
-    description:
-      'This layout strategy lets the title define the width of ' + 'the button',
-    render: function() {
+    description: ('This layout strategy lets the title define the width of ' +
+      'the button': string),
+    render: function(): React.Node {
       return (
         <View style={styles.container}>
           <Button
@@ -85,7 +84,7 @@ exports.examples = [
   {
     title: 'Disabled Button',
     description: 'All interactions for the component are disabled.',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Button
           disabled

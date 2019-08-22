@@ -46,9 +46,10 @@ function getJavaValueForProp(prop: PropTypeShape, imports): string {
       return '@Nullable String value';
     case 'Int32TypeAnnotation':
       return 'int value';
+    case 'DoubleTypeAnnotation':
+      return 'double value';
     case 'FloatTypeAnnotation':
-      addNullable(imports);
-      return 'Float value';
+      return 'float value';
     case 'NativePrimitiveTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
@@ -67,6 +68,10 @@ function getJavaValueForProp(prop: PropTypeShape, imports): string {
     case 'ArrayTypeAnnotation': {
       addNullable(imports);
       return '@Nullable ReadableArray value';
+    }
+    case 'ObjectTypeAnnotation': {
+      addNullable(imports);
+      return '@Nullable ReadableMap value';
     }
     case 'StringEnumTypeAnnotation':
       addNullable(imports);
@@ -95,6 +100,10 @@ function getCommandArgJavaType(param) {
   switch (param.typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
       return 'boolean';
+    case 'DoubleTypeAnnotation':
+      return 'double';
+    case 'FloatTypeAnnotation':
+      return 'float';
     case 'Int32TypeAnnotation':
       return 'int';
     case 'StringTypeAnnotation':
@@ -158,7 +167,11 @@ function getClassExtendString(component): string {
 }
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const files = new Map();
     Object.keys(schema.modules).forEach(moduleName => {
       const components = schema.modules[moduleName].components;
@@ -169,7 +182,7 @@ module.exports = {
 
       return Object.keys(components).forEach(componentName => {
         const component = components[componentName];
-        const className = `${componentName}ViewManagerInterface`;
+        const className = `${componentName}ManagerInterface`;
         const fileName = `${className}.java`;
 
         const imports = getImports(component);

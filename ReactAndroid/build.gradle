@@ -92,15 +92,15 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
 }
 
 task prepareHermes() {
-    def hermesAAR = file("$projectDir/../node_modules/hermesvm/android/hermes-debug.aar")
+    def hermesAAR = file("$projectDir/../node_modules/hermes-engine/android/hermes-debug.aar")
     if (!hermesAAR.exists()) {
-        // For an app to build from RN source, hermesvm is located at /path/to/app/node_modules
+        // For an app to build from RN source, hermes-engine is located at /path/to/app/node_modules
         // and $projectDir is located at /path/to/app/node_modules/react-native/ReactAndroid
-        hermesAAR = file("$projectDir/../../hermesvm/android/hermes-debug.aar")
+        hermesAAR = file("$projectDir/../../hermes-engine/android/hermes-debug.aar")
 
         if (!hermesAAR.exists()) {
-          // At Facebook, this file is in a different folder
-          hermesAAR = file("$projectDir/../../node_modules/hermesvm/android/hermes-debug.aar")
+            // At Facebook, this file is in a different folder
+            hermesAAR = file("$projectDir/../../node_modules/hermes-engine/android/hermes-debug.aar")
         }
     }
     def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
@@ -356,6 +356,7 @@ android {
 
 dependencies {
     api("com.facebook.infer.annotation:infer-annotation:0.11.2")
+    api("com.facebook.yoga:proguard-annotations:1.14.1")
     api("javax.inject:javax.inject:1")
     api("androidx.appcompat:appcompat:1.0.2")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
@@ -379,6 +380,12 @@ dependencies {
     androidTestImplementation("androidx.test:runner:1.1.0")
     androidTestImplementation("androidx.test:rules:1.1.0")
     androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
+
+    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
+        exclude group:'com.facebook.yoga'
+        exclude group:'com.facebook.flipper', module: 'fbjni'
+        exclude group:'com.facebook.litho', module: 'litho-annotations'
+    }
 }
 
 apply(from: "release.gradle")

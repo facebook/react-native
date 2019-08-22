@@ -14,11 +14,11 @@ const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 import type AnimatedValue from '../nodes/AnimatedValue';
 
 export type EndResult = {finished: boolean};
-export type EndCallback = (result: EndResult) => void | Promise<void>;
+export type EndCallback = (result: EndResult) => void;
 
 export type AnimationConfig = {
   isInteraction?: boolean,
-  useNativeDriver?: boolean,
+  useNativeDriver: boolean,
   onComplete?: ?EndCallback,
   iterations?: number,
 };

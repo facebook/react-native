@@ -84,7 +84,11 @@ const propertyTemplate =
   'virtual ::_RETURN_VALUE_:: ::_PROPERTY_NAME_::(jsi::Runtime &rt::_ARGS_::) = 0;';
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const nativeModules = Object.keys(schema.modules)
       .map(moduleName => {
         const modules = schema.modules[moduleName].nativeModules;

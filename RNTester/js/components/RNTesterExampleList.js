@@ -10,7 +10,10 @@
 
 'use strict';
 
+const RNTesterActions = require('../utils/RNTesterActions');
+const RNTesterExampleFilter = require('./RNTesterExampleFilter');
 const React = require('react');
+
 const {
   Platform,
   SectionList,
@@ -19,11 +22,9 @@ const {
   TouchableHighlight,
   View,
 } = require('react-native');
-const RNTesterActions = require('../utils/RNTesterActions');
-const RNTesterExampleFilter = require('./RNTesterExampleFilter');
 
-import type {RNTesterExample} from '../types/RNTesterTypes';
 import type {ViewStyleProp} from '../../../Libraries/StyleSheet/StyleSheet';
+import type {RNTesterExample} from '../types/RNTesterTypes';
 
 type Props = {
   onNavigate: Function,
@@ -69,7 +70,7 @@ const renderSectionHeader = ({section}) => (
 );
 
 class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
-  render() {
+  render(): React.Node {
     const filter = ({example, filterRegex}) =>
       filterRegex.test(example.module.title) &&
       (!Platform.isTV || example.supportsTVOS);

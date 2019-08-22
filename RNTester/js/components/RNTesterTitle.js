@@ -11,10 +11,11 @@
 'use strict';
 
 const React = require('react');
+
 const {StyleSheet, Text, View} = require('react-native');
 
 class RNTesterTitle extends React.Component<$FlowFixMeProps> {
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.container}>
         <Text style={styles.text}>{this.props.title}</Text>

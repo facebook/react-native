@@ -42,6 +42,19 @@ class UIManagerDelegate {
       std::string const &commandName,
       folly::dynamic const args) = 0;
 
+  /*
+   * Set JS responder for a view
+   */
+  virtual void uiManagerDidSetJSResponder(
+      SurfaceId surfaceId,
+      SharedShadowNode const &shadowView,
+      bool blockNativeResponder) = 0;
+
+  /*
+   * Clear the JSResponder for a view
+   */
+  virtual void uiManagerDidClearJSResponder() = 0;
+
   virtual ~UIManagerDelegate() noexcept = default;
 };
 

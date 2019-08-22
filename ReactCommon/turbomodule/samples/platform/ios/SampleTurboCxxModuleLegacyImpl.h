@@ -15,8 +15,9 @@ namespace react {
 /**
  * A sample CxxModule (legacy system) implementation.
  */
-class SampleTurboCxxModuleLegacyImpl : public facebook::xplat::module::CxxModule {
-public:
+class SampleTurboCxxModuleLegacyImpl
+    : public facebook::xplat::module::CxxModule {
+ public:
   SampleTurboCxxModuleLegacyImpl();
 
   std::string getName() override;
@@ -30,9 +31,14 @@ public:
   std::string getString(const std::string &arg);
   folly::dynamic getArray(const folly::dynamic &arg);
   folly::dynamic getObject(const folly::dynamic &arg);
-  folly::dynamic getValue(double x, const std::string &y, const folly::dynamic &z);
-  void getValueWithCallback(const facebook::xplat::module::CxxModule::Callback &callback);
-  void getValueWithPromise(bool error, const facebook::xplat::module::CxxModule::Callback &resolve, const facebook::xplat::module::CxxModule::Callback &reject);
+  folly::dynamic
+  getValue(double x, const std::string &y, const folly::dynamic &z);
+  void getValueWithCallback(
+      const facebook::xplat::module::CxxModule::Callback &callback);
+  void getValueWithPromise(
+      bool error,
+      const facebook::xplat::module::CxxModule::Callback &resolve,
+      const facebook::xplat::module::CxxModule::Callback &reject);
 };
 
 } // namespace react

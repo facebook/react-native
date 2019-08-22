@@ -11,6 +11,7 @@
 'use strict';
 
 import type {ViewProps} from './ViewPropTypes';
+import type {ViewNativeComponentType} from './ViewNativeComponent';
 
 export type Props = ViewProps;
 
@@ -21,4 +22,5 @@ export type Props = ViewProps;
  *
  * @see http://facebook.github.io/react-native/docs/view.html
  */
-module.exports = require('./ViewNativeComponent').default;
+module.exports = (require('./ViewNativeComponent')
+  .default: ViewNativeComponentType);

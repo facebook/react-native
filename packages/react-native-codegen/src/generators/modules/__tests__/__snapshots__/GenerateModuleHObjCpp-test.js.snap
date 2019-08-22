@@ -2,7 +2,7 @@
 
 exports[`GenerateModuleHObjCpp can generate fixture COMPLEX_OBJECTS 1`] = `
 Map {
-  "RCTNativeModules.h" => "
+  "SampleSpec.h" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -23,10 +23,10 @@ Map {
 #import <RCTTypeSafety/RCTTypedModuleConstants.h>
 #import <React/RCTCxxConvert.h>
 #import <React/RCTManagedPointer.h>
-
-
-
 #import <RCTTypeSafety/RCTConvertHelpers.h>
+
+
+
 
 namespace JS {
   namespace NativeSampleTurboModule {
@@ -86,70 +86,70 @@ namespace JS {
 
 inline bool JS::NativeSampleTurboModule::SpecDifficultA::D() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"D\\"];
   return RCTBridgingToBool(p);
 }
 
 
 inline JS::NativeSampleTurboModule::SpecDifficultAE JS::NativeSampleTurboModule::SpecDifficultA::E() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"E\\"];
   return JS::NativeSampleTurboModule::SpecDifficultAE(p);
 }
 
 
 inline NSString *JS::NativeSampleTurboModule::SpecDifficultA::F() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"F\\"];
   return RCTBridgingToString(p);
 }
 
 
 inline bool JS::NativeSampleTurboModule::SpecDifficultReturnType::D() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"D\\"];
   return RCTBridgingToBool(p);
 }
 
 
 inline double JS::NativeSampleTurboModule::SpecDifficultReturnType::E() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"E\\"];
   return RCTBridgingToDouble(p);
 }
 
 
 inline NSString *JS::NativeSampleTurboModule::SpecDifficultReturnType::F() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"F\\"];
   return RCTBridgingToString(p);
 }
 
 
 inline bool JS::NativeSampleTurboModule::SpecDifficultAE::D() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"D\\"];
   return RCTBridgingToBool(p);
 }
 
 
 inline double JS::NativeSampleTurboModule::SpecDifficultAE::E() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"E\\"];
   return RCTBridgingToDouble(p);
 }
 
 
 inline NSString *JS::NativeSampleTurboModule::SpecDifficultAE::F() const
 {
-  id const p = _v[@\\"a\\"];
+  id const p = _v[@\\"F\\"];
   return RCTBridgingToString(p);
 }
 
 
 
 @protocol NativeSampleTurboModuleSpec <RCTBridgeModule, RCTTurboModule>
-- (NSDictionary *) difficult:(NSDictionary *)A;
+- (NSDictionary *) difficult:(JS::NativeSampleTurboModule::SpecDifficultA&)A;
 @end
 
 
@@ -169,7 +169,7 @@ public:
 
 exports[`GenerateModuleHObjCpp can generate fixture EMPTY_NATIVE_MODULES 1`] = `
 Map {
-  "RCTNativeModules.h" => "
+  "SampleSpec.h" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -190,10 +190,10 @@ Map {
 #import <RCTTypeSafety/RCTTypedModuleConstants.h>
 #import <React/RCTCxxConvert.h>
 #import <React/RCTManagedPointer.h>
-
-
-
 #import <RCTTypeSafety/RCTConvertHelpers.h>
+
+
+
 
 
 
@@ -218,7 +218,7 @@ public:
 
 exports[`GenerateModuleHObjCpp can generate fixture SIMPLE_NATIVE_MODULES 1`] = `
 Map {
-  "RCTNativeModules.h" => "
+  "SampleSpec.h" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -239,10 +239,10 @@ Map {
 #import <RCTTypeSafety/RCTTypedModuleConstants.h>
 #import <React/RCTCxxConvert.h>
 #import <React/RCTManagedPointer.h>
-
-
-
 #import <RCTTypeSafety/RCTConvertHelpers.h>
+
+
+
 
 namespace JS {
   namespace NativeSampleTurboModule {
@@ -294,11 +294,11 @@ inline JS::NativeSampleTurboModule::Constants::Builder::Builder(Constants i) : _
 - (facebook::react::ModuleConstants<JS::NativeSampleTurboModule::Constants::Builder>)getConstants;
 - (void) voidFunc;
 - (BOOL) getBool:(BOOL)arg;
-- (NSNumber *) getNumber:(NSNumber *)arg;
+- (NSNumber *) getNumber:(double)arg;
 - (NSString *) getString:(NSString *)arg;
-- (NSArray<id<NSObject>> *) getArray:(NSArray<id<NSObject>> *)arg;
+- (NSArray<id<NSObject>> *) getArray:(NSArray *)arg;
 - (NSDictionary *) getObject:(NSDictionary *)arg;
-- (NSDictionary *) getValue:(NSNumber *)x
+- (NSDictionary *) getValue:(double)x
    y:(NSString *)y
    z:(NSDictionary *)z;
 - (void) getValueWithCallback:(RCTResponseSenderBlock)callback;
@@ -324,7 +324,7 @@ public:
 
 exports[`GenerateModuleHObjCpp can generate fixture TWO_MODULES_DIFFERENT_FILES 1`] = `
 Map {
-  "RCTNativeModules.h" => "
+  "SampleSpec.h" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -345,10 +345,10 @@ Map {
 #import <RCTTypeSafety/RCTTypedModuleConstants.h>
 #import <React/RCTCxxConvert.h>
 #import <React/RCTManagedPointer.h>
-
-
-
 #import <RCTTypeSafety/RCTConvertHelpers.h>
+
+
+
 
 
 
@@ -358,11 +358,11 @@ Map {
 
 
 
-#import <RCTTypeSafety/RCTConvertHelpers.h>
 
 
 
 @protocol NativeSample2TurboModuleSpec <RCTBridgeModule, RCTTurboModule>
+
 - (void) voidFunc;
 @end
 
@@ -388,7 +388,7 @@ public:
 
 exports[`GenerateModuleHObjCpp can generate fixture TWO_MODULES_SAME_FILE 1`] = `
 Map {
-  "RCTNativeModules.h" => "
+  "SampleSpec.h" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -409,10 +409,10 @@ Map {
 #import <RCTTypeSafety/RCTTypedModuleConstants.h>
 #import <React/RCTCxxConvert.h>
 #import <React/RCTManagedPointer.h>
-
-
-
 #import <RCTTypeSafety/RCTConvertHelpers.h>
+
+
+
 
 
 
@@ -422,7 +422,6 @@ Map {
 
 
 
-#import <RCTTypeSafety/RCTConvertHelpers.h>
 
 
 

@@ -11,7 +11,9 @@
 'use strict';
 
 const React = require('react');
+
 const {Text, View, StyleSheet} = require('react-native');
+
 import {PanResponder, ScrollView} from 'react-native';
 
 exports.displayName = 'JSResponderHandlerExample';
@@ -28,13 +30,12 @@ const _gesture = PanResponder.create({
 exports.examples = [
   {
     title: 'JSResponderHandlerExample',
-    description:
-      'This example tests the native JSResponderHandler: when the user ' +
+    description: ('This example tests the native JSResponderHandler: when the user ' +
       'scrolls on the right side of the ScrollView (white area located on the' +
       ' right side of the gray area), the touch event is managed by native ' +
-      'which blocks the scroll event.',
+      'which blocks the scroll event.': string),
 
-    render: function() {
+    render: function(): React.Node {
       const views = [];
       for (let i = 0; i < 100; i++) {
         views[i] = (

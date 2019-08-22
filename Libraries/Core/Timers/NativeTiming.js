@@ -24,4 +24,4 @@ export interface Spec extends TurboModule {
   +setSendIdleEvents: (sendIdleEvents: boolean) => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('Timing');
+export default (TurboModuleRegistry.get<Spec>('Timing'): ?Spec);

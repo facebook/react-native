@@ -151,7 +151,7 @@ export type ImageStyle = ____ImageStyle_Internal;
  */
 export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
 
-let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
+let hairlineWidth: number = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }

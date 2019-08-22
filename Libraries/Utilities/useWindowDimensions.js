@@ -16,7 +16,7 @@ import * as React from 'react';
 
 export default function useWindowDimensions(): DisplayMetrics {
   const dims = Dimensions.get('window'); // always read the latest value
-  const forceUpdate = React.useState()[1];
+  const forceUpdate = React.useState(false)[1].bind(null, v => !v);
   const initialDims = React.useState(dims)[0];
   React.useEffect(() => {
     Dimensions.addEventListener('change', forceUpdate);

@@ -10,12 +10,12 @@
 
 'use strict';
 
-const React = require('react');
 const Platform = require('../../Utilities/Platform');
 const RootTagContext = require('../../ReactNative/RootTagContext');
 import ReactNative from '../../Renderer/shims/ReactNative';
 
 const processColor = require('../../StyleSheet/processColor');
+
 import NativeStatusBarManager from './NativeStatusBarManager';
 
 /**
@@ -247,7 +247,7 @@ class StatusBar extends React.Component<Props> {
    *
    * @platform android
    */
-  static currentHeight = NativeStatusBarManager.getConstants().HEIGHT;
+  static currentHeight: number = NativeStatusBarManager.getConstants().HEIGHT;
 
   // Provide an imperative API as static functions of the component.
   // See the corresponding prop for more detail.
@@ -396,7 +396,10 @@ class StatusBar extends React.Component<Props> {
     return newEntry;
   }
 
-  static defaultProps = {
+  static defaultProps: {|
+    animated: boolean,
+    showHideTransition: $TEMPORARY$string<'fade'>,
+  |} = {
     animated: false,
     showHideTransition: 'fade',
   };

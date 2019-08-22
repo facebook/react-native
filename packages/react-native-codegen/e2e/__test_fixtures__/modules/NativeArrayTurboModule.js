@@ -18,7 +18,10 @@ type AnotherArray = Array<ArrayType>;
 
 export interface Spec extends TurboModule {
   +getArray: (a: Array<any>) => Array<string>;
+  +getReadOnlyArray: (a: Array<any>) => $ReadOnlyArray<string>;
   +getArrayWithAlias: (a: AnotherArray, b: Array<ArrayType>) => AnotherArray;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default (TurboModuleRegistry.getEnforcing<Spec>(
+  'SampleTurboModule',
+): Spec);

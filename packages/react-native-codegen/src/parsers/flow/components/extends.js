@@ -11,9 +11,19 @@
 'use strict';
 
 import type {ExtendsPropsShape} from '../../../CodegenSchema.js';
+import type {TypeMap} from '../utils.js';
 
-function extendsForProp(prop) {
+function extendsForProp(prop: PropsAST, types: TypeMap) {
+  if (!prop.argument) {
+    console.log('null', prop);
+  }
   const name = prop.argument.id.name;
+
+  if (types[name] != null) {
+    // This type is locally defined in the file
+    return null;
+  }
+
   switch (name) {
     case 'ViewProps':
       return {
@@ -26,17 +36,31 @@ function extendsForProp(prop) {
   }
 }
 
+function removeKnownExtends(
+  typeDefinition: $ReadOnlyArray<PropsAST>,
+  types: TypeMap,
+): $ReadOnlyArray<PropsAST> {
+  return typeDefinition.filter(
+    prop =>
+      prop.type !== 'ObjectTypeSpreadProperty' ||
+      extendsForProp(prop, types) === null,
+  );
+}
+
 // $FlowFixMe there's no flowtype for ASTs
 type PropsAST = Object;
 
 function getExtendsProps(
   typeDefinition: $ReadOnlyArray<PropsAST>,
+  types: TypeMap,
 ): $ReadOnlyArray<ExtendsPropsShape> {
   return typeDefinition
     .filter(prop => prop.type === 'ObjectTypeSpreadProperty')
-    .map(extendsForProp);
+    .map(prop => extendsForProp(prop, types))
+    .filter(Boolean);
 }
 
 module.exports = {
   getExtendsProps,
+  removeKnownExtends,
 };

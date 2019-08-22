@@ -38,7 +38,7 @@ type State = {
 };
 
 class ScrollViewStickyHeader extends React.Component<Props, State> {
-  state = {
+  state: State = {
     measured: false,
     layoutY: 0,
     layoutHeight: 0,
@@ -63,7 +63,7 @@ class ScrollViewStickyHeader extends React.Component<Props, State> {
     }
   };
 
-  render() {
+  render(): React.Node {
     const {inverted, scrollViewHeight} = this.props;
     const {measured, layoutHeight, layoutY, nextHeaderLayoutY} = this.state;
     const inputRange: Array<number> = [-1, 0];

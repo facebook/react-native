@@ -106,7 +106,11 @@ function traverseProprety(property): string {
 }
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const nativeModules = Object.keys(schema.modules)
       .map(moduleName => {
         const modules = schema.modules[moduleName].nativeModules;

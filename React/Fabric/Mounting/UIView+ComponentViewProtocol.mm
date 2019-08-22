@@ -11,7 +11,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
-#import "RNConversions.h"
+#import "RCTConversions.h"
 
 using namespace facebook::react;
 
@@ -19,7 +19,7 @@ using namespace facebook::react;
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
-  RCTAssert(NO, @"`-[RNComponentViewProtocol componentDescriptorProvider]` must be implemented in a concrete class.");
+  RCTAssert(NO, @"`-[RCTComponentViewProtocol componentDescriptorProvider]` must be implemented in a concrete class.");
   return {};
 }
 
@@ -28,12 +28,12 @@ using namespace facebook::react;
   return {};
 }
 
-- (void)mountChildComponentView:(UIView<RNComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [self insertSubview:childComponentView atIndex:index];
 }
 
-- (void)unmountChildComponentView:(UIView<RNComponentViewProtocol> *)childComponentView index:(NSInteger)index
+- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   RCTAssert(childComponentView.superview == self, @"Attempt to unmount improperly mounted component view.");
   [childComponentView removeFromSuperview];
@@ -115,7 +115,7 @@ using namespace facebook::react;
 
 - (facebook::react::SharedProps)props
 {
-  RCTAssert(NO, @"props access should be implemented by RNViewComponentView.");
+  RCTAssert(NO, @"props access should be implemented by RCTViewComponentView.");
   return nullptr;
 }
 

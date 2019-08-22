@@ -31,10 +31,14 @@ function getObjectProperties(
   types: TypeMap,
 ): $ReadOnlyArray<ObjectParamTypeAnnotation> {
   return objectParam.properties.map(objectTypeProperty => {
-    let optional = false;
+    let optional = objectTypeProperty.optional;
     let value = objectTypeProperty.value;
     if (value.type === 'NullableTypeAnnotation') {
-      optional = true;
+      if (
+        objectTypeProperty.value.typeAnnotation.type !== 'StringTypeAnnotation'
+      ) {
+        optional = true;
+      }
       value = objectTypeProperty.value.typeAnnotation;
     }
     return {
@@ -64,6 +68,7 @@ function getElementTypeForArrayOrObject(
 
   switch (type) {
     case 'Array':
+    case '$ReadOnlyArray':
       if (
         typeAnnotation.typeParameters &&
         typeAnnotation.typeParameters.params[0]
@@ -82,15 +87,30 @@ function getElementTypeForArrayOrObject(
           `Unsupported type for ${name}, param: "${paramName}": expected to find annotation for type of nested array contents`,
         );
       }
-    case 'Object':
-      return {
-        type: 'GenericObjectTypeAnnotation',
-      };
     case 'ObjectTypeAnnotation':
       return {
         type: 'ObjectTypeAnnotation',
         properties: getObjectProperties(name, typeAnnotation, paramName, types),
       };
+    case '$ReadOnly':
+      if (
+        typeAnnotation.typeParameters.params &&
+        typeAnnotation.typeParameters.params[0]
+      ) {
+        return {
+          type: 'ObjectTypeAnnotation',
+          properties: getObjectProperties(
+            name,
+            typeAnnotation.typeParameters.params[0],
+            paramName,
+            types,
+          ),
+        };
+      } else {
+        throw new Error(
+          `Unsupported param for method "${name}", param "${paramName}". No type specified for $ReadOnly`,
+        );
+      }
     case 'AnyTypeAnnotation':
       return {
         type,
@@ -117,9 +137,9 @@ function getElementTypeForArrayOrObject(
     case 'UnionTypeAnnotation':
       return undefined;
     default:
-      throw new Error(
-        `Unsupported param type for method "${name}", param "${paramName}". Found ${type}`,
-      );
+      return {
+        type: 'GenericObjectTypeAnnotation',
+      };
   }
 }
 
@@ -129,6 +149,11 @@ function getTypeAnnotationForParam(
   types: TypeMap,
 ): FunctionTypeAnnotationParam {
   let param = paramAnnotation;
+  if (param.name === null) {
+    throw new Error(
+      `Unsupported type for ${name}. Please provide a name for every parameter.`,
+    );
+  }
   let paramName = param.name.name;
   let nullable = false;
   if (param.typeAnnotation.type === 'NullableTypeAnnotation') {
@@ -143,15 +168,8 @@ function getTypeAnnotationForParam(
       : typeAnnotation.type;
 
   switch (type) {
-    case 'Object':
-      return {
-        nullable,
-        name: paramName,
-        typeAnnotation: {
-          type: 'GenericObjectTypeAnnotation',
-        },
-      };
     case 'Array':
+    case '$ReadOnlyArray':
       if (
         typeAnnotation.typeParameters &&
         typeAnnotation.typeParameters.params[0]
@@ -188,22 +206,35 @@ function getTypeAnnotationForParam(
           ),
         },
       };
+    case '$ReadOnly':
+      if (
+        typeAnnotation.typeParameters.params &&
+        typeAnnotation.typeParameters.params[0]
+      ) {
+        return {
+          nullable,
+          name: paramName,
+          typeAnnotation: {
+            type: 'ObjectTypeAnnotation',
+            properties: getObjectProperties(
+              name,
+              typeAnnotation.typeParameters.params[0],
+              paramName,
+              types,
+            ),
+          },
+        };
+      } else {
+        throw new Error(
+          `Unsupported param for method "${name}", param "${paramName}". No type specified for $ReadOnly`,
+        );
+      }
     case 'FunctionTypeAnnotation':
-      const params = typeAnnotation.params.map(callbackParam =>
-        getTypeAnnotationForParam(name, callbackParam, types),
-      );
-      const returnTypeAnnotation = getReturnTypeAnnotation(
-        name,
-        typeAnnotation.returnType,
-        types,
-      );
       return {
         name: paramName,
         nullable,
         typeAnnotation: {
           type: 'FunctionTypeAnnotation',
-          params,
-          returnTypeAnnotation,
         },
       };
     case 'NumberTypeAnnotation':
@@ -242,9 +273,13 @@ function getTypeAnnotationForParam(
         },
       };
     default:
-      throw new Error(
-        `Unsupported param type for method "${name}", param "${paramName}". Found ${type}`,
-      );
+      return {
+        nullable,
+        name: paramName,
+        typeAnnotation: {
+          type: 'GenericObjectTypeAnnotation',
+        },
+      };
   }
 }
 
@@ -253,17 +288,18 @@ function getReturnTypeAnnotation(
   returnType,
   types: TypeMap,
 ): FunctionTypeAnnotationReturn {
-  const typeAnnotation = getValueFromTypes(returnType, types);
-  const type =
+  let typeAnnotation = getValueFromTypes(returnType, types);
+  let nullable = false;
+  if (typeAnnotation.type === 'NullableTypeAnnotation') {
+    nullable = true;
+    typeAnnotation = typeAnnotation.typeAnnotation;
+  }
+  let type =
     typeAnnotation.type === 'GenericTypeAnnotation'
       ? typeAnnotation.id.name
       : typeAnnotation.type;
 
   switch (type) {
-    case 'Object':
-      return {
-        type: 'GenericObjectTypeAnnotation',
-      };
     case 'Promise':
       if (
         typeAnnotation.typeParameters &&
@@ -271,11 +307,7 @@ function getReturnTypeAnnotation(
       ) {
         return {
           type: 'GenericPromiseTypeAnnotation',
-          resolvedType: getReturnTypeAnnotation(
-            methodName,
-            typeAnnotation.typeParameters.params[0],
-            types,
-          ),
+          nullable,
         };
       } else {
         throw new Error(
@@ -283,11 +315,13 @@ function getReturnTypeAnnotation(
         );
       }
     case 'Array':
+    case '$ReadOnlyArray':
       if (
         typeAnnotation.typeParameters &&
         typeAnnotation.typeParameters.params[0]
       ) {
         return {
+          nullable,
           type: 'ArrayTypeAnnotation',
           elementType: getElementTypeForArrayOrObject(
             methodName,
@@ -303,6 +337,7 @@ function getReturnTypeAnnotation(
       }
     case 'ObjectTypeAnnotation':
       return {
+        nullable,
         type: 'ObjectTypeAnnotation',
         properties: getObjectProperties(
           methodName,
@@ -311,32 +346,55 @@ function getReturnTypeAnnotation(
           types,
         ),
       };
-
+    case '$ReadOnly':
+      if (
+        typeAnnotation.typeParameters.params &&
+        typeAnnotation.typeParameters.params[0]
+      ) {
+        return {
+          nullable,
+          type: 'ObjectTypeAnnotation',
+          properties: getObjectProperties(
+            methodName,
+            typeAnnotation.typeParameters.params[0],
+            'returning value',
+            types,
+          ),
+        };
+      } else {
+        throw new Error(
+          `Unsupported return type for method "${methodName}", No type specified for $ReadOnly`,
+        );
+      }
     case 'BooleanTypeAnnotation':
     case 'NumberTypeAnnotation':
     case 'VoidTypeAnnotation':
       return {
+        nullable,
         type,
       };
     case 'StringTypeAnnotation':
     case 'Stringish':
       return {
+        nullable,
         type: 'StringTypeAnnotation',
       };
 
     case 'Int32':
       return {
+        nullable,
         type: 'Int32TypeAnnotation',
       };
     case 'Float':
       return {
+        nullable,
         type: 'FloatTypeAnnotation',
       };
     default:
-      (type: empty);
-      throw new Error(
-        `Unsupported return type for method "${methodName}", Found ${type}`,
-      );
+      return {
+        type: 'GenericObjectTypeAnnotation',
+        nullable,
+      };
   }
 }
 

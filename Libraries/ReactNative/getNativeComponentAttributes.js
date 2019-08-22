@@ -14,16 +14,16 @@ const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleA
 const UIManager = require('./UIManager');
 
 const insetsDiffer = require('../Utilities/differ/insetsDiffer');
+const invariant = require('invariant');
 const matricesDiffer = require('../Utilities/differ/matricesDiffer');
 const pointsDiffer = require('../Utilities/differ/pointsDiffer');
 const processColor = require('../StyleSheet/processColor');
 const processColorArray = require('../StyleSheet/processColorArray');
 const resolveAssetSource = require('../Image/resolveAssetSource');
 const sizesDiffer = require('../Utilities/differ/sizesDiffer');
-const invariant = require('invariant');
 const warning = require('fbjs/lib/warning');
 
-function getNativeComponentAttributes(uiViewClassName: string) {
+function getNativeComponentAttributes(uiViewClassName: string): any {
   const viewConfig = UIManager.getViewManagerConfig(uiViewClassName);
 
   invariant(

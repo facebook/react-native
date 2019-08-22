@@ -102,7 +102,6 @@ public class DevServerHelper {
 
   private enum BundleType {
     BUNDLE("bundle"),
-    DELTA("delta"),
     MAP("map");
 
     private final String mTypeID;
@@ -397,8 +396,7 @@ public class DevServerHelper {
       File outputFile,
       String bundleURL,
       BundleDownloader.BundleInfo bundleInfo) {
-    mBundleDownloader.downloadBundleFromURL(
-        callback, outputFile, bundleURL, bundleInfo, getDeltaClientType());
+    mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo);
   }
 
   public void downloadBundleFromURL(
@@ -408,17 +406,7 @@ public class DevServerHelper {
       BundleDownloader.BundleInfo bundleInfo,
       Request.Builder requestBuilder) {
     mBundleDownloader.downloadBundleFromURL(
-        callback, outputFile, bundleURL, bundleInfo, getDeltaClientType(), requestBuilder);
-  }
-
-  private BundleDeltaClient.ClientType getDeltaClientType() {
-    if (mSettings.isBundleDeltasCppEnabled()) {
-      return BundleDeltaClient.ClientType.NATIVE;
-    } else if (mSettings.isBundleDeltasEnabled()) {
-      return BundleDeltaClient.ClientType.DEV_SUPPORT;
-    } else {
-      return BundleDeltaClient.ClientType.NONE;
-    }
+        callback, outputFile, bundleURL, bundleInfo, requestBuilder);
   }
 
   /** @return the host to use when connecting to the bundle server from the host itself. */
@@ -475,7 +463,7 @@ public class DevServerHelper {
   public String getDevServerBundleURL(final String jsModulePath) {
     return createBundleURL(
         jsModulePath,
-        mSettings.isBundleDeltasEnabled() ? BundleType.DELTA : BundleType.BUNDLE,
+        BundleType.BUNDLE,
         mSettings.getPackagerConnectionSettings().getDebugServerHost());
   }
 
@@ -652,8 +640,7 @@ public class DevServerHelper {
   }
 
   public String getSourceUrl(String mainModuleName) {
-    return createBundleURL(
-        mainModuleName, mSettings.isBundleDeltasEnabled() ? BundleType.DELTA : BundleType.BUNDLE);
+    return createBundleURL(mainModuleName, BundleType.BUNDLE);
   }
 
   public String getJSBundleURLForRemoteDebugging(String mainModuleName) {

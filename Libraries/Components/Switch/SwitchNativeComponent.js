@@ -15,6 +15,7 @@ import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
 type SwitchChangeEvent = $ReadOnly<{|
   value: boolean,
@@ -39,6 +40,6 @@ type NativeProps = $ReadOnly<{|
   onChange?: ?BubblingEventHandler<SwitchChangeEvent>,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('Switch', {
+export default (codegenNativeComponent<NativeProps>('Switch', {
   paperComponentName: 'RCTSwitch',
-});
+}): NativeComponentType<NativeProps>);

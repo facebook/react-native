@@ -41,7 +41,7 @@ type State = {|
 class YellowBoxInspector extends React.Component<Props, State> {
   _symbolication: ?SymbolicationRequest;
 
-  state = {
+  state: State = {
     selectedIndex: 0,
   };
 

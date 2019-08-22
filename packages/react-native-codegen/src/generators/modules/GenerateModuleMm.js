@@ -36,7 +36,7 @@ const moduleTemplate = `
 
 Native::_MODULE_NAME_::SpecJSI::Native::_MODULE_NAME_::SpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
   : ObjCTurboModule("::_MODULE_NAME_::", instance, jsInvoker) {
-::_PROPERTIES_MAP_::
+::_PROPERTIES_MAP_::::_CONVERSION_SELECTORS_::
 }`.trim();
 
 const getterTemplate = `
@@ -48,6 +48,9 @@ const getterTemplate = `
 @end
 `.trim();
 
+const argConvertionTemplate =
+  '\n  setMethodArgConversionSelector(@"::_ARG_NAME_::", ::_ARG_NUMBER_::, @"JS_Native::_MODULE_NAME_::_Spec::_SELECTOR_NAME_:::");';
+
 const template = `
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -56,7 +59,7 @@ const template = `
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/modules/::_LIBRARY_NAME_::/RCTNativeModules.h>
+#include <::_INCLUDE_::>
 ::_GETTERS_::
 namespace facebook {
 namespace react {
@@ -77,6 +80,7 @@ function translateReturnTypeToKind(type): string {
     case 'BooleanTypeAnnotation':
       return 'BooleanKind';
     case 'NumberTypeAnnotation':
+    case 'DoubleTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'Int32TypeAnnotation':
       return 'NumberKind';
@@ -111,6 +115,15 @@ function tranlsateMethodForImplementation(property): string {
     .slice(1)
     .join(':')
     .concat(':');
+  if (
+    property.name === 'getConstants' &&
+    property.typeAnnotation.returnTypeAnnotation.type ===
+      'ObjectTypeAnnotation' &&
+    property.typeAnnotation.returnTypeAnnotation.properties &&
+    property.typeAnnotation.returnTypeAnnotation.properties.length === 0
+  ) {
+    return '';
+  }
   return propertyTemplate
     .replace(
       /::_KIND_::/g,
@@ -128,7 +141,11 @@ function tranlsateMethodForImplementation(property): string {
 }
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const nativeModules: {[name: string]: NativeModuleShape} = Object.keys(
       schema.modules,
     )
@@ -210,22 +227,54 @@ module.exports = {
           .replace(
             '::_PROPERTIES_MAP_::',
             properties
-              .map(({name: propertyName, typeAnnotation: {params}}) =>
-                proprertyDefTemplate
-                  .replace(/::_PROPERTY_NAME_::/g, propertyName)
-                  .replace(/::_ARGS_COUNT_::/g, params.length.toString()),
+              .map(
+                ({
+                  name: propertyName,
+                  typeAnnotation: {params, returnTypeAnnotation},
+                }) =>
+                  propertyName === 'getConstants' &&
+                  returnTypeAnnotation.type === 'ObjectTypeAnnotation' &&
+                  returnTypeAnnotation.properties &&
+                  returnTypeAnnotation.properties.length === 0
+                    ? ''
+                    : proprertyDefTemplate
+                        .replace(/::_PROPERTY_NAME_::/g, propertyName)
+                        .replace(/::_ARGS_COUNT_::/g, params.length.toString()),
               )
               .join('\n'),
+          )
+          .replace(
+            '::_CONVERSION_SELECTORS_::',
+            properties
+              .map(({name: propertyName, typeAnnotation: {params}}) =>
+                params
+                  .map((param, index) =>
+                    param.typeAnnotation.type === 'ObjectTypeAnnotation' &&
+                    param.typeAnnotation.properties
+                      ? argConvertionTemplate
+                          .replace(
+                            '::_SELECTOR_NAME_::',
+                            capitalizeFirstLetter(propertyName) +
+                              capitalizeFirstLetter(param.name),
+                          )
+                          .replace('::_ARG_NUMBER_::', index.toString())
+                          .replace('::_ARG_NAME_::', propertyName)
+                      : '',
+                  )
+                  .join(''),
+              )
+              .join(''),
           )
           .replace(/::_MODULE_NAME_::/g, name);
       })
       .join('\n');
 
-    const fileName = 'RCTNativeModules.mm';
+    const fileName = `${moduleSpecName}-generated.mm`;
     const replacedTemplate = template
       .replace(/::_GETTERS_::/g, gettersImplementations)
       .replace(/::_MODULES_::/g, modules)
-      .replace(/::_LIBRARY_NAME_::/g, libraryName);
+      .replace(/::_LIBRARY_NAME_::/g, libraryName)
+      .replace(/::_INCLUDE_::/g, `${moduleSpecName}/${moduleSpecName}.h`);
     return new Map([[fileName, replacedTemplate]]);
   },
 };

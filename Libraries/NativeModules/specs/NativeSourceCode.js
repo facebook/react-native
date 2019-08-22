@@ -19,4 +19,4 @@ export interface Spec extends TurboModule {
   |};
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SourceCode');
+export default (TurboModuleRegistry.getEnforcing<Spec>('SourceCode'): Spec);

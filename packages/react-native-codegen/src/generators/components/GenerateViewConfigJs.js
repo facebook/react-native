@@ -43,7 +43,9 @@ function getReactDiffProcessValue(typeAnnotation) {
     case 'BooleanTypeAnnotation':
     case 'StringTypeAnnotation':
     case 'Int32TypeAnnotation':
+    case 'DoubleTypeAnnotation':
     case 'FloatTypeAnnotation':
+    case 'ObjectTypeAnnotation':
     case 'StringEnumTypeAnnotation':
       return j.literal(true);
     case 'NativePrimitiveTypeAnnotation':
@@ -277,14 +279,15 @@ function buildCommands(
     return null;
   }
 
-  imports.add(UIMANAGER_IMPORT);
-  imports.add('const {findNodeHandle} = require("react-native")');
+  imports.add(
+    'const {dispatchCommand} = require("react-native/Libraries/Renderer/shims/ReactNative");',
+  );
 
   const properties = commands.map(command => {
     const commandName = command.name;
     const params = command.typeAnnotation.params;
 
-    const componentNameLiteral = j.literal(componentName);
+    const commandNameLiteral = j.literal(commandName);
     const commandNameIdentifier = j.identifier(commandName);
     const arrayParams = j.arrayExpression(
       params.map(param => {
@@ -292,13 +295,8 @@ function buildCommands(
       }),
     );
 
-    const expression = j.template.expression`
-      UIManager.dispatchViewManagerCommand(
-        findNodeHandle(ref),
-        UIManager.getViewManagerConfig(${componentNameLiteral}).Commands.${commandNameIdentifier},
-        ${arrayParams}
-      )
-      `;
+    const expression = j.template
+      .expression`dispatchCommand(ref, ${commandNameLiteral}, ${arrayParams})`;
 
     const functionParams = params.map(param => {
       return j.identifier(param.name);

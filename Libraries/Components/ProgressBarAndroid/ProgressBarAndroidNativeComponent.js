@@ -15,6 +15,7 @@ import type {ViewProps} from '../View/ViewPropTypes';
 import type {Float, WithDefault} from '../../Types/CodegenTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -29,4 +30,6 @@ type NativeProps = $ReadOnly<{|
   testID?: WithDefault<string, ''>,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('AndroidProgressBar');
+export default (codegenNativeComponent<NativeProps>(
+  'AndroidProgressBar',
+): NativeComponentType<NativeProps>);

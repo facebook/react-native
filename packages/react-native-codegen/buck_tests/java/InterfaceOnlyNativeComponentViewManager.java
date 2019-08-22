@@ -15,8 +15,9 @@ public class InterfaceOnlyNativeComponentViewManager extends SimpleViewManager<V
   }
 
   private void test() {
-    InterfaceOnlyNativeComponentViewManagerDelegate delegate =
-        new InterfaceOnlyNativeComponentViewManagerDelegate<ViewGroup>();
+    InterfaceOnlyNativeComponentViewManagerDelegate<
+            ViewGroup, InterfaceOnlyNativeComponentViewManager>
+        delegate = new InterfaceOnlyNativeComponentViewManagerDelegate<>(this);
   }
 
   @Override

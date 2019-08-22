@@ -15,8 +15,8 @@ public class EventPropsNativeComponentViewManager extends SimpleViewManager<View
   }
 
   private void test() {
-    EventPropsNativeComponentViewManagerDelegate delegate =
-        new EventPropsNativeComponentViewManagerDelegate<ViewGroup>();
+    EventPropsNativeComponentViewManagerDelegate<ViewGroup, EventPropsNativeComponentViewManager>
+        delegate = new EventPropsNativeComponentViewManagerDelegate<>(this);
   }
 
   @Override

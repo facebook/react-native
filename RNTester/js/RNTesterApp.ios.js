@@ -10,7 +10,15 @@
 
 'use strict';
 
+const RNTesterActions = require('./utils/RNTesterActions');
+const RNTesterExampleContainer = require('./components/RNTesterExampleContainer');
+const RNTesterExampleList = require('./components/RNTesterExampleList');
+const RNTesterList = require('./utils/RNTesterList.ios');
+const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
 const React = require('react');
+const SnapshotViewIOS = require('./examples/Snapshot/SnapshotViewIOS.ios');
+const URIActionMap = require('./utils/URIActionMap');
+
 const {
   AppRegistry,
   AsyncStorage,
@@ -23,20 +31,13 @@ const {
   View,
   YellowBox,
 } = require('react-native');
-const RNTesterActions = require('./utils/RNTesterActions');
-const RNTesterExampleContainer = require('./components/RNTesterExampleContainer');
-const RNTesterExampleList = require('./components/RNTesterExampleList');
-const RNTesterList = require('./utils/RNTesterList.ios');
-const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
-const SnapshotViewIOS = require('./examples/Snapshot/SnapshotViewIOS.ios');
-const URIActionMap = require('./utils/URIActionMap');
 
 import type {RNTesterExample} from './types/RNTesterTypes';
 import type {RNTesterAction} from './utils/RNTesterActions';
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
 
 type Props = {
-  exampleFromAppetizeParams: string,
+  exampleFromAppetizeParams?: ?string,
 };
 
 YellowBox.ignoreWarnings([
@@ -109,7 +110,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     }
   };
 
-  render() {
+  render(): React.Node | null {
     if (!this.state) {
       return null;
     }

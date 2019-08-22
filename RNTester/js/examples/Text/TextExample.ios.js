@@ -11,6 +11,10 @@
 'use strict';
 
 const React = require('react');
+const TextAncestor = require('../../../../Libraries/Text/TextAncestor');
+const TextInlineView = require('../../components/TextInlineView');
+const TextLegend = require('../../components/TextLegend');
+
 const {
   Button,
   LayoutAnimation,
@@ -19,9 +23,6 @@ const {
   TextInput,
   View,
 } = require('react-native');
-const TextAncestor = require('../../../../Libraries/Text/TextAncestor');
-const TextInlineView = require('../../components/TextInlineView');
-const TextLegend = require('../../components/TextLegend');
 
 // TODO: Is there a cleaner way to flip the TextAncestor value to false? I
 //   suspect apps won't even be able to leverage this workaround because
@@ -459,7 +460,7 @@ exports.displayName = 'TextExample';
 exports.examples = [
   {
     title: 'Wrap',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Text>
           The text should wrap if it goes on multiple lines. See, this is going
@@ -470,13 +471,13 @@ exports.examples = [
   },
   {
     title: "Substring Emoji (should only see 'test')",
-    render: function() {
+    render: function(): React.Node {
       return <Text>{'test🙃'.substring(0, 5)}</Text>;
     },
   },
   {
     title: 'Transparent Background Color',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Text style={{backgroundColor: '#00000020', padding: 10}}>
           Text in a gray box!
@@ -489,17 +490,17 @@ exports.examples = [
   },
   {
     title: 'Text metrics',
-    render: function() {
+    render: function(): React.Node {
       return <TextRenderInfoExample />;
     },
   },
   {
     title: 'Text metrics legend',
-    render: () => <TextLegend />,
+    render: (): React.Node => <TextLegend />,
   },
   {
     title: 'Baseline capheight box',
-    render: () => (
+    render: (): React.Node => (
       <View style={{backgroundColor: 'red'}}>
         <TextWithCapBaseBox>Some example text.</TextWithCapBaseBox>
       </View>
@@ -507,7 +508,7 @@ exports.examples = [
   },
   {
     title: 'Padding',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Text style={{padding: 10}}>
           This text is indented by 10px padding on all sides.
@@ -517,7 +518,7 @@ exports.examples = [
   },
   {
     title: 'Font Family',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <Text style={{fontFamily: Platform.isTV ? 'Times' : 'Cochin'}}>
@@ -550,7 +551,7 @@ exports.examples = [
   },
   {
     title: 'Font Size',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <Text style={{fontSize: 23}}>Size 23</Text>
@@ -561,7 +562,7 @@ exports.examples = [
   },
   {
     title: 'Color',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <Text style={{color: 'red'}}>Red color</Text>
@@ -572,7 +573,7 @@ exports.examples = [
   },
   {
     title: 'Font Weight',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <Text style={{fontSize: 20, fontWeight: '100'}}>
@@ -596,7 +597,7 @@ exports.examples = [
   },
   {
     title: 'Font Style',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <Text style={{fontStyle: 'normal'}}>Normal text</Text>
@@ -607,7 +608,7 @@ exports.examples = [
   },
   {
     title: 'Selectable',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <Text selectable={true}>
@@ -620,7 +621,7 @@ exports.examples = [
   },
   {
     title: 'Text Decoration',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <Text
@@ -695,11 +696,10 @@ exports.examples = [
   },
   {
     title: 'Nested',
-    description:
-      'Nested text components will inherit the styles of their ' +
+    description: ('Nested text components will inherit the styles of their ' +
       'parents (only backgroundColor is inherited from non-Text parents).  ' +
-      '<Text> only supports other <Text> and raw text (strings) as children.',
-    render: function() {
+      '<Text> only supports other <Text> and raw text (strings) as children.': string),
+    render: function(): React.Node {
       return (
         <View>
           <Text>
@@ -737,7 +737,7 @@ exports.examples = [
   },
   {
     title: 'Text Align',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <Text>auto (default) - english LTR</Text>
@@ -769,7 +769,7 @@ exports.examples = [
   },
   {
     title: 'Letter Spacing',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <Text style={{letterSpacing: 0}}>letterSpacing = 0</Text>
@@ -813,7 +813,7 @@ exports.examples = [
   },
   {
     title: 'Spaces',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Text>
           A {'generated'} {'string'} and some &nbsp;&nbsp;&nbsp; spaces
@@ -823,7 +823,7 @@ exports.examples = [
   },
   {
     title: 'Line Height',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Text>
           <Text style={{lineHeight: 35}}>
@@ -837,7 +837,7 @@ exports.examples = [
   {
     title: 'Empty Text',
     description: "It's ok to have Text with zero or null children.",
-    render: function() {
+    render: function(): React.Node {
       return <Text />;
     },
   },
@@ -850,7 +850,7 @@ exports.examples = [
   {
     title: 'backgroundColor attribute',
     description: 'backgroundColor is inherited from all types of views.',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Text style={{backgroundColor: 'yellow'}}>
           Yellow container background,
@@ -876,7 +876,7 @@ exports.examples = [
   },
   {
     title: 'numberOfLines attribute',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <Text numberOfLines={1}>
@@ -897,7 +897,7 @@ exports.examples = [
   },
   {
     title: 'Text highlighting (tap the link to see highlight)',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <Text>
@@ -923,7 +923,7 @@ exports.examples = [
   },
   {
     title: 'allowFontScaling attribute',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <Text>
@@ -951,27 +951,27 @@ exports.examples = [
   },
   {
     title: 'Inline views',
-    render: () => <TextInlineView.Basic />,
+    render: (): React.Node => <TextInlineView.Basic />,
   },
   {
     title: 'Inline image/view clipped by <Text>',
-    render: () => <TextInlineView.ClippedByText />,
+    render: (): React.Node => <TextInlineView.ClippedByText />,
   },
   {
     title: 'Relayout inline image',
-    render: () => <TextInlineView.ChangeImageSize />,
+    render: (): React.Node => <TextInlineView.ChangeImageSize />,
   },
   {
     title: 'Relayout inline view',
-    render: () => <TextInlineView.ChangeViewSize />,
+    render: (): React.Node => <TextInlineView.ChangeViewSize />,
   },
   {
     title: 'Relayout nested inline view',
-    render: () => <TextInlineView.ChangeInnerViewSize />,
+    render: (): React.Node => <TextInlineView.ChangeInnerViewSize />,
   },
   {
     title: 'Text shadow',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <Text
@@ -989,7 +989,7 @@ exports.examples = [
   },
   {
     title: 'Ellipsize mode',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <Text numberOfLines={1}>
@@ -1010,7 +1010,7 @@ exports.examples = [
   },
   {
     title: 'Font variants',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <Text style={{fontVariant: ['small-caps']}}>Small Caps{'\n'}</Text>
@@ -1044,7 +1044,7 @@ exports.examples = [
   },
   {
     title: 'Nested content',
-    render: function() {
+    render: function(): React.Node {
       // iOS-only because it relies on inline views being able to size to content.
       // Android's implementation requires that a width and height be specified
       // on the inline view.
@@ -1078,19 +1078,19 @@ exports.examples = [
   },
   {
     title: 'Text Align with RTL',
-    render: function() {
+    render: function(): React.Node {
       return <TextAlignRTLExample />;
     },
   },
   {
     title: "Text `alignItems: 'baseline'` style",
-    render: function() {
+    render: function(): React.Node {
       return <TextBaseLineLayoutExample />;
     },
   },
   {
     title: 'Transform',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <Text style={{textTransform: 'uppercase'}}>

@@ -136,6 +136,7 @@ protected:
   NativeSample2TurboModuleCxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
 
 public:
+virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
 virtual void voidFunc(jsi::Runtime &rt) = 0;
 
 };

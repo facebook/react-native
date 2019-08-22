@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   Alert,
   Linking,
@@ -71,7 +72,7 @@ class XHRExampleBinaryUpload extends React.Component<{}, $FlowFixMeState> {
     Linking.openURL(url);
   }
 
-  state = {
+  state: $FlowFixMe | {|type: $TEMPORARY$string<'Uint8Array'>|} = {
     type: 'Uint8Array',
   };
 
@@ -104,7 +105,7 @@ class XHRExampleBinaryUpload extends React.Component<{}, $FlowFixMeState> {
     xhr.send(new TypedArrayClass(arrayBuffer));
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text>Upload 255 bytes as...</Text>

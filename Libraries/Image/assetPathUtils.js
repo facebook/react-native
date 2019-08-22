@@ -44,7 +44,10 @@ const drawableFileTypes = new Set([
   'xml',
 ]);
 
-function getAndroidResourceFolderName(asset: PackagerAsset, scale: number) {
+function getAndroidResourceFolderName(
+  asset: PackagerAsset,
+  scale: number,
+): string | $TEMPORARY$string<'raw'> {
   if (!drawableFileTypes.has(asset.type)) {
     return 'raw';
   }
@@ -63,7 +66,7 @@ function getAndroidResourceFolderName(asset: PackagerAsset, scale: number) {
   return androidFolder;
 }
 
-function getAndroidResourceIdentifier(asset: PackagerAsset) {
+function getAndroidResourceIdentifier(asset: PackagerAsset): string {
   var folderPath = getBasePath(asset);
   return (folderPath + '/' + asset.name)
     .toLowerCase()
@@ -72,7 +75,7 @@ function getAndroidResourceIdentifier(asset: PackagerAsset) {
     .replace(/^assets_/, ''); // Remove "assets_" prefix
 }
 
-function getBasePath(asset: PackagerAsset) {
+function getBasePath(asset: PackagerAsset): string {
   var basePath = asset.httpServerLocation;
   if (basePath[0] === '/') {
     basePath = basePath.substr(1);

@@ -42,6 +42,7 @@ type Options = $ReadOnly<{|
   libraryName: string,
   schema: SchemaType,
   outputDirectory: string,
+  moduleSpecName: string,
 |}>;
 
 type Generators =
@@ -50,8 +51,7 @@ type Generators =
   | 'props'
   | 'tests'
   | 'shadow-nodes'
-  | 'modules'
-  | 'view-configs';
+  | 'modules';
 
 type Config = $ReadOnly<{|
   generators: Array<Generators>,
@@ -79,7 +79,6 @@ const GENERATORS = {
     generateShadowNodeCpp.generate,
     generateShadowNodeH.generate,
   ],
-  'view-configs': [generateViewConfigJs.generate],
 };
 
 function writeMapToFiles(map: Map<string, string>, outputDir: string) {
@@ -118,7 +117,7 @@ function checkFilesForChanges(
 
 module.exports = {
   generate(
-    {libraryName, schema, outputDirectory}: Options,
+    {libraryName, schema, outputDirectory, moduleSpecName}: Options,
     {generators, test}: Config,
   ): boolean {
     schemaValidator.validate(schema);
@@ -126,7 +125,7 @@ module.exports = {
     const generatedFiles = [];
     for (const name of generators) {
       for (const generator of GENERATORS[name]) {
-        generatedFiles.push(...generator(libraryName, schema));
+        generatedFiles.push(...generator(libraryName, schema, moduleSpecName));
       }
     }
 

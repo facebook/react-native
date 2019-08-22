@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   Alert,
   Platform,
@@ -142,7 +143,7 @@ class XHRExampleDownload extends React.Component<{}, Object> {
     this.xhr && this.xhr.abort();
   }
 
-  render() {
+  render(): React.Node {
     const button = this.state.downloading ? (
       <View style={styles.wrapper}>
         <View style={styles.button}>

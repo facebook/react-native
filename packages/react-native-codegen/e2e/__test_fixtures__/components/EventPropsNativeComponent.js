@@ -19,6 +19,7 @@ import type {
 } from '../../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../../../../Libraries/Utilities/codegenNativeComponent';
 
 type OnChangeEvent = $ReadOnly<{|
   value: boolean,
@@ -59,4 +60,6 @@ type NativeProps = $ReadOnly<{|
   >,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('EventPropsNativeComponent');
+export default (codegenNativeComponent<NativeProps>(
+  'EventPropsNativeComponentView',
+): NativeComponentType<NativeProps>);

@@ -13,9 +13,7 @@
 #include <jsi/jsi.h>
 
 #include <ReactCommon/TurboModule.h>
-#include <ReactCommon/TurboModuleUtils.h>
 #include <jsi/JSIDynamic.h>
-#include <react/jni/JCallback.h>
 #include <react/jni/NativeMap.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/jni/WritableNativeMap.h>
@@ -25,36 +23,73 @@
 namespace facebook {
 namespace react {
 
-JavaTurboModule::JavaTurboModule(const std::string &name, jni::global_ref<JTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
-  : TurboModule(name, jsInvoker), instance_(instance) {}
+JavaTurboModule::JavaTurboModule(
+    const std::string &name,
+    jni::alias_ref<JTurboModule> instance,
+    std::shared_ptr<JSCallInvoker> jsInvoker)
+    : TurboModule(name, jsInvoker), instance_(jni::make_global(instance)) {}
 
-jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
+jni::local_ref<JCxxCallbackImpl::JavaPart>
+JavaTurboModule::createJavaCallbackFromJSIFunction(
     jsi::Function &function,
     jsi::Runtime &rt,
     std::shared_ptr<JSCallInvoker> jsInvoker) {
   auto wrapper = std::make_shared<react::CallbackWrapper>(
       std::move(function), rt, jsInvoker);
-  std::function<void(folly::dynamic)> fn = [wrapper](folly::dynamic responses) {
-    if (wrapper == nullptr) {
+  callbackWrappers_.insert(wrapper);
+
+  std::function<void(folly::dynamic)> fn = [this,
+                                            wrapper](folly::dynamic responses) {
+    if (wrapper->isDestroyed()) {
       throw std::runtime_error("callback arg cannot be called more than once");
     }
-    std::shared_ptr<react::CallbackWrapper> rw = wrapper;
-    wrapper->jsInvoker->invokeAsync([rw, responses]() {
+
+    wrapper->jsInvoker().invokeAsync([this, wrapper, responses]() {
+      if (wrapper->isDestroyed()) {
+        return;
+      }
+
       // TODO (T43155926) valueFromDynamic already returns a Value array. Don't
       // iterate again
-      jsi::Value args = jsi::valueFromDynamic(rw->runtime, responses);
-      auto argsArray = args.getObject(rw->runtime).asArray(rw->runtime);
+      jsi::Value args = jsi::valueFromDynamic(wrapper->runtime(), responses);
+      auto argsArray =
+          args.getObject(wrapper->runtime()).asArray(wrapper->runtime());
       std::vector<jsi::Value> result;
-      for (size_t i = 0; i < argsArray.size(rw->runtime); i++) {
+      for (size_t i = 0; i < argsArray.size(wrapper->runtime()); i++) {
         result.emplace_back(
-            rw->runtime, argsArray.getValueAtIndex(rw->runtime, i));
+            wrapper->runtime(),
+            argsArray.getValueAtIndex(wrapper->runtime(), i));
       }
-      rw->callback.call(
-          rw->runtime, (const jsi::Value *)result.data(), result.size());
+      wrapper->callback().call(
+          wrapper->runtime(), (const jsi::Value *)result.data(), result.size());
+
+      /**
+       * Eagerly destroy the jsi::Function since it's already been invoked.
+       * TODO(T48128233) Do we want callbacks to be invoked only once?
+       *
+       * NOTE: ~JavaTurboModule and this function run on the same thread.
+       * If you reach this point, you know that the destructor wasn't run
+       * because the current wrapper wasn't destroyed. Therefore, it's
+       * safe to access callbackWrappers_.
+       */
+      wrapper->destroy();
+      callbackWrappers_.erase(wrapper);
     });
   };
-  wrapper = nullptr;
   return JCxxCallbackImpl::newObjectCxxArgs(fn);
+}
+
+JavaTurboModule::~JavaTurboModule() {
+  /**
+   * Delete all jsi::Functions that haven't yet been invoked by Java.
+   * So long as nothing else aside from the JS heap is holding on to this
+   * JavaTurboModule, this destructor is guaranteed to execute before the
+   * jsi::Runtime is deleted.
+   */
+  for (auto it = callbackWrappers_.begin(); it != callbackWrappers_.end();
+       it++) {
+    (*it)->destroy();
+  }
 }
 
 namespace {
@@ -181,7 +216,7 @@ std::vector<std::string> getMethodArgTypesFromSignature(
 // needs to be done again
 // TODO (axe) Reuse existing implementation as needed - the exist in
 // MethodInvoker.cpp
-std::vector<jvalue> convertJSIArgsToJNIArgs(
+std::vector<jvalue> JavaTurboModule::convertJSIArgsToJNIArgs(
     JNIEnv *env,
     jsi::Runtime &rt,
     std::string methodName,
@@ -322,16 +357,20 @@ std::vector<jvalue> convertJSIArgsToJNIArgs(
 }
 
 jsi::Value convertFromJMapToValue(JNIEnv *env, jsi::Runtime &rt, jobject arg) {
-    // We currently use Java Argument.makeNativeMap() method to do this conversion
-    // This could also be done purely in C++, but iterative over map methods
-    // but those may end up calling reflection methods anyway
-    // TODO (axe) Investigate the best way to convert Java Map to Value
-    jclass jArguments = env->FindClass("com/facebook/react/bridge/Arguments");
-    static jmethodID jMakeNativeMap = env->GetStaticMethodID(jArguments, "makeNativeMap", "(Ljava/util/Map;)Lcom/facebook/react/bridge/WritableNativeMap;");
-    auto constants = (jobject) env->CallStaticObjectMethod(jArguments, jMakeNativeMap, arg);
-    auto jResult = jni::adopt_local(constants);
-    auto result = jni::static_ref_cast<NativeMap::jhybridobject>(jResult);
-    return jsi::valueFromDynamic(rt, result->cthis()->consume());
+  // We currently use Java Argument.makeNativeMap() method to do this conversion
+  // This could also be done purely in C++, but iterative over map methods
+  // but those may end up calling reflection methods anyway
+  // TODO (axe) Investigate the best way to convert Java Map to Value
+  jclass jArguments = env->FindClass("com/facebook/react/bridge/Arguments");
+  static jmethodID jMakeNativeMap = env->GetStaticMethodID(
+      jArguments,
+      "makeNativeMap",
+      "(Ljava/util/Map;)Lcom/facebook/react/bridge/WritableNativeMap;");
+  auto constants =
+      (jobject)env->CallStaticObjectMethod(jArguments, jMakeNativeMap, arg);
+  auto jResult = jni::adopt_local(constants);
+  auto result = jni::static_ref_cast<NativeMap::jhybridobject>(jResult);
+  return jsi::valueFromDynamic(rt, result->cthis()->consume());
 }
 
 jsi::Value JavaTurboModule::invokeJavaMethod(

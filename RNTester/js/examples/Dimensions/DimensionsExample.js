@@ -10,8 +10,8 @@
 
 'use strict';
 
-import * as React from 'react';
 import {Dimensions, Text, useWindowDimensions} from 'react-native';
+import * as React from 'react';
 
 class DimensionsSubscription extends React.Component<
   {dim: string},
@@ -45,7 +45,7 @@ exports.description = 'Dimensions of the viewport';
 exports.examples = [
   {
     title: 'useWindowDimensions hook',
-    render() {
+    render(): React.Node {
       const DimensionsViaHook = () => {
         const dims = useWindowDimensions();
         return <Text>{JSON.stringify(dims, null, 2)}</Text>;

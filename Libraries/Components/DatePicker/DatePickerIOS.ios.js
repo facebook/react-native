@@ -13,16 +13,15 @@
 
 'use strict';
 
+const RCTDatePickerNativeComponent = require('./RCTDatePickerNativeComponent');
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
 
 const invariant = require('invariant');
 
-import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
-
-const RCTDatePickerNativeComponent = require('./RCTDatePickerNativeComponent');
+import type {ViewProps} from '../View/ViewPropTypes';
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
@@ -113,7 +112,7 @@ type Props = $ReadOnly<{|
  * source of truth.
  */
 class DatePickerIOS extends React.Component<Props> {
-  static DefaultProps = {
+  static DefaultProps: {|mode: $TEMPORARY$string<'datetime'>|} = {
     mode: 'datetime',
   };
 
@@ -137,7 +136,7 @@ class DatePickerIOS extends React.Component<Props> {
     this.props.onChange && this.props.onChange(event);
   };
 
-  render() {
+  render(): React.Node {
     const props = this.props;
     invariant(
       props.date || props.initialDate,

@@ -89,6 +89,14 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
 
   void setPixelDensity(float pointScaleFactor);
 
+  void schedulerDidSetJSResponder(
+     SurfaceId surfaceId,
+     const ShadowView &shadowView,
+     const ShadowView &initialShadowView,
+     bool blockNativeResponder);
+
+  void schedulerDidClearJSResponder();
+
   void uninstallFabricUIManager();
 };
 

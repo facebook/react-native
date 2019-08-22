@@ -109,6 +109,7 @@ const ActivityIndicator = (props: Props, forwardedRef?: any) => {
         // $FlowFixMe Flow doesn't know when this is the android component
         <PlatformActivityIndicator {...nativeProps} {...androidProps} />
       ) : (
+        // $FlowFixMe Flow doesn't know when this is the iOS component
         <PlatformActivityIndicator {...nativeProps} />
       )}
     </View>

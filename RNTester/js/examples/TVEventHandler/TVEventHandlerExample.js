@@ -81,7 +81,7 @@ exports.description = 'iOS alerts and action sheets';
 exports.examples = [
   {
     title: 'TVEventHandler',
-    render() {
+    render(): React.Node {
       return <TVEventHandlerView />;
     },
   },

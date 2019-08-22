@@ -53,4 +53,6 @@ export interface Spec extends TurboModule {
   ) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('StatusBarManager');
+export default (TurboModuleRegistry.getEnforcing<Spec>(
+  'StatusBarManager',
+): Spec);

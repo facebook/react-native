@@ -15,6 +15,7 @@ import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -43,6 +44,6 @@ type NativeProps = $ReadOnly<{|
   refreshing: boolean,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('PullToRefreshView', {
+export default (codegenNativeComponent<NativeProps>('PullToRefreshView', {
   paperComponentName: 'RCTRefreshControl',
-});
+}): NativeComponentType<NativeProps>);

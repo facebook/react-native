@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {Animated, PanResponder, StyleSheet, View} = require('react-native');
 
 class AnExChained extends React.Component<Object, any> {
@@ -68,7 +69,7 @@ class AnExChained extends React.Component<Object, any> {
     });
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.chained}>
         {this.state.stickers.map((_, i) => {

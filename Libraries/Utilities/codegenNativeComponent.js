@@ -22,10 +22,12 @@ type Options = $ReadOnly<{|
   paperComponentNameDeprecated?: string,
 |}>;
 
+export type NativeComponentType<T> = Class<NativeComponent<T>>;
+
 function codegenNativeComponent<Props>(
   componentName: string,
   options?: Options,
-): Class<NativeComponent<Props>> {
+): NativeComponentType<Props> {
   let componentNameInUse =
     options && options.paperComponentName
       ? options.paperComponentName
@@ -41,7 +43,8 @@ function codegenNativeComponent<Props>(
       componentNameInUse = options.paperComponentNameDeprecated;
     } else {
       throw new Error(
-        'Failed to find native component for either "::_COMPONENT_NAME_::" or "::_COMPONENT_NAME_DEPRECATED_::"',
+        `Failed to find native component for either ${componentName} or ${options.paperComponentNameDeprecated ||
+          '(unknown)'}`,
       );
     }
   }
