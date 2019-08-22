@@ -146,6 +146,12 @@ static NSUInteger RCTDeviceFreeMemory() {
 
 - (CADisplayLink *)displayLink
 {
+  // We only need a displayLink in the case of animated images, so short-circuit this code and don't create one for most of the use cases.
+  // Since this class is used for all RCTImageView's, this is especially important.
+  if (!_animatedImage) {
+    return nil;
+  }
+
   if (!_displayLink) {
     _displayLink = [CADisplayLink displayLinkWithTarget:[RCTWeakProxy weakProxyWithTarget:self] selector:@selector(displayDidRefresh:)];
     NSString *runLoopMode = [NSProcessInfo processInfo].activeProcessorCount > 1 ? NSRunLoopCommonModes : NSDefaultRunLoopMode;
