@@ -37,7 +37,7 @@ function getOrdinalNumber(num: number): string {
 }
 
 const protocolTemplate = `
-@protocol ::_COMPONENT_NAME_::ViewProtocol <NSObject>
+@protocol RCT::_COMPONENT_NAME_::ViewProtocol <NSObject>
 ::_METHODS_::
 @end
 `.trim();
@@ -69,7 +69,7 @@ if ([commandName isEqualToString:@"::_COMMAND_NAME_::"]) {
 `.trim();
 
 const commandHandlerTemplate = `
-RCT_EXTERN inline void ::_COMPONENT_NAME_::HandleCommand(
+RCT_EXTERN inline void RCT::_COMPONENT_NAME_::HandleCommand(
   id<::_COMPONENT_NAME_::ViewProtocol> componentView,
   NSString const *commandName,
   NSArray const *args)
@@ -105,6 +105,10 @@ function getObjCParamType(param: CommandsFunctionTypeParamAnnotation): string {
   switch (param.typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
       return 'BOOL';
+    case 'DoubleTypeAnnotation':
+      return 'double';
+    case 'FloatTypeAnnotation':
+      return 'float';
     case 'Int32TypeAnnotation':
       return 'NSInteger';
     case 'StringTypeAnnotation':
@@ -120,6 +124,10 @@ function getObjCExpectedKindParamType(
 ): string {
   switch (param.typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
+      return '[NSNumber class]';
+    case 'DoubleTypeAnnotation':
+      return '[NSNumber class]';
+    case 'FloatTypeAnnotation':
       return '[NSNumber class]';
     case 'Int32TypeAnnotation':
       return '[NSNumber class]';
@@ -137,6 +145,10 @@ function getReadableExpectedKindParamType(
   switch (param.typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
       return 'boolean';
+    case 'DoubleTypeAnnotation':
+      return 'double';
+    case 'FloatTypeAnnotation':
+      return 'float';
     case 'Int32TypeAnnotation':
       return 'number';
     case 'StringTypeAnnotation':
@@ -154,6 +166,10 @@ function getObjCRightHandAssignmentParamType(
   switch (param.typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
       return `[(NSNumber *)arg${index} boolValue]`;
+    case 'DoubleTypeAnnotation':
+      return `[(NSNumber *)arg${index} doubleValue]`;
+    case 'FloatTypeAnnotation':
+      return `[(NSNumber *)arg${index} floatValue]`;
     case 'Int32TypeAnnotation':
       return `[(NSNumber *)arg${index} intValue]`;
     case 'StringTypeAnnotation':
@@ -263,8 +279,12 @@ function generateCommandHandler(
 }
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
-    const fileName = 'ComponentViewHelpers.h';
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
+    const fileName = 'RCTComponentViewHelpers.h';
 
     const componentContent = Object.keys(schema.modules)
       .map(moduleName => {

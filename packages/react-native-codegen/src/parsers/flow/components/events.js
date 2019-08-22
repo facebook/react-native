@@ -40,6 +40,12 @@ function getPropertyType(name, optional, typeAnnotation) {
         name,
         optional,
       };
+    case 'Double':
+      return {
+        type: 'DoubleTypeAnnotation',
+        name,
+        optional,
+      };
     case 'Float':
       return {
         type: 'FloatTypeAnnotation',
@@ -62,7 +68,7 @@ function getPropertyType(name, optional, typeAnnotation) {
       };
     default:
       (type: empty);
-      throw new Error(`Unable to determine event type for "${name}"`);
+      throw new Error(`Unable to determine event type for "${name}": ${type}`);
   }
 }
 
@@ -72,6 +78,9 @@ function findEventArgumentsAndType(
   bubblingType,
   paperName,
 ) {
+  if (!typeAnnotation.id) {
+    throw new Error("typeAnnotation of event doesn't have a name");
+  }
   const name = typeAnnotation.id.name;
   if (name === '$ReadOnly') {
     return {

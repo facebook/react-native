@@ -36,7 +36,7 @@ const UIManagerJS = {
   getConstants(): Object {
     return getConstants();
   },
-  getViewManagerConfig: function(viewManagerName: string) {
+  getViewManagerConfig: function(viewManagerName: string): any {
     if (
       viewManagerConfigs[viewManagerName] === undefined &&
       NativeUIManager.getConstantsForViewManager

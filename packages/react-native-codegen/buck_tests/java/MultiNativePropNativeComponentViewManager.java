@@ -16,8 +16,9 @@ public class MultiNativePropNativeComponentViewManager extends SimpleViewManager
   }
 
   private void test() {
-    MultiNativePropNativeComponentViewManagerDelegate delegate =
-        new MultiNativePropNativeComponentViewManagerDelegate<ViewGroup>();
+    MultiNativePropNativeComponentViewManagerDelegate<
+            ViewGroup, MultiNativePropNativeComponentViewManager>
+        delegate = new MultiNativePropNativeComponentViewManagerDelegate<>(this);
   }
 
   @Override

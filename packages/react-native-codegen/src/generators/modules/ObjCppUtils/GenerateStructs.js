@@ -15,7 +15,6 @@ const {flatObjects, capitalizeFirstLetter} = require('./Utils');
 const {generateStructsForConstants} = require('./GenerateStructsForConstants');
 
 const template = `
-#import <RCTTypeSafety/RCTConvertHelpers.h>
 ::_CONSTANTS_::::_STRUCTS_::::_INLINES_::
 `;
 
@@ -40,7 +39,7 @@ namespace JS {
 const inlineTemplate = `
 inline ::_RETURN_TYPE_::JS::Native::_MODULE_NAME_::::Spec::_STRUCT_NAME_::::::_PROPERTY_NAME_::() const
 {
-  id const p = _v[@"a"];
+  id const p = _v[@"::_PROPERTY_NAME_::"];
   return ::_RETURN_VALUE_::;
 }
 `;
@@ -99,7 +98,7 @@ function getInlineMethodImplementation(
     case 'GenericObjectTypeAnnotation':
     case 'AnyTypeAnnotation':
       return inlineTemplate
-        .replace(/::_RETURN_TYPE_::/, 'id<NSObject> *')
+        .replace(/::_RETURN_TYPE_::/, 'id<NSObject> ')
         .replace(/::_RETURN_VALUE_::/, 'p');
     case 'ObjectTypeAnnotation':
       return inlineTemplate
@@ -119,7 +118,7 @@ function getInlineMethodImplementation(
       return inlineTemplate
         .replace(
           /::_RETURN_TYPE_::/,
-          'facebook::react::LazyVector<id<NSObject>> *',
+          'facebook::react::LazyVector<id<NSObject>> ',
         )
         .replace(
           /::_RETURN_VALUE_::/,

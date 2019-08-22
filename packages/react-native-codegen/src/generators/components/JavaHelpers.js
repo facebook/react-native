@@ -77,6 +77,10 @@ function getImports(component: ComponentShape): Set<string> {
     if (typeAnnotation.type === 'ArrayTypeAnnotation') {
       imports.add('import com.facebook.react.bridge.ReadableArray;');
     }
+
+    if (typeAnnotation.type === 'ObjectTypeAnnotation') {
+      imports.add('import com.facebook.react.bridge.ReadableMap;');
+    }
   });
 
   return imports;

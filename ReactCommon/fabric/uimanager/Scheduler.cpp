@@ -274,5 +274,30 @@ void Scheduler::uiManagerDidDispatchCommand(
   }
 }
 
+/*
+ * Set JS responder for a view
+ */
+void Scheduler::uiManagerDidSetJSResponder(
+    SurfaceId surfaceId,
+    const SharedShadowNode &shadowNode,
+    bool blockNativeResponder) {
+  if (delegate_) {
+    // TODO: the first shadowView paramenter, should be the first parent that
+    // is non virtual.
+    auto shadowView = ShadowView(*shadowNode);
+    delegate_->schedulerDidSetJSResponder(
+        surfaceId, shadowView, shadowView, blockNativeResponder);
+  }
+}
+
+/*
+ * Clear the JSResponder for a view
+ */
+void Scheduler::uiManagerDidClearJSResponder() {
+  if (delegate_) {
+    delegate_->schedulerDidClearJSResponder();
+  }
+}
+
 } // namespace react
 } // namespace facebook

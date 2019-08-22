@@ -131,6 +131,31 @@ public class ViewProps {
   public static final String BORDER_END_COLOR = "borderEndColor";
   public static final String ON_LAYOUT = "onLayout";
 
+  public static final String TRANSFORM = "transform";
+  public static final String ELEVATION = "elevation";
+  public static final String Z_INDEX = "zIndex";
+  public static final String RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
+  public static final String ACCESSIBILITY_LABEL = "accessibilityLabel";
+  public static final String ACCESSIBILITY_HINT = "accessibilityHint";
+  public static final String ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
+  public static final String ACCESSIBILITY_ROLE = "accessibilityRole";
+  public static final String ACCESSIBILITY_STATES = "accessibilityStates";
+  public static final String ACCESSIBILITY_STATE = "accessibilityState";
+  public static final String ACCESSIBILITY_ACTIONS = "accessibilityActions";
+  public static final String IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
+
+  // DEPRECATED
+  public static final String ROTATION = "rotation";
+  public static final String SCALE_X = "scaleX";
+  public static final String SCALE_Y = "scaleY";
+  public static final String TRANSLATE_X = "translateX";
+  public static final String TRANSLATE_Y = "translateY";
+
+  /** Used to locate views in end-to-end (UI) tests. */
+  public static final String TEST_ID = "testID";
+
+  public static final String NATIVE_ID = "nativeID";
+
   public static final int[] BORDER_SPACING_TYPES = {
     Spacing.ALL,
     Spacing.START,

@@ -38,14 +38,28 @@ rn_apple_library(
         ["-D PIC_MODIFIER=@PLT"],
     )],
     plugins = react_module_plugin_providers(
-        name = "PlatformConstants",
-        native_class_func = "RCTPlatformCls",
-    ),
+                  name = "DeviceInfo",
+                  native_class_func = "RCTDeviceInfoCls",
+              ) +
+              react_module_plugin_providers(
+                  name = "ExceptionsManager",
+                  native_class_func = "RCTExceptionsManagerCls",
+              ) +
+              react_module_plugin_providers(
+                  name = "ImageLoader",
+                  native_class_func = "RCTImageLoaderCls",
+              ) +
+              react_module_plugin_providers(
+                  name = "PlatformConstants",
+                  native_class_func = "RCTPlatformCls",
+              ),
     preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_debug_flags() + [
         "-DRN_DISABLE_OSS_PLUGIN_HEADER",
     ],
+    reexport_all_header_dependencies = True,
     visibility = ["PUBLIC"],
     exported_deps = [
+        "fbsource//xplat/js:RCTImageApple",
         "fbsource//xplat/js/react-native-github:ReactInternalApple",
         "fbsource//xplat/js/react-native-github/Libraries/FBReactNativeSpec:FBReactNativeSpecApple",
     ],

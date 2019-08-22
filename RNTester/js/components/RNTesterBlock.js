@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {StyleSheet, Text, View} = require('react-native');
 
 type Props = $ReadOnly<{|
@@ -24,9 +25,9 @@ type State = {|
 |};
 
 class RNTesterBlock extends React.Component<Props, State> {
-  state = {description: null};
+  state: State = {description: null};
 
-  render() {
+  render(): React.Node {
     const description = this.props.description ? (
       <Text style={styles.descriptionText}>{this.props.description}</Text>
     ) : null;

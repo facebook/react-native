@@ -24,7 +24,7 @@ SharedShadowNode UIManager::createNode(
       componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
   auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
   auto const state = componentDescriptor.createInitialState(
-      ShadowNodeFragment{surfaceId, tag, props, eventEmitter});
+      ShadowNodeFragment{tag, surfaceId, props, eventEmitter});
 
   auto shadowNode = componentDescriptor.createShadowNode({
       /* .tag = */ tag,
@@ -93,9 +93,18 @@ void UIManager::completeSurface(
 
 void UIManager::setJSResponder(
     const SharedShadowNode &shadowNode,
-    const bool blockNativeResponder) const {}
+    const bool blockNativeResponder) const {
+  if (delegate_) {
+    delegate_->uiManagerDidSetJSResponder(
+        shadowNode->getSurfaceId(), shadowNode, blockNativeResponder);
+  }
+}
 
-void UIManager::clearJSResponder() const {}
+void UIManager::clearJSResponder() const {
+  if (delegate_) {
+    delegate_->uiManagerDidClearJSResponder();
+  }
+}
 
 void UIManager::setNativeProps(
     const SharedShadowNode &shadowNode,

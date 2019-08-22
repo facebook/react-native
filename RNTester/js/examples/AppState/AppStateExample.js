@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {AppState, Text, View} = require('react-native');
 
 class AppStateSubscription extends React.Component<
@@ -75,7 +76,7 @@ exports.examples = [
   {
     title: 'AppState.currentState',
     description: 'Can be null on app initialization',
-    render() {
+    render(): React.Node {
       return <Text>{AppState.currentState}</Text>;
     },
   },

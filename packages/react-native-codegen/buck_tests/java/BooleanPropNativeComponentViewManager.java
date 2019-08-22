@@ -6,6 +6,7 @@ import com.facebook.react.viewmanagers.BooleanPropNativeComponentViewManagerInte
 
 public class BooleanPropNativeComponentViewManager extends SimpleViewManager<ViewGroup>
     implements BooleanPropNativeComponentViewManagerInterface<ViewGroup> {
+
   public static final String REACT_CLASS = "BooleanPropNativeComponentView";
 
   @Override
@@ -14,8 +15,8 @@ public class BooleanPropNativeComponentViewManager extends SimpleViewManager<Vie
   }
 
   private void test() {
-    BooleanPropNativeComponentViewManagerDelegate delegate =
-        new BooleanPropNativeComponentViewManagerDelegate<ViewGroup>();
+    BooleanPropNativeComponentViewManagerDelegate<ViewGroup, BooleanPropNativeComponentViewManager>
+        delegate = new BooleanPropNativeComponentViewManagerDelegate<>(this);
   }
 
   @Override

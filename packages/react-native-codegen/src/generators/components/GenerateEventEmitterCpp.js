@@ -10,11 +10,10 @@
 
 'use strict';
 
-const {generateStructName} = require('./EventEmitterHelpers.js');
+const {generateStructName} = require('./CppHelpers.js');
 
 import type {
   ComponentShape,
-  EventTypeShape,
   ObjectPropertyType,
   SchemaType,
 } from '../../CodegenSchema';
@@ -25,8 +24,6 @@ type FilesOutput = Map<string, string>;
 type ComponentCollection = $ReadOnly<{
   [component: string]: ComponentShape,
 }>;
-
-type SettersSet = Set<string>;
 
 const template = `
 /**
@@ -90,6 +87,7 @@ function generateSetters(
         case 'BooleanTypeAnnotation':
         case 'StringTypeAnnotation':
         case 'Int32TypeAnnotation':
+        case 'DoubleTypeAnnotation':
         case 'FloatTypeAnnotation':
           return generateSetter(
             parentPropertyName,
@@ -166,7 +164,11 @@ function generateEvent(componentName: string, event): string {
 }
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const moduleComponents: ComponentCollection = Object.keys(schema.modules)
       .map(moduleName => {
         const components = schema.modules[moduleName].components;

@@ -11,7 +11,10 @@
 
 import NativeI18nManager from './NativeI18nManager';
 
-const i18nConstants = NativeI18nManager
+const i18nConstants: {|
+  doLeftAndRightSwapInRTL: boolean,
+  isRTL: boolean,
+|} = NativeI18nManager
   ? NativeI18nManager.getConstants()
   : {
       isRTL: false,
@@ -19,7 +22,7 @@ const i18nConstants = NativeI18nManager
     };
 
 module.exports = {
-  getConstants: () => {
+  getConstants: (): {|doLeftAndRightSwapInRTL: boolean, isRTL: boolean|} => {
     return i18nConstants;
   },
 

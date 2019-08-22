@@ -11,6 +11,7 @@
 'use strict';
 
 import codegenNativeComponent from '../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../Utilities/codegenNativeComponent';
 import type {
   WithDefault,
   BubblingEventHandler,
@@ -112,7 +113,7 @@ type NativeProps = $ReadOnly<{|
   identifier?: WithDefault<Int32, 0>,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('ModalHostView', {
+export default (codegenNativeComponent<NativeProps>('ModalHostView', {
   interfaceOnly: true,
   paperComponentName: 'RCTModalHostView',
-});
+}): NativeComponentType<NativeProps>);

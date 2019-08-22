@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {StyleSheet, Text, TouchableHighlight, View} = require('react-native');
 
 class XHRExampleOnTimeOut extends React.Component<any, any> {
@@ -58,7 +59,7 @@ class XHRExampleOnTimeOut extends React.Component<any, any> {
     this.xhr && this.xhr.abort();
   }
 
-  render() {
+  render(): React.Node {
     const button = this.state.loading ? (
       <View style={styles.wrapper}>
         <View style={styles.button}>

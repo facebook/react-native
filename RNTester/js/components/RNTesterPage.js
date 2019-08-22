@@ -10,10 +10,10 @@
 
 'use strict';
 
-const React = require('react');
-const {ScrollView, StyleSheet, View} = require('react-native');
-
 const RNTesterTitle = require('./RNTesterTitle');
+const React = require('react');
+
+const {ScrollView, StyleSheet, View} = require('react-native');
 
 type Props = $ReadOnly<{|
   children?: React.Node,
@@ -23,7 +23,7 @@ type Props = $ReadOnly<{|
 |}>;
 
 class RNTesterPage extends React.Component<Props> {
-  render() {
+  render(): React.Node {
     let ContentWrapper;
     let wrapperProps = {};
     if (this.props.noScroll) {

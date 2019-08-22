@@ -79,7 +79,7 @@ function unregisterInput(textFieldID: number) {
   inputs.delete(textFieldID);
 }
 
-function isTextInput(textFieldID: number) {
+function isTextInput(textFieldID: number): boolean {
   return inputs.has(textFieldID);
 }
 

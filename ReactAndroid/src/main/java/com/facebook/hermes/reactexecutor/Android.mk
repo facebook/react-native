@@ -12,7 +12,7 @@ LOCAL_MODULE := hermes-executor-release
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi $(REACT_NATIVE)/node_modules/hermesvm/android/include $(REACT_NATIVE)/../hermesvm/android/include $(REACT_NATIVE)/../node_modules/hermesvm/include
+LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi $(REACT_NATIVE)/node_modules/hermes-engine/android/include $(REACT_NATIVE)/../hermes-engine/android/include $(REACT_NATIVE)/../node_modules/hermes-engine/include
 
 LOCAL_CPP_FEATURES := exceptions
 
@@ -30,7 +30,7 @@ LOCAL_CFLAGS := -DHERMES_ENABLE_DEBUGGER=1
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi $(REACT_NATIVE)/node_modules/hermesvm/android/include $(REACT_NATIVE)/../hermesvm/android/include $(REACT_NATIVE)/../node_modules/hermesvm/include
+LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi $(REACT_NATIVE)/node_modules/hermes-engine/android/include $(REACT_NATIVE)/../hermes-engine/android/include $(REACT_NATIVE)/../node_modules/hermes-engine/include
 
 LOCAL_CPP_FEATURES := exceptions
 

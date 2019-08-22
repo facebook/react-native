@@ -26,6 +26,7 @@ function buildCommandSchema(property, types: TypeMap) {
 
   if (
     !(
+      firstParam.id != null &&
       firstParam.id.type === 'QualifiedTypeIdentifier' &&
       firstParam.id.qualification.name === 'React' &&
       firstParam.id.id.name === 'Ref'
@@ -54,6 +55,16 @@ function buildCommandSchema(property, types: TypeMap) {
       case 'Int32':
         returnType = {
           type: 'Int32TypeAnnotation',
+        };
+        break;
+      case 'Double':
+        returnType = {
+          type: 'DoubleTypeAnnotation',
+        };
+        break;
+      case 'Float':
+        returnType = {
+          type: 'FloatTypeAnnotation',
         };
         break;
       default:

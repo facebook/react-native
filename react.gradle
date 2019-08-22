@@ -16,7 +16,7 @@ def reactRoot = file(config.root ?: "../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
 def enableVmCleanup = config.enableVmCleanup == null ? true : config.enableVmCleanup
-def hermesCommand = config.hermesCommand ?: "../../node_modules/hermesvm/%OS-BIN%/hermes"
+def hermesCommand = config.hermesCommand ?: "../../node_modules/hermes-engine/%OS-BIN%/hermes"
 
 def reactNativeDevServerPort() {
     def value = project.getProperties().get("reactNativeDevServerPort")
@@ -29,31 +29,31 @@ def reactNativeInspectorProxyPort() {
 }
 
 def getHermesOSBin() {
-  if (Os.isFamily(Os.FAMILY_WINDOWS)) return "win64-bin";
-  if (Os.isFamily(Os.FAMILY_MAC)) return "osx-bin";
-  if (Os.isOs(null, "linux", "amd64", null)) return "linux64-bin";
-  throw new Exception("OS not recognized. Please set project.ext.react.hermesCommand " +
-                      "to the path of a working Hermes compiler.");
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) return "win64-bin";
+    if (Os.isFamily(Os.FAMILY_MAC)) return "osx-bin";
+    if (Os.isOs(null, "linux", "amd64", null)) return "linux64-bin";
+    throw new Exception("OS not recognized. Please set project.ext.react.hermesCommand " +
+                        "to the path of a working Hermes compiler.");
 }
 
 // Make sure not to inspect the Hermes config unless we need it,
 // to avoid breaking any JSC-only setups.
 def getHermesCommand = {
-  // If the project specifies a Hermes command, don't second guess it.
-  if (!hermesCommand.contains("%OS-BIN%")) {
-    return hermesCommand
-  }
+    // If the project specifies a Hermes command, don't second guess it.
+    if (!hermesCommand.contains("%OS-BIN%")) {
+        return hermesCommand
+    }
 
-  // Execution on Windows fails with / as separator
-  return hermesCommand
-      .replaceAll("%OS-BIN%", getHermesOSBin())
-      .replace('/' as char, File.separatorChar);
+    // Execution on Windows fails with / as separator
+    return hermesCommand
+            .replaceAll("%OS-BIN%", getHermesOSBin())
+            .replace('/' as char, File.separatorChar);
 }
 
 // Set enableHermesForVariant to a function to configure per variant,
 // or set `enableHermes` to True/False to set all of them
 def enableHermesForVariant = config.enableHermesForVariant ?: {
-      def variant -> config.enableHermes ?: false
+    def variant -> config.enableHermes ?: false
 }
 
 android {
@@ -177,10 +177,10 @@ afterEvaluate {
             }
 
             enabled config."bundleIn${targetName}" != null
-              ? config."bundleIn${targetName}"
-              : config."bundleIn${variant.buildType.name.capitalize()}" != null
-                ? config."bundleIn${variant.buildType.name.capitalize()}"
-                : targetName.toLowerCase().contains("release")
+                ? config."bundleIn${targetName}"
+                : config."bundleIn${variant.buildType.name.capitalize()}" != null
+                    ? config."bundleIn${variant.buildType.name.capitalize()}"
+                    : targetName.toLowerCase().contains("release")
         }
 
         // Expose a minimal interface on the application variant and the task itself:
@@ -297,7 +297,7 @@ afterEvaluate {
                 def targetVariant = ".*/transforms/[^/]*/${targetPath}/.*"
                 def path = details.file.getAbsolutePath().replace(File.separatorChar, '/' as char)
                 if (path.matches(targetVariant) && details.file.isFile()) {
-                  details.file.delete()
+                    details.file.delete()
                 }
             }
         }

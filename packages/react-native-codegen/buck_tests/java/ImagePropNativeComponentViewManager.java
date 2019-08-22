@@ -16,8 +16,8 @@ public class ImagePropNativeComponentViewManager extends SimpleViewManager<ViewG
   }
 
   private void test() {
-    ImagePropNativeComponentViewManagerDelegate delegate =
-        new ImagePropNativeComponentViewManagerDelegate<ViewGroup>();
+    ImagePropNativeComponentViewManagerDelegate<ViewGroup, ImagePropNativeComponentViewManager>
+        delegate = new ImagePropNativeComponentViewManagerDelegate<>(this);
   }
 
   @Override

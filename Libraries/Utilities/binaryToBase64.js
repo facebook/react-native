@@ -12,7 +12,7 @@
 
 const base64 = require('base64-js');
 
-function binaryToBase64(data: ArrayBuffer | $ArrayBufferView) {
+function binaryToBase64(data: ArrayBuffer | $ArrayBufferView): any {
   if (data instanceof ArrayBuffer) {
     data = new Uint8Array(data);
   }

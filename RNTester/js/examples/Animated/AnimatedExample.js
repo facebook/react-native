@@ -10,9 +10,10 @@
 
 'use strict';
 
-const React = require('react');
-const {Animated, Easing, StyleSheet, Text, View} = require('react-native');
 const RNTesterButton = require('../../components/RNTesterButton');
+const React = require('react');
+
+const {Animated, Easing, StyleSheet, Text, View} = require('react-native');
 
 const styles = StyleSheet.create({
   content: {
@@ -32,19 +33,17 @@ const styles = StyleSheet.create({
 
 exports.framework = 'React';
 exports.title = 'Animated - Examples';
-exports.description =
-  'Animated provides a powerful ' +
+exports.description = ('Animated provides a powerful ' +
   'and easy-to-use API for building modern, ' +
-  'interactive user experiences.';
+  'interactive user experiences.': string);
 
 exports.examples = [
   {
     title: 'FadeInView',
-    description:
-      'Uses a simple timing animation to ' +
+    description: ('Uses a simple timing animation to ' +
       'bring opacity from 0 to 1 when the component ' +
-      'mounts.',
-    render: function() {
+      'mounts.': string),
+    render: function(): React.Node {
       class FadeInView extends React.Component<$FlowFixMeProps, any> {
         constructor(props) {
           super(props);
@@ -113,13 +112,12 @@ exports.examples = [
   },
   {
     title: 'Transform Bounce',
-    description:
-      'One `Animated.Value` is driven by a ' +
+    description: ('One `Animated.Value` is driven by a ' +
       'spring with custom constants and mapped to an ' +
       'ordered set of transforms.  Each transform has ' +
       'an interpolation to convert the value into the ' +
-      'right range and units.',
-    render: function() {
+      'right range and units.': string),
+    render: function(): React.Node {
       this.anim = this.anim || new Animated.Value(0);
       return (
         <View>
@@ -181,10 +179,9 @@ exports.examples = [
   },
   {
     title: 'Composite Animations with Easing',
-    description:
-      'Sequence, parallel, delay, and ' +
-      'stagger with different easing functions.',
-    render: function() {
+    description: ('Sequence, parallel, delay, and ' +
+      'stagger with different easing functions.': string),
+    render: function(): React.Node {
       this.anims = this.anims || [1, 2, 3].map(() => new Animated.Value(0));
       return (
         <View>
@@ -279,7 +276,7 @@ exports.examples = [
   {
     title: 'Rotating Images',
     description: 'Simple Animated.Image rotation.',
-    render: function() {
+    render: function(): React.Node {
       this.anim = this.anim || new Animated.Value(0);
       return (
         <View>
@@ -340,10 +337,11 @@ exports.examples = [
   },
   {
     title: 'Continuous Interactions',
-    description:
-      'Gesture events, chaining, 2D ' +
+    description: ('Gesture events, chaining, 2D ' +
       'values, interrupting and transitioning ' +
-      'animations, etc.',
-    render: () => <Text>Checkout the Gratuitous Animation App!</Text>,
+      'animations, etc.': string),
+    render: (): React.Node => (
+      <Text>Checkout the Gratuitous Animation App!</Text>
+    ),
   },
 ];

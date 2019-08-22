@@ -42,7 +42,7 @@ export interface Spec extends TurboModule {
   |};
 }
 
-const NativeModule = TurboModuleRegistry.getEnforcing<Spec>('DeviceInfo');
+const NativeModule: Spec = TurboModuleRegistry.getEnforcing<Spec>('DeviceInfo');
 
 const NativeDeviceInfo = NativeModule;
 

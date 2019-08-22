@@ -559,14 +559,42 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
   }
 
-  @Override
-  public void setJSResponder(int reactTag, boolean blockNativeResponder) {
-    // do nothing for now.
+  /**
+   * Set the JS responder for the view associated with the tags received as a parameter.
+   *
+   * @param reactTag React tag of the first parent of the view that is NOT virtual
+   * @param initialReactTag React tag of the JS view that initiated the touch operation
+   * @param blockNativeResponder If native responder should be blocked or not
+   */
+  @DoNotStrip
+  public void setJSResponder(
+      final int reactTag, final int initialReactTag, final boolean blockNativeResponder) {
+    synchronized (mMountItemsLock) {
+      mMountItems.add(
+          new MountItem() {
+            @Override
+            public void execute(MountingManager mountingManager) {
+              mountingManager.setJSResponder(reactTag, initialReactTag, blockNativeResponder);
+            }
+          });
+    }
   }
 
-  @Override
+  /**
+   * Clears the JS Responder specified by {@link #setJSResponder(int, int, boolean)}. After this
+   * method is called, all the touch events are going to be handled by JS.
+   */
+  @DoNotStrip
   public void clearJSResponder() {
-    // do nothing for now.
+    synchronized (mMountItemsLock) {
+      mMountItems.add(
+          new MountItem() {
+            @Override
+            public void execute(MountingManager mountingManager) {
+              mountingManager.clearJSResponder();
+            }
+          });
+    }
   }
 
   @Override

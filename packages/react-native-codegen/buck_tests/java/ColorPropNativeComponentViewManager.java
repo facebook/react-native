@@ -15,8 +15,8 @@ public class ColorPropNativeComponentViewManager extends SimpleViewManager<ViewG
   }
 
   private void test() {
-    ColorPropNativeComponentViewManagerDelegate delegate =
-        new ColorPropNativeComponentViewManagerDelegate<ViewGroup>();
+    ColorPropNativeComponentViewManagerDelegate<ViewGroup, ColorPropNativeComponentViewManager>
+        delegate = new ColorPropNativeComponentViewManagerDelegate<>(this);
   }
 
   @Override

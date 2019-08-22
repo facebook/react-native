@@ -29,4 +29,6 @@ export interface Spec extends TurboModule {
   |};
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('PlatformConstants');
+export default (TurboModuleRegistry.getEnforcing<Spec>(
+  'PlatformConstants',
+): Spec);

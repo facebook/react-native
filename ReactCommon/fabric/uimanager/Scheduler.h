@@ -90,6 +90,11 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
       const SharedShadowNode &shadowNode,
       std::string const &commandName,
       folly::dynamic const args) override;
+  void uiManagerDidSetJSResponder(
+      SurfaceId surfaceId,
+      const SharedShadowNode &shadowView,
+      bool blockNativeResponder) override;
+  void uiManagerDidClearJSResponder() override;
 
 #pragma mark - ShadowTreeDelegate
 

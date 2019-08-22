@@ -17,6 +17,7 @@ import type {
 } from '../../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../../../../Libraries/Utilities/codegenNativeComponent';
 
 type OnChangeEvent = $ReadOnly<{|
   location: {
@@ -38,6 +39,6 @@ type NativeProps = $ReadOnly<{|
   onChange?: ?BubblingEventHandler<OnChangeEvent>,
 |}>;
 
-export default codegenNativeComponent<NativeProps>(
-  'EventNestedObjectPropsNativeComponent',
-);
+export default (codegenNativeComponent<NativeProps>(
+  'EventNestedObjectPropsNativeComponentView',
+): NativeComponentType<NativeProps>);

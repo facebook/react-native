@@ -307,7 +307,9 @@ function checkInfiniteRange(name: string, arr: Array<number>) {
 
 class AnimatedInterpolation extends AnimatedWithChildren {
   // Export for testing.
-  static __createInterpolation = createInterpolation;
+  static __createInterpolation: (
+    config: InterpolationConfigType,
+  ) => (input: number) => number | string = createInterpolation;
 
   _parent: AnimatedNode;
   _config: InterpolationConfigType;
@@ -347,7 +349,7 @@ class AnimatedInterpolation extends AnimatedWithChildren {
     super.__detach();
   }
 
-  __transformDataType(range: Array<any>) {
+  __transformDataType(range: Array<any>): Array<any> {
     return range.map(NativeAnimatedHelper.transformDataType);
   }
 

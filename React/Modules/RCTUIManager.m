@@ -1137,7 +1137,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
   }];
 }
 
-- (void)flushUIBlocksWithCompletion:(void (^)(void))completion;
+- (void)flushUIBlocksWithCompletion:(void (^)(void))completion
 {
   RCTAssertUIManagerQueue();
 

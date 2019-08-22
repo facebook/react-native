@@ -10,15 +10,17 @@
 
 'use strict';
 
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 import type {
   WithDefault,
   DirectEventHandler,
   Int32,
   Float,
 } from 'react-native/Libraries/Types/CodegenTypes';
-import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
+import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import * as React from 'react';
 
 type DrawerStateEvent = $ReadOnly<{|
   drawerState: Int32,
@@ -27,6 +29,11 @@ type DrawerStateEvent = $ReadOnly<{|
 type DrawerSlideEvent = $ReadOnly<{|
   offset: Float,
 |}>;
+
+interface NativeCommands {
+  +openDrawer: (viewRef: React.Ref<'AndroidDrawerLayout'>) => void;
+  +closeDrawer: (viewRef: React.Ref<'AndroidDrawerLayout'>) => void;
+}
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -53,7 +60,7 @@ type NativeProps = $ReadOnly<{|
   /**
    * Specifies the side of the screen from which the drawer will slide in.
    */
-  drawerPosition: ?Int32,
+  drawerPosition?: WithDefault<'left' | 'right', 'left'>,
 
   /**
    * Specifies the width of the drawer, more precisely the width of the view that be pulled in
@@ -105,5 +112,9 @@ type NativeProps = $ReadOnly<{|
    */
   statusBarBackgroundColor?: ?ColorValue,
 |}>;
+
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['openDrawer', 'closeDrawer'],
+});
 
 export default codegenNativeComponent<NativeProps>('AndroidDrawerLayout');

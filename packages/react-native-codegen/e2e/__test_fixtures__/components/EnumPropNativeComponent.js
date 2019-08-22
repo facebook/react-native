@@ -13,6 +13,7 @@
 import type {WithDefault} from '../../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../../../../Libraries/Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -21,4 +22,6 @@ type NativeProps = $ReadOnly<{|
   alignment?: WithDefault<'top' | 'center' | 'bottom-right', 'center'>,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('EnumPropNativeComponent');
+export default (codegenNativeComponent<NativeProps>(
+  'EnumPropNativeComponentView',
+): NativeComponentType<NativeProps>);

@@ -101,7 +101,11 @@ class MessageQueue {
     }
   }
 
-  callFunctionReturnFlushedQueue(module: string, method: string, args: any[]) {
+  callFunctionReturnFlushedQueue(
+    module: string,
+    method: string,
+    args: any[],
+  ): null | [Array<number>, Array<number>, Array<any>, number] {
     this.__guard(() => {
       this.__callFunction(module, method, args);
     });
@@ -113,7 +117,7 @@ class MessageQueue {
     module: string,
     method: string,
     args: any[],
-  ) {
+  ): $TEMPORARY$array<?[Array<number>, Array<number>, Array<any>, number]> {
     let result;
     this.__guard(() => {
       result = this.__callFunction(module, method, args);
@@ -122,7 +126,10 @@ class MessageQueue {
     return [result, this.flushedQueue()];
   }
 
-  invokeCallbackAndReturnFlushedQueue(cbID: number, args: any[]) {
+  invokeCallbackAndReturnFlushedQueue(
+    cbID: number,
+    args: any[],
+  ): null | [Array<number>, Array<number>, Array<any>, number] {
     this.__guard(() => {
       this.__invokeCallback(cbID, args);
     });
@@ -130,7 +137,7 @@ class MessageQueue {
     return this.flushedQueue();
   }
 
-  flushedQueue() {
+  flushedQueue(): null | [Array<number>, Array<number>, Array<any>, number] {
     this.__guard(() => {
       this.__callImmediates();
     });
@@ -140,7 +147,7 @@ class MessageQueue {
     return queue[0].length ? queue : null;
   }
 
-  getEventLoopRunningTime() {
+  getEventLoopRunningTime(): number {
     return Date.now() - this._eventLoopStartTime;
   }
 
@@ -160,7 +167,7 @@ class MessageQueue {
     };
   }
 
-  getCallableModule(name: string) {
+  getCallableModule(name: string): any | null {
     const getValue = this._lazyCallableModules[name];
     return getValue ? getValue() : null;
   }
@@ -171,7 +178,7 @@ class MessageQueue {
     params: any[],
     onFail: ?Function,
     onSucc: ?Function,
-  ) {
+  ): any {
     if (__DEV__) {
       invariant(
         global.nativeCallSyncHook,
@@ -383,7 +390,7 @@ class MessageQueue {
   // This makes stacktraces to be placed at MessageQueue rather than at where they were launched
   // The parameter DebuggerInternal.shouldPauseOnThrow is used to check before catching all exceptions and
   // can be configured by the VM or any Inspector
-  __shouldPauseOnThrow() {
+  __shouldPauseOnThrow(): boolean {
     return (
       // $FlowFixMe
       typeof DebuggerInternal !== 'undefined' &&

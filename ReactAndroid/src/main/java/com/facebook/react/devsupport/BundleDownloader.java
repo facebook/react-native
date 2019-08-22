@@ -7,11 +7,9 @@
 package com.facebook.react.devsupport;
 
 import android.util.Log;
-import android.util.Pair;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.NativeDeltaClient;
 import com.facebook.react.common.DebugServerException;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
@@ -41,12 +39,9 @@ public class BundleDownloader {
 
   private final OkHttpClient mClient;
 
-  private BundleDeltaClient mBundleDeltaClient;
-
   private @Nullable Call mDownloadBundleFromURLCall;
 
   public static class BundleInfo {
-    private @Nullable String mDeltaClientName;
     private @Nullable String mUrl;
     private int mFilesChangedCount;
 
@@ -59,7 +54,6 @@ public class BundleDownloader {
 
       try {
         JSONObject obj = new JSONObject(jsonStr);
-        info.mDeltaClientName = obj.getString("deltaClient");
         info.mUrl = obj.getString("url");
         info.mFilesChangedCount = obj.getInt("filesChangedCount");
       } catch (JSONException e) {
@@ -74,7 +68,6 @@ public class BundleDownloader {
       JSONObject obj = new JSONObject();
 
       try {
-        obj.put("deltaClient", mDeltaClientName);
         obj.put("url", mUrl);
         obj.put("filesChangedCount", mFilesChangedCount);
       } catch (JSONException e) {
@@ -83,10 +76,6 @@ public class BundleDownloader {
       }
 
       return obj.toString();
-    }
-
-    public @Nullable String getDeltaClient() {
-      return mDeltaClientName;
     }
 
     public String getUrl() {
@@ -106,10 +95,8 @@ public class BundleDownloader {
       final DevBundleDownloadListener callback,
       final File outputFile,
       final String bundleURL,
-      final @Nullable BundleInfo bundleInfo,
-      final BundleDeltaClient.ClientType clientType) {
-    downloadBundleFromURL(
-        callback, outputFile, bundleURL, bundleInfo, clientType, new Request.Builder());
+      final @Nullable BundleInfo bundleInfo) {
+    downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo, new Request.Builder());
   }
 
   public void downloadBundleFromURL(
@@ -117,12 +104,11 @@ public class BundleDownloader {
       final File outputFile,
       final String bundleURL,
       final @Nullable BundleInfo bundleInfo,
-      final BundleDeltaClient.ClientType clientType,
       Request.Builder requestBuilder) {
 
     final Request request =
         requestBuilder
-            .url(formatBundleUrl(bundleURL, clientType))
+            .url(formatBundleUrl(bundleURL))
             // FIXME: there is a bug that makes MultipartStreamReader to never find the end of the
             // multipart message. This temporarily disables the multipart mode to work around it,
             // but
@@ -165,8 +151,7 @@ public class BundleDownloader {
             Matcher match = regex.matcher(contentType);
             try (Response r = response) {
               if (match.find()) {
-                processMultipartResponse(
-                    url, r, match.group(1), outputFile, bundleInfo, clientType, callback);
+                processMultipartResponse(url, r, match.group(1), outputFile, bundleInfo, callback);
               } else {
                 // In case the server doesn't support multipart/mixed responses, fallback to normal
                 // download.
@@ -177,7 +162,6 @@ public class BundleDownloader {
                     Okio.buffer(r.body().source()),
                     outputFile,
                     bundleInfo,
-                    clientType,
                     callback);
               }
             }
@@ -185,12 +169,8 @@ public class BundleDownloader {
         });
   }
 
-  private String formatBundleUrl(String bundleURL, BundleDeltaClient.ClientType clientType) {
-    return BundleDeltaClient.isDeltaUrl(bundleURL)
-            && mBundleDeltaClient != null
-            && mBundleDeltaClient.canHandle(clientType)
-        ? mBundleDeltaClient.extendUrlForDelta(bundleURL)
-        : bundleURL;
+  private String formatBundleUrl(String bundleURL) {
+    return bundleURL;
   }
 
   private void processMultipartResponse(
@@ -199,7 +179,6 @@ public class BundleDownloader {
       String boundary,
       final File outputFile,
       @Nullable final BundleInfo bundleInfo,
-      final BundleDeltaClient.ClientType clientType,
       final DevBundleDownloadListener callback)
       throws IOException {
 
@@ -223,14 +202,7 @@ public class BundleDownloader {
                     status = Integer.parseInt(headers.get("X-Http-Status"));
                   }
                   processBundleResult(
-                      url,
-                      status,
-                      Headers.of(headers),
-                      body,
-                      outputFile,
-                      bundleInfo,
-                      clientType,
-                      callback);
+                      url, status, Headers.of(headers), body, outputFile, bundleInfo, callback);
                 } else {
                   if (!headers.containsKey("Content-Type")
                       || !headers.get("Content-Type").equals("application/json")) {
@@ -286,7 +258,6 @@ public class BundleDownloader {
       BufferedSource body,
       File outputFile,
       BundleInfo bundleInfo,
-      BundleDeltaClient.ClientType clientType,
       DevBundleDownloadListener callback)
       throws IOException {
     // Check for server errors. If the server error has the expected form, fail with more info.
@@ -311,41 +282,19 @@ public class BundleDownloader {
     }
 
     if (bundleInfo != null) {
-      populateBundleInfo(url, headers, clientType, bundleInfo);
+      populateBundleInfo(url, headers, bundleInfo);
     }
 
     File tmpFile = new File(outputFile.getPath() + ".tmp");
 
-    boolean bundleWritten;
-    NativeDeltaClient nativeDeltaClient = null;
-
-    if (BundleDeltaClient.isDeltaUrl(url)) {
-      // If the bundle URL has the delta extension, we need to use the delta patching logic.
-      BundleDeltaClient deltaClient = getBundleDeltaClient(clientType);
-      Assertions.assertNotNull(deltaClient);
-      Pair<Boolean, NativeDeltaClient> result = deltaClient.processDelta(headers, body, tmpFile);
-      bundleWritten = result.first;
-      nativeDeltaClient = result.second;
-    } else {
-      mBundleDeltaClient = null;
-      bundleWritten = storePlainJSInFile(body, tmpFile);
-    }
-
-    if (bundleWritten) {
+    if (storePlainJSInFile(body, tmpFile)) {
       // If we have received a new bundle from the server, move it to its final destination.
       if (!tmpFile.renameTo(outputFile)) {
         throw new IOException("Couldn't rename " + tmpFile + " to " + outputFile);
       }
     }
 
-    callback.onSuccess(nativeDeltaClient);
-  }
-
-  private BundleDeltaClient getBundleDeltaClient(BundleDeltaClient.ClientType clientType) {
-    if (mBundleDeltaClient == null || !mBundleDeltaClient.canHandle(clientType)) {
-      mBundleDeltaClient = BundleDeltaClient.create(clientType);
-    }
-    return mBundleDeltaClient;
+    callback.onSuccess();
   }
 
   private static boolean storePlainJSInFile(BufferedSource body, File outputFile)
@@ -363,10 +312,7 @@ public class BundleDownloader {
     return true;
   }
 
-  private static void populateBundleInfo(
-      String url, Headers headers, BundleDeltaClient.ClientType clientType, BundleInfo bundleInfo) {
-    bundleInfo.mDeltaClientName =
-        clientType == BundleDeltaClient.ClientType.NONE ? null : clientType.name();
+  private static void populateBundleInfo(String url, Headers headers, BundleInfo bundleInfo) {
     bundleInfo.mUrl = url;
 
     String filesChangedCountStr = headers.get("X-Metro-Files-Changed-Count");

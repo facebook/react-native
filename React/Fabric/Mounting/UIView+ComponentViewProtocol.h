@@ -7,20 +7,20 @@
 
 #import <UIKit/UIKit.h>
 
-#import <React/RNComponentViewProtocol.h>
+#import <React/RCTComponentViewProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Default implementation of RNComponentViewProtocol.
+ * Default implementation of RCTComponentViewProtocol.
  */
-@interface UIView (ComponentViewProtocol) <RNComponentViewProtocol>
+@interface UIView (ComponentViewProtocol) <RCTComponentViewProtocol>
 
 + (std::vector<facebook::react::ComponentDescriptorProvider>)supplementalComponentDescriptorProviders;
 
-- (void)mountChildComponentView:(UIView<RNComponentViewProtocol> *)childComponentView index:(NSInteger)index;
+- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;
 
-- (void)unmountChildComponentView:(UIView<RNComponentViewProtocol> *)childComponentView index:(NSInteger)index;
+- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;
 
 - (void)updateProps:(facebook::react::Props::Shared const &)props
            oldProps:(facebook::react::Props::Shared const &)oldProps;

@@ -11,12 +11,12 @@
 'use strict';
 
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-import NativeNetworkingIOS from './NativeNetworkingIOS';
+
 const convertRequestBody = require('./convertRequestBody');
 
-import type {RequestBody} from './convertRequestBody';
-
+import NativeNetworkingIOS from './NativeNetworkingIOS';
 import type {NativeResponseType} from './XMLHttpRequest';
+import type {RequestBody} from './convertRequestBody';
 
 class RCTNetworking extends NativeEventEmitter {
   constructor() {
@@ -60,4 +60,4 @@ class RCTNetworking extends NativeEventEmitter {
   }
 }
 
-module.exports = new RCTNetworking();
+module.exports = (new RCTNetworking(): RCTNetworking);

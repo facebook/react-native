@@ -16,6 +16,7 @@ import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -29,4 +30,6 @@ type NativeProps = $ReadOnly<{|
   trackImage?: ?ImageSource,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('RCTProgressView');
+export default (codegenNativeComponent<NativeProps>(
+  'RCTProgressView',
+): NativeComponentType<NativeProps>);

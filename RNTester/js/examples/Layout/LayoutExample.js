@@ -10,11 +10,11 @@
 
 'use strict';
 
-const React = require('react');
-const {StyleSheet, Text, View} = require('react-native');
-
 const RNTesterBlock = require('../../components/RNTesterBlock');
 const RNTesterPage = require('../../components/RNTesterPage');
+const React = require('react');
+
+const {StyleSheet, Text, View} = require('react-native');
 
 class Circle extends React.Component<$FlowFixMeProps> {
   render() {
@@ -50,7 +50,7 @@ class CircleBlock extends React.Component<$FlowFixMeProps> {
 }
 
 class LayoutExample extends React.Component<$FlowFixMeProps> {
-  render() {
+  render(): React.Node {
     const fiveColoredCircles = [
       <Circle bgColor="#527fe4" key="blue" />,
       <Circle bgColor="#D443E3" key="violet" />,

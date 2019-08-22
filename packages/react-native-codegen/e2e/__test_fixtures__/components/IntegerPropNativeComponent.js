@@ -16,6 +16,7 @@ import type {
 } from '../../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../../../../Libraries/Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -26,6 +27,6 @@ type NativeProps = $ReadOnly<{|
   progress3?: WithDefault<Int32, 10>,
 |}>;
 
-export default codegenNativeComponent<NativeProps>(
-  'IntegerPropNativeComponent',
-);
+export default (codegenNativeComponent<NativeProps>(
+  'IntegerPropNativeComponentView',
+): NativeComponentType<NativeProps>);

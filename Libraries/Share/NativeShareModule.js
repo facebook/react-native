@@ -21,4 +21,4 @@ export interface Spec extends TurboModule {
   ) => Promise<{|action: string|}>;
 }
 
-export default TurboModuleRegistry.get<Spec>('ShareModule');
+export default (TurboModuleRegistry.get<Spec>('ShareModule'): ?Spec);

@@ -40,5 +40,5 @@ export interface Spec extends TurboModule {
   ) => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('AsyncSQLiteDBStorage') ||
-  TurboModuleRegistry.get<Spec>('AsyncLocalStorage');
+export default (TurboModuleRegistry.get<Spec>('AsyncSQLiteDBStorage') ||
+  TurboModuleRegistry.get<Spec>('AsyncLocalStorage'): ?Spec);

@@ -10,17 +10,16 @@
 'use strict';
 
 import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
+import type {EventConfig} from './AnimatedEvent';
+import NativeAnimatedModule from './NativeAnimatedModule';
 import type {
   EventMapping,
   AnimatedNodeConfig,
   AnimatingNodeConfig,
 } from './NativeAnimatedModule';
-import NativeAnimatedModule from './NativeAnimatedModule';
-import invariant from 'invariant';
-
 import type {AnimationConfig, EndCallback} from './animations/Animation';
 import type {InterpolationConfigType} from './nodes/AnimatedInterpolation';
-import type {EventConfig} from './AnimatedEvent';
+import invariant from 'invariant';
 
 let __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
 let __nativeAnimationIdCount = 1; /* used for started animations */
@@ -190,6 +189,7 @@ const TRANSFORM_WHITELIST = {
   rotate: true,
   rotateX: true,
   rotateY: true,
+  rotateZ: true,
   perspective: true,
 };
 
@@ -311,7 +311,7 @@ module.exports = {
   shouldUseNativeDriver,
   transformDataType,
   // $FlowExpectedError - unsafe getter lint suppresion
-  get nativeEventEmitter() {
+  get nativeEventEmitter(): NativeEventEmitter {
     if (!nativeEventEmitter) {
       nativeEventEmitter = new NativeEventEmitter(NativeAnimatedModule);
     }

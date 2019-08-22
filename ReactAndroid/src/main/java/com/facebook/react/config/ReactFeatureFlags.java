@@ -47,4 +47,11 @@ public class ReactFeatureFlags {
    * This feature flag enables logs for Fabric
    */
   public static boolean enableFabricLogs = false;
+
+  /**
+   * Should this application use a {@link com.facebook.react.uimanager.ViewManagerDelegate} (if
+   * provided) to update the view properties. If {@code false}, then the generated {@code
+   * ...$$PropsSetter} class will be used instead.
+   */
+  public static boolean useViewManagerDelegates = false;
 }

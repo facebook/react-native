@@ -10,16 +10,15 @@
 
 'use strict';
 
-import NativeDialogManagerAndroid from '../NativeModules/specs/NativeDialogManagerAndroid';
 const Platform = require('../Utilities/Platform');
+
+import NativeDialogManagerAndroid from '../NativeModules/specs/NativeDialogManagerAndroid';
 import NativePermissionsAndroid from './NativePermissionsAndroid';
-
-import invariant from 'invariant';
-
 import type {
   PermissionStatus,
   PermissionType,
 } from './NativePermissionsAndroid';
+import invariant from 'invariant';
 
 export type Rationale = {
   title: string,
@@ -69,8 +68,37 @@ const PERMISSIONS = Object.freeze({
  */
 
 class PermissionsAndroid {
-  PERMISSIONS = PERMISSIONS;
-  RESULTS = PERMISSION_REQUEST_RESULT;
+  PERMISSIONS: {|
+    ACCESS_COARSE_LOCATION: string,
+    ACCESS_FINE_LOCATION: string,
+    ADD_VOICEMAIL: string,
+    BODY_SENSORS: string,
+    CALL_PHONE: string,
+    CAMERA: string,
+    GET_ACCOUNTS: string,
+    PROCESS_OUTGOING_CALLS: string,
+    READ_CALENDAR: string,
+    READ_CALL_LOG: string,
+    READ_CONTACTS: string,
+    READ_EXTERNAL_STORAGE: string,
+    READ_PHONE_STATE: string,
+    READ_SMS: string,
+    RECEIVE_MMS: string,
+    RECEIVE_SMS: string,
+    RECEIVE_WAP_PUSH: string,
+    RECORD_AUDIO: string,
+    SEND_SMS: string,
+    USE_SIP: string,
+    WRITE_CALENDAR: string,
+    WRITE_CALL_LOG: string,
+    WRITE_CONTACTS: string,
+    WRITE_EXTERNAL_STORAGE: string,
+  |} = PERMISSIONS;
+  RESULTS: {|
+    DENIED: $TEMPORARY$string<'denied'>,
+    GRANTED: $TEMPORARY$string<'granted'>,
+    NEVER_ASK_AGAIN: $TEMPORARY$string<'never_ask_again'>,
+  |} = PERMISSION_REQUEST_RESULT;
 
   /**
    * DEPRECATED - use check

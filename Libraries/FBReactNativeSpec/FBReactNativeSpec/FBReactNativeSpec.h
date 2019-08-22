@@ -47,6 +47,33 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+
+namespace JS {
+  namespace NativeAccessibilityManager {
+    struct SpecSetAccessibilityContentSizeMultipliersJSMultiipliers {
+      folly::Optional<double> extraSmall() const;
+      folly::Optional<double> small() const;
+      folly::Optional<double> medium() const;
+      folly::Optional<double> large() const;
+      folly::Optional<double> extraLarge() const;
+      folly::Optional<double> extraExtraLarge() const;
+      folly::Optional<double> extraExtraExtraLarge() const;
+      folly::Optional<double> accessibilityMedium() const;
+      folly::Optional<double> accessibilityLarge() const;
+      folly::Optional<double> accessibilityExtraLarge() const;
+      folly::Optional<double> accessibilityExtraExtraLarge() const;
+      folly::Optional<double> accessibilityExtraExtraExtraLarge() const;
+
+      SpecSetAccessibilityContentSizeMultipliersJSMultiipliers(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultiipliers)
++ (RCTManagedPointer *)JS_NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultiipliers:(id)json;
+@end
 @protocol NativeAccessibilityManagerSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)getCurrentBoldTextState:(RCTResponseSenderBlock)onSuccess
@@ -61,6 +88,7 @@ namespace facebook {
                                   onError:(RCTResponseSenderBlock)onError;
 - (void)getCurrentVoiceOverState:(RCTResponseSenderBlock)onSuccess
                          onError:(RCTResponseSenderBlock)onError;
+- (void)setAccessibilityContentSizeMultipliers:(JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers &)JSMultiipliers;
 - (void)setAccessibilityFocus:(double)reactTag;
 - (void)announceForAccessibility:(NSString *)announcement;
 
@@ -583,6 +611,27 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+@protocol NativeBugReportingSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)startReportAProblemFlow;
+- (void)setExtraData:(NSDictionary *)extraData
+          extraFiles:(NSDictionary *)extraFiles;
+- (void)setCategoryID:(NSString *)categoryID;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'BugReporting'
+     */
+
+    class JSI_EXPORT NativeBugReportingSpecJSI : public ObjCTurboModule {
+    public:
+      NativeBugReportingSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
 @protocol NativeClipboardSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)getString:(RCTPromiseResolveBlock)resolve
@@ -739,10 +788,10 @@ namespace JS {
   namespace NativeDialogManagerAndroid {
     struct DialogOptions {
       NSString *title() const;
-      id<NSObject> _Nullable message() const;
-      id<NSObject> _Nullable buttonPositive() const;
-      id<NSObject> _Nullable buttonNegative() const;
-      id<NSObject> _Nullable buttonNeutral() const;
+      NSString *message() const;
+      NSString *buttonPositive() const;
+      NSString *buttonNegative() const;
+      NSString *buttonNeutral() const;
       folly::Optional<facebook::react::LazyVector<NSString *>> items() const;
       folly::Optional<bool> cancelable() const;
 
@@ -833,21 +882,6 @@ namespace JS {
 
 namespace JS {
   namespace NativeExceptionsManager {
-    struct ExceptionDataExtraData {
-
-      ExceptionDataExtraData(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeExceptionsManager_ExceptionDataExtraData)
-+ (RCTManagedPointer *)JS_NativeExceptionsManager_ExceptionDataExtraData:(id)json;
-@end
-
-namespace JS {
-  namespace NativeExceptionsManager {
     struct ExceptionData {
       NSString *message() const;
       NSString *originalMessage() const;
@@ -856,7 +890,7 @@ namespace JS {
       facebook::react::LazyVector<JS::NativeExceptionsManager::StackFrame> stack() const;
       double id_() const;
       bool isFatal() const;
-      folly::Optional<JS::NativeExceptionsManager::ExceptionDataExtraData> extraData() const;
+      id<NSObject> _Nullable extraData() const;
 
       ExceptionData(NSDictionary *const v) : _v(v) {}
     private:
@@ -916,6 +950,44 @@ namespace facebook {
     class JSI_EXPORT NativeFileReaderModuleSpecJSI : public ObjCTurboModule {
     public:
       NativeFileReaderModuleSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace JS {
+  namespace NativeFrameRateLogger {
+    struct SpecSetGlobalOptionsOptions {
+      folly::Optional<bool> debug() const;
+      folly::Optional<bool> reportStackTraces() const;
+
+      SpecSetGlobalOptionsOptions(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeFrameRateLogger_SpecSetGlobalOptionsOptions)
++ (RCTManagedPointer *)JS_NativeFrameRateLogger_SpecSetGlobalOptionsOptions:(id)json;
+@end
+@protocol NativeFrameRateLoggerSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)setGlobalOptions:(JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions &)options;
+- (void)setContext:(NSString *)context;
+- (void)beginScroll;
+- (void)endScroll;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'FrameRateLogger'
+     */
+
+    class JSI_EXPORT NativeFrameRateLoggerSpecJSI : public ObjCTurboModule {
+    public:
+      NativeFrameRateLoggerSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
 
     };
   } // namespace react
@@ -1008,6 +1080,21 @@ namespace facebook {
     class JSI_EXPORT NativeI18nManagerSpecJSI : public ObjCTurboModule {
     public:
       NativeI18nManagerSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
+@protocol NativeImageLoaderSpec <RCTBridgeModule, RCTTurboModule>
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'ImageLoader'
+     */
+
+    class JSI_EXPORT NativeImageLoaderSpecJSI : public ObjCTurboModule {
+    public:
+      NativeImageLoaderSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
 
     };
   } // namespace react
@@ -2242,6 +2329,66 @@ namespace facebook {
 #import <RCTTypeSafety/RCTConvertHelpers.h>
 
 
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::extraSmall() const
+{
+  id const p = _v[@"extraSmall"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::small() const
+{
+  id const p = _v[@"small"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::medium() const
+{
+  id const p = _v[@"medium"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::large() const
+{
+  id const p = _v[@"large"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::extraLarge() const
+{
+  id const p = _v[@"extraLarge"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::extraExtraLarge() const
+{
+  id const p = _v[@"extraExtraLarge"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::extraExtraExtraLarge() const
+{
+  id const p = _v[@"extraExtraExtraLarge"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::accessibilityMedium() const
+{
+  id const p = _v[@"accessibilityMedium"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::accessibilityLarge() const
+{
+  id const p = _v[@"accessibilityLarge"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::accessibilityExtraLarge() const
+{
+  id const p = _v[@"accessibilityExtraLarge"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::accessibilityExtraExtraLarge() const
+{
+  id const p = _v[@"accessibilityExtraExtraLarge"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultiipliers::accessibilityExtraExtraExtraLarge() const
+{
+  id const p = _v[@"accessibilityExtraExtraExtraLarge"];
+  return RCTBridgingToOptionalDouble(p);
+}
 inline NSString *JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::title() const
 {
   id const p = _v[@"title"];
@@ -2463,25 +2610,25 @@ inline NSString *JS::NativeDialogManagerAndroid::DialogOptions::title() const
   id const p = _v[@"title"];
   return RCTBridgingToString(p);
 }
-inline id<NSObject> _Nullable JS::NativeDialogManagerAndroid::DialogOptions::message() const
+inline NSString *JS::NativeDialogManagerAndroid::DialogOptions::message() const
 {
   id const p = _v[@"message"];
-  return p;
+  return RCTBridgingToString(p);
 }
-inline id<NSObject> _Nullable JS::NativeDialogManagerAndroid::DialogOptions::buttonPositive() const
+inline NSString *JS::NativeDialogManagerAndroid::DialogOptions::buttonPositive() const
 {
   id const p = _v[@"buttonPositive"];
-  return p;
+  return RCTBridgingToString(p);
 }
-inline id<NSObject> _Nullable JS::NativeDialogManagerAndroid::DialogOptions::buttonNegative() const
+inline NSString *JS::NativeDialogManagerAndroid::DialogOptions::buttonNegative() const
 {
   id const p = _v[@"buttonNegative"];
-  return p;
+  return RCTBridgingToString(p);
 }
-inline id<NSObject> _Nullable JS::NativeDialogManagerAndroid::DialogOptions::buttonNeutral() const
+inline NSString *JS::NativeDialogManagerAndroid::DialogOptions::buttonNeutral() const
 {
   id const p = _v[@"buttonNeutral"];
-  return p;
+  return RCTBridgingToString(p);
 }
 inline folly::Optional<facebook::react::LazyVector<NSString *>> JS::NativeDialogManagerAndroid::DialogOptions::items() const
 {
@@ -2535,7 +2682,6 @@ inline folly::Optional<bool> JS::NativeExceptionsManager::StackFrame::collapse()
   id const p = _v[@"collapse"];
   return RCTBridgingToOptionalBool(p);
 }
-
 inline NSString *JS::NativeExceptionsManager::ExceptionData::message() const
 {
   id const p = _v[@"message"];
@@ -2571,10 +2717,20 @@ inline bool JS::NativeExceptionsManager::ExceptionData::isFatal() const
   id const p = _v[@"isFatal"];
   return RCTBridgingToBool(p);
 }
-inline folly::Optional<JS::NativeExceptionsManager::ExceptionDataExtraData> JS::NativeExceptionsManager::ExceptionData::extraData() const
+inline id<NSObject> _Nullable JS::NativeExceptionsManager::ExceptionData::extraData() const
 {
   id const p = _v[@"extraData"];
-  return (p == nil ? folly::none : folly::make_optional(JS::NativeExceptionsManager::ExceptionDataExtraData(p)));
+  return p;
+}
+inline folly::Optional<bool> JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions::debug() const
+{
+  id const p = _v[@"debug"];
+  return RCTBridgingToOptionalBool(p);
+}
+inline folly::Optional<bool> JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions::reportStackTraces() const
+{
+  id const p = _v[@"reportStackTraces"];
+  return RCTBridgingToOptionalBool(p);
 }
 inline JS::NativeI18nManager::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];

@@ -70,7 +70,7 @@ project.ext.react = [
     root: "$rootDir",
     inputExcludes: ["android/**", "./**", ".gradle/**"],
     composeSourceMapsPath: "$rootDir/scripts/compose-source-maps.js",
-    hermesCommand: "../../../node_modules/hermesvm/%OS-BIN%/hermes",
+    hermesCommand: "../../../node_modules/hermes-engine/%OS-BIN%/hermes",
     enableHermesForVariant: { def v -> v.name.contains("hermes") }
 ]
 
@@ -110,12 +110,12 @@ android {
 
     flavorDimensions "vm"
     productFlavors {
-      hermes {
-        dimension "vm"
-      }
-      jsc {
-        dimension "vm"
-      }
+        hermes {
+            dimension "vm"
+        }
+        jsc {
+            dimension "vm"
+        }
     }
 
     defaultConfig {
@@ -165,7 +165,7 @@ dependencies {
     // Build React Native from source
     implementation project(':ReactAndroid')
 
-    def hermesPath = '$projectDir/../../../../node_modules/hermesvm/android/'
+    def hermesPath = '$projectDir/../../../../node_modules/hermes-engine/android/'
     debugImplementation files(hermesPath + "hermes-debug.aar")
     releaseImplementation files(hermesPath + "hermes-release.aar")
 

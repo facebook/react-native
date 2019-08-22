@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include <unordered_map>
 #include <fb/fbjni.h>
 #include <jsi/jsi.h>
 #include <ReactCommon/TurboModule.h>
@@ -27,7 +28,7 @@ public:
     jni::alias_ref<jhybridobject> jThis,
     jlong jsContext,
     jni::alias_ref<JSCallInvokerHolder::javaobject> jsCallInvokerHolder,
-    jni::alias_ref<TurboModuleManagerDelegate::javaobject> tmmDelegate
+    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate
   );
   static void registerNatives();
 private:
@@ -35,16 +36,22 @@ private:
   jni::global_ref<TurboModuleManager::javaobject> javaPart_;
   jsi::Runtime* runtime_;
   std::shared_ptr<JSCallInvoker> jsCallInvoker_;
-  jni::global_ref<TurboModuleManagerDelegate::javaobject> turboModuleManagerDelegate_;
+  jni::global_ref<TurboModuleManagerDelegate::javaobject> delegate_;
 
-  jni::global_ref<JTurboModule> getJavaModule(std::string name);
-  jni::global_ref<CxxModuleWrapper::javaobject> getLegacyCxxJavaModule(std::string name);
+  /**
+   * TODO(T48018690):
+   * All modules are currently long-lived.
+   * We need to come up with a mechanism to allow modules to specify whether
+   * they want to be long-lived or short-lived.
+   */
+  std::unordered_map<std::string, std::shared_ptr<react::TurboModule>> turboModuleCache_;
+
   void installJSIBindings();
   explicit TurboModuleManager(
     jni::alias_ref<TurboModuleManager::jhybridobject> jThis,
     jsi::Runtime *rt,
     std::shared_ptr<JSCallInvoker> jsCallInvoker,
-    jni::alias_ref<TurboModuleManagerDelegate::javaobject> tmmDelegate
+    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate
   );
 };
 

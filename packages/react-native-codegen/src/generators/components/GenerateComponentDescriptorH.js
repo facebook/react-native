@@ -42,7 +42,11 @@ using ::_CLASSNAME_::ComponentDescriptor = ConcreteComponentDescriptor<::_CLASSN
 `.trim();
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const fileName = 'ComponentDescriptors.h';
 
     const componentDescriptors = Object.keys(schema.modules)

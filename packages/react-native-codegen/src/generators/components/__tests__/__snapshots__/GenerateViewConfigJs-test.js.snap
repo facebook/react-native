@@ -28,6 +28,43 @@ const ArrayPropsNativeComponentViewConfig = {
     srcs: true,
     points: true,
     sizes: true,
+    object: true,
+    array: true,
+  },
+};
+
+let nativeComponentName = 'ArrayPropsNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, ArrayPropsNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = ArrayPropsNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
+Map {
+  "ARRAY_PROPS_WITH_NESTED_OBJECTNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const ArrayPropsNativeComponentViewConfig = {
+  uiViewClassName: 'ArrayPropsNativeComponent',
+
+  validAttributes: {
+    nativePrimitives: true,
   },
 };
 
@@ -127,8 +164,7 @@ Map {
 'use strict';
 
 const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
-const {UIManager} = require(\\"react-native\\")
-const {findNodeHandle} = require(\\"react-native\\")
+const {dispatchCommand} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
 const CommandNativeComponentViewConfig = {
   uiViewClassName: 'CommandNativeComponent',
@@ -145,19 +181,11 @@ export default nativeComponentName;
 
 export const Commands = {
     flashScrollIndicators(ref) {
-        UIManager.dispatchViewManagerCommand(
-          findNodeHandle(ref),
-          UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.flashScrollIndicators,
-          []
-        );
+        dispatchCommand(ref, \\"flashScrollIndicators\\", []);
     },
 
-    allTypes(ref, x, message, animated) {
-        UIManager.dispatchViewManagerCommand(
-          findNodeHandle(ref),
-          UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.allTypes,
-          [x, message, animated]
-        );
+    allTypes(ref, x, y, z, message, animated) {
+        dispatchCommand(ref, \\"allTypes\\", [x, y, z, message, animated]);
     }
 };
 ",
@@ -179,8 +207,7 @@ Map {
 'use strict';
 
 const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
-const {UIManager} = require(\\"react-native\\")
-const {findNodeHandle} = require(\\"react-native\\")
+const {dispatchCommand} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
 
 const CommandNativeComponentViewConfig = {
   uiViewClassName: 'CommandNativeComponent',
@@ -200,13 +227,49 @@ export default nativeComponentName;
 
 export const Commands = {
     hotspotUpdate(ref, x, y) {
-        UIManager.dispatchViewManagerCommand(
-          findNodeHandle(ref),
-          UIManager.getViewManagerConfig(\\"CommandNativeComponent\\").Commands.hotspotUpdate,
-          [x, y]
-        );
+        dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
     }
 };
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture DOUBLE_PROPS 1`] = `
+Map {
+  "DOUBLE_PROPSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const DoublePropNativeComponentViewConfig = {
+  uiViewClassName: 'DoublePropNativeComponent',
+
+  validAttributes: {
+    blurRadius: true,
+    blurRadius2: true,
+    blurRadius3: true,
+    blurRadius4: true,
+    blurRadius5: true,
+    blurRadius6: true,
+  },
+};
+
+let nativeComponentName = 'DoublePropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, DoublePropNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = DoublePropNativeComponentViewConfig;
+
+export default nativeComponentName;
 ",
 }
 `;
@@ -639,6 +702,41 @@ let nativeComponentName = 'NoPropsNoEventsComponent';
 registerGeneratedViewConfig(nativeComponentName, NoPropsNoEventsComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = NoPropsNoEventsComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture OBJECT_PROPS 1`] = `
+Map {
+  "OBJECT_PROPSNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const ObjectPropsViewConfig = {
+  uiViewClassName: 'ObjectProps',
+
+  validAttributes: {
+    objectProp: true,
+  },
+};
+
+let nativeComponentName = 'ObjectProps';
+
+registerGeneratedViewConfig(nativeComponentName, ObjectPropsViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = ObjectPropsViewConfig;
 
 export default nativeComponentName;
 ",

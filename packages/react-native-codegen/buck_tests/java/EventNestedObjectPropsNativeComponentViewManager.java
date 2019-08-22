@@ -15,8 +15,9 @@ public class EventNestedObjectPropsNativeComponentViewManager extends SimpleView
   }
 
   private void test() {
-    EventNestedObjectPropsNativeComponentViewManagerDelegate delegate =
-        new EventNestedObjectPropsNativeComponentViewManagerDelegate<ViewGroup>();
+    EventNestedObjectPropsNativeComponentViewManagerDelegate<
+            ViewGroup, EventNestedObjectPropsNativeComponentViewManager>
+        delegate = new EventNestedObjectPropsNativeComponentViewManagerDelegate<>(this);
   }
 
   @Override

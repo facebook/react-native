@@ -81,7 +81,11 @@ function getClassExtendString(component): string {
 }
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const fileName = 'Props.cpp';
     const allImports: Set<string> = new Set([
       '#include <react/core/propsConversions.h>',
@@ -103,7 +107,7 @@ module.exports = {
             const propsString = generatePropsString(component);
             const extendString = getClassExtendString(component);
 
-            const imports = getImports(component);
+            const imports = getImports(component.props);
             imports.forEach(allImports.add, allImports);
 
             const replacedTemplate = componentTemplate

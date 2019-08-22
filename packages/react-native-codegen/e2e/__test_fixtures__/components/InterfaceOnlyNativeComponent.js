@@ -16,6 +16,7 @@ import type {
 } from '../../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../../../../Libraries/Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -27,10 +28,10 @@ type NativeProps = $ReadOnly<{|
   onChange?: ?BubblingEventHandler<$ReadOnly<{|value: boolean|}>>,
 |}>;
 
-export default codegenNativeComponent<NativeProps>(
-  'InterfaceOnlyNativeComponent',
+export default (codegenNativeComponent<NativeProps>(
+  'InterfaceOnlyNativeComponentView',
   {
     interfaceOnly: true,
     paperComponentName: 'RCTInterfaceOnlyComponent',
   },
-);
+): NativeComponentType<NativeProps>);

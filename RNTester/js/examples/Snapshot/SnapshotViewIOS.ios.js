@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {NativeModules, StyleSheet, UIManager, View} = require('react-native');
 
 const {TestModule} = NativeModules;
@@ -38,11 +39,13 @@ type Props = $ReadOnly<{|
 |}>;
 
 class SnapshotViewIOS extends React.Component<Props> {
-  onDefaultAction = (event: SnapshotReadyEvent) => {
+  onDefaultAction: (event: SnapshotReadyEvent) => void = (
+    event: SnapshotReadyEvent,
+  ) => {
     TestModule.verifySnapshot(TestModule.markTestPassed);
   };
 
-  render() {
+  render(): React.Node {
     const testIdentifier = this.props.testIdentifier || 'test';
     const onSnapshotReady = this.props.onSnapshotReady || this.onDefaultAction;
     return (
