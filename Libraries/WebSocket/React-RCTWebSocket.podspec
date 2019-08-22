@@ -18,15 +18,19 @@ else
 end
 
 Pod::Spec.new do |s|
-  s.name                   = "React-jsinspector"
+  s.name                   = "React-RCTWebSocket"
   s.version                = version
-  s.summary                = "-"  # TODO
+  s.summary                = "A library for supporting WebSockets, a protocol which provides full-duplex communication channels over a single TCP connection." 
   s.homepage               = "http://facebook.github.io/react-native/"
+  s.documentation_url      = "https://facebook.github.io/react-native/docs/network#websocket-support"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.source                 = source
-  s.source_files           = "*.{cpp,h}"
-  s.header_dir             = 'jsinspector'
+  s.source_files           = "*.{m}"
+  s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
+  s.header_dir             = "RCTWebSocket"
   s.static_framework       = true
+
+  s.dependency "React-Core/RCTWebSocketHeaders", version
 end

@@ -29,6 +29,7 @@ Pod::Spec.new do |s|
   s.source_files           = "*.{m,mm}"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTNetwork"
+  s.static_framework       = true
 
   s.dependency "React-Core/RCTNetworkHeaders", version
 end

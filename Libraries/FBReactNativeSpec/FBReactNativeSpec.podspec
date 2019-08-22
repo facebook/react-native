@@ -32,6 +32,7 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "**/*.{c,h,m,mm,cpp}"
   s.header_dir             = "FBReactNativeSpec"
+  s.static_framework       = true
 
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",

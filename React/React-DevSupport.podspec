@@ -6,7 +6,7 @@
 
 require "json"
 
-package = JSON.parse(File.read(File.join(__dir__, "..", "..", "package.json")))
+package = JSON.parse(File.read(File.join(__dir__, "..", "package.json")))
 version = package['version']
 
 source = { :git => 'https://github.com/facebook/react-native.git' }
@@ -18,7 +18,7 @@ else
 end
 
 Pod::Spec.new do |s|
-  s.name                   = "React-jsinspector"
+  s.name                   = "React-DevSupport"
   s.version                = version
   s.summary                = "-"  # TODO
   s.homepage               = "http://facebook.github.io/react-native/"
@@ -26,7 +26,12 @@ Pod::Spec.new do |s|
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.source                 = source
-  s.source_files           = "*.{cpp,h}"
-  s.header_dir             = 'jsinspector'
+  s.source_files           = "DevSupport/*.{mm,m}",
+                             "Inspector/*.{mm,m}"
+  s.header_dir             = "DevSupport"
   s.static_framework       = true
+
+  s.dependency "React-Core/DevSupportHeaders", version
+  s.dependency "React-RCTWebSocket", version
+  s.dependency "React-jsinspector", version
 end

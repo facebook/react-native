@@ -26,10 +26,10 @@ def use_react_native! (options={})
   pod 'React-RCTSettings', :path => "#{prefix}/Libraries/Settings"
   pod 'React-RCTText', :path => "#{prefix}/Libraries/Text"
   pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
-  pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
+  pod 'React-RCTWebSocket', :path => "#{prefix}/Libraries/WebSocket"
 
   unless production
-    pod 'React-Core/DevSupport', :path => "#{prefix}/"
+    pod 'React-DevSupport', :path => "#{prefix}/React"
   end
 
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
