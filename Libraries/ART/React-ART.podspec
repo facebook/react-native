@@ -29,7 +29,6 @@ Pod::Spec.new do |s|
   s.source_files           = "**/*.{m}"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "ART"
-  s.static_framework       = true
 
   s.dependency "React-Core/ARTHeaders", version
 end

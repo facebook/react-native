@@ -23,7 +23,6 @@ boost_compiler_flags = '-Wno-documentation'
 
 header_subspecs = {
   'ARTHeaders'                  => 'Libraries/ART/**/*.h',
-  'DevSupportHeaders'           => 'React/{DevSupport/*.h,Inspector/*.h}',
   'CoreModulesHeaders'          => 'React/CoreModules/**/*.h',
   'RCTActionSheetHeaders'       => 'Libraries/ActionSheetIOS/*.h',
   'RCTAnimationHeaders'         => 'Libraries/NativeAnimation/{Drivers/*,Nodes/*,*}.{h}',
@@ -34,9 +33,7 @@ header_subspecs = {
   'RCTPushNotificationHeaders'  => 'Libraries/PushNotificationIOS/*.h',
   'RCTSettingsHeaders'          => 'Libraries/Settings/*.h',
   'RCTTextHeaders'              => 'Libraries/Text/**/*.h',
-  'RCTSettingsHeaders'          => 'Libraries/Settings/*.h',
   'RCTVibrationHeaders'         => 'Libraries/Vibration/*.h',
-  'RCTWebSocketHeaders'         => 'Libraries/WebSocket/*.h',
 }
 
 Pod::Spec.new do |s|
@@ -50,12 +47,11 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "React"
-  s.static_framework       = true
   s.framework              = "JavaScriptCore"
   s.library                = "stdc++"
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}
-  s.default_subspec         = "Default"
+  s.default_subspec        = "Default"
 
   s.subspec "Default" do |ss|
     ss.source_files           = "React/**/*.{c,h,m,mm,S,cpp}"
@@ -71,6 +67,20 @@ Pod::Spec.new do |s|
                                 "React/Views/RCTSlider*",
                                 "React/Views/RCTSwitch*",
     ss.private_header_files   = "React/Cxx*/*.h"
+  end
+
+  s.subspec "DevSupport" do |ss|
+    ss.source_files = "React/DevSupport/*.{h,mm,m}",
+                      "React/Inspector/*.{h,mm,m}"
+
+    ss.dependency "React-Core/Default", version
+    ss.dependency "React-Core/RCTWebSocket", version
+    ss.dependency "React-jsinspector", version
+  end
+
+  s.subspec "RCTWebSocket" do |ss|
+    ss.source_files = "Libraries/WebSocket/*.{h,m}"
+    ss.dependency "React-Core/Default", version
   end
 
   # Add a subspec containing just the headers for each

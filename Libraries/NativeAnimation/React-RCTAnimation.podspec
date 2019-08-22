@@ -29,7 +29,6 @@ Pod::Spec.new do |s|
   s.source_files           = "{Drivers/*,Nodes/*,*}.{m}"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTAnimation"
-  s.static_framework       = true
 
   s.dependency "React-Core/RCTAnimationHeaders", version
 end

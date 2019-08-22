@@ -30,10 +30,9 @@ Pod::Spec.new do |s|
   s.source_files           = "*.{m,mm}", "RCTBlobCollector.h"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTBlob"
-  s.static_framework       = true
 
   s.dependency "React-Core/RCTBlobHeaders", version
+  s.dependency "React-Core/RCTWebSocket", version
   s.dependency "React-RCTNetwork", version
-  s.dependency "React-RCTWebSocket", version
   s.dependency "React-jsi", version
 end
