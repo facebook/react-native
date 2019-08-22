@@ -5,11 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTAnimatedImage.h>
-#import <React/RCTDefines.h>
+#import <Foundation/Foundation.h>
 
-RCT_EXTERN void RCTUIImageViewEnableWeakProxy(BOOL enabled);
+@interface RCTWeakProxy : NSObject
 
-@interface RCTUIImageViewAnimated : UIImageView
+@property (nonatomic, weak, readonly) id target;
+
++ (instancetype)weakProxyWithTarget:(id)target;
 
 @end

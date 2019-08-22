@@ -6,9 +6,15 @@
  */
 
 #import <React/RCTUIImageViewAnimated.h>
+#import <React/RCTWeakProxy.h>
 
 #import <mach/mach.h>
 #import <objc/runtime.h>
+
+static BOOL weakProxyEnabled = YES;
+void RCTUIImageViewEnableWeakProxy(BOOL enabled) {
+  weakProxyEnabled = enabled;
+}
 
 static NSUInteger RCTDeviceTotalMemory() {
   return (NSUInteger)[[NSProcessInfo processInfo] physicalMemory];
@@ -146,8 +152,9 @@ static NSUInteger RCTDeviceFreeMemory() {
 - (CADisplayLink *)displayLink
 {
   if (!_displayLink) {
-    __weak __typeof(self) weakSelf = self;
-    _displayLink = [CADisplayLink displayLinkWithTarget:weakSelf selector:@selector(displayDidRefresh:)];
+    __weak typeof(self) weakSelf = self;
+    id target = weakProxyEnabled ? [RCTWeakProxy weakProxyWithTarget:self] : weakSelf;
+    _displayLink = [CADisplayLink displayLinkWithTarget:target selector:@selector(displayDidRefresh:)];
     NSString *runLoopMode = [NSProcessInfo processInfo].activeProcessorCount > 1 ? NSRunLoopCommonModes : NSDefaultRunLoopMode;
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:runLoopMode];
   }
