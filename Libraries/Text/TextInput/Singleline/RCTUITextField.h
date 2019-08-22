@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 #else // [TODO(macOS ISS#2323203)
 @property (nonatomic, assign) BOOL textWasPasted;
 #endif // ]TODO(macOS ISS#2323203)
-@property (nonatomic, strong, nullable) UIColor *placeholderColor;
+@property (nonatomic, strong, nullable) RCTUIColor *placeholderColor; // TODO(OSS Candidate ISS#2710739)
 @property (nonatomic, assign) UIEdgeInsets textContainerInset;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @property (nonatomic, assign, getter=isEditable) BOOL editable;
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSString *text;
 @property (nonatomic, getter=isAutomaticTextReplacementEnabled) BOOL automaticTextReplacementEnabled;
 @property (nonatomic, getter=isAutomaticSpellingCorrectionEnabled) BOOL automaticSpellingCorrectionEnabled;
-@property (nonatomic, strong, nullable) UIColor *selectionColor;
+@property (nonatomic, strong, nullable) RCTUIColor *selectionColor;
 @property (weak, nullable) id<RCTUITextFieldDelegate> delegate;
 #endif // ]TODO(macOS ISS#2323203)
 

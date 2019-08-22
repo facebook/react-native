@@ -17,8 +17,8 @@
 #endif
 
 #if TARGET_OS_OSX
-@property (nonatomic, strong, nullable) UIColor *progressTintColor;
-@property (nonatomic, strong, nullable) UIColor *trackTintColor;
+@property (nonatomic, strong, nullable) RCTUIColor *progressTintColor;
+@property (nonatomic, strong, nullable) RCTUIColor *trackTintColor;
 @property(nonatomic, strong, nullable) UIImage *progressImage;
 @property(nonatomic, strong, nullable) UIImage *trackImage;
 #endif

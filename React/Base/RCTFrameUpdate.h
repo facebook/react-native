@@ -6,8 +6,7 @@
  */
 
 #import <Foundation/Foundation.h>
-
-@class CADisplayLink;
+#import "RCTPlatformDisplayLink.h" // TODO(macOS ISS#2323203)
 
 /**
  * Interface containing the information about the last screen refresh.
@@ -24,7 +23,7 @@
  */
 @property (nonatomic, readonly) NSTimeInterval deltaTime;
 
-- (instancetype)initWithDisplayLink:(CADisplayLink *)displayLink NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDisplayLink:(RCTPlatformDisplayLink *)displayLink NS_DESIGNATED_INITIALIZER; // TODO(OSS Candidate ISS#2710739)
 
 @end
 

@@ -26,10 +26,10 @@ static UIFont *defaultPlaceholderFont()
   return [UIFont systemFontOfSize:17];
 }
 
-static UIColor *defaultPlaceholderColor()
+static RCTUIColor *defaultPlaceholderColor() // TODO(OSS Candidate ISS#2710739)
 {
   // Default placeholder color from UITextField.
-  return [UIColor colorWithRed:0 green:0 blue:0.0980392 alpha:0.22];
+  return [RCTUIColor colorWithRed:0 green:0 blue:0.0980392 alpha:0.22]; // TODO(OSS Candidate ISS#2710739)
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -93,7 +93,7 @@ static UIColor *defaultPlaceholderColor()
 #endif // ]TODO(macOS ISS#2323203)
 }
 
-- (void)setPlaceholderColor:(UIColor *)placeholderColor
+- (void)setPlaceholderColor:(RCTUIColor *)placeholderColor // TODO(OSS Candidate ISS#2710739)
 {
   _placeholderColor = placeholderColor;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
@@ -104,7 +104,7 @@ static UIColor *defaultPlaceholderColor()
 }
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-- (void)setSelectionColor:(UIColor *)selectionColor
+- (void)setSelectionColor:(RCTUIColor *)selectionColor
 {
   NSMutableDictionary *selectTextAttributes = self.selectedTextAttributes.mutableCopy;
   selectTextAttributes[NSBackgroundColorAttributeName] = selectionColor ?: [NSColor selectedControlColor];
@@ -112,9 +112,9 @@ static UIColor *defaultPlaceholderColor()
   self.insertionPointColor = self.selectionColor ?: [NSColor selectedControlColor];
 }
 
-- (UIColor*)selectionColor
+- (RCTUIColor*)selectionColor
 {
-  return (UIColor*)self.selectedTextAttributes[NSBackgroundColorAttributeName];
+  return (RCTUIColor*)self.selectedTextAttributes[NSBackgroundColorAttributeName];
 }
 
 - (void)setEnabledTextCheckingTypes:(NSTextCheckingTypes)checkingType

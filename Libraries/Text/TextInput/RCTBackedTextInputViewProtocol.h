@@ -31,11 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RCTBackedTextInputViewProtocol
 #endif // ]TODO(macOS ISS#2323203)
 
-@property (nonatomic, strong, nullable) UIColor *textColor;
+@property (nonatomic, strong, nullable) RCTUIColor *textColor; // TODO(OSS Candidate ISS#2710739)
 @property (nonatomic, strong, nullable) UIFont *font;
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;
 @property (nonatomic, copy, nullable) NSString *placeholder;
-@property (nonatomic, strong, nullable) UIColor *placeholderColor;
+@property (nonatomic, strong, nullable) RCTUIColor *placeholderColor; // TODO(OSS Candidate ISS#2710739)
 @property (nonatomic, assign) NSTextAlignment textAlignment;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @property (nonatomic, assign, readonly) BOOL textWasPasted;

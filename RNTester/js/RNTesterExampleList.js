@@ -113,6 +113,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
               renderSectionHeader={renderSectionHeader}
               backgroundColor={Platform.select({
                 macos: 'transparent',
+                ios: 'transparent',
                 default: undefined,
               })} // TODO(macOS ISS#2323203)
             />
@@ -183,6 +184,9 @@ const styles = StyleSheet.create({
       macos: {
         backgroundColor: {semantic: 'controlBackgroundColor'},
       },
+      ios: {
+        backgroundColor: {semantic: 'systemBackgroundColor'},
+      },
       default: {
         // ]TODO(macOS ISS#2323203)
         backgroundColor: '#eeeeee',
@@ -197,6 +201,12 @@ const styles = StyleSheet.create({
           semantic: 'unemphasizedSelectedContentBackgroundColor',
         },
         color: {semantic: 'headerTextColor'},
+      },
+      ios: {
+        backgroundColor: {
+          semantic: 'systemGroupedBackgroundColor',
+        },
+        color: {semantic: 'secondaryLabelColor'},
       },
       default: {
         // ]TODO(macOS ISS#2323203)
@@ -213,6 +223,9 @@ const styles = StyleSheet.create({
       // [TODO(macOS ISS#2323203)
       macos: {
         backgroundColor: {semantic: 'controlBackgroundColor'},
+      },
+      ios: {
+        backgroundColor: {semantic: 'secondarySystemGroupedBackgroundColor'},
       },
       default: {
         // ]TODO(macOS ISS#2323203)
@@ -236,6 +249,9 @@ const styles = StyleSheet.create({
       macos: {
         backgroundColor: {semantic: 'separatorColor'},
       },
+      ios: {
+        backgroundColor: {semantic: 'separatorColor'},
+      },
       default: {
         // ]TODO(macOS ISS#2323203)
         backgroundColor: '#bbbbbb',
@@ -249,6 +265,7 @@ const styles = StyleSheet.create({
   },
   sectionListContentContainer: Platform.select({
     macos: {backgroundColor: {semantic: 'separatorColor'}},
+    ios: {backgroundColor: {semantic: 'separatorColor'}},
     default: {backgroundColor: 'white'},
   }),
   rowTitleText: {
@@ -258,6 +275,9 @@ const styles = StyleSheet.create({
       // [TODO(macOS ISS#2323203)
       macos: {
         color: {semantic: 'controlTextColor'},
+      },
+      ios: {
+        color: {semantic: 'labelColor'},
       },
       default: {
         // ]TODO(macOS ISS#2323203)

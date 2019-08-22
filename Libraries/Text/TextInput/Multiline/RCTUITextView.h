@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL textWasPasted;
 #endif // ]TODO(macOS ISS#2323203)
 @property (nonatomic, copy, nullable) NSString *placeholder;
-@property (nonatomic, strong, nullable) UIColor *placeholderColor;
+@property (nonatomic, strong, nullable) RCTUIColor *placeholderColor; // TODO(OSS Candidate ISS#2710739)
 
 @property (nonatomic, assign) CGFloat preferredMaxLayoutWidth;
 
@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 @property (nonatomic, assign) BOOL scrollEnabled;
-@property (nonatomic, strong, nullable) UIColor *selectionColor;
+@property (nonatomic, strong, nullable) RCTUIColor *selectionColor; // TODO(OSS Candidate ISS#2710739)
 @property (nonatomic, assign) UIEdgeInsets textContainerInsets;
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, assign) NSTextAlignment textAlignment;

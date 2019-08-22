@@ -20,7 +20,7 @@
 
 - (void)updateAnimations;
 
-- (void)stepAnimations:(nonnull CADisplayLink *)displaylink;
+- (void)stepAnimations:(nonnull RCTPlatformDisplayLink *)displaylink; // TODO(macOS ISS#2323203)
 
 // graph
 

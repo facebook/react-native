@@ -107,6 +107,8 @@ UIKIT_STATIC_INLINE CGRect CGRectValue(NSValue *value)
 // semantically equivalent types
 //
 
+#define RCTUIColor UIColor
+
 UIKIT_STATIC_INLINE UIFont *UIFontWithSize(UIFont *font, CGFloat pointSize)
 {
   return [font fontWithSize:pointSize];
@@ -269,7 +271,7 @@ void UIGraphicsEndImageContext(void);
 //
 
 // UIColor.h/NSColor.h
-@compatibility_alias UIColor NSColor;
+#define RCTUIColor NSColor
 
 // UIFont.h/NSFont.h
 // Both NSFont and UIFont are toll-free bridged to CTFontRef so we'll assume they're semantically equivalent

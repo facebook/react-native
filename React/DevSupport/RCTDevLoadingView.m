@@ -67,7 +67,7 @@ RCT_EXPORT_MODULE()
   }
 }
 
-RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor)
+RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(RCTUIColor *)color backgroundColor:(RCTUIColor *)backgroundColor) // TODO(OSS Candidate ISS#2710739)
 {
   if (!isEnabled) {
     return;
@@ -167,20 +167,20 @@ RCT_EXPORT_METHOD(hide)
 
 - (void)showWithURL:(NSURL *)URL
 {
-  UIColor *color;
-  UIColor *backgroundColor;
+  RCTUIColor *color; // TODO(OSS Candidate ISS#2710739)
+  RCTUIColor *backgroundColor; // TODO(OSS Candidate ISS#2710739)
   NSString *source;
   if (URL.fileURL) {
     // If dev mode is not enabled, we don't want to show this kind of notification
 #if !RCT_DEV
     return;
 #endif
-    color = [UIColor grayColor];
-    backgroundColor = [UIColor blackColor];
+    color = [RCTUIColor grayColor]; // TODO(OSS Candidate ISS#2710739)
+    backgroundColor = [RCTUIColor blackColor]; // TODO(OSS Candidate ISS#2710739)
     source = @"pre-bundled file";
   } else {
-    color = [UIColor whiteColor];
-    backgroundColor = [UIColor colorWithHue:1./3 saturation:1 brightness:.35 alpha:1];
+    color = [RCTUIColor whiteColor]; // TODO(OSS Candidate ISS#2710739)
+    backgroundColor = [RCTUIColor colorWithHue:1./3 saturation:1 brightness:.35 alpha:1]; // TODO(OSS Candidate ISS#2710739)
     source = [NSString stringWithFormat:@"%@:%@", URL.host, URL.port];
   }
 

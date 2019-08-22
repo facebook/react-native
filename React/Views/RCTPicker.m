@@ -23,7 +23,7 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
-    _color = [UIColor blackColor];
+    _color = [RCTUIColor blackColor]; // TODO(OSS Candidate ISS#2710739)
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     _font = [UIFont systemFontOfSize:21]; // TODO: selected title default should be 23.5
 #else // [TODO(macOS ISS#2323203)

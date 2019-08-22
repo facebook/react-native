@@ -146,6 +146,9 @@ RCT_EXTERN UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL);
 // Creates a new, unique temporary file path with the specified extension
 RCT_EXTERN NSString *__nullable RCTTempFilePath(NSString *__nullable extension, NSError **error);
 
+// Get RGBA components of CGColor
+RCT_EXTERN void RCTGetRGBAColorComponents(CGColorRef color, CGFloat rgba[_Nonnull 4]); // TODO(OSS Candidate ISS#2710739)
+
 // Converts a CGColor to a hex string
 RCT_EXTERN NSString *RCTColorToHexString(CGColorRef color);
 

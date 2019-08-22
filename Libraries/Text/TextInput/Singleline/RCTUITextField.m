@@ -18,7 +18,7 @@
 @property (nonatomic, assign) UIEdgeInsets textContainerInset;
 @property (nonatomic, getter=isAutomaticTextReplacementEnabled) BOOL automaticTextReplacementEnabled;
 @property (nonatomic, getter=isAutomaticSpellingCorrectionEnabled) BOOL automaticSpellingCorrectionEnabled;
-@property (nonatomic, strong, nullable) UIColor *selectionColor;
+@property (nonatomic, strong, nullable) RCTUIColor *selectionColor;
 
 @end
 
@@ -65,7 +65,7 @@
   NSMutableDictionary *selectTextAttributes = fieldEditor.selectedTextAttributes.mutableCopy;
   selectTextAttributes[NSBackgroundColorAttributeName] = self.selectionColor ?: [NSColor selectedControlColor];
 	fieldEditor.selectedTextAttributes = selectTextAttributes;
-  fieldEditor.insertionPointColor = self.selectionColor ?: [NSColor selectedControlColor];
+  fieldEditor.insertionPointColor = self.selectionColor ?: [RCTUIColor selectedControlColor];
   return fieldEditor;
 }
 
@@ -85,10 +85,10 @@ static UIFont *defaultPlaceholderFont()
   return [UIFont systemFontOfSize:17];
 }
 
-static UIColor *defaultPlaceholderTextColor()
+static RCTUIColor *defaultPlaceholderTextColor()
 {
   // Default placeholder color from UITextField.
-  return [UIColor colorWithRed:0 green:0 blue:0.0980392 alpha:0.22];
+  return [RCTUIColor colorWithRed:0 green:0 blue:0.0980392 alpha:0.22];
 }
 
 #endif // ]TODO(macOS ISS#2323203)
@@ -183,12 +183,12 @@ static UIColor *defaultPlaceholderTextColor()
   return ((RCTUITextFieldCell*)self.cell).isAutomaticSpellingCorrectionEnabled;
 }
 
-- (void)setSelectionColor:(UIColor *)selectionColor
+- (void)setSelectionColor:(RCTUIColor *)selectionColor // TODO(OSS Candidate ISS#2710739)
 {
   ((RCTUITextFieldCell*)self.cell).selectionColor = selectionColor;
 }
 
-- (UIColor*)selectionColor
+- (RCTUIColor*)selectionColor // TODO(OSS Candidate ISS#2710739)
 {
   return ((RCTUITextFieldCell*)self.cell).selectionColor;
 }
@@ -215,7 +215,7 @@ static UIColor *defaultPlaceholderTextColor()
   [self _updatePlaceholder];
 }
 
-- (void)setPlaceholderColor:(UIColor *)placeholderColor
+- (void)setPlaceholderColor:(RCTUIColor *)placeholderColor // TODO(OSS Candidate ISS#2710739)
 {
   _placeholderColor = placeholderColor;
   [self _updatePlaceholder];

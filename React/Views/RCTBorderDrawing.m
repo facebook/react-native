@@ -526,7 +526,7 @@ static UIImage *RCTGetDashedOrDottedBorderImage(RCTBorderStyle borderStyle,
   CGContextSetLineWidth(ctx, lineWidth);
   CGContextSetLineDash(ctx, 0, dashLengths, sizeof(dashLengths) / sizeof(*dashLengths));
 
-  CGContextSetStrokeColorWithColor(ctx, [UIColor yellowColor].CGColor);
+  CGContextSetStrokeColorWithColor(ctx, [RCTUIColor yellowColor].CGColor); // TODO(OSS Candidate ISS#2710739)
 
   CGContextAddPath(ctx, path);
   CGContextSetStrokeColorWithColor(ctx, borderColors.top);

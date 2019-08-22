@@ -99,7 +99,7 @@ typedef NSURL RCTFileURL;
 
 + (CGAffineTransform)CGAffineTransform:(id)json;
 
-+ (UIColor *)UIColor:(id)json;
++ (RCTUIColor *)UIColor:(id)json; // TODO(OSS Candidate ISS#2710739)
 + (CGColorRef)CGColor:(id)json CF_RETURNS_NOT_RETAINED;
 
 + (YGValue)YGValue:(id)json;
@@ -111,7 +111,7 @@ typedef NSURL RCTFileURL;
 + (NSArray<NSURL *> *)NSURLArray:(id)json;
 + (NSArray<RCTFileURL *> *)RCTFileURLArray:(id)json;
 + (NSArray<NSNumber *> *)NSNumberArray:(id)json;
-+ (NSArray<UIColor *> *)UIColorArray:(id)json;
++ (NSArray<RCTUIColor *> *)UIColorArray:(id)json; // TODO(OSS Candidate ISS#2710739)
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 + (NSArray<NSPasteboardType> *)NSPasteboardTypeArray:(id)json;
 #endif // ]TODO(macOS ISS#2323203)

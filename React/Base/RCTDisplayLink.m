@@ -22,7 +22,8 @@
 
 @implementation RCTDisplayLink
 {
-  CADisplayLink *_jsDisplayLink;
+  RCTPlatformDisplayLink *_jsDisplayLink; // TODO(macOS ISS#2323203)
+
   NSMutableSet<RCTModuleData *> *_frameUpdateObservers;
   NSRunLoop *_runLoop;
 }
@@ -31,7 +32,7 @@
 {
   if ((self = [super init])) {
     _frameUpdateObservers = [NSMutableSet new];
-    _jsDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_jsThreadUpdate:)];
+    _jsDisplayLink = [RCTPlatformDisplayLink displayLinkWithTarget:self selector:@selector(_jsThreadUpdate:)]; // TODO(macOS ISS#2323203)
   }
 
   return self;
@@ -102,7 +103,7 @@
   }
 }
 
-- (void)_jsThreadUpdate:(CADisplayLink *)displayLink
+- (void)_jsThreadUpdate:(RCTPlatformDisplayLink *)displayLink // TODO(macOS ISS#2323203)
 {
   RCTAssertRunLoop();
 

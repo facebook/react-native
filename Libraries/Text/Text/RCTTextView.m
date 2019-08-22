@@ -148,9 +148,9 @@
 
 - (void)drawRect:(CGRect)rect
 {
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+// [TODO(OSS Candidate ISS#2710739): for macOS and iOS dark mode
   [super drawRect:rect];
-#endif // ]TODO(macOS ISS#2323203)
+// ]TODO(OSS Candidate ISS#2710739)
   if (!_textStorage) {
     return;
   }
@@ -193,7 +193,7 @@
   if (highlightPath) {
     if (!_highlightLayer) {
       _highlightLayer = [CAShapeLayer layer];
-      _highlightLayer.fillColor = [UIColor colorWithWhite:0 alpha:0.25].CGColor;
+      _highlightLayer.fillColor = [RCTUIColor colorWithWhite:0 alpha:0.25].CGColor; // TODO(OSS Candidate ISS#2710739)
       [self.layer addSublayer:_highlightLayer];
     }
     _highlightLayer.position = _contentFrame.origin;
