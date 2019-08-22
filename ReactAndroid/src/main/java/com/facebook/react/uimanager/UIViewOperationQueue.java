@@ -546,7 +546,7 @@ public class UIViewOperationQueue {
     }
   }
 
-  /*private final class PerformAccessibilityAction extends ViewOperation {
+  private final class PerformAccessibilityAction extends ViewOperation {
 
     private final int mAction;
 
@@ -574,7 +574,7 @@ public class UIViewOperationQueue {
     public void execute() {
       mNativeViewHierarchyManager.announceForAccessibility(mTag, mAnnouncement);
     }
-  }*/
+  }
 
   private final NativeViewHierarchyManager mNativeViewHierarchyManager;
   private final Object mDispatchRunnablesLock = new Object();

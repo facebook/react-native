@@ -6,6 +6,7 @@
 package com.facebook.react.uimanager;
 
 import android.graphics.Color;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.View;
 import android.view.ViewParent;
 import androidx.core.view.ViewCompat;
@@ -13,6 +14,7 @@ import androidx.core.view.ViewCompat;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
@@ -32,6 +34,7 @@ import javax.annotation.Nullable;
 public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode>
     extends ViewManager<T, C> {
 
+  private static final String CLICKABLE = "clickable";
   private static final String PROP_BACKGROUND_COLOR = ViewProps.BACKGROUND_COLOR;
   private static final String PROP_TRANSFORM = "transform";
   private static final String PROP_ELEVATION = "elevation";
@@ -225,9 +228,22 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = PROP_ACCESSIBILITY_NODE_INFO)
   public void setAccessibilityNodeInfo(T view, @Nullable ReadableMap map) {
-    AccessibilityHelper.updateAccessibilityNodeInfo(view, map);
+    if(map == null) {
+      return ;
+    }
+    view.setAccessibilityDelegate(new View.AccessibilityDelegate() {
+      @Override
+      public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
+        super.onInitializeAccessibilityNodeInfo(host, info);
+        if(map.hasKey(CLICKABLE))
+        {
+          if(map.getType(CLICKABLE) == ReadableType.Boolean)
+          info.setClickable(map.getBoolean(CLICKABLE));
+        }
+      }
+    });
   }
-
+ 
   @Deprecated
   @ReactProp(name = PROP_ROTATION)
   public void setRotation(@Nonnull T view, float rotation) {

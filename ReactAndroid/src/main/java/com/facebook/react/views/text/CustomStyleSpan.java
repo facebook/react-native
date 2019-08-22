@@ -70,7 +70,7 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
 
   @Override
   public void updateMeasureState(@NonNull TextPaint paint) {
-    apply(paint, mStyle, mWeight, mFontFamily, mAssetManager);
+    apply(paint, mStyle, mWeight, mFontFamily, mFontPath, mAssetManager);
   }
 
   /**
