@@ -30,8 +30,8 @@ jobs:
 
     - name: Bump package version
       run: node .ado/bumpFileVersions.js
-      #env:
-      #  BUILD_SOURCEBRANCH: ref/head/master
+      env:
+        BUILD_SOURCEBRANCH: ${{ github.ref }}
 
     - name: Setup Nuget.exe
       uses: warrenbuckley/Setup-Nuget@v1
