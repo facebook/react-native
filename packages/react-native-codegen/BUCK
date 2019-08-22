@@ -7,6 +7,23 @@ load("@fbsource//xplat/js/react-native-github/packages/react-native-codegen:DEFS
 load("//tools/build_defs/oss:rn_defs.bzl", "react_native_target")
 
 fb_native.sh_binary(
+    name = "codegen_rn_modules_tests",
+    main = "src/cli/verify_with_old_codegen.sh",
+    visibility = ["PUBLIC"],
+    resources = [
+        "fbsource//xplat/js:setup_env",
+        "src/cli/verify_with_old_codegen.js",
+        "src/cli/verify_with_old_codegen.sh",
+    ],
+)
+
+fb_native.sh_test(
+    name = "verify_all_modules_with_old_codegen",
+    test = "src/cli/verify_all_modules_with_old_codegen.sh",
+    visibility = ["PUBLIC"],
+)
+
+fb_native.sh_binary(
     name = "write_to_json",
     main = "src/cli/combine/combine_js_to_schema.sh",
     resources = [
