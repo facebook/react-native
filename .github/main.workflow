@@ -1,6 +1,11 @@
 workflow "New workflow" {
-  on = "push"
   resolves = ["GitHub Action for npm"]
+  on = "pull_request"
+}
+
+workflow "New workflow" {
+  resolves = ["GitHub Action for npm"]
+  on = "push"
 }
 
 action "GitHub Action for npm" {
