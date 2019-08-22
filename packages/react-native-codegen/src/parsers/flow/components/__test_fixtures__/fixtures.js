@@ -776,10 +776,18 @@ import type {Int32, Double, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {NativeComponent} from 'codegenNativeComponent';
 
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  // No props or events
+|}>;
+
+type NativeType = NativeComponent<ModuleProps>;
+
 interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+  +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void;
   +scrollTo: (
-    viewRef: React.Ref<'RCTView'>,
+    viewRef: React.ElementRef<NativeType>,
     x: Float,
     y: Int32,
     z: Double,
@@ -787,18 +795,13 @@ interface NativeCommands {
   ) => void;
 }
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
-  // No props or events
-|}>;
-
 export const Commands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['hotspotUpdate', 'scrollTo'],
 });
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): NativeType);
 `;
 
 const COMMANDS_WITH_EXTERNAL_TYPES = `
@@ -825,8 +828,15 @@ export type Boolean = boolean;
 export type Int = Int32;
 export type Void = void;
 
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  // No props or events
+|}>;
+
+type NativeType = NativeComponent<ModuleProps>;
+
 export type ScrollTo = (
-  viewRef: React.Ref<'RCTView'>,
+  viewRef: React.ElementRef<NativeType>,
   y: Int,
   animated: Boolean,
 ) => Void;
@@ -835,18 +845,13 @@ interface NativeCommands {
   +scrollTo: ScrollTo;
 }
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
-  // No props or events
-|}>;
-
 export const Commands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['scrollTo'],
 });
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): NativeType);
 `;
 
 const COMMANDS_AND_EVENTS_TYPES_EXPORTED = `
@@ -879,12 +884,6 @@ export type Boolean = boolean;
 export type Int = Int32;
 export type Void = void;
 
-export type ScrollTo = (viewRef: React.Ref<'RCTView'>, y: Int, animated: Boolean) => Void
-
-interface NativeCommands {
-  +scrollTo: ScrollTo;
-}
-
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 
@@ -897,13 +896,21 @@ export type ModuleProps = $ReadOnly<{|
   onDirectEventDefinedInlineWithPaperName: DirectEventHandler<EventInFile, 'paperDirectEventDefinedInlineWithPaperName'>,
 |}>;
 
+type NativeType = NativeComponent<ModuleProps>;
+
+export type ScrollTo = (viewRef: React.ElementRef<NativeType>, y: Int, animated: Boolean) => Void
+
+interface NativeCommands {
+  +scrollTo: ScrollTo;
+}
+
 export const Commands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['scrollTo']
 });
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): NativeType);
 `;
 
 module.exports = {

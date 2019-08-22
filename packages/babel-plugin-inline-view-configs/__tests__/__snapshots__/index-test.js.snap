@@ -7,11 +7,8 @@ const codegenNativeCommands = require('codegenNativeCommands');
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type { Int32, BubblingEventHandler, DirectEventHandler, WithDefault } from 'CodegenFlowtypes';
+import type { NativeComponent } from 'codegenNativeComponent';
 import type { ViewProps } from 'ViewPropTypes';
-interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void,
-  +scrollTo: (viewRef: React.Ref<'RCTView'>, y: Int32, animated: boolean) => void,
-}
 type ModuleProps = $ReadOnly<{| ...ViewProps,
   // Props
   boolean_default_true_optional_both?: WithDefault<boolean, true>,
@@ -19,6 +16,11 @@ type ModuleProps = $ReadOnly<{| ...ViewProps,
   onDirectEventDefinedInlineNull: DirectEventHandler<null>,
   onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
 |}>;
+type NativeType = NativeComponent<ModuleProps>;
+interface NativeCommands {
+  +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void,
+  +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
+}
 
 const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
@@ -69,13 +71,9 @@ const codegenNativeCommands = require('codegenNativeCommands');
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type { NativeComponent } from 'ReactNative';
+import type { NativeComponent } from 'codegenNativeComponent';
 import type { Int32, BubblingEventHandler, DirectEventHandler, WithDefault } from 'CodegenFlowtypes';
 import type { ViewProps } from 'ViewPropTypes';
-interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void,
-  +scrollTo: (viewRef: React.Ref<'RCTView'>, y: Int32, animated: boolean) => void,
-}
 type ModuleProps = $ReadOnly<{| ...ViewProps,
   // Props
   boolean_default_true_optional_both?: WithDefault<boolean, true>,
@@ -83,7 +81,11 @@ type ModuleProps = $ReadOnly<{| ...ViewProps,
   onDirectEventDefinedInlineNull: DirectEventHandler<null>,
   onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
 |}>;
-type NativeComponentType = Class<NativeComponent<NativeProps>>;
+type NativeType = NativeComponent<ModuleProps>;
+interface NativeCommands {
+  +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void,
+  +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
+}
 
 const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
 
