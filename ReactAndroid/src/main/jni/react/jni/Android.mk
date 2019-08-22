@@ -79,3 +79,4 @@ include $(REACT_SRC_DIR)/turbomodule/core/jni/Android.mk
 include $(REACT_SRC_DIR)/jscexecutor/Android.mk
 include $(REACT_SRC_DIR)/../hermes/reactexecutor/Android.mk
 include $(REACT_SRC_DIR)/../hermes/instrumentation/Android.mk
+include $(REACT_SRC_DIR)/modules/blob/jni/Android.mk

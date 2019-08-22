@@ -256,6 +256,7 @@ def getNdkBuildFullPath() {
 task buildReactNdkLib(dependsOn: [prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
     inputs.dir("$projectDir/../ReactCommon")
     inputs.dir("src/main/jni")
+    inputs.dir("src/main/java/com/facebook/react/modules/blob")
     outputs.dir("$buildDir/react-ndk/all")
     commandLine(getNdkBuildFullPath(),
             "NDK_DEBUG=" + (nativeBuildType.equalsIgnoreCase("debug") ? "1" : "0"),
