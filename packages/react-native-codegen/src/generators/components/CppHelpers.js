@@ -96,8 +96,88 @@ function generateStructName(
   return `${componentName}${additional}Struct`;
 }
 
+function getEnumName(componentName: string, propName: string): string {
+  const uppercasedPropName = toSafeCppString(propName);
+  return `${componentName}${uppercasedPropName}`;
+}
+
+function getEnumMaskName(enumName: string): string {
+  return `${enumName}Mask`;
+}
+
+function convertDefaultTypeToString(
+  componentName: string,
+  prop: PropTypeShape,
+): string {
+  const typeAnnotation = prop.typeAnnotation;
+  switch (typeAnnotation.type) {
+    case 'BooleanTypeAnnotation':
+      return String(typeAnnotation.default);
+    case 'StringTypeAnnotation':
+      if (typeAnnotation.default == null) {
+        return '';
+      }
+      return `"${typeAnnotation.default}"`;
+    case 'Int32TypeAnnotation':
+      return String(typeAnnotation.default);
+    case 'DoubleTypeAnnotation':
+      const defaultDoubleVal = typeAnnotation.default;
+      return parseInt(defaultDoubleVal, 10) === defaultDoubleVal
+        ? typeAnnotation.default.toFixed(1)
+        : String(typeAnnotation.default);
+    case 'FloatTypeAnnotation':
+      const defaultFloatVal = typeAnnotation.default;
+      return parseInt(defaultFloatVal, 10) === defaultFloatVal
+        ? typeAnnotation.default.toFixed(1)
+        : String(typeAnnotation.default);
+    case 'NativePrimitiveTypeAnnotation':
+      switch (typeAnnotation.name) {
+        case 'ColorPrimitive':
+          return '';
+        case 'ImageSourcePrimitive':
+          return '';
+        case 'PointPrimitive':
+          return '';
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error('Received unknown NativePrimitiveTypeAnnotation');
+      }
+    case 'ArrayTypeAnnotation': {
+      switch (typeAnnotation.elementType.type) {
+        case 'StringEnumTypeAnnotation':
+          if (typeAnnotation.elementType.default == null) {
+            throw new Error(
+              'A default is required for array StringEnumTypeAnnotation',
+            );
+          }
+          const enumName = getEnumName(componentName, prop.name);
+          const enumMaskName = getEnumMaskName(enumName);
+          const defaultValue = `${enumName}::${toSafeCppString(
+            typeAnnotation.elementType.default || '',
+          )}`;
+          return `static_cast<${enumMaskName}>(${defaultValue})`;
+        default:
+          return '';
+      }
+    }
+    case 'ObjectTypeAnnotation': {
+      return '';
+    }
+    case 'StringEnumTypeAnnotation':
+      return `${getEnumName(componentName, prop.name)}::${toSafeCppString(
+        typeAnnotation.default,
+      )}`;
+    default:
+      (typeAnnotation: empty);
+      throw new Error('Received invalid typeAnnotation');
+  }
+}
+
 module.exports = {
+  convertDefaultTypeToString,
   getCppTypeForAnnotation,
+  getEnumName,
+  getEnumMaskName,
   getImports,
   toSafeCppString,
   generateStructName,

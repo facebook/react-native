@@ -21,16 +21,16 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     const ArrayPropsNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    names(convertRawProp(rawProps, \\"names\\", sourceProps.names, names)),
-    disableds(convertRawProp(rawProps, \\"disableds\\", sourceProps.disableds, disableds)),
-    progress(convertRawProp(rawProps, \\"progress\\", sourceProps.progress, progress)),
-    radii(convertRawProp(rawProps, \\"radii\\", sourceProps.radii, radii)),
-    colors(convertRawProp(rawProps, \\"colors\\", sourceProps.colors, colors)),
-    srcs(convertRawProp(rawProps, \\"srcs\\", sourceProps.srcs, srcs)),
-    points(convertRawProp(rawProps, \\"points\\", sourceProps.points, points)),
-    sizes(convertRawProp(rawProps, \\"sizes\\", sourceProps.sizes, sizes)),
-    object(convertRawProp(rawProps, \\"object\\", sourceProps.object, object)),
-    array(convertRawProp(rawProps, \\"array\\", sourceProps.array, array))
+    names(convertRawProp(rawProps, \\"names\\", sourceProps.names, {})),
+    disableds(convertRawProp(rawProps, \\"disableds\\", sourceProps.disableds, {})),
+    progress(convertRawProp(rawProps, \\"progress\\", sourceProps.progress, {})),
+    radii(convertRawProp(rawProps, \\"radii\\", sourceProps.radii, {})),
+    colors(convertRawProp(rawProps, \\"colors\\", sourceProps.colors, {})),
+    srcs(convertRawProp(rawProps, \\"srcs\\", sourceProps.srcs, {})),
+    points(convertRawProp(rawProps, \\"points\\", sourceProps.points, {})),
+    sizes(convertRawProp(rawProps, \\"sizes\\", sourceProps.sizes, {static_cast<ArrayPropsNativeComponentSizesMask>(ArrayPropsNativeComponentSizes::Small)})),
+    object(convertRawProp(rawProps, \\"object\\", sourceProps.object, {})),
+    array(convertRawProp(rawProps, \\"array\\", sourceProps.array, {}))
       {}
 
 } // namespace react
@@ -59,7 +59,7 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     const ArrayPropsNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    nativePrimitives(convertRawProp(rawProps, \\"nativePrimitives\\", sourceProps.nativePrimitives, nativePrimitives))
+    nativePrimitives(convertRawProp(rawProps, \\"nativePrimitives\\", sourceProps.nativePrimitives, {}))
       {}
 
 } // namespace react
@@ -88,7 +88,7 @@ BooleanPropNativeComponentProps::BooleanPropNativeComponentProps(
     const BooleanPropNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    disabled(convertRawProp(rawProps, \\"disabled\\", sourceProps.disabled, disabled))
+    disabled(convertRawProp(rawProps, \\"disabled\\", sourceProps.disabled, {false}))
       {}
 
 } // namespace react
@@ -117,7 +117,7 @@ ColorPropNativeComponentProps::ColorPropNativeComponentProps(
     const ColorPropNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    tintColor(convertRawProp(rawProps, \\"tintColor\\", sourceProps.tintColor, tintColor))
+    tintColor(convertRawProp(rawProps, \\"tintColor\\", sourceProps.tintColor, {}))
       {}
 
 } // namespace react
@@ -175,7 +175,7 @@ CommandNativeComponentProps::CommandNativeComponentProps(
     const CommandNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    accessibilityHint(convertRawProp(rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, accessibilityHint))
+    accessibilityHint(convertRawProp(rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {\\"\\"}))
       {}
 
 } // namespace react
@@ -204,12 +204,12 @@ DoublePropNativeComponentProps::DoublePropNativeComponentProps(
     const DoublePropNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    blurRadius(convertRawProp(rawProps, \\"blurRadius\\", sourceProps.blurRadius, blurRadius)),
-    blurRadius2(convertRawProp(rawProps, \\"blurRadius2\\", sourceProps.blurRadius2, blurRadius2)),
-    blurRadius3(convertRawProp(rawProps, \\"blurRadius3\\", sourceProps.blurRadius3, blurRadius3)),
-    blurRadius4(convertRawProp(rawProps, \\"blurRadius4\\", sourceProps.blurRadius4, blurRadius4)),
-    blurRadius5(convertRawProp(rawProps, \\"blurRadius5\\", sourceProps.blurRadius5, blurRadius5)),
-    blurRadius6(convertRawProp(rawProps, \\"blurRadius6\\", sourceProps.blurRadius6, blurRadius6))
+    blurRadius(convertRawProp(rawProps, \\"blurRadius\\", sourceProps.blurRadius, {0.0})),
+    blurRadius2(convertRawProp(rawProps, \\"blurRadius2\\", sourceProps.blurRadius2, {0.001})),
+    blurRadius3(convertRawProp(rawProps, \\"blurRadius3\\", sourceProps.blurRadius3, {2.1})),
+    blurRadius4(convertRawProp(rawProps, \\"blurRadius4\\", sourceProps.blurRadius4, {0.0})),
+    blurRadius5(convertRawProp(rawProps, \\"blurRadius5\\", sourceProps.blurRadius5, {1.0})),
+    blurRadius6(convertRawProp(rawProps, \\"blurRadius6\\", sourceProps.blurRadius6, {0.0}))
       {}
 
 } // namespace react
@@ -238,7 +238,7 @@ EnumPropsNativeComponentProps::EnumPropsNativeComponentProps(
     const EnumPropsNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    alignment(convertRawProp(rawProps, \\"alignment\\", sourceProps.alignment, alignment))
+    alignment(convertRawProp(rawProps, \\"alignment\\", sourceProps.alignment, {EnumPropsNativeComponentAlignment::Center}))
       {}
 
 } // namespace react
@@ -267,7 +267,7 @@ EventsNestedObjectNativeComponentProps::EventsNestedObjectNativeComponentProps(
     const EventsNestedObjectNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    disabled(convertRawProp(rawProps, \\"disabled\\", sourceProps.disabled, disabled))
+    disabled(convertRawProp(rawProps, \\"disabled\\", sourceProps.disabled, {false}))
       {}
 
 } // namespace react
@@ -296,7 +296,7 @@ EventsNativeComponentProps::EventsNativeComponentProps(
     const EventsNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    disabled(convertRawProp(rawProps, \\"disabled\\", sourceProps.disabled, disabled))
+    disabled(convertRawProp(rawProps, \\"disabled\\", sourceProps.disabled, {false}))
       {}
 
 } // namespace react
@@ -354,12 +354,12 @@ FloatPropNativeComponentProps::FloatPropNativeComponentProps(
     const FloatPropNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    blurRadius(convertRawProp(rawProps, \\"blurRadius\\", sourceProps.blurRadius, blurRadius)),
-    blurRadius2(convertRawProp(rawProps, \\"blurRadius2\\", sourceProps.blurRadius2, blurRadius2)),
-    blurRadius3(convertRawProp(rawProps, \\"blurRadius3\\", sourceProps.blurRadius3, blurRadius3)),
-    blurRadius4(convertRawProp(rawProps, \\"blurRadius4\\", sourceProps.blurRadius4, blurRadius4)),
-    blurRadius5(convertRawProp(rawProps, \\"blurRadius5\\", sourceProps.blurRadius5, blurRadius5)),
-    blurRadius6(convertRawProp(rawProps, \\"blurRadius6\\", sourceProps.blurRadius6, blurRadius6))
+    blurRadius(convertRawProp(rawProps, \\"blurRadius\\", sourceProps.blurRadius, {0.0})),
+    blurRadius2(convertRawProp(rawProps, \\"blurRadius2\\", sourceProps.blurRadius2, {0.001})),
+    blurRadius3(convertRawProp(rawProps, \\"blurRadius3\\", sourceProps.blurRadius3, {2.1})),
+    blurRadius4(convertRawProp(rawProps, \\"blurRadius4\\", sourceProps.blurRadius4, {0.0})),
+    blurRadius5(convertRawProp(rawProps, \\"blurRadius5\\", sourceProps.blurRadius5, {1.0})),
+    blurRadius6(convertRawProp(rawProps, \\"blurRadius6\\", sourceProps.blurRadius6, {0.0}))
       {}
 
 } // namespace react
@@ -389,7 +389,7 @@ ImagePropNativeComponentProps::ImagePropNativeComponentProps(
     const ImagePropNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    thumbImage(convertRawProp(rawProps, \\"thumbImage\\", sourceProps.thumbImage, thumbImage))
+    thumbImage(convertRawProp(rawProps, \\"thumbImage\\", sourceProps.thumbImage, {}))
       {}
 
 } // namespace react
@@ -418,9 +418,9 @@ IntegerPropNativeComponentProps::IntegerPropNativeComponentProps(
     const IntegerPropNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    progress1(convertRawProp(rawProps, \\"progress1\\", sourceProps.progress1, progress1)),
-    progress2(convertRawProp(rawProps, \\"progress2\\", sourceProps.progress2, progress2)),
-    progress3(convertRawProp(rawProps, \\"progress3\\", sourceProps.progress3, progress3))
+    progress1(convertRawProp(rawProps, \\"progress1\\", sourceProps.progress1, {0})),
+    progress2(convertRawProp(rawProps, \\"progress2\\", sourceProps.progress2, {-1})),
+    progress3(convertRawProp(rawProps, \\"progress3\\", sourceProps.progress3, {10}))
       {}
 
 } // namespace react
@@ -449,7 +449,7 @@ InterfaceOnlyComponentProps::InterfaceOnlyComponentProps(
     const InterfaceOnlyComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    accessibilityHint(convertRawProp(rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, accessibilityHint))
+    accessibilityHint(convertRawProp(rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {\\"\\"}))
       {}
 
 } // namespace react
@@ -479,10 +479,10 @@ ImageColorPropNativeComponentProps::ImageColorPropNativeComponentProps(
     const ImageColorPropNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    thumbImage(convertRawProp(rawProps, \\"thumbImage\\", sourceProps.thumbImage, thumbImage)),
-    color(convertRawProp(rawProps, \\"color\\", sourceProps.color, color)),
-    thumbTintColor(convertRawProp(rawProps, \\"thumbTintColor\\", sourceProps.thumbTintColor, thumbTintColor)),
-    point(convertRawProp(rawProps, \\"point\\", sourceProps.point, point))
+    thumbImage(convertRawProp(rawProps, \\"thumbImage\\", sourceProps.thumbImage, {})),
+    color(convertRawProp(rawProps, \\"color\\", sourceProps.color, {})),
+    thumbTintColor(convertRawProp(rawProps, \\"thumbTintColor\\", sourceProps.thumbTintColor, {})),
+    point(convertRawProp(rawProps, \\"point\\", sourceProps.point, {}))
       {}
 
 } // namespace react
@@ -541,7 +541,7 @@ ObjectPropsProps::ObjectPropsProps(
     const ObjectPropsProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    objectProp(convertRawProp(rawProps, \\"objectProp\\", sourceProps.objectProp, objectProp))
+    objectProp(convertRawProp(rawProps, \\"objectProp\\", sourceProps.objectProp, {}))
       {}
 
 } // namespace react
@@ -570,7 +570,7 @@ PointPropNativeComponentProps::PointPropNativeComponentProps(
     const PointPropNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    startPoint(convertRawProp(rawProps, \\"startPoint\\", sourceProps.startPoint, startPoint))
+    startPoint(convertRawProp(rawProps, \\"startPoint\\", sourceProps.startPoint, {}))
       {}
 
 } // namespace react
@@ -599,8 +599,8 @@ StringPropComponentProps::StringPropComponentProps(
     const StringPropComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    accessibilityHint(convertRawProp(rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, accessibilityHint)),
-    accessibilityRole(convertRawProp(rawProps, \\"accessibilityRole\\", sourceProps.accessibilityRole, accessibilityRole))
+    accessibilityHint(convertRawProp(rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {\\"\\"})),
+    accessibilityRole(convertRawProp(rawProps, \\"accessibilityRole\\", sourceProps.accessibilityRole, {}))
       {}
 
 } // namespace react
@@ -629,13 +629,13 @@ MultiFile1NativeComponentProps::MultiFile1NativeComponentProps(
     const MultiFile1NativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    disabled(convertRawProp(rawProps, \\"disabled\\", sourceProps.disabled, disabled))
+    disabled(convertRawProp(rawProps, \\"disabled\\", sourceProps.disabled, {false}))
       {}
 MultiFile2NativeComponentProps::MultiFile2NativeComponentProps(
     const MultiFile2NativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    disabled(convertRawProp(rawProps, \\"disabled\\", sourceProps.disabled, disabled))
+    disabled(convertRawProp(rawProps, \\"disabled\\", sourceProps.disabled, {true}))
       {}
 
 } // namespace react
@@ -664,13 +664,13 @@ MultiComponent1NativeComponentProps::MultiComponent1NativeComponentProps(
     const MultiComponent1NativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    disabled(convertRawProp(rawProps, \\"disabled\\", sourceProps.disabled, disabled))
+    disabled(convertRawProp(rawProps, \\"disabled\\", sourceProps.disabled, {false}))
       {}
 MultiComponent2NativeComponentProps::MultiComponent2NativeComponentProps(
     const MultiComponent2NativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    disabled(convertRawProp(rawProps, \\"disabled\\", sourceProps.disabled, disabled))
+    disabled(convertRawProp(rawProps, \\"disabled\\", sourceProps.disabled, {true}))
       {}
 
 } // namespace react
