@@ -11,7 +11,8 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-      submodules: true
+      with:
+        submodules: true
 
     - run: npm install
 
@@ -19,7 +20,7 @@ jobs:
       uses: warrenbuckley/Setup-Nuget@v1
 
     - name: NuGet restore
-      run: nuget.exe restore ReactAndroid/packages.config -PackagesDirectory packages/ -Verbosity Detailed -NonInteractive
+      run: nuget.exe restore ReactAndroid/packages.config -PackagesDirectory ReactAndroid/packages/ -Verbosity Detailed -NonInteractive
 
     - name: Create RNTester bundle
       run: node cli.js bundle --entry-file .\RNTester\js\RNTesterApp.android.js --bundle-output RNTesterApp.android.bundle --platform android --reactNativePath .
