@@ -18,8 +18,16 @@ jobs:
 
     - run: npm install
 
+    - name: github context
+      run: echo ${{ toJson(github) }}
+
+    - name: job context
+      run: echo ${{ toJson(job) }}
+
     - name: Bump package version
       run: node .ado/bumpFileVersions.js
+      #env:
+      #  BUILD_SOURCEBRANCH: ref/head/master
 
     - name: Setup Nuget.exe
       uses: warrenbuckley/Setup-Nuget@v1
