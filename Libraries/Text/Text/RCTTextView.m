@@ -9,6 +9,8 @@
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import <MobileCoreServices/UTCoreTypes.h>
+#else
+#import <Quartz/Quartz.h> // TODO(macOS ISS#2323203) for CATiledLayer
 #endif // TODO(macOS ISS#2323203)
 
 #import <React/RCTAssert.h> // TODO(macOS ISS#2323203)
@@ -173,16 +175,17 @@
 
 - (void)configureLayer
 {
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-  [super drawRect:rect];
-#endif // ]TODO(macOS ISS#2323203)
   if (!_textStorage) {
     return;
   }
 
   CALayer *currentLayer;
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   CGSize screenSize = RCTScreenSize();
+#else
+  CGSize screenSize = [[NSScreen mainScreen] frame].size;
+#endif // TODO(macOS ISS#2323203)
   CGFloat textViewTileSize =  MAX(screenSize.width, screenSize.height) * 1.5;
 
   if (self.frame.size.width > textViewTileSize || self.frame.size.height > textViewTileSize) {
@@ -196,7 +199,11 @@
     if (_asyncTiledLayer == nil) {
       RCTTextTiledLayer *layer = [RCTTextTiledLayer layer];
       layer.delegate = _renderer;
-      layer.contentsScale = RCTScreenScale();
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+      layer.contentsScale = RCTScreenScaleRCTScreenScale();
+#else
+      layer.contentsScale = 1.0;
+#endif // TODO(macOS ISS#2323203)
       layer.tileSize = CGSizeMake(textViewTileSize, textViewTileSize);
       _asyncTiledLayer = layer;
       [self.layer addSublayer:layer];
@@ -215,7 +222,11 @@
     if (_syncLayer == nil) {
       CALayer *layer = [CALayer layer];
       layer.delegate = _renderer;
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
       layer.contentsScale = RCTScreenScale();
+#else
+      layer.contentsScale = 1.0;
+#endif // TODO(macOS ISS#2323203)
       _syncLayer = layer;
       [self.layer addSublayer:layer];
       [layer setNeedsDisplay];
@@ -247,7 +258,11 @@
                                          inTextContainer:textContainer
                                               usingBlock:
       ^(CGRect enclosingRect, __unused BOOL *anotherStop) {
+#if !TARGET_OS_OSX // TODO(macOS ISS#3536887)
         UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) cornerRadius:2];
+#else // TODO(macOS ISS#3536887)
+        NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) xRadius:2 yRadius:2];
+#endif // TODO(macOS ISS#3536887)
         if (highlightPath) {
           UIBezierPathAppendPath(highlightPath, path); // TODO(macOS ISS#2323203)
         } else {

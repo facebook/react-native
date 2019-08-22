@@ -265,7 +265,6 @@
 		1854FF1B1EF484760008DADC /* UIView+React.h in Headers */ = {isa = PBXBuildFile; fileRef = 13E067531A70F44B002CDEE1 /* UIView+React.h */; };
 		1854FF211EF485000008DADC /* YGEnums.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77031DF767AF001F9587 /* YGEnums.h */; };
 		1854FF221EF485000008DADC /* YGMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77041DF767AF001F9587 /* YGMacros.h */; };
-		1854FF241EF485000008DADC /* (null) in Headers */ = {isa = PBXBuildFile; };
 		1854FF261EF485000008DADC /* Yoga.h in Headers */ = {isa = PBXBuildFile; fileRef = 130A77081DF767AF001F9587 /* Yoga.h */; };
 		1854FF291EF4855F0008DADC /* YGMacros.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77041DF767AF001F9587 /* YGMacros.h */; };
 		1854FF2B1EF4855F0008DADC /* Yoga.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77081DF767AF001F9587 /* Yoga.h */; };
@@ -299,7 +298,6 @@
 		18572B9F1EF32003007EAD54 /* RCTUIKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 6BF8B4B21EC550F500061E2F /* RCTUIKit.h */; };
 		18632C021EF495D40010A3BB /* libcxxreact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B857F421EC51FCF00A9D063 /* libcxxreact.a */; };
 		18632C051EF495D40010A3BB /* libthird-party.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 188202A21EF48CF700C9B354 /* libthird-party.a */; };
-		18632C061EF495D40010A3BB /* libyoga.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B857F341EC51FCC00A9D063 /* libyoga.a */; };
 		18632C1A1EF49C9D0010A3BB /* CxxModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A71E03699D0018521A /* CxxModule.h */; };
 		18632C1B1EF49C9D0010A3BB /* CxxNativeModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A91E03699D0018521A /* CxxNativeModule.h */; };
 		18632C1C1EF49C9D0010A3BB /* JSExecutor.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0AB1E03699D0018521A /* JSExecutor.h */; };
@@ -1615,6 +1613,11 @@
 		9F5C1830230C67CA00E3E5A7 /* RCTSurfacePresenterStub.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EEEA8DE2239002200A8C82D /* RCTSurfacePresenterStub.m */; };
 		9F5C1840230DB54100E3E5A7 /* RCTSurfacePresenterStub.h in Headers */ = {isa = PBXBuildFile; fileRef = 589515DF2231AD9C0036BDE0 /* RCTSurfacePresenterStub.h */; };
 		9F5C1841230DB6F300E3E5A7 /* RCTSurfacePresenterStub.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 589515DF2231AD9C0036BDE0 /* RCTSurfacePresenterStub.h */; };
+		9F5C195A230F4CB300E3E5A7 /* YGFloatOptional.h in Headers */ = {isa = PBXBuildFile; fileRef = 53DEF6E7205AE59C006A3890 /* YGFloatOptional.h */; };
+		9F5C195C230F4CE200E3E5A7 /* YGMarker.h in Headers */ = {isa = PBXBuildFile; fileRef = AC8360CC21B0256A00FC46B9 /* YGMarker.h */; };
+		9F5C195D230F4CE700E3E5A7 /* YGConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE2080120772F7C009A43B3 /* YGConfig.h */; };
+		9F5C195E230F4CED00E3E5A7 /* YGValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC6B69E221B1467C00B2B68A /* YGValue.h */; };
+		9F5C195F230F4CF300E3E5A7 /* CompactValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC90463D21C91CC2005B24B3 /* CompactValue.h */; };
 		9FB7D34C224954A600F31D11 /* libjsinspector-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F2AC95E2239D788005C9C14 /* libjsinspector-macOS.a */; };
 		9FB7D34D224954B300F31D11 /* libjsi-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D78224303D900E7F88E /* libjsi-macOS.a */; };
 		9FB7D34E224954CC00F31D11 /* libjsiexecutor-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D94224305AA00E7F88E /* libjsiexecutor-macOS.a */; };
@@ -3068,7 +3071,6 @@
 		68EFE4ED1CF6EB3900A1DE13 /* RCTBundleURLProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTBundleURLProvider.m; sourceTree = "<group>"; };
 		6A15FB0C1BDF663500531DFB /* RCTRootViewInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTRootViewInternal.h; sourceTree = "<group>"; };
 		6B7049C81EDF81E3005670F5 /* RCTPlatform.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTPlatform.m; sourceTree = "<group>"; };
-		6B857F341EC51FCC00A9D063 /* libyoga.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libyoga.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B857F421EC51FCF00A9D063 /* libcxxreact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcxxreact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BDE7A171ECA38AC00CC951F /* RCTUIKit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTUIKit.m; sourceTree = "<group>"; };
 		6BF8B4B21EC550F500061E2F /* RCTUIKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTUIKit.h; sourceTree = "<group>"; };
@@ -3116,6 +3118,7 @@
 		9F0D892F224166050053729F /* Unicode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Unicode.cpp; path = folly/Unicode.cpp; sourceTree = "<group>"; };
 		9F2AC95D2239D788005C9C14 /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F2AC95E2239D788005C9C14 /* libjsinspector-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libjsinspector-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9F5C195B230F4CB300E3E5A7 /* libyoga.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libyoga.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FD21D78224303D900E7F88E /* libjsi-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libjsi-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FD21D94224305AA00E7F88E /* libjsiexecutor-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libjsiexecutor-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTReloadCommand.h; sourceTree = "<group>"; };
@@ -3189,7 +3192,6 @@
 				18632C021EF495D40010A3BB /* libcxxreact.a in Frameworks */,
 				9FB7D34D224954B300F31D11 /* libjsi-macOS.a in Frameworks */,
 				9FB7D34E224954CC00F31D11 /* libjsiexecutor-macOS.a in Frameworks */,
-				18632C061EF495D40010A3BB /* libyoga.a in Frameworks */,
 				9FB7D34F224954EE00F31D11 /* libdouble-conversion.a in Frameworks */,
 				18632C051EF495D40010A3BB /* libthird-party.a in Frameworks */,
 			);
@@ -3833,6 +3835,7 @@
 				9F2AC95E2239D788005C9C14 /* libjsinspector-macOS.a */,
 				9FD21D78224303D900E7F88E /* libjsi-macOS.a */,
 				9FD21D94224305AA00E7F88E /* libjsiexecutor-macOS.a */,
+				9F5C195B230F4CB300E3E5A7 /* libyoga.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3949,7 +3952,6 @@
 				6B857F421EC51FCF00A9D063 /* libcxxreact.a */,
 				1882027C1EF48B7E00C9B354 /* libdouble-conversion.a */,
 				188202A21EF48CF700C9B354 /* libthird-party.a */,
-				6B857F341EC51FCC00A9D063 /* libyoga.a */,
 				18F3BA0E2142F4DB00AD247D /* RCTWebView.m */,
 			);
 			name = "Recovered References";
@@ -4265,16 +4267,20 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1854FF261EF485000008DADC /* Yoga.h in Headers */,
-				18F3B9E22142F15D00AD247D /* YGNodePrint.h in Headers */,
-				1854FF241EF485000008DADC /* (null) in Headers */,
+				9F5C195F230F4CF300E3E5A7 /* CompactValue.h in Headers */,
+				9F5C195E230F4CED00E3E5A7 /* YGValue.h in Headers */,
+				9F5C195D230F4CE700E3E5A7 /* YGConfig.h in Headers */,
+				9F5C195C230F4CE200E3E5A7 /* YGMarker.h in Headers */,
 				18F3B9DF2142F15400AD247D /* YGStyle.h in Headers */,
-				1854FF211EF485000008DADC /* YGEnums.h in Headers */,
-				18F3B9E32142F16000AD247D /* Yoga-internal.h in Headers */,
 				18F3B9E12142F15A00AD247D /* YGNode.h in Headers */,
+				18F3B9E32142F16000AD247D /* Yoga-internal.h in Headers */,
+				1854FF211EF485000008DADC /* YGEnums.h in Headers */,
+				1854FF261EF485000008DADC /* Yoga.h in Headers */,
 				18F3B9E02142F15800AD247D /* Utils.h in Headers */,
+				18F3B9E22142F15D00AD247D /* YGNodePrint.h in Headers */,
 				1854FF221EF485000008DADC /* YGMacros.h in Headers */,
 				18F3B9DE2142F15100AD247D /* YGLayout.h in Headers */,
+				9F5C195A230F4CB300E3E5A7 /* YGFloatOptional.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5147,7 +5153,7 @@
 			);
 			name = "yoga-macOS";
 			productName = React;
-			productReference = 6B857F341EC51FCC00A9D063 /* libyoga.a */;
+			productReference = 9F5C195B230F4CB300E3E5A7 /* libyoga.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		6B857F351EC51FCF00A9D063 /* cxxreact-macOS */ = {

@@ -5,9 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTTextRenderer.h"
-
 #import "RCTTextAttributes.h"
+#import "RCTTextRenderer.h"
 
 @implementation RCTTextRenderer
 {
@@ -31,7 +30,11 @@
 
   CGRect boundingBox = CGContextGetClipBoundingBox(ctx);
   CGContextSaveGState(ctx);
+#if !TARGET_OS_OSX // TODO(macOS ISS#3536887)
   UIGraphicsPushContext(ctx);
+#else
+  [NSGraphicsContext saveGraphicsState];
+#endif // TODO(macOS ISS#3536887)
 
   NSLayoutManager *layoutManager = _textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
@@ -43,7 +46,11 @@
   [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:_contentFrame.origin];
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#3536887)
   UIGraphicsPopContext();
+#else
+  [NSGraphicsContext restoreGraphicsState];
+#endif // TODO(macOS ISS#3536887)
   CGContextRestoreGState(ctx);
 }
 

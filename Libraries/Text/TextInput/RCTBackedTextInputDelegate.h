@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif  // ]TODO(macOS ISS#2323203)
 
 @optional
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView;
+- (void)scrollViewDidScroll:(RCTUIScrollView *)scrollView;
 
 @end
 

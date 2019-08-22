@@ -5,7 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 #import <UIKit/UIKit.h>
+#else
+#import <AppKit/AppKit.h>
+#endif // [TODO(macOS ISS#2323203)
 
 NS_ASSUME_NONNULL_BEGIN
 

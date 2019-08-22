@@ -233,7 +233,7 @@ static UIColor *defaultPlaceholderTextColor()
 
 - (NSString*)placeholder // [TODO(macOS ISS#2323203)
 {
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX 
   return super.placeholder;
 #else
   return self.placeholderAttributedString.string ?: self.placeholderString;
@@ -245,7 +245,9 @@ static UIColor *defaultPlaceholderTextColor()
   if ([reactTextAttributes isEqual:_reactTextAttributes]) {
     return;
   }
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   self.defaultTextAttributes = reactTextAttributes.effectiveTextAttributes;
+#endif // TODO(macOS ISS#2323203)
   _reactTextAttributes = reactTextAttributes;
   [self _updatePlaceholder];
 }
@@ -485,11 +487,12 @@ static UIColor *defaultPlaceholderTextColor()
 {
   // Note: `placeholder` defines intrinsic size for `<TextInput>`.
   NSString *text = self.placeholder ?: @"";
-  CGSize size = [text sizeWithAttributes:[self placeholderEffectiveTextAttributes]];
   
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+  CGSize size = [text sizeWithAttributes:[self placeholderEffectiveTextAttributes]];
   size = CGSizeMake(RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height));
 #else // [TODO(macOS ISS#2323203)
+  CGSize size = [text sizeWithAttributes:@{NSFontAttributeName: self.font}];
   CGFloat scale = self.window.backingScaleFactor;
   RCTAssert(scale != 0.0, @"Layout occurs before the view is in a window?");
   if (scale == 0) {

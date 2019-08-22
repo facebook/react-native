@@ -373,10 +373,11 @@ static UIColor *defaultPlaceholderColor()
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   CGSize contentSize = super.contentSize;
+  CGSize placeholderSize = _placeholderView.isHidden ? CGSizeZero : self.placeholderSize;
 #else // [TODO(macOS ISS#2323203)
   CGSize contentSize = super.intrinsicContentSize;
+  CGSize placeholderSize = self.placeholderSize;
 #endif // ]TODO(macOS ISS#2323203)
-  CGSize placeholderSize = _placeholderView.isHidden ? CGSizeZero : self.placeholderSize;
   // When a text input is empty, it actually displays a placehoder.
   // So, we have to consider `placeholderSize` as a minimum `contentSize`.
   // Returning size DOES contain `textContainerInset` (aka `padding`).
@@ -406,7 +407,13 @@ static UIColor *defaultPlaceholderColor()
 - (CGSize)sizeThatFits:(CGSize)size
 {
   // Returned fitting size depends on text size and placeholder size.
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   CGSize textSize = [super sizeThatFits:size];
+#else
+  [self.layoutManager glyphRangeForTextContainer:self.textContainer];
+  NSRect rect = [self.layoutManager usedRectForTextContainer:self.textContainer];
+  CGSize textSize = CGSizeMake(MIN(rect.size.width, size.width), rect.size.height);
+#endif // TODO(macOS ISS#2323203)
   CGSize placeholderSize = self.placeholderSize;
   // Returning size DOES contain `textContainerInset` (aka `padding`).
   return CGSizeMake(MAX(textSize.width, placeholderSize.width), MAX(textSize.height, placeholderSize.height));
