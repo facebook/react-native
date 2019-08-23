@@ -4,7 +4,7 @@ on:
     branches:
       - master
     paths:
-      - "**
+      - "**"
       - "!package.json"
 
 jobs:
