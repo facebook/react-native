@@ -203,13 +203,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 - (NSString *)accessibilityValue
 {
   if ((self.accessibilityTraits & SwitchAccessibilityTrait) == SwitchAccessibilityTrait) {
-    for (NSString *state in self.accessibilityStates) {
-      if ([state isEqualToString:@"checked"]) {
-        return @"1";
-      } else if ([state isEqualToString:@"unchecked"]) {
-        return @"0";
-      }
-    }
     for (NSString *state in self.accessibilityState) {
       id val = self.accessibilityState[state];
       if (!val) {
@@ -258,12 +251,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   NSString *roleDescription = self.accessibilityRole ? roleDescriptions[self.accessibilityRole]: nil;
   if (roleDescription) {
     [valueComponents addObject:roleDescription];
-  }
-  for (NSString *state in self.accessibilityStates) {
-    NSString *stateDescription = state ? stateDescriptions[state] : nil;
-    if (stateDescription) {
-      [valueComponents addObject:stateDescription];
-    }
   }
   for (NSString *state in self.accessibilityState) {
     id val = self.accessibilityState[state];

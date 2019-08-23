@@ -42,18 +42,6 @@ export type AccessibilityRole =
   | 'timer'
   | 'toolbar';
 
-// This must be kept in sync with the AccessibilityStatesMask in RCTViewManager.m
-export type AccessibilityStates = $ReadOnlyArray<
-  | 'disabled'
-  | 'selected'
-  | 'checked'
-  | 'unchecked'
-  | 'busy'
-  | 'expanded'
-  | 'collapsed'
-  | 'hasPopup',
->;
-
 // the info associated with an accessibility action
 export type AccessibilityActionInfo = $ReadOnly<{
   name: string,

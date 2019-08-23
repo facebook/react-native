@@ -136,31 +136,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
   }
 
-  @ReactProp(name = ViewProps.ACCESSIBILITY_STATES)
-  public void setViewStates(@NonNull T view, @Nullable ReadableArray accessibilityStates) {
-    boolean shouldUpdateContentDescription =
-        view.getTag(R.id.accessibility_states) != null && accessibilityStates == null;
-    view.setTag(R.id.accessibility_states, accessibilityStates);
-    view.setSelected(false);
-    view.setEnabled(true);
-    if (accessibilityStates != null) {
-      for (int i = 0; i < accessibilityStates.size(); i++) {
-        String state = accessibilityStates.getString(i);
-        if (sStateDescription.containsKey(state)) {
-          shouldUpdateContentDescription = true;
-        }
-        if ("selected".equals(state)) {
-          view.setSelected(true);
-        } else if ("disabled".equals(state)) {
-          view.setEnabled(false);
-        }
-      }
-    }
-    if (shouldUpdateContentDescription) {
-      updateViewContentDescription(view);
-    }
-  }
-
   @ReactProp(name = ViewProps.ACCESSIBILITY_STATE)
   public void setViewState(@NonNull T view, @Nullable ReadableMap accessibilityState) {
     if (accessibilityState == null) {
@@ -189,21 +164,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   private void updateViewContentDescription(@NonNull T view) {
     final String accessibilityLabel = (String) view.getTag(R.id.accessibility_label);
-    final ReadableArray accessibilityStates =
-        (ReadableArray) view.getTag(R.id.accessibility_states);
     final ReadableMap accessibilityState = (ReadableMap) view.getTag(R.id.accessibility_state);
     final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
     final List<String> contentDescription = new ArrayList<>();
     if (accessibilityLabel != null) {
       contentDescription.add(accessibilityLabel);
-    }
-    if (accessibilityStates != null) {
-      for (int i = 0; i < accessibilityStates.size(); i++) {
-        final String state = accessibilityStates.getString(i);
-        if (sStateDescription.containsKey(state)) {
-          contentDescription.add(view.getContext().getString(sStateDescription.get(state)));
-        }
-      }
     }
     if (accessibilityState != null) {
       final ReadableMapKeySetIterator i = accessibilityState.keySetIterator();
