@@ -151,7 +151,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Build React Native from source
-    if (parent.parent == null) {
+    if (isSDXPlatform()) {
         implementation project(':react-native:ReactAndroid')
     }
     else {

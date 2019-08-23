@@ -12,6 +12,7 @@ sourceSets {
         java {
             srcDirs = ['../ReactAndroid/src/main/java']
             includes = [
+                'com/facebook/react/common/ReactConstants.java',
                 'com/facebook/react/processing/ReactNativeModuleProcessor.java',
                 'com/facebook/react/processing/ReactPropertyProcessor.java',
                 'com/facebook/react/bridge/Callback.java',
@@ -22,6 +23,7 @@ sourceSets {
                 'com/facebook/react/bridge/WritableMap.java',
                 'com/facebook/react/bridge/WritableArray.java',
                 'com/facebook/react/bridge/Dynamic.java',
+                'com/facebook/react/bridge/DynamicFromObject.java',
                 'com/facebook/react/bridge/ReactMethod.java',
                 'com/facebook/react/bridge/ReadableMapKeySetIterator.java',
                 'com/facebook/proguard/annotations/DoNotStrip.java',
