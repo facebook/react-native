@@ -82,6 +82,7 @@ import typeof ToastAndroid from '../Components/ToastAndroid/ToastAndroid';
 import typeof * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 import typeof TVEventHandler from '../Components/AppleTV/TVEventHandler';
 import typeof UIManager from '../ReactNative/UIManager';
+import typeof useColorScheme from '../Utilities/useColorScheme';
 import typeof useWindowDimensions from '../Utilities/useWindowDimensions';
 import typeof UTFSequence from '../UTFSequence';
 import typeof Vibration from '../Vibration/Vibration';
@@ -392,6 +393,9 @@ module.exports = {
     'unstable_batchedUpdates',
   > {
     return require('../Renderer/shims/ReactNative').unstable_batchedUpdates;
+  },
+  get useColorScheme(): useColorScheme {
+    return require('../Utilities/useColorScheme').default;
   },
   get useWindowDimensions(): useWindowDimensions {
     return require('../Utilities/useWindowDimensions').default;
