@@ -290,6 +290,9 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     } else if (role.equals(AccessibilityRole.IMAGEBUTTON)) {
       nodeInfo.setRoleDescription(context.getString(R.string.imagebutton_description));
       nodeInfo.setClickable(true);
+    } else if (role.equals(AccessibilityRole.BUTTON)) {
+      nodeInfo.setRoleDescription(context.getString(R.string.button_description));
+      nodeInfo.setClickable(true);
     } else if (role.equals(AccessibilityRole.SUMMARY)) {
       nodeInfo.setRoleDescription(context.getString(R.string.summary_description));
     } else if (role.equals(AccessibilityRole.HEADER)) {
