@@ -60,6 +60,7 @@ jobs:
       env:
         BUILD_STAGINGDIRECTORY: ${{ runner.temp }}\final
         BUILD_SOURCEBRANCH: ${{ github.ref }}
+        GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
 
     - name: Set NuGet source
       run: nuget sources add -name nugetfeed -source ${{ secrets.NUGET_FEED }} -username anything -password ${{ secrets.NUGET_AUTH }}

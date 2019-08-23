@@ -30,6 +30,7 @@ function doPublish() {
 
   exec(`git config --global user.email "53619745+rnbot@users.noreply.github.com"`);
   exec(`git config --global user.name "React-Native Build"`);
+  exec(`git remote set-url origin https://rnbot:${process.env.GIT_TOKEN}@github.com/microsoft/react-native.git`);
 
   exec(`git add ${pkgJsonPath}`);
   exec(`git commit -m "Applying package update to ${releaseVersion}`);
