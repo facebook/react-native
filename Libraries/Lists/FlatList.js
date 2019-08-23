@@ -560,7 +560,12 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   _getItemCount = (data: ?Array<ItemT>): number => {
-    return data ? Math.ceil(data.length / this.props.numColumns) : 0;
+    if (data) {
+      const {numColumns} = this.props;
+      return numColumns > 1 ? Math.ceil(data.length / numColumns) : data.length;
+    } else {
+      return 0;
+    }
   };
 
   _keyExtractor = (items: ItemT | Array<ItemT>, index: number) => {
