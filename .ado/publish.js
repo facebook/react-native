@@ -33,7 +33,7 @@ function doPublish() {
   exec(`git remote set-url origin https://rnbot:${process.env.GIT_TOKEN}@github.com/microsoft/react-native.git`);
 
   exec(`git add ${pkgJsonPath}`);
-  exec(`git commit -m "Applying package update to ${releaseVersion}`);
+  exec(`git commit -m "Applying package update to ${releaseVersion} ***NO_CI***`);
   exec(`git tag v${releaseVersion}`);
   exec(`git push origin HEAD:${tempPublishBranch} --follow-tags --verbose`);
   exec(`git push origin tag v${releaseVersion}`);

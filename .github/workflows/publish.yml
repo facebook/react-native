@@ -3,9 +3,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - "**"
-      - "!package.json"
 
 jobs:
 
@@ -15,6 +12,11 @@ jobs:
     runs-on: windows-2016
     
     steps:
+
+    - name: No publish loop
+      if: contains( github.event.head_commit, "***NO_CI***")
+      run: exit 123
+
     - uses: actions/checkout@v1
       with:
         submodules: true
