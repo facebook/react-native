@@ -58,8 +58,8 @@ jobs:
         GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
 
     - name: Set NuGet source
-      run: nuget sources add -name nugetfeed -source ${{ secrets.NUGET_FEED }} -username anything -password ${{ secrets.NUGET_AUTH }}
+      run: nuget sources add -name nugetfeed -source ${{ secrets.NUGET_FEED }} -username msrnpublish -password ${{ secrets.NUGET_AUTH }}
 
     - name: Publish NuGet
       run: |
-       for %%i in (${{ runner.temp }}\final\*.nupkg) do nuget push %%i -Source ${{ secrets.NUGET_FEED }}
+       for %%i in (${{ runner.temp }}\final\*.nupkg) do nuget push %%i -Source ${{ secrets.NUGET_FEED }} -ApiKey msrnpublish
