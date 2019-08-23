@@ -20,11 +20,13 @@ const SnapshotViewIOS = require('./examples/Snapshot/SnapshotViewIOS.ios');
 const URIActionMap = require('./utils/URIActionMap');
 
 const {
+  Appearance,
   AppRegistry,
   AsyncStorage,
   BackHandler,
   Button,
   Linking,
+  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -35,6 +37,7 @@ const {
 import type {RNTesterExample} from './types/RNTesterTypes';
 import type {RNTesterAction} from './utils/RNTesterActions';
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
+import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
 
 type Props = {
   exampleFromAppetizeParams?: ?string,
@@ -47,18 +50,40 @@ YellowBox.ignoreWarnings([
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
 const Header = ({onBack, title}: {onBack?: () => mixed, title: string}) => (
-  <SafeAreaView style={styles.headerContainer}>
-    <View style={styles.header}>
-      <View style={styles.headerCenter}>
-        <Text style={styles.title}>{title}</Text>
-      </View>
-      {onBack && (
-        <View style={styles.headerLeft}>
-          <Button title="Back" onPress={onBack} />
-        </View>
-      )}
-    </View>
-  </SafeAreaView>
+  <RNTesterThemeContext.Consumer>
+    {theme => {
+      return (
+        <SafeAreaView
+          style={[
+            styles.headerContainer,
+            {
+              borderBottomColor: theme.SeparatorColor,
+              backgroundColor: theme.TertiarySystemBackgroundColor,
+            },
+          ]}>
+          <View style={styles.header}>
+            <View style={styles.headerCenter}>
+              <Text style={{...styles.title, ...{color: theme.LabelColor}}}>
+                {title}
+              </Text>
+            </View>
+            {onBack && (
+              <View>
+                <Button
+                  title="Back"
+                  onPress={onBack}
+                  color={Platform.select({
+                    ios: theme.LinkColor,
+                    default: undefined,
+                  })}
+                />
+              </View>
+            )}
+          </View>
+        </SafeAreaView>
+      );
+    }}
+  </RNTesterThemeContext.Consumer>
 );
 
 class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
@@ -88,6 +113,14 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     Linking.addEventListener('url', url => {
       this._handleAction(URIActionMap(url));
     });
+
+    Appearance.addChangeListener(prefs => {
+      this._handleAction(
+        RNTesterActions.ThemeAction(
+          prefs.colorScheme === 'dark' ? themes.dark : themes.light,
+        ),
+      );
+    });
   }
 
   componentWillUnmount() {
@@ -114,27 +147,32 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     if (!this.state) {
       return null;
     }
+    const theme = this.state.theme;
     if (this.state.openExample) {
       const Component = RNTesterList.Modules[this.state.openExample];
       if (Component && Component.external) {
         return <Component onExampleExit={this._handleBack} />;
       } else {
         return (
-          <View style={styles.exampleContainer}>
-            <Header onBack={this._handleBack} title={Component.title} />
-            <RNTesterExampleContainer module={Component} />
-          </View>
+          <RNTesterThemeContext.Provider value={theme}>
+            <View style={styles.exampleContainer}>
+              <Header onBack={this._handleBack} title={Component.title} />
+              <RNTesterExampleContainer module={Component} />
+            </View>
+          </RNTesterThemeContext.Provider>
         );
       }
     }
     return (
-      <View style={styles.exampleContainer}>
-        <Header title="RNTester" />
-        <RNTesterExampleList
-          onNavigate={this._handleAction}
-          list={RNTesterList}
-        />
-      </View>
+      <RNTesterThemeContext.Provider value={theme}>
+        <View style={styles.exampleContainer}>
+          <Header title="RNTester" />
+          <RNTesterExampleList
+            onNavigate={this._handleAction}
+            list={RNTesterList}
+          />
+        </View>
+      </RNTesterThemeContext.Provider>
     );
   }
 }
@@ -142,14 +180,11 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
 const styles = StyleSheet.create({
   headerContainer: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#96969A',
-    backgroundColor: '#F5F5F6',
   },
   header: {
     height: 40,
     flexDirection: 'row',
   },
-  headerLeft: {},
   headerCenter: {
     flex: 1,
     position: 'absolute',
