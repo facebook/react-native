@@ -50,6 +50,8 @@ jobs:
 
     - run: nuget pack ReactAndroid/ReactAndroid.nuspec
 
+    - run: mkdir ${{ runner.temp }}\final
+
     - name: Do Publish
       run: node .ado/publish.js
       env:
