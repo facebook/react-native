@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+    paths:
+      - "!package.json"
 
 jobs:
 
@@ -17,16 +19,6 @@ jobs:
         submodules: true
 
     - run: npm install
-
-    - name: github context
-      run: echo %GITHUB_CONTEXT%
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-
-    - name: job context
-      run: echo %JOB_CONTEXT%
-      env:
-        JOB_CONTEXT: ${{ toJson(job) }}
 
     - name: Bump package version
       run: node .ado/bumpFileVersions.js
@@ -58,7 +50,7 @@ jobs:
     - name: Do Publish
       run: node .ado/publish.js
       env:
-        BUILD_STAGINGDIRECTORY: ${{ runner.temp }}\final
+        BUILD_STAGINGDIRECTORY: ${{ runner.temp }}
         BUILD_SOURCEBRANCH: ${{ github.ref }}
         GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
 

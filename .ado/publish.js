@@ -58,7 +58,7 @@ function doPublish() {
 
   const assetUpdateUrl = `https://uploads.github.com/repos/microsoft/react-native/releases/{id}/assets?name=react-native-${releaseVersion}.tgz`;
   const authHeader =
-    "Basic " + new Buffer(":" + process.env.githubToken).toString("base64");
+    "Basic " + new Buffer(":" + process.env.GIT_TOKEN).toString("base64");
   const userAgent = "Microsoft-React-Native-Release-Agent";
 
   let uploadReleaseAssetUrl = "";
