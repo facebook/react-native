@@ -109,7 +109,9 @@ const ActivityIndicator = (props: Props, forwardedRef?: any) => {
         // $FlowFixMe Flow doesn't know when this is the android component
         <PlatformActivityIndicator {...nativeProps} {...androidProps} />
       ) : (
-        // $FlowFixMe Flow doesn't know when this is the iOS component
+        /* $FlowFixMe(>=0.106.0 site=react_native_android_fb) This comment
+         * suppresses an error found when Flow v0.106 was deployed. To see the
+         * error, delete this comment and run Flow. */
         <PlatformActivityIndicator {...nativeProps} />
       )}
     </View>

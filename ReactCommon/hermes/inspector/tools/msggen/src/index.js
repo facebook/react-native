@@ -11,7 +11,6 @@
 
 import fs from 'fs';
 
-// $FlowFixMe: flow doesn't know about yargs
 import yargs from 'yargs';
 
 import {Command} from './Command';
