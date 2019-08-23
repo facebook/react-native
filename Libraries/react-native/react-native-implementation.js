@@ -49,6 +49,7 @@ import typeof VirtualizedSectionList from '../Lists/VirtualizedSectionList';
 import typeof ActionSheetIOS from '../ActionSheetIOS/ActionSheetIOS';
 import typeof Alert from '../Alert/Alert';
 import typeof Animated from '../Animated/src/Animated';
+import typeof Appearance from '../Utilities/Appearance';
 import typeof AppRegistry from '../ReactNative/AppRegistry';
 import typeof AppState from '../AppState/AppState';
 import typeof AsyncStorage from '../Storage/AsyncStorage';
@@ -251,6 +252,9 @@ module.exports = {
   },
   get Animated(): Animated {
     return require('../Animated/src/Animated');
+  },
+  get Appearance(): Appearance {
+    return require('../Utilities/Appearance');
   },
   get AppRegistry(): AppRegistry {
     return require('../ReactNative/AppRegistry');
