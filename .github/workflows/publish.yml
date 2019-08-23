@@ -14,7 +14,7 @@ jobs:
     steps:
 
     - name: No publish loop
-      if: contains( github.event.head_commit, "***NO_CI***")
+      if: contains( github.event.head_commit, '***NO_CI***')
       run: exit 123
 
     - uses: actions/checkout@v1
