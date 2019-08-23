@@ -20,10 +20,25 @@ export type PlatformSelectSpec<A, D> = {
 const Platform = {
   __constants: null,
   OS: 'android',
-  get Version() {
+  get Version(): number {
     return this.constants.Version;
   },
-  get constants() {
+  get constants(): {|
+    isTesting: boolean,
+    reactNativeVersion: {|
+      major: number,
+      minor: number,
+      patch: number,
+      prerelease: ?number,
+    |},
+    Version: number,
+    Release: string,
+    Serial: string,
+    Fingerprint: string,
+    Model: string,
+    ServerHost: string,
+    uiMode: string,
+  |} {
     if (this.__constants == null) {
       this.__constants = NativePlatformConstantsAndroid.getConstants();
     }

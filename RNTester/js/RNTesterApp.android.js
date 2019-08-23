@@ -10,7 +10,16 @@
 
 'use strict';
 
+const RNTesterActions = require('./utils/RNTesterActions');
+const RNTesterExampleContainer = require('./components/RNTesterExampleContainer');
+const RNTesterExampleList = require('./components/RNTesterExampleList');
+const RNTesterList = require('./utils/RNTesterList');
+const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
 const React = require('react');
+const URIActionMap = require('./utils/URIActionMap');
+
+const nativeImageSource = require('../../Libraries/Image/nativeImageSource');
+
 const {
   AppRegistry,
   AsyncStorage,
@@ -26,14 +35,6 @@ const {
   UIManager,
   View,
 } = require('react-native');
-const RNTesterActions = require('./utils/RNTesterActions');
-const RNTesterExampleContainer = require('./components/RNTesterExampleContainer');
-const RNTesterExampleList = require('./components/RNTesterExampleList');
-const RNTesterList = require('./utils/RNTesterList');
-const RNTesterNavigationReducer = require('./utils/RNTesterNavigationReducer');
-const URIActionMap = require('./utils/URIActionMap');
-
-const nativeImageSource = require('../../Libraries/Image/nativeImageSource');
 
 import type {RNTesterNavigationState} from './utils/RNTesterNavigationReducer';
 
@@ -99,7 +100,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     });
   }
 
-  render() {
+  render(): React.Node {
     if (!this.state) {
       return null;
     }

@@ -83,7 +83,7 @@ interface NativeCommands {
   ) => void;
 }
 
-export const Commands = codegenNativeCommands<NativeCommands>({
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['hotspotUpdate', 'setPressed'],
 });
 

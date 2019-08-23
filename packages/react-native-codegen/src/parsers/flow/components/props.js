@@ -10,12 +10,12 @@
 
 'use strict';
 
+const {getValueFromTypes} = require('../utils.js');
+
 import type {PropTypeShape} from '../../../CodegenSchema.js';
 import type {TypeMap} from '../utils.js';
 
-const {getValueFromTypes} = require('../utils.js');
-
-function getPropProperties(propsTypeName: string, types: TypeMap) {
+function getPropProperties(propsTypeName: string, types: TypeMap): $FlowFixMe {
   const typeAlias = types[propsTypeName];
   try {
     return typeAlias.right.typeParameters.params[0].properties;

@@ -10,18 +10,19 @@
 
 'use strict';
 
+import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
+import type {ImageSource} from '../../../../../Libraries/Image/ImageSource';
 import type {
   PointValue,
   ColorValue,
 } from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
-import type {ImageSource} from '../../../../../Libraries/Image/ImageSource';
 import type {
   Int32,
   Float,
   WithDefault,
 } from '../../../../../Libraries/Types/CodegenTypes';
-import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
+import type {NativeComponentType} from '../../../../../Libraries/Utilities/codegenNativeComponent';
 
 type ObjectArrayPropType = $ReadOnly<{|
   array: $ReadOnlyArray<string>,
@@ -46,6 +47,6 @@ type NativeProps = $ReadOnly<{|
   |}>,
 |}>;
 
-export default codegenNativeComponent<NativeProps>(
+export default (codegenNativeComponent<NativeProps>(
   'ObjectPropsNativeComponent',
-);
+): NativeComponentType<NativeProps>);

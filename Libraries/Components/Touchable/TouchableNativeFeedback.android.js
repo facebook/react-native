@@ -11,8 +11,8 @@
 'use strict';
 
 const Platform = require('../../Utilities/Platform');
-const React = require('react');
 const PropTypes = require('prop-types');
+const React = require('react');
 const Touchable = require('./Touchable');
 const TouchableWithoutFeedback = require('./TouchableWithoutFeedback');
 const View = require('../View/View');
@@ -345,4 +345,4 @@ const TouchableNativeFeedback = createReactClass({
   },
 });
 
-module.exports = TouchableNativeFeedback;
+module.exports = (TouchableNativeFeedback: $FlowFixMe);

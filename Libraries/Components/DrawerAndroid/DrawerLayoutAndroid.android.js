@@ -15,9 +15,10 @@ const React = require('react');
 const StatusBar = require('../StatusBar/StatusBar');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
-const nullthrows = require('nullthrows');
 
 const dismissKeyboard = require('../../Utilities/dismissKeyboard');
+const nullthrows = require('nullthrows');
+
 import AndroidDrawerLayoutNativeComponent, {
   Commands,
 } from './AndroidDrawerLayoutNativeComponent';
@@ -163,15 +164,17 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
 
     return {Left: 'left', Right: 'right'};
   }
-  static defaultProps = {
+  static defaultProps: {|
+    drawerBackgroundColor: 'white',
+  |} = {
     drawerBackgroundColor: 'white',
   };
 
   _nativeRef = React.createRef<AndroidDrawerLayoutNativeComponent>();
 
-  state = {statusBarBackgroundColor: null};
+  state: State = {statusBarBackgroundColor: null};
 
-  render() {
+  render(): React.Node {
     const {
       onDrawerStateChanged,
       renderNavigationView,
