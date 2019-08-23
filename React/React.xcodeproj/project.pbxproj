@@ -1613,11 +1613,9 @@
 		9F5C1830230C67CA00E3E5A7 /* RCTSurfacePresenterStub.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EEEA8DE2239002200A8C82D /* RCTSurfacePresenterStub.m */; };
 		9F5C1840230DB54100E3E5A7 /* RCTSurfacePresenterStub.h in Headers */ = {isa = PBXBuildFile; fileRef = 589515DF2231AD9C0036BDE0 /* RCTSurfacePresenterStub.h */; };
 		9F5C1841230DB6F300E3E5A7 /* RCTSurfacePresenterStub.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 589515DF2231AD9C0036BDE0 /* RCTSurfacePresenterStub.h */; };
-		9F5C195A230F4CB300E3E5A7 /* YGFloatOptional.h in Headers */ = {isa = PBXBuildFile; fileRef = 53DEF6E7205AE59C006A3890 /* YGFloatOptional.h */; };
-		9F5C195C230F4CE200E3E5A7 /* YGMarker.h in Headers */ = {isa = PBXBuildFile; fileRef = AC8360CC21B0256A00FC46B9 /* YGMarker.h */; };
-		9F5C195D230F4CE700E3E5A7 /* YGConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE2080120772F7C009A43B3 /* YGConfig.h */; };
-		9F5C195E230F4CED00E3E5A7 /* YGValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC6B69E221B1467C00B2B68A /* YGValue.h */; };
-		9F5C195F230F4CF300E3E5A7 /* CompactValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC90463D21C91CC2005B24B3 /* CompactValue.h */; };
+		9F5C1991230F4F0400E3E5A7 /* libyoga.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F5C195B230F4CB300E3E5A7 /* libyoga.a */; };
+		9F5C199223104CBA00E3E5A7 /* log.h in Headers */ = {isa = PBXBuildFile; fileRef = ACC75C55221AA194002F24E8 /* log.h */; };
+		9F5C199323104CBF00E3E5A7 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACC75C53221AA188002F24E8 /* log.cpp */; };
 		9FB7D34C224954A600F31D11 /* libjsinspector-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F2AC95E2239D788005C9C14 /* libjsinspector-macOS.a */; };
 		9FB7D34D224954B300F31D11 /* libjsi-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D78224303D900E7F88E /* libjsi-macOS.a */; };
 		9FB7D34E224954CC00F31D11 /* libjsiexecutor-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D94224305AA00E7F88E /* libjsiexecutor-macOS.a */; };
@@ -3188,6 +3186,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F5C1991230F4F0400E3E5A7 /* libyoga.a in Frameworks */,
 				9FB7D34C224954A600F31D11 /* libjsinspector-macOS.a in Frameworks */,
 				18632C021EF495D40010A3BB /* libcxxreact.a in Frameworks */,
 				9FB7D34D224954B300F31D11 /* libjsi-macOS.a in Frameworks */,
@@ -4267,10 +4266,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F5C195F230F4CF300E3E5A7 /* CompactValue.h in Headers */,
-				9F5C195E230F4CED00E3E5A7 /* YGValue.h in Headers */,
-				9F5C195D230F4CE700E3E5A7 /* YGConfig.h in Headers */,
-				9F5C195C230F4CE200E3E5A7 /* YGMarker.h in Headers */,
+				9F5C199223104CBA00E3E5A7 /* log.h in Headers */,
 				18F3B9DF2142F15400AD247D /* YGStyle.h in Headers */,
 				18F3B9E12142F15A00AD247D /* YGNode.h in Headers */,
 				18F3B9E32142F16000AD247D /* Yoga-internal.h in Headers */,
@@ -4280,7 +4276,6 @@
 				18F3B9E22142F15D00AD247D /* YGNodePrint.h in Headers */,
 				1854FF221EF485000008DADC /* YGMacros.h in Headers */,
 				18F3B9DE2142F15100AD247D /* YGLayout.h in Headers */,
-				9F5C195A230F4CB300E3E5A7 /* YGFloatOptional.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5958,6 +5953,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F5C199323104CBF00E3E5A7 /* log.cpp in Sources */,
 				9FF2AC1A228A44D1003BA899 /* YGMarker.cpp in Sources */,
 				9FF2AC1B228A451C003BA899 /* YGValue.cpp in Sources */,
 				18F3BA2A2142F94F00AD247D /* Yoga.cpp in Sources */,
