@@ -59,6 +59,7 @@ jobs:
       run: node .ado/publish.js
       env:
         BUILD_STAGINGDIRECTORY: ${{ runner.temp }}\final
+        BUILD_SOURCEBRANCH: ${{ github.ref }}
 
     - name: Set NuGet source
       run: nuget sources add -name nugetfeed -source ${{ secrets.NUGET_FEED }} -username anything -password ${{ secrets.NUGET_AUTH }}
