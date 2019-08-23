@@ -233,6 +233,18 @@ type OptionalProps<ItemT> = {
    * will be called when its corresponding ViewabilityConfig's conditions are met.
    */
   viewabilityConfigCallbackPairs?: Array<ViewabilityConfigCallbackPair>,
+  /**
+   * See `ScrollView` for flow type and further documentation.
+   */
+  horizontalFadingEdgesEnabled?: ?boolean,
+  /**
+   * See `ScrollView` for flow type and further documentation.
+   */
+  verticalFadingEdgesEnabled?: ?boolean,
+  /**
+   * See `ScrollView` for flow type and further documentation.
+   */
+  fadingEdgeLength?: ?number,
 };
 export type Props<ItemT> = RequiredProps<ItemT> &
   OptionalProps<ItemT> &

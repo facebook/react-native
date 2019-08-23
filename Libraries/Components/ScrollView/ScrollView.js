@@ -335,6 +335,27 @@ type AndroidProps = $ReadOnly<{|
    * @platform android
    */
   persistentScrollbar?: ?boolean,
+  /**
+   * Fades out the left and right edges.
+   * The default value is false.
+   *
+   * @platform android
+   */
+  horizontalFadingEdgesEnabled?: ?boolean,
+  /**
+   * Fades out the up and down edges.
+   * The default value is false.
+   *
+   * @platform android
+   */
+  verticalFadingEdgesEnabled?: ?boolean,
+  /**
+   * The amount of fading.
+   * The default value is 0.
+   *
+   * @platform android
+   */
+  fadingEdgeLength?: ?number,
 |}>;
 
 type VRProps = $ReadOnly<{|

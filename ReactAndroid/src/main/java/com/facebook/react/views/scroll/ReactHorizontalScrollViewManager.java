@@ -276,4 +276,14 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   public void setPersistentScrollbar(ReactHorizontalScrollView view, boolean value) {
     view.setScrollbarFadingEnabled(!value);
   }
+
+  @ReactProp(name = "horizontalFadingEdgesEnabled")
+  public void setHorizontalFadingEdgesEnabled(ReactHorizontalScrollView view, boolean value) {
+    view.setHorizontalFadingEdgeEnabled(value);
+  }
+
+  @ReactProp(name = "fadingEdgeLength")
+  public void setFadingEdgeLength(ReactHorizontalScrollView view, int value) {
+    view.setFadingEdgeLength(value);
+  }
 }
