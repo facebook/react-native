@@ -13,8 +13,10 @@ jobs:
     
     steps:
 
+    - run: echo github.event.head_commit.message: ${{ github.event.head_commit.message }}
+
     - name: No publish loop
-      if: contains( github.event.head_commit, '***NO_CI***')
+      if: contains( github.event.head_commit.message, '***NO_CI***')
       run: exit 123
 
     - uses: actions/checkout@v1
@@ -63,4 +65,5 @@ jobs:
       run: nuget sources add -name nugetfeed -source ${{ secrets.NUGET_FEED }} -username anything -password ${{ secrets.NUGET_AUTH }}
 
     - name: Publish NuGet
-      run: for %i in (${{ runner.temp }}\final\*.nupkg) do nuget push %i -Source ${{ secrets.NUGET_FEED }}
+      run: |
+       for %%i in (${{ runner.temp }}\final\*.nupkg) do nuget push %%i -Source ${{ secrets.NUGET_FEED }}
