@@ -13,7 +13,9 @@ jobs:
     
     steps:
 
-    - run: echo github.event.head_commit.message: ${{ github.event.head_commit.message }}
+    - run: echo github.event.head_commit.message: %GITMSG%
+      env:
+        GITMSG: ${{ github.event.head_commit.message }}
 
     - name: No publish loop
       if: contains( github.event.head_commit.message, '***NO_CI***')
