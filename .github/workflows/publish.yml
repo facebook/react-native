@@ -1,4 +1,4 @@
-name: CI
+name: Publish
 on:
   push:
     branches:
@@ -55,14 +55,13 @@ jobs:
 
     - run: nuget pack ReactAndroid/ReactAndroid.nuspec
 
-  #  - name: Do Publish
-  #    run: node .ado/publish.js
-  #    env:
-  #      BUILD_STAGINGDIRECTORY: ${{ runner.temp }}\final
+    - name: Do Publish
+      run: node .ado/publish.js
+      env:
+        BUILD_STAGINGDIRECTORY: ${{ runner.temp }}\final
 
-  #  - name: Publish final artifacts
-  #    uses:  actions/upload-artifact@master
-  #    with:
-  #      name: ReactNative-Final
-  #      path: ${{ runner.temp }}\final
+    - name: Set NuGet source
+      run: nuget sources add -name nugetfeed -source ${{ secrets.NUGET_FEED }} -username anything -password ${{ secrets.NUGET_AUTH }}
 
+    - name: Publish NuGet
+      run: for %i in (${{ runner.temp }}\final\*.nupkg) do nuget push %i -Source ${{ secrets.NUGET_FEED }}
