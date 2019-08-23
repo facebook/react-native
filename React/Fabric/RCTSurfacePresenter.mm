@@ -65,7 +65,7 @@ using namespace facebook::react;
   RuntimeExecutor _runtimeExecutor;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
+- (instancetype)initWithBridge:(RCTBridge *_Nullable)bridge
                         config:(std::shared_ptr<const ReactNativeConfig>)config
                    imageLoader:(RCTImageLoader *)imageLoader
                runtimeExecutor:(RuntimeExecutor)runtimeExecutor

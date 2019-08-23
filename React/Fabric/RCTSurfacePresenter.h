@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTSurfacePresenter : NSObject
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
+- (instancetype)initWithBridge:(RCTBridge *_Nullable)bridge
                         config:(std::shared_ptr<const facebook::react::ReactNativeConfig>)config
                    imageLoader:(RCTImageLoader *)imageLoader
                runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor;
