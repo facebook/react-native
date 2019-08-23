@@ -2390,7 +2390,7 @@ var ResponderEventPlugin = {
       if (trackedTouchCount >= 0) {
         trackedTouchCount -= 1;
       } else {
-        console.error(
+        console.warn(
           "Ended a touch event which was not counted in `trackedTouchCount`."
         );
         return null;

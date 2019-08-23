@@ -712,7 +712,7 @@ var eventTypes = {
         if (0 <= trackedTouchCount) --trackedTouchCount;
         else
           return (
-            console.error(
+            console.warn(
               "Ended a touch event which was not counted in `trackedTouchCount`."
             ),
             null
