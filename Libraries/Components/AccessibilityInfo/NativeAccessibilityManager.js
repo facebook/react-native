@@ -38,7 +38,7 @@ export interface Spec extends TurboModule {
     onSuccess: (isScreenReaderEnabled: boolean) => void,
     onError: (error: Object) => void,
   ) => void;
-  +setAccessibilityContentSizeMultipliers: (JSMultiipliers: {|
+  +setAccessibilityContentSizeMultipliers: (JSMultipliers: {|
     +extraSmall?: ?number,
     +small?: ?number,
     +medium?: ?number,

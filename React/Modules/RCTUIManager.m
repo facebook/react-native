@@ -9,7 +9,6 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import "RCTAccessibilityManager.h"
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
@@ -181,8 +180,9 @@ RCT_EXPORT_MODULE()
   dispatch_async(dispatch_get_main_queue(), ^{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveNewContentSizeMultiplier)
-                                                 name:RCTAccessibilityManagerDidUpdateMultiplierNotification
-                                               object:self->_bridge.accessibilityManager];
+                                                 name:@"RCTAccessibilityManagerDidUpdateMultiplierNotification"
+                                               object:[self->_bridge moduleForName:@"AccessibilityManager"
+                                                             lazilyLoadIfNecessary:YES]];
   });
 #if !TARGET_OS_TV
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -200,8 +200,12 @@ RCT_EXPORT_MODULE()
   // Report the event across the bridge.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
-                                              body:@([_bridge.accessibilityManager multiplier])];
+  id multiplier = [[self->_bridge moduleForName:@"AccessibilityManager"
+                          lazilyLoadIfNecessary:YES] valueForKey:@"multiplier"];
+  if (multiplier) {
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateContentSizeMultiplier"
+                                                body:multiplier];
+  }
 #pragma clang diagnostic pop
 
   RCTExecuteOnUIManagerQueue(^{

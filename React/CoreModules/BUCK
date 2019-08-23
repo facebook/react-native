@@ -38,6 +38,10 @@ rn_apple_library(
         ["-D PIC_MODIFIER=@PLT"],
     )],
     plugins = react_module_plugin_providers(
+                  name = "AccessibilityManager",
+                  native_class_func = "RCTAccessibilityManagerCls",
+              ) +
+              react_module_plugin_providers(
                   name = "DeviceInfo",
                   native_class_func = "RCTDeviceInfoCls",
               ) +
