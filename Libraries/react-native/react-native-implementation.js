@@ -96,8 +96,7 @@ import typeof RootTagContext from '../ReactNative/RootTagContext';
 import typeof DeprecatedColorPropType from '../DeprecatedPropTypes/DeprecatedColorPropType';
 import typeof DeprecatedEdgeInsetsPropType from '../DeprecatedPropTypes/DeprecatedEdgeInsetsPropType';
 import typeof DeprecatedPointPropType from '../DeprecatedPropTypes/DeprecatedPointPropType';
-import typeof DeprecatedViewPropTypesimport useAppState from '../AppState/useAppState';
- from '../DeprecatedPropTypes/DeprecatedViewPropTypes';
+import typeof DeprecatedViewPropTypes from '../DeprecatedPropTypes/DeprecatedViewPropTypes';
 
 const invariant = require('invariant');
 const warnOnce = require('../Utilities/warnOnce');
@@ -391,16 +390,11 @@ module.exports = {
   > {
     return require('../Renderer/shims/ReactNative').unstable_batchedUpdates;
   },
-<<<<<<< Updated upstream
-  get useWindowDimensions(): useWindowDimensions {
-    return require('../Utilities/useWindowDimensions').default;
-=======
   get useAppState(): useAppState {
     return require('../AppState/useAppState').default;
-  }
-  get useDimensions(): useDimensions {
-    return require('../Utilities/useDimensions').default;
->>>>>>> Stashed changes
+  },
+  get useWindowDimensions(): useWindowDimensions {
+    return require('../Utilities/useWindowDimensions').default;
   },
   get UTFSequence(): UTFSequence {
     return require('../UTFSequence');
