@@ -63,3 +63,8 @@ jobs:
     - name: Publish NuGet
       run: |
        for %%i in (${{ runner.temp }}\final\*.nupkg) do nuget push %%i -Source ${{ secrets.NUGET_FEED }} -ApiKey msrnpublish
+
+    - name: Update react-native-windows
+      run: node .ado/updateRNW.js
+      env:
+        GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
