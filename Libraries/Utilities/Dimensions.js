@@ -26,7 +26,7 @@ let dimensions: DimensionsValue;
 
 class Dimensions {
   /**
-   * NOTE: `useWindowDimensions` is the preffered API for React components.
+   * NOTE: `useDimensions` is the preffered API for React components.
    *
    * Initial dimensions are set before `runApplication` is called so they should
    * be available before any other require's are run, but may be updated later.

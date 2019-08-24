@@ -14,17 +14,17 @@ import Dimensions from './Dimensions';
 import {type DisplayMetrics} from './NativeDeviceInfo';
 import {useEffect, useState} from 'react';
 
-export default function useWindowDimensions(): DisplayMetrics {
-  const [dims, setDims] = useState(() => Dimensions.get('window'));
+export default function useDimensions(dim = "window"): DisplayMetrics {
+  const [dims, setDims] = useState(() => Dimensions.get(dim));
   useEffect(() => {
-    function handleChange({window}) {
-      setDims(window);
+    function handleChange(event) {
+      setDims(event[dim]);
     }
     Dimensions.addEventListener('change', handleChange);
     // We might have missed an update between calling `get` in render and
     // `addEventListener` in this handler, so we set it here. If there was
     // no change, React will filter out this update as a no-op.
-    setDims(Dimensions.get('window'));
+    setDims(Dimensions.get(dim));
     return () => {
       Dimensions.removeEventListener('change', handleChange);
     };
