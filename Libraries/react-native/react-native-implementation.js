@@ -81,6 +81,7 @@ import typeof ToastAndroid from '../Components/ToastAndroid/ToastAndroid';
 import typeof * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 import typeof TVEventHandler from '../Components/AppleTV/TVEventHandler';
 import typeof UIManager from '../ReactNative/UIManager';
+import typeof useAppState from '../AppState/useAppState';
 import typeof useWindowDimensions from '../Utilities/useWindowDimensions';
 import typeof UTFSequence from '../UTFSequence';
 import typeof Vibration from '../Vibration/Vibration';
@@ -95,7 +96,8 @@ import typeof RootTagContext from '../ReactNative/RootTagContext';
 import typeof DeprecatedColorPropType from '../DeprecatedPropTypes/DeprecatedColorPropType';
 import typeof DeprecatedEdgeInsetsPropType from '../DeprecatedPropTypes/DeprecatedEdgeInsetsPropType';
 import typeof DeprecatedPointPropType from '../DeprecatedPropTypes/DeprecatedPointPropType';
-import typeof DeprecatedViewPropTypes from '../DeprecatedPropTypes/DeprecatedViewPropTypes';
+import typeof DeprecatedViewPropTypesimport useAppState from '../AppState/useAppState';
+ from '../DeprecatedPropTypes/DeprecatedViewPropTypes';
 
 const invariant = require('invariant');
 const warnOnce = require('../Utilities/warnOnce');
@@ -389,8 +391,16 @@ module.exports = {
   > {
     return require('../Renderer/shims/ReactNative').unstable_batchedUpdates;
   },
+<<<<<<< Updated upstream
   get useWindowDimensions(): useWindowDimensions {
     return require('../Utilities/useWindowDimensions').default;
+=======
+  get useAppState(): useAppState {
+    return require('../AppState/useAppState').default;
+  }
+  get useDimensions(): useDimensions {
+    return require('../Utilities/useDimensions').default;
+>>>>>>> Stashed changes
   },
   get UTFSequence(): UTFSequence {
     return require('../UTFSequence');

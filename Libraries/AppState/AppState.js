@@ -18,6 +18,8 @@ const logError = require('../Utilities/logError');
 const invariant = require('invariant');
 
 /**
+ * NOTE: `useAppState` is the preffered API for React components.
+ *
  * `AppState` can tell you if the app is in the foreground or background,
  * and notify you when the state changes.
  *
