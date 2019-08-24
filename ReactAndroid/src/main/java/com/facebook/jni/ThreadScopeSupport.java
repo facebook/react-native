@@ -5,10 +5,10 @@
 
 package com.facebook.jni;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 import com.facebook.soloader.SoLoader;
 
-@DoNotStrip
+@Keep
 public class ThreadScopeSupport {
   static {
     SoLoader.loadLibrary("fb");
@@ -16,7 +16,7 @@ public class ThreadScopeSupport {
 
   // This is just used for ThreadScope::withClassLoader to have a java function
   // in the stack so that jni has access to the correct classloader.
-  @DoNotStrip
+  @Keep
   private static void runStdFunction(long ptr) {
     runStdFunctionImpl(ptr);
   }

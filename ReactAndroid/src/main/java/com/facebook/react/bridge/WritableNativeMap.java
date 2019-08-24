@@ -6,17 +6,17 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
  * Implementation of a write-only map stored in native memory. Use {@link Arguments#createMap()} if
  * you need to stub out creating this class in a test. TODO(5815532): Check if consumed on read
  */
-@DoNotStrip
+@Keep
 public class WritableNativeMap extends ReadableNativeMap implements WritableMap {
   static {
     ReactBridge.staticInit();

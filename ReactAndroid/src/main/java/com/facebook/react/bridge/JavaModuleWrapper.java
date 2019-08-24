@@ -12,8 +12,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.GET_CONSTANTS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.GET_CONSTANTS_START;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.lang.reflect.Method;
@@ -28,14 +28,14 @@ import java.util.Set;
  * be in C++, but it's android-specific initialization code, and writing it this way is easier to
  * read and means fewer JNI calls.
  */
-@DoNotStrip
+@Keep
 public class JavaModuleWrapper {
-  @DoNotStrip
+  @Keep
   public class MethodDescriptor {
-    @DoNotStrip Method method;
-    @DoNotStrip String signature;
-    @DoNotStrip String name;
-    @DoNotStrip String type;
+    @Keep Method method;
+    @Keep String signature;
+    @Keep String name;
+    @Keep String type;
   }
 
   private final JSInstance mJSInstance;
@@ -50,17 +50,17 @@ public class JavaModuleWrapper {
     mDescs = new ArrayList();
   }
 
-  @DoNotStrip
+  @Keep
   public BaseJavaModule getModule() {
     return (BaseJavaModule) mModuleHolder.getModule();
   }
 
-  @DoNotStrip
+  @Keep
   public String getName() {
     return mModuleHolder.getName();
   }
 
-  @DoNotStrip
+  @Keep
   private void findMethods() {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "findMethods");
     Set<String> methodNames = new HashSet<>();
@@ -102,7 +102,7 @@ public class JavaModuleWrapper {
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
-  @DoNotStrip
+  @Keep
   public List<MethodDescriptor> getMethodDescriptors() {
     if (mDescs.isEmpty()) {
       findMethods();
@@ -110,7 +110,7 @@ public class JavaModuleWrapper {
     return mDescs;
   }
 
-  @DoNotStrip
+  @Keep
   public @Nullable NativeMap getConstants() {
     if (!mModuleHolder.getHasConstants()) {
       return null;
@@ -141,7 +141,7 @@ public class JavaModuleWrapper {
     }
   }
 
-  @DoNotStrip
+  @Keep
   public void invoke(int methodId, ReadableNativeArray parameters) {
     if (mMethods == null || methodId >= mMethods.size()) {
       return;

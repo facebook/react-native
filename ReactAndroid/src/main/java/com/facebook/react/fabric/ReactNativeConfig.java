@@ -6,17 +6,17 @@
  */
 package com.facebook.react.fabric;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 
 // This is a wrapper for the ReactNativeConfig object in C++
-@DoNotStrip
+@Keep
 public interface ReactNativeConfig {
   /**
    * Get a boolean param by string name. Default should be false.
    *
    * @param param The string name of the parameter being requested.
    */
-  @DoNotStrip
+  @Keep
   boolean getBool(String param);
 
   /**
@@ -24,7 +24,7 @@ public interface ReactNativeConfig {
    *
    * @param param The string name of the parameter being requested.
    */
-  @DoNotStrip
+  @Keep
   int getInt64(String param);
 
   /**
@@ -32,7 +32,7 @@ public interface ReactNativeConfig {
    *
    * @param param The string name of the parameter being requested.
    */
-  @DoNotStrip
+  @Keep
   String getString(String param);
 
   /**
@@ -40,6 +40,6 @@ public interface ReactNativeConfig {
    *
    * @param param The string name of the parameter being requested.
    */
-  @DoNotStrip
+  @Keep
   double getDouble(String param);
 }

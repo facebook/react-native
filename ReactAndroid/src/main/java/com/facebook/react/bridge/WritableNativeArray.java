@@ -6,16 +6,16 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
  * Implementation of a write-only array stored in native memory. Use {@link Arguments#createArray()}
  * if you need to stub out creating this class in a test. TODO(5815532): Check if consumed on read
  */
-@DoNotStrip
+@Keep
 public class WritableNativeArray extends ReadableNativeArray implements WritableArray {
   static {
     ReactBridge.staticInit();

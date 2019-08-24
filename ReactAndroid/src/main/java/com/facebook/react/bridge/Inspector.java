@@ -5,15 +5,15 @@
 
 package com.facebook.react.bridge;
 
+import androidx.annotation.Keep;
 import com.facebook.common.logging.FLog;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.ReactConstants;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@DoNotStrip
+@Keep
 public class Inspector {
   static {
     ReactBridge.staticInit();
@@ -49,7 +49,7 @@ public class Inspector {
     mHybridData = hybridData;
   }
 
-  @DoNotStrip
+  @Keep
   public static class Page {
     private final int mId;
     private final String mTitle;
@@ -72,7 +72,7 @@ public class Inspector {
       return "Page{" + "mId=" + mId + ", mTitle='" + mTitle + '\'' + '}';
     }
 
-    @DoNotStrip
+    @Keep
     private Page(int id, String title, String vm) {
       mId = id;
       mTitle = title;
@@ -80,16 +80,16 @@ public class Inspector {
     }
   }
 
-  @DoNotStrip
+  @Keep
   public interface RemoteConnection {
-    @DoNotStrip
+    @Keep
     void onMessage(String message);
 
-    @DoNotStrip
+    @Keep
     void onDisconnect();
   }
 
-  @DoNotStrip
+  @Keep
   public static class LocalConnection {
     private final HybridData mHybridData;
 

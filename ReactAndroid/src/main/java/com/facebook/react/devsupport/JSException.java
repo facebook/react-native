@@ -6,17 +6,17 @@
  */
 package com.facebook.react.devsupport;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 
 /**
  * This represents an error evaluating JavaScript. It includes the usual message, and the raw JS
  * stack where the error occurred (which may be empty).
  */
-@DoNotStrip
+@Keep
 public class JSException extends Exception {
   private final String mStack;
 
-  @DoNotStrip
+  @Keep
   public JSException(String message, String stack, Throwable cause) {
     super(message, cause);
     mStack = stack;

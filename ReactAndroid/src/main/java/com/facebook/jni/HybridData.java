@@ -5,7 +5,7 @@
 
 package com.facebook.jni;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 import com.facebook.soloader.SoLoader;
 
 /**
@@ -16,14 +16,14 @@ import com.facebook.soloader.SoLoader;
  * <p>{@link #resetNative} deletes the corresponding native object synchronously on whatever thread
  * the method is called on. Otherwise, deletion will occur on the {@link DestructorThread} thread.
  */
-@DoNotStrip
+@Keep
 public class HybridData {
 
   static {
     SoLoader.loadLibrary("fb");
   }
 
-  @DoNotStrip private Destructor mDestructor = new Destructor(this);
+  @Keep private Destructor mDestructor = new Destructor(this);
 
   /**
    * To explicitly delete the instance, call resetNative(). If the C++ instance is referenced after
@@ -56,7 +56,7 @@ public class HybridData {
   public static class Destructor extends DestructorThread.Destructor {
 
     // Private C++ instance
-    @DoNotStrip private long mNativePointer;
+    @Keep private long mNativePointer;
 
     Destructor(Object referent) {
       super(referent);

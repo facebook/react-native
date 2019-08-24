@@ -6,16 +6,16 @@
  */
 package com.facebook.react.bridge.queue;
 
+import androidx.annotation.Keep;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
 
 /** A Runnable that has a native run implementation. */
-@DoNotStrip
+@Keep
 public class NativeRunnable implements Runnable {
 
   private final HybridData mHybridData;
 
-  @DoNotStrip
+  @Keep
   private NativeRunnable(HybridData hybridData) {
     mHybridData = hybridData;
   }

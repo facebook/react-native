@@ -7,7 +7,7 @@
 package com.facebook.hermes.reactexecutor;
 
 import com.facebook.hermes.instrumentation.HermesMemoryDumper;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /** Holds runtime configuration for a Hermes VM instance (master or snapshot). */
 public final class RuntimeConfig {

@@ -6,45 +6,45 @@
  */
 package com.facebook.react.bridge.queue;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 /** Encapsulates a Thread that can accept Runnables. */
-@DoNotStrip
+@Keep
 public interface MessageQueueThread {
   /**
    * Runs the given Runnable on this Thread. It will be submitted to the end of the event queue even
    * if it is being submitted from the same queue Thread.
    */
-  @DoNotStrip
+  @Keep
   void runOnQueue(Runnable runnable);
 
   /**
    * Runs the given Callable on this Thread. It will be submitted to the end of the event queue even
    * if it is being submitted from the same queue Thread.
    */
-  @DoNotStrip
+  @Keep
   <T> Future<T> callOnQueue(final Callable<T> callable);
 
   /**
    * @return whether the current Thread is also the Thread associated with this MessageQueueThread.
    */
-  @DoNotStrip
+  @Keep
   boolean isOnThread();
 
   /**
    * Asserts {@link #isOnThread()}, throwing a {@link AssertionException} (NOT an {@link
    * AssertionError}) if the assertion fails.
    */
-  @DoNotStrip
+  @Keep
   void assertIsOnThread();
 
   /**
    * Asserts {@link #isOnThread()}, throwing a {@link AssertionException} (NOT an {@link
    * AssertionError}) if the assertion fails. The given message is appended to the error.
    */
-  @DoNotStrip
+  @Keep
   void assertIsOnThread(String message);
 
   /**
@@ -52,20 +52,20 @@ public interface MessageQueueThread {
    * thing the thread runs. If called from a separate thread, this will block until the thread can
    * be quit and joined.
    */
-  @DoNotStrip
+  @Keep
   void quitSynchronous();
 
   /**
    * Returns the perf counters taken when the framework was started. This method is intended to be
    * used for instrumentation purposes.
    */
-  @DoNotStrip
+  @Keep
   MessageQueueThreadPerfStats getPerfStats();
 
   /**
    * Resets the perf counters. This is useful if the RN threads are being re-used. This method is
    * intended to be used for instrumentation purposes.
    */
-  @DoNotStrip
+  @Keep
   void resetPerfStats();
 }

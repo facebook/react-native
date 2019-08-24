@@ -6,11 +6,11 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.Keep;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
 
 /** Base class for a Map whose keys and values are stored in native code (C++). */
-@DoNotStrip
+@Keep
 public abstract class NativeMap {
   static {
     ReactBridge.staticInit();
@@ -23,5 +23,5 @@ public abstract class NativeMap {
   @Override
   public native String toString();
 
-  @DoNotStrip private HybridData mHybridData;
+  @Keep private HybridData mHybridData;
 }

@@ -6,8 +6,8 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
-import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
  * A native module whose API can be provided to JS catalyst instances. {@link NativeModule}s whose
@@ -16,7 +16,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
  * not provide any Java code (so they can be reused on other platforms), and instead should register
  * themselves using {@link CxxModuleWrapper}.
  */
-@DoNotStrip
+@Keep
 public interface NativeModule {
   interface NativeMethod {
     void invoke(JSInstance jsInstance, ReadableArray parameters);

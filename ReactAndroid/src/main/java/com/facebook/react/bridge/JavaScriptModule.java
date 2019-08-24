@@ -6,7 +6,7 @@
  */
 package com.facebook.react.bridge;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 
 /**
  * Interface denoting that a class is the interface to a module with the same name in JS. Calling
@@ -20,5 +20,5 @@ import com.facebook.proguard.annotations.DoNotStrip;
  * <p>NB: JavaScriptModule does not allow method name overloading because JS does not allow method
  * name overloading.
  */
-@DoNotStrip
+@Keep
 public interface JavaScriptModule {}

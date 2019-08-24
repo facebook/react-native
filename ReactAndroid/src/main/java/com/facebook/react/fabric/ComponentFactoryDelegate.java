@@ -2,19 +2,19 @@
 
 package com.facebook.react.fabric;
 
+import androidx.annotation.Keep;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
 
-@DoNotStrip
+@Keep
 public class ComponentFactoryDelegate {
 
   static {
     FabricSoLoader.staticInit();
   }
 
-  @DoNotStrip private final HybridData mHybridData;
+  @Keep private final HybridData mHybridData;
 
-  @DoNotStrip
+  @Keep
   private static native HybridData initHybrid();
 
   public ComponentFactoryDelegate() {

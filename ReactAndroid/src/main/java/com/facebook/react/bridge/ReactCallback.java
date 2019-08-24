@@ -6,16 +6,16 @@
  */
 package com.facebook.react.bridge;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 
-@DoNotStrip
+@Keep
 /* package */ interface ReactCallback {
-  @DoNotStrip
+  @Keep
   void onBatchComplete();
 
-  @DoNotStrip
+  @Keep
   void incrementPendingJSCalls();
 
-  @DoNotStrip
+  @Keep
   void decrementPendingJSCalls();
 }

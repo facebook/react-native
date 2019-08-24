@@ -9,8 +9,8 @@ package com.facebook.react.fabric.mounting.mountitems;
 import static com.facebook.react.fabric.FabricUIManager.DEBUG;
 import static com.facebook.react.fabric.FabricUIManager.TAG;
 
+import androidx.annotation.Keep;
 import com.facebook.common.logging.FLog;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.fabric.mounting.MountingManager;
@@ -25,7 +25,7 @@ import com.facebook.systrace.Systrace;
  * <p>The purpose of encapsulating the array of MountItems this way, is to reduce the amount of
  * allocations in C++
  */
-@DoNotStrip
+@Keep
 public class BatchMountItem implements MountItem {
 
   private final MountItem[] mMountItems;

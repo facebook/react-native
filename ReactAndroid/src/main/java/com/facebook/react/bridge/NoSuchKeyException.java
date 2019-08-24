@@ -6,13 +6,13 @@
  */
 package com.facebook.react.bridge;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 
 /** Exception thrown by {@link ReadableNativeMap} when a key that does not exist is requested. */
-@DoNotStrip
+@Keep
 public class NoSuchKeyException extends RuntimeException {
 
-  @DoNotStrip
+  @Keep
   public NoSuchKeyException(String msg) {
     super(msg);
   }

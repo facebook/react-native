@@ -5,23 +5,23 @@
 
 package com.facebook.jni;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 import com.facebook.soloader.SoLoader;
 
 /** Utility class to determine CPU capabilities */
-@DoNotStrip
+@Keep
 public class CpuCapabilitiesJni {
 
   static {
     SoLoader.loadLibrary("fb");
   }
 
-  @DoNotStrip
+  @Keep
   public static native boolean nativeDeviceSupportsNeon();
 
-  @DoNotStrip
+  @Keep
   public static native boolean nativeDeviceSupportsVFPFP16();
 
-  @DoNotStrip
+  @Keep
   public static native boolean nativeDeviceSupportsX86();
 }

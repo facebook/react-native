@@ -7,8 +7,8 @@
 package com.facebook.react.fabric;
 
 import android.annotation.SuppressLint;
+import androidx.annotation.Keep;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableMap;
@@ -24,7 +24,7 @@ public class StateWrapperImpl implements StateWrapper {
     FabricSoLoader.staticInit();
   }
 
-  @DoNotStrip private final HybridData mHybridData;
+  @Keep private final HybridData mHybridData;
 
   private static native HybridData initHybrid();
 

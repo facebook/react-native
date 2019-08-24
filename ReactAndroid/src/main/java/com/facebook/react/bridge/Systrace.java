@@ -5,11 +5,11 @@
 
 package com.facebook.react.bridge;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 
 /** Interface to the JavaScript Systrace Module */
-@DoNotStrip
+@Keep
 public interface Systrace extends JavaScriptModule {
-  @DoNotStrip
+  @Keep
   void setEnabled(boolean enabled);
 }

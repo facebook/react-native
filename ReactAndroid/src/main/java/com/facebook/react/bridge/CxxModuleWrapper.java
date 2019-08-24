@@ -5,12 +5,12 @@
 
 package com.facebook.react.bridge;
 
+import androidx.annotation.Keep;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
 /** This does nothing interesting, except avoid breaking existing code. */
-@DoNotStrip
+@Keep
 public class CxxModuleWrapper extends CxxModuleWrapperBase {
   protected CxxModuleWrapper(HybridData hd) {
     super(hd);

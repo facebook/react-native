@@ -5,8 +5,8 @@
 
 package com.facebook.react.bridge;
 
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
-import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -14,7 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Static class that allows markers to be placed in React code and responded to in a configurable
  * way
  */
-@DoNotStrip
+@Keep
 public class ReactMarker {
 
   public interface MarkerListener {
@@ -39,25 +39,25 @@ public class ReactMarker {
   private static final List<FabricMarkerListener> sFabricMarkerListeners =
       new CopyOnWriteArrayList<>();
 
-  @DoNotStrip
+  @Keep
   public static void addListener(MarkerListener listener) {
     if (!sListeners.contains(listener)) {
       sListeners.add(listener);
     }
   }
 
-  @DoNotStrip
+  @Keep
   public static void removeListener(MarkerListener listener) {
     sListeners.remove(listener);
   }
 
-  @DoNotStrip
+  @Keep
   public static void clearMarkerListeners() {
     sListeners.clear();
   }
 
   // Specific to Fabric marker listeners
-  @DoNotStrip
+  @Keep
   public static void addFabricListener(FabricMarkerListener listener) {
     if (!sFabricMarkerListeners.contains(listener)) {
       sFabricMarkerListeners.add(listener);
@@ -65,19 +65,19 @@ public class ReactMarker {
   }
 
   // Specific to Fabric marker listeners
-  @DoNotStrip
+  @Keep
   public static void removeFabricListener(FabricMarkerListener listener) {
     sFabricMarkerListeners.remove(listener);
   }
 
   // Specific to Fabric marker listeners
-  @DoNotStrip
+  @Keep
   public static void clearFabricMarkerListeners() {
     sFabricMarkerListeners.clear();
   }
 
   // Specific to Fabric marker listeners
-  @DoNotStrip
+  @Keep
   public static void logFabricMarker(
       ReactMarkerConstants name, @Nullable String tag, int instanceKey, long timestamp) {
     for (FabricMarkerListener listener : sFabricMarkerListeners) {
@@ -86,49 +86,49 @@ public class ReactMarker {
   }
 
   // Specific to Fabric marker listeners
-  @DoNotStrip
+  @Keep
   public static void logFabricMarker(
       ReactMarkerConstants name, @Nullable String tag, int instanceKey) {
     logFabricMarker(name, tag, instanceKey, -1);
   }
 
-  @DoNotStrip
+  @Keep
   public static void logMarker(String name) {
     logMarker(name, null);
   }
 
-  @DoNotStrip
+  @Keep
   public static void logMarker(String name, int instanceKey) {
     logMarker(name, null, instanceKey);
   }
 
-  @DoNotStrip
+  @Keep
   public static void logMarker(String name, @Nullable String tag) {
     logMarker(name, tag, 0);
   }
 
-  @DoNotStrip
+  @Keep
   public static void logMarker(String name, @Nullable String tag, int instanceKey) {
     ReactMarkerConstants marker = ReactMarkerConstants.valueOf(name);
     logMarker(marker, tag, instanceKey);
   }
 
-  @DoNotStrip
+  @Keep
   public static void logMarker(ReactMarkerConstants name) {
     logMarker(name, null, 0);
   }
 
-  @DoNotStrip
+  @Keep
   public static void logMarker(ReactMarkerConstants name, int instanceKey) {
     logMarker(name, null, instanceKey);
   }
 
-  @DoNotStrip
+  @Keep
   public static void logMarker(ReactMarkerConstants name, @Nullable String tag) {
     logMarker(name, tag, 0);
   }
 
-  @DoNotStrip
+  @Keep
   public static void logMarker(ReactMarkerConstants name, @Nullable String tag, int instanceKey) {
     logFabricMarker(name, tag, instanceKey);
     for (MarkerListener listener : sListeners) {

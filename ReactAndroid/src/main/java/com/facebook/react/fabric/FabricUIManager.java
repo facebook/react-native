@@ -18,13 +18,13 @@ import android.annotation.SuppressLint;
 import android.os.SystemClock;
 import android.view.View;
 import androidx.annotation.GuardedBy;
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -185,7 +185,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   /** Method called when an event has been dispatched on the C++ side. */
-  @DoNotStrip
+  @Keep
   @SuppressWarnings("unused")
   public void onRequestEventBeat() {
     mEventDispatcher.dispatchAllEvents();
@@ -212,7 +212,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     ViewManagerPropertyUpdater.clear();
   }
 
-  @DoNotStrip
+  @Keep
   @SuppressWarnings("unused")
   private void preallocateView(
       int rootTag,
@@ -236,7 +236,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
   }
 
-  @DoNotStrip
+  @Keep
   @SuppressWarnings("unused")
   private MountItem createMountItem(
       String componentName,
@@ -260,62 +260,62 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         isLayoutable);
   }
 
-  @DoNotStrip
+  @Keep
   @SuppressWarnings("unused")
   private MountItem removeMountItem(int reactTag, int parentReactTag, int index) {
     return new RemoveMountItem(reactTag, parentReactTag, index);
   }
 
-  @DoNotStrip
+  @Keep
   @SuppressWarnings("unused")
   private MountItem insertMountItem(int reactTag, int parentReactTag, int index) {
     return new InsertMountItem(reactTag, parentReactTag, index);
   }
 
-  @DoNotStrip
+  @Keep
   @SuppressWarnings("unused")
   private MountItem deleteMountItem(int reactTag) {
     return new DeleteMountItem(reactTag);
   }
 
-  @DoNotStrip
+  @Keep
   @SuppressWarnings("unused")
   private MountItem updateLayoutMountItem(
       int reactTag, int x, int y, int width, int height, int layoutDirection) {
     return new UpdateLayoutMountItem(reactTag, x, y, width, height, layoutDirection);
   }
 
-  @DoNotStrip
+  @Keep
   @SuppressWarnings("unused")
   private MountItem updatePropsMountItem(int reactTag, ReadableMap map) {
     return new UpdatePropsMountItem(reactTag, map);
   }
 
-  @DoNotStrip
+  @Keep
   @SuppressWarnings("unused")
   private MountItem updateLocalDataMountItem(int reactTag, ReadableMap newLocalData) {
     return new UpdateLocalDataMountItem(reactTag, newLocalData);
   }
 
-  @DoNotStrip
+  @Keep
   @SuppressWarnings("unused")
   private MountItem updateStateMountItem(int reactTag, Object stateWrapper) {
     return new UpdateStateMountItem(reactTag, (StateWrapper) stateWrapper);
   }
 
-  @DoNotStrip
+  @Keep
   @SuppressWarnings("unused")
   private MountItem updateEventEmitterMountItem(int reactTag, Object eventEmitter) {
     return new UpdateEventEmitterMountItem(reactTag, (EventEmitterWrapper) eventEmitter);
   }
 
-  @DoNotStrip
+  @Keep
   @SuppressWarnings("unused")
   private MountItem createBatchMountItem(MountItem[] items, int size, int commitNumber) {
     return new BatchMountItem(items, size, commitNumber);
   }
 
-  @DoNotStrip
+  @Keep
   @SuppressWarnings("unused")
   private long measure(
       String componentName,
@@ -361,7 +361,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * This method enqueues UI operations directly to the UI thread. This might change in the future
    * to enforce execution order using {@link ReactChoreographer#CallbackType}.
    */
-  @DoNotStrip
+  @Keep
   @SuppressWarnings("unused")
   private void scheduleMountItem(
       final MountItem mountItem,
@@ -566,7 +566,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * @param initialReactTag React tag of the JS view that initiated the touch operation
    * @param blockNativeResponder If native responder should be blocked or not
    */
-  @DoNotStrip
+  @Keep
   public void setJSResponder(
       final int reactTag, final int initialReactTag, final boolean blockNativeResponder) {
     synchronized (mMountItemsLock) {
@@ -584,7 +584,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * Clears the JS Responder specified by {@link #setJSResponder(int, int, boolean)}. After this
    * method is called, all the touch events are going to be handled by JS.
    */
-  @DoNotStrip
+  @Keep
   public void clearJSResponder() {
     synchronized (mMountItemsLock) {
       mMountItems.add(

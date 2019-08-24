@@ -6,11 +6,11 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -19,7 +19,7 @@ import java.util.Map;
  * Implementation of a read-only map in native memory. This will generally be constructed and filled
  * in native code so you shouldn't construct one yourself.
  */
-@DoNotStrip
+@Keep
 public class ReadableNativeMap extends NativeMap implements ReadableMap {
   static {
     ReactBridge.staticInit();

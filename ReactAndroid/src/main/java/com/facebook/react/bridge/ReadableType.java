@@ -6,10 +6,10 @@
  */
 package com.facebook.react.bridge;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 
 /** Defines the type of an object stored in a {@link ReadableArray} or {@link ReadableMap}. */
-@DoNotStrip
+@Keep
 public enum ReadableType {
   Null,
   Boolean,
