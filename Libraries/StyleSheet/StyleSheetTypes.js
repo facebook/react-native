@@ -11,9 +11,9 @@
 'use strict';
 
 const AnimatedNode = require('AnimatedNode');
-import type {SemanticOrDynamicColorType} from 'normalizeColor'; // TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from 'normalizeColorObject'; // TODO(macOS ISS#2323203)
 
-export type ColorValue = null | string | SemanticOrDynamicColorType; // TODO(macOS ISS#2323203)
+export type ColorValue = null | string | NativeOrDynamicColorType; // TODO(macOS ISS#2323203)
 export type DimensionValue = null | number | string | AnimatedNode;
 
 /**

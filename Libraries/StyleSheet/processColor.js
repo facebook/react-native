@@ -11,14 +11,14 @@
 'use strict';
 
 const Platform = require('Platform');
-
+const processColorObject = require('processColorObject'); // TODO(macOS ISS#2323203)
 const normalizeColor = require('normalizeColor');
-import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from 'normalizeColorObject'; // TODO(macOS ISS#2323203)
 
 /* eslint no-bitwise: 0 */
 function processColor(
-  color?: ?(string | number | SemanticOrDynamicColorType),
-): ?(number | SemanticOrDynamicColorType) /* TODO(macOS ISS#2323203) */ {
+  color?: ?(string | number | NativeOrDynamicColorType),
+): ?(number | NativeOrDynamicColorType) /* TODO(macOS ISS#2323203) */ {
   if (color === undefined || color === null) {
     return color;
   }
@@ -28,23 +28,14 @@ function processColor(
     return undefined;
   }
 
-  // [TODO(macOS ISS#2323203)
-  if (
-    typeof int32Color === 'object' &&
-    (Platform.OS === 'macos' || Platform.OS === 'ios')
-  ) {
-    if ('dynamic' in int32Color && int32Color.dynamic !== undefined) {
-      const dynamic = int32Color.dynamic;
-      const dynamicColor = {
-        dynamic: {
-          light: processColor(dynamic.light),
-          dark: processColor(dynamic.dark),
-        },
-      };
-      return dynamicColor;
+  if (typeof int32Color === 'object') {
+    const processedColorObj = processColorObject(int32Color);
+
+    if (processedColorObj !== null) {
+      return processedColorObj;
     }
-    return int32Color;
   }
+
   if (typeof int32Color !== 'number') {
     return null;
   } // ]TODO(macOS ISS#2323203)

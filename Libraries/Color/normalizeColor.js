@@ -11,23 +11,16 @@
 /* eslint no-bitwise: 0 */
 'use strict';
 
-const Platform = require('Platform'); // [TODO(macOS ISS#2323203)
-
-export type SemanticOrDynamicColorType = {
-  semantic?: string,
-  dynamic?: {
-    light: ?(string | number | SemanticOrDynamicColorType),
-    dark: ?(string | number | SemanticOrDynamicColorType),
-  },
-}; // ]TODO(macOS ISS#2323203)
+const normalizeColorObject = require('normalizeColorObject'); // TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from 'normalizeColorObject'; // TODO(macOS ISS#2323203)
 
 function normalizeColor(
   color: ?(
     | string
     | number
-    | SemanticOrDynamicColorType
+    | NativeOrDynamicColorType
   ) /* TODO(macOS ISS#2323203) */,
-): ?(number | SemanticOrDynamicColorType) /* TODO(macOS ISS#2323203) */ {
+): ?(number | NativeOrDynamicColorType) /* TODO(macOS ISS#2323203) */ {
   const matchers = getMatchers();
   let match;
 
@@ -39,26 +32,14 @@ function normalizeColor(
   }
 
   // [TODO(macOS ISS#2323203)
-  if (
-    typeof color === 'object' &&
-    color !== null &&
-    (Platform.OS === 'macos' || Platform.OS === 'ios')
-  ) {
-    if ('semantic' in color) {
-      // a macos semantic color
+  if (typeof color === 'object' && color !== null) {
+    const normalizedColorObj = normalizeColorObject(color);
+
+    if (normalizedColorObj !== null) {
       return color;
-    } else if ('dynamic' in color && color.dynamic !== undefined) {
-      // a dynamic, appearance aware color
-      const dynamic = color.dynamic;
-      const dynamicColor: SemanticOrDynamicColorType = {
-        dynamic: {
-          light: normalizeColor(dynamic.light),
-          dark: normalizeColor(dynamic.dark),
-        },
-      };
-      return dynamicColor;
     }
   }
+
   if (typeof color !== 'string') {
     return null;
   } // ]TODO(macOS ISS#2323203)

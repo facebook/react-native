@@ -24,7 +24,7 @@ const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 const processColor = require('processColor');
 
 import type {PressEvent} from 'CoreEventTypes';
-import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from 'normalizeColorObject'; // TODO(macOS ISS#2323203)
 
 const rippleBackgroundPropType = PropTypes.shape({
   type: PropTypes.oneOf(['RippleAndroid']),
@@ -146,7 +146,7 @@ const TouchableNativeFeedback = createReactClass({
       borderless: boolean,
     ): {
       type: 'RippleAndroid',
-      color: ?(number | SemanticOrDynamicColorType),
+      color: ?(number | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
       borderless: boolean,
     } {
       return {
