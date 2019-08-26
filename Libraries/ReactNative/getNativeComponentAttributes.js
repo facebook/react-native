@@ -19,6 +19,7 @@ const matricesDiffer = require('../Utilities/differ/matricesDiffer');
 const pointsDiffer = require('../Utilities/differ/pointsDiffer');
 const processColor = require('../StyleSheet/processColor');
 const processColorArray = require('../StyleSheet/processColorArray');
+const processTransform = require('../StyleSheet/processTransform');
 const resolveAssetSource = require('../Image/resolveAssetSource');
 const sizesDiffer = require('../Utilities/differ/sizesDiffer');
 const warning = require('fbjs/lib/warning');
@@ -179,6 +180,8 @@ function getProcessorForType(typeName: string): ?(nextProp: any) => any {
       return processColor;
     case 'ColorArray':
       return processColorArray;
+    case 'CATransform3D':
+      return processTransform;
   }
   return null;
 }
