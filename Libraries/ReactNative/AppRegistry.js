@@ -62,7 +62,7 @@ let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
 ) => component();
 
 let wrapperComponentProvider: ?WrapperComponentProvider;
-let showFabricIndicator = false;
+let showArchitectureIndicator = false;
 
 /**
  * `AppRegistry` is the JavaScript entry point to running all React Native apps.
@@ -74,8 +74,8 @@ const AppRegistry = {
     wrapperComponentProvider = provider;
   },
 
-  enableFabricIndicator(enabled: boolean): void {
-    showFabricIndicator = enabled;
+  enableArchitectureIndicator(enabled: boolean): void {
+    showArchitectureIndicator = enabled;
   },
 
   registerConfig(config: Array<AppConfig>): void {
@@ -121,7 +121,7 @@ const AppRegistry = {
           appParameters.rootTag,
           wrapperComponentProvider && wrapperComponentProvider(appParameters),
           appParameters.fabric,
-          showFabricIndicator,
+          showArchitectureIndicator,
           scopedPerformanceLogger,
         );
       },

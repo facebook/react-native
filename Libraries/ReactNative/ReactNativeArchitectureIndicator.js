@@ -15,14 +15,29 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
 const View = require('../Components/View/View');
 
-function ReactFabricIndicator(): React.Node {
+const hasTurboModule = global.__turboModuleProxy != null;
+const isBridgeless = global.RN$Bridgeless === true;
+
+function ReactNativeArchitectureIndicator(props: {|
+  fabric: boolean,
+|}): React.Node {
+  const parts = [];
+  if (isBridgeless) {
+    parts.push('NOBRIDGE');
+  } else {
+    if (props.fabric) {
+      parts.push('FABRIC');
+    }
+    if (hasTurboModule) {
+      parts.push('TM');
+    }
+  }
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>FABRIC</Text>
+      <Text style={styles.text}>{parts.join('+')}</Text>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
@@ -38,5 +53,4 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
 });
-
-module.exports = ReactFabricIndicator;
+module.exports = ReactNativeArchitectureIndicator;
