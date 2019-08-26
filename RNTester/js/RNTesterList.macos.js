@@ -58,21 +58,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
-    key: 'ListViewExample',
-    module: require('./ListViewExample'),
-    supportsTVOS: false,
-  },
-  {
-    key: 'ListViewGridLayoutExample',
-    module: require('./ListViewGridLayoutExample'),
-    supportsTVOS: false,
-  },
-  {
-    key: 'ListViewPagingExample',
-    module: require('./ListViewPagingExample'),
-    supportsTVOS: false,
-  },
-  {
     key: 'MultiColumnExample',
     module: require('./MultiColumnExample'),
     supportsTVOS: false,
@@ -80,16 +65,6 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'PickerExample',
     module: require('./PickerExample'),
-    supportsTVOS: false,
-  },
-  {
-    key: 'PickerIOSExample',
-    module: require('./PickerIOSExample'),
-    supportsTVOS: false,
-  },
-  {
-    key: 'ProgressViewIOSExample',
-    module: require('./ProgressViewIOSExample'),
     supportsTVOS: false,
   },
   {
@@ -103,11 +78,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
-    key: 'SegmentedControlIOSExample',
-    module: require('./SegmentedControlIOSExample'),
-    supportsTVOS: false,
-  },
-  {
     key: 'SliderExample',
     module: require('./SliderExample'),
     supportsTVOS: false,
@@ -115,11 +85,6 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'SwipeableFlatListExample',
     module: require('./SwipeableFlatListExample'),
-    supportsTVOS: false,
-  },
-  {
-    key: 'SwipeableListViewExample',
-    module: require('./SwipeableListViewExample'),
     supportsTVOS: false,
   },
   {
@@ -150,11 +115,6 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'ViewExample',
     module: require('./ViewExample'),
-    supportsTVOS: false,
-  },
-  {
-    key: 'WebViewExample',
-    module: require('./WebViewExample'),
     supportsTVOS: false,
   },
 ];
@@ -201,11 +161,6 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
-    key: 'GeolocationExample',
-    module: require('./GeolocationExample'),
-    supportsTVOS: false,
-  },
-  {
     key: 'LayoutAnimationExample',
     module: require('./LayoutAnimationExample'),
     supportsTVOS: false,
@@ -224,11 +179,6 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'NativeAnimationsExample',
     module: require('./NativeAnimationsExample'),
     supportsTVOS: false,
-  },
-  {
-    key: 'NetInfoExample',
-    module: require('./NetInfoExample'),
-    supportsTVOS: true,
   },
   {
     key: 'PanResponderExample',

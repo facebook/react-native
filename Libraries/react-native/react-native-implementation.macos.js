@@ -29,12 +29,6 @@ module.exports = {
   get Button() {
     return require('Button');
   },
-  get CheckBox() {
-    return require('CheckBox');
-  },
-  get DatePickerIOS() {
-    return require('DatePickerIOS');
-  },
   /*
   get DrawerLayoutAndroid() {
     return require('DrawerLayoutAndroid');
