@@ -1,21 +1,24 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_native_target", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_native_target", "react_native_xplat_dep", "rn_xplat_cxx_library")
 
 rn_xplat_cxx_library(
     name = "jni",
     srcs = glob(["*.cpp"]),
     headers = glob(["*.h"]),
     header_namespace = "",
-    compiler_flags = ["-fexceptions"],
-    fbandroid_allow_jni_merging = True,
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
     platforms = ANDROID,
     soname = "libreactnativeblob.$(ext)",
     visibility = [
-        "PUBLIC",
+        react_native_target("java/com/facebook/react/modules/blob:blob"),
     ],
     deps = [
-        "fbsource//xplat/folly:molly",
-        FBJNI_TARGET,
         react_native_target("jni/react/jni:jni"),
-        react_native_xplat_target("jsiexecutor:jsiexecutor"),
+        FBJNI_TARGET,
+        react_native_xplat_dep("jsi:jsi"),
     ],
 )
