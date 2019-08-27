@@ -659,6 +659,14 @@ workflows:
       - publish_npm_package:
           requires:
             - setup_android
+          filters:
+            # Both of the following conditions must be included!
+            # Ignore any commit on any branch by default.
+            branches:
+              ignore: /.*/
+            # Only act on version tags.
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
   analysis:
     jobs:
