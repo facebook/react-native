@@ -76,56 +76,48 @@
 <p>The <a href="/react-native/docs/next/animated"><code>Animated</code></a> API is designed to make it very easy to concisely express a wide variety of interesting animation and interaction patterns in a very performant way. <code>Animated</code> focuses on declarative relationships between inputs and outputs, with configurable transforms in between, and simple <code>start</code>/<code>stop</code> methods to control time-based animation execution.</p>
 <p><code>Animated</code> exports six animatable component types: <code>View</code>, <code>Text</code>, <code>Image</code>, <code>ScrollView</code>, <code>FlatList</code> and <code>SectionList</code>, but you can also create your own using <code>Animated.createAnimatedComponent()</code>.</p>
 <p>For example, a container view that fades in when it is mounted may look like this:</p>
-<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { useState, useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { Animated, Text, View } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
-<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">FadeInView</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
-  state = {
-    <span class="hljs-attr">fadeAnim</span>: <span class="hljs-keyword">new</span> Animated.Value(<span class="hljs-number">0</span>),  <span class="hljs-comment">// Initial value for opacity: 0</span>
-  }
-
-  componentDidMount() {
-    Animated.timing(                  <span class="hljs-comment">// Animate over time</span>
-      <span class="hljs-keyword">this</span>.state.fadeAnim,            <span class="hljs-comment">// The animated value to drive</span>
+<span class="hljs-keyword">const</span> FadeInView = <span class="hljs-function">(<span class="hljs-params">props</span>) =&gt;</span> {
+  <span class="hljs-keyword">const</span> [fadeAdmin] = useState(<span class="hljs-keyword">new</span> Animated.Value(<span class="hljs-number">0</span>))  <span class="hljs-comment">// Initial value for opacity: 0</span>
+  
+  React.useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    Animated.timing(
+      fadeAdmin,
       {
-        <span class="hljs-attr">toValue</span>: <span class="hljs-number">1</span>,                   <span class="hljs-comment">// Animate to opacity: 1 (opaque)</span>
-        duration: <span class="hljs-number">10000</span>,              <span class="hljs-comment">// Make it take a while</span>
+        <span class="hljs-attr">toValue</span>: <span class="hljs-number">1</span>,
+        <span class="hljs-attr">duration</span>: <span class="hljs-number">10000</span>,
       }
-    ).start();                        <span class="hljs-comment">// Starts the animation</span>
-  }
+    ).start();
+  }, [])
 
-  render() {
-    <span class="hljs-keyword">let</span> { fadeAnim } = <span class="hljs-keyword">this</span>.state;
-
-    <span class="hljs-keyword">return</span> (
-      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Animated.View</span>                 // <span class="hljs-attr">Special</span> <span class="hljs-attr">animatable</span> <span class="hljs-attr">View</span>
-        <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
-          <span class="hljs-attr">...this.props.style</span>,
-          <span class="hljs-attr">opacity:</span> <span class="hljs-attr">fadeAnim</span>,         // <span class="hljs-attr">Bind</span> <span class="hljs-attr">opacity</span> <span class="hljs-attr">to</span> <span class="hljs-attr">animated</span> <span class="hljs-attr">value</span>
-        }}
-      &gt;</span>
-        {this.props.children}
-      <span class="hljs-tag">&lt;/<span class="hljs-name">Animated.View</span>&gt;</span>
-    );
-  }
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Animated.View</span>                 // <span class="hljs-attr">Special</span> <span class="hljs-attr">animatable</span> <span class="hljs-attr">View</span>
+      <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+        <span class="hljs-attr">...props.style</span>,
+        <span class="hljs-attr">opacity:</span> <span class="hljs-attr">fadeAdnim</span>,         // <span class="hljs-attr">Bind</span> <span class="hljs-attr">opacity</span> <span class="hljs-attr">to</span> <span class="hljs-attr">animated</span> <span class="hljs-attr">value</span>
+      }}
+    &gt;</span>
+      {props.children}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">Animated.View</span>&gt;</span>
+  );
 }
 
 // You can then use your `FadeInView` in place of a `View` in your components:
-export default class App extends React.Component {
-  render() {
-    return (
-      <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">alignItems:</span> '<span class="hljs-attr">center</span>', <span class="hljs-attr">justifyContent:</span> '<span class="hljs-attr">center</span>'}}&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">FadeInView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">250</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">backgroundColor:</span> '<span class="hljs-attr">powderblue</span>'}}&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{fontSize:</span> <span class="hljs-attr">28</span>, <span class="hljs-attr">textAlign:</span> '<span class="hljs-attr">center</span>', <span class="hljs-attr">margin:</span> <span class="hljs-attr">10</span>}}&gt;</span>Fading in<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
-        <span class="hljs-tag">&lt;/<span class="hljs-name">FadeInView</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
-    )
-  }
+export default () =&gt; {
+  return (
+    <span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{flex:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">alignItems:</span> '<span class="hljs-attr">center</span>', <span class="hljs-attr">justifyContent:</span> '<span class="hljs-attr">center</span>'}}&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">FadeInView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{width:</span> <span class="hljs-attr">250</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">backgroundColor:</span> '<span class="hljs-attr">powderblue</span>'}}&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{fontSize:</span> <span class="hljs-attr">28</span>, <span class="hljs-attr">textAlign:</span> '<span class="hljs-attr">center</span>', <span class="hljs-attr">margin:</span> <span class="hljs-attr">10</span>}}&gt;</span>Fading in<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">FadeInView</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span>
+  )
 }
 </span></code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
         data-snack-name="Example"
         data-snack-description="Example usage"
-        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20Animated%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aclass%20FadeInView%20extends%20React.Component%20%7B%0A%20%20state%20%3D%20%7B%0A%20%20%20%20fadeAnim%3A%20new%20Animated.Value(0)%2C%20%20%2F%2F%20Initial%20value%20for%20opacity%3A%200%0A%20%20%7D%0A%0A%20%20componentDidMount()%20%7B%0A%20%20%20%20Animated.timing(%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20Animate%20over%20time%0A%20%20%20%20%20%20this.state.fadeAnim%2C%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20The%20animated%20value%20to%20drive%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20toValue%3A%201%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20Animate%20to%20opacity%3A%201%20(opaque)%0A%20%20%20%20%20%20%20%20duration%3A%2010000%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20Make%20it%20take%20a%20while%0A%20%20%20%20%20%20%7D%0A%20%20%20%20).start()%3B%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20Starts%20the%20animation%0A%20%20%7D%0A%0A%20%20render()%20%7B%0A%20%20%20%20let%20%7B%20fadeAnim%20%7D%20%3D%20this.state%3B%0A%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CAnimated.View%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20Special%20animatable%20View%0A%20%20%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20%20%20...this.props.style%2C%0A%20%20%20%20%20%20%20%20%20%20opacity%3A%20fadeAnim%2C%20%20%20%20%20%20%20%20%20%2F%2F%20Bind%20opacity%20to%20animated%20value%0A%20%20%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%20%20%3E%0A%20%20%20%20%20%20%20%20%7Bthis.props.children%7D%0A%20%20%20%20%20%20%3C%2FAnimated.View%3E%0A%20%20%20%20)%3B%0A%20%20%7D%0A%7D%0A%0A%2F%2F%20You%20can%20then%20use%20your%20%60FadeInView%60%20in%20place%20of%20a%20%60View%60%20in%20your%20components%3A%0Aexport%20default%20class%20App%20extends%20React.Component%20%7B%0A%20%20render()%20%7B%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%201%2C%20alignItems%3A%20'center'%2C%20justifyContent%3A%20'center'%7D%7D%3E%0A%20%20%20%20%20%20%20%20%3CFadeInView%20style%3D%7B%7Bwidth%3A%20250%2C%20height%3A%2050%2C%20backgroundColor%3A%20'powderblue'%7D%7D%3E%0A%20%20%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7BfontSize%3A%2028%2C%20textAlign%3A%20'center'%2C%20margin%3A%2010%7D%7D%3EFading%20in%3C%2FText%3E%0A%20%20%20%20%20%20%20%20%3C%2FFadeInView%3E%0A%20%20%20%20%20%20%3C%2FView%3E%0A%20%20%20%20)%0A%20%20%7D%0A%7D%0A"
+        data-snack-code="import%20React%2C%20%7B%20useState%2C%20useEffect%20%7D%20from%20'react'%3B%0Aimport%20%7B%20Animated%2C%20Text%2C%20View%20%7D%20from%20'react-native'%3B%0A%0Aconst%20FadeInView%20%3D%20(props)%20%3D%3E%20%7B%0A%20%20const%20%5BfadeAdmin%5D%20%3D%20useState(new%20Animated.Value(0))%20%20%2F%2F%20Initial%20value%20for%20opacity%3A%200%0A%20%20%0A%20%20React.useEffect(()%20%3D%3E%20%7B%0A%20%20%20%20Animated.timing(%0A%20%20%20%20%20%20fadeAdmin%2C%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20toValue%3A%201%2C%0A%20%20%20%20%20%20%20%20duration%3A%2010000%2C%0A%20%20%20%20%20%20%7D%0A%20%20%20%20).start()%3B%0A%20%20%7D%2C%20%5B%5D)%0A%0A%20%20return%20(%0A%20%20%20%20%3CAnimated.View%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%2F%2F%20Special%20animatable%20View%0A%20%20%20%20%20%20style%3D%7B%7B%0A%20%20%20%20%20%20%20%20...props.style%2C%0A%20%20%20%20%20%20%20%20opacity%3A%20fadeAdnim%2C%20%20%20%20%20%20%20%20%20%2F%2F%20Bind%20opacity%20to%20animated%20value%0A%20%20%20%20%20%20%7D%7D%0A%20%20%20%20%3E%0A%20%20%20%20%20%20%7Bprops.children%7D%0A%20%20%20%20%3C%2FAnimated.View%3E%0A%20%20)%3B%0A%7D%0A%0A%2F%2F%20You%20can%20then%20use%20your%20%60FadeInView%60%20in%20place%20of%20a%20%60View%60%20in%20your%20components%3A%0Aexport%20default%20()%20%3D%3E%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7B%7Bflex%3A%201%2C%20alignItems%3A%20'center'%2C%20justifyContent%3A%20'center'%7D%7D%3E%0A%20%20%20%20%20%20%3CFadeInView%20style%3D%7B%7Bwidth%3A%20250%2C%20height%3A%2050%2C%20backgroundColor%3A%20'powderblue'%7D%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7B%7BfontSize%3A%2028%2C%20textAlign%3A%20'center'%2C%20margin%3A%2010%7D%7D%3EFading%20in%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FFadeInView%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%0A%7D%0A"
         data-snack-platform="web"
         data-snack-preview="true"
         style="
