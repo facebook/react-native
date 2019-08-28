@@ -114,7 +114,7 @@ private:
   bool m_applicationScriptHasFailure = false;
 
   #ifdef WITH_FBSYSTRACE
-  std::atomic_uint_least32_t m_systraceCookie = ATOMIC_VAR_INIT();
+  std::atomic_uint_least32_t m_systraceCookie{};
   #endif
 };
 

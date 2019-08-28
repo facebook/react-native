@@ -181,7 +181,6 @@ void NativeToJsBridge::callFunction(
       #else
       (void)(systraceCookie);
       #endif
-      SystraceSection s("NativeToJsBridge::callFunction", "module", module, "method", method);
       // This is safe because we are running on the executor's thread: it won't
       // destruct until after it's been unregistered (which we check above) and
       // that will happen on this thread
