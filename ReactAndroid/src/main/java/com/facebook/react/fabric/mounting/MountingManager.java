@@ -247,6 +247,24 @@ public class MountingManager {
   }
 
   @UiThread
+  public void updatePadding(int reactTag, int left, int top, int right, int bottom) {
+    UiThreadUtil.assertOnUiThread();
+
+    ViewState viewState = getViewState(reactTag);
+    // Do not layout Root Views
+    if (viewState.mIsRoot) {
+      return;
+    }
+
+    View viewToUpdate = viewState.mView;
+    if (viewToUpdate == null) {
+      throw new IllegalStateException("Unable to find View for tag: " + reactTag);
+    }
+
+    viewToUpdate.setPadding(left, top, right, bottom);
+  }
+
+  @UiThread
   public void deleteView(int reactTag) {
     UiThreadUtil.assertOnUiThread();
     View view = getViewState(reactTag).mView;

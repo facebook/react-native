@@ -54,6 +54,7 @@ import com.facebook.react.fabric.mounting.mountitems.RemoveMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateEventEmitterMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateLayoutMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateLocalDataMountItem;
+import com.facebook.react.fabric.mounting.mountitems.UpdatePaddingMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateStateMountItem;
 import com.facebook.react.modules.core.ReactChoreographer;
@@ -283,6 +284,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private MountItem updateLayoutMountItem(
       int reactTag, int x, int y, int width, int height, int layoutDirection) {
     return new UpdateLayoutMountItem(reactTag, x, y, width, height, layoutDirection);
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private MountItem updatePaddingMountItem(int reactTag, int left, int top, int right, int bottom) {
+    return new UpdatePaddingMountItem(reactTag, left, top, right, bottom);
   }
 
   @DoNotStrip

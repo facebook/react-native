@@ -338,6 +338,34 @@ local_ref<JMountItem::javaobject> createUpdateLayoutMountItem(
   return nullptr;
 }
 
+local_ref<JMountItem::javaobject> createUpdatePaddingMountItem(
+  const jni::global_ref<jobject> &javaUIManager,
+  const ShadowViewMutation &mutation) {
+
+  auto oldChildShadowView = mutation.oldChildShadowView;
+  auto newChildShadowView = mutation.newChildShadowView;
+
+  if (oldChildShadowView.layoutMetrics.contentInsets == newChildShadowView.layoutMetrics.contentInsets) {
+    return nullptr;
+  }
+
+  static auto updateLayoutInstruction =
+    jni::findClassStatic(UIManagerJavaDescriptor)
+      ->getMethod<alias_ref<JMountItem>(jint, jint, jint, jint, jint)>(
+        "updatePaddingMountItem");
+
+  auto layoutMetrics = newChildShadowView.layoutMetrics;
+  auto pointScaleFactor = layoutMetrics.pointScaleFactor;
+  auto contentInsets = layoutMetrics.contentInsets;
+
+  int left = round(contentInsets.left * pointScaleFactor);
+  int top = round(contentInsets.top * pointScaleFactor);
+  int right = round(contentInsets.right * pointScaleFactor);
+  int bottom = round(contentInsets.bottom * pointScaleFactor);
+
+  return updateLayoutInstruction(javaUIManager, newChildShadowView.tag, left, top, right, bottom);
+}
+
 local_ref<JMountItem::javaobject> createInsertMountItem(
     const jni::global_ref<jobject> &javaUIManager,
     const ShadowViewMutation &mutation) {
@@ -559,6 +587,11 @@ void Binding::schedulerDidFinishTransaction(
           if (updateLayoutMountItem) {
             mountItems[position++] = updateLayoutMountItem;
           }
+
+          auto updatePaddingMountItem = createUpdatePaddingMountItem(localJavaUIManager, mutation);
+          if (updatePaddingMountItem) {
+            mountItems[position++] = updatePaddingMountItem;
+          }
         }
 
         if (mutation.oldChildShadowView.eventEmitter !=
@@ -601,6 +634,13 @@ void Binding::schedulerDidFinishTransaction(
               createUpdateLayoutMountItem(localJavaUIManager, mutation);
           if (updateLayoutMountItem) {
             mountItems[position++] = updateLayoutMountItem;
+          }
+
+          // Padding
+          auto updatePaddingMountItem =
+            createUpdatePaddingMountItem(localJavaUIManager, mutation);
+          if (updatePaddingMountItem) {
+            mountItems[position++] = updatePaddingMountItem;
           }
         }
 
