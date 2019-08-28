@@ -80,14 +80,30 @@
 </div>
 <p>Handle push notifications for your app, including permission handling and icon badge number.</p>
 <p>To get up and running, <a href="https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6">configure your notifications with Apple</a> and your server-side system.</p>
+<p>React Native version equal or higher than 0.60.0:</p>
+<ul>
+<li>Autolinking in 0.60.0 handles the linking for you!</li>
+</ul>
+<p>React Native versions lower than 0.60.0:</p>
 <p>Add the PushNotificationIOS library to your Podfile: ./ios/Podfile</p>
+<ul>
+<li><p>CocoaPods:</p>
+<ul>
+<li><p>Add the PushNotificationIOS library to your Podfile: ./ios/Podfile</p>
 <pre><code class="hljs">...
 target <span class="hljs-string">'myAwesomeApp'</span> do
   # Pods for myAwesomeApp
 ...
   pod <span class="hljs-string">'React-RCTPushNotification'</span>, :path =&gt; <span class="hljs-string">'../node_modules/react-native/Libraries/PushNotificationIOS'</span>
 ...
-</code></pre>
+</code></pre></li>
+</ul></li>
+<li><p><a href="/react-native/docs/next/linking-libraries-ios#manual-linking">Manually link</a> the PushNotificationIOS library:</p>
+<ul>
+<li>Add the following to your Project: <code>node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj</code></li>
+<li>Add the following to <code>Link Binary With Libraries</code>: <code>libRCTPushNotification.a</code></li>
+</ul></li>
+</ul>
 <p>Finally, to enable support for <code>notification</code> and <code>register</code> events you need to augment your AppDelegate.</p>
 <p>At the top of your <code>AppDelegate.m</code>:</p>
 <p><code>#import &lt;React/RCTPushNotificationManager.h&gt;</code></p>
