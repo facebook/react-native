@@ -74,9 +74,11 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
           }}
           placeholder="Search..."
           placeholderTextColor={
-            Platform.OS === 'macos'
-              ? {semantic: 'placeholderTextColor'}
-              : undefined /*TODO(macOS ISS#2323203)*/
+            Platform.select({
+              macos: {semantic: 'placeholderTextColor'},
+              ios: {semantic: 'placeholderTextColor'},
+              default: undefined,
+            }) /*TODO(macOS ISS#2323203)*/
           }
           underlineColorAndroid="transparent"
           style={styles.searchTextInput}
@@ -95,6 +97,9 @@ const styles = StyleSheet.create({
       macos: {
         backgroundColor: {semantic: 'windowBackgroundColor'},
       },
+      ios: {
+        backgroundColor: {semantic: 'systemGroupedBackgroundColor'},
+      },
       default: {
         // ]TODO(macOS ISS#2323203)
         backgroundColor: '#eeeeee',
@@ -108,6 +113,11 @@ const styles = StyleSheet.create({
       macos: {
         color: {semantic: 'textColor'},
         backgroundColor: {semantic: 'textBackgroundColor'},
+        borderColor: {semantic: 'quaternaryLabelColor'},
+      },
+      ios: {
+        color: {semantic: 'labelColor'},
+        backgroundColor: {semantic: 'secondarySystemGroupedBackgroundColor'},
         borderColor: {semantic: 'quaternaryLabelColor'},
       },
       default: {

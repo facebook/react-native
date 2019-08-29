@@ -33,6 +33,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'DarkModeExample',
+    module: require('./DarkModeExample'),
+    supportsTVOS: false,
+  },
+  {
     key: 'DatePickerMacOSExample',
     module: require('./DatePickerMacOSExample'),
     supportsTVOS: false,

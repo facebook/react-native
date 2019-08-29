@@ -19,7 +19,7 @@
     self.indeterminate = NO;
 
     // Default track color from NSProgressIndicator.
-    self.trackTintColor = [UIColor colorWithRed: 237/255.0 green:237/255.0 blue:237/255.0 alpha:1.0];
+    self.trackTintColor = [RCTUIColor colorWithRed: 237/255.0 green:237/255.0 blue:237/255.0 alpha:1.0];
   }
   return self;
 }

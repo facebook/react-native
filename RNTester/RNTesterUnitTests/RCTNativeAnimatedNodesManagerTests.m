@@ -17,7 +17,7 @@
 
 static const NSTimeInterval FRAME_LENGTH = 1.0 / 60.0;
 
-@interface RCTFakeDisplayLink : CADisplayLink
+@interface RCTFakeDisplayLink : RCTPlatformDisplayLink // TODO(macOS ISS#2323203)
 
 @end
 

@@ -12,7 +12,7 @@
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 @property (nonatomic, assign) UIActivityIndicatorViewStyle activityIndicatorViewStyle;
 @property (nonatomic, assign) BOOL hidesWhenStopped;
-@property (nullable, readwrite, nonatomic, strong) UIColor *color;
+@property (nullable, readwrite, nonatomic, strong) RCTUIColor *color; // TODO(OSS Candidate ISS#2710739)
 @property (nonatomic, readonly, getter=isAnimating) BOOL animating;
 - (void)startAnimating;
 - (void)stopAnimating;

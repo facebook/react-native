@@ -15,7 +15,7 @@
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (instancetype)initWithDisplayLink:(CADisplayLink *)displayLink
+- (instancetype)initWithDisplayLink:(RCTPlatformDisplayLink *)displayLink // TODO(macOS ISS#2323203)
 {
   if ((self = [super init])) {
     _timestamp = displayLink.timestamp;

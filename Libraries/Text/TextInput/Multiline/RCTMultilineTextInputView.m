@@ -27,8 +27,8 @@
 
     _backedTextInputView = [[RCTUITextView alloc] initWithFrame:self.bounds];
     _backedTextInputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    _backedTextInputView.backgroundColor = [UIColor clearColor];
-    _backedTextInputView.textColor = [UIColor blackColor];
+    _backedTextInputView.backgroundColor = [RCTUIColor clearColor]; // TODO(OSS Candidate ISS#2710739)
+    _backedTextInputView.textColor = [RCTUIColor blackColor]; // TODO(OSS Candidate ISS#2710739)
     // This line actually removes 5pt (default value) left and right padding in UITextView.
     _backedTextInputView.textContainer.lineFragmentPadding = 0;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
@@ -38,7 +38,7 @@
     _backedTextInputView.scrollEnabled = YES;
 #else // [TODO(macOS ISS#2323203)
     _scrollView = [[RCTUIScrollView alloc] initWithFrame:self.bounds]; // TODO(macOS ISS#3536887)
-    _scrollView.backgroundColor = [UIColor clearColor];
+    _scrollView.backgroundColor = [RCTUIColor clearColor];
     _scrollView.drawsBackground = NO;
     _scrollView.borderType = NSNoBorder;
     _scrollView.hasHorizontalRuler = NO;

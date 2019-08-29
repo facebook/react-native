@@ -107,8 +107,8 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS I
 
 @implementation RCTView
 {
-  UIColor *_backgroundColor;
-  #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  RCTUIColor *_backgroundColor; // TODO(OSS Candidate ISS#2710739)
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   NSTrackingArea *_trackingArea;
   BOOL _hasMouseOver;
 #endif // ]TODO(macOS ISS#2323203)
@@ -710,16 +710,30 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   }
   return YES;
 }
+
+#if !TARGET_OS_OSX
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+  [super traitCollectionDidChange: previousTraitCollection];
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+  if (@available(iOS 13.0, *)) {
+    if ([self.traitCollection hasDifferentColorAppearanceComparedToTraitCollection:previousTraitCollection]) {
+      [self.layer setNeedsDisplay];
+    }
+  }
+#endif
+}
+#endif // !TARGET_OS_OSX
+
 // ]TODO(OSS Candidate ISS#2710739)
 
 #pragma mark - Borders
 
-- (UIColor *)backgroundColor
+- (RCTUIColor *)backgroundColor // TODO(OSS Candidate ISS#2710739)
 {
   return _backgroundColor;
 }
 
-- (void)setBackgroundColor:(UIColor *)backgroundColor
+- (void)setBackgroundColor:(RCTUIColor *)backgroundColor // TODO(OSS Candidate ISS#2710739)
 {
   if ([_backgroundColor isEqual:backgroundColor]) {
     return;
@@ -887,6 +901,16 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
   // solve this, we'll need to add a container view inside the main view to
   // correctly clip the subviews.
 
+#if !TARGET_OS_OSX
+  id savedTraitCollection = nil;
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+  if (@available(iOS 13.0, *)) {
+    savedTraitCollection = [UITraitCollection currentTraitCollection];
+    [UITraitCollection setCurrentTraitCollection:[self traitCollection]];
+  }
+#endif
+#endif
+
   if (useIOSBorderRendering) {
     layer.cornerRadius = cornerRadii.topLeft;
     layer.borderColor = borderColors.left;
@@ -897,6 +921,14 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
     layer.mask = nil;
     return;
   }
+
+#if !TARGET_OS_OSX
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+  if (@available(iOS 13.0, *)) {
+    [UITraitCollection setCurrentTraitCollection:savedTraitCollection];
+  }
+#endif 
+#endif
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   CGFloat scaleFactor = self.window.backingScaleFactor;

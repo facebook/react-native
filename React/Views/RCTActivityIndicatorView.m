@@ -66,7 +66,7 @@
   }
 }
 
-- (void)setColor: (UIColor*)color
+- (void)setColor: (RCTUIColor*)color
 {
   if (_color != color) {
     _color = color;

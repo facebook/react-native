@@ -11,6 +11,7 @@
 
 #if !TARGET_OS_OSX
 #import <QuartzCore/CADisplayLink.h>
+#define RCTPlatformDisplayLink CADisplayLink
 #else
 
 #import <Foundation/Foundation.h>
@@ -34,8 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (getter=isPaused, nonatomic) BOOL paused;
 
 @end
-
-@compatibility_alias CADisplayLink RCTPlatformDisplayLink;
 
 NS_ASSUME_NONNULL_END
 
