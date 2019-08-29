@@ -175,9 +175,6 @@
 
 - (void)configureLayer
 {
-// [TODO(OSS Candidate ISS#2710739): for macOS and iOS dark mode
-  [super drawRect:rect];
-// ]TODO(OSS Candidate ISS#2710739)
   if (!_textStorage) {
     return;
   }
