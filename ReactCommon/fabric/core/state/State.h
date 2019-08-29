@@ -49,6 +49,14 @@ class State {
    * Must be used by `ShadowNode` *only*.
    */
   State::Shared getCommitedState() const;
+
+  /*
+   * Indicates that the state was committed once and then was replaced by a
+   * newer one.
+   * To be used by `StateCoordinator` only.
+   * Protected by mutex inside `StateCoordinator`.
+   */
+  mutable bool isObsolete_{false};
 };
 
 } // namespace react
