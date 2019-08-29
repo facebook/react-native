@@ -200,7 +200,7 @@
       RCTTextTiledLayer *layer = [RCTTextTiledLayer layer];
       layer.delegate = _renderer;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-      layer.contentsScale = RCTScreenScaleRCTScreenScale();
+      layer.contentsScale = RCTScreenScale();
 #else
       layer.contentsScale = 1.0;
 #endif // TODO(macOS ISS#2323203)
