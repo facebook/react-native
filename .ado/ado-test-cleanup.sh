@@ -20,6 +20,8 @@ EOF
 
 # clear packager cache
 rm -fr $TMPDIR/react-*
+rm -rf /tmp/metro-bundler-cache-*;
+rm -rf /tmp/haste-map-react-native-packager-*;
 
 # clear watchman state
 rm -rf /usr/local/var/run/watchman/*

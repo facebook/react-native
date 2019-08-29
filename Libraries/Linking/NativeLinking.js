@@ -12,7 +12,7 @@
 
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
-import Platform from 'Platform';
+import Platform from '../Utilities/Platform';
 
 export interface Spec extends TurboModule {
   // Common interface
