@@ -28,7 +28,7 @@ target 'HelloWorld' do
   pod 'React-jsinspector', :path => '../node_modules/react-native/ReactCommon/jsinspector'
   pod 'ReactCommon/jscallinvoker', :path => "../node_modules/react-native/ReactCommon"
   pod 'ReactCommon/turbomodule/core', :path => "../node_modules/react-native/ReactCommon"
-  pod 'yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
+  pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
 
   pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
