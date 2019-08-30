@@ -80,5 +80,4 @@ RNTester/build
 # CocoaPods
 /template/ios/Pods/
 /template/ios/Podfile.lock
-RNTester/Pods/Local Podspecs
-RNTester/Pods/Target Support Files
+/RNTester/Pods/
