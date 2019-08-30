@@ -13,7 +13,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 
-public interface RCTSegmentedControlManagerInterface<T extends View> {
+public interface SegmentedControlManagerInterface<T extends View> {
   void setValues(T view, @Nullable ReadableArray value);
   void setSelectedIndex(T view, int value);
   void setEnabled(T view, boolean value);

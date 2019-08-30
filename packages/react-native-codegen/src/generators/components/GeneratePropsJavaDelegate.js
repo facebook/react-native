@@ -16,7 +16,12 @@ import type {
   PropTypeShape,
   SchemaType,
 } from '../../CodegenSchema';
-const {getImports, toSafeJavaString} = require('./JavaHelpers');
+const {
+  getImports,
+  toSafeJavaString,
+  getInterfaceJavaClassName,
+  getDelegateJavaClassName,
+} = require('./JavaHelpers');
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
@@ -254,8 +259,8 @@ module.exports = {
 
       return Object.keys(components).forEach(componentName => {
         const component = components[componentName];
-        const className = `${componentName}ManagerDelegate`;
-        const interfaceClassName = `${componentName}ManagerInterface`;
+        const className = getDelegateJavaClassName(componentName);
+        const interfaceClassName = getInterfaceJavaClassName(componentName);
         const fileName = `${className}.java`;
 
         const imports = getDelegateImports(component);

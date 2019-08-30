@@ -11,6 +11,6 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 
-public interface RCTSafeAreaViewManagerInterface<T extends View> {
-  void setEmulateUnlessSupported(T view, boolean value);
+public interface MaskedViewManagerInterface<T extends View> {
+  // No props
 }

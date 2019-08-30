@@ -10,8 +10,7 @@
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
-import androidx.annotation.Nullable;
 
-public interface RCTInputAccessoryViewManagerInterface<T extends View> {
-  void setBackgroundColor(T view, @Nullable Integer value);
+public interface SafeAreaViewManagerInterface<T extends View> {
+  void setEmulateUnlessSupported(T view, boolean value);
 }

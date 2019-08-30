@@ -16,8 +16,8 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
-public class RCTProgressViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & RCTProgressViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
-  public RCTProgressViewManagerDelegate(U viewManager) {
+public class ProgressViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ProgressViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public ProgressViewManagerDelegate(U viewManager) {
     super(viewManager);
   }
   @Override

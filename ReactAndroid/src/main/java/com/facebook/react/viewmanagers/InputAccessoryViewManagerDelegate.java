@@ -15,15 +15,15 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
-public class RCTSafeAreaViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & RCTSafeAreaViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
-  public RCTSafeAreaViewManagerDelegate(U viewManager) {
+public class InputAccessoryViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & InputAccessoryViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public InputAccessoryViewManagerDelegate(U viewManager) {
     super(viewManager);
   }
   @Override
   public void setProperty(T view, String propName, @Nullable Object value) {
     switch (propName) {
-      case "emulateUnlessSupported":
-        mViewManager.setEmulateUnlessSupported(view, value == null ? false : (boolean) value);
+      case "backgroundColor":
+        mViewManager.setBackgroundColor(view, value == null ? null : ((Double) value).intValue());
         break;
       default:
         super.setProperty(view, propName, value);

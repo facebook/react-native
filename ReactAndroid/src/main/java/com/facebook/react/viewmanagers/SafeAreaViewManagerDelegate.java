@@ -15,12 +15,18 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
-public class RCTMaskedViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & RCTMaskedViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
-  public RCTMaskedViewManagerDelegate(U viewManager) {
+public class SafeAreaViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & SafeAreaViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public SafeAreaViewManagerDelegate(U viewManager) {
     super(viewManager);
   }
   @Override
   public void setProperty(T view, String propName, @Nullable Object value) {
-    super.setProperty(view, propName, value);
+    switch (propName) {
+      case "emulateUnlessSupported":
+        mViewManager.setEmulateUnlessSupported(view, value == null ? false : (boolean) value);
+        break;
+      default:
+        super.setProperty(view, propName, value);
+    }
   }
 }

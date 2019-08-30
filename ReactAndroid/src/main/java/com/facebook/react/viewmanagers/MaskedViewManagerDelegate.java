@@ -15,18 +15,12 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
-public class RCTInputAccessoryViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & RCTInputAccessoryViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
-  public RCTInputAccessoryViewManagerDelegate(U viewManager) {
+public class MaskedViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & MaskedViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public MaskedViewManagerDelegate(U viewManager) {
     super(viewManager);
   }
   @Override
   public void setProperty(T view, String propName, @Nullable Object value) {
-    switch (propName) {
-      case "backgroundColor":
-        mViewManager.setBackgroundColor(view, value == null ? null : ((Double) value).intValue());
-        break;
-      default:
-        super.setProperty(view, propName, value);
-    }
+    super.setProperty(view, propName, value);
   }
 }

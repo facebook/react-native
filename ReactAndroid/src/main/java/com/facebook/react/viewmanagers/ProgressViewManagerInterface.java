@@ -13,7 +13,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 
-public interface RCTProgressViewManagerInterface<T extends View> {
+public interface ProgressViewManagerInterface<T extends View> {
   void setProgressViewStyle(T view, @Nullable String value);
   void setProgress(T view, float value);
   void setProgressTintColor(T view, @Nullable Integer value);

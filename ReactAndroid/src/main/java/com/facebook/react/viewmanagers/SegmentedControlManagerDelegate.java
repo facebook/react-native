@@ -16,8 +16,8 @@ import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
-public class RCTSegmentedControlManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & RCTSegmentedControlManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
-  public RCTSegmentedControlManagerDelegate(U viewManager) {
+public class SegmentedControlManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & SegmentedControlManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+  public SegmentedControlManagerDelegate(U viewManager) {
     super(viewManager);
   }
   @Override
