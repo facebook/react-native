@@ -16,7 +16,7 @@ end
 
 Pod::Spec.new do |spec|
   spec.name = 'Yoga'
-  spec.version = "#{version}.React"
+  spec.version = '1.14.0'
   spec.license =  { :type => 'MIT' }
   spec.homepage = 'https://yogalayout.com'
   spec.documentation_url = 'https://yogalayout.com/docs/'
