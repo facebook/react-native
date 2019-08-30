@@ -64,7 +64,21 @@ if (Platform.OS === 'android') {
 }
 
 export type ScrollResponderType = {
-  ...ScrollView,
+  // We'd like to do ...ScrollView here, however Flow doesn't seem
+  // to see the imperative methods of ScrollView that way. Workaround the
+  // issue by specifying them manually.
+  getScrollableNode: $PropertyType<ScrollView, 'getScrollableNode'>,
+  getInnerViewNode: $PropertyType<ScrollView, 'getInnerViewNode'>,
+  getNativeScrollRef: $PropertyType<ScrollView, 'getNativeScrollRef'>,
+
+  setNativeProps: $PropertyType<ScrollView, 'setNativeProps'>,
+  scrollTo: $PropertyType<ScrollView, 'scrollTo'>,
+  scrollWithoutAnimationTo: $PropertyType<
+    ScrollView,
+    'scrollWithoutAnimationTo',
+  >,
+  flashScrollIndicators: $PropertyType<ScrollView, 'flashScrollIndicators'>,
+
   ...typeof ScrollResponder.Mixin,
 };
 

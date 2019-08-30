@@ -172,7 +172,9 @@ PODS:
   - React-CoreModules (1000.0.0):
     - FBReactNativeSpec (= 1000.0.0)
     - Folly (= 2018.10.22.00)
+    - RCTTypeSafety (= 1000.0.0)
     - React-Core/CoreModulesHeaders (= 1000.0.0)
+    - React-RCTImage (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-cxxreact (1000.0.0):
     - boost-for-react-native (= 1.63.0)
@@ -356,7 +358,7 @@ SPEC CHECKSUMS:
   React: 28a654b69575941571c073a656bc06795825e7f7
   React-ART: a5da06a892342d03896e0db45a7072525981f63c
   React-Core: 47b8ab211d9325292811e62ee23c54b464853111
-  React-CoreModules: 38d8cc34497674ae3d411e644a9b17ad75ef3f74
+  React-CoreModules: 96b2f1e0b84493e6c1b7f3bb21357f24fdcfce2f
   React-cxxreact: 7c4242192149ce0205b53efaa03e3bf86ba4337c
   React-jsi: 98d1f9d8a79d2720ba6a44c2d928a77f315b7e4f
   React-jsiexecutor: c0ab8c80a6e88380d63f583690a50d4a723b47b5
