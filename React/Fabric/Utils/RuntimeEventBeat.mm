@@ -10,7 +10,8 @@
 namespace facebook {
 namespace react {
 
-RuntimeEventBeat::RuntimeEventBeat(RuntimeExecutor runtimeExecutor) : runtimeExecutor_(std::move(runtimeExecutor))
+RuntimeEventBeat::RuntimeEventBeat(EventBeat::SharedOwnerBox const &ownerBox, RuntimeExecutor runtimeExecutor)
+    : EventBeat(ownerBox), runtimeExecutor_(std::move(runtimeExecutor))
 {
   mainRunLoopObserver_ = CFRunLoopObserverCreateWithHandler(
       NULL /* allocator */,
@@ -41,7 +42,12 @@ void RuntimeEventBeat::induce() const
   }
 
   isBusy_ = true;
-  runtimeExecutor_([=](jsi::Runtime &runtime) mutable {
+  runtimeExecutor_([this, ownerBox = ownerBox_](jsi::Runtime &runtime) mutable {
+    auto owner = ownerBox->owner.lock();
+    if (!owner) {
+      return;
+    }
+
     this->beat(runtime);
     isBusy_ = false;
   });

@@ -28,6 +28,7 @@ Scheduler::Scheduler(
           ->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
 
   auto uiManager = std::make_shared<UIManager>();
+  auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
 
   auto eventPipe = [=](jsi::Runtime &runtime,
                        const EventTarget *eventTarget,
@@ -45,19 +46,20 @@ Scheduler::Scheduler(
         stateTarget.getShadowNode().shared_from_this(), data);
   };
 
-  auto eventDispatcher = std::make_shared<EventDispatcher>(
+  eventDispatcher_ = std::make_shared<EventDispatcher>(
       eventPipe,
       statePipe,
       schedulerToolbox.synchronousEventBeatFactory,
-      schedulerToolbox.asynchronousEventBeatFactory);
+      schedulerToolbox.asynchronousEventBeatFactory,
+      eventOwnerBox);
 
-  eventDispatcher_ = eventDispatcher;
+  eventOwnerBox->owner = eventDispatcher_;
 
   componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
-      eventDispatcher, schedulerToolbox.contextContainer);
+      eventDispatcher_, schedulerToolbox.contextContainer);
 
   rootComponentDescriptor_ =
-      std::make_unique<const RootComponentDescriptor>(eventDispatcher);
+      std::make_unique<const RootComponentDescriptor>(eventDispatcher_);
 
   uiManager->setDelegate(this);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
@@ -73,7 +75,6 @@ Scheduler::Scheduler(
           componentDescriptorRegistry_));
 
   delegate_ = delegate;
-  eventDispatcher_ = eventDispatcher;
   uiManager_ = uiManager;
 }
 

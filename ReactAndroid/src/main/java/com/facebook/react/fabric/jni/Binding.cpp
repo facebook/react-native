@@ -206,16 +206,16 @@ void Binding::installFabricUIManager(
 
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
-  EventBeatFactory synchronousBeatFactory =
-      [eventBeatManager, runtimeExecutor, localJavaUIManager]() {
+  EventBeat::Factory synchronousBeatFactory =
+      [eventBeatManager, runtimeExecutor, localJavaUIManager](EventBeat::SharedOwnerBox const &ownerBox) {
         return std::make_unique<AsyncEventBeat>(
-            eventBeatManager, runtimeExecutor, localJavaUIManager);
+            ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
       };
 
-  EventBeatFactory asynchronousBeatFactory =
-      [eventBeatManager, runtimeExecutor, localJavaUIManager]() {
+  EventBeat::Factory asynchronousBeatFactory =
+      [eventBeatManager, runtimeExecutor, localJavaUIManager](EventBeat::SharedOwnerBox const &ownerBox) {
         return std::make_unique<AsyncEventBeat>(
-            eventBeatManager, runtimeExecutor, localJavaUIManager);
+            ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
       };
 
   std::shared_ptr<const ReactNativeConfig> config =

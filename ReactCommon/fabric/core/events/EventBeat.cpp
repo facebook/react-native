@@ -10,6 +10,8 @@
 namespace facebook {
 namespace react {
 
+EventBeat::EventBeat(SharedOwnerBox const &ownerBox) : ownerBox_(ownerBox) {}
+
 void EventBeat::request() const {
   isRequested_ = true;
 }
