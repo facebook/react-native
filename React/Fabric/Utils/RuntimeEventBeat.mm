@@ -40,29 +40,10 @@ void RuntimeEventBeat::induce() const
     return;
   }
 
-#ifndef NDEBUG
-  // We do a trick here.
-  // If `wasExecuted` was destroyed before set to `true`,
-  // it means that the execution block was deallocated not being executed.
-  // This indicates that `messageQueueThread_` is being deallocated.
-  // This trick is quite expensive due to deallocation and messing with atomic
-  // counters. Seems we need this only for making hot-reloading mechanism
-  // thread-safe. Hence, let's leave it to be DEBUG-only for now.
-  auto wasExecuted = std::shared_ptr<bool>(new bool{false}, [this](bool *wasExecuted) {
-    if (!*wasExecuted && failCallback_) {
-      failCallback_();
-    }
-    delete wasExecuted;
-  });
-#endif
-
   isBusy_ = true;
   runtimeExecutor_([=](jsi::Runtime &runtime) mutable {
     this->beat(runtime);
     isBusy_ = false;
-#ifndef NDEBUG
-    *wasExecuted = true;
-#endif
   });
 }
 

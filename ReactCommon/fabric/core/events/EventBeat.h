@@ -24,7 +24,6 @@ class EventBeat {
   virtual ~EventBeat() = default;
 
   using BeatCallback = std::function<void(jsi::Runtime &runtime)>;
-  using FailCallback = std::function<void()>;
 
   /*
    * Communicates to the Beat that a consumer is waiting for the coming beat.
@@ -51,14 +50,6 @@ class EventBeat {
   void setBeatCallback(const BeatCallback &beatCallback);
 
   /*
-   * Sets the fail callback function.
-   * Called in case if the beat cannot be performed anymore because of
-   * some external circumstances (e.g. execution thread is beling destructed).
-   * The callback can be called on any thread.
-   */
-  void setFailCallback(const FailCallback &failCallback);
-
-  /*
    * Should be used by sublasses to send a beat.
    * Receiver might ignore the call if a beat was not requested.
    */
@@ -66,7 +57,6 @@ class EventBeat {
 
  protected:
   BeatCallback beatCallback_;
-  FailCallback failCallback_;
   mutable std::atomic<bool> isRequested_{false};
 };
 
