@@ -19,7 +19,6 @@ class UIManagerBinding;
 
 class UIManager {
  public:
-  void setShadowTreeRegistry(ShadowTreeRegistry *shadowTreeRegistry);
 
   void setComponentDescriptorRegistry(
       const SharedComponentDescriptorRegistry &componentDescriptorRegistry);
@@ -98,10 +97,12 @@ class UIManager {
       std::string const &commandName,
       folly::dynamic const args) const;
 
-  ShadowTreeRegistry *shadowTreeRegistry_;
+  ShadowTreeRegistry const &getShadowTreeRegistry() const;
+
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
   UIManagerBinding *uiManagerBinding_;
+  ShadowTreeRegistry shadowTreeRegistry_{};
 };
 
 } // namespace react

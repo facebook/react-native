@@ -60,7 +60,6 @@ Scheduler::Scheduler(
       std::make_unique<const RootComponentDescriptor>(eventDispatcher);
 
   uiManager->setDelegate(this);
-  uiManager->setShadowTreeRegistry(&shadowTreeRegistry_);
   uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
@@ -94,9 +93,10 @@ void Scheduler::startSurface(
       surfaceId, layoutConstraints, layoutContext, *rootComponentDescriptor_);
   shadowTree->setDelegate(this);
 
-  shadowTreeRegistry_.add(std::move(shadowTree));
-
   auto uiManager = uiManager_;
+
+  uiManager->getShadowTreeRegistry().add(std::move(shadowTree));
+
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     uiManager->visitBinding([&](UIManagerBinding const &uiManagerBinding) {
       uiManagerBinding.startSurface(
@@ -122,9 +122,10 @@ void Scheduler::renderTemplateToSurface(
         nMR,
         reactNativeConfig_);
 
-    shadowTreeRegistry_.visit(surfaceId, [=](const ShadowTree &shadowTree) {
-      return shadowTree.tryCommit(
-          [&](const SharedRootShadowNode &oldRootShadowNode) {
+    uiManager_->getShadowTreeRegistry().visit(
+        surfaceId, [=](const ShadowTree &shadowTree) {
+          return shadowTree.tryCommit([&](const SharedRootShadowNode
+                                              &oldRootShadowNode) {
             return std::make_shared<RootShadowNode>(
                 *oldRootShadowNode,
                 ShadowNodeFragment{
@@ -139,7 +140,7 @@ void Scheduler::renderTemplateToSurface(
                         SharedShadowNodeList{tree}),
                 });
           });
-    });
+        });
   } catch (const std::exception &e) {
     LOG(ERROR) << "    >>>> EXCEPTION <<<  rendering uiTemplate in "
                << "Scheduler::renderTemplateToSurface: " << e.what();
@@ -149,10 +150,11 @@ void Scheduler::renderTemplateToSurface(
 void Scheduler::stopSurface(SurfaceId surfaceId) const {
   SystraceSection s("Scheduler::stopSurface");
 
-  shadowTreeRegistry_.visit(surfaceId, [](const ShadowTree &shadowTree) {
-    // As part of stopping the Surface, we have to commit an empty tree.
-    return shadowTree.tryCommit(
-        [&](const SharedRootShadowNode &oldRootShadowNode) {
+  uiManager_->getShadowTreeRegistry().visit(
+      surfaceId, [](const ShadowTree &shadowTree) {
+        // As part of stopping the Surface, we have to commit an empty tree.
+        return shadowTree.tryCommit([&](const SharedRootShadowNode
+                                            &oldRootShadowNode) {
           return std::make_shared<RootShadowNode>(
               *oldRootShadowNode,
               ShadowNodeFragment{
@@ -166,9 +168,9 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
                   ShadowNode::emptySharedShadowNodeSharedList(),
               });
         });
-  });
+      });
 
-  auto shadowTree = shadowTreeRegistry_.remove(surfaceId);
+  auto shadowTree = uiManager_->getShadowTreeRegistry().remove(surfaceId);
   shadowTree->setDelegate(nullptr);
 
   auto uiManager = uiManager_;
@@ -186,15 +188,17 @@ Size Scheduler::measureSurface(
   SystraceSection s("Scheduler::measureSurface");
 
   Size size;
-  shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.tryCommit([&](const SharedRootShadowNode &oldRootShadowNode) {
-      auto rootShadowNode =
-          oldRootShadowNode->clone(layoutConstraints, layoutContext);
-      rootShadowNode->layout();
-      size = rootShadowNode->getLayoutMetrics().frame.size;
-      return nullptr;
-    });
-  });
+  uiManager_->getShadowTreeRegistry().visit(
+      surfaceId, [&](const ShadowTree &shadowTree) {
+        shadowTree.tryCommit(
+            [&](const SharedRootShadowNode &oldRootShadowNode) {
+              auto rootShadowNode =
+                  oldRootShadowNode->clone(layoutConstraints, layoutContext);
+              rootShadowNode->layout();
+              size = rootShadowNode->getLayoutMetrics().frame.size;
+              return nullptr;
+            });
+      });
   return size;
 }
 
@@ -204,11 +208,12 @@ void Scheduler::constraintSurfaceLayout(
     const LayoutContext &layoutContext) const {
   SystraceSection s("Scheduler::constraintSurfaceLayout");
 
-  shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
-      return oldRootShadowNode->clone(layoutConstraints, layoutContext);
-    });
-  });
+  uiManager_->getShadowTreeRegistry().visit(
+      surfaceId, [&](const ShadowTree &shadowTree) {
+        shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
+          return oldRootShadowNode->clone(layoutConstraints, layoutContext);
+        });
+      });
 }
 
 const ComponentDescriptor &Scheduler::getComponentDescriptor(
@@ -245,20 +250,21 @@ void Scheduler::uiManagerDidFinishTransaction(
     const SharedShadowNodeUnsharedList &rootChildNodes) {
   SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
-  shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
-      return std::make_shared<RootShadowNode>(
-          *oldRootShadowNode,
-          ShadowNodeFragment{
-              /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-              /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
-              /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-              /* .eventEmitter = */
-              ShadowNodeFragment::eventEmitterPlaceholder(),
-              /* .children = */ rootChildNodes,
-          });
-    });
-  });
+  uiManager_->getShadowTreeRegistry().visit(
+      surfaceId, [&](const ShadowTree &shadowTree) {
+        shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
+          return std::make_shared<RootShadowNode>(
+              *oldRootShadowNode,
+              ShadowNodeFragment{
+                  /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                  /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                  /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                  /* .eventEmitter = */
+                  ShadowNodeFragment::eventEmitterPlaceholder(),
+                  /* .children = */ rootChildNodes,
+              });
+        });
+      });
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(

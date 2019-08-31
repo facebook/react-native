@@ -14,7 +14,6 @@
 #include <react/core/LayoutConstraints.h>
 #include <react/mounting/ShadowTree.h>
 #include <react/mounting/ShadowTreeDelegate.h>
-#include <react/mounting/ShadowTreeRegistry.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/SchedulerDelegate.h>
