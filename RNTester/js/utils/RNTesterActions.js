@@ -5,10 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict
+ * @flow strict-local
  */
 
 'use strict';
+
+import type {RNTesterTheme} from '../components/RNTesterTheme';
 
 export type RNTesterBackAction = {
   type: 'RNTesterBackAction',
@@ -23,10 +25,16 @@ export type RNTesterExampleAction = {
   openExample: string,
 };
 
+export type RNTesterThemeAction = {
+  type: 'RNTesterThemeAction',
+  theme: RNTesterTheme,
+};
+
 export type RNTesterAction =
   | RNTesterBackAction
   | RNTesterListAction
-  | RNTesterExampleAction;
+  | RNTesterExampleAction
+  | RNTesterThemeAction;
 
 function Back(): RNTesterBackAction {
   return {
@@ -47,10 +55,18 @@ function ExampleAction(openExample: string): RNTesterExampleAction {
   };
 }
 
+function ThemeAction(theme: RNTesterTheme): RNTesterThemeAction {
+  return {
+    type: 'RNTesterThemeAction',
+    theme,
+  };
+}
+
 const RNTesterActions = {
   Back,
   ExampleList,
   ExampleAction,
+  ThemeAction,
 };
 
 module.exports = RNTesterActions;
