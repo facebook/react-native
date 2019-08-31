@@ -18,6 +18,7 @@
 
 static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
   {"AccessibilityManager", RCTAccessibilityManagerCls},
+{"Appearance", RCTAppearanceCls},
 {"DeviceInfo", RCTDeviceInfoCls},
 {"ExceptionsManager", RCTExceptionsManagerCls},
 {"ImageLoader", RCTImageLoaderCls},

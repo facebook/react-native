@@ -30,6 +30,7 @@ Class RCTCoreModulesClassProvider(const char *name);
 
 // Lookup functions
 Class RCTAccessibilityManagerCls(void);
+Class RCTAppearanceCls(void);
 Class RCTDeviceInfoCls(void);
 Class RCTExceptionsManagerCls(void);
 Class RCTImageLoaderCls(void);

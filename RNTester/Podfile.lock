@@ -248,7 +248,7 @@ PODS:
     - React-jsi (= 1000.0.0)
     - ReactCommon/jscallinvoker (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
-  - Yoga (1000.0.0.React)
+  - Yoga (1.14.0)
 
 DEPENDENCIES:
   - DoubleConversion (from `../third-party-podspecs/DoubleConversion.podspec`)
@@ -375,8 +375,8 @@ SPEC CHECKSUMS:
   React-RCTText: 9078167d3bc011162326f2d8ef4dd580ec1eca17
   React-RCTVibration: 63c20d89204937ff8c7bbc1e712383347e6fbd90
   ReactCommon: 63d1a6355d5810a21a61efda9ac93804571a1b8b
-  Yoga: d2044f32d047e7f5a36b6894347569f069c0f9b7
+  Yoga: 0abc4039ca4c0de783ab88c0ee21273583cbc2af
 
 PODFILE CHECKSUM: 060903e270072f1e192b064848e6c34528af1c87
 
-COCOAPODS: 1.7.2
+COCOAPODS: 1.7.1
