@@ -18,8 +18,6 @@
 #include <react/debug/SystraceSection.h>
 #include <yoga/Yoga.h>
 
-#include <Glog/logging.h>
-
 namespace facebook {
 namespace react {
 
