@@ -32,6 +32,11 @@ function ReactNativeArchitectureIndicator(props: {|
       parts.push('TM');
     }
   }
+
+  if (parts.length === 0) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>{parts.join('+')}</Text>
