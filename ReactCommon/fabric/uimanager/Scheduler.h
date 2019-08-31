@@ -110,6 +110,7 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManagerBinding> uiManagerBinding_;
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
+  EventDispatcher::Shared eventDispatcher_;
 };
 
 } // namespace react

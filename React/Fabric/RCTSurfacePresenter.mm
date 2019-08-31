@@ -195,7 +195,7 @@ using namespace facebook::react;
   }
 
   auto componentRegistryFactory = [factory = wrapManagedObject(self.componentViewFactory)](
-                                      EventDispatcher::Shared const &eventDispatcher,
+                                      EventDispatcher::Weak const &eventDispatcher,
                                       ContextContainer::Shared const &contextContainer) {
     return [(RCTComponentViewFactory *)unwrapManagedObject(factory)
         createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];

@@ -72,6 +72,8 @@ Scheduler::Scheduler(
       "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE",
       std::weak_ptr<ComponentDescriptorRegistry const>(
           componentDescriptorRegistry_));
+
+  eventDispatcher_ = eventDispatcher;
 }
 
 Scheduler::~Scheduler() {
