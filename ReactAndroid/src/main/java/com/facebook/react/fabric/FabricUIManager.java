@@ -51,6 +51,7 @@ import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
 import com.facebook.react.fabric.mounting.mountitems.RemoveMountItem;
+import com.facebook.react.fabric.mounting.mountitems.SendAccessibilityEvent;
 import com.facebook.react.fabric.mounting.mountitems.UpdateEventEmitterMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateLayoutMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateLocalDataMountItem;
@@ -563,6 +564,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final int reactTag, final String commandId, @Nullable final ReadableArray commandArgs) {
     synchronized (mMountItemsLock) {
       mMountItems.add(new DispatchStringCommandMountItem(reactTag, commandId, commandArgs));
+    }
+  }
+
+  @Override
+  public void sendAccessibilityEvent(int reactTag, int eventType) {
+    synchronized (mMountItemsLock) {
+      mMountItems.add(new SendAccessibilityEvent(reactTag, eventType));
     }
   }
 
