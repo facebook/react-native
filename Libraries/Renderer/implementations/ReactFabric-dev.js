@@ -11118,6 +11118,11 @@ function renderWithHooks(
     do {
       didScheduleRenderPhaseUpdate = false;
       numberOfReRenders += 1;
+      {
+        // Even when hot reloading, allow dependencies to stabilize
+        // after first render to prevent infinite render phase updates.
+        ignorePreviousDependencies = false;
+      }
 
       // Start over from the beginning of the list
       nextCurrentHook = current !== null ? current.memoizedState : null;
