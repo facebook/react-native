@@ -20,7 +20,7 @@ class AndroidTextInputComponentDescriptor final
     : public ConcreteComponentDescriptor<AndroidTextInputShadowNode> {
  public:
   AndroidTextInputComponentDescriptor(
-      EventDispatcher::Shared eventDispatcher,
+      EventDispatcher::Weak eventDispatcher,
       const ContextContainer::Shared &contextContainer)
       : ConcreteComponentDescriptor<AndroidTextInputShadowNode>(
             eventDispatcher,
