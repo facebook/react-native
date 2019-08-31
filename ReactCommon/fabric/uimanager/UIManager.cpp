@@ -208,5 +208,15 @@ UIManagerDelegate *UIManager::getDelegate() {
   return delegate_;
 }
 
+void UIManager::visitBinding(
+    std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
+    const {
+  if (!uiManagerBinding_) {
+    return;
+  }
+
+  callback(*uiManagerBinding_);
+}
+
 } // namespace react
 } // namespace facebook

@@ -15,6 +15,8 @@
 namespace facebook {
 namespace react {
 
+class UIManagerBinding;
+
 class UIManager {
  public:
   void setShadowTreeRegistry(ShadowTreeRegistry *shadowTreeRegistry);
@@ -29,6 +31,16 @@ class UIManager {
    */
   void setDelegate(UIManagerDelegate *delegate);
   UIManagerDelegate *getDelegate();
+
+  /*
+   * Provides access to a UIManagerBindging.
+   * The `callback` methods will not be called if the internal pointer to
+   * `UIManagerBindging` is `nullptr`.
+   * The callback is called synchronously on the same thread.
+   */
+  void visitBinding(
+      std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
+      const;
 
  private:
   friend class UIManagerBinding;
@@ -89,6 +101,7 @@ class UIManager {
   ShadowTreeRegistry *shadowTreeRegistry_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
+  UIManagerBinding *uiManagerBinding_;
 };
 
 } // namespace react

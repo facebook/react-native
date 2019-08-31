@@ -27,20 +27,19 @@ Scheduler::Scheduler(
       schedulerToolbox.contextContainer
           ->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
 
-  auto uiManager = std::make_unique<UIManager>();
-  auto &uiManagerRef = *uiManager;
-  uiManagerBinding_ = std::make_shared<UIManagerBinding>(std::move(uiManager));
+  auto uiManager = std::make_shared<UIManager>();
 
-  auto eventPipe = [uiManagerBinding = uiManagerBinding_.get()](
-                       jsi::Runtime &runtime,
+  auto eventPipe = [=](jsi::Runtime &runtime,
                        const EventTarget *eventTarget,
                        const std::string &type,
                        const ValueFactory &payloadFactory) {
-    uiManagerBinding->dispatchEvent(runtime, eventTarget, type, payloadFactory);
+    uiManager->visitBinding([&](UIManagerBinding const &uiManagerBinding) {
+      uiManagerBinding.dispatchEvent(
+          runtime, eventTarget, type, payloadFactory);
+    });
   };
 
-  auto statePipe = [uiManager = &uiManagerRef](
-                       const StateData::Shared &data,
+  auto statePipe = [=](const StateData::Shared &data,
                        const StateTarget &stateTarget) {
     uiManager->updateState(
         stateTarget.getShadowNode().shared_from_this(), data);
@@ -52,20 +51,21 @@ Scheduler::Scheduler(
       schedulerToolbox.synchronousEventBeatFactory,
       schedulerToolbox.asynchronousEventBeatFactory);
 
+  eventDispatcher_ = eventDispatcher;
+
   componentDescriptorRegistry_ = schedulerToolbox.componentRegistryFactory(
       eventDispatcher, schedulerToolbox.contextContainer);
 
   rootComponentDescriptor_ =
       std::make_unique<const RootComponentDescriptor>(eventDispatcher);
 
-  delegate_ = delegate;
-
-  uiManagerRef.setDelegate(this);
-  uiManagerRef.setShadowTreeRegistry(&shadowTreeRegistry_);
-  uiManagerRef.setComponentDescriptorRegistry(componentDescriptorRegistry_);
+  uiManager->setDelegate(this);
+  uiManager->setShadowTreeRegistry(&shadowTreeRegistry_);
+  uiManager->setComponentDescriptorRegistry(componentDescriptorRegistry_);
 
   runtimeExecutor_([=](jsi::Runtime &runtime) {
-    UIManagerBinding::install(runtime, uiManagerBinding_);
+    auto uiManagerBinding = UIManagerBinding::createAndInstallIfNeeded(runtime);
+    uiManagerBinding->attach(uiManager);
   });
 
   schedulerToolbox.contextContainer->insert(
@@ -73,11 +73,13 @@ Scheduler::Scheduler(
       std::weak_ptr<ComponentDescriptorRegistry const>(
           componentDescriptorRegistry_));
 
+  delegate_ = delegate;
   eventDispatcher_ = eventDispatcher;
+  uiManager_ = uiManager;
 }
 
 Scheduler::~Scheduler() {
-  uiManagerBinding_->invalidate();
+  uiManager_->setDelegate(nullptr);
 }
 
 void Scheduler::startSurface(
@@ -94,9 +96,12 @@ void Scheduler::startSurface(
 
   shadowTreeRegistry_.add(std::move(shadowTree));
 
+  auto uiManager = uiManager_;
   runtimeExecutor_([=](jsi::Runtime &runtime) {
-    uiManagerBinding_->startSurface(
-        runtime, surfaceId, moduleName, initialProps);
+    uiManager->visitBinding([&](UIManagerBinding const &uiManagerBinding) {
+      uiManagerBinding.startSurface(
+          runtime, surfaceId, moduleName, initialProps);
+    });
   });
 }
 
@@ -166,8 +171,11 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
   auto shadowTree = shadowTreeRegistry_.remove(surfaceId);
   shadowTree->setDelegate(nullptr);
 
+  auto uiManager = uiManager_;
   runtimeExecutor_([=](jsi::Runtime &runtime) {
-    uiManagerBinding_->stopSurface(runtime, surfaceId);
+    uiManager->visitBinding([&](UIManagerBinding const &uiManagerBinding) {
+      uiManagerBinding.stopSurface(runtime, surfaceId);
+    });
   });
 }
 
