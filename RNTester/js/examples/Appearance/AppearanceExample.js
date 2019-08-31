@@ -11,9 +11,8 @@
 'use strict';
 
 import * as React from 'react';
-import {Appearance, Text, View} from 'react-native';
+import {Appearance, Text, useColorScheme, View} from 'react-native';
 import type {AppearancePreferences} from '../../../../Libraries/Utilities/NativeAppearance';
-
 import {RNTesterThemeContext, themes} from '../../components/RNTesterTheme';
 
 class ColorSchemeSubscription extends React.Component<
@@ -80,6 +79,23 @@ const ThemedText = props => (
 exports.title = 'Appearance';
 exports.description = 'Light and dark user interface examples.';
 exports.examples = [
+  {
+    title: 'useColorScheme hook',
+    render(): React.Node {
+      const AppearanceViaHook = () => {
+        const colorScheme = useColorScheme();
+        return (
+          <RNTesterThemeContext.Provider
+            value={colorScheme === 'dark' ? themes.dark : themes.light}>
+            <ThemedContainer>
+              <ThemedText>useColorScheme(): {colorScheme}</ThemedText>
+            </ThemedContainer>
+          </RNTesterThemeContext.Provider>
+        );
+      };
+      return <AppearanceViaHook />;
+    },
+  },
   {
     title: 'Non-component `getColorScheme` API',
     render(): React.Element<any> {

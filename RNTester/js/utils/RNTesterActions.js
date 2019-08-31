@@ -25,16 +25,10 @@ export type RNTesterExampleAction = {
   openExample: string,
 };
 
-export type RNTesterThemeAction = {
-  type: 'RNTesterThemeAction',
-  theme: RNTesterTheme,
-};
-
 export type RNTesterAction =
   | RNTesterBackAction
   | RNTesterListAction
-  | RNTesterExampleAction
-  | RNTesterThemeAction;
+  | RNTesterExampleAction;
 
 function Back(): RNTesterBackAction {
   return {
@@ -55,18 +49,10 @@ function ExampleAction(openExample: string): RNTesterExampleAction {
   };
 }
 
-function ThemeAction(theme: RNTesterTheme): RNTesterThemeAction {
-  return {
-    type: 'RNTesterThemeAction',
-    theme,
-  };
-}
-
 const RNTesterActions = {
   Back,
   ExampleList,
   ExampleAction,
-  ThemeAction,
 };
 
 module.exports = RNTesterActions;

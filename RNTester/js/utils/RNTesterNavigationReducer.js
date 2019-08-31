@@ -10,15 +10,10 @@
 
 'use strict';
 
-import {themes} from '../components/RNTesterTheme';
-import type {RNTesterTheme} from '../components/RNTesterTheme';
-
 const RNTesterList = require('./RNTesterList');
-import {Appearance} from 'react-native';
 
 export type RNTesterNavigationState = {
   openExample: ?string,
-  theme: RNTesterTheme,
 };
 
 function RNTesterNavigationReducer(
@@ -36,8 +31,6 @@ function RNTesterNavigationReducer(
     return {
       // A null openExample will cause the views to display the RNTester example list
       openExample: null,
-      theme:
-        Appearance.getColorScheme() === 'dark' ? themes.dark : themes.light,
     };
   }
 
@@ -48,16 +41,6 @@ function RNTesterNavigationReducer(
     if (ExampleModule) {
       return {
         openExample: action.openExample,
-        theme: state.theme,
-      };
-    }
-  }
-
-  if (action.type === 'RNTesterThemeAction') {
-    if (action.colorScheme) {
-      return {
-        openExample: state.openExample,
-        theme: action.colorScheme === 'dark' ? themes.dark : themes.light,
       };
     }
   }

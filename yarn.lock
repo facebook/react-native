@@ -7043,6 +7043,11 @@ urix@^0.1.0:
   resolved "https://registry.yarnpkg.com/urix/-/urix-0.1.0.tgz#da937f7a62e21fec1fd18d49b35c2935067a6c72"
   integrity sha1-2pN/emLiH+wf0Y1Js1wpNQZ6bHI=
 
+use-subscription@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/use-subscription/-/use-subscription-1.0.0.tgz#25ed2161f75e9f6bd8c5c4acfe6087bfebfbfef4"
+  integrity sha512-PkDL9KSMN01nJYfa5c8O7Qbs7lmpzirfRWhWfIQN053hbIj5s1o5L7hrTzCfCCO2FsN2bKrU7ciRxxRcinmxAA==
+
 use@^3.1.0:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/use/-/use-3.1.1.tgz#d50c8cac79a19fbc20f2911f56eb973f4e10070f"
