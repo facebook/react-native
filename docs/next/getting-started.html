@@ -71,8 +71,8 @@
               }
             });
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/getting-started.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">Getting Started</h1></header><article><div><span><p>This page will help you install and build your first React Native app. If you already have React Native installed, you can skip ahead to the <a href="/react-native/docs/next/tutorial">Tutorial</a>.</p>
-<p><strong>If you are new to mobile development</strong>, the easiest way to get started is with Expo CLI. Expo is a set of tools built around React Native and, while it has many <a href="https://expo.io/features">features</a>, the most relevant feature for us right now is that it can get you writing a React Native app within minutes. You will only need a recent version of Node.js and a phone or emulator. If you'd like to try out React Native directly in your web browser before installing any tools, you can try out <a href="https://snack.expo.io/">Snack</a>.</p>
-<p><strong>If you are already familiar with mobile development</strong>, you may want to use React Native CLI. It requires Xcode or Android Studio to get started. If you already have one of these tools installed, you should be able to get up and running within a few minutes. If they are not installed, you should expect to spend about an hour installing and configuring them.</p>
+<p><strong>If you are coming from a web background</strong>, the easiest way to get started with React Native is with Expo tools because they allow you to start a project without installing and configuring Xcode or Android Studio. Expo CLI sets up a development environment on your local machine and you can begin writing a React Native app within minutes. For instant development, you can use <a href="https://snack.expo.io/">Snack</a> to try React Native out directly in your web browser.</p>
+<p><strong>If you are familiar with native development</strong>, you will likely want to use React Native CLI. It requires Xcode or Android Studio to get started. If you already have one of these tools installed, you should be able to get up and running within a few minutes. If they are not installed, you should expect to spend about an hour installing and configuring them.</p>
 <div class="toggler">
   <ul role="tablist" id="toggle-guide">
     <li id="quickstart" class="button-quickstart" aria-selected="false" role="tab" tabindex="0" aria-controls="quickstarttab" onclick="displayTab('guide', 'quickstart')">
@@ -84,7 +84,7 @@
   </ul>
 </div>
 <p><block class="quickstart mac windows linux ios android" /></p>
-<p>Assuming that you have <a href="https://nodejs.org/en/download/">Node 10 LTS</a> or greater installed, you can use npm to install the Expo CLI command line utility:</p>
+<p>Assuming that you have <a href="https://nodejs.org/en/download/">Node 10+</a> installed, you can use npm to install the Expo CLI command line utility:</p>
 <pre><code class="hljs css language-sh">npm install -g expo-cli
 </code></pre>
 <p>Then run the following commands to create a new React Native project called &quot;AwesomeProject&quot;:</p>
@@ -119,7 +119,7 @@ npm start <span class="hljs-comment"># you can also use: expo start</span>
 <p>Expo CLI configures your project to use the most recent React Native version that is supported by the Expo client app. The Expo client app usually gains support for a given React Native version about a week after the React Native version is released as stable. You can check <a href="https://docs.expo.io/versions/latest/sdk/#sdk-version">this document</a> to find out what versions are supported.</p>
 <p>If you're integrating React Native into an existing project, you'll want to skip Expo CLI and go directly to setting up the native build environment. Select &quot;React Native CLI Quickstart&quot; above for instructions on configuring a native build environment for React Native.</p>
 <p><block class="native mac windows linux ios android" /></p>
-<p>Follow these instructions if you need to build native code in your project. For example, if you are integrating React Native into an existing application, or if you "ejected" from <a href="getting-started" onclick="displayTab('guide', 'quickstart')">Expo</a>, you'll need this section.</p>
+<p>Follow these instructions if you need to build native code in your project. For example, if you are integrating React Native into an existing application, or if you "ejected" from <a href="getting-started" onclick="displayTab('guide', 'quickstart')">Expo</a> or Create React Native App, you'll need this section.</p>
 <p>The instructions are a bit different depending on your development operating system, and whether you want to start developing for iOS or Android. If you want to develop for both iOS and Android, that's fine - you just have to pick one to start with, since the setup is a bit different.</p>
 <div class="toggler">
   <span>Development OS:</span>
