@@ -14,11 +14,24 @@
 #if !TARGET_OS_TV
 @implementation RCTConvert (UIStatusBar)
 
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+
 RCT_ENUM_CONVERTER(UIStatusBarStyle, (@{
-  @"default": @(UIStatusBarStyleDefault),
-  @"light-content": @(UIStatusBarStyleLightContent),
-  @"dark-content": @(UIStatusBarStyleDefault),
+    @"default": @(UIStatusBarStyleDefault),
+    @"light-content": @(UIStatusBarStyleLightContent),
+    @"dark-content": @available(iOS 13.0, *) ? @(UIStatusBarStyleDarkContent):@(UIStatusBarStyleDefault)
 }), UIStatusBarStyleDefault, integerValue);
+
+#else
+
+RCT_ENUM_CONVERTER(UIStatusBarStyle, (@{
+                                        @"default": @(UIStatusBarStyleDefault),
+                                        @"light-content": @(UIStatusBarStyleLightContent),
+                                        @"dark-content": @(UIStatusBarStyleDefault)
+                                        }), UIStatusBarStyleDefault, integerValue);
+
+#endif
 
 RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
   @"none": @(UIStatusBarAnimationNone),
