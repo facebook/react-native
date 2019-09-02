@@ -10,8 +10,6 @@
 // [TODO(macOS ISS#2323203)
 'use strict';
 
-const normalizeColor = require('normalizeColor');
-
 export type NativeOrDynamicColorType = {
   semantic?: string,
   dynamic?: {
@@ -27,6 +25,8 @@ function normalizeColorObject(
     // a macos semantic color
     return color;
   } else if ('dynamic' in color && color.dynamic !== undefined) {
+    const normalizeColor = require('normalizeColor');
+
     // a dynamic, appearance aware color
     const dynamic = color.dynamic;
     const dynamicColor: NativeOrDynamicColorType = {

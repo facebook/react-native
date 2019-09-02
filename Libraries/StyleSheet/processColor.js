@@ -11,7 +11,6 @@
 'use strict';
 
 const Platform = require('Platform');
-const processColorObject = require('processColorObject'); // TODO(macOS ISS#2323203)
 const normalizeColor = require('normalizeColor');
 import type {NativeOrDynamicColorType} from 'normalizeColorObject'; // TODO(macOS ISS#2323203)
 
@@ -29,6 +28,8 @@ function processColor(
   }
 
   if (typeof int32Color === 'object') {
+    const processColorObject = require('processColorObject'); // TODO(macOS ISS#2323203)
+
     const processedColorObj = processColorObject(int32Color);
 
     if (processedColorObj !== null) {

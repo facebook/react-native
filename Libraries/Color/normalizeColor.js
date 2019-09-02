@@ -11,7 +11,6 @@
 /* eslint no-bitwise: 0 */
 'use strict';
 
-const normalizeColorObject = require('normalizeColorObject'); // TODO(macOS ISS#2323203)
 import type {NativeOrDynamicColorType} from 'normalizeColorObject'; // TODO(macOS ISS#2323203)
 
 function normalizeColor(
@@ -33,6 +32,8 @@ function normalizeColor(
 
   // [TODO(macOS ISS#2323203)
   if (typeof color === 'object' && color !== null) {
+    const normalizeColorObject = require('normalizeColorObject'); // TODO(macOS ISS#2323203)
+
     const normalizedColorObj = normalizeColorObject(color);
 
     if (normalizedColorObj !== null) {
