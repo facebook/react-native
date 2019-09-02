@@ -74,7 +74,7 @@
 <p>Android: Detect hardware back button presses, and programmatically invoke the default back button functionality to exit the app if there are no listeners or if none of the listeners return true.</p>
 <p>tvOS: Detect presses of the menu button on the TV remote. (Still to be implemented: programmatically disable menu button handling functionality to exit the app if there are no listeners or if none of the listeners return true.)</p>
 <p>iOS: Not applicable.</p>
-<p>The event subscriptions are called in reverse order (i.e. last registered subscription first), and if one subscription returns true then subscriptions registered earlier will not be called.</p>
+<p>The event subscriptions are called in reverse order (i.e. last registered subscription first), and if one subscription returns true then subscriptions registered earlier will not be called. Beware: If your app shows an opened <code>Modal</code>, BackHandler will not publish any events (<a href="https://facebook.github.io/react-native/docs/modal#onrequestclose">see <code>Modal</code> docs</a>).</p>
 <p>Example:</p>
 <pre><code class="hljs css language-jsx">BackHandler<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">'hardwareBackPress'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token comment">// this.onMainScreen and this.goBack are just examples, you need to use your own implementation here</span>
