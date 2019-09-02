@@ -139,7 +139,6 @@ public class ViewProps {
   public static final String ACCESSIBILITY_HINT = "accessibilityHint";
   public static final String ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
   public static final String ACCESSIBILITY_ROLE = "accessibilityRole";
-  public static final String ACCESSIBILITY_STATES = "accessibilityStates";
   public static final String ACCESSIBILITY_STATE = "accessibilityState";
   public static final String ACCESSIBILITY_ACTIONS = "accessibilityActions";
   public static final String IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";

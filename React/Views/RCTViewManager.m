@@ -178,34 +178,6 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
   }
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(accessibilityStates, NSArray<NSString *>, RCTView)
-{
-  NSArray<NSString *> *states = json ? [RCTConvert NSStringArray:json] : nil;
-  NSMutableArray *newStates = [NSMutableArray new];
-
-  if (!states) {
-    return;
-  }
-
-  const UIAccessibilityTraits AccessibilityStatesMask = UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected;
-  view.reactAccessibilityElement.accessibilityTraits = view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityStatesMask;
-
-  for (NSString *state in states) {
-    if ([state isEqualToString:@"selected"]) {
-      view.reactAccessibilityElement.accessibilityTraits |= UIAccessibilityTraitSelected;
-    } else if ([state isEqualToString:@"disabled"]) {
-      view.reactAccessibilityElement.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
-    } else {
-      [newStates addObject:state];
-    }
-  }
-  if (newStates.count > 0) {
-    view.reactAccessibilityElement.accessibilityStates = newStates;
-  } else {
-    view.reactAccessibilityElement.accessibilityStates = nil;
-  }
-}
-
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
 {
   NSDictionary<NSString *, id> *state = json ? [RCTConvert NSDictionary:json] : nil;
