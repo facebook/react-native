@@ -257,19 +257,28 @@ using namespace facebook::react;
   }
 
   _contextContainer = std::make_shared<ContextContainer>();
+
+  [self _updateContextContainerIfNeeded_DEPRECATED];
+
+  return _contextContainer;
+}
+
+- (void)_updateContextContainerIfNeeded_DEPRECATED
+{
   // Please do not add stuff here; `SurfacePresenter` must not alter `ContextContainer`.
   // Those two pieces eventually should be moved out there:
   // * `RCTImageLoader` should be moved to `RCTImageComponentView`.
   // * `ReactNativeConfig` should be set by outside product code.
+  _contextContainer->erase("ReactNativeConfig");
   _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
+
   // TODO T47869586 petetheheat: Delete else case when TM rollout 100%
+  _contextContainer->erase("RCTImageLoader");
   if (_imageLoader) {
     _contextContainer->insert("RCTImageLoader", wrapManagedObject(_imageLoader));
   } else {
     _contextContainer->insert("RCTImageLoader", wrapManagedObject([_bridge moduleForClass:[RCTImageLoader class]]));
   }
-
-  return _contextContainer;
 }
 
 - (void)_startSurface:(RCTFabricSurface *)surface
@@ -421,6 +430,10 @@ using namespace facebook::react;
   RCTBridge *bridge = notification.userInfo[@"bridge"];
   if (bridge != _batchedBridge) {
     _batchedBridge = bridge;
+
+    // Some of the injected dependencies are tight to a particular instance of Bridge,
+    // so they need to be reinjected.
+    [self _updateContextContainerIfNeeded_DEPRECATED];
 
     [self _startAllSurfaces];
   }
