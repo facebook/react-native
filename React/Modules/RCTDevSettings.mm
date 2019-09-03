@@ -38,7 +38,7 @@ static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 #import "RCTInspectorDevServerHelper.h"
 #endif
 
-#if RCT_DEV
+#if RCT_DEV_MENU
 
 @interface RCTDevSettingsUserDefaultsDataSource : NSObject <RCTDevSettingsDataSource>
 
@@ -401,7 +401,7 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   }
 }
 
-#if RCT_DEV
+#if RCT_DEV_MENU
 
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
 {

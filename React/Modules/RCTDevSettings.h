@@ -86,7 +86,7 @@
  */
 @property (nonatomic, assign) BOOL isPerfMonitorShown;
 
-#if RCT_DEV
+#if RCT_DEV_MENU
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name __deprecated_msg("Use RCTPackagerConnection directly instead");
 #endif
 

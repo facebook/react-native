@@ -15,7 +15,7 @@
 #import <React/RCTDefines.h>
 #import <React/RCTBundleURLProvider.h>
 
-#if RCT_DEV
+#if RCT_DEV_MENU
 
 #if RCT_ENABLE_INSPECTOR
 #import <React/RCTInspectorDevServerHelper.h>
@@ -477,7 +477,7 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 
 - (RCTDevMenu *)devMenu
 {
-#if RCT_DEV
+#if RCT_DEV_MENU
   return [self moduleForClass:[RCTDevMenu class]];
 #else
   return nil;
