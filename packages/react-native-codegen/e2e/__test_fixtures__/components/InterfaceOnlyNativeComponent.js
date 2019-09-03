@@ -12,7 +12,7 @@
 
 import type {
   BubblingEventHandler,
-  WithDefault
+  WithDefault,
 } from '../../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
@@ -33,5 +33,5 @@ export default (codegenNativeComponent<NativeProps>(
   {
     interfaceOnly: true,
     paperComponentName: 'RCTInterfaceOnlyComponent',
-  }
+  },
 ): NativeComponentType<NativeProps>);

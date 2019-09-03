@@ -15,7 +15,7 @@ import type {
   Float,
   BubblingEventHandler,
   DirectEventHandler,
-  WithDefault
+  WithDefault,
 } from '../../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
@@ -47,19 +47,19 @@ type NativeProps = $ReadOnly<{|
   onEventDirect?: ?DirectEventHandler<OnEventDirect>,
   onEventDirectWithPaperName?: ?DirectEventHandler<
     OnEventDirect,
-    'paperDirectName'
+    'paperDirectName',
   >,
   onOrientationChange?: ?DirectEventHandler<
     OnOrientationChangeEvent,
-    'paperBubblingName'
+    'paperBubblingName',
   >,
   onEnd?: ?BubblingEventHandler<null>,
   onEventBubblingWithPaperName?: ?BubblingEventHandler<
     null,
-    'paperBubblingName'
+    'paperBubblingName',
   >,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(
-  'EventPropsNativeComponentView'
+  'EventPropsNativeComponentView',
 ): NativeComponentType<NativeProps>);

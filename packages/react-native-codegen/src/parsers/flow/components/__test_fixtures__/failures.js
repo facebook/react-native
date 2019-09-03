@@ -42,7 +42,7 @@ export const Commands = codegenNativeCommands<{
 });
 
 export default (codegenNativeComponent<ModuleProps>(
-  'Module'
+  'Module',
 ): NativeComponent<ModuleProps>);
 `;
 
@@ -83,7 +83,7 @@ export const Commands2 = codegenNativeCommands<NativeCommands>({
 });
 
 export default (codegenNativeComponent<ModuleProps>(
-  'Module'
+  'Module',
 ): NativeComponent<ModuleProps>);
 `;
 
@@ -121,7 +121,7 @@ export const Commands = codegenNativeCommands<NativeCommands>({
 });
 
 export default (codegenNativeComponent<ModuleProps>(
-  'Module'
+  'Module',
 ): NativeComponent<ModuleProps>);
 `;
 
@@ -159,7 +159,7 @@ export const Commands = codegenNativeCommands<NativeCommands>({
 });
 
 export default (codegenNativeComponent<ModuleProps>(
-  'Module'
+  'Module',
 ): NativeComponent<ModuleProps>);
 `;
 
@@ -188,7 +188,7 @@ interface NativeCommands {
   +scrollTo: (
     viewRef: React.Ref<'RCTView'>,
     y: Int32,
-    animated: boolean
+    animated: boolean,
   ) => void;
 }
 
@@ -202,7 +202,7 @@ export const Commands = codegenNativeCommands<NativeCommands>({
 });
 
 export default (codegenNativeComponent<ModuleProps>(
-  'Module'
+  'Module',
 ): NativeComponent<ModuleProps>);
 `;
 
@@ -231,7 +231,7 @@ interface NativeCommands {
   +scrollTo: (
     viewRef: React.Ref<'RCTView'>,
     y: Int32,
-    animated: boolean
+    animated: boolean,
   ) => void;
 }
 
@@ -243,7 +243,7 @@ export type ModuleProps = $ReadOnly<{|
 export const Commands = codegenNativeCommands<NativeCommands>();
 
 export default (codegenNativeComponent<ModuleProps>(
-  'Module'
+  'Module',
 ): NativeComponent<ModuleProps>);
 `;
 
@@ -272,7 +272,7 @@ export type ModuleProps = $ReadOnly<{|
 |}>;
 
 export default (codegenNativeComponent<ModuleProps>(
-  'Module'
+  'Module',
 ): NativeComponent<ModuleProps>);
 `;
 
@@ -301,7 +301,7 @@ export type ModuleProps = $ReadOnly<{|
 |}>;
 
 export default (codegenNativeComponent<ModuleProps>(
-  'Module'
+  'Module',
 ): NativeComponent<ModuleProps>);
 `;
 
@@ -331,7 +331,7 @@ export type ModuleProps = $ReadOnly<{|
 |}>;
 
 export default (codegenNativeComponent<ModuleProps>(
-  'Module'
+  'Module',
 ): NativeComponent<ModuleProps>);
 `;
 
@@ -365,7 +365,7 @@ export type ModuleProps = $ReadOnly<{|
 |}>;
 
 export default (codegenNativeComponent<ModuleProps>(
-  'Module'
+  'Module',
 ): NativeComponent<ModuleProps>);
 `;
 
@@ -399,7 +399,7 @@ export type ModuleProps = $ReadOnly<{|
 |}>;
 
 export default (codegenNativeComponent<ModuleProps>(
-  'Module'
+  'Module',
 ): NativeComponent<ModuleProps>);
 `;
 
@@ -428,7 +428,7 @@ export type ModuleProps = $ReadOnly<{|
 |}>;
 
 export default (codegenNativeComponent<ModuleProps>(
-  'Module'
+  'Module',
 ): NativeComponent<ModuleProps>);
 `;
 
