@@ -22,10 +22,10 @@ Both macOS and Xcode are required.
 
 You'll need to have all the [prerequisites](https://github.com/facebook/react-native/tree/master/ReactAndroid#prerequisites) (SDK, NDK) for Building React Native installed.
 
-Start an Android emulator ([Genymotion](https://www.genymotion.com) is recommended).
+Start an Android emulator.
 
     cd react-native
-    ./gradlew :RNTester:android:app:installDebug
+    ./gradlew :RNTester:android:app:installJscDebug
     ./scripts/packager.sh
 
 _Note: Building for the first time can take a while._
