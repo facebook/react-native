@@ -110,6 +110,21 @@ export type TextProps = $ReadOnly<{|
    * See https://facebook.github.io/react-native/docs/text.html#onpress
    */
   onPress?: ?(event: PressEvent) => mixed,
+
+  /**
+   * This function is called on press in.
+   *
+   * See https://facebook.github.io/react-native/docs/text.html#onpressin
+   */
+  onPressIn?: ?(event: PressEvent) => mixed,
+
+  /**
+   * This function is called on press out.
+   *
+   * See https://facebook.github.io/react-native/docs/text.html#onpressout
+   */
+  onPressOut?: ?(event: PressEvent) => mixed,
+
   onResponderGrant?: ?(event: PressEvent, dispatchID: string) => void,
   onResponderMove?: ?(event: PressEvent) => void,
   onResponderRelease?: ?(event: PressEvent) => void,

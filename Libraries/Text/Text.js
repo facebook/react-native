@@ -93,8 +93,8 @@ class TouchableText extends React.Component<Props, State> {
   };
 
   touchableGetPressRectOffset: ?() => PressRetentionOffset;
-  touchableHandleActivePressIn: ?() => void;
-  touchableHandleActivePressOut: ?() => void;
+  touchableHandleActivePressIn: ?(event: PressEvent) => void;
+  touchableHandleActivePressOut: ?(event: PressEvent) => void;
   touchableHandleLongPress: ?(event: PressEvent) => void;
   touchableHandlePress: ?(event: PressEvent) => void;
   touchableHandleResponderGrant: ?(
@@ -227,14 +227,20 @@ class TouchableText extends React.Component<Props, State> {
         (this: any)[key] = Touchable.Mixin[key].bind(this);
       }
     }
-    this.touchableHandleActivePressIn = (): void => {
+    this.touchableHandleActivePressIn = (event: PressEvent): void => {
       if (!this.props.suppressHighlighting && isTouchable(this.props)) {
         this.setState({isHighlighted: true});
       }
+      if (this.props.onPressIn != null) {
+        this.props.onPressIn(event);
+      }
     };
-    this.touchableHandleActivePressOut = (): void => {
+    this.touchableHandleActivePressOut = (event: PressEvent): void => {
       if (!this.props.suppressHighlighting && isTouchable(this.props)) {
         this.setState({isHighlighted: false});
+      }
+      if (this.props.onPressOut != null) {
+        this.props.onPressOut(event);
       }
     };
     this.touchableHandlePress = (event: PressEvent): void => {
