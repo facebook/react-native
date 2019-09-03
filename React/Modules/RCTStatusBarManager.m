@@ -14,24 +14,34 @@
 #if !TARGET_OS_TV
 @implementation RCTConvert (UIStatusBar)
 
++ (UIStatusBarStyle)UIStatusBarStyle:(id)json RCT_DYNAMIC
+{
+  static NSDictionary *mapping;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+      if(@available(iOS 13.0, *)){
+        mapping=@{
+          @"default": @(UIStatusBarStyleDefault),
+          @"light-content": @(UIStatusBarStyleLightContent),
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
-
-RCT_ENUM_CONVERTER(UIStatusBarStyle, (@{
-    @"default": @(UIStatusBarStyleDefault),
-    @"light-content": @(UIStatusBarStyleLightContent),
-    @"dark-content": @available(iOS 13.0, *) ? @(UIStatusBarStyleDarkContent):@(UIStatusBarStyleDefault)
-}), UIStatusBarStyleDefault, integerValue);
-
+          __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+          @"dark-content": @(UIStatusBarStyleDarkContent)
 #else
-
-RCT_ENUM_CONVERTER(UIStatusBarStyle, (@{
-                                        @"default": @(UIStatusBarStyleDefault),
-                                        @"light-content": @(UIStatusBarStyleLightContent),
-                                        @"dark-content": @(UIStatusBarStyleDefault)
-                                        }), UIStatusBarStyleDefault, integerValue);
-
+          @"dark-content": @(UIStatusBarStyleDefault)
 #endif
+        };
+
+      }else{
+          mapping=@{
+          @"default": @(UIStatusBarStyleDefault),
+          @"light-content": @(UIStatusBarStyleLightContent),
+          @"dark-content": @(UIStatusBarStyleDefault)
+          };
+      }
+      
+  });
+  return _RCT_CAST(type, [RCTConvertEnumValue("UIStatusBarStyle", mapping, @(UIStatusBarStyleDefault), json) integerValue]);
+}
 
 RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
   @"none": @(UIStatusBarAnimationNone),
