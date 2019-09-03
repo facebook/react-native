@@ -4,7 +4,7 @@
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
  * directory of this source tree.
  */
-package com.facebook.flipper;
+package com.helloworld;
 
 import android.content.Context;
 import com.facebook.flipper.android.AndroidFlipperClient;
@@ -18,15 +18,12 @@ import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor;
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin;
 import com.facebook.flipper.plugins.react.ReactFlipperPlugin;
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin;
-import com.facebook.react.BuildConfig;
 import com.facebook.react.modules.network.NetworkingModule;
 import okhttp3.OkHttpClient;
 
 public class ReactNativeFlipper {
-  public static final String CLASS_NAME = "com.facebook.flipper.ReactNativeFlipper";
-
   public static void initializeFlipper(Context context) {
-    if (BuildConfig.DEBUG && FlipperUtils.shouldEnableFlipper(context)) {
+    if (FlipperUtils.shouldEnableFlipper(context)) {
       final FlipperClient client = AndroidFlipperClient.getInstance(context);
 
       client.addPlugin(new InspectorFlipperPlugin(context, DescriptorMapping.withDefaults()));
