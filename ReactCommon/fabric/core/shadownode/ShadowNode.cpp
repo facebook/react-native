@@ -92,6 +92,14 @@ UnsharedShadowNode ShadowNode::clone(const ShadowNodeFragment &fragment) const {
 
 #pragma mark - Getters
 
+ComponentName ShadowNode::getComponentName() const {
+  return family_->componentDescriptor_.getComponentName();
+}
+
+ComponentHandle ShadowNode::getComponentHandle() const {
+  return family_->componentDescriptor_.getComponentHandle();
+}
+
 const SharedShadowNodeList &ShadowNode::getChildren() const {
   return *children_;
 }
