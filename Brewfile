@@ -1,2 +1,2 @@
-brew "node@8", link: true
+brew "node@10", link: true
 brew "watchman"

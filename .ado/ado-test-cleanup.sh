@@ -9,17 +9,18 @@ lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
 # kill whatever is occupying port 5555 (web socket server)
 lsof -i tcp:5555 | awk 'NR!=1 {print $2}' | xargs kill
 
-osascript <<'EOF'
-tell application "Terminal"
-  set winlist to windows where name contains "React Packager" or name contains "Metro Bundler" or name contains "Web Socket Test Server"
-  repeat with win in winlist
-    tell application "Terminal" to close win
-  end repeat
-end tell
-EOF
+# AppleScript can't be invoked from Azure DevOps Mojave agents until the following ticket is resolved: https://dev.azure.com/mseng/AzureDevOps/_workitems/edit/1513729
+# osascript <<'EOF'
+# tell application "Terminal"
+#   set winlist to windows where name contains "React Packager" or name contains "Metro Bundler" or name contains "Web Socket Test Server"
+#   repeat with win in winlist
+#     tell application "Terminal" to close win
+#   end repeat
+# end tell
+# EOF
 
 # clear packager cache
-rm -fr $TMPDIR/react-*
+rm -fr "$TMPDIR/react-*"
 
 # clear watchman state
 rm -rf /usr/local/var/run/watchman/*

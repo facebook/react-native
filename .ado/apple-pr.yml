@@ -15,7 +15,7 @@ jobs:
           packager_platform: 'ios'
           xcode_sdk: iphonesimulator
           xcode_scheme: 'RNTester'
-          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 5s'
+          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 8'
         tvos:
           packager_platform: 'ios'
           xcode_sdk: appletvsimulator
@@ -27,6 +27,7 @@ jobs:
           xcode_scheme: 'RNTester-macOS'
           xcode_destination: 'platform=macOS,arch=x86_64'
     pool:
+      name: Hosted Mac Internal Mojave
       demands: ['xcode', 'sh', 'npm']
     timeoutInMinutes: 60 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
