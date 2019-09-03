@@ -10,17 +10,13 @@
 
 'use strict';
 
-const React = require('react');
 const Platform = require('../../Utilities/Platform');
 const ReactNative = require('../../Renderer/shims/ReactNative');
 const ReactNativeViewViewConfigAndroid = require('./ReactNativeViewViewConfigAndroid');
 
 const registerGeneratedViewConfig = require('../../Utilities/registerGeneratedViewConfig');
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
-const codegenNativeCommands = require('../../Utilities/codegenNativeCommands')
-  .default;
 
-import type {Int32} from '../../Types/CodegenTypes';
 import type {ViewProps} from './ViewPropTypes';
 
 export type ViewNativeComponentType = Class<
@@ -69,23 +65,6 @@ if (__DEV__) {
 } else {
   NativeViewComponent = requireNativeComponent('RCTView');
 }
-
-// These commands are Android only
-interface NativeCommands {
-  +hotspotUpdate: (
-    viewRef: React.ElementRef<ViewNativeComponentType>,
-    x: Int32,
-    y: Int32,
-  ) => void;
-  +setPressed: (
-    viewRef: React.ElementRef<ViewNativeComponentType>,
-    pressed: boolean,
-  ) => void;
-}
-
-export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['hotspotUpdate', 'setPressed'],
-});
 
 export const __INTERNAL_VIEW_CONFIG = viewConfig;
 export default ((NativeViewComponent: any): ViewNativeComponentType);

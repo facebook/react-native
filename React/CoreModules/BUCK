@@ -42,6 +42,10 @@ rn_apple_library(
                   native_class_func = "RCTAccessibilityManagerCls",
               ) +
               react_module_plugin_providers(
+                  name = "Appearance",
+                  native_class_func = "RCTAppearanceCls",
+              ) +
+              react_module_plugin_providers(
                   name = "DeviceInfo",
                   native_class_func = "RCTDeviceInfoCls",
               ) +

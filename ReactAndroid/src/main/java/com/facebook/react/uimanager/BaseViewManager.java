@@ -136,31 +136,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
   }
 
-  @ReactProp(name = ViewProps.ACCESSIBILITY_STATES)
-  public void setViewStates(@NonNull T view, @Nullable ReadableArray accessibilityStates) {
-    boolean shouldUpdateContentDescription =
-        view.getTag(R.id.accessibility_states) != null && accessibilityStates == null;
-    view.setTag(R.id.accessibility_states, accessibilityStates);
-    view.setSelected(false);
-    view.setEnabled(true);
-    if (accessibilityStates != null) {
-      for (int i = 0; i < accessibilityStates.size(); i++) {
-        String state = accessibilityStates.getString(i);
-        if (sStateDescription.containsKey(state)) {
-          shouldUpdateContentDescription = true;
-        }
-        if ("selected".equals(state)) {
-          view.setSelected(true);
-        } else if ("disabled".equals(state)) {
-          view.setEnabled(false);
-        }
-      }
-    }
-    if (shouldUpdateContentDescription) {
-      updateViewContentDescription(view);
-    }
-  }
-
   @ReactProp(name = ViewProps.ACCESSIBILITY_STATE)
   public void setViewState(@NonNull T view, @Nullable ReadableMap accessibilityState) {
     if (accessibilityState == null) {
@@ -189,21 +164,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   private void updateViewContentDescription(@NonNull T view) {
     final String accessibilityLabel = (String) view.getTag(R.id.accessibility_label);
-    final ReadableArray accessibilityStates =
-        (ReadableArray) view.getTag(R.id.accessibility_states);
     final ReadableMap accessibilityState = (ReadableMap) view.getTag(R.id.accessibility_state);
     final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
     final List<String> contentDescription = new ArrayList<>();
     if (accessibilityLabel != null) {
       contentDescription.add(accessibilityLabel);
-    }
-    if (accessibilityStates != null) {
-      for (int i = 0; i < accessibilityStates.size(); i++) {
-        final String state = accessibilityStates.getString(i);
-        if (sStateDescription.containsKey(state)) {
-          contentDescription.add(view.getContext().getString(sStateDescription.get(state)));
-        }
-      }
     }
     if (accessibilityState != null) {
       final ReadableMapKeySetIterator i = accessibilityState.keySetIterator();
@@ -305,14 +270,19 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     TransformHelper.processTransform(transforms, sTransformDecompositionArray);
     MatrixMathHelper.decomposeMatrix(sTransformDecompositionArray, sMatrixDecompositionContext);
     view.setTranslationX(
-        PixelUtil.toPixelFromDIP((float) sMatrixDecompositionContext.translation[0]));
+        PixelUtil.toPixelFromDIP(
+            sanitizeFloatPropertyValue((float) sMatrixDecompositionContext.translation[0])));
     view.setTranslationY(
-        PixelUtil.toPixelFromDIP((float) sMatrixDecompositionContext.translation[1]));
-    view.setRotation((float) sMatrixDecompositionContext.rotationDegrees[2]);
-    view.setRotationX((float) sMatrixDecompositionContext.rotationDegrees[0]);
-    view.setRotationY((float) sMatrixDecompositionContext.rotationDegrees[1]);
-    view.setScaleX((float) sMatrixDecompositionContext.scale[0]);
-    view.setScaleY((float) sMatrixDecompositionContext.scale[1]);
+        PixelUtil.toPixelFromDIP(
+            sanitizeFloatPropertyValue((float) sMatrixDecompositionContext.translation[1])));
+    view.setRotation(
+        sanitizeFloatPropertyValue((float) sMatrixDecompositionContext.rotationDegrees[2]));
+    view.setRotationX(
+        sanitizeFloatPropertyValue((float) sMatrixDecompositionContext.rotationDegrees[0]));
+    view.setRotationY(
+        sanitizeFloatPropertyValue((float) sMatrixDecompositionContext.rotationDegrees[1]));
+    view.setScaleX(sanitizeFloatPropertyValue((float) sMatrixDecompositionContext.scale[0]));
+    view.setScaleY(sanitizeFloatPropertyValue((float) sMatrixDecompositionContext.scale[1]));
 
     double[] perspectiveArray = sMatrixDecompositionContext.perspective;
 
@@ -336,6 +306,29 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
           scale * scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
       view.setCameraDistance(normalizedCameraDistance);
     }
+  }
+
+  /**
+   * Prior to Android P things like setScaleX() allowed passing float values that were bogus such as
+   * Float.NaN. If the app is targeting Android P or later then passing these values will result in
+   * an exception being thrown. Since JS might still send Float.NaN, we want to keep the code
+   * backward compatible and continue using the fallback value if an invalid float is passed.
+   */
+  private static float sanitizeFloatPropertyValue(float value) {
+    if (value >= -Float.MAX_VALUE && value <= Float.MAX_VALUE) {
+      return value;
+    }
+    if (value < -Float.MAX_VALUE || value == Float.NEGATIVE_INFINITY) {
+      return -Float.MAX_VALUE;
+    }
+    if (value > Float.MAX_VALUE || value == Float.POSITIVE_INFINITY) {
+      return Float.MAX_VALUE;
+    }
+    if (Float.isNaN(value)) {
+      return 0;
+    }
+    // Shouldn't be possible to reach this point.
+    throw new IllegalStateException("Invalid float property value: " + value);
   }
 
   private static void resetTransformProperty(@NonNull View view) {

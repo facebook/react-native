@@ -25,8 +25,8 @@ public class StringPropNativeComponentViewManager extends SimpleViewManager<View
   }
 
   @Override
-  public void setAccessibilityHint(ViewGroup view, String value) {}
+  public void setPlaceholder(ViewGroup view, String value) {}
 
   @Override
-  public void setAccessibilityRole(ViewGroup view, String value) {}
+  public void setDefaultValue(ViewGroup view, String value) {}
 }

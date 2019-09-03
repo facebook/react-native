@@ -26,7 +26,7 @@ class ParagraphComponentDescriptor final
     : public ConcreteComponentDescriptor<ParagraphShadowNode> {
  public:
   ParagraphComponentDescriptor(
-      EventDispatcher::Shared eventDispatcher,
+      EventDispatcher::Weak eventDispatcher,
       ContextContainer::Shared const &contextContainer)
       : ConcreteComponentDescriptor<ParagraphShadowNode>(eventDispatcher) {
     // Every single `ParagraphShadowNode` will have a reference to

@@ -13,10 +13,11 @@
 const Platform = require('../../Utilities/Platform');
 const PropTypes = require('prop-types');
 const React = require('react');
+const ReactNative = require('../../Renderer/shims/ReactNative');
 const Touchable = require('./Touchable');
 const TouchableWithoutFeedback = require('./TouchableWithoutFeedback');
+const UIManager = require('../../ReactNative/UIManager');
 const View = require('../View/View');
-const {Commands: ViewCommands} = require('../View/ViewNativeComponent');
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('./ensurePositiveDelayProps');
@@ -261,16 +262,20 @@ const TouchableNativeFeedback = createReactClass({
     );
   },
 
-  _handleRef: function(ref) {
-    this._viewRef = ref;
-  },
-
   _dispatchHotspotUpdate: function(destX, destY) {
-    ViewCommands.hotspotUpdate(this._viewRef, destX || 0, destY || 0);
+    UIManager.dispatchViewManagerCommand(
+      ReactNative.findNodeHandle(this),
+      UIManager.getViewManagerConfig('RCTView').Commands.hotspotUpdate,
+      [destX || 0, destY || 0],
+    );
   },
 
   _dispatchPressedStateChange: function(pressed) {
-    ViewCommands.setPressed(this._viewRef, pressed);
+    UIManager.dispatchViewManagerCommand(
+      ReactNative.findNodeHandle(this),
+      UIManager.getViewManagerConfig('RCTView').Commands.setPressed,
+      [pressed],
+    );
   },
 
   render: function() {
@@ -308,12 +313,10 @@ const TouchableNativeFeedback = createReactClass({
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
       accessibilityRole: this.props.accessibilityRole,
-      accessibilityStates: this.props.accessibilityStates,
       accessibilityState: this.props.accessibilityState,
       accessibilityActions: this.props.accessibilityActions,
       onAccessibilityAction: this.props.onAccessibilityAction,
       children,
-      ref: this._handleRef,
       testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,

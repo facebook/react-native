@@ -49,6 +49,7 @@ import typeof VirtualizedSectionList from '../Lists/VirtualizedSectionList';
 import typeof ActionSheetIOS from '../ActionSheetIOS/ActionSheetIOS';
 import typeof Alert from '../Alert/Alert';
 import typeof Animated from '../Animated/src/Animated';
+import typeof Appearance from '../Utilities/Appearance';
 import typeof AppRegistry from '../ReactNative/AppRegistry';
 import typeof AppState from '../AppState/AppState';
 import typeof AsyncStorage from '../Storage/AsyncStorage';
@@ -81,6 +82,7 @@ import typeof ToastAndroid from '../Components/ToastAndroid/ToastAndroid';
 import typeof * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 import typeof TVEventHandler from '../Components/AppleTV/TVEventHandler';
 import typeof UIManager from '../ReactNative/UIManager';
+import typeof useColorScheme from '../Utilities/useColorScheme';
 import typeof useDimensions from '../Utilities/useDimensions';
 import typeof UTFSequence from '../UTFSequence';
 import typeof Vibration from '../Vibration/Vibration';
@@ -252,6 +254,9 @@ module.exports = {
   get Animated(): Animated {
     return require('../Animated/src/Animated');
   },
+  get Appearance(): Appearance {
+    return require('../Utilities/Appearance');
+  },
   get AppRegistry(): AppRegistry {
     return require('../ReactNative/AppRegistry');
   },
@@ -389,9 +394,12 @@ module.exports = {
   > {
     return require('../Renderer/shims/ReactNative').unstable_batchedUpdates;
   },
+  get useColorScheme(): useColorScheme {
+    return require('../Utilities/useColorScheme').default;
+  },
   get useDimensions(): useDimensions {
     return require('../Utilities/useDimensions').default;
-  },
+  },  
   get UTFSequence(): UTFSequence {
     return require('../UTFSequence');
   },

@@ -195,7 +195,7 @@ using namespace facebook::react;
   }
 
   auto componentRegistryFactory = [factory = wrapManagedObject(self.componentViewFactory)](
-                                      EventDispatcher::Shared const &eventDispatcher,
+                                      EventDispatcher::Weak const &eventDispatcher,
                                       ContextContainer::Shared const &contextContainer) {
     return [(RCTComponentViewFactory *)unwrapManagedObject(factory)
         createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
@@ -208,12 +208,12 @@ using namespace facebook::react;
   toolbox.componentRegistryFactory = componentRegistryFactory;
   toolbox.runtimeExecutor = runtimeExecutor;
 
-  toolbox.synchronousEventBeatFactory = [runtimeExecutor]() {
-    return std::make_unique<MainRunLoopEventBeat>(runtimeExecutor);
+  toolbox.synchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
+    return std::make_unique<MainRunLoopEventBeat>(ownerBox, runtimeExecutor);
   };
 
-  toolbox.asynchronousEventBeatFactory = [runtimeExecutor]() {
-    return std::make_unique<RuntimeEventBeat>(runtimeExecutor);
+  toolbox.asynchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
+    return std::make_unique<RuntimeEventBeat>(ownerBox, runtimeExecutor);
   };
 
   _scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];

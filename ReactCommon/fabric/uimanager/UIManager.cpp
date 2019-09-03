@@ -119,7 +119,7 @@ void UIManager::setNativeProps(
       /* .props = */ props,
   });
 
-  shadowTreeRegistry_->visit(
+  shadowTreeRegistry_.visit(
       shadowNode->getSurfaceId(), [&](const ShadowTree &shadowTree) {
         shadowTree.tryCommit(
             [&](const SharedRootShadowNode &oldRootShadowNode) {
@@ -134,7 +134,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
   SystraceSection s("UIManager::getRelativeLayoutMetrics");
 
   if (!ancestorShadowNode) {
-    shadowTreeRegistry_->visit(
+    shadowTreeRegistry_.visit(
         shadowNode.getSurfaceId(), [&](const ShadowTree &shadowTree) {
           shadowTree.tryCommit(
               [&](const SharedRootShadowNode &oldRootShadowNode) {
@@ -173,7 +173,7 @@ void UIManager::updateState(
       /* .state = */ state,
   });
 
-  shadowTreeRegistry_->visit(
+  shadowTreeRegistry_.visit(
       shadowNode->getSurfaceId(), [&](const ShadowTree &shadowTree) {
         shadowTree.tryCommit(
             [&](const SharedRootShadowNode &oldRootShadowNode) {
@@ -191,10 +191,6 @@ void UIManager::dispatchCommand(
   }
 }
 
-void UIManager::setShadowTreeRegistry(ShadowTreeRegistry *shadowTreeRegistry) {
-  shadowTreeRegistry_ = shadowTreeRegistry;
-}
-
 void UIManager::setComponentDescriptorRegistry(
     const SharedComponentDescriptorRegistry &componentDescriptorRegistry) {
   componentDescriptorRegistry_ = componentDescriptorRegistry;
@@ -206,6 +202,20 @@ void UIManager::setDelegate(UIManagerDelegate *delegate) {
 
 UIManagerDelegate *UIManager::getDelegate() {
   return delegate_;
+}
+
+void UIManager::visitBinding(
+    std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
+    const {
+  if (!uiManagerBinding_) {
+    return;
+  }
+
+  callback(*uiManagerBinding_);
+}
+
+ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
+  return shadowTreeRegistry_;
 }
 
 } // namespace react

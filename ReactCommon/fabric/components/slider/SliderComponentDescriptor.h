@@ -21,7 +21,7 @@ class SliderComponentDescriptor final
     : public ConcreteComponentDescriptor<SliderShadowNode> {
  public:
   SliderComponentDescriptor(
-      EventDispatcher::Shared eventDispatcher,
+      EventDispatcher::Weak eventDispatcher,
       ContextContainer::Shared const &contextContainer)
       : ConcreteComponentDescriptor(eventDispatcher),
         imageManager_(std::make_shared<ImageManager>(contextContainer)),

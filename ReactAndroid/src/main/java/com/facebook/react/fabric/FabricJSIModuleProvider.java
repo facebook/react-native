@@ -22,6 +22,7 @@ import com.facebook.react.fabric.mounting.mountitems.RemoveMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateEventEmitterMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateLayoutMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateLocalDataMountItem;
+import com.facebook.react.fabric.mounting.mountitems.UpdatePaddingMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -108,6 +109,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     UpdateEventEmitterMountItem.class.getClass();
     UpdateLayoutMountItem.class.getClass();
     UpdateLocalDataMountItem.class.getClass();
+    UpdatePaddingMountItem.class.getClass();
     UpdatePropsMountItem.class.getClass();
     LayoutMetricsConversions.class.getClass();
     MountingManager.class.getClass();

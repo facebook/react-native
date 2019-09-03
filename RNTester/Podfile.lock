@@ -47,7 +47,7 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
+    - Yoga
   - React-Core/ARTHeaders (1000.0.0):
     - Folly (= 2018.10.22.00)
     - glog
@@ -55,7 +55,7 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
+    - Yoga
   - React-Core/CoreModulesHeaders (1000.0.0):
     - Folly (= 2018.10.22.00)
     - glog
@@ -63,14 +63,14 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
+    - Yoga
   - React-Core/Default (1000.0.0):
     - Folly (= 2018.10.22.00)
     - glog
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
+    - Yoga
   - React-Core/DevSupport (1000.0.0):
     - Folly (= 2018.10.22.00)
     - glog
@@ -80,7 +80,7 @@ PODS:
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
     - React-jsinspector (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
+    - Yoga
   - React-Core/RCTActionSheetHeaders (1000.0.0):
     - Folly (= 2018.10.22.00)
     - glog
@@ -88,7 +88,7 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
+    - Yoga
   - React-Core/RCTAnimationHeaders (1000.0.0):
     - Folly (= 2018.10.22.00)
     - glog
@@ -96,7 +96,7 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
+    - Yoga
   - React-Core/RCTBlobHeaders (1000.0.0):
     - Folly (= 2018.10.22.00)
     - glog
@@ -104,7 +104,7 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
+    - Yoga
   - React-Core/RCTImageHeaders (1000.0.0):
     - Folly (= 2018.10.22.00)
     - glog
@@ -112,7 +112,7 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
+    - Yoga
   - React-Core/RCTLinkingHeaders (1000.0.0):
     - Folly (= 2018.10.22.00)
     - glog
@@ -120,7 +120,7 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
+    - Yoga
   - React-Core/RCTNetworkHeaders (1000.0.0):
     - Folly (= 2018.10.22.00)
     - glog
@@ -128,7 +128,7 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
+    - Yoga
   - React-Core/RCTPushNotificationHeaders (1000.0.0):
     - Folly (= 2018.10.22.00)
     - glog
@@ -136,7 +136,7 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
+    - Yoga
   - React-Core/RCTSettingsHeaders (1000.0.0):
     - Folly (= 2018.10.22.00)
     - glog
@@ -144,7 +144,7 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
+    - Yoga
   - React-Core/RCTTextHeaders (1000.0.0):
     - Folly (= 2018.10.22.00)
     - glog
@@ -152,7 +152,7 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
+    - Yoga
   - React-Core/RCTVibrationHeaders (1000.0.0):
     - Folly (= 2018.10.22.00)
     - glog
@@ -160,7 +160,7 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
+    - Yoga
   - React-Core/RCTWebSocket (1000.0.0):
     - Folly (= 2018.10.22.00)
     - glog
@@ -168,11 +168,13 @@ PODS:
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
-    - yoga (= 1000.0.0.React)
+    - Yoga
   - React-CoreModules (1000.0.0):
     - FBReactNativeSpec (= 1000.0.0)
     - Folly (= 2018.10.22.00)
+    - RCTTypeSafety (= 1000.0.0)
     - React-Core/CoreModulesHeaders (= 1000.0.0)
+    - React-RCTImage (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-cxxreact (1000.0.0):
     - boost-for-react-native (= 1.63.0)
@@ -246,7 +248,7 @@ PODS:
     - React-jsi (= 1000.0.0)
     - ReactCommon/jscallinvoker (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
-  - yoga (1000.0.0.React)
+  - Yoga (1.14.0)
 
 DEPENDENCIES:
   - DoubleConversion (from `../third-party-podspecs/DoubleConversion.podspec`)
@@ -280,7 +282,7 @@ DEPENDENCIES:
   - ReactCommon/jscallinvoker (from `../ReactCommon`)
   - ReactCommon/turbomodule/core (from `../ReactCommon`)
   - ReactCommon/turbomodule/samples (from `../ReactCommon`)
-  - yoga (from `../ReactCommon/yoga`)
+  - Yoga (from `../ReactCommon/yoga`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -341,7 +343,7 @@ EXTERNAL SOURCES:
     :path: "../Libraries/Vibration"
   ReactCommon:
     :path: "../ReactCommon"
-  yoga:
+  Yoga:
     :path: "../ReactCommon/yoga"
 
 SPEC CHECKSUMS:
@@ -355,8 +357,8 @@ SPEC CHECKSUMS:
   RCTTypeSafety: 2b1cb2d92b779aa9a3522f67bd4f07e6b6d0797e
   React: 28a654b69575941571c073a656bc06795825e7f7
   React-ART: a5da06a892342d03896e0db45a7072525981f63c
-  React-Core: 47b8ab211d9325292811e62ee23c54b464853111
-  React-CoreModules: 38d8cc34497674ae3d411e644a9b17ad75ef3f74
+  React-Core: f8656b21cfe16b1fe276686f3b921bce0fa6de4d
+  React-CoreModules: 96b2f1e0b84493e6c1b7f3bb21357f24fdcfce2f
   React-cxxreact: 7c4242192149ce0205b53efaa03e3bf86ba4337c
   React-jsi: 98d1f9d8a79d2720ba6a44c2d928a77f315b7e4f
   React-jsiexecutor: c0ab8c80a6e88380d63f583690a50d4a723b47b5
@@ -373,7 +375,7 @@ SPEC CHECKSUMS:
   React-RCTText: 9078167d3bc011162326f2d8ef4dd580ec1eca17
   React-RCTVibration: 63c20d89204937ff8c7bbc1e712383347e6fbd90
   ReactCommon: 63d1a6355d5810a21a61efda9ac93804571a1b8b
-  yoga: b72aa5b3708cc93c5897f8297122d6eba1331e07
+  Yoga: 0abc4039ca4c0de783ab88c0ee21273583cbc2af
 
 PODFILE CHECKSUM: 060903e270072f1e192b064848e6c34528af1c87
 

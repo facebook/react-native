@@ -40,9 +40,6 @@ public abstract class BaseViewManagerDelegate<
       case ViewProps.ACCESSIBILITY_STATE:
         mViewManager.setViewState(view, (ReadableMap) value);
         break;
-      case ViewProps.ACCESSIBILITY_STATES:
-        mViewManager.setViewStates(view, (ReadableArray) value);
-        break;
       case ViewProps.BACKGROUND_COLOR:
         mViewManager.setBackgroundColor(view, value == null ? 0 : ((Double) value).intValue());
         break;

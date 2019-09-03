@@ -143,6 +143,20 @@ public class MountingManager {
     viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
   }
 
+  public void sendAccessibilityEvent(int reactTag, int eventType) {
+    ViewState viewState = getViewState(reactTag);
+
+    if (viewState.mViewManager == null) {
+      throw new IllegalStateException("Unable to find viewState manager for tag " + reactTag);
+    }
+
+    if (viewState.mView == null) {
+      throw new IllegalStateException("Unable to find viewState view for tag " + reactTag);
+    }
+
+    viewState.mView.sendAccessibilityEvent(eventType);
+  }
+
   @SuppressWarnings("unchecked") // prevents unchecked conversion warn of the <ViewGroup> type
   private static ViewGroupManager<ViewGroup> getViewGroupManager(ViewState viewState) {
     if (viewState.mViewManager == null) {
@@ -244,6 +258,24 @@ public class MountingManager {
     // TODO: T31905686 Check if the parent of the view has to layout the view, or the child has
     // to lay itself out. see NativeViewHierarchyManager.updateLayout
     viewToUpdate.layout(x, y, x + width, y + height);
+  }
+
+  @UiThread
+  public void updatePadding(int reactTag, int left, int top, int right, int bottom) {
+    UiThreadUtil.assertOnUiThread();
+
+    ViewState viewState = getViewState(reactTag);
+    // Do not layout Root Views
+    if (viewState.mIsRoot) {
+      return;
+    }
+
+    View viewToUpdate = viewState.mView;
+    if (viewToUpdate == null) {
+      throw new IllegalStateException("Unable to find View for tag: " + reactTag);
+    }
+
+    viewToUpdate.setPadding(left, top, right, bottom);
   }
 
   @UiThread

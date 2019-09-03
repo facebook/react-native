@@ -159,13 +159,8 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       setRole(info, accessibilityRole, host.getContext());
     }
 
-    // states are changeable.
-    final ReadableArray accessibilityStates =
-        (ReadableArray) host.getTag(R.id.accessibility_states);
+    // state is changeable.
     final ReadableMap accessibilityState = (ReadableMap) host.getTag(R.id.accessibility_state);
-    if (accessibilityStates != null) {
-      setStates(info, accessibilityStates, host.getContext());
-    }
     if (accessibilityState != null) {
       setState(info, accessibilityState, host.getContext());
     }
@@ -204,35 +199,6 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       return true;
     }
     return super.performAccessibilityAction(host, action, args);
-  }
-
-  private static void setStates(
-      AccessibilityNodeInfoCompat info, ReadableArray accessibilityStates, Context context) {
-    for (int i = 0; i < accessibilityStates.size(); i++) {
-      String state = accessibilityStates.getString(i);
-      switch (state) {
-        case "selected":
-          info.setSelected(true);
-          break;
-        case "disabled":
-          info.setEnabled(false);
-          break;
-        case "checked":
-          info.setCheckable(true);
-          info.setChecked(true);
-          if (info.getClassName().equals(AccessibilityRole.getValue(AccessibilityRole.SWITCH))) {
-            info.setText(context.getString(R.string.state_on_description));
-          }
-          break;
-        case "unchecked":
-          info.setCheckable(true);
-          info.setChecked(false);
-          if (info.getClassName().equals(AccessibilityRole.getValue(AccessibilityRole.SWITCH))) {
-            info.setText(context.getString(R.string.state_off_description));
-          }
-          break;
-      }
-    }
   }
 
   private static void setState(
@@ -335,7 +301,6 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     // so leave it alone.
     if (!ViewCompat.hasAccessibilityDelegate(view)
         && (view.getTag(R.id.accessibility_role) != null
-            || view.getTag(R.id.accessibility_states) != null
             || view.getTag(R.id.accessibility_state) != null
             || view.getTag(R.id.accessibility_actions) != null)) {
       ViewCompat.setAccessibilityDelegate(view, new ReactAccessibilityDelegate());
