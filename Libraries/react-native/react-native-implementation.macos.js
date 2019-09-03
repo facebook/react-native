@@ -100,14 +100,14 @@ module.exports = {
   get Picker() {
     return require('Picker');
   },
-  /*
-    get PickerIOS() {
-    return require('PickerIOS');
+  get PickerIOS() {
+    return require('../Components/Picker/PickerIOS');
   },
+  /*
   get ProgressBarAndroid() {
     return require('ProgressBarAndroid');
   },
-    get ProgressViewIOS() {
+  get ProgressViewIOS() {
     return require('ProgressViewIOS');
   },*/
   get SafeAreaView() {
@@ -191,15 +191,6 @@ module.exports = {
   get VirtualizedSectionList() {
     return require('VirtualizedSectionList');
   },*/
-  get WebView() {
-    warnOnce(
-      'webview-moved',
-      'WebView has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-webview',
-    );
-    return require('WebView');
-  },
 
   // APIs
   /*
@@ -240,9 +231,10 @@ module.exports = {
   get Clipboard() {
     return require('Clipboard');
   },
+  /*
   get DatePickerAndroid() {
-    return require('DatePickerAndroid');
-  },
+    return require(' DatePickerAndroid');
+  },*/
   // [TODO(macOS ISS#2323203)
   get DatePickerMacOS() {
     return require('../Components/DatePickerMacOS/DatePickerMacOS');
@@ -282,15 +274,6 @@ module.exports = {
   get NativeEventEmitter() {
     return require('NativeEventEmitter');
   },
-  get NetInfo() {
-    warnOnce(
-      'netinfo-moved',
-      'NetInfo has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/netinfo' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-netinfo',
-    );
-    return require('NetInfo');
-  },
   get PanResponder() {
     return require('PanResponder');
   },
@@ -311,7 +294,7 @@ module.exports = {
     return require('PushNotificationIOS');
   },
   get Settings() {
-    return require('../Settings/Settings.macos');
+    return require('../Settings/Settings');
   },
   /*
   get Share() {
@@ -417,19 +400,6 @@ if (__DEV__) {
         'SwipeableListView has been removed from React Native. ' +
           'See https://fb.me/nolistview for more information or use ' +
           '`deprecated-react-native-swipeable-listview`.',
-      );
-    },
-  });
-
-  // $FlowFixMe This is intentional: Flow will error when attempting to access WebView.
-  Object.defineProperty(module.exports, 'WebView', {
-    configurable: true,
-    get() {
-      invariant(
-        false,
-        'WebView has been removed from React Native. ' +
-          "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-webview',
       );
     },
   });

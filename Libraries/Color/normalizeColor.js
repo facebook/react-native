@@ -11,7 +11,7 @@
 /* eslint no-bitwise: 0 */
 'use strict';
 
-const Platform = require('Platform'); // [TODO(macOS ISS#2323203)
+import Platform from '../Utilities/Platform'; // [TODO(macOS ISS#2323203)
 
 export type SemanticOrDynamicColorType = {
   semantic?: string,

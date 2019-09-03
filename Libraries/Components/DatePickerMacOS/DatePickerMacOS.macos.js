@@ -115,7 +115,7 @@ class DatePickerMacOS extends React.Component<Props> {
         date: propsTimeStamp,
       });
     }
-  },
+  }
 
   render() {
     const props = this.props;
@@ -140,7 +140,7 @@ class DatePickerMacOS extends React.Component<Props> {
         />
       </View>
     );
-  },
-});
+  }
+};
 
 module.exports = DatePickerMacOS;

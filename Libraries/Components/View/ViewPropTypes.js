@@ -328,9 +328,8 @@ type AndroidViewProps = $ReadOnly<{|
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
 
   accessibilityNodeInfo?: AccessibilityNodeInfoProp, // TODO(android ISS)
-|}>;
 
-  /**
+   /**
    * TV next focus down (see documentation for the View component).
    *
    * @platform android
@@ -364,20 +363,6 @@ type AndroidViewProps = $ReadOnly<{|
    * @platform android
    */
   nextFocusUp?: ?number,
-
-  /**
-   * Whether this `View` should be clickable with a non-touch click, eg. enter key on a hardware keyboard.
-   *
-   * @platform android
-   */
-  clickable?: boolean,
-
-  /**
-   * The action to perform when this `View` is clicked on by a non-touch click, eg. enter key on a hardware keyboard.
-   *
-   * @platform android
-   */
-  onClick?: () => void,
 |}>;
 
 type IOSViewProps = $ReadOnly<{|

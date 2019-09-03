@@ -12,7 +12,7 @@
 
 'use strict';
 
-const Platform = require('Platform');
+import Platform from '../../Libraries/Utilities/Platform'; // TODO(OSS Candidate ISS#2710739)
 var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');

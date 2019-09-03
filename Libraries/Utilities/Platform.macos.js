@@ -12,19 +12,28 @@
 
 'use strict';
 
-const NativeModules = require('NativeModules');
+const NativeModules = require('../BatchedBridge/NativeModules');
+
+export type PlatformSelectSpec<D, I> = {
+  default?: D,
+  macos?: I,
+};
 
 const Platform = {
   OS: 'macos',
   get Version() {
-    const constants = NativeModules.MacOSConstants;
+    const constants = NativeModules.PlatformConstants;
     return constants && constants.osVersion;
   },
   get isTesting(): boolean {
-    const constants = NativeModules.PlatformConstants;
-    return constants && constants.isTesting;
+    if (__DEV__) {
+      const constants = NativeModules.PlatformConstants;
+      return constants && constants.isTesting;
+    }
+    return false;
   },
-  select: (obj: Object) => 'macos' in obj ? obj.macos : obj.default,
+  select: <D, I>(spec: PlatformSelectSpec<D, I>): D | I =>
+    'macos' in spec ? spec.macos : spec.default,
 };
 
 module.exports = Platform;

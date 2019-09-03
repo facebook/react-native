@@ -31,7 +31,6 @@ const {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
 } = ReactNative;
 
 import type {RNTesterExample} from './RNTesterList.macos';
@@ -45,7 +44,7 @@ type Props = {
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
 const Header = ({onBack, title}: {onBack?: () => mixed, title: string}) => (
-  <SafeAreaView style={styles.headerContainer}>
+  <View style={styles.headerContainer}>
     <View style={styles.header}>
       <View style={styles.headerCenter}>
         <Text style={styles.title}>{title}</Text>
@@ -56,7 +55,7 @@ const Header = ({onBack, title}: {onBack?: () => mixed, title: string}) => (
         </View>
       )}
     </View>
-  </SafeAreaView>
+  </View>
 );
 
 class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
