@@ -21,8 +21,9 @@ import invariant from 'invariant';
 type AppearanceListener = (preferences: AppearancePreferences) => void;
 const eventEmitter = new EventEmitter();
 
+// TODO: (hramos) T52919652 Use ?ColorSchemeName once codegen supports union
 const nativeColorScheme: ?string =
-  NativeAppearance == null ? null : NativeAppearance.getColorScheme();
+  NativeAppearance == null ? null : NativeAppearance.getColorScheme() || null;
 invariant(
   nativeColorScheme === 'dark' ||
     nativeColorScheme === 'light' ||
