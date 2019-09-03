@@ -452,13 +452,6 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
-typedef NS_ENUM(NSInteger, NativeAppearanceColorSchemeName) {
-  NativeAppearanceColorSchemeNameLight = 0,
-  NativeAppearanceColorSchemeNameDark,
-};
-
-folly::Optional<NativeAppearanceColorSchemeName> NSStringToNativeAppearanceColorSchemeName(NSString *value);
-NSString *NativeAppearanceColorSchemeNameToNSString(folly::Optional<NativeAppearanceColorSchemeName> value);
 
 namespace JS {
   namespace NativeAppearance {
@@ -475,6 +468,13 @@ namespace JS {
 @interface RCTCxxConvert (NativeAppearance_AppearancePreferences)
 + (RCTManagedPointer *)JS_NativeAppearance_AppearancePreferences:(id)json;
 @end
+typedef NS_ENUM(NSInteger, NativeAppearanceColorSchemeName) {
+  NativeAppearanceColorSchemeNameLight = 0,
+  NativeAppearanceColorSchemeNameDark,
+};
+
+folly::Optional<NativeAppearanceColorSchemeName> NSStringToNativeAppearanceColorSchemeName(NSString *value);
+NSString *NativeAppearanceColorSchemeNameToNSString(folly::Optional<NativeAppearanceColorSchemeName> value);
 
 namespace JS {
   namespace NativeAsyncStorage {

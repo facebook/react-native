@@ -487,6 +487,12 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
+@implementation RCTCxxConvert (NativeAppearance_AppearancePreferences)
++ (RCTManagedPointer *)JS_NativeAppearance_AppearancePreferences:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeAppearance::AppearancePreferences>(json);
+}
+@end
 folly::Optional<NativeAppearanceColorSchemeName> NSStringToNativeAppearanceColorSchemeName(NSString *value) {
   static NSDictionary *dict = nil;
   static dispatch_once_t onceToken;
@@ -510,12 +516,6 @@ NSString *NativeAppearanceColorSchemeNameToNSString(folly::Optional<NativeAppear
   });
   return value.hasValue() ? dict[@(value.value())] : nil;
 }
-@implementation RCTCxxConvert (NativeAppearance_AppearancePreferences)
-+ (RCTManagedPointer *)JS_NativeAppearance_AppearancePreferences:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeAppearance::AppearancePreferences>(json);
-}
-@end
 @implementation RCTCxxConvert (NativeAsyncStorage_SpecMultiGetCallbackErrorsElement)
 + (RCTManagedPointer *)JS_NativeAsyncStorage_SpecMultiGetCallbackErrorsElement:(id)json
 {
