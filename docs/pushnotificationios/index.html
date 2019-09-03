@@ -99,15 +99,15 @@
 <li><p>CocoaPods:</p>
 <ul>
 <li><p>Add the PushNotificationIOS library to your Podfile: ./ios/Podfile</p>
-<pre><code class="hljs">
-``
-<span class="hljs-built_in">..</span>
-<span class="hljs-keyword">do</span>
-pp
-<span class="hljs-built_in">..</span>
-S'
-<span class="hljs-built_in">..</span>.
-</code></pre></li>
+<p><!-- prettier-ignore-start --></p>
+<pre><code class="hljs">...
+target <span class="hljs-string">'myAwesomeApp'</span> do
+  # Pods for myAwesomeApp
+...
+  pod <span class="hljs-string">'React-RCTPushNotification'</span>, :path =&gt; <span class="hljs-string">'../node_modules/react-native/Libraries/PushNotificationIOS'</span>
+...
+</code></pre>
+<p><!-- prettier-ignore-end --></p></li>
 </ul></li>
 <li><p><a href="/react-native/docs/linking-libraries-ios#manual-linking">Manually link</a> the PushNotificationIOS library:</p>
 <ul>
