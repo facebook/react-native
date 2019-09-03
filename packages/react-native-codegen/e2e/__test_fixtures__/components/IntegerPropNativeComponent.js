@@ -12,7 +12,7 @@
 
 import type {
   WithDefault,
-  Int32,
+  Int32
 } from '../../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
@@ -28,5 +28,5 @@ type NativeProps = $ReadOnly<{|
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(
-  'IntegerPropNativeComponentView',
+  'IntegerPropNativeComponentView'
 ): NativeComponentType<NativeProps>);

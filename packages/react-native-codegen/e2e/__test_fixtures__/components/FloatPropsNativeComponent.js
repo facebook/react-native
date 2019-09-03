@@ -12,7 +12,7 @@
 
 import type {
   WithDefault,
-  Float,
+  Float
 } from '../../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
@@ -31,5 +31,5 @@ type NativeProps = $ReadOnly<{|
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(
-  'FloatPropsNativeComponentView',
+  'FloatPropsNativeComponentView'
 ): NativeComponentType<NativeProps>);

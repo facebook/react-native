@@ -13,7 +13,7 @@
 import type {
   Int32,
   BubblingEventHandler,
-  WithDefault,
+  WithDefault
 } from '../../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
@@ -40,5 +40,5 @@ type NativeProps = $ReadOnly<{|
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(
-  'EventNestedObjectPropsNativeComponentView',
+  'EventNestedObjectPropsNativeComponentView'
 ): NativeComponentType<NativeProps>);

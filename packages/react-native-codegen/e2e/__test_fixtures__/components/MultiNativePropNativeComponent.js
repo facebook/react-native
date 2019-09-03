@@ -12,7 +12,7 @@
 
 import type {
   PointValue,
-  ColorValue,
+  ColorValue
 } from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
 import type {ImageSource} from '../../../../../Libraries/Image/ImageSource';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
@@ -30,5 +30,5 @@ type NativeProps = $ReadOnly<{|
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(
-  'MultiNativePropNativeComponentView',
+  'MultiNativePropNativeComponentView'
 ): NativeComponentType<NativeProps>);
