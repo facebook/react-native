@@ -93,6 +93,12 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
 static BOOL turboModuleEnabled = NO;
 BOOL RCTTurboModuleEnabled(void)
 {
+#if RCT_DEBUG
+  // TODO(T53341772): Allow TurboModule for test environment. Right now this breaks RNTester tests if enabled.
+  if (RCTRunningInTestEnvironment()) {
+    return NO;
+  }
+#endif
   return turboModuleEnabled;
 }
 
