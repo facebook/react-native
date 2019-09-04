@@ -4,7 +4,7 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 # The prefix to the react-native
 prefix = "../node_modules/react-native"
 
-target 'Oii' do
+target 'HelloWorld' do
   # Pods for HelloWorld
   pod 'React', :path => "#{prefix}/"
   pod 'React-Core', :path => "#{prefix}/React"
@@ -30,7 +30,7 @@ target 'Oii' do
   pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
   pod 'Folly', :podspec => "#{prefix}/third-party-podspecs/Folly.podspec"
 
-  target 'OiiTests' do
+  target 'HelloWorldTests' do
     inherit! :search_paths
     # Pods for testing
   end
@@ -38,10 +38,10 @@ target 'Oii' do
   use_native_modules!
 end
 
-target 'Oii-tvOS' do
+target 'HelloWorld-tvOS' do
   # Pods for HelloWorld-tvOS
 
-  target 'Oii-tvOSTests' do
+  target 'HelloWorld-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
   end
