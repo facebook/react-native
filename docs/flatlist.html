@@ -84,73 +84,182 @@
 <li>Multiple column support.</li>
 </ul>
 <p>If you need section support, use <a href="/react-native/docs/sectionlist"><code>&lt;SectionList&gt;</code></a>.</p>
-<p>Minimal Example:</p>
-<pre><code class="hljs css language-jsx"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">FlatList</span></span>
-  <span class="token attr-name">data</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">[</span><span class="token punctuation">{</span>key<span class="token punctuation">:</span> <span class="token string">'a'</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>key<span class="token punctuation">:</span> <span class="token string">'b'</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">}</span></span>
-  <span class="token attr-name">renderItem</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span>item<span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token punctuation">{</span>item<span class="token punctuation">.</span>key<span class="token punctuation">}</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token punctuation">}</span></span>
-<span class="token punctuation">/></span></span>
-</code></pre>
-<p>To render multiple columns, use the <a href="/react-native/docs/flatlist#numcolumns"><code>numColumns</code></a> prop. Using this approach instead of a <code>flexWrap</code> layout can prevent conflicts with the item height logic.</p>
-<p>More complex, multi-select example demonstrating <code>PureComponent</code> usage for perf optimization and avoiding bugs.</p>
+<h3><a class="anchor" aria-hidden="true" id="basic-example"></a><a href="#basic-example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Basic Example:</h3>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { SafeAreaView, View, FlatList, StyleSheet, Text } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">'expo-constants'</span>;
+
+<span class="hljs-keyword">const</span> DATA = [
+  {
+    <span class="hljs-attr">id</span>: <span class="hljs-string">'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba'</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">'First Item'</span>,
+  },
+  {
+    <span class="hljs-attr">id</span>: <span class="hljs-string">'3ac68afc-c605-48d3-a4f8-fbd91aa97f63'</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">'Second Item'</span>,
+  },
+  {
+    <span class="hljs-attr">id</span>: <span class="hljs-string">'58694a0f-3da1-471f-bd96-145571e29d72'</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">'Third Item'</span>,
+  },
+];
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Item</span>(<span class="hljs-params">{ title }</span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">View</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.item}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>{title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">View</span>&gt;</span></span>
+  );
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">App</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    &lt;SafeAreaView style={styles.container}&gt;
+      &lt;FlatList
+        data={DATA}
+        renderItem={({ item }) =&gt; &lt;Item title={item.title} /&gt;}
+        keyExtractor={item =&gt; item.id}
+      /&gt;
+    &lt;/SafeAreaView&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: Constants.statusBarHeight,
+  },
+  item: {
+    backgroundColor: '#f9c2ff',
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+  title: {
+    fontSize: 32,
+  },
+});
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="flatlist-simple"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20SafeAreaView%2C%20View%2C%20FlatList%2C%20StyleSheet%2C%20Text%20%7D%20from%20'react-native'%3B%0Aimport%20Constants%20from%20'expo-constants'%3B%0A%0Aconst%20DATA%20%3D%20%5B%0A%20%20%7B%0A%20%20%20%20id%3A%20'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba'%2C%0A%20%20%20%20title%3A%20'First%20Item'%2C%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20id%3A%20'3ac68afc-c605-48d3-a4f8-fbd91aa97f63'%2C%0A%20%20%20%20title%3A%20'Second%20Item'%2C%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20id%3A%20'58694a0f-3da1-471f-bd96-145571e29d72'%2C%0A%20%20%20%20title%3A%20'Third%20Item'%2C%0A%20%20%7D%2C%0A%5D%3B%0A%0Afunction%20Item(%7B%20title%20%7D)%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CView%20style%3D%7Bstyles.item%7D%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.title%7D%3E%7Btitle%7D%3C%2FText%3E%0A%20%20%20%20%3C%2FView%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20function%20App()%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CSafeAreaView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CFlatList%0A%20%20%20%20%20%20%20%20data%3D%7BDATA%7D%0A%20%20%20%20%20%20%20%20renderItem%3D%7B(%7B%20item%20%7D)%20%3D%3E%20%3CItem%20title%3D%7Bitem.title%7D%20%2F%3E%7D%0A%20%20%20%20%20%20%20%20keyExtractor%3D%7Bitem%20%3D%3E%20item.id%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FSafeAreaView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20marginTop%3A%20Constants.statusBarHeight%2C%0A%20%20%7D%2C%0A%20%20item%3A%20%7B%0A%20%20%20%20backgroundColor%3A%20'%23f9c2ff'%2C%0A%20%20%20%20padding%3A%2020%2C%0A%20%20%20%20marginVertical%3A%208%2C%0A%20%20%20%20marginHorizontal%3A%2016%2C%0A%20%20%7D%2C%0A%20%20title%3A%20%7B%0A%20%20%20%20fontSize%3A%2032%2C%0A%20%20%7D%2C%0A%7D)%3B%0A"
+        data-snack-platform="web"
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p>To render multiple columns, use the <a href="/react-native/docs/flatlist#numcolumns"><code>numColumns</code></a> prop. Using this approach instead of a <code>flexWrap</code> layout can prevent conflicts with the item height logic.</p>
+<p>More complex, multi-select example demonstrating `` usage for perf optimization and avoiding bugs.</p>
 <ul>
-<li>By binding the <code>onPressItem</code> handler, the props will remain <code>===</code> and <code>PureComponent</code> will prevent wasteful re-renders unless the actual <code>id</code>, <code>selected</code>, or <code>title</code> props change, even if the components rendered in <code>MyListItem</code> did not have such optimizations.</li>
-<li>By passing <code>extraData={this.state}</code> to <code>FlatList</code> we make sure <code>FlatList</code> itself will re-render when the <code>state.selected</code> changes. Without setting this prop, <code>FlatList</code> would not know it needs to re-render any items because it is also a <code>PureComponent</code> and the prop comparison will not show any changes.</li>
+<li>By passing <code>extraData={selected}</code> to <code>FlatList</code> we make sure <code>FlatList</code> itself will re-render when the state changes. Without setting this prop, <code>FlatList</code> would not know it needs to re-render any items because it is a <code>PureComponent</code> and the prop comparison will not show any changes.</li>
 <li><code>keyExtractor</code> tells the list to use the <code>id</code>s for the react keys instead of the default <code>key</code> property.</li>
 </ul>
-<pre><code class="hljs css language-jsx"><span class="token keyword">class</span> <span class="token class-name">MyListItem</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>PureComponent</span> <span class="token punctuation">{</span>
-  <span class="token function-variable function">_onPress</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span><span class="token function">onPressItem</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> {
+  SafeAreaView,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  Text,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">'expo-constants'</span>;
 
-  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">const</span> textColor <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>selected <span class="token operator">?</span> <span class="token string">'red'</span> <span class="token punctuation">:</span> <span class="token string">'black'</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> <span class="token punctuation">(</span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">TouchableOpacity</span></span> <span class="token attr-name">onPress</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_onPress<span class="token punctuation">}</span></span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span>
-          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>color<span class="token punctuation">:</span> textColor<span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>title<span class="token punctuation">}</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">TouchableOpacity</span></span><span class="token punctuation">></span></span>
-    <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<span class="hljs-keyword">const</span> DATA = [
+  {
+    <span class="hljs-attr">id</span>: <span class="hljs-string">'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba'</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">'First Item'</span>,
+  },
+  {
+    <span class="hljs-attr">id</span>: <span class="hljs-string">'3ac68afc-c605-48d3-a4f8-fbd91aa97f63'</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">'Second Item'</span>,
+  },
+  {
+    <span class="hljs-attr">id</span>: <span class="hljs-string">'58694a0f-3da1-471f-bd96-145571e29d72'</span>,
+    <span class="hljs-attr">title</span>: <span class="hljs-string">'Third Item'</span>,
+  },
+];
 
-<span class="token keyword">class</span> <span class="token class-name">MultiSelectList</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>PureComponent</span> <span class="token punctuation">{</span>
-  state <span class="token operator">=</span> <span class="token punctuation">{</span>selected<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Map</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> Map<span class="token operator">&lt;</span>string<span class="token punctuation">,</span> boolean<span class="token operator">></span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Item</span>(<span class="hljs-params">{ id, title, selected, onSelect }</span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">TouchableOpacity</span>
+      <span class="hljs-attr">onPress</span>=<span class="hljs-string">{()</span> =&gt;</span> onSelect(id)}
+      style={[
+        styles.item,
+        { backgroundColor: selected ? '#6e3b6e' : '#f9c2ff' },
+      ]}
+    &gt;
+      <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.title}</span>&gt;</span>{title}<span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">TouchableOpacity</span>&gt;</span></span>
+  );
+}
 
-  <span class="token function-variable function">_keyExtractor</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">item<span class="token punctuation">,</span> index</span><span class="token punctuation">)</span> <span class="token operator">=></span> item<span class="token punctuation">.</span>id<span class="token punctuation">;</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">App</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> [selected, setSelected] = React.useState(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Map</span>());
 
-  <span class="token function-variable function">_onPressItem</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">id<span class="token punctuation">:</span> string</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-    <span class="token comment">// updater functions are preferred for transactional updates</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">state</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-      <span class="token comment">// copy the map rather than modifying state.</span>
-      <span class="token keyword">const</span> selected <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Map</span><span class="token punctuation">(</span>state<span class="token punctuation">.</span>selected<span class="token punctuation">)</span><span class="token punctuation">;</span>
-      selected<span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span> <span class="token operator">!</span>selected<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// toggle</span>
-      <span class="token keyword">return</span> <span class="token punctuation">{</span>selected<span class="token punctuation">}</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="hljs-keyword">const</span> onSelect = React.useCallback(
+    <span class="hljs-function"><span class="hljs-params">id</span> =&gt;</span> {
+      <span class="hljs-keyword">const</span> newSelected = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Map</span>(selected);
+      newSelected.set(id, !selected.get(id));
 
-  <span class="token function-variable function">_renderItem</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span>item<span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">MyListItem</span></span>
-      <span class="token attr-name">id</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>item<span class="token punctuation">.</span>id<span class="token punctuation">}</span></span>
-      <span class="token attr-name">onPressItem</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_onPressItem<span class="token punctuation">}</span></span>
-      <span class="token attr-name">selected</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token operator">!</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>selected<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>item<span class="token punctuation">.</span>id<span class="token punctuation">)</span><span class="token punctuation">}</span></span>
-      <span class="token attr-name">title</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>item<span class="token punctuation">.</span>title<span class="token punctuation">}</span></span>
-    <span class="token punctuation">/></span></span>
-  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+      setSelected(newSelected);
+    },
+    [selected],
+  );
 
-  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token punctuation">(</span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">FlatList</span></span>
-        <span class="token attr-name">data</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>props<span class="token punctuation">.</span>data<span class="token punctuation">}</span></span>
-        <span class="token attr-name">extraData</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">}</span></span>
-        <span class="token attr-name">keyExtractor</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_keyExtractor<span class="token punctuation">}</span></span>
-        <span class="token attr-name">renderItem</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_renderItem<span class="token punctuation">}</span></span>
-      <span class="token punctuation">/></span></span>
-    <span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-</code></pre>
-<p>This is a convenience wrapper around <a href="/react-native/docs/virtualizedlist"><code>&lt;VirtualizedList&gt;</code></a>, and thus inherits its props (as well as those of <a href="/react-native/docs/scrollview"><code>&lt;ScrollView&gt;</code></a>) that aren't explicitly listed here, along with the following caveats:</p>
+  <span class="hljs-keyword">return</span> (
+    &lt;SafeAreaView style={styles.container}&gt;
+      &lt;FlatList
+        data={DATA}
+        renderItem={({ item }) =&gt; (
+          &lt;Item
+            id={item.id}
+            title={item.title}
+            selected={!!selected.get(item.id)}
+            onSelect={onSelect}
+          /&gt;
+        )}
+        keyExtractor={item =&gt; item.id}
+        extraData={selected}
+      /&gt;
+    &lt;/SafeAreaView&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: Constants.statusBarHeight,
+  },
+  item: {
+    backgroundColor: '#f9c2ff',
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+  title: {
+    fontSize: 32,
+  },
+});
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="flatlist-selectable"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%0A%20%20SafeAreaView%2C%0A%20%20TouchableOpacity%2C%0A%20%20FlatList%2C%0A%20%20StyleSheet%2C%0A%20%20Text%2C%0A%7D%20from%20'react-native'%3B%0Aimport%20Constants%20from%20'expo-constants'%3B%0A%0Aconst%20DATA%20%3D%20%5B%0A%20%20%7B%0A%20%20%20%20id%3A%20'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba'%2C%0A%20%20%20%20title%3A%20'First%20Item'%2C%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20id%3A%20'3ac68afc-c605-48d3-a4f8-fbd91aa97f63'%2C%0A%20%20%20%20title%3A%20'Second%20Item'%2C%0A%20%20%7D%2C%0A%20%20%7B%0A%20%20%20%20id%3A%20'58694a0f-3da1-471f-bd96-145571e29d72'%2C%0A%20%20%20%20title%3A%20'Third%20Item'%2C%0A%20%20%7D%2C%0A%5D%3B%0A%0Afunction%20Item(%7B%20id%2C%20title%2C%20selected%2C%20onSelect%20%7D)%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CTouchableOpacity%0A%20%20%20%20%20%20onPress%3D%7B()%20%3D%3E%20onSelect(id)%7D%0A%20%20%20%20%20%20style%3D%7B%5B%0A%20%20%20%20%20%20%20%20styles.item%2C%0A%20%20%20%20%20%20%20%20%7B%20backgroundColor%3A%20selected%20%3F%20'%236e3b6e'%20%3A%20'%23f9c2ff'%20%7D%2C%0A%20%20%20%20%20%20%5D%7D%0A%20%20%20%20%3E%0A%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.title%7D%3E%7Btitle%7D%3C%2FText%3E%0A%20%20%20%20%3C%2FTouchableOpacity%3E%0A%20%20)%3B%0A%7D%0A%0Aexport%20default%20function%20App()%20%7B%0A%20%20const%20%5Bselected%2C%20setSelected%5D%20%3D%20React.useState(new%20Map())%3B%0A%0A%20%20const%20onSelect%20%3D%20React.useCallback(%0A%20%20%20%20id%20%3D%3E%20%7B%0A%20%20%20%20%20%20const%20newSelected%20%3D%20new%20Map(selected)%3B%0A%20%20%20%20%20%20newSelected.set(id%2C%20!selected.get(id))%3B%0A%0A%20%20%20%20%20%20setSelected(newSelected)%3B%0A%20%20%20%20%7D%2C%0A%20%20%20%20%5Bselected%5D%2C%0A%20%20)%3B%0A%0A%20%20return%20(%0A%20%20%20%20%3CSafeAreaView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CFlatList%0A%20%20%20%20%20%20%20%20data%3D%7BDATA%7D%0A%20%20%20%20%20%20%20%20renderItem%3D%7B(%7B%20item%20%7D)%20%3D%3E%20(%0A%20%20%20%20%20%20%20%20%20%20%3CItem%0A%20%20%20%20%20%20%20%20%20%20%20%20id%3D%7Bitem.id%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20title%3D%7Bitem.title%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20selected%3D%7B!!selected.get(item.id)%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20onSelect%3D%7BonSelect%7D%0A%20%20%20%20%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%20%20%20%20)%7D%0A%20%20%20%20%20%20%20%20keyExtractor%3D%7Bitem%20%3D%3E%20item.id%7D%0A%20%20%20%20%20%20%20%20extraData%3D%7Bselected%7D%0A%20%20%20%20%20%20%2F%3E%0A%20%20%20%20%3C%2FSafeAreaView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20marginTop%3A%20Constants.statusBarHeight%2C%0A%20%20%7D%2C%0A%20%20item%3A%20%7B%0A%20%20%20%20backgroundColor%3A%20'%23f9c2ff'%2C%0A%20%20%20%20padding%3A%2020%2C%0A%20%20%20%20marginVertical%3A%208%2C%0A%20%20%20%20marginHorizontal%3A%2016%2C%0A%20%20%7D%2C%0A%20%20title%3A%20%7B%0A%20%20%20%20fontSize%3A%2032%2C%0A%20%20%7D%2C%0A%7D)%3B%0A"
+        data-snack-platform="web"
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><p>This is a convenience wrapper around <a href="/react-native/docs/virtualizedlist"><code>&lt;VirtualizedList&gt;</code></a>, and thus inherits its props (as well as those of <a href="/react-native/docs/scrollview"><code>&lt;ScrollView&gt;</code></a>) that aren't explicitly listed here, along with the following caveats:</p>
 <ul>
 <li>Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.</li>
 <li>This is a <code>PureComponent</code> which means that it will not re-render if <code>props</code> remain shallow-equal. Make sure that everything your <code>renderItem</code> function depends on is passed as a prop (e.g. <code>extraData</code>) that is not <code>===</code> after updates, otherwise your UI may not update on changes. This includes the <code>data</code> prop and parent component state.</li>
