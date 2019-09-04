@@ -53,7 +53,15 @@ read -n 1
 
 ./gradlew :RNTester:android:app:installJscDebug || error "Couldn't build RNTester Android"
 
-npm pack
+info "Press any key to run RNTester in an already running Android emulator/device"
+info ""
+read -n 1
+adb shell am start -n com.facebook.react.uiapp/.RNTesterActivity
+
+info "Press any key to open the workspace in Xcode, then build and test manually."
+info ""
+read -n 1
+open "RNTester/RNTesterPods.xcworkspace"
 
 info "When done testing RNTester app on iOS and Android press any key to continue."
 info ""
