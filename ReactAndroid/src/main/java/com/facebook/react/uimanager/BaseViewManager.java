@@ -324,7 +324,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       // sqrt(5) produces an exact replica with iOS.
       // For more information, see https://github.com/facebook/react-native/pull/18302
       float normalizedCameraDistance =
-          scale * scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
+          sanitizeFloatPropertyValue(
+              scale * scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER);
       view.setCameraDistance(normalizedCameraDistance);
     }
   }
