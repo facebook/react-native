@@ -14,6 +14,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
@@ -40,6 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * FabricUIManager#scheduleMountItems(int, MountItem[])} on the UI thread.
  */
 public class MountingManager {
+  public static final String TAG = MountingManager.class.getSimpleName();
 
   private final ConcurrentHashMap<Integer, ViewState> mTagToViewState;
   private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
@@ -82,7 +84,7 @@ public class MountingManager {
       ViewGroupManager<ViewGroup> viewGroupManager = getViewGroupManager(state);
       for (int i = viewGroupManager.getChildCount(viewGroup) - 1; i >= 0; i--) {
         View child = viewGroupManager.getChildAt(viewGroup, i);
-        if (mTagToViewState.get(child.getId()) != null) {
+        if (getNullableViewState(child.getId()) != null) {
           dropView(child);
         }
         viewGroupManager.removeViewAt(viewGroup, i);
@@ -114,9 +116,21 @@ public class MountingManager {
     return viewState;
   }
 
+  private @Nullable ViewState getNullableViewState(int tag) {
+    return mTagToViewState.get(tag);
+  }
+
   @Deprecated
   public void receiveCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
-    ViewState viewState = getViewState(reactTag);
+    ViewState viewState = getNullableViewState(reactTag);
+
+    if (viewState == null) {
+      ReactSoftException.logSoftException(
+          MountingManager.TAG,
+          new IllegalStateException(
+              "Unable to find viewState for tag: " + reactTag + " for commandId: " + commandId));
+      return;
+    }
 
     if (viewState.mViewManager == null) {
       throw new IllegalStateException("Unable to find viewState manager for tag " + reactTag);
@@ -130,7 +144,15 @@ public class MountingManager {
   }
 
   public void receiveCommand(int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
-    ViewState viewState = getViewState(reactTag);
+    ViewState viewState = getNullableViewState(reactTag);
+
+    if (viewState == null) {
+      ReactSoftException.logSoftException(
+          MountingManager.TAG,
+          new IllegalStateException(
+              "Unable to find viewState for tag: " + reactTag + " for commandId: " + commandId));
+      return;
+    }
 
     if (viewState.mViewManager == null) {
       throw new IllegalStateException("Unable to find viewState manager for tag " + reactTag);
@@ -168,8 +190,18 @@ public class MountingManager {
   @UiThread
   public void removeViewAt(int parentTag, int index) {
     UiThreadUtil.assertOnUiThread();
-    ViewState viewState = getViewState(parentTag);
+    ViewState viewState = getNullableViewState(parentTag);
+
+    if (viewState == null) {
+      ReactSoftException.logSoftException(
+          MountingManager.TAG,
+          new IllegalStateException(
+              "Unable to find viewState for tag: " + parentTag + " for removeViewAt"));
+      return;
+    }
+
     final ViewGroup parentView = (ViewGroup) viewState.mView;
+
     if (parentView == null) {
       throw new IllegalStateException("Unable to find view for tag " + parentTag);
     }
@@ -185,7 +217,7 @@ public class MountingManager {
       @Nullable ReadableMap props,
       @Nullable StateWrapper stateWrapper,
       boolean isLayoutable) {
-    if (mTagToViewState.get(reactTag) != null) {
+    if (getNullableViewState(reactTag) != null) {
       return;
     }
 
@@ -281,7 +313,17 @@ public class MountingManager {
   @UiThread
   public void deleteView(int reactTag) {
     UiThreadUtil.assertOnUiThread();
-    View view = getViewState(reactTag).mView;
+    ViewState viewState = getNullableViewState(reactTag);
+
+    if (viewState == null) {
+      ReactSoftException.logSoftException(
+          MountingManager.TAG,
+          new IllegalStateException(
+              "Unable to find viewState for tag: " + reactTag + " for deleteView"));
+      return;
+    }
+
+    View view = viewState.mView;
     if (view != null) {
       dropView(view);
     } else {
@@ -351,7 +393,7 @@ public class MountingManager {
       @Nullable StateWrapper stateWrapper,
       boolean isLayoutable) {
 
-    if (mTagToViewState.get(reactTag) != null) {
+    if (getNullableViewState(reactTag) != null) {
       throw new IllegalStateException(
           "View for component " + componentName + " with tag " + reactTag + " already exists.");
     }
@@ -438,7 +480,7 @@ public class MountingManager {
 
   @AnyThread
   public @Nullable EventEmitterWrapper getEventEmitter(int reactTag) {
-    ViewState viewState = mTagToViewState.get(reactTag);
+    ViewState viewState = getNullableViewState(reactTag);
     return viewState == null ? null : viewState.mEventEmitter;
   }
 
