@@ -31,8 +31,8 @@ Start an Android emulator.
 _Note: Building for the first time can take a while._
 
 Open the RNTester app in your emulator.
-
-See [Running on Device](https://facebook.github.io/react-native/docs/running-on-device.html) in case you want to use a physical device.
+If you want to use a physical device, run `adb devices`, then `adb -s <device name> reverse tcp:8081 tcp:8081`.
+See [Running on Device](https://facebook.github.io/react-native/docs/running-on-device.html) for additional instructions on using a physical device.
 
 ### Running with Buck
 
