@@ -6,9 +6,9 @@ prefix = "../node_modules/react-native"
 
 target 'HelloWorld' do
   # Pods for HelloWorld
-  pod 'React', :path => "#{prefix}/"
-  pod 'React-Core', :path => "#{prefix}/React"
-  pod 'React-DevSupport', :path => "#{prefix}/React"
+  pod 'React', :path => "#{prefix}"
+  pod 'React-Core', :path => "#{prefix}"
+  pod 'React-Core/DevSupport', :path => "#{prefix}"
   pod 'React-RCTActionSheet', :path => "#{prefix}/Libraries/ActionSheetIOS"
   pod 'React-RCTAnimation', :path => "#{prefix}/Libraries/NativeAnimation"
   pod 'React-RCTBlob', :path => "#{prefix}/Libraries/Blob"
@@ -18,13 +18,13 @@ target 'HelloWorld' do
   pod 'React-RCTSettings', :path => "#{prefix}/Libraries/Settings"
   pod 'React-RCTText', :path => "#{prefix}/Libraries/Text"
   pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
-  pod 'React-RCTWebSocket', :path => "#{prefix}/Libraries/WebSocket"
+  pod 'React-Core/RCTWebSocket', :path => "#{prefix}"
 
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
   pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector"
-  pod 'yoga', :path => "#{prefix}/ReactCommon/yoga"
+  pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga"
 
   pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
   pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
