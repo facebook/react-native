@@ -35,39 +35,41 @@ def flipper_post_install(installer)
   installer.pods_project.save
 end
 
+# The prefix to the react-native
+prefix = "../node_modules/react-native"
 
 target 'HelloWorld' do
   # Pods for HelloWorld
-  pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
-  pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
-  pod 'RCTRequired', :path => "../node_modules/react-native/Libraries/RCTRequired"
-  pod 'RCTTypeSafety', :path => "../node_modules/react-native/Libraries/TypeSafety"
-  pod 'React', :path => '../node_modules/react-native/'
-  pod 'React-Core', :path => '../node_modules/react-native/'
-  pod 'React-CoreModules', :path => '../node_modules/react-native/React/CoreModules'
-  pod 'React-Core/DevSupport', :path => '../node_modules/react-native/'
-  pod 'React-RCTActionSheet', :path => '../node_modules/react-native/Libraries/ActionSheetIOS'
-  pod 'React-RCTAnimation', :path => '../node_modules/react-native/Libraries/NativeAnimation'
-  pod 'React-RCTBlob', :path => '../node_modules/react-native/Libraries/Blob'
-  pod 'React-RCTImage', :path => '../node_modules/react-native/Libraries/Image'
-  pod 'React-RCTLinking', :path => '../node_modules/react-native/Libraries/LinkingIOS'
-  pod 'React-RCTNetwork', :path => '../node_modules/react-native/Libraries/Network'
-  pod 'React-RCTSettings', :path => '../node_modules/react-native/Libraries/Settings'
-  pod 'React-RCTText', :path => '../node_modules/react-native/Libraries/Text'
-  pod 'React-RCTVibration', :path => '../node_modules/react-native/Libraries/Vibration'
-  pod 'React-Core/RCTWebSocket', :path => '../node_modules/react-native/'
+  pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
+  pod 'FBReactNativeSpec', :path => "#{prefix}/Libraries/FBReactNativeSpec"
+  pod 'RCTRequired', :path => "#{prefix}/Libraries/RCTRequired"
+  pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety"
+  pod 'React', :path => "#{prefix}/"
+  pod 'React-Core', :path => "#{prefix}/"
+  pod 'React-CoreModules', :path => "#{prefix}/React/CoreModules"
+  pod 'React-Core/DevSupport', :path => "#{prefix}/"
+  pod 'React-RCTActionSheet', :path => "#{prefix}/Libraries/ActionSheetIOS"
+  pod 'React-RCTAnimation', :path => "#{prefix}/Libraries/NativeAnimation"
+  pod 'React-RCTBlob', :path => "#{prefix}/Libraries/Blob"
+  pod 'React-RCTImage', :path => "#{prefix}/Libraries/Image"
+  pod 'React-RCTLinking', :path => "#{prefix}/Libraries/LinkingIOS"
+  pod 'React-RCTNetwork', :path => "#{prefix}/Libraries/Network"
+  pod 'React-RCTSettings', :path => "#{prefix}/Libraries/Settings"
+  pod 'React-RCTText', :path => "#{prefix}/Libraries/Text"
+  pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
+  pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
 
-  pod 'React-cxxreact', :path => '../node_modules/react-native/ReactCommon/cxxreact'
-  pod 'React-jsi', :path => '../node_modules/react-native/ReactCommon/jsi'
-  pod 'React-jsiexecutor', :path => '../node_modules/react-native/ReactCommon/jsiexecutor'
-  pod 'React-jsinspector', :path => '../node_modules/react-native/ReactCommon/jsinspector'
-  pod 'ReactCommon/jscallinvoker', :path => "../node_modules/react-native/ReactCommon"
-  pod 'ReactCommon/turbomodule/core', :path => "../node_modules/react-native/ReactCommon"
-  pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
+  pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
+  pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
+  pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
+  pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector"
+  pod 'ReactCommon/jscallinvoker', :path => "#{prefix}/ReactCommon"
+  pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon"
+  pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga"
 
-  pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
-  pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
-  pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
+  pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
+  pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
+  pod 'Folly', :podspec => "#{prefix}/third-party-podspecs/Folly.podspec"
 
   target 'HelloWorldTests' do
     inherit! :complete
@@ -77,8 +79,8 @@ target 'HelloWorld' do
   use_native_modules!
 
   # For enabling Flipper.
-  # Note that if you use_framework!, flipper will no work. 
-  # Disable these lines if you are doing use_framework! 
+  # Note that if you use_framework!, flipper will no work.
+  # Disable these lines if you are doing use_framework!
   flipper_pods()
   post_install do |installer|
     flipper_post_install(installer)
