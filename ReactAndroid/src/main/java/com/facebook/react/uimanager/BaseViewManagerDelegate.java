@@ -10,8 +10,7 @@ import com.facebook.yoga.YogaConstants;
  * This is a base implementation of {@link ViewManagerDelegate} which supports setting properties
  * that every view should support, such as rotation, background color, etc.
  */
-public abstract class BaseViewManagerDelegate<
-        T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode>>
+public abstract class BaseViewManagerDelegate<T extends View, U extends BaseViewManagerInterface<T>>
     implements ViewManagerDelegate<T> {
   protected final U mViewManager;
 

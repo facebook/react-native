@@ -11,11 +11,11 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
+import com.facebook.react.uimanager.BaseViewManagerInterface;
 import com.facebook.react.uimanager.LayoutShadowNode;
 
-public class InputAccessoryViewManagerDelegate<T extends View, U extends BaseViewManager<T, ? extends LayoutShadowNode> & InputAccessoryViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+public class InputAccessoryViewManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & InputAccessoryViewManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
   public InputAccessoryViewManagerDelegate(U viewManager) {
     super(viewManager);
   }

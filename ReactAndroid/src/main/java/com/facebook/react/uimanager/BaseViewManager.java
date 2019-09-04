@@ -34,7 +34,7 @@ import java.util.Map;
  * provides support for base view properties such as backgroundColor, opacity, etc.
  */
 public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode>
-    extends ViewManager<T, C> {
+    extends ViewManager<T, C> implements BaseViewManagerInterface<T> {
 
   private static final int PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX = 2;
   private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = (float) Math.sqrt(5);
@@ -60,6 +60,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String STATE_EXPANDED = "expanded";
   private static final String STATE_MIXED = "mixed";
 
+  @Override
   @ReactProp(
       name = ViewProps.BACKGROUND_COLOR,
       defaultInt = Color.TRANSPARENT,
@@ -68,6 +69,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setBackgroundColor(backgroundColor);
   }
 
+  @Override
   @ReactProp(name = ViewProps.TRANSFORM)
   public void setTransform(@NonNull T view, @Nullable ReadableArray matrix) {
     if (matrix == null) {
@@ -77,16 +79,19 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
+  @Override
   @ReactProp(name = ViewProps.OPACITY, defaultFloat = 1.f)
   public void setOpacity(@NonNull T view, float opacity) {
     view.setAlpha(opacity);
   }
 
+  @Override
   @ReactProp(name = ViewProps.ELEVATION)
   public void setElevation(@NonNull T view, float elevation) {
     ViewCompat.setElevation(view, PixelUtil.toPixelFromDIP(elevation));
   }
 
+  @Override
   @ReactProp(name = ViewProps.Z_INDEX)
   public void setZIndex(@NonNull T view, float zIndex) {
     int integerZIndex = Math.round(zIndex);
@@ -97,37 +102,43 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
+  @Override
   @ReactProp(name = ViewProps.RENDER_TO_HARDWARE_TEXTURE)
   public void setRenderToHardwareTexture(@NonNull T view, boolean useHWTexture) {
     view.setLayerType(useHWTexture ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE, null);
   }
 
+  @Override
   @ReactProp(name = ViewProps.TEST_ID)
-  public void setTestId(@NonNull T view, String testId) {
+  public void setTestId(@NonNull T view, @Nullable String testId) {
     view.setTag(R.id.react_test_id, testId);
 
     // temporarily set the tag and keyed tags to avoid end to end test regressions
     view.setTag(testId);
   }
 
+  @Override
   @ReactProp(name = ViewProps.NATIVE_ID)
-  public void setNativeId(@NonNull T view, String nativeId) {
+  public void setNativeId(@NonNull T view, @Nullable String nativeId) {
     view.setTag(R.id.view_tag_native_id, nativeId);
     ReactFindViewUtil.notifyViewRendered(view);
   }
 
+  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_LABEL)
-  public void setAccessibilityLabel(@NonNull T view, String accessibilityLabel) {
+  public void setAccessibilityLabel(@NonNull T view, @Nullable String accessibilityLabel) {
     view.setTag(R.id.accessibility_label, accessibilityLabel);
     updateViewContentDescription(view);
   }
 
+  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_HINT)
-  public void setAccessibilityHint(@NonNull T view, String accessibilityHint) {
+  public void setAccessibilityHint(@NonNull T view, @Nullable String accessibilityHint) {
     view.setTag(R.id.accessibility_hint, accessibilityHint);
     updateViewContentDescription(view);
   }
 
+  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_ROLE)
   public void setAccessibilityRole(@NonNull T view, @Nullable String accessibilityRole) {
     if (accessibilityRole == null) {
@@ -136,6 +147,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
   }
 
+  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_STATE)
   public void setViewState(@NonNull T view, @Nullable ReadableMap accessibilityState) {
     if (accessibilityState == null) {
@@ -201,6 +213,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
+  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_ACTIONS)
   public void setAccessibilityActions(T view, ReadableArray accessibilityActions) {
     if (accessibilityActions == null) {
@@ -210,6 +223,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.accessibility_actions, accessibilityActions);
   }
 
+  @Override
   @ReactProp(name = ViewProps.IMPORTANT_FOR_ACCESSIBILITY)
   public void setImportantForAccessibility(
       @NonNull T view, @Nullable String importantForAccessibility) {
@@ -225,36 +239,42 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
+  @Override
   @Deprecated
   @ReactProp(name = ViewProps.ROTATION)
   public void setRotation(@NonNull T view, float rotation) {
     view.setRotation(rotation);
   }
 
+  @Override
   @Deprecated
   @ReactProp(name = ViewProps.SCALE_X, defaultFloat = 1f)
   public void setScaleX(@NonNull T view, float scaleX) {
     view.setScaleX(scaleX);
   }
 
+  @Override
   @Deprecated
   @ReactProp(name = ViewProps.SCALE_Y, defaultFloat = 1f)
   public void setScaleY(@NonNull T view, float scaleY) {
     view.setScaleY(scaleY);
   }
 
+  @Override
   @Deprecated
   @ReactProp(name = ViewProps.TRANSLATE_X, defaultFloat = 0f)
   public void setTranslateX(@NonNull T view, float translateX) {
     view.setTranslationX(PixelUtil.toPixelFromDIP(translateX));
   }
 
+  @Override
   @Deprecated
   @ReactProp(name = ViewProps.TRANSLATE_Y, defaultFloat = 0f)
   public void setTranslateY(@NonNull T view, float translateY) {
     view.setTranslationY(PixelUtil.toPixelFromDIP(translateY));
   }
 
+  @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_LIVE_REGION)
   public void setAccessibilityLiveRegion(@NonNull T view, @Nullable String liveRegion) {
     if (liveRegion == null || liveRegion.equals("none")) {
@@ -359,23 +379,28 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         .build();
   }
 
-  protected void setBorderRadius(T view, float borderRadius) {
+  @Override
+  public void setBorderRadius(T view, float borderRadius) {
     logUnsupportedPropertyWarning(ViewProps.BORDER_RADIUS);
   }
 
-  protected void setBorderBottomLeftRadius(T view, float borderRadius) {
+  @Override
+  public void setBorderBottomLeftRadius(T view, float borderRadius) {
     logUnsupportedPropertyWarning(ViewProps.BORDER_BOTTOM_LEFT_RADIUS);
   }
 
-  protected void setBorderBottomRightRadius(T view, float borderRadius) {
+  @Override
+  public void setBorderBottomRightRadius(T view, float borderRadius) {
     logUnsupportedPropertyWarning(ViewProps.BORDER_BOTTOM_RIGHT_RADIUS);
   }
 
-  protected void setBorderTopLeftRadius(T view, float borderRadius) {
+  @Override
+  public void setBorderTopLeftRadius(T view, float borderRadius) {
     logUnsupportedPropertyWarning(ViewProps.BORDER_TOP_LEFT_RADIUS);
   }
 
-  protected void setBorderTopRightRadius(T view, float borderRadius) {
+  @Override
+  public void setBorderTopRightRadius(T view, float borderRadius) {
     logUnsupportedPropertyWarning(ViewProps.BORDER_TOP_RIGHT_RADIUS);
   }
 
