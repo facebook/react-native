@@ -11,7 +11,6 @@
 
 const DeprecatedTextInputPropTypes = require('../../DeprecatedPropTypes/DeprecatedTextInputPropTypes');
 const DocumentSelectionState = require('../../vendor/document/selection/DocumentSelectionState');
-const NativeMethodsMixin = require('../../Renderer/shims/NativeMethodsMixin');
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const ReactNative = require('../../Renderer/shims/ReactNative');
@@ -22,10 +21,11 @@ const TextInputState = require('./TextInputState');
 const TouchableWithoutFeedback = require('../Touchable/TouchableWithoutFeedback');
 const UIManager = require('../../ReactNative/UIManager');
 
-const createReactClass = require('create-react-class');
 const invariant = require('invariant');
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 const warning = require('fbjs/lib/warning');
+const nullthrows = require('nullthrows');
+const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 
 import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
@@ -689,7 +689,31 @@ type Props = $ReadOnly<{|
    * If `true`, contextMenuHidden is hidden. The default value is `false`.
    */
   contextMenuHidden?: ?boolean,
+
+  rejectResponderTermination?: ?boolean,
+  inputView?: ?React.ElementRef<any>,
+
+  forwardedRef?: ?React.Ref<Class<TextInputType>>,
 |}>;
+
+type NativeProps = $ReadOnly<{|
+  ...Props,
+  text?: ?string,
+  onSelectionChangeShouldSetResponder?: ?() => boolean,
+  mostRecentEventCount?: ?number,
+|}>;
+
+declare class TextInputType extends ReactNative.NativeComponent<NativeProps> {
+  /**
+   * Removes all text from the `TextInput`.
+   */
+  clear(): mixed;
+
+  /**
+   * Returns `true` if the input is currently focused; `false` otherwise.
+   */
+  isFocused(): boolean;
+}
 
 const emptyFunctionThatReturnsTrue = () => true;
 
@@ -805,46 +829,38 @@ const emptyFunctionThatReturnsTrue = () => true;
  *
  */
 
-const TextInput = createReactClass({
-  displayName: 'TextInput',
-  statics: {
-    State: {
-      currentlyFocusedField: TextInputState.currentlyFocusedField,
-      focusTextInput: TextInputState.focusTextInput,
-      blurTextInput: TextInputState.blurTextInput,
-    },
-  },
-  propTypes: DeprecatedTextInputPropTypes,
-  getDefaultProps() {
-    return {
-      allowFontScaling: true,
-      rejectResponderTermination: true,
-      underlineColorAndroid: 'transparent',
-    };
-  },
-  /**
-   * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
-   * make `this` look like an actual native component class.
-   */
-  mixins: [NativeMethodsMixin],
+class TextInput extends React.Component<Props> {
+  static defaultProps = {
+    allowFontScaling: true,
+    rejectResponderTermination: true,
+    underlineColorAndroid: 'transparent',
+  };
+
+  static propTypes = DeprecatedTextInputPropTypes;
+
+  static State = {
+    currentlyFocusedField: TextInputState.currentlyFocusedField,
+    focusTextInput: TextInputState.focusTextInput,
+    blurTextInput: TextInputState.blurTextInput,
+  };
 
   /**
    * Returns `true` if the input is currently focused; `false` otherwise.
    */
-  isFocused: function(): boolean {
+  isFocused(): boolean {
     return (
       TextInputState.currentlyFocusedField() ===
       ReactNative.findNodeHandle(this._inputRef)
     );
-  },
+  }
 
-  _inputRef: (undefined: any),
-  _focusSubscription: (undefined: ?Function),
-  _lastNativeText: (undefined: ?string),
-  _lastNativeSelection: (undefined: ?Selection),
-  _rafId: (null: ?AnimationFrameID),
+  _inputRef: ?React.ElementRef<Class<TextInputType>> = null;
+  _focusSubscription: ?Function = undefined;
+  _lastNativeText: ?string = null;
+  _lastNativeSelection: ?Selection = null;
+  _rafId: ?AnimationFrameID = null;
 
-  componentDidMount: function() {
+  componentDidMount() {
     this._lastNativeText = this.props.value;
     const tag = ReactNative.findNodeHandle(this._inputRef);
     if (tag != null) {
@@ -853,14 +869,16 @@ const TextInput = createReactClass({
     }
 
     if (this.props.autoFocus) {
-      this._rafId = requestAnimationFrame(this.focus);
+      this._rafId = requestAnimationFrame(
+        nullthrows(this._inputRef).focus.bind(this._inputRef),
+      );
     }
-  },
+  }
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     this._focusSubscription && this._focusSubscription.remove();
     if (this.isFocused()) {
-      this.blur();
+      nullthrows(this._inputRef).blur();
     }
     const tag = ReactNative.findNodeHandle(this._inputRef);
     if (tag != null) {
@@ -869,16 +887,16 @@ const TextInput = createReactClass({
     if (this._rafId != null) {
       cancelAnimationFrame(this._rafId);
     }
-  },
+  }
 
   /**
    * Removes all text from the `TextInput`.
    */
-  clear: function() {
-    this.setNativeProps({text: ''});
-  },
+  clear() {
+    nullthrows(this._inputRef).setNativeProps({text: ''});
+  }
 
-  render: function() {
+  render() {
     let textInput;
     if (Platform.OS === 'ios') {
       textInput = UIManager.getViewManagerConfig('RCTVirtualText')
@@ -890,25 +908,28 @@ const TextInput = createReactClass({
     return (
       <TextAncestor.Provider value={true}>{textInput}</TextAncestor.Provider>
     );
-  },
+  }
 
-  _getText: function(): ?string {
+  _getText(): ?string {
     return typeof this.props.value === 'string'
       ? this.props.value
       : typeof this.props.defaultValue === 'string'
       ? this.props.defaultValue
       : '';
-  },
+  }
 
-  _setNativeRef: function(ref: any) {
-    this._inputRef = ref;
-  },
+  _setNativeRef = setAndForwardRef({
+    getForwardedRef: () => this.props.forwardedRef,
+    setLocalRef: ref => {
+      this._inputRef = ref;
+    },
+  });
 
-  _renderIOSLegacy: function() {
+  _renderIOSLegacy() {
     let textContainer;
 
     const props = Object.assign({}, this.props);
-    props.style = [this.props.style];
+    const style: Array<TextStyleProp> = [this.props.style];
 
     if (props.selection && props.selection.end == null) {
       props.selection = {
@@ -934,6 +955,7 @@ const TextInput = createReactClass({
         <RCTSinglelineTextInputView
           ref={this._setNativeRef}
           {...props}
+          style={style}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
@@ -953,7 +975,7 @@ const TextInput = createReactClass({
       if (childCount >= 1) {
         children = (
           <Text
-            style={props.style}
+            style={style}
             allowFontScaling={props.allowFontScaling}
             maxFontSizeMultiplier={props.maxFontSizeMultiplier}>
             {children}
@@ -963,11 +985,12 @@ const TextInput = createReactClass({
       if (props.inputView) {
         children = [children, props.inputView];
       }
-      props.style.unshift(styles.multilineInput);
+      style.unshift(styles.multilineInput);
       textContainer = (
         <RCTMultilineTextInputView
           ref={this._setNativeRef}
           {...props}
+          style={style}
           children={children}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
@@ -997,11 +1020,11 @@ const TextInput = createReactClass({
         {textContainer}
       </TouchableWithoutFeedback>
     );
-  },
+  }
 
-  _renderIOS: function() {
+  _renderIOS() {
     const props = Object.assign({}, this.props);
-    props.style = [this.props.style];
+    const style: Array<TextStyleProp> = [this.props.style];
 
     if (props.selection && props.selection.end == null) {
       props.selection = {
@@ -1015,13 +1038,14 @@ const TextInput = createReactClass({
       : RCTSinglelineTextInputView;
 
     if (props.multiline) {
-      props.style.unshift(styles.multilineInput);
+      style.unshift(styles.multilineInput);
     }
 
     const textContainer = (
       <RCTTextInputView
         ref={this._setNativeRef}
         {...props}
+        style={style}
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}
@@ -1049,9 +1073,9 @@ const TextInput = createReactClass({
         {textContainer}
       </TouchableWithoutFeedback>
     );
-  },
+  }
 
-  _renderAndroid: function() {
+  _renderAndroid() {
     const props = Object.assign({}, this.props);
     props.style = [this.props.style];
     props.autoCapitalize = props.autoCapitalize || 'sentences';
@@ -1104,9 +1128,9 @@ const TextInput = createReactClass({
         {textContainer}
       </TouchableWithoutFeedback>
     );
-  },
+  }
 
-  _onFocus: function(event: FocusEvent) {
+  _onFocus = (event: FocusEvent) => {
     if (this.props.onFocus) {
       this.props.onFocus(event);
     }
@@ -1114,15 +1138,15 @@ const TextInput = createReactClass({
     if (this.props.selectionState) {
       this.props.selectionState.focus();
     }
-  },
+  };
 
-  _onPress: function(event: PressEvent) {
+  _onPress = (event: PressEvent) => {
     if (this.props.editable || this.props.editable === undefined) {
-      this.focus();
+      nullthrows(this._inputRef).focus();
     }
-  },
+  };
 
-  _onChange: function(event: ChangeEvent) {
+  _onChange = (event: ChangeEvent) => {
     // Make sure to fire the mostRecentEventCount first so it is already set on
     // native when the text value is set.
     if (this._inputRef && this._inputRef.setNativeProps) {
@@ -1143,9 +1167,9 @@ const TextInput = createReactClass({
 
     this._lastNativeText = text;
     this.forceUpdate();
-  },
+  };
 
-  _onSelectionChange: function(event: SelectionChangeEvent) {
+  _onSelectionChange = (event: SelectionChangeEvent) => {
     this.props.onSelectionChange && this.props.onSelectionChange(event);
 
     if (!this._inputRef) {
@@ -1159,9 +1183,9 @@ const TextInput = createReactClass({
     if (this.props.selection || this.props.selectionState) {
       this.forceUpdate();
     }
-  },
+  };
 
-  componentDidUpdate: function() {
+  componentDidUpdate() {
     // This is necessary in case native updates the text and JS decides
     // that the update should be ignored and we should stick with the value
     // that we have in JS.
@@ -1197,12 +1221,12 @@ const TextInput = createReactClass({
     if (this.props.selectionState && selection) {
       this.props.selectionState.update(selection.start, selection.end);
     }
-  },
+  }
 
-  _onBlur: function(event: BlurEvent) {
+  _onBlur = (event: BlurEvent) => {
     // This is a hack to fix https://fburl.com/toehyir8
     // @todo(rsnara) Figure out why this is necessary.
-    this.blur();
+    nullthrows(this._inputRef).blur();
     if (this.props.onBlur) {
       this.props.onBlur(event);
     }
@@ -1210,25 +1234,23 @@ const TextInput = createReactClass({
     if (this.props.selectionState) {
       this.props.selectionState.blur();
     }
-  },
+  };
 
-  _onTextInput: function(event: TextInputEvent) {
+  _onTextInput = (event: TextInputEvent) => {
     this.props.onTextInput && this.props.onTextInput(event);
-  },
+  };
 
-  _onScroll: function(event: ScrollEvent) {
+  _onScroll = (event: ScrollEvent) => {
     this.props.onScroll && this.props.onScroll(event);
-  },
-});
-
-class InternalTextInputType extends ReactNative.NativeComponent<Props> {
-  clear() {}
-
-  // $FlowFixMe
-  isFocused(): boolean {}
+  };
 }
 
-const TypedTextInput = ((TextInput: any): Class<InternalTextInputType>);
+const TextInputWithRef = React.forwardRef(function TextInputWithRef(
+  props: Props,
+  forwardedRef?: ?React.Ref<Class<TextInputType>>,
+) {
+  return <TextInput {...props} forwardedRef={forwardedRef} />;
+});
 
 const styles = StyleSheet.create({
   multilineInput: {
@@ -1239,4 +1261,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = TypedTextInput;
+module.exports = TextInputWithRef;
