@@ -138,7 +138,9 @@ public class InspectorPackagerConnection {
     String wrappedEvent = payload.getString("wrappedEvent");
     Inspector.LocalConnection inspectorConnection = mInspectorConnections.get(pageId);
     if (inspectorConnection == null) {
-      throw new IllegalStateException("Not connected: " + pageId);
+      // This tends to happen during reloads, so don't panic.
+      FLog.w(TAG, "PageID " + pageId + " is disconnected. Dropping event: " + wrappedEvent);
+      return;
     }
     inspectorConnection.sendMessage(wrappedEvent);
   }
