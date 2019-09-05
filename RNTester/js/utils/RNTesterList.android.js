@@ -129,6 +129,10 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/Animated/AnimatedExample'),
   },
   {
+    key: 'Animation - GratuitousAnimation',
+    module: require('../examples/Animated/AnimatedGratuitousApp/AnExApp'),
+  },
+  {
     key: 'AppearanceExample',
     module: require('../examples/Appearance/AppearanceExample'),
   },
