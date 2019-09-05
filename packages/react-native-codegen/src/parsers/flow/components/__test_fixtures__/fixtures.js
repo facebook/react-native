@@ -43,19 +43,19 @@ const EVENT_DEFINITION = `
 
   object_required: {
     boolean_required: boolean,
-  }
+  },
 
   object_optional_key?: {
     string_optional_key?: string,
-  }
+  },
 
   object_optional_value: ?{
     float_optional_value: ?Float,
-  }
+  },
 
   object_optional_both?: ?{
     int32_optional_both?: ?Int32,
-  }
+  },
 
   object_required_nested_2_layers: {
     object_optional_nested_1_layer?: ?{
@@ -65,7 +65,7 @@ const EVENT_DEFINITION = `
       float_optional_value: ?Float,
       int32_optional_both?: ?Int32,
     }
-  }
+  },
 `;
 
 const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS = `
@@ -500,7 +500,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 type DeepSpread = $ReadOnly<{|
   otherStringProp: string,
-|}>
+|}>;
 
 export type PropsInFile = $ReadOnly<{|
   ...DeepSpread,
@@ -511,11 +511,11 @@ export type PropsInFile = $ReadOnly<{|
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 
-  ...PropsInFile
+  ...PropsInFile,
 
   localType: $ReadOnly<{|
     ...PropsInFile
-  |}>
+  |}>,
 
   localArr: $ReadOnlyArray<PropsInFile>
 |}>;
@@ -898,7 +898,7 @@ export type ModuleProps = $ReadOnly<{|
 
 type NativeType = NativeComponent<ModuleProps>;
 
-export type ScrollTo = (viewRef: React.ElementRef<NativeType>, y: Int, animated: Boolean) => Void
+export type ScrollTo = (viewRef: React.ElementRef<NativeType>, y: Int, animated: Boolean) => Void;
 
 interface NativeCommands {
   +scrollTo: ScrollTo;
