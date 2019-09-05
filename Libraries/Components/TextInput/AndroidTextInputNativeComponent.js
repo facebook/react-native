@@ -17,13 +17,14 @@ import type {
   Double,
   Float,
   Int32,
+  WithDefault,
 } from 'react-native/Libraries/Types/CodegenTypes';
 import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import {requireNativeComponent} from 'react-native';
 
-/*export type KeyboardType =
+export type KeyboardType =
   // Cross Platform
   | 'default'
   | 'email-address'
@@ -39,9 +40,9 @@ import {requireNativeComponent} from 'react-native';
   | 'twitter'
   | 'web-search'
   // Android-only
-  | 'visible-password';*/
+  | 'visible-password';
 
-/*export type ReturnKeyType =
+export type ReturnKeyType =
   // Cross Platform
   | 'done'
   | 'go'
@@ -57,7 +58,7 @@ import {requireNativeComponent} from 'react-native';
   | 'google'
   | 'join'
   | 'route'
-  | 'yahoo';*/
+  | 'yahoo';
 
 export type NativeProps = $ReadOnly<{|
   // This allows us to inherit everything from ViewProps except for style (see below)
@@ -91,25 +92,22 @@ export type NativeProps = $ReadOnly<{|
    *
    * @platform android
    */
-  // TODO T53321474: define as flow enum
-  autoCompleteType?: ?string /*WithDefault<
-    ?(
-      | 'cc-csc'
-      | 'cc-exp'
-      | 'cc-exp-month'
-      | 'cc-exp-year'
-      | 'cc-number'
-      | 'email'
-      | 'name'
-      | 'password'
-      | 'postal-code'
-      | 'street-address'
-      | 'tel'
-      | 'username'
-      | 'off'
-    ),
+  autoCompleteType?: WithDefault<
+    | 'cc-csc'
+    | 'cc-exp'
+    | 'cc-exp-month'
+    | 'cc-exp-year'
+    | 'cc-number'
+    | 'email'
+    | 'name'
+    | 'password'
+    | 'postal-code'
+    | 'street-address'
+    | 'tel'
+    | 'username'
+    | 'off',
     'off',
-  >*/,
+  >,
 
   /**
    * Sets the return key to the label. Use it instead of `returnKeyType`.
@@ -139,8 +137,10 @@ export type NativeProps = $ReadOnly<{|
    * The default value is `simple`.
    * @platform android
    */
-  // TODO T53321474: enable enum types in codegen
-  textBreakStrategy?: string, // ?('simple' | 'highQuality' | 'balanced'),
+  textBreakStrategy?: WithDefault<
+    'simple' | 'highQuality' | 'balanced',
+    'simple',
+  >,
 
   /**
    * The color of the `TextInput` underline.
@@ -193,7 +193,10 @@ export type NativeProps = $ReadOnly<{|
    * - `sentences`: first letter of each sentence (*default*).
    * - `none`: don't auto capitalize anything.
    */
-  autoCapitalize?: ?string, // TODO T53321474: define as enum: AutoCapitalize 'none' | 'sentences' | 'words' | 'characters' ,
+  autoCapitalize?: WithDefault<
+    'none' | 'sentences' | 'words' | 'characters',
+    'none',
+  >,
 
   /**
    * If `false`, disables auto-correct. The default value is `true`.
@@ -238,25 +241,13 @@ export type NativeProps = $ReadOnly<{|
    * - `email-address`
    * - `phone-pad`
    *
-   * *iOS Only*
-   *
-   * The following values work on iOS only:
-   *
-   * - `ascii-capable`
-   * - `numbers-and-punctuation`
-   * - `url`
-   * - `name-phone-pad`
-   * - `twitter`
-   * - `web-search`
-   *
    * *Android Only*
    *
    * The following values work on Android only:
    *
    * - `visible-password`
    */
-  // TODO T53321474: enable enum codegen
-  keyboardType?: ?string, // ?KeyboardType,
+  keyboardType?: WithDefault<KeyboardType, 'default'>,
 
   /**
    * Determines how the return key should look. On Android you can also use
@@ -278,20 +269,8 @@ export type NativeProps = $ReadOnly<{|
    *
    * - `none`
    * - `previous`
-   *
-   * *iOS Only*
-   *
-   * The following values work on iOS only:
-   *
-   * - `default`
-   * - `emergency-call`
-   * - `google`
-   * - `join`
-   * - `route`
-   * - `yahoo`
    */
-  // TODO T53321474: enable enum codegen
-  returnKeyType?: ?string, // ?ReturnKeyType,
+  returnKeyType?: WithDefault<ReturnKeyType, 'done'>,
 
   /**
    * Limits the maximum number of characters that can be entered. Use this
