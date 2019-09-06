@@ -778,6 +778,19 @@ const OBJECT_PROPS: SchemaType = {
                     },
                   },
                   {
+                    name: 'intEnumProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'Int32EnumTypeAnnotation',
+                      default: 0,
+                      options: [
+                        {
+                          value: 0,
+                        },
+                      ],
+                    },
+                  },
+                  {
                     name: 'objectArrayProp',
                     optional: false,
                     typeAnnotation: {

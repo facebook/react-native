@@ -407,14 +407,16 @@ function generateEnumString(componentName: string, component): string {
       }
 
       if (prop.typeAnnotation.type === 'ObjectTypeAnnotation') {
-        // TODO: Int32 Enums
         return prop.typeAnnotation.properties
-          .filter(
-            property =>
-              property.typeAnnotation.type === 'StringEnumTypeAnnotation',
-          )
           .map(property => {
-            return generateStringEnum(componentName, property);
+            if (property.typeAnnotation.type === 'StringEnumTypeAnnotation') {
+              return generateStringEnum(componentName, property);
+            } else if (
+              property.typeAnnotation.type === 'Int32EnumTypeAnnotation'
+            ) {
+              return generateIntEnum(componentName, property);
+            }
+            return null;
           })
           .filter(Boolean)
           .join('\n');

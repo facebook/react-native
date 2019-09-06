@@ -816,6 +816,24 @@ static inline std::string toString(const ObjectPropsStringEnumProp &value) {
     case ObjectPropsStringEnumProp::Option1: return \\"option1\\";
   }
 }
+enum class ObjectPropsIntEnumProp { IntEnumProp0 = 0 };
+
+static inline void fromRawValue(const RawValue &value, ObjectPropsIntEnumProp &result) {
+  assert(value.hasType<int>());
+  auto integerValue = (int)value;
+  switch (integerValue) {
+    case 0:
+      result = ObjectPropsIntEnumProp::IntEnumProp0;
+      return;
+  }
+  abort();
+}
+
+static inline std::string toString(const ObjectPropsIntEnumProp &value) {
+  switch (value) {
+    case ObjectPropsIntEnumProp::IntEnumProp0: return \\"0\\";
+  }
+}
 struct ObjectPropsObjectPropObjectArrayPropStruct {
   std::vector<std::string> array;
 };
@@ -944,6 +962,7 @@ struct ObjectPropsObjectPropStruct {
   Float floatProp;
   int intProp;
   ObjectPropsStringEnumProp stringEnumProp;
+  ObjectPropsIntEnumProp intEnumProp;
   ObjectPropsObjectPropObjectArrayPropStruct objectArrayProp;
   ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp;
   ObjectPropsObjectPropNestedPropAStruct nestedPropA;
@@ -972,6 +991,10 @@ static inline void fromRawValue(const RawValue &value, ObjectPropsObjectPropStru
   auto stringEnumProp = map.find(\\"stringEnumProp\\");
   if (stringEnumProp != map.end()) {
     fromRawValue(stringEnumProp->second, result.stringEnumProp);
+  }
+  auto intEnumProp = map.find(\\"intEnumProp\\");
+  if (intEnumProp != map.end()) {
+    fromRawValue(intEnumProp->second, result.intEnumProp);
   }
   auto objectArrayProp = map.find(\\"objectArrayProp\\");
   if (objectArrayProp != map.end()) {
