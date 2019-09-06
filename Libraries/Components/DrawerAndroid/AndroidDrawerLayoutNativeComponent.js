@@ -16,7 +16,7 @@ import type {NativeComponent} from 'ReactNative';
 import type {SyntheticEvent} from 'CoreEventTypes';
 import type {ViewStyleProp} from 'StyleSheet';
 import type React from 'React';
-import type {NativeOrDynamicColorType} from 'normalizeColorObject'; // TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from 'NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 type ColorValue = null | string | NativeOrDynamicColorType; // TODO(macOS ISS#2323203)
 

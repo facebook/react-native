@@ -17,7 +17,7 @@ const requireNativeComponent = require('requireNativeComponent');
 
 import type {SwitchChangeEvent} from 'CoreEventTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeOrDynamicColorType} from 'normalizeColorObject'; // TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from 'NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 type SwitchProps = $ReadOnly<{|
   ...ViewProps,

@@ -10,13 +10,13 @@
 // [TODO(macOS ISS#2323203)
 'use strict';
 
-import type {NativeOrDynamicColorType} from 'normalizeColorObject';
-const processColor = require('processColor');
+import type {NativeOrDynamicColorType} from 'NativeOrDynamicColorType';
 
 function processColorObject(
   color: NativeOrDynamicColorType,
 ): ?NativeOrDynamicColorType {
   if ('dynamic' in color && color.dynamic !== undefined) {
+    const processColor = require('processColor');
     const dynamic = color.dynamic;
     const dynamicColor: NativeOrDynamicColorType = {
       dynamic: {

@@ -10,7 +10,7 @@
 // [TODO(macOS ISS#2323203)
 'use strict';
 
-import type {NativeOrDynamicColorType} from 'normalizeColorObject';
+import type {NativeOrDynamicColorType} from 'NativeOrDynamicColorType';
 
 function processColorObject(
   color: NativeOrDynamicColorType,

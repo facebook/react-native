@@ -10,13 +10,7 @@
 // [TODO(macOS ISS#2323203)
 'use strict';
 
-export type NativeOrDynamicColorType = {
-  semantic?: string,
-  dynamic?: {
-    light: ?(string | number | NativeOrDynamicColorType),
-    dark: ?(string | number | NativeOrDynamicColorType),
-  },
-};
+import type {NativeOrDynamicColorType} from 'NativeOrDynamicColorType';
 
 function normalizeColorObject(
   color: NativeOrDynamicColorType,

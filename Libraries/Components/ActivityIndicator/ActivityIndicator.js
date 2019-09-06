@@ -19,7 +19,7 @@ const RCTActivityIndicatorViewNativeComponent = require('RCTActivityIndicatorVie
 
 import type {NativeComponent} from 'ReactNative';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeOrDynamicColorType} from 'normalizeColorObject'; // TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from 'NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 const RCTActivityIndicator =
   Platform.OS === 'android'

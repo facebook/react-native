@@ -21,7 +21,7 @@ const resolveAssetSource = require('resolveAssetSource');
 const sizesDiffer = require('sizesDiffer');
 const invariant = require('invariant');
 const warning = require('fbjs/lib/warning');
-import type {NativeOrDynamicColorType} from 'normalizeColorObject'; // TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from 'NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 function getNativeComponentAttributes(uiViewClassName: string) {
   const viewConfig = UIManager.getViewManagerConfig(uiViewClassName);

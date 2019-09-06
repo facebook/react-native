@@ -12,7 +12,7 @@
 
 const Platform = require('Platform');
 const normalizeColor = require('normalizeColor');
-import type {NativeOrDynamicColorType} from 'normalizeColorObject'; // TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from 'NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 /* eslint no-bitwise: 0 */
 function processColor(
