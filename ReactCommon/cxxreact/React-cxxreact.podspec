@@ -31,7 +31,10 @@ Pod::Spec.new do |s|
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.source                 = source
   s.source_files           = "*.{cpp,h}"
-  s.exclude_files          = "SampleCxxModule.*"
+  s.exclude_files          = "SampleCxxModule.*",
+  # Microsoft CocoaPod Support [
+														 "*V8*", # Android uses V8 files for Chromium that Apple platforms should ignore
+# ] Microsoft CocoaPod Support
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\"" }
   s.header_dir             = "cxxreact"
