@@ -420,56 +420,6 @@ class DoublePropNativeComponentProps final : public ViewProps {
 }
 `;
 
-exports[`GeneratePropsH can generate fixture ENUM_PROP 1`] = `
-Map {
-  "Props.h" => "
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-#pragma once
-
-#include <react/components/view/ViewProps.h>
-
-namespace facebook {
-namespace react {
-
-enum class EnumPropsNativeComponentAlignment { Top, Center, BottomRight };
-
-static inline void fromRawValue(const RawValue &value, EnumPropsNativeComponentAlignment &result) {
-  auto string = (std::string)value;
-  if (string == \\"top\\") { result = EnumPropsNativeComponentAlignment::Top; return; }
-  if (string == \\"center\\") { result = EnumPropsNativeComponentAlignment::Center; return; }
-  if (string == \\"bottom-right\\") { result = EnumPropsNativeComponentAlignment::BottomRight; return; }
-  abort();
-}
-
-static inline std::string toString(const EnumPropsNativeComponentAlignment &value) {
-  switch (value) {
-    case EnumPropsNativeComponentAlignment::Top: return \\"top\\";
-    case EnumPropsNativeComponentAlignment::Center: return \\"center\\";
-    case EnumPropsNativeComponentAlignment::BottomRight: return \\"bottom-right\\";
-  }
-}
-
-class EnumPropsNativeComponentProps final : public ViewProps {
- public:
-  EnumPropsNativeComponentProps() = default;
-  EnumPropsNativeComponentProps(const EnumPropsNativeComponentProps &sourceProps, const RawProps &rawProps);
-
-#pragma mark - Props
-
-  const EnumPropsNativeComponentAlignment alignment{EnumPropsNativeComponentAlignment::Center};
-};
-
-} // namespace react
-} // namespace facebook
-",
-}
-`;
-
 exports[`GeneratePropsH can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "Props.h" => "
@@ -1026,6 +976,56 @@ class PointPropNativeComponentProps final : public ViewProps {
 #pragma mark - Props
 
   const Point startPoint{};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture STRING_ENUM_PROP 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+enum class StringEnumPropsNativeComponentAlignment { Top, Center, BottomRight };
+
+static inline void fromRawValue(const RawValue &value, StringEnumPropsNativeComponentAlignment &result) {
+  auto string = (std::string)value;
+  if (string == \\"top\\") { result = StringEnumPropsNativeComponentAlignment::Top; return; }
+  if (string == \\"center\\") { result = StringEnumPropsNativeComponentAlignment::Center; return; }
+  if (string == \\"bottom-right\\") { result = StringEnumPropsNativeComponentAlignment::BottomRight; return; }
+  abort();
+}
+
+static inline std::string toString(const StringEnumPropsNativeComponentAlignment &value) {
+  switch (value) {
+    case StringEnumPropsNativeComponentAlignment::Top: return \\"top\\";
+    case StringEnumPropsNativeComponentAlignment::Center: return \\"center\\";
+    case StringEnumPropsNativeComponentAlignment::BottomRight: return \\"bottom-right\\";
+  }
+}
+
+class StringEnumPropsNativeComponentProps final : public ViewProps {
+ public:
+  StringEnumPropsNativeComponentProps() = default;
+  StringEnumPropsNativeComponentProps(const StringEnumPropsNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  const StringEnumPropsNativeComponentAlignment alignment{StringEnumPropsNativeComponentAlignment::Center};
 };
 
 } // namespace react

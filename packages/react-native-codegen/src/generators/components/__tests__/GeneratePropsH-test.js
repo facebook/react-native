@@ -17,6 +17,7 @@ const generator = require('../GeneratePropsH.js');
 describe('GeneratePropsH', () => {
   Object.keys(fixtures)
     .sort()
+    .filter(fixtureName => fixtureName !== 'INT32_ENUM_PROP')
     .forEach(fixtureName => {
       const fixture = fixtures[fixtureName];
 

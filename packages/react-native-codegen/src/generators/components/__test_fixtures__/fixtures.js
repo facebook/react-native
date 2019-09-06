@@ -948,11 +948,11 @@ const MULTI_NATIVE_PROP: SchemaType = {
   },
 };
 
-const ENUM_PROP: SchemaType = {
+const STRING_ENUM_PROP: SchemaType = {
   modules: {
     Switch: {
       components: {
-        EnumPropsNativeComponent: {
+        StringEnumPropsNativeComponent: {
           extendsProps: [
             {
               type: 'ReactNativeBuiltInType',
@@ -1453,8 +1453,8 @@ module.exports = {
   ARRAY_PROPS_WITH_NESTED_OBJECT,
   OBJECT_PROPS,
   MULTI_NATIVE_PROP,
-  ENUM_PROP,
-  // INT32_ENUM_PROP,
+  STRING_ENUM_PROP,
+  INT32_ENUM_PROP,
   EVENT_PROPS,
   EVENTS_WITH_PAPER_NAME,
   EVENT_NESTED_OBJECT_PROPS,
