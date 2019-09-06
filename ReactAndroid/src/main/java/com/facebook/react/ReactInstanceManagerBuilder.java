@@ -5,10 +5,13 @@
 
 package com.facebook.react;
 
+import static com.facebook.react.ReactInstanceManager.initializeSoLoaderIfNecessary;
 import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriendlyDeviceName;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
+
 import androidx.annotation.Nullable;
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.infer.annotation.Assertions;
@@ -254,6 +257,7 @@ public class ReactInstanceManagerBuilder {
     }
 
     // We use the name of the device and the app for debugging & metrics
+    //noinspection ConstantConditions
     String appName = mApplication.getPackageName();
     String deviceName = getFriendlyDeviceName();
 
@@ -262,7 +266,7 @@ public class ReactInstanceManagerBuilder {
         mCurrentActivity,
         mDefaultHardwareBackBtnHandler,
         mJavaScriptExecutorFactory == null
-            ? getDefaultJSExecutorFactory(appName, deviceName)
+            ? getDefaultJSExecutorFactory(appName, deviceName, mApplication.getApplicationContext())
             : mJavaScriptExecutorFactory,
         (mJSBundleLoader == null && mJSBundleAssetUrl != null)
             ? JSBundleLoader.createAssetLoader(
@@ -284,9 +288,10 @@ public class ReactInstanceManagerBuilder {
         mCustomPackagerCommandHandlers);
   }
 
-  private JavaScriptExecutorFactory getDefaultJSExecutorFactory(String appName, String deviceName) {
+  private JavaScriptExecutorFactory getDefaultJSExecutorFactory(String appName, String deviceName, Context applicationContext) {
     try {
       // If JSC is included, use it as normal
+      initializeSoLoaderIfNecessary(applicationContext);
       SoLoader.loadLibrary("jscexecutor");
       return new JSCExecutorFactory(appName, deviceName);
     } catch (UnsatisfiedLinkError jscE) {
