@@ -12,6 +12,10 @@
 import type {PropTypeShape} from '../../CodegenSchema';
 
 function upperCaseFirst(inString: string): string {
+  if (inString.length === 0) {
+    return inString;
+  }
+
   return inString[0].toUpperCase() + inString.slice(1);
 }
 

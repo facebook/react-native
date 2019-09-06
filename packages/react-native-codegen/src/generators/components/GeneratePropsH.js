@@ -124,6 +124,20 @@ const arrayConversionFunction = `static inline void fromRawValue(const RawValue 
 }
 `;
 
+const doubleArrayConversionFunction = `static inline void fromRawValue(const RawValue &value, std::vector<std::vector<::_STRUCT_NAME_::>> &result) {
+  auto items = (std::vector<std::vector<RawValue>>)value;
+  for (const std::vector<RawValue> &item : items) {
+    auto nestedArray = std::vector<::_STRUCT_NAME_::>{};
+    for (const RawValue &nestedItem : item) {
+      ::_STRUCT_NAME_:: newItem;
+      fromRawValue(nestedItem, newItem);
+      nestedArray.emplace_back(newItem);
+    }
+    result.emplace_back(nestedArray);
+  }
+}
+`;
+
 const arrayEnumTemplate = `
 using ::_ENUM_MASK_:: = uint32_t;
 
@@ -220,18 +234,22 @@ function getNativeTypeFromAnnotation(
           throw new Error('Received unknown NativePrimitiveTypeAnnotation');
       }
     case 'ArrayTypeAnnotation': {
-      if (typeAnnotation.elementType.type === 'ArrayTypeAnnotation') {
-        // TODO: Implement correctly in the next diff, this is to pass tests
-        return 'std::vector<int>';
+      const arrayType = typeAnnotation.elementType.type;
+      if (arrayType === 'ArrayTypeAnnotation') {
+        return `std::vector<${getNativeTypeFromAnnotation(
+          componentName,
+          {typeAnnotation: typeAnnotation.elementType, name: ''},
+          nameParts.concat([prop.name]),
+        )}>`;
       }
-      if (typeAnnotation.elementType.type === 'ObjectTypeAnnotation') {
+      if (arrayType === 'ObjectTypeAnnotation') {
         const structName = generateStructName(
           componentName,
           nameParts.concat([prop.name]),
         );
         return `std::vector<${structName}>`;
       }
-      if (typeAnnotation.elementType.type === 'StringEnumTypeAnnotation') {
+      if (arrayType === 'StringEnumTypeAnnotation') {
         const enumName = getEnumName(componentName, prop.name);
         return getEnumMaskName(enumName);
       }
@@ -601,6 +619,45 @@ function generateStructs(
           '',
         )}ArrayStruct`,
         arrayConversionFunction.replace(
+          /::_STRUCT_NAME_::/g,
+          generateStructName(componentName, nameParts.concat([prop.name])),
+        ),
+      );
+    }
+    if (
+      prop.typeAnnotation.type === 'ArrayTypeAnnotation' &&
+      prop.typeAnnotation.elementType.type === 'ArrayTypeAnnotation' &&
+      prop.typeAnnotation.elementType.elementType.type ===
+        'ObjectTypeAnnotation'
+    ) {
+      // Recursively visit all of the object properties.
+      // Note: this is depth first so that the nested structs are ordered first.
+      const elementProperties =
+        prop.typeAnnotation.elementType.elementType.properties;
+      const nestedStructs = generateStructs(
+        componentName,
+        elementProperties,
+        nameParts.concat([prop.name]),
+      );
+      nestedStructs.forEach(function(value, key) {
+        structs.set(key, value);
+      });
+
+      // Generate this struct and its conversion function.
+      generateStruct(
+        structs,
+        componentName,
+        nameParts.concat([prop.name]),
+        elementProperties,
+      );
+
+      // Generate the conversion function for std:vector<Object>.
+      // Note: This needs to be at the end since it references the struct above.
+      structs.set(
+        `${[componentName, ...nameParts.concat([prop.name])].join(
+          '',
+        )}ArrayArrayStruct`,
+        doubleArrayConversionFunction.replace(
           /::_STRUCT_NAME_::/g,
           generateStructName(componentName, nameParts.concat([prop.name])),
         ),

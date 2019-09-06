@@ -156,6 +156,37 @@ static inline void fromRawValue(const RawValue &value, std::vector<ArrayPropsNat
   }
 }
 
+
+struct ArrayPropsNativeComponentArrayOfArrayOfObjectStruct {
+  std::string stringProp;
+};
+
+static inline void fromRawValue(const RawValue &value, ArrayPropsNativeComponentArrayOfArrayOfObjectStruct &result) {
+  auto map = (better::map<std::string, RawValue>)value;
+
+  auto stringProp = map.find(\\"stringProp\\");
+  if (stringProp != map.end()) {
+    fromRawValue(stringProp->second, result.stringProp);
+  }
+}
+
+static inline std::string toString(const ArrayPropsNativeComponentArrayOfArrayOfObjectStruct &value) {
+  return \\"[Object ArrayPropsNativeComponentArrayOfArrayOfObjectStruct]\\";
+}
+
+static inline void fromRawValue(const RawValue &value, std::vector<std::vector<ArrayPropsNativeComponentArrayOfArrayOfObjectStruct>> &result) {
+  auto items = (std::vector<std::vector<RawValue>>)value;
+  for (const std::vector<RawValue> &item : items) {
+    auto nestedArray = std::vector<ArrayPropsNativeComponentArrayOfArrayOfObjectStruct>{};
+    for (const RawValue &nestedItem : item) {
+      ArrayPropsNativeComponentArrayOfArrayOfObjectStruct newItem;
+      fromRawValue(nestedItem, newItem);
+      nestedArray.emplace_back(newItem);
+    }
+    result.emplace_back(nestedArray);
+  }
+}
+
 class ArrayPropsNativeComponentProps final : public ViewProps {
  public:
   ArrayPropsNativeComponentProps() = default;
@@ -173,7 +204,7 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
   const ArrayPropsNativeComponentSizesMask sizes{static_cast<ArrayPropsNativeComponentSizesMask>(ArrayPropsNativeComponentSizes::Small)};
   const std::vector<ArrayPropsNativeComponentObjectStruct> object{};
   const std::vector<ArrayPropsNativeComponentArrayStruct> array{};
-  const std::vector<int> arrayOfArrayOfObject{};
+  const std::vector<std::vector<ArrayPropsNativeComponentArrayOfArrayOfObjectStruct>> arrayOfArrayOfObject{};
 };
 
 } // namespace react
