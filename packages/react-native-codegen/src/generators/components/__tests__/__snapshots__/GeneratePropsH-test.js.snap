@@ -586,6 +586,65 @@ class ImagePropNativeComponentProps final : public ViewProps {
 }
 `;
 
+exports[`GeneratePropsH can generate fixture INT32_ENUM_PROP 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+enum class Int32EnumPropsNativeComponentMaxInterval { MaxInterval0 = 0, MaxInterval1 = 1, MaxInterval2 = 2 };
+
+static inline void fromRawValue(const RawValue &value, Int32EnumPropsNativeComponentMaxInterval &result) {
+  assert(value.hasType<int>());
+  auto integerValue = (int)value;
+  switch (integerValue) {
+    case 0:
+      result = Int32EnumPropsNativeComponentMaxInterval::MaxInterval0;
+      return;
+    case 1:
+      result = Int32EnumPropsNativeComponentMaxInterval::MaxInterval1;
+      return;
+    case 2:
+      result = Int32EnumPropsNativeComponentMaxInterval::MaxInterval2;
+      return;
+  }
+  abort();
+}
+
+static inline std::string toString(const Int32EnumPropsNativeComponentMaxInterval &value) {
+  switch (value) {
+    case Int32EnumPropsNativeComponentMaxInterval::MaxInterval0: return \\"0\\";
+    case Int32EnumPropsNativeComponentMaxInterval::MaxInterval1: return \\"1\\";
+    case Int32EnumPropsNativeComponentMaxInterval::MaxInterval2: return \\"2\\";
+  }
+}
+
+class Int32EnumPropsNativeComponentProps final : public ViewProps {
+ public:
+  Int32EnumPropsNativeComponentProps() = default;
+  Int32EnumPropsNativeComponentProps(const Int32EnumPropsNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  const Int32EnumPropsNativeComponentMaxInterval maxInterval{Int32EnumPropsNativeComponentMaxInterval::MaxInterval0};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GeneratePropsH can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "Props.h" => "

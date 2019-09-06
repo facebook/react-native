@@ -389,7 +389,7 @@ Int32EnumPropsNativeComponentProps::Int32EnumPropsNativeComponentProps(
     const Int32EnumPropsNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
-    maxInterval(convertRawProp(rawProps, \\"maxInterval\\", sourceProps.maxInterval, {Int32EnumPropsNativeComponentMaxInterval::TODO}))
+    maxInterval(convertRawProp(rawProps, \\"maxInterval\\", sourceProps.maxInterval, {Int32EnumPropsNativeComponentMaxInterval::MaxInterval0}))
       {}
 
 } // namespace react

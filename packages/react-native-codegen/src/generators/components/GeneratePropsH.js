@@ -18,6 +18,7 @@ const {
   toSafeCppString,
   generateStructName,
   getImports,
+  toIntEnumValueName,
 } = require('./CppHelpers.js');
 
 import type {
@@ -70,6 +71,24 @@ enum class ::_ENUM_NAME_:: { ::_VALUES_:: };
 static inline void fromRawValue(const RawValue &value, ::_ENUM_NAME_:: &result) {
   auto string = (std::string)value;
   ::_FROM_CASES_::
+  abort();
+}
+
+static inline std::string toString(const ::_ENUM_NAME_:: &value) {
+  switch (value) {
+    ::_TO_CASES_::
+  }
+}
+`.trim();
+
+const intEnumTemplate = `
+enum class ::_ENUM_NAME_:: { ::_VALUES_:: };
+
+static inline void fromRawValue(const RawValue &value, ::_ENUM_NAME_:: &result) {
+  assert(value.hasType<int>());
+  auto integerValue = (int)value;
+  switch (integerValue) {::_FROM_CASES_::
+  }
   abort();
 }
 
@@ -286,10 +305,10 @@ function generateArrayEnumString(
     .replace('::_FROM_CASES_::', fromCases)
     .replace('::_TO_CASES_::', toCases);
 }
-function generateEnum(componentName, prop) {
+
+function generateStringEnum(componentName, prop) {
   const typeAnnotation = prop.typeAnnotation;
   if (typeAnnotation.type === 'StringEnumTypeAnnotation') {
-    // TODO: Handle Int32EnumTypeAnnotation
     const values: $ReadOnlyArray<string> = typeAnnotation.options.map(
       option => option.name,
     );
@@ -323,6 +342,48 @@ function generateEnum(componentName, prop) {
   return '';
 }
 
+function generateIntEnum(componentName, prop) {
+  const typeAnnotation = prop.typeAnnotation;
+  if (typeAnnotation.type === 'Int32EnumTypeAnnotation') {
+    const values: $ReadOnlyArray<number> = typeAnnotation.options.map(
+      option => option.value,
+    );
+    const enumName = getEnumName(componentName, prop.name);
+
+    const fromCases = values
+      .map(
+        value =>
+          `
+    case ${value}:
+      result = ${enumName}::${toIntEnumValueName(prop.name, value)};
+      return;`,
+      )
+      .join('');
+
+    const toCases = values
+      .map(
+        value =>
+          `case ${enumName}::${toIntEnumValueName(
+            prop.name,
+            value,
+          )}: return "${value}";`,
+      )
+      .join('\n' + '    ');
+
+    const valueVariables = values
+      .map(val => `${toIntEnumValueName(prop.name, val)} = ${val}`)
+      .join(', ');
+
+    return intEnumTemplate
+      .replace(/::_ENUM_NAME_::/g, enumName)
+      .replace('::_VALUES_::', valueVariables)
+      .replace('::_FROM_CASES_::', fromCases)
+      .replace('::_TO_CASES_::', toCases);
+  }
+
+  return '';
+}
+
 function generateEnumString(componentName: string, component): string {
   return component.props
     .map(prop => {
@@ -338,7 +399,11 @@ function generateEnumString(componentName: string, component): string {
       }
 
       if (prop.typeAnnotation.type === 'StringEnumTypeAnnotation') {
-        return generateEnum(componentName, prop);
+        return generateStringEnum(componentName, prop);
+      }
+
+      if (prop.typeAnnotation.type === 'Int32EnumTypeAnnotation') {
+        return generateIntEnum(componentName, prop);
       }
 
       if (prop.typeAnnotation.type === 'ObjectTypeAnnotation') {
@@ -349,7 +414,7 @@ function generateEnumString(componentName: string, component): string {
               property.typeAnnotation.type === 'StringEnumTypeAnnotation',
           )
           .map(property => {
-            return generateEnum(componentName, property);
+            return generateStringEnum(componentName, property);
           })
           .filter(Boolean)
           .join('\n');

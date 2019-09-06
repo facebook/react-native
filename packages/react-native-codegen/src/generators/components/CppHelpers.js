@@ -22,6 +22,10 @@ function toSafeCppString(input: string): string {
     .join('');
 }
 
+function toIntEnumValueName(propName: string, value: number): string {
+  return `${toSafeCppString(propName)}${value}`;
+}
+
 function getCppTypeForAnnotation(
   type:
     | 'BooleanTypeAnnotation'
@@ -154,7 +158,7 @@ function convertDefaultTypeToString(
           const enumName = getEnumName(componentName, prop.name);
           const enumMaskName = getEnumMaskName(enumName);
           const defaultValue = `${enumName}::${toSafeCppString(
-            elementType.default || '',
+            elementType.default,
           )}`;
           return `static_cast<${enumMaskName}>(${defaultValue})`;
         default:
@@ -169,8 +173,10 @@ function convertDefaultTypeToString(
         typeAnnotation.default,
       )}`;
     case 'Int32EnumTypeAnnotation':
-      // TODO: implement default
-      return `${getEnumName(componentName, prop.name)}::${'TODO'}`;
+      return `${getEnumName(componentName, prop.name)}::${toIntEnumValueName(
+        prop.name,
+        typeAnnotation.default,
+      )}`;
     default:
       (typeAnnotation: empty);
       throw new Error('Received invalid typeAnnotation');
@@ -184,5 +190,6 @@ module.exports = {
   getEnumMaskName,
   getImports,
   toSafeCppString,
+  toIntEnumValueName,
   generateStructName,
 };
