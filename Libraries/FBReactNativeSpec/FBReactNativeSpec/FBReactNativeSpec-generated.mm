@@ -793,10 +793,6 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setIsDebuggingRemotely", @selector(setIsDebuggingRemotely:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeDevSettingsSpecJSI_setLiveReloadEnabled(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setLiveReloadEnabled", @selector(setLiveReloadEnabled:), args, count);
-    }
-
     static facebook::jsi::Value __hostFunction_NativeDevSettingsSpecJSI_setProfilingEnabled(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setProfilingEnabled", @selector(setProfilingEnabled:), args, count);
     }
@@ -820,9 +816,6 @@ namespace facebook {
         
         
         methodMap_["setIsDebuggingRemotely"] = MethodMetadata {1, __hostFunction_NativeDevSettingsSpecJSI_setIsDebuggingRemotely};
-        
-        
-        methodMap_["setLiveReloadEnabled"] = MethodMetadata {1, __hostFunction_NativeDevSettingsSpecJSI_setLiveReloadEnabled};
         
         
         methodMap_["setProfilingEnabled"] = MethodMetadata {1, __hostFunction_NativeDevSettingsSpecJSI_setProfilingEnabled};
