@@ -38,7 +38,7 @@ RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
                   stack:(NSArray<NSDictionary *> *)stack
                   exceptionId:(double)exceptionId)
 {
-  [_bridge.redBox showErrorMessage:message withStack:stack];
+  [_bridge.redBox showErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
 
   if (_delegate) {
     [_delegate handleSoftJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
@@ -49,7 +49,7 @@ RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
                   stack:(NSArray<NSDictionary *> *)stack
                   exceptionId:(double) exceptionId)
 {
-  [_bridge.redBox showErrorMessage:message withStack:stack];
+  [_bridge.redBox showErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
 
   if (_delegate) {
     [_delegate handleFatalJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
@@ -70,7 +70,7 @@ RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
                   stack:(NSArray<NSDictionary *> *)stack
                   exceptionId:(double)exceptionId)
 {
-  [_bridge.redBox updateErrorMessage:message withStack:stack];
+  [_bridge.redBox updateErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
 
   if (_delegate && [_delegate respondsToSelector:@selector(updateJSExceptionWithMessage:stack:exceptionId:)]) {
     [_delegate updateJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
