@@ -143,9 +143,10 @@ function convertDefaultTypeToString(
           throw new Error('Received unknown NativePrimitiveTypeAnnotation');
       }
     case 'ArrayTypeAnnotation': {
-      switch (typeAnnotation.elementType.type) {
+      const elementType = typeAnnotation.elementType;
+      switch (elementType.type) {
         case 'StringEnumTypeAnnotation':
-          if (typeAnnotation.elementType.default == null) {
+          if (elementType.default == null) {
             throw new Error(
               'A default is required for array StringEnumTypeAnnotation',
             );
@@ -153,7 +154,7 @@ function convertDefaultTypeToString(
           const enumName = getEnumName(componentName, prop.name);
           const enumMaskName = getEnumMaskName(enumName);
           const defaultValue = `${enumName}::${toSafeCppString(
-            typeAnnotation.elementType.default || '',
+            elementType.default || '',
           )}`;
           return `static_cast<${enumMaskName}>(${defaultValue})`;
         default:
@@ -167,6 +168,9 @@ function convertDefaultTypeToString(
       return `${getEnumName(componentName, prop.name)}::${toSafeCppString(
         typeAnnotation.default,
       )}`;
+    case 'Int32EnumTypeAnnotation':
+      // TODO: implement default
+      return `${getEnumName(componentName, prop.name)}::${'TODO'}`;
     default:
       (typeAnnotation: empty);
       throw new Error('Received invalid typeAnnotation');

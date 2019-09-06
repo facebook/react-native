@@ -232,6 +232,8 @@ function getNativeTypeFromAnnotation(
     }
     case 'StringEnumTypeAnnotation':
       return getEnumName(componentName, prop.name);
+    case 'Int32EnumTypeAnnotation':
+      return getEnumName(componentName, prop.name);
     default:
       (typeAnnotation: empty);
       throw new Error(
@@ -285,36 +287,42 @@ function generateArrayEnumString(
     .replace('::_TO_CASES_::', toCases);
 }
 function generateEnum(componentName, prop) {
-  if (!prop.typeAnnotation.options) {
-    return '';
+  const typeAnnotation = prop.typeAnnotation;
+  if (typeAnnotation.type === 'StringEnumTypeAnnotation') {
+    // TODO: Handle Int32EnumTypeAnnotation
+    const values: $ReadOnlyArray<string> = typeAnnotation.options.map(
+      option => option.name,
+    );
+    const enumName = getEnumName(componentName, prop.name);
+
+    const fromCases = values
+      .map(
+        value =>
+          `if (string == "${value}") { result = ${enumName}::${convertValueToEnumOption(
+            value,
+          )}; return; }`,
+      )
+      .join('\n' + '  ');
+
+    const toCases = values
+      .map(
+        value =>
+          `case ${enumName}::${convertValueToEnumOption(
+            value,
+          )}: return "${value}";`,
+      )
+      .join('\n' + '    ');
+
+    return enumTemplate
+      .replace(/::_ENUM_NAME_::/g, enumName)
+      .replace('::_VALUES_::', values.map(toSafeCppString).join(', '))
+      .replace('::_FROM_CASES_::', fromCases)
+      .replace('::_TO_CASES_::', toCases);
   }
-  const values = prop.typeAnnotation.options.map(option => option.name);
-  const enumName = getEnumName(componentName, prop.name);
 
-  const fromCases = values
-    .map(
-      value =>
-        `if (string == "${value}") { result = ${enumName}::${convertValueToEnumOption(
-          value,
-        )}; return; }`,
-    )
-    .join('\n' + '  ');
-
-  const toCases = values
-    .map(
-      value =>
-        `case ${enumName}::${convertValueToEnumOption(
-          value,
-        )}: return "${value}";`,
-    )
-    .join('\n' + '    ');
-
-  return enumTemplate
-    .replace(/::_ENUM_NAME_::/g, enumName)
-    .replace('::_VALUES_::', values.map(toSafeCppString).join(', '))
-    .replace('::_FROM_CASES_::', fromCases)
-    .replace('::_TO_CASES_::', toCases);
+  return '';
 }
+
 function generateEnumString(componentName: string, component): string {
   return component.props
     .map(prop => {
@@ -334,6 +342,7 @@ function generateEnumString(componentName: string, component): string {
       }
 
       if (prop.typeAnnotation.type === 'ObjectTypeAnnotation') {
+        // TODO: Int32 Enums
         return prop.typeAnnotation.properties
           .filter(
             property =>
@@ -573,6 +582,8 @@ function generateStruct(
       case 'ArrayTypeAnnotation':
         return;
       case 'StringEnumTypeAnnotation':
+        return;
+      case 'Int32EnumTypeAnnotation':
         return;
       case 'DoubleTypeAnnotation':
         return;
