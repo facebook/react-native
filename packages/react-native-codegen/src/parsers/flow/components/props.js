@@ -58,6 +58,28 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
           .filter(Boolean),
       };
     }
+
+    if (objectType.id.name === '$ReadOnlyArray') {
+      // We need to go yet another level deeper to resolve
+      // types that may be defined in a type alias
+      const nestedObjectType = getValueFromTypes(
+        objectType.typeParameters.params[0],
+        types,
+      );
+
+      return {
+        type: 'ArrayTypeAnnotation',
+        elementType: {
+          type: 'ObjectTypeAnnotation',
+          properties: flattenProperties(
+            nestedObjectType.typeParameters.params[0].properties,
+            types,
+          )
+            .map(prop => buildPropSchema(prop, types))
+            .filter(Boolean),
+        },
+      };
+    }
   }
 
   const type =

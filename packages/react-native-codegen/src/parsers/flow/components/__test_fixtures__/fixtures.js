@@ -396,6 +396,29 @@ type ModuleProps = $ReadOnly<{|
       array_object_optional_both: $ReadOnlyArray<$ReadOnly<{| prop?: ?string |}>>,
     |}>
   >,
+
+  // Nested array of array of object types
+  array_of_array_of_object_required: $ReadOnlyArray<
+    $ReadOnlyArray<
+      $ReadOnly<{|
+        prop: string,
+      |}>,
+    >,
+  >,
+
+  // Nested array of array of object types (in file)
+  array_of_array_of_object_required_in_file: $ReadOnlyArray<
+    $ReadOnlyArray<ObjectType>,
+  >,
+
+  // Nested array of array of object types (with spread)
+  array_of_array_of_object_required_with_spread: $ReadOnlyArray<
+    $ReadOnlyArray<
+      $ReadOnly<{|
+        ...ObjectType
+      |}>,
+    >,
+  >,
 |}>;
 
 export default (codegenNativeComponent<ModuleProps>(

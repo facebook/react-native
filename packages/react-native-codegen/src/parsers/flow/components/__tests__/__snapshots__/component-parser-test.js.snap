@@ -1057,6 +1057,75 @@ Object {
                 "type": "ArrayTypeAnnotation",
               },
             },
+            Object {
+              "name": "array_of_array_of_object_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "elementType": Object {
+                    "properties": Array [
+                      Object {
+                        "name": "prop",
+                        "optional": false,
+                        "typeAnnotation": Object {
+                          "default": null,
+                          "type": "StringTypeAnnotation",
+                        },
+                      },
+                    ],
+                    "type": "ObjectTypeAnnotation",
+                  },
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_of_object_required_in_file",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "elementType": Object {
+                    "properties": Array [
+                      Object {
+                        "name": "prop",
+                        "optional": false,
+                        "typeAnnotation": Object {
+                          "default": null,
+                          "type": "StringTypeAnnotation",
+                        },
+                      },
+                    ],
+                    "type": "ObjectTypeAnnotation",
+                  },
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_of_object_required_with_spread",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "elementType": Object {
+                    "properties": Array [
+                      Object {
+                        "name": "prop",
+                        "optional": false,
+                        "typeAnnotation": Object {
+                          "default": null,
+                          "type": "StringTypeAnnotation",
+                        },
+                      },
+                    ],
+                    "type": "ObjectTypeAnnotation",
+                  },
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
           ],
         },
       },
