@@ -30,6 +30,7 @@ const ArrayPropsNativeComponentViewConfig = {
     sizes: true,
     object: true,
     array: true,
+    arrayOfArrayOfObject: true,
   },
 };
 

@@ -30,7 +30,8 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     points(convertRawProp(rawProps, \\"points\\", sourceProps.points, {})),
     sizes(convertRawProp(rawProps, \\"sizes\\", sourceProps.sizes, {static_cast<ArrayPropsNativeComponentSizesMask>(ArrayPropsNativeComponentSizes::Small)})),
     object(convertRawProp(rawProps, \\"object\\", sourceProps.object, {})),
-    array(convertRawProp(rawProps, \\"array\\", sourceProps.array, {}))
+    array(convertRawProp(rawProps, \\"array\\", sourceProps.array, {})),
+    arrayOfArrayOfObject(convertRawProp(rawProps, \\"arrayOfArrayOfObject\\", sourceProps.arrayOfArrayOfObject, {}))
       {}
 
 } // namespace react

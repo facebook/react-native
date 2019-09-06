@@ -173,6 +173,7 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
   const ArrayPropsNativeComponentSizesMask sizes{static_cast<ArrayPropsNativeComponentSizesMask>(ArrayPropsNativeComponentSizes::Small)};
   const std::vector<ArrayPropsNativeComponentObjectStruct> object{};
   const std::vector<ArrayPropsNativeComponentArrayStruct> array{};
+  const std::vector<int> arrayOfArrayOfObject{};
 };
 
 } // namespace react

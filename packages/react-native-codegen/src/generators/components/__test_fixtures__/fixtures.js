@@ -639,6 +639,29 @@ const ARRAY_PROPS: SchemaType = {
                 },
               },
             },
+            {
+              name: 'arrayOfArrayOfObject',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ArrayTypeAnnotation',
+                  elementType: {
+                    type: 'ObjectTypeAnnotation',
+                    properties: [
+                      {
+                        name: 'stringProp',
+                        optional: true,
+                        typeAnnotation: {
+                          type: 'StringTypeAnnotation',
+                          default: '',
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
           ],
           commands: [],
         },
