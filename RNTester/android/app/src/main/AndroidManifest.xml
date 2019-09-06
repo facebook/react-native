@@ -48,6 +48,8 @@
         <category android:name="android.intent.category.BROWSABLE" />
         <!-- Accepts URIs that begin with "rntester://example” -->
         <data android:scheme="rntester" android:host="example" />
+        <!-- Accepts URIs that begin with "rntester://bundle-test” -->
+        <data android:scheme="rntester" android:host="bundle-test" />
       </intent-filter>
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
