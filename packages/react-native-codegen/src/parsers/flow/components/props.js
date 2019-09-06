@@ -106,16 +106,33 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
         type: 'StringTypeAnnotation',
       };
     case 'UnionTypeAnnotation':
-      if (defaultValue == null) {
-        throw new Error(`A default array enum value is required for "${name}"`);
+      typeAnnotation.types.reduce((lastType, currType) => {
+        if (lastType && currType.type !== lastType.type) {
+          throw new Error(`Mixed types are not supported (see "${name}")`);
+        }
+        return currType;
+      });
+
+      if (defaultValue === null) {
+        throw new Error(`A default enum value is required for "${name}"`);
       }
-      return {
-        type: 'StringEnumTypeAnnotation',
-        default: defaultValue,
-        options: extractedTypeAnnotation.types.map(option => ({
-          name: option.value,
-        })),
-      };
+
+      const unionType = typeAnnotation.types[0].type;
+      if (unionType === 'StringLiteralTypeAnnotation') {
+        return {
+          type: 'StringEnumTypeAnnotation',
+          default: (defaultValue: string),
+          options: typeAnnotation.types.map(option => ({name: option.value})),
+        };
+      } else if (unionType === 'NumberLiteralTypeAnnotation') {
+        throw new Error(
+          `Arrays of int enums are not supported (see: "${name}")`,
+        );
+      } else {
+        throw new Error(
+          `Unsupported union type for "${name}", recieved "${unionType}"`,
+        );
+      }
     default:
       (type: empty);
       throw new Error(`Unknown prop type for "${name}": ${type}`);
@@ -221,14 +238,35 @@ function getTypeAnnotation(name, annotation, defaultValue, types) {
       }
       throw new Error(`A default string (or null) is required for "${name}"`);
     case 'UnionTypeAnnotation':
-      if (defaultValue !== null) {
+      typeAnnotation.types.reduce((lastType, currType) => {
+        if (lastType && currType.type !== lastType.type) {
+          throw new Error(`Mixed types are not supported (see "${name}")`);
+        }
+        return currType;
+      });
+
+      if (defaultValue === null) {
+        throw new Error(`A default enum value is required for "${name}"`);
+      }
+
+      const unionType = typeAnnotation.types[0].type;
+      if (unionType === 'StringLiteralTypeAnnotation') {
         return {
           type: 'StringEnumTypeAnnotation',
           default: (defaultValue: string),
           options: typeAnnotation.types.map(option => ({name: option.value})),
         };
+      } else if (unionType === 'NumberLiteralTypeAnnotation') {
+        return {
+          type: 'Int32EnumTypeAnnotation',
+          default: (defaultValue: number),
+          options: typeAnnotation.types.map(option => ({value: option.value})),
+        };
+      } else {
+        throw new Error(
+          `Unsupported union type for "${name}", received "${unionType}"`,
+        );
       }
-      throw new Error(`A default enum value is required for "${name}"`);
     case 'NumberTypeAnnotation':
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
