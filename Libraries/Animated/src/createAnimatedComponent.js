@@ -87,6 +87,9 @@ function createAnimatedComponent(Component: any, defaultProps: any): any {
     // components. If you want to animate a composite component, you need to
     // re-render it. In this case, we have a fallback that uses forceUpdate.
     _animatedPropsCallback = () => {
+      // eslint-disable-next-line dot-notation
+      const internalInstanceHandle = this._component['_internalInstanceHandle'];
+
       if (this._component == null) {
         // AnimatedProps is created in will-mount because it's used in render.
         // But this callback may be invoked before mount in async mode,
@@ -96,7 +99,12 @@ function createAnimatedComponent(Component: any, defaultProps: any): any {
         this._invokeAnimatedPropsCallbackOnMount = true;
       } else if (
         AnimatedComponent.__skipSetNativeProps_FOR_TESTS_ONLY ||
-        typeof this._component.setNativeProps !== 'function'
+        // For animating properties of non-leaf/non-native components
+        typeof this._component.setNativeProps !== 'function' ||
+        // This forces all animations to go through forceUpdate, and skip setNativeProps, in Fabric
+        (internalInstanceHandle &&
+          internalInstanceHandle.stateNode &&
+          internalInstanceHandle.stateNode.canonical != null)
       ) {
         this.forceUpdate();
       } else if (!this._propsAnimated.__isNative) {
