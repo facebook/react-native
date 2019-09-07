@@ -375,6 +375,13 @@ jsi::Value performMethodInvocation(
     }
   }
 
+  // VoidKind can't be null
+  // PromiseKind, and FunctionKind must throw errors always
+  if (valueKind != VoidKind && valueKind != PromiseKind && valueKind != FunctionKind &&
+      (result == (id)kCFNull || result == nil)) {
+    return jsi::Value::null();
+  }
+
   // TODO: Re-use value conversion logic from existing impl, if possible.
   switch (valueKind) {
     case VoidKind:
