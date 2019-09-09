@@ -1,8 +1,10 @@
 package com.facebook.react.bridge;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -32,6 +34,11 @@ public class ArgumentsTest {
     verifyBundle(createBundle());
   }
 
+  /**
+   * When passing a bundle via {@link Intent} extras, it gets parceled and unparceled.
+   * Any array of bundles will return as an array of {@link Parcelable} instead. This test
+   * verifies that {@link Arguments#fromArray} handles this situation correctly.
+   */
   @Test
   public void testFromMarshaledBundle() {
     verifyBundle(marshalAndUnmarshalBundle(createBundle()));
