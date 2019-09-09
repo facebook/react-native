@@ -78,8 +78,8 @@ target 'HelloWorld' do
   use_native_modules!
 
   # For enabling Flipper.
-  # Note that if you use_framework!, flipper will no work.
-  # Disable these lines if you are doing use_framework!
+  # Note that if you use_frameworks!, flipper will no work.
+  # Disable these lines if you are doing use_frameworks!
   flipper_pods()
   post_install do |installer|
     flipper_post_install(installer)
