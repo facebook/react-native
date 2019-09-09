@@ -716,7 +716,7 @@ public class ReactInstanceManager {
 
   /** Call this from {@link Activity#onConfigurationChanged()}. */
   @ThreadConfined(UI)
-  public void onConfigurationChanged(Configuration newConfig) {
+  public void onConfigurationChanged(@Nullable Configuration newConfig) {
     UiThreadUtil.assertOnUiThread();
 
     ReactContext currentContext = getCurrentReactContext();

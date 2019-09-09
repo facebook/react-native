@@ -168,30 +168,6 @@ namespace react {
 }
 `;
 
-exports[`GenerateEventEmitterH can generate fixture ENUM_PROP 1`] = `
-Map {
-  "EventEmitters.h" => "
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-#pragma once
-
-#include <react/components/view/ViewEventEmitter.h>
-
-namespace facebook {
-namespace react {
-
-
-
-} // namespace react
-} // namespace facebook
-",
-}
-`;
-
 exports[`GenerateEventEmitterH can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "EventEmitters.h" => "
@@ -384,6 +360,30 @@ namespace react {
 }
 `;
 
+exports[`GenerateEventEmitterH can generate fixture INT32_ENUM_PROP 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateEventEmitterH can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "EventEmitters.h" => "
@@ -514,6 +514,30 @@ namespace react {
 `;
 
 exports[`GenerateEventEmitterH can generate fixture POINT_PROP 1`] = `
+Map {
+  "EventEmitters.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewEventEmitter.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterH can generate fixture STRING_ENUM_PROP 1`] = `
 Map {
   "EventEmitters.h" => "
 /**
