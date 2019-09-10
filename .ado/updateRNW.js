@@ -10,7 +10,7 @@ request.post(
     url: url,
     json: true,
     headers: {
-      Authorization: 'Basic ' + new Buffer(":" + process.env.GIT_TOKEN).toString("base64"),
+      Authorization: 'Basic ' + new Buffer(":" + process.env.SYSTEM_ACCESSTOKEN).toString("base64"),
       'Content-Type': 'application/json',
       'User-Agent': 'RNW-Evergreen Script',
       Accept: 'application/vnd.github.everest-preview+json',
