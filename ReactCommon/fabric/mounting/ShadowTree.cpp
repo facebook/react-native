@@ -116,6 +116,7 @@ ShadowTree::~ShadowTree() {
                 /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
             });
       });
+  mountingCoordinator_->revoke();
 }
 
 Tag ShadowTree::getSurfaceId() const {
