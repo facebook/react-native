@@ -165,7 +165,8 @@ Pod::Spec.new do |s|
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "fabric/imagemanager/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "**/tests/*",
-                              "**/android/*"
+                              "**/android/*",
+                              "**/cxx/*"
     ss.header_dir           = "react/imagemanager"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
   end
@@ -184,7 +185,8 @@ Pod::Spec.new do |s|
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "fabric/textlayoutmanager/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "**/tests/*",
-                              "**/android/*"
+                              "**/android/*",
+                              "**/cxx/*"
     ss.header_dir           = "react/textlayoutmanager"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
   end
