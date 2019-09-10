@@ -470,7 +470,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     long batchedExecutionStartTime = SystemClock.uptimeMillis();
     for (MountItem mountItem : mountItemsToDispatch) {
       if (DEBUG) {
-        FLog.d(TAG, "dispatchMountItems: Executing mountItem: " + mountItem);
+        // If a MountItem description is split across multiple lines, it's because it's a compound
+        // MountItem. Log each line separately.
+        String[] mountItemLines = mountItem.toString().split("\n");
+        for (String m : mountItemLines) {
+          FLog.d(TAG, "dispatchMountItems: Executing mountItem: " + m);
+        }
       }
       mountItem.execute(mMountingManager);
     }
