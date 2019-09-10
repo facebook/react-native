@@ -6,16 +6,16 @@
  */
 package com.facebook.react.bridge;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 
 /**
  * Exception thrown from native code when a type retrieved from a map or array (e.g. via {@link
  * NativeArrayParameter#getString(int)}) does not match the expected type.
  */
-@DoNotStrip
+@Keep
 public class UnexpectedNativeTypeException extends RuntimeException {
 
-  @DoNotStrip
+  @Keep
   public UnexpectedNativeTypeException(String msg) {
     super(msg);
   }

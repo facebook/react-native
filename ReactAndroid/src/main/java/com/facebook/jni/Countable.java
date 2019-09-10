@@ -5,7 +5,7 @@
 
 package com.facebook.jni;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 import com.facebook.soloader.SoLoader;
 
 /**
@@ -18,7 +18,7 @@ import com.facebook.soloader.SoLoader;
  * the system finalizer thread. If you manually call dispose on the Java object, the native object
  * will be deleted synchronously on that thread.
  */
-@DoNotStrip
+@Keep
 public class Countable {
 
   static {
@@ -26,7 +26,7 @@ public class Countable {
   }
 
   // Private C++ instance
-  @DoNotStrip private long mInstance = 0;
+  @Keep private long mInstance = 0;
 
   public native void dispose();
 

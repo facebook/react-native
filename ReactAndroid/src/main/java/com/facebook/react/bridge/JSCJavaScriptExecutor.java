@@ -6,10 +6,10 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.Keep;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
 
-@DoNotStrip
+@Keep
 /* package */ class JSCJavaScriptExecutor extends JavaScriptExecutor {
   static {
     ReactBridge.staticInit();

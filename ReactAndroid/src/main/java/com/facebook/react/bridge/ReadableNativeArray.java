@@ -6,11 +6,11 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -18,7 +18,7 @@ import java.util.Arrays;
  * Implementation of a NativeArray that allows read-only access to its members. This will generally
  * be constructed and filled in native code so you shouldn't construct one yourself.
  */
-@DoNotStrip
+@Keep
 public class ReadableNativeArray extends NativeArray implements ReadableArray {
   static {
     ReactBridge.staticInit();

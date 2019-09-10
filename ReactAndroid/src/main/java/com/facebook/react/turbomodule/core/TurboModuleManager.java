@@ -6,9 +6,9 @@
  */
 package com.facebook.react.turbomodule.core;
 
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeModule;
@@ -32,7 +32,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
 
   private final Map<String, TurboModule> mTurboModules = new HashMap<>();
 
-  @DoNotStrip
+  @Keep
   @SuppressWarnings("unused")
   private final HybridData mHybridData;
 
@@ -45,7 +45,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     mTurbomoduleManagerDelegate = tmmDelegate;
   }
 
-  @DoNotStrip
+  @Keep
   @Nullable
   protected TurboModule getJavaModule(String name) {
     if (!mTurboModules.containsKey(name)) {

@@ -5,7 +5,7 @@
 
 package com.facebook.jni;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 
-@DoNotStrip
+@Keep
 public abstract class HybridClassBase extends HybridData {}

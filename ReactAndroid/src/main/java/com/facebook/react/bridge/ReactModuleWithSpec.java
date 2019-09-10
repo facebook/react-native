@@ -6,11 +6,11 @@
  */
 package com.facebook.react.bridge;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 
 /**
  * An interface to be implemented by react modules that extends from the generated spec class. This
  * is experimental.
  */
-@DoNotStrip
+@Keep
 public interface ReactModuleWithSpec {}

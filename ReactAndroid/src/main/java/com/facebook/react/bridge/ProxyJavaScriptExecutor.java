@@ -6,9 +6,9 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
 
 /**
  * JavaScript executor that delegates JS calls processed by native code back to a java version of
@@ -18,7 +18,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
  * delegate low level javascript calls to the implementation of {@link JavaJSExecutor} interface
  * provided with the constructor of this class.
  */
-@DoNotStrip
+@Keep
 public class ProxyJavaScriptExecutor extends JavaScriptExecutor {
   public static class Factory implements JavaScriptExecutorFactory {
     private final JavaJSExecutor.Factory mJavaJSExecutorFactory;

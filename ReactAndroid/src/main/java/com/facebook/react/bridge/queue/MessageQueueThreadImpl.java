@@ -10,8 +10,8 @@ import android.os.Looper;
 import android.os.Process;
 import android.os.SystemClock;
 import android.util.Pair;
+import androidx.annotation.Keep;
 import com.facebook.common.logging.FLog;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.AssertionException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -21,7 +21,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 /** Encapsulates a Thread that has a {@link Looper} running on it that can accept Runnables. */
-@DoNotStrip
+@Keep
 public class MessageQueueThreadImpl implements MessageQueueThread {
 
   private final String mName;
@@ -52,7 +52,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
    * Runs the given Runnable on this Thread. It will be submitted to the end of the event queue even
    * if it is being submitted from the same queue Thread.
    */
-  @DoNotStrip
+  @Keep
   @Override
   public void runOnQueue(Runnable runnable) {
     if (mIsFinished) {
@@ -65,7 +65,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     mHandler.post(runnable);
   }
 
-  @DoNotStrip
+  @Keep
   @Override
   public <T> Future<T> callOnQueue(final Callable<T> callable) {
     final SimpleSettableFuture<T> future = new SimpleSettableFuture<>();
@@ -86,7 +86,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
   /**
    * @return whether the current Thread is also the Thread associated with this MessageQueueThread.
    */
-  @DoNotStrip
+  @Keep
   @Override
   public boolean isOnThread() {
     return mLooper.getThread() == Thread.currentThread();
@@ -96,7 +96,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
    * Asserts {@link #isOnThread()}, throwing a {@link AssertionException} (NOT an {@link
    * AssertionError}) if the assertion fails.
    */
-  @DoNotStrip
+  @Keep
   @Override
   public void assertIsOnThread() {
     SoftAssertions.assertCondition(isOnThread(), mAssertionErrorMessage);
@@ -106,7 +106,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
    * Asserts {@link #isOnThread()}, throwing a {@link AssertionException} (NOT an {@link
    * AssertionError}) if the assertion fails.
    */
-  @DoNotStrip
+  @Keep
   @Override
   public void assertIsOnThread(String message) {
     SoftAssertions.assertCondition(
@@ -118,7 +118,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
    * Quits this queue's Looper. If that Looper was running on a different Thread than the current
    * Thread, also waits for the last message being processed to finish and the Thread to die.
    */
-  @DoNotStrip
+  @Keep
   @Override
   public void quitSynchronous() {
     mIsFinished = true;
@@ -132,13 +132,13 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     }
   }
 
-  @DoNotStrip
+  @Keep
   @Override
   public MessageQueueThreadPerfStats getPerfStats() {
     return mPerfStats;
   }
 
-  @DoNotStrip
+  @Keep
   @Override
   public void resetPerfStats() {
     assignToPerfStats(mPerfStats, -1, -1);

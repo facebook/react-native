@@ -10,7 +10,7 @@ import com.facebook.hermes.instrumentation.HermesMemoryDumper;
 import com.facebook.jni.HybridData;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.soloader.SoLoader;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class HermesExecutor extends JavaScriptExecutor {
   private static String mode_;

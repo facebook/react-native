@@ -6,14 +6,14 @@
  */
 package com.facebook.react.bridge.queue;
 
+import androidx.annotation.Keep;
 import com.facebook.jni.Countable;
-import com.facebook.proguard.annotations.DoNotStrip;
 
 /** A Runnable that has a native run implementation. */
-@DoNotStrip
+@Keep
 public class NativeRunnableDeprecated extends Countable implements Runnable {
 
-  @DoNotStrip
+  @Keep
   private NativeRunnableDeprecated() {}
 
   public native void run();

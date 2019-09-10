@@ -6,13 +6,13 @@
  */
 package com.facebook.react.jscexecutor;
 
+import androidx.annotation.Keep;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.soloader.SoLoader;
 
-@DoNotStrip
+@Keep
 /* package */ class JSCExecutor extends JavaScriptExecutor {
   static {
     SoLoader.loadLibrary("jscexecutor");

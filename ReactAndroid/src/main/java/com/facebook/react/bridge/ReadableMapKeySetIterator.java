@@ -6,10 +6,10 @@
  */
 package com.facebook.react.bridge;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 
 /** Interface of a iterator for a {@link NativeMap}'s key set. */
-@DoNotStrip
+@Keep
 public interface ReadableMapKeySetIterator {
 
   boolean hasNextKey();

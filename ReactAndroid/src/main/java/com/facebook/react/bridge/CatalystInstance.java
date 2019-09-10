@@ -6,8 +6,8 @@
  */
 package com.facebook.react.bridge;
 
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.turbomodule.core.interfaces.JSCallInvokerHolder;
@@ -19,7 +19,7 @@ import java.util.List;
  * the invocation of JavaScript methods and lets a set of Java APIs be invokable from JavaScript as
  * well.
  */
-@DoNotStrip
+@Keep
 public interface CatalystInstance
     extends MemoryPressureListener, JSInstance, JSBundleLoaderDelegate {
   void runJSBundle();
@@ -37,10 +37,10 @@ public interface CatalystInstance
   // This is called from java code, so it won't be stripped anyway, but proguard will rename it,
   // which this prevents.
   @Override
-  @DoNotStrip
+  @Keep
   void invokeCallback(int callbackID, NativeArrayInterface arguments);
 
-  @DoNotStrip
+  @Keep
   void callFunction(String module, String method, NativeArray arguments);
   /**
    * Destroys this catalyst instance, waiting for any other threads in ReactQueueConfiguration

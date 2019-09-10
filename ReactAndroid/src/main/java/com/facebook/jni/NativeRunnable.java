@@ -6,15 +6,15 @@
  */
 package com.facebook.jni;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 
 /** A Runnable that has a native run implementation. */
-@DoNotStrip
+@Keep
 public class NativeRunnable implements Runnable {
 
-  @DoNotStrip private final HybridData mHybridData;
+  @Keep private final HybridData mHybridData;
 
-  @DoNotStrip
+  @Keep
   private NativeRunnable(HybridData hybridData) {
     mHybridData = hybridData;
   }

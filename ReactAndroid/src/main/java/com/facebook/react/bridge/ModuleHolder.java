@@ -11,12 +11,12 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_MODULE_START
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import androidx.annotation.GuardedBy;
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.systrace.SystraceMessage;
@@ -33,7 +33,7 @@ import javax.inject.Provider;
  * <p>Lifecycle events via a {@link LifecycleEventListener} will still always happen on the UI
  * thread.
  */
-@DoNotStrip
+@Keep
 public class ModuleHolder {
 
   private static final AtomicInteger sInstanceKeyCounter = new AtomicInteger(1);
@@ -109,7 +109,7 @@ public class ModuleHolder {
     }
   }
 
-  @DoNotStrip
+  @Keep
   public String getName() {
     return mName;
   }
@@ -134,7 +134,7 @@ public class ModuleHolder {
     return mReactModuleInfo.className();
   }
 
-  @DoNotStrip
+  @Keep
   public NativeModule getModule() {
     NativeModule module;
     boolean shouldCreate = false;

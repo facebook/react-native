@@ -11,11 +11,11 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.util.Log;
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * This provides an implementation of the public CatalystInstance instance. It is public because it
  * is built by XReactInstanceManager which is in a different package.
  */
-@DoNotStrip
+@Keep
 public class CatalystInstanceImpl implements CatalystInstance {
   static {
     ReactBridge.staticInit();

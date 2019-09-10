@@ -6,8 +6,8 @@
  */
 package com.facebook.jni;
 
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
-import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -17,13 +17,13 @@ import java.util.Map;
  * generic argument, since in C++, the types will be erased, anyway. This is *not* a {@link
  * java.util.Iterator}.
  */
-@DoNotStrip
+@Keep
 public class MapIteratorHelper {
-  @DoNotStrip private final Iterator<Map.Entry> mIterator;
-  @DoNotStrip private @Nullable Object mKey;
-  @DoNotStrip private @Nullable Object mValue;
+  @Keep private final Iterator<Map.Entry> mIterator;
+  @Keep private @Nullable Object mKey;
+  @Keep private @Nullable Object mValue;
 
-  @DoNotStrip
+  @Keep
   public MapIteratorHelper(Map map) {
     mIterator = map.entrySet().iterator();
   }
@@ -32,7 +32,7 @@ public class MapIteratorHelper {
    * Moves the helper to the next entry in the map, if any. Returns true iff there is an entry to
    * read.
    */
-  @DoNotStrip
+  @Keep
   boolean hasNext() {
     if (mIterator.hasNext()) {
       Map.Entry entry = mIterator.next();

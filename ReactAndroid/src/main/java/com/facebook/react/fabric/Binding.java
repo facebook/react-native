@@ -7,15 +7,15 @@
 package com.facebook.react.fabric;
 
 import android.annotation.SuppressLint;
+import androidx.annotation.Keep;
 import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.uimanager.PixelUtil;
 
-@DoNotStrip
+@Keep
 @SuppressLint("MissingNativeLoadLibrary")
 public class Binding {
 
@@ -23,7 +23,7 @@ public class Binding {
     FabricSoLoader.staticInit();
   }
 
-  @DoNotStrip private final HybridData mHybridData;
+  @Keep private final HybridData mHybridData;
 
   private static native HybridData initHybrid();
 

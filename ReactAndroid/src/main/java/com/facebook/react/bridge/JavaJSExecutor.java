@@ -6,14 +6,14 @@
  */
 package com.facebook.react.bridge;
 
-import com.facebook.proguard.annotations.DoNotStrip;
+import androidx.annotation.Keep;
 
 /**
  * This is class represents java version of native js executor interface. When set through {@link
  * ProxyJavaScriptExecutor} as a {@link CatalystInstance} executor, native code will delegate js
  * calls to the given implementation of this interface.
  */
-@DoNotStrip
+@Keep
 public interface JavaJSExecutor {
   interface Factory {
     JavaJSExecutor create() throws Exception;
@@ -36,7 +36,7 @@ public interface JavaJSExecutor {
    *
    * @param sourceURL url or file location from which script content was loaded
    */
-  @DoNotStrip
+  @Keep
   void loadApplicationScript(String sourceURL) throws ProxyExecutorException;
 
   /**
@@ -46,9 +46,9 @@ public interface JavaJSExecutor {
    * @param jsonArgsArray json encoded array of arguments provided for the method call
    * @return json encoded value returned from the method call
    */
-  @DoNotStrip
+  @Keep
   String executeJSCall(String methodName, String jsonArgsArray) throws ProxyExecutorException;
 
-  @DoNotStrip
+  @Keep
   void setGlobalVariable(String propertyName, String jsonEncodedValue);
 }

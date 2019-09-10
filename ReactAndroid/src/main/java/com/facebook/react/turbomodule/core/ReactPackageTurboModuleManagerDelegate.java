@@ -2,9 +2,9 @@
 
 package com.facebook.react.turbomodule.core;
 
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.CxxModuleWrapper;
@@ -49,7 +49,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
 
   @Nullable
   @Override
-  @DoNotStrip
+  @Keep
   public CxxModuleWrapper getLegacyCxxModule(String moduleName) {
     TurboModule module = resolveModule(moduleName);
     if (module == null) {
