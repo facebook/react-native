@@ -233,13 +233,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
     jniLoadScriptFromFile(fileName, sourceURL, loadSynchronously);
   }
 
-  @Override
-  public void loadScriptFromDeltaBundle(
-      String sourceURL, NativeDeltaClient deltaClient, boolean loadSynchronously) {
-    mSourceURL = sourceURL;
-    jniLoadScriptFromDeltaBundle(sourceURL, deltaClient, loadSynchronously);
-  }
-
   private native void jniSetSourceURL(String sourceURL);
 
   private native void jniRegisterSegment(int segmentId, String path);
@@ -249,9 +242,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private native void jniLoadScriptFromFile(
       String fileName, String sourceURL, boolean loadSynchronously);
-
-  private native void jniLoadScriptFromDeltaBundle(
-      String sourceURL, NativeDeltaClient deltaClient, boolean loadSynchronously);
 
   @Override
   public void runJSBundle() {

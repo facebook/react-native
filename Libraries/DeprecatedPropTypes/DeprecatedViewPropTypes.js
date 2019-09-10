@@ -16,10 +16,7 @@ const DeprecatedViewStylePropTypes = require('./DeprecatedViewStylePropTypes');
 const PlatformViewPropTypes = require('../Components/View/PlatformViewPropTypes');
 const PropTypes = require('prop-types');
 
-const {
-  DeprecatedAccessibilityRoles,
-  DeprecatedAccessibilityStates,
-} = require('./DeprecatedViewAccessibility');
+const {DeprecatedAccessibilityRoles} = require('./DeprecatedViewAccessibility');
 
 const stylePropType: ReactPropsCheckType = DeprecatedStyleSheetPropType(
   DeprecatedViewStylePropTypes,
@@ -104,23 +101,6 @@ module.exports = {
     | 'toolbar',
   >),
 
-  /**
-   * Indicates to accessibility services that UI Component is in a specific State.
-   */
-  accessibilityStates: (PropTypes.arrayOf(
-    PropTypes.oneOf(DeprecatedAccessibilityStates),
-  ): React$PropType$Primitive<
-    Array<
-      | 'selected'
-      | 'disabled'
-      | 'checked'
-      | 'unchecked'
-      | 'busy'
-      | 'expanded'
-      | 'collapsed'
-      | 'hasPopup',
-    >,
-  >),
   accessibilityState: PropTypes.object,
   /**
    * Indicates to accessibility services whether the user should be notified

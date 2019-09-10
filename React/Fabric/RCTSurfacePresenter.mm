@@ -34,7 +34,6 @@
 #import <react/uimanager/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
-#import <react/utils/RuntimeExecutor.h>
 
 #import "MainRunLoopEventBeat.h"
 #import "RCTConversions.h"
@@ -62,11 +61,18 @@ using namespace facebook::react;
   std::shared_ptr<const ReactNativeConfig> _reactNativeConfig;
   better::shared_mutex _observerListMutex;
   NSMutableArray<id<RCTSurfacePresenterObserver>> *_observers;
+  RCTImageLoader *_imageLoader;
+  RuntimeExecutor _runtimeExecutor;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge config:(std::shared_ptr<const ReactNativeConfig>)config
+- (instancetype)initWithBridge:(RCTBridge *_Nullable)bridge
+                        config:(std::shared_ptr<const ReactNativeConfig>)config
+                   imageLoader:(RCTImageLoader *)imageLoader
+               runtimeExecutor:(RuntimeExecutor)runtimeExecutor
 {
   if (self = [super init]) {
+    _imageLoader = imageLoader;
+    _runtimeExecutor = runtimeExecutor;
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;
     [_batchedBridge setSurfacePresenter:self];
@@ -189,25 +195,25 @@ using namespace facebook::react;
   }
 
   auto componentRegistryFactory = [factory = wrapManagedObject(self.componentViewFactory)](
-                                      EventDispatcher::Shared const &eventDispatcher,
+                                      EventDispatcher::Weak const &eventDispatcher,
                                       ContextContainer::Shared const &contextContainer) {
     return [(RCTComponentViewFactory *)unwrapManagedObject(factory)
         createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
   };
 
-  auto runtimeExecutor = [self _runtimeExecutor];
+  auto runtimeExecutor = [self getRuntimeExecutor];
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = self.contextContainer;
   toolbox.componentRegistryFactory = componentRegistryFactory;
   toolbox.runtimeExecutor = runtimeExecutor;
 
-  toolbox.synchronousEventBeatFactory = [runtimeExecutor]() {
-    return std::make_unique<MainRunLoopEventBeat>(runtimeExecutor);
+  toolbox.synchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
+    return std::make_unique<MainRunLoopEventBeat>(ownerBox, runtimeExecutor);
   };
 
-  toolbox.asynchronousEventBeatFactory = [runtimeExecutor]() {
-    return std::make_unique<RuntimeEventBeat>(runtimeExecutor);
+  toolbox.asynchronousEventBeatFactory = [runtimeExecutor](EventBeat::SharedOwnerBox const &ownerBox) {
+    return std::make_unique<RuntimeEventBeat>(ownerBox, runtimeExecutor);
   };
 
   _scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
@@ -218,8 +224,12 @@ using namespace facebook::react;
 
 @synthesize contextContainer = _contextContainer;
 
-- (RuntimeExecutor)_runtimeExecutor
+- (RuntimeExecutor)getRuntimeExecutor
 {
+  if (_runtimeExecutor) {
+    return _runtimeExecutor;
+  }
+
   auto messageQueueThread = _batchedBridge.jsMessageThread;
   if (messageQueueThread) {
     // Make sure initializeBridge completed
@@ -247,14 +257,28 @@ using namespace facebook::react;
   }
 
   _contextContainer = std::make_shared<ContextContainer>();
+
+  [self _updateContextContainerIfNeeded_DEPRECATED];
+
+  return _contextContainer;
+}
+
+- (void)_updateContextContainerIfNeeded_DEPRECATED
+{
   // Please do not add stuff here; `SurfacePresenter` must not alter `ContextContainer`.
   // Those two pieces eventually should be moved out there:
   // * `RCTImageLoader` should be moved to `RCTImageComponentView`.
   // * `ReactNativeConfig` should be set by outside product code.
+  _contextContainer->erase("ReactNativeConfig");
   _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
-  _contextContainer->insert("RCTImageLoader", wrapManagedObject([_bridge moduleForClass:[RCTImageLoader class]]));
 
-  return _contextContainer;
+  // TODO T47869586 petetheheat: Delete else case when TM rollout 100%
+  _contextContainer->erase("RCTImageLoader");
+  if (_imageLoader) {
+    _contextContainer->insert("RCTImageLoader", wrapManagedObject(_imageLoader));
+  } else {
+    _contextContainer->insert("RCTImageLoader", wrapManagedObject([_bridge moduleForClass:[RCTImageLoader class]]));
+  }
 }
 
 - (void)_startSurface:(RCTFabricSurface *)surface
@@ -406,6 +430,10 @@ using namespace facebook::react;
   RCTBridge *bridge = notification.userInfo[@"bridge"];
   if (bridge != _batchedBridge) {
     _batchedBridge = bridge;
+
+    // Some of the injected dependencies are tight to a particular instance of Bridge,
+    // so they need to be reinjected.
+    [self _updateContextContainerIfNeeded_DEPRECATED];
 
     [self _startAllSurfaces];
   }

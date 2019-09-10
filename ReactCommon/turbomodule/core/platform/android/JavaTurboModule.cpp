@@ -401,6 +401,10 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
 
   std::vector<std::string> methodArgTypes =
       getMethodArgTypesFromSignature(methodSignature);
+
+  // Ensure all Java arguments created for the method invocation are released
+  // after the method call.
+  jni::JniLocalScope scope(env, valueKind == PromiseKind ? count + 1 : count);
   std::vector<jvalue> jargs = convertJSIArgsToJNIArgs(
       env,
       runtime,

@@ -14,10 +14,12 @@
 #import <React/RCTSurfacePresenterStub.h>
 #import <react/config/ReactNativeConfig.h>
 #import <react/utils/ContextContainer.h>
+#import <react/utils/RuntimeExecutor.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class RCTFabricSurface;
+@class RCTImageLoader;
 @class RCTMountingManager;
 
 /**
@@ -28,8 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTSurfacePresenter : NSObject
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                        config:(std::shared_ptr<const facebook::react::ReactNativeConfig>)config;
+- (instancetype)initWithBridge:(RCTBridge *_Nullable)bridge
+                        config:(std::shared_ptr<const facebook::react::ReactNativeConfig>)config
+                   imageLoader:(RCTImageLoader *)imageLoader
+               runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor;
 
 @property (nonatomic, readonly) RCTComponentViewFactory *componentViewFactory;
 @property (nonatomic, readonly) facebook::react::ContextContainer::Shared contextContainer;

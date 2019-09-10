@@ -15,8 +15,8 @@ else
 end
 
 Pod::Spec.new do |spec|
-  spec.name = 'yoga'
-  spec.version = "#{version}.React"
+  spec.name = 'Yoga'
+  spec.version = '1.14.0'
   spec.license =  { :type => 'MIT' }
   spec.homepage = 'https://yogalayout.com'
   spec.documentation_url = 'https://yogalayout.com/docs/'
@@ -29,6 +29,9 @@ Pod::Spec.new do |spec|
 
   spec.module_name = 'yoga'
   spec.requires_arc = false
+  spec.pod_target_xcconfig = {
+      'DEFINES_MODULE' => 'YES'
+  }
   spec.compiler_flags = [
       '-fno-omit-frame-pointer',
       '-fexceptions',

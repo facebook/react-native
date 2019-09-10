@@ -9,8 +9,9 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTDefines.h>
 
-#if RCT_DEV
+#if RCT_DEV_MENU
 
 RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 

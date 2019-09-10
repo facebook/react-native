@@ -38,7 +38,7 @@ let RCTMultilineTextInputView;
 let RCTSinglelineTextInputView;
 
 if (Platform.OS === 'android') {
-  AndroidTextInput = requireNativeComponent('AndroidTextInput');
+  AndroidTextInput = require('./AndroidTextInputNativeComponent').default;
 } else if (Platform.OS === 'ios') {
   RCTMultilineTextInputView = requireNativeComponent(
     'RCTMultilineTextInputView',
@@ -991,7 +991,6 @@ const TextInput = createReactClass({
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
-        accessibilityStates={props.accessibilityStates}
         accessibilityState={props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={props.testID}>
@@ -1044,7 +1043,6 @@ const TextInput = createReactClass({
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
-        accessibilityStates={props.accessibilityStates}
         accessibilityState={props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={props.testID}>
@@ -1100,7 +1098,6 @@ const TextInput = createReactClass({
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityRole={this.props.accessibilityRole}
-        accessibilityStates={this.props.accessibilityStates}
         accessibilityState={this.props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={this.props.testID}>

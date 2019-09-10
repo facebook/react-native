@@ -68,8 +68,6 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
 
   void setRemoteJSDebugEnabled(final boolean isRemoteJSDebugEnabled);
 
-  void setReloadOnJSChangeEnabled(final boolean isReloadOnJSChangeEnabled);
-
   void setFpsDebugEnabled(final boolean isFpsDebugEnabled);
 
   void toggleElementInspector();

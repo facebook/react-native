@@ -326,7 +326,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     };
 
     _reloadImageCancellationBlock =
-    [[_bridge moduleForName:@"ImageLoader"] loadImageWithURLRequest:source.request
+    [[_bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES] loadImageWithURLRequest:source.request
                                                                         size:imageSize
                                                                        scale:imageScale
                                                                      clipped:NO

@@ -376,10 +376,10 @@ class StatusBar extends React.Component<Props> {
     return newEntry;
   }
 
-  static defaultProps: $TEMPORARY$object<{|
+  static defaultProps: {|
     animated: boolean,
     showHideTransition: $TEMPORARY$string<'fade'>,
-  |}> = {
+  |} = {
     animated: false,
     showHideTransition: 'fade',
   };

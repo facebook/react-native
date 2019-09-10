@@ -25,9 +25,11 @@ class AsyncEventBeat : public EventBeat {
   friend class EventBeatManager;
 
   AsyncEventBeat(
+      EventBeat::SharedOwnerBox const &ownerBox,
       EventBeatManager* eventBeatManager,
       RuntimeExecutor runtimeExecutor,
       jni::global_ref<jobject> javaUIManager) :
+      EventBeat(ownerBox),
       eventBeatManager_(eventBeatManager),
       runtimeExecutor_(std::move(runtimeExecutor)),
       javaUIManager_(javaUIManager) {

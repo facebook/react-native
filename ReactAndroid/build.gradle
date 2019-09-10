@@ -380,12 +380,6 @@ dependencies {
     androidTestImplementation("androidx.test:runner:1.1.0")
     androidTestImplementation("androidx.test:rules:1.1.0")
     androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
-
-    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.yoga'
-        exclude group:'com.facebook.flipper', module: 'fbjni'
-        exclude group:'com.facebook.litho', module: 'litho-annotations'
-    }
 }
 
 apply(from: "release.gradle")

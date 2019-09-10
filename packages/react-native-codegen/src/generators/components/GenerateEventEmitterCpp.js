@@ -87,6 +87,7 @@ function generateSetters(
         case 'BooleanTypeAnnotation':
         case 'StringTypeAnnotation':
         case 'Int32TypeAnnotation':
+        case 'DoubleTypeAnnotation':
         case 'FloatTypeAnnotation':
           return generateSetter(
             parentPropertyName,

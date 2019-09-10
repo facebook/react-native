@@ -44,6 +44,11 @@ void MountingCoordinator::push(ShadowTreeRevision &&revision) const {
   }
 }
 
+void MountingCoordinator::revoke() const {
+  std::lock_guard<std::mutex> lock(mutex_);
+  lastRevision_.reset();
+}
+
 better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     const {
   std::lock_guard<std::mutex> lock(mutex_);

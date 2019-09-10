@@ -23,8 +23,13 @@ export type CommandsFunctionTypeParamAnnotation = $ReadOnly<{|
 export type CommandsTypeAnnotation =
   | BooleanTypeAnnotation
   | Int32TypeAnnotation
+  | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | StringTypeAnnotation;
+
+export type DoubleTypeAnnotation = $ReadOnly<{|
+  type: 'DoubleTypeAnnotation',
+|}>;
 
 export type FloatTypeAnnotation = $ReadOnly<{|
   type: 'FloatTypeAnnotation',
@@ -50,6 +55,11 @@ export type ObjectPropertyType =
     |}>
   | $ReadOnly<{|
       type: 'StringTypeAnnotation',
+      name: string,
+      optional: boolean,
+    |}>
+  | $ReadOnly<{|
+      type: 'DoubleTypeAnnotation',
       name: string,
       optional: boolean,
     |}>
@@ -107,6 +117,13 @@ type PropTypeTypeAnnotation =
       |}>,
     |}>
   | $ReadOnly<{|
+      type: 'Int32EnumTypeAnnotation',
+      default: number,
+      options: $ReadOnlyArray<{|
+        value: number,
+      |}>,
+    |}>
+  | $ReadOnly<{|
       type: 'NativePrimitiveTypeAnnotation',
       name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
     |}>
@@ -122,6 +139,9 @@ type PropTypeTypeAnnotation =
           |}>
         | $ReadOnly<{|
             type: 'StringTypeAnnotation',
+          |}>
+        | $ReadOnly<{|
+            type: 'DoubleTypeAnnotation',
           |}>
         | $ReadOnly<{|
             type: 'FloatTypeAnnotation',
@@ -143,6 +163,13 @@ type PropTypeTypeAnnotation =
         | $ReadOnly<{|
             type: 'NativePrimitiveTypeAnnotation',
             name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
+          |}>
+        | $ReadOnly<{|
+            type: 'ArrayTypeAnnotation',
+            elementType: $ReadOnly<{|
+              type: 'ObjectTypeAnnotation',
+              properties: $ReadOnlyArray<PropTypeShape>,
+            |}>,
           |}>,
     |}>;
 

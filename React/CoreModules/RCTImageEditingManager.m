@@ -10,13 +10,12 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTConvert.h>
-#import <React/RCTLog.h>
-#import <React/RCTUtils.h>
-
 #import <React/RCTImageLoader.h>
 #import <React/RCTImageStoreManager.h>
 #import <React/RCTImageUtils.h>
 #import <React/RCTImageLoaderProtocol.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
 
 @implementation RCTImageEditingManager
 
@@ -44,7 +43,7 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
     [RCTConvert CGSize:cropData[@"size"]]
   };
 
-  [[_bridge moduleForName:@"ImageLoader"]
+  [[_bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES]
    loadImageWithURLRequest:imageRequest callback:^(NSError *error, UIImage *image) {
      if (error) {
        errorCallback(error);

@@ -105,7 +105,7 @@ export function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {
 export function getConfigWithoutViewProps(
   viewConfig: ReactNativeBaseComponentViewConfig<>,
   propName: string,
-): $TEMPORARY$object<{||}> {
+): {...} {
   if (!viewConfig[propName]) {
     return {};
   }

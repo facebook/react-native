@@ -53,4 +53,12 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * @param props {@link ReadableMap} props that should be immediately updated in view
    */
   void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props);
+
+  /**
+   * Dispatch an accessibility event to a view asynchronously.
+   *
+   * @param reactTag
+   * @param eventType
+   */
+  void sendAccessibilityEvent(int reactTag, int eventType);
 }

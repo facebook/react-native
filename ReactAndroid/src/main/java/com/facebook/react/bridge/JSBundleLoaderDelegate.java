@@ -33,17 +33,6 @@ public interface JSBundleLoaderDelegate {
   void loadScriptFromFile(String fileName, String sourceURL, boolean loadSynchronously);
 
   /**
-   * Load a delta bundle from Metro. See {@link JSBundleLoader#createDeltaFromNetworkLoader(String,
-   * NativeDeltaClient)}
-   *
-   * @param sourceURL
-   * @param deltaClient
-   * @param loadSynchronously
-   */
-  void loadScriptFromDeltaBundle(
-      String sourceURL, NativeDeltaClient deltaClient, boolean loadSynchronously);
-
-  /**
    * This API is used in situations where the JS bundle is being executed not on the device, but on
    * a host machine. In that case, we must provide two source URLs for the JS bundle: One to be used
    * on the device, and one to be used on the remote debugging machine.

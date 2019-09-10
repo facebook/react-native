@@ -10,6 +10,8 @@ exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_PRO
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_READ_ONLY_OBJECT_NO_TYPE_FOR_CONTENT 1`] = `"Unsupported param for method \\"getString\\", param \\"arg\\". No type specified for $ReadOnly"`;
 
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_UNNAMED_PARAMS 1`] = `"Unsupported type for getBool. Please provide a name for every parameter."`;
+
 exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_EXTENDING_TURBO_MODULE 1`] = `"Found two types extending \\"TurboModule\\" is one file. Split them into separated files."`;
 
 exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT 1`] = `

@@ -16,7 +16,7 @@ module.exports = {
     );
     return null;
   },
-  getConstants: (): $TEMPORARY$object<{||}> => ({}),
+  getConstants: (): {...} => ({}),
   getConstantsForViewManager: (viewManagerName: string) => {},
   getDefaultEventTypes: (): Array<$FlowFixMe> => [],
   playTouchSound: () => {},

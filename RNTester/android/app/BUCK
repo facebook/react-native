@@ -15,6 +15,7 @@ rn_android_library(
     is_androidx = True,
     deps = [
         ":res",
+        react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/android/androidx:appcompat"),
         react_native_dep("third-party/android/androidx:core"),
@@ -25,6 +26,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react:react"),
         react_native_target("java/com/facebook/react/common:build_config"),
         react_native_target("java/com/facebook/react/modules/core:core"),
+        react_native_target("java/com/facebook/react/views/text:text"),
         react_native_target("java/com/facebook/react/shell:shell"),
         react_native_target("jni/prebuilt:android-jsc"),
         # .so files are prebuilt by Gradle with `./gradlew :ReactAndroid:packageReactNdkLibsForBuck`

@@ -457,6 +457,80 @@ describe('ExceptionsManager', () => {
       );
     });
   });
+
+  describe('unstable_setExceptionDecorator', () => {
+    test('modifying the exception data', () => {
+      const error = new Error('Some error happened');
+      const decorator = jest.fn().mockImplementation(data => ({
+        ...data,
+        message: 'decorated: ' + data.message,
+      }));
+
+      // Report the same exception with and without the decorator
+      ExceptionsManager.handleException(error, true);
+      ExceptionsManager.unstable_setExceptionDecorator(decorator);
+      ExceptionsManager.handleException(error, true);
+
+      expect(nativeReportException.mock.calls.length).toBe(2);
+      expect(decorator.mock.calls.length).toBe(1);
+
+      const withoutDecoratorInstalled = nativeReportException.mock.calls[0][0];
+      const afterDecorator = nativeReportException.mock.calls[1][0];
+      const beforeDecorator = decorator.mock.calls[0][0];
+
+      expect(afterDecorator.id).toEqual(beforeDecorator.id);
+
+      // id will change between successive exceptions
+      delete withoutDecoratorInstalled.id;
+      delete beforeDecorator.id;
+      delete afterDecorator.id;
+
+      expect(withoutDecoratorInstalled).toEqual(beforeDecorator);
+      expect(afterDecorator).toEqual({
+        ...beforeDecorator,
+        message: 'decorated: ' + beforeDecorator.message,
+      });
+    });
+
+    test('clearing a decorator', () => {
+      const error = new Error('Some error happened');
+      const decorator = jest.fn().mockImplementation(data => ({
+        ...data,
+        message: 'decorated: ' + data.message,
+      }));
+
+      ExceptionsManager.unstable_setExceptionDecorator(decorator);
+      ExceptionsManager.unstable_setExceptionDecorator(null);
+      ExceptionsManager.handleException(error, true);
+
+      expect(decorator).not.toHaveBeenCalled();
+      expect(nativeReportException).toHaveBeenCalled();
+    });
+
+    test('prevents decorator recursion', () => {
+      const error = new Error('Some error happened');
+      const decorator = jest.fn().mockImplementation(data => {
+        console.error('Logging an error within the decorator');
+        return {
+          ...data,
+          message: 'decorated: ' + data.message,
+        };
+      });
+
+      ExceptionsManager.installConsoleErrorReporter();
+      ExceptionsManager.unstable_setExceptionDecorator(decorator);
+      ExceptionsManager.handleException(error, true);
+
+      expect(decorator).toHaveBeenCalled();
+      expect(nativeReportException).toHaveBeenCalledTimes(2);
+      expect(nativeReportException.mock.calls[0][0].message).toMatch(
+        /Logging an error within the decorator/,
+      );
+      expect(nativeReportException.mock.calls[1][0].message).toMatch(
+        /decorated: .*Some error happened/,
+      );
+    });
+  });
 });
 
 const linesByFile = new Map();

@@ -1,4 +1,4 @@
-load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_native_dep", "react_native_target", "rn_android_library", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_native_dep", "react_native_target", "react_native_xplat_dep", "rn_android_library", "rn_xplat_cxx_library")
 
 rn_android_library(
     name = "instrumentation",
@@ -28,16 +28,15 @@ rn_xplat_cxx_library(
     ],
     headers = ["HermesSamplingProfiler.h"],
     header_namespace = "",
-    #allow_jni_merging = True,
     compiler_flags = ["-fexceptions"],
     platforms = ANDROID,
     soname = "libjsijniprofiler.$(ext)",
     visibility = [
-        "fbandroid//java/com/facebook/jsi:jsi",
+        react_native_dep("java/com/facebook/jsi:jsi"),
     ],
     deps = [
         react_native_target("jni/react/jni:jni"),
         FBJNI_TARGET,
-        "fbsource//xplat/hermes/API:HermesAPI",
+        react_native_xplat_dep("hermes/API:HermesAPI"),
     ],
 )

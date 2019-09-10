@@ -112,9 +112,7 @@ type Props = $ReadOnly<{|
  * source of truth.
  */
 class DatePickerIOS extends React.Component<Props> {
-  static DefaultProps: $TEMPORARY$object<{|
-    mode: $TEMPORARY$string<'datetime'>,
-  |}> = {
+  static DefaultProps: {|mode: $TEMPORARY$string<'datetime'>|} = {
     mode: 'datetime',
   };
 

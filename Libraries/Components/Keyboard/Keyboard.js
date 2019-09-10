@@ -111,7 +111,7 @@ type KeyboardEventListener = (e: KeyboardEvent) => void;
 
 let Keyboard:
   | NativeEventEmitter
-  | $TEMPORARY$object<{|
+  | {|
       addListener: (
         eventName: KeyboardEventName,
         callback: KeyboardEventListener,
@@ -123,7 +123,7 @@ let Keyboard:
         callback: KeyboardEventListener,
       ) => $FlowFixMe,
       scheduleLayoutAnimation: (event: KeyboardEvent) => $FlowFixMe,
-    |}> = {
+    |} = {
   /**
    * The `addListener` function connects a JavaScript function to an identified native
    * keyboard notification event.

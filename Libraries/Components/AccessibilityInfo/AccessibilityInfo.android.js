@@ -10,10 +10,10 @@
 
 'use strict';
 
-import NativeAccessibilityInfo from './NativeAccessibilityInfo';
-
 const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
 const UIManager = require('../../ReactNative/UIManager');
+
+import NativeAccessibilityInfo from './NativeAccessibilityInfo';
 
 const REDUCE_MOTION_EVENT = 'reduceMotionDidChange';
 const TOUCH_EXPLORATION_EVENT = 'touchExplorationDidChange';
@@ -90,7 +90,7 @@ const AccessibilityInfo = {
    *
    * Same as `isScreenReaderEnabled`
    */
-  get fetch() {
+  get fetch(): () => Promise<boolean> {
     return this.isScreenReaderEnabled;
   },
 

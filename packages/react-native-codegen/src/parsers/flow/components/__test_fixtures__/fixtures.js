@@ -21,6 +21,11 @@ const EVENT_DEFINITION = `
   string_optional_value: ?string,
   string_optional_both?: ?string,
 
+  double_required: Double,
+  double_optional_key?: Double,
+  double_optional_value: ?Double,
+  double_optional_both?: ?Double,
+
   float_required: Float,
   float_optional_key?: Float,
   float_optional_value: ?Float,
@@ -38,28 +43,29 @@ const EVENT_DEFINITION = `
 
   object_required: {
     boolean_required: boolean,
-  }
+  },
 
   object_optional_key?: {
     string_optional_key?: string,
-  }
+  },
 
   object_optional_value: ?{
     float_optional_value: ?Float,
-  }
+  },
 
   object_optional_both?: ?{
     int32_optional_both?: ?Int32,
-  }
+  },
 
   object_required_nested_2_layers: {
     object_optional_nested_1_layer?: ?{
       boolean_required: Int32,
       string_optional_key?: string,
+      double_optional_value: ?Double,
       float_optional_value: ?Float,
       int32_optional_both?: ?Int32,
     }
-  }
+  },
 `;
 
 const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS = `
@@ -184,7 +190,7 @@ const ALL_PROP_TYPES_NO_EVENTS = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {Int32, Float, WithDefault} from 'CodegenTypes';
+import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
 import type {ColorValue, ColorArrayValue, PointValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
@@ -217,6 +223,11 @@ type ModuleProps = $ReadOnly<{|
   stringish_null_optional_key?: WithDefault<Stringish, null>,
   stringish_null_optional_both?: WithDefault<Stringish, null>,
 
+  // Double props
+  double_required: Double,
+  double_optional_key?: WithDefault<Double, 1.1>,
+  double_optional_both?: WithDefault<Double, 1.1>,
+
   // Float props
   float_required: Float,
   float_optional_key?: WithDefault<Float, 1.1>,
@@ -230,6 +241,9 @@ type ModuleProps = $ReadOnly<{|
   // String enum props
   enum_optional_key?: WithDefault<'small' | 'large', 'small'>,
   enum_optional_both?: WithDefault<'small' | 'large', 'small'>,
+
+  // Int enum props
+  int_enum_optional_key?: WithDefault<0 | 1, 0>,
 
   // Object props
   object_optional_key?: $ReadOnly<{| prop: string |}>,
@@ -280,7 +294,7 @@ const ARRAY_PROP_TYPES_NO_EVENTS = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {Int32, Float, WithDefault} from 'CodegenTypes';
+import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
 import type {ColorValue, PointValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
@@ -304,6 +318,12 @@ type ModuleProps = $ReadOnly<{|
   array_string_optional_key?: $ReadOnlyArray<string>,
   array_string_optional_value: ?$ReadOnlyArray<string>,
   array_string_optional_both?: ?$ReadOnlyArray<string>,
+
+  // Double props
+  array_double_required: $ReadOnlyArray<Double>,
+  array_double_optional_key?: $ReadOnlyArray<Double>,
+  array_double_optional_value: ?$ReadOnlyArray<Double>,
+  array_double_optional_both?: ?$ReadOnlyArray<Double>,
 
   // Float props
   array_float_required: $ReadOnlyArray<Float>,
@@ -350,6 +370,55 @@ type ModuleProps = $ReadOnly<{|
   array_object_optional_key?: $ReadOnlyArray<$ReadOnly<{| prop: string |}>>,
   array_object_optional_value: ?ArrayObjectType,
   array_object_optional_both?: ?$ReadOnlyArray<ObjectType>,
+
+  // Nested array object types
+  array_of_array_object_required: $ReadOnlyArray<
+    $ReadOnly<{|
+      // This needs to be the same name as the top level array above
+      array_object_required: $ReadOnlyArray<$ReadOnly<{| prop: string |}>>,
+    |}>
+  >,
+  array_of_array_object_optional_key?: $ReadOnlyArray<
+    $ReadOnly<{|
+      // This needs to be the same name as the top level array above
+      array_object_optional_key: $ReadOnlyArray<$ReadOnly<{| prop?: string |}>>,
+    |}>
+  >,
+  array_of_array_object_optional_value: ?$ReadOnlyArray<
+    $ReadOnly<{|
+      // This needs to be the same name as the top level array above
+      array_object_optional_value: $ReadOnlyArray<$ReadOnly<{| prop: ?string |}>>,
+    |}>
+  >,
+  array_of_array_object_optional_both?: ?$ReadOnlyArray<
+    $ReadOnly<{|
+      // This needs to be the same name as the top level array above
+      array_object_optional_both: $ReadOnlyArray<$ReadOnly<{| prop?: ?string |}>>,
+    |}>
+  >,
+
+  // Nested array of array of object types
+  array_of_array_of_object_required: $ReadOnlyArray<
+    $ReadOnlyArray<
+      $ReadOnly<{|
+        prop: string,
+      |}>,
+    >,
+  >,
+
+  // Nested array of array of object types (in file)
+  array_of_array_of_object_required_in_file: $ReadOnlyArray<
+    $ReadOnlyArray<ObjectType>,
+  >,
+
+  // Nested array of array of object types (with spread)
+  array_of_array_of_object_required_with_spread: $ReadOnlyArray<
+    $ReadOnlyArray<
+      $ReadOnly<{|
+        ...ObjectType
+      |}>,
+    >,
+  >,
 |}>;
 
 export default (codegenNativeComponent<ModuleProps>(
@@ -372,7 +441,7 @@ const OBJECT_PROP_TYPES_NO_EVENTS = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {Int32, Float, WithDefault} from 'CodegenTypes';
+import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
 import type {ColorValue, PointValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
@@ -389,6 +458,10 @@ type ModuleProps = $ReadOnly<{|
   // String props
   string_required: $ReadOnly<{|prop: string|}>,
   string_optional: $ReadOnly<{|prop?: WithDefault<string, ''>|}>,
+
+  // Double props
+  double_required: $ReadOnly<{|prop: Double|}>,
+  double_optional: $ReadOnly<{|prop?: WithDefault<Double, 0.0>|}>,
 
   // Float props
   float_required: $ReadOnly<{|prop: Float|}>,
@@ -453,7 +526,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 type DeepSpread = $ReadOnly<{|
   otherStringProp: string,
-|}>
+|}>;
 
 export type PropsInFile = $ReadOnly<{|
   ...DeepSpread,
@@ -464,11 +537,13 @@ export type PropsInFile = $ReadOnly<{|
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 
-  ...PropsInFile
+  ...PropsInFile,
 
   localType: $ReadOnly<{|
     ...PropsInFile
-  |}>
+  |}>,
+
+  localArr: $ReadOnlyArray<PropsInFile>
 |}>;
 
 export default (codegenNativeComponent<ModuleProps>(
@@ -494,6 +569,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {
   Int32,
+  Double,
   Float,
   BubblingEventHandler,
   DirectEventHandler,
@@ -722,24 +798,28 @@ const COMMANDS_DEFINED_WITH_ALL_TYPES = `
 const codegenNativeCommands = require('codegenNativeCommands');
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {Int32, Float} from 'CodegenTypes';
+import type {Int32, Double, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {NativeComponent} from 'codegenNativeComponent';
 
-interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
-  +scrollTo: (
-    viewRef: React.Ref<'RCTView'>,
-    x: Float,
-    y: Int32,
-    animated: boolean,
-  ) => void;
-}
 
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
   // No props or events
 |}>;
+
+type NativeType = NativeComponent<ModuleProps>;
+
+interface NativeCommands {
+  +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void;
+  +scrollTo: (
+    viewRef: React.ElementRef<NativeType>,
+    x: Float,
+    y: Int32,
+    z: Double,
+    animated: boolean,
+  ) => void;
+}
 
 export const Commands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['hotspotUpdate', 'scrollTo'],
@@ -747,7 +827,7 @@ export const Commands = codegenNativeCommands<NativeCommands>({
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): NativeType);
 `;
 
 const COMMANDS_WITH_EXTERNAL_TYPES = `
@@ -774,8 +854,15 @@ export type Boolean = boolean;
 export type Int = Int32;
 export type Void = void;
 
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  // No props or events
+|}>;
+
+type NativeType = NativeComponent<ModuleProps>;
+
 export type ScrollTo = (
-  viewRef: React.Ref<'RCTView'>,
+  viewRef: React.ElementRef<NativeType>,
   y: Int,
   animated: Boolean,
 ) => Void;
@@ -784,18 +871,13 @@ interface NativeCommands {
   +scrollTo: ScrollTo;
 }
 
-export type ModuleProps = $ReadOnly<{|
-  ...ViewProps,
-  // No props or events
-|}>;
-
 export const Commands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['scrollTo'],
 });
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): NativeType);
 `;
 
 const COMMANDS_AND_EVENTS_TYPES_EXPORTED = `
@@ -828,12 +910,6 @@ export type Boolean = boolean;
 export type Int = Int32;
 export type Void = void;
 
-export type ScrollTo = (viewRef: React.Ref<'RCTView'>, y: Int, animated: Boolean) => Void
-
-interface NativeCommands {
-  +scrollTo: ScrollTo;
-}
-
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 
@@ -846,13 +922,21 @@ export type ModuleProps = $ReadOnly<{|
   onDirectEventDefinedInlineWithPaperName: DirectEventHandler<EventInFile, 'paperDirectEventDefinedInlineWithPaperName'>,
 |}>;
 
+type NativeType = NativeComponent<ModuleProps>;
+
+export type ScrollTo = (viewRef: React.ElementRef<NativeType>, y: Int, animated: Boolean) => Void;
+
+interface NativeCommands {
+  +scrollTo: ScrollTo;
+}
+
 export const Commands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['scrollTo']
 });
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): NativeType);
 `;
 
 module.exports = {

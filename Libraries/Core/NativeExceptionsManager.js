@@ -29,7 +29,8 @@ export type ExceptionData = {
   stack: Array<StackFrame>,
   id: number,
   isFatal: boolean,
-  extraData?: ?{},
+  // flowlint-next-line unclear-type:off
+  extraData?: Object,
 };
 
 export interface Spec extends TurboModule {
@@ -45,15 +46,18 @@ export interface Spec extends TurboModule {
     stack: Array<StackFrame>,
     exceptionId: number,
   ) => void;
+  // TODO(T53311281): This is a noop on iOS now. Implement it.
   +reportException?: (data: ExceptionData) => void;
   +updateExceptionMessage: (
     message: string,
     stack: Array<StackFrame>,
     exceptionId: number,
   ) => void;
-  // Android only
+  // TODO(T53311281): This is a noop on iOS now. Implement it.
   +dismissRedbox?: () => void;
 }
+
+const Platform = require('../Utilities/Platform');
 
 const NativeModule = TurboModuleRegistry.getEnforcing<Spec>(
   'ExceptionsManager',
@@ -82,12 +86,14 @@ const ExceptionsManager = {
     NativeModule.updateExceptionMessage(message, stack, exceptionId);
   },
   dismissRedbox(): void {
-    if (NativeModule.dismissRedbox) {
+    if (Platform.OS !== 'ios' && NativeModule.dismissRedbox) {
+      // TODO(T53311281): This is a noop on iOS now. Implement it.
       NativeModule.dismissRedbox();
     }
   },
   reportException(data: ExceptionData): void {
-    if (NativeModule.reportException) {
+    if (Platform.OS !== 'ios' && NativeModule.reportException) {
+      // TODO(T53311281): This is a noop on iOS now. Implement it.
       NativeModule.reportException(data);
       return;
     }

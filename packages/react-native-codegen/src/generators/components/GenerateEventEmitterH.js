@@ -91,6 +91,7 @@ function getNativeTypeFromAnnotation(
     case 'BooleanTypeAnnotation':
     case 'StringTypeAnnotation':
     case 'Int32TypeAnnotation':
+    case 'DoubleTypeAnnotation':
     case 'FloatTypeAnnotation':
       return getCppTypeForAnnotation(type);
     case 'StringEnumTypeAnnotation':
@@ -157,6 +158,7 @@ function generateStruct(
       case 'BooleanTypeAnnotation':
       case 'StringTypeAnnotation':
       case 'Int32TypeAnnotation':
+      case 'DoubleTypeAnnotation':
       case 'FloatTypeAnnotation':
         return;
       case 'ObjectTypeAnnotation':

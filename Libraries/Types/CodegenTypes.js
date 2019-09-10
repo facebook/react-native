@@ -25,6 +25,7 @@ export type DirectEventHandler<
 > = (event: SyntheticEvent<T>) => void | Promise<void>;
 
 // Prop types
+export type Double = number;
 export type Float = number;
 export type Int32 = number;
 

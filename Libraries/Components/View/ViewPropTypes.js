@@ -17,7 +17,6 @@ import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {TVViewProps} from '../AppleTV/TVViewPropTypes';
 import type {
   AccessibilityRole,
-  AccessibilityStates,
   AccessibilityState,
   AccessibilityActionEvent,
   AccessibilityActionInfo,
@@ -413,7 +412,6 @@ export type ViewProps = $ReadOnly<{|
   /**
    * Indicates to accessibility services that UI Component is in a specific State.
    */
-  accessibilityStates?: ?AccessibilityStates,
   accessibilityState?: ?AccessibilityState,
 
   /**
