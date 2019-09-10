@@ -223,6 +223,8 @@ void Binding::installFabricUIManager(
   contextContainer->insert("ReactNativeConfig", config);
   contextContainer->insert("FabricUIManager", javaUIManager_);
 
+  reactNativeConfig_ = config;
+
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
@@ -240,6 +242,7 @@ void Binding::uninstallFabricUIManager() {
 
   scheduler_ = nullptr;
   javaUIManager_ = nullptr;
+  reactNativeConfig_ = nullptr;
 }
 
 inline local_ref<ReadableMap::javaobject> castReadableMap(
