@@ -29,8 +29,7 @@ function doPublish() {
   exec(`git checkout -b ${tempPublishBranch}`);
 
   exec(`git config --global user.email "53619745+rnbot@users.noreply.github.com"`);
-  exec(`git config --global user.name "React-Native Build"`);
-  exec(`git remote set-url origin https://rnbot:${process.env.GIT_TOKEN}@github.com/microsoft/react-native.git`);
+  exec(`git config --global user.name "React-Native Bot"`);
 
   exec(`git add ${pkgJsonPath}`);
   exec(`git commit -m "Applying package update to ${releaseVersion} ***NO_CI***`);
@@ -58,7 +57,7 @@ function doPublish() {
 
   const assetUpdateUrl = `https://uploads.github.com/repos/microsoft/react-native/releases/{id}/assets?name=react-native-${releaseVersion}.tgz`;
   const authHeader =
-    "Basic " + new Buffer(":" + process.env.GIT_TOKEN).toString("base64");
+    "Basic " + new Buffer(":" + process.env.SYSTEM_ACCESSTOKEN).toString("base64");
   const userAgent = "Microsoft-React-Native-Release-Agent";
 
   let uploadReleaseAssetUrl = "";
