@@ -18,6 +18,7 @@ const View = require('../Components/View/View');
 const hasTurboModule = global.__turboModuleProxy != null;
 const isBridgeless = global.RN$Bridgeless === true;
 
+// This is a temporary component to help with migration for the new architecture.
 function ReactNativeArchitectureIndicator(props: {|
   fabric: boolean,
 |}): React.Node {
@@ -39,7 +40,7 @@ function ReactNativeArchitectureIndicator(props: {|
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>{parts.join('+')}</Text>
+      <Text style={styles.text}>{'(FB-ONLY) ' + parts.join('+')}</Text>
     </View>
   );
 }
