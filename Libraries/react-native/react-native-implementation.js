@@ -238,6 +238,9 @@ module.exports = {
   get NativeEventEmitter() {
     return require('../EventEmitter/NativeEventEmitter');
   },
+  get Networking() {
+    return require('../Network/RCTNetworking');
+  },
   get PanResponder() {
     return require('../Interaction/PanResponder');
   },
