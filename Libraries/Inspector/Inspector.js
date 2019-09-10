@@ -30,13 +30,16 @@ export type ReactRenderer = {
 const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 const renderers = findRenderers();
 
-// required for devtools to be able to edit react native styles
+// Required for React DevTools to view/edit React Native styles in Flipper.
+// Flipper doesn't inject these values when initializing DevTools.
 hook.resolveRNStyle = require('../StyleSheet/flattenStyle');
+const viewConfig = require('../Components/View/ReactNativeViewViewConfig.js');
+hook.nativeStyleEditorValidAttributes = Object.keys(
+  viewConfig.validAttributes.style,
+);
 
 function findRenderers(): $ReadOnlyArray<ReactRenderer> {
-  const allRenderers = Object.keys(hook._renderers).map(
-    key => hook._renderers[key],
-  );
+  const allRenderers = Array.from(hook.renderers.values());
   invariant(
     allRenderers.length >= 1,
     'Expected to find at least one React Native renderer on DevTools hook.',
@@ -78,6 +81,7 @@ class Inspector extends React.Component<
     networking: boolean,
   },
 > {
+  _hideTimeoutID: TimeoutID | null = null;
   _subs: ?Array<() => void>;
 
   constructor(props: Object) {
@@ -97,10 +101,10 @@ class Inspector extends React.Component<
   }
 
   componentDidMount() {
-    hook.on('react-devtools', this.attachToDevtools);
+    hook.on('react-devtools', this._attachToDevtools);
     // if devtools is already started
     if (hook.reactDevtoolsAgent) {
-      this.attachToDevtools(hook.reactDevtoolsAgent);
+      this._attachToDevtools(hook.reactDevtoolsAgent);
     }
   }
 
@@ -108,53 +112,67 @@ class Inspector extends React.Component<
     if (this._subs) {
       this._subs.map(fn => fn());
     }
-    hook.off('react-devtools', this.attachToDevtools);
+    hook.off('react-devtools', this._attachToDevtools);
   }
 
   UNSAFE_componentWillReceiveProps(newProps: Object) {
     this.setState({inspectedViewTag: newProps.inspectedViewTag});
   }
 
-  attachToDevtools = (agent: Object) => {
-    let _hideWait = null;
-    const hlSub = agent.sub('highlight', ({node, name, props}) => {
-      clearTimeout(_hideWait);
+  _attachToDevtools = (agent: Object) => {
+    agent.addListener('hideNativeHighlight', this._onAgentHideNativeHighlight);
+    agent.addListener('showNativeHighlight', this._onAgentShowNativeHighlight);
+    agent.addListener('shutdown', this._onAgentShutdown);
 
-      if (typeof node !== 'number') {
-        // Fiber
-        node = ReactNative.findNodeHandle(node);
-      }
-
-      UIManager.measure(node, (x, y, width, height, left, top) => {
-        this.setState({
-          hierarchy: [],
-          inspected: {
-            frame: {left, top, width, height},
-            style: props ? props.style : {},
-          },
-        });
-      });
-    });
-    const hideSub = agent.sub('hideHighlight', () => {
-      if (this.state.inspected === null) {
-        return;
-      }
-      // we wait to actually hide in order to avoid flicker
-      _hideWait = setTimeout(() => {
-        this.setState({
-          inspected: null,
-        });
-      }, 100);
-    });
-    this._subs = [hlSub, hideSub];
-
-    agent.on('shutdown', () => {
-      this.setState({devtoolsAgent: null});
-      this._subs = null;
-    });
     this.setState({
       devtoolsAgent: agent,
     });
+  };
+
+  _onAgentHideNativeHighlight = () => {
+    if (this.state.inspected === null) {
+      return;
+    }
+    // we wait to actually hide in order to avoid flicker
+    this._hideTimeoutID = setTimeout(() => {
+      this.setState({
+        inspected: null,
+      });
+    }, 100);
+  };
+
+  _onAgentShowNativeHighlight = node => {
+    clearTimeout(this._hideTimeoutID);
+
+    if (typeof node !== 'number') {
+      node = ReactNative.findNodeHandle(node);
+    }
+
+    UIManager.measure(node, (x, y, width, height, left, top) => {
+      this.setState({
+        hierarchy: [],
+        inspected: {
+          frame: {left, top, width, height},
+        },
+      });
+    });
+  };
+
+  _onAgentShutdown = () => {
+    const agent = this.state.devtoolsAgent;
+    if (agent != null) {
+      agent.removeListener(
+        'hideNativeHighlight',
+        this._onAgentHideNativeHighlight,
+      );
+      agent.removeListener(
+        'showNativeHighlight',
+        this._onAgentShowNativeHighlight,
+      );
+      agent.removeListener('shutdown', this._onAgentShutdown);
+
+      this.setState({devtoolsAgent: null});
+    }
   };
 
   setSelection(i: number) {
@@ -187,11 +205,7 @@ class Inspector extends React.Component<
     if (this.state.devtoolsAgent) {
       // Skip host leafs
       const offsetFromLeaf = hierarchy.length - 1 - selection;
-      this.state.devtoolsAgent.selectFromDOMNode(
-        touchedViewTag,
-        true,
-        offsetFromLeaf,
-      );
+      this.state.devtoolsAgent.selectNode(touchedViewTag);
     }
 
     this.setState({
@@ -239,7 +253,7 @@ class Inspector extends React.Component<
     });
   }
 
-  render() {
+  render(): React.Node {
     const panelContainerStyle =
       this.state.panelPos === 'bottom'
         ? {bottom: 0}

@@ -16,6 +16,7 @@ import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -50,6 +51,6 @@ type NativeProps = $ReadOnly<{|
   size?: WithDefault<'small' | 'large', 'small'>,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('ActivityIndicatorView', {
+export default (codegenNativeComponent<NativeProps>('ActivityIndicatorView', {
   paperComponentName: 'RCTActivityIndicatorView',
-});
+}): NativeComponentType<NativeProps>);

@@ -11,9 +11,9 @@
 'use strict';
 
 const Blob = require('../Blob/Blob');
+const BlobManager = require('../Blob/BlobManager');
 const EventTarget = require('event-target-shim');
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-const BlobManager = require('../Blob/BlobManager');
 const Platform = require('../Utilities/Platform');
 const WebSocketEvent = require('./WebSocketEvent');
 
@@ -21,9 +21,8 @@ const base64 = require('base64-js');
 const binaryToBase64 = require('../Utilities/binaryToBase64');
 const invariant = require('invariant');
 
-import NativeWebSocketModule from './NativeWebSocketModule';
-
 import type EventSubscription from '../vendor/emitter/EventSubscription';
+import NativeWebSocketModule from './NativeWebSocketModule';
 
 type ArrayBufferView =
   | Int8Array
@@ -56,11 +55,11 @@ let nextWebSocketId = 0;
  * See https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
  * See https://github.com/websockets/ws
  */
-class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
-  static CONNECTING = CONNECTING;
-  static OPEN = OPEN;
-  static CLOSING = CLOSING;
-  static CLOSED = CLOSED;
+class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
+  static CONNECTING: number = CONNECTING;
+  static OPEN: number = OPEN;
+  static CLOSING: number = CLOSING;
+  static CLOSED: number = CLOSED;
 
   CONNECTING: number = CONNECTING;
   OPEN: number = OPEN;

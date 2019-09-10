@@ -16,10 +16,10 @@ const {View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 
 class PromiseTest extends React.Component<{}> {
-  shouldResolve = false;
-  shouldReject = false;
-  shouldSucceedAsync = false;
-  shouldThrowAsync = false;
+  shouldResolve: boolean = false;
+  shouldReject: boolean = false;
+  shouldSucceedAsync: boolean = false;
+  shouldThrowAsync: boolean = false;
 
   componentDidMount() {
     Promise.all([
@@ -37,19 +37,19 @@ class PromiseTest extends React.Component<{}> {
     );
   }
 
-  testShouldResolve = () => {
+  testShouldResolve: () => any = () => {
     return TestModule.shouldResolve()
       .then(() => (this.shouldResolve = true))
       .catch(() => (this.shouldResolve = false));
   };
 
-  testShouldReject = () => {
+  testShouldReject: () => any = () => {
     return TestModule.shouldReject()
       .then(() => (this.shouldReject = false))
       .catch(() => (this.shouldReject = true));
   };
 
-  testShouldSucceedAsync = async (): Promise<any> => {
+  testShouldSucceedAsync: () => Promise<any> = async (): Promise<any> => {
     try {
       await TestModule.shouldResolve();
       this.shouldSucceedAsync = true;
@@ -58,7 +58,7 @@ class PromiseTest extends React.Component<{}> {
     }
   };
 
-  testShouldThrowAsync = async (): Promise<any> => {
+  testShouldThrowAsync: () => Promise<any> = async (): Promise<any> => {
     try {
       await TestModule.shouldReject();
       this.shouldThrowAsync = false;

@@ -52,7 +52,7 @@ type Props = $ReadOnly<{|
  * On press down, the opacity of the wrapped view is decreased, dimming it.
  *
  * Opacity is controlled by wrapping the children in an Animated.View, which is
- * added to the view hiearchy.  Be aware that this can affect layout.
+ * added to the view hierarchy.  Be aware that this can affect layout.
  *
  * Example:
  *
@@ -310,7 +310,6 @@ const TouchableOpacity = ((createReactClass({
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityHint={this.props.accessibilityHint}
         accessibilityRole={this.props.accessibilityRole}
-        accessibilityStates={this.props.accessibilityStates}
         accessibilityState={this.props.accessibilityState}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}

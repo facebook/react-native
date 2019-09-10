@@ -25,7 +25,7 @@ namespace react {
  */
 using ComponentRegistryFactory =
     std::function<SharedComponentDescriptorRegistry(
-        EventDispatcher::Shared const &eventDispatcher,
+        EventDispatcher::Weak const &eventDispatcher,
         ContextContainer::Shared const &contextContainer)>;
 
 ComponentRegistryFactory getDefaultComponentRegistryFactory();

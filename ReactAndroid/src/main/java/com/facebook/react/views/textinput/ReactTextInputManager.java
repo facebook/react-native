@@ -6,6 +6,7 @@
  */
 package com.facebook.react.views.textinput;
 
+import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -20,6 +21,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -29,6 +31,7 @@ import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
@@ -50,7 +53,9 @@ import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaMeasureMode;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.Map;
@@ -90,6 +95,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final String KEYBOARD_TYPE_VISIBLE_PASSWORD = "visible-password";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
   private static final int UNSET = -1;
+
+  @Nullable private static EditText mDummyEditText = null;
 
   @Override
   public String getName() {
@@ -1074,5 +1081,19 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             InputType.TYPE_TEXT_FLAG_CAP_WORDS,
             "sentences",
             InputType.TYPE_TEXT_FLAG_CAP_SENTENCES));
+  }
+  /** Measure function for Fabric. */
+  @Override
+  public long measure(
+      Context context,
+      ReadableMap localData,
+      ReadableMap props,
+      ReadableMap state,
+      float width,
+      YogaMeasureMode widthMode,
+      float height,
+      YogaMeasureMode heightMode) {
+    return TextLayoutManager.measureText(
+        context, localData, props, width, widthMode, height, heightMode);
   }
 }

@@ -34,6 +34,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('../examples/Image/ImageExample'),
   },
   {
+    key: 'JSResponderHandlerExample',
+    module: require('../examples/JSResponderHandlerExample/JSResponderHandlerExample'),
+  },
+  {
     key: 'KeyboardAvoidingViewExample',
     module: require('../examples/KeyboardAvoidingView/KeyboardAvoidingViewExample'),
   },
@@ -123,6 +127,14 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'AnimatedExample',
     module: require('../examples/Animated/AnimatedExample'),
+  },
+  {
+    key: 'Animation - GratuitousAnimation',
+    module: require('../examples/Animated/AnimatedGratuitousApp/AnExApp'),
+  },
+  {
+    key: 'AppearanceExample',
+    module: require('../examples/Appearance/AppearanceExample'),
   },
   {
     key: 'AppStateExample',
@@ -222,7 +234,7 @@ const APIExamples: Array<RNTesterExample> = [
   },
 ];
 
-const Modules = {};
+const Modules: any = {};
 
 APIExamples.concat(ComponentExamples).forEach(Example => {
   Modules[Example.key] = Example.module;

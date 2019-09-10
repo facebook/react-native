@@ -14,7 +14,7 @@ namespace react {
 
 /**
  * MapBuffer is an optimized map format for transferring data like props between
- * C++ and other platforms The implemenation of this map is optimized to:
+ * C++ and other platforms The implementation of this map is optimized to:
  * - be compact to optimize space when sparse (sparse is the common case).
  * - be accessible through JNI with zero/minimal copying via ByteBuffer.
  * - be Have excellent C++ single-write and many-read performance by maximizing

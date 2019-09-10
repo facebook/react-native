@@ -22,7 +22,18 @@ export type CommandsFunctionTypeParamAnnotation = $ReadOnly<{|
 
 export type CommandsTypeAnnotation =
   | BooleanTypeAnnotation
-  | Int32TypeAnnotation;
+  | Int32TypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | StringTypeAnnotation;
+
+export type DoubleTypeAnnotation = $ReadOnly<{|
+  type: 'DoubleTypeAnnotation',
+|}>;
+
+export type FloatTypeAnnotation = $ReadOnly<{|
+  type: 'FloatTypeAnnotation',
+|}>;
 
 export type BooleanTypeAnnotation = $ReadOnly<{|
   type: 'BooleanTypeAnnotation',
@@ -30,6 +41,10 @@ export type BooleanTypeAnnotation = $ReadOnly<{|
 
 export type Int32TypeAnnotation = $ReadOnly<{|
   type: 'Int32TypeAnnotation',
+|}>;
+
+export type StringTypeAnnotation = $ReadOnly<{|
+  type: 'StringTypeAnnotation',
 |}>;
 
 export type ObjectPropertyType =
@@ -40,6 +55,11 @@ export type ObjectPropertyType =
     |}>
   | $ReadOnly<{|
       type: 'StringTypeAnnotation',
+      name: string,
+      optional: boolean,
+    |}>
+  | $ReadOnly<{|
+      type: 'DoubleTypeAnnotation',
       name: string,
       optional: boolean,
     |}>
@@ -78,6 +98,10 @@ type PropTypeTypeAnnotation =
       default: string | null,
     |}>
   | $ReadOnly<{|
+      type: 'DoubleTypeAnnotation',
+      default: number,
+    |}>
+  | $ReadOnly<{|
       type: 'FloatTypeAnnotation',
       default: number,
     |}>
@@ -93,8 +117,19 @@ type PropTypeTypeAnnotation =
       |}>,
     |}>
   | $ReadOnly<{|
+      type: 'Int32EnumTypeAnnotation',
+      default: number,
+      options: $ReadOnlyArray<{|
+        value: number,
+      |}>,
+    |}>
+  | $ReadOnly<{|
       type: 'NativePrimitiveTypeAnnotation',
       name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
+    |}>
+  | $ReadOnly<{|
+      type: 'ObjectTypeAnnotation',
+      properties: $ReadOnlyArray<PropTypeShape>,
     |}>
   | $ReadOnly<{|
       type: 'ArrayTypeAnnotation',
@@ -104,6 +139,9 @@ type PropTypeTypeAnnotation =
           |}>
         | $ReadOnly<{|
             type: 'StringTypeAnnotation',
+          |}>
+        | $ReadOnly<{|
+            type: 'DoubleTypeAnnotation',
           |}>
         | $ReadOnly<{|
             type: 'FloatTypeAnnotation',
@@ -119,8 +157,19 @@ type PropTypeTypeAnnotation =
             |}>,
           |}>
         | $ReadOnly<{|
+            type: 'ObjectTypeAnnotation',
+            properties: $ReadOnlyArray<PropTypeShape>,
+          |}>
+        | $ReadOnly<{|
             type: 'NativePrimitiveTypeAnnotation',
             name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
+          |}>
+        | $ReadOnly<{|
+            type: 'ArrayTypeAnnotation',
+            elementType: $ReadOnly<{|
+              type: 'ObjectTypeAnnotation',
+              properties: $ReadOnlyArray<PropTypeShape>,
+            |}>,
           |}>,
     |}>;
 
@@ -134,6 +183,7 @@ export type PrimitiveTypeAnnotationType =
   | 'StringTypeAnnotation'
   | 'NumberTypeAnnotation'
   | 'Int32TypeAnnotation'
+  | 'DoubleTypeAnnotation'
   | 'FloatTypeAnnotation'
   | 'BooleanTypeAnnotation'
   | 'GenericObjectTypeAnnotation';
@@ -144,7 +194,10 @@ export type PrimitiveTypeAnnotation = $ReadOnly<{|
 
 export type FunctionTypeAnnotationParamTypeAnnotation =
   | $ReadOnly<{|
-      type: 'AnyTypeAnnotation' | PrimitiveTypeAnnotationType,
+      type:
+        | 'AnyTypeAnnotation'
+        | 'FunctionTypeAnnotation'
+        | PrimitiveTypeAnnotationType,
     |}>
   | $ReadOnly<{|
       type: 'ArrayTypeAnnotation',
@@ -153,11 +206,6 @@ export type FunctionTypeAnnotationParamTypeAnnotation =
   | $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
       properties: ?$ReadOnlyArray<ObjectParamTypeAnnotation>,
-    |}>
-  | $ReadOnly<{|
-      type: 'FunctionTypeAnnotation',
-      params: $ReadOnlyArray<FunctionTypeAnnotationParam>,
-      returnTypeAnnotation: FunctionTypeAnnotationReturn,
     |}>;
 
 export type FunctionTypeAnnotationReturnArrayElementType = FunctionTypeAnnotationParamTypeAnnotation;
@@ -170,17 +218,19 @@ export type ObjectParamTypeAnnotation = $ReadOnly<{|
 
 export type FunctionTypeAnnotationReturn =
   | $ReadOnly<{|
-      type: PrimitiveTypeAnnotationType | 'VoidTypeAnnotation',
+      nullable: boolean,
+      type:
+        | PrimitiveTypeAnnotationType
+        | 'VoidTypeAnnotation'
+        | 'GenericPromiseTypeAnnotation',
     |}>
   | $ReadOnly<{|
+      nullable: boolean,
       type: 'ArrayTypeAnnotation',
       elementType: ?FunctionTypeAnnotationReturnArrayElementType,
     |}>
   | $ReadOnly<{|
-      type: 'GenericPromiseTypeAnnotation',
-      resolvedType: FunctionTypeAnnotationReturn,
-    |}>
-  | $ReadOnly<{|
+      nullable: boolean,
       type: 'ObjectTypeAnnotation',
       properties: ?$ReadOnlyArray<ObjectParamTypeAnnotation>,
     |}>;

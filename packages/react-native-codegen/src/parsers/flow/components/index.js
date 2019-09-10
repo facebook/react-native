@@ -13,9 +13,9 @@
 import type {ComponentSchemaBuilderConfig} from './schema.js';
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
-const {getProps} = require('./props');
-const {getOptions} = require('./options');
-const {getExtendsProps} = require('./extends');
+const {getProps, getPropProperties} = require('./props');
+const {getCommandOptions, getOptions} = require('./options');
+const {getExtendsProps, removeKnownExtends} = require('./extends');
 
 function findComponentConfig(ast) {
   const foundConfigs = [];
@@ -25,10 +25,18 @@ function findComponentConfig(ast) {
   );
 
   defaultExports.forEach(statement => {
+    let declaration = statement.declaration;
+
+    // codegenNativeComponent can be nested inside a cast
+    // expression so we need to go one level deeper
+    if (declaration.type === 'TypeCastExpression') {
+      declaration = declaration.expression;
+    }
+
     try {
-      if (statement.declaration.callee.name === 'codegenNativeComponent') {
-        const typeArgumentParams = statement.declaration.typeArguments.params;
-        const funcArgumentParams = statement.declaration.arguments;
+      if (declaration.callee.name === 'codegenNativeComponent') {
+        const typeArgumentParams = declaration.typeArguments.params;
+        const funcArgumentParams = declaration.arguments;
 
         const nativeComponentType = {};
         nativeComponentType.propsTypeName = typeArgumentParams[0].id.name;
@@ -58,11 +66,12 @@ function findComponentConfig(ast) {
 
   const commandsTypeNames = namedExports
     .map(statement => {
+      let callExpression;
       let calleeName;
       try {
-        calleeName = statement.declaration.declarations[0].init.callee.name;
+        callExpression = statement.declaration.declarations[0].init;
+        calleeName = callExpression.callee.name;
       } catch (e) {
-        // Not a function call
         return;
       }
 
@@ -70,8 +79,14 @@ function findComponentConfig(ast) {
         return;
       }
 
-      const typeArgumentParam =
-        statement.declaration.declarations[0].init.typeArguments.params[0];
+      // const statement.declaration.declarations[0].init
+      if (callExpression.arguments.length !== 1) {
+        throw new Error(
+          'codegenNativeCommands must be passed options including the supported commands',
+        );
+      }
+
+      const typeArgumentParam = callExpression.typeArguments.params[0];
 
       if (typeArgumentParam.type !== 'GenericTypeAnnotation') {
         throw new Error(
@@ -79,7 +94,10 @@ function findComponentConfig(ast) {
         );
       }
 
-      return typeArgumentParam.id.name;
+      return {
+        commandTypeName: typeArgumentParam.id.name,
+        commandOptionsExpression: callExpression.arguments[0],
+      };
     })
     .filter(Boolean);
 
@@ -89,22 +107,18 @@ function findComponentConfig(ast) {
 
   return {
     ...foundConfig,
-    commandTypeName: commandsTypeNames[0],
+    commandTypeName:
+      commandsTypeNames[0] == null
+        ? null
+        : commandsTypeNames[0].commandTypeName,
+    commandOptionsExpression:
+      commandsTypeNames[0] == null
+        ? null
+        : commandsTypeNames[0].commandOptionsExpression,
   };
 }
 
-function getPropProperties(propsTypeName, types) {
-  const typeAlias = types[propsTypeName];
-  try {
-    return typeAlias.right.typeParameters.params[0].properties;
-  } catch (e) {
-    throw new Error(
-      `Failed to find type definition for "${propsTypeName}", please check that you have a valid codegen flow file`,
-    );
-  }
-}
-
-function getCommandProperties(commandTypeName, types) {
+function getCommandProperties(commandTypeName, types, commandOptions) {
   if (commandTypeName == null) {
     return [];
   }
@@ -113,19 +127,45 @@ function getCommandProperties(commandTypeName, types) {
 
   if (typeAlias.type !== 'InterfaceDeclaration') {
     throw new Error(
-      `The type argument for codegenNativeCommands must be an interface, receieved ${
+      `The type argument for codegenNativeCommands must be an interface, received ${
         typeAlias.type
       }`,
     );
   }
 
+  let properties;
   try {
-    return typeAlias.body.properties;
+    properties = typeAlias.body.properties;
   } catch (e) {
     throw new Error(
       `Failed to find type definition for "${commandTypeName}", please check that you have a valid codegen flow file`,
     );
   }
+
+  const flowPropertyNames = properties
+    .map(property => property && property.key && property.key.name)
+    .filter(Boolean);
+
+  if (commandOptions == null || commandOptions.supportedCommands == null) {
+    throw new Error(
+      'codegenNativeCommands must be given an options object with supportedCommands array',
+    );
+  }
+
+  if (
+    commandOptions.supportedCommands.length !== flowPropertyNames.length ||
+    !commandOptions.supportedCommands.every(supportedCommand =>
+      flowPropertyNames.includes(supportedCommand),
+    )
+  ) {
+    throw new Error(
+      `codegenNativeCommands expected the same supportedCommands specified in the ${commandTypeName} interface: ${flowPropertyNames.join(
+        ', ',
+      )}`,
+    );
+  }
+
+  return properties;
 }
 
 // $FlowFixMe there's no flowtype for AST
@@ -134,16 +174,24 @@ function processComponent(ast, types): ComponentSchemaBuilderConfig {
     componentName,
     propsTypeName,
     commandTypeName,
+    commandOptionsExpression,
     optionsExpression,
   } = findComponentConfig(ast);
 
   const propProperties = getPropProperties(propsTypeName, types);
-  const commandProperties = getCommandProperties(commandTypeName, types);
+  const commandOptions = getCommandOptions(commandOptionsExpression);
 
-  const extendsProps = getExtendsProps(propProperties);
+  const commandProperties = getCommandProperties(
+    commandTypeName,
+    types,
+    commandOptions,
+  );
+
+  const extendsProps = getExtendsProps(propProperties, types);
   const options = getOptions(optionsExpression);
 
-  const props = getProps(propProperties, types);
+  const nonExtendsProps = removeKnownExtends(propProperties, types);
+  const props = getProps(nonExtendsProps, types);
   const events = getEvents(propProperties, types);
   const commands = getCommands(commandProperties, types);
 

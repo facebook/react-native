@@ -487,6 +487,8 @@ struct RCTInstanceCallback : public InstanceCallback {
     }
     return moduleData.instance;
   }
+  
+  static NSSet<NSString *> *ignoredModuleLoadFailures = [NSSet setWithArray: @[@"UIManager"]];
 
   // Module may not be loaded yet, so attempt to force load it here.
   const BOOL result = [self.delegate respondsToSelector:@selector(bridge:didNotFindModule:)] &&
@@ -494,6 +496,8 @@ struct RCTInstanceCallback : public InstanceCallback {
   if (result) {
     // Try again.
     moduleData = _moduleDataByName[moduleName];
+  } else if ([ignoredModuleLoadFailures containsObject: moduleName]) {
+    RCTLogWarn(@"Unable to find module for %@", moduleName);
   } else {
     RCTLogError(@"Unable to find module for %@", moduleName);
   }
@@ -594,7 +598,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   _moduleRegistryCreated = YES;
 }
 
-- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance;
+- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance
 {
   NSString *const moduleName = RCTBridgeModuleNameForClass([instance class]);
   if (moduleName) {
@@ -861,7 +865,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       if (initializeImmediately && RCTIsMainQueue()) {
         block();
       } else {
-        // We've already checked that dispatchGroup is non-null, but this satisifies the
+        // We've already checked that dispatchGroup is non-null, but this satisfies the
         // Xcode analyzer
         if (dispatchGroup) {
           dispatch_group_async(dispatchGroup, dispatch_get_main_queue(), block);
@@ -911,7 +915,6 @@ struct RCTInstanceCallback : public InstanceCallback {
     [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:completion];
   }
 
-#if RCT_DEV
   if (self.devSettings.isHotLoadingAvailable) {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
     NSString *host = self.bundleURL.host;
@@ -922,7 +925,6 @@ struct RCTInstanceCallback : public InstanceCallback {
                    args:@[@"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled)]
              completion:NULL];
   }
-#endif
 }
 
 - (void)handleError:(NSError *)error
@@ -1149,7 +1151,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   // work to the JS queue directly.
 
   if (self.loading || _pendingCount > 0) {
-    // From the callers' perspecive:
+    // From the callers' perspective:
 
     // Phase 1: jsQueueBlocks are added to the queue; _pendingCount is
     // incremented for each.  If the first block is created after self.loading is

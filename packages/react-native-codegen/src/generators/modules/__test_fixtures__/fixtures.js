@@ -35,6 +35,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
+                  nullable: false,
                   type: 'ObjectTypeAnnotation',
                   properties: [
                     {
@@ -69,6 +70,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
+                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [],
@@ -80,6 +82,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
+                  nullable: false,
                   type: 'BooleanTypeAnnotation',
                 },
                 params: [
@@ -99,6 +102,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
+                  nullable: false,
                   type: 'NumberTypeAnnotation',
                 },
                 params: [
@@ -118,6 +122,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
+                  nullable: false,
                   type: 'StringTypeAnnotation',
                 },
                 params: [
@@ -137,6 +142,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
+                  nullable: false,
                   type: 'ArrayTypeAnnotation',
                   elementType: {
                     type: 'AnyTypeAnnotation',
@@ -162,6 +168,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
+                  nullable: false,
                   type: 'GenericObjectTypeAnnotation',
                 },
                 params: [
@@ -181,6 +188,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
+                  nullable: false,
                   type: 'GenericObjectTypeAnnotation',
                 },
                 params: [
@@ -214,6 +222,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
+                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [
@@ -222,18 +231,6 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
                     nullable: false,
                     typeAnnotation: {
                       type: 'FunctionTypeAnnotation',
-                      params: [
-                        {
-                          nullable: false,
-                          name: 'value',
-                          typeAnnotation: {
-                            type: 'StringTypeAnnotation',
-                          },
-                        },
-                      ],
-                      returnTypeAnnotation: {
-                        type: 'VoidTypeAnnotation',
-                      },
                     },
                   },
                 ],
@@ -245,10 +242,8 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
+                  nullable: false,
                   type: 'GenericPromiseTypeAnnotation',
-                  resolvedType: {
-                    type: 'StringTypeAnnotation',
-                  },
                 },
                 params: [
                   {
@@ -280,6 +275,7 @@ const TWO_MODULES_SAME_FILE: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
+                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [],
@@ -295,6 +291,7 @@ const TWO_MODULES_SAME_FILE: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
+                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [],
@@ -319,6 +316,7 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
+                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [],
@@ -334,10 +332,24 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
         Sample2TurboModule: {
           properties: [
             {
+              name: 'getConstants',
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                returnTypeAnnotation: {
+                  nullable: false,
+                  type: 'ObjectTypeAnnotation',
+                  properties: [],
+                },
+                params: [],
+                optional: false,
+              },
+            },
+            {
               name: 'voidFunc',
               typeAnnotation: {
                 type: 'FunctionTypeAnnotation',
                 returnTypeAnnotation: {
+                  nullable: false,
                   type: 'VoidTypeAnnotation',
                 },
                 params: [],
@@ -351,7 +363,109 @@ const TWO_MODULES_DIFFERENT_FILES: SchemaType = {
   },
 };
 
+const COMPLEX_OBJECTS: SchemaType = {
+  modules: {
+    NativeSampleTurboModule: {
+      nativeModules: {
+        SampleTurboModule: {
+          properties: [
+            {
+              name: 'difficult',
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                returnTypeAnnotation: {
+                  nullable: false,
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      optional: false,
+                      name: 'D',
+                      typeAnnotation: {
+                        type: 'BooleanTypeAnnotation',
+                      },
+                    },
+                    {
+                      optional: false,
+                      name: 'E',
+                      typeAnnotation: {
+                        type: 'NumberTypeAnnotation',
+                      },
+                    },
+                    {
+                      optional: false,
+                      name: 'F',
+                      typeAnnotation: {
+                        type: 'StringTypeAnnotation',
+                      },
+                    },
+                  ],
+                },
+                params: [
+                  {
+                    nullable: false,
+                    name: 'A',
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          optional: false,
+                          name: 'D',
+                          typeAnnotation: {
+                            type: 'BooleanTypeAnnotation',
+                          },
+                        },
+                        {
+                          optional: false,
+                          name: 'E',
+                          typeAnnotation: {
+                            type: 'ObjectTypeAnnotation',
+                            properties: [
+                              {
+                                optional: false,
+                                name: 'D',
+                                typeAnnotation: {
+                                  type: 'BooleanTypeAnnotation',
+                                },
+                              },
+                              {
+                                optional: false,
+                                name: 'E',
+                                typeAnnotation: {
+                                  type: 'NumberTypeAnnotation',
+                                },
+                              },
+                              {
+                                optional: false,
+                                name: 'F',
+                                typeAnnotation: {
+                                  type: 'StringTypeAnnotation',
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        {
+                          optional: false,
+                          name: 'F',
+                          typeAnnotation: {
+                            type: 'StringTypeAnnotation',
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+                optional: false,
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+};
 module.exports = {
+  COMPLEX_OBJECTS,
   TWO_MODULES_SAME_FILE,
   TWO_MODULES_DIFFERENT_FILES,
   EMPTY_NATIVE_MODULES,

@@ -1139,7 +1139,7 @@ public class NativeAnimatedNodeTraversalTest {
    */
   @Test
   public void testSpringTrackingRetainsSpeed() {
-    // this spring config correspomds to tension 20 and friction 0.5 which makes the spring settle
+    // this spring config corresponds to tension 20 and friction 0.5 which makes the spring settle
     // very slowly
     JavaOnlyMap springConfig =
         JavaOnlyMap.of(

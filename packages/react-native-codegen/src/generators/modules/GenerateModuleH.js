@@ -19,9 +19,9 @@ import type {
 type FilesOutput = Map<string, string>;
 
 const moduleTemplate = `
-class JSI_EXPORT Native::_MODULE_NAME_::SpecJSI : public TurboModule {
+class JSI_EXPORT Native::_MODULE_NAME_::CxxSpecJSI : public TurboModule {
 protected:
-  Native::_MODULE_NAME_::SpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
+  Native::_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker);
 
 public:
 ::_MODULE_PROPERTIES_::
@@ -84,7 +84,11 @@ const propertyTemplate =
   'virtual ::_RETURN_VALUE_:: ::_PROPERTY_NAME_::(jsi::Runtime &rt::_ARGS_::) = 0;';
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const nativeModules = Object.keys(schema.modules)
       .map(moduleName => {
         const modules = schema.modules[moduleName].nativeModules;

@@ -11,7 +11,7 @@
 'use strict';
 
 import type {ComponentShape, SchemaType} from '../../CodegenSchema';
-const {getImports} = require('./CppHelpers');
+const {convertDefaultTypeToString, getImports} = require('./CppHelpers');
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
@@ -45,12 +45,13 @@ const componentTemplate = `
       {}
 `.trim();
 
-function generatePropsString(component: ComponentShape) {
+function generatePropsString(componentName: string, component: ComponentShape) {
   return component.props
     .map(prop => {
+      const defaultValue = convertDefaultTypeToString(componentName, prop);
       return `${prop.name}(convertRawProp(rawProps, "${
         prop.name
-      }", sourceProps.${prop.name}, ${prop.name}))`;
+      }", sourceProps.${prop.name}, {${defaultValue}}))`;
     })
     .join(',\n' + '    ');
 }
@@ -81,7 +82,11 @@ function getClassExtendString(component): string {
 }
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const fileName = 'Props.cpp';
     const allImports: Set<string> = new Set([
       '#include <react/core/propsConversions.h>',
@@ -100,10 +105,10 @@ module.exports = {
             const component = components[componentName];
             const newName = `${componentName}Props`;
 
-            const propsString = generatePropsString(component);
+            const propsString = generatePropsString(componentName, component);
             const extendString = getClassExtendString(component);
 
-            const imports = getImports(component);
+            const imports = getImports(component.props);
             imports.forEach(allImports.add, allImports);
 
             const replacedTemplate = componentTemplate

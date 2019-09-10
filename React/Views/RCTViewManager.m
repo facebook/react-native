@@ -121,7 +121,7 @@ RCT_EXPORT_VIEW_PROPERTY(hasTVPreferredFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)
 #endif
 
-// Acessibility related properties
+// Accessibility related properties
 RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.isAccessibilityElement, BOOL)
 RCT_REMAP_VIEW_PROPERTY(accessibilityActions, reactAccessibilityElement.accessibilityActions, NSDictionaryArray)
 RCT_REMAP_VIEW_PROPERTY(accessibilityLabel, reactAccessibilityElement.accessibilityLabel, NSString)
@@ -175,34 +175,6 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
   } else {
     NSString *role = json ? [RCTConvert NSString:json] : @"";
     view.reactAccessibilityElement.accessibilityRole = role;
-  }
-}
-
-RCT_CUSTOM_VIEW_PROPERTY(accessibilityStates, NSArray<NSString *>, RCTView)
-{
-  NSArray<NSString *> *states = json ? [RCTConvert NSStringArray:json] : nil;
-  NSMutableArray *newStates = [NSMutableArray new];
-
-  if (!states) {
-    return;
-  }
-
-  const UIAccessibilityTraits AccessibilityStatesMask = UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected;
-  view.reactAccessibilityElement.accessibilityTraits = view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityStatesMask;
-
-  for (NSString *state in states) {
-    if ([state isEqualToString:@"selected"]) {
-      view.reactAccessibilityElement.accessibilityTraits |= UIAccessibilityTraitSelected;
-    } else if ([state isEqualToString:@"disabled"]) {
-      view.reactAccessibilityElement.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
-    } else {
-      [newStates addObject:state];
-    }
-  }
-  if (newStates.count > 0) {
-    view.reactAccessibilityElement.accessibilityStates = newStates;
-  } else {
-    view.reactAccessibilityElement.accessibilityStates = nil;
   }
 }
 

@@ -26,9 +26,9 @@ describe('YellowBoxCategory', () => {
 
   it('parses strings with arguments', () => {
     expect(YellowBoxCategory.parse(['A', 'B', 'C'])).toEqual({
-      category: 'A "B" "C"',
+      category: 'A B C',
       message: {
-        content: 'A "B" "C"',
+        content: 'A B C',
         substitutions: [],
       },
     });
@@ -38,10 +38,10 @@ describe('YellowBoxCategory', () => {
     expect(YellowBoxCategory.parse(['%s', 'A'])).toEqual({
       category: '\ufeff%s',
       message: {
-        content: '"A"',
+        content: 'A',
         substitutions: [
           {
-            length: 3,
+            length: 1,
             offset: 0,
           },
         ],
@@ -53,15 +53,15 @@ describe('YellowBoxCategory', () => {
     expect(YellowBoxCategory.parse(['%s %s', 'A'])).toEqual({
       category: '\ufeff%s %s',
       message: {
-        content: '"A" %s',
+        content: 'A %s',
         substitutions: [
           {
-            length: 3,
+            length: 1,
             offset: 0,
           },
           {
             length: 2,
-            offset: 4,
+            offset: 2,
           },
         ],
       },
@@ -70,12 +70,12 @@ describe('YellowBoxCategory', () => {
 
   it('parses formatted strings with excess arguments', () => {
     expect(YellowBoxCategory.parse(['%s', 'A', 'B'])).toEqual({
-      category: '\ufeff%s "B"',
+      category: '\ufeff%s B',
       message: {
-        content: '"A" "B"',
+        content: 'A B',
         substitutions: [
           {
-            length: 3,
+            length: 1,
             offset: 0,
           },
         ],
@@ -85,12 +85,12 @@ describe('YellowBoxCategory', () => {
 
   it('treats "%s" in arguments as literals', () => {
     expect(YellowBoxCategory.parse(['%s', '%s', 'A'])).toEqual({
-      category: '\ufeff%s "A"',
+      category: '\ufeff%s A',
       message: {
-        content: '"%s" "A"',
+        content: '%s A',
         substitutions: [
           {
-            length: 4,
+            length: 2,
             offset: 0,
           },
         ],
@@ -111,10 +111,10 @@ describe('YellowBoxCategory', () => {
     expect(
       YellowBoxCategory.render(
         {
-          content: '"A"',
+          content: 'A',
           substitutions: [
             {
-              length: 3,
+              length: 1,
               offset: 0,
             },
           ],
@@ -128,19 +128,19 @@ describe('YellowBoxCategory', () => {
     expect(
       YellowBoxCategory.render(
         {
-          content: '"A" "B" "C"',
+          content: 'A B C',
           substitutions: [
             {
-              length: 3,
+              length: 1,
               offset: 0,
             },
             {
-              length: 3,
-              offset: 4,
+              length: 1,
+              offset: 2,
             },
             {
-              length: 3,
-              offset: 8,
+              length: 1,
+              offset: 4,
             },
           ],
         },
@@ -153,10 +153,10 @@ describe('YellowBoxCategory', () => {
     expect(
       YellowBoxCategory.render(
         {
-          content: '!"A"',
+          content: '!A',
           substitutions: [
             {
-              length: 3,
+              length: 1,
               offset: 1,
             },
           ],
@@ -170,10 +170,10 @@ describe('YellowBoxCategory', () => {
     expect(
       YellowBoxCategory.render(
         {
-          content: '"A"!',
+          content: 'A!',
           substitutions: [
             {
-              length: 3,
+              length: 1,
               offset: 0,
             },
           ],

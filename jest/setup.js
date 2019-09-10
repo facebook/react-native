@@ -131,20 +131,18 @@ jest
     Animated.View.__skipSetNativeProps_FOR_TESTS_ONLY = true;
     return Animated;
   })
-  .mock('../Libraries/Animated/src/AnimatedImplementation', () => {
-    const AnimatedImplementation = jest.requireActual(
-      '../Libraries/Animated/src/AnimatedImplementation',
+  .mock('../Libraries/Animated/src/createAnimatedComponent', () => {
+    const createAnimatedComponent = jest.requireActual(
+      '../Libraries/Animated/src/createAnimatedComponent',
     );
-    const oldCreate = AnimatedImplementation.createAnimatedComponent;
-    AnimatedImplementation.createAnimatedComponent = function(
-      Component,
-      defaultProps,
-    ) {
-      const Wrapped = oldCreate(Component, defaultProps);
+
+    return (Component, defaultProps) => {
+      const Wrapped = createAnimatedComponent(Component, defaultProps);
+
       Wrapped.__skipSetNativeProps_FOR_TESTS_ONLY = true;
+
       return Wrapped;
     };
-    return AnimatedImplementation;
   })
   .mock('../Libraries/AppState/AppState', () => ({
     addEventListener: jest.fn(),
@@ -172,9 +170,6 @@ jest
 
     return ReactNative;
   })
-  .mock('../Libraries/Components/Touchable/ensureComponentIsNative', () => () =>
-    true,
-  )
   // Mock modules defined by the native layer (ex: Objective-C, Java)
   .mock('../Libraries/BatchedBridge/NativeModules', () => ({
     AlertManager: {
@@ -285,13 +280,15 @@ jest
       },
     },
     StatusBarManager: {
-      HEIGHT: 42,
       setColor: jest.fn(),
       setStyle: jest.fn(),
       setHidden: jest.fn(),
       setNetworkActivityIndicatorVisible: jest.fn(),
       setBackgroundColor: jest.fn(),
       setTranslucent: jest.fn(),
+      getConstants: () => ({
+        HEIGHT: 42,
+      }),
     },
     Timing: {
       createTimer: jest.fn(),
@@ -348,4 +345,19 @@ jest
   .mock(
     '../Libraries/Utilities/verifyComponentAttributeEquivalence',
     () => function() {},
-  );
+  )
+  .mock('../Libraries/Components/View/ViewNativeComponent', () => {
+    const React = require('react');
+    const Component = class extends React.Component {
+      render() {
+        return React.createElement('View', this.props, this.props.children);
+      }
+    };
+
+    Component.displayName = 'View';
+
+    return {
+      __esModule: true,
+      default: Component,
+    };
+  });

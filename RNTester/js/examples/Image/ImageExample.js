@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   ActivityIndicator,
   Image,
@@ -408,19 +409,17 @@ exports.description =
 exports.examples = [
   {
     title: 'Plain Network Image',
-    description:
-      'If the `source` prop `uri` property is prefixed with ' +
-      '"http", then it will be downloaded from the network.',
-    render: function() {
+    description: ('If the `source` prop `uri` property is prefixed with ' +
+      '"http", then it will be downloaded from the network.': string),
+    render: function(): React.Node {
       return <Image source={fullImage} style={styles.base} />;
     },
   },
   {
     title: 'Plain Static Image',
-    description:
-      'Static assets should be placed in the source code tree, and ' +
-      'required in the same way as JavaScript modules.',
-    render: function() {
+    description: ('Static assets should be placed in the source code tree, and ' +
+      'required in the same way as JavaScript modules.': string),
+    render: function(): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image
@@ -445,7 +444,7 @@ exports.examples = [
   },
   {
     title: 'Image Loading Events',
-    render: function() {
+    render: function(): React.Node {
       return (
         <NetworkImageCallbackExample
           source={{
@@ -460,7 +459,7 @@ exports.examples = [
   },
   {
     title: 'Error Handler',
-    render: function() {
+    render: function(): React.Node {
       return (
         <NetworkImageExample
           source={{
@@ -473,7 +472,7 @@ exports.examples = [
   },
   {
     title: 'Image Download Progress',
-    render: function() {
+    render: function(): React.Node {
       return (
         <NetworkImageExample
           source={{
@@ -487,7 +486,7 @@ exports.examples = [
   {
     title: 'defaultSource',
     description: 'Show a placeholder image when a network image is loading',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Image
           defaultSource={require('../../assets/bunny.png')}
@@ -502,11 +501,10 @@ exports.examples = [
   },
   {
     title: 'Cache Policy',
-    description:
-      'First image has never been loaded before and is instructed not to load unless in cache.' +
+    description: ('First image has never been loaded before and is instructed not to load unless in cache.' +
       'Placeholder image from above will stay. Second image is the same but forced to load regardless of' +
-      ' local cache state.',
-    render: function() {
+      ' local cache state.': string),
+    render: function(): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image
@@ -532,7 +530,7 @@ exports.examples = [
   },
   {
     title: 'Border Color',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image
@@ -549,7 +547,7 @@ exports.examples = [
   },
   {
     title: 'Border Width',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image
@@ -566,7 +564,7 @@ exports.examples = [
   },
   {
     title: 'Border Radius',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image style={[styles.base, {borderRadius: 5}]} source={fullImage} />
@@ -612,7 +610,7 @@ exports.examples = [
   },
   {
     title: 'Background Color',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image source={smallImage} style={styles.base} />
@@ -638,7 +636,7 @@ exports.examples = [
   },
   {
     title: 'Opacity',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image style={[styles.base, {opacity: 1}]} source={fullImage} />
@@ -668,7 +666,7 @@ exports.examples = [
   },
   {
     title: 'Nesting content inside <Image> component',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View style={{width: 60, height: 60}}>
           <Image
@@ -682,7 +680,7 @@ exports.examples = [
   },
   {
     title: 'Nesting content inside <ImageBackground> component',
-    render: function() {
+    render: function(): React.Node {
       return (
         <ImageBackground
           style={{width: 60, height: 60, backgroundColor: 'transparent'}}
@@ -694,10 +692,9 @@ exports.examples = [
   },
   {
     title: 'Tint Color',
-    description:
-      'The `tintColor` style prop changes all the non-alpha ' +
-      'pixels to the tint color.',
-    render: function() {
+    description: ('The `tintColor` style prop changes all the non-alpha ' +
+      'pixels to the tint color.': string),
+    render: function(): React.Node {
       return (
         <View>
           <View style={styles.horizontal}>
@@ -769,10 +766,9 @@ exports.examples = [
   },
   {
     title: 'Resize Mode',
-    description:
-      'The `resizeMode` style prop controls how the image is ' +
-      'rendered within the frame.',
-    render: function() {
+    description: ('The `resizeMode` style prop controls how the image is ' +
+      'rendered within the frame.': string),
+    render: function(): React.Node {
       return (
         <View>
           {[smallImage, fullImage].map((image, index) => {
@@ -831,7 +827,7 @@ exports.examples = [
   },
   {
     title: 'Animated GIF',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Image
           style={styles.gif}
@@ -843,7 +839,7 @@ exports.examples = [
   },
   {
     title: 'Base64 image',
-    render: function() {
+    render: function(): React.Node {
       return (
         <Image style={styles.base64} source={{uri: base64Icon, scale: 3}} />
       );
@@ -852,44 +848,41 @@ exports.examples = [
   },
   {
     title: 'Cap Insets',
-    description:
-      'When the image is resized, the corners of the size specified ' +
+    description: ('When the image is resized, the corners of the size specified ' +
       'by capInsets will stay a fixed size, but the center content and ' +
       'borders of the image will be stretched. This is useful for creating ' +
-      'resizable rounded buttons, shadows, and other resizable assets.',
-    render: function() {
+      'resizable rounded buttons, shadows, and other resizable assets.': string),
+    render: function(): React.Node {
       return <ImageCapInsetsExample />;
     },
     platform: 'ios',
   },
   {
     title: 'Image Size',
-    render: function() {
+    render: function(): React.Node {
       return <ImageSizeExample source={fullImage} />;
     },
   },
   {
     title: 'MultipleSourcesExample',
-    description:
-      'The `source` prop allows passing in an array of uris, so that native to choose which image ' +
-      'to diplay based on the size of the of the target image',
-    render: function() {
+    description: ('The `source` prop allows passing in an array of uris, so that native to choose which image ' +
+      'to diplay based on the size of the of the target image': string),
+    render: function(): React.Node {
       return <MultipleSourcesExample />;
     },
   },
   {
     title: 'Legacy local image',
-    description:
-      'Images shipped with the native bundle, but not managed ' +
-      'by the JS packager',
-    render: function() {
+    description: ('Images shipped with the native bundle, but not managed ' +
+      'by the JS packager': string),
+    render: function(): React.Node {
       return <Image source={{uri: 'legacy_image', width: 120, height: 120}} />;
     },
   },
   {
     title: 'Bundled images',
     description: 'Images shipped in a separate native bundle',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View style={{flexDirection: 'row'}}>
           <Image
@@ -917,7 +910,7 @@ exports.examples = [
   },
   {
     title: 'Blur Radius',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View style={styles.horizontal}>
           <Image style={[styles.base]} source={fullImage} blurRadius={0} />

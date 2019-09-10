@@ -15,6 +15,38 @@ import type {OptionsShape} from '../../../CodegenSchema.js';
 // $FlowFixMe there's no flowtype for ASTs
 type OptionsAST = Object;
 
+export type CommandOptions = $ReadOnly<{|
+  supportedCommands: $ReadOnlyArray<string>,
+|}>;
+
+function getCommandOptions(
+  commandOptionsExpression: OptionsAST,
+): ?CommandOptions {
+  if (commandOptionsExpression == null) {
+    return null;
+  }
+
+  let foundOptions;
+  try {
+    foundOptions = commandOptionsExpression.properties.reduce(
+      (options, prop) => {
+        options[prop.key.name] = (
+          (prop && prop.value && prop.value.elements) ||
+          []
+        ).map(element => element && element.value);
+        return options;
+      },
+      {},
+    );
+  } catch (e) {
+    throw new Error(
+      'Failed to parse command options, please check that they are defined correctly',
+    );
+  }
+
+  return foundOptions;
+}
+
 function getOptions(optionsExpression: OptionsAST): ?OptionsShape {
   if (!optionsExpression) {
     return null;
@@ -44,5 +76,6 @@ function getOptions(optionsExpression: OptionsAST): ?OptionsShape {
 }
 
 module.exports = {
+  getCommandOptions,
   getOptions,
 };

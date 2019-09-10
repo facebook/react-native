@@ -17,6 +17,7 @@ import type {
 import type {ImageSource} from '../../../../../Libraries/Image/ImageSource';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../../../../Libraries/Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -28,6 +29,6 @@ type NativeProps = $ReadOnly<{|
   point?: PointValue,
 |}>;
 
-export default codegenNativeComponent<NativeProps>(
-  'MultiNativePropNativeComponent',
-);
+export default (codegenNativeComponent<NativeProps>(
+  'MultiNativePropNativeComponentView',
+): NativeComponentType<NativeProps>);

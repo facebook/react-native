@@ -68,7 +68,10 @@ project.ext.react = [
     bundleAssetName: "RNTesterApp.android.bundle",
     entryFile: file("../../js/RNTesterApp.android.js"),
     root: "$rootDir",
-    inputExcludes: ["android/**", "./**", ".gradle/**"]
+    inputExcludes: ["android/**", "./**", ".gradle/**"],
+    composeSourceMapsPath: "$rootDir/scripts/compose-source-maps.js",
+    hermesCommand: "../../../node_modules/hermes-engine/%OS-BIN%/hermes",
+    enableHermesForVariant: { def v -> v.name.contains("hermes") }
 ]
 
 apply from: "../../../react.gradle"
@@ -98,17 +101,27 @@ def enableProguardInReleaseBuilds = true
 def useIntlJsc = false
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    flavorDimensions "vm"
+    productFlavors {
+        hermes {
+            dimension "vm"
+        }
+        jsc {
+            dimension "vm"
+        }
+    }
+
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
     }
@@ -138,6 +151,12 @@ android {
             signingConfig signingConfigs.release
         }
     }
+    packagingOptions {
+        pickFirst '**/armeabi-v7a/libc++_shared.so'
+        pickFirst '**/x86/libc++_shared.so'
+        pickFirst '**/arm64-v8a/libc++_shared.so'
+        pickFirst '**/x86_64/libc++_shared.so'
+    }
 }
 
 dependencies {
@@ -145,6 +164,16 @@ dependencies {
 
     // Build React Native from source
     implementation project(':ReactAndroid')
+
+    def hermesPath = '$projectDir/../../../../node_modules/hermes-engine/android/'
+    debugImplementation files(hermesPath + "hermes-debug.aar")
+    releaseImplementation files(hermesPath + "hermes-release.aar")
+
+    debugImplementation("com.facebook.flipper:flipper:0.23.4") {
+        exclude group:'com.facebook.yoga'
+        exclude group:'com.facebook.flipper', module: 'fbjni'
+        exclude group:'com.facebook.litho', module: 'litho-annotations'
+    }
 
     if (useIntlJsc) {
         implementation 'org.webkit:android-jsc-intl:+'

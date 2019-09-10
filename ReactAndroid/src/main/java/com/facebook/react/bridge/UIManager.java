@@ -43,10 +43,6 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    */
   void dispatchCommand(int reactTag, String commandId, @Nullable ReadableArray commandArgs);
 
-  void setJSResponder(int reactTag, boolean blockNativeResponder);
-
-  void clearJSResponder();
-
   /**
    * Used by native animated module to bypass the process of updating the values through the shadow
    * view hierarchy. This method will directly update native views, which means that updates for
@@ -57,4 +53,12 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * @param props {@link ReadableMap} props that should be immediately updated in view
    */
   void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props);
+
+  /**
+   * Dispatch an accessibility event to a view asynchronously.
+   *
+   * @param reactTag
+   * @param eventType
+   */
+  void sendAccessibilityEvent(int reactTag, int eventType);
 }

@@ -269,7 +269,7 @@ const FLOAT_PROPS: SchemaType = {
           props: [
             {
               name: 'blurRadius',
-              optional: true,
+              optional: false,
               typeAnnotation: {
                 type: 'FloatTypeAnnotation',
                 default: 0.0,
@@ -312,6 +312,75 @@ const FLOAT_PROPS: SchemaType = {
               optional: true,
               typeAnnotation: {
                 type: 'FloatTypeAnnotation',
+                default: -0.0,
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const DOUBLE_PROPS: SchemaType = {
+  modules: {
+    Switch: {
+      components: {
+        DoublePropNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'blurRadius',
+              optional: false,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: 0.0,
+              },
+            },
+            {
+              name: 'blurRadius2',
+              optional: true,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: 0.001,
+              },
+            },
+            {
+              name: 'blurRadius3',
+              optional: true,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: 2.1,
+              },
+            },
+            {
+              name: 'blurRadius4',
+              optional: true,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: 0,
+              },
+            },
+            {
+              name: 'blurRadius5',
+              optional: true,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
+                default: 1,
+              },
+            },
+            {
+              name: 'blurRadius6',
+              optional: true,
+              typeAnnotation: {
+                type: 'DoubleTypeAnnotation',
                 default: -0.0,
               },
             },
@@ -515,6 +584,345 @@ const ARRAY_PROPS: SchemaType = {
                 },
               },
             },
+            {
+              name: 'object',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      name: 'stringProp',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'StringTypeAnnotation',
+                        default: '',
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              name: 'array',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      // This needs to stay the same as the object above
+                      // to confirm that the structs are generated
+                      // with unique non-colliding names
+                      name: 'object',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ObjectTypeAnnotation',
+                          properties: [
+                            {
+                              name: 'stringProp',
+                              optional: true,
+                              typeAnnotation: {
+                                type: 'StringTypeAnnotation',
+                                default: '',
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              name: 'arrayOfArrayOfObject',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ArrayTypeAnnotation',
+                  elementType: {
+                    type: 'ObjectTypeAnnotation',
+                    properties: [
+                      {
+                        name: 'stringProp',
+                        optional: true,
+                        typeAnnotation: {
+                          type: 'StringTypeAnnotation',
+                          default: '',
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const ARRAY_PROPS_WITH_NESTED_OBJECT: SchemaType = {
+  modules: {
+    Slider: {
+      components: {
+        ArrayPropsNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'nativePrimitives',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      name: 'colors',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'NativePrimitiveTypeAnnotation',
+                          name: 'ColorPrimitive',
+                        },
+                      },
+                    },
+                    {
+                      name: 'srcs',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'NativePrimitiveTypeAnnotation',
+                          name: 'ImageSourcePrimitive',
+                        },
+                      },
+                    },
+                    {
+                      name: 'points',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'NativePrimitiveTypeAnnotation',
+                          name: 'PointPrimitive',
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const OBJECT_PROPS: SchemaType = {
+  modules: {
+    ObjectPropsNativeComponent: {
+      components: {
+        ObjectProps: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'objectProp',
+              optional: true,
+              typeAnnotation: {
+                type: 'ObjectTypeAnnotation',
+                properties: [
+                  {
+                    name: 'stringProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                      default: '',
+                    },
+                  },
+                  {
+                    name: 'booleanProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                      default: false,
+                    },
+                  },
+                  {
+                    name: 'floatProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'FloatTypeAnnotation',
+                      default: 0.0,
+                    },
+                  },
+                  {
+                    name: 'intProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                      default: 0,
+                    },
+                  },
+                  {
+                    name: 'stringEnumProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'StringEnumTypeAnnotation',
+                      default: 'option1',
+                      options: [
+                        {
+                          name: 'option1',
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'intEnumProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'Int32EnumTypeAnnotation',
+                      default: 0,
+                      options: [
+                        {
+                          value: 0,
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'objectArrayProp',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'array',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'ArrayTypeAnnotation',
+                            elementType: {
+                              type: 'StringTypeAnnotation',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'objectPrimitiveRequiredProp',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'image',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'NativePrimitiveTypeAnnotation',
+                            name: 'ImageSourcePrimitive',
+                          },
+                        },
+                        {
+                          name: 'color',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'NativePrimitiveTypeAnnotation',
+                            name: 'ColorPrimitive',
+                          },
+                        },
+                        {
+                          name: 'point',
+                          optional: true,
+                          typeAnnotation: {
+                            type: 'NativePrimitiveTypeAnnotation',
+                            name: 'PointPrimitive',
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'nestedPropA',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'nestedPropB',
+                          optional: false,
+                          typeAnnotation: {
+                            type: 'ObjectTypeAnnotation',
+                            properties: [
+                              {
+                                name: 'nestedPropC',
+                                optional: true,
+                                typeAnnotation: {
+                                  type: 'StringTypeAnnotation',
+                                  default: '',
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'nestedArrayAsProperty',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'arrayProp',
+                          optional: false,
+                          typeAnnotation: {
+                            type: 'ArrayTypeAnnotation',
+                            elementType: {
+                              type: 'ObjectTypeAnnotation',
+                              properties: [
+                                {
+                                  name: 'stringProp',
+                                  optional: false,
+                                  typeAnnotation: {
+                                    type: 'StringTypeAnnotation',
+                                    default: '',
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
           ],
           commands: [],
         },
@@ -576,11 +984,11 @@ const MULTI_NATIVE_PROP: SchemaType = {
   },
 };
 
-const ENUM_PROP: SchemaType = {
+const STRING_ENUM_PROP: SchemaType = {
   modules: {
     Switch: {
       components: {
-        EnumPropsNativeComponent: {
+        StringEnumPropsNativeComponent: {
           extendsProps: [
             {
               type: 'ReactNativeBuiltInType',
@@ -604,6 +1012,46 @@ const ENUM_PROP: SchemaType = {
                   },
                   {
                     name: 'bottom-right',
+                  },
+                ],
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const INT32_ENUM_PROP: SchemaType = {
+  modules: {
+    Switch: {
+      components: {
+        Int32EnumPropsNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'maxInterval',
+              optional: true,
+              typeAnnotation: {
+                type: 'Int32EnumTypeAnnotation',
+                default: 0,
+                options: [
+                  {
+                    value: 0,
+                  },
+                  {
+                    value: 1,
+                  },
+                  {
+                    value: 2,
                   },
                 ],
               },
@@ -922,6 +1370,83 @@ const COMMANDS: SchemaType = {
           props: [],
           commands: [
             {
+              name: 'flashScrollIndicators',
+              optional: false,
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                params: [],
+              },
+            },
+            {
+              name: 'allTypes',
+              optional: false,
+              typeAnnotation: {
+                type: 'FunctionTypeAnnotation',
+                params: [
+                  {
+                    name: 'x',
+                    typeAnnotation: {
+                      type: 'Int32TypeAnnotation',
+                    },
+                  },
+                  {
+                    name: 'y',
+                    typeAnnotation: {
+                      type: 'FloatTypeAnnotation',
+                    },
+                  },
+                  {
+                    name: 'z',
+                    typeAnnotation: {
+                      type: 'DoubleTypeAnnotation',
+                    },
+                  },
+                  {
+                    name: 'message',
+                    typeAnnotation: {
+                      type: 'StringTypeAnnotation',
+                    },
+                  },
+                  {
+                    name: 'animated',
+                    typeAnnotation: {
+                      type: 'BooleanTypeAnnotation',
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+};
+
+const COMMANDS_AND_PROPS: SchemaType = {
+  modules: {
+    Switch: {
+      components: {
+        CommandNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'accessibilityHint',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+                default: '',
+              },
+            },
+          ],
+          commands: [
+            {
               name: 'hotspotUpdate',
               optional: false,
               typeAnnotation: {
@@ -942,27 +1467,6 @@ const COMMANDS: SchemaType = {
                 ],
               },
             },
-            {
-              name: 'scrollTo',
-              optional: false,
-              typeAnnotation: {
-                type: 'FunctionTypeAnnotation',
-                params: [
-                  {
-                    name: 'y',
-                    typeAnnotation: {
-                      type: 'Int32TypeAnnotation',
-                    },
-                  },
-                  {
-                    name: 'animated',
-                    typeAnnotation: {
-                      type: 'BooleanTypeAnnotation',
-                    },
-                  },
-                ],
-              },
-            },
           ],
         },
       },
@@ -976,17 +1480,22 @@ module.exports = {
   BOOLEAN_PROP,
   STRING_PROP,
   INTEGER_PROPS,
+  DOUBLE_PROPS,
   FLOAT_PROPS,
   COLOR_PROP,
   IMAGE_PROP,
   POINT_PROP,
   ARRAY_PROPS,
+  ARRAY_PROPS_WITH_NESTED_OBJECT,
+  OBJECT_PROPS,
   MULTI_NATIVE_PROP,
-  ENUM_PROP,
+  STRING_ENUM_PROP,
+  INT32_ENUM_PROP,
   EVENT_PROPS,
   EVENTS_WITH_PAPER_NAME,
   EVENT_NESTED_OBJECT_PROPS,
   TWO_COMPONENTS_SAME_FILE,
   TWO_COMPONENTS_DIFFERENT_FILES,
   COMMANDS,
+  COMMANDS_AND_PROPS,
 };

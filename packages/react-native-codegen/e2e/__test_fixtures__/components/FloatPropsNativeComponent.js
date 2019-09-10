@@ -16,12 +16,13 @@ import type {
 } from '../../../../../Libraries/Types/CodegenTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../../../../Libraries/Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
   // Props
-  blurRadius?: WithDefault<Float, 0.0>,
+  blurRadius: Float,
   blurRadius2?: WithDefault<Float, 0.001>,
   blurRadius3?: WithDefault<Float, 2.1>,
   blurRadius4?: WithDefault<Float, 0>,
@@ -29,4 +30,6 @@ type NativeProps = $ReadOnly<{|
   blurRadius6?: WithDefault<Float, -0.0>,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('FloatPropsNativeComponent');
+export default (codegenNativeComponent<NativeProps>(
+  'FloatPropsNativeComponentView',
+): NativeComponentType<NativeProps>);

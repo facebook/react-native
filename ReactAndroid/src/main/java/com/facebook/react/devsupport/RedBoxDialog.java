@@ -122,6 +122,8 @@ import org.json.JSONObject;
     public StackAdapter(String title, StackFrame[] stack) {
       mTitle = title;
       mStack = stack;
+      Assertions.assertNotNull(mTitle);
+      Assertions.assertNotNull(mStack);
     }
 
     @Override
@@ -169,7 +171,8 @@ import org.json.JSONObject;
                     LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.redbox_item_title, parent, false);
         // Remove ANSI color codes from the title
-        title.setText(mTitle.replaceAll("\\x1b\\[[0-9;]*m", ""));
+        String titleSafe = (mTitle == null ? "<unknown title>" : mTitle);
+        title.setText(titleSafe.replaceAll("\\x1b\\[[0-9;]*m", ""));
         return title;
       } else {
         if (convertView == null) {

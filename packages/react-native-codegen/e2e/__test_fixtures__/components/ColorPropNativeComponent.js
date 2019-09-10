@@ -13,6 +13,7 @@
 import type {ColorValue} from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../../../../Libraries/Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -21,4 +22,6 @@ type NativeProps = $ReadOnly<{|
   tintColor?: ColorValue,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('ColorPropNativeComponent');
+export default (codegenNativeComponent<NativeProps>(
+  'ColorPropNativeComponentView',
+): NativeComponentType<NativeProps>);

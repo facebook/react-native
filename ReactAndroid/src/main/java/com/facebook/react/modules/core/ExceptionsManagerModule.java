@@ -7,6 +7,7 @@
 package com.facebook.react.modules.core;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactMethod;
@@ -57,10 +58,11 @@ public class ExceptionsManagerModule extends BaseJavaModule {
 
   @ReactMethod
   public void reportException(ReadableMap data) {
-    String message = data.getString("message");
-    ReadableArray stack = data.getArray("stack");
-    int id = data.getInt("id");
-    boolean isFatal = data.getBoolean("isFatal");
+    String message = data.hasKey("message") ? data.getString("message") : "";
+    ReadableArray stack = data.hasKey("stack") ? data.getArray("stack") : Arguments.createArray();
+    int id = data.hasKey("id") ? data.getInt("id") : -1;
+    boolean isFatal = data.hasKey("isFatal") ? data.getBoolean("isFatal") : false;
+
     if (mDevSupportManager.getDevSupportEnabled()) {
       mDevSupportManager.showNewJSError(message, stack, id);
     } else {

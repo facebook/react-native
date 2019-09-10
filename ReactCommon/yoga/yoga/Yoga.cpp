@@ -891,7 +891,7 @@ YGValue YGNodeStyleGetMaxHeight(const YGNodeConstRef node) {
         "Cannot get layout properties of multi-edge shorthands");       \
                                                                         \
     if (edge == YGEdgeStart) {                                          \
-      if (node->getLayout().direction == YGDirectionRTL) {              \
+      if (node->getLayout().direction() == YGDirectionRTL) {            \
         return node->getLayout().instanceName[YGEdgeRight];             \
       } else {                                                          \
         return node->getLayout().instanceName[YGEdgeLeft];              \
@@ -899,7 +899,7 @@ YGValue YGNodeStyleGetMaxHeight(const YGNodeConstRef node) {
     }                                                                   \
                                                                         \
     if (edge == YGEdgeEnd) {                                            \
-      if (node->getLayout().direction == YGDirectionRTL) {              \
+      if (node->getLayout().direction() == YGDirectionRTL) {            \
         return node->getLayout().instanceName[YGEdgeLeft];              \
       } else {                                                          \
         return node->getLayout().instanceName[YGEdgeRight];             \
@@ -915,15 +915,15 @@ YG_NODE_LAYOUT_PROPERTY_IMPL(float, Right, position[YGEdgeRight]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Bottom, position[YGEdgeBottom]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Width, dimensions[YGDimensionWidth]);
 YG_NODE_LAYOUT_PROPERTY_IMPL(float, Height, dimensions[YGDimensionHeight]);
-YG_NODE_LAYOUT_PROPERTY_IMPL(YGDirection, Direction, direction);
-YG_NODE_LAYOUT_PROPERTY_IMPL(bool, HadOverflow, hadOverflow);
+YG_NODE_LAYOUT_PROPERTY_IMPL(YGDirection, Direction, direction());
+YG_NODE_LAYOUT_PROPERTY_IMPL(bool, HadOverflow, hadOverflow());
 
 YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Margin, margin);
 YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Border, border);
 YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Padding, padding);
 
 bool YGNodeLayoutGetDidLegacyStretchFlagAffectLayout(const YGNodeRef node) {
-  return node->getLayout().doesLegacyStretchFlagAffectsLayout;
+  return node->getLayout().doesLegacyStretchFlagAffectsLayout();
 }
 
 uint32_t gCurrentGenerationCount = 0;
@@ -1644,6 +1644,8 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
         layoutContext);
 
     layoutMarkerData.measureCallbacks += 1;
+    layoutMarkerData.measureCallbackReasonsCount[static_cast<size_t>(reason)] +=
+        1;
 
     Event::publish<Event::MeasureCallbackEnd>(
         node,
@@ -1843,7 +1845,7 @@ static float YGNodeComputeFlexBasisForChildren(
     const uint32_t generationCount) {
   float totalOuterFlexBasis = 0.0f;
   YGNodeRef singleFlexChild = nullptr;
-  YGVector children = node->getChildren();
+  const YGVector &children = node->getChildren();
   YGMeasureMode measureModeMainDim =
       YGFlexDirectionIsRow(mainAxis) ? widthMeasureMode : heightMeasureMode;
   // If there is only one child with flexGrow + flexShrink it means we can set
@@ -2175,27 +2177,29 @@ static float YGDistributeFreeSpaceSecondPass(
     const YGMeasureMode childHeightMeasureMode =
         !isMainAxisRow ? childMainMeasureMode : childCrossMeasureMode;
 
+    const bool isLayoutPass = performLayout && !requiresStretchLayout;
     // Recursively call the layout algorithm for this child with the updated
     // main size.
     YGLayoutNodeInternal(
         currentRelativeChild,
         childWidth,
         childHeight,
-        node->getLayout().direction,
+        node->getLayout().direction(),
         childWidthMeasureMode,
         childHeightMeasureMode,
         availableInnerWidth,
         availableInnerHeight,
-        performLayout && !requiresStretchLayout,
-        LayoutPassReason::kFlex,
+        isLayoutPass,
+        isLayoutPass ? LayoutPassReason::kFlexLayout
+                     : LayoutPassReason::kFlexMeasure,
         config,
         layoutMarkerData,
         layoutContext,
         depth,
         generationCount);
     node->setLayoutHadOverflow(
-        node->getLayout().hadOverflow |
-        currentRelativeChild->getLayout().hadOverflow);
+        node->getLayout().hadOverflow() |
+        currentRelativeChild->getLayout().hadOverflow());
   }
   return deltaFreeSpace;
 }
@@ -2954,7 +2958,7 @@ static void YGNodelayoutImpl(
     }
 
     node->setLayoutHadOverflow(
-        node->getLayout().hadOverflow |
+        node->getLayout().hadOverflow() |
         (collectedFlexItemsValues.remainingFreeSpace < 0));
 
     // STEP 6: MAIN-AXIS JUSTIFICATION & CROSS-AXIS SIZE DETERMINATION
@@ -4133,7 +4137,7 @@ void YGNodeCalculateLayoutWithContext(
           0, // tree root
           gCurrentGenerationCount)) {
     node->setPosition(
-        node->getLayout().direction, ownerWidth, ownerHeight, ownerWidth);
+        node->getLayout().direction(), ownerWidth, ownerHeight, ownerWidth);
     YGRoundToPixelGrid(node, node->getConfig()->pointScaleFactor, 0.0f, 0.0f);
 
 #ifdef DEBUG
@@ -4183,7 +4187,7 @@ void YGNodeCalculateLayoutWithContext(
             0, // tree root
             gCurrentGenerationCount)) {
       nodeWithoutLegacyFlag->setPosition(
-          nodeWithoutLegacyFlag->getLayout().direction,
+          nodeWithoutLegacyFlag->getLayout().direction(),
           ownerWidth,
           ownerHeight,
           ownerWidth);

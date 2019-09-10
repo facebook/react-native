@@ -38,11 +38,13 @@ function generateRequestId() {
 
 const ImageProps = {
   ...DeprecatedViewPropTypes,
-  style: DeprecatedStyleSheetPropType(DeprecatedImageStylePropTypes),
+  style: (DeprecatedStyleSheetPropType(
+    DeprecatedImageStylePropTypes,
+  ): ReactPropsCheckType),
   /**
    * See https://facebook.github.io/react-native/docs/image.html#source
    */
-  source: PropTypes.oneOfType([
+  source: (PropTypes.oneOfType([
     PropTypes.shape({
       uri: PropTypes.string,
       headers: PropTypes.objectOf(PropTypes.string),
@@ -58,7 +60,16 @@ const ImageProps = {
         headers: PropTypes.objectOf(PropTypes.string),
       }),
     ),
-  ]),
+  ]): React$PropType$Primitive<
+    | {headers?: {[string]: string}, uri?: string}
+    | number
+    | Array<{
+        headers?: {[string]: string},
+        height?: number,
+        uri?: string,
+        width?: number,
+      }>,
+  >),
   /**
    * blurRadius: the blur radius of the blur filter added to the image
    *
@@ -72,13 +83,13 @@ const ImageProps = {
   /**
    * See https://facebook.github.io/react-native/docs/image.html#loadingindicatorsource
    */
-  loadingIndicatorSource: PropTypes.oneOfType([
+  loadingIndicatorSource: (PropTypes.oneOfType([
     PropTypes.shape({
       uri: PropTypes.string,
     }),
     // Opaque type returned by require('./image.jpg')
     PropTypes.number,
-  ]),
+  ]): React$PropType$Primitive<{uri?: string} | number>),
   progressiveRenderingEnabled: PropTypes.bool,
   fadeDuration: PropTypes.number,
   /**
@@ -107,20 +118,26 @@ const ImageProps = {
    *
    * See https://facebook.github.io/react-native/docs/image.html#resizemethod
    */
-  resizeMethod: PropTypes.oneOf(['auto', 'resize', 'scale']),
+  resizeMethod: (PropTypes.oneOf([
+    'auto',
+    'resize',
+    'scale',
+  ]): React$PropType$Primitive<'auto' | 'resize' | 'scale'>),
   /**
    * Determines how to resize the image when the frame doesn't match the raw
    * image dimensions.
    *
    * See https://facebook.github.io/react-native/docs/image.html#resizemode
    */
-  resizeMode: PropTypes.oneOf([
+  resizeMode: (PropTypes.oneOf([
     'cover',
     'contain',
     'stretch',
     'repeat',
     'center',
-  ]),
+  ]): React$PropType$Primitive<
+    'cover' | 'contain' | 'stretch' | 'repeat' | 'center',
+  >),
 };
 
 /**
@@ -132,7 +149,7 @@ function getSize(
   url: string,
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
-) {
+): any {
   return ImageLoader.getSize(url)
     .then(function(sizes) {
       success(sizes.width, sizes.height);
@@ -156,7 +173,7 @@ function getSizeWithHeaders(
   headers: {[string]: string},
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
-) {
+): any {
   return ImageLoader.getSizeWithHeaders(url, headers)
     .then(function(sizes) {
       success(sizes.width, sizes.height);
@@ -169,7 +186,7 @@ function getSizeWithHeaders(
     );
 }
 
-function prefetch(url: string, callback: ?Function) {
+function prefetch(url: string, callback: ?Function): any {
   const requestId = generateRequestId();
   callback && callback(requestId);
   return ImageLoader.prefetchImage(url, requestId);

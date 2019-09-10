@@ -49,7 +49,11 @@ using ::_CLASSNAME_::ShadowNode = ConcreteViewShadowNode<
 `.trim();
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const fileName = 'ShadowNodes.h';
 
     let hasAnyEvents = false;

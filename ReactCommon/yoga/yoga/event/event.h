@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <vector>
+#include <array>
 #include <yoga/YGEnums.h>
 
 struct YGConfig;
@@ -23,6 +24,18 @@ enum struct LayoutType : int {
   kCachedMeasure = 3
 };
 
+enum struct LayoutPassReason : int {
+  kInitial = 0,
+  kAbsLayout = 1,
+  kStretch = 2,
+  kMultilineStretch = 3,
+  kFlexLayout = 4,
+  kMeasureChild = 5,
+  kAbsMeasureChild = 6,
+  kFlexMeasure = 7,
+  COUNT
+};
+
 struct LayoutData {
   int layouts;
   int measures;
@@ -30,16 +43,8 @@ struct LayoutData {
   int cachedLayouts;
   int cachedMeasures;
   int measureCallbacks;
-};
-
-enum struct LayoutPassReason : int {
-  kInitial = 0,
-  kMeasureChild = 1,
-  kAbsMeasureChild = 2,
-  kFlex = 3,
-  kAbsLayout = 4,
-  kStretch = 5,
-  kMultilineStretch = 6
+  std::array<int, static_cast<uint8_t>(LayoutPassReason::COUNT)>
+      measureCallbackReasonsCount;
 };
 
 const char* LayoutPassReasonToString(const LayoutPassReason value);

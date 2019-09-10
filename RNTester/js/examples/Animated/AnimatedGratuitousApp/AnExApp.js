@@ -15,7 +15,9 @@ const {
   Animated,
   LayoutAnimation,
   PanResponder,
+  Platform,
   StyleSheet,
+  UIManager,
   View,
 } = require('react-native');
 
@@ -39,6 +41,10 @@ class Circle extends React.Component<any, any> {
       pan: new Animated.ValueXY(), // Vectors reduce boilerplate.  (step1: uncomment)
       pop: new Animated.Value(0), // Initial value.               (step2a: uncomment)
     };
+
+    if (Platform.OS === 'android') {
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
   }
 
   _onLongPress(): void {
@@ -48,8 +54,13 @@ class Circle extends React.Component<any, any> {
       this.props.onMove && this.props.onMove(value);
     });
     Animated.spring(this.state.pop, {
-      toValue: 1, //  Pop to larger size.                      (step2b: uncomment)
-      ...config, //  Reuse config for convenient consistency  (step2b: uncomment)
+      //  Pop to larger size.                      (step2b: uncomment)
+      toValue: 1,
+
+      //  Reuse config for convenient consistency  (step2b: uncomment)
+      ...config,
+
+      useNativeDriver: false,
     }).start();
     this.setState(
       {
@@ -61,8 +72,11 @@ class Circle extends React.Component<any, any> {
           onPanResponderRelease: (e, gestureState) => {
             LayoutAnimation.easeInEaseOut(); // @flowfixme animates layout update as one batch (step3: uncomment)
             Animated.spring(this.state.pop, {
-              toValue: 0, // Pop back to 0                       (step2c: uncomment)
+              // Pop back to 0                       (step2c: uncomment)
+              toValue: 0,
+
               ...config,
+              useNativeDriver: false,
             }).start();
             this.setState({panResponder: undefined});
             this.props.onMove &&
@@ -185,7 +199,11 @@ class Circle extends React.Component<any, any> {
   _toggleIsActive(velocity) {
     const config = {tension: 30, friction: 7};
     if (this.state.isActive) {
-      Animated.spring(this.props.openVal, {toValue: 0, ...config}).start(() => {
+      Animated.spring(this.props.openVal, {
+        toValue: 0,
+        ...config,
+        useNativeDriver: false,
+      }).start(() => {
         // (step4: uncomment)
         this.setState({isActive: false}, this.props.onDeactivate);
       }); // (step4: uncomment)
@@ -193,7 +211,11 @@ class Circle extends React.Component<any, any> {
       this.props.onActivate();
       this.setState({isActive: true, panResponder: undefined}, () => {
         // this.props.openVal.setValue(1);                                             // (step4: comment)
-        Animated.spring(this.props.openVal, {toValue: 1, ...config}).start(); // (step4: uncomment)
+        Animated.spring(this.props.openVal, {
+          toValue: 1,
+          ...config,
+          useNativeDriver: false,
+        }).start(); // (step4: uncomment)
       });
     }
   }

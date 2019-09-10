@@ -544,8 +544,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * Replaces the View specified by oldTag with the View specified by newTag within oldTag's parent.
    * This resolves to a simple {@link #manageChildren} call, but React doesn't have enough info in
    * JS to formulate it itself.
+   *
+   * @deprecated This method will not be available in Fabric UIManager.
    */
   @ReactMethod
+  @Deprecated
   public void replaceExistingNonRootView(int oldTag, int newTag) {
     mUIImplementation.replaceExistingNonRootView(oldTag, newTag);
   }
@@ -555,8 +558,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * receipt. TODO: The method name is incorrect and will be renamed, #6033872
    *
    * @param containerTag the tag of the container for which the subviews must be removed
+   * @deprecated This method will not be available in Fabric UIManager.
    */
   @ReactMethod
+  @Deprecated
   public void removeSubviewsFromContainerWithID(int containerTag) {
     mUIImplementation.removeSubviewsFromContainerWithID(containerTag);
   }
@@ -602,8 +607,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * <p>NB: Unlike {@link #measure}, this will measure relative to the view layout, not the visible
    * window which can cause unexpected results when measuring relative to things like ScrollViews
    * that can have offset content on the screen.
+   *
+   * @deprecated This method will not be part of Fabric.
    */
   @ReactMethod
+  @Deprecated
   public void measureLayoutRelativeToParent(
       int tag, Callback errorCallback, Callback successCallback) {
     mUIImplementation.measureLayoutRelativeToParent(tag, errorCallback, successCallback);
@@ -642,13 +650,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mUIImplementation.viewIsDescendantOf(reactTag, ancestorReactTag, callback);
   }
 
-  @Override
   @ReactMethod
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
     mUIImplementation.setJSResponder(reactTag, blockNativeResponder);
   }
 
-  @Override
   @ReactMethod
   public void clearJSResponder() {
     mUIImplementation.clearJSResponder();
@@ -684,7 +690,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mUIImplementation.dispatchViewManagerCommand(reactTag, commandId, commandArgs);
   }
 
+  /** @deprecated use {@link SoundManager#playTouchSound()} instead. */
   @ReactMethod
+  @Deprecated
   public void playTouchSound() {
     AudioManager audioManager =
         (AudioManager) getReactApplicationContext().getSystemService(Context.AUDIO_SERVICE);
@@ -788,7 +796,14 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   @ReactMethod
   public void sendAccessibilityEvent(int tag, int eventType) {
-    mUIImplementation.sendAccessibilityEvent(tag, eventType);
+    int uiManagerType = ViewUtil.getUIManagerType(tag);
+    if (uiManagerType == FABRIC) {
+      UIManager fabricUIManager =
+          UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
+      fabricUIManager.sendAccessibilityEvent(tag, eventType);
+    } else {
+      mUIImplementation.sendAccessibilityEvent(tag, eventType);
+    }
   }
 
   /**

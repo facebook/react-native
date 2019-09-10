@@ -12,6 +12,7 @@
 
 import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
 import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../../../../Libraries/Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -19,6 +20,6 @@ type NativeProps = $ReadOnly<{|
   // No Props or events
 |}>;
 
-export default codegenNativeComponent<NativeProps>(
-  'NoPropsNoEventsNativeComponent',
-);
+export default (codegenNativeComponent<NativeProps>(
+  'NoPropsNoEventsNativeComponentView',
+): NativeComponentType<NativeProps>);

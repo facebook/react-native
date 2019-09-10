@@ -10,15 +10,15 @@
 
 'use strict';
 
-import SwitchNativeComponent from './SwitchNativeComponent';
 const AndroidSwitchNativeComponent = require('./AndroidSwitchNativeComponent');
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
+import SwitchNativeComponent from './SwitchNativeComponent';
 
 type SwitchChangeEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -93,7 +93,7 @@ class Switch extends React.Component<Props> {
     typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
   >;
 
-  render() {
+  render(): React.Node {
     const {
       disabled,
       ios_backgroundColor,

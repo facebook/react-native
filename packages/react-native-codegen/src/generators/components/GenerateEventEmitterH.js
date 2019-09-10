@@ -12,8 +12,11 @@
 
 const nullthrows = require('nullthrows');
 
-const {getCppTypeForAnnotation, toSafeCppString} = require('./CppHelpers.js');
-const {generateStructName} = require('./EventEmitterHelpers.js');
+const {
+  getCppTypeForAnnotation,
+  toSafeCppString,
+  generateStructName,
+} = require('./CppHelpers.js');
 
 import type {
   ComponentShape,
@@ -88,6 +91,7 @@ function getNativeTypeFromAnnotation(
     case 'BooleanTypeAnnotation':
     case 'StringTypeAnnotation':
     case 'Int32TypeAnnotation':
+    case 'DoubleTypeAnnotation':
     case 'FloatTypeAnnotation':
       return getCppTypeForAnnotation(type);
     case 'StringEnumTypeAnnotation':
@@ -102,7 +106,7 @@ function getNativeTypeFromAnnotation(
       );
     default:
       (type: empty);
-      throw new Error(`Receieved invalid event property type ${type}`);
+      throw new Error(`Received invalid event property type ${type}`);
   }
 }
 function generateEnum(structs, componentName, options, nameParts) {
@@ -154,6 +158,7 @@ function generateStruct(
       case 'BooleanTypeAnnotation':
       case 'StringTypeAnnotation':
       case 'Int32TypeAnnotation':
+      case 'DoubleTypeAnnotation':
       case 'FloatTypeAnnotation':
         return;
       case 'ObjectTypeAnnotation':
@@ -175,7 +180,7 @@ function generateStruct(
       default:
         (property: empty);
         throw new Error(
-          `Receieved invalid event property type ${property.type}`,
+          `Received invalid event property type ${property.type}`,
         );
     }
   });
@@ -221,7 +226,11 @@ function generateEvents(componentName: string, component): string {
 }
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const moduleComponents: ComponentCollection = Object.keys(schema.modules)
       .map(moduleName => {
         const components = schema.modules[moduleName].components;

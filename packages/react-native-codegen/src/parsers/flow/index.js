@@ -23,7 +23,7 @@ const {processModule} = require('./modules');
 function getTypes(ast) {
   return ast.body.reduce((types, node) => {
     if (node.type === 'ExportNamedDeclaration') {
-      if (node.declaration.type !== 'VariableDeclaration') {
+      if (node.declaration && node.declaration.type !== 'VariableDeclaration') {
         types[node.declaration.id.name] = node.declaration;
       }
     } else if (
@@ -40,11 +40,22 @@ function getConfigType(ast, types): 'module' | 'component' {
   const defaultExports = ast.body.filter(
     node => node.type === 'ExportDefaultDeclaration',
   );
-  const isComponent =
-    defaultExports[0] &&
-    defaultExports[0].declaration &&
-    defaultExports[0].declaration.callee &&
-    defaultExports[0].declaration.callee.name === 'codegenNativeComponent';
+
+  let isComponent = false;
+
+  if (defaultExports.length > 0) {
+    let declaration = defaultExports[0].declaration;
+    // codegenNativeComponent can be nested inside a cast
+    // expression so we need to go one level deeper
+    if (declaration.type === 'TypeCastExpression') {
+      declaration = declaration.expression;
+    }
+
+    isComponent =
+      declaration &&
+      declaration.callee &&
+      declaration.callee.name === 'codegenNativeComponent';
+  }
 
   const typesExtendingTurboModule = Object.keys(types)
     .map(typeName => types[typeName])

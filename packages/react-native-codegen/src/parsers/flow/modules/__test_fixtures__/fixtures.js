@@ -50,13 +50,16 @@ const NATIVE_MODULE_WITH_COMPLEX_OBJECTS = `
 import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
-export type String = string
+export type String = string;
 
 export interface Spec extends TurboModule {
   // Exported methods.
   +getObject: (arg: {|const1: {|const1: boolean|}|}) => {|
     const1: {|const1: boolean|},
   |};
+  +getReadOnlyObject: (arg: $ReadOnly<{|const1: $ReadOnly<{|const1: boolean|}>|}>) => $ReadOnly<{|
+    const1: {|const1: boolean|},
+  |}>;
   +getObject2: (arg: { a: String }) => Object;
   +getObjectInArray: (arg: {const1: {|const1: boolean|}}) => Array<{|
     const1: {const1: boolean},
@@ -88,7 +91,7 @@ export interface Spec extends TurboModule {
     reactNativeVersion: {|
       major: number,
       minor: number,
-      patch: number,
+      patch?: number,
       prerelease: ?number,
     |},
     forceTouchAvailable: boolean,
@@ -205,7 +208,7 @@ import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getObject(o : Object) => Object,
+  +getObject: (o : Object) => Object,
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -255,6 +258,7 @@ import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +getArray: (arg: Array<string>) => Array<string>;
+  +getArray: (arg: $ReadOnlyArray<string>) => $ReadOnlyArray<string>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -287,6 +291,11 @@ export interface Spec extends TurboModule {
       windowPhysicalPixels: DisplayMetricsAndroid,
     },
   |};
+  +getConstants2: () => $ReadOnly<{|
+    +Dimensions: {
+      windowPhysicalPixels: DisplayMetricsAndroid,
+    },
+  |}>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -381,7 +390,7 @@ const NATIVE_MODULE_WITH_PROMISE = `/**
 import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
-export type String = string
+export type String = string;
 export type SomeObj = {| a: string |};
 
 export interface Spec extends TurboModule {

@@ -29,6 +29,34 @@ TEST(ArrayPropsNativeComponentProps_DoesNotDie, etc) {
 }
 `;
 
+exports[`GenerateTests can generate fixture ARRAY_PROPS_WITH_NESTED_OBJECT 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/ARRAY_PROPS_WITH_NESTED_OBJECT/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(ArrayPropsNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<ArrayPropsNativeComponentProps>();
+  auto const &sourceProps = ArrayPropsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  ArrayPropsNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
 exports[`GenerateTests can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "Tests.cpp" => "/**
@@ -131,7 +159,7 @@ TEST(CommandNativeComponentProps_DoesNotDie, etc) {
 }
 `;
 
-exports[`GenerateTests can generate fixture ENUM_PROP 1`] = `
+exports[`GenerateTests can generate fixture COMMANDS_AND_PROPS 1`] = `
 Map {
   "Tests.cpp" => "/**
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -141,47 +169,57 @@ Map {
  */
 
 #include <gtest/gtest.h>
-#include <react/components/ENUM_PROP/Props.h>
+#include <react/components/COMMANDS_AND_PROPS/Props.h>
 #include <react/core/RawProps.h>
 #include <react/core/RawPropsParser.h>
 #include <react/core/propsConversions.h>
 
 using namespace facebook::react;
 
-TEST(EnumPropsNativeComponentProps_DoesNotDie, etc) {
+TEST(CommandNativeComponentProps_DoesNotDie, etc) {
   auto propParser = RawPropsParser();
-  propParser.prepare<EnumPropsNativeComponentProps>();
-  auto const &sourceProps = EnumPropsNativeComponentProps();
+  propParser.prepare<CommandNativeComponentProps>();
+  auto const &sourceProps = CommandNativeComponentProps();
   auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
   rawProps.parse(propParser);
-  EnumPropsNativeComponentProps(sourceProps, rawProps);
+  CommandNativeComponentProps(sourceProps, rawProps);
 }
 
-TEST(EnumPropsNativeComponentProps_alignment_Top, etc) {
+TEST(CommandNativeComponentProps_accessibilityHint, etc) {
   auto propParser = RawPropsParser();
-  propParser.prepare<EnumPropsNativeComponentProps>();
-  auto const &sourceProps = EnumPropsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"top\\"));
+  propParser.prepare<CommandNativeComponentProps>();
+  auto const &sourceProps = CommandNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"accessibilityHint\\", \\"foo\\"));
   rawProps.parse(propParser);
-  EnumPropsNativeComponentProps(sourceProps, rawProps);
+  CommandNativeComponentProps(sourceProps, rawProps);
+}",
 }
+`;
 
-TEST(EnumPropsNativeComponentProps_alignment_Center, etc) {
-  auto propParser = RawPropsParser();
-  propParser.prepare<EnumPropsNativeComponentProps>();
-  auto const &sourceProps = EnumPropsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"center\\"));
-  rawProps.parse(propParser);
-  EnumPropsNativeComponentProps(sourceProps, rawProps);
-}
+exports[`GenerateTests can generate fixture DOUBLE_PROPS 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
-TEST(EnumPropsNativeComponentProps_alignment_BottomRight, etc) {
+#include <gtest/gtest.h>
+#include <react/components/DOUBLE_PROPS/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(DoublePropNativeComponentProps_DoesNotDie, etc) {
   auto propParser = RawPropsParser();
-  propParser.prepare<EnumPropsNativeComponentProps>();
-  auto const &sourceProps = EnumPropsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"bottom-right\\"));
+  propParser.prepare<DoublePropNativeComponentProps>();
+  auto const &sourceProps = DoublePropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
   rawProps.parse(propParser);
-  EnumPropsNativeComponentProps(sourceProps, rawProps);
+  DoublePropNativeComponentProps(sourceProps, rawProps);
 }",
 }
 `;
@@ -408,6 +446,34 @@ TEST(ImagePropNativeComponentProps_thumbImage, etc) {
 }
 `;
 
+exports[`GenerateTests can generate fixture INT32_ENUM_PROP 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/INT32_ENUM_PROP/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(Int32EnumPropsNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<Int32EnumPropsNativeComponentProps>();
+  auto const &sourceProps = Int32EnumPropsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  Int32EnumPropsNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
 exports[`GenerateTests can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "Tests.cpp" => "/**
@@ -566,6 +632,35 @@ TEST(NoPropsNoEventsComponentProps_DoesNotDie, etc) {
 }
 `;
 
+exports[`GenerateTests can generate fixture OBJECT_PROPS 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/OBJECT_PROPS/Props.h>
+#include <react/components/image/conversions.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(ObjectPropsProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<ObjectPropsProps>();
+  auto const &sourceProps = ObjectPropsProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  ObjectPropsProps(sourceProps, rawProps);
+}",
+}
+`;
+
 exports[`GenerateTests can generate fixture POINT_PROP 1`] = `
 Map {
   "Tests.cpp" => "/**
@@ -599,6 +694,61 @@ TEST(PointPropNativeComponentProps_startPoint, etc) {
   auto const &rawProps = RawProps(folly::dynamic::object(\\"startPoint\\", folly::dynamic::object(\\"x\\", 1)(\\"y\\", 1)));
   rawProps.parse(propParser);
   PointPropNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture STRING_ENUM_PROP 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/STRING_ENUM_PROP/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(StringEnumPropsNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<StringEnumPropsNativeComponentProps>();
+  auto const &sourceProps = StringEnumPropsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  StringEnumPropsNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(StringEnumPropsNativeComponentProps_alignment_Top, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<StringEnumPropsNativeComponentProps>();
+  auto const &sourceProps = StringEnumPropsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"top\\"));
+  rawProps.parse(propParser);
+  StringEnumPropsNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(StringEnumPropsNativeComponentProps_alignment_Center, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<StringEnumPropsNativeComponentProps>();
+  auto const &sourceProps = StringEnumPropsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"center\\"));
+  rawProps.parse(propParser);
+  StringEnumPropsNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(StringEnumPropsNativeComponentProps_alignment_BottomRight, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<StringEnumPropsNativeComponentProps>();
+  auto const &sourceProps = StringEnumPropsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"bottom-right\\"));
+  rawProps.parse(propParser);
+  StringEnumPropsNativeComponentProps(sourceProps, rawProps);
 }",
 }
 `;

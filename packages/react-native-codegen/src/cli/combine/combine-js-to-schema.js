@@ -20,7 +20,7 @@ function combineSchemas(files: Array<string>): SchemaType {
       const contents = fs.readFileSync(filename, 'utf8');
       if (
         contents &&
-        (/export\s+default\s+codegenNativeComponent</.test(contents) ||
+        (/export\s+default\s+\(?codegenNativeComponent</.test(contents) ||
           /extends TurboModule/.test(contents))
       ) {
         const schema = FlowParser.parseFile(filename);

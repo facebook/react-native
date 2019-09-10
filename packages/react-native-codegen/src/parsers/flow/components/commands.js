@@ -26,13 +26,14 @@ function buildCommandSchema(property, types: TypeMap) {
 
   if (
     !(
+      firstParam.id != null &&
       firstParam.id.type === 'QualifiedTypeIdentifier' &&
       firstParam.id.qualification.name === 'React' &&
-      firstParam.id.id.name === 'Ref'
+      firstParam.id.id.name === 'ElementRef'
     )
   ) {
     throw new Error(
-      `The first argument of method ${name} must be of type React.Ref<>`,
+      `The first argument of method ${name} must be of type React.ElementRef<>`,
     );
   }
 
@@ -54,6 +55,16 @@ function buildCommandSchema(property, types: TypeMap) {
       case 'Int32':
         returnType = {
           type: 'Int32TypeAnnotation',
+        };
+        break;
+      case 'Double':
+        returnType = {
+          type: 'DoubleTypeAnnotation',
+        };
+        break;
+      case 'Float':
+        returnType = {
+          type: 'FloatTypeAnnotation',
         };
         break;
       default:

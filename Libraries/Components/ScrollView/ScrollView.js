@@ -27,20 +27,19 @@ const requireNativeComponent = require('../../ReactNative/requireNativeComponent
 const resolveAssetSource = require('../../Image/resolveAssetSource');
 const splitLayoutProps = require('../../StyleSheet/splitLayoutProps');
 
+import type {NativeMethodsMixinType} from '../../Renderer/shims/ReactNativeTypes';
+import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {PointProp} from '../../StyleSheet/PointPropType';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {
   PressEvent,
   ScrollEvent,
   LayoutEvent,
 } from '../../Types/CoreEventTypes';
-import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
-import type {NativeMethodsMixinType} from '../../Renderer/shims/ReactNativeTypes';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ViewProps} from '../View/ViewPropTypes';
-import type {PointProp} from '../../StyleSheet/PointPropType';
-import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
-
-import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {State as ScrollResponderState} from '../ScrollResponder';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
 
 let AndroidScrollView;
 let AndroidHorizontalScrollContentView;
@@ -65,7 +64,21 @@ if (Platform.OS === 'android') {
 }
 
 export type ScrollResponderType = {
-  ...ScrollView,
+  // We'd like to do ...ScrollView here, however Flow doesn't seem
+  // to see the imperative methods of ScrollView that way. Workaround the
+  // issue by specifying them manually.
+  getScrollableNode: $PropertyType<ScrollView, 'getScrollableNode'>,
+  getInnerViewNode: $PropertyType<ScrollView, 'getInnerViewNode'>,
+  getNativeScrollRef: $PropertyType<ScrollView, 'getNativeScrollRef'>,
+
+  setNativeProps: $PropertyType<ScrollView, 'setNativeProps'>,
+  scrollTo: $PropertyType<ScrollView, 'scrollTo'>,
+  scrollWithoutAnimationTo: $PropertyType<
+    ScrollView,
+    'scrollWithoutAnimationTo',
+  >,
+  flashScrollIndicators: $PropertyType<ScrollView, 'flashScrollIndicators'>,
+
   ...typeof ScrollResponder.Mixin,
 };
 
@@ -336,6 +349,18 @@ type AndroidProps = $ReadOnly<{|
    * @platform android
    */
   persistentScrollbar?: ?boolean,
+  /**
+   * Fades out the edges of the the scroll content.
+   *
+   * If the value is greater than 0, the fading edges will be set accordingly
+   * to the current scroll direction and position,
+   * indicating if there is more content to show.
+   *
+   * The default value is 0.
+   *
+   * @platform android
+   */
+  fadingEdgeLength?: ?number,
 |}>;
 
 type VRProps = $ReadOnly<{|
@@ -532,7 +557,7 @@ export type Props = $ReadOnly<{|
    */
   snapToOffsets?: ?$ReadOnlyArray<number>,
   /**
-   * Use in conjuction with `snapToOffsets`. By default, the beginning
+   * Use in conjunction with `snapToOffsets`. By default, the beginning
    * of the list counts as a snap offset. Set `snapToStart` to false to disable
    * this behavior and allow the list to scroll freely between its start and
    * the first `snapToOffsets` offset.
@@ -540,7 +565,7 @@ export type Props = $ReadOnly<{|
    */
   snapToStart?: ?boolean,
   /**
-   * Use in conjuction with `snapToOffsets`. By default, the end
+   * Use in conjunction with `snapToOffsets`. By default, the end
    * of the list counts as a snap offset. Set `snapToEnd` to false to disable
    * this behavior and allow the list to scroll freely between its end and
    * the last `snapToOffsets` offset.
@@ -561,7 +586,7 @@ export type Props = $ReadOnly<{|
    *
    * See [RefreshControl](docs/refreshcontrol.html).
    */
-  // $FlowFixMe - how to handle generic type without existential opereator?
+  // $FlowFixMe - how to handle generic type without existential operator?
   refreshControl?: ?React.Element<any>,
   children?: React.Node,
 |}>;
@@ -628,7 +653,7 @@ const standardVerticalContext: ContextType = Object.freeze({horizontal: false});
  * supports out of the box.
  */
 class ScrollView extends React.Component<Props, State> {
-  static Context = Context;
+  static Context: React$Context<ContextType> = Context;
   /**
    * Part 1: Removing ScrollResponder.Mixin:
    *
@@ -688,7 +713,7 @@ class ScrollView extends React.Component<Props, State> {
   _stickyHeaderRefs: Map<string, StickyHeaderComponentType> = new Map();
   _headerLayoutYs: Map<string, number> = new Map();
 
-  state = {
+  state: State = {
     layoutHeight: null,
     ...ScrollResponder.Mixin.scrollResponderMixinGetInitialState(),
   };
@@ -941,7 +966,7 @@ class ScrollView extends React.Component<Props, State> {
     this._innerViewRef = ref;
   };
 
-  render() {
+  render(): React.Node | React.Element<string> {
     let ScrollViewClass;
     let ScrollContentContainerViewClass;
     if (Platform.OS === 'android') {

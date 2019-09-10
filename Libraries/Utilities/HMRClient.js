@@ -21,12 +21,24 @@ import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
 const pendingEntryPoints = [];
 let hmrClient = null;
 let hmrUnavailableReason: string | null = null;
-let isRegisteringEntryPoints = false;
+let currentCompileErrorMessage: string | null = null;
+let didConnect: boolean = false;
+
+type LogLevel =
+  | 'trace'
+  | 'info'
+  | 'warn'
+  | 'log'
+  | 'group'
+  | 'groupCollapsed'
+  | 'groupEnd'
+  | 'debug';
 
 export type HMRClientNativeInterface = {|
   enable(): void,
   disable(): void,
   registerBundle(requestUrl: string): void,
+  log(level: LogLevel, data: Array<mixed>): void,
   setup(
     platform: string,
     bundleEntry: string,
@@ -51,45 +63,81 @@ const HMRClient: HMRClientNativeInterface = {
     }
 
     invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
-    hmrClient.shouldApplyUpdates = true;
+    const LoadingView = require('./LoadingView');
 
-    // Intentionally reading it outside the condition
-    // so that it's less likely we'd break it later.
-    const modules = (require: any).getModules();
-    if (hmrClient.outdatedModules.size > 0) {
-      let message =
-        "You've changed these files before turning on Fast Refresh: ";
-      message +=
-        Array.from(hmrClient.outdatedModules)
-          .map(id => {
-            const mod = modules[id];
-            return getShortModuleName(mod.verboseName);
-          })
-          .join(', ') + '.';
-      message +=
-        "\n\nThese pending changes won't be reflected unless you save them again " +
-        'or perform a full reload.';
-      console.warn(message);
-      // Don't warn about the same modules twice.
-      hmrClient.outdatedModules.clear();
+    // We use this for internal logging only.
+    // It doesn't affect the logic.
+    hmrClient.send(JSON.stringify({type: 'log-opt-in'}));
+
+    // When toggling Fast Refresh on, we might already have some stashed updates.
+    // Since they'll get applied now, we'll show a banner.
+    const hasUpdates = hmrClient.hasPendingUpdates();
+
+    if (hasUpdates) {
+      LoadingView.showMessage('Refreshing...', 'refresh');
+    }
+    try {
+      hmrClient.enable();
+    } finally {
+      if (hasUpdates) {
+        LoadingView.hide();
+      }
     }
 
-    registerBundleEntryPoints(hmrClient);
+    // There could be a compile error while Fast Refresh was off,
+    // but we ignored it at the time. Show it now.
+    showCompileError();
   },
 
   disable() {
     invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
-    // Note: we don't actually tear down the connection.
-    // We just tell the client to ignore updates.
-    // This lets us avoid reasonining about complex race conditions
-    // if the user toggles the setting on and off.
-    hmrClient.shouldApplyUpdates = false;
+    hmrClient.disable();
   },
 
   registerBundle(requestUrl: string) {
     invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
     pendingEntryPoints.push(requestUrl);
     registerBundleEntryPoints(hmrClient);
+  },
+
+  log(level: LogLevel, data: Array<mixed>) {
+    try {
+      if (hmrClient) {
+        let message;
+        if (global.Symbol) {
+          message = JSON.stringify({
+            type: 'log',
+            level,
+            data: data.map(item =>
+              typeof item === 'string'
+                ? item
+                : require('pretty-format')(item, {
+                    escapeString: true,
+                    highlight: true,
+                    maxDepth: 3,
+                    min: true,
+                    plugins: [require('pretty-format').plugins.ReactElement],
+                  }),
+            ),
+          });
+        } else {
+          try {
+            message = JSON.stringify({type: 'log', level, data});
+          } catch (error) {
+            message = JSON.stringify({
+              type: 'log',
+              level,
+              data: [error.message],
+            });
+          }
+        }
+
+        hmrClient.send(message);
+      }
+    } catch (error) {
+      // If sending logs causes any failures we want to silently ignore them
+      // to ensure we do not cause infinite-logging loops.
+    }
   },
 
   // Called once by the bridge on startup, even if Fast Refresh is off.
@@ -118,10 +166,10 @@ const HMRClient: HMRClientNativeInterface = {
     );
 
     client.on('connection-error', e => {
-      let error = `Fast Refresh isn't working because it cannot connect to the development server.
+      let error = `Cannot connect to the Metro server.
 
 Try the following to fix the issue:
-- Ensure that the Metro Server is running and available on the same network`;
+- Ensure that the Metro server is running and available on the same network`;
 
       if (Platform.OS === 'ios') {
         error += `
@@ -142,42 +190,17 @@ Error: ${e.message}`;
       setHMRUnavailableReason(error);
     });
 
-    // This is intentionally called lazily, as these values change.
-    function isFastRefreshActive() {
-      return (
-        // If HMR is disabled by the user, we're ignoring updates.
-        client.shouldApplyUpdates && !isRegisteringEntryPoints
-      );
-    }
+    client.on('update-start', ({isInitialUpdate}) => {
+      currentCompileErrorMessage = null;
+      didConnect = true;
 
-    client.on('bundle-registered', () => {
-      isRegisteringEntryPoints = false;
-    });
-
-    function dismissRedbox() {
-      if (
-        Platform.OS === 'ios' &&
-        NativeRedBox != null &&
-        NativeRedBox.dismiss != null
-      ) {
-        NativeRedBox.dismiss();
-      } else {
-        const NativeExceptionsManager = require('../Core/NativeExceptionsManager')
-          .default;
-        NativeExceptionsManager &&
-          NativeExceptionsManager.dismissRedbox &&
-          NativeExceptionsManager.dismissRedbox();
-      }
-    }
-
-    client.on('update-start', () => {
-      if (isFastRefreshActive()) {
+      if (client.isEnabled() && !isInitialUpdate) {
         LoadingView.showMessage('Refreshing...', 'refresh');
       }
     });
 
-    client.on('update', () => {
-      if (isFastRefreshActive()) {
+    client.on('update', ({isInitialUpdate}) => {
+      if (client.isEnabled() && !isInitialUpdate) {
         dismissRedbox();
       }
     });
@@ -190,47 +213,37 @@ Error: ${e.message}`;
       LoadingView.hide();
 
       if (data.type === 'GraphNotFoundError') {
-        client.disable();
+        client.close();
         setHMRUnavailableReason(
-          'The Metro server has restarted since the last edit. Fast Refresh will be disabled until you reload the application.',
+          'The Metro server has restarted since the last edit. Reload to reconnect.',
         );
       } else if (data.type === 'RevisionNotFoundError') {
-        client.disable();
+        client.close();
         setHMRUnavailableReason(
-          'The Metro server and the client are out of sync. Fast Refresh will be disabled until you reload the application.',
+          'The Metro server and the client are out of sync. Reload to reconnect.',
         );
-      } else if (isFastRefreshActive()) {
-        // Even if there is already a redbox, syntax errors are more important.
-        // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
-        dismissRedbox();
-        const error: ExtendedError = new Error(`${data.type} ${data.message}`);
-        // Symbolicating compile errors is wasted effort
-        // because the stack trace is meaningless:
-        error.preventSymbolication = true;
-        throw error;
+      } else {
+        currentCompileErrorMessage = `${data.type} ${data.message}`;
+        if (client.isEnabled()) {
+          showCompileError();
+        }
       }
     });
 
     client.on('close', data => {
       LoadingView.hide();
       setHMRUnavailableReason(
-        'Disconnected from the Metro server. Fast Refresh will be disabled until you reload the application.',
+        'Disconnected from the Metro server. Reload to reconnect.',
       );
     });
-
-    // This sets up the socket. A better name would be open(), or perhaps
-    // it should just connect in the constructor. We can change this name if we
-    // cut a major Metro bump right after. This runs even if Fast Refresh is off.
-    client.enable();
-    // Don't confuse this with the enable/disable calls below which actually
-    // enable or disable applying updates. (Yes, this is very confusing.)
-    // TODO(gaearon): refactor this to reduce the confusion.
 
     if (isEnabled) {
       HMRClient.enable();
     } else {
       HMRClient.disable();
     }
+
+    registerBundleEntryPoints(hmrClient);
   },
 };
 
@@ -241,34 +254,18 @@ function setHMRUnavailableReason(reason) {
     return;
   }
   hmrUnavailableReason = reason;
-  if (hmrClient.shouldApplyUpdates) {
-    // If HMR is currently enabled, show a warning.
+
+  // We only want to show a warning if Fast Refresh is on *and* if we ever
+  // previously managed to connect successfully. We don't want to show
+  // the warning to native engineers who use cached bundles without Metro.
+  if (hmrClient.isEnabled() && didConnect) {
     console.warn(reason);
     // (Not using the `warning` module to prevent a Buck cycle.)
   }
 }
 
-// Returns the filename without the folder path.
-// If file is called index.js, it does include the parent folder though.
-function getShortModuleName(fullName) {
-  const BEFORE_SLASH_RE = /^(.*)[\\\/]/;
-  let shortName = fullName.replace(BEFORE_SLASH_RE, '');
-  if (/^index\./.test(shortName)) {
-    const match = fullName.match(BEFORE_SLASH_RE);
-    if (match) {
-      const pathBeforeSlash = match[1];
-      if (pathBeforeSlash) {
-        const folderName = pathBeforeSlash.replace(BEFORE_SLASH_RE, '');
-        return folderName + '/' + shortName;
-      }
-    }
-  }
-  return shortName;
-}
-
 function registerBundleEntryPoints(client) {
   if (pendingEntryPoints.length > 0) {
-    isRegisteringEntryPoints = true;
     client.send(
       JSON.stringify({
         type: 'register-entrypoints',
@@ -277,6 +274,41 @@ function registerBundleEntryPoints(client) {
     );
     pendingEntryPoints.length = 0;
   }
+}
+
+function dismissRedbox() {
+  if (
+    Platform.OS === 'ios' &&
+    NativeRedBox != null &&
+    NativeRedBox.dismiss != null
+  ) {
+    NativeRedBox.dismiss();
+  } else {
+    const NativeExceptionsManager = require('../Core/NativeExceptionsManager')
+      .default;
+    NativeExceptionsManager &&
+      NativeExceptionsManager.dismissRedbox &&
+      NativeExceptionsManager.dismissRedbox();
+  }
+}
+
+function showCompileError() {
+  if (currentCompileErrorMessage === null) {
+    return;
+  }
+
+  // Even if there is already a redbox, syntax errors are more important.
+  // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
+  dismissRedbox();
+
+  const message = currentCompileErrorMessage;
+  currentCompileErrorMessage = null;
+
+  const error: ExtendedError = new Error(message);
+  // Symbolicating compile errors is wasted effort
+  // because the stack trace is meaningless:
+  error.preventSymbolication = true;
+  throw error;
 }
 
 module.exports = HMRClient;

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTBaseTextInputShadowView.h"
+#import <React/RCTBaseTextInputShadowView.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTShadowView+Layout.h>
@@ -13,7 +13,7 @@
 #import <yoga/Yoga.h>
 
 #import "NSTextStorage+FontScaling.h"
-#import "RCTBaseTextInputView.h"
+#import <React/RCTBaseTextInputView.h>
 
 @implementation RCTBaseTextInputShadowView
 {
@@ -137,7 +137,7 @@
   NSMutableAttributedString *attributedText =
     [[NSMutableAttributedString alloc] initWithAttributedString:[self attributedTextWithBaseTextAttributes:nil]];
 
-  // Removing all references to Shadow Views and tags to avoid unnececery retainning
+  // Removing all references to Shadow Views and tags to avoid unnecessary retaining
   // and problems with comparing the strings.
   [attributedText removeAttribute:RCTBaseTextShadowViewEmbeddedShadowViewAttributeName
                             range:NSMakeRange(0, attributedText.length)];
@@ -195,7 +195,7 @@
 
   if (attributedText.length == 0) {
     // It's impossible to measure empty attributed string because all attributes are
-    // assosiated with some characters, so no characters means no data.
+    // associated with some characters, so no characters means no data.
 
     // Placeholder also can represent the intrinsic size when it is visible.
     NSString *text = self.placeholder;

@@ -4,11 +4,35 @@ exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_INLINE
 
 exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_MULTIPLE_TIMES 1`] = `"codegenNativeCommands may only be called once in a file"`;
 
-exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITHOUT_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.Ref<>"`;
+exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITH_MISMATCHED_METHOD_NAMES 1`] = `"codegenNativeCommands expected the same supportedCommands specified in the NativeCommands interface: hotspotUpdate, scrollTo"`;
+
+exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITH_NULLABLE_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.ElementRef<>"`;
+
+exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITHOUT_METHOD_NAMES 1`] = `"codegenNativeCommands must be passed options including the supported commands"`;
+
+exports[`RN Codegen Flow Parser Fails with error message COMMANDS_DEFINED_WITHOUT_REF 1`] = `"The first argument of method hotspotUpdate must be of type React.ElementRef<>"`;
 
 exports[`RN Codegen Flow Parser Fails with error message NON_OPTIONAL_KEY_WITH_DEFAULT_VALUE 1`] = `"key required_key_with_default must be optional if used with WithDefault<> annotation"`;
 
 exports[`RN Codegen Flow Parser Fails with error message NULLABLE_WITH_DEFAULT 1`] = `"WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it."`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROP_ARRAY_ENUM_BOOLEAN 1`] = `"Unsupported union type for \\"someProp\\", recieved \\"BooleanLiteralTypeAnnotation\\""`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROP_ARRAY_ENUM_INT 1`] = `"Arrays of int enums are not supported (see: \\"someProp\\")"`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROP_ARRAY_MIXED_ENUM 1`] = `"Mixed types are not supported (see \\"someProp\\")"`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROP_ENUM_BOOLEAN 1`] = `"Unsupported union type for \\"someProp\\", received \\"BooleanLiteralTypeAnnotation\\""`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROP_MIXED_ENUM 1`] = `"Mixed types are not supported (see \\"someProp\\")"`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROP_NUMBER_TYPE 1`] = `"Cannot use \\"NumberTypeAnnotation\\" type annotation for \\"someProp\\": must use a specific numeric type like Int32, Double, or Float"`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROPS_CONFLICT_NAMES 1`] = `"A prop was already defined with the name isEnabled"`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROPS_CONFLICT_WITH_SPREAD_PROPS 1`] = `"A prop was already defined with the name isEnabled"`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROPS_SPREAD_CONFLICTS_WITH_PROPS 1`] = `"A prop was already defined with the name isEnabled"`;
 
 exports[`RN Codegen Flow Parser can generate fixture ALL_PROP_TYPES_NO_EVENTS 1`] = `
 Object {
@@ -130,6 +154,30 @@ Object {
               },
             },
             Object {
+              "name": "double_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "default": 0,
+                "type": "DoubleTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "double_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": 1.1,
+                "type": "DoubleTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "double_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": 1.1,
+                "type": "DoubleTypeAnnotation",
+              },
+            },
+            Object {
               "name": "float_required",
               "optional": false,
               "typeAnnotation": Object {
@@ -207,6 +255,73 @@ Object {
                   },
                 ],
                 "type": "StringEnumTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "int_enum_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": 0,
+                "options": Array [
+                  Object {
+                    "value": 0,
+                  },
+                  Object {
+                    "value": 1,
+                  },
+                ],
+                "type": "Int32EnumTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "object_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": null,
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "object_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": null,
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "object_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": null,
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
               },
             },
             Object {
@@ -440,6 +555,46 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "type": "StringTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_double_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "type": "DoubleTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_double_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "type": "DoubleTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_double_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "type": "DoubleTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_double_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "type": "DoubleTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },
@@ -694,6 +849,283 @@ Object {
                 "type": "ArrayTypeAnnotation",
               },
             },
+            Object {
+              "name": "array_object_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "properties": Array [
+                    Object {
+                      "name": "prop",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "default": null,
+                        "type": "StringTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_object_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "properties": Array [
+                    Object {
+                      "name": "prop",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "default": null,
+                        "type": "StringTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_object_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "properties": Array [
+                    Object {
+                      "name": "prop",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "default": null,
+                        "type": "StringTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_object_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "properties": Array [
+                    Object {
+                      "name": "prop",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "default": null,
+                        "type": "StringTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_object_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "properties": Array [
+                    Object {
+                      "name": "array_object_required",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "elementType": Object {
+                          "properties": Array [
+                            Object {
+                              "name": "prop",
+                              "optional": false,
+                              "typeAnnotation": Object {
+                                "default": null,
+                                "type": "StringTypeAnnotation",
+                              },
+                            },
+                          ],
+                          "type": "ObjectTypeAnnotation",
+                        },
+                        "type": "ArrayTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_object_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "properties": Array [
+                    Object {
+                      "name": "array_object_optional_key",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "elementType": Object {
+                          "properties": Array [
+                            Object {
+                              "name": "prop",
+                              "optional": true,
+                              "typeAnnotation": Object {
+                                "default": null,
+                                "type": "StringTypeAnnotation",
+                              },
+                            },
+                          ],
+                          "type": "ObjectTypeAnnotation",
+                        },
+                        "type": "ArrayTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_object_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "properties": Array [
+                    Object {
+                      "name": "array_object_optional_value",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "elementType": Object {
+                          "properties": Array [
+                            Object {
+                              "name": "prop",
+                              "optional": true,
+                              "typeAnnotation": Object {
+                                "default": null,
+                                "type": "StringTypeAnnotation",
+                              },
+                            },
+                          ],
+                          "type": "ObjectTypeAnnotation",
+                        },
+                        "type": "ArrayTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_object_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "properties": Array [
+                    Object {
+                      "name": "array_object_optional_both",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "elementType": Object {
+                          "properties": Array [
+                            Object {
+                              "name": "prop",
+                              "optional": true,
+                              "typeAnnotation": Object {
+                                "default": null,
+                                "type": "StringTypeAnnotation",
+                              },
+                            },
+                          ],
+                          "type": "ObjectTypeAnnotation",
+                        },
+                        "type": "ArrayTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_of_object_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "elementType": Object {
+                    "properties": Array [
+                      Object {
+                        "name": "prop",
+                        "optional": false,
+                        "typeAnnotation": Object {
+                          "default": null,
+                          "type": "StringTypeAnnotation",
+                        },
+                      },
+                    ],
+                    "type": "ObjectTypeAnnotation",
+                  },
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_of_object_required_in_file",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "elementType": Object {
+                    "properties": Array [
+                      Object {
+                        "name": "prop",
+                        "optional": false,
+                        "typeAnnotation": Object {
+                          "default": null,
+                          "type": "StringTypeAnnotation",
+                        },
+                      },
+                    ],
+                    "type": "ObjectTypeAnnotation",
+                  },
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_of_object_required_with_spread",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "elementType": Object {
+                    "properties": Array [
+                      Object {
+                        "name": "prop",
+                        "optional": false,
+                        "typeAnnotation": Object {
+                          "default": null,
+                          "type": "StringTypeAnnotation",
+                        },
+                      },
+                    ],
+                    "type": "ObjectTypeAnnotation",
+                  },
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
           ],
         },
       },
@@ -780,6 +1212,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -936,6 +1388,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -1008,6 +1465,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -1164,6 +1641,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -1235,6 +1717,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -1391,6 +1893,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -1463,6 +1970,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -1621,6 +2148,11 @@ Object {
                               "type": "StringTypeAnnotation",
                             },
                             Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
+                            },
+                            Object {
                               "name": "float_optional_value",
                               "optional": true,
                               "type": "FloatTypeAnnotation",
@@ -1691,9 +2223,21 @@ Object {
               "typeAnnotation": Object {
                 "params": Array [
                   Object {
+                    "name": "x",
+                    "typeAnnotation": Object {
+                      "type": "FloatTypeAnnotation",
+                    },
+                  },
+                  Object {
                     "name": "y",
                     "typeAnnotation": Object {
                       "type": "Int32TypeAnnotation",
+                    },
+                  },
+                  Object {
+                    "name": "z",
+                    "typeAnnotation": Object {
+                      "type": "DoubleTypeAnnotation",
                     },
                   },
                   Object {
@@ -1967,6 +2511,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -2123,6 +2687,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -2194,6 +2763,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -2350,6 +2939,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -2421,6 +3015,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -2577,6 +3191,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -2648,6 +3267,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -2804,6 +3443,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -2876,6 +3520,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -3032,6 +3696,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -3103,6 +3772,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -3259,6 +3948,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -3330,6 +4024,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -3486,6 +4200,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -3557,6 +4276,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -3713,6 +4452,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -3784,6 +4528,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -3940,6 +4704,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -4012,6 +4781,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -4170,6 +4959,11 @@ Object {
                               "type": "StringTypeAnnotation",
                             },
                             Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
+                            },
+                            Object {
                               "name": "float_optional_value",
                               "optional": true,
                               "type": "FloatTypeAnnotation",
@@ -4229,6 +5023,535 @@ Object {
 }
 `;
 
+exports[`RN Codegen Flow Parser can generate fixture OBJECT_PROP_TYPES_NO_EVENTS 1`] = `
+Object {
+  "modules": Object {
+    "Module": Object {
+      "components": Object {
+        "Module": Object {
+          "commands": Array [],
+          "events": Array [],
+          "extendsProps": Array [
+            Object {
+              "knownTypeName": "ReactNativeCoreViewProps",
+              "type": "ReactNativeBuiltInType",
+            },
+          ],
+          "props": Array [
+            Object {
+              "name": "boolean_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": false,
+                      "type": "BooleanTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "boolean_optional",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "default": false,
+                      "type": "BooleanTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "string_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": null,
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "string_optional",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "default": "",
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "double_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": 0,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "double_optional",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "default": 0,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "float_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": 0,
+                      "type": "FloatTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "float_optional",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "default": 0,
+                      "type": "FloatTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "int_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": 0,
+                      "type": "Int32TypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "int_optional",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "default": 0,
+                      "type": "Int32TypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "enum_optional",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "elementType": Object {
+                        "default": "small",
+                        "options": Array [
+                          Object {
+                            "name": "small",
+                          },
+                          Object {
+                            "name": "large",
+                          },
+                        ],
+                        "type": "StringEnumTypeAnnotation",
+                      },
+                      "type": "ArrayTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "image_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "name": "ImageSourcePrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "image_optional_key",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "ImageSourcePrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "image_optional_value",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "ImageSourcePrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "image_optional_both",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "ImageSourcePrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "color_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "name": "ColorPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "color_optional_key",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "ColorPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "color_optional_value",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "ColorPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "color_optional_both",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "ColorPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "point_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "name": "PointPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "point_optional_key",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "PointPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "point_optional_value",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "PointPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "point_optional_both",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "PointPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "object_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "properties": Array [
+                        Object {
+                          "name": "nestedProp",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "default": null,
+                            "type": "StringTypeAnnotation",
+                          },
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "object_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "properties": Array [
+                        Object {
+                          "name": "nestedProp",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "default": null,
+                            "type": "StringTypeAnnotation",
+                          },
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "object_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "properties": Array [
+                        Object {
+                          "name": "nestedProp",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "default": null,
+                            "type": "StringTypeAnnotation",
+                          },
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "object_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "properties": Array [
+                        Object {
+                          "name": "nestedProp",
+                          "optional": false,
+                          "typeAnnotation": Object {
+                            "default": null,
+                            "type": "StringTypeAnnotation",
+                          },
+                        },
+                      ],
+                      "type": "ObjectTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
 exports[`RN Codegen Flow Parser can generate fixture ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS 1`] = `
 Object {
   "modules": Object {
@@ -4277,6 +5600,180 @@ Object {
               "typeAnnotation": Object {
                 "default": true,
                 "type": "BooleanTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS_NO_CAST 1`] = `
+Object {
+  "modules": Object {
+    "Module": Object {
+      "components": Object {
+        "Module": Object {
+          "commands": Array [],
+          "events": Array [
+            Object {
+              "bubblingType": "direct",
+              "name": "onDirectEventDefinedInlineNull",
+              "optional": false,
+              "typeAnnotation": Object {
+                "argument": Object {
+                  "properties": Array [],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "EventTypeAnnotation",
+              },
+            },
+            Object {
+              "bubblingType": "bubble",
+              "name": "onBubblingEventDefinedInlineNull",
+              "optional": false,
+              "typeAnnotation": Object {
+                "argument": Object {
+                  "properties": Array [],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "EventTypeAnnotation",
+              },
+            },
+          ],
+          "extendsProps": Array [
+            Object {
+              "knownTypeName": "ReactNativeCoreViewProps",
+              "type": "ReactNativeBuiltInType",
+            },
+          ],
+          "interfaceOnly": true,
+          "paperComponentName": "RCTModule",
+          "props": Array [
+            Object {
+              "name": "boolean_default_true_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": true,
+                "type": "BooleanTypeAnnotation",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture PROPS_ALIASED_LOCALLY 1`] = `
+Object {
+  "modules": Object {
+    "Module": Object {
+      "components": Object {
+        "Module": Object {
+          "commands": Array [],
+          "events": Array [],
+          "extendsProps": Array [
+            Object {
+              "knownTypeName": "ReactNativeCoreViewProps",
+              "type": "ReactNativeBuiltInType",
+            },
+          ],
+          "props": Array [
+            Object {
+              "name": "otherStringProp",
+              "optional": false,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "StringTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "isEnabled",
+              "optional": false,
+              "typeAnnotation": Object {
+                "default": false,
+                "type": "BooleanTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "label",
+              "optional": false,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "StringTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "localType",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "otherStringProp",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": null,
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                  Object {
+                    "name": "isEnabled",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": false,
+                      "type": "BooleanTypeAnnotation",
+                    },
+                  },
+                  Object {
+                    "name": "label",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "default": null,
+                      "type": "StringTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "localArr",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "properties": Array [
+                    Object {
+                      "name": "otherStringProp",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "default": null,
+                        "type": "StringTypeAnnotation",
+                      },
+                    },
+                    Object {
+                      "name": "isEnabled",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "default": false,
+                        "type": "BooleanTypeAnnotation",
+                      },
+                    },
+                    Object {
+                      "name": "label",
+                      "optional": false,
+                      "typeAnnotation": Object {
+                        "default": null,
+                        "type": "StringTypeAnnotation",
+                      },
+                    },
+                  ],
+                  "type": "ObjectTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
               },
             },
           ],
@@ -4343,6 +5840,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -4499,6 +6016,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -4571,6 +6093,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -4727,6 +6269,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -4798,6 +6345,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -4954,6 +6521,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",
@@ -5026,6 +6598,26 @@ Object {
                       "type": "StringTypeAnnotation",
                     },
                     Object {
+                      "name": "double_required",
+                      "optional": false,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_key",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_value",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
+                      "name": "double_optional_both",
+                      "optional": true,
+                      "type": "DoubleTypeAnnotation",
+                    },
+                    Object {
                       "name": "float_required",
                       "optional": false,
                       "type": "FloatTypeAnnotation",
@@ -5182,6 +6774,11 @@ Object {
                               "name": "string_optional_key",
                               "optional": true,
                               "type": "StringTypeAnnotation",
+                            },
+                            Object {
+                              "name": "double_optional_value",
+                              "optional": true,
+                              "type": "DoubleTypeAnnotation",
                             },
                             Object {
                               "name": "float_optional_value",

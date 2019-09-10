@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {StyleSheet, Text, TextInput, View, Platform} = require('react-native');
 
 class XHRExampleFetch extends React.Component<any, any> {
@@ -57,7 +58,7 @@ class XHRExampleFetch extends React.Component<any, any> {
     return responseHeaders;
   }
 
-  render() {
+  render(): React.Node {
     const responseURL = this.responseURL ? (
       <View style={{marginTop: 10}}>
         <Text style={styles.label}>Server response URL:</Text>

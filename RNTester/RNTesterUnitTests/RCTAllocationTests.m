@@ -9,11 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
 
-#if (defined(COCOAPODS))
-#import <React-RCTTest/React/RCTTestRunner.h>
-#else
 #import <RCTTest/RCTTestRunner.h>
-#endif
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTModuleMethod.h>
@@ -176,7 +172,7 @@ RCT_EXPORT_METHOD(test:(__unused NSString *)a
 /**
  * T42930872:
  *
- * Both bridge invalidation and bridge setUp occurr execute concurrently.
+ * Both bridge invalidation and bridge setUp occur execute concurrently.
  * Therefore, it's not safe for us to create a bridge, and immediately reload on
  * it. It's also unsafe to just reload the bridge, because that calls invalidate
  * and then setUp. Because of these race conditions, this test may randomly

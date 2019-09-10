@@ -8,11 +8,7 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#if (defined(COCOAPODS))
-#import <React-RCTTest/React/RCTTestRunner.h>
-#else
 #import <RCTTest/RCTTestRunner.h>
-#endif
 
 #define RCT_TEST(name)                  \
 - (void)test##name                      \
@@ -68,7 +64,7 @@ configurationBlock:nil];
 // This list should be kept in sync with IntegrationTestsApp.js
 RCT_TEST(IntegrationTestHarnessTest)
 // RCT_TEST(TimersTest) // Disabled due to issue introduced in 61346d3
-RCT_TEST(AsyncStorageTest)
+// TODO(TD15973709) RCT_TEST(AsyncStorageTest)
 RCT_TEST(AppEventsTest)
 //RCT_TEST(ImageCachePolicyTest) // This test never passed.
 RCT_TEST(ImageSnapshotTest)
@@ -78,6 +74,6 @@ RCT_TEST(SyncMethodTest)
 RCT_TEST(PromiseTest)
 RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest) // Requires a WebSocket test server, see scripts/objc-test.sh
 RCT_TEST(AccessibilityManagerTest)
+RCT_TEST(GlobalEvalWithSourceUrlTest)
 
 @end
-

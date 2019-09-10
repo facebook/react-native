@@ -39,7 +39,11 @@ extern const char ::_CLASSNAME_::ComponentName[] = "::_CLASSNAME_::";
 `.trim();
 
 module.exports = {
-  generate(libraryName: string, schema: SchemaType): FilesOutput {
+  generate(
+    libraryName: string,
+    schema: SchemaType,
+    moduleSpecName: string,
+  ): FilesOutput {
     const fileName = 'ShadowNodes.cpp';
 
     const componentNames = Object.keys(schema.modules)

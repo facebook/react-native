@@ -7,9 +7,9 @@
 
 #import "RCTSurfaceTouchHandler.h"
 
-#import <UIKit/UIGestureRecognizerSubclass.h>
 #import <React/RCTUtils.h>
 #import <React/RCTViewComponentView.h>
+#import <UIKit/UIGestureRecognizerSubclass.h>
 
 #import "RCTConversions.h"
 #import "RCTTouchableComponentViewProtocol.h"
@@ -92,7 +92,8 @@ static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponen
   ActiveTouch activeTouch = {};
 
   if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
-    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
+    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView
+        touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
     activeTouch.touch.target = (Tag)componentView.tag;
   }
 

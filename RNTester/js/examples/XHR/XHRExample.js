@@ -11,53 +11,51 @@
 'use strict';
 
 const React = require('react');
-
-const XHRExampleDownload = require('./XHRExampleDownload');
-const XHRExampleBinaryUpload = require('./XHRExampleBinaryUpload');
-const XHRExampleHeaders = require('./XHRExampleHeaders');
-const XHRExampleFetch = require('./XHRExampleFetch');
-const XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
 const XHRExampleAbortController = require('./XHRExampleAbortController');
+const XHRExampleBinaryUpload = require('./XHRExampleBinaryUpload');
+const XHRExampleDownload = require('./XHRExampleDownload');
+const XHRExampleFetch = require('./XHRExampleFetch');
+const XHRExampleHeaders = require('./XHRExampleHeaders');
+const XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
 
 exports.framework = 'React';
 exports.title = 'XMLHttpRequest';
-exports.description =
-  'Example that demonstrates upload and download ' +
-  'requests using XMLHttpRequest.';
+exports.description = ('Example that demonstrates upload and download ' +
+  'requests using XMLHttpRequest.': string);
 exports.examples = [
   {
     title: 'File Download',
-    render() {
+    render(): React.Node {
       return <XHRExampleDownload />;
     },
   },
   {
     title: 'multipart/form-data Upload',
-    render() {
+    render(): React.Node {
       return <XHRExampleBinaryUpload />;
     },
   },
   {
     title: 'Fetch Test',
-    render() {
+    render(): React.Node {
       return <XHRExampleFetch />;
     },
   },
   {
     title: 'Headers',
-    render() {
+    render(): React.Node {
       return <XHRExampleHeaders />;
     },
   },
   {
     title: 'Time Out Test',
-    render() {
+    render(): React.Node {
       return <XHRExampleOnTimeOut />;
     },
   },
   {
     title: 'Abort Test',
-    render() {
+    render(): React.Node {
       return <XHRExampleAbortController />;
     },
   },

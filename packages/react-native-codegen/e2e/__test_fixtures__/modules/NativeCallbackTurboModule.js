@@ -21,4 +21,6 @@ export interface Spec extends TurboModule {
   +getValueWithCallbackWithAlias: (c: CB) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default (TurboModuleRegistry.getEnforcing<Spec>(
+  'SampleTurboModule',
+): Spec);

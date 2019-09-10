@@ -294,7 +294,7 @@ public class ImageEditingManager extends ReactContextBaseJavaModule {
      */
     private Bitmap crop(BitmapFactory.Options outOptions) throws IOException {
       InputStream inputStream = openBitmapInputStream();
-      // Effeciently crops image without loading full resolution into memory
+      // Efficiently crops image without loading full resolution into memory
       // https://developer.android.com/reference/android/graphics/BitmapRegionDecoder.html
       BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(inputStream, false);
       try {

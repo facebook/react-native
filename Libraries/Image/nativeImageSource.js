@@ -10,26 +10,20 @@
 
 'use strict';
 
-const Platform = require('../Utilities/Platform');
+import Platform from '../Utilities/Platform';
 
-// TODO: Change `nativeImageSource` to return this type.
-export type NativeImageSource = {|
-  +deprecated: true,
-  +height: number,
-  +uri: string,
-  +width: number,
-|};
+import type {ImageURISource} from './ImageSource';
 
-type NativeImageSourceSpec = {|
-  +android?: string,
-  +ios?: string,
-  +default?: string,
+type NativeImageSourceSpec = $ReadOnly<{|
+  android?: string,
+  ios?: string,
+  default?: string,
 
   // For more details on width and height, see
   // http://facebook.github.io/react-native/docs/images.html#why-not-automatically-size-everything
-  +height: number,
-  +width: number,
-|};
+  height: number,
+  width: number,
+|}>;
 
 /**
  * In hybrid apps, use `nativeImageSource` to access images that are already
@@ -47,7 +41,7 @@ type NativeImageSourceSpec = {|
  *   http://facebook.github.io/react-native/docs/images.html
  *
  */
-function nativeImageSource(spec: NativeImageSourceSpec): Object {
+function nativeImageSource(spec: NativeImageSourceSpec): ImageURISource {
   let uri = Platform.select({
     android: spec.android,
     default: spec.default,

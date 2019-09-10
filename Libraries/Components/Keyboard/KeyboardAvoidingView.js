@@ -17,8 +17,8 @@ const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
 
-import type EmitterSubscription from '../../vendor/emitter/EmitterSubscription';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type EmitterSubscription from '../../vendor/emitter/EmitterSubscription';
 import type {
   ViewProps,
   ViewLayout,
@@ -61,7 +61,7 @@ type State = {|
  * adjusting its height, position, or bottom padding.
  */
 class KeyboardAvoidingView extends React.Component<Props, State> {
-  static defaultProps = {
+  static defaultProps: {|enabled: boolean, keyboardVerticalOffset: number|} = {
     enabled: true,
     keyboardVerticalOffset: 0,
   };

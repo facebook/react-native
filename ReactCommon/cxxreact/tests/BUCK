@@ -25,7 +25,7 @@ jni_instrumentation_test_lib(
     ],
     soname = "libxplat-bridge.so",
     visibility = [
-        "fbandroid//instrumentation_tests/...",
+        "//fbandroid/instrumentation_tests/...",
     ],
     deps = [
         "fbsource//xplat/folly:dynamic",

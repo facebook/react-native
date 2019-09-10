@@ -25,7 +25,9 @@ type Context = {
 
 type Props = $ReadOnly<{|
   children?: React.Node,
+  fabric?: boolean,
   rootTag: number,
+  showArchitectureIndicator?: boolean,
   WrapperComponent?: ?React.ComponentType<any>,
 |}>;
 
@@ -42,7 +44,9 @@ class AppContainer extends React.Component<Props, State> {
   _mainRef: ?React.ElementRef<typeof View>;
   _subscription: ?EmitterSubscription = null;
 
-  static childContextTypes = {
+  static childContextTypes:
+    | any
+    | {|rootTag: React$PropType$Primitive<number>|} = {
     rootTag: PropTypes.number,
   };
 
@@ -110,7 +114,15 @@ class AppContainer extends React.Component<Props, State> {
 
     const Wrapper = this.props.WrapperComponent;
     if (Wrapper != null) {
-      innerView = <Wrapper>{innerView}</Wrapper>;
+      innerView = (
+        <Wrapper
+          fabric={this.props.fabric === true}
+          showArchitectureIndicator={
+            this.props.showArchitectureIndicator === true
+          }>
+          {innerView}
+        </Wrapper>
+      );
     }
     return (
       <RootTagContext.Provider value={this.props.rootTag}>

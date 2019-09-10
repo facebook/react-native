@@ -12,10 +12,10 @@
 
 const getNativeComponentAttributes = require('../ReactNative/getNativeComponentAttributes');
 
-import type {ReactNativeBaseComponentViewConfig} from '../Renderer/shims/ReactNativeTypes';
 import ReactNativeViewViewConfig from '../Components/View/ReactNativeViewViewConfig';
+import type {ReactNativeBaseComponentViewConfig} from '../Renderer/shims/ReactNativeTypes';
 
-const IGNORED_KEYS = ['transform'];
+const IGNORED_KEYS = ['transform', 'hitSlop'];
 /**
  * The purpose of this function is to validate that the view config that
  * native exposes for a given view manager is the same as the view config
@@ -105,7 +105,7 @@ export function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {
 export function getConfigWithoutViewProps(
   viewConfig: ReactNativeBaseComponentViewConfig<>,
   propName: string,
-) {
+): {...} {
   if (!viewConfig[propName]) {
     return {};
   }
@@ -118,7 +118,7 @@ export function getConfigWithoutViewProps(
     }, {});
 }
 
-export function stringifyViewConfig(viewConfig: any) {
+export function stringifyViewConfig(viewConfig: any): string {
   return JSON.stringify(
     viewConfig,
     (key, val) => {

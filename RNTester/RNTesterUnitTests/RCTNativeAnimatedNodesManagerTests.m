@@ -10,13 +10,8 @@
 
 #import "OCMock/OCMock.h"
 
-#if (defined(COCOAPODS))
-#import <React-RCTAnimation/React/RCTNativeAnimatedNodesManager.h>
-#import <React-RCTAnimation/React/RCTValueAnimatedNode.h>
-#else
-#import <RCTAnimation/RCTNativeAnimatedNodesManager.h>
-#import <RCTAnimation/RCTValueAnimatedNode.h>
-#endif
+#import <React/RCTNativeAnimatedNodesManager.h>
+#import <React/RCTValueAnimatedNode.h>
 #import <React/RCTUIManager.h>
 
 static const NSTimeInterval FRAME_LENGTH = 1.0 / 60.0;
@@ -1031,7 +1026,7 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
  */
 - (void) testSpringTrackingRetainsSpeed
 {
-  // this spring config correspomds to tension 20 and friction 0.5 which makes the spring settle
+  // this spring config corresponds to tension 20 and friction 0.5 which makes the spring settle
   // very slowly
   NSDictionary *springConfig = @{@"type": @"spring",
                                  @"restSpeedThreshold": @0.001,

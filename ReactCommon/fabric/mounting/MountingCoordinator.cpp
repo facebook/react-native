@@ -13,6 +13,7 @@
 
 #include <react/mounting/Differentiator.h>
 #include <react/mounting/ShadowViewMutation.h>
+#include <react/utils/TimeUtils.h>
 
 namespace facebook {
 namespace react {
@@ -43,6 +44,11 @@ void MountingCoordinator::push(ShadowTreeRevision &&revision) const {
   }
 }
 
+void MountingCoordinator::revoke() const {
+  std::lock_guard<std::mutex> lock(mutex_);
+  lastRevision_.reset();
+}
+
 better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     const {
   std::lock_guard<std::mutex> lock(mutex_);
@@ -53,8 +59,13 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
 
   number_++;
 
+  auto telemetry = lastRevision_->getTelemetry();
+  telemetry.willDiff();
+
   auto mutations = calculateShadowViewMutations(
       baseRevision_.getRootShadowNode(), lastRevision_->getRootShadowNode());
+
+  telemetry.didDiff();
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
   stubViewTree_.mutate(mutations);
@@ -76,7 +87,6 @@ better::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   }
 #endif
 
-  auto telemetry = lastRevision_->getTelemetry();
   baseRevision_ = std::move(*lastRevision_);
   lastRevision_.reset();
 

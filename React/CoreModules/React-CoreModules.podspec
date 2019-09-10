@@ -30,8 +30,8 @@ Pod::Spec.new do |s|
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
-  s.source_files           = "**/*.{c,h,m,mm,cpp}"
-  s.header_dir             = "React"
+  s.source_files           = "**/*.{c,m,mm,cpp}"
+  s.header_dir             = "CoreModules"
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
@@ -40,5 +40,8 @@ Pod::Spec.new do |s|
 
   s.dependency "FBReactNativeSpec", version
   s.dependency "Folly", folly_version
-  s.dependency "React-Core", version
+  s.dependency "RCTTypeSafety", version
+  s.dependency "React-Core/CoreModulesHeaders", version
+  s.dependency "React-RCTImage", version
+  s.dependency "ReactCommon/turbomodule/core", version
 end

@@ -46,7 +46,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   using ConcreteStateData = typename ShadowNodeT::ConcreteState::Data;
 
   ConcreteComponentDescriptor(
-      EventDispatcher::Shared const &eventDispatcher,
+      EventDispatcher::Weak const &eventDispatcher,
       ContextContainer::Shared const &contextContainer = {})
       : ComponentDescriptor(eventDispatcher, contextContainer) {
     rawPropsParser_.prepare<ConcreteProps>();

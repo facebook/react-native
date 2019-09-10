@@ -14,6 +14,7 @@ const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
 const infoLog = require('../Utilities/infoLog');
 
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
+import NativeBugReporting from './NativeBugReporting';
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 
 type ExtraData = {[key: string]: string};
@@ -121,12 +122,10 @@ class BugReporting {
     for (const [key, callback] of BugReporting._fileSources) {
       fileData[key] = callback();
     }
-    infoLog('BugReporting extraData:', extraData);
-    const BugReportingNativeModule = require('../BatchedBridge/NativeModules')
-      .BugReporting;
-    BugReportingNativeModule &&
-      BugReportingNativeModule.setExtraData &&
-      BugReportingNativeModule.setExtraData(extraData, fileData);
+
+    if (NativeBugReporting != null && NativeBugReporting.setExtraData != null) {
+      NativeBugReporting.setExtraData(extraData, fileData);
+    }
 
     if (NativeRedBox != null && NativeRedBox.setExtraData != null) {
       NativeRedBox.setExtraData(extraData, 'From BugReporting.js');

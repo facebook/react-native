@@ -39,6 +39,8 @@ if (__DEV__) {
           ? devServer.url.replace(/https?:\/\//, '').split(':')[0]
           : 'localhost';
 
+        const viewConfig = require('../Components/View/ReactNativeViewViewConfig.js');
+
         reactDevTools.connectToDevTools({
           isAppActive,
           host,
@@ -46,6 +48,9 @@ if (__DEV__) {
           // It was added in https://github.com/facebook/react-native/commit/bf2b435322e89d0aeee8792b1c6e04656c2719a0.
           port: window.__REACT_DEVTOOLS_PORT__,
           resolveRNStyle: require('../StyleSheet/flattenStyle'),
+          nativeStyleEditorValidAttributes: Object.keys(
+            viewConfig.validAttributes.style,
+          ),
         });
       }
 
@@ -55,7 +60,7 @@ if (__DEV__) {
     }
 
     if (!Platform.isTesting) {
-      const logToConsole = require('./Devtools/logToConsole');
+      const HMRClient = require('../Utilities/HMRClient');
       [
         'trace',
         'info',
@@ -69,7 +74,7 @@ if (__DEV__) {
         const originalFunction = console[level];
         // $FlowFixMe Overwrite console methods
         console[level] = function(...args) {
-          logToConsole(level, args);
+          HMRClient.log(level, args);
           originalFunction.apply(console, args);
         };
       });

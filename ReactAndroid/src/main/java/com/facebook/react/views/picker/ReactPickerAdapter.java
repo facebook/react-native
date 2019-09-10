@@ -1,6 +1,7 @@
 package com.facebook.react.views.picker;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,12 +37,16 @@ class ReactPickerAdapter extends ArrayAdapter<ReactPickerItem> {
 
   private View getView(int position, View convertView, ViewGroup parent, boolean isDropdown) {
     ReactPickerItem item = getItem(position);
+    boolean isNew = false;
     if (convertView == null) {
       int layoutResId =
           isDropdown
               ? android.R.layout.simple_spinner_dropdown_item
               : android.R.layout.simple_spinner_item;
       convertView = mInflater.inflate(layoutResId, parent, false);
+      // Save original text colors
+      convertView.setTag(((TextView) convertView).getTextColors());
+      isNew = true;
     }
 
     TextView textView = (TextView) convertView;
@@ -50,9 +55,12 @@ class ReactPickerAdapter extends ArrayAdapter<ReactPickerItem> {
       textView.setTextColor(mPrimaryTextColor);
     } else if (item.color != null) {
       textView.setTextColor(item.color);
+    } else if (textView.getTag() != null && !isNew) {
+      // In case the new item does not set the color prop, go back to the default one
+      textView.setTextColor((ColorStateList) textView.getTag());
     }
 
-    return convertView;
+    return textView;
   }
 
   public @Nullable Integer getPrimaryTextColor() {

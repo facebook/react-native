@@ -44,6 +44,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'JSResponderHandlerExample',
+    module: require('../examples/JSResponderHandlerExample/JSResponderHandlerExample'),
+  },
+  {
     key: 'InputAccessoryViewExample',
     module: require('../examples/InputAccessoryView/InputAccessoryViewExample'),
     supportsTVOS: true,
@@ -202,6 +206,11 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'AppearanceExample',
+    module: require('../examples/Appearance/AppearanceExample'),
+    supportsTVOS: false,
+  },
+  {
     key: 'AppStateExample',
     module: require('../examples/AppState/AppStateExample'),
     supportsTVOS: true,
@@ -333,7 +342,7 @@ const APIExamples: Array<RNTesterExample> = [
   },
 ];
 
-const Modules = {};
+const Modules: {...} = {};
 
 APIExamples.concat(ComponentExamples).forEach(Example => {
   Modules[Example.key] = Example.module;

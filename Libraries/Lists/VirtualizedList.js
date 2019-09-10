@@ -27,6 +27,7 @@ const warning = require('fbjs/lib/warning');
 
 const {computeWindowedRenderLimits} = require('./VirtualizeUtils');
 
+import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
@@ -240,6 +241,18 @@ type OptionalProps = {
  * comment to see the errors */
 export type Props = RequiredProps & OptionalProps;
 
+type DefaultProps = {|
+  disableVirtualization: boolean,
+  horizontal: boolean,
+  initialNumToRender: number,
+  keyExtractor: (item: Item, index: number) => string,
+  maxToRenderPerBatch: number,
+  onEndReachedThreshold: number,
+  scrollEventThrottle: number,
+  updateCellsBatchingPeriod: number,
+  windowSize: number,
+|};
+
 let _usedIndexForKey = false;
 let _keylessItemComponentName: string = '';
 
@@ -326,7 +339,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const {animated, index, viewOffset, viewPosition} = params;
     invariant(
       index >= 0 && index < getItemCount(data),
-      `scrollToIndex out of range: ${index} vs ${getItemCount(data) - 1}`,
+      `scrollToIndex out of range: requested index ${index} but maximum is ${getItemCount(
+        data,
+      ) - 1}`,
     );
     if (!getItemLayout && index > this._highestMeasuredFrameIndex) {
       invariant(
@@ -417,13 +432,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
    * Note that `this._scrollRef` might not be a `ScrollView`, so we
    * need to check that it responds to `getScrollResponder` before calling it.
    */
-  getScrollResponder() {
+  getScrollResponder(): ?ScrollResponderType {
     if (this._scrollRef && this._scrollRef.getScrollResponder) {
       return this._scrollRef.getScrollResponder();
     }
   }
 
-  getScrollableNode() {
+  getScrollableNode(): any {
     if (this._scrollRef && this._scrollRef.getScrollableNode) {
       return this._scrollRef.getScrollableNode();
     } else {
@@ -431,7 +446,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
-  getScrollRef() {
+  getScrollRef(): any {
     if (this._scrollRef && this._scrollRef.getScrollRef) {
       return this._scrollRef.getScrollRef();
     } else {
@@ -445,7 +460,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
-  static defaultProps = {
+  static defaultProps: DefaultProps = {
     disableVirtualization: false,
     horizontal: false,
     initialNumToRender: 10,
@@ -469,7 +484,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     windowSize: 21, // multiples of length
   };
 
-  static contextTypes = {
+  static contextTypes:
+    | any
+    | {|
+        virtualizedCell: {|
+          cellKey: React$PropType$Primitive<string>,
+        |},
+        virtualizedList: {|
+          getScrollMetrics: React$PropType$Primitive<Function>,
+          horizontal: React$PropType$Primitive<boolean>,
+          getOutermostParentListRef: React$PropType$Primitive<Function>,
+          getNestedChildState: React$PropType$Primitive<Function>,
+          registerAsNestedChild: React$PropType$Primitive<Function>,
+          unregisterAsNestedChild: React$PropType$Primitive<Function>,
+        |},
+      |} = {
     virtualizedCell: PropTypes.shape({
       cellKey: PropTypes.string,
     }),
@@ -483,7 +512,16 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }),
   };
 
-  static childContextTypes = {
+  static childContextTypes:
+    | any
+    | {|
+        getScrollMetrics: React$PropType$Primitive<Function>,
+        horizontal: React$PropType$Primitive<boolean>,
+        getOutermostParentListRef: React$PropType$Primitive<Function>,
+        getNestedChildState: React$PropType$Primitive<Function>,
+        registerAsNestedChild: React$PropType$Primitive<Function>,
+        unregisterAsNestedChild: React$PropType$Primitive<Function>,
+      |} = {
     virtualizedList: PropTypes.shape({
       getScrollMetrics: PropTypes.func,
       horizontal: PropTypes.bool,
@@ -494,7 +532,31 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }),
   };
 
-  getChildContext() {
+  getChildContext(): {|
+    virtualizedList: {
+      getScrollMetrics: () => {
+        contentLength: number,
+        dOffset: number,
+        dt: number,
+        offset: number,
+        timestamp: number,
+        velocity: number,
+        visibleLength: number,
+      },
+      horizontal: ?boolean,
+      getOutermostParentListRef: Function,
+      getNestedChildState: string => ?ChildListState,
+      registerAsNestedChild: ({
+        cellKey: string,
+        key: string,
+        ref: VirtualizedList,
+      }) => ?ChildListState,
+      unregisterAsNestedChild: ({
+        key: string,
+        state: ChildListState,
+      }) => void,
+    },
+  |} {
     return {
       virtualizedList: {
         getScrollMetrics: this._getScrollMetrics,
@@ -661,7 +723,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._fillRateHelper.deactivateAndFlush();
   }
 
-  static getDerivedStateFromProps(newProps: Props, prevState: State) {
+  static getDerivedStateFromProps(newProps: Props, prevState: State): State {
     const {data, getItemCount, maxToRenderPerBatch} = newProps;
     // first and last could be stale (e.g. if a new, shorter items props is passed in), so we make
     // sure we're rendering a reasonable range here.
@@ -745,7 +807,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
   }
 
-  render() {
+  render(): React.Node {
     if (__DEV__) {
       const flatStyles = flattenStyle(this.props.contentContainerStyle);
       warning(
@@ -1180,7 +1242,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       if (!this._scrollRef) {
         return;
       }
-      // We are asuming that getOutermostParentListRef().getScrollRef()
+      // We are assuming that getOutermostParentListRef().getScrollRef()
       // is a non-null reference to a ScrollView
       this._scrollRef.measureLayout(
         this.context.virtualizedList
