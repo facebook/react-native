@@ -50,6 +50,7 @@ import com.facebook.react.fabric.mounting.mountitems.DispatchStringCommandMountI
 import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
+import com.facebook.react.fabric.mounting.mountitems.RemoveDeleteMultiMountItem;
 import com.facebook.react.fabric.mounting.mountitems.RemoveMountItem;
 import com.facebook.react.fabric.mounting.mountitems.SendAccessibilityEvent;
 import com.facebook.react.fabric.mounting.mountitems.UpdateEventEmitterMountItem;
@@ -278,6 +279,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @SuppressWarnings("unused")
   private MountItem deleteMountItem(int reactTag) {
     return new DeleteMountItem(reactTag);
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private MountItem removeDeleteMultiMountItem(int[] metadata) {
+    return new RemoveDeleteMultiMountItem(metadata);
   }
 
   @DoNotStrip

@@ -42,6 +42,14 @@ struct JMountItem : public JavaClass<JMountItem> {
 static constexpr auto UIManagerJavaDescriptor =
     "com/facebook/react/fabric/FabricUIManager";
 
+struct RemoveDeleteMetadata {
+  int tag;
+  int parentTag;
+  int index;
+  bool shouldRemove;
+  bool shouldDelete;
+};
+
 } // namespace
 
 jni::local_ref<Binding::jhybriddata> Binding::initHybrid(
@@ -223,7 +231,9 @@ void Binding::installFabricUIManager(
   contextContainer->insert("ReactNativeConfig", config);
   contextContainer->insert("FabricUIManager", javaUIManager_);
 
+  // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
+  shouldCollateRemovesAndDeletes_ = reactNativeConfig_->getBool("react_fabric:enable_removedelete_collation_android");
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
@@ -411,9 +421,9 @@ local_ref<JMountItem::javaobject> createUpdateStateMountItem(
     const jni::global_ref<jobject> &javaUIManager,
     const ShadowViewMutation &mutation) {
   static auto updateStateInstruction =
-      jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<alias_ref<JMountItem>(jint, jobject)>(
-              "updateStateMountItem");
+    jni::findClassStatic(UIManagerJavaDescriptor)
+      ->getMethod<alias_ref<JMountItem>(jint, jobject)>(
+        "updateStateMountItem");
 
   auto state = mutation.newChildShadowView.state;
 
@@ -428,9 +438,9 @@ local_ref<JMountItem::javaobject> createUpdateStateMountItem(
   }
 
   return updateStateInstruction(
-      javaUIManager,
-      mutation.newChildShadowView.tag,
-      (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr));
+    javaUIManager,
+    mutation.newChildShadowView.tag,
+    (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr));
 }
 
 local_ref<JMountItem::javaobject> createRemoveMountItem(
@@ -456,6 +466,30 @@ local_ref<JMountItem::javaobject> createDeleteMountItem(
           ->getMethod<alias_ref<JMountItem>(jint)>("deleteMountItem");
 
   return deleteInstruction(javaUIManager, mutation.oldChildShadowView.tag);
+}
+
+local_ref<JMountItem::javaobject> createRemoveAndDeleteMultiMountItem(
+  const jni::global_ref<jobject> &javaUIManager,
+  std::vector<RemoveDeleteMetadata> metadata) {
+
+  auto env = Environment::current();
+  auto removeAndDeleteArray = env->NewIntArray(metadata.size()*4);
+  int position = 0;
+  jint temp[4];
+  for (const auto& x : metadata) {
+    temp[0] = x.tag;
+    temp[1] = x.parentTag;
+    temp[2] = x.index;
+    temp[3] = (x.shouldRemove ? 1 : 0) | (x.shouldDelete ? 2 : 0);
+    env->SetIntArrayRegion(removeAndDeleteArray, position, 4, temp);
+    position += 4;
+  }
+
+  static auto removeDeleteMultiInstruction =
+    jni::findClassStatic(UIManagerJavaDescriptor)
+      ->getMethod<alias_ref<JMountItem>(jintArray)>("removeDeleteMultiMountItem");
+
+  return removeDeleteMultiInstruction(javaUIManager, removeAndDeleteArray);
 }
 
 // TODO T48019320: because we pass initial props and state to the Create (and preallocate) mount instruction,
@@ -535,6 +569,9 @@ void Binding::schedulerDidFinishTransaction(
   auto mountItems = *(mountItemsArray);
   std::unordered_set<Tag> deletedViewTags;
 
+  // Find the set of tags that are removed and deleted in one block
+  std::vector<RemoveDeleteMetadata> toRemove;
+
   int position = 0;
   for (const auto &mutation : mutations) {
     auto oldChildShadowView = mutation.oldChildShadowView;
@@ -542,6 +579,14 @@ void Binding::schedulerDidFinishTransaction(
 
     bool isVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
         oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;
+
+    // Handle accumulated removals/deletions
+    if (shouldCollateRemovesAndDeletes_ && mutation.type != ShadowViewMutation::Remove && mutation.type != ShadowViewMutation::Delete) {
+      if (toRemove.size() > 0) {
+        mountItems[position++] = createRemoveAndDeleteMultiMountItem(localJavaUIManager, toRemove);
+        toRemove.clear();
+      }
+    }
 
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
@@ -555,14 +600,27 @@ void Binding::schedulerDidFinishTransaction(
       }
       case ShadowViewMutation::Remove: {
         if (!isVirtual) {
-          mountItems[position++] =
-              createRemoveMountItem(localJavaUIManager, mutation);
+          if (shouldCollateRemovesAndDeletes_) {
+            toRemove.push_back(RemoveDeleteMetadata{mutation.oldChildShadowView.tag, mutation.parentShadowView.tag, mutation.index, true, false});
+          } else {
+            mountItems[position++] = createRemoveMountItem(localJavaUIManager, mutation);
+          }
         }
         break;
       }
       case ShadowViewMutation::Delete: {
-        mountItems[position++] =
-          createDeleteMountItem(localJavaUIManager, mutation);
+        if (shouldCollateRemovesAndDeletes_) {
+          // It is impossible to delete without removing node first
+          const auto& it = std::find_if(std::begin(toRemove), std::end(toRemove), [&mutation](const auto& x) { return x.tag == mutation.oldChildShadowView.tag; });
+
+          if (it != std::end(toRemove)) {
+            it->shouldDelete = true;
+          } else {
+            toRemove.push_back(RemoveDeleteMetadata{mutation.oldChildShadowView.tag, -1, -1, false, true});
+          }
+        } else {
+          mountItems[position++] = createDeleteMountItem(localJavaUIManager, mutation);
+        }
 
         deletedViewTags.insert(mutation.oldChildShadowView.tag);
         break;
@@ -660,6 +718,12 @@ void Binding::schedulerDidFinishTransaction(
         break;
       }
     }
+  }
+
+  // Handle remaining removals and deletions
+  if (shouldCollateRemovesAndDeletes_ && toRemove.size() > 0) {
+    mountItems[position++] = createRemoveAndDeleteMultiMountItem(localJavaUIManager, toRemove);
+    toRemove.clear();
   }
 
   if (position <= 0) {

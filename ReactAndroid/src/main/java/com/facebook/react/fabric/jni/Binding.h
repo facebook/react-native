@@ -100,7 +100,8 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
 
   float pointScaleFactor_ = 1;
 
-  std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
+  std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
+  bool shouldCollateRemovesAndDeletes_{false};
 };
 
 } // namespace react
