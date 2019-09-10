@@ -42,7 +42,7 @@ export interface Spec extends TurboModule {
   +dispatchViewManagerCommand: (
     reactTag: ?number,
     commandID: number,
-    commandArgs: ?Array<string | number | boolean>, // is this best?
+    commandArgs: ?Array<any>,
   ) => void;
   +measure: (
     reactTag: ?number,
@@ -119,4 +119,4 @@ export interface Spec extends TurboModule {
   +dismissPopupMenu: () => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('UIManager');
+export default (TurboModuleRegistry.getEnforcing<Spec>('UIManager'): Spec);

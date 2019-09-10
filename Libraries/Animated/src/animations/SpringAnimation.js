@@ -15,6 +15,7 @@ const Animation = require('./Animation');
 const SpringConfig = require('../SpringConfig');
 
 const invariant = require('invariant');
+
 const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
 
 import type {AnimationConfig, EndCallback} from './Animation';
@@ -137,7 +138,18 @@ class SpringAnimation extends Animation {
     invariant(this._mass > 0, 'Mass value must be greater than 0');
   }
 
-  __getNativeAnimationConfig() {
+  __getNativeAnimationConfig(): {|
+    damping: number,
+    initialVelocity: number,
+    iterations: number,
+    mass: number,
+    overshootClamping: boolean,
+    restDisplacementThreshold: number,
+    restSpeedThreshold: number,
+    stiffness: number,
+    toValue: any,
+    type: $TEMPORARY$string<'spring'>,
+  |} {
     return {
       type: 'spring',
       overshootClamping: this._overshootClamping,

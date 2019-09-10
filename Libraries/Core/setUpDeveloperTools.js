@@ -22,7 +22,36 @@ if (__DEV__) {
       // not when debugging in chrome
       // TODO(t12832058) This check is broken
       if (!window.document) {
-        require('./Devtools/setupDevtools');
+        const AppState = require('../AppState/AppState');
+        // $FlowFixMe Module is untyped
+        const reactDevTools = require('react-devtools-core');
+        const getDevServer = require('./Devtools/getDevServer');
+
+        // Don't steal the DevTools from currently active app.
+        // Note: if you add any AppState subscriptions to this file,
+        // you will also need to guard against `AppState.isAvailable`,
+        // or the code will throw for bundles that don't have it.
+        const isAppActive = () => AppState.currentState !== 'background';
+
+        // Get hostname from development server (packager)
+        const devServer = getDevServer();
+        const host = devServer.bundleLoadedFromServer
+          ? devServer.url.replace(/https?:\/\//, '').split(':')[0]
+          : 'localhost';
+
+        const viewConfig = require('../Components/View/ReactNativeViewViewConfig.js');
+
+        reactDevTools.connectToDevTools({
+          isAppActive,
+          host,
+          // Read the optional global variable for backward compatibility.
+          // It was added in https://github.com/facebook/react-native/commit/bf2b435322e89d0aeee8792b1c6e04656c2719a0.
+          port: window.__REACT_DEVTOOLS_PORT__,
+          resolveRNStyle: require('../StyleSheet/flattenStyle'),
+          nativeStyleEditorValidAttributes: Object.keys(
+            viewConfig.validAttributes.style,
+          ),
+        });
       }
 
       // Set up inspector
@@ -31,12 +60,21 @@ if (__DEV__) {
     }
 
     if (!Platform.isTesting) {
-      const logToConsole = require('./Devtools/logToConsole');
-      ['log', 'warn', 'info', 'trace'].forEach(level => {
+      const HMRClient = require('../Utilities/HMRClient');
+      [
+        'trace',
+        'info',
+        'warn',
+        'log',
+        'group',
+        'groupCollapsed',
+        'groupEnd',
+        'debug',
+      ].forEach(level => {
         const originalFunction = console[level];
         // $FlowFixMe Overwrite console methods
         console[level] = function(...args) {
-          logToConsole(level, args);
+          HMRClient.log(level, args);
           originalFunction.apply(console, args);
         };
       });

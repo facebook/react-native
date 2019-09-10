@@ -49,14 +49,14 @@ class EventEmitterWithHolding {
   /**
    * @see EventEmitter#addListener
    */
-  addListener(eventType: string, listener: Function, context: ?Object) {
+  addListener(eventType: string, listener: Function, context: ?Object): any {
     return this._emitter.addListener(eventType, listener, context);
   }
 
   /**
    * @see EventEmitter#once
    */
-  once(eventType: string, listener: Function, context: ?Object) {
+  once(eventType: string, listener: Function, context: ?Object): any {
     return this._emitter.once(eventType, listener, context);
   }
 
@@ -115,7 +115,7 @@ class EventEmitterWithHolding {
   /**
    * @see EventEmitter#listeners
    */
-  listeners(eventType: string) /* TODO: Annotate return type here */ {
+  listeners(eventType: string): any /* TODO: Annotate return type here */ {
     return this._emitter.listeners(eventType);
   }
 

@@ -128,7 +128,7 @@ type ButtonProps = $ReadOnly<{|
  */
 
 class Button extends React.Component<ButtonProps> {
-  render() {
+  render(): React.Node {
     const {
       accessibilityLabel,
       color,
@@ -153,11 +153,11 @@ class Button extends React.Component<ButtonProps> {
         buttonStyles.push({backgroundColor: color});
       }
     }
-    const accessibilityStates = [];
+    const accessibilityState = {};
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
       textStyles.push(styles.textDisabled);
-      accessibilityStates.push('disabled');
+      accessibilityState.disabled = true;
     }
     invariant(
       typeof title === 'string',
@@ -171,7 +171,7 @@ class Button extends React.Component<ButtonProps> {
       <Touchable
         accessibilityLabel={accessibilityLabel}
         accessibilityRole="button"
-        accessibilityStates={accessibilityStates}
+        accessibilityState={accessibilityState}
         hasTVPreferredFocus={hasTVPreferredFocus}
         nextFocusDown={nextFocusDown}
         nextFocusForward={nextFocusForward}

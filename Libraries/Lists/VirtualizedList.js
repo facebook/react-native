@@ -27,6 +27,7 @@ const warning = require('fbjs/lib/warning');
 
 const {computeWindowedRenderLimits} = require('./VirtualizeUtils');
 
+import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
@@ -160,7 +161,7 @@ type OptionalProps = {
   listKey?: string,
   /**
    * The maximum number of items to render in each incremental render batch. The more rendered at
-   * once, the better the fill rate, but responsiveness my suffer because rendering content may
+   * once, the better the fill rate, but responsiveness may suffer because rendering content may
    * interfere with responding to button taps or other interactions.
    */
   maxToRenderPerBatch: number,
@@ -239,6 +240,18 @@ type OptionalProps = {
 /* $FlowFixMe - this Props seems to be missing a bunch of stuff. Remove this
  * comment to see the errors */
 export type Props = RequiredProps & OptionalProps;
+
+type DefaultProps = {|
+  disableVirtualization: boolean,
+  horizontal: boolean,
+  initialNumToRender: number,
+  keyExtractor: (item: Item, index: number) => string,
+  maxToRenderPerBatch: number,
+  onEndReachedThreshold: number,
+  scrollEventThrottle: number,
+  updateCellsBatchingPeriod: number,
+  windowSize: number,
+|};
 
 let _usedIndexForKey = false;
 let _keylessItemComponentName: string = '';
@@ -326,7 +339,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const {animated, index, viewOffset, viewPosition} = params;
     invariant(
       index >= 0 && index < getItemCount(data),
-      `scrollToIndex out of range: ${index} vs ${getItemCount(data) - 1}`,
+      `scrollToIndex out of range: requested index ${index} but maximum is ${getItemCount(
+        data,
+      ) - 1}`,
     );
     if (!getItemLayout && index > this._highestMeasuredFrameIndex) {
       invariant(
@@ -417,13 +432,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
    * Note that `this._scrollRef` might not be a `ScrollView`, so we
    * need to check that it responds to `getScrollResponder` before calling it.
    */
-  getScrollResponder() {
+  getScrollResponder(): ?ScrollResponderType {
     if (this._scrollRef && this._scrollRef.getScrollResponder) {
       return this._scrollRef.getScrollResponder();
     }
   }
 
-  getScrollableNode() {
+  getScrollableNode(): any {
     if (this._scrollRef && this._scrollRef.getScrollableNode) {
       return this._scrollRef.getScrollableNode();
     } else {
@@ -431,7 +446,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
-  getScrollRef() {
+  getScrollRef(): any {
     if (this._scrollRef && this._scrollRef.getScrollRef) {
       return this._scrollRef.getScrollRef();
     } else {
@@ -445,7 +460,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
-  static defaultProps = {
+  static defaultProps: DefaultProps = {
     disableVirtualization: false,
     horizontal: false,
     initialNumToRender: 10,
@@ -469,7 +484,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     windowSize: 21, // multiples of length
   };
 
-  static contextTypes = {
+  static contextTypes:
+    | any
+    | {|
+        virtualizedCell: {|
+          cellKey: React$PropType$Primitive<string>,
+        |},
+        virtualizedList: {|
+          getScrollMetrics: React$PropType$Primitive<Function>,
+          horizontal: React$PropType$Primitive<boolean>,
+          getOutermostParentListRef: React$PropType$Primitive<Function>,
+          getNestedChildState: React$PropType$Primitive<Function>,
+          registerAsNestedChild: React$PropType$Primitive<Function>,
+          unregisterAsNestedChild: React$PropType$Primitive<Function>,
+        |},
+      |} = {
     virtualizedCell: PropTypes.shape({
       cellKey: PropTypes.string,
     }),
@@ -483,7 +512,16 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }),
   };
 
-  static childContextTypes = {
+  static childContextTypes:
+    | any
+    | {|
+        getScrollMetrics: React$PropType$Primitive<Function>,
+        horizontal: React$PropType$Primitive<boolean>,
+        getOutermostParentListRef: React$PropType$Primitive<Function>,
+        getNestedChildState: React$PropType$Primitive<Function>,
+        registerAsNestedChild: React$PropType$Primitive<Function>,
+        unregisterAsNestedChild: React$PropType$Primitive<Function>,
+      |} = {
     virtualizedList: PropTypes.shape({
       getScrollMetrics: PropTypes.func,
       horizontal: PropTypes.bool,
@@ -494,7 +532,31 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }),
   };
 
-  getChildContext() {
+  getChildContext(): {|
+    virtualizedList: {
+      getScrollMetrics: () => {
+        contentLength: number,
+        dOffset: number,
+        dt: number,
+        offset: number,
+        timestamp: number,
+        velocity: number,
+        visibleLength: number,
+      },
+      horizontal: ?boolean,
+      getOutermostParentListRef: Function,
+      getNestedChildState: string => ?ChildListState,
+      registerAsNestedChild: ({
+        cellKey: string,
+        key: string,
+        ref: VirtualizedList,
+      }) => ?ChildListState,
+      unregisterAsNestedChild: ({
+        key: string,
+        state: ChildListState,
+      }) => void,
+    },
+  |} {
     return {
       virtualizedList: {
         getScrollMetrics: this._getScrollMetrics,
@@ -661,7 +723,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._fillRateHelper.deactivateAndFlush();
   }
 
-  static getDerivedStateFromProps(newProps: Props, prevState: State) {
+  static getDerivedStateFromProps(newProps: Props, prevState: State): State {
     const {data, getItemCount, maxToRenderPerBatch} = newProps;
     // first and last could be stale (e.g. if a new, shorter items props is passed in), so we make
     // sure we're rendering a reasonable range here.
@@ -745,7 +807,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
   }
 
-  render() {
+  render(): React.Node {
     if (__DEV__) {
       const flatStyles = flattenStyle(this.props.contentContainerStyle);
       warning(
@@ -968,7 +1030,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._hasMore =
       this.state.last < this.props.getItemCount(this.props.data) - 1;
 
-    const ret = React.cloneElement(
+    const innerRet = React.cloneElement(
       (this.props.renderScrollComponent || this._defaultRenderScrollComponent)(
         scrollProps,
       ),
@@ -977,6 +1039,29 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       },
       cells,
     );
+    let ret = innerRet;
+    if (__DEV__) {
+      ret = (
+        <ScrollView.Context.Consumer>
+          {scrollContext => {
+            if (
+              scrollContext != null &&
+              !scrollContext.horizontal === !this.props.horizontal &&
+              !this._hasWarned.nesting &&
+              this.context.virtualizedList == null
+            ) {
+              // TODO (T46547044): use React.warn once 16.9 is sync'd: https://github.com/facebook/react/pull/15170
+              console.warn(
+                'VirtualizedLists should never be nested inside plain ScrollViews with the same ' +
+                  'orientation - use another VirtualizedList-backed container instead.',
+              );
+              this._hasWarned.nesting = true;
+            }
+            return innerRet;
+          }}
+        </ScrollView.Context.Consumer>
+      );
+    }
     if (this.props.debug) {
       return (
         <View style={styles.debug}>
@@ -1157,7 +1242,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       if (!this._scrollRef) {
         return;
       }
-      // We are asuming that getOutermostParentListRef().getScrollRef()
+      // We are assuming that getOutermostParentListRef().getScrollRef()
       // is a non-null reference to a ScrollView
       this._scrollRef.measureLayout(
         this.context.virtualizedList
@@ -1828,10 +1913,10 @@ class CellRenderer extends React.Component<
     );
     const cellStyle = inversionStyle
       ? horizontal
-        ? [{flexDirection: 'row-reverse'}, inversionStyle]
-        : [{flexDirection: 'column-reverse'}, inversionStyle]
+        ? [styles.rowReverse, inversionStyle]
+        : [styles.columnReverse, inversionStyle]
       : horizontal
-      ? [{flexDirection: 'row'}, inversionStyle]
+      ? [styles.row, inversionStyle]
       : inversionStyle;
     if (!CellRendererComponent) {
       return (
@@ -1885,6 +1970,15 @@ const styles = StyleSheet.create({
   },
   horizontallyInverted: {
     transform: [{scaleX: -1}],
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  columnReverse: {
+    flexDirection: 'column-reverse',
   },
   debug: {
     flex: 1,

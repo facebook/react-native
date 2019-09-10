@@ -20,25 +20,37 @@ export type PlatformSelectSpec<D, I> = {
 const Platform = {
   __constants: null,
   OS: 'ios',
-  get Version() {
+  get Version(): $FlowFixMe {
     return this.constants.osVersion;
   },
-  get constants() {
+  get constants(): {|
+    forceTouchAvailable: boolean,
+    interfaceIdiom: string,
+    isTesting: boolean,
+    osVersion: string,
+    reactNativeVersion: {|
+      major: number,
+      minor: number,
+      patch: number,
+      prerelease: ?number,
+    |},
+    systemName: string,
+  |} {
     if (this.__constants == null) {
       this.__constants = NativePlatformConstantsIOS.getConstants();
     }
     return this.__constants;
   },
-  get isPad() {
+  get isPad(): boolean {
     return this.constants.interfaceIdiom === 'pad';
   },
   /**
    * Deprecated, use `isTV` instead.
    */
-  get isTVOS() {
+  get isTVOS(): boolean {
     return Platform.isTV;
   },
-  get isTV() {
+  get isTV(): boolean {
     return this.constants.interfaceIdiom === 'tv';
   },
   get isTesting(): boolean {

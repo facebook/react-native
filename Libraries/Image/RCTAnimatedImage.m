@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTAnimatedImage.h"
+#import <ImageIO/ImageIO.h>
+#import <React/RCTAnimatedImage.h>
 
 @interface RCTGIFCoderFrame : NSObject
 
@@ -32,25 +33,25 @@
     if (!imageSource) {
       return nil;
     }
-    
+
     BOOL framesValid = [self scanAndCheckFramesValidWithSource:imageSource];
     if (!framesValid) {
       CFRelease(imageSource);
       return nil;
     }
-    
+
     _imageSource = imageSource;
-    
+
     // grab image at the first index
     UIImage *image = [self animatedImageFrameAtIndex:0];
     if (!image) {
       return nil;
     }
     self = [super initWithCGImage:image.CGImage scale:MAX(scale, 1) orientation:image.imageOrientation];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
   }
-  
+
   return self;
 }
 
@@ -62,18 +63,18 @@
   NSUInteger frameCount = CGImageSourceGetCount(imageSource);
   NSUInteger loopCount = [self imageLoopCountWithSource:imageSource];
   NSMutableArray<RCTGIFCoderFrame *> *frames = [NSMutableArray array];
-  
+
   for (size_t i = 0; i < frameCount; i++) {
     RCTGIFCoderFrame *frame = [[RCTGIFCoderFrame alloc] init];
     frame.index = i;
     frame.duration = [self frameDurationAtIndex:i source:imageSource];
     [frames addObject:frame];
   }
-  
+
   _frameCount = frameCount;
   _loopCount = loopCount;
   _frames = [frames copy];
-  
+
   return YES;
 }
 
@@ -86,6 +87,10 @@
     NSNumber *gifLoopCount = gifProperties[(__bridge NSString *)kCGImagePropertyGIFLoopCount];
     if (gifLoopCount != nil) {
       loopCount = gifLoopCount.unsignedIntegerValue;
+      // A loop count of 1 means it should repeat twice, 2 means, thrice, etc.
+      if (loopCount != 0) {
+        loopCount++;
+      }
     }
   }
   return loopCount;
@@ -100,7 +105,7 @@
   }
   NSDictionary *frameProperties = (__bridge NSDictionary *)cfFrameProperties;
   NSDictionary *gifProperties = frameProperties[(NSString *)kCGImagePropertyGIFDictionary];
-  
+
   NSNumber *delayTimeUnclampedProp = gifProperties[(NSString *)kCGImagePropertyGIFUnclampedDelayTime];
   if (delayTimeUnclampedProp != nil) {
     frameDuration = [delayTimeUnclampedProp floatValue];
@@ -110,7 +115,7 @@
       frameDuration = [delayTimeProp floatValue];
     }
   }
-  
+
   CFRelease(cfFrameProperties);
   return frameDuration;
 }

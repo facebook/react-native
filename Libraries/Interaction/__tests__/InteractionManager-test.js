@@ -16,7 +16,7 @@ jest
 
 const isWindows = process.platform === 'win32';
 function expectToBeCalledOnce(fn) {
-  // todo fix this test case on widnows
+  // todo fix this test case on windows
   if (isWindows) {
     return;
   }

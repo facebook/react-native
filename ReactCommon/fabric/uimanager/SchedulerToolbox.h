@@ -7,8 +7,8 @@
 
 #include <react/core/EventBeat.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
-#include <react/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
+#include <react/utils/RuntimeExecutor.h>
 
 namespace facebook {
 namespace react {
@@ -39,8 +39,8 @@ struct SchedulerToolbox final {
    * Represent connections with the platform-specific run loops and general
    * purpose background queue.
    */
-  EventBeatFactory asynchronousEventBeatFactory;
-  EventBeatFactory synchronousEventBeatFactory;
+  EventBeat::Factory asynchronousEventBeatFactory;
+  EventBeat::Factory synchronousEventBeatFactory;
 };
 
 } // namespace react

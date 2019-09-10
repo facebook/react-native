@@ -22,4 +22,4 @@ export interface Spec extends TurboModule {
   +onFailure: (errorCode: number, error: string) => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('JSDevSupport');
+export default (TurboModuleRegistry.get<Spec>('JSDevSupport'): ?Spec);

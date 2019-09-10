@@ -8,18 +8,20 @@
  * @flow strict-local
  */
 
+/* eslint-disable react-internal/warning-and-invariant-args */
+
 'use strict';
+
+const invariant = require('invariant');
 
 import type {
   ReactNativeBaseComponentViewConfig,
   ViewConfigGetter,
 } from './ReactNativeTypes';
 
-const invariant = require('invariant');
-
 // Event configs
-const customBubblingEventTypes = {};
-const customDirectEventTypes = {};
+const customBubblingEventTypes: {...} = {};
+const customDirectEventTypes: {...} = {};
 
 exports.customBubblingEventTypes = customBubblingEventTypes;
 exports.customDirectEventTypes = customDirectEventTypes;

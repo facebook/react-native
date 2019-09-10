@@ -60,6 +60,11 @@ using namespace facebook::react;
   // Default implementation does nothing.
 }
 
+- (void)handleCommand:(NSString *)commandName args:(NSArray *)args
+{
+  // Default implementation does nothing.
+}
+
 - (void)updateLayoutMetrics:(LayoutMetrics const &)layoutMetrics
            oldLayoutMetrics:(LayoutMetrics const &)oldLayoutMetrics
 {
@@ -81,7 +86,10 @@ using namespace facebook::react;
       return;
     }
 
-    self.frame = frame;
+    // Note: Changing `frame` when `layer.transform` is not the `identity transform` is undefined behavior.
+    // Therefore, we must use `center` and `bounds`.
+    self.center = CGPoint{CGRectGetMidX(frame), CGRectGetMidY(frame)};
+    self.bounds = CGRect{CGPointZero, frame.size};
   }
 
   if (layoutMetrics.layoutDirection != oldLayoutMetrics.layoutDirection) {

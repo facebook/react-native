@@ -11,7 +11,9 @@
 'use strict';
 
 const React = require('react');
+
 const {StyleSheet, TextInput, View} = require('react-native');
+import {RNTesterThemeContext} from './RNTesterTheme';
 
 type Props = {
   filter: Function,
@@ -26,9 +28,9 @@ type State = {
 };
 
 class RNTesterExampleFilter extends React.Component<Props, State> {
-  state = {filter: ''};
+  state: State = {filter: ''};
 
-  render() {
+  render(): React.Node {
     const filterText = this.state.filter;
     let filterRegex = /.*/;
 
@@ -63,33 +65,48 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
       return null;
     }
     return (
-      <View style={styles.searchRow}>
-        <TextInput
-          autoCapitalize="none"
-          autoCorrect={false}
-          clearButtonMode="always"
-          onChangeText={text => {
-            this.setState(() => ({filter: text}));
-          }}
-          placeholder="Search..."
-          underlineColorAndroid="transparent"
-          style={styles.searchTextInput}
-          testID={this.props.testID}
-          value={this.state.filter}
-        />
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => {
+          return (
+            <View
+              style={[
+                styles.searchRow,
+                {backgroundColor: theme.GroupedBackgroundColor},
+              ]}>
+              <TextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                clearButtonMode="always"
+                onChangeText={text => {
+                  this.setState(() => ({filter: text}));
+                }}
+                placeholder="Search..."
+                placeholderTextColor={theme.PlaceholderTextColor}
+                underlineColorAndroid="transparent"
+                style={[
+                  styles.searchTextInput,
+                  {
+                    color: theme.LabelColor,
+                    backgroundColor: theme.SecondaryGroupedBackgroundColor,
+                    borderColor: theme.QuaternaryLabelColor,
+                  },
+                ]}
+                testID={this.props.testID}
+                value={this.state.filter}
+              />
+            </View>
+          );
+        }}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }
 
 const styles = StyleSheet.create({
   searchRow: {
-    backgroundColor: '#eeeeee',
     padding: 10,
   },
   searchTextInput: {
-    backgroundColor: 'white',
-    borderColor: '#cccccc',
     borderRadius: 3,
     borderWidth: 1,
     paddingLeft: 8,

@@ -16,17 +16,20 @@ import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
   // Props
-  progressViewStyle?: ?WithDefault<'default' | 'bar', 'default'>,
-  progress?: ?WithDefault<Float, 0>,
+  progressViewStyle?: WithDefault<'default' | 'bar', 'default'>,
+  progress?: WithDefault<Float, 0>,
   progressTintColor?: ?ColorValue,
   trackTintColor?: ?ColorValue,
   progressImage?: ?ImageSource,
   trackImage?: ?ImageSource,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('RCTProgressView');
+export default (codegenNativeComponent<NativeProps>(
+  'RCTProgressView',
+): NativeComponentType<NativeProps>);

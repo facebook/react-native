@@ -12,6 +12,7 @@
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
 #include <react/components/scrollview/ScrollViewProps.h>
+#include <react/core/conversions.h>
 #include <react/core/EventBeat.h>
 #include <react/core/EventEmitter.h>
 #include <react/debug/SystraceSection.h>
@@ -40,6 +41,14 @@ struct JMountItem : public JavaClass<JMountItem> {
 
 static constexpr auto UIManagerJavaDescriptor =
     "com/facebook/react/fabric/FabricUIManager";
+
+struct RemoveDeleteMetadata {
+  int tag;
+  int parentTag;
+  int index;
+  bool shouldRemove;
+  bool shouldDelete;
+};
 
 } // namespace
 
@@ -205,16 +214,16 @@ void Binding::installFabricUIManager(
 
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
-  EventBeatFactory synchronousBeatFactory =
-      [eventBeatManager, runtimeExecutor, localJavaUIManager]() {
+  EventBeat::Factory synchronousBeatFactory =
+      [eventBeatManager, runtimeExecutor, localJavaUIManager](EventBeat::SharedOwnerBox const &ownerBox) {
         return std::make_unique<AsyncEventBeat>(
-            eventBeatManager, runtimeExecutor, localJavaUIManager);
+            ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
       };
 
-  EventBeatFactory asynchronousBeatFactory =
-      [eventBeatManager, runtimeExecutor, localJavaUIManager]() {
+  EventBeat::Factory asynchronousBeatFactory =
+      [eventBeatManager, runtimeExecutor, localJavaUIManager](EventBeat::SharedOwnerBox const &ownerBox) {
         return std::make_unique<AsyncEventBeat>(
-            eventBeatManager, runtimeExecutor, localJavaUIManager);
+            ownerBox, eventBeatManager, runtimeExecutor, localJavaUIManager);
       };
 
   std::shared_ptr<const ReactNativeConfig> config =
@@ -222,14 +231,17 @@ void Binding::installFabricUIManager(
   contextContainer->insert("ReactNativeConfig", config);
   contextContainer->insert("FabricUIManager", javaUIManager_);
 
+  // Keep reference to config object and cache some feature flags here
+  reactNativeConfig_ = config;
+  shouldCollateRemovesAndDeletes_ = reactNativeConfig_->getBool("react_fabric:enable_removedelete_collation_android");
+
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
   toolbox.runtimeExecutor = runtimeExecutor;
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
-  scheduler_ = std::make_shared<Scheduler>(toolbox);
-  scheduler_->setDelegate(this);
+  scheduler_ = std::make_shared<Scheduler>(toolbox, this);
 }
 
 void Binding::uninstallFabricUIManager() {
@@ -240,11 +252,17 @@ void Binding::uninstallFabricUIManager() {
 
   scheduler_ = nullptr;
   javaUIManager_ = nullptr;
+  reactNativeConfig_ = nullptr;
 }
 
 inline local_ref<ReadableMap::javaobject> castReadableMap(
     local_ref<ReadableNativeMap::javaobject> nativeMap) {
   return make_local(reinterpret_cast<ReadableMap::javaobject>(nativeMap.get()));
+}
+
+inline local_ref<ReadableArray::javaobject> castReadableArray(
+  local_ref<ReadableNativeArray::javaobject> nativeArray) {
+  return make_local(reinterpret_cast<ReadableArray::javaobject>(nativeArray.get()));
 }
 
 // TODO: this method will be removed when binding for components are code-gen
@@ -315,7 +333,7 @@ local_ref<JMountItem::javaobject> createUpdateLayoutMountItem(
       oldChildShadowView.layoutMetrics != newChildShadowView.layoutMetrics) {
     static auto updateLayoutInstruction =
         jni::findClassStatic(UIManagerJavaDescriptor)
-            ->getMethod<alias_ref<JMountItem>(jint, jint, jint, jint, jint)>(
+            ->getMethod<alias_ref<JMountItem>(jint, jint, jint, jint, jint, jint)>(
                 "updateLayoutMountItem");
     auto layoutMetrics = newChildShadowView.layoutMetrics;
     auto pointScaleFactor = layoutMetrics.pointScaleFactor;
@@ -325,11 +343,40 @@ local_ref<JMountItem::javaobject> createUpdateLayoutMountItem(
     int y = round(frame.origin.y * pointScaleFactor);
     int w = round(frame.size.width * pointScaleFactor);
     int h = round(frame.size.height * pointScaleFactor);
+    auto layoutDirection = toInt(newChildShadowView.layoutMetrics.layoutDirection);
     return updateLayoutInstruction(
-        javaUIManager, newChildShadowView.tag, x, y, w, h);
+        javaUIManager, newChildShadowView.tag, x, y, w, h, layoutDirection);
   }
 
   return nullptr;
+}
+
+local_ref<JMountItem::javaobject> createUpdatePaddingMountItem(
+  const jni::global_ref<jobject> &javaUIManager,
+  const ShadowViewMutation &mutation) {
+
+  auto oldChildShadowView = mutation.oldChildShadowView;
+  auto newChildShadowView = mutation.newChildShadowView;
+
+  if (oldChildShadowView.layoutMetrics.contentInsets == newChildShadowView.layoutMetrics.contentInsets) {
+    return nullptr;
+  }
+
+  static auto updateLayoutInstruction =
+    jni::findClassStatic(UIManagerJavaDescriptor)
+      ->getMethod<alias_ref<JMountItem>(jint, jint, jint, jint, jint)>(
+        "updatePaddingMountItem");
+
+  auto layoutMetrics = newChildShadowView.layoutMetrics;
+  auto pointScaleFactor = layoutMetrics.pointScaleFactor;
+  auto contentInsets = layoutMetrics.contentInsets;
+
+  int left = round(contentInsets.left * pointScaleFactor);
+  int top = round(contentInsets.top * pointScaleFactor);
+  int right = round(contentInsets.right * pointScaleFactor);
+  int bottom = round(contentInsets.bottom * pointScaleFactor);
+
+  return updateLayoutInstruction(javaUIManager, newChildShadowView.tag, left, top, right, bottom);
 }
 
 local_ref<JMountItem::javaobject> createInsertMountItem(
@@ -374,9 +421,9 @@ local_ref<JMountItem::javaobject> createUpdateStateMountItem(
     const jni::global_ref<jobject> &javaUIManager,
     const ShadowViewMutation &mutation) {
   static auto updateStateInstruction =
-      jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<alias_ref<JMountItem>(jint, jobject)>(
-              "updateStateMountItem");
+    jni::findClassStatic(UIManagerJavaDescriptor)
+      ->getMethod<alias_ref<JMountItem>(jint, jobject)>(
+        "updateStateMountItem");
 
   auto state = mutation.newChildShadowView.state;
 
@@ -391,9 +438,9 @@ local_ref<JMountItem::javaobject> createUpdateStateMountItem(
   }
 
   return updateStateInstruction(
-      javaUIManager,
-      mutation.newChildShadowView.tag,
-      (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr));
+    javaUIManager,
+    mutation.newChildShadowView.tag,
+    (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr));
 }
 
 local_ref<JMountItem::javaobject> createRemoveMountItem(
@@ -421,13 +468,39 @@ local_ref<JMountItem::javaobject> createDeleteMountItem(
   return deleteInstruction(javaUIManager, mutation.oldChildShadowView.tag);
 }
 
+local_ref<JMountItem::javaobject> createRemoveAndDeleteMultiMountItem(
+  const jni::global_ref<jobject> &javaUIManager,
+  std::vector<RemoveDeleteMetadata> metadata) {
+
+  auto env = Environment::current();
+  auto removeAndDeleteArray = env->NewIntArray(metadata.size()*4);
+  int position = 0;
+  jint temp[4];
+  for (const auto& x : metadata) {
+    temp[0] = x.tag;
+    temp[1] = x.parentTag;
+    temp[2] = x.index;
+    temp[3] = (x.shouldRemove ? 1 : 0) | (x.shouldDelete ? 2 : 0);
+    env->SetIntArrayRegion(removeAndDeleteArray, position, 4, temp);
+    position += 4;
+  }
+
+  static auto removeDeleteMultiInstruction =
+    jni::findClassStatic(UIManagerJavaDescriptor)
+      ->getMethod<alias_ref<JMountItem>(jintArray)>("removeDeleteMultiMountItem");
+
+  return removeDeleteMultiInstruction(javaUIManager, removeAndDeleteArray);
+}
+
+// TODO T48019320: because we pass initial props and state to the Create (and preallocate) mount instruction,
+// we technically don't need to pass the first Update to any components. Dedupe?
 local_ref<JMountItem::javaobject> createCreateMountItem(
     const jni::global_ref<jobject> &javaUIManager,
     const ShadowViewMutation &mutation,
     const Tag surfaceId) {
   static auto createJavaInstruction =
       jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<alias_ref<JMountItem>(jstring, jint, jint, jboolean)>(
+          ->getMethod<alias_ref<JMountItem>(jstring, ReadableMap::javaobject, jobject, jint, jint, jboolean)>(
               "createMountItem");
 
   auto newChildShadowView = mutation.newChildShadowView;
@@ -438,9 +511,24 @@ local_ref<JMountItem::javaobject> createCreateMountItem(
   jboolean isLayoutable =
       newChildShadowView.layoutMetrics != EmptyLayoutMetrics;
 
+  local_ref<ReadableMap::javaobject> props = castReadableMap(
+    ReadableNativeMap::newObjectCxxArgs(newChildShadowView.props->rawProps));
+
+  // Do not hold onto Java object from C
+  // We DO want to hold onto C object from Java, since we don't know the
+  // lifetime of the Java object
+  local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
+  if (newChildShadowView.state != nullptr) {
+    javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
+    StateWrapperImpl *cStateWrapper = cthis(javaStateWrapper);
+    cStateWrapper->state_ = newChildShadowView.state;
+  }
+
   return createJavaInstruction(
       javaUIManager,
       componentName.get(),
+      props.get(),
+      (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr),
       surfaceId,
       newChildShadowView.tag,
       isLayoutable);
@@ -448,6 +536,8 @@ local_ref<JMountItem::javaobject> createCreateMountItem(
 
 void Binding::schedulerDidFinishTransaction(
     MountingCoordinator::Shared const &mountingCoordinator) {
+  std::lock_guard<std::recursive_mutex> lock(commitMutex_);
+
   SystraceSection s("FabricUIManagerBinding::schedulerDidFinishTransaction");
   long finishTransactionStartTime = getTime();
 
@@ -467,6 +557,8 @@ void Binding::schedulerDidFinishTransaction(
   auto surfaceId = mountingTransaction->getSurfaceId();
   auto &mutations = mountingTransaction->getMutations();
 
+  int64_t commitNumber = telemetry.getCommitNumber();
+
   std::vector<local_ref<jobject>> queue;
   // Upper bound estimation of mount items to be delivered to Java side.
   int size = mutations.size() * 3 + 42;
@@ -477,6 +569,9 @@ void Binding::schedulerDidFinishTransaction(
   auto mountItems = *(mountItemsArray);
   std::unordered_set<Tag> deletedViewTags;
 
+  // Find the set of tags that are removed and deleted in one block
+  std::vector<RemoveDeleteMetadata> toRemove;
+
   int position = 0;
   for (const auto &mutation : mutations) {
     auto oldChildShadowView = mutation.oldChildShadowView;
@@ -484,6 +579,14 @@ void Binding::schedulerDidFinishTransaction(
 
     bool isVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
         oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;
+
+    // Handle accumulated removals/deletions
+    if (shouldCollateRemovesAndDeletes_ && mutation.type != ShadowViewMutation::Remove && mutation.type != ShadowViewMutation::Delete) {
+      if (toRemove.size() > 0) {
+        mountItems[position++] = createRemoveAndDeleteMultiMountItem(localJavaUIManager, toRemove);
+        toRemove.clear();
+      }
+    }
 
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
@@ -497,14 +600,27 @@ void Binding::schedulerDidFinishTransaction(
       }
       case ShadowViewMutation::Remove: {
         if (!isVirtual) {
-          mountItems[position++] =
-              createRemoveMountItem(localJavaUIManager, mutation);
+          if (shouldCollateRemovesAndDeletes_) {
+            toRemove.push_back(RemoveDeleteMetadata{mutation.oldChildShadowView.tag, mutation.parentShadowView.tag, mutation.index, true, false});
+          } else {
+            mountItems[position++] = createRemoveMountItem(localJavaUIManager, mutation);
+          }
         }
         break;
       }
       case ShadowViewMutation::Delete: {
-        mountItems[position++] =
-            createDeleteMountItem(localJavaUIManager, mutation);
+        if (shouldCollateRemovesAndDeletes_) {
+          // It is impossible to delete without removing node first
+          const auto& it = std::find_if(std::begin(toRemove), std::end(toRemove), [&mutation](const auto& x) { return x.tag == mutation.oldChildShadowView.tag; });
+
+          if (it != std::end(toRemove)) {
+            it->shouldDelete = true;
+          } else {
+            toRemove.push_back(RemoveDeleteMetadata{mutation.oldChildShadowView.tag, -1, -1, false, true});
+          }
+        } else {
+          mountItems[position++] = createDeleteMountItem(localJavaUIManager, mutation);
+        }
 
         deletedViewTags.insert(mutation.oldChildShadowView.tag);
         break;
@@ -532,6 +648,11 @@ void Binding::schedulerDidFinishTransaction(
           if (updateLayoutMountItem) {
             mountItems[position++] = updateLayoutMountItem;
           }
+
+          auto updatePaddingMountItem = createUpdatePaddingMountItem(localJavaUIManager, mutation);
+          if (updatePaddingMountItem) {
+            mountItems[position++] = updatePaddingMountItem;
+          }
         }
 
         if (mutation.oldChildShadowView.eventEmitter !=
@@ -555,12 +676,12 @@ void Binding::schedulerDidFinishTransaction(
                   deletedViewTags.end()) {
             mountItems[position++] =
                 createUpdatePropsMountItem(localJavaUIManager, mutation);
+          }
 
-            // State
-            if (mutation.newChildShadowView.state) {
-              mountItems[position++] =
-                  createUpdateStateMountItem(localJavaUIManager, mutation);
-            }
+          // State
+          if (mutation.newChildShadowView.state) {
+            mountItems[position++] =
+                createUpdateStateMountItem(localJavaUIManager, mutation);
           }
 
           // LocalData
@@ -574,6 +695,13 @@ void Binding::schedulerDidFinishTransaction(
               createUpdateLayoutMountItem(localJavaUIManager, mutation);
           if (updateLayoutMountItem) {
             mountItems[position++] = updateLayoutMountItem;
+          }
+
+          // Padding
+          auto updatePaddingMountItem =
+            createUpdatePaddingMountItem(localJavaUIManager, mutation);
+          if (updatePaddingMountItem) {
+            mountItems[position++] = updatePaddingMountItem;
           }
         }
 
@@ -592,27 +720,42 @@ void Binding::schedulerDidFinishTransaction(
     }
   }
 
+  // Handle remaining removals and deletions
+  if (shouldCollateRemovesAndDeletes_ && toRemove.size() > 0) {
+    mountItems[position++] = createRemoveAndDeleteMultiMountItem(localJavaUIManager, toRemove);
+    toRemove.clear();
+  }
+
+  if (position <= 0) {
+    // If there are no mountItems to be sent to the platform, then it is not necessary to even call.
+    return;
+  }
+
   static auto createMountItemsBatchContainer =
       jni::findClassStatic(UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(
-              jtypeArray<JMountItem::javaobject>, jint)>(
+              jtypeArray<JMountItem::javaobject>, jint, jint)>(
               "createBatchMountItem");
 
   auto batch = createMountItemsBatchContainer(
-      localJavaUIManager, mountItemsArray.get(), position);
+      localJavaUIManager, mountItemsArray.get(), position, commitNumber);
 
-  static auto scheduleMountItems =
+  static auto scheduleMountItem =
       jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<void(JMountItem::javaobject, jlong, jlong, jlong, jlong)>(
-              "scheduleMountItems");
+          ->getMethod<void(JMountItem::javaobject, jint, jlong, jlong, jlong, jlong, jlong, jlong, jlong)>(
+              "scheduleMountItem");
 
   long finishTransactionEndTime = getTime();
 
-  scheduleMountItems(
+  scheduleMountItem(
       localJavaUIManager,
       batch.get(),
+      telemetry.getCommitNumber(),
       telemetry.getCommitStartTime(),
-      telemetry.getLayoutTime(),
+      telemetry.getDiffStartTime(),
+      telemetry.getDiffEndTime(),
+      telemetry.getLayoutStartTime(),
+      telemetry.getLayoutEndTime(),
       finishTransactionStartTime,
       finishTransactionEndTime);
 }
@@ -661,6 +804,66 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
       props.get(),
       (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr),
       isLayoutableShadowNode);
+}
+
+void Binding::schedulerDidDispatchCommand(
+  const ShadowView &shadowView,
+  std::string const &commandName,
+  folly::dynamic const args) {
+
+  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
+  if (!localJavaUIManager) {
+    LOG(ERROR) << "Binding::schedulerDidDispatchCommand: JavaUIManager disappeared";
+    return;
+  }
+
+  static auto dispatchCommand =
+    jni::findClassStatic(UIManagerJavaDescriptor)
+      ->getMethod<void(
+        jint, jstring, ReadableArray::javaobject)>(
+        "dispatchCommand");
+
+  local_ref<JString> command = make_jstring(commandName);
+
+  local_ref<ReadableArray::javaobject> argsArray = castReadableArray(
+    ReadableNativeArray::newObjectCxxArgs(args));
+
+  dispatchCommand(localJavaUIManager, shadowView.tag, command.get(), argsArray.get());
+}
+
+void Binding::schedulerDidSetJSResponder(
+    SurfaceId surfaceId,
+    const ShadowView &shadowView,
+    const ShadowView &initialShadowView,
+    bool blockNativeResponder) {
+
+  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
+  if (!localJavaUIManager) {
+    LOG(ERROR) << "Binding::schedulerSetJSResponder: JavaUIManager disappeared";
+    return;
+  }
+
+  static auto setJSResponder =
+      jni::findClassStatic(UIManagerJavaDescriptor)
+          ->getMethod<void(
+              jint, jint, jboolean)>(
+              "setJSResponder");
+
+  setJSResponder(localJavaUIManager, shadowView.tag, initialShadowView.tag, (jboolean) blockNativeResponder);
+}
+
+void Binding::schedulerDidClearJSResponder() {
+  jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
+  if (!localJavaUIManager) {
+    LOG(ERROR) << "Binding::schedulerClearJSResponder: JavaUIManager disappeared";
+    return;
+  }
+
+  static auto clearJSResponder =
+      jni::findClassStatic(UIManagerJavaDescriptor)
+          ->getMethod<void()>("clearJSResponder");
+
+  clearJSResponder(localJavaUIManager);
 }
 
 void Binding::registerNatives() {

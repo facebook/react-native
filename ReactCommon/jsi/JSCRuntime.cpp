@@ -630,7 +630,9 @@ jsi::String JSCRuntime::createStringFromUtf8(
     size_t length) {
   std::string tmp(reinterpret_cast<const char*>(str), length);
   JSStringRef stringRef = JSStringCreateWithUTF8CString(tmp.c_str());
-  return createString(stringRef);
+  auto result = createString(stringRef);
+  JSStringRelease(stringRef);
+  return result;
 }
 
 std::string JSCRuntime::utf8(const jsi::String& str) {
@@ -789,7 +791,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
 
 std::shared_ptr<jsi::HostObject> JSCRuntime::getHostObject(
     const jsi::Object& obj) {
-  // We are guarenteed at this point to have isHostObject(obj) == true
+  // We are guaranteed at this point to have isHostObject(obj) == true
   // so the private data should be HostObjectMetadata
   JSObjectRef object = objectRef(obj);
   auto metadata =

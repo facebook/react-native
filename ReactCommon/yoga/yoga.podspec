@@ -15,8 +15,8 @@ else
 end
 
 Pod::Spec.new do |spec|
-  spec.name = 'yoga'
-  spec.version = "#{version}.React"
+  spec.name = 'Yoga'
+  spec.version = '1.14.0'
   spec.license =  { :type => 'MIT' }
   spec.homepage = 'https://yogalayout.com'
   spec.documentation_url = 'https://yogalayout.com/docs/'
@@ -29,6 +29,9 @@ Pod::Spec.new do |spec|
 
   spec.module_name = 'yoga'
   spec.requires_arc = false
+  spec.pod_target_xcconfig = {
+      'DEFINES_MODULE' => 'YES'
+  }
   spec.compiler_flags = [
       '-fno-omit-frame-pointer',
       '-fexceptions',
@@ -47,7 +50,7 @@ Pod::Spec.new do |spec|
   source_files = File.join('ReactCommon/yoga', source_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
   spec.source_files = source_files
 
-  header_files = 'yoga/{Yoga,YGEnums,YGMacros,YGValue,YGStyle,CompactValue,YGFloatOptional,Yoga-internal,YGNode,YGConfig,YGLayout,YGMarker}.h'
+  header_files = 'yoga/{Yoga,YGEnums,YGMacros,YGValue}.h'
   header_files = File.join('ReactCommon/yoga', header_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
   spec.public_header_files = header_files
 end

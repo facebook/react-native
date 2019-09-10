@@ -10,10 +10,11 @@
 
 'use strict';
 
-const React = require('react');
-const {ProgressBarAndroid: ProgressBar} = require('react-native');
 const RNTesterBlock = require('../../components/RNTesterBlock');
 const RNTesterPage = require('../../components/RNTesterPage');
+const React = require('react');
+
+const {ProgressBarAndroid: ProgressBar} = require('react-native');
 
 import type {ProgressBarAndroidProps} from '../../../../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 
@@ -57,7 +58,7 @@ class MovingBar extends React.Component<MovingBarProps, MovingBarState> {
 }
 
 class ProgressBarAndroidExample extends React.Component<{}> {
-  render() {
+  render(): React.Node {
     return (
       <RNTesterPage title="ProgressBar Examples">
         <RNTesterBlock title="Horizontal Indeterminate ProgressBar">

@@ -57,7 +57,7 @@ using namespace facebook::react;
   // is also baked into _method.
 
   // the last N arguments are callbacks, according to the Method data.  The
-  // preceding arguments are values whic have already been parsed from JS: they
+  // preceding arguments are values which have already been parsed from JS: they
   // may be NSNumber (bool, int, double), NSString, NSArray, or NSObject.
 
   CxxModule::Callback first;

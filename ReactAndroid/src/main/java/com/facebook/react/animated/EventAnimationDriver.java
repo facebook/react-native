@@ -1,24 +1,19 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.animated;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
-
 import java.util.List;
 
-import javax.annotation.Nullable;
-
-/**
- * Handles updating a {@link ValueAnimatedNode} when an event gets dispatched.
- */
+/** Handles updating a {@link ValueAnimatedNode} when an event gets dispatched. */
 /* package */ class EventAnimationDriver implements RCTEventEmitter {
   private List<String> mEventPath;
   /* package */ ValueAnimatedNode mValueNode;
@@ -44,7 +39,8 @@ import javax.annotation.Nullable;
   }
 
   @Override
-  public void receiveTouches(String eventName, WritableArray touches, WritableArray changedIndices) {
+  public void receiveTouches(
+      String eventName, WritableArray touches, WritableArray changedIndices) {
     throw new RuntimeException("receiveTouches is not support by native animated events");
   }
 }

@@ -14,6 +14,7 @@ import type {ViewProps} from '../View/ViewPropTypes';
 import type {WithDefault} from '../../Types/CodegenTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -22,4 +23,6 @@ type NativeProps = $ReadOnly<{|
   emulateUnlessSupported?: WithDefault<boolean, false>,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('RCTSafeAreaView');
+export default (codegenNativeComponent<NativeProps>(
+  'RCTSafeAreaView',
+): NativeComponentType<NativeProps>);

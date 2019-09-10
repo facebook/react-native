@@ -16,6 +16,7 @@ const {
   Text,
   View,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   Alert,
   UIManager,
   findNodeHandle,
@@ -477,6 +478,35 @@ class AccessibilityActionsExample extends React.Component {
             }}>
             <Text>Slider</Text>
           </View>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Button with custom accessibility actions">
+          <TouchableWithoutFeedback
+            accessible={true}
+            accessibilityActions={[
+              {name: 'cut', label: 'cut label'},
+              {name: 'copy', label: 'copy label'},
+              {name: 'paste', label: 'paste label'},
+            ]}
+            onAccessibilityAction={event => {
+              switch (event.nativeEvent.actionName) {
+                case 'cut':
+                  Alert.alert('Alert', 'cut action success');
+                  break;
+                case 'copy':
+                  Alert.alert('Alert', 'copy action success');
+                  break;
+                case 'paste':
+                  Alert.alert('Alert', 'paste action success');
+                  break;
+              }
+            }}
+            onPress={() => Alert.alert('Button has been pressed!')}
+            accessibilityRole="button">
+            <View>
+              <Text>Click me</Text>
+            </View>
+          </TouchableWithoutFeedback>
         </RNTesterBlock>
       </View>
     );

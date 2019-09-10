@@ -1,8 +1,8 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.fabric;
 
@@ -35,12 +35,9 @@ public class FabricComponents {
     sComponentNames.put("AxialGradientView", "RCTAxialGradientView");
   }
 
-  /**
-   * @return the name of component in the Fabric environment
-   */
+  /** @return the name of component in the Fabric environment */
   static String getFabricComponentName(String componentName) {
     String component = sComponentNames.get(componentName);
     return component != null ? component : componentName;
   }
-
 }

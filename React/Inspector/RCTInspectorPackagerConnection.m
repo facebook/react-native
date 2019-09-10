@@ -3,15 +3,15 @@
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
-#import "RCTInspectorPackagerConnection.h"
+#import <React/RCTInspectorPackagerConnection.h>
 
-#if RCT_DEV
+#if RCT_DEV && !TARGET_OS_UIKITFORMAC
 
-#import "RCTDefines.h"
-#import "RCTInspector.h"
-#import "RCTLog.h"
-#import "RCTSRWebSocket.h"
-#import "RCTUtils.h"
+#import <React/RCTDefines.h>
+#import <React/RCTInspector.h>
+#import <React/RCTLog.h>
+#import <React/RCTSRWebSocket.h>
+#import <React/RCTUtils.h>
 
 // This is a port of the Android impl, at
 // ReactAndroid/src/main/java/com/facebook/react/devsupport/InspectorPackagerConnection.java
@@ -246,7 +246,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return;
   }
 
-  // The corresopnding android code has a lot of custom config options for
+  // The corresponding android code has a lot of custom config options for
   // timeouts, but it appears the iOS RCTSRWebSocket API doesn't have the same
   // implemented options.
   _webSocket = [[RCTSRWebSocket alloc] initWithURL:_url];
@@ -287,7 +287,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)sendToPackager:(NSDictionary *)messageObject
 {
   __weak RCTInspectorPackagerConnection *weakSelf = self;
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+  dispatch_async(_jsQueue, ^{
     RCTInspectorPackagerConnection *strongSelf = weakSelf;
     if (strongSelf && !strongSelf->_closed) {
       NSError *error;

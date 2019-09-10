@@ -18,7 +18,7 @@
 
 #import <cxxreact/JSExecutor.h>
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
 #import <React/RCTPushNotificationManager.h>
 #endif
 
@@ -27,26 +27,28 @@
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
 #endif
 
-#ifdef RN_TURBO_MODULE_ENABLED
-#import <jsireact/RCTTurboModuleManager.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
+
+#if DEBUG
+#ifdef FB_SONARKIT_ENABLED
+#import <FlipperKit/FlipperClient.h>
+#import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
+#import <FlipperKitUserDefaultsPlugin/FKUserDefaultsPlugin.h>
+#import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
+#import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
+#import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
+#endif
+#endif
 
 #import "RNTesterTurboModuleProvider.h"
-#endif
 
-#ifdef RN_TURBO_MODULE_ENABLED
 @interface AppDelegate() <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate>{
-#else
-@interface AppDelegate() <RCTCxxBridgeDelegate>{
-#endif
 
 #ifdef RN_FABRIC_ENABLED
   RCTSurfacePresenter *_surfacePresenter;
 #endif
 
-#ifdef RN_TURBO_MODULE_ENABLED
   RCTTurboModuleManager *_turboModuleManager;
-#endif
-
 }
 @end
 
@@ -54,9 +56,8 @@
 
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-#ifdef RN_TURBO_MODULE_ENABLED
+  [AppDelegate initializeFlipper:application];
   RCTEnableTurboModule(YES);
-#endif
 
   _bridge = [[RCTBridge alloc] initWithDelegate:self
                                   launchOptions:launchOptions];
@@ -69,7 +70,13 @@
   }
 
 #ifdef RN_FABRIC_ENABLED
-  _surfacePresenter = [[RCTSurfacePresenter alloc] initWithBridge:_bridge config:nil];
+  _surfacePresenter = [[RCTSurfacePresenter alloc] initWithBridge:_bridge
+                                                           config:nil
+                                                      imageLoader:RCTTurboModuleEnabled() ?
+                                                                  [_bridge moduleForName:@"RCTImageLoader"
+                                                                  lazilyLoadIfNecessary:YES] : nil
+                                                  runtimeExecutor:nullptr];
+
   _bridge.surfacePresenter = _surfacePresenter;
 
   UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
@@ -113,6 +120,7 @@
 
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
+  _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:self];
   __weak __typeof(self) weakSelf = self;
   return std::make_unique<facebook::react::JSCExecutorFactory>([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
     if (!bridge) {
@@ -120,29 +128,29 @@
     }
     __typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
-#ifdef RN_TURBO_MODULE_ENABLED
-      strongSelf->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:strongSelf];
       [strongSelf->_turboModuleManager installJSBindingWithRuntime:&runtime];
-#endif
     }
   });
 }
 
 #pragma mark RCTTurboModuleManagerDelegate
 
-#ifdef RN_TURBO_MODULE_ENABLED
+- (Class)getModuleClassFromName:(const char *)name
+{
+  return facebook::react::RNTesterTurboModuleClassProvider(name);
+}
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
 {
-  return RNTesterTurboModuleProvider(name, jsInvoker);
+  return facebook::react::RNTesterTurboModuleProvider(name, jsInvoker);
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                        instance:(id<RCTTurboModule>)instance
                                                       jsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
 {
-  return RNTesterTurboModuleProvider(name, instance, jsInvoker);
+  return facebook::react::RNTesterTurboModuleProvider(name, instance, jsInvoker);
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
@@ -151,11 +159,9 @@
   return [moduleClass new];
 }
 
-#endif
-
 # pragma mark - Push Notifications
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
 
 // Required to register for notifications
 - (void)application:(__unused UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
@@ -185,6 +191,22 @@
 - (void)application:(__unused UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
   [RCTPushNotificationManager didReceiveLocalNotification:notification];
+}
+
+
++ (void) initializeFlipper:(UIApplication *)application
+{
+#if DEBUG
+#ifdef FB_SONARKIT_ENABLED
+  FlipperClient *client = [FlipperClient sharedClient];
+  SKDescriptorMapper *layoutDescriptorMapper = [[SKDescriptorMapper alloc] initWithDefaults];
+  [client addPlugin: [[FlipperKitLayoutPlugin alloc] initWithRootNode: application withDescriptorMapper: layoutDescriptorMapper]];
+  [client addPlugin: [[FKUserDefaultsPlugin alloc] initWithSuiteName:nil]];
+  [client addPlugin: [FlipperKitReactPlugin new]];
+  [client addPlugin: [[FlipperKitNetworkPlugin alloc] initWithNetworkAdapter:[SKIOSNetworkAdapter new]]];
+  [client start];
+#endif
+#endif
 }
 
 #endif

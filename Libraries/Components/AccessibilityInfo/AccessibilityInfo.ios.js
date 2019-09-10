@@ -10,10 +10,10 @@
 
 'use strict';
 
-import NativeAccessibilityManager from './NativeAccessibilityManager';
-
 const Promise = require('../../Promise');
 const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
+
+import NativeAccessibilityManager from './NativeAccessibilityManager';
 
 const CHANGE_EVENT_NAME = {
   announcementFinished: 'announcementFinished',
@@ -164,7 +164,7 @@ const AccessibilityInfo = {
    *
    * Same as `isScreenReaderEnabled`
    */
-  get fetch() {
+  get fetch(): $FlowFixMe {
     return this.isScreenReaderEnabled;
   },
 

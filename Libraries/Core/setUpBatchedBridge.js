@@ -53,5 +53,10 @@ if (!global.RN$Bridgeless) {
       'HMRClient',
       require('../Utilities/HMRClient'),
     );
+  } else {
+    BatchedBridge.registerCallableModule(
+      'HMRClient',
+      require('../Utilities/HMRClientProdShim'),
+    );
   }
 }

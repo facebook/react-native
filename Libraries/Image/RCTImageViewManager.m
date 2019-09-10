@@ -5,16 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTImageViewManager.h"
+#import <React/RCTImageViewManager.h>
 
 #import <UIKit/UIKit.h>
 
 #import <React/RCTConvert.h>
 #import <React/RCTImageSource.h>
 
-#import "RCTImageLoader.h"
-#import "RCTImageShadowView.h"
-#import "RCTImageView.h"
+#import <React/RCTImageShadowView.h>
+#import <React/RCTImageView.h>
+#import <React/RCTImageLoaderProtocol.h>
 
 @implementation RCTImageViewManager
 
@@ -54,28 +54,30 @@ RCT_EXPORT_METHOD(getSize:(NSURLRequest *)request
                   successBlock:(RCTResponseSenderBlock)successBlock
                   errorBlock:(RCTResponseErrorBlock)errorBlock)
 {
-  [self.bridge.imageLoader getImageSizeForURLRequest:request
-                                               block:^(NSError *error, CGSize size) {
-                                                 if (error) {
-                                                   errorBlock(error);
-                                                 } else {
-                                                   successBlock(@[@(size.width), @(size.height)]);
-                                                 }
-                                               }];
+  [[self.bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES]
+   getImageSizeForURLRequest:request
+   block:^(NSError *error, CGSize size) {
+     if (error) {
+       errorBlock(error);
+     } else {
+       successBlock(@[@(size.width), @(size.height)]);
+     }
+   }];
 }
 
 RCT_EXPORT_METHOD(getSizeWithHeaders:(RCTImageSource *)source
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  [self.bridge.imageLoader getImageSizeForURLRequest:source.request
-                                              block:^(NSError *error, CGSize size) {
-                                                if (error) {
-                                                  reject(@"E_GET_SIZE_FAILURE", nil, error);
-                                                  return;
-                                                }
-                                                resolve(@{@"width":@(size.width),@"height":@(size.height)});
-                                              }];
+  [[self.bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES]
+   getImageSizeForURLRequest:source.request
+   block:^(NSError *error, CGSize size) {
+     if (error) {
+       reject(@"E_GET_SIZE_FAILURE", nil, error);
+       return;
+     }
+     resolve(@{@"width":@(size.width),@"height":@(size.height)});
+   }];
 }
 
 RCT_EXPORT_METHOD(prefetchImage:(NSURLRequest *)request
@@ -87,21 +89,22 @@ RCT_EXPORT_METHOD(prefetchImage:(NSURLRequest *)request
     return;
   }
 
-  [self.bridge.imageLoader loadImageWithURLRequest:request
-                                          callback:^(NSError *error, UIImage *image) {
-                                            if (error) {
-                                              reject(@"E_PREFETCH_FAILURE", nil, error);
-                                              return;
-                                            }
-                                            resolve(@YES);
-                                          }];
+  [[self.bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES]
+   loadImageWithURLRequest:request
+   callback:^(NSError *error, UIImage *image) {
+     if (error) {
+       reject(@"E_PREFETCH_FAILURE", nil, error);
+       return;
+     }
+     resolve(@YES);
+   }];
 }
 
 RCT_EXPORT_METHOD(queryCache:(NSArray *)requests
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  resolve([self.bridge.imageLoader getImageCacheStatus:requests]);
+  resolve([[self.bridge moduleForName:@"ImageLoader"] getImageCacheStatus:requests]);
 }
 
 @end

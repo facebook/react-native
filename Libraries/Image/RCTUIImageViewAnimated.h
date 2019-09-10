@@ -5,7 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTAnimatedImage.h"
+#import <React/RCTAnimatedImage.h>
+#import <React/RCTDefines.h>
+
+RCT_EXTERN void RCTUIImageViewEnableWeakProxy(BOOL enabled);
 
 @interface RCTUIImageViewAnimated : UIImageView
 

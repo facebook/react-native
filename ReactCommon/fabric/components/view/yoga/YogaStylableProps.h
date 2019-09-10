@@ -15,23 +15,19 @@
 namespace facebook {
 namespace react {
 
-class YogaStylableProps;
-
-typedef std::shared_ptr<const YogaStylableProps> SharedYogaStylableProps;
-
 class YogaStylableProps {
  public:
   YogaStylableProps() = default;
-  YogaStylableProps(const YGStyle &yogaStyle);
+  YogaStylableProps(YGStyle const &yogaStyle);
   YogaStylableProps(
-      const YogaStylableProps &sourceProps,
-      const RawProps &rawProps);
+      YogaStylableProps const &sourceProps,
+      RawProps const &rawProps);
 
 #pragma mark - Props
 
  protected:
   friend class YogaLayoutableShadowNode;
-  const YGStyle yogaStyle{};
+  YGStyle const yogaStyle{};
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 

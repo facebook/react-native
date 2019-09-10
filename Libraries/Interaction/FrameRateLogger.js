@@ -10,7 +10,7 @@
 
 'use strict';
 
-const NativeModules = require('../BatchedBridge/NativeModules');
+import NativeFrameRateLogger from './NativeFrameRateLogger';
 
 const invariant = require('invariant');
 
@@ -41,17 +41,17 @@ const FrameRateLogger = {
   }) {
     if (options.debug !== undefined) {
       invariant(
-        NativeModules.FrameRateLogger,
+        NativeFrameRateLogger,
         'Trying to debug FrameRateLogger without the native module!',
       );
     }
-    if (NativeModules.FrameRateLogger) {
+    if (NativeFrameRateLogger) {
       // Needs to clone the object first to avoid modifying the argument.
       const optionsClone = {
         debug: !!options.debug,
         reportStackTraces: !!options.reportStackTraces,
       };
-      NativeModules.FrameRateLogger.setGlobalOptions(optionsClone);
+      NativeFrameRateLogger.setGlobalOptions(optionsClone);
     }
   },
 
@@ -60,8 +60,7 @@ const FrameRateLogger = {
    * in `AppRegistry`, but navigation is also a common place to hook in.
    */
   setContext: function(context: string) {
-    NativeModules.FrameRateLogger &&
-      NativeModules.FrameRateLogger.setContext(context);
+    NativeFrameRateLogger && NativeFrameRateLogger.setContext(context);
   },
 
   /**
@@ -69,8 +68,7 @@ const FrameRateLogger = {
    * automatically.
    */
   beginScroll() {
-    NativeModules.FrameRateLogger &&
-      NativeModules.FrameRateLogger.beginScroll();
+    NativeFrameRateLogger && NativeFrameRateLogger.beginScroll();
   },
 
   /**
@@ -78,7 +76,7 @@ const FrameRateLogger = {
    * automatically.
    */
   endScroll() {
-    NativeModules.FrameRateLogger && NativeModules.FrameRateLogger.endScroll();
+    NativeFrameRateLogger && NativeFrameRateLogger.endScroll();
   },
 };
 

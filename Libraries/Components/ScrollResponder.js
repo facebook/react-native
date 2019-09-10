@@ -16,13 +16,12 @@ const Keyboard = require('./Keyboard/Keyboard');
 const ReactNative = require('../Renderer/shims/ReactNative');
 const TextInputState = require('./TextInput/TextInputState');
 const UIManager = require('../ReactNative/UIManager');
+const Platform = require('../Utilities/Platform');
 
 const invariant = require('invariant');
 const nullthrows = require('nullthrows');
 const performanceNow = require('fbjs/lib/performanceNow');
 const warning = require('fbjs/lib/warning');
-
-const {ScrollViewManager} = require('../BatchedBridge/NativeModules');
 
 import type {PressEvent, ScrollEvent} from '../Types/CoreEventTypes';
 import type {KeyboardEvent} from './Keyboard/Keyboard';
@@ -510,10 +509,7 @@ const ScrollResponderMixin = {
     |},
     animated?: boolean, // deprecated, put this inside the rect argument instead
   ) {
-    invariant(
-      ScrollViewManager && ScrollViewManager.zoomToRect,
-      'zoomToRect is not implemented',
-    );
+    invariant(Platform.OS === 'ios', 'zoomToRect is not implemented');
     if ('animated' in rect) {
       animated = rect.animated;
       delete rect.animated;
@@ -522,10 +518,11 @@ const ScrollResponderMixin = {
         '`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead',
       );
     }
-    ScrollViewManager.zoomToRect(
+
+    UIManager.dispatchViewManagerCommand(
       this.scrollResponderGetScrollableNode(),
-      rect,
-      animated !== false,
+      UIManager.getViewManagerConfig('RCTScrollView').Commands.zoomToRect,
+      [rect, animated !== false],
     );
   },
 

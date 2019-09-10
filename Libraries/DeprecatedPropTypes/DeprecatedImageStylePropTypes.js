@@ -11,27 +11,35 @@
 
 const DeprecatedColorPropType = require('./DeprecatedColorPropType');
 const DeprecatedLayoutPropTypes = require('./DeprecatedLayoutPropTypes');
-const ReactPropTypes = require('prop-types');
 const DeprecatedShadowPropTypesIOS = require('./DeprecatedShadowPropTypesIOS');
 const DeprecatedTransformPropTypes = require('./DeprecatedTransformPropTypes');
+const ReactPropTypes = require('prop-types');
 
 const ImageStylePropTypes = {
   ...DeprecatedLayoutPropTypes,
   ...DeprecatedShadowPropTypesIOS,
   ...DeprecatedTransformPropTypes,
-  resizeMode: ReactPropTypes.oneOf([
+  resizeMode: (ReactPropTypes.oneOf([
     'center',
     'contain',
     'cover',
     'repeat',
     'stretch',
-  ]),
-  backfaceVisibility: ReactPropTypes.oneOf(['visible', 'hidden']),
+  ]): React$PropType$Primitive<
+    'center' | 'contain' | 'cover' | 'repeat' | 'stretch',
+  >),
+  backfaceVisibility: (ReactPropTypes.oneOf([
+    'visible',
+    'hidden',
+  ]): React$PropType$Primitive<'visible' | 'hidden'>),
   backgroundColor: DeprecatedColorPropType,
   borderColor: DeprecatedColorPropType,
   borderWidth: ReactPropTypes.number,
   borderRadius: ReactPropTypes.number,
-  overflow: ReactPropTypes.oneOf(['visible', 'hidden']),
+  overflow: (ReactPropTypes.oneOf([
+    'visible',
+    'hidden',
+  ]): React$PropType$Primitive<'visible' | 'hidden'>),
 
   /**
    * Changes the color of all the non-transparent pixels to the tintColor.

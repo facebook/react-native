@@ -10,36 +10,36 @@
 
 'use strict';
 
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
+import type {
+  WithDefault,
+  DirectEventHandler,
+  Int32,
+  Float,
+} from 'react-native/Libraries/Types/CodegenTypes';
+import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
+import codegenNativeComponent, {
+  type NativeComponentType,
+} from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import * as React from 'react';
 
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {Element, Node} from 'react';
+type DrawerStateEvent = $ReadOnly<{|
+  drawerState: Int32,
+|}>;
 
-type ColorValue = null | string;
-
-type DrawerStates = 'Idle' | 'Dragging' | 'Settling';
-
-type DrawerStateEvent = SyntheticEvent<
-  $ReadOnly<{|
-    drawerState: number,
-  |}>,
->;
-
-type DrawerSlideEvent = SyntheticEvent<
-  $ReadOnly<{|
-    offset: number,
-  |}>,
->;
+type DrawerSlideEvent = $ReadOnly<{|
+  offset: Float,
+|}>;
 
 type NativeProps = $ReadOnly<{|
+  ...ViewProps,
   /**
    * Determines whether the keyboard gets dismissed in response to a drag.
    *   - 'none' (the default), drags do not dismiss the keyboard.
    *   - 'on-drag', the keyboard is dismissed when a drag begins.
    */
-  keyboardDismissMode?: ?('none' | 'on-drag'),
+  keyboardDismissMode?: WithDefault<'none' | 'on-drag', 'none'>,
 
   /**
    * Specifies the background color of the drawer. The default value is white.
@@ -57,13 +57,14 @@ type NativeProps = $ReadOnly<{|
   /**
    * Specifies the side of the screen from which the drawer will slide in.
    */
-  drawerPosition: ?number,
+  drawerPosition?: WithDefault<'left' | 'right', 'left'>,
 
   /**
    * Specifies the width of the drawer, more precisely the width of the view that be pulled in
    * from the edge of the window.
    */
-  drawerWidth?: ?number,
+
+  drawerWidth?: ?Float,
 
   /**
    * Specifies the lock mode of the drawer. The drawer can be locked in 3 states:
@@ -72,12 +73,15 @@ type NativeProps = $ReadOnly<{|
    * - locked-open, meaning that the drawer will stay opened and not respond to gestures.
    * The drawer may still be opened and closed programmatically (`openDrawer`/`closeDrawer`).
    */
-  drawerLockMode?: ?('unlocked' | 'locked-closed' | 'locked-open'),
+  drawerLockMode?: WithDefault<
+    'unlocked' | 'locked-closed' | 'locked-open',
+    'unlocked',
+  >,
 
   /**
    * Function called whenever there is an interaction with the navigation view.
    */
-  onDrawerSlide?: ?(event: DrawerSlideEvent) => mixed,
+  onDrawerSlide?: ?DirectEventHandler<DrawerSlideEvent>,
 
   /**
    * Function called when the drawer state has changed. The drawer can be in 3 states:
@@ -86,22 +90,17 @@ type NativeProps = $ReadOnly<{|
    * - Settling, meaning that there was an interaction with the navigation view, and the
    * navigation view is now finishing its closing or opening animation
    */
-  onDrawerStateChanged?: ?(state: DrawerStateEvent) => mixed,
+  onDrawerStateChanged?: ?DirectEventHandler<DrawerStateEvent>,
 
   /**
    * Function called whenever the navigation view has been opened.
    */
-  onDrawerOpen?: ?() => mixed,
+  onDrawerOpen?: ?DirectEventHandler<null, 'topDrawerOpened'>,
 
   /**
    * Function called whenever the navigation view has been closed.
    */
-  onDrawerClose?: ?() => mixed,
-
-  /**
-   * The navigation view that will be rendered to the side of the screen and can be pulled in.
-   */
-  renderNavigationView: () => Element<any>,
+  onDrawerClose?: ?DirectEventHandler<null, 'topDrawerClosed'>,
 
   /**
    * Make the drawer take the entire screen and draw the background of the
@@ -109,13 +108,19 @@ type NativeProps = $ReadOnly<{|
    * effect on API 21+.
    */
   statusBarBackgroundColor?: ?ColorValue,
-
-  children?: Node,
-  style?: ?ViewStyleProp,
 |}>;
 
-type AndroidDrawerLayoutNativeType = Class<NativeComponent<NativeProps>>;
+type NativeType = NativeComponentType<NativeProps>;
 
-module.exports = ((requireNativeComponent(
+interface NativeCommands {
+  +openDrawer: (viewRef: React.ElementRef<NativeType>) => void;
+  +closeDrawer: (viewRef: React.ElementRef<NativeType>) => void;
+}
+
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['openDrawer', 'closeDrawer'],
+});
+
+export default (codegenNativeComponent<NativeProps>(
   'AndroidDrawerLayout',
-): any): AndroidDrawerLayoutNativeType);
+): NativeType);

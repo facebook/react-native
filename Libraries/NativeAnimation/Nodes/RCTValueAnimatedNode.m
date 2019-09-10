@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTValueAnimatedNode.h"
+#import <React/RCTValueAnimatedNode.h>
 
 @interface RCTValueAnimatedNode ()
 

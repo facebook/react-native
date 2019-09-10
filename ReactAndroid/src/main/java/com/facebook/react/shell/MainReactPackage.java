@@ -1,20 +1,22 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.shell;
 
-import com.facebook.react.LazyReactPackage;
+import androidx.annotation.Nullable;
+import com.facebook.react.TurboReactPackage;
 import com.facebook.react.animated.NativeAnimatedModule;
-import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
+import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.modules.accessibilityinfo.AccessibilityInfoModule;
+import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.blob.BlobModule;
 import com.facebook.react.modules.blob.FileReaderModule;
@@ -31,6 +33,7 @@ import com.facebook.react.modules.intent.IntentModule;
 import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.permissions.PermissionsModule;
 import com.facebook.react.modules.share.ShareModule;
+import com.facebook.react.modules.sound.SoundManagerModule;
 import com.facebook.react.modules.statusbar.StatusBarModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.timepicker.TimePickerDialogModule;
@@ -61,56 +64,47 @@ import com.facebook.react.views.textinput.ReactTextInputManager;
 import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.react.views.viewpager.ReactViewPagerManager;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import javax.annotation.Nullable;
-import javax.inject.Provider;
-import com.facebook.react.TurboReactPackage;
-import com.facebook.react.ViewManagerOnDemandReactPackage;
-import java.util.Map;
-import com.facebook.react.module.model.ReactModuleInfo;
-import com.facebook.react.module.annotations.ReactModule;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-/**
- * Package defining basic modules and view managers.
- */
-@ReactModuleList(nativeModules = {
-  AccessibilityInfoModule.class,
-  AppStateModule.class,
-  BlobModule.class,
-  FileReaderModule.class,
-  AsyncStorageModule.class,
-  CameraRollManager.class,
-  ClipboardModule.class,
-  DatePickerDialogModule.class,
-  DialogModule.class,
-  FrescoModule.class,
-  I18nManagerModule.class,
-  ImageEditingManager.class,
-  ImageLoaderModule.class,
-  ImageStoreManager.class,
-  IntentModule.class,
-  NativeAnimatedModule.class,
-  NetworkingModule.class,
-  PermissionsModule.class,
-  ShareModule.class,
-  StatusBarModule.class,
-  TimePickerDialogModule.class,
-  ToastModule.class,
-  VibrationModule.class,
-  WebSocketModule.class,
-})
+/** Package defining basic modules and view managers. */
+@ReactModuleList(
+    nativeModules = {
+      AccessibilityInfoModule.class,
+      AppearanceModule.class,
+      AppStateModule.class,
+      BlobModule.class,
+      FileReaderModule.class,
+      AsyncStorageModule.class,
+      CameraRollManager.class,
+      ClipboardModule.class,
+      DatePickerDialogModule.class,
+      DialogModule.class,
+      FrescoModule.class,
+      I18nManagerModule.class,
+      ImageEditingManager.class,
+      ImageLoaderModule.class,
+      ImageStoreManager.class,
+      IntentModule.class,
+      NativeAnimatedModule.class,
+      NetworkingModule.class,
+      PermissionsModule.class,
+      ShareModule.class,
+      SoundManagerModule.class,
+      StatusBarModule.class,
+      TimePickerDialogModule.class,
+      ToastModule.class,
+      VibrationModule.class,
+      WebSocketModule.class,
+    })
 public class MainReactPackage extends TurboReactPackage {
 
   private MainPackageConfig mConfig;
 
-  public MainReactPackage() {
-  }
+  public MainReactPackage() {}
 
-  /**
-   * Create a new package with configuration
-   */
+  /** Create a new package with configuration */
   public MainReactPackage(MainPackageConfig config) {
     mConfig = config;
   }
@@ -120,6 +114,8 @@ public class MainReactPackage extends TurboReactPackage {
     switch (name) {
       case AccessibilityInfoModule.NAME:
         return new AccessibilityInfoModule(context);
+      case AppearanceModule.NAME:
+        return new AppearanceModule(context);
       case AppStateModule.NAME:
         return new AppStateModule(context);
       case BlobModule.NAME:
@@ -137,8 +133,7 @@ public class MainReactPackage extends TurboReactPackage {
       case DialogModule.NAME:
         return new DialogModule(context);
       case FrescoModule.NAME:
-        return new FrescoModule(
-              context, true, mConfig != null ? mConfig.getFrescoConfig() : null);
+        return new FrescoModule(context, true, mConfig != null ? mConfig.getFrescoConfig() : null);
       case I18nManagerModule.NAME:
         return new I18nManagerModule(context);
       case ImageEditingManager.NAME:
@@ -159,6 +154,8 @@ public class MainReactPackage extends TurboReactPackage {
         return new ShareModule(context);
       case StatusBarModule.NAME:
         return new StatusBarModule(context);
+      case SoundManagerModule.NAME:
+        return new SoundManagerModule(context);
       case TimePickerDialogModule.FRAGMENT_TAG:
         return new TimePickerDialogModule(context);
       case ToastModule.NAME:
@@ -217,6 +214,7 @@ public class MainReactPackage extends TurboReactPackage {
       Class<? extends NativeModule>[] moduleList =
           new Class[] {
             AccessibilityInfoModule.class,
+            AppearanceModule.class,
             AppStateModule.class,
             BlobModule.class,
             FileReaderModule.class,
@@ -236,6 +234,7 @@ public class MainReactPackage extends TurboReactPackage {
             PermissionsModule.class,
             ShareModule.class,
             StatusBarModule.class,
+            SoundManagerModule.class,
             TimePickerDialogModule.class,
             ToastModule.class,
             VibrationModule.class,

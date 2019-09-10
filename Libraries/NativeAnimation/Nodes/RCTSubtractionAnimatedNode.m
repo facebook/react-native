@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTSubtractionAnimatedNode.h"
+#import <React/RCTSubtractionAnimatedNode.h>
 
 @implementation RCTSubtractionAnimatedNode
 

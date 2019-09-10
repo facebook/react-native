@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.textinput;
 
 import com.facebook.react.bridge.Arguments;
@@ -12,9 +11,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
-/**
- * Event emitted by EditText native view when the user submits the text.
- */
+/** Event emitted by EditText native view when the user submits the text. */
 /* package */ class ReactTextInputSubmitEditingEvent
     extends Event<ReactTextInputSubmitEditingEvent> {
 
@@ -22,9 +19,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
   private String mText;
 
-  public ReactTextInputSubmitEditingEvent(
-      int viewId,
-      String text) {
+  public ReactTextInputSubmitEditingEvent(int viewId, String text) {
     super(viewId);
     mText = text;
   }

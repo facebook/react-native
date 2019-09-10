@@ -13,10 +13,13 @@ import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
+import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
   backgroundColor?: ?ColorValue,
 |}>;
 
-export default codegenNativeComponent<NativeProps>('RCTInputAccessoryView');
+export default (codegenNativeComponent<NativeProps>(
+  'RCTInputAccessoryView',
+): NativeComponentType<NativeProps>);

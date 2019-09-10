@@ -1,14 +1,12 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
 
 import com.facebook.yoga.YogaConstants;
-
 import java.util.Arrays;
 
 /**
@@ -18,24 +16,17 @@ import java.util.Arrays;
  */
 public class Spacing {
 
-  /**
-   * Spacing type that represents the left direction. E.g. {@code marginLeft}.
-   */
+  /** Spacing type that represents the left direction. E.g. {@code marginLeft}. */
   public static final int LEFT = 0;
-  /**
-   * Spacing type that represents the top direction. E.g. {@code marginTop}.
-   */
+  /** Spacing type that represents the top direction. E.g. {@code marginTop}. */
   public static final int TOP = 1;
-  /**
-   * Spacing type that represents the right direction. E.g. {@code marginRight}.
-   */
+  /** Spacing type that represents the right direction. E.g. {@code marginRight}. */
   public static final int RIGHT = 2;
-  /**
-   * Spacing type that represents the bottom direction. E.g. {@code marginBottom}.
-   */
+  /** Spacing type that represents the bottom direction. E.g. {@code marginBottom}. */
   public static final int BOTTOM = 3;
   /**
-   * Spacing type that represents start direction e.g. left in left-to-right, right in right-to-left.
+   * Spacing type that represents start direction e.g. left in left-to-right, right in
+   * right-to-left.
    */
   public static final int START = 4;
   /**
@@ -43,8 +34,8 @@ public class Spacing {
    */
   public static final int END = 5;
   /**
-   * Spacing type that represents horizontal direction (left and right). E.g.
-   * {@code marginHorizontal}.
+   * Spacing type that represents horizontal direction (left and right). E.g. {@code
+   * marginHorizontal}.
    */
   public static final int HORIZONTAL = 6;
   /**
@@ -57,15 +48,8 @@ public class Spacing {
   public static final int ALL = 8;
 
   private static final int[] sFlagsMap = {
-    1, /*LEFT*/
-    2, /*TOP*/
-    4, /*RIGHT*/
-    8, /*BOTTOM*/
-    16, /*START*/
-    32, /*END*/
-    64, /*HORIZONTAL*/
-    128, /*VERTICAL*/
-    256, /*ALL*/
+    1, /*LEFT*/ 2, /*TOP*/ 4, /*RIGHT*/ 8, /*BOTTOM*/ 16, /*START*/ 32, /*END*/ 64, /*HORIZONTAL*/
+    128, /*VERTICAL*/ 256, /*ALL*/
   };
 
   private final float[] mSpacing;
@@ -92,11 +76,11 @@ public class Spacing {
   /**
    * Set a spacing value.
    *
-   * @param spacingType one of {@link #LEFT}, {@link #TOP}, {@link #RIGHT}, {@link #BOTTOM},
-   *        {@link #VERTICAL}, {@link #HORIZONTAL}, {@link #ALL}
+   * @param spacingType one of {@link #LEFT}, {@link #TOP}, {@link #RIGHT}, {@link #BOTTOM}, {@link
+   *     #VERTICAL}, {@link #HORIZONTAL}, {@link #ALL}
    * @param value the value for this direction
    * @return {@code true} if the spacing has changed, or {@code false} if the same value was already
-   *         set
+   *     set
    */
   public boolean set(int spacingType, float value) {
     if (!FloatUtil.floatsEqual(mSpacing[spacingType], value)) {
@@ -109,9 +93,9 @@ public class Spacing {
       }
 
       mHasAliasesSet =
-          (mValueFlags & sFlagsMap[ALL]) != 0 ||
-          (mValueFlags & sFlagsMap[VERTICAL]) != 0 ||
-          (mValueFlags & sFlagsMap[HORIZONTAL]) != 0;
+          (mValueFlags & sFlagsMap[ALL]) != 0
+              || (mValueFlags & sFlagsMap[VERTICAL]) != 0
+              || (mValueFlags & sFlagsMap[HORIZONTAL]) != 0;
 
       return true;
     }
@@ -125,9 +109,8 @@ public class Spacing {
    * @param spacingType one of {@link #LEFT}, {@link #TOP}, {@link #RIGHT}, {@link #BOTTOM}
    */
   public float get(int spacingType) {
-    float defaultValue = (spacingType == START || spacingType == END
-        ? YogaConstants.UNDEFINED
-        : mDefaultValue);
+    float defaultValue =
+        (spacingType == START || spacingType == END ? YogaConstants.UNDEFINED : mDefaultValue);
 
     if (mValueFlags == 0) {
       return defaultValue;
@@ -153,8 +136,8 @@ public class Spacing {
    * Get the raw value (that was set using {@link #set(int, float)}), without taking into account
    * any default values.
    *
-   * @param spacingType one of {@link #LEFT}, {@link #TOP}, {@link #RIGHT}, {@link #BOTTOM},
-   *        {@link #VERTICAL}, {@link #HORIZONTAL}, {@link #ALL}
+   * @param spacingType one of {@link #LEFT}, {@link #TOP}, {@link #RIGHT}, {@link #BOTTOM}, {@link
+   *     #VERTICAL}, {@link #HORIZONTAL}, {@link #ALL}
    */
   public float getRaw(int spacingType) {
     return mSpacing[spacingType];
@@ -171,28 +154,25 @@ public class Spacing {
   }
 
   /**
-   * Try to get start value and fallback to given type if not defined. This is used privately
-   * by the layout engine as a more efficient way to fetch direction-aware values by
-   * avoid extra method invocations.
+   * Try to get start value and fallback to given type if not defined. This is used privately by the
+   * layout engine as a more efficient way to fetch direction-aware values by avoid extra method
+   * invocations.
    */
   float getWithFallback(int spacingType, int fallbackType) {
-    return
-        (mValueFlags & sFlagsMap[spacingType]) != 0
-            ? mSpacing[spacingType]
-            : get(fallbackType);
+    return (mValueFlags & sFlagsMap[spacingType]) != 0 ? mSpacing[spacingType] : get(fallbackType);
   }
 
   private static float[] newFullSpacingArray() {
     return new float[] {
-        YogaConstants.UNDEFINED,
-        YogaConstants.UNDEFINED,
-        YogaConstants.UNDEFINED,
-        YogaConstants.UNDEFINED,
-        YogaConstants.UNDEFINED,
-        YogaConstants.UNDEFINED,
-        YogaConstants.UNDEFINED,
-        YogaConstants.UNDEFINED,
-        YogaConstants.UNDEFINED,
+      YogaConstants.UNDEFINED,
+      YogaConstants.UNDEFINED,
+      YogaConstants.UNDEFINED,
+      YogaConstants.UNDEFINED,
+      YogaConstants.UNDEFINED,
+      YogaConstants.UNDEFINED,
+      YogaConstants.UNDEFINED,
+      YogaConstants.UNDEFINED,
+      YogaConstants.UNDEFINED,
     };
   }
 }

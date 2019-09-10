@@ -72,7 +72,7 @@
 
 /**
  * Used by the UIIManager to set the view frame.
- * May be overriden to disable animation, etc.
+ * May be overridden to disable animation, etc.
  */
 - (void)reactSetFrame:(CGRect)frame;
 
@@ -107,7 +107,7 @@
 /**
  * The (sub)view which represents this view in terms of accessibility.
  * ViewManager will apply all accessibility properties directly to this view.
- * May be overriten in view subclass which needs to be accessiblitywise
+ * May be overridden in view subclass which needs to be accessiblitywise
  * transparent in favour of some subview.
  * Defaults to `self`.
  */
@@ -117,7 +117,6 @@
  * Accessibility properties
  */
 @property (nonatomic, copy) NSString *accessibilityRole;
-@property (nonatomic, copy) NSArray <NSString *> *accessibilityStates;
 @property (nonatomic, copy) NSDictionary<NSString *, id> *accessibilityState;
 @property (nonatomic, copy) NSArray <NSDictionary *> *accessibilityActions;
 

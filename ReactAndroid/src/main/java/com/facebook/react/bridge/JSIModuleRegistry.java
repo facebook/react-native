@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
 import com.facebook.infer.annotation.Assertions;
@@ -16,7 +15,7 @@ public class JSIModuleRegistry {
 
   private final Map<JSIModuleType, JSIModuleHolder> mModules = new HashMap<>();
 
-  public JSIModuleRegistry() { }
+  public JSIModuleRegistry() {}
 
   public JSIModule getModule(JSIModuleType moduleType) {
     JSIModuleHolder jsiModuleHolder = mModules.get(moduleType);
@@ -33,7 +32,15 @@ public class JSIModuleRegistry {
   }
 
   public void notifyJSInstanceDestroy() {
-    for (JSIModuleHolder moduleHolder : mModules.values()) {
+    for (Map.Entry<JSIModuleType, JSIModuleHolder> entry : mModules.entrySet()) {
+      JSIModuleType moduleType = entry.getKey();
+
+      // Don't call TurboModuleManager.onCatalystInstanceDestroy
+      if (moduleType == JSIModuleType.TurboModuleManager) {
+        continue;
+      }
+
+      JSIModuleHolder moduleHolder = entry.getValue();
       moduleHolder.notifyJSInstanceDestroy();
     }
   }

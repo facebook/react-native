@@ -108,7 +108,7 @@ static void sliceChildShadowNodeViewPairsRecursively(
   }
 }
 
-static ShadowViewNodePair::List sliceChildShadowNodeViewPairs(
+ShadowViewNodePair::List sliceChildShadowNodeViewPairs(
     ShadowNode const &shadowNode) {
   auto pairList = ShadowViewNodePair::List{};
   sliceChildShadowNodeViewPairsRecursively(pairList, {0, 0}, shadowNode);
@@ -143,7 +143,7 @@ static void calculateShadowViewMutations(
     ShadowView const &parentShadowView,
     ShadowViewNodePair::List const &oldChildPairs,
     ShadowViewNodePair::List const &newChildPairs) {
-  // The current version of the algorithm is otimized for simplicity,
+  // The current version of the algorithm is optimized for simplicity,
   // not for performance or optimal result.
 
   if (oldChildPairs == newChildPairs) {

@@ -17,6 +17,8 @@ RawValue const *RawPropsParser::at(
     RawProps const &rawProps,
     RawPropsKey const &key) const {
   if (UNLIKELY(!ready_)) {
+    // This is not thread-safe part; this happens only during initialization of
+    // a `ComponentDescriptor` where it is actually safe.
     keys_.push_back(key);
     nameToIndex_.insert(key, size_);
     size_++;
@@ -24,14 +26,14 @@ RawValue const *RawPropsParser::at(
   }
 
   do {
-    keyIndex_++;
+    rawProps.keyIndexCursor_++;
 
-    if (UNLIKELY(keyIndex_ >= size_)) {
-      keyIndex_ = 0;
+    if (UNLIKELY(rawProps.keyIndexCursor_ >= size_)) {
+      rawProps.keyIndexCursor_ = 0;
     }
-  } while (UNLIKELY(key != keys_[keyIndex_]));
+  } while (UNLIKELY(key != keys_[rawProps.keyIndexCursor_]));
 
-  auto valueIndex = rawProps.keyIndexToValueIndex_[keyIndex_];
+  auto valueIndex = rawProps.keyIndexToValueIndex_[rawProps.keyIndexCursor_];
   return valueIndex == kRawPropsValueIndexEmpty ? nullptr
                                                 : &rawProps.values_[valueIndex];
 }
@@ -39,12 +41,13 @@ RawValue const *RawPropsParser::at(
 void RawPropsParser::postPrepare() {
   ready_ = true;
   nameToIndex_.reindex();
-  // Next increment will give `0`.
-  keyIndex_ = size_ - 1;
 }
 
 void RawPropsParser::preparse(RawProps const &rawProps) const {
   rawProps.keyIndexToValueIndex_.resize(size_, kRawPropsValueIndexEmpty);
+
+  // Resetting the cursor, the next increment will give `0`.
+  rawProps.keyIndexCursor_ = size_ - 1;
 
   switch (rawProps.mode_) {
     case RawProps::Mode::Empty:

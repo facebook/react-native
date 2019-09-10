@@ -11,10 +11,11 @@
 'use strict';
 
 const React = require('react');
+
 const {Text, View} = require('react-native');
 
 class SetPropertiesExampleApp extends React.Component<$FlowFixMeProps> {
-  render() {
+  render(): React.Node {
     const wrapperStyle = {
       backgroundColor: this.props.color,
       flex: 1,

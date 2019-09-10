@@ -14,7 +14,7 @@ const AnimatedImplementation = require('./AnimatedImplementation');
 
 module.exports = {
   ...AnimatedImplementation,
-  div: AnimatedImplementation.createAnimatedComponent('div'),
-  span: AnimatedImplementation.createAnimatedComponent('span'),
-  img: AnimatedImplementation.createAnimatedComponent('img'),
+  div: (AnimatedImplementation.createAnimatedComponent('div'): $FlowFixMe),
+  span: (AnimatedImplementation.createAnimatedComponent('span'): $FlowFixMe),
+  img: (AnimatedImplementation.createAnimatedComponent('img'): $FlowFixMe),
 };

@@ -25,7 +25,7 @@ describe('<DrawerLayoutAndroid />', () => {
     const instance = render.create(
       <DrawerLayoutAndroid
         drawerWidth={300}
-        drawerPosition={DrawerLayoutAndroid.positions.Left}
+        drawerPosition="left"
         renderNavigationView={() => <View />}
       />,
     );
@@ -36,7 +36,7 @@ describe('<DrawerLayoutAndroid />', () => {
     const output = render.shallow(
       <DrawerLayoutAndroid
         drawerWidth={300}
-        drawerPosition={DrawerLayoutAndroid.positions.Left}
+        drawerPosition="left"
         renderNavigationView={() => <View />}
       />,
     );
@@ -49,7 +49,7 @@ describe('<DrawerLayoutAndroid />', () => {
     const output = render.shallow(
       <DrawerLayoutAndroid
         drawerWidth={300}
-        drawerPosition={DrawerLayoutAndroid.positions.Left}
+        drawerPosition="left"
         renderNavigationView={() => <View />}
       />,
     );
@@ -62,7 +62,7 @@ describe('<DrawerLayoutAndroid />', () => {
     const instance = render.create(
       <DrawerLayoutAndroid
         drawerWidth={300}
-        drawerPosition={DrawerLayoutAndroid.positions.Left}
+        drawerPosition="left"
         renderNavigationView={() => <View />}
       />,
     );

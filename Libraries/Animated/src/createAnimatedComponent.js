@@ -25,7 +25,7 @@ function createAnimatedComponent(Component: any, defaultProps: any): any {
   );
 
   class AnimatedComponent extends React.Component<Object> {
-    _component: any;
+    _component: any; // TODO T53738161: flow type this, and the whole file
     _invokeAnimatedPropsCallbackOnMount: boolean = false;
     _prevComponent: any;
     _propsAnimated: AnimatedProps;
@@ -63,7 +63,7 @@ function createAnimatedComponent(Component: any, defaultProps: any): any {
     _attachNativeEvents() {
       // Make sure to get the scrollable node for components that implement
       // `ScrollResponder.Mixin`.
-      const scrollableNode = this._component.getScrollableNode
+      const scrollableNode = this._component?.getScrollableNode
         ? this._component.getScrollableNode()
         : this._component;
 
@@ -96,7 +96,11 @@ function createAnimatedComponent(Component: any, defaultProps: any): any {
         this._invokeAnimatedPropsCallbackOnMount = true;
       } else if (
         AnimatedComponent.__skipSetNativeProps_FOR_TESTS_ONLY ||
-        typeof this._component.setNativeProps !== 'function'
+        // For animating properties of non-leaf/non-native components
+        typeof this._component.setNativeProps !== 'function' ||
+        // In Fabric, force animations to go through forceUpdate and skip setNativeProps
+        // eslint-disable-next-line dot-notation
+        this._component['_internalInstanceHandle']?.stateNode?.canonical != null
       ) {
         this.forceUpdate();
       } else if (!this._propsAnimated.__isNative) {

@@ -31,8 +31,9 @@ import type {
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {
   AccessibilityRole,
-  AccessibilityStates,
   AccessibilityState,
+  AccessibilityActionInfo,
+  AccessibilityActionEvent,
 } from '../View/ViewAccessibility';
 
 type TargetEvent = SyntheticEvent<
@@ -51,8 +52,9 @@ const OVERRIDE_PROPS = [
   'accessibilityHint',
   'accessibilityIgnoresInvertColors',
   'accessibilityRole',
-  'accessibilityStates',
   'accessibilityState',
+  'accessibilityActions',
+  'onAccessibilityAction',
   'hitSlop',
   'nativeID',
   'onBlur',
@@ -67,8 +69,8 @@ export type Props = $ReadOnly<{|
   accessibilityHint?: ?Stringish,
   accessibilityIgnoresInvertColors?: ?boolean,
   accessibilityRole?: ?AccessibilityRole,
-  accessibilityStates?: ?AccessibilityStates,
   accessibilityState?: ?AccessibilityState,
+  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,
@@ -84,6 +86,7 @@ export type Props = $ReadOnly<{|
   onPress?: ?(event: PressEvent) => mixed,
   onPressIn?: ?(event: PressEvent) => mixed,
   onPressOut?: ?(event: PressEvent) => mixed,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => void,
   pressRetentionOffset?: ?EdgeInsetsProp,
   rejectResponderTermination?: ?boolean,
   testID?: ?string,
@@ -106,8 +109,9 @@ const TouchableWithoutFeedback = ((createReactClass({
     accessibilityHint: PropTypes.string,
     accessibilityIgnoresInvertColors: PropTypes.bool,
     accessibilityRole: PropTypes.oneOf(DeprecatedAccessibilityRoles),
-    accessibilityStates: PropTypes.array,
     accessibilityState: PropTypes.object,
+    accessibilityActions: PropTypes.array,
+    onAccessibilityAction: PropTypes.func,
     /**
      * When `accessible` is true (which is the default) this may be called when
      * the OS-specific concept of "focus" occurs. Some platforms may not have

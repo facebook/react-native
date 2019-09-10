@@ -17,7 +17,7 @@ namespace facebook {
 namespace react {
 
 /*
- * General purpose dependecy injection container.
+ * General purpose dependency injection container.
  * Instance types must be copyable.
  */
 class ContextContainer final {
@@ -43,6 +43,20 @@ class ContextContainer final {
 
 #ifndef NDEBUG
     typeNames_.insert({key, typeid(T).name()});
+#endif
+  }
+
+  /*
+   * Removes an instance stored for a given `key`.
+   * Does nothing if the instance was not found.
+   */
+  void erase(std::string const &key) const {
+    std::unique_lock<better::shared_mutex> lock(mutex_);
+
+    instances_.erase(key);
+
+#ifndef NDEBUG
+    typeNames_.erase(key);
 #endif
   }
 

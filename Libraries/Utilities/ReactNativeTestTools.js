@@ -108,12 +108,12 @@ function maximumDepthOfJSON(node: ReactTestRendererNode): number {
   }
 }
 
-function renderAndEnforceStrictMode(element: React.Node) {
+function renderAndEnforceStrictMode(element: React.Node): any {
   expectNoConsoleError();
   return renderWithStrictMode(element);
 }
 
-function renderWithStrictMode(element: React.Node) {
+function renderWithStrictMode(element: React.Node): any {
   const WorkAroundBugWithStrictModeInTestRenderer = prps => prps.children;
   const StrictMode = (React: $FlowFixMe).StrictMode;
   return ReactTestRenderer.create(
