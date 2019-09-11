@@ -271,6 +271,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
       [valueComponents addObject:stateDescriptions[@"busy"]];
     }
   }
+  
+  // handle accessibilityValue
+
+  if (self.accessibilityValueInternal) {
+    id min = self.accessibilityValueInternal[@"min"];
+    id now = self.accessibilityValueInternal[@"now"];
+    id max = self.accessibilityValueInternal[@"max"];
+    id text = self.accessibilityValueInternal[@"text"];
+    if (text && [text isKindOfClass:[NSString class]]) {
+      [valueComponents addObject:text];
+    } else if ([min isKindOfClass:[NSNumber class]] &&
+        [now isKindOfClass:[NSNumber class]] &&
+        [max isKindOfClass:[NSNumber class]] &&
+        ([min intValue] < [max intValue]) &&
+        ([min intValue] <= [now intValue] && [now intValue] <= [max intValue])) {
+      int val = ([now intValue]*100)/([max intValue]-[min intValue]);
+      [valueComponents addObject:[NSString stringWithFormat:@"%d percent", val]];
+    }
+  }
+
   if (valueComponents.count > 0) {
     return [valueComponents componentsJoinedByString:@", "];
   }

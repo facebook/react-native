@@ -20,6 +20,7 @@ const UIView = {
   accessibilityLiveRegion: true,
   accessibilityRole: true,
   accessibilityState: true,
+  accessibilityValue: true,
   accessibilityHint: true,
   importantForAccessibility: true,
   nativeID: true,
