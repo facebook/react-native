@@ -112,16 +112,16 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   }
 
   alertController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
-  if([alertController respondsToSelector:NSSelectorFromString(@"overrideUserInterfaceStyle")])
-  {
+  if ([alertController respondsToSelector:NSSelectorFromString(@"overrideUserInterfaceStyle")]) {
     NSString *userInterfaceStyle = [RCTConvert NSString:options[@"userInterfaceStyle"]];
 
-    if(userInterfaceStyle == nil || [userInterfaceStyle isEqualToString:@""])
+    if (userInterfaceStyle == nil || [userInterfaceStyle isEqualToString:@""]) {
       alertController.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
-    else if ([userInterfaceStyle isEqualToString:@"dark"])
+    } else if ([userInterfaceStyle isEqualToString:@"dark"]) {
       alertController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
-    else if ([userInterfaceStyle isEqualToString:@"light"])
+    } else if ([userInterfaceStyle isEqualToString:@"light"]) {
       alertController.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+    }
   }
   
   [self presentViewController:alertController onParentViewController:controller anchorViewTag:anchorViewTag];
@@ -185,16 +185,16 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
 
   NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
   shareController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
-  if([shareController respondsToSelector:NSSelectorFromString(@"overrideUserInterfaceStyle")])
-  {
+  if ([shareController respondsToSelector:NSSelectorFromString(@"overrideUserInterfaceStyle")]) {
     NSString *userInterfaceStyle = [RCTConvert NSString:options[@"userInterfaceStyle"]];
 
-    if(userInterfaceStyle == nil || [userInterfaceStyle isEqualToString:@""])
+    if (userInterfaceStyle == nil || [userInterfaceStyle isEqualToString:@""]) {
       shareController.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
-    else if ([userInterfaceStyle isEqualToString:@"dark"])
+    } else if ([userInterfaceStyle isEqualToString:@"dark"]) {
       shareController.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
-    else if ([userInterfaceStyle isEqualToString:@"light"])
+    } else if ([userInterfaceStyle isEqualToString:@"light"]) {
       shareController.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+    }
   }
   
   [self presentViewController:shareController onParentViewController:controller anchorViewTag:anchorViewTag];
