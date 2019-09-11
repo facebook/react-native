@@ -173,9 +173,21 @@ module.exports = {
     return require('../Modal/Modal');
   },
   get Picker(): Picker {
+    warnOnce(
+      'picker-moved',
+      'Picker has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/picker' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-picker',
+    );
     return require('../Components/Picker/Picker');
   },
   get PickerIOS(): PickerIOS {
+    warnOnce(
+      'pickerios-moved',
+      'PickerIOS has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/picker' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-picker',
+    );
     return require('../Components/Picker/PickerIOS');
   },
   get ProgressBarAndroid(): ProgressBarAndroid {
