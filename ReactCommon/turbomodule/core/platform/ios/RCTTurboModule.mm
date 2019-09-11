@@ -192,95 +192,13 @@ static RCTResponseSenderBlock convertJSIFunctionToCallback(
   };
 }
 
-// Helper for creating Promise object.
-struct PromiseWrapper : public react::LongLivedObject {
-  static std::shared_ptr<PromiseWrapper> create(
-      jsi::Function resolve,
-      jsi::Function reject,
-      jsi::Runtime &runtime,
-      std::shared_ptr<react::JSCallInvoker> jsInvoker)
-  {
-    auto instance = std::make_shared<PromiseWrapper>(std::move(resolve), std::move(reject), runtime, jsInvoker);
-    // This instance needs to live longer than the caller's scope, since the resolve/reject functions may not
-    // be called immediately. Doing so keeps it alive at least until resolve/reject is called, or when the
-    // collection is cleared (e.g. when JS reloads).
-    react::LongLivedObjectCollection::get().add(instance);
-    return instance;
-  }
+namespace facebook {
+namespace react {
 
-  PromiseWrapper(
-      jsi::Function resolve,
-      jsi::Function reject,
-      jsi::Runtime &runtime,
-      std::shared_ptr<react::JSCallInvoker> jsInvoker)
-      : resolveWrapper(std::make_shared<react::CallbackWrapper>(std::move(resolve), runtime, jsInvoker)),
-        rejectWrapper(std::make_shared<react::CallbackWrapper>(std::move(reject), runtime, jsInvoker)),
-        runtime(runtime),
-        jsInvoker(jsInvoker)
-  {
-  }
-
-  RCTPromiseResolveBlock resolveBlock()
-  {
-    return ^(id result) {
-      if (resolveWrapper == nullptr) {
-        throw std::runtime_error("Promise resolve arg cannot be called more than once");
-      }
-
-      // Retain the resolveWrapper so that it stays alive inside the lambda.
-      std::shared_ptr<react::CallbackWrapper> retainedWrapper = resolveWrapper;
-      jsInvoker->invokeAsync([retainedWrapper, result]() {
-        jsi::Runtime &rt = retainedWrapper->runtime();
-        jsi::Value arg = convertObjCObjectToJSIValue(rt, result);
-        retainedWrapper->callback().call(rt, arg);
-      });
-
-      // Prevent future invocation of the same resolve() function.
-      cleanup();
-    };
-  }
-
-  RCTPromiseRejectBlock rejectBlock()
-  {
-    return ^(NSString *code, NSString *message, NSError *error) {
-      // TODO: There is a chance `this` is no longer valid when this block executes.
-      if (rejectWrapper == nullptr) {
-        throw std::runtime_error("Promise reject arg cannot be called more than once");
-      }
-
-      // Retain the resolveWrapper so that it stays alive inside the lambda.
-      std::shared_ptr<react::CallbackWrapper> retainedWrapper = rejectWrapper;
-      NSDictionary *jsError = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-      jsInvoker->invokeAsync([retainedWrapper, jsError]() {
-        jsi::Runtime &rt = retainedWrapper->runtime();
-        jsi::Value arg = convertNSDictionaryToJSIObject(rt, jsError);
-        retainedWrapper->callback().call(rt, arg);
-      });
-
-      // Prevent future invocation of the same resolve() function.
-      cleanup();
-    };
-  }
-
-  void cleanup()
-  {
-    resolveWrapper = nullptr;
-    rejectWrapper = nullptr;
-    allowRelease();
-  }
-
-  // CallbackWrapper is used here instead of just holding on the jsi jsi::Function in order to force release it after
-  // either the resolve() or the reject() is called. jsi jsi::Function does not support explicit releasing, so we need
-  // an extra mechanism to control that lifecycle.
-  std::shared_ptr<react::CallbackWrapper> resolveWrapper;
-  std::shared_ptr<react::CallbackWrapper> rejectWrapper;
-  jsi::Runtime &runtime;
-  std::shared_ptr<react::JSCallInvoker> jsInvoker;
-};
-
-using PromiseInvocationBlock = void (^)(jsi::Runtime &rt, std::shared_ptr<PromiseWrapper> wrapper);
-static jsi::Value
-createPromise(jsi::Runtime &runtime, std::shared_ptr<react::JSCallInvoker> jsInvoker, PromiseInvocationBlock invoke)
+jsi::Value ObjCTurboModule::createPromise(
+    jsi::Runtime &runtime,
+    std::shared_ptr<react::JSCallInvoker> jsInvoker,
+    PromiseInvocationBlock invoke)
 {
   if (!invoke) {
     return jsi::Value::undefined();
@@ -297,23 +215,90 @@ createPromise(jsi::Runtime &runtime, std::shared_ptr<react::JSCallInvoker> jsInv
       2,
       [invokeCopy, jsInvoker](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
         if (count != 2) {
-          throw std::invalid_argument("Promise fn arg count must be 2");
+          throw std::invalid_argument(
+              "Promise must pass constructor function two args. Passed " + std::to_string(count) + " args.");
         }
         if (!invokeCopy) {
           return jsi::Value::undefined();
         }
-        jsi::Function resolve = args[0].getObject(rt).getFunction(rt);
-        jsi::Function reject = args[1].getObject(rt).getFunction(rt);
-        auto wrapper = PromiseWrapper::create(std::move(resolve), std::move(reject), rt, jsInvoker);
-        invokeCopy(rt, wrapper);
+
+        std::shared_ptr<CallbackWrapper> resolveWrapper =
+            std::make_shared<react::CallbackWrapper>(args[0].getObject(rt).getFunction(rt), rt, jsInvoker);
+        std::shared_ptr<CallbackWrapper> rejectWrapper =
+            std::make_shared<react::CallbackWrapper>(args[1].getObject(rt).getFunction(rt), rt, jsInvoker);
+
+        BOOL __block resolveWasCalled = NO;
+        BOOL __block rejectWasCalled = NO;
+
+        RCTPromiseResolveBlock resolveBlock = ^(id result) {
+          if (rejectWasCalled) {
+            throw std::runtime_error("Tried to resolve a promise after it's already been rejected.");
+          }
+
+          if (resolveWasCalled) {
+            throw std::runtime_error("Tried to resolve a promise more than once.");
+          }
+
+          // In the case that ObjC runtime first invokes this block after
+          // the TurboModuleManager was invalidated, we should do nothing.
+          if (resolveWrapper->isDestroyed()) {
+            return;
+          }
+
+          resolveWrapper->jsInvoker().invokeAsync([resolveWrapper, rejectWrapper, result]() {
+            if (resolveWrapper->isDestroyed()) {
+              return;
+            }
+
+            jsi::Runtime &rt = resolveWrapper->runtime();
+            jsi::Value arg = convertObjCObjectToJSIValue(rt, result);
+            resolveWrapper->callback().call(rt, arg);
+
+            resolveWrapper->destroy();
+            rejectWrapper->destroy();
+          });
+
+          resolveWasCalled = YES;
+        };
+
+        RCTPromiseRejectBlock rejectBlock = ^(NSString *code, NSString *message, NSError *error) {
+          if (resolveWasCalled) {
+            throw std::runtime_error("Tried to reject a promise after it's already been resolved.");
+          }
+
+          if (rejectWasCalled) {
+            throw std::runtime_error("Tried to reject a promise more than once.");
+          }
+
+          // In the case that ObjC runtime first invokes this block after
+          // the TurboModuleManager was invalidated, we should do nothing.
+          if (rejectWrapper->isDestroyed()) {
+            return;
+          }
+
+          NSDictionary *jsError = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
+          rejectWrapper->jsInvoker().invokeAsync([rejectWrapper, resolveWrapper, jsError]() {
+            if (rejectWrapper->isDestroyed()) {
+              return;
+            }
+
+            jsi::Runtime &rt = rejectWrapper->runtime();
+            jsi::Value arg = convertNSDictionaryToJSIObject(rt, jsError);
+            rejectWrapper->callback().call(rt, arg);
+
+            rejectWrapper->destroy();
+            resolveWrapper->destroy();
+          });
+
+          rejectWasCalled = YES;
+        };
+
+        invokeCopy(rt, resolveBlock, rejectBlock);
         return jsi::Value::undefined();
       });
 
   return Promise.callAsConstructor(runtime, fn);
 }
-
-namespace facebook {
-namespace react {
 
 namespace {
 
@@ -624,16 +609,17 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
   if (valueKind == PromiseKind) {
     // Promise return type is special cased today, i.e. it needs extra 2 function args for resolve() and reject(), to
     // be passed to the actual ObjC++ class method.
-    return createPromise(runtime, jsInvoker_, ^(jsi::Runtime &rt, std::shared_ptr<PromiseWrapper> wrapper) {
-      RCTPromiseResolveBlock resolveBlock = wrapper->resolveBlock();
-      RCTPromiseRejectBlock rejectBlock = wrapper->rejectBlock();
-      [inv setArgument:(void *)&resolveBlock atIndex:count + 2];
-      [inv setArgument:(void *)&rejectBlock atIndex:count + 3];
-      [retainedObjectsForInvocation addObject:resolveBlock];
-      [retainedObjectsForInvocation addObject:rejectBlock];
-      // The return type becomes void in the ObjC side.
-      performMethodInvocation(rt, inv, VoidKind, instance_, jsInvoker_, retainedObjectsForInvocation);
-    });
+    return createPromise(
+        runtime,
+        jsInvoker_,
+        ^(jsi::Runtime &rt, RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock) {
+          [inv setArgument:(void *)&resolveBlock atIndex:count + 2];
+          [inv setArgument:(void *)&rejectBlock atIndex:count + 3];
+          [retainedObjectsForInvocation addObject:resolveBlock];
+          [retainedObjectsForInvocation addObject:rejectBlock];
+          // The return type becomes void in the ObjC side.
+          performMethodInvocation(rt, inv, VoidKind, instance_, jsInvoker_, retainedObjectsForInvocation);
+        });
   }
 
   return performMethodInvocation(runtime, inv, valueKind, instance_, jsInvoker_, retainedObjectsForInvocation);
