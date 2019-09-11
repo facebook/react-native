@@ -68,6 +68,7 @@ import typeof LayoutAnimation from '../LayoutAnimation/LayoutAnimation';
 import typeof Linking from '../Linking/Linking';
 import typeof NativeDialogManagerAndroid from '../NativeModules/specs/NativeDialogManagerAndroid';
 import typeof NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
+import typeof Networking from '../Network/RCTNetworking';
 import typeof PanResponder from '../Interaction/PanResponder';
 import typeof PermissionsAndroid from '../PermissionsAndroid/PermissionsAndroid';
 import typeof PixelRatio from '../Utilities/PixelRatio';
@@ -329,6 +330,9 @@ module.exports = {
   },
   get NativeEventEmitter(): NativeEventEmitter {
     return require('../EventEmitter/NativeEventEmitter');
+  },
+  get Networking(): Networking {
+    return require('../Network/RCTNetworking');
   },
   get PanResponder(): PanResponder {
     return require('../Interaction/PanResponder');
