@@ -126,11 +126,3 @@ jobs:
         inputs:
           PathtoPublish: '$(Build.StagingDirectory)\final'
           ArtifactName: 'ReactNative-Final'
-
-
-      - task: CmdLine@2
-        displayName: Update React-Native-Windows
-        inputs:
-          script: node .ado/updateRNW.js
-        env:
-          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
