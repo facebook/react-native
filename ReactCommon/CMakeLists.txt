@@ -43,7 +43,6 @@ endif(WIN32)
 
 if(ANDROID)
 	set(SOURCES ${SOURCES}
-		cxxreact/fbsystrace.cpp
 		cxxreact/JSBigString.cpp
 		)
 endif(ANDROID)
