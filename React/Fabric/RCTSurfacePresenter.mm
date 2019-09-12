@@ -122,10 +122,6 @@ using namespace facebook::react;
 - (void)registerSurface:(RCTFabricSurface *)surface
 {
   [_surfaceRegistry registerSurface:surface];
-}
-
-- (void)startSurface:(RCTFabricSurface *)surface
-{
   [self _startSurface:surface];
 }
 

@@ -46,12 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
  * Surface uses these methods to register itself in the Presenter.
  */
 - (void)registerSurface:(RCTFabricSurface *)surface;
-/**
- * Starting initiates running, rendering and mounting processes.
- * Should be called after registerSurface and any other surface-specific setup is done
- */
-- (void)startSurface:(RCTFabricSurface *)surface;
 - (void)unregisterSurface:(RCTFabricSurface *)surface;
+
 - (void)setProps:(NSDictionary *)props surface:(RCTFabricSurface *)surface;
 
 - (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;
