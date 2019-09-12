@@ -252,7 +252,9 @@ using namespace facebook::react;
 - (void)updateLayoutMetrics:(LayoutMetrics const &)layoutMetrics
            oldLayoutMetrics:(LayoutMetrics const &)oldLayoutMetrics
 {
-  [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
+  // Using stored `_layoutMetrics` as `oldLayoutMetrics` here to avoid
+  // re-applying individual sub-values which weren't changed.
+  [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:_layoutMetrics];
 
   _layoutMetrics = layoutMetrics;
   _needsInvalidateLayer = YES;
