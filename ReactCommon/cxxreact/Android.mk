@@ -11,7 +11,6 @@ LOCAL_MODULE := reactnative
 
 LOCAL_SRC_FILES := \
   CxxNativeModule.cpp \
-  fbsystrace.cpp \
   Instance.cpp \
   JSBigString.cpp \
   JSBundleType.cpp \

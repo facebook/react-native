@@ -16,7 +16,7 @@ import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ImageSource} from '../../Image/ImageSource';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {NativeComponent} from '../../Renderer/shims/ReactNative';
-import type {SemanticOrDynamicColorType} from '../../Color/normalizeColor'; // ]TODO(macOS ISS#2323203)
+import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // ]TODO(macOS ISS#2323203)
 
 type Action = $ReadOnly<{|
   title: string,
@@ -36,7 +36,7 @@ type NativeProps = $ReadOnly<{|
   nativeActions?: Array<Action>,
 |}>;
 
-type ColorValue = null | string | SemanticOrDynamicColorType;
+type ColorValue = null | string | NativeOrDynamicColorType; // TODO(macOS ISS#2323203)
 
 type ToolbarAndroidProps = $ReadOnly<{|
   ...ViewProps,

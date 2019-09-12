@@ -73,6 +73,7 @@ class YellowBoxList extends React.Component<Props, State> {
     }
 
     const listStyle = {
+      width: Platform.OS === 'win32' ? '85%' : undefined,
       height:
         // Additional `0.5` so the (N + 1)th row can peek into view.
         Math.min(items.length, MAX_ITEMS + 0.5) *
@@ -126,16 +127,16 @@ const styles = StyleSheet.create({
   list: {
     bottom: 0,
     position: 'absolute',
-    width: Platform.OS === 'win32' ? 270 : '100%',
+    width: '100%',
   },
   dismissAll: {
-    bottom: Platform.OS === 'win32' ? undefined : '100%',
+    bottom: Platform.OS === 'win32' ? 0 : '100%',
     flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingBottom: 4,
     paddingEnd: 4,
     position: 'absolute',
-    width: Platform.OS === 'win32' ? 350 : '100%',
+    width: '100%',
   },
   safeArea: {
     backgroundColor: YellowBoxStyle.getBackgroundColor(0.95),

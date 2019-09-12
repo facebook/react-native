@@ -39,16 +39,16 @@
   [_runner runTest:_cmd module:@#name]; \
 }
 
-// TODO(ISS#2739352: the tests disabled below do not reliably pass on XCode 10.1)
-//RCT_TEST(ViewExample)
+RCT_TEST(ViewExample)
 RCT_TEST(LayoutExample)
 RCT_TEST(ARTExample)
 RCT_TEST(ScrollViewExample)
-//RCT_TEST(TextExample)
 #if !TARGET_OS_TV
+// TODO(OSS Candidate ISS#2710739): RCTPicker which TextExample depends on not available on tvOS
+RCT_TEST(TextExample)
 // No switch or slider available on tvOS
-//RCT_TEST(SwitchExample)
-//RCT_TEST(SliderExample)
+RCT_TEST(SwitchExample)
+RCT_TEST(SliderExample)
 #endif
 
 - (void)testZZZNotInRecordMode
