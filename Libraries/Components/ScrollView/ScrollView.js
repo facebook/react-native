@@ -914,6 +914,16 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
+  _handleBeginScroll = (e: ScrollEvent) => {
+    if (
+      this.props.keyboardDismissMode === 'on-drag' &&
+      Platform.OS === 'android'
+    ) {
+      dismissKeyboard();
+    }
+    this._scrollResponder.scrollResponderHandleScrollBeginDrag(e);
+  };
+
   _handleScroll = (e: ScrollEvent) => {
     if (__DEV__) {
       if (
@@ -928,14 +938,6 @@ class ScrollView extends React.Component<Props, State> {
             "cause frame drops, use a bigger number if you don't need as " +
             'much precision.',
         );
-      }
-    }
-    if (Platform.OS === 'android') {
-      if (
-        this.props.keyboardDismissMode === 'on-drag' &&
-        this.state.isTouching
-      ) {
-        dismissKeyboard();
       }
     }
     this._scrollResponder.scrollResponderHandleScroll(e);
@@ -1122,8 +1124,7 @@ class ScrollView extends React.Component<Props, State> {
         .scrollResponderHandleTerminate,
       onResponderTerminationRequest: this._scrollResponder
         .scrollResponderHandleTerminationRequest,
-      onScrollBeginDrag: this._scrollResponder
-        .scrollResponderHandleScrollBeginDrag,
+      onScrollBeginDrag: this._handleBeginScroll,
       onScrollEndDrag: this._scrollResponder.scrollResponderHandleScrollEndDrag,
       onScrollShouldSetResponder: this._scrollResponder
         .scrollResponderHandleScrollShouldSetResponder,
