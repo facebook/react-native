@@ -20,9 +20,9 @@ steps:
   - template: apple-xcode-select.yml
 
   - task: CmdLine@2
-    displayName: npm install
+    displayName: yarn install
     inputs:
-      script: npm install
+      script: yarn install
 
   - task: ShellScript@2
     displayName: 'Setup packager and WebSocket test server'
