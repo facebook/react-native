@@ -10,6 +10,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.view.FocusFinder;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewParent;
 import android.widget.HorizontalScrollView;
 import android.widget.OverScroller;
 import androidx.annotation.Nullable;
@@ -489,6 +491,51 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   @Override
   public void getClippingRect(Rect outClippingRect) {
     outClippingRect.set(Assertions.assertNotNull(mClippingRect));
+  }
+
+  @Override
+  public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
+    Log.e(getClass().toString(), "public override");
+    // This is based on the Android ViewGroup implementation, modified to clip child rects
+    // if overflow is set to ViewProps.HIDDEN. This effectively solves Issue #23870 which
+    // appears to have been introduced by FLAG_CLIP_CHILDREN being forced false
+    // regardless of whether clipping is desired.
+    final RectF rect = new RectF();
+    rect.set(r);
+
+    child.getMatrix().mapRect(rect);
+
+    final int dx = child.getLeft() - getScrollX();
+    int dy = child.getTop() - getScrollY();
+
+    rect.offset(dx, dy);
+
+    if (offset != null) {
+      float[] position = new float[2];
+      position[0] = offset.x;
+      position[1] = offset.y;
+      child.getMatrix().mapPoints(position);
+      offset.x = Math.round(position[0]) + dx;
+      offset.y = Math.round(position[1]) + dy;
+    }
+
+    final int width = getRight() - getLeft();
+    final int height = getBottom() - getTop();
+
+    boolean rectIsVisible = true;
+
+    ViewParent parent = getParent();
+    if (parent == null || ViewProps.HIDDEN.equals(mOverflow)) {
+      rectIsVisible = rect.intersect(0, 0, width, height);
+    }
+
+    r.set((int) Math.floor(rect.left), (int) Math.floor(rect.top),
+      (int) Math.ceil(rect.right), (int) Math.ceil(rect.bottom));
+
+    if (rectIsVisible && parent != null) {
+      rectIsVisible = parent.getChildVisibleRect(this, r, offset);
+    }
+    return rectIsVisible;
   }
 
   private int getSnapInterval() {

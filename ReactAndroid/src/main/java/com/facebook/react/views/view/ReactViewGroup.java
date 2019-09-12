@@ -500,14 +500,6 @@ public class ReactViewGroup extends ViewGroup
     return rectIsVisible;
   }
 
-  // Override the @hide decorated API as well, because ViewGroups will call it.
-  public boolean getChildVisibleRect(
-    View child, Rect r, android.graphics.Point offset, boolean forceParentCheck) {
-    // It's safe to discard 'forceParentCheck' as it is only used internal to the Android SDK
-    // for testing ViewGroup.
-    return getChildVisibleRect(child, r, offset);
-  }
-
   @Override
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);
