@@ -6,6 +6,7 @@
  */
 
 #import "RCTBackedTextInputDelegateAdapter.h"
+#import "../RCTTextUIKit.h" // TODO(macOS ISS#2323203)
 
 #pragma mark - RCTBackedTextFieldDelegateAdapter (for UITextField)
 

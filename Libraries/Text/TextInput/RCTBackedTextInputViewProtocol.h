@@ -6,7 +6,6 @@
  */
 
 #import <React/RCTUIKit.h> // [TODO(macOS ISS#2323203)
-#import <RCTText/RCTTextUIKit.h>
 
 #if TARGET_OS_OSX
 NS_ASSUME_NONNULL_BEGIN

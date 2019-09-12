@@ -19,6 +19,7 @@
 #import "RCTInputAccessoryViewContent.h"
 #import "RCTTextAttributes.h"
 #import "RCTTextSelection.h"
+#import "../RCTTextUIKit.h" // TODO(macOS ISS#2323203)
 
 @implementation RCTBaseTextInputView {
   __weak RCTBridge *_bridge;

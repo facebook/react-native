@@ -34,7 +34,10 @@ Pod::Spec.new do |s|
   s.exclude_files          = "DevSupport/**/*",
                              "Fabric/**/*",
                              "Inspector/**/*"
-  s.ios.exclude_files      = "**/RCTTV*.*"
+  s.ios.exclude_files      = "**/RCTTV*.*",
+# Microsoft CocoaPod Support
+														 "**/MacOS/*"
+# Microsoft CocoaPod Support
   s.tvos.exclude_files     = "Modules/RCTClipboard*",
                              "Views/RCTDatePicker*",
                              "Views/RCTPicker*",
