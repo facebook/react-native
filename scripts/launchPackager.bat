@@ -4,7 +4,7 @@
 :: LICENSE file in the root directory of this source tree.
 
 @echo off
-title Metro Bundler
+title Metro
 call .packager.bat
 cd ../../../
 node "%~dp0..\cli.js" start

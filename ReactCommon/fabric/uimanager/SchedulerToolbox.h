@@ -39,8 +39,8 @@ struct SchedulerToolbox final {
    * Represent connections with the platform-specific run loops and general
    * purpose background queue.
    */
-  EventBeatFactory asynchronousEventBeatFactory;
-  EventBeatFactory synchronousEventBeatFactory;
+  EventBeat::Factory asynchronousEventBeatFactory;
+  EventBeat::Factory synchronousEventBeatFactory;
 };
 
 } // namespace react

@@ -27,7 +27,7 @@ function attachNativeEvent(
   viewRef: any,
   eventName: string,
   argMapping: Array<?Mapping>,
-): $TEMPORARY$object<{|detach: () => void|}> {
+): {|detach: () => void|} {
   // Find animated values in `argMapping` and create an array representing their
   // key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
   const eventMappings = [];

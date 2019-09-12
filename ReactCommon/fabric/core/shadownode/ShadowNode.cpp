@@ -92,6 +92,14 @@ UnsharedShadowNode ShadowNode::clone(const ShadowNodeFragment &fragment) const {
 
 #pragma mark - Getters
 
+ComponentName ShadowNode::getComponentName() const {
+  return family_->componentDescriptor_.getComponentName();
+}
+
+ComponentHandle ShadowNode::getComponentHandle() const {
+  return family_->componentDescriptor_.getComponentHandle();
+}
+
 const SharedShadowNodeList &ShadowNode::getChildren() const {
   return *children_;
 }
@@ -122,7 +130,7 @@ const State::Shared &ShadowNode::getState() const {
 
 State::Shared ShadowNode::getMostRecentState() const {
   if (state_) {
-    auto commitedState = state_->getCommitedState();
+    auto commitedState = state_->getMostRecentState();
 
     // Commited state can be `null` in case if no one node was commited yet;
     // in this case we return own `state`.

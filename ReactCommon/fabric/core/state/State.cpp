@@ -30,7 +30,7 @@ void State::commit(const ShadowNode &shadowNode) const {
   stateCoordinator_->setTarget(StateTarget{shadowNode});
 }
 
-State::Shared State::getCommitedState() const {
+State::Shared State::getMostRecentState() const {
   auto target = stateCoordinator_->getTarget();
   return target ? target.getShadowNode().getState()
                 : ShadowNodeFragment::statePlaceholder();

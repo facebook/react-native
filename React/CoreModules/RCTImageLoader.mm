@@ -959,7 +959,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 
 - (RCTImageLoader *)imageLoader
 {
-  RCTLogWarn(@"Calling bridge.imageLoader is deprecated and will not work in newer versions of RN. Please update to the"
+  RCTLogWarn(@"Calling bridge.imageLoader is deprecated and will not work in newer versions of RN. Please update to the "
              "moduleForClass API or turboModuleLookupDelegate API.");
   return [self moduleForClass:[RCTImageLoader class]];
 }

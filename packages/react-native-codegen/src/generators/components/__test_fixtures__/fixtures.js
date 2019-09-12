@@ -604,6 +604,130 @@ const ARRAY_PROPS: SchemaType = {
                 },
               },
             },
+            {
+              name: 'array',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      // This needs to stay the same as the object above
+                      // to confirm that the structs are generated
+                      // with unique non-colliding names
+                      name: 'object',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ObjectTypeAnnotation',
+                          properties: [
+                            {
+                              name: 'stringProp',
+                              optional: true,
+                              typeAnnotation: {
+                                type: 'StringTypeAnnotation',
+                                default: '',
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              name: 'arrayOfArrayOfObject',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ArrayTypeAnnotation',
+                  elementType: {
+                    type: 'ObjectTypeAnnotation',
+                    properties: [
+                      {
+                        name: 'stringProp',
+                        optional: true,
+                        typeAnnotation: {
+                          type: 'StringTypeAnnotation',
+                          default: '',
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const ARRAY_PROPS_WITH_NESTED_OBJECT: SchemaType = {
+  modules: {
+    Slider: {
+      components: {
+        ArrayPropsNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'nativePrimitives',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      name: 'colors',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'NativePrimitiveTypeAnnotation',
+                          name: 'ColorPrimitive',
+                        },
+                      },
+                    },
+                    {
+                      name: 'srcs',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'NativePrimitiveTypeAnnotation',
+                          name: 'ImageSourcePrimitive',
+                        },
+                      },
+                    },
+                    {
+                      name: 'points',
+                      optional: true,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'NativePrimitiveTypeAnnotation',
+                          name: 'PointPrimitive',
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
           ],
           commands: [],
         },
@@ -677,6 +801,19 @@ const OBJECT_PROPS: SchemaType = {
                     },
                   },
                   {
+                    name: 'intEnumProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'Int32EnumTypeAnnotation',
+                      default: 0,
+                      options: [
+                        {
+                          value: 0,
+                        },
+                      ],
+                    },
+                  },
+                  {
                     name: 'objectArrayProp',
                     optional: false,
                     typeAnnotation: {
@@ -723,6 +860,61 @@ const OBJECT_PROPS: SchemaType = {
                           typeAnnotation: {
                             type: 'NativePrimitiveTypeAnnotation',
                             name: 'PointPrimitive',
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'nestedPropA',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'nestedPropB',
+                          optional: false,
+                          typeAnnotation: {
+                            type: 'ObjectTypeAnnotation',
+                            properties: [
+                              {
+                                name: 'nestedPropC',
+                                optional: true,
+                                typeAnnotation: {
+                                  type: 'StringTypeAnnotation',
+                                  default: '',
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'nestedArrayAsProperty',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ObjectTypeAnnotation',
+                      properties: [
+                        {
+                          name: 'arrayProp',
+                          optional: false,
+                          typeAnnotation: {
+                            type: 'ArrayTypeAnnotation',
+                            elementType: {
+                              type: 'ObjectTypeAnnotation',
+                              properties: [
+                                {
+                                  name: 'stringProp',
+                                  optional: false,
+                                  typeAnnotation: {
+                                    type: 'StringTypeAnnotation',
+                                    default: '',
+                                  },
+                                },
+                              ],
+                            },
                           },
                         },
                       ],
@@ -792,11 +984,11 @@ const MULTI_NATIVE_PROP: SchemaType = {
   },
 };
 
-const ENUM_PROP: SchemaType = {
+const STRING_ENUM_PROP: SchemaType = {
   modules: {
     Switch: {
       components: {
-        EnumPropsNativeComponent: {
+        StringEnumPropsNativeComponent: {
           extendsProps: [
             {
               type: 'ReactNativeBuiltInType',
@@ -820,6 +1012,46 @@ const ENUM_PROP: SchemaType = {
                   },
                   {
                     name: 'bottom-right',
+                  },
+                ],
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const INT32_ENUM_PROP: SchemaType = {
+  modules: {
+    Switch: {
+      components: {
+        Int32EnumPropsNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'maxInterval',
+              optional: true,
+              typeAnnotation: {
+                type: 'Int32EnumTypeAnnotation',
+                default: 0,
+                options: [
+                  {
+                    value: 0,
+                  },
+                  {
+                    value: 1,
+                  },
+                  {
+                    value: 2,
                   },
                 ],
               },
@@ -1254,9 +1486,11 @@ module.exports = {
   IMAGE_PROP,
   POINT_PROP,
   ARRAY_PROPS,
+  ARRAY_PROPS_WITH_NESTED_OBJECT,
   OBJECT_PROPS,
   MULTI_NATIVE_PROP,
-  ENUM_PROP,
+  STRING_ENUM_PROP,
+  INT32_ENUM_PROP,
   EVENT_PROPS,
   EVENTS_WITH_PAPER_NAME,
   EVENT_NESTED_OBJECT_PROPS,

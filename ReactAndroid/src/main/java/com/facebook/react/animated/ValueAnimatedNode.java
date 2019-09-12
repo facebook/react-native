@@ -29,6 +29,9 @@ import com.facebook.react.bridge.ReadableMap;
   }
 
   public double getValue() {
+    if (Double.isNaN(mOffset + mValue)) {
+      this.update();
+    }
     return mOffset + mValue;
   }
 

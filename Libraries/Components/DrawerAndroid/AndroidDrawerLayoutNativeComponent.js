@@ -19,7 +19,9 @@ import type {
   Float,
 } from 'react-native/Libraries/Types/CodegenTypes';
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import codegenNativeComponent, {
+  type NativeComponentType,
+} from 'react-native/Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
 
 type DrawerStateEvent = $ReadOnly<{|
@@ -29,11 +31,6 @@ type DrawerStateEvent = $ReadOnly<{|
 type DrawerSlideEvent = $ReadOnly<{|
   offset: Float,
 |}>;
-
-interface NativeCommands {
-  +openDrawer: (viewRef: React.Ref<'AndroidDrawerLayout'>) => void;
-  +closeDrawer: (viewRef: React.Ref<'AndroidDrawerLayout'>) => void;
-}
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -113,8 +110,17 @@ type NativeProps = $ReadOnly<{|
   statusBarBackgroundColor?: ?ColorValue,
 |}>;
 
+type NativeType = NativeComponentType<NativeProps>;
+
+interface NativeCommands {
+  +openDrawer: (viewRef: React.ElementRef<NativeType>) => void;
+  +closeDrawer: (viewRef: React.ElementRef<NativeType>) => void;
+}
+
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['openDrawer', 'closeDrawer'],
 });
 
-export default codegenNativeComponent<NativeProps>('AndroidDrawerLayout');
+export default (codegenNativeComponent<NativeProps>(
+  'AndroidDrawerLayout',
+): NativeType);

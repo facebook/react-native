@@ -206,6 +206,11 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'AppearanceExample',
+    module: require('../examples/Appearance/AppearanceExample'),
+    supportsTVOS: false,
+  },
+  {
     key: 'AppStateExample',
     module: require('../examples/AppState/AppStateExample'),
     supportsTVOS: true,
@@ -337,7 +342,7 @@ const APIExamples: Array<RNTesterExample> = [
   },
 ];
 
-const Modules: $TEMPORARY$object<{||}> = {};
+const Modules: {...} = {};
 
 APIExamples.concat(ComponentExamples).forEach(Example => {
   Modules[Example.key] = Example.module;

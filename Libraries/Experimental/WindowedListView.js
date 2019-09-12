@@ -170,7 +170,7 @@ class WindowedListView extends React.Component<Props, State> {
   _scrollRef: ?ScrollView;
   _viewabilityHelper: ViewabilityHelper;
 
-  static defaultProps: $TEMPORARY$object<{|
+  static defaultProps: {|
     disableIncrementalRendering: boolean,
     initialNumToRender: number,
     maxNumToRender: number,
@@ -178,16 +178,11 @@ class WindowedListView extends React.Component<Props, State> {
     recomputeRowsBatchingPeriod: number,
     renderScrollComponent: (props: any) => React.Node,
     viewablePercentThreshold: number,
-  |}> = {
+  |} = {
     initialNumToRender: 10,
     maxNumToRender: 30,
     numToRenderAhead: 10,
     viewablePercentThreshold: 50,
-    /* $FlowFixMe(>=0.59.0 site=react_native_fb) This comment suppresses an
-     * error caught by Flow 0.59 which was not caught before. Most likely, this
-     * error is because an exported function parameter is missing an
-     * annotation. Without an annotation, these parameters are uncovered by
-     * Flow. */
     renderScrollComponent: props => <ScrollView {...props} />,
     disableIncrementalRendering: false,
     recomputeRowsBatchingPeriod: 10, // This should capture most events that happen within a frame

@@ -33,6 +33,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/module/model:model"),
         react_native_target("java/com/facebook/react/modules/appregistry:appregistry"),
+        react_native_target("java/com/facebook/react/modules/appearance:appearance"),
         react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/modules/debug:debug"),
         react_native_target("java/com/facebook/react/modules/fabric:fabric"),

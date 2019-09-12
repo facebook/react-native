@@ -598,7 +598,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   _moduleRegistryCreated = YES;
 }
 
-- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance;
+- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance
 {
   NSString *const moduleName = RCTBridgeModuleNameForClass([instance class]);
   if (moduleName) {
@@ -915,7 +915,6 @@ struct RCTInstanceCallback : public InstanceCallback {
     [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:completion];
   }
 
-#if RCT_DEV
   if (self.devSettings.isHotLoadingAvailable) {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
     NSString *host = self.bundleURL.host;
@@ -926,7 +925,6 @@ struct RCTInstanceCallback : public InstanceCallback {
                    args:@[@"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled)]
              completion:NULL];
   }
-#endif
 }
 
 - (void)handleError:(NSError *)error

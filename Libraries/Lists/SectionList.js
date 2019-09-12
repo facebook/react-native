@@ -14,6 +14,7 @@ const React = require('react');
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const VirtualizedSectionList = require('./VirtualizedSectionList');
 
+import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewToken} from './ViewabilityHelper';
 import type {
   SectionBase as _SectionBase,
@@ -275,7 +276,7 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
   /**
    * Provides a handle to the underlying scroll responder.
    */
-  getScrollResponder(): ?ScrollView {
+  getScrollResponder(): ?ScrollResponderType {
     const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
     if (listRef) {
       return listRef.getScrollResponder();

@@ -284,6 +284,10 @@ static Class getFallbackClassFromName(const char *name)
      */
     @try {
       /**
+       * If module requiresMainQueueSetup, dispatch to main queue. Bridge setup
+       * may call APIs which are main queue only, which crash if called from
+       * JS thread.
+       *
        * RCTBridgeModule declares the bridge property as readonly.
        * Therefore, when authors of NativeModules synthesize the bridge
        * via @synthesize bridge = bridge;, the ObjC runtime generates
@@ -291,7 +295,16 @@ static Class getFallbackClassFromName(const char *name)
        * generated, so we have have to rely on the KVC API of ObjC to set
        * the bridge property of these NativeModules.
        */
-      [(id)module setValue:_bridge forKey:@"bridge"];
+      if ([[module class] respondsToSelector:@selector(requiresMainQueueSetup)] &&
+          [[module class] requiresMainQueueSetup]) {
+        __weak __typeof(self) weakSelf = self;
+        dispatch_async(dispatch_get_main_queue(), ^{
+          __strong __typeof(self) strongSelf = weakSelf;
+          [(id)module setValue:strongSelf->_bridge forKey:@"bridge"];
+        });
+      } else {
+        [(id)module setValue:_bridge forKey:@"bridge"];
+      }
     } @catch (NSException *exception) {
       RCTLogError(
           @"%@ has no setter or ivar for its bridge, which is not "

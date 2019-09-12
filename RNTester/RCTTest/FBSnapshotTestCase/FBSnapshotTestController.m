@@ -39,7 +39,7 @@ typedef struct RGBAPixel {
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithTestClass:(Class)testClass;
+- (instancetype)initWithTestClass:(Class)testClass
 {
     return [self initWithTestName:NSStringFromClass(testClass)];
 }
