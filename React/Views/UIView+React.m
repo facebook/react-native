@@ -290,11 +290,41 @@
   return UIEdgeInsetsInsetRect(self.bounds, self.reactCompoundInsets);
 }
 
-#pragma mark - Accessiblity
+#pragma mark - Accessibility
 
 - (UIView *)reactAccessibilityElement
 {
   return self;
+}
+
+- (NSArray<NSDictionary *> *)accessibilityActions
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setAccessibilityActions:(NSArray<NSDictionary *> *)accessibilityActions
+{
+  objc_setAssociatedObject(self, @selector(accessibilityActions), accessibilityActions, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSString *)accessibilityRole
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setAccessibilityRole:(NSString *)accessibilityRole
+{
+  objc_setAssociatedObject(self, @selector(accessibilityRole), accessibilityRole, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSDictionary<NSString *, id> *)accessibilityState
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setAccessibilityState:(NSDictionary<NSString *, id> *)accessibilityState
+{
+  objc_setAssociatedObject(self, @selector(accessibilityState), accessibilityState, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 #pragma mark - Debug

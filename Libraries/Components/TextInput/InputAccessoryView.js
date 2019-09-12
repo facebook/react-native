@@ -9,14 +9,14 @@
  */
 'use strict';
 
-const DeprecatedColorPropType = require('DeprecatedColorPropType');
-const Platform = require('Platform');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
+const DeprecatedColorPropType = require('../../DeprecatedPropTypes/DeprecatedColorPropType');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
 
-const RCTInputAccessoryViewNativeComponent = require('RCTInputAccessoryViewNativeComponent');
+import RCTInputAccessoryViewNativeComponent from './RCTInputAccessoryViewNativeComponent';
 
-import type {ViewStyleProp} from 'StyleSheet';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 
 /**
  * Note: iOS only

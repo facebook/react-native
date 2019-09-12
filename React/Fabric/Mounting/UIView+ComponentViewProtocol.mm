@@ -17,6 +17,12 @@ using namespace facebook::react;
 
 @implementation UIView (ComponentViewProtocol)
 
++ (ComponentDescriptorProvider)componentDescriptorProvider
+{
+  RCTAssert(NO, @"`-[RCTComponentViewProtocol componentDescriptorProvider]` must be implemented in a concrete class.");
+  return {};
+}
+
 + (std::vector<facebook::react::ComponentDescriptorProvider>)supplementalComponentDescriptorProviders
 {
   return {};
@@ -33,12 +39,12 @@ using namespace facebook::react;
   [childComponentView removeFromSuperview];
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
   // Default implementation does nothing.
 }
 
-- (void)updateEventEmitter:(SharedEventEmitter)eventEmitter
+- (void)updateEventEmitter:(EventEmitter::Shared const &)eventEmitter
 {
   // Default implementation does nothing.
 }
@@ -48,19 +54,25 @@ using namespace facebook::react;
   // Default implementation does nothing.
 }
 
-- (void)updateState:(facebook::react::State::Shared)state oldState:(facebook::react::State::Shared)oldState
+- (void)updateState:(facebook::react::State::Shared const &)state
+           oldState:(facebook::react::State::Shared const &)oldState
 {
   // Default implementation does nothing.
 }
 
-- (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics oldLayoutMetrics:(LayoutMetrics)oldLayoutMetrics
+- (void)handleCommand:(NSString *)commandName args:(NSArray *)args
+{
+  // Default implementation does nothing.
+}
+
+- (void)updateLayoutMetrics:(LayoutMetrics const &)layoutMetrics
+           oldLayoutMetrics:(LayoutMetrics const &)oldLayoutMetrics
 {
   if (layoutMetrics.frame != oldLayoutMetrics.frame) {
     CGRect frame = RCTCGRectFromRect(layoutMetrics.frame);
 
-    if (std::isnan(frame.origin.x) || std::isnan(frame.origin.y) || std::isnan(frame.size.width) ||
-        std::isnan(frame.size.height) || std::isinf(frame.origin.x) || std::isinf(frame.origin.y) ||
-        std::isinf(frame.size.width) || std::isinf(frame.size.height)) {
+    if (!std::isfinite(frame.origin.x) || !std::isfinite(frame.origin.y) || !std::isfinite(frame.size.width) ||
+        !std::isfinite(frame.size.height)) {
       // CALayer will crash if we pass NaN or Inf values.
       // It's unclear how to detect this case on cross-platform manner holistically, so we have to do it on the mounting
       // layer as well. NaN/Inf is a kinda valid result of some math operations. Even if we can (and should) detect (and
@@ -73,7 +85,10 @@ using namespace facebook::react;
       return;
     }
 
-    self.frame = frame;
+    // Note: Changing `frame` when `layer.transform` is not the `identity transform` is undefined behavior.
+    // Therefore, we must use `center` and `bounds`.
+    self.center = CGPoint{CGRectGetMidX(frame), CGRectGetMidY(frame)};
+    self.bounds = CGRect{CGPointZero, frame.size};
   }
 
   if (layoutMetrics.layoutDirection != oldLayoutMetrics.layoutDirection) {

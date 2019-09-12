@@ -1,23 +1,17 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.imagehelper;
 
-import javax.annotation.Nullable;
-
-import java.util.List;
-
+import androidx.annotation.Nullable;
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
-import com.facebook.react.views.imagehelper.ImageSource;
+import java.util.List;
 
-/**
- * Helper class for dealing with multisource images.
- */
+/** Helper class for dealing with multisource images. */
 public class MultiSourceHelper {
 
   public static class MultiSourceResult {
@@ -25,8 +19,7 @@ public class MultiSourceHelper {
     private final @Nullable ImageSource bestResultInCache;
 
     private MultiSourceResult(
-      @Nullable ImageSource bestResult,
-      @Nullable ImageSource bestResultInCache) {
+        @Nullable ImageSource bestResult, @Nullable ImageSource bestResultInCache) {
       this.bestResult = bestResult;
       this.bestResultInCache = bestResultInCache;
     }
@@ -50,9 +43,7 @@ public class MultiSourceHelper {
   }
 
   public static MultiSourceResult getBestSourceForSize(
-    int width,
-    int height,
-    List<ImageSource> sources) {
+      int width, int height, List<ImageSource> sources) {
     return getBestSourceForSize(width, height, sources, 1.0d);
   }
 
@@ -63,14 +54,11 @@ public class MultiSourceHelper {
    * @param height the height of the view that will be used to display this image
    * @param sources the list of potential image sources to choose from
    * @param multiplier the area of the view will be multiplied by this number before calculating the
-   *        best source; this is useful if the image will be displayed bigger than the view
-   *        (e.g. zoomed)
+   *     best source; this is useful if the image will be displayed bigger than the view (e.g.
+   *     zoomed)
    */
   public static MultiSourceResult getBestSourceForSize(
-    int width,
-    int height,
-    List<ImageSource> sources,
-    double multiplier) {
+      int width, int height, List<ImageSource> sources, double multiplier) {
     // no sources
     if (sources.isEmpty()) {
       return new MultiSourceResult(null, null);
@@ -99,9 +87,9 @@ public class MultiSourceHelper {
         bestPrecision = precision;
         best = source;
       }
-      if (precision < bestCachePrecision &&
-        (imagePipeline.isInBitmapMemoryCache(source.getUri()) ||
-          imagePipeline.isInDiskCacheSync(source.getUri()))) {
+      if (precision < bestCachePrecision
+          && (imagePipeline.isInBitmapMemoryCache(source.getUri())
+              || imagePipeline.isInDiskCacheSync(source.getUri()))) {
         bestCachePrecision = precision;
         bestCached = source;
       }

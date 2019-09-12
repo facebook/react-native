@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTUITextField.h"
+#import <React/RCTUITextField.h>
 
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
-#import "RCTBackedTextInputDelegateAdapter.h"
-#import "RCTTextAttributes.h"
+#import <React/RCTBackedTextInputDelegateAdapter.h>
+#import <React/RCTTextAttributes.h>
 
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
@@ -41,6 +41,15 @@
 - (void)_textDidChange
 {
   _textWasPasted = NO;
+}
+
+#pragma mark - Accessibility
+
+- (void)setIsAccessibilityElement:(BOOL)isAccessibilityElement
+{
+  // UITextField is accessible by default (some nested views are) and disabling that is not supported.
+  // On iOS accessible elements cannot be nested, therefore enabling accessibility for some container view
+  // (even in a case where this view is a part of public API of TextInput on iOS) shadows some features implemented inside the component.
 }
 
 #pragma mark - Properties
@@ -166,6 +175,16 @@
 }
 
 #pragma mark - Overrides
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+// Overrides selectedTextRange setter to get notify when selectedTextRange changed.
+- (void)setSelectedTextRange:(UITextRange *)selectedTextRange
+{
+  [super setSelectedTextRange:selectedTextRange];
+  [_textInputDelegateAdapter selectedTextRangeWasSet];
+}
+#pragma clang diagnostic pop
 
 - (void)setSelectedTextRange:(UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate
 {

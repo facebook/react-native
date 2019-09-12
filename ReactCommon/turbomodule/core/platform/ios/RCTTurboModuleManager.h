@@ -12,7 +12,8 @@
 // TODO: Move to xplat codegen.
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                        instance:(id<RCTTurboModule>)instance
-                                                      jsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker;
+                                                      jsInvoker:
+                                                          (std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker;
 
 @optional
 
@@ -30,17 +31,16 @@
  * Create an instance of a TurboModule without relying on any ObjC++ module instance.
  */
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                      jsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker;
+                                                      jsInvoker:
+                                                          (std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker;
 
 @end
 
-@interface RCTTurboModuleManager : NSObject<RCTTurboModuleLookupDelegate>
+@interface RCTTurboModuleManager : NSObject <RCTTurboModuleLookupDelegate>
 
-- (instancetype)initWithRuntime:(facebook::jsi::Runtime *)runtime
-                         bridge:(RCTBridge *)bridge
-                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate;
+- (instancetype)initWithBridge:(RCTBridge *)bridge delegate:(id<RCTTurboModuleManagerDelegate>)delegate;
 
-- (void)installJSBinding;
+- (void)installJSBindingWithRuntime:(facebook::jsi::Runtime *)runtime;
 
 - (std::shared_ptr<facebook::react::TurboModule>)getModule:(const std::string &)name;
 

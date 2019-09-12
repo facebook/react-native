@@ -10,7 +10,7 @@
 
 'use strict';
 
-const React = require('React');
+const React = require('react');
 
 /**
  * Renders static content efficiently by allowing React to short-circuit the
@@ -43,7 +43,7 @@ class StaticContainer extends React.Component<Props> {
     return !!nextProps.shouldUpdate;
   }
 
-  render() {
+  render(): null | React$Node {
     const child = this.props.children;
     return child === null || child === false
       ? null

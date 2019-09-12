@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTTextAttributes.h"
+#import <React/RCTTextAttributes.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTFont.h>
@@ -37,7 +37,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
 - (void)applyTextAttributes:(RCTTextAttributes *)textAttributes
 {
-  // Note: All lines marked with `*` does not use explicit/correct rules to compare old and new values becuase
+  // Note: All lines marked with `*` does not use explicit/correct rules to compare old and new values because
   // their types do not have special designated value representing undefined/unspecified/inherit meaning.
   // We will address this in the future.
 

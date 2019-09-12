@@ -10,23 +10,23 @@
 
 'use strict';
 
-const Platform = require('Platform');
-const React = require('React');
-const ScrollView = require('ScrollView');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const View = require('View');
-const YellowBoxCategory = require('YellowBoxCategory');
-const YellowBoxInspectorFooter = require('YellowBoxInspectorFooter');
-const YellowBoxInspectorHeader = require('YellowBoxInspectorHeader');
-const YellowBoxInspectorSourceMapStatus = require('YellowBoxInspectorSourceMapStatus');
-const YellowBoxInspectorStackFrame = require('YellowBoxInspectorStackFrame');
-const YellowBoxStyle = require('YellowBoxStyle');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
+const ScrollView = require('../../Components/ScrollView/ScrollView');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const Text = require('../../Text/Text');
+const View = require('../../Components/View/View');
+const YellowBoxCategory = require('../Data/YellowBoxCategory');
+const YellowBoxInspectorFooter = require('./YellowBoxInspectorFooter');
+const YellowBoxInspectorHeader = require('./YellowBoxInspectorHeader');
+const YellowBoxInspectorSourceMapStatus = require('./YellowBoxInspectorSourceMapStatus');
+const YellowBoxInspectorStackFrame = require('./YellowBoxInspectorStackFrame');
+const YellowBoxStyle = require('./YellowBoxStyle');
 
-const openFileInEditor = require('openFileInEditor');
+const openFileInEditor = require('../../Core/Devtools/openFileInEditor');
 
-import type YellowBoxWarning from 'YellowBoxWarning';
-import type {SymbolicationRequest} from 'YellowBoxWarning';
+import type YellowBoxWarning from '../Data/YellowBoxWarning';
+import type {SymbolicationRequest} from '../Data/YellowBoxWarning';
 
 type Props = $ReadOnly<{|
   onDismiss: () => void,
@@ -41,7 +41,7 @@ type State = {|
 class YellowBoxInspector extends React.Component<Props, State> {
   _symbolication: ?SymbolicationRequest;
 
-  state = {
+  state: State = {
     selectedIndex: 0,
   };
 
@@ -85,19 +85,24 @@ class YellowBoxInspector extends React.Component<Props, State> {
                 status={warning.symbolicated.status}
               />
             </View>
-            {warning.getAvailableStack().map((frame, index) => (
-              <YellowBoxInspectorStackFrame
-                key={index}
-                frame={frame}
-                onPress={
-                  warning.symbolicated.status === 'COMPLETE'
-                    ? () => {
-                        openFileInEditor(frame.file, frame.lineNumber);
-                      }
-                    : null
-                }
-              />
-            ))}
+            {warning.getAvailableStack().map((frame, index) => {
+              const {file, lineNumber} = frame;
+              return (
+                <YellowBoxInspectorStackFrame
+                  key={index}
+                  frame={frame}
+                  onPress={
+                    warning.symbolicated.status === 'COMPLETE' &&
+                    file != null &&
+                    lineNumber != null
+                      ? () => {
+                          openFileInEditor(file, lineNumber);
+                        }
+                      : null
+                  }
+                />
+              );
+            })}
           </View>
         </ScrollView>
         <YellowBoxInspectorFooter

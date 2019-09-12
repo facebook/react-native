@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
   s.source_files           = "**/*.{h,m}"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.framework              = "XCTest"
-  s.header_dir             = "React"
-
+  s.header_dir             = "RCTTest"
+  
   s.dependency "React-Core", version
 end

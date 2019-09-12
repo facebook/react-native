@@ -19,33 +19,34 @@ namespace facebook {
 namespace react {
 
 EventDispatcher::EventDispatcher(
-    const EventPipe &eventPipe,
-    const StatePipe &statePipe,
-    const EventBeatFactory &synchonousEventBeatFactory,
-    const EventBeatFactory &asynchonousEventBeatFactory) {
+    EventPipe const &eventPipe,
+    StatePipe const &statePipe,
+    EventBeat::Factory const &synchonousEventBeatFactory,
+    EventBeat::Factory const &asynchonousEventBeatFactory,
+    EventBeat::SharedOwnerBox const &ownerBox) {
   // Synchronous/Unbatched
   eventQueues_[(int)EventPriority::SynchronousUnbatched] =
       std::make_unique<UnbatchedEventQueue>(
-          eventPipe, statePipe, synchonousEventBeatFactory());
+          eventPipe, statePipe, synchonousEventBeatFactory(ownerBox));
 
   // Synchronous/Batched
   eventQueues_[(int)EventPriority::SynchronousBatched] =
       std::make_unique<BatchedEventQueue>(
-          eventPipe, statePipe, synchonousEventBeatFactory());
+          eventPipe, statePipe, synchonousEventBeatFactory(ownerBox));
 
   // Asynchronous/Unbatched
   eventQueues_[(int)EventPriority::AsynchronousUnbatched] =
       std::make_unique<UnbatchedEventQueue>(
-          eventPipe, statePipe, asynchonousEventBeatFactory());
+          eventPipe, statePipe, asynchonousEventBeatFactory(ownerBox));
 
   // Asynchronous/Batched
   eventQueues_[(int)EventPriority::AsynchronousBatched] =
       std::make_unique<BatchedEventQueue>(
-          eventPipe, statePipe, asynchonousEventBeatFactory());
+          eventPipe, statePipe, asynchonousEventBeatFactory(ownerBox));
 }
 
 void EventDispatcher::dispatchEvent(
-    const RawEvent &rawEvent,
+    RawEvent const &rawEvent,
     EventPriority priority) const {
   getEventQueue(priority).enqueueEvent(std::move(rawEvent));
 }
@@ -58,15 +59,7 @@ void EventDispatcher::dispatchStateUpdate(
 
 const EventQueue &EventDispatcher::getEventQueue(EventPriority priority) const {
 #ifdef REACT_FABRIC_SYNC_EVENT_DISPATCHING_DISABLED
-  // Synchronous dispatch works, but JavaScript interop layer does not have
-  // proper synchonization yet and it crashes.
-  if (priority == EventPriority::SynchronousUnbatched) {
-    priority = EventPriority::AsynchronousUnbatched;
-  }
-
-  if (priority == EventPriority::SynchronousBatched) {
-    priority = EventPriority::AsynchronousBatched;
-  }
+  priority = EventPriority::AsynchronousBatched;
 #endif
 
   return *eventQueues_[(int)priority];

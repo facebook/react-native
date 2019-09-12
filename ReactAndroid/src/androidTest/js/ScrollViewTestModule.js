@@ -10,18 +10,23 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const React = require('React');
-const View = require('View');
-const ScrollView = require('ScrollView');
-const Text = require('Text');
-const StyleSheet = require('StyleSheet');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-const ScrollListener = require('NativeModules').ScrollListener;
+const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
+const React = require('react');
+
+const {
+  NativeModules,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} = require('react-native');
+
+const {ScrollListener} = NativeModules;
 
 const NUM_ITEMS = 100;
 
-import type {PressEvent} from 'CoreEventTypes';
+import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 // Shared by integration tests for ScrollView and HorizontalScrollView
 
@@ -87,11 +92,8 @@ type State = {|
 |};
 
 class ScrollViewTestApp extends React.Component<Props, State> {
-  /* $FlowFixMe(>=0.87.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.87 was deployed. To see the error, delete this comment
-   * and run Flow. */
-  scrollView = React.createRef();
-  state = getInitialState();
+  scrollView: {|current: any | null|} = React.createRef();
+  state: State = getInitialState();
 
   scrollTo(destX: number, destY: number) {
     const scrollView = this.scrollView.current;
@@ -102,7 +104,7 @@ class ScrollViewTestApp extends React.Component<Props, State> {
     scrollView.scrollTo(destY, destX);
   }
 
-  render() {
+  render(): React.Node {
     scrollViewApp = this;
     const children = this.state.data.map((item, index) => (
       <Item
@@ -124,11 +126,8 @@ class ScrollViewTestApp extends React.Component<Props, State> {
 }
 
 class HorizontalScrollViewTestApp extends React.Component<Props, State> {
-  /* $FlowFixMe(>=0.87.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.87 was deployed. To see the error, delete this comment
-   * and run Flow. */
-  scrollView = React.createRef();
-  state = getInitialState();
+  scrollView: {|current: any | null|} = React.createRef();
+  state: State = getInitialState();
 
   scrollTo(destX: number, destY: number) {
     const scrollView = this.scrollView.current;
@@ -139,7 +138,7 @@ class HorizontalScrollViewTestApp extends React.Component<Props, State> {
     scrollView.scrollTo(destY, destX);
   }
 
-  render() {
+  render(): React.Node {
     scrollViewApp = this;
     const children = this.state.data.map((item, index) => (
       <Item

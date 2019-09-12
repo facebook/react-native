@@ -1,23 +1,16 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.testing;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
-import android.app.Instrumentation;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-
+import androidx.annotation.Nullable;
+import com.android.internal.util.Predicate;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.NativeModuleRegistryBuilder;
 import com.facebook.react.R;
@@ -25,19 +18,19 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.JavaScriptModuleRegistry;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JavaScriptExecutor;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.ViewManager;
-import com.android.internal.util.Predicate;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class ReactTestHelper {
   private static class DefaultReactTestFactory implements ReactTestFactory {
@@ -56,31 +49,30 @@ public class ReactTestHelper {
       @Override
       public ReactInstanceEasyBuilder addNativeModule(final NativeModule nativeModule) {
         if (mNativeModuleRegistryBuilder == null) {
-          mNativeModuleRegistryBuilder = new NativeModuleRegistryBuilder(
-            (ReactApplicationContext) mContext,
-            null);
+          mNativeModuleRegistryBuilder =
+              new NativeModuleRegistryBuilder((ReactApplicationContext) mContext, null);
         }
         Assertions.assertNotNull(nativeModule);
-        mNativeModuleRegistryBuilder.processPackage(new ReactPackage(){
-        	@Override
-        	public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-        	   return Collections.emptyList();
-        	}
+        mNativeModuleRegistryBuilder.processPackage(
+            new ReactPackage() {
+              @Override
+              public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+                return Collections.emptyList();
+              }
 
-        	@Override
-        	public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        		return Arrays.asList(nativeModule);
-        	}
-        });
+              @Override
+              public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+                return Arrays.asList(nativeModule);
+              }
+            });
         return this;
       }
 
       @Override
       public CatalystInstance build() {
         if (mNativeModuleRegistryBuilder == null) {
-          mNativeModuleRegistryBuilder = new NativeModuleRegistryBuilder(
-            (ReactApplicationContext) mContext,
-            null);
+          mNativeModuleRegistryBuilder =
+              new NativeModuleRegistryBuilder((ReactApplicationContext) mContext, null);
         }
         JavaScriptExecutor executor = null;
         try {
@@ -89,21 +81,20 @@ public class ReactTestHelper {
           throw new RuntimeException(e);
         }
         return new CatalystInstanceImpl.Builder()
-          .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
-          .setJSExecutor(executor)
-          .setRegistry(mNativeModuleRegistryBuilder.build())
-          .setJSBundleLoader(JSBundleLoader.createAssetLoader(
-              mContext,
-              "assets://AndroidTestBundle.js",
-              false/* Asynchronous */))
-          .setNativeModuleCallExceptionHandler(
-            new NativeModuleCallExceptionHandler() {
-                @Override
-                public void handleException(Exception e) {
-                  throw new RuntimeException(e);
-                }
-            })
-          .build();
+            .setReactQueueConfigurationSpec(ReactQueueConfigurationSpec.createDefault())
+            .setJSExecutor(executor)
+            .setRegistry(mNativeModuleRegistryBuilder.build())
+            .setJSBundleLoader(
+                JSBundleLoader.createAssetLoader(
+                    mContext, "assets://AndroidTestBundle.js", false /* Asynchronous */))
+            .setNativeModuleCallExceptionHandler(
+                new NativeModuleCallExceptionHandler() {
+                  @Override
+                  public void handleException(Exception e) {
+                    throw new RuntimeException(e);
+                  }
+                })
+            .build();
       }
     }
 
@@ -119,58 +110,56 @@ public class ReactTestHelper {
   }
 
   public static ReactTestFactory getReactTestFactory() {
-// TODO: re-enable after cleanup of android-x migration
-//    Instrumentation inst = InstrumentationRegistry.getInstrumentation();
-//    if (!(inst instanceof ReactTestFactory)) {
-      return new DefaultReactTestFactory();
-//    }
-//
-//    return (ReactTestFactory) inst;
+    // TODO: re-enable after cleanup of android-x migration
+    //    Instrumentation inst = InstrumentationRegistry.getInstrumentation();
+    //    if (!(inst instanceof ReactTestFactory)) {
+    return new DefaultReactTestFactory();
+    //    }
+    //
+    //    return (ReactTestFactory) inst;
   }
 
   public static ReactTestFactory.ReactInstanceEasyBuilder catalystInstanceBuilder(
       final ReactIntegrationTestCase testCase) {
     final ReactTestFactory.ReactInstanceEasyBuilder builder =
-      getReactTestFactory().getCatalystInstanceBuilder();
+        getReactTestFactory().getCatalystInstanceBuilder();
     ReactTestFactory.ReactInstanceEasyBuilder postBuilder =
-      new ReactTestFactory.ReactInstanceEasyBuilder() {
-        @Override
-        public ReactTestFactory.ReactInstanceEasyBuilder setContext(Context context) {
-          builder.setContext(context);
-          return this;
-        }
+        new ReactTestFactory.ReactInstanceEasyBuilder() {
+          @Override
+          public ReactTestFactory.ReactInstanceEasyBuilder setContext(Context context) {
+            builder.setContext(context);
+            return this;
+          }
 
-        @Override
-        public ReactTestFactory.ReactInstanceEasyBuilder addNativeModule(NativeModule module) {
-          builder.addNativeModule(module);
-          return this;
-        }
+          @Override
+          public ReactTestFactory.ReactInstanceEasyBuilder addNativeModule(NativeModule module) {
+            builder.addNativeModule(module);
+            return this;
+          }
 
-        @Override
-        public CatalystInstance build() {
-          final CatalystInstance instance = builder.build();
-          testCase.initializeWithInstance(instance);
-          instance.runJSBundle();
-// TODO: re-enable after cleanup of android-x migration
-//          InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-//            @Override
-//            public void run() {
-              ReactChoreographer.initialize();
-              instance.initialize();
-//            }
-//          });
-          testCase.waitForBridgeAndUIIdle();
-          return instance;
-        }
-      };
+          @Override
+          public CatalystInstance build() {
+            final CatalystInstance instance = builder.build();
+            testCase.initializeWithInstance(instance);
+            instance.runJSBundle();
+            // TODO: re-enable after cleanup of android-x migration
+            //          InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            //            @Override
+            //            public void run() {
+            ReactChoreographer.initialize();
+            instance.initialize();
+            //            }
+            //          });
+            testCase.waitForBridgeAndUIIdle();
+            return instance;
+          }
+        };
 
     postBuilder.setContext(testCase.getContext());
     return postBuilder;
   }
 
-  /**
-   * Gets the view at given path in the UI hierarchy, ignoring modals.
-   */
+  /** Gets the view at given path in the UI hierarchy, ignoring modals. */
   public static <T extends View> T getViewAtPath(ViewGroup rootView, int... path) {
     // The application root element is wrapped in a helper view in order
     // to be able to display modals. See renderApplication.js.
@@ -192,8 +181,8 @@ public class ReactTestHelper {
 
   public static String getTestId(View view) {
     return view.getTag(R.id.react_test_id) instanceof String
-      ? (String) view.getTag(R.id.react_test_id)
-      : null;
+        ? (String) view.getTag(R.id.react_test_id)
+        : null;
   }
 
   private static View findChild(View root, Predicate<View> predicate) {

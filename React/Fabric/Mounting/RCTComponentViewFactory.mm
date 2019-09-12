@@ -14,9 +14,12 @@
 #import <react/core/ReactPrimitives.h>
 #import <react/uimanager/ComponentDescriptorProviderRegistry.h>
 
+#import "RCTARTSurfaceViewComponentView.h"
 #import "RCTActivityIndicatorViewComponentView.h"
 #import "RCTImageComponentView.h"
+#import "RCTModalHostViewComponentView.h"
 #import "RCTParagraphComponentView.h"
+#import "RCTPullToRefreshViewComponentView.h"
 #import "RCTRootComponentView.h"
 #import "RCTScrollViewComponentView.h"
 #import "RCTSliderComponentView.h"
@@ -39,12 +42,15 @@ using namespace facebook::react;
   [componentViewFactory registerComponentViewClass:[RCTViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTRootComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTScrollViewComponentView class]];
+  [componentViewFactory registerComponentViewClass:[RCTPullToRefreshViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTImageComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTParagraphComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTActivityIndicatorViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTSliderComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTSwitchComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTUnimplementedNativeComponentView class]];
+  [componentViewFactory registerComponentViewClass:[RCTModalHostViewComponentView class]];
+  [componentViewFactory registerComponentViewClass:[RCTARTSurfaceViewComponentView class]];
 
   return componentViewFactory;
 }

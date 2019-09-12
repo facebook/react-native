@@ -14,7 +14,7 @@ namespace facebook {
 namespace react {
 
 /*
- * Defines visibility of the shadow node and partucular layout
+ * Defines visibility of the shadow node and particular layout
  * engine which should be used for laying out the node.
  */
 enum class DisplayType {

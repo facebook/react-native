@@ -34,7 +34,8 @@ void ComponentDescriptorRegistry::add(
       sharedComponentDescriptor;
   _registryByName[componentDescriptorProvider.name] = sharedComponentDescriptor;
 
-  if (componentDescriptorProvider.name == "UnimplementedNativeView") {
+  if (strcmp(componentDescriptorProvider.name, "UnimplementedNativeView") ==
+      0) {
     auto *self = const_cast<ComponentDescriptorRegistry *>(this);
     self->setFallbackComponentDescriptor(sharedComponentDescriptor);
   }
@@ -64,7 +65,7 @@ void ComponentDescriptorRegistry::registerComponentDescriptor(
   _registryByName[componentName] = componentDescriptor;
 }
 
-static ComponentName componentNameByReactViewName(ComponentName viewName) {
+static std::string componentNameByReactViewName(std::string viewName) {
   // We need this function only for the transition period;
   // eventually, all names will be unified.
 
@@ -100,12 +101,9 @@ static ComponentName componentNameByReactViewName(ComponentName viewName) {
     return "ActivityIndicatorView";
   }
 
-  // We need this temporarly for testing purposes until we have proper
+  // We need this temporarily for testing purposes until we have proper
   // implementation of core components.
-  if (viewName == "SinglelineTextInputView" ||
-      viewName == "MultilineTextInputView" || viewName == "AndroidTextInput" ||
-      viewName == "RefreshControl" || viewName == "SafeAreaView" ||
-      viewName == "ScrollContentView" ||
+  if (viewName == "SafeAreaView" || viewName == "ScrollContentView" ||
       viewName == "AndroidHorizontalScrollContentView" // Android
   ) {
     return "View";
@@ -115,7 +113,7 @@ static ComponentName componentNameByReactViewName(ComponentName viewName) {
 }
 
 ComponentDescriptor const &ComponentDescriptorRegistry::at(
-    ComponentName const &componentName) const {
+    std::string const &componentName) const {
   std::shared_lock<better::shared_mutex> lock(mutex_);
 
   auto unifiedComponentName = componentNameByReactViewName(componentName);
@@ -141,18 +139,28 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
 
 SharedShadowNode ComponentDescriptorRegistry::createNode(
     Tag tag,
-    ComponentName const &viewName,
+    std::string const &viewName,
     SurfaceId surfaceId,
-    folly::dynamic const &props,
+    folly::dynamic const &propsDynamic,
     SharedEventTarget const &eventTarget) const {
   auto unifiedComponentName = componentNameByReactViewName(viewName);
   auto const &componentDescriptor = this->at(unifiedComponentName);
+
+  auto const eventEmitter =
+      componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
+  auto const props =
+      componentDescriptor.cloneProps(nullptr, RawProps(propsDynamic));
+  auto const state = componentDescriptor.createInitialState(
+      ShadowNodeFragment{surfaceId, tag, props, eventEmitter});
+
   return componentDescriptor.createShadowNode({
       /* .tag = */ tag,
       /* .surfaceId = */ surfaceId,
-      /* .props = */ componentDescriptor.cloneProps(nullptr, RawProps(props)),
-      /* .eventEmitter = */
-      componentDescriptor.createEventEmitter(std::move(eventTarget), tag),
+      /* .props = */ props,
+      /* .eventEmitter = */ eventEmitter,
+      /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
+      /* .localData = */ ShadowNodeFragment::localDataPlaceholder(),
+      /* .state = */ state,
   });
 }
 

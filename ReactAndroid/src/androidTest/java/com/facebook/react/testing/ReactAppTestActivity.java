@@ -11,18 +11,19 @@ import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import androidx.fragment.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.ReactRootView;
-import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JSIModuleProvider;
 import com.facebook.react.bridge.JSIModuleSpec;
+import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -34,16 +35,11 @@ import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
 import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
-import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
-
 
 public class ReactAppTestActivity extends FragmentActivity
     implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
@@ -189,14 +185,16 @@ public class ReactAppTestActivity extends FragmentActivity
                 .startReactApplication(mReactInstanceManager, appKey, initialProps);
           }
         });
-        try {
-          waitForBridgeAndUIIdle();
-          waitForLayout(5000);
-        } catch (InterruptedException e) {
-          throw new RuntimeException("Layout never occurred for component " + appKey, e);}
+    try {
+      waitForBridgeAndUIIdle();
+      waitForLayout(5000);
+    } catch (InterruptedException e) {
+      throw new RuntimeException("Layout never occurred for component " + appKey, e);
+    }
   }
 
-  public void loadBundle(final ReactInstanceSpecForTest spec, String bundleName, boolean useDevSupport) {
+  public void loadBundle(
+      final ReactInstanceSpecForTest spec, String bundleName, boolean useDevSupport) {
 
     mBridgeIdleSignaler = new ReactBridgeIdleSignaler();
 
@@ -213,6 +211,14 @@ public class ReactAppTestActivity extends FragmentActivity
     } else {
       builder.addPackage(new MainReactPackage());
     }
+    /**
+     * The {@link ReactContext#mCurrentActivity} never to be set if initial lifecycle state is
+     * resumed. So we should call {@link ReactInstanceManagerBuilder#setCurrentActivity}.
+     *
+     * <p>Finally,{@link ReactInstanceManagerBuilder#build()} will create instance of {@link
+     * ReactInstanceManager}. And also will set {@link ReactContext#mCurrentActivity}.
+     */
+    builder.setCurrentActivity(this);
     builder
         .addPackage(new InstanceSpecForTestPackage(spec))
         // By not setting a JS module name, we force the bundle to be always loaded from
@@ -231,8 +237,8 @@ public class ReactAppTestActivity extends FragmentActivity
                 return Arrays.<JSIModuleSpec>asList(
                     new JSIModuleSpec() {
                       @Override
-                      public Class<? extends JSIModule> getJSIModuleClass() {
-                        return UIManager.class;
+                      public JSIModuleType getJSIModuleType() {
+                        return JSIModuleType.UIManager;
                       }
 
                       @Override
@@ -241,11 +247,15 @@ public class ReactAppTestActivity extends FragmentActivity
                           @Override
                           public UIManager get() {
                             ViewManagerRegistry viewManagerRegistry =
-                              new ViewManagerRegistry(
-                                mReactInstanceManager.getOrCreateViewManagers(reactApplicationContext));
+                                new ViewManagerRegistry(
+                                    mReactInstanceManager.getOrCreateViewManagers(
+                                        reactApplicationContext));
 
                             FabricUIManagerFactory factory = spec.getFabricUIManagerFactory();
-                            return factory != null ? factory.getFabricUIManager(reactApplicationContext, viewManagerRegistry, jsContext) : null;
+                            return factory != null
+                                ? factory.getFabricUIManager(
+                                    reactApplicationContext, viewManagerRegistry, jsContext)
+                                : null;
                           }
                         };
                       }

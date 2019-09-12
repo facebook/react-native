@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const SectionList = require('SectionList');
+const SectionList = require('../SectionList');
 
 function renderMyListItem(info: {item: {title: string}, index: number}) {
   return <span />;
@@ -22,7 +22,7 @@ const renderMyHeader = ({section}: {section: {fooNumber: number} & Object}) => (
 );
 
 module.exports = {
-  testGoodDataWithGoodItem() {
+  testGoodDataWithGoodItem(): React.Node {
     const sections = [
       {
         key: 'a',
@@ -37,7 +37,7 @@ module.exports = {
     return <SectionList renderItem={renderMyListItem} sections={sections} />;
   },
 
-  testBadRenderItemFunction() {
+  testBadRenderItemFunction(): $TEMPORARY$array<React.Node> {
     const sections = [
       {
         key: 'a',

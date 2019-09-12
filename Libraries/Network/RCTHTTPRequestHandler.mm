@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTHTTPRequestHandler.h"
+#import <React/RCTHTTPRequestHandler.h>
 
 #import <mutex>
 
-#import "RCTNetworking.h"
+#import <React/RCTNetworking.h>
 
 @interface RCTHTTPRequestHandler () <NSURLSessionDataDelegate>
 
@@ -29,12 +29,12 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  dispatch_async(self->_methodQueue, ^{
-    [self->_session invalidateAndCancel];
-    self->_session = nil;
-  });
+  std::lock_guard<std::mutex> lock(_mutex);
+  [self->_session invalidateAndCancel];
+  self->_session = nil;
 }
 
+// Needs to lock before call this method.
 - (BOOL)isValid
 {
   // if session == nil and delegates != nil, we've been invalidated
@@ -58,12 +58,25 @@ RCT_EXPORT_MODULE()
 - (NSURLSessionDataTask *)sendRequest:(NSURLRequest *)request
                          withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
+  std::lock_guard<std::mutex> lock(_mutex);
   // Lazy setup
   if (!_session && [self isValid]) {
+    // You can override default NSURLSession instance property allowsCellularAccess (default value YES)
+    //  by providing the following key to your RN project (edit ios/project/Info.plist file in Xcode):
+    // <key>ReactNetworkForceWifiOnly</key>    <true/>
+    // This will set allowsCellularAccess to NO and force Wifi only for all network calls on iOS
+    // If you do not want to override default behavior, do nothing or set key with value false
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    NSNumber *useWifiOnly = [infoDictionary objectForKey:@"ReactNetworkForceWifiOnly"];
+    
     NSOperationQueue *callbackQueue = [NSOperationQueue new];
     callbackQueue.maxConcurrentOperationCount = 1;
     callbackQueue.underlyingQueue = [[_bridge networking] methodQueue];
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    // Set allowsCellularAccess to NO ONLY if key ReactNetworkForceWifiOnly exists AND its value is YES
+    if (useWifiOnly) {
+      configuration.allowsCellularAccess = ![useWifiOnly boolValue];
+    }
     [configuration setHTTPShouldSetCookies:YES];
     [configuration setHTTPCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     [configuration setHTTPCookieStorage:[NSHTTPCookieStorage sharedHTTPCookieStorage]];
@@ -71,19 +84,12 @@ RCT_EXPORT_MODULE()
                                              delegate:self
                                         delegateQueue:callbackQueue];
 
-    std::lock_guard<std::mutex> lock(_mutex);
     _delegates = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
                                            valueOptions:NSPointerFunctionsStrongMemory
                                                capacity:0];
   }
-  __block NSURLSessionDataTask *task = nil;
-  dispatch_sync(self->_methodQueue, ^{
-    task = [self->_session dataTaskWithRequest:request];
-  });
-  {
-    std::lock_guard<std::mutex> lock(_mutex);
-    [_delegates setObject:delegate forKey:task];
-  }
+  NSURLSessionDataTask *task = [_session dataTaskWithRequest:request];
+  [_delegates setObject:delegate forKey:task];
   [task resume];
   return task;
 }

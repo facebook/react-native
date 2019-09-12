@@ -1,34 +1,42 @@
-load("@fbsource//tools/build_defs:default_platform_defs.bzl", "ANDROID", "APPLE")
+load("@fbsource//tools/build_defs:default_platform_defs.bzl", "ANDROID", "APPLE", "IOS")
 load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("@fbsource//tools/build_defs:fb_xplat_cxx_binary.bzl", "fb_xplat_cxx_binary")
-load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "rn_xplat_cxx_library")
-load("@fbsource//xplat/js/react-native-github/packages/react-native-codegen:DEFS.bzl", "rn_codegen_test")
+load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_xplat_cxx_library")
+load("@fbsource//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
+load("@fbsource//xplat/js/react-native-github/packages/react-native-codegen:DEFS.bzl", "rn_codegen_components", "rn_codegen_modules")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_target")
 
 fb_native.sh_binary(
-    name = "copy_fixture_schema",
-    main = "buck_tests/copy_fixture.sh",
+    name = "codegen_rn_modules_tests",
+    main = "src/cli/verify_with_old_codegen.sh",
+    visibility = ["PUBLIC"],
     resources = [
-        "buck_tests/copy-fixture.js",
-        "buck_tests/copy_fixture.sh",
         "fbsource//xplat/js:setup_env",
-        "src/generators/__test_fixtures__/fixtures.js",
+        "src/cli/verify_with_old_codegen.js",
+        "src/cli/verify_with_old_codegen.sh",
     ],
+)
+
+fb_native.sh_test(
+    name = "verify_all_modules_with_old_codegen",
+    test = "src/cli/verify_all_modules_with_old_codegen.sh",
+    visibility = ["PUBLIC"],
 )
 
 fb_native.sh_binary(
     name = "write_to_json",
-    main = "buck_tests/combine_js_to_schema.sh",
+    main = "src/cli/combine/combine_js_to_schema.sh",
     resources = [
-        "buck_tests/combine-js-to-schema.js",
-        "buck_tests/combine_js_to_schema.sh",
         "fbsource//xplat/js:setup_env",
+        "src/cli/combine/combine-js-to-schema.js",
+        "src/cli/combine/combine_js_to_schema.sh",
     ],
     visibility = ["PUBLIC"],
 )
 
 fb_native.sh_binary(
     name = "rn_codegen",
-    main = "buck_tests/generate_tests.sh",
+    main = "buck_tests/generate-tests.sh",
     resources = glob(
         [
             "buck_tests/**/*.js",
@@ -43,64 +51,27 @@ fb_native.sh_binary(
     visibility = ["PUBLIC"],
 )
 
-rn_codegen_test(
-    fixture_name = "INTERFACE_ONLY",
+fb_native.genrule(
+    name = "codegen_tests_schema",
+    srcs = glob(
+        [
+            "**/e2e/__test_fixtures__/components/*NativeComponent.js",
+            "**/e2e/__test_fixtures__/modules/Native*.js",
+        ],
+    ),
+    cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:write_to_json) $OUT $SRCS",
+    out = "schema-codegen_tests.json",
 )
 
-rn_codegen_test(
-    fixture_name = "BOOLEAN_PROP",
+rn_codegen_components(
+    name = "codegen_tests",
+    schema_target = ":codegen_tests_schema",
 )
 
-rn_codegen_test(
-    fixture_name = "STRING_PROP",
-)
-
-rn_codegen_test(
-    fixture_name = "INTEGER_PROPS",
-)
-
-rn_codegen_test(
-    fixture_name = "FLOAT_PROPS",
-)
-
-rn_codegen_test(
-    fixture_name = "COLOR_PROP",
-)
-
-rn_codegen_test(
-    fixture_name = "IMAGE_PROP",
-)
-
-rn_codegen_test(
-    fixture_name = "POINT_PROP",
-)
-
-rn_codegen_test(
-    fixture_name = "ARRAY_PROPS",
-)
-
-rn_codegen_test(
-    fixture_name = "MULTI_NATIVE_PROP",
-)
-
-rn_codegen_test(
-    fixture_name = "ENUM_PROP",
-)
-
-rn_codegen_test(
-    fixture_name = "EVENT_PROPS",
-)
-
-rn_codegen_test(
-    fixture_name = "EVENT_NESTED_OBJECT_PROPS",
-)
-
-rn_codegen_test(
-    fixture_name = "TWO_COMPONENTS_SAME_FILE",
-)
-
-rn_codegen_test(
-    fixture_name = "TWO_COMPONENTS_DIFFERENT_FILES",
+rn_codegen_modules(
+    name = "codegen_tests",
+    native_module_spec_name = "FBReactNativeTestSpec",
+    schema_target = ":codegen_tests_schema",
 )
 
 fb_xplat_cxx_binary(
@@ -119,21 +90,22 @@ fb_xplat_cxx_binary(
     ],
     visibility = ["PUBLIC"],
     deps = [
-        ":generated_components-ARRAY_PROPS",
-        ":generated_components-BOOLEAN_PROP",
-        ":generated_components-COLOR_PROP",
-        ":generated_components-ENUM_PROP",
-        ":generated_components-EVENT_NESTED_OBJECT_PROPS",
-        ":generated_components-EVENT_PROPS",
-        ":generated_components-FLOAT_PROPS",
-        ":generated_components-IMAGE_PROP",
-        ":generated_components-INTEGER_PROPS",
-        ":generated_components-INTERFACE_ONLY",
-        ":generated_components-MULTI_NATIVE_PROP",
-        ":generated_components-POINT_PROP",
-        ":generated_components-STRING_PROP",
-        ":generated_components-TWO_COMPONENTS_DIFFERENT_FILES",
-        ":generated_components-TWO_COMPONENTS_SAME_FILE",
+        ":generated_components-codegen_tests",
+    ],
+)
+
+rn_android_library(
+    name = "rn_codegen_library_java",
+    srcs = glob(["**/*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_target("java/com/facebook/react/bridge:bridge"),
+        react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/views/view:view"),
+        react_native_target("java/com/facebook/react/uimanager:uimanager"),
+        ":generated_components_java-codegen_tests",
     ],
 )
 
@@ -156,20 +128,53 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        ":generated_components-ARRAY_PROPS",
-        ":generated_components-BOOLEAN_PROP",
-        ":generated_components-COLOR_PROP",
-        ":generated_components-ENUM_PROP",
-        ":generated_components-EVENT_NESTED_OBJECT_PROPS",
-        ":generated_components-EVENT_PROPS",
-        ":generated_components-FLOAT_PROPS",
-        ":generated_components-IMAGE_PROP",
-        ":generated_components-INTEGER_PROPS",
-        ":generated_components-INTERFACE_ONLY",
-        ":generated_components-MULTI_NATIVE_PROP",
-        ":generated_components-POINT_PROP",
-        ":generated_components-STRING_PROP",
-        ":generated_components-TWO_COMPONENTS_DIFFERENT_FILES",
-        ":generated_components-TWO_COMPONENTS_SAME_FILE",
+        ":generated_components-codegen_tests",
     ],
+)
+
+rn_xplat_cxx_library(
+    name = "rn_codegen_library_mm",
+    srcs = ["buck_tests/emptyFile.mm"],
+    headers = [],
+    apple_sdks = (IOS,),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    platforms = (APPLE),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        ":generated_components-codegen_tests",
+        ":generated_objcpp_modules-codegen_tests",
+    ],
+)
+
+yarn_workspace(
+    name = "yarn-workspace",
+    srcs = glob(
+        ["**/*.js"],
+        exclude = [
+            "**/__fixtures__/**",
+            "**/__flowtests__/**",
+            "**/__mocks__/**",
+            "**/__server_snapshot_tests__/**",
+            "**/__tests__/**",
+            "**/node_modules/**",
+            "**/node_modules/.bin/**",
+            "**/.*",
+            "**/.*/**",
+            "**/.*/.*",
+            "**/*.xcodeproj/**",
+            "**/*.xcworkspace/**",
+        ],
+    ),
+    visibility = ["PUBLIC"],
 )

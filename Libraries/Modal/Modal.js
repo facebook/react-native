@@ -10,27 +10,19 @@
 
 'use strict';
 
-const AppContainer = require('AppContainer');
-const I18nManager = require('I18nManager');
-const NativeEventEmitter = require('NativeEventEmitter');
-const NativeModules = require('NativeModules');
-const Platform = require('Platform');
-const React = require('React');
+const AppContainer = require('../ReactNative/AppContainer');
+const I18nManager = require('../ReactNative/I18nManager');
 const PropTypes = require('prop-types');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
+const React = require('react');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const View = require('../Components/View/View');
 
-const RCTModalHostView = require('RCTModalHostViewNativeComponent');
-
-const ModalEventEmitter =
-  Platform.OS === 'ios' && NativeModules.ModalManager
-    ? new NativeEventEmitter(NativeModules.ModalManager)
-    : null;
-
-import type EmitterSubscription from 'EmitterSubscription';
-import type {ViewProps} from 'ViewPropTypes';
-import type {SyntheticEvent} from 'CoreEventTypes';
-
+import type {ViewProps} from '../Components/View/ViewPropTypes';
+import type {DirectEventHandler} from '../Types/CodegenTypes';
+import type {SyntheticEvent} from '../Types/CoreEventTypes';
+import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
+import RCTModalHostView from './RCTModalHostViewNativeComponent';
 /**
  * The Modal component is a simple way to present content above an enclosing view.
  *
@@ -43,13 +35,11 @@ import type {SyntheticEvent} from 'CoreEventTypes';
 // destroyed before the callback is fired.
 let uniqueModalIdentifier = 0;
 
-type OrientationChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
-    orientation: 'portrait' | 'landscape',
-  |}>,
->;
+type OrientationChangeEvent = $ReadOnly<{|
+  orientation: 'portrait' | 'landscape',
+|}>;
 
-type Props = $ReadOnly<{|
+export type Props = $ReadOnly<{|
   ...ViewProps,
 
   /**
@@ -102,7 +92,7 @@ type Props = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onrequestclose
    */
-  onRequestClose?: ?(event?: SyntheticEvent<null>) => mixed,
+  onRequestClose?: ?DirectEventHandler<null>,
 
   /**
    * The `onShow` prop allows passing a function that will be called once the
@@ -110,7 +100,7 @@ type Props = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onshow
    */
-  onShow?: ?(event?: SyntheticEvent<null>) => mixed,
+  onShow?: ?DirectEventHandler<null>,
 
   /**
    * The `onDismiss` prop allows passing a function that will be called once
@@ -143,16 +133,16 @@ type Props = $ReadOnly<{|
    *
    * See https://facebook.github.io/react-native/docs/modal.html#onorientationchange
    */
-  onOrientationChange?: ?(event: OrientationChangeEvent) => mixed,
+  onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
 |}>;
 
 class Modal extends React.Component<Props> {
-  static defaultProps = {
+  static defaultProps: {|hardwareAccelerated: boolean, visible: boolean|} = {
     visible: true,
     hardwareAccelerated: false,
   };
 
-  static contextTypes = {
+  static contextTypes: any | {|rootTag: React$PropType$Primitive<number>|} = {
     rootTag: PropTypes.number,
   };
 
@@ -165,34 +155,23 @@ class Modal extends React.Component<Props> {
     this._identifier = uniqueModalIdentifier++;
   }
 
-  static childContextTypes = {
+  static childContextTypes:
+    | any
+    | {|virtualizedList: React$PropType$Primitive<any>|} = {
     virtualizedList: PropTypes.object,
   };
 
-  getChildContext() {
+  getChildContext(): {|virtualizedList: null|} {
     // Reset the context so VirtualizedList doesn't get confused by nesting
-    // in the React tree that doesn't reflect the native component heirarchy.
+    // in the React tree that doesn't reflect the native component hierarchy.
     return {
       virtualizedList: null,
     };
   }
 
-  componentDidMount() {
-    if (ModalEventEmitter) {
-      this._eventSubscription = ModalEventEmitter.addListener(
-        'modalDismissed',
-        event => {
-          if (event.modalID === this._identifier && this.props.onDismiss) {
-            this.props.onDismiss();
-          }
-        },
-      );
-    }
-  }
-
   componentWillUnmount() {
-    if (this._eventSubscription) {
-      this._eventSubscription.remove();
+    if (this.props.onDismiss != null) {
+      this.props.onDismiss();
     }
   }
 
@@ -261,7 +240,11 @@ class Modal extends React.Component<Props> {
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
         onOrientationChange={this.props.onOrientationChange}>
-        <View style={[styles.container, containerStyles]}>{innerChildren}</View>
+        <ScrollView.Context.Provider value={null}>
+          <View style={[styles.container, containerStyles]}>
+            {innerChildren}
+          </View>
+        </ScrollView.Context.Provider>
       </RCTModalHostView>
     );
   }
@@ -272,7 +255,7 @@ class Modal extends React.Component<Props> {
   }
 }
 
-const side = I18nManager.isRTL ? 'right' : 'left';
+const side = I18nManager.getConstants().isRTL ? 'right' : 'left';
 const styles = StyleSheet.create({
   modal: {
     position: 'absolute',

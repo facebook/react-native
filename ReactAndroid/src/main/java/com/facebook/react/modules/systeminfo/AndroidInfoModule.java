@@ -1,37 +1,34 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.systeminfo;
+
+import static android.content.Context.UI_MODE_SERVICE;
 
 import android.annotation.SuppressLint;
 import android.app.UiModeManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Build;
 import android.provider.Settings.Secure;
-
+import androidx.annotation.Nullable;
+import com.facebook.react.R;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
-
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
-import static android.content.Context.UI_MODE_SERVICE;
-
-/**
- * Module that exposes Android Constants to JS.
- */
+/** Module that exposes Android Constants to JS. */
 @ReactModule(name = AndroidInfoModule.NAME)
 @SuppressLint("HardwareIds")
-public class AndroidInfoModule extends ReactContextBaseJavaModule {
+public class AndroidInfoModule extends ReactContextBaseJavaModule implements TurboModule {
   public static final String NAME = "PlatformConstants";
   private static final String IS_TESTING = "IS_TESTING";
 
@@ -40,10 +37,12 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
   }
 
   /**
-   * See: https://developer.android.com/reference/android/app/UiModeManager.html#getCurrentModeType()
+   * See:
+   * https://developer.android.com/reference/android/app/UiModeManager.html#getCurrentModeType()
    */
   private String uiMode() {
-    UiModeManager uiModeManager = (UiModeManager) getReactApplicationContext().getSystemService(UI_MODE_SERVICE);
+    UiModeManager uiModeManager =
+        (UiModeManager) getReactApplicationContext().getSystemService(UI_MODE_SERVICE);
     switch (uiModeManager.getCurrentModeType()) {
       case Configuration.UI_MODE_TYPE_TELEVISION:
         return "tv";
@@ -74,19 +73,22 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
     constants.put("Fingerprint", Build.FINGERPRINT);
     constants.put("Model", Build.MODEL);
     if (ReactBuildConfig.DEBUG) {
-      constants.put("ServerHost", AndroidInfoHelpers.getServerHost());
+      constants.put("ServerHost", getServerHost());
     }
-    constants.put("isTesting", "true".equals(System.getProperty(IS_TESTING))
-    || isRunningScreenshotTest());
+    constants.put(
+        "isTesting", "true".equals(System.getProperty(IS_TESTING)) || isRunningScreenshotTest());
     constants.put("reactNativeVersion", ReactNativeVersion.VERSION);
     constants.put("uiMode", uiMode());
     return constants;
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  public String getAndroidID(){
-    return Secure.getString(getReactApplicationContext().getContentResolver(),Secure.ANDROID_ID);
+  public String getAndroidID() {
+    return Secure.getString(getReactApplicationContext().getContentResolver(), Secure.ANDROID_ID);
   }
+
+  @Override
+  public void invalidate() {}
 
   private Boolean isRunningScreenshotTest() {
     try {
@@ -95,5 +97,13 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
     } catch (ClassNotFoundException ignored) {
       return false;
     }
+  }
+
+  private String getServerHost() {
+    Resources resources = getReactApplicationContext().getApplicationContext().getResources();
+
+    Integer devServerPort = resources.getInteger(R.integer.react_native_dev_server_port);
+
+    return AndroidInfoHelpers.getServerHost(devServerPort);
   }
 }

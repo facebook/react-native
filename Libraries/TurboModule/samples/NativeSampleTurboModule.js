@@ -10,8 +10,8 @@
 
 'use strict';
 
-import type {TurboModule} from 'RCTExport';
-import * as TurboModuleRegistry from 'TurboModuleRegistry';
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   // Exported methods.
@@ -31,4 +31,6 @@ export interface Spec extends TurboModule {
   +getValueWithPromise: (error: boolean) => Promise<string>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default (TurboModuleRegistry.getEnforcing<Spec>(
+  'SampleTurboModule',
+): Spec);

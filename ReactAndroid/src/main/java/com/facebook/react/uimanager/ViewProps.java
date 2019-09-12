@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
 
 import android.graphics.Color;
@@ -12,9 +11,7 @@ import com.facebook.react.bridge.ReadableMap;
 import java.util.Arrays;
 import java.util.HashSet;
 
-/**
- * Keys for props that need to be shared across multiple classes.
- */
+/** Keys for props that need to be shared across multiple classes. */
 public class ViewProps {
 
   public static final String VIEW_CLASS_NAME = "RCTView";
@@ -134,6 +131,30 @@ public class ViewProps {
   public static final String BORDER_END_COLOR = "borderEndColor";
   public static final String ON_LAYOUT = "onLayout";
 
+  public static final String TRANSFORM = "transform";
+  public static final String ELEVATION = "elevation";
+  public static final String Z_INDEX = "zIndex";
+  public static final String RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
+  public static final String ACCESSIBILITY_LABEL = "accessibilityLabel";
+  public static final String ACCESSIBILITY_HINT = "accessibilityHint";
+  public static final String ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
+  public static final String ACCESSIBILITY_ROLE = "accessibilityRole";
+  public static final String ACCESSIBILITY_STATE = "accessibilityState";
+  public static final String ACCESSIBILITY_ACTIONS = "accessibilityActions";
+  public static final String IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
+
+  // DEPRECATED
+  public static final String ROTATION = "rotation";
+  public static final String SCALE_X = "scaleX";
+  public static final String SCALE_Y = "scaleY";
+  public static final String TRANSLATE_X = "translateX";
+  public static final String TRANSLATE_Y = "translateY";
+
+  /** Used to locate views in end-to-end (UI) tests. */
+  public static final String TEST_ID = "testID";
+
+  public static final String NATIVE_ID = "nativeID";
+
   public static final int[] BORDER_SPACING_TYPES = {
     Spacing.ALL,
     Spacing.START,
@@ -231,19 +252,21 @@ public class ViewProps {
           return false;
         }
         if (map.hasKey(BORDER_WIDTH)
-          && !map.isNull(BORDER_WIDTH)
-          && map.getDouble(BORDER_WIDTH) != 0d) {
+            && !map.isNull(BORDER_WIDTH)
+            && map.getDouble(BORDER_WIDTH) != 0d) {
           return false;
         }
         return true;
       case BORDER_LEFT_COLOR:
         return !map.isNull(BORDER_LEFT_COLOR) && map.getInt(BORDER_LEFT_COLOR) == Color.TRANSPARENT;
       case BORDER_RIGHT_COLOR:
-        return !map.isNull(BORDER_RIGHT_COLOR) && map.getInt(BORDER_RIGHT_COLOR) == Color.TRANSPARENT;
+        return !map.isNull(BORDER_RIGHT_COLOR)
+            && map.getInt(BORDER_RIGHT_COLOR) == Color.TRANSPARENT;
       case BORDER_TOP_COLOR:
         return !map.isNull(BORDER_TOP_COLOR) && map.getInt(BORDER_TOP_COLOR) == Color.TRANSPARENT;
       case BORDER_BOTTOM_COLOR:
-        return !map.isNull(BORDER_BOTTOM_COLOR) && map.getInt(BORDER_BOTTOM_COLOR) == Color.TRANSPARENT;
+        return !map.isNull(BORDER_BOTTOM_COLOR)
+            && map.getInt(BORDER_BOTTOM_COLOR) == Color.TRANSPARENT;
       case BORDER_WIDTH:
         return map.isNull(BORDER_WIDTH) || map.getDouble(BORDER_WIDTH) == 0d;
       case BORDER_LEFT_WIDTH:
@@ -258,6 +281,6 @@ public class ViewProps {
         return map.isNull(OVERFLOW) || VISIBLE.equals(map.getString(OVERFLOW));
       default:
         return false;
-      }
+    }
   }
 }

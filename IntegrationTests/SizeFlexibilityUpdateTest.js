@@ -10,13 +10,13 @@
 
 'use strict';
 
+const RCTNativeAppEventEmitter = require('react-native/Libraries/EventEmitter/RCTNativeAppEventEmitter');
 const React = require('react');
 const ReactNative = require('react-native');
-const RCTNativeAppEventEmitter = require('RCTNativeAppEventEmitter');
 const {View} = ReactNative;
 
 const {TestModule} = ReactNative.NativeModules;
-import type EmitterSubscription from 'EmitterSubscription';
+import type EmitterSubscription from 'react-native/Libraries/vendor/emitter/EmitterSubscription';
 
 const reactViewWidth = 111;
 const reactViewHeight = 222;
@@ -46,15 +46,15 @@ class SizeFlexibilityUpdateTest extends React.Component<Props> {
     }
   }
 
-  markPassed = () => {
+  markPassed: () => void = () => {
     TestModule.markTestPassed(true);
     finalState = true;
   };
 
-  rootViewDidChangeIntrinsicSize = (intrinsicSize: {
-    width: number,
+  rootViewDidChangeIntrinsicSize: (intrinsicSize: {
     height: number,
-  }) => {
+    width: number,
+  }) => void = (intrinsicSize: {width: number, height: number}) => {
     if (finalState) {
       // If a test reaches its final state, it is not expected to do anything more
       TestModule.markTestPassed(false);
@@ -99,7 +99,7 @@ class SizeFlexibilityUpdateTest extends React.Component<Props> {
     }
   };
 
-  render() {
+  render(): React.Node {
     return <View style={{height: reactViewHeight, width: reactViewWidth}} />;
   }
 }

@@ -1,38 +1,29 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.text.frescosupport;
-
-import com.facebook.react.uimanager.LayoutShadowNode;
-import javax.annotation.Nullable;
-
-import java.util.Locale;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
-
+import androidx.annotation.Nullable;
 import com.facebook.common.util.UriUtil;
-import com.facebook.yoga.YogaConstants;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactTextInlineImageShadowNode;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.yoga.YogaConstants;
+import java.util.Locale;
 
-/**
- * Shadow node that represents an inline image. Loading is done using Fresco.
- *
- */
+/** Shadow node that represents an inline image. Loading is done using Fresco. */
 public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShadowNode {
 
   private @Nullable Uri mUri;
@@ -44,8 +35,7 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
   private int mTintColor = 0;
 
   public FrescoBasedReactTextInlineImageShadowNode(
-    AbstractDraweeControllerBuilder draweeControllerBuilder,
-    @Nullable Object callerContext) {
+      AbstractDraweeControllerBuilder draweeControllerBuilder, @Nullable Object callerContext) {
     mDraweeControllerBuilder = draweeControllerBuilder;
     mCallerContext = callerContext;
   }
@@ -53,7 +43,7 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
   @ReactProp(name = "src")
   public void setSource(@Nullable ReadableArray sources) {
     final String source =
-      (sources == null || sources.size() == 0) ? null : sources.getMap(0).getString("uri");
+        (sources == null || sources.size() == 0) ? null : sources.getMap(0).getString("uri");
     Uri uri = null;
     if (source != null) {
       try {
@@ -85,9 +75,7 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
     mTintColor = tintColor;
   }
 
-  /**
-   * Besides width/height, all other layout props on inline images are ignored
-   */
+  /** Besides width/height, all other layout props on inline images are ignored */
   @Override
   public void setWidth(Dynamic width) {
     if (width.getType() == ReadableType.Number) {
@@ -107,7 +95,7 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
           "Inline images must not have percentage based height");
     }
   }
-  
+
   public @Nullable Uri getUri() {
     return mUri;
   }
@@ -122,14 +110,11 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
       return null;
     }
     name = name.toLowerCase(Locale.getDefault()).replace("-", "_");
-    int resId = context.getResources().getIdentifier(
-      name,
-      "drawable",
-      context.getPackageName());
+    int resId = context.getResources().getIdentifier(name, "drawable", context.getPackageName());
     return new Uri.Builder()
-      .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
-      .path(String.valueOf(resId))
-      .build();
+        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME)
+        .path(String.valueOf(resId))
+        .build();
   }
 
   @Override
@@ -143,14 +128,14 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
     int width = (int) Math.ceil(mWidth);
     int height = (int) Math.ceil(mHeight);
     return new FrescoBasedReactTextInlineImageSpan(
-      resources,
-      height,
-      width,
-      mTintColor,
-      getUri(),
-      getHeaders(),
-      getDraweeControllerBuilder(),
-      getCallerContext());
+        resources,
+        height,
+        width,
+        mTintColor,
+        getUri(),
+        getHeaders(),
+        getDraweeControllerBuilder(),
+        getCallerContext());
   }
 
   public AbstractDraweeControllerBuilder getDraweeControllerBuilder() {

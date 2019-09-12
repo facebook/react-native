@@ -11,8 +11,8 @@
 
 'use strict';
 
-const React = require('React');
-const DatePickerIOS = require('DatePickerIOS');
+const React = require('react');
+const DatePickerIOS = require('../DatePickerIOS');
 const render = require('../../../../jest/renderer');
 
 describe('DatePickerIOS', () => {
@@ -39,7 +39,7 @@ describe('DatePickerIOS', () => {
   });
 
   it('should shallow render as <DatePickerIOS> when not mocked', () => {
-    jest.dontMock('DatePickerIOS');
+    jest.dontMock('../DatePickerIOS');
 
     const output = render.shallow(
       <DatePickerIOS
@@ -52,7 +52,7 @@ describe('DatePickerIOS', () => {
   });
 
   it('should render as <View> when not mocked', () => {
-    jest.dontMock('DatePickerIOS');
+    jest.dontMock('../DatePickerIOS');
 
     const instance = render.create(
       <DatePickerIOS

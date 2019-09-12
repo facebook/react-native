@@ -33,8 +33,9 @@ Pod::Spec.new do |s|
   s.compiler_flags         = folly_compiler_flags
   s.source_files           = "**/*.{m,mm,cpp,h}"
   s.exclude_files          = "**/tests/*",
-                             "**/android/*"
-  s.header_dir           = "react/graphics"
+                             "**/android/*",
+                             "**/cxx/*"
+  s.header_dir             = "react/graphics"
   s.pod_target_xcconfig  = { "USE_HEADERMAP" => "NO", "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
 
   s.dependency "Folly/Fabric", folly_version

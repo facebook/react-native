@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -15,13 +15,7 @@ using facebook::yoga::detail::CompactValue;
 
 YGNode::YGNode(YGNode&& node) {
   context_ = node.context_;
-  hasNewLayout_ = node.hasNewLayout_;
-  isReferenceBaseline_ = node.isReferenceBaseline_;
-  isDirty_ = node.isDirty_;
-  nodeType_ = node.nodeType_;
-  measureUsesContext_ = node.measureUsesContext_;
-  baselineUsesContext_ = node.baselineUsesContext_;
-  printUsesContext_ = node.printUsesContext_;
+  flags_ = node.flags_;
   measure_ = node.measure_;
   baseline_ = node.baseline_;
   print_ = node.print_;
@@ -38,9 +32,16 @@ YGNode::YGNode(YGNode&& node) {
   }
 }
 
+YGNode::YGNode(const YGNode& node, YGConfigRef config) : YGNode{node} {
+  config_ = config;
+  if (config->useWebDefaults) {
+    useWebDefaults();
+  }
+}
+
 void YGNode::print(void* printContext) {
   if (print_.noContext != nullptr) {
-    if (printUsesContext_) {
+    if (flags_.at<printUsesContext_>()) {
       print_.withContext(this, printContext);
     } else {
       print_.noContext(this);
@@ -146,14 +147,14 @@ YGSize YGNode::measure(
     YGMeasureMode heightMode,
     void* layoutContext) {
 
-  return measureUsesContext_
+  return flags_.at<measureUsesContext_>()
       ? measure_.withContext(
             this, width, widthMode, height, heightMode, layoutContext)
       : measure_.noContext(this, width, widthMode, height, heightMode);
 }
 
 float YGNode::baseline(float width, float height, void* layoutContext) {
-  return baselineUsesContext_
+  return flags_.at<baselineUsesContext_>()
       ? baseline_.withContext(this, width, height, layoutContext)
       : baseline_.noContext(this, width, height);
 }
@@ -164,7 +165,7 @@ void YGNode::setMeasureFunc(decltype(YGNode::measure_) measureFunc) {
   if (measureFunc.noContext == nullptr) {
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
-    nodeType_ = YGNodeTypeDefault;
+    flags_.at<nodeType_>() = YGNodeTypeDefault;
   } else {
     YGAssertWithNode(
         this,
@@ -180,14 +181,14 @@ void YGNode::setMeasureFunc(decltype(YGNode::measure_) measureFunc) {
 }
 
 void YGNode::setMeasureFunc(YGMeasureFunc measureFunc) {
-  measureUsesContext_ = false;
+  flags_.at<measureUsesContext_>() = false;
   decltype(YGNode::measure_) m;
   m.noContext = measureFunc;
   setMeasureFunc(m);
 }
 
 void YGNode::setMeasureFunc(MeasureWithContextFn measureFunc) {
-  measureUsesContext_ = true;
+  flags_.at<measureUsesContext_>() = true;
   decltype(YGNode::measure_) m;
   m.withContext = measureFunc;
   setMeasureFunc(m);
@@ -206,10 +207,10 @@ void YGNode::insertChild(YGNodeRef child, uint32_t index) {
 }
 
 void YGNode::setDirty(bool isDirty) {
-  if (isDirty == isDirty_) {
+  if (isDirty == flags_.at<isDirty_>()) {
     return;
   }
-  isDirty_ = isDirty;
+  flags_.at<isDirty_>() = isDirty;
   if (isDirty && dirtied_) {
     dirtied_(this);
   }
@@ -230,7 +231,7 @@ void YGNode::removeChild(uint32_t index) {
 }
 
 void YGNode::setLayoutDirection(YGDirection direction) {
-  layout_.direction = direction;
+  layout_.direction() = direction;
 }
 
 void YGNode::setLayoutMargin(float margin, int index) {
@@ -268,7 +269,7 @@ void YGNode::setLayoutMeasuredDimension(float measuredDimension, int index) {
 }
 
 void YGNode::setLayoutHadOverflow(bool hadOverflow) {
-  layout_.hadOverflow = hadOverflow;
+  layout_.hadOverflow() = hadOverflow;
 }
 
 void YGNode::setLayoutDimension(float dimension, int index) {
@@ -349,7 +350,7 @@ YGValue YGNode::resolveFlexBasisPtr() const {
     return flexBasis;
   }
   if (!style_.flex().isUndefined() && style_.flex().unwrap() > 0.0f) {
-    return config_->useWebDefaults ? YGValueAuto : YGValueZero;
+    return flags_.at<useWebDefaults_>() ? YGValueAuto : YGValueZero;
   }
   return YGValueAuto;
 }
@@ -388,7 +389,7 @@ void YGNode::cloneChildrenIfNeeded(void* cloneContext) {
 }
 
 void YGNode::markDirtyAndPropogate() {
-  if (!isDirty_) {
+  if (!flags_.at<isDirty_>()) {
     setDirty(true);
     setLayoutComputedFlexBasis(YGFloatOptional());
     if (owner_) {
@@ -398,7 +399,7 @@ void YGNode::markDirtyAndPropogate() {
 }
 
 void YGNode::markDirtyAndPropogateDownwards() {
-  isDirty_ = true;
+  flags_.at<isDirty_>() = true;
   for_each(children_.begin(), children_.end(), [](YGNodeRef childNode) {
     childNode->markDirtyAndPropogateDownwards();
   });
@@ -425,11 +426,12 @@ float YGNode::resolveFlexShrink() const {
   if (!style_.flexShrink().isUndefined()) {
     return style_.flexShrink().unwrap();
   }
-  if (!config_->useWebDefaults && !style_.flex().isUndefined() &&
+  if (!flags_.at<useWebDefaults_>() && !style_.flex().isUndefined() &&
       style_.flex().unwrap() < 0.0f) {
     return -style_.flex().unwrap();
   }
-  return config_->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink;
+  return flags_.at<useWebDefaults_>() ? kWebDefaultFlexShrink
+                                      : kDefaultFlexShrink;
 }
 
 bool YGNode::isNodeFlexible() {
@@ -518,12 +520,12 @@ YGFloatOptional YGNode::getTrailingPaddingAndBorder(
 }
 
 bool YGNode::didUseLegacyFlag() {
-  bool didUseLegacyFlag = layout_.didUseLegacyFlag;
+  bool didUseLegacyFlag = layout_.didUseLegacyFlag();
   if (didUseLegacyFlag) {
     return true;
   }
   for (const auto& child : children_) {
-    if (child->layout_.didUseLegacyFlag) {
+    if (child->layout_.didUseLegacyFlag()) {
       didUseLegacyFlag = true;
       break;
     }
@@ -531,20 +533,13 @@ bool YGNode::didUseLegacyFlag() {
   return didUseLegacyFlag;
 }
 
-void YGNode::setAndPropogateUseLegacyFlag(bool useLegacyFlag) {
-  config_->useLegacyStretchBehaviour = useLegacyFlag;
-  for_each(children_.begin(), children_.end(), [=](YGNodeRef childNode) {
-    childNode->getConfig()->useLegacyStretchBehaviour = useLegacyFlag;
-  });
-}
-
 void YGNode::setLayoutDoesLegacyFlagAffectsLayout(
     bool doesLegacyFlagAffectsLayout) {
-  layout_.doesLegacyStretchFlagAffectsLayout = doesLegacyFlagAffectsLayout;
+  layout_.doesLegacyStretchFlagAffectsLayout() = doesLegacyFlagAffectsLayout;
 }
 
 void YGNode::setLayoutDidUseLegacyFlag(bool didUseLegacyFlag) {
-  layout_.didUseLegacyFlag = didUseLegacyFlag;
+  layout_.didUseLegacyFlag() = didUseLegacyFlag;
 }
 
 bool YGNode::isLayoutTreeEqualToNode(const YGNode& node) const {
@@ -581,11 +576,9 @@ void YGNode::reset() {
 
   clearChildren();
 
-  auto config = getConfig();
-  *this = YGNode{};
-  if (config->useWebDefaults) {
-    style_.flexDirection() = YGFlexDirectionRow;
-    style_.alignContent() = YGAlignStretch;
+  auto webDefaults = flags_.at<useWebDefaults_>();
+  *this = YGNode{getConfig()};
+  if (webDefaults) {
+    useWebDefaults();
   }
-  setConfig(config);
 }

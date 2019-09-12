@@ -6,6 +6,7 @@
 #include "Differentiator.h"
 
 #include <better/map.h>
+#include <better/small_vector.h>
 #include <react/core/LayoutableShadowNode.h>
 #include <react/debug/SystraceSection.h>
 #include "ShadowView.h"
@@ -13,15 +14,78 @@
 namespace facebook {
 namespace react {
 
+/*
+ * Extremely simple and naive implementation of a map.
+ * The map is simple but it's optimized for particular constraints that we have
+ * here.
+ *
+ * A regular map implementation (e.g. `std::unordered_map`) has some basic
+ * performance guarantees like constant average insertion and lookup complexity.
+ * This is nice, but it's *average* complexity measured on a non-trivial amount
+ * of data. The regular map is a very complex data structure that using hashing,
+ * buckets, multiple comprising operations, multiple allocations and so on.
+ *
+ * In our particular case, we need a map for `int` to `void *` with a dozen
+ * values. In these conditions, nothing can beat a naive implementation using a
+ * stack-allocated vector. And this implementation is exactly this: no
+ * allocation, no hashing, no complex branching, no buckets, no iterators, no
+ * rehashing, no other guarantees. It's crazy limited, unsafe, and performant on
+ * a trivial amount of data.
+ *
+ * Besides that, we also need to optimize for insertion performance (the case
+ * where a bunch of views appears on the screen first time); in this
+ * implementation, this is as performant as vector `push_back`.
+ */
+template <typename KeyT, typename ValueT, int DefaultSize = 16>
+class TinyMap final {
+ public:
+  using Pair = std::pair<KeyT, ValueT>;
+  using Iterator = Pair *;
+
+  inline Iterator begin() {
+    return (Pair *)vector_;
+  }
+
+  inline Iterator end() {
+    return nullptr;
+  }
+
+  inline Iterator find(KeyT key) {
+    for (auto &item : vector_) {
+      if (item.first == key) {
+        return &item;
+      }
+    }
+
+    return end();
+  }
+
+  inline void insert(Pair pair) {
+    assert(pair.first != 0);
+    vector_.push_back(pair);
+  }
+
+  inline void erase(Iterator iterator) {
+    static_assert(
+        std::is_same<KeyT, Tag>::value,
+        "The collection is designed to store only `Tag`s as keys.");
+    // Zero is a invalid tag.
+    iterator->first = 0;
+  }
+
+ private:
+  better::small_vector<Pair, DefaultSize> vector_;
+};
+
 static void sliceChildShadowNodeViewPairsRecursively(
-    ShadowViewNodePairList &pairList,
+    ShadowViewNodePair::List &pairList,
     Point layoutOffset,
-    const ShadowNode &shadowNode) {
-  for (const auto &childShadowNode : shadowNode.getChildren()) {
+    ShadowNode const &shadowNode) {
+  for (auto const &childShadowNode : shadowNode.getChildren()) {
     auto shadowView = ShadowView(*childShadowNode);
 
-    const auto layoutableShadowNode =
-        dynamic_cast<const LayoutableShadowNode *>(childShadowNode.get());
+    auto const layoutableShadowNode =
+        dynamic_cast<LayoutableShadowNode const *>(childShadowNode.get());
 #ifndef ANDROID
     // New approach (iOS):
     // Non-view components are treated as layout-only views (they aren't
@@ -44,19 +108,42 @@ static void sliceChildShadowNodeViewPairsRecursively(
   }
 }
 
-static ShadowViewNodePairList sliceChildShadowNodeViewPairs(
-    const ShadowNode &shadowNode) {
-  ShadowViewNodePairList pairList;
+ShadowViewNodePair::List sliceChildShadowNodeViewPairs(
+    ShadowNode const &shadowNode) {
+  auto pairList = ShadowViewNodePair::List{};
   sliceChildShadowNodeViewPairsRecursively(pairList, {0, 0}, shadowNode);
   return pairList;
 }
 
+/*
+ * Before we start to diff, let's make sure all our core data structures are in
+ * good shape to deliver the best performance.
+ */
+static_assert(
+    std::is_move_constructible<ShadowViewMutation>::value,
+    "`ShadowViewMutation` must be `move constructible`.");
+static_assert(
+    std::is_move_constructible<ShadowView>::value,
+    "`ShadowView` must be `move constructible`.");
+static_assert(
+    std::is_move_constructible<ShadowViewNodePair>::value,
+    "`ShadowViewNodePair` must be `move constructible`.");
+static_assert(
+    std::is_move_assignable<ShadowViewMutation>::value,
+    "`ShadowViewMutation` must be `move assignable`.");
+static_assert(
+    std::is_move_assignable<ShadowView>::value,
+    "`ShadowView` must be `move assignable`.");
+static_assert(
+    std::is_move_assignable<ShadowViewNodePair>::value,
+    "`ShadowViewNodePair` must be `move assignable`.");
+
 static void calculateShadowViewMutations(
-    ShadowViewMutationList &mutations,
-    const ShadowView &parentShadowView,
-    const ShadowViewNodePairList &oldChildPairs,
-    const ShadowViewNodePairList &newChildPairs) {
-  // The current version of the algorithm is otimized for simplicity,
+    ShadowViewMutation::List &mutations,
+    ShadowView const &parentShadowView,
+    ShadowViewNodePair::List const &oldChildPairs,
+    ShadowViewNodePair::List const &newChildPairs) {
+  // The current version of the algorithm is optimized for simplicity,
   // not for performance or optimal result.
 
   if (oldChildPairs == newChildPairs) {
@@ -67,22 +154,25 @@ static void calculateShadowViewMutations(
     return;
   }
 
-  better::map<Tag, ShadowViewNodePair> insertedPairs;
-  int index = 0;
+  auto index = int{0};
 
-  ShadowViewMutationList createMutations = {};
-  ShadowViewMutationList deleteMutations = {};
-  ShadowViewMutationList insertMutations = {};
-  ShadowViewMutationList removeMutations = {};
-  ShadowViewMutationList updateMutations = {};
-  ShadowViewMutationList downwardMutations = {};
-  ShadowViewMutationList destructiveDownwardMutations = {};
+  // Maps inserted node tags to pointers to them in `newChildPairs`.
+  auto insertedPairs = TinyMap<Tag, ShadowViewNodePair const *>{};
+
+  // Lists of mutations
+  auto createMutations = ShadowViewMutation::List{};
+  auto deleteMutations = ShadowViewMutation::List{};
+  auto insertMutations = ShadowViewMutation::List{};
+  auto removeMutations = ShadowViewMutation::List{};
+  auto updateMutations = ShadowViewMutation::List{};
+  auto downwardMutations = ShadowViewMutation::List{};
+  auto destructiveDownwardMutations = ShadowViewMutation::List{};
 
   // Stage 1: Collecting `Update` mutations
   for (index = 0; index < oldChildPairs.size() && index < newChildPairs.size();
        index++) {
-    const auto &oldChildPair = oldChildPairs[index];
-    const auto &newChildPair = newChildPairs[index];
+    auto const &oldChildPair = oldChildPairs[index];
+    auto const &newChildPair = newChildPairs[index];
 
     if (oldChildPair.shadowView.tag != newChildPair.shadowView.tag) {
       // Totally different nodes, updating is impossible.
@@ -97,9 +187,9 @@ static void calculateShadowViewMutations(
           index));
     }
 
-    const auto oldGrandChildPairs =
+    auto const oldGrandChildPairs =
         sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
-    const auto newGrandChildPairs =
+    auto const newGrandChildPairs =
         sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
     calculateShadowViewMutations(
         *(newGrandChildPairs.size() ? &downwardMutations
@@ -113,25 +203,25 @@ static void calculateShadowViewMutations(
 
   // Stage 2: Collecting `Insert` mutations
   for (; index < newChildPairs.size(); index++) {
-    const auto &newChildPair = newChildPairs[index];
+    auto const &newChildPair = newChildPairs[index];
 
     insertMutations.push_back(ShadowViewMutation::InsertMutation(
-          parentShadowView, newChildPair.shadowView, index));
+        parentShadowView, newChildPair.shadowView, index));
 
-    insertedPairs.insert({newChildPair.shadowView.tag, newChildPair});
+    insertedPairs.insert({newChildPair.shadowView.tag, &newChildPair});
   }
 
   // Stage 3: Collecting `Delete` and `Remove` mutations
   for (index = lastIndexAfterFirstStage; index < oldChildPairs.size();
        index++) {
-    const auto &oldChildPair = oldChildPairs[index];
+    auto const &oldChildPair = oldChildPairs[index];
 
     // Even if the old view was (re)inserted, we have to generate `remove`
     // mutation.
     removeMutations.push_back(ShadowViewMutation::RemoveMutation(
         parentShadowView, oldChildPair.shadowView, index));
 
-    const auto &it = insertedPairs.find(oldChildPair.shadowView.tag);
+    auto const it = insertedPairs.find(oldChildPair.shadowView.tag);
 
     if (it == insertedPairs.end()) {
       // The old view was *not* (re)inserted.
@@ -151,11 +241,12 @@ static void calculateShadowViewMutations(
       // The old view *was* (re)inserted.
       // We have to call the algorithm recursively if the inserted view
       // is *not* the same as removed one.
-      const auto &newChildPair = it->second;
+      auto const &newChildPair = *it->second;
+
       if (newChildPair != oldChildPair) {
-        const auto oldGrandChildPairs =
+        auto const oldGrandChildPairs =
             sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
-        const auto newGrandChildPairs =
+        auto const newGrandChildPairs =
             sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
         calculateShadowViewMutations(
             *(newGrandChildPairs.size() ? &downwardMutations
@@ -176,7 +267,7 @@ static void calculateShadowViewMutations(
   // Stage 4: Collecting `Create` mutations
   for (index = lastIndexAfterFirstStage; index < newChildPairs.size();
        index++) {
-    const auto &newChildPair = newChildPairs[index];
+    auto const &newChildPair = newChildPairs[index];
 
     if (insertedPairs.find(newChildPair.shadowView.tag) ==
         insertedPairs.end()) {
@@ -195,33 +286,46 @@ static void calculateShadowViewMutations(
   }
 
   // All mutations in an optimal order:
-  mutations.insert(
-      mutations.end(),
+  std::move(
       destructiveDownwardMutations.begin(),
-      destructiveDownwardMutations.end());
-  mutations.insert(
-      mutations.end(), updateMutations.begin(), updateMutations.end());
-  mutations.insert(
-      mutations.end(), removeMutations.rbegin(), removeMutations.rend());
-  mutations.insert(
-      mutations.end(), deleteMutations.begin(), deleteMutations.end());
-  mutations.insert(
-      mutations.end(), createMutations.begin(), createMutations.end());
-  mutations.insert(
-      mutations.end(), downwardMutations.begin(), downwardMutations.end());
-  mutations.insert(
-      mutations.end(), insertMutations.begin(), insertMutations.end());
+      destructiveDownwardMutations.end(),
+      std::back_inserter(mutations));
+  std::move(
+      updateMutations.begin(),
+      updateMutations.end(),
+      std::back_inserter(mutations));
+  std::move(
+      removeMutations.rbegin(),
+      removeMutations.rend(),
+      std::back_inserter(mutations));
+  std::move(
+      deleteMutations.begin(),
+      deleteMutations.end(),
+      std::back_inserter(mutations));
+  std::move(
+      createMutations.begin(),
+      createMutations.end(),
+      std::back_inserter(mutations));
+  std::move(
+      downwardMutations.begin(),
+      downwardMutations.end(),
+      std::back_inserter(mutations));
+  std::move(
+      insertMutations.begin(),
+      insertMutations.end(),
+      std::back_inserter(mutations));
 }
 
-ShadowViewMutationList calculateShadowViewMutations(
-    const ShadowNode &oldRootShadowNode,
-    const ShadowNode &newRootShadowNode) {
+ShadowViewMutation::List calculateShadowViewMutations(
+    ShadowNode const &oldRootShadowNode,
+    ShadowNode const &newRootShadowNode) {
   SystraceSection s("calculateShadowViewMutations");
 
   // Root shadow nodes must be belong the same family.
   assert(ShadowNode::sameFamily(oldRootShadowNode, newRootShadowNode));
 
-  ShadowViewMutationList mutations;
+  auto mutations = ShadowViewMutation::List{};
+  mutations.reserve(256);
 
   auto oldRootShadowView = ShadowView(oldRootShadowNode);
   auto newRootShadowView = ShadowView(newRootShadowNode);

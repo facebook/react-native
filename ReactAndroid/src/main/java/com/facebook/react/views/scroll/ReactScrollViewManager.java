@@ -1,16 +1,15 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.scroll;
 
 import android.graphics.Color;
-import androidx.core.view.ViewCompat;
 import android.util.DisplayMetrics;
-
+import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
@@ -24,27 +23,24 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 /**
  * View manager for {@link ReactScrollView} components.
  *
- * <p>Note that {@link ReactScrollView} and {@link ReactScrollView} are exposed to JS
- * as a single ScrollView component, configured via the {@code horizontal} boolean property.
+ * <p>Note that {@link ReactScrollView} and {@link ReactHorizontalScrollView} are exposed to JS as a
+ * single ScrollView component, configured via the {@code horizontal} boolean property.
  */
 @ReactModule(name = ReactScrollViewManager.REACT_CLASS)
-public class ReactScrollViewManager
-    extends ViewGroupManager<ReactScrollView>
+public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactScrollView> {
 
   public static final String REACT_CLASS = "RCTScrollView";
 
   private static final int[] SPACING_TYPES = {
-      Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
+    Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
   };
 
   private @Nullable FpsListener mFpsListener = null;
@@ -70,6 +66,10 @@ public class ReactScrollViewManager
   @ReactProp(name = "scrollEnabled", defaultBoolean = true)
   public void setScrollEnabled(ReactScrollView view, boolean value) {
     view.setScrollEnabled(value);
+
+    // Set focusable to match whether scroll is enabled. This improves keyboarding
+    // experience by not making scrollview a tab stop when you cannot interact with it.
+    view.setFocusable(value);
   }
 
   @ReactProp(name = "showsVerticalScrollIndicator")
@@ -115,9 +115,9 @@ public class ReactScrollViewManager
   }
 
   /**
-   * Computing momentum events is potentially expensive since we post a runnable on the UI thread
-   * to see when it is done.  We only do that if {@param sendMomentumEvents} is set to true.  This
-   * is handled automatically in js by checking if there is a listener on the momentum events.
+   * Computing momentum events is potentially expensive since we post a runnable on the UI thread to
+   * see when it is done. We only do that if {@param sendMomentumEvents} is set to true. This is
+   * handled automatically in js by checking if there is a listener on the momentum events.
    *
    * @param view
    * @param sendMomentumEvents
@@ -147,6 +147,7 @@ public class ReactScrollViewManager
   /**
    * When set, fills the rest of the scrollview with a color to avoid setting a background and
    * creating unnecessary overdraw.
+   *
    * @param view
    * @param color
    */
@@ -155,9 +156,7 @@ public class ReactScrollViewManager
     view.setEndFillColor(color);
   }
 
-  /**
-   * Controls overScroll behaviour
-   */
+  /** Controls overScroll behaviour */
   @ReactProp(name = "overScrollMode")
   public void setOverScrollMode(ReactScrollView view, String value) {
     view.setOverScrollMode(ReactScrollViewHelper.parseOverScrollMode(value));
@@ -175,9 +174,13 @@ public class ReactScrollViewManager
 
   @Override
   public void receiveCommand(
-      ReactScrollView scrollView,
-      int commandId,
-      @Nullable ReadableArray args) {
+      ReactScrollView scrollView, int commandId, @Nullable ReadableArray args) {
+    ReactScrollViewCommandHelper.receiveCommand(this, scrollView, commandId, args);
+  }
+
+  @Override
+  public void receiveCommand(
+      ReactScrollView scrollView, String commandId, @Nullable ReadableArray args) {
     ReactScrollViewCommandHelper.receiveCommand(this, scrollView, commandId, args);
   }
 
@@ -195,13 +198,16 @@ public class ReactScrollViewManager
       scrollView.scrollTo(data.mDestX, data.mDestY);
     }
   }
-  @ReactPropGroup(names = {
-      ViewProps.BORDER_RADIUS,
-      ViewProps.BORDER_TOP_LEFT_RADIUS,
-      ViewProps.BORDER_TOP_RIGHT_RADIUS,
-      ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
-      ViewProps.BORDER_BOTTOM_LEFT_RADIUS
-  }, defaultFloat = YogaConstants.UNDEFINED)
+
+  @ReactPropGroup(
+      names = {
+        ViewProps.BORDER_RADIUS,
+        ViewProps.BORDER_TOP_LEFT_RADIUS,
+        ViewProps.BORDER_TOP_RIGHT_RADIUS,
+        ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+        ViewProps.BORDER_BOTTOM_LEFT_RADIUS
+      },
+      defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderRadius(ReactScrollView view, int index, float borderRadius) {
     if (!YogaConstants.isUndefined(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
@@ -219,13 +225,15 @@ public class ReactScrollViewManager
     view.setBorderStyle(borderStyle);
   }
 
-  @ReactPropGroup(names = {
-      ViewProps.BORDER_WIDTH,
-      ViewProps.BORDER_LEFT_WIDTH,
-      ViewProps.BORDER_RIGHT_WIDTH,
-      ViewProps.BORDER_TOP_WIDTH,
-      ViewProps.BORDER_BOTTOM_WIDTH,
-  }, defaultFloat = YogaConstants.UNDEFINED)
+  @ReactPropGroup(
+      names = {
+        ViewProps.BORDER_WIDTH,
+        ViewProps.BORDER_LEFT_WIDTH,
+        ViewProps.BORDER_RIGHT_WIDTH,
+        ViewProps.BORDER_TOP_WIDTH,
+        ViewProps.BORDER_BOTTOM_WIDTH,
+      },
+      defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderWidth(ReactScrollView view, int index, float width) {
     if (!YogaConstants.isUndefined(width)) {
       width = PixelUtil.toPixelFromDIP(width);
@@ -233,12 +241,17 @@ public class ReactScrollViewManager
     view.setBorderWidth(SPACING_TYPES[index], width);
   }
 
-  @ReactPropGroup(names = {
-      "borderColor", "borderLeftColor", "borderRightColor", "borderTopColor", "borderBottomColor"
-  }, customType = "Color")
+  @ReactPropGroup(
+      names = {
+        "borderColor",
+        "borderLeftColor",
+        "borderRightColor",
+        "borderTopColor",
+        "borderBottomColor"
+      },
+      customType = "Color")
   public void setBorderColor(ReactScrollView view, int index, Integer color) {
-    float rgbComponent =
-        color == null ? YogaConstants.UNDEFINED : (float) (color & 0x00FFFFFF);
+    float rgbComponent = color == null ? YogaConstants.UNDEFINED : (float) (color & 0x00FFFFFF);
     float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) (color >>> 24);
     view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
@@ -250,11 +263,9 @@ public class ReactScrollViewManager
 
   @Override
   public void scrollToEnd(
-      ReactScrollView scrollView,
-      ReactScrollViewCommandHelper.ScrollToEndCommandData data) {
+      ReactScrollView scrollView, ReactScrollViewCommandHelper.ScrollToEndCommandData data) {
     // ScrollView always has one child - the scrollable area
-    int bottom =
-      scrollView.getChildAt(0).getHeight() + scrollView.getPaddingBottom();
+    int bottom = scrollView.getChildAt(0).getHeight() + scrollView.getPaddingBottom();
     if (data.mAnimated) {
       scrollView.smoothScrollTo(scrollView.getScrollX(), bottom);
     } else {
@@ -267,6 +278,17 @@ public class ReactScrollViewManager
     view.setScrollbarFadingEnabled(!value);
   }
 
+  @ReactProp(name = "fadingEdgeLength")
+  public void setFadingEdgeLength(ReactScrollView view, int value) {
+    if (value > 0) {
+      view.setVerticalFadingEdgeEnabled(true);
+      view.setFadingEdgeLength(value);
+    } else {
+      view.setVerticalFadingEdgeEnabled(false);
+      view.setFadingEdgeLength(0);
+    }
+  }
+
   @Override
   public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
     return createExportedCustomDirectEventTypeConstants();
@@ -274,11 +296,21 @@ public class ReactScrollViewManager
 
   public static Map<String, Object> createExportedCustomDirectEventTypeConstants() {
     return MapBuilder.<String, Object>builder()
-        .put(ScrollEventType.getJSEventName(ScrollEventType.SCROLL), MapBuilder.of("registrationName", "onScroll"))
-        .put(ScrollEventType.getJSEventName(ScrollEventType.BEGIN_DRAG), MapBuilder.of("registrationName", "onScrollBeginDrag"))
-        .put(ScrollEventType.getJSEventName(ScrollEventType.END_DRAG), MapBuilder.of("registrationName", "onScrollEndDrag"))
-        .put(ScrollEventType.getJSEventName(ScrollEventType.MOMENTUM_BEGIN), MapBuilder.of("registrationName", "onMomentumScrollBegin"))
-        .put(ScrollEventType.getJSEventName(ScrollEventType.MOMENTUM_END), MapBuilder.of("registrationName", "onMomentumScrollEnd"))
+        .put(
+            ScrollEventType.getJSEventName(ScrollEventType.SCROLL),
+            MapBuilder.of("registrationName", "onScroll"))
+        .put(
+            ScrollEventType.getJSEventName(ScrollEventType.BEGIN_DRAG),
+            MapBuilder.of("registrationName", "onScrollBeginDrag"))
+        .put(
+            ScrollEventType.getJSEventName(ScrollEventType.END_DRAG),
+            MapBuilder.of("registrationName", "onScrollEndDrag"))
+        .put(
+            ScrollEventType.getJSEventName(ScrollEventType.MOMENTUM_BEGIN),
+            MapBuilder.of("registrationName", "onMomentumScrollBegin"))
+        .put(
+            ScrollEventType.getJSEventName(ScrollEventType.MOMENTUM_END),
+            MapBuilder.of("registrationName", "onMomentumScrollEnd"))
         .build();
   }
 }

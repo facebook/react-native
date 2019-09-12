@@ -630,7 +630,9 @@ jsi::String JSCRuntime::createStringFromUtf8(
     size_t length) {
   std::string tmp(reinterpret_cast<const char*>(str), length);
   JSStringRef stringRef = JSStringCreateWithUTF8CString(tmp.c_str());
-  return createString(stringRef);
+  auto result = createString(stringRef);
+  JSStringRelease(stringRef);
+  return result;
 }
 
 std::string JSCRuntime::utf8(const jsi::String& str) {
@@ -664,11 +666,11 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
     static JSValueRef getProperty(
         JSContextRef ctx,
         JSObjectRef object,
-        JSStringRef propertyName,
+        JSStringRef propName,
         JSValueRef* exception) {
       auto proxy = static_cast<HostObjectProxy*>(JSObjectGetPrivate(object));
       auto& rt = proxy->runtime;
-      jsi::PropNameID sym = rt.createPropNameID(propertyName);
+      jsi::PropNameID sym = rt.createPropNameID(propName);
       jsi::Value ret;
       try {
         ret = proxy->hostObject->get(rt, sym);
@@ -681,14 +683,20 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
                 .getPropertyAsFunction(rt, "Error")
                 .call(
                     rt,
-                    std::string("Exception in HostObject::get: ") + ex.what());
+                    std::string("Exception in HostObject::get(propName:")
+                      + JSStringToSTLString(propName)
+                      + std::string("): ") + ex.what());
         *exception = rt.valueRef(excValue);
         return JSValueMakeUndefined(ctx);
       } catch (...) {
         auto excValue =
             rt.global()
                 .getPropertyAsFunction(rt, "Error")
-                .call(rt, std::string("Exception in HostObject::get: ") + JSStringToSTLString(propertyName));
+                .call(
+                    rt,
+                    std::string("Exception in HostObject::get(propName:")
+                      + JSStringToSTLString(propName)
+                      + std::string("): <unknown>"));
         *exception = rt.valueRef(excValue);
         return JSValueMakeUndefined(ctx);
       }
@@ -718,14 +726,20 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
                 .getPropertyAsFunction(rt, "Error")
                 .call(
                     rt,
-                    std::string("Exception in HostObject::set: ") + ex.what());
+                    std::string("Exception in HostObject::set(propName:")
+                      + JSStringToSTLString(propName)
+                      + std::string("): ") + ex.what());
         *exception = rt.valueRef(excValue);
         return false;
       } catch (...) {
         auto excValue =
             rt.global()
                 .getPropertyAsFunction(rt, "Error")
-                .call(rt, "Exception in HostObject::set: <unknown>");
+                .call(
+                    rt,
+                      std::string("Exception in HostObject::set(propName:")
+                      + JSStringToSTLString(propName)
+                      + std::string("): <unknown>"));
         *exception = rt.valueRef(excValue);
         return false;
       }
@@ -777,7 +791,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
 
 std::shared_ptr<jsi::HostObject> JSCRuntime::getHostObject(
     const jsi::Object& obj) {
-  // We are guarenteed at this point to have isHostObject(obj) == true
+  // We are guaranteed at this point to have isHostObject(obj) == true
   // so the private data should be HostObjectMetadata
   JSObjectRef object = objectRef(obj);
   auto metadata =

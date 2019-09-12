@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTBlobManager.h"
+#import <React/RCTBlobManager.h>
 
 #import <mutex>
 
@@ -13,6 +13,7 @@
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
 #import <React/RCTWebSocketModule.h>
+#import "RCTBlobCollector.h"
 
 static NSString *const kBlobURIScheme = @"blob";
 
@@ -33,6 +34,7 @@ static NSString *const kBlobURIScheme = @"blob";
 RCT_EXPORT_MODULE(BlobModule)
 
 @synthesize bridge = _bridge;
+@synthesize methodQueue = _methodQueue;
 
 - (void)setBridge:(RCTBridge *)bridge
 {
@@ -40,6 +42,8 @@ RCT_EXPORT_MODULE(BlobModule)
 
   std::lock_guard<std::mutex> lock(_blobsMutex);
   _blobs = [NSMutableDictionary new];
+
+  facebook::react::RCTBlobCollector::install(self);
 }
 
 + (BOOL)requiresMainQueueSetup

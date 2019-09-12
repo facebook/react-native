@@ -4,14 +4,13 @@
 
 #include <react/core/ShadowNodeFragment.h>
 #include <react/debug/SystraceSection.h>
-#include <react/utils/TimeUtils.h>
 
 namespace facebook {
 namespace react {
 
 SharedShadowNode UIManager::createNode(
     Tag tag,
-    const ComponentName &name,
+    std::string const &name,
     SurfaceId surfaceId,
     const RawProps &rawProps,
     SharedEventTarget eventTarget) const {
@@ -25,7 +24,7 @@ SharedShadowNode UIManager::createNode(
       componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
   auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
   auto const state = componentDescriptor.createInitialState(
-      ShadowNodeFragment{surfaceId, tag, props, eventEmitter});
+      ShadowNodeFragment{tag, surfaceId, props, eventEmitter});
 
   auto shadowNode = componentDescriptor.createShadowNode({
       /* .tag = */ tag,
@@ -88,8 +87,22 @@ void UIManager::completeSurface(
   SystraceSection s("UIManager::completeSurface");
 
   if (delegate_) {
-    delegate_->uiManagerDidFinishTransaction(
-        surfaceId, rootChildren, getTime());
+    delegate_->uiManagerDidFinishTransaction(surfaceId, rootChildren);
+  }
+}
+
+void UIManager::setJSResponder(
+    const SharedShadowNode &shadowNode,
+    const bool blockNativeResponder) const {
+  if (delegate_) {
+    delegate_->uiManagerDidSetJSResponder(
+        shadowNode->getSurfaceId(), shadowNode, blockNativeResponder);
+  }
+}
+
+void UIManager::clearJSResponder() const {
+  if (delegate_) {
+    delegate_->uiManagerDidClearJSResponder();
   }
 }
 
@@ -97,8 +110,6 @@ void UIManager::setNativeProps(
     const SharedShadowNode &shadowNode,
     const RawProps &rawProps) const {
   SystraceSection s("UIManager::setNativeProps");
-
-  long startCommitTime = getTime();
 
   auto &componentDescriptor = shadowNode->getComponentDescriptor();
   auto props = componentDescriptor.cloneProps(shadowNode->getProps(), rawProps);
@@ -108,13 +119,12 @@ void UIManager::setNativeProps(
       /* .props = */ props,
   });
 
-  shadowTreeRegistry_->visit(
+  shadowTreeRegistry_.visit(
       shadowNode->getSurfaceId(), [&](const ShadowTree &shadowTree) {
         shadowTree.tryCommit(
             [&](const SharedRootShadowNode &oldRootShadowNode) {
               return oldRootShadowNode->clone(shadowNode, newShadowNode);
-            },
-            startCommitTime);
+            });
       });
 }
 
@@ -123,17 +133,14 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
     const ShadowNode *ancestorShadowNode) const {
   SystraceSection s("UIManager::getRelativeLayoutMetrics");
 
-  long startCommitTime = getTime();
-
   if (!ancestorShadowNode) {
-    shadowTreeRegistry_->visit(
+    shadowTreeRegistry_.visit(
         shadowNode.getSurfaceId(), [&](const ShadowTree &shadowTree) {
           shadowTree.tryCommit(
               [&](const SharedRootShadowNode &oldRootShadowNode) {
                 ancestorShadowNode = oldRootShadowNode.get();
                 return nullptr;
-              },
-              startCommitTime);
+              });
         });
   }
 
@@ -153,8 +160,6 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
 void UIManager::updateState(
     const SharedShadowNode &shadowNode,
     const StateData::Shared &rawStateData) const {
-  long startCommitTime = getTime();
-
   auto &componentDescriptor = shadowNode->getComponentDescriptor();
   auto state =
       componentDescriptor.createState(shadowNode->getState(), rawStateData);
@@ -168,18 +173,63 @@ void UIManager::updateState(
       /* .state = */ state,
   });
 
-  shadowTreeRegistry_->visit(
+  shadowTreeRegistry_.visit(
       shadowNode->getSurfaceId(), [&](const ShadowTree &shadowTree) {
         shadowTree.tryCommit(
             [&](const SharedRootShadowNode &oldRootShadowNode) {
               return oldRootShadowNode->clone(shadowNode, newShadowNode);
-            },
-            startCommitTime);
+            });
       });
 }
 
-void UIManager::setShadowTreeRegistry(ShadowTreeRegistry *shadowTreeRegistry) {
-  shadowTreeRegistry_ = shadowTreeRegistry;
+void UIManager::dispatchCommand(
+    const SharedShadowNode &shadowNode,
+    std::string const &commandName,
+    folly::dynamic const args) const {
+  if (delegate_) {
+    delegate_->uiManagerDidDispatchCommand(shadowNode, commandName, args);
+  }
+}
+
+static ShadowNode::Shared findShadowNodeByTagRecursively(
+    ShadowNode::Shared const &parentShadowNode,
+    Tag tag) {
+  if (parentShadowNode->getTag() == tag) {
+    return parentShadowNode;
+  }
+
+  for (ShadowNode::Shared const &shadowNode : parentShadowNode->getChildren()) {
+    auto result = findShadowNodeByTagRecursively(shadowNode, tag);
+    if (result) {
+      return result;
+    }
+  }
+
+  return nullptr;
+}
+
+ShadowNode::Shared UIManager::findShadowNodeByTag_DEPRECATED(Tag tag) const {
+  auto shadowNode = ShadowNode::Shared{};
+
+  shadowTreeRegistry_.enumerate([&](ShadowTree const &shadowTree, bool &stop) {
+    auto rootShadowNode = ShadowNode::Shared{};
+    // This is tricky.
+    // The public interface of `ShadowTree` discourages accessing a stored
+    // pointer to a root node because of the possible data race.
+    // To work around this, we ask for a commit and immediately cancel it
+    // returning `nullptr` instead of a new shadow tree.
+    shadowTree.tryCommit([&](SharedRootShadowNode const &oldRootShadowNode) {
+      rootShadowNode = oldRootShadowNode;
+      return nullptr;
+    });
+
+    shadowNode = findShadowNodeByTagRecursively(rootShadowNode, tag);
+    if (shadowNode) {
+      stop = true;
+    }
+  });
+
+  return shadowNode;
 }
 
 void UIManager::setComponentDescriptorRegistry(
@@ -193,6 +243,20 @@ void UIManager::setDelegate(UIManagerDelegate *delegate) {
 
 UIManagerDelegate *UIManager::getDelegate() {
   return delegate_;
+}
+
+void UIManager::visitBinding(
+    std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
+    const {
+  if (!uiManagerBinding_) {
+    return;
+  }
+
+  callback(*uiManagerBinding_);
+}
+
+ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
+  return shadowTreeRegistry_;
 }
 
 } // namespace react

@@ -6,7 +6,7 @@
 plugins {
     id("com.android.library")
     id("maven")
-    id("de.undercouch.download") version "3.4.3"
+    id("de.undercouch.download")
 }
 
 import de.undercouch.gradle.tasks.download.Download
@@ -32,6 +32,9 @@ def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
 // If Boost is already present on your system, define the REACT_NATIVE_BOOST_PATH env variable
 // and the build will use that.
 def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
+
+// Setup build type for NDK, supported values: {debug, release}
+def nativeBuildType = System.getenv("NATIVE_BUILD_TYPE") ?: "release"
 
 task createNativeDepsDirectories {
     downloadsDir.mkdirs()
@@ -88,6 +91,27 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
     into("$thirdPartyNdkDir/folly")
 }
 
+task prepareHermes() {
+    def hermesAAR = file("$projectDir/../node_modules/hermes-engine/android/hermes-debug.aar")
+    if (!hermesAAR.exists()) {
+        // For an app to build from RN source, hermes-engine is located at /path/to/app/node_modules
+        // and $projectDir is located at /path/to/app/node_modules/react-native/ReactAndroid
+        hermesAAR = file("$projectDir/../../hermes-engine/android/hermes-debug.aar")
+
+        if (!hermesAAR.exists()) {
+            // At Facebook, this file is in a different folder
+            hermesAAR = file("$projectDir/../../node_modules/hermes-engine/android/hermes-debug.aar")
+        }
+    }
+    def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
+
+    copy {
+        from soFiles
+        from "src/main/jni/first-party/hermes/Android.mk"
+        into "$thirdPartyNdkDir/hermes"
+    }
+}
+
 task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
     onlyIfNewer(true)
@@ -126,7 +150,7 @@ task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) 
 
     doLast {
         copy {
-            from(fileTree(dir: "$thirdPartyNdkDir/glog", includes: ["stl_logging.h", "logging.h", "raw_logging.h", "vlog_is_on.h", "**/glog/log_severity.h"]).files)
+            from(fileTree(dir: "$thirdPartyNdkDir/glog", includes: ["stl_logging.h", "logging.h", "raw_logging.h", "vlog_is_on.h", "**/src/glog/log_severity.h"]).files)
             includeEmptyDirs = false
             into("$thirdPartyNdkDir/glog/exported/glog")
         }
@@ -193,11 +217,21 @@ def findNdkBuildFullPath() {
     def ndkDir = android.hasProperty("plugin") ? android.plugin.ndkFolder :
             plugins.getPlugin("com.android.library").hasProperty("sdkHandler") ?
                     plugins.getPlugin("com.android.library").sdkHandler.getNdkFolder() :
-                    android.ndkDirectory.absolutePath
+                    android.ndkDirectory ? android.ndkDirectory.absolutePath : null
     if (ndkDir) {
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
     return null
+}
+
+def reactNativeDevServerPort() {
+    def value = project.getProperties().get("reactNativeDevServerPort")
+    return value != null ? value : "8081"
+}
+
+def reactNativeInspectorProxyPort() {
+    def value = project.getProperties().get("reactNativeInspectorProxyPort")
+    return value != null ? value : reactNativeDevServerPort()
 }
 
 def getNdkBuildFullPath() {
@@ -219,10 +253,12 @@ def getNdkBuildFullPath() {
     return ndkBuildFullPath
 }
 
-task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
-    inputs.dir("src/main/jni/react")
+task buildReactNdkLib(dependsOn: [prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
+    inputs.dir("$projectDir/../ReactCommon")
+    inputs.dir("src/main/jni")
     outputs.dir("$buildDir/react-ndk/all")
     commandLine(getNdkBuildFullPath(),
+            "NDK_DEBUG=" + (nativeBuildType.equalsIgnoreCase("debug") ? "1" : "0"),
             "NDK_PROJECT_PATH=null",
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
             "NDK_OUT=" + temporaryDir,
@@ -254,6 +290,7 @@ task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
     from("$buildDir/react-ndk/all")
     into("$buildDir/react-ndk/exported")
     exclude("**/libjsc.so")
+    exclude("**/libhermes.so")
 }
 
 task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
@@ -283,6 +320,10 @@ android {
 
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
         buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
+
+        resValue "integer", "react_native_dev_server_port", reactNativeDevServerPort()
+        resValue "integer", "react_native_inspector_proxy_port", reactNativeInspectorProxyPort()
+
         testApplicationId("com.facebook.react.tests.gradle")
         testInstrumentationRunner("androidx.test.runner.AndroidJUnitRunner")
     }
@@ -315,6 +356,7 @@ android {
 
 dependencies {
     api("com.facebook.infer.annotation:infer-annotation:0.11.2")
+    api("com.facebook.yoga:proguard-annotations:1.14.1")
     api("javax.inject:javax.inject:1")
     api("androidx.appcompat:appcompat:1.0.2")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")

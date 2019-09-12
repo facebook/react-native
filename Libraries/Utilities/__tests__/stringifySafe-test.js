@@ -11,7 +11,7 @@
 'use strict';
 
 describe('stringifySafe', () => {
-  const stringifySafe = require('stringifySafe');
+  const stringifySafe = require('../stringifySafe');
 
   it('stringifySafe stringifies undefined values', () => {
     expect(stringifySafe(undefined)).toEqual('undefined');
@@ -46,5 +46,11 @@ describe('stringifySafe', () => {
     arg.toString = undefined;
     const result = stringifySafe(arg);
     expect(result).toEqual('["object" failed to stringify]');
+  });
+
+  it('stringifySafe stringifies error messages', () => {
+    const error = new Error('error');
+    const result = stringifySafe(error);
+    expect(result).toEqual('Error: error');
   });
 });

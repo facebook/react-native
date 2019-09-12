@@ -13,6 +13,10 @@
     translatable="false"
     >Image</string>
   <string
+    name="button_description"
+    translatable="false"
+    >Button</string>
+  <string
     name="imagebutton_description"
     translatable="false"
     >Button, Image</string>
@@ -96,4 +100,8 @@
     name="state_off_description"
     translatable="false"
     >off</string>
+  <string
+    name="state_mixed_description"
+    translatable="false"
+    >mixed</string>
 </resources>

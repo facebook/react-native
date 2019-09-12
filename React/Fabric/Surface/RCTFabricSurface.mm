@@ -85,7 +85,7 @@
   [self stop];
 }
 
-#pragma mark - Immutable Properties (no need to enforce synchonization)
+#pragma mark - Immutable Properties (no need to enforce synchronization)
 
 - (NSString *)moduleName
 {

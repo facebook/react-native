@@ -3,6 +3,8 @@ load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
     "APPLE",
+    "CXX",
+    "YOGA_CXX_TARGET",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
@@ -28,22 +30,24 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
+    contacts = ["oncall+react_native@xmail.facebook.com"],
     fbandroid_exported_headers = subdir_glob(
         [
             ("", "*.h"),
+            ("platform/cxx", "**/*.h"),
         ],
         prefix = "react/imagemanager",
     ),
     fbandroid_headers = subdir_glob(
         [
             ("", "*.h"),
-            ("platform/android", "**/*.h"),
+            ("platform/cxx", "**/*.h"),
         ],
         prefix = "",
     ),
     fbandroid_srcs = glob(
         [
-            "platform/android/**/*.cpp",
+            "platform/cxx/**/*.cpp",
         ],
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
@@ -55,6 +59,7 @@ rn_xplat_cxx_library(
     ios_deps = [
         "fbsource//xplat/js:RCTImage",
         "fbsource//xplat/js/react-native-github:RCTCxxBridge",
+        "fbsource//xplat/js/react-native-github/React/CoreModules:CoreModules",
     ],
     ios_exported_headers = subdir_glob(
         [
@@ -82,7 +87,7 @@ rn_xplat_cxx_library(
         ],
     ),
     macosx_tests_override = [],
-    platforms = (ANDROID, APPLE),
+    platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
@@ -95,7 +100,7 @@ rn_xplat_cxx_library(
         "fbsource//xplat/folly:memory",
         "fbsource//xplat/folly:molly",
         "fbsource//xplat/third-party/glog:glog",
-        "fbsource//xplat/yoga:yoga",
+        YOGA_CXX_TARGET,
         react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/mounting:mounting"),
         react_native_xplat_target("fabric/debug:debug"),
@@ -114,7 +119,7 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = (ANDROID, APPLE),
+    platforms = (ANDROID, APPLE, CXX),
     deps = [
         "fbsource//xplat/folly:molly",
         "fbsource//xplat/third-party/gmock:gtest",

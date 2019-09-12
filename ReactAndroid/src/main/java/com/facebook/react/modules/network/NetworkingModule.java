@@ -1,14 +1,14 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.modules.network;
 
 import android.net.Uri;
 import android.util.Base64;
-
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedAsyncTask;
@@ -22,7 +22,6 @@ import com.facebook.react.common.StandardCharsets;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -31,9 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Nullable;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.CookieJar;
@@ -51,59 +47,41 @@ import okio.ByteString;
 import okio.GzipSource;
 import okio.Okio;
 
-/**
- * Implements the XMLHttpRequest JavaScript interface.
- */
+/** Implements the XMLHttpRequest JavaScript interface. */
 @ReactModule(name = NetworkingModule.NAME)
 public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   /**
-   * Allows to implement a custom fetching process for specific URIs. It is the handler's job
-   * to fetch the URI and return the JS body payload.
+   * Allows to implement a custom fetching process for specific URIs. It is the handler's job to
+   * fetch the URI and return the JS body payload.
    */
   public interface UriHandler {
-    /**
-     * Returns if the handler should be used for an URI.
-     */
+    /** Returns if the handler should be used for an URI. */
     boolean supports(Uri uri, String responseType);
 
-    /**
-     * Fetch the URI and return the JS body payload.
-     */
+    /** Fetch the URI and return the JS body payload. */
     WritableMap fetch(Uri uri) throws IOException;
   }
 
-  /**
-   * Allows adding custom handling to build the {@link RequestBody} from the JS body payload.
-   */
+  /** Allows adding custom handling to build the {@link RequestBody} from the JS body payload. */
   public interface RequestBodyHandler {
-    /**
-     * Returns if the handler should be used for a JS body payload.
-     */
+    /** Returns if the handler should be used for a JS body payload. */
     boolean supports(ReadableMap map);
 
-    /**
-     * Returns the {@link RequestBody} for the JS body payload.
-     */
+    /** Returns the {@link RequestBody} for the JS body payload. */
     RequestBody toRequestBody(ReadableMap map, String contentType);
   }
 
-  /**
-   * Allows adding custom handling to build the JS body payload from the {@link ResponseBody}.
-   */
+  /** Allows adding custom handling to build the JS body payload from the {@link ResponseBody}. */
   public interface ResponseHandler {
-    /**
-     * Returns if the handler should be used for a response type.
-     */
+    /** Returns if the handler should be used for a response type. */
     boolean supports(String responseType);
 
-    /**
-     * Returns the JS body payload for the {@link ResponseBody}.
-     */
+    /** Returns the JS body payload for the {@link ResponseBody}. */
     WritableMap toResponseData(ResponseBody body) throws IOException;
   }
 
-  protected static final String NAME = "Networking";
+  public static final String NAME = "Networking";
 
   private static final String TAG = "NetworkingModule";
   private static final String CONTENT_ENCODING_HEADER_NAME = "content-encoding";
@@ -153,19 +131,15 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   /**
    * @param context the ReactContext of the application
    * @param defaultUserAgent the User-Agent header that will be set for all requests where the
-   * caller does not provide one explicitly
+   *     caller does not provide one explicitly
    * @param client the {@link OkHttpClient} to be used for networking
    */
   /* package */ NetworkingModule(
-    ReactApplicationContext context,
-    @Nullable String defaultUserAgent,
-    OkHttpClient client) {
+      ReactApplicationContext context, @Nullable String defaultUserAgent, OkHttpClient client) {
     this(context, defaultUserAgent, client, null);
   }
 
-  /**
-   * @param context the ReactContext of the application
-   */
+  /** @param context the ReactContext of the application */
   public NetworkingModule(final ReactApplicationContext context) {
     this(context, null, OkHttpClientProvider.createClient(context), null);
   }
@@ -173,18 +147,17 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   /**
    * @param context the ReactContext of the application
    * @param networkInterceptorCreators list of {@link NetworkInterceptorCreator}'s whose create()
-   * methods would be called to attach the interceptors to the client.
+   *     methods would be called to attach the interceptors to the client.
    */
   public NetworkingModule(
-    ReactApplicationContext context,
-    List<NetworkInterceptorCreator> networkInterceptorCreators) {
+      ReactApplicationContext context, List<NetworkInterceptorCreator> networkInterceptorCreators) {
     this(context, null, OkHttpClientProvider.createClient(context), networkInterceptorCreators);
   }
 
   /**
    * @param context the ReactContext of the application
    * @param defaultUserAgent the User-Agent header that will be set for all requests where the
-   * caller does not provide one explicitly
+   *     caller does not provide one explicitly
    */
   public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
     this(context, defaultUserAgent, OkHttpClientProvider.createClient(context), null);
@@ -263,17 +236,23 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       int timeout,
       boolean withCredentials) {
     try {
-      sendRequestInternal(method, url, requestId, headers, data, responseType,
-        useIncrementalUpdates, timeout, withCredentials);
+      sendRequestInternal(
+          method,
+          url,
+          requestId,
+          headers,
+          data,
+          responseType,
+          useIncrementalUpdates,
+          timeout,
+          withCredentials);
     } catch (Throwable th) {
       FLog.e(TAG, "Failed to send url request: " + url, th);
       ResponseUtil.onRequestError(getEventEmitter(), requestId, th.getMessage(), th);
     }
   }
 
-  /**
-   * @param timeout value of 0 results in no timeout
-   */
+  /** @param timeout value of 0 results in no timeout */
   public void sendRequestInternal(
       String method,
       String url,
@@ -326,37 +305,38 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     // If JS is listening for progress updates, install a ProgressResponseBody that intercepts the
     // response and counts bytes received.
     if (useIncrementalUpdates) {
-      clientBuilder.addNetworkInterceptor(new Interceptor() {
-        @Override
-        public Response intercept(Interceptor.Chain chain) throws IOException {
-          Response originalResponse = chain.proceed(chain.request());
-          ProgressResponseBody responseBody = new ProgressResponseBody(
-            originalResponse.body(),
-            new ProgressListener() {
-              long last = System.nanoTime();
+      clientBuilder.addNetworkInterceptor(
+          new Interceptor() {
+            @Override
+            public Response intercept(Interceptor.Chain chain) throws IOException {
+              Response originalResponse = chain.proceed(chain.request());
+              ProgressResponseBody responseBody =
+                  new ProgressResponseBody(
+                      originalResponse.body(),
+                      new ProgressListener() {
+                        long last = System.nanoTime();
 
-              @Override
-              public void onProgress(long bytesWritten, long contentLength, boolean done) {
-                long now = System.nanoTime();
-                if (!done && !shouldDispatch(now, last)) {
-                  return;
-                }
-                if (responseType.equals("text")) {
-                  // For 'text' responses we continuously send response data with progress info to
-                  // JS below, so no need to do anything here.
-                  return;
-                }
-                ResponseUtil.onDataReceivedProgress(
-                  eventEmitter,
-                  requestId,
-                  bytesWritten,
-                  contentLength);
-                last = now;
-              }
-            });
-          return originalResponse.newBuilder().body(responseBody).build();
-        }
-      });
+                        @Override
+                        public void onProgress(
+                            long bytesWritten, long contentLength, boolean done) {
+                          long now = System.nanoTime();
+                          if (!done && !shouldDispatch(now, last)) {
+                            return;
+                          }
+                          if (responseType.equals("text")) {
+                            // For 'text' responses we continuously send response data with progress
+                            // info to
+                            // JS below, so no need to do anything here.
+                            return;
+                          }
+                          ResponseUtil.onDataReceivedProgress(
+                              eventEmitter, requestId, bytesWritten, contentLength);
+                          last = now;
+                        }
+                      });
+              return originalResponse.newBuilder().body(responseBody).build();
+            }
+          });
     }
 
     // If the current timeout does not equal the passed in timeout, we need to clone the existing
@@ -396,10 +376,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     } else if (data.hasKey(REQUEST_BODY_KEY_STRING)) {
       if (contentType == null) {
         ResponseUtil.onRequestError(
-          eventEmitter,
-          requestId,
-          "Payload is set but no content-type header specified",
-          null);
+            eventEmitter, requestId, "Payload is set but no content-type header specified", null);
         return;
       }
       String body = data.getString(REQUEST_BODY_KEY_STRING);
@@ -414,18 +391,16 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         // Use getBytes() to convert the body into a byte[], preventing okhttp from
         // appending the character set to the Content-Type header when otherwise unspecified
         // https://github.com/facebook/react-native/issues/8237
-        Charset charset = contentMediaType == null
-          ? StandardCharsets.UTF_8
-          : contentMediaType.charset(StandardCharsets.UTF_8);
+        Charset charset =
+            contentMediaType == null
+                ? StandardCharsets.UTF_8
+                : contentMediaType.charset(StandardCharsets.UTF_8);
         requestBody = RequestBody.create(contentMediaType, body.getBytes(charset));
       }
     } else if (data.hasKey(REQUEST_BODY_KEY_BASE64)) {
       if (contentType == null) {
         ResponseUtil.onRequestError(
-          eventEmitter,
-          requestId,
-          "Payload is set but no content-type header specified",
-          null);
+            eventEmitter, requestId, "Payload is set but no content-type header specified", null);
         return;
       }
       String base64String = data.getString(REQUEST_BODY_KEY_BASE64);
@@ -434,10 +409,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     } else if (data.hasKey(REQUEST_BODY_KEY_URI)) {
       if (contentType == null) {
         ResponseUtil.onRequestError(
-          eventEmitter,
-          requestId,
-          "Payload is set but no content-type header specified",
-          null);
+            eventEmitter, requestId, "Payload is set but no content-type header specified", null);
         return;
       }
       String uri = data.getString(REQUEST_BODY_KEY_URI);
@@ -445,10 +417,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
           RequestBodyUtil.getFileInputStream(getReactApplicationContext(), uri);
       if (fileInputStream == null) {
         ResponseUtil.onRequestError(
-          eventEmitter,
-          requestId,
-          "Could not retrieve file for uri " + uri,
-          null);
+            eventEmitter, requestId, "Could not retrieve file for uri " + uri, null);
         return;
       }
       requestBody = RequestBodyUtil.create(MediaType.parse(contentType), fileInputStream);
@@ -469,131 +438,140 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     }
 
     requestBuilder.method(
-      method,
-      wrapRequestBodyWithProgressEmitter(requestBody, eventEmitter, requestId));
+        method, wrapRequestBodyWithProgressEmitter(requestBody, eventEmitter, requestId));
 
     addRequest(requestId);
-    client.newCall(requestBuilder.build()).enqueue(
-        new Callback() {
-          @Override
-          public void onFailure(Call call, IOException e) {
-            if (mShuttingDown) {
-              return;
-            }
-            removeRequest(requestId);
-            String errorMessage = e.getMessage() != null
-                    ? e.getMessage()
-                    : "Error while executing request: " + e.getClass().getSimpleName();
-            ResponseUtil.onRequestError(eventEmitter, requestId, errorMessage, e);
-          }
-
-          @Override
-          public void onResponse(Call call, Response response) throws IOException {
-            if (mShuttingDown) {
-              return;
-            }
-            removeRequest(requestId);
-            // Before we touch the body send headers to JS
-            ResponseUtil.onResponseReceived(
-              eventEmitter,
-              requestId,
-              response.code(),
-              translateHeaders(response.headers()),
-              response.request().url().toString());
-
-            try {
-              // OkHttp implements something called transparent gzip, which mean that it will
-              // automatically add the Accept-Encoding gzip header and handle decoding internally.
-              // The issue is that it won't handle decoding if the user provides a Accept-Encoding
-              // header. This is also undesirable considering that iOS does handle the decoding even
-              // when the header is provided. To make sure this works in all cases, handle gzip body
-              // here also. This works fine since OKHttp will remove the Content-Encoding header if
-              // it used transparent gzip.
-              // See https://github.com/square/okhttp/blob/5b37cda9e00626f43acf354df145fd452c3031f1/okhttp/src/main/java/okhttp3/internal/http/BridgeInterceptor.java#L76-L111
-              ResponseBody responseBody = response.body();
-              if ("gzip".equalsIgnoreCase(response.header("Content-Encoding")) &&
-                  responseBody != null) {
-                GzipSource gzipSource = new GzipSource(responseBody.source());
-                String contentType = response.header("Content-Type");
-                responseBody = ResponseBody.create(
-                    contentType != null ? MediaType.parse(contentType) : null,
-                    -1L,
-                    Okio.buffer(gzipSource));
-              }
-
-              // Check if a handler is registered
-              for (ResponseHandler handler : mResponseHandlers) {
-                if (handler.supports(responseType)) {
-                  WritableMap res = handler.toResponseData(responseBody);
-                  ResponseUtil.onDataReceived(eventEmitter, requestId, res);
-                  ResponseUtil.onRequestSuccess(eventEmitter, requestId);
+    client
+        .newCall(requestBuilder.build())
+        .enqueue(
+            new Callback() {
+              @Override
+              public void onFailure(Call call, IOException e) {
+                if (mShuttingDown) {
                   return;
                 }
+                removeRequest(requestId);
+                String errorMessage =
+                    e.getMessage() != null
+                        ? e.getMessage()
+                        : "Error while executing request: " + e.getClass().getSimpleName();
+                ResponseUtil.onRequestError(eventEmitter, requestId, errorMessage, e);
               }
 
-              // If JS wants progress updates during the download, and it requested a text response,
-              // periodically send response data updates to JS.
-              if (useIncrementalUpdates && responseType.equals("text")) {
-                readWithProgress(eventEmitter, requestId, responseBody);
-                ResponseUtil.onRequestSuccess(eventEmitter, requestId);
-                return;
-              }
-
-              // Otherwise send the data in one big chunk, in the format that JS requested.
-              String responseString = "";
-              if (responseType.equals("text")) {
-                try {
-                  responseString = responseBody.string();
-                } catch (IOException e) {
-                  if (response.request().method().equalsIgnoreCase("HEAD")) {
-                    // The request is an `HEAD` and the body is empty,
-                    // the OkHttp will produce an exception.
-                    // Ignore the exception to not invalidate the request in the
-                    // Javascript layer.
-                    // Introduced to fix issue #7463.
-                  } else {
-                    ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
-                  }
+              @Override
+              public void onResponse(Call call, Response response) throws IOException {
+                if (mShuttingDown) {
+                  return;
                 }
-              } else if (responseType.equals("base64")) {
-                responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
+                removeRequest(requestId);
+                // Before we touch the body send headers to JS
+                ResponseUtil.onResponseReceived(
+                    eventEmitter,
+                    requestId,
+                    response.code(),
+                    translateHeaders(response.headers()),
+                    response.request().url().toString());
+
+                try {
+                  // OkHttp implements something called transparent gzip, which mean that it will
+                  // automatically add the Accept-Encoding gzip header and handle decoding
+                  // internally.
+                  // The issue is that it won't handle decoding if the user provides a
+                  // Accept-Encoding
+                  // header. This is also undesirable considering that iOS does handle the decoding
+                  // even
+                  // when the header is provided. To make sure this works in all cases, handle gzip
+                  // body
+                  // here also. This works fine since OKHttp will remove the Content-Encoding header
+                  // if
+                  // it used transparent gzip.
+                  // See
+                  // https://github.com/square/okhttp/blob/5b37cda9e00626f43acf354df145fd452c3031f1/okhttp/src/main/java/okhttp3/internal/http/BridgeInterceptor.java#L76-L111
+                  ResponseBody responseBody = response.body();
+                  if ("gzip".equalsIgnoreCase(response.header("Content-Encoding"))
+                      && responseBody != null) {
+                    GzipSource gzipSource = new GzipSource(responseBody.source());
+                    String contentType = response.header("Content-Type");
+                    responseBody =
+                        ResponseBody.create(
+                            contentType != null ? MediaType.parse(contentType) : null,
+                            -1L,
+                            Okio.buffer(gzipSource));
+                  }
+
+                  // Check if a handler is registered
+                  for (ResponseHandler handler : mResponseHandlers) {
+                    if (handler.supports(responseType)) {
+                      WritableMap res = handler.toResponseData(responseBody);
+                      ResponseUtil.onDataReceived(eventEmitter, requestId, res);
+                      ResponseUtil.onRequestSuccess(eventEmitter, requestId);
+                      return;
+                    }
+                  }
+
+                  // If JS wants progress updates during the download, and it requested a text
+                  // response,
+                  // periodically send response data updates to JS.
+                  if (useIncrementalUpdates && responseType.equals("text")) {
+                    readWithProgress(eventEmitter, requestId, responseBody);
+                    ResponseUtil.onRequestSuccess(eventEmitter, requestId);
+                    return;
+                  }
+
+                  // Otherwise send the data in one big chunk, in the format that JS requested.
+                  String responseString = "";
+                  if (responseType.equals("text")) {
+                    try {
+                      responseString = responseBody.string();
+                    } catch (IOException e) {
+                      if (response.request().method().equalsIgnoreCase("HEAD")) {
+                        // The request is an `HEAD` and the body is empty,
+                        // the OkHttp will produce an exception.
+                        // Ignore the exception to not invalidate the request in the
+                        // Javascript layer.
+                        // Introduced to fix issue #7463.
+                      } else {
+                        ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
+                      }
+                    }
+                  } else if (responseType.equals("base64")) {
+                    responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP);
+                  }
+                  ResponseUtil.onDataReceived(eventEmitter, requestId, responseString);
+                  ResponseUtil.onRequestSuccess(eventEmitter, requestId);
+                } catch (IOException e) {
+                  ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
+                }
               }
-              ResponseUtil.onDataReceived(eventEmitter, requestId, responseString);
-              ResponseUtil.onRequestSuccess(eventEmitter, requestId);
-            } catch (IOException e) {
-              ResponseUtil.onRequestError(eventEmitter, requestId, e.getMessage(), e);
-            }
-          }
-        });
+            });
   }
 
   private RequestBody wrapRequestBodyWithProgressEmitter(
       final RequestBody requestBody,
       final RCTDeviceEventEmitter eventEmitter,
       final int requestId) {
-    if(requestBody == null) {
+    if (requestBody == null) {
       return null;
     }
     return RequestBodyUtil.createProgressRequest(
-      requestBody,
-      new ProgressListener() {
-        long last = System.nanoTime();
+        requestBody,
+        new ProgressListener() {
+          long last = System.nanoTime();
 
-        @Override
-        public void onProgress(long bytesWritten, long contentLength, boolean done) {
-          long now = System.nanoTime();
-          if (done || shouldDispatch(now, last)) {
-            ResponseUtil.onDataSend(eventEmitter, requestId, bytesWritten, contentLength);
-            last = now;
+          @Override
+          public void onProgress(long bytesWritten, long contentLength, boolean done) {
+            long now = System.nanoTime();
+            if (done || shouldDispatch(now, last)) {
+              ResponseUtil.onDataSend(eventEmitter, requestId, bytesWritten, contentLength);
+              last = now;
+            }
           }
-        }
-      });
+        });
   }
 
   private void readWithProgress(
-      RCTDeviceEventEmitter eventEmitter,
-      int requestId,
-      ResponseBody responseBody) throws IOException {
+      RCTDeviceEventEmitter eventEmitter, int requestId, ResponseBody responseBody)
+      throws IOException {
     long totalBytesRead = -1;
     long contentLength = -1;
     try {
@@ -604,8 +582,10 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       // Ignore
     }
 
-    Charset charset = responseBody.contentType() == null ? StandardCharsets.UTF_8 :
-      responseBody.contentType().charset(StandardCharsets.UTF_8);
+    Charset charset =
+        responseBody.contentType() == null
+            ? StandardCharsets.UTF_8
+            : responseBody.contentType().charset(StandardCharsets.UTF_8);
 
     ProgressiveStringDecoder streamDecoder = new ProgressiveStringDecoder(charset);
     InputStream inputStream = responseBody.byteStream();
@@ -614,11 +594,11 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       int read;
       while ((read = inputStream.read(buffer)) != -1) {
         ResponseUtil.onIncrementalDataReceived(
-          eventEmitter,
-          requestId,
-          streamDecoder.decodeNext(buffer, read),
-          totalBytesRead,
-          contentLength);
+            eventEmitter,
+            requestId,
+            streamDecoder.decodeNext(buffer, read),
+            totalBytesRead,
+            contentLength);
       }
     } finally {
       inputStream.close();
@@ -651,8 +631,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       // multiple values for the same header
       if (responseHeaders.hasKey(headerName)) {
         responseHeaders.putString(
-            headerName,
-            responseHeaders.getString(headerName) + ", " + headers.value(i));
+            headerName, responseHeaders.getString(headerName) + ", " + headers.value(i));
       } else {
         responseHeaders.putString(headerName, headers.value(i));
       }
@@ -683,9 +662,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   }
 
   private @Nullable MultipartBody.Builder constructMultipartBody(
-      ReadableArray body,
-      String contentType,
-      int requestId) {
+      ReadableArray body, String contentType, int requestId) {
     RCTDeviceEventEmitter eventEmitter = getEventEmitter();
     MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
     multipartBuilder.setType(MediaType.parse(contentType));
@@ -698,10 +675,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       Headers headers = extractHeaders(headersArray, null);
       if (headers == null) {
         ResponseUtil.onRequestError(
-          eventEmitter,
-          requestId,
-          "Missing or invalid header format for FormData part.",
-          null);
+            eventEmitter, requestId, "Missing or invalid header format for FormData part.", null);
         return null;
       }
       MediaType partContentType = null;
@@ -719,10 +693,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       } else if (bodyPart.hasKey(REQUEST_BODY_KEY_URI)) {
         if (partContentType == null) {
           ResponseUtil.onRequestError(
-            eventEmitter,
-            requestId,
-            "Binary FormData part needs a content-type header.",
-            null);
+              eventEmitter, requestId, "Binary FormData part needs a content-type header.", null);
           return null;
         }
         String fileContentUriStr = bodyPart.getString(REQUEST_BODY_KEY_URI);
@@ -730,10 +701,10 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
             RequestBodyUtil.getFileInputStream(getReactApplicationContext(), fileContentUriStr);
         if (fileInputStream == null) {
           ResponseUtil.onRequestError(
-            eventEmitter,
-            requestId,
-            "Could not retrieve file for uri " + fileContentUriStr,
-            null);
+              eventEmitter,
+              requestId,
+              "Could not retrieve file for uri " + fileContentUriStr,
+              null);
           return null;
         }
         multipartBuilder.addPart(headers, RequestBodyUtil.create(partContentType, fileInputStream));
@@ -748,8 +719,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * Extracts the headers from the Array. If the format is invalid, this method will return null.
    */
   private @Nullable Headers extractHeaders(
-      @Nullable ReadableArray headersArray,
-      @Nullable ReadableMap requestData) {
+      @Nullable ReadableArray headersArray, @Nullable ReadableMap requestData) {
     if (headersArray == null) {
       return null;
     }

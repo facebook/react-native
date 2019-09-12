@@ -9,11 +9,11 @@
  */
 'use strict';
 
-const PixelRatio = require('PixelRatio');
-const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-const StyleSheetValidation = require('StyleSheetValidation');
+const PixelRatio = require('../Utilities/PixelRatio');
+const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+const StyleSheetValidation = require('./StyleSheetValidation');
 
-const flatten = require('flattenStyle');
+const flatten = require('./flattenStyle');
 
 import type {
   ____Styles_Internal,
@@ -25,7 +25,7 @@ import type {
   ____TextStyleProp_Internal,
   ____ImageStyle_Internal,
   ____ImageStyleProp_Internal,
-} from 'StyleSheetTypes';
+} from './StyleSheetTypes';
 
 /**
  * This type should be used as the type for a prop that is passed through
@@ -151,7 +151,7 @@ export type ImageStyle = ____ImageStyle_Internal;
  */
 export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
 
-let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
+let hairlineWidth: number = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
@@ -279,7 +279,7 @@ module.exports = {
    * > **NOTE**: Exercise caution as abusing this can tax you in terms of
    * > optimizations.
    * >
-   * > IDs enable optimizations through the bridge and memory in general. Refering
+   * > IDs enable optimizations through the bridge and memory in general. Referring
    * > to style objects directly will deprive you of these optimizations.
    *
    * Example:

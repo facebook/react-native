@@ -76,8 +76,8 @@ public abstract class LazyReactPackage implements ReactPackage {
    * @param reactContext
    * @return
    */
-  /* package */
-  Iterable<ModuleHolder> getNativeModuleIterator(final ReactApplicationContext reactContext) {
+  public Iterable<ModuleHolder> getNativeModuleIterator(
+      final ReactApplicationContext reactContext) {
     final Map<String, ReactModuleInfo> reactModuleInfoMap =
         getReactModuleInfoProvider().getReactModuleInfos();
     final List<ModuleSpec> nativeModules = getNativeModules(reactContext);

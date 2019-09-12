@@ -10,30 +10,33 @@
 
 'use strict';
 
-import Platform from 'Platform';
+import Platform from '../../Utilities/Platform';
 
-const AnimatedImplementation = Platform.isTesting
-  ? require('AnimatedMock')
-  : require('AnimatedImplementation');
+const AnimatedMock = require('./AnimatedMock');
+const AnimatedImplementation = require('./AnimatedImplementation');
+
+const Animated = ((Platform.isTesting
+  ? AnimatedMock
+  : AnimatedImplementation): typeof AnimatedMock);
 
 module.exports = {
-  get FlatList() {
-    return require('AnimatedFlatList');
+  get FlatList(): any {
+    return require('./components/AnimatedFlatList');
   },
-  get Image() {
-    return require('AnimatedImage');
+  get Image(): any {
+    return require('./components/AnimatedImage');
   },
-  get ScrollView() {
-    return require('AnimatedScrollView');
+  get ScrollView(): any {
+    return require('./components/AnimatedScrollView');
   },
-  get SectionList() {
-    return require('AnimatedSectionList');
+  get SectionList(): any {
+    return require('./components/AnimatedSectionList');
   },
-  get Text() {
-    return require('AnimatedText');
+  get Text(): any {
+    return require('./components/AnimatedText');
   },
-  get View() {
-    return require('AnimatedView');
+  get View(): any {
+    return require('./components/AnimatedView');
   },
-  ...AnimatedImplementation,
+  ...Animated,
 };

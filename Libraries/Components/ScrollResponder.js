@@ -10,23 +10,22 @@
 
 'use strict';
 
-const Dimensions = require('Dimensions');
-const FrameRateLogger = require('FrameRateLogger');
-const Keyboard = require('Keyboard');
-const ReactNative = require('ReactNative');
-const TextInputState = require('TextInputState');
-const UIManager = require('UIManager');
+const Dimensions = require('../Utilities/Dimensions');
+const FrameRateLogger = require('../Interaction/FrameRateLogger');
+const Keyboard = require('./Keyboard/Keyboard');
+const ReactNative = require('../Renderer/shims/ReactNative');
+const TextInputState = require('./TextInput/TextInputState');
+const UIManager = require('../ReactNative/UIManager');
+const Platform = require('../Utilities/Platform');
 
 const invariant = require('invariant');
 const nullthrows = require('nullthrows');
 const performanceNow = require('fbjs/lib/performanceNow');
 const warning = require('fbjs/lib/warning');
 
-const {ScrollViewManager} = require('NativeModules');
-
-import type {PressEvent, ScrollEvent} from 'CoreEventTypes';
-import type {KeyboardEvent} from 'Keyboard';
-import type EmitterSubscription from 'EmitterSubscription';
+import type {PressEvent, ScrollEvent} from '../Types/CoreEventTypes';
+import type {KeyboardEvent} from './Keyboard/Keyboard';
+import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well
@@ -510,10 +509,7 @@ const ScrollResponderMixin = {
     |},
     animated?: boolean, // deprecated, put this inside the rect argument instead
   ) {
-    invariant(
-      ScrollViewManager && ScrollViewManager.zoomToRect,
-      'zoomToRect is not implemented',
-    );
+    invariant(Platform.OS === 'ios', 'zoomToRect is not implemented');
     if ('animated' in rect) {
       animated = rect.animated;
       delete rect.animated;
@@ -522,10 +518,11 @@ const ScrollResponderMixin = {
         '`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead',
       );
     }
-    ScrollViewManager.zoomToRect(
+
+    UIManager.dispatchViewManagerCommand(
       this.scrollResponderGetScrollableNode(),
-      rect,
-      animated !== false,
+      UIManager.getViewManagerConfig('RCTScrollView').Commands.zoomToRect,
+      [rect, animated !== false],
     );
   },
 

@@ -17,8 +17,15 @@ namespace react {
  * The list of mutations might be and might not be optimal.
  */
 ShadowViewMutationList calculateShadowViewMutations(
-    const ShadowNode &oldRootShadowNode,
-    const ShadowNode &newRootShadowNode);
+    ShadowNode const &oldRootShadowNode,
+    ShadowNode const &newRootShadowNode);
+
+/*
+ * Generates a list of `ShadowViewNodePair`s that represents a layer of a
+ * flattened view hierarchy.
+ */
+ShadowViewNodePair::List sliceChildShadowNodeViewPairs(
+    ShadowNode const &shadowNode);
 
 } // namespace react
 } // namespace facebook

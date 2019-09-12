@@ -8,7 +8,7 @@
 #include <CoreFoundation/CFRunLoop.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <react/core/EventBeat.h>
-#include <react/uimanager/primitives.h>
+#include <react/utils/RuntimeExecutor.h>
 
 namespace facebook {
 namespace react {
@@ -19,7 +19,9 @@ namespace react {
  */
 class MainRunLoopEventBeat final : public EventBeat {
  public:
-  MainRunLoopEventBeat(RuntimeExecutor runtimeExecutor);
+  MainRunLoopEventBeat(
+      EventBeat::SharedOwnerBox const &ownerBox,
+      RuntimeExecutor runtimeExecutor);
   ~MainRunLoopEventBeat();
 
   void induce() const override;

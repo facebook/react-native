@@ -11,9 +11,9 @@
 
 'use strict';
 
-const React = require('React');
-const View = require('View');
-const InputAccessoryView = require('InputAccessoryView');
+const React = require('react');
+const View = require('../../View/View');
+const InputAccessoryView = require('../InputAccessoryView');
 const render = require('../../../../jest/renderer');
 
 describe('<InputAccessoryView />', () => {
@@ -36,7 +36,7 @@ describe('<InputAccessoryView />', () => {
   });
 
   it('should shallow render as <InputAccessoryView> when not mocked', () => {
-    jest.dontMock('InputAccessoryView');
+    jest.dontMock('../InputAccessoryView');
 
     const output = render.shallow(
       <InputAccessoryView nativeID="1">
@@ -47,7 +47,7 @@ describe('<InputAccessoryView />', () => {
   });
 
   it('should render as <RCTInputAccessoryView> when not mocked', () => {
-    jest.dontMock('InputAccessoryView');
+    jest.dontMock('../InputAccessoryView');
 
     const instance = render.create(
       <InputAccessoryView nativeID="1">

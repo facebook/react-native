@@ -11,8 +11,8 @@
 'use strict';
 
 describe('Dimensions', () => {
-  const Dimensions = require('Dimensions');
-  const Platform = require('Platform');
+  const Dimensions = require('../Dimensions');
+  const Platform = require('../Platform');
 
   it('should set window dimensions', () => {
     Dimensions.set({

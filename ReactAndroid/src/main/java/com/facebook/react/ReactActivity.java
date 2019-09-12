@@ -1,26 +1,21 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react;
-
-import javax.annotation.Nullable;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.KeyEvent;
-
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
-/**
- * Base Activity for React Native applications.
- */
+/** Base Activity for React Native applications. */
 public abstract class ReactActivity extends AppCompatActivity
     implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
@@ -31,17 +26,14 @@ public abstract class ReactActivity extends AppCompatActivity
   }
 
   /**
-   * Returns the name of the main component registered from JavaScript.
-   * This is used to schedule rendering of the component.
-   * e.g. "MoviesApp"
+   * Returns the name of the main component registered from JavaScript. This is used to schedule
+   * rendering of the component. e.g. "MoviesApp"
    */
   protected @Nullable String getMainComponentName() {
     return null;
   }
 
-  /**
-   * Called at construction time, override if you have a custom delegate implementation.
-   */
+  /** Called at construction time, override if you have a custom delegate implementation. */
   protected ReactActivityDelegate createReactActivityDelegate() {
     return new ReactActivityDelegate(this, getMainComponentName());
   }
@@ -111,18 +103,20 @@ public abstract class ReactActivity extends AppCompatActivity
 
   @Override
   public void requestPermissions(
-    String[] permissions,
-    int requestCode,
-    PermissionListener listener) {
+      String[] permissions, int requestCode, PermissionListener listener) {
     mDelegate.requestPermissions(permissions, requestCode, listener);
   }
 
   @Override
   public void onRequestPermissionsResult(
-    int requestCode,
-    String[] permissions,
-    int[] grantResults) {
+      int requestCode, String[] permissions, int[] grantResults) {
     mDelegate.onRequestPermissionsResult(requestCode, permissions, grantResults);
+  }
+
+  @Override
+  public void onWindowFocusChanged(boolean hasFocus) {
+    super.onWindowFocusChanged(hasFocus);
+    mDelegate.onWindowFocusChanged(hasFocus);
   }
 
   protected final ReactNativeHost getReactNativeHost() {

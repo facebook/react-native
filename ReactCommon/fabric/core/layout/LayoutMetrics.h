@@ -14,7 +14,7 @@ namespace facebook {
 namespace react {
 
 /*
- * Describes results of layout process for partucular shadow node.
+ * Describes results of layout process for particular shadow node.
  */
 struct LayoutMetrics {
   Rect frame;
@@ -45,7 +45,7 @@ struct LayoutMetrics {
                rhs.borderWidth,
                rhs.displayType,
                rhs.layoutDirection,
-               this->pointScaleFactor);
+               rhs.pointScaleFactor);
   }
 
   bool operator!=(const LayoutMetrics &rhs) const {
@@ -56,11 +56,30 @@ struct LayoutMetrics {
 /*
  * Represents some undefined, not-yet-computed or meaningless value of
  * `LayoutMetrics` type.
+ * The value is comparable by equality with any other `LayoutMetrics` value.
+ * All individual sub-properties of `EmptyLayoutMetrics` have the most possible
+ * "invalid" values; this is useful when we compare them with some valid values.
  */
-static const LayoutMetrics EmptyLayoutMetrics = {/* .frame = */ {
-    /* .origin = */ {0, 0},
-    /* .size = */ {-1, -1},
-}};
+static const LayoutMetrics EmptyLayoutMetrics = {
+    /* .frame = */ {
+        /* .origin = */ {std::numeric_limits<Float>::min(),
+                         std::numeric_limits<Float>::min()},
+        /* .size = */
+        {std::numeric_limits<Float>::min(), std::numeric_limits<Float>::min()},
+    },
+    /* .contentInsets = */
+    {std::numeric_limits<Float>::min(),
+     std::numeric_limits<Float>::min(),
+     std::numeric_limits<Float>::min(),
+     std::numeric_limits<Float>::min()},
+    /* .borderWidth = */
+    {std::numeric_limits<Float>::min(),
+     std::numeric_limits<Float>::min(),
+     std::numeric_limits<Float>::min(),
+     std::numeric_limits<Float>::min()},
+    /* .displayType = */ (DisplayType)-1,
+    /* .layoutDirection = */ (LayoutDirection)-1,
+    /* .pointScaleFactor = */ std::numeric_limits<Float>::min()};
 
 } // namespace react
 } // namespace facebook

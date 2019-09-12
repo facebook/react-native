@@ -10,11 +10,11 @@
 
 'use strict';
 
-const React = require('React');
+const React = require('react');
 
-const ProgressBarAndroidNativeComponent = require('ProgressBarAndroidNativeComponent');
+import ProgressBarAndroidNativeComponent from './ProgressBarAndroidNativeComponent';
 
-import type {ViewProps} from 'ViewPropTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 export type ProgressBarAndroidProps = $ReadOnly<{|
   ...ViewProps,
@@ -100,4 +100,4 @@ ProgressBarAndroidToExport.defaultProps = {
 /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
  * error found when Flow v0.89 was deployed. To see the error, delete this
  * comment and run Flow. */
-module.exports = (ProgressBarAndroidToExport: ProgressBarAndroidNativeComponent);
+module.exports = (ProgressBarAndroidToExport: typeof ProgressBarAndroidNativeComponent);

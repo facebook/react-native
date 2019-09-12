@@ -10,9 +10,9 @@
 
 'use strict';
 
-const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
-const TextStylePropTypes = require('TextStylePropTypes');
-const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
+const DeprecatedImageStylePropTypes = require('../DeprecatedPropTypes/DeprecatedImageStylePropTypes');
+const DeprecatedTextStylePropTypes = require('../DeprecatedPropTypes/DeprecatedTextStylePropTypes');
+const DeprecatedViewStylePropTypes = require('../DeprecatedPropTypes/DeprecatedViewStylePropTypes');
 
 const invariant = require('invariant');
 
@@ -89,7 +89,7 @@ const allStylePropTypes = {};
 
 if (__DEV__ && !global.__RCTProfileIsProfiling) {
   StyleSheetValidation.addValidStylePropTypes(DeprecatedImageStylePropTypes);
-  StyleSheetValidation.addValidStylePropTypes(TextStylePropTypes);
+  StyleSheetValidation.addValidStylePropTypes(DeprecatedTextStylePropTypes);
   StyleSheetValidation.addValidStylePropTypes(DeprecatedViewStylePropTypes);
 }
 

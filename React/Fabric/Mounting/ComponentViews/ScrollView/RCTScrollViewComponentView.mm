@@ -8,10 +8,11 @@
 #import "RCTScrollViewComponentView.h"
 
 #import <React/RCTAssert.h>
+
 #import <react/components/scrollview/ScrollViewComponentDescriptor.h>
 #import <react/components/scrollview/ScrollViewEventEmitter.h>
-#import <react/components/scrollview/ScrollViewLocalData.h>
 #import <react/components/scrollview/ScrollViewProps.h>
+#import <react/components/scrollview/ScrollViewState.h>
 #import <react/graphics/Geometry.h>
 
 #import "RCTConversions.h"
@@ -21,14 +22,21 @@ using namespace facebook::react;
 
 @interface RCTScrollViewComponentView () <UIScrollViewDelegate>
 
-@property (nonatomic, assign) CGFloat scrollEventThrottle;
-
 @end
 
 @implementation RCTScrollViewComponentView {
-  RCTEnhancedScrollView *_Nonnull _scrollView;
-  UIView *_Nonnull _contentView;
-  SharedScrollViewLocalData _scrollViewLocalData;
+  ScrollViewShadowNode::ConcreteState::Shared _state;
+  CGSize _contentSize;
+  NSTimeInterval _lastScrollEventDispatchTime;
+  NSTimeInterval _scrollEventThrottle;
+}
+
++ (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view
+{
+  do {
+    view = view.superview;
+  } while (view != nil && ![view isKindOfClass:[RCTScrollViewComponentView class]]);
+  return (RCTScrollViewComponentView *)view;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -39,11 +47,20 @@ using namespace facebook::react;
 
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    _scrollView.delegate = self;
     _scrollView.delaysContentTouches = NO;
-    _contentView = [[UIView alloc] initWithFrame:_scrollView.bounds];
-    [_scrollView addSubview:_contentView];
     [self addSubview:_scrollView];
+
+    _containerView = [[UIView alloc] initWithFrame:CGRectZero];
+    [_scrollView addSubview:_containerView];
+
+    __weak __typeof(self) weakSelf = self;
+    _scrollViewDelegateSplitter = [[RCTGenericDelegateSplitter alloc] initWithDelegateUpdateBlock:^(id delegate) {
+      weakSelf.scrollView.delegate = delegate;
+    }];
+
+    [_scrollViewDelegateSplitter addDelegate:self];
+
+    _scrollEventThrottle = INFINITY;
   }
 
   return self;
@@ -56,12 +73,10 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>();
 }
 
-- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
+- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &oldScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(oldProps ?: _props);
+  const auto &oldScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(_props);
   const auto &newScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(props);
-
-  [super updateProps:props oldProps:oldProps];
 
 #define REMAP_PROP(reactName, localName, target)                      \
   if (oldScrollViewProps.reactName != newScrollViewProps.reactName) { \
@@ -70,7 +85,8 @@ using namespace facebook::react;
 
 #define REMAP_VIEW_PROP(reactName, localName) REMAP_PROP(reactName, localName, self)
 #define MAP_VIEW_PROP(name) REMAP_VIEW_PROP(name, name)
-#define REMAP_SCROLL_VIEW_PROP(reactName, localName) REMAP_PROP(reactName, localName, _scrollView)
+#define REMAP_SCROLL_VIEW_PROP(reactName, localName) \
+  REMAP_PROP(reactName, localName, ((RCTEnhancedScrollView *)_scrollView))
 #define MAP_SCROLL_VIEW_PROP(name) REMAP_SCROLL_VIEW_PROP(name, name)
 
   // FIXME: Commented props are not supported yet.
@@ -93,31 +109,54 @@ using namespace facebook::react;
   MAP_SCROLL_VIEW_PROP(scrollsToTop);
   MAP_SCROLL_VIEW_PROP(showsHorizontalScrollIndicator);
   MAP_SCROLL_VIEW_PROP(showsVerticalScrollIndicator);
-  MAP_VIEW_PROP(scrollEventThrottle);
+
+  if (oldScrollViewProps.scrollEventThrottle != newScrollViewProps.scrollEventThrottle) {
+    // Zero means "send value only once per significant logical event".
+    // Prop value is in milliseconds.
+    // iOS implementation uses `NSTimeInterval` (in seconds).
+    // 16 ms is the minimum allowed value.
+    _scrollEventThrottle = newScrollViewProps.scrollEventThrottle <= 0
+        ? INFINITY
+        : std::max(newScrollViewProps.scrollEventThrottle / 1000.0, 1.0 / 60.0);
+  }
+
   MAP_SCROLL_VIEW_PROP(zoomScale);
-  // MAP_SCROLL_VIEW_PROP(contentInset);
+
+  if (oldScrollViewProps.contentInset != newScrollViewProps.contentInset) {
+    _scrollView.contentInset = RCTUIEdgeInsetsFromEdgeInsets(newScrollViewProps.contentInset);
+  }
+
   // MAP_SCROLL_VIEW_PROP(scrollIndicatorInsets);
   // MAP_SCROLL_VIEW_PROP(snapToInterval);
   // MAP_SCROLL_VIEW_PROP(snapToAlignment);
+
+  [super updateProps:props oldProps:oldProps];
 }
 
-- (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
+- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  assert(std::dynamic_pointer_cast<const ScrollViewLocalData>(localData));
-  _scrollViewLocalData = std::static_pointer_cast<const ScrollViewLocalData>(localData);
-  CGSize contentSize = RCTCGSizeFromSize(_scrollViewLocalData->getContentSize());
-  _contentView.frame = CGRect{CGPointZero, contentSize};
+  assert(std::dynamic_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state));
+  _state = std::static_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state);
+
+  CGSize contentSize = RCTCGSizeFromSize(_state->getData().getContentSize());
+
+  if (CGSizeEqualToSize(_contentSize, contentSize)) {
+    return;
+  }
+
+  _contentSize = contentSize;
+  _containerView.frame = CGRect{CGPointZero, contentSize};
   _scrollView.contentSize = contentSize;
 }
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  [_contentView insertSubview:childComponentView atIndex:index];
+  [_containerView insertSubview:childComponentView atIndex:index];
 }
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  RCTAssert(childComponentView.superview == _contentView, @"Attempt to unmount improperly mounted component view.");
+  RCTAssert(childComponentView.superview == _containerView, @"Attempt to unmount improperly mounted component view.");
   [childComponentView removeFromSuperview];
 }
 
@@ -132,54 +171,172 @@ using namespace facebook::react;
   return metrics;
 }
 
+- (void)_updateStateWithContentOffset
+{
+  auto contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
+
+  _state->updateState([contentOffset](ScrollViewShadowNode::ConcreteState::Data const &data) {
+    auto newData = data;
+    newData.contentOffset = contentOffset;
+    return newData;
+  });
+}
+
+- (void)prepareForRecycle
+{
+  _scrollView.contentOffset = CGPointZero;
+  [super prepareForRecycle];
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
+  if (!_eventEmitter) {
+    return;
+  }
+
+  NSTimeInterval now = CACurrentMediaTime();
+  if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
+    _lastScrollEventDispatchTime = now;
+    std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
+  }
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
+  [self scrollViewDidScroll:scrollView];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
+  [self _forceDispatchNextScrollEvent];
+
+  if (!_eventEmitter) {
+    return;
+  }
+
+  std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
                      withVelocity:(CGPoint)velocity
               targetContentOffset:(inout CGPoint *)targetContentOffset
 {
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
+  [self _forceDispatchNextScrollEvent];
+
+  if (!_eventEmitter) {
+    return;
+  }
+
+  std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)
+  [self _forceDispatchNextScrollEvent];
+
+  if (!_eventEmitter) {
+    return;
+  }
+
+  std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)
       ->onMomentumScrollBegin([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
+  [self _forceDispatchNextScrollEvent];
+
+  if (!_eventEmitter) {
+    return;
+  }
+
+  std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
+  [self _updateStateWithContentOffset];
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
+  [self _forceDispatchNextScrollEvent];
+
+  if (!_eventEmitter) {
+    return;
+  }
+
+  std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
+  [self _updateStateWithContentOffset];
 }
 
 - (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view
 {
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
+  [self _forceDispatchNextScrollEvent];
+
+  if (!_eventEmitter) {
+    return;
+  }
+
+  std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view atScale:(CGFloat)scale
 {
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
+  [self _forceDispatchNextScrollEvent];
+
+  if (!_eventEmitter) {
+    return;
+  }
+
+  std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
+  [self _updateStateWithContentOffset];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)_forceDispatchNextScrollEvent
+{
+  _lastScrollEventDispatchTime = 0;
+}
+
+@end
+
+@implementation RCTScrollViewComponentView (ScrollableProtocol)
+
+- (CGSize)contentSize
+{
+  return _contentSize;
+}
+
+- (void)scrollToOffset:(CGPoint)offset
+{
+  [self _forceDispatchNextScrollEvent];
+  [self scrollToOffset:offset animated:YES];
+}
+
+- (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
+{
+  [self _forceDispatchNextScrollEvent];
+  [self.scrollView setContentOffset:offset animated:animated];
+}
+
+- (void)scrollToEnd:(BOOL)animated
+{
+  // Not implemented.
+}
+
+- (void)zoomToRect:(CGRect)rect animated:(BOOL)animated
+{
+  // Not implemented.
+}
+
+- (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
+{
+  [self.scrollViewDelegateSplitter addDelegate:scrollListener];
+}
+
+- (void)removeScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
+{
+  [self.scrollViewDelegateSplitter removeDelegate:scrollListener];
 }
 
 @end

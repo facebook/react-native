@@ -10,16 +10,16 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const EventEmitter = require('EventEmitter');
-const TaskQueue = require('TaskQueue');
+const BatchedBridge = require('../BatchedBridge/BatchedBridge');
+const EventEmitter = require('../vendor/emitter/EventEmitter');
+const TaskQueue = require('./TaskQueue');
 
-const infoLog = require('infoLog');
+const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
 const keyMirror = require('fbjs/lib/keyMirror');
 
-type Handle = number;
-import type {Task} from 'TaskQueue';
+export type Handle = number;
+import type {Task} from './TaskQueue';
 
 const _emitter = new EventEmitter();
 
@@ -139,7 +139,7 @@ const InteractionManager = {
     _deleteInteractionSet.add(handle);
   },
 
-  addListener: _emitter.addListener.bind(_emitter),
+  addListener: (_emitter.addListener.bind(_emitter): $FlowFixMe),
 
   /**
    * A positive number will use setTimeout to schedule any tasks after the

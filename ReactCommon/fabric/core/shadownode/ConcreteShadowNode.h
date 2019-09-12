@@ -22,7 +22,7 @@ namespace react {
  * with many handy features.
  */
 template <
-    const char *concreteComponentName,
+    ComponentName concreteComponentName,
     typename PropsT,
     typename EventEmitterT = EventEmitter,
     typename StateDataT = StateData>
@@ -71,21 +71,33 @@ class ConcreteShadowNode : public ShadowNode {
     return {};
   }
 
-  ComponentName getComponentName() const override {
-    return ComponentName(concreteComponentName);
-  }
-
-  ComponentHandle getComponentHandle() const override {
-    return reinterpret_cast<ComponentHandle>(concreteComponentName);
-  }
-
   const SharedConcreteProps getProps() const {
-    assert(std::dynamic_pointer_cast<const PropsT>(props_));
-    return std::static_pointer_cast<const PropsT>(props_);
+    assert(props_ && "Props must not be `nullptr`.");
+    assert(
+        std::dynamic_pointer_cast<ConcreteProps const>(props_) &&
+        "Props must be an instance of ConcreteProps class.");
+    return std::static_pointer_cast<ConcreteProps const>(props_);
   }
 
-  const typename ConcreteState::Shared getState() const {
-    return std::static_pointer_cast<const ConcreteState>(state_);
+  /*
+   * Returns a concrete state data associated with the node.
+   * Thread-safe after the node is sealed.
+   */
+  ConcreteStateData const &getStateData() const {
+    assert(state_ && "State must not be `nullptr`.");
+    assert(
+        std::dynamic_pointer_cast<ConcreteState const>(state_) &&
+        "State must be an instance of ConcreteState class.");
+    return std::static_pointer_cast<ConcreteState const>(state_)->getData();
+  }
+
+  /*
+   * Creates and assigns a new state object containing given state data.
+   * Can be called only before the node is sealed (usually during construction).
+   */
+  void setStateData(ConcreteStateData &&data) {
+    ensureUnsealed();
+    state_ = std::make_shared<ConcreteState const>(std::move(data), *state_);
   }
 
   /*

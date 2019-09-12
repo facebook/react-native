@@ -1,20 +1,21 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.text;
 
-import javax.annotation.Nullable;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.util.SparseArray;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class responsible to load and cache Typeface objects. It will first try to load typefaces inside
@@ -26,20 +27,18 @@ import android.util.SparseArray;
  */
 public class ReactFontManager {
 
-  private static final String[] EXTENSIONS = {
-      "",
-      "_bold",
-      "_italic",
-      "_bold_italic"};
+  private static final String[] EXTENSIONS = {"", "_bold", "_italic", "_bold_italic"};
   private static final String[] FILE_EXTENSIONS = {".ttf", ".otf"};
   private static final String FONTS_ASSET_PATH = "fonts/";
 
   private static ReactFontManager sReactFontManagerInstance;
 
-  private Map<String, FontFamily> mFontCache;
+  private final Map<String, FontFamily> mFontCache;
+  private final Map<String, Typeface> mCustomTypefaceCache;
 
   private ReactFontManager() {
     mFontCache = new HashMap<>();
+    mCustomTypefaceCache = new HashMap<>();
   }
 
   public static ReactFontManager getInstance() {
@@ -49,11 +48,21 @@ public class ReactFontManager {
     return sReactFontManagerInstance;
   }
 
-  public
-  @Nullable Typeface getTypeface(
-      String fontFamilyName,
-      int style,
-      AssetManager assetManager) {
+  public @Nullable Typeface getTypeface(
+      String fontFamilyName, int style, AssetManager assetManager) {
+    return getTypeface(fontFamilyName, style, 0, assetManager);
+  }
+
+  public @Nullable Typeface getTypeface(
+      String fontFamilyName, int style, int weight, AssetManager assetManager) {
+    if (mCustomTypefaceCache.containsKey(fontFamilyName)) {
+      Typeface typeface = mCustomTypefaceCache.get(fontFamilyName);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && weight >= 100 && weight <= 1000) {
+        return Typeface.create(typeface, weight, (style & Typeface.ITALIC) != 0);
+      }
+      return Typeface.create(typeface, style);
+    }
+
     FontFamily fontFamily = mFontCache.get(fontFamilyName);
     if (fontFamily == null) {
       fontFamily = new FontFamily();
@@ -71,8 +80,23 @@ public class ReactFontManager {
     return typeface;
   }
 
+  /*
+   * This method allows you to load custom fonts from res/font folder as provided font family name.
+   * Fonts may be one of .ttf, .otf or XML (https://developer.android.com/guide/topics/ui/look-and-feel/fonts-in-xml).
+   * To support multiple font styles or weights, you must provide a font in XML format.
+   *
+   * ReactFontManager.getInstance().addCustomFont(this, "Srisakdi", R.font.srisakdi);
+   */
+  public void addCustomFont(@NonNull Context context, @NonNull String fontFamily, int fontId) {
+    Typeface font = ResourcesCompat.getFont(context, fontId);
+    if (font != null) {
+      mCustomTypefaceCache.put(fontFamily, font);
+    }
+  }
+
   /**
    * Add additional font family, or replace the exist one in the font memory cache.
+   *
    * @param style
    * @see {@link Typeface#DEFAULT}
    * @see {@link Typeface#BOLD}
@@ -90,19 +114,17 @@ public class ReactFontManager {
     }
   }
 
-  private static
-  @Nullable Typeface createTypeface(
-      String fontFamilyName,
-      int style,
-      AssetManager assetManager) {
+  private static @Nullable Typeface createTypeface(
+      String fontFamilyName, int style, AssetManager assetManager) {
     String extension = EXTENSIONS[style];
     for (String fileExtension : FILE_EXTENSIONS) {
-      String fileName = new StringBuilder()
-          .append(FONTS_ASSET_PATH)
-          .append(fontFamilyName)
-          .append(extension)
-          .append(fileExtension)
-          .toString();
+      String fileName =
+          new StringBuilder()
+              .append(FONTS_ASSET_PATH)
+              .append(fontFamilyName)
+              .append(extension)
+              .append(fileExtension)
+              .toString();
       try {
         return Typeface.createFromAsset(assetManager, fileName);
       } catch (RuntimeException e) {
@@ -129,6 +151,5 @@ public class ReactFontManager {
     public void setTypeface(int style, Typeface typeface) {
       mTypefaceSparseArray.put(style, typeface);
     }
-
   }
 }

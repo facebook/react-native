@@ -7,11 +7,13 @@
 
 #pragma once
 
+#include <cassert>
 #include <string>
 
+#include <folly/Optional.h>
 #include <jsi/jsi.h>
 
-#include "JSCallInvoker.h"
+#include <ReactCommon/JSCallInvoker.h>
 
 using namespace facebook;
 
@@ -32,18 +34,61 @@ struct Promise {
   jsi::Function reject_;
 };
 
-using PromiseSetupFunctionType = std::function<void(jsi::Runtime &rt, std::shared_ptr<Promise>)>;
-jsi::Value createPromiseAsJSIValue(jsi::Runtime &rt, const PromiseSetupFunctionType func);
+using PromiseSetupFunctionType =
+    std::function<void(jsi::Runtime &rt, std::shared_ptr<Promise>)>;
+jsi::Value createPromiseAsJSIValue(
+    jsi::Runtime &rt,
+    const PromiseSetupFunctionType func);
 
 // Helper for passing jsi::Function arg to other methods.
-struct CallbackWrapper {
-  CallbackWrapper(jsi::Function callback, jsi::Runtime &runtime, std::shared_ptr<react::JSCallInvoker> jsInvoker)
-  : callback(std::move(callback)),
-    runtime(runtime),
-    jsInvoker(jsInvoker) {}
-  jsi::Function callback;
-  jsi::Runtime &runtime;
-  std::shared_ptr<react::JSCallInvoker> jsInvoker;
+class CallbackWrapper {
+ private:
+  struct Data {
+    Data(
+        jsi::Function callback,
+        jsi::Runtime &runtime,
+        std::shared_ptr<react::JSCallInvoker> jsInvoker)
+        : callback(std::move(callback)),
+          runtime(runtime),
+          jsInvoker(std::move(jsInvoker)) {}
+
+    jsi::Function callback;
+    jsi::Runtime &runtime;
+    std::shared_ptr<react::JSCallInvoker> jsInvoker;
+  };
+
+  folly::Optional<Data> data_;
+
+ public:
+  CallbackWrapper(
+      jsi::Function callback,
+      jsi::Runtime &runtime,
+      std::shared_ptr<react::JSCallInvoker> jsInvoker)
+      : data_(Data{std::move(callback), runtime, jsInvoker}) {}
+
+  // Delete the enclosed jsi::Function
+  void destroy() {
+    data_ = folly::none;
+  }
+
+  bool isDestroyed() {
+    return !data_.hasValue();
+  }
+
+  jsi::Function &callback() {
+    assert(!isDestroyed());
+    return data_->callback;
+  }
+
+  jsi::Runtime &runtime() {
+    assert(!isDestroyed());
+    return data_->runtime;
+  }
+
+  react::JSCallInvoker &jsInvoker() {
+    assert(!isDestroyed());
+    return *(data_->jsInvoker);
+  }
 };
 
 } // namespace react

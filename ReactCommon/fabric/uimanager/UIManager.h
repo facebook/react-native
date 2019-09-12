@@ -15,9 +15,10 @@
 namespace facebook {
 namespace react {
 
+class UIManagerBinding;
+
 class UIManager {
  public:
-  void setShadowTreeRegistry(ShadowTreeRegistry *shadowTreeRegistry);
 
   void setComponentDescriptorRegistry(
       const SharedComponentDescriptorRegistry &componentDescriptorRegistry);
@@ -30,13 +31,23 @@ class UIManager {
   void setDelegate(UIManagerDelegate *delegate);
   UIManagerDelegate *getDelegate();
 
+  /*
+   * Provides access to a UIManagerBindging.
+   * The `callback` methods will not be called if the internal pointer to
+   * `UIManagerBindging` is `nullptr`.
+   * The callback is called synchronously on the same thread.
+   */
+  void visitBinding(
+      std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
+      const;
+
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
 
   SharedShadowNode createNode(
       Tag tag,
-      const std::string &name,
+      std::string const &componentName,
       SurfaceId surfaceId,
       const RawProps &props,
       SharedEventTarget eventTarget) const;
@@ -58,6 +69,12 @@ class UIManager {
       const SharedShadowNode &shadowNode,
       const RawProps &rawProps) const;
 
+  void setJSResponder(
+      const SharedShadowNode &shadowNode,
+      const bool blockNativeResponder) const;
+
+  void clearJSResponder() const;
+
   /*
    * Returns layout metrics of given `shadowNode` relative to
    * `ancestorShadowNode` (relative to the root node in case if provided
@@ -75,9 +92,25 @@ class UIManager {
       const SharedShadowNode &shadowNode,
       const StateData::Shared &rawStateData) const;
 
-  ShadowTreeRegistry *shadowTreeRegistry_;
+  void dispatchCommand(
+      const SharedShadowNode &shadowNode,
+      std::string const &commandName,
+      folly::dynamic const args) const;
+
+  /*
+   * Iterates over all shadow nodes which are parts of all registered surfaces
+   * and find the one that has given `tag`. Returns `nullptr` if the node wasn't
+   * found. This is a temporary workaround that should not be used in any core
+   * functionality.
+   */
+  ShadowNode::Shared findShadowNodeByTag_DEPRECATED(Tag tag) const;
+
+  ShadowTreeRegistry const &getShadowTreeRegistry() const;
+
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;
+  UIManagerBinding *uiManagerBinding_;
+  ShadowTreeRegistry shadowTreeRegistry_{};
 };
 
 } // namespace react

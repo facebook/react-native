@@ -51,17 +51,17 @@ info "and then press any key."
 info ""
 read -n 1
 
-./gradlew :RNTester:android:app:installDebug || error "Couln't build RNTester Android"
+./gradlew :RNTester:android:app:installJscDebug || error "Couldn't build RNTester Android"
 
 info "Press any key to run RNTester in an already running Android emulator/device"
 info ""
 read -n 1
 adb shell am start -n com.facebook.react.uiapp/.RNTesterActivity
 
-info "Press any key to open the project in Xcode, then build and test manually."
+info "Press any key to open the workspace in Xcode, then build and test manually."
 info ""
 read -n 1
-open "RNTester/RNTester.xcodeproj"
+open "RNTester/RNTesterPods.xcworkspace"
 
 info "When done testing RNTester app on iOS and Android press any key to continue."
 info ""
@@ -92,7 +92,7 @@ grep -E "com.facebook.react:react-native:\\+" "${project_name}/android/app/build
 success "New sample project generated at /tmp/${project_name}"
 
 info "Test the following on Android:"
-info "   - Disable Hot Reloading. It might be enabled from last time (the setting is stored on the device)"
+info "   - Disable Fast Refresh. It might be enabled from last time (the setting is stored on the device)"
 info "   - Verify 'Reload JS' works"
 info ""
 info "Press any key to run the sample in Android emulator/device"
@@ -101,12 +101,12 @@ read -n 1
 cd "/tmp/${project_name}" && react-native run-android
 
 info "Test the following on iOS:"
-info "   - Disable Hot Reloading. It might be enabled from last time (the setting is stored on the device)"
+info "   - Disable Fast Refresh. It might be enabled from last time (the setting is stored on the device)"
 info "   - Verify 'Reload JS' works"
 info "   - Test Chrome debugger by adding breakpoints and reloading JS. We don't have tests for Chrome debugging."
 info "   - Disable Chrome debugging."
-info "   - Enable Hot Reloading, change a file (index.js) and save. The UI should refresh."
-info "   - Disable Hot Reloading."
+info "   - Enable Fast Refresh, change a file (index.js) and save. The UI should refresh."
+info "   - Disable Fast Refresh."
 info ""
 info "Press any key to open the project in Xcode"
 info ""

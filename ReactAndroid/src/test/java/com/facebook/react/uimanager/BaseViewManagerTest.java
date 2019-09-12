@@ -1,27 +1,23 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
 
-import static org.mockito.Mockito.mock;
+import static org.fest.assertions.api.Assertions.assertThat;
 
-import android.content.Context;
-import androidx.core.view.ViewCompat;
-import com.facebook.react.uimanager.AccessibilityDelegateUtil.AccessibilityRole;
+import com.facebook.react.R;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewManager;
-import com.facebook.react.R;
 import java.util.Locale;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.RobolectricTestRunner;
-import static org.fest.assertions.api.Assertions.assertThat;
+import org.robolectric.RuntimeEnvironment;
 
 @RunWith(RobolectricTestRunner.class)
 public class BaseViewManagerTest {

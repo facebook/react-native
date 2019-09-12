@@ -13,7 +13,7 @@ import type {
   MeasureOnSuccessCallback,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
-} from 'ReactNativeTypes';
+} from '../Renderer/shims/ReactNativeTypes';
 
 // TODO: type these properly.
 type Node = {};
@@ -48,6 +48,7 @@ type Spec = {|
     onFail: () => void,
     onSuccess: MeasureLayoutOnSuccessCallback,
   ) => void,
+  +findShadowNodeByTag_DEPRECATED: (reactTag: number) => ?Node,
 |};
 
 const FabricUIManager: ?Spec = global.nativeFabricUIManager;

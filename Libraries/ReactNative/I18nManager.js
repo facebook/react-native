@@ -9,20 +9,47 @@
  */
 'use strict';
 
-type I18nManagerStatus = {
-  isRTL: boolean,
+import NativeI18nManager from './NativeI18nManager';
+
+const i18nConstants: {|
   doLeftAndRightSwapInRTL: boolean,
-  allowRTL: (allowRTL: boolean) => {},
-  forceRTL: (forceRTL: boolean) => {},
-  swapLeftAndRightInRTL: (flipStyles: boolean) => {},
-};
+  isRTL: boolean,
+|} = NativeI18nManager
+  ? NativeI18nManager.getConstants()
+  : {
+      isRTL: false,
+      doLeftAndRightSwapInRTL: true,
+    };
 
-const I18nManager: I18nManagerStatus = require('NativeModules').I18nManager || {
-  isRTL: false,
-  doLeftAndRightSwapInRTL: true,
-  allowRTL: () => {},
-  forceRTL: () => {},
-  swapLeftAndRightInRTL: () => {},
-};
+module.exports = {
+  getConstants: (): {|doLeftAndRightSwapInRTL: boolean, isRTL: boolean|} => {
+    return i18nConstants;
+  },
 
-module.exports = I18nManager;
+  allowRTL: (shouldAllow: boolean) => {
+    if (!NativeI18nManager) {
+      return;
+    }
+
+    NativeI18nManager.allowRTL(shouldAllow);
+  },
+
+  forceRTL: (shouldForce: boolean) => {
+    if (!NativeI18nManager) {
+      return;
+    }
+
+    NativeI18nManager.forceRTL(shouldForce);
+  },
+
+  swapLeftAndRightInRTL: (flipStyles: boolean) => {
+    if (!NativeI18nManager) {
+      return;
+    }
+
+    NativeI18nManager.swapLeftAndRightInRTL(flipStyles);
+  },
+
+  isRTL: i18nConstants.isRTL,
+  doLeftAndRightSwapInRTL: i18nConstants.doLeftAndRightSwapInRTL,
+};

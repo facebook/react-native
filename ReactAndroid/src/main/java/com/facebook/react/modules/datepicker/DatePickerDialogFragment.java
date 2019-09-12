@@ -1,16 +1,10 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.modules.datepicker;
-
-import javax.annotation.Nullable;
-
-import java.util.Calendar;
-import java.util.Locale;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
@@ -19,23 +13,23 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.fragment.app.DialogFragment;
 import android.widget.DatePicker;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import java.util.Calendar;
+import java.util.Locale;
 
 @SuppressLint("ValidFragment")
 public class DatePickerDialogFragment extends DialogFragment {
 
-  /**
-   * Minimum date supported by {@link DatePicker}, 01 Jan 1900
-   */
+  /** Minimum date supported by {@link DatePicker}, 01 Jan 1900 */
   private static final long DEFAULT_MIN_DATE = -2208988800001l;
 
-  @Nullable
-  private OnDateSetListener mOnDateSetListener;
-  @Nullable
-  private OnDismissListener mOnDismissListener;
+  @Nullable private OnDateSetListener mOnDateSetListener;
+  @Nullable private OnDismissListener mOnDismissListener;
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -55,7 +49,9 @@ public class DatePickerDialogFragment extends DialogFragment {
 
     DatePickerMode mode = DatePickerMode.DEFAULT;
     if (args != null && args.getString(DatePickerDialogModule.ARG_MODE, null) != null) {
-      mode = DatePickerMode.valueOf(args.getString(DatePickerDialogModule.ARG_MODE).toUpperCase(Locale.US));
+      mode =
+          DatePickerMode.valueOf(
+              args.getString(DatePickerDialogModule.ARG_MODE).toUpperCase(Locale.US));
     }
 
     DatePickerDialog dialog = null;
@@ -63,21 +59,39 @@ public class DatePickerDialogFragment extends DialogFragment {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       switch (mode) {
         case CALENDAR:
-          dialog = new DismissableDatePickerDialog(activityContext,
-            activityContext.getResources().getIdentifier("CalendarDatePickerDialog", "style", activityContext.getPackageName()),
-            onDateSetListener, year, month, day);
+          dialog =
+              new DismissableDatePickerDialog(
+                  activityContext,
+                  activityContext
+                      .getResources()
+                      .getIdentifier(
+                          "CalendarDatePickerDialog", "style", activityContext.getPackageName()),
+                  onDateSetListener,
+                  year,
+                  month,
+                  day);
           break;
         case SPINNER:
-          dialog = new DismissableDatePickerDialog(activityContext,
-            activityContext.getResources().getIdentifier("SpinnerDatePickerDialog", "style", activityContext.getPackageName()),
-            onDateSetListener, year, month, day);
+          dialog =
+              new DismissableDatePickerDialog(
+                  activityContext,
+                  android.R.style.Theme_Holo_Light_Dialog,
+                  onDateSetListener,
+                  year,
+                  month,
+                  day);
+          dialog
+              .getWindow()
+              .setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
           break;
         case DEFAULT:
-          dialog = new DismissableDatePickerDialog(activityContext, onDateSetListener, year, month, day);
+          dialog =
+              new DismissableDatePickerDialog(activityContext, onDateSetListener, year, month, day);
           break;
       }
     } else {
-      dialog = new DismissableDatePickerDialog(activityContext, onDateSetListener, year, month, day);
+      dialog =
+          new DismissableDatePickerDialog(activityContext, onDateSetListener, year, month, day);
 
       switch (mode) {
         case CALENDAR:

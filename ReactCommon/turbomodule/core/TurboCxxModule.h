@@ -18,24 +18,29 @@ namespace facebook {
 namespace react {
 
 /**
- * A helper class to convert the legacy CxxModule instance to a TurboModule instance.
- * This should be used only for migration purpose (to TurboModule), since it's not very performant
- * due to a lot of back-and-forth value conversions between folly::dynamic and jsi::Value.
+ * A helper class to convert the legacy CxxModule instance to a TurboModule
+ * instance. This should be used only for migration purpose (to TurboModule),
+ * since it's not very performant due to a lot of back-and-forth value
+ * conversions between folly::dynamic and jsi::Value.
  */
 class JSI_EXPORT TurboCxxModule : public TurboModule {
-public:
-  TurboCxxModule(std::unique_ptr<facebook::xplat::module::CxxModule> cxxModule, std::shared_ptr<JSCallInvoker> jsInvoker);
+ public:
+  TurboCxxModule(
+      std::unique_ptr<facebook::xplat::module::CxxModule> cxxModule,
+      std::shared_ptr<JSCallInvoker> jsInvoker);
 
-  virtual facebook::jsi::Value get(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& propName) override;
+  virtual facebook::jsi::Value get(
+      facebook::jsi::Runtime &runtime,
+      const facebook::jsi::PropNameID &propName) override;
 
-  virtual jsi::Value invokeMethod(
+  jsi::Value invokeMethod(
       jsi::Runtime &runtime,
       TurboModuleMethodValueKind valueKind,
       const std::string &methodName,
       const jsi::Value *args,
-      size_t count) override;
+      size_t count);
 
-private:
+ private:
   std::vector<facebook::xplat::module::CxxModule::Method> cxxMethods_;
   std::unique_ptr<facebook::xplat::module::CxxModule> cxxModule_;
 };

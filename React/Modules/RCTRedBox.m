@@ -37,10 +37,12 @@
     UITableView *_stackTraceTableView;
     NSString *_lastErrorMessage;
     NSArray<RCTJSStackFrame *> *_lastStackTrace;
+    int _lastErrorCookie;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
+    _lastErrorCookie = -1;
     if ((self = [super initWithFrame:frame])) {
 #if TARGET_OS_TV
         self.windowLevel = UIWindowLevelAlert + 1000;
@@ -161,7 +163,7 @@
 - (NSInteger)bottomSafeViewHeight
 {
     if (@available(iOS 11.0, *)) {
-        return [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+        return RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
     } else {
         return 0;
     }
@@ -183,17 +185,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     return [regex stringByReplacingMatchesInString:text options:0 range:NSMakeRange(0, [text length]) withTemplate:@""];
 }
 
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray<RCTJSStackFrame *> *)stack isUpdate:(BOOL)isUpdate
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray<RCTJSStackFrame *> *)stack isUpdate:(BOOL)isUpdate errorCookie:(int)errorCookie
 {
     // Remove ANSI color codes from the message
     NSString *messageWithoutAnsi = [self stripAnsi:message];
 
     // Show if this is a new message, or if we're updating the previous message
-    if ((self.hidden && !isUpdate) || (!self.hidden && isUpdate && [_lastErrorMessage isEqualToString:messageWithoutAnsi])) {
+    BOOL isNew = self.hidden && !isUpdate;
+    BOOL isUpdateForSameMessage = !isNew && (
+      !self.hidden && isUpdate && (
+        (errorCookie == -1 && [_lastErrorMessage isEqualToString:messageWithoutAnsi]) ||
+        (errorCookie == _lastErrorCookie)
+      )
+    );
+    if (isNew || isUpdateForSameMessage) {
         _lastStackTrace = stack;
         // message is displayed using UILabel, which is unable to render text of
         // unlimited length, so we truncate it
         _lastErrorMessage = [messageWithoutAnsi substringToIndex:MIN((NSUInteger)10000, messageWithoutAnsi.length)];
+        _lastErrorCookie = errorCookie;
 
         [_stackTraceTableView reloadData];
 
@@ -440,54 +450,80 @@ RCT_EXPORT_MODULE()
 {
     [self showErrorMessage:error.localizedDescription
                withDetails:error.localizedFailureReason
-                     stack:error.userInfo[RCTJSStackTraceKey]];
+                     stack:error.userInfo[RCTJSStackTraceKey]
+                     errorCookie:-1];
 }
 
 - (void)showErrorMessage:(NSString *)message
 {
-    [self showErrorMessage:message withParsedStack:nil isUpdate:NO];
+    [self showErrorMessage:message withParsedStack:nil isUpdate:NO errorCookie:-1];
 }
 
 - (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details
 {
-    [self showErrorMessage:message withDetails:details stack:nil];
+    [self showErrorMessage:message withDetails:details stack:nil errorCookie:-1];
 }
 
-- (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details stack:(NSArray<RCTJSStackFrame *> *)stack {
+- (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details stack:(NSArray<RCTJSStackFrame *> *)stack errorCookie:(int)errorCookie {
     NSString *combinedMessage = message;
     if (details) {
         combinedMessage = [NSString stringWithFormat:@"%@\n\n%@", message, details];
     }
-    [self showErrorMessage:combinedMessage withParsedStack:stack isUpdate:NO];
+    [self showErrorMessage:combinedMessage withParsedStack:stack isUpdate:NO errorCookie:errorCookie];
 }
 
 - (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack
 {
+    [self showErrorMessage:message withRawStack:rawStack errorCookie:-1];
+}
+
+- (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack errorCookie:(int)errorCookie
+{
     NSArray<RCTJSStackFrame *> *stack = [RCTJSStackFrame stackFramesWithLines:rawStack];
-    [self showErrorMessage:message withParsedStack:stack isUpdate:NO];
+    [self showErrorMessage:message withParsedStack:stack isUpdate:NO errorCookie:errorCookie];
 }
 
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack
 {
-    [self showErrorMessage:message withParsedStack:[RCTJSStackFrame stackFramesWithDictionaries:stack] isUpdate:NO];
+    [self showErrorMessage:message withStack:stack errorCookie:-1];
 }
 
 - (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack
 {
-    [self showErrorMessage:message withParsedStack:[RCTJSStackFrame stackFramesWithDictionaries:stack] isUpdate:YES];
+    [self updateErrorMessage:message withStack:stack errorCookie:-1];
+}
+
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack errorCookie:(int)errorCookie
+{
+    [self showErrorMessage:message withParsedStack:[RCTJSStackFrame stackFramesWithDictionaries:stack] isUpdate:NO errorCookie:errorCookie];
+}
+
+- (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack errorCookie:(int)errorCookie
+{
+    [self showErrorMessage:message withParsedStack:[RCTJSStackFrame stackFramesWithDictionaries:stack] isUpdate:YES errorCookie:errorCookie];
 }
 
 - (void)showErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack
 {
-    [self showErrorMessage:message withParsedStack:stack isUpdate:NO];
+    [self showErrorMessage:message withParsedStack:stack errorCookie:-1];
 }
 
 - (void)updateErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack
 {
-    [self showErrorMessage:message withParsedStack:stack isUpdate:YES];
+    [self updateErrorMessage:message withParsedStack:stack errorCookie:-1];
 }
 
-- (void)showErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack isUpdate:(BOOL)isUpdate
+- (void)showErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack errorCookie:(int)errorCookie
+{
+    [self showErrorMessage:message withParsedStack:stack isUpdate:NO errorCookie:errorCookie];
+}
+
+- (void)updateErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack errorCookie:(int)errorCookie
+{
+    [self showErrorMessage:message withParsedStack:stack isUpdate:YES errorCookie:errorCookie];
+}
+
+- (void)showErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack isUpdate:(BOOL)isUpdate errorCookie:(int)errorCookie
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self->_extraDataViewController == nil) {
@@ -510,7 +546,8 @@ RCT_EXPORT_MODULE()
         errorInfo = [self _customizeError:errorInfo];
         [self->_window showErrorMessage:errorInfo.errorMessage
                               withStack:errorInfo.stack
-                               isUpdate:isUpdate];
+                               isUpdate:isUpdate
+                               errorCookie:errorCookie];
     });
 }
 
@@ -592,15 +629,20 @@ RCT_EXPORT_METHOD(dismiss)
 
 + (NSString *)moduleName { return nil; }
 - (void)registerErrorCustomizer:(id<RCTErrorCustomizer>)errorCustomizer {}
-- (void)showError:(NSError *)message {}
+- (void)showError:(NSError *)error {}
 - (void)showErrorMessage:(NSString *)message {}
 - (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details {}
 - (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack {}
+- (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack errorCookie:(int)errorCookie {}
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack {}
 - (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack {}
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack errorCookie:(int)errorCookie {}
+- (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack errorCookie:(int)errorCookie {}
 - (void)showErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack {}
 - (void)updateErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack {}
-- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack isUpdate:(BOOL)isUpdate {}
+- (void)showErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack errorCookie:(int)errorCookie {}
+- (void)updateErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack errorCookie:(int)errorCookie {}
+
 - (void)dismiss {}
 
 @end

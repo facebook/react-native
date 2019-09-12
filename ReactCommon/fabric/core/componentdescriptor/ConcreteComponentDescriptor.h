@@ -45,7 +45,12 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   using ConcreteState = typename ShadowNodeT::ConcreteState;
   using ConcreteStateData = typename ShadowNodeT::ConcreteState::Data;
 
-  using ComponentDescriptor::ComponentDescriptor;
+  ConcreteComponentDescriptor(
+      EventDispatcher::Weak const &eventDispatcher,
+      ContextContainer::Shared const &contextContainer = {})
+      : ComponentDescriptor(eventDispatcher, contextContainer) {
+    rawPropsParser_.prepare<ConcreteProps>();
+  }
 
   ComponentHandle getComponentHandle() const override {
     return ShadowNodeT::Handle();
@@ -90,6 +95,12 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   virtual SharedProps cloneProps(
       const SharedProps &props,
       const RawProps &rawProps) const override {
+    if (rawProps.isEmpty()) {
+      return props ? props : ShadowNodeT::defaultSharedProps();
+    }
+
+    rawProps.parse(rawPropsParser_);
+
     return ShadowNodeT::Props(rawProps, props);
   };
 

@@ -10,12 +10,13 @@
 
 'use strict';
 
-const NativeEventEmitter = require('NativeEventEmitter');
-const {StatusBarManager} = require('NativeModules');
+const NativeEventEmitter = require('../../EventEmitter/NativeEventEmitter');
+
+import NativeStatusBarManager from './NativeStatusBarManager';
 
 /**
  * Use `StatusBar` for mutating the status bar.
  */
 class StatusBarIOS extends NativeEventEmitter {}
 
-module.exports = new StatusBarIOS(StatusBarManager);
+module.exports = (new StatusBarIOS(NativeStatusBarManager): StatusBarIOS);

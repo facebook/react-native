@@ -9,6 +9,7 @@
 
 #include <react/core/EventDispatcher.h>
 #include <react/core/Props.h>
+#include <react/core/RawPropsParser.h>
 #include <react/core/ShadowNode.h>
 #include <react/core/State.h>
 #include <react/core/StateData.h>
@@ -33,8 +34,8 @@ class ComponentDescriptor {
   using Unique = std::unique_ptr<ComponentDescriptor const>;
 
   ComponentDescriptor(
-      EventDispatcher::Shared const &eventDispatcher,
-      ContextContainer::Shared const &contextContainer = {});
+      EventDispatcher::Weak const &eventDispatcher,
+      ContextContainer::Shared const &contextContainer);
 
   virtual ~ComponentDescriptor() = default;
 
@@ -110,8 +111,9 @@ class ComponentDescriptor {
       const StateData::Shared &data) const = 0;
 
  protected:
-  EventDispatcher::Shared eventDispatcher_;
+  EventDispatcher::Weak eventDispatcher_;
   ContextContainer::Shared contextContainer_;
+  RawPropsParser rawPropsParser_{};
 };
 
 } // namespace react

@@ -35,6 +35,7 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 @protocol RCTEvent <NSObject>
 @required
 
+@property (nonatomic, strong, readonly) NSNumber *viewTag;
 @property (nonatomic, copy, readonly) NSString *eventName;
 
 - (BOOL)canCoalesce;
@@ -46,12 +47,6 @@ RCT_EXTERN NSString *RCTNormalizeInputEventName(NSString *eventName);
 - (NSArray *)arguments;
 
 @optional
-
-/**
- * Can be implemented for view based events that need to be coalesced
- * by it's viewTag.
- */
-@property (nonatomic, strong, readonly) NSNumber *viewTag;
 
 /**
  * Coalescing related methods must only be implemented if canCoalesce

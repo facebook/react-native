@@ -6,10 +6,12 @@ rn_android_library(
         ["*.java"],
         exclude = ["MultiSourceHelper.java"],
     ),
+    is_androidx = True,
     visibility = [
         "PUBLIC",
     ],
     deps = [
+        react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
     ],
@@ -18,10 +20,12 @@ rn_android_library(
 rn_android_library(
     name = "withmultisource",
     srcs = ["MultiSourceHelper.java"],
+    is_androidx = True,
     visibility = [
         "PUBLIC",
     ],
     deps = [
+        react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("libraries/fresco/fresco-react-native:imagepipeline"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),

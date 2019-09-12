@@ -92,8 +92,8 @@ class ShadowNode : public virtual Sealable,
 
 #pragma mark - Getters
 
-  virtual ComponentHandle getComponentHandle() const = 0;
-  virtual ComponentName getComponentName() const = 0;
+  ComponentName getComponentName() const;
+  ComponentHandle getComponentHandle() const;
 
   SharedProps const &getProps() const;
   SharedShadowNodeList const &getChildren() const;
@@ -112,10 +112,13 @@ class ShadowNode : public virtual Sealable,
   const State::Shared &getState() const;
 
   /*
-   * Returns a momentary value of currently committed state associated with a
-   * family of nodes which this node belongs to.
+   * Returns a momentary value of the most recently created or committed state
+   * associated with a family of nodes which this node belongs to.
+   * Sequential calls might return different values.
+   * The method may return null pointer in case if the particular `ShadowNode`
+   * does not use `State`.
    */
-  const State::Shared &getCommitedState() const;
+  State::Shared getMostRecentState() const;
 
   /*
    * Returns a local data associated with the node.
@@ -136,7 +139,7 @@ class ShadowNode : public virtual Sealable,
       int suggestedIndex = -1);
 
   /*
-   * Sets local data assosiated with the node.
+   * Sets local data associated with the node.
    * The node must be unsealed at this point.
    */
   void setLocalData(const SharedLocalData &localData);

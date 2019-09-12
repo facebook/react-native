@@ -121,9 +121,9 @@ RCT_EXPORT_VIEW_PROPERTY(hasTVPreferredFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)
 #endif
 
-// Acessibility related properties
+// Accessibility related properties
 RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.isAccessibilityElement, BOOL)
-RCT_REMAP_VIEW_PROPERTY(accessibilityActions, reactAccessibilityElement.accessibilityActions, NSArray<NSString *>)
+RCT_REMAP_VIEW_PROPERTY(accessibilityActions, reactAccessibilityElement.accessibilityActions, NSDictionaryArray)
 RCT_REMAP_VIEW_PROPERTY(accessibilityLabel, reactAccessibilityElement.accessibilityLabel, NSString)
 RCT_REMAP_VIEW_PROPERTY(accessibilityHint, reactAccessibilityElement.accessibilityHint, NSString)
 RCT_REMAP_VIEW_PROPERTY(accessibilityViewIsModal, reactAccessibilityElement.accessibilityViewIsModal, BOOL)
@@ -174,35 +174,39 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
     view.reactAccessibilityElement.accessibilityTraits |= maskedTraits;
   } else {
     NSString *role = json ? [RCTConvert NSString:json] : @"";
-    ((RCTView *)view.reactAccessibilityElement).accessibilityRole = role;
+    view.reactAccessibilityElement.accessibilityRole = role;
   }
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(accessibilityStates, NSArray<NSString *>, RCTView)
+RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
 {
-  NSArray<NSString *> *states = json ? [RCTConvert NSStringArray:json] : nil;
-  NSMutableArray *newStates = [NSMutableArray new];
+  NSDictionary<NSString *, id> *state = json ? [RCTConvert NSDictionary:json] : nil;
+  NSMutableDictionary<NSString *, id> *newState = [[NSMutableDictionary<NSString *, id> alloc] init];
 
-  if (!states) {
+  if (!state) {
     return;
   }
 
   const UIAccessibilityTraits AccessibilityStatesMask = UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected;
   view.reactAccessibilityElement.accessibilityTraits = view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityStatesMask;
 
-  for (NSString *state in states) {
-    if ([state isEqualToString:@"selected"]) {
+  for (NSString *s in state) {
+    id val = [state objectForKey:s];
+    if (!val) {
+      continue;
+    }
+    if ([s isEqualToString:@"selected"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
       view.reactAccessibilityElement.accessibilityTraits |= UIAccessibilityTraitSelected;
-    } else if ([state isEqualToString:@"disabled"]) {
+    } else if ([s isEqualToString:@"disabled"] && [val isKindOfClass:[NSNumber class]] && [val boolValue]) {
       view.reactAccessibilityElement.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
     } else {
-      [newStates addObject:state];
+      newState[s] = val;
     }
   }
-  if (newStates.count > 0) {
-    ((RCTView *)view.reactAccessibilityElement).accessibilityStates = newStates;
+  if (newState.count > 0) {
+    view.reactAccessibilityElement.accessibilityState = newState;
   } else {
-      ((RCTView *)view.reactAccessibilityElement).accessibilityStates = nil;
+    view.reactAccessibilityElement.accessibilityState = nil;
   }
 }
 

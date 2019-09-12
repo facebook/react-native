@@ -10,19 +10,19 @@
 
 'use strict';
 
-const Dimensions = require('Dimensions');
-const React = require('React');
-const FlatList = require('FlatList');
-const SafeAreaView = require('SafeAreaView');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
-const YellowBoxButton = require('YellowBoxButton');
-const YellowBoxInspector = require('YellowBoxInspector');
-const YellowBoxListRow = require('YellowBoxListRow');
-const YellowBoxStyle = require('YellowBoxStyle');
+const Dimensions = require('../../Utilities/Dimensions');
+const FlatList = require('../../Lists/FlatList');
+const React = require('react');
+const SafeAreaView = require('../../Components/SafeAreaView/SafeAreaView');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const View = require('../../Components/View/View');
+const YellowBoxButton = require('./YellowBoxButton');
+const YellowBoxInspector = require('./YellowBoxInspector');
+const YellowBoxListRow = require('./YellowBoxListRow');
+const YellowBoxStyle = require('./YellowBoxStyle');
 
-import type {Category} from 'YellowBoxCategory';
-import type {Registry} from 'YellowBoxRegistry';
+import type {Category} from '../Data/YellowBoxCategory';
+import type {Registry} from '../Data/YellowBoxRegistry';
 
 type Props = $ReadOnly<{|
   onDismiss: (category: Category) => void,
@@ -41,7 +41,7 @@ const MAX_ITEMS = Math.floor(
 );
 
 class YellowBoxList extends React.Component<Props, State> {
-  state = {
+  state: State = {
     selectedCategory: null,
   };
 

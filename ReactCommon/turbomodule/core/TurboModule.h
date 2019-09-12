@@ -12,7 +12,7 @@
 
 #include <jsi/jsi.h>
 
-#include "JSCallInvoker.h"
+#include <ReactCommon/JSCallInvoker.h>
 
 namespace facebook {
 namespace react {
@@ -36,38 +36,26 @@ enum TurboModuleMethodValueKind {
  * Base HostObject class for every module to be exposed to JS
  */
 class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
-public:
-  TurboModule(const std::string &name, std::shared_ptr<JSCallInvoker> jsInvoker);
+ public:
+  TurboModule(
+      const std::string &name,
+      std::shared_ptr<JSCallInvoker> jsInvoker);
   virtual ~TurboModule();
 
-  /**
-   * Instruct this module to invalidate itself.
-   */
-  virtual void invalidate();
-
-  virtual facebook::jsi::Value get(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& propName) override;
-
-  /**
-   * General method invocation mechanism.
-   * Each subclass decides how the invocation should be, and whether it should be platform-specific.
-   */
-  virtual jsi::Value invokeMethod(
-      jsi::Runtime &runtime,
-      TurboModuleMethodValueKind valueKind,
-      const std::string &methodName,
-      const jsi::Value *args,
-      size_t count);
+  virtual facebook::jsi::Value get(
+      facebook::jsi::Runtime &runtime,
+      const facebook::jsi::PropNameID &propName) override;
 
   const std::string name_;
   std::shared_ptr<JSCallInvoker> jsInvoker_;
 
-protected:
+ protected:
   struct MethodMetadata {
     size_t argCount;
     facebook::jsi::Value (*invoker)(
-        facebook::jsi::Runtime& rt,
+        facebook::jsi::Runtime &rt,
         TurboModule &turboModule,
-        const facebook::jsi::Value* args,
+        const facebook::jsi::Value *args,
         size_t count);
   };
 
@@ -75,10 +63,11 @@ protected:
 };
 
 /**
- * An app/platform-specific provider function to get an instance of a module given a name.
+ * An app/platform-specific provider function to get an instance of a module
+ * given a name.
  */
-using TurboModuleProviderFunctionType = std::function<std::shared_ptr<TurboModule>(
-    const std::string &name)>;
+using TurboModuleProviderFunctionType =
+    std::function<std::shared_ptr<TurboModule>(const std::string &name)>;
 
 } // namespace react
 } // namespace facebook

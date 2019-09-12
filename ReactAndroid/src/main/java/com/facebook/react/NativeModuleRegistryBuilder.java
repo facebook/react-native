@@ -52,7 +52,7 @@ public class NativeModuleRegistryBuilder {
                   + name
                   + " tried to override "
                   + existingNativeModule.getClassName()
-                  + " for module name .Check the getPackages() method in MainApplication.java, it might be that module is being created twice. If this was your intention, set canOverrideExistingModule=true");
+                  + ". Check the getPackages() method in MainApplication.java, it might be that module is being created twice. If this was your intention, set canOverrideExistingModule=true");
         }
         mModules.remove(existingNativeModule);
       }
@@ -64,7 +64,8 @@ public class NativeModuleRegistryBuilder {
         // already in the list, and then NOT add the new module, since that will be directly exposed
 
         // Note that is someone uses {@link NativeModuleRegistry#registerModules}, we will NOT check
-        // for TurboModules - assuming that people wanted to explicitly register native modules there
+        // for TurboModules - assuming that people wanted to explicitly register native modules
+        // there
         continue;
       }
       mModules.put(name, moduleHolder);

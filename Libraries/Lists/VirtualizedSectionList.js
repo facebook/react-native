@@ -9,15 +9,14 @@
  */
 'use strict';
 
-const Platform = require('Platform');
-const React = require('React');
-const View = require('View');
-const VirtualizedList = require('VirtualizedList');
+const React = require('react');
+const View = require('../Components/View/View');
+const VirtualizedList = require('./VirtualizedList');
 
 const invariant = require('invariant');
 
-import type {ViewToken} from 'ViewabilityHelper';
-import type {Props as VirtualizedListProps} from 'VirtualizedList';
+import type {ViewToken} from './ViewabilityHelper';
+import type {Props as VirtualizedListProps} from './VirtualizedList';
 
 type Item = any;
 
@@ -120,10 +119,19 @@ type OptionalProps<SectionT: SectionBase<any>> = {
 export type Props<SectionT> = RequiredProps<SectionT> &
   OptionalProps<SectionT> &
   VirtualizedListProps;
+export type ScrollToLocationParamsType = {|
+  animated?: ?boolean,
+  itemIndex: number,
+  sectionIndex: number,
+  viewOffset?: number,
+  viewPosition?: number,
+|};
 
-type DefaultProps = typeof VirtualizedList.defaultProps & {
+type DefaultProps = {|
+  ...typeof VirtualizedList.defaultProps,
   data: $ReadOnlyArray<Item>,
-};
+|};
+
 type State = {childProps: VirtualizedListProps};
 
 /**
@@ -139,18 +147,21 @@ class VirtualizedSectionList<
     data: [],
   };
 
-  scrollToLocation(params: {
-    animated?: ?boolean,
-    itemIndex: number,
-    sectionIndex: number,
-    viewPosition?: number,
-  }) {
-    let index = Platform.OS === 'ios' ? params.itemIndex : params.itemIndex + 1;
+  scrollToLocation(params: ScrollToLocationParamsType) {
+    let index = params.itemIndex;
     for (let i = 0; i < params.sectionIndex; i++) {
       index += this.props.getItemCount(this.props.sections[i].data) + 2;
     }
+    let viewOffset = params.viewOffset || 0;
+    if (params.itemIndex > 0 && this.props.stickySectionHeadersEnabled) {
+      const frame = this._listRef._getFrameMetricsApprox(
+        index - params.itemIndex,
+      );
+      viewOffset += frame.length;
+    }
     const toIndexParams = {
       ...params,
+      viewOffset,
       index,
     };
     this._listRef.scrollToIndex(toIndexParams);
@@ -199,7 +210,7 @@ class VirtualizedSectionList<
     };
   }
 
-  render() {
+  render(): React.Node {
     return (
       <VirtualizedList {...this.state.childProps} ref={this._captureRef} />
     );

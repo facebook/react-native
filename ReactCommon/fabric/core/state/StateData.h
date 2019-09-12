@@ -17,23 +17,16 @@ namespace facebook {
 namespace react {
 
 /*
- * Base class for state data.
- * Must be used to provide getDynamic for Android.
+ * Dummy type that is used as a placeholder for state data for nodes that
+ * don't have a state.
  */
-class StateData {
- public:
+struct StateData final {
   using Shared = std::shared_ptr<void>;
 
-  StateData() {}
-
 #ifdef ANDROID
-  StateData(folly::dynamic data) {}
-
-  // Destructor must either be virtual or protected if we have any
-  // virtual methods
-  virtual ~StateData();
-
-  virtual const folly::dynamic getDynamic() const;
+  StateData() = default;
+  StateData(folly::dynamic data){};
+  folly::dynamic getDynamic() const;
 #endif
 };
 

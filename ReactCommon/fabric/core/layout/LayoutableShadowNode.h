@@ -17,6 +17,7 @@
 #include <react/core/Sealable.h>
 #include <react/core/ShadowNode.h>
 #include <react/debug/DebugStringConvertible.h>
+#include <react/graphics/Transform.h>
 
 namespace facebook {
 namespace react {
@@ -36,14 +37,14 @@ class LayoutableShadowNode : public virtual Sealable {
   virtual ~LayoutableShadowNode() noexcept = default;
 
   /*
-   * Measures the node (and node content, propbably recursivly) with
+   * Measures the node (and node content, probably recursively) with
    * given constrains and relying on possible layout.
    * Default implementation returns zero size.
    */
   virtual Size measure(LayoutConstraints layoutConstraints) const;
 
   /*
-   * Computes layout recusively.
+   * Computes layout recursively.
    * Additional environmental constraints might be provided via `layoutContext`
    * argument.
    * Default implementation basically calls `layoutChildren()` and then
@@ -65,6 +66,14 @@ class LayoutableShadowNode : public virtual Sealable {
   virtual bool isLayoutOnly() const;
 
   /*
+   * Returns a transform object that represents transformations that will/should
+   * be applied on top of regular layout metrics by mounting layer.
+   * The `transform` value modifies a coordinate space of a layout system.
+   * Default implementation returns `Identity` transform.
+   */
+  virtual Transform getTransform() const;
+
+  /*
    * Returns layout metrics relatively to the given ancestor node.
    */
   LayoutMetrics getRelativeLayoutMetrics(
@@ -74,7 +83,7 @@ class LayoutableShadowNode : public virtual Sealable {
   /*
    * Clean or Dirty layout state:
    * Indicates whether all nodes (and possibly their subtrees) along the path
-   * to the root node should be re-layouted.
+   * to the root node should be re-laid out.
    */
   virtual void cleanLayout() = 0;
   virtual void dirtyLayout() = 0;
@@ -89,7 +98,7 @@ class LayoutableShadowNode : public virtual Sealable {
 
   /*
    * Applies layout for all children;
-   * does not call anything in recusive manner *by desing*.
+   * does not call anything in recursive manner *by desing*.
    */
   virtual void layoutChildren(LayoutContext layoutContext);
 

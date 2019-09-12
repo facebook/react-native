@@ -170,7 +170,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     [self.panGestureRecognizer addTarget:self action:@selector(handleCustomPan:)];
 
     if ([self respondsToSelector:@selector(setSemanticContentAttribute:)]) {
-      // We intentionaly force `UIScrollView`s `semanticContentAttribute` to `LTR` here
+      // We intentionally force `UIScrollView`s `semanticContentAttribute` to `LTR` here
       // because this attribute affects a position of vertical scrollbar; we don't want this
       // scrollbar flip because we also flip it with whole `UIScrollView` flip.
       self.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
@@ -298,7 +298,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)setContentOffset:(CGPoint)contentOffset
 {
   UIView *contentView = [self contentView];
-  if (contentView && _centerContent) {
+  if (contentView && _centerContent && !CGSizeEqualToSize(contentView.frame.size, CGSizeZero)) {
     CGSize subviewSize = contentView.frame.size;
     CGSize scrollViewSize = self.bounds.size;
     if (subviewSize.width <= scrollViewSize.width) {
@@ -367,7 +367,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 {
   [super didMoveToWindow];
   // ScrollView enables pinch gesture late in its lifecycle. So simply setting it
-  // in the setter gets overriden when the view loads.
+  // in the setter gets overridden when the view loads.
   self.pinchGestureRecognizer.enabled = _pinchGestureEnabled;
 }
 #endif //TARGET_OS_TV
@@ -706,10 +706,10 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
    * warnings, and behave strangely (ListView works fine however), so don't fix it unless you fix that too!
    *
    * We limit the delta to 17ms so that small throttles intended to enable 60fps updates will not
-   * inadvertantly filter out any scroll events.
+   * inadvertently filter out any scroll events.
    */
   if (_allowNextScrollNoMatterWhat ||
-      (_scrollEventThrottle > 0 && _scrollEventThrottle < MAX(17, now - _lastScrollDispatchTime))) {
+      (_scrollEventThrottle > 0 && _scrollEventThrottle < MAX(0.017, now - _lastScrollDispatchTime))) {
 
     if (_DEPRECATED_sendUpdatedChildFrames) {
       // Calculate changed frames

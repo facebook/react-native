@@ -1,20 +1,22 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.shell;
 
-import com.facebook.react.LazyReactPackage;
+import androidx.annotation.Nullable;
+import com.facebook.react.TurboReactPackage;
 import com.facebook.react.animated.NativeAnimatedModule;
-import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
+import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.modules.accessibilityinfo.AccessibilityInfoModule;
+import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.blob.BlobModule;
 import com.facebook.react.modules.blob.FileReaderModule;
@@ -28,10 +30,10 @@ import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.i18nmanager.I18nManagerModule;
 import com.facebook.react.modules.image.ImageLoaderModule;
 import com.facebook.react.modules.intent.IntentModule;
-import com.facebook.react.modules.netinfo.NetInfoModule;
 import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.permissions.PermissionsModule;
 import com.facebook.react.modules.share.ShareModule;
+import com.facebook.react.modules.sound.SoundManagerModule;
 import com.facebook.react.modules.statusbar.StatusBarModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.timepicker.TimePickerDialogModule;
@@ -59,263 +61,112 @@ import com.facebook.react.views.text.ReactTextViewManager;
 import com.facebook.react.views.text.ReactVirtualTextViewManager;
 import com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageViewManager;
 import com.facebook.react.views.textinput.ReactTextInputManager;
-import com.facebook.react.views.toolbar.ReactToolbarManager;
 import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.react.views.viewpager.ReactViewPagerManager;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import javax.inject.Provider;
+import java.util.Map;
 
-/**
- * Package defining basic modules and view managers.
- */
-@ReactModuleList(nativeModules = {
-  AccessibilityInfoModule.class,
-  AppStateModule.class,
-  BlobModule.class,
-  FileReaderModule.class,
-  AsyncStorageModule.class,
-  CameraRollManager.class,
-  ClipboardModule.class,
-  DatePickerDialogModule.class,
-  DialogModule.class,
-  FrescoModule.class,
-  I18nManagerModule.class,
-  ImageEditingManager.class,
-  ImageLoaderModule.class,
-  ImageStoreManager.class,
-  IntentModule.class,
-  NativeAnimatedModule.class,
-  NetworkingModule.class,
-  NetInfoModule.class,
-  PermissionsModule.class,
-  ShareModule.class,
-  StatusBarModule.class,
-  TimePickerDialogModule.class,
-  ToastModule.class,
-  VibrationModule.class,
-  WebSocketModule.class,
-
-})
-public class MainReactPackage extends LazyReactPackage {
+/** Package defining basic modules and view managers. */
+@ReactModuleList(
+    nativeModules = {
+      AccessibilityInfoModule.class,
+      AppearanceModule.class,
+      AppStateModule.class,
+      BlobModule.class,
+      FileReaderModule.class,
+      AsyncStorageModule.class,
+      CameraRollManager.class,
+      ClipboardModule.class,
+      DatePickerDialogModule.class,
+      DialogModule.class,
+      FrescoModule.class,
+      I18nManagerModule.class,
+      ImageEditingManager.class,
+      ImageLoaderModule.class,
+      ImageStoreManager.class,
+      IntentModule.class,
+      NativeAnimatedModule.class,
+      NetworkingModule.class,
+      PermissionsModule.class,
+      ShareModule.class,
+      SoundManagerModule.class,
+      StatusBarModule.class,
+      TimePickerDialogModule.class,
+      ToastModule.class,
+      VibrationModule.class,
+      WebSocketModule.class,
+    })
+public class MainReactPackage extends TurboReactPackage {
 
   private MainPackageConfig mConfig;
 
-  public MainReactPackage() {
-  }
+  public MainReactPackage() {}
 
-  /**
-   * Create a new package with configuration
-   */
+  /** Create a new package with configuration */
   public MainReactPackage(MainPackageConfig config) {
     mConfig = config;
   }
 
   @Override
-  public List<ModuleSpec> getNativeModules(final ReactApplicationContext context) {
-    return Arrays.asList(
-        ModuleSpec.nativeModuleSpec(
-            AccessibilityInfoModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new AccessibilityInfoModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            AppStateModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new AppStateModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            BlobModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new BlobModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            FileReaderModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new FileReaderModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            AsyncStorageModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new AsyncStorageModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            CameraRollManager.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new CameraRollManager(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            ClipboardModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new ClipboardModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            DatePickerDialogModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new DatePickerDialogModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            DialogModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new DialogModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            FrescoModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new FrescoModule(
-                    context, true, mConfig != null ? mConfig.getFrescoConfig() : null);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            I18nManagerModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new I18nManagerModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            ImageEditingManager.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new ImageEditingManager(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            ImageLoaderModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new ImageLoaderModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            ImageStoreManager.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new ImageStoreManager(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            IntentModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new IntentModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            NativeAnimatedModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new NativeAnimatedModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            NetworkingModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new NetworkingModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            NetInfoModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new NetInfoModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            PermissionsModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new PermissionsModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            ShareModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new ShareModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            StatusBarModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new StatusBarModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            TimePickerDialogModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new TimePickerDialogModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            ToastModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new ToastModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            VibrationModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new VibrationModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
-            WebSocketModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new WebSocketModule(context);
-              }
-            }));
+  public @Nullable NativeModule getModule(String name, ReactApplicationContext context) {
+    switch (name) {
+      case AccessibilityInfoModule.NAME:
+        return new AccessibilityInfoModule(context);
+      case AppearanceModule.NAME:
+        return new AppearanceModule(context);
+      case AppStateModule.NAME:
+        return new AppStateModule(context);
+      case BlobModule.NAME:
+        return new BlobModule(context);
+      case FileReaderModule.NAME:
+        return new FileReaderModule(context);
+      case AsyncStorageModule.NAME:
+        return new AsyncStorageModule(context);
+      case CameraRollManager.NAME:
+        return new CameraRollManager(context);
+      case ClipboardModule.NAME:
+        return new ClipboardModule(context);
+      case DatePickerDialogModule.FRAGMENT_TAG:
+        return new DatePickerDialogModule(context);
+      case DialogModule.NAME:
+        return new DialogModule(context);
+      case FrescoModule.NAME:
+        return new FrescoModule(context, true, mConfig != null ? mConfig.getFrescoConfig() : null);
+      case I18nManagerModule.NAME:
+        return new I18nManagerModule(context);
+      case ImageEditingManager.NAME:
+        return new ImageEditingManager(context);
+      case ImageLoaderModule.NAME:
+        return new ImageLoaderModule(context);
+      case ImageStoreManager.NAME:
+        return new ImageStoreManager(context);
+      case IntentModule.NAME:
+        return new IntentModule(context);
+      case NativeAnimatedModule.NAME:
+        return new NativeAnimatedModule(context);
+      case NetworkingModule.NAME:
+        return new NetworkingModule(context);
+      case PermissionsModule.NAME:
+        return new PermissionsModule(context);
+      case ShareModule.NAME:
+        return new ShareModule(context);
+      case StatusBarModule.NAME:
+        return new StatusBarModule(context);
+      case SoundManagerModule.NAME:
+        return new SoundManagerModule(context);
+      case TimePickerDialogModule.FRAGMENT_TAG:
+        return new TimePickerDialogModule(context);
+      case ToastModule.NAME:
+        return new ToastModule(context);
+      case VibrationModule.NAME:
+        return new VibrationModule(context);
+      case WebSocketModule.NAME:
+        return new WebSocketModule(context);
+      default:
+        return null;
+    }
   }
 
   @Override
@@ -335,7 +186,6 @@ public class MainReactPackage extends LazyReactPackage {
     viewManagers.add(new ReactScrollViewManager());
     viewManagers.add(new ReactSliderManager());
     viewManagers.add(new ReactSwitchManager());
-    viewManagers.add(new ReactToolbarManager());
     viewManagers.add(new SwipeRefreshLayoutManager());
 
     // Native equivalents
@@ -355,7 +205,70 @@ public class MainReactPackage extends LazyReactPackage {
 
   @Override
   public ReactModuleInfoProvider getReactModuleInfoProvider() {
-    // This has to be done via reflection or we break open source.
-    return LazyReactPackage.getReactModuleInfoProviderViaReflection(this);
+    try {
+      Class<?> reactModuleInfoProviderClass =
+          Class.forName("com.facebook.react.MainReactPackage$$ReactModuleInfoProvider");
+      return (ReactModuleInfoProvider) reactModuleInfoProviderClass.newInstance();
+    } catch (ClassNotFoundException e) {
+      // In OSS case, the annotation processor does not run. We fall back on creating this byhand
+      Class<? extends NativeModule>[] moduleList =
+          new Class[] {
+            AccessibilityInfoModule.class,
+            AppearanceModule.class,
+            AppStateModule.class,
+            BlobModule.class,
+            FileReaderModule.class,
+            AsyncStorageModule.class,
+            CameraRollManager.class,
+            ClipboardModule.class,
+            DatePickerDialogModule.class,
+            DialogModule.class,
+            FrescoModule.class,
+            I18nManagerModule.class,
+            ImageEditingManager.class,
+            ImageLoaderModule.class,
+            ImageStoreManager.class,
+            IntentModule.class,
+            NativeAnimatedModule.class,
+            NetworkingModule.class,
+            PermissionsModule.class,
+            ShareModule.class,
+            StatusBarModule.class,
+            SoundManagerModule.class,
+            TimePickerDialogModule.class,
+            ToastModule.class,
+            VibrationModule.class,
+            WebSocketModule.class
+          };
+
+      final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
+      for (Class<? extends NativeModule> moduleClass : moduleList) {
+        ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
+
+        reactModuleInfoMap.put(
+            reactModule.name(),
+            new ReactModuleInfo(
+                reactModule.name(),
+                moduleClass.getName(),
+                reactModule.canOverrideExistingModule(),
+                reactModule.needsEagerInit(),
+                reactModule.hasConstants(),
+                reactModule.isCxxModule(),
+                false));
+      }
+
+      return new ReactModuleInfoProvider() {
+        @Override
+        public Map<String, ReactModuleInfo> getReactModuleInfos() {
+          return reactModuleInfoMap;
+        }
+      };
+    } catch (InstantiationException e) {
+      throw new RuntimeException(
+          "No ReactModuleInfoProvider for CoreModulesPackage$$ReactModuleInfoProvider", e);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(
+          "No ReactModuleInfoProvider for CoreModulesPackage$$ReactModuleInfoProvider", e);
+    }
   }
 }

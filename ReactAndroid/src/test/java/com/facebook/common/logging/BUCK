@@ -7,6 +7,7 @@ rn_android_library(
         "PUBLIC",
     ],
     deps = [
+        react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
     ],
     exported_deps = [

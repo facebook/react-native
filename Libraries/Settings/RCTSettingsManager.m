@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTSettingsManager.h"
+#import <React/RCTSettingsManager.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>

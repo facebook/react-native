@@ -9,8 +9,8 @@
  */
 'use strict';
 
-import type {TurboModule} from 'RCTExport';
-import * as TurboModuleRegistry from 'TurboModuleRegistry';
+import type {TurboModule} from '../../TurboModule/RCTExport';
+import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +fetchSegment: (
@@ -18,6 +18,11 @@ export interface Spec extends TurboModule {
     options: Object, // flowlint-line unclear-type: off
     callback: (error: ?Object) => void, // flowlint-line unclear-type: off
   ) => void;
+  +getSegment?: (
+    segmentId: number,
+    options: Object, // flowlint-line unclear-type: off
+    callback: (error: ?Object, path: ?string) => void, // flowlint-line unclear-type: off
+  ) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SegmentFetcher');
+export default (TurboModuleRegistry.getEnforcing<Spec>('SegmentFetcher'): Spec);

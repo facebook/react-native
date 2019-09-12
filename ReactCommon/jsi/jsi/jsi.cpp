@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -78,6 +78,10 @@ Instrumentation& Runtime::instrumentation() {
     void collectGarbage() override {}
 
     bool createSnapshotToFile(const std::string&, bool) override {
+      return false;
+    }
+
+    bool createSnapshotToStream(std::ostream&, bool) override {
       return false;
     }
 

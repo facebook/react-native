@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -53,16 +52,13 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-/**
- * Tests for {@link UIManagerModule}.
- */
+/** Tests for {@link UIManagerModule}. */
 @PrepareForTest({Arguments.class, ReactChoreographer.class})
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class UIManagerModuleTest {
 
-  @Rule
-  public PowerMockRule rule = new PowerMockRule();
+  @Rule public PowerMockRule rule = new PowerMockRule();
 
   private ReactApplicationContext mReactContext;
   private CatalystInstance mCatalystInstanceMock;
@@ -73,31 +69,38 @@ public class UIManagerModuleTest {
     PowerMockito.mockStatic(Arguments.class, ReactChoreographer.class);
 
     ReactChoreographer choreographerMock = mock(ReactChoreographer.class);
-    PowerMockito.when(Arguments.createArray()).thenAnswer(new Answer<Object>() {
-      @Override
-      public Object answer(InvocationOnMock invocation) throws Throwable {
-        return new JavaOnlyArray();
-      }
-    });
-    PowerMockito.when(Arguments.createMap()).thenAnswer(new Answer<Object>() {
-      @Override
-      public Object answer(InvocationOnMock invocation) throws Throwable {
-        return new JavaOnlyMap();
-      }
-    });
+    PowerMockito.when(Arguments.createArray())
+        .thenAnswer(
+            new Answer<Object>() {
+              @Override
+              public Object answer(InvocationOnMock invocation) throws Throwable {
+                return new JavaOnlyArray();
+              }
+            });
+    PowerMockito.when(Arguments.createMap())
+        .thenAnswer(
+            new Answer<Object>() {
+              @Override
+              public Object answer(InvocationOnMock invocation) throws Throwable {
+                return new JavaOnlyMap();
+              }
+            });
     PowerMockito.when(ReactChoreographer.getInstance()).thenReturn(choreographerMock);
 
     mPendingFrameCallbacks = new ArrayList<>();
-    doAnswer(new Answer() {
-      @Override
-      public Object answer(InvocationOnMock invocation) throws Throwable {
-        mPendingFrameCallbacks
-            .add((ChoreographerCompat.FrameCallback) invocation.getArguments()[1]);
-        return null;
-      }
-    }).when(choreographerMock).postFrameCallback(
-        any(ReactChoreographer.CallbackType.class),
-        any(ChoreographerCompat.FrameCallback.class));
+    doAnswer(
+            new Answer() {
+              @Override
+              public Object answer(InvocationOnMock invocation) throws Throwable {
+                mPendingFrameCallbacks.add(
+                    (ChoreographerCompat.FrameCallback) invocation.getArguments()[1]);
+                return null;
+              }
+            })
+        .when(choreographerMock)
+        .postFrameCallback(
+            any(ReactChoreographer.CallbackType.class),
+            any(ChoreographerCompat.FrameCallback.class));
 
     mCatalystInstanceMock = ReactTestHelper.createMockCatalystInstance();
     mReactContext = new ReactApplicationContext(RuntimeEnvironment.application);
@@ -151,31 +154,15 @@ public class UIManagerModuleTest {
     int subViewTag = viewTag + 1;
 
     uiManager.createView(
-        viewTag,
-        ReactViewManager.REACT_CLASS,
-        rootTag,
-        JavaOnlyMap.of("collapsable", false));
+        viewTag, ReactViewManager.REACT_CLASS, rootTag, JavaOnlyMap.of("collapsable", false));
     uiManager.createView(
-        subViewTag,
-        ReactViewManager.REACT_CLASS,
-        rootTag,
-        JavaOnlyMap.of("collapsable", false));
+        subViewTag, ReactViewManager.REACT_CLASS, rootTag, JavaOnlyMap.of("collapsable", false));
 
     uiManager.manageChildren(
-        viewTag,
-        null,
-        null,
-        JavaOnlyArray.of(subViewTag),
-        JavaOnlyArray.of(0),
-        null);
+        viewTag, null, null, JavaOnlyArray.of(subViewTag), JavaOnlyArray.of(0), null);
 
     uiManager.manageChildren(
-        rootTag,
-        null,
-        null,
-        JavaOnlyArray.of(viewTag),
-        JavaOnlyArray.of(0),
-        null);
+        rootTag, null, null, JavaOnlyArray.of(viewTag), JavaOnlyArray.of(0), null);
 
     uiManager.onBatchComplete();
     executePendingFrameCallbacks();
@@ -201,12 +188,7 @@ public class UIManagerModuleTest {
     View expectedViewAt3 = hierarchy.nativeRootView.getChildAt(3);
 
     uiManager.manageChildren(
-        hierarchy.rootView,
-        JavaOnlyArray.of(1, 0, 2),
-        JavaOnlyArray.of(0, 2, 1),
-        null,
-        null,
-        null);
+        hierarchy.rootView, JavaOnlyArray.of(1, 0, 2), JavaOnlyArray.of(0, 2, 1), null, null, null);
 
     uiManager.onBatchComplete();
     executePendingFrameCallbacks();
@@ -227,21 +209,12 @@ public class UIManagerModuleTest {
     View expectedViewAt0 = hierarchy.nativeRootView.getChildAt(1);
     View expectedViewAt1 = hierarchy.nativeRootView.getChildAt(2);
 
-    uiManager.manageChildren(
-        hierarchy.rootView,
-        null,
-        null,
-        null,
-        null,
-        JavaOnlyArray.of(0, 3));
+    uiManager.manageChildren(hierarchy.rootView, null, null, null, null, JavaOnlyArray.of(0, 3));
 
     uiManager.onBatchComplete();
     executePendingFrameCallbacks();
 
-    assertChildrenAreExactly(
-        hierarchy.nativeRootView,
-        expectedViewAt0,
-        expectedViewAt1);
+    assertChildrenAreExactly(hierarchy.nativeRootView, expectedViewAt0, expectedViewAt1);
   }
 
   @Test
@@ -265,10 +238,7 @@ public class UIManagerModuleTest {
     executePendingFrameCallbacks();
 
     assertChildrenAreExactly(
-        hierarchy.nativeRootView,
-        expectedViewAt0,
-        expectedViewAt1,
-        expectedViewAt2);
+        hierarchy.nativeRootView, expectedViewAt0, expectedViewAt1, expectedViewAt2);
   }
 
   @Test(expected = IllegalViewOperationException.class)
@@ -293,13 +263,7 @@ public class UIManagerModuleTest {
     UIManagerModule uiManager = getUIManagerModule();
     TestMoveDeleteHierarchy hierarchy = createMoveDeleteHierarchy(uiManager);
 
-    uiManager.manageChildren(
-        hierarchy.rootView,
-        null,
-        null,
-        null,
-        null,
-        JavaOnlyArray.of(3, 3));
+    uiManager.manageChildren(hierarchy.rootView, null, null, null, null, JavaOnlyArray.of(3, 3));
 
     uiManager.onBatchComplete();
     executePendingFrameCallbacks();
@@ -351,12 +315,7 @@ public class UIManagerModuleTest {
     View expectedViewAt3 = hierarchy.nativeRootView.getChildAt(3);
 
     uiManager.manageChildren(
-        hierarchy.rootView,
-        JavaOnlyArray.of(1, 2),
-        JavaOnlyArray.of(2, 1),
-        null,
-        null,
-        null);
+        hierarchy.rootView, JavaOnlyArray.of(1, 2), JavaOnlyArray.of(2, 1), null, null, null);
 
     uiManager.onBatchComplete();
     executePendingFrameCallbacks();
@@ -379,22 +338,13 @@ public class UIManagerModuleTest {
     View expectedViewAt1 = hierarchy.nativeRootView.getChildAt(2);
     View expectedViewAt2 = hierarchy.nativeRootView.getChildAt(3);
 
-    uiManager.manageChildren(
-        hierarchy.rootView,
-        null,
-        null,
-        null,
-        null,
-        JavaOnlyArray.of(1));
+    uiManager.manageChildren(hierarchy.rootView, null, null, null, null, JavaOnlyArray.of(1));
 
     uiManager.onBatchComplete();
     executePendingFrameCallbacks();
 
     assertChildrenAreExactly(
-        hierarchy.nativeRootView,
-        expectedViewAt0,
-        expectedViewAt1,
-        expectedViewAt2);
+        hierarchy.nativeRootView, expectedViewAt0, expectedViewAt1, expectedViewAt2);
   }
 
   @Test
@@ -408,16 +358,11 @@ public class UIManagerModuleTest {
         newViewTag,
         ReactViewManager.REACT_CLASS,
         hierarchy.rootView,
-        JavaOnlyMap
-            .of("left", 10.0, "top", 20.0, "width", 30.0, "height", 40.0, "collapsable", false));
+        JavaOnlyMap.of(
+            "left", 10.0, "top", 20.0, "width", 30.0, "height", 40.0, "collapsable", false));
 
     uiManager.manageChildren(
-        hierarchy.rootView,
-        null,
-        null,
-        JavaOnlyArray.of(newViewTag),
-        JavaOnlyArray.of(4),
-        null);
+        hierarchy.rootView, null, null, JavaOnlyArray.of(newViewTag), JavaOnlyArray.of(4), null);
 
     uiManager.onBatchComplete();
     executePendingFrameCallbacks();
@@ -430,9 +375,7 @@ public class UIManagerModuleTest {
     assertThat(newView.getHeight()).isEqualTo(40);
   }
 
-  /**
-   * This is to make sure we execute enqueued operations in the order given by JS.
-   */
+  /** This is to make sure we execute enqueued operations in the order given by JS. */
   @Test
   public void testAddUpdateRemoveInSingleBatch() {
     UIManagerModule uiManager = getUIManagerModule();
@@ -447,25 +390,12 @@ public class UIManagerModuleTest {
         JavaOnlyMap.of("collapsable", false));
 
     uiManager.manageChildren(
-        hierarchy.rootView,
-        null,
-        null,
-        JavaOnlyArray.of(newViewTag),
-        JavaOnlyArray.of(4),
-        null);
+        hierarchy.rootView, null, null, JavaOnlyArray.of(newViewTag), JavaOnlyArray.of(4), null);
 
     uiManager.updateView(
-        newViewTag,
-        ReactViewManager.REACT_CLASS,
-        JavaOnlyMap.of("backgroundColor", Color.RED));
+        newViewTag, ReactViewManager.REACT_CLASS, JavaOnlyMap.of("backgroundColor", Color.RED));
 
-    uiManager.manageChildren(
-        hierarchy.rootView,
-        null,
-        null,
-        null,
-        null,
-        JavaOnlyArray.of(4));
+    uiManager.manageChildren(hierarchy.rootView, null, null, null, null, JavaOnlyArray.of(4));
 
     uiManager.onBatchComplete();
     executePendingFrameCallbacks();
@@ -536,8 +466,7 @@ public class UIManagerModuleTest {
     }
 
     @Override
-    public void run() {
-    }
+    public void run() {}
   }
 
   @Test
@@ -610,10 +539,7 @@ public class UIManagerModuleTest {
     final int containerSiblingTag = containerTag + 1;
 
     uiManager.createView(
-        containerTag,
-        ReactViewManager.REACT_CLASS,
-        rootTag,
-        JavaOnlyMap.of("collapsable", false));
+        containerTag, ReactViewManager.REACT_CLASS, rootTag, JavaOnlyMap.of("collapsable", false));
     uiManager.createView(
         containerSiblingTag,
         ReactViewManager.REACT_CLASS,
@@ -662,10 +588,7 @@ public class UIManagerModuleTest {
     int rawTextTag = textTag + 1;
 
     uiManager.createView(
-        textTag,
-        ReactTextViewManager.REACT_CLASS,
-        rootTag,
-        JavaOnlyMap.of("collapsable", false));
+        textTag, ReactTextViewManager.REACT_CLASS, rootTag, JavaOnlyMap.of("collapsable", false));
     uiManager.createView(
         rawTextTag,
         ReactRawTextManager.REACT_CLASS,
@@ -673,20 +596,10 @@ public class UIManagerModuleTest {
         JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, text, "collapsable", false));
 
     uiManager.manageChildren(
-        textTag,
-        null,
-        null,
-        JavaOnlyArray.of(rawTextTag),
-        JavaOnlyArray.of(0),
-        null);
+        textTag, null, null, JavaOnlyArray.of(rawTextTag), JavaOnlyArray.of(0), null);
 
     uiManager.manageChildren(
-        rootTag,
-        null,
-        null,
-        JavaOnlyArray.of(textTag),
-        JavaOnlyArray.of(0),
-        null);
+        rootTag, null, null, JavaOnlyArray.of(textTag), JavaOnlyArray.of(0), null);
 
     uiManager.onBatchComplete();
     executePendingFrameCallbacks();
@@ -747,34 +660,22 @@ public class UIManagerModuleTest {
 
   private void addChild(UIManagerModule uiManager, int parentTag, int childTag, int index) {
     uiManager.manageChildren(
-        parentTag,
-        null,
-        null,
-        JavaOnlyArray.of(childTag),
-        JavaOnlyArray.of(index),
-        null);
+        parentTag, null, null, JavaOnlyArray.of(childTag), JavaOnlyArray.of(index), null);
   }
 
   private void assertChildrenAreExactly(ViewGroup parent, View... views) {
     assertThat(parent.getChildCount()).isEqualTo(views.length);
     for (int i = 0; i < views.length; i++) {
-      assertThat(parent.getChildAt(i))
-          .describedAs("View at " + i)
-          .isEqualTo(views[i]);
+      assertThat(parent.getChildAt(i)).describedAs("View at " + i).isEqualTo(views[i]);
     }
   }
 
   /**
-   * Holder for the tags that represent that represent views in the following hierarchy:
-   *  - View rootView
-   *    - View view0
-   *    - View viewWithChildren1
-   *      - View childView0
-   *      - View childView1
-   *    - View view2
-   *    - View view3
+   * Holder for the tags that represent that represent views in the following hierarchy: - View
+   * rootView - View view0 - View viewWithChildren1 - View childView0 - View childView1 - View view2
+   * - View view3
    *
-   * This hierarchy is used to test move/delete functionality in manageChildren.
+   * <p>This hierarchy is used to test move/delete functionality in manageChildren.
    */
   private static class TestMoveDeleteHierarchy {
 
@@ -809,12 +710,10 @@ public class UIManagerModuleTest {
   }
 
   private UIManagerModule getUIManagerModule() {
-    List<ViewManager> viewManagers = Arrays.<ViewManager>asList(
-        new ReactViewManager(),
-        new ReactTextViewManager(),
-        new ReactRawTextManager());
-    UIManagerModule uiManagerModule =
-        new UIManagerModule(mReactContext, viewManagers, 0);
+    List<ViewManager> viewManagers =
+        Arrays.<ViewManager>asList(
+            new ReactViewManager(), new ReactTextViewManager(), new ReactRawTextManager());
+    UIManagerModule uiManagerModule = new UIManagerModule(mReactContext, viewManagers, 0);
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }

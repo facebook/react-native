@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTImageLoader.h>
+#import <React/RCTImageDataDecoder.h>
 
 @interface RCTGIFImageDecoder : NSObject <RCTImageDataDecoder>
 

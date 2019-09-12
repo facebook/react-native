@@ -66,7 +66,7 @@ ShadowNode::ShadowNode(
                              : sourceShadowNode.localData_),
       state_(
           fragment.state ? fragment.state
-                         : sourceShadowNode.getCommitedState()),
+                         : sourceShadowNode.getMostRecentState()),
       family_(sourceShadowNode.family_),
       childrenAreShared_(true),
       revision_(sourceShadowNode.revision_ + 1) {
@@ -91,6 +91,14 @@ UnsharedShadowNode ShadowNode::clone(const ShadowNodeFragment &fragment) const {
 }
 
 #pragma mark - Getters
+
+ComponentName ShadowNode::getComponentName() const {
+  return family_->componentDescriptor_.getComponentName();
+}
+
+ComponentHandle ShadowNode::getComponentHandle() const {
+  return family_->componentDescriptor_.getComponentHandle();
+}
 
 const SharedShadowNodeList &ShadowNode::getChildren() const {
   return *children_;
@@ -120,9 +128,16 @@ const State::Shared &ShadowNode::getState() const {
   return state_;
 }
 
-const State::Shared &ShadowNode::getCommitedState() const {
-  return state_ ? state_->getCommitedState()
-                : ShadowNodeFragment::statePlaceholder();
+State::Shared ShadowNode::getMostRecentState() const {
+  if (state_) {
+    auto commitedState = state_->getMostRecentState();
+
+    // Commited state can be `null` in case if no one node was commited yet;
+    // in this case we return own `state`.
+    return commitedState ? commitedState : state_;
+  }
+
+  return ShadowNodeFragment::statePlaceholder();
 }
 
 SharedLocalData ShadowNode::getLocalData() const {

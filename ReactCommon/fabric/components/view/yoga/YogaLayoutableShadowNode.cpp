@@ -22,21 +22,17 @@ namespace facebook {
 namespace react {
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode()
-    : yogaNode_({}), yogaConfig_(nullptr) {
-  initializeYogaConfig(yogaConfig_);
-
-  yogaNode_.setConfig(&yogaConfig_);
+    : yogaConfig_(nullptr), yogaNode_(&initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
 }
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     const YogaLayoutableShadowNode &layoutableShadowNode)
     : LayoutableShadowNode(layoutableShadowNode),
-      yogaNode_(layoutableShadowNode.yogaNode_),
-      yogaConfig_(nullptr) {
-  initializeYogaConfig(yogaConfig_);
-
-  yogaNode_.setConfig(&yogaConfig_);
+      yogaConfig_(nullptr),
+      yogaNode_(
+          layoutableShadowNode.yogaNode_,
+          &initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
 
@@ -199,7 +195,11 @@ void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
     assert(childYogaNode->getOwner() == &yogaNode_);
 
     childNode->ensureUnsealed();
-    childNode->setLayoutMetrics(childLayoutMetrics);
+    auto affected = childNode->setLayoutMetrics(childLayoutMetrics);
+
+    if (affected && layoutContext.affectedNodes) {
+      layoutContext.affectedNodes->push_back(childNode);
+    }
   }
 }
 
@@ -225,7 +225,7 @@ YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
     int childIndex) {
   SystraceSection s("YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector");
 
-  // At this point it is garanteed that all shadow nodes associated with yoga
+  // At this point it is guaranteed that all shadow nodes associated with yoga
   // nodes are `YogaLayoutableShadowNode` subclasses.
   auto parentNode =
       static_cast<YogaLayoutableShadowNode *>(parentYogaNode->getContext());
@@ -282,9 +282,11 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
                 yogaFloatFromFloat(size.height)};
 }
 
-void YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
+YGConfig &YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
   config.setCloneNodeCallback(
       YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
+  config.useLegacyStretchBehaviour = true;
+  return config;
 }
 
 } // namespace react

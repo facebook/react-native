@@ -33,7 +33,7 @@ class TimersTest extends React.Component<Props, State> {
   _immediateIDs: Set<ImmediateID> = new Set();
   _animationFrameIDs: Set<AnimationFrameID> = new Set();
 
-  state = {
+  state: State = {
     count: 0,
     done: false,
   };
@@ -228,7 +228,7 @@ class TimersTest extends React.Component<Props, State> {
     }
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.container}>
         <Text>

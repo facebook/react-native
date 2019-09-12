@@ -91,6 +91,7 @@ static BOOL RCTParseSelectorPart(const char **input, NSMutableString *selector)
 static BOOL RCTParseUnused(const char **input)
 {
   return RCTReadString(input, "__attribute__((unused))") ||
+         RCTReadString(input, "__attribute__((__unused__))") ||
          RCTReadString(input, "__unused");
 }
 
@@ -428,7 +429,7 @@ RCT_EXTERN_C_END
           }
           if (isNullableType) {
             // Check converted value wasn't null either, as method probably
-            // won't gracefully handle a nil vallue for a nonull argument
+            // won't gracefully handle a nil value for a nonull argument
             void *value;
             [invocation getArgument:&value atIndex:index + 2];
             if (value == NULL) {

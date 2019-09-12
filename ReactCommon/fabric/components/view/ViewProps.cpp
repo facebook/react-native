@@ -146,6 +146,16 @@ BorderMetrics ViewProps::resolveBorderMetrics(
   };
 }
 
+bool ViewProps::getClipsContentToBounds() const {
+  return yogaStyle.overflow() != YGOverflowVisible;
+}
+
+#ifdef ANDROID
+bool ViewProps::getProbablyMoreHorizontalThanVertical_DEPRECATED() const {
+  return yogaStyle.flexDirection() == YGFlexDirectionRow;
+}
+#endif
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE

@@ -1,49 +1,46 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.util;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class JSStackTrace {
 
-  private static final Pattern FILE_ID_PATTERN = Pattern.compile("\\b((?:seg-\\d+(?:_\\d+)?|\\d+)\\.js)");
+  private static final String LINE_NUMBER_KEY = "lineNumber";
+  private static final Pattern FILE_ID_PATTERN =
+      Pattern.compile("\\b((?:seg-\\d+(?:_\\d+)?|\\d+)\\.js)");
+  private static final String FILE_KEY = "file";
+  private static final String COLUMN_KEY = "column";
+  private static final String METHOD_NAME_KEY = "methodName";
 
   public static String format(String message, ReadableArray stack) {
     StringBuilder stringBuilder = new StringBuilder(message).append(", stack:\n");
     for (int i = 0; i < stack.size(); i++) {
       ReadableMap frame = stack.getMap(i);
-      stringBuilder
-        .append(frame.getString("methodName"))
-        .append("@")
-        .append(parseFileId(frame));
-      
-      if (frame.hasKey("lineNumber") &&
-        !frame.isNull("lineNumber") &&
-        frame.getType("lineNumber") == ReadableType.Number) {
-        stringBuilder
-          .append(frame.getInt("lineNumber"));
+      stringBuilder.append(frame.getString(METHOD_NAME_KEY)).append("@").append(parseFileId(frame));
+
+      if (frame.hasKey(LINE_NUMBER_KEY)
+          && !frame.isNull(LINE_NUMBER_KEY)
+          && frame.getType(LINE_NUMBER_KEY) == ReadableType.Number) {
+        stringBuilder.append(frame.getInt(LINE_NUMBER_KEY));
       } else {
-        stringBuilder
-          .append(-1);
+        stringBuilder.append(-1);
       }
-      
-      if (frame.hasKey("column") &&
-        !frame.isNull("column") &&
-        frame.getType("column") == ReadableType.Number) {
-        stringBuilder
-          .append(":")
-          .append(frame.getInt("column"));
+
+      if (frame.hasKey(COLUMN_KEY)
+          && !frame.isNull(COLUMN_KEY)
+          && frame.getType(COLUMN_KEY) == ReadableType.Number) {
+        stringBuilder.append(":").append(frame.getInt(COLUMN_KEY));
       }
-      
+
       stringBuilder.append("\n");
     }
     return stringBuilder.toString();
@@ -57,12 +54,15 @@ public class JSStackTrace {
   // stack traces with a single source map file.
   // NOTE: The ".js" suffix is kept to avoid ambiguities between "module-id:line" and "line:column".
   private static String parseFileId(ReadableMap frame) {
-    if (frame.hasKey("file") &&
-        !frame.isNull("file") &&
-        frame.getType("file") == ReadableType.String) {
-      final Matcher matcher = FILE_ID_PATTERN.matcher(frame.getString("file"));
-      if (matcher.find()) {
-        return matcher.group(1) + ":";
+    if (frame.hasKey(FILE_KEY)
+        && !frame.isNull(FILE_KEY)
+        && frame.getType(FILE_KEY) == ReadableType.String) {
+      String file = frame.getString(FILE_KEY);
+      if (file != null) {
+        final Matcher matcher = FILE_ID_PATTERN.matcher(file);
+        if (matcher.find()) {
+          return matcher.group(1) + ":";
+        }
       }
     }
     return "";

@@ -10,17 +10,17 @@
 
 'use strict';
 
-const Platform = require('Platform');
-const RCTSliderNativeComponent = require('RCTSliderNativeComponent');
-const React = require('React');
-const ReactNative = require('ReactNative');
-const StyleSheet = require('StyleSheet');
+const Platform = require('../../Utilities/Platform');
+import SliderNativeComponent from './SliderNativeComponent';
+const React = require('react');
+const ReactNative = require('../../Renderer/shims/ReactNative');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
 
-import type {ImageSource} from 'ImageSource';
-import type {ViewStyleProp} from 'StyleSheet';
-import type {ColorValue} from 'StyleSheetTypes';
-import type {ViewProps} from 'ViewPropTypes';
-import type {SyntheticEvent} from 'CoreEventTypes';
+import type {ImageSource} from '../../Image/ImageSource';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
@@ -197,7 +197,7 @@ type Props = $ReadOnly<{|
  */
 const Slider = (
   props: Props,
-  forwardedRef?: ?React.Ref<typeof RCTSliderNativeComponent>,
+  forwardedRef?: ?React.Ref<typeof SliderNativeComponent>,
 ) => {
   const style = StyleSheet.compose(
     styles.slider,
@@ -227,7 +227,7 @@ const Slider = (
     : null;
 
   return (
-    <RCTSliderNativeComponent
+    <SliderNativeComponent
       {...localProps}
       ref={forwardedRef}
       style={style}

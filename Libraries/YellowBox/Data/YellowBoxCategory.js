@@ -10,13 +10,13 @@
 
 'use strict';
 
-const React = require('React');
-const Text = require('Text');
-const UTFSequence = require('UTFSequence');
+const React = require('react');
+const Text = require('../../Text/Text');
+const UTFSequence = require('../../UTFSequence');
 
-const stringifySafe = require('stringifySafe');
+const stringifySafe = require('../../Utilities/stringifySafe');
 
-import type {TextStyleProp} from 'StyleSheet';
+import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 
 export type Category = string;
 export type Message = $ReadOnly<{|
@@ -60,9 +60,13 @@ const YellowBoxCategory = {
 
         if (substitutionIndex < substitutionCount) {
           if (substitutionIndex < substitutions.length) {
-            const substitution = stringifySafe(
-              substitutions[substitutionIndex],
-            );
+            // Don't stringify a string type.
+            // It adds quotation mark wrappers around the string,
+            // which causes the yellow box to look odd.
+            const substitution =
+              typeof substitutions[substitutionIndex] === 'string'
+                ? substitutions[substitutionIndex]
+                : stringifySafe(substitutions[substitutionIndex]);
             substitutionOffsets.push({
               length: substitution.length,
               offset: contentString.length,
@@ -88,7 +92,12 @@ const YellowBoxCategory = {
       contentParts.push(contentString);
     }
 
-    const remainingArgs = remaining.map(stringifySafe);
+    const remainingArgs = remaining.map(arg => {
+      // Don't stringify a string type.
+      // It adds quotation mark wrappers around the string,
+      // which causes the yellow box to look odd.
+      return typeof arg === 'string' ? arg : stringifySafe(arg);
+    });
     categoryParts.push(...remainingArgs);
     contentParts.push(...remainingArgs);
 

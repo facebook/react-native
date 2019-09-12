@@ -8,19 +8,18 @@
  * @format
  */
 
-const Platform = require('Platform');
-const React = require('React');
-const View = require('View');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
+const View = require('../View/View');
 
-import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'ReactNative';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 type Props = $ReadOnly<{|
   ...ViewProps,
   emulateUnlessSupported?: boolean,
 |}>;
 
-let exported;
+let exported: Class<React$Component<Props>>;
 
 /**
  * Renders nested content and automatically applies paddings reflect the portion
@@ -44,7 +43,8 @@ if (Platform.OS === 'android') {
   SafeAreaViewRef.displayName = 'SafeAreaView';
   exported = ((SafeAreaViewRef: any): Class<React.Component<Props>>);
 } else {
-  const RCTSafeAreaViewNativeComponent = require('RCTSafeAreaViewNativeComponent');
+  const RCTSafeAreaViewNativeComponent = require('./RCTSafeAreaViewNativeComponent')
+    .default;
 
   const SafeAreaView = (
     props: Props,
@@ -61,7 +61,7 @@ if (Platform.OS === 'android') {
 
   const SafeAreaViewRef = React.forwardRef(SafeAreaView);
   SafeAreaViewRef.displayName = 'SafeAreaView';
-  exported = ((SafeAreaViewRef: any): Class<NativeComponent<Props>>);
+  exported = ((SafeAreaViewRef: any): Class<React.Component<Props>>);
 }
 
 module.exports = exported;

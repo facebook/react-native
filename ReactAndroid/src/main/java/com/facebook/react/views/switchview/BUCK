@@ -5,7 +5,6 @@ rn_android_library(
     srcs = glob(["*.java"]),
     is_androidx = True,
     provided_deps = [
-        react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/android/androidx:appcompat"),
         react_native_dep("third-party/android/androidx:core"),
         react_native_dep("third-party/android/androidx:fragment"),
@@ -17,6 +16,7 @@ rn_android_library(
     ],
     deps = [
         YOGA_TARGET,
+        react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),

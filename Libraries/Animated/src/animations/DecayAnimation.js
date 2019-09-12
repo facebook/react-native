@@ -13,8 +13,8 @@ const Animation = require('./Animation');
 
 const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
 
-import type {AnimationConfig, EndCallback} from './Animation';
 import type AnimatedValue from '../nodes/AnimatedValue';
+import type {AnimationConfig, EndCallback} from './Animation';
 
 export type DecayAnimationConfig = AnimationConfig & {
   velocity: number | {x: number, y: number},
@@ -45,7 +45,12 @@ class DecayAnimation extends Animation {
     this.__iterations = config.iterations ?? 1;
   }
 
-  __getNativeAnimationConfig() {
+  __getNativeAnimationConfig(): {|
+    deceleration: number,
+    iterations: number,
+    type: $TEMPORARY$string<'decay'>,
+    velocity: number,
+  |} {
     return {
       type: 'decay',
       deceleration: this._deceleration,

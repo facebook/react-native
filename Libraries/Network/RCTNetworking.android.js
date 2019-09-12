@@ -12,11 +12,12 @@
 
 // Do not require the native RCTNetworking module directly! Use this wrapper module instead.
 // It will add the necessary requestId, so that you don't have to generate it yourself.
-const NativeEventEmitter = require('NativeEventEmitter');
-const RCTNetworkingNative = require('NativeModules').Networking;
-const convertRequestBody = require('convertRequestBody');
+const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
 
-import type {RequestBody} from 'convertRequestBody';
+const convertRequestBody = require('./convertRequestBody');
+
+import NativeNetworkingAndroid from './NativeNetworkingAndroid';
+import type {RequestBody} from './convertRequestBody';
 
 type Header = [string, string];
 
@@ -41,7 +42,7 @@ function generateRequestId(): number {
  */
 class RCTNetworking extends NativeEventEmitter {
   constructor() {
-    super(RCTNetworkingNative);
+    super(NativeNetworkingAndroid);
   }
 
   sendRequest(
@@ -53,7 +54,7 @@ class RCTNetworking extends NativeEventEmitter {
     responseType: 'text' | 'base64',
     incrementalUpdates: boolean,
     timeout: number,
-    callback: (requestId: number) => any,
+    callback: (requestId: number) => mixed,
     withCredentials: boolean,
   ) {
     const body = convertRequestBody(data);
@@ -64,7 +65,7 @@ class RCTNetworking extends NativeEventEmitter {
       }));
     }
     const requestId = generateRequestId();
-    RCTNetworkingNative.sendRequest(
+    NativeNetworkingAndroid.sendRequest(
       method,
       url,
       requestId,
@@ -79,12 +80,12 @@ class RCTNetworking extends NativeEventEmitter {
   }
 
   abortRequest(requestId: number) {
-    RCTNetworkingNative.abortRequest(requestId);
+    NativeNetworkingAndroid.abortRequest(requestId);
   }
 
   clearCookies(callback: (result: boolean) => any) {
-    RCTNetworkingNative.clearCookies(callback);
+    NativeNetworkingAndroid.clearCookies(callback);
   }
 }
 
-module.exports = new RCTNetworking();
+module.exports = (new RCTNetworking(): RCTNetworking);

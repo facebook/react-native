@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the LICENSE
@@ -51,7 +51,7 @@ class StringBuffer : public Buffer {
   std::string s_;
 };
 
-/// PreparedJavaScript is a base class repesenting JavaScript which is in a form
+/// PreparedJavaScript is a base class representing JavaScript which is in a form
 /// optimized for execution, in a runtime-specific way. Construct one via
 /// jsi::Runtime::prepareJavaScript().
 /// ** This is an experimental API that is subject to change. **
@@ -150,7 +150,7 @@ class Runtime {
 
   /// Evaluates the given JavaScript \c buffer.  \c sourceURL is used
   /// to annotate the stack trace if there is an exception.  The
-  /// contents may be utf8-encoded JS source code, or binary bytcode
+  /// contents may be utf8-encoded JS source code, or binary bytecode
   /// whose format is specific to the implementation.  If the input
   /// format is unknown, or evaluation causes an error, a JSIException
   /// will be thrown.
@@ -745,7 +745,7 @@ class Array : public Object {
   template <typename... Args>
   static Array createWithElements(Runtime&, Args&&... args);
 
-  /// Creates a new Array instance from intitializer list.
+  /// Creates a new Array instance from initializer list.
   static Array createWithElements(
       Runtime& runtime,
       std::initializer_list<Value> elements);
@@ -919,7 +919,7 @@ class Value {
         std::is_base_of<Symbol, T>::value ||
             std::is_base_of<String, T>::value ||
             std::is_base_of<Object, T>::value,
-        "Value cannot be implictly move-constructed from this type");
+        "Value cannot be implicitly move-constructed from this type");
     new (&data_.pointer) T(std::move(other));
   }
 

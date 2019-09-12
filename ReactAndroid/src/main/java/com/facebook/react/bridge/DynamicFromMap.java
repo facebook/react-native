@@ -1,26 +1,23 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
-
+import androidx.annotation.Nullable;
 import androidx.core.util.Pools.SimplePool;
 
-/**
- * Implementation of Dynamic wrapping a ReadableMap.
- */
+/** Implementation of Dynamic wrapping a ReadableMap. */
 public class DynamicFromMap implements Dynamic {
-  private static final ThreadLocal<SimplePool<DynamicFromMap>> sPool = new ThreadLocal<SimplePool<DynamicFromMap>>() {
-    @Override
-    protected SimplePool<DynamicFromMap> initialValue() {
-      return new SimplePool<>(10);
-    }
-  };
+  private static final ThreadLocal<SimplePool<DynamicFromMap>> sPool =
+      new ThreadLocal<SimplePool<DynamicFromMap>>() {
+        @Override
+        protected SimplePool<DynamicFromMap> initialValue() {
+          return new SimplePool<>(10);
+        }
+      };
 
   private @Nullable ReadableMap mMap;
   private @Nullable String mName;

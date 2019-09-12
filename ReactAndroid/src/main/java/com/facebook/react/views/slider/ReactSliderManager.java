@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.slider;
 
 import android.content.Context;
@@ -18,13 +17,11 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
-import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
@@ -34,7 +31,7 @@ import java.util.Map;
 /**
  * Manages instances of {@code ReactSlider}.
  *
- * Note that the slider is _not_ a controlled component.
+ * <p>Note that the slider is _not_ a controlled component.
  */
 public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
 
@@ -42,8 +39,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
 
   public static final String REACT_CLASS = "RCTSlider";
 
-  static class ReactSliderShadowNode extends LayoutShadowNode implements
-      YogaMeasureFunction {
+  static class ReactSliderShadowNode extends LayoutShadowNode implements YogaMeasureFunction {
 
     private int mWidth;
     private int mHeight;
@@ -66,9 +62,9 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
         YogaMeasureMode heightMode) {
       if (!mMeasured) {
         SeekBar reactSlider = new ReactSlider(getThemedContext(), null, STYLE);
-        final int spec = View.MeasureSpec.makeMeasureSpec(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            View.MeasureSpec.UNSPECIFIED);
+        final int spec =
+            View.MeasureSpec.makeMeasureSpec(
+                ViewGroup.LayoutParams.WRAP_CONTENT, View.MeasureSpec.UNSPECIFIED);
         reactSlider.measure(spec, spec);
         mWidth = reactSlider.getMeasuredWidth();
         mHeight = reactSlider.getMeasuredHeight();
@@ -84,24 +80,27 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
         @Override
         public void onProgressChanged(SeekBar seekbar, int progress, boolean fromUser) {
           ReactContext reactContext = (ReactContext) seekbar.getContext();
-          reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
-              new ReactSliderEvent(
-                  seekbar.getId(),
-                  ((ReactSlider) seekbar).toRealProgress(progress),
-                  fromUser));
+          reactContext
+              .getNativeModule(UIManagerModule.class)
+              .getEventDispatcher()
+              .dispatchEvent(
+                  new ReactSliderEvent(
+                      seekbar.getId(), ((ReactSlider) seekbar).toRealProgress(progress), fromUser));
         }
 
         @Override
-        public void onStartTrackingTouch(SeekBar seekbar) {
-        }
+        public void onStartTrackingTouch(SeekBar seekbar) {}
 
         @Override
         public void onStopTrackingTouch(SeekBar seekbar) {
           ReactContext reactContext = (ReactContext) seekbar.getContext();
-          reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
-              new ReactSlidingCompleteEvent(
-                  seekbar.getId(),
-                  ((ReactSlider) seekbar).toRealProgress(seekbar.getProgress())));
+          reactContext
+              .getNativeModule(UIManagerModule.class)
+              .getEventDispatcher()
+              .dispatchEvent(
+                  new ReactSlidingCompleteEvent(
+                      seekbar.getId(),
+                      ((ReactSlider) seekbar).toRealProgress(seekbar.getProgress())));
         }
       };
 
@@ -197,19 +196,20 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
 
   @Override
   public long measure(
-    Context context,
-    ReadableMap localData,
-    ReadableMap props,
-    float width,
-    YogaMeasureMode widthMode,
-    float height,
-    YogaMeasureMode heightMode) {
-      SeekBar reactSlider = new ReactSlider(context, null, STYLE);
-      final int spec = View.MeasureSpec.makeMeasureSpec(
-        ViewGroup.LayoutParams.WRAP_CONTENT,
-        View.MeasureSpec.UNSPECIFIED);
-      reactSlider.measure(spec, spec);
+      Context context,
+      ReadableMap localData,
+      ReadableMap props,
+      ReadableMap state,
+      float width,
+      YogaMeasureMode widthMode,
+      float height,
+      YogaMeasureMode heightMode) {
+    SeekBar reactSlider = new ReactSlider(context, null, STYLE);
+    final int spec =
+        View.MeasureSpec.makeMeasureSpec(
+            ViewGroup.LayoutParams.WRAP_CONTENT, View.MeasureSpec.UNSPECIFIED);
+    reactSlider.measure(spec, spec);
 
-      return YogaMeasureOutput.make(reactSlider.getMeasuredWidth(), reactSlider.getMeasuredHeight());
-    }
+    return YogaMeasureOutput.make(reactSlider.getMeasuredWidth(), reactSlider.getMeasuredHeight());
   }
+}

@@ -1,14 +1,15 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
 
 import android.os.SystemClock;
 import android.view.View;
+import androidx.annotation.GuardedBy;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
@@ -27,19 +28,16 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
 
 /**
- * This class acts as a buffer for command executed on {@link NativeViewHierarchyManager}.
- * It expose similar methods as mentioned classes but instead of executing commands
- * immediately it enqueues those operations in a queue that is then flushed from
- * {@link UIManagerModule} once JS batch of ui operations is finished. This is to make sure that we
- * execute all the JS operation coming from a single batch a single loop of the main (UI) android
- * looper.
+ * This class acts as a buffer for command executed on {@link NativeViewHierarchyManager}. It expose
+ * similar methods as mentioned classes but instead of executing commands immediately it enqueues
+ * those operations in a queue that is then flushed from {@link UIManagerModule} once JS batch of ui
+ * operations is finished. This is to make sure that we execute all the JS operation coming from a
+ * single batch a single loop of the main (UI) android looper.
  *
- * TODO(7135923): Pooling of operation objects
- * TODO(5694019): Consider a better data structure for operations queue to save on allocations
+ * <p>TODO(7135923): Pooling of operation objects TODO(5694019): Consider a better data structure
+ * for operations queue to save on allocations
  */
 public class UIViewOperationQueue {
 
@@ -47,17 +45,13 @@ public class UIViewOperationQueue {
 
   private final int[] mMeasureBuffer = new int[4];
 
-  /**
-   * A mutation or animation operation on the view hierarchy.
-   */
+  /** A mutation or animation operation on the view hierarchy. */
   public interface UIOperation {
 
     void execute();
   }
 
-  /**
-   * A spec for an operation on the native View hierarchy.
-   */
+  /** A spec for an operation on the native View hierarchy. */
   private abstract class ViewOperation implements UIOperation {
 
     public int mTag;
@@ -102,11 +96,7 @@ public class UIViewOperationQueue {
     private final int mScreenHeight;
 
     public EmitOnLayoutEventOperation(
-        int tag,
-        int screenX,
-        int screenY,
-        int screenWidth,
-        int screenHeight) {
+        int tag, int screenX, int screenY, int screenWidth, int screenHeight) {
       super(tag);
       mScreenX = screenX;
       mScreenY = screenY;
@@ -116,14 +106,11 @@ public class UIViewOperationQueue {
 
     @Override
     public void execute() {
-      mReactApplicationContext.getNativeModule(UIManagerModule.class)
-        .getEventDispatcher()
-        .dispatchEvent(OnLayoutEvent.obtain(
-          mTag,
-          mScreenX,
-          mScreenY,
-          mScreenWidth,
-          mScreenHeight));
+      mReactApplicationContext
+          .getNativeModule(UIManagerModule.class)
+          .getEventDispatcher()
+          .dispatchEvent(
+              OnLayoutEvent.obtain(mTag, mScreenX, mScreenY, mScreenWidth, mScreenHeight));
     }
   }
 
@@ -144,20 +131,14 @@ public class UIViewOperationQueue {
 
   /**
    * Operation for updating native view's position and size. The operation is not created directly
-   * by a {@link UIManagerModule} call from JS. Instead it gets inflated using computed position
-   * and size values by CSSNodeDEPRECATED hierarchy.
+   * by a {@link UIManagerModule} call from JS. Instead it gets inflated using computed position and
+   * size values by CSSNodeDEPRECATED hierarchy.
    */
   private final class UpdateLayoutOperation extends ViewOperation {
 
     private final int mParentTag, mX, mY, mWidth, mHeight;
 
-    public UpdateLayoutOperation(
-        int parentTag,
-        int tag,
-        int x,
-        int y,
-        int width,
-        int height) {
+    public UpdateLayoutOperation(int parentTag, int tag, int x, int y, int width, int height) {
       super(tag);
       mParentTag = parentTag;
       mX = x;
@@ -195,11 +176,7 @@ public class UIViewOperationQueue {
     @Override
     public void execute() {
       Systrace.endAsyncFlow(Systrace.TRACE_TAG_REACT_VIEW, "createView", mTag);
-      mNativeViewHierarchyManager.createView(
-          mThemedContext,
-          mTag,
-          mClassName,
-          mInitialProps);
+      mNativeViewHierarchyManager.createView(mThemedContext, mTag, mClassName, mInitialProps);
     }
   }
 
@@ -226,11 +203,7 @@ public class UIViewOperationQueue {
     @Override
     public void execute() {
       mNativeViewHierarchyManager.manageChildren(
-          mTag,
-          mIndicesToRemove,
-          mViewsToAdd,
-          mTagsToDelete,
-          mIndicesToDelete);
+          mTag, mIndicesToRemove, mViewsToAdd, mTagsToDelete, mIndicesToDelete);
     }
   }
 
@@ -238,18 +211,14 @@ public class UIViewOperationQueue {
 
     private final ReadableArray mChildrenTags;
 
-    public SetChildrenOperation(
-      int tag,
-      ReadableArray childrenTags) {
+    public SetChildrenOperation(int tag, ReadableArray childrenTags) {
       super(tag);
       mChildrenTags = childrenTags;
     }
 
     @Override
     public void execute() {
-      mNativeViewHierarchyManager.setChildren(
-        mTag,
-        mChildrenTags);
+      mNativeViewHierarchyManager.setChildren(mTag, mChildrenTags);
     }
   }
 
@@ -275,10 +244,7 @@ public class UIViewOperationQueue {
     private final boolean mClearResponder;
 
     public ChangeJSResponderOperation(
-        int tag,
-        int initialTag,
-        boolean clearResponder,
-        boolean blockNativeResponder) {
+        int tag, int initialTag, boolean clearResponder, boolean blockNativeResponder) {
       super(tag);
       mInitialTag = initialTag;
       mClearResponder = clearResponder;
@@ -295,6 +261,7 @@ public class UIViewOperationQueue {
     }
   }
 
+  @Deprecated
   private final class DispatchCommandOperation extends ViewOperation {
 
     private final int mCommand;
@@ -312,17 +279,30 @@ public class UIViewOperationQueue {
     }
   }
 
+  private final class DispatchStringCommandOperation extends ViewOperation {
+
+    private final String mCommand;
+    private final @Nullable ReadableArray mArgs;
+
+    public DispatchStringCommandOperation(int tag, String command, @Nullable ReadableArray args) {
+      super(tag);
+      mCommand = command;
+      mArgs = args;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.dispatchCommand(mTag, mCommand, mArgs);
+    }
+  }
+
   private final class ShowPopupMenuOperation extends ViewOperation {
 
     private final ReadableArray mItems;
     private final Callback mError;
     private final Callback mSuccess;
 
-    public ShowPopupMenuOperation(
-        int tag,
-        ReadableArray items,
-        Callback error,
-        Callback success) {
+    public ShowPopupMenuOperation(int tag, ReadableArray items, Callback error, Callback success) {
       super(tag);
       mItems = items;
       mError = error;
@@ -342,10 +322,8 @@ public class UIViewOperationQueue {
     }
   }
 
-  /**
-   * A spec for animation operations (add/remove)
-   */
-  private static abstract class AnimationOperation implements UIViewOperationQueue.UIOperation {
+  /** A spec for animation operations (add/remove) */
+  private abstract static class AnimationOperation implements UIViewOperationQueue.UIOperation {
 
     protected final int mAnimationID;
 
@@ -371,7 +349,8 @@ public class UIViewOperationQueue {
     private final ReadableMap mConfig;
     private final Callback mAnimationComplete;
 
-    private ConfigureLayoutAnimationOperation(final ReadableMap config, final Callback animationComplete) {
+    private ConfigureLayoutAnimationOperation(
+        final ReadableMap config, final Callback animationComplete) {
       mConfig = config;
       mAnimationComplete = animationComplete;
     }
@@ -387,9 +366,7 @@ public class UIViewOperationQueue {
     private final int mReactTag;
     private final Callback mCallback;
 
-    private MeasureOperation(
-        final int reactTag,
-        final Callback callback) {
+    private MeasureOperation(final int reactTag, final Callback callback) {
       super();
       mReactTag = reactTag;
       mCallback = callback;
@@ -419,9 +396,7 @@ public class UIViewOperationQueue {
     private final int mReactTag;
     private final Callback mCallback;
 
-    private MeasureInWindowOperation(
-        final int reactTag,
-        final Callback callback) {
+    private MeasureInWindowOperation(final int reactTag, final Callback callback) {
       super();
       mReactTag = reactTag;
       mCallback = callback;
@@ -454,10 +429,7 @@ public class UIViewOperationQueue {
     private final Callback mCallback;
 
     private FindTargetForTouchOperation(
-        final int reactTag,
-        final float targetX,
-        final float targetY,
-        final Callback callback) {
+        final int reactTag, final float targetX, final float targetY, final Callback callback) {
       super();
       mReactTag = reactTag;
       mTargetX = targetX;
@@ -468,9 +440,7 @@ public class UIViewOperationQueue {
     @Override
     public void execute() {
       try {
-        mNativeViewHierarchyManager.measure(
-            mReactTag,
-            mMeasureBuffer);
+        mNativeViewHierarchyManager.measure(mReactTag, mMeasureBuffer);
       } catch (IllegalViewOperationException e) {
         mCallback.invoke();
         return;
@@ -481,15 +451,11 @@ public class UIViewOperationQueue {
       final float containerX = (float) mMeasureBuffer[0];
       final float containerY = (float) mMeasureBuffer[1];
 
-      final int touchTargetReactTag = mNativeViewHierarchyManager.findTargetTagForTouch(
-          mReactTag,
-          mTargetX,
-          mTargetY);
+      final int touchTargetReactTag =
+          mNativeViewHierarchyManager.findTargetTagForTouch(mReactTag, mTargetX, mTargetY);
 
       try {
-        mNativeViewHierarchyManager.measure(
-            touchTargetReactTag,
-            mMeasureBuffer);
+        mNativeViewHierarchyManager.measure(touchTargetReactTag, mMeasureBuffer);
       } catch (IllegalViewOperationException e) {
         mCallback.invoke();
         return;
@@ -508,7 +474,8 @@ public class UIViewOperationQueue {
     private final ReactShadowNode mNode;
     private final UIImplementation.LayoutUpdateListener mListener;
 
-    private LayoutUpdateFinishedOperation(ReactShadowNode node, UIImplementation.LayoutUpdateListener listener) {
+    private LayoutUpdateFinishedOperation(
+        ReactShadowNode node, UIImplementation.LayoutUpdateListener listener) {
       mNode = node;
       mListener = listener;
     }
@@ -521,7 +488,8 @@ public class UIViewOperationQueue {
 
   private class UIBlockOperation implements UIOperation {
     private final UIBlock mBlock;
-    public UIBlockOperation (UIBlock block) {
+
+    public UIBlockOperation(UIBlock block) {
       mBlock = block;
     }
 
@@ -567,12 +535,16 @@ public class UIViewOperationQueue {
   private boolean mIsProfilingNextBatch = false;
   private long mNonBatchedExecutionTotalTime;
   private long mProfiledBatchCommitStartTime;
+  private long mProfiledBatchCommitEndTime;
   private long mProfiledBatchLayoutTime;
   private long mProfiledBatchDispatchViewUpdatesTime;
   private long mProfiledBatchRunStartTime;
+  private long mProfiledBatchRunEndTime;
   private long mProfiledBatchBatchedExecutionTime;
   private long mProfiledBatchNonBatchedExecutionTime;
   private long mThreadCpuTime;
+  private long mCreateViewCount;
+  private long mUpdatePropertiesOperationCount;
 
   public UIViewOperationQueue(
       ReactApplicationContext reactContext,
@@ -600,17 +572,23 @@ public class UIViewOperationQueue {
   public void profileNextBatch() {
     mIsProfilingNextBatch = true;
     mProfiledBatchCommitStartTime = 0;
+    mCreateViewCount = 0;
+    mUpdatePropertiesOperationCount = 0;
   }
 
   public Map<String, Long> getProfiledBatchPerfCounters() {
     Map<String, Long> perfMap = new HashMap<>();
     perfMap.put("CommitStartTime", mProfiledBatchCommitStartTime);
+    perfMap.put("CommitEndTime", mProfiledBatchCommitEndTime);
     perfMap.put("LayoutTime", mProfiledBatchLayoutTime);
     perfMap.put("DispatchViewUpdatesTime", mProfiledBatchDispatchViewUpdatesTime);
     perfMap.put("RunStartTime", mProfiledBatchRunStartTime);
+    perfMap.put("RunEndTime", mProfiledBatchRunEndTime);
     perfMap.put("BatchedExecutionTime", mProfiledBatchBatchedExecutionTime);
     perfMap.put("NonBatchedExecutionTime", mProfiledBatchNonBatchedExecutionTime);
     perfMap.put("NativeModulesThreadCpuTime", mThreadCpuTime);
+    perfMap.put("CreateViewCount", mCreateViewCount);
+    perfMap.put("UpdatePropsCount", mUpdatePropertiesOperationCount);
     return perfMap;
   }
 
@@ -635,16 +613,10 @@ public class UIViewOperationQueue {
     mOperations.add(new RemoveRootViewOperation(rootViewTag));
   }
 
-  public void enqueueSetJSResponder(
-      int tag,
-      int initialTag,
-      boolean blockNativeResponder) {
+  public void enqueueSetJSResponder(int tag, int initialTag, boolean blockNativeResponder) {
     mOperations.add(
         new ChangeJSResponderOperation(
-            tag,
-            initialTag,
-            false /*clearResponder*/,
-            blockNativeResponder));
+            tag, initialTag, false /*clearResponder*/, blockNativeResponder));
   }
 
   public void enqueueClearJSResponder() {
@@ -652,11 +624,15 @@ public class UIViewOperationQueue {
     mOperations.add(new ChangeJSResponderOperation(0, 0, true /*clearResponder*/, false));
   }
 
+  @Deprecated
   public void enqueueDispatchCommand(
-      int reactTag,
-      int commandId,
-      @Nullable ReadableArray commandArgs) {
+      int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     mOperations.add(new DispatchCommandOperation(reactTag, commandId, commandArgs));
+  }
+
+  public void enqueueDispatchCommand(
+      int reactTag, String commandId, @Nullable ReadableArray commandArgs) {
+    mOperations.add(new DispatchStringCommandOperation(reactTag, commandId, commandArgs));
   }
 
   public void enqueueUpdateExtraData(int reactTag, Object extraData) {
@@ -664,10 +640,7 @@ public class UIViewOperationQueue {
   }
 
   public void enqueueShowPopupMenu(
-      int reactTag,
-      ReadableArray items,
-      Callback error,
-      Callback success) {
+      int reactTag, ReadableArray items, Callback error, Callback success) {
     mOperations.add(new ShowPopupMenuOperation(reactTag, items, error, success));
   }
 
@@ -681,12 +654,9 @@ public class UIViewOperationQueue {
       String viewClassName,
       @Nullable ReactStylesDiffMap initialProps) {
     synchronized (mNonBatchedOperationsLock) {
+      mCreateViewCount++;
       mNonBatchedOperations.addLast(
-        new CreateViewOperation(
-          themedContext,
-          viewReactTag,
-          viewClassName,
-          initialProps));
+          new CreateViewOperation(themedContext, viewReactTag, viewClassName, initialProps));
     }
   }
 
@@ -695,28 +665,19 @@ public class UIViewOperationQueue {
   }
 
   public void enqueueUpdateProperties(int reactTag, String className, ReactStylesDiffMap props) {
+    mUpdatePropertiesOperationCount++;
     mOperations.add(new UpdatePropertiesOperation(reactTag, props));
   }
 
   public void enqueueOnLayoutEvent(
-    int tag,
-    int screenX,
-    int screenY,
-    int screenWidth,
-    int screenHeight) {
-    mOperations.add(new EmitOnLayoutEventOperation(tag, screenX, screenY, screenWidth, screenHeight));
+      int tag, int screenX, int screenY, int screenWidth, int screenHeight) {
+    mOperations.add(
+        new EmitOnLayoutEventOperation(tag, screenX, screenY, screenWidth, screenHeight));
   }
 
-
   public void enqueueUpdateLayout(
-      int parentTag,
-      int reactTag,
-      int x,
-      int y,
-      int width,
-      int height) {
-    mOperations.add(
-        new UpdateLayoutOperation(parentTag, reactTag, x, y, width, height));
+      int parentTag, int reactTag, int x, int y, int width, int height) {
+    mOperations.add(new UpdateLayoutOperation(parentTag, reactTag, x, y, width, height));
   }
 
   public void enqueueManageChildren(
@@ -726,55 +687,42 @@ public class UIViewOperationQueue {
       @Nullable int[] tagsToDelete,
       @Nullable int[] indicesToDelete) {
     mOperations.add(
-        new ManageChildrenOperation(reactTag, indicesToRemove, viewsToAdd, tagsToDelete, indicesToDelete));
+        new ManageChildrenOperation(
+            reactTag, indicesToRemove, viewsToAdd, tagsToDelete, indicesToDelete));
   }
 
-  public void enqueueSetChildren(
-    int reactTag,
-    ReadableArray childrenTags) {
-    mOperations.add(
-      new SetChildrenOperation(reactTag, childrenTags));
+  public void enqueueSetChildren(int reactTag, ReadableArray childrenTags) {
+    mOperations.add(new SetChildrenOperation(reactTag, childrenTags));
   }
 
-  public void enqueueSetLayoutAnimationEnabled(
-      final boolean enabled) {
+  public void enqueueSetLayoutAnimationEnabled(final boolean enabled) {
     mOperations.add(new SetLayoutAnimationEnabledOperation(enabled));
   }
 
   public void enqueueConfigureLayoutAnimation(
-      final ReadableMap config,
-      final Callback onAnimationComplete) {
+      final ReadableMap config, final Callback onAnimationComplete) {
     mOperations.add(new ConfigureLayoutAnimationOperation(config, onAnimationComplete));
   }
 
-  public void enqueueMeasure(
-      final int reactTag,
-      final Callback callback) {
-    mOperations.add(
-        new MeasureOperation(reactTag, callback));
+  public void enqueueMeasure(final int reactTag, final Callback callback) {
+    mOperations.add(new MeasureOperation(reactTag, callback));
   }
 
-  public void enqueueMeasureInWindow(
-      final int reactTag,
-      final Callback callback) {
-    mOperations.add(
-        new MeasureInWindowOperation(reactTag, callback));
+  public void enqueueMeasureInWindow(final int reactTag, final Callback callback) {
+    mOperations.add(new MeasureInWindowOperation(reactTag, callback));
   }
 
   public void enqueueFindTargetForTouch(
-      final int reactTag,
-      final float targetX,
-      final float targetY,
-      final Callback callback) {
-    mOperations.add(
-        new FindTargetForTouchOperation(reactTag, targetX, targetY, callback));
+      final int reactTag, final float targetX, final float targetY, final Callback callback) {
+    mOperations.add(new FindTargetForTouchOperation(reactTag, targetX, targetY, callback));
   }
 
   public void enqueueSendAccessibilityEvent(int tag, int eventType) {
     mOperations.add(new SendAccessibilityEvent(tag, eventType));
   }
 
-  public void enqueueLayoutUpdateFinished(ReactShadowNode node, UIImplementation.LayoutUpdateListener listener) {
+  public void enqueueLayoutUpdateFinished(
+      ReactShadowNode node, UIImplementation.LayoutUpdateListener listener) {
     mOperations.add(new LayoutUpdateFinishedOperation(node, listener));
   }
 
@@ -789,10 +737,9 @@ public class UIViewOperationQueue {
   public void dispatchViewUpdates(
       final int batchId, final long commitStartTime, final long layoutTime) {
     SystraceMessage.beginSection(
-      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-      "UIViewOperationQueue.dispatchViewUpdates")
-      .arg("batchId", batchId)
-      .flush();
+            Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIViewOperationQueue.dispatchViewUpdates")
+        .arg("batchId", batchId)
+        .flush();
     try {
       final long dispatchViewUpdatesTime = SystemClock.uptimeMillis();
       final long nativeModulesThreadCpuTime = SystemClock.currentThreadTimeMillis();
@@ -847,9 +794,11 @@ public class UIViewOperationQueue {
 
                 if (mIsProfilingNextBatch && mProfiledBatchCommitStartTime == 0) {
                   mProfiledBatchCommitStartTime = commitStartTime;
+                  mProfiledBatchCommitEndTime = SystemClock.uptimeMillis();
                   mProfiledBatchLayoutTime = layoutTime;
                   mProfiledBatchDispatchViewUpdatesTime = dispatchViewUpdatesTime;
                   mProfiledBatchRunStartTime = runStartTime;
+                  mProfiledBatchRunEndTime = mProfiledBatchCommitEndTime;
                   mThreadCpuTime = nativeModulesThreadCpuTime;
 
                   Systrace.beginAsyncSection(
@@ -890,26 +839,27 @@ public class UIViewOperationQueue {
           };
 
       SystraceMessage.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-        "acquiring mDispatchRunnablesLock")
-        .arg("batchId", batchId)
-        .flush();
+              Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "acquiring mDispatchRunnablesLock")
+          .arg("batchId", batchId)
+          .flush();
       synchronized (mDispatchRunnablesLock) {
         Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
         mDispatchUIRunnables.add(runOperations);
       }
 
-      // In the case where the frame callback isn't enqueued, the UI isn't being displayed or is being
-      // destroyed. In this case it's no longer important to align to frames, but it is important to make
+      // In the case where the frame callback isn't enqueued, the UI isn't being displayed or is
+      // being
+      // destroyed. In this case it's no longer important to align to frames, but it is important to
+      // make
       // sure any late-arriving UI commands are executed.
       if (!mIsDispatchUIFrameCallbackEnqueued) {
         UiThreadUtil.runOnUiThread(
-          new GuardedRunnable(mReactApplicationContext) {
-            @Override
-            public void runGuarded() {
-              flushPendingBatches();
-            }
-          });
+            new GuardedRunnable(mReactApplicationContext) {
+              @Override
+              public void runGuarded() {
+                flushPendingBatches();
+              }
+            });
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -932,8 +882,8 @@ public class UIViewOperationQueue {
   private void flushPendingBatches() {
     if (mIsInIllegalUIState) {
       FLog.w(
-        ReactConstants.TAG,
-        "Not flushing pending UI operations because of previously thrown Exception");
+          ReactConstants.TAG,
+          "Not flushing pending UI operations because of previously thrown Exception");
       return;
     }
 
@@ -973,14 +923,14 @@ public class UIViewOperationQueue {
    * directly to the UI thread from that method is to make sure our Runnables actually run before
    * the next traversals happen:
    *
-   * ViewRootImpl#scheduleTraversals (which is called from invalidate, requestLayout, etc) calls
+   * <p>ViewRootImpl#scheduleTraversals (which is called from invalidate, requestLayout, etc) calls
    * Looper#postSyncBarrier which keeps any UI thread looper messages from being processed until
    * that barrier is removed during the next traversal. That means, depending on when we get updates
    * from JS and what else is happening on the UI thread, we can sometimes try to post this runnable
    * after ViewRootImpl has posted a barrier.
    *
-   * Using a Choreographer callback (which runs immediately before traversals), we guarantee we run
-   * before the next traversal.
+   * <p>Using a Choreographer callback (which runs immediately before traversals), we guarantee we
+   * run before the next traversal.
    */
   private class DispatchUIFrameCallback extends GuardedFrameCallback {
 
@@ -997,8 +947,8 @@ public class UIViewOperationQueue {
     public void doFrameGuarded(long frameTimeNanos) {
       if (mIsInIllegalUIState) {
         FLog.w(
-          ReactConstants.TAG,
-          "Not flushing pending UI operations because of previously thrown Exception");
+            ReactConstants.TAG,
+            "Not flushing pending UI operations because of previously thrown Exception");
         return;
       }
 
@@ -1011,8 +961,8 @@ public class UIViewOperationQueue {
 
       flushPendingBatches();
 
-      ReactChoreographer.getInstance().postFrameCallback(
-        ReactChoreographer.CallbackType.DISPATCH_UI, this);
+      ReactChoreographer.getInstance()
+          .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, this);
     }
 
     private void dispatchPendingNonBatchedOperations(long frameTimeNanos) {

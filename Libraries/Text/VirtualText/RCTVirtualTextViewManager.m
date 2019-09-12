@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTVirtualTextViewManager.h"
+#import <React/RCTVirtualTextViewManager.h>
 
-#import "RCTVirtualTextShadowView.h"
+#import <React/RCTVirtualTextShadowView.h>
 
 @implementation RCTVirtualTextViewManager
 

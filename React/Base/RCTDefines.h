@@ -46,6 +46,14 @@
 #endif
 #endif
 
+/**
+ * RCT_DEV_MENU can be used to toggle the dev menu separately from RCT_DEV.
+ * By default though, it will inherit from RCT_DEV.
+ */
+#ifndef RCT_DEV_MENU
+#define RCT_DEV_MENU RCT_DEV
+#endif
+
 #ifndef RCT_ENABLE_INSPECTOR
 #if RCT_DEV && __has_include(<React/RCTInspectorDevServerHelper.h>)
 #define RCT_ENABLE_INSPECTOR 1
@@ -55,7 +63,7 @@
 #endif
 
 #ifndef ENABLE_PACKAGER_CONNECTION
-#if RCT_DEV && __has_include(<React/RCTPackagerConnection.h>)
+#if RCT_DEV && (__has_include("RCTPackagerConnection.h") || __has_include(<React/RCTPackagerConnection.h>)) && !TARGET_OS_UIKITFORMAC
 #define ENABLE_PACKAGER_CONNECTION 1
 #else
 #define ENABLE_PACKAGER_CONNECTION 0
@@ -87,6 +95,13 @@
 #undef RCT_METRO_PORT
 #define RCT_METRO_PORT 8081
 #endif
+#endif
+
+/**
+ * Add the default packager name
+ */
+#ifndef RCT_PACKAGER_NAME
+#define RCT_PACKAGER_NAME @"Metro"
 #endif
 
 /**

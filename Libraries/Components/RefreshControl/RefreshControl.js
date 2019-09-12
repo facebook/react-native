@@ -10,20 +10,19 @@
 
 'use strict';
 
-const Platform = require('Platform');
-const React = require('React');
-const {NativeComponent} = require('ReactNative');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
 
-const AndroidSwipeRefreshLayoutNativeComponent = require('AndroidSwipeRefreshLayoutNativeComponent');
-const RCTRefreshControlNativeComponent = require('RCTRefreshControlNativeComponent');
 const nullthrows = require('nullthrows');
 
-import type {ColorValue} from 'StyleSheetTypes';
-import type {ViewProps} from 'ViewPropTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+import AndroidSwipeRefreshLayoutNativeComponent from './AndroidSwipeRefreshLayoutNativeComponent';
+import PullToRefreshViewNativeComponent from './PullToRefreshViewNativeComponent';
 
-let RefreshLayoutConsts;
+let RefreshLayoutConsts: any;
 if (Platform.OS === 'android') {
-  const AndroidSwipeRefreshLayout = require('UIManager').getViewManagerConfig(
+  const AndroidSwipeRefreshLayout = require('../../ReactNative/UIManager').getViewManagerConfig(
     'AndroidSwipeRefreshLayout',
   );
   RefreshLayoutConsts = AndroidSwipeRefreshLayout
@@ -82,7 +81,7 @@ export type RefreshControlProps = $ReadOnly<{|
   /**
    * Called when the view starts refreshing.
    */
-  onRefresh?: ?() => mixed,
+  onRefresh?: ?() => void,
 
   /**
    * Whether the view should be indicating an active refresh.
@@ -136,7 +135,7 @@ export type RefreshControlProps = $ReadOnly<{|
  * in the `onRefresh` function otherwise the refresh indicator will stop immediately.
  */
 class RefreshControl extends React.Component<RefreshControlProps> {
-  static SIZE = RefreshLayoutConsts.SIZE;
+  static SIZE: any = RefreshLayoutConsts.SIZE;
 
   _setNativePropsOnRef: ?({refreshing: boolean}) => void;
   _lastNativeRefreshing = false;
@@ -162,7 +161,7 @@ class RefreshControl extends React.Component<RefreshControlProps> {
     }
   }
 
-  render() {
+  render(): React.Node {
     const setRef = ref =>
       (this._setNativePropsOnRef = ref ? ref.setNativeProps.bind(ref) : null);
     if (Platform.OS === 'ios') {
@@ -175,7 +174,7 @@ class RefreshControl extends React.Component<RefreshControlProps> {
         ...props
       } = this.props;
       return (
-        <RCTRefreshControlNativeComponent
+        <PullToRefreshViewNativeComponent
           {...props}
           ref={setRef}
           onRefresh={this._onRefresh}

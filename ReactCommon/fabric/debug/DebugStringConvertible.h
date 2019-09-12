@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 namespace facebook {
 namespace react {
@@ -52,7 +53,7 @@ class DebugStringConvertible {
   // Default implementation returns "Node".
   virtual std::string getDebugName() const;
 
-  // Returns a value assosiate with the object.
+  // Returns a value associate with the object.
   // Default implementation returns an empty string.
   virtual std::string getDebugValue() const;
 
@@ -110,7 +111,7 @@ std::string toString(void const *value);
  * - `getDebugName`: Returns a name of the object. Default implementation
  * returns "Node".
  *
- * - `getDebugValue`: Returns a value assosiate with the object. Default
+ * - `getDebugValue`: Returns a value associate with the object. Default
  * implementation returns an empty string.
  *
  * - `getDebugChildren`: Returns a list of `DebugStringConvertible`-compatible
@@ -285,13 +286,26 @@ inline std::string getDebugDescription(
 }
 
 // `std::vector<T>`
-template <typename T>
-std::string getDebugName(std::vector<T> const &vector) {
+template <typename T, typename... Ts>
+std::string getDebugName(std::vector<T, Ts...> const &vector) {
   return "List";
 }
 
-template <typename T>
-std::vector<T> getDebugChildren(std::vector<T> const &vector) {
+template <typename T, typename... Ts>
+std::vector<T, Ts...> getDebugChildren(std::vector<T, Ts...> const &vector) {
+  return vector;
+}
+
+// `std::unordered_set<T>`
+template <typename T, typename... Ts>
+std::string getDebugName(std::unordered_set<T, Ts...> const &set) {
+  return "Set";
+}
+
+template <typename T, typename... Ts>
+std::vector<T> getDebugChildren(std::unordered_set<T, Ts...> const &set) {
+  auto vector = std::vector<T>{};
+  vector.insert(vector.end(), set.begin(), set.end());
   return vector;
 }
 

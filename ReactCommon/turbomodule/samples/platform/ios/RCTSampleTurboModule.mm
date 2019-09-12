@@ -9,9 +9,7 @@
 
 #import <UIKit/UIKit.h>
 
-#ifdef RN_TURBO_MODULE_ENABLED
 using namespace facebook::react;
-#endif
 
 @implementation RCTSampleTurboModule
 
@@ -19,10 +17,7 @@ using namespace facebook::react;
 RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
-
-#ifdef RN_TURBO_MODULE_ENABLED
 @synthesize turboModuleLookupDelegate = _turboModuleLookupDelegate;
-#endif
 
 // Backward-compatible queue configuration
 + (BOOL)requiresMainQueueSetup
@@ -35,14 +30,18 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-#ifdef RN_TURBO_MODULE_ENABLED
-
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
+    (std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
 {
   return std::make_shared<NativeSampleTurboModuleSpecJSI>(self, jsInvoker);
 }
 
-#endif
+// Backward compatible invalidation
+- (void)invalidate
+{
+  // Actually do nothing here.
+  NSLog(@"Invalidating RCTSampleTurboModule...");
+}
 
 - (NSDictionary *)getConstants
 {
@@ -50,9 +49,9 @@ RCT_EXPORT_MODULE()
   CGSize screenSize = mainScreen.bounds.size;
 
   return @{
-    @"const1": @YES,
-    @"const2": @(screenSize.width),
-    @"const3": @"something",
+    @"const1" : @YES,
+    @"const2" : @(screenSize.width),
+    @"const3" : @"something",
   };
 }
 
@@ -67,56 +66,62 @@ RCT_EXPORT_METHOD(voidFunc)
   // Nothing to do
 }
 
-RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSNumber *, getBool:(BOOL)arg)
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSNumber *, getBool : (BOOL)arg)
 {
   return @(arg);
 }
 
-RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSNumber *, getNumber:(double)arg)
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSNumber *, getNumber : (double)arg)
 {
   return @(arg);
 }
 
-RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getString:(NSString *)arg)
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getString : (NSString *)arg)
 {
   return arg;
 }
 
-RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSArray<id<NSObject>> *, getArray:(NSArray *)arg)
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSArray<id<NSObject>> *, getArray : (NSArray *)arg)
 {
   return arg;
 }
 
-RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getObject:(NSDictionary *)arg)
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getObject : (NSDictionary *)arg)
 {
   return arg;
 }
 
-RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getValue:(double)x y:(NSString *)y z:(NSDictionary *)z)
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getValue : (double)x y : (NSString *)y z : (NSDictionary *)z)
 {
   return @{
-    @"x": @(x),
-    @"y": y ?: [NSNull null],
-    @"z": z ?: [NSNull null],
+    @"x" : @(x),
+    @"y" : y ?: [NSNull null],
+    @"z" : z ?: [NSNull null],
   };
 }
 
-RCT_EXPORT_METHOD(getValueWithCallback:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(getValueWithCallback : (RCTResponseSenderBlock)callback)
 {
   if (!callback) {
     return;
   }
-  callback(@[@"value from callback!"]);
+  callback(@[ @"value from callback!" ]);
 }
 
-RCT_EXPORT_METHOD(getValueWithPromise:(BOOL)error resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(getValueWithPromise
+                  : (BOOL)error resolve
+                  : (RCTPromiseResolveBlock)resolve reject
+                  : (RCTPromiseRejectBlock)reject)
 {
   if (!resolve || !reject) {
     return;
   }
 
   if (error) {
-    reject(@"code_1", @"intentional promise rejection", [NSError errorWithDomain:@"RCTSampleTurboModule" code:1 userInfo:nil]);
+    reject(
+        @"code_1",
+        @"intentional promise rejection",
+        [NSError errorWithDomain:@"RCTSampleTurboModule" code:1 userInfo:nil]);
   } else {
     resolve(@"result!");
   }

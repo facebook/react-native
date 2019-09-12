@@ -10,14 +10,13 @@
 
 'use strict';
 
-const React = require('React');
-const StyleSheet = require('StyleSheet');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
 
-const RCTProgressViewNativeComponent = require('RCTProgressViewNativeComponent');
-
-import type {ImageSource} from 'ImageSource';
-import type {ColorValue} from 'StyleSheetTypes';
-import type {ViewProps} from 'ViewPropTypes';
+import RCTProgressViewNativeComponent from './RCTProgressViewNativeComponent';
+import type {ImageSource} from '../../Image/ImageSource';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 type Props = $ReadOnly<{|
   ...ViewProps,
