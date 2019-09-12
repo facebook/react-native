@@ -81,23 +81,23 @@ function reportException(e: ExtendedError, isFatal: boolean) {
     message =
       e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
 
-    NativeExceptionsManager.reportException(
-      preprocessException({
-        message,
-        originalMessage: message === originalMessage ? null : originalMessage,
-        name: e.name == null || e.name === '' ? null : e.name,
-        componentStack:
-          typeof e.componentStack === 'string' ? e.componentStack : null,
-        stack,
-        id: currentExceptionID,
-        isFatal,
-        extraData: {
-          jsEngine: e.jsEngine,
-          rawStack: e.stack,
-          framesPopped: e.framesToPop,
-        },
-      }),
-    );
+    const data = preprocessException({
+      message,
+      originalMessage: message === originalMessage ? null : originalMessage,
+      name: e.name == null || e.name === '' ? null : e.name,
+      componentStack:
+        typeof e.componentStack === 'string' ? e.componentStack : null,
+      stack,
+      id: currentExceptionID,
+      isFatal,
+      extraData: {
+        jsEngine: e.jsEngine,
+        rawStack: e.stack,
+        framesPopped: e.framesToPop,
+      },
+    });
+
+    NativeExceptionsManager.reportException(data);
 
     if (__DEV__) {
       if (e.preventSymbolication === true) {
@@ -111,7 +111,7 @@ function reportException(e: ExtendedError, isFatal: boolean) {
               frame => !frame.collapse,
             );
             NativeExceptionsManager.updateExceptionMessage(
-              message,
+              data.message,
               stackWithoutCollapsedFrames,
               currentExceptionID,
             );
