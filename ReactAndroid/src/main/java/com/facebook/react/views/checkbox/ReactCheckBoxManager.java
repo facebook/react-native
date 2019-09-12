@@ -24,7 +24,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 /** View manager for {@link ReactCheckBox} components. */
 public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {
 
-  private static final String REACT_CLASS = "AndroidCheckBox";
+  public static final String REACT_CLASS = "AndroidCheckBox";
 
   private static final CompoundButton.OnCheckedChangeListener ON_CHECKED_CHANGE_LISTENER =
       new CompoundButton.OnCheckedChangeListener() {
