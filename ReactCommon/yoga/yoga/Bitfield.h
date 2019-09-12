@@ -9,7 +9,7 @@
 #include <cstddef>
 #include <limits>
 #include <type_traits>
-#include <yoga/YGEnums.h>
+#include <Yoga/YGEnums.h>
 
 namespace facebook {
 namespace yoga {
