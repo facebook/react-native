@@ -196,6 +196,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 }
 
+- (void)setDefaultImage:(UIImage *)defaultImage
+{
+  if (_defaultImage == defaultImage) {
+    return;
+  }
+  BOOL update = self.image == nil || [self.image isEqual:_defaultImage];
+  _defaultImage = defaultImage;
+  if (update) {
+    [self updateWithImage:defaultImage];
+  }
+}
+
 - (void)setResizeMode:(RCTResizeMode)resizeMode
 {
   if (_resizeMode != resizeMode) {
