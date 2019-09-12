@@ -10,7 +10,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTUIManager.h>
-#import <yoga/Yoga.h>
+#import <Yoga/Yoga.h>
 
 #import "NSTextStorage+FontScaling.h"
 #import <React/RCTTextView.h>

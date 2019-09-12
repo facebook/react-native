@@ -8,7 +8,7 @@
 #import "RCTSafeAreaShadowView.h"
 
 #import <React/RCTAssert.h>
-#import <yoga/Yoga.h>
+#import <Yoga/Yoga.h>
 
 #import "RCTSafeAreaViewLocalData.h"
 

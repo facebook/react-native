@@ -6,7 +6,7 @@
  */
 
 #import <React/RCTShadowView.h>
-#import <yoga/YGEnums.h>
+#import <Yoga/YGEnums.h>
 
 @interface RCTRootShadowView : RCTShadowView
 

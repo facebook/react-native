@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <yoga/Yoga.h>
+#import <Yoga/Yoga.h>
 
 #import "RCTAssert.h"
 #import "RCTShadowView+Layout.h"
