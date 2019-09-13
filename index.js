@@ -12,7 +12,6 @@
 
 import typeof AccessibilityInfo from './Libraries/Components/AccessibilityInfo/AccessibilityInfo';
 import typeof ActivityIndicator from './Libraries/Components/ActivityIndicator/ActivityIndicator';
-import typeof ReactNativeART from './Libraries/ART/ReactNativeART';
 import typeof Button from './Libraries/Components/Button';
 import typeof CheckBox from './Libraries/Components/CheckBox/CheckBox';
 import typeof DatePickerIOS from './Libraries/Components/DatePicker/DatePickerIOS';
@@ -111,15 +110,6 @@ module.exports = {
   },
   get ActivityIndicator(): ActivityIndicator {
     return require('./Libraries/Components/ActivityIndicator/ActivityIndicator');
-  },
-  get ART(): ReactNativeART {
-    warnOnce(
-      'art-moved',
-      'React Native ART has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/art' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/art',
-    );
-    return require('./Libraries/ART/ReactNativeART');
   },
   get Button(): Button {
     return require('./Libraries/Components/Button');
@@ -467,6 +457,19 @@ module.exports = {
 };
 
 if (__DEV__) {
+  // $FlowFixMe This is intentional: Flow will error when attempting to access ART.
+  Object.defineProperty(module.exports, 'ART', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'ART has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-community/art' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-art',
+      );
+    },
+  });
+
   // $FlowFixMe This is intentional: Flow will error when attempting to access ListView.
   Object.defineProperty(module.exports, 'ListView', {
     configurable: true,

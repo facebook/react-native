@@ -90,7 +90,6 @@
     "@react-native-community/cli-platform-android": "^3.0.0-alpha.1",
     "@react-native-community/cli-platform-ios": "^3.0.0-alpha.1",
     "abort-controller": "^3.0.0",
-    "art": "^0.10.0",
     "base64-js": "^1.1.2",
     "connect": "^3.6.5",
     "create-react-class": "^15.6.3",

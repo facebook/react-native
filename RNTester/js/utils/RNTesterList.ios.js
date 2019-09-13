@@ -19,11 +19,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'ARTExample',
-    module: require('../examples/ART/ARTExample'),
-    supportsTVOS: true,
-  },
-  {
     key: 'ButtonExample',
     module: require('../examples/Button/ButtonExample'),
     supportsTVOS: true,
