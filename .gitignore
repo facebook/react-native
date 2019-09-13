@@ -81,3 +81,4 @@ RNTester/build
 /template/ios/Pods/
 /template/ios/Podfile.lock
 /RNTester/Pods/
+/RNTester/Gemfile.lock
