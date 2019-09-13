@@ -52,14 +52,14 @@
 }
 </code></pre>
 <p>If you're targeting iOS 8.x or older, you can use the following code instead:</p>
-<pre><code class="hljs"><span class="hljs-comment">// iOS 8.x or older</span>
-<span class="hljs-meta">#import <span class="hljs-meta-string">&lt;React/RCTLinkingManager.h&gt;</span></span>
+<pre><code class="hljs">/<span class="hljs-regexp">/ iOS 8.x or older
+#import &lt;React/</span>RCTLinkingManager.h&gt;
 
-- (<span class="hljs-built_in">BOOL</span>)application:(<span class="hljs-built_in">UIApplication</span> *)application openURL:(<span class="hljs-built_in">NSURL</span> *)url
-  sourceApplication:(<span class="hljs-built_in">NSString</span> *)sourceApplication annotation:(<span class="hljs-keyword">id</span>)annotation
+- (BOOL)<span class="hljs-symbol">application:</span>(UIApplication *)application <span class="hljs-symbol">openURL:</span>(NSURL *)url
+  <span class="hljs-symbol">sourceApplication:</span>(NSString *)sourceApplication <span class="hljs-keyword">annotation</span>:(<span class="hljs-title">id</span>)<span class="hljs-title">annotation</span>
 {
-  <span class="hljs-keyword">return</span> [RCTLinkingManager application:application openURL:url
-                      sourceApplication:sourceApplication annotation:annotation];
+  <span class="hljs-keyword">return</span> [RCTLinkingManager <span class="hljs-symbol">application:</span>application <span class="hljs-symbol">openURL:</span>url
+                      <span class="hljs-symbol">sourceApplication:</span>sourceApplication <span class="hljs-keyword">annotation</span>:<span class="hljs-title">annotation</span>];
 }
 </code></pre>
 <p>// If your app is using <a href="https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html">Universal Links</a>, you'll need to add the following code as well:</p>
@@ -72,28 +72,28 @@
 }
 </code></pre>
 <p>And then on your React component you'll be able to listen to the events on <code>Linking</code> as follows</p>
-<pre><code class="hljs"><span class="hljs-selector-tag">componentDidMount</span>() {
-  <span class="hljs-selector-tag">Linking</span><span class="hljs-selector-class">.addEventListener</span>(<span class="hljs-string">'url'</span>, this._handleOpenURL);
+<pre><code class="hljs">component<span class="hljs-constructor">DidMount()</span> {
+  <span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Linking</span>.</span></span>add<span class="hljs-constructor">EventListener('<span class="hljs-params">url</span>', <span class="hljs-params">this</span>.<span class="hljs-params">_handleOpenURL</span>)</span>;
 },
-<span class="hljs-selector-tag">componentWillUnmount</span>() {
-  <span class="hljs-selector-tag">Linking</span><span class="hljs-selector-class">.removeEventListener</span>(<span class="hljs-string">'url'</span>, this._handleOpenURL);
+component<span class="hljs-constructor">WillUnmount()</span> {
+  <span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Linking</span>.</span></span>remove<span class="hljs-constructor">EventListener('<span class="hljs-params">url</span>', <span class="hljs-params">this</span>.<span class="hljs-params">_handleOpenURL</span>)</span>;
 },
-<span class="hljs-selector-tag">_handleOpenURL</span>(event) {
-  <span class="hljs-selector-tag">console</span><span class="hljs-selector-class">.log</span>(event.url);
+<span class="hljs-constructor">_handleOpenURL(<span class="hljs-params">event</span>)</span> {
+  console.log(event.url);
 }
 </code></pre>
 <h4><a class="anchor" aria-hidden="true" id="opening-external-links"></a><a href="#opening-external-links" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Opening external links</h4>
 <p>To start the corresponding activity for a link (web URL, email, contact etc.), call</p>
-<pre><code class="hljs">Linking.openURL(url).catch(<span class="hljs-keyword">err</span> =&gt; console.<span class="hljs-keyword">error</span>('<span class="hljs-keyword">An</span> <span class="hljs-keyword">error</span> occurred', <span class="hljs-keyword">err</span>));
+<pre><code class="hljs"><span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Linking</span>.</span></span><span class="hljs-keyword">open</span><span class="hljs-constructor">URL(<span class="hljs-params">url</span>)</span>.catch(err =&gt; console.error('An error occurred', err));
 </code></pre>
 <p>If you want to check if any installed app can handle a given URL beforehand you can call</p>
-<pre><code class="hljs">Linking.canOpenURL(url).then(<span class="hljs-function"><span class="hljs-params">supported</span> =&gt;</span> {
+<pre><code class="hljs"><span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Linking</span>.</span></span>can<span class="hljs-constructor">OpenURL(<span class="hljs-params">url</span>)</span>.<span class="hljs-keyword">then</span>(supported =&gt; {
   <span class="hljs-keyword">if</span> (!supported) {
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Can\'t handle url: '</span> + url);
+    console.log('Can\'t handle url: ' + url);
   } <span class="hljs-keyword">else</span> {
-    <span class="hljs-keyword">return</span> Linking.openURL(url);
+    return <span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Linking</span>.</span></span><span class="hljs-keyword">open</span><span class="hljs-constructor">URL(<span class="hljs-params">url</span>)</span>;
   }
-}).catch(<span class="hljs-function"><span class="hljs-params">err</span> =&gt;</span> <span class="hljs-built_in">console</span>.error(<span class="hljs-string">'An error occurred'</span>, err));
+}).catch(err =&gt; console.error('An error occurred', err));
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h3>
 <ul>
