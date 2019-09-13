@@ -50,7 +50,7 @@ struct JSEConfigParams {
 
 class RN_EXPORT Instance {
 public:
-  ~Instance();
+  virtual ~Instance();
 
   virtual void setModuleRegistry(std::shared_ptr<ModuleRegistry> moduleRegistry);
 

@@ -125,7 +125,7 @@ private:
   void terminateOnJSVMThread();
   void bindBridge();
   void callNativeModules(Local<Context> context, Local<Value> value);
-  void flush();
+  void flush() override;
   void flushQueueImmediate(Value&&);
   void loadModule(uint32_t bundleId, uint32_t moduleId);
 

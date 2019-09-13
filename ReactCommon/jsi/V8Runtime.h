@@ -32,6 +32,8 @@ namespace v8runtime {
 
   struct InspectorInterface {
 
+    virtual ~InspectorInterface() {};
+
     // This will start the server and listen for connections .. Don't create instance if debugger is not needed.
     // Creating multiple inspectors in the same process is untested and not supported as of now.
     static std::unique_ptr<InspectorInterface> create(V8Platform& platform, int port);
