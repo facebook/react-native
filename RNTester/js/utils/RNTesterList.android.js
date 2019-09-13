@@ -205,10 +205,6 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/Share/ShareExample'),
   },
   {
-    key: 'TimePickerAndroidExample',
-    module: require('../examples/TimePicker/TimePickerAndroidExample'),
-  },
-  {
     key: 'TimerExample',
     module: require('../examples/Timer/TimerExample'),
   },

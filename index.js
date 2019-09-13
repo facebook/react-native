@@ -77,7 +77,6 @@ import typeof Share from './Libraries/Share/Share';
 import typeof StatusBarIOS from './Libraries/Components/StatusBar/StatusBarIOS';
 import typeof StyleSheet from './Libraries/StyleSheet/StyleSheet';
 import typeof Systrace from './Libraries/Performance/Systrace';
-import typeof TimePickerAndroid from './Libraries/Components/TimePickerAndroid/TimePickerAndroid';
 import typeof ToastAndroid from './Libraries/Components/ToastAndroid/ToastAndroid';
 import typeof * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistry';
 import typeof TVEventHandler from './Libraries/Components/AppleTV/TVEventHandler';
@@ -373,15 +372,6 @@ module.exports = {
   get Systrace(): Systrace {
     return require('./Libraries/Performance/Systrace');
   },
-  get TimePickerAndroid(): TimePickerAndroid {
-    warnOnce(
-      'TimePickerAndroid-merged',
-      'TimePickerAndroid has been merged with DatePickerIOS and DatePickerAndroid and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-datetimepicker',
-    );
-    return require('./Libraries/Components/TimePickerAndroid/TimePickerAndroid');
-  },
   get ToastAndroid(): ToastAndroid {
     return require('./Libraries/Components/ToastAndroid/ToastAndroid');
   },
@@ -557,6 +547,19 @@ if (__DEV__) {
         'ImageEditor has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/image-editor' instead of 'react-native'. " +
           'See https://github.com/react-native-community/react-native-image-editor',
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access TimePickerAndroid.
+  Object.defineProperty(module.exports, 'TimePickerAndroid', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'TimePickerAndroid has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-datetimepicker',
       );
     },
   });
