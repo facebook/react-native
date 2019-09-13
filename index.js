@@ -102,7 +102,6 @@ import typeof DeprecatedViewPropTypes from './Libraries/DeprecatedPropTypes/Depr
 const invariant = require('invariant');
 const warnOnce = require('./Libraries/Utilities/warnOnce');
 
-// Export React, plus some native additions.
 module.exports = {
   // Components
   get AccessibilityInfo(): AccessibilityInfo {
@@ -516,7 +515,7 @@ if (__DEV__) {
       invariant(
         false,
         'NetInfo has been removed from React Native. ' +
-          "It can now be installed and imported from 'react-native-netinfo' instead of 'react-native'. " +
+          "It can now be installed and imported from '@react-native-community/netinfo' instead of 'react-native'. " +
           'See https://github.com/react-native-community/react-native-netinfo',
       );
     },
@@ -529,7 +528,7 @@ if (__DEV__) {
       invariant(
         false,
         'CameraRoll has been removed from React Native. ' +
-          "It can now be installed and imported from 'react-native-cameraroll' instead of 'react-native'. " +
+          "It can now be installed and imported from '@react-native-community/cameraroll' instead of 'react-native'. " +
           'See https://github.com/react-native-community/react-native-cameraroll',
       );
     },
@@ -556,7 +555,7 @@ if (__DEV__) {
       invariant(
         false,
         'ImageEditor has been removed from React Native. ' +
-          "It can now be installed and imported from 'react-native-image-editor' instead of 'react-native'. " +
+          "It can now be installed and imported from '@react-native-community/image-editor' instead of 'react-native'. " +
           'See https://github.com/react-native-community/react-native-image-editor',
       );
     },
@@ -569,7 +568,7 @@ if (__DEV__) {
       invariant(
         false,
         'ViewPagerAndroid has been removed from React Native. ' +
-          "It can now be installed and imported from 'react-native-viewpager' instead of 'react-native'. " +
+          "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
           'See https://github.com/react-native-community/react-native-viewpager',
       );
     },
