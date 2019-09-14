@@ -11,7 +11,6 @@ import static com.facebook.react.uimanager.events.TouchesHelper.TARGET_KEY;
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.UIManagerType;
@@ -19,13 +18,9 @@ import com.facebook.react.uimanager.common.ViewUtil;
 
 public class ReactEventEmitter implements RCTEventEmitter {
 
-  private static final String TAG = ReactEventEmitter.class.getSimpleName();
   private final SparseArray<RCTEventEmitter> mEventEmitters = new SparseArray<>();
-  private final ReactApplicationContext mReactContext;
 
-  public ReactEventEmitter(ReactApplicationContext reactContext) {
-    mReactContext = reactContext;
-  }
+  public ReactEventEmitter() {}
 
   public void register(@UIManagerType int uiManagerType, RCTEventEmitter eventEmitter) {
     mEventEmitters.put(uiManagerType, eventEmitter);
@@ -54,7 +49,7 @@ public class ReactEventEmitter implements RCTEventEmitter {
     int type = ViewUtil.getUIManagerType(reactTag);
     RCTEventEmitter eventEmitter = mEventEmitters.get(type);
     if (eventEmitter == null) {
-      eventEmitter = mReactContext.getJSModule(RCTEventEmitter.class);
+      throw new RuntimeException("Unable to find event emitter for type: " + type);
     }
     return eventEmitter;
   }
