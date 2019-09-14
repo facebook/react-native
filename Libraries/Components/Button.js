@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   }),
   text: {
     textAlign: 'center',
-    padding: 8,
+    margin: 8,
     ...Platform.select({
       ios: {
         // iOS blue from https://developer.apple.com/ios/human-interface-guidelines/visual-design/color/
