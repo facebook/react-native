@@ -173,22 +173,28 @@ static RCTResponseSenderBlock convertJSIFunctionToCallback(
     const jsi::Function &value,
     std::shared_ptr<react::JSCallInvoker> jsInvoker)
 {
-  __block auto wrapper = std::make_shared<react::CallbackWrapper>(value.getFunction(runtime), runtime, jsInvoker);
+  auto weakWrapper = react::CallbackWrapper::createWeak(value.getFunction(runtime), runtime, jsInvoker);
+  BOOL __block wrapperWasCalled = NO;
   return ^(NSArray *responses) {
-    if (wrapper == nullptr) {
+    if (wrapperWasCalled) {
       throw std::runtime_error("callback arg cannot be called more than once");
     }
 
-    std::shared_ptr<react::CallbackWrapper> rw = wrapper;
-    wrapper->jsInvoker().invokeAsync([rw, responses]() {
-      std::vector<jsi::Value> args = convertNSArrayToStdVector(rw->runtime(), responses);
-      rw->callback().call(rw->runtime(), (const jsi::Value *)args.data(), args.size());
-    });
+    auto strongWrapper = weakWrapper.lock();
+    if (!strongWrapper) {
+      return;
+    }
 
-    // The callback is single-use, so force release it here.
-    // Doing this also releases the jsi::jsi::Function early, since this block may not get released by ARC for a while,
-    // because the method invocation isn't guarded with @autoreleasepool.
-    wrapper = nullptr;
+    strongWrapper->jsInvoker().invokeAsync([weakWrapper, responses]() {
+      auto strongWrapper2 = weakWrapper.lock();
+      if (!strongWrapper2) {
+        return;
+      }
+
+      std::vector<jsi::Value> args = convertNSArrayToStdVector(strongWrapper2->runtime(), responses);
+      strongWrapper2->callback().call(strongWrapper2->runtime(), (const jsi::Value *)args.data(), args.size());
+      strongWrapper2->destroy();
+    });
   };
 }
 
@@ -222,13 +228,13 @@ jsi::Value ObjCTurboModule::createPromise(
           return jsi::Value::undefined();
         }
 
-        std::shared_ptr<CallbackWrapper> resolveWrapper =
-            std::make_shared<react::CallbackWrapper>(args[0].getObject(rt).getFunction(rt), rt, jsInvoker);
-        std::shared_ptr<CallbackWrapper> rejectWrapper =
-            std::make_shared<react::CallbackWrapper>(args[1].getObject(rt).getFunction(rt), rt, jsInvoker);
+        auto weakResolveWrapper =
+            react::CallbackWrapper::createWeak(args[0].getObject(rt).getFunction(rt), rt, jsInvoker);
+        auto weakRejectWrapper =
+            react::CallbackWrapper::createWeak(args[1].getObject(rt).getFunction(rt), rt, jsInvoker);
 
-        BOOL __block resolveWasCalled = NO;
-        BOOL __block rejectWasCalled = NO;
+        __block BOOL resolveWasCalled = NO;
+        __block BOOL rejectWasCalled = NO;
 
         RCTPromiseResolveBlock resolveBlock = ^(id result) {
           if (rejectWasCalled) {
@@ -239,23 +245,25 @@ jsi::Value ObjCTurboModule::createPromise(
             throw std::runtime_error("Tried to resolve a promise more than once.");
           }
 
-          // In the case that ObjC runtime first invokes this block after
-          // the TurboModuleManager was invalidated, we should do nothing.
-          if (resolveWrapper->isDestroyed()) {
+          auto strongResolveWrapper = weakResolveWrapper.lock();
+          auto strongRejectWrapper = weakRejectWrapper.lock();
+          if (!strongResolveWrapper || !strongRejectWrapper) {
             return;
           }
 
-          resolveWrapper->jsInvoker().invokeAsync([resolveWrapper, rejectWrapper, result]() {
-            if (resolveWrapper->isDestroyed()) {
+          strongResolveWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, result]() {
+            auto strongResolveWrapper2 = weakResolveWrapper.lock();
+            auto strongRejectWrapper2 = weakRejectWrapper.lock();
+            if (!strongResolveWrapper2 || !strongRejectWrapper2) {
               return;
             }
 
-            jsi::Runtime &rt = resolveWrapper->runtime();
+            jsi::Runtime &rt = strongResolveWrapper2->runtime();
             jsi::Value arg = convertObjCObjectToJSIValue(rt, result);
-            resolveWrapper->callback().call(rt, arg);
+            strongResolveWrapper2->callback().call(rt, arg);
 
-            resolveWrapper->destroy();
-            rejectWrapper->destroy();
+            strongResolveWrapper2->destroy();
+            strongRejectWrapper2->destroy();
           });
 
           resolveWasCalled = YES;
@@ -270,24 +278,26 @@ jsi::Value ObjCTurboModule::createPromise(
             throw std::runtime_error("Tried to reject a promise more than once.");
           }
 
-          // In the case that ObjC runtime first invokes this block after
-          // the TurboModuleManager was invalidated, we should do nothing.
-          if (rejectWrapper->isDestroyed()) {
+          auto strongResolveWrapper = weakResolveWrapper.lock();
+          auto strongRejectWrapper = weakRejectWrapper.lock();
+          if (!strongResolveWrapper || !strongRejectWrapper) {
             return;
           }
 
           NSDictionary *jsError = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-          rejectWrapper->jsInvoker().invokeAsync([rejectWrapper, resolveWrapper, jsError]() {
-            if (rejectWrapper->isDestroyed()) {
+          strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, jsError]() {
+            auto strongResolveWrapper2 = weakResolveWrapper.lock();
+            auto strongRejectWrapper2 = weakRejectWrapper.lock();
+            if (!strongResolveWrapper2 || !strongRejectWrapper2) {
               return;
             }
 
-            jsi::Runtime &rt = rejectWrapper->runtime();
+            jsi::Runtime &rt = strongRejectWrapper2->runtime();
             jsi::Value arg = convertNSDictionaryToJSIObject(rt, jsError);
-            rejectWrapper->callback().call(rt, arg);
+            strongRejectWrapper2->callback().call(rt, arg);
 
-            rejectWrapper->destroy();
-            resolveWrapper->destroy();
+            strongResolveWrapper2->destroy();
+            strongRejectWrapper2->destroy();
           });
 
           rejectWasCalled = YES;
