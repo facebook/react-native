@@ -489,7 +489,16 @@ local_ref<JMountItem::javaobject> createRemoveAndDeleteMultiMountItem(
     jni::findClassStatic(UIManagerJavaDescriptor)
       ->getMethod<alias_ref<JMountItem>(jintArray)>("removeDeleteMultiMountItem");
 
-  return removeDeleteMultiInstruction(javaUIManager, removeAndDeleteArray);
+  auto ret = removeDeleteMultiInstruction(javaUIManager, removeAndDeleteArray);
+
+  // It is not strictly necessary to manually delete the ref here, in this particular case.
+  // If JNI memory is being allocated in a loop, it's easy to overload the localref table
+  // and crash; this is not possible in this case since the JNI would automatically clear this
+  // ref when it goes out of scope, anyway. However, this is being left here as a reminder of
+  // good hygiene and to be careful with JNI-allocated memory in general.
+  env->DeleteLocalRef(removeAndDeleteArray);
+
+  return ret;
 }
 
 // TODO T48019320: because we pass initial props and state to the Create (and preallocate) mount instruction,
