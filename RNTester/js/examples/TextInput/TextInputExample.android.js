@@ -871,4 +871,18 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'Colored cursor for text input',
+    render: function(): React.Node {
+      return (
+        <View>
+          <TextInput
+            style={styles.default}
+            cursorColor="red"
+            defaultValue="Highlight me"
+          />
+        </View>
+      );
+    },
+  },
 ];

@@ -7,6 +7,8 @@
 package com.facebook.react.views.textinput;
 
 import android.content.Context;
+import android.graphics.BlendMode;
+import android.graphics.BlendModeColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -400,38 +402,49 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "cursorColor", customType = "Color")
   public void setCursorColor(ReactEditText view, @Nullable Integer color) {
-    // Evil method that uses reflection because there is no public API to changes
-    // the cursor color programmatically.
-    // Based on
-    // http://stackoverflow.com/questions/25996032/how-to-change-programatically-edittext-cursor-color-in-android.
-    try {
-      // Get the original cursor drawable resource.
-      Field cursorDrawableResField = TextView.class.getDeclaredField("mCursorDrawableRes");
-      cursorDrawableResField.setAccessible(true);
-      int drawableResId = cursorDrawableResField.getInt(view);
-
-      // The view has no cursor drawable.
-      if (drawableResId == 0) {
-        return;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      Drawable drawable = view.getTextCursorDrawable();
+      if (drawable != null) {
+        if (color != null) {
+          drawable.setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC_IN));
+        } else {
+          drawable.setColorFilter(null);
+        }
+        view.setTextCursorDrawable(drawable);
       }
+    } else {
+      // Evil method that uses reflection because there is no public API to changes
+      // the cursor color programmatically.
+      // Based on
+      // http://stackoverflow.com/questions/25996032/how-to-change-programatically-edittext-cursor-color-in-android.
+      try {
+        // Get the original cursor drawable resource.
+        Field cursorDrawableResField = TextView.class.getDeclaredField("mCursorDrawableRes");
+        cursorDrawableResField.setAccessible(true);
+        int drawableResId = cursorDrawableResField.getInt(view);
 
-      Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
-      if (color != null) {
-        drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-      }
-      Drawable[] drawables = {drawable, drawable};
+        // The view has no cursor drawable.
+        if (drawableResId == 0) {
+          return;
+        }
 
-      // Update the current cursor drawable with the new one.
-      Field editorField = TextView.class.getDeclaredField("mEditor");
-      editorField.setAccessible(true);
-      Object editor = editorField.get(view);
-      Field cursorDrawableField = editor.getClass().getDeclaredField("mCursorDrawable");
-      cursorDrawableField.setAccessible(true);
-      cursorDrawableField.set(editor, drawables);
-    } catch (NoSuchFieldException ex) {
-      // Ignore errors to avoid crashing if these private fields don't exist on modified
-      // or future android versions.
-    } catch (IllegalAccessException ex) {
+        Drawable drawable = ContextCompat.getDrawable(view.getContext(), drawableResId);
+        if (color != null) {
+          drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        }
+        Drawable[] drawables = {drawable, drawable};
+
+        // Update the current cursor drawable with the new one.
+        Field editorField = TextView.class.getDeclaredField("mEditor");
+        editorField.setAccessible(true);
+        Object editor = editorField.get(view);
+        Field cursorDrawableField = editor.getClass().getDeclaredField("mCursorDrawable");
+        cursorDrawableField.setAccessible(true);
+        cursorDrawableField.set(editor, drawables);
+      } catch (NoSuchFieldException ex) {
+        // Ignore errors to avoid crashing if these private fields don't exist on modified
+        // or future android versions.
+      } catch (IllegalAccessException ex) {}
     }
   }
 
