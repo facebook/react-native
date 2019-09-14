@@ -103,19 +103,7 @@ ShadowTree::ShadowTree(
 }
 
 ShadowTree::~ShadowTree() {
-  commit(
-      [](const SharedRootShadowNode &oldRootShadowNode) {
-        return std::make_shared<RootShadowNode>(
-            *oldRootShadowNode,
-            ShadowNodeFragment{
-                /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
-                /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                /* .eventEmitter = */
-                ShadowNodeFragment::eventEmitterPlaceholder(),
-                /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
-            });
-      });
+  mountingCoordinator_->revoke();
 }
 
 Tag ShadowTree::getSurfaceId() const {
@@ -203,6 +191,23 @@ bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
   }
 
   return true;
+}
+
+void ShadowTree::commitEmptyTree() const {
+  commit(
+      [](const SharedRootShadowNode &oldRootShadowNode)
+          -> UnsharedRootShadowNode {
+        return std::make_shared<RootShadowNode>(
+            *oldRootShadowNode,
+            ShadowNodeFragment{
+                /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                /* .eventEmitter = */
+                ShadowNodeFragment::eventEmitterPlaceholder(),
+                /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
+            });
+      });
 }
 
 void ShadowTree::emitLayoutEvents(

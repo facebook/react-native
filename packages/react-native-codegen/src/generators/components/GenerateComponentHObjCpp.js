@@ -61,7 +61,7 @@ if ([commandName isEqualToString:@"::_COMMAND_NAME_::"]) {
   }
 #endif
 
-::_CONVERT_ARGS_::
+  ::_CONVERT_ARGS_::
 
   ::_COMMAND_CALL_::
   return;
@@ -70,7 +70,7 @@ if ([commandName isEqualToString:@"::_COMMAND_NAME_::"]) {
 
 const commandHandlerTemplate = `
 RCT_EXTERN inline void RCT::_COMPONENT_NAME_::HandleCommand(
-  id<::_COMPONENT_NAME_::ViewProtocol> componentView,
+  id<RCT::_COMPONENT_NAME_::ViewProtocol> componentView,
   NSString const *commandName,
   NSArray const *args)
 {
@@ -251,7 +251,7 @@ function generateCommandIfCase(
             return `${index === 0 ? '' : param.name}:${param.name}`;
           })
           .join(' ');
-  const commandCall = `[componentView ${command.name}${commandCallArgs}]`;
+  const commandCall = `[componentView ${command.name}${commandCallArgs}];`;
 
   return commandHandlerIfCaseTemplate
     .replace(/::_COMPONENT_NAME_::/g, componentName)

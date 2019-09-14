@@ -18,9 +18,6 @@
 
 static NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
 static NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
-// This option is no longer exposed in the dev menu UI.
-// It was renamed in D15958697 so it doesn't get stuck with no way to turn it off:
-static NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled_LEGACY";
 static NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
 static NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
 static NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
@@ -38,7 +35,7 @@ static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 #import "RCTInspectorDevServerHelper.h"
 #endif
 
-#if RCT_DEV
+#if RCT_DEV_MENU
 
 @interface RCTDevSettingsUserDefaultsDataSource : NSObject <RCTDevSettingsDataSource>
 
@@ -100,10 +97,7 @@ static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 @end
 
-@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating>
-{
-  NSURLSessionDataTask *_liveReloadUpdateTask;
-  NSURL *_liveReloadURL;
+@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating> {
   BOOL _isJSLoaded;
 #if ENABLE_PACKAGER_CONNECTION
   RCTHandlerToken _reloadToken;
@@ -130,10 +124,11 @@ RCT_EXPORT_MODULE()
 {
   // default behavior is to use NSUserDefaults
   NSDictionary *defaultValues = @{
-    kRCTDevSettingShakeToShowDevMenu: @YES,
-    kRCTDevSettingHotLoadingEnabled: @YES,
+    kRCTDevSettingShakeToShowDevMenu : @YES,
+    kRCTDevSettingHotLoadingEnabled : @YES,
   };
-  RCTDevSettingsUserDefaultsDataSource *dataSource = [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
+  RCTDevSettingsUserDefaultsDataSource *dataSource =
+      [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
   return [self initWithDataSource:dataSource];
 }
 
@@ -162,16 +157,15 @@ RCT_EXPORT_MODULE()
 
 #if ENABLE_PACKAGER_CONNECTION
   RCTBridge *__weak weakBridge = bridge;
-  _reloadToken =
-  [[RCTPackagerConnection sharedPackagerConnection]
-   addNotificationHandler:^(id params) {
-     if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
-       weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
-     }
-     [weakBridge reload];
-   }
-   queue:dispatch_get_main_queue()
-   forMethod:@"reload"];
+  _reloadToken = [[RCTPackagerConnection sharedPackagerConnection]
+      addNotificationHandler:^(id params) {
+        if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
+          weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
+        }
+        [weakBridge reload];
+      }
+                       queue:dispatch_get_main_queue()
+                   forMethod:@"reload"];
 #endif
 
 #if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC
@@ -181,9 +175,11 @@ RCT_EXPORT_MODULE()
   // relinquishes control of the main thread, so only queue on the JS thread
   // after the current main thread operation is done.
   dispatch_async(dispatch_get_main_queue(), ^{
-    [bridge dispatchBlock:^{
-      [RCTInspectorDevServerHelper connectWithBundleURL:bridge.bundleURL];
-    } queue:RCTJSThread];
+    [bridge
+        dispatchBlock:^{
+          [RCTInspectorDevServerHelper connectWithBundleURL:bridge.bundleURL];
+        }
+                queue:RCTJSThread];
   });
 #endif
 }
@@ -195,7 +191,6 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  [_liveReloadUpdateTask cancel];
 #if ENABLE_PACKAGER_CONNECTION
   [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_reloadToken];
 #endif
@@ -235,17 +230,12 @@ RCT_EXPORT_MODULE()
   return _bridge.bundleURL && !_bridge.bundleURL.fileURL; // Only works when running from server
 }
 
-- (BOOL)isLiveReloadAvailable
-{
-  return (_liveReloadURL != nil);
-}
-
 RCT_EXPORT_METHOD(reload)
 {
   [_bridge reload];
 }
 
-RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled:(BOOL)enabled)
+RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled : (BOOL)enabled)
 {
   [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingShakeToShowDevMenu];
 }
@@ -255,7 +245,7 @@ RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled:(BOOL)enabled)
   return [[self settingForKey:kRCTDevSettingShakeToShowDevMenu] boolValue];
 }
 
-RCT_EXPORT_METHOD(setIsDebuggingRemotely:(BOOL)enabled)
+RCT_EXPORT_METHOD(setIsDebuggingRemotely : (BOOL)enabled)
 {
   [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingIsDebuggingRemotely];
   [self _remoteDebugSettingDidChange];
@@ -279,7 +269,7 @@ RCT_EXPORT_METHOD(setIsDebuggingRemotely:(BOOL)enabled)
   }
 }
 
-RCT_EXPORT_METHOD(setProfilingEnabled:(BOOL)enabled)
+RCT_EXPORT_METHOD(setProfilingEnabled : (BOOL)enabled)
 {
   [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingProfilingEnabled];
   [self _profilingSettingDidChange];
@@ -293,7 +283,7 @@ RCT_EXPORT_METHOD(setProfilingEnabled:(BOOL)enabled)
 - (void)_profilingSettingDidChange
 {
   BOOL enabled = self.isProfilingEnabled;
-  if (_liveReloadURL && enabled != RCTProfileIsProfiling()) {
+  if (self.isHotLoadingAvailable && enabled != RCTProfileIsProfiling()) {
     if (enabled) {
       [_bridge startProfiling];
     } else {
@@ -304,47 +294,19 @@ RCT_EXPORT_METHOD(setProfilingEnabled:(BOOL)enabled)
   }
 }
 
-RCT_EXPORT_METHOD(setLiveReloadEnabled:(BOOL)enabled)
-{
-  [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingLiveReloadEnabled];
-  [self _liveReloadSettingDidChange];
-}
-
-- (BOOL)isLiveReloadEnabled
-{
-  return [[self settingForKey:kRCTDevSettingLiveReloadEnabled] boolValue];
-}
-
-- (void)_liveReloadSettingDidChange
-{
-  BOOL liveReloadEnabled = (self.isLiveReloadAvailable && self.isLiveReloadEnabled);
-  if (liveReloadEnabled) {
-    [self _pollForLiveReload];
-  } else {
-    [_liveReloadUpdateTask cancel];
-    _liveReloadUpdateTask = nil;
-  }
-}
-
-RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
+RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 {
   if (self.isHotLoadingEnabled != enabled) {
     [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingHotLoadingEnabled];
     if (_isJSLoaded) {
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
       if (enabled) {
-        [_bridge enqueueJSCall:@"HMRClient"
-                        method:@"enable"
-                        args:@[]
-                        completion:NULL];
+        [_bridge enqueueJSCall:@"HMRClient" method:@"enable" args:@[] completion:NULL];
       } else {
-        [_bridge enqueueJSCall:@"HMRClient"
-                        method:@"disable"
-                        args:@[]
-                        completion:NULL];
+        [_bridge enqueueJSCall:@"HMRClient" method:@"disable" args:@[] completion:NULL];
       }
-  #pragma clang diagnostic pop
+#pragma clang diagnostic pop
     }
   }
 }
@@ -386,13 +348,11 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 {
   _executorClass = executorClass;
   if (_bridge.executorClass != executorClass) {
-
     // TODO (6929129): we can remove this special case test once we have better
     // support for custom executors in the dev menu. But right now this is
     // needed to prevent overriding a custom executor with the default if a
     // custom executor has been set directly on the bridge
-    if (executorClass == Nil &&
-        _bridge.executorClass != objc_lookUpClass("RCTWebSocketExecutor")) {
+    if (executorClass == Nil && _bridge.executorClass != objc_lookUpClass("RCTWebSocketExecutor")) {
       return;
     }
 
@@ -401,7 +361,7 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   }
 }
 
-#if RCT_DEV
+#if RCT_DEV_MENU
 
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
 {
@@ -420,43 +380,8 @@ RCT_EXPORT_METHOD(toggleElementInspector)
  */
 - (void)_synchronizeAllSettings
 {
-  [self _liveReloadSettingDidChange];
   [self _remoteDebugSettingDidChange];
   [self _profilingSettingDidChange];
-}
-
-- (void)_pollForLiveReload
-{
-  if (!_isJSLoaded || ![[self settingForKey:kRCTDevSettingLiveReloadEnabled] boolValue] || !_liveReloadURL) {
-    return;
-  }
-
-  if (_liveReloadUpdateTask) {
-    return;
-  }
-
-  __weak RCTDevSettings *weakSelf = self;
-  _liveReloadUpdateTask = [[NSURLSession sharedSession] dataTaskWithURL:_liveReloadURL completionHandler:
-                           ^(__unused NSData *data, NSURLResponse *response, NSError *error) {
-
-                             dispatch_async(dispatch_get_main_queue(), ^{
-                               __strong RCTDevSettings *strongSelf = weakSelf;
-                               if (strongSelf && [[strongSelf settingForKey:kRCTDevSettingLiveReloadEnabled] boolValue]) {
-                                 NSHTTPURLResponse *HTTPResponse = (NSHTTPURLResponse *)response;
-                                 if (!error && HTTPResponse.statusCode == 205) {
-                                   [strongSelf reload];
-                                 } else {
-                                   if (error.code != NSURLErrorCancelled) {
-                                     strongSelf->_liveReloadUpdateTask = nil;
-                                     [strongSelf _pollForLiveReload];
-                                   }
-                                 }
-                               }
-                             });
-
-                           }];
-
-  [_liveReloadUpdateTask resume];
 }
 
 - (void)jsLoaded:(NSNotification *)notification
@@ -466,16 +391,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   }
 
   _isJSLoaded = YES;
-
-  // Check if live reloading is available
-  NSURL *scriptURL = _bridge.bundleURL;
-  if (![scriptURL isFileURL]) {
-    // Live reloading is disabled when running from bundled JS file
-    _liveReloadURL = [[NSURL alloc] initWithString:@"/onchange" relativeToURL:scriptURL];
-  } else {
-    _liveReloadURL = nil;
-  }
-
   dispatch_async(dispatch_get_main_queue(), ^{
     // update state again after the bridge has finished loading
     [self _synchronizeAllSettings];
@@ -496,13 +411,28 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 
 @implementation RCTDevSettings
 
-- (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource { return [super init]; }
-- (BOOL)isHotLoadingAvailable { return NO; }
-- (BOOL)isLiveReloadAvailable { return NO; }
-- (BOOL)isRemoteDebuggingAvailable { return NO; }
-- (id)settingForKey:(NSString *)key { return nil; }
-- (void)reload {}
-- (void)toggleElementInspector {}
+- (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource
+{
+  return [super init];
+}
+- (BOOL)isHotLoadingAvailable
+{
+  return NO;
+}
+- (BOOL)isRemoteDebuggingAvailable
+{
+  return NO;
+}
+- (id)settingForKey:(NSString *)key
+{
+  return nil;
+}
+- (void)reload
+{
+}
+- (void)toggleElementInspector
+{
+}
 
 @end
 

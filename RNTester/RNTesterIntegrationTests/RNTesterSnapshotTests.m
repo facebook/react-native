@@ -11,8 +11,7 @@
 
 #import <RCTTest/RCTTestRunner.h>
 
-@interface RNTesterSnapshotTests : XCTestCase
-{
+@interface RNTesterSnapshotTests : XCTestCase {
   RCTTestRunner *_runner;
 }
 
@@ -29,15 +28,14 @@
   _runner.recordMode = NO;
 }
 
-#define RCT_TEST(name)                  \
-- (void)test##name                      \
-{                                       \
-  [_runner runTest:_cmd module:@#name]; \
-}
+#define RCT_TEST(name)                     \
+  -(void)test##name                        \
+  {                                        \
+    [_runner runTest:_cmd module:@ #name]; \
+  }
 
 RCT_TEST(ViewExample)
 RCT_TEST(LayoutExample)
-RCT_TEST(ARTExample)
 RCT_TEST(ScrollViewExample)
 RCT_TEST(TextExample)
 #if !TARGET_OS_TV

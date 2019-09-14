@@ -268,9 +268,9 @@ RCT_EXPORT_MODULE()
   }
 
   if (_sendIdleEvents) {
-    NSTimeInterval frameElapsed = (CACurrentMediaTime() - update.timestamp);
+    NSTimeInterval currentTimestamp = [[NSDate date] timeIntervalSince1970];
+    NSTimeInterval frameElapsed = currentTimestamp - update.timestamp;
     if (kFrameDuration - frameElapsed >= kIdleCallbackFrameDeadline) {
-      NSTimeInterval currentTimestamp = [[NSDate date] timeIntervalSince1970];
       NSNumber *absoluteFrameStartMS = @((currentTimestamp - frameElapsed) * 1000);
       [_bridge enqueueJSCall:@"JSTimers"
                       method:@"callIdleCallbacks"

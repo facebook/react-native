@@ -27,9 +27,6 @@ public class DevInternalSettings
   private static final String PREFS_JS_DEV_MODE_DEBUG_KEY = "js_dev_mode_debug";
   private static final String PREFS_JS_MINIFY_DEBUG_KEY = "js_minify_debug";
   private static final String PREFS_ANIMATIONS_DEBUG_KEY = "animations_debug";
-  // This option is no longer exposed in the dev menu UI.
-  // It was renamed in D15958697 so it doesn't get stuck with no way to turn it off:
-  private static final String PREFS_RELOAD_ON_JS_CHANGE_KEY = "reload_on_js_change_LEGACY";
   private static final String PREFS_INSPECTOR_DEBUG_KEY = "inspector_debug";
   private static final String PREFS_HOT_MODULE_REPLACEMENT_KEY = "hot_module_replacement";
   private static final String PREFS_REMOTE_JS_DEBUG_KEY = "remote_js_debug";
@@ -82,7 +79,6 @@ public class DevInternalSettings
   public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     if (mListener != null) {
       if (PREFS_FPS_DEBUG_KEY.equals(key)
-          || PREFS_RELOAD_ON_JS_CHANGE_KEY.equals(key)
           || PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key)
           || PREFS_START_SAMPLING_PROFILER_ON_INIT.equals(key)
           || PREFS_JS_MINIFY_DEBUG_KEY.equals(key)) {
@@ -97,14 +93,6 @@ public class DevInternalSettings
 
   public void setHotModuleReplacementEnabled(boolean enabled) {
     mPreferences.edit().putBoolean(PREFS_HOT_MODULE_REPLACEMENT_KEY, enabled).apply();
-  }
-
-  public boolean isReloadOnJSChangeEnabled() {
-    return mPreferences.getBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, false);
-  }
-
-  public void setReloadOnJSChangeEnabled(boolean enabled) {
-    mPreferences.edit().putBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, enabled).apply();
   }
 
   public boolean isElementInspectorEnabled() {

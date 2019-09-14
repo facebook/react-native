@@ -29,7 +29,6 @@ require('./ScrollViewTestModule');
 require('./ShareTestModule');
 require('./SwipeRefreshLayoutTestModule');
 require('./TextInputTestModule');
-require('./TimePickerDialogTestModule');
 
 // Define catalyst test apps used in integration tests
 const {AppRegistry} = require('react-native');
@@ -115,11 +114,6 @@ const apps = [
   {
     appKey: 'TestIdTestApp',
     component: () => require('./TestIdTestModule').TestIdTestApp,
-  },
-  {
-    appKey: 'TimePickerDialogTestApp',
-    component: () =>
-      require('./TimePickerDialogTestModule').TimePickerDialogTestApp,
   },
   {
     appKey: 'TouchBubblingTestAppModule',

@@ -47,7 +47,6 @@ public class RNTesterApplication extends Application implements ReactApplication
   public void onCreate() {
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik);
     super.onCreate();
-    SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this);
   }
 

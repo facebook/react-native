@@ -317,7 +317,7 @@ public class ReactInstanceManager {
     return new ArrayList<>(mPackages);
   }
 
-  private static void initializeSoLoaderIfNecessary(Context applicationContext) {
+  static void initializeSoLoaderIfNecessary(Context applicationContext) {
     // Call SoLoader.initialize here, this is required for apps that does not use exopackage and
     // does not use SoLoader for loading other native code except from the one used by React Native
     // This way we don't need to require others to have additional initialization code and to
@@ -716,7 +716,7 @@ public class ReactInstanceManager {
 
   /** Call this from {@link Activity#onConfigurationChanged()}. */
   @ThreadConfined(UI)
-  public void onConfigurationChanged(Configuration newConfig) {
+  public void onConfigurationChanged(@Nullable Configuration newConfig) {
     UiThreadUtil.assertOnUiThread();
 
     ReactContext currentContext = getCurrentReactContext();

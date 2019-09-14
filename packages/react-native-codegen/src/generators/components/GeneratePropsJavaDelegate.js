@@ -39,7 +39,7 @@ package com.facebook.react.viewmanagers;
 
 ::_IMPORTS_::
 
-public class ::_CLASSNAME_::<T extends ::_EXTEND_CLASSES_::, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ::_INTERFACE_CLASSNAME_::<T>> extends BaseViewManagerDelegate<T, U> {
+public class ::_CLASSNAME_::<T extends ::_EXTEND_CLASSES_::, U extends BaseViewManagerInterface<T> & ::_INTERFACE_CLASSNAME_::<T>> extends BaseViewManagerDelegate<T, U> {
   public ::_CLASSNAME_::(U viewManager) {
     super(viewManager);
   }
@@ -117,6 +117,10 @@ function getJavaValueForProp(
     }
     case 'StringEnumTypeAnnotation':
       return '(String) value';
+    case 'Int32EnumTypeAnnotation':
+      return `value == null ? ${
+        typeAnnotation.default
+      } : ((Double) value).intValue()`;
     default:
       (typeAnnotation: empty);
       throw new Error('Received invalid typeAnnotation');
@@ -225,8 +229,8 @@ function getDelegateImports(component) {
     imports.add('import com.facebook.react.bridge.ReadableArray;');
   }
   imports.add('import androidx.annotation.Nullable;');
-  imports.add('import com.facebook.react.uimanager.BaseViewManager;');
   imports.add('import com.facebook.react.uimanager.BaseViewManagerDelegate;');
+  imports.add('import com.facebook.react.uimanager.BaseViewManagerInterface;');
   imports.add('import com.facebook.react.uimanager.LayoutShadowNode;');
 
   return imports;

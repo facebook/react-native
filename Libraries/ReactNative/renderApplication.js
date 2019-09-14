@@ -15,7 +15,6 @@ import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 import PerformanceLoggerContext from '../Utilities/PerformanceLoggerContext';
 const React = require('react');
-const ReactNativeArchitectureIndicator = require('./ReactNativeArchitectureIndicator');
 
 const invariant = require('invariant');
 
@@ -36,11 +35,12 @@ function renderApplication<Props: Object>(
   const renderable = (
     <PerformanceLoggerContext.Provider
       value={scopedPerformanceLogger ?? GlobalPerformanceLogger}>
-      <AppContainer rootTag={rootTag} WrapperComponent={WrapperComponent}>
+      <AppContainer
+        rootTag={rootTag}
+        fabric={fabric}
+        showArchitectureIndicator={showArchitectureIndicator}
+        WrapperComponent={WrapperComponent}>
         <RootComponent {...initialProps} rootTag={rootTag} />
-        {showArchitectureIndicator === true ? (
-          <ReactNativeArchitectureIndicator fabric={!!fabric} />
-        ) : null}
       </AppContainer>
     </PerformanceLoggerContext.Provider>
   );

@@ -43,19 +43,19 @@ const EVENT_DEFINITION = `
 
   object_required: {
     boolean_required: boolean,
-  }
+  },
 
   object_optional_key?: {
     string_optional_key?: string,
-  }
+  },
 
   object_optional_value: ?{
     float_optional_value: ?Float,
-  }
+  },
 
   object_optional_both?: ?{
     int32_optional_both?: ?Int32,
-  }
+  },
 
   object_required_nested_2_layers: {
     object_optional_nested_1_layer?: ?{
@@ -65,7 +65,7 @@ const EVENT_DEFINITION = `
       float_optional_value: ?Float,
       int32_optional_both?: ?Int32,
     }
-  }
+  },
 `;
 
 const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS = `
@@ -242,6 +242,9 @@ type ModuleProps = $ReadOnly<{|
   enum_optional_key?: WithDefault<'small' | 'large', 'small'>,
   enum_optional_both?: WithDefault<'small' | 'large', 'small'>,
 
+  // Int enum props
+  int_enum_optional_key?: WithDefault<0 | 1, 0>,
+
   // Object props
   object_optional_key?: $ReadOnly<{| prop: string |}>,
   object_optional_both?: ?$ReadOnly<{| prop: string |}>,
@@ -393,6 +396,29 @@ type ModuleProps = $ReadOnly<{|
       array_object_optional_both: $ReadOnlyArray<$ReadOnly<{| prop?: ?string |}>>,
     |}>
   >,
+
+  // Nested array of array of object types
+  array_of_array_of_object_required: $ReadOnlyArray<
+    $ReadOnlyArray<
+      $ReadOnly<{|
+        prop: string,
+      |}>,
+    >,
+  >,
+
+  // Nested array of array of object types (in file)
+  array_of_array_of_object_required_in_file: $ReadOnlyArray<
+    $ReadOnlyArray<ObjectType>,
+  >,
+
+  // Nested array of array of object types (with spread)
+  array_of_array_of_object_required_with_spread: $ReadOnlyArray<
+    $ReadOnlyArray<
+      $ReadOnly<{|
+        ...ObjectType
+      |}>,
+    >,
+  >,
 |}>;
 
 export default (codegenNativeComponent<ModuleProps>(
@@ -500,7 +526,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 type DeepSpread = $ReadOnly<{|
   otherStringProp: string,
-|}>
+|}>;
 
 export type PropsInFile = $ReadOnly<{|
   ...DeepSpread,
@@ -511,11 +537,11 @@ export type PropsInFile = $ReadOnly<{|
 export type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 
-  ...PropsInFile
+  ...PropsInFile,
 
   localType: $ReadOnly<{|
     ...PropsInFile
-  |}>
+  |}>,
 
   localArr: $ReadOnlyArray<PropsInFile>
 |}>;
@@ -898,7 +924,7 @@ export type ModuleProps = $ReadOnly<{|
 
 type NativeType = NativeComponent<ModuleProps>;
 
-export type ScrollTo = (viewRef: React.ElementRef<NativeType>, y: Int, animated: Boolean) => Void
+export type ScrollTo = (viewRef: React.ElementRef<NativeType>, y: Int, animated: Boolean) => Void;
 
 interface NativeCommands {
   +scrollTo: ScrollTo;

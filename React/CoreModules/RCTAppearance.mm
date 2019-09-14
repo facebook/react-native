@@ -32,11 +32,12 @@ static NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
     });
 
     traitCollection = traitCollection ?: [UITraitCollection currentTraitCollection];
-    return appearances[@(traitCollection.userInterfaceStyle)] ?: nil;
+    return appearances[@(traitCollection.userInterfaceStyle)] ?: RCTAppearanceColorSchemeLight;
   }
 #endif
 
-  return nil;
+  // Default to light on older OS version - same behavior as Android.
+  return RCTAppearanceColorSchemeLight;
 }
 
 @interface RCTAppearance () <NativeAppearanceSpec>

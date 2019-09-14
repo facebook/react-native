@@ -432,6 +432,151 @@ export default (codegenNativeComponent<ModuleProps>(
 ): NativeComponent<ModuleProps>);
 `;
 
+const PROP_MIXED_ENUM = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  someProp?: WithDefault<'foo' | 1, 1>
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const PROP_ENUM_BOOLEAN = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  someProp?: WithDefault<false | true, false>
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const PROP_ARRAY_MIXED_ENUM = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  someProp?: WithDefault<$ReadOnlyArray<'foo' | 1>, 1>
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const PROP_ARRAY_ENUM_BOOLEAN = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  someProp?: WithDefault<$ReadOnlyArray<false | true>, false>
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
+const PROP_ARRAY_ENUM_INT = `
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
+
+const codegenNativeComponent = require('codegenNativeComponent');
+
+export type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+
+  someProp?: WithDefault<$ReadOnlyArray<0 | 1>, 0>
+|}>;
+
+export default (codegenNativeComponent<ModuleProps>(
+  'Module',
+): NativeComponent<ModuleProps>);
+`;
+
 module.exports = {
   COMMANDS_DEFINED_INLINE,
   COMMANDS_DEFINED_MULTIPLE_TIMES,
@@ -445,4 +590,9 @@ module.exports = {
   PROPS_CONFLICT_WITH_SPREAD_PROPS,
   PROPS_SPREAD_CONFLICTS_WITH_PROPS,
   PROP_NUMBER_TYPE,
+  PROP_MIXED_ENUM,
+  PROP_ENUM_BOOLEAN,
+  PROP_ARRAY_MIXED_ENUM,
+  PROP_ARRAY_ENUM_BOOLEAN,
+  PROP_ARRAY_ENUM_INT,
 };

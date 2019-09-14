@@ -55,11 +55,6 @@ public class DevSettingsModule extends BaseJavaModule {
   }
 
   @ReactMethod
-  public void setLiveReloadEnabled(boolean isLiveReloadEnabled) {
-    mDevSupportManager.setReloadOnJSChangeEnabled(isLiveReloadEnabled);
-  }
-
-  @ReactMethod
   public void setProfilingEnabled(boolean isProfilingEnabled) {
     mDevSupportManager.setFpsDebugEnabled(isProfilingEnabled);
   }

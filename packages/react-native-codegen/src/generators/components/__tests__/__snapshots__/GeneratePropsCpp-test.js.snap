@@ -30,7 +30,8 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     points(convertRawProp(rawProps, \\"points\\", sourceProps.points, {})),
     sizes(convertRawProp(rawProps, \\"sizes\\", sourceProps.sizes, {static_cast<ArrayPropsNativeComponentSizesMask>(ArrayPropsNativeComponentSizes::Small)})),
     object(convertRawProp(rawProps, \\"object\\", sourceProps.object, {})),
-    array(convertRawProp(rawProps, \\"array\\", sourceProps.array, {}))
+    array(convertRawProp(rawProps, \\"array\\", sourceProps.array, {})),
+    arrayOfArrayOfObject(convertRawProp(rawProps, \\"arrayOfArrayOfObject\\", sourceProps.arrayOfArrayOfObject, {}))
       {}
 
 } // namespace react
@@ -218,35 +219,6 @@ DoublePropNativeComponentProps::DoublePropNativeComponentProps(
 }
 `;
 
-exports[`GeneratePropsCpp can generate fixture ENUM_PROP 1`] = `
-Map {
-  "Props.cpp" => "
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-#include <react/components/ENUM_PROP/Props.h>
-#include <react/core/propsConversions.h>
-
-namespace facebook {
-namespace react {
-
-EnumPropsNativeComponentProps::EnumPropsNativeComponentProps(
-    const EnumPropsNativeComponentProps &sourceProps,
-    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
-
-    alignment(convertRawProp(rawProps, \\"alignment\\", sourceProps.alignment, {EnumPropsNativeComponentAlignment::Center}))
-      {}
-
-} // namespace react
-} // namespace facebook
-",
-}
-`;
-
 exports[`GeneratePropsCpp can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "Props.cpp" => "
@@ -390,6 +362,35 @@ ImagePropNativeComponentProps::ImagePropNativeComponentProps(
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
     thumbImage(convertRawProp(rawProps, \\"thumbImage\\", sourceProps.thumbImage, {}))
+      {}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsCpp can generate fixture INT32_ENUM_PROP 1`] = `
+Map {
+  "Props.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/INT32_ENUM_PROP/Props.h>
+#include <react/core/propsConversions.h>
+
+namespace facebook {
+namespace react {
+
+Int32EnumPropsNativeComponentProps::Int32EnumPropsNativeComponentProps(
+    const Int32EnumPropsNativeComponentProps &sourceProps,
+    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
+
+    maxInterval(convertRawProp(rawProps, \\"maxInterval\\", sourceProps.maxInterval, {Int32EnumPropsNativeComponentMaxInterval::MaxInterval0}))
       {}
 
 } // namespace react
@@ -571,6 +572,35 @@ PointPropNativeComponentProps::PointPropNativeComponentProps(
     const RawProps &rawProps): ViewProps(sourceProps, rawProps),
 
     startPoint(convertRawProp(rawProps, \\"startPoint\\", sourceProps.startPoint, {}))
+      {}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsCpp can generate fixture STRING_ENUM_PROP 1`] = `
+Map {
+  "Props.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/STRING_ENUM_PROP/Props.h>
+#include <react/core/propsConversions.h>
+
+namespace facebook {
+namespace react {
+
+StringEnumPropsNativeComponentProps::StringEnumPropsNativeComponentProps(
+    const StringEnumPropsNativeComponentProps &sourceProps,
+    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
+
+    alignment(convertRawProp(rawProps, \\"alignment\\", sourceProps.alignment, {StringEnumPropsNativeComponentAlignment::Center}))
       {}
 
 } // namespace react

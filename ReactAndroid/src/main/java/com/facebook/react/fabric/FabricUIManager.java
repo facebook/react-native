@@ -50,6 +50,7 @@ import com.facebook.react.fabric.mounting.mountitems.DispatchStringCommandMountI
 import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
+import com.facebook.react.fabric.mounting.mountitems.RemoveDeleteMultiMountItem;
 import com.facebook.react.fabric.mounting.mountitems.RemoveMountItem;
 import com.facebook.react.fabric.mounting.mountitems.SendAccessibilityEvent;
 import com.facebook.react.fabric.mounting.mountitems.UpdateEventEmitterMountItem;
@@ -282,6 +283,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @DoNotStrip
   @SuppressWarnings("unused")
+  private MountItem removeDeleteMultiMountItem(int[] metadata) {
+    return new RemoveDeleteMultiMountItem(metadata);
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
   private MountItem updateLayoutMountItem(
       int reactTag, int x, int y, int width, int height, int layoutDirection) {
     return new UpdateLayoutMountItem(reactTag, x, y, width, height, layoutDirection);
@@ -470,7 +477,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     long batchedExecutionStartTime = SystemClock.uptimeMillis();
     for (MountItem mountItem : mountItemsToDispatch) {
       if (DEBUG) {
-        FLog.d(TAG, "dispatchMountItems: Executing mountItem: " + mountItem);
+        // If a MountItem description is split across multiple lines, it's because it's a compound
+        // MountItem. Log each line separately.
+        String[] mountItemLines = mountItem.toString().split("\n");
+        for (String m : mountItemLines) {
+          FLog.d(TAG, "dispatchMountItems: Executing mountItem: " + m);
+        }
       }
       mountItem.execute(mMountingManager);
     }

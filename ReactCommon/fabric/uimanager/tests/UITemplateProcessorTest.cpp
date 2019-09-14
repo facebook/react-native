@@ -25,8 +25,7 @@ using namespace facebook::react;
 namespace facebook {
 namespace react {
 
-// TODO (T29441913): Codegen this app-specific implementation.
-ComponentRegistryFactory getDefaultComponentRegistryFactory() {
+static ComponentRegistryFactory getComponentRegistryFactory() {
   return [](const EventDispatcher::Weak &eventDispatcher,
             const ContextContainer::Shared &contextContainer) {
     auto registry = std::make_shared<ComponentDescriptorRegistry>();
@@ -85,7 +84,7 @@ TEST(UITemplateProcessorTest, testSimpleBytecode) {
   auto surfaceId = 11;
   auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
   auto componentDescriptorRegistry =
-      getDefaultComponentRegistryFactory()(eventDispatcher, nullptr);
+      getComponentRegistryFactory()(eventDispatcher, nullptr);
   auto nativeModuleRegistry = buildNativeModuleRegistry();
 
   auto bytecode = R"delim({"version":0.1,"commands":[
@@ -120,7 +119,7 @@ TEST(UITemplateProcessorTest, testConditionalBytecode) {
   auto surfaceId = 11;
   auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
   auto componentDescriptorRegistry =
-      getDefaultComponentRegistryFactory()(eventDispatcher, nullptr);
+      getComponentRegistryFactory()(eventDispatcher, nullptr);
   auto nativeModuleRegistry = buildNativeModuleRegistry();
 
   auto bytecode = R"delim({"version":0.1,"commands":[

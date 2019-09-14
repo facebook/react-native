@@ -8,14 +8,14 @@
 #import <React/RCTDevMenu.h>
 
 #import <React/RCTBridge+Private.h>
+#import <React/RCTBundleURLProvider.h>
+#import <React/RCTDefines.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTKeyCommands.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
-#import <React/RCTDefines.h>
-#import <React/RCTBundleURLProvider.h>
 
-#if RCT_DEV
+#if RCT_DEV_MENU
 
 #if RCT_ENABLE_INSPECTOR
 #import <React/RCTInspectorDevServerHelper.h>
@@ -34,14 +34,12 @@ NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 
 @end
 
-@implementation RCTDevMenuItem
-{
+@implementation RCTDevMenuItem {
   RCTDevMenuItemTitleBlock _titleBlock;
   dispatch_block_t _handler;
 }
 
-- (instancetype)initWithTitleBlock:(RCTDevMenuItemTitleBlock)titleBlock
-                           handler:(dispatch_block_t)handler
+- (instancetype)initWithTitleBlock:(RCTDevMenuItemTitleBlock)titleBlock handler:(dispatch_block_t)handler
 {
   if ((self = [super init])) {
     _titleBlock = [titleBlock copy];
@@ -50,17 +48,20 @@ NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
-+ (instancetype)buttonItemWithTitleBlock:(NSString *(^)(void))titleBlock handler:(dispatch_block_t)handler
++ (instancetype)buttonItemWithTitleBlock:(NSString * (^)(void))titleBlock handler:(dispatch_block_t)handler
 {
   return [[self alloc] initWithTitleBlock:titleBlock handler:handler];
 }
 
-+ (instancetype)buttonItemWithTitle:(NSString *)title
-                            handler:(dispatch_block_t)handler
++ (instancetype)buttonItemWithTitle:(NSString *)title handler:(dispatch_block_t)handler
 {
-  return [[self alloc] initWithTitleBlock:^NSString *{ return title; } handler:handler];
+  return [[self alloc]
+      initWithTitleBlock:^NSString * {
+        return title;
+      }
+                 handler:handler];
 }
 
 - (void)callHandler
@@ -80,14 +81,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @end
 
-typedef void(^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
+typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
 @interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating>
 
 @end
 
-@implementation RCTDevMenu
-{
+@implementation RCTDevMenu {
   UIAlertController *_actionSheet;
   NSMutableArray<RCTDevMenuItem *> *_extraMenuItems;
 }
@@ -155,7 +155,9 @@ RCT_EXPORT_MODULE()
 - (void)invalidate
 {
   _presentedItems = nil;
-  [_actionSheet dismissViewControllerAnimated:YES completion:^(void){}];
+  [_actionSheet dismissViewControllerAnimated:YES
+                                   completion:^(void){
+                                   }];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -169,7 +171,9 @@ RCT_EXPORT_MODULE()
 - (void)toggle
 {
   if (_actionSheet) {
-    [_actionSheet dismissViewControllerAnimated:YES completion:^(void){}];
+    [_actionSheet dismissViewControllerAnimated:YES
+                                     completion:^(void){
+                                     }];
     _actionSheet = nil;
   } else {
     [self show];
@@ -181,7 +185,7 @@ RCT_EXPORT_MODULE()
   return _actionSheet != nil;
 }
 
-- (void)addItem:(NSString *)title handler:(void(^)(void))handler
+- (void)addItem:(NSString *)title handler:(void (^)(void))handler
 {
   [self addItem:[RCTDevMenuItem buttonItemWithTitle:title handler:handler]];
 }
@@ -191,9 +195,11 @@ RCT_EXPORT_MODULE()
   [_extraMenuItems addObject:item];
 }
 
-- (void)setDefaultJSBundle {
+- (void)setDefaultJSBundle
+{
   [[RCTBundleURLProvider sharedSettings] resetToDefaults];
-  self->_bridge.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackResource:nil fallbackExtension:nil];
+  self->_bridge.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackResource:nil
+                                                                                fallbackExtension:nil];
   [self->_bridge reload];
 }
 
@@ -206,141 +212,182 @@ RCT_EXPORT_MODULE()
   __weak RCTDevSettings *devSettings = _bridge.devSettings;
   __weak RCTDevMenu *weakSelf = self;
 
-  [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Reload" handler:^{
-    [bridge reload];
-  }]];
+  [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Reload"
+                                               handler:^{
+                                                 [bridge reload];
+                                               }]];
 
   if (!devSettings.isProfilingEnabled) {
     if (!devSettings.isRemoteDebuggingAvailable) {
-      [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Debugger Unavailable" handler:^{
-        NSString *message = RCTTurboModuleEnabled() ?
-            @"Debugging is not currently supported when TurboModule is enabled." :
-            @"Include the RCTWebSocket library to enable JavaScript debugging.";
-        UIAlertController *alertController = [UIAlertController
-          alertControllerWithTitle:@"Debugger Unavailable"
-          message:message
-          preferredStyle:UIAlertControllerStyleAlert];
-        __weak typeof(alertController) weakAlertController = alertController;
-        [alertController addAction:
-        [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action){
-          [weakAlertController dismissViewControllerAnimated:YES completion:nil];
-        }]];
-        [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
-      }]];
+      [items
+          addObject:[RCTDevMenuItem
+                        buttonItemWithTitle:@"Debugger Unavailable"
+                                    handler:^{
+                                      NSString *message = RCTTurboModuleEnabled()
+                                          ? @"Debugging is not currently supported when TurboModule is enabled."
+                                          : @"Include the RCTWebSocket library to enable JavaScript debugging.";
+                                      UIAlertController *alertController =
+                                          [UIAlertController alertControllerWithTitle:@"Debugger Unavailable"
+                                                                              message:message
+                                                                       preferredStyle:UIAlertControllerStyleAlert];
+                                      __weak typeof(alertController) weakAlertController = alertController;
+                                      [alertController
+                                          addAction:[UIAlertAction actionWithTitle:@"OK"
+                                                                             style:UIAlertActionStyleDefault
+                                                                           handler:^(__unused UIAlertAction *action) {
+                                                                             [weakAlertController
+                                                                                 dismissViewControllerAnimated:YES
+                                                                                                    completion:nil];
+                                                                           }]];
+                                      [RCTPresentedViewController() presentViewController:alertController
+                                                                                 animated:YES
+                                                                               completion:NULL];
+                                    }]];
     } else {
-      [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-        if (devSettings.isNuclideDebuggingAvailable) {
-          return devSettings.isDebuggingRemotely ? @"Stop Chrome Debugger" : @"Debug with Chrome";
-        } else {
-          return devSettings.isDebuggingRemotely ? @"Stop Debugging" : @"Debug";
-        }
-      } handler:^{
-        devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
-      }]];
+      [items addObject:[RCTDevMenuItem
+                           buttonItemWithTitleBlock:^NSString * {
+                             if (devSettings.isNuclideDebuggingAvailable) {
+                               return devSettings.isDebuggingRemotely ? @"Stop Chrome Debugger" : @"Debug with Chrome";
+                             } else {
+                               return devSettings.isDebuggingRemotely ? @"Stop Debugging" : @"Debug";
+                             }
+                           }
+                           handler:^{
+                             devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
+                           }]];
     }
 
     if (devSettings.isNuclideDebuggingAvailable && !devSettings.isDebuggingRemotely) {
-      [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Debug with Nuclide" handler:^{
-  #if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC
-        [RCTInspectorDevServerHelper attachDebugger:@"ReactNative" withBundleURL:bridge.bundleURL withView: RCTPresentedViewController()];
-  #endif
-      }]];
+      [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Debug with Nuclide"
+                                                   handler:^{
+#if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC
+                                                     [RCTInspectorDevServerHelper
+                                                         attachDebugger:@"ReactNative"
+                                                          withBundleURL:bridge.bundleURL
+                                                               withView:RCTPresentedViewController()];
+#endif
+                                                   }]];
     }
   }
 
-  [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-    return devSettings.isElementInspectorShown ? @"Hide Inspector" : @"Show Inspector";
-  } handler:^{
-    [devSettings toggleElementInspector];
-  }]];
+  [items addObject:[RCTDevMenuItem
+                       buttonItemWithTitleBlock:^NSString * {
+                         return devSettings.isElementInspectorShown ? @"Hide Inspector" : @"Show Inspector";
+                       }
+                       handler:^{
+                         [devSettings toggleElementInspector];
+                       }]];
 
   if (devSettings.isHotLoadingAvailable) {
-    [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      // Previously known as "Hot Reloading". We won't use this term anymore.
-      return devSettings.isHotLoadingEnabled ? @"Disable Fast Refresh" : @"Enable Fast Refresh";
-    } handler:^{
-      devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled;
-    }]];
+    [items addObject:[RCTDevMenuItem
+                         buttonItemWithTitleBlock:^NSString * {
+                           // Previously known as "Hot Reloading". We won't use this term anymore.
+                           return devSettings.isHotLoadingEnabled ? @"Disable Fast Refresh" : @"Enable Fast Refresh";
+                         }
+                         handler:^{
+                           devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled;
+                         }]];
   }
 
   if (devSettings.isLiveReloadAvailable) {
-    [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-      return devSettings.isDebuggingRemotely
-        ? @"Systrace Unavailable"
-        : devSettings.isProfilingEnabled
-          ? @"Stop Systrace"
-          : @"Start Systrace";
-    } handler:^{
-      if (devSettings.isDebuggingRemotely) {
-        UIAlertController *alertController = [UIAlertController
-          alertControllerWithTitle:@"Systrace Unavailable"
-          message:@"Stop debugging to enable Systrace."
-          preferredStyle:UIAlertControllerStyleAlert];
-        __weak typeof(alertController) weakAlertController = alertController;
-        [alertController addAction:
-         [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action){
-          [weakAlertController dismissViewControllerAnimated:YES completion:nil];
-        }]];
-        [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
-      } else {
-        devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
-      }
-    }]];
+    [items addObject:[RCTDevMenuItem
+                         buttonItemWithTitleBlock:^NSString * {
+                           return devSettings.isDebuggingRemotely
+                               ? @"Systrace Unavailable"
+                               : devSettings.isProfilingEnabled ? @"Stop Systrace" : @"Start Systrace";
+                         }
+                         handler:^{
+                           if (devSettings.isDebuggingRemotely) {
+                             UIAlertController *alertController =
+                                 [UIAlertController alertControllerWithTitle:@"Systrace Unavailable"
+                                                                     message:@"Stop debugging to enable Systrace."
+                                                              preferredStyle:UIAlertControllerStyleAlert];
+                             __weak typeof(alertController) weakAlertController = alertController;
+                             [alertController
+                                 addAction:[UIAlertAction actionWithTitle:@"OK"
+                                                                    style:UIAlertActionStyleDefault
+                                                                  handler:^(__unused UIAlertAction *action) {
+                                                                    [weakAlertController
+                                                                        dismissViewControllerAnimated:YES
+                                                                                           completion:nil];
+                                                                  }]];
+                             [RCTPresentedViewController() presentViewController:alertController
+                                                                        animated:YES
+                                                                      completion:NULL];
+                           } else {
+                             devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
+                           }
+                         }]];
     // "Live reload" which refreshes on every edit was removed in favor of "Fast Refresh".
     // While native code for "Live reload" is still there, please don't add the option back.
     // See D15958697 for more context.
   }
 
-  [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
-    return @"Configure Bundler";
-  } handler:^{
-    UIAlertController * alertController = [UIAlertController alertControllerWithTitle: @"Configure Bundler"
-                                                                              message: @"Provide a custom bundler address, port, and entrypoint."
-                                                                       preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-      textField.placeholder = @"0.0.0.0";
-    }];
-    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-      textField.placeholder = @"8081";
-    }];
-    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-      textField.placeholder = @"index";
-    }];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Apply Changes" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action) {
-      NSArray * textfields = alertController.textFields;
-      UITextField * ipTextField = textfields[0];
-      UITextField * portTextField = textfields[1];
-      UITextField * bundleRootTextField = textfields[2];
-      NSString * bundleRoot = bundleRootTextField.text;
-      if(ipTextField.text.length == 0 && portTextField.text.length == 0) {
-        [weakSelf setDefaultJSBundle];
-        return;
-      }
-      NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
-      formatter.numberStyle = NSNumberFormatterDecimalStyle;
-      NSNumber *portNumber = [formatter numberFromString:portTextField.text];
-      if (portNumber == nil) {
-        portNumber = [NSNumber numberWithInt: RCT_METRO_PORT];
-      }
-      [RCTBundleURLProvider sharedSettings].jsLocation = [NSString stringWithFormat:@"%@:%d",
-                                                          ipTextField.text, portNumber.intValue];
-      __strong RCTBridge *strongBridge = bridge;
-      if (strongBridge) {
-        NSURL *bundleURL = bundleRoot.length
-          ? [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:bundleRoot fallbackResource:nil]
-          : [strongBridge.delegate sourceURLForBridge:strongBridge];
-        strongBridge.bundleURL = bundleURL;
-        [strongBridge reload];
-      }
-    }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Reset to Default" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action) {
-      [weakSelf setDefaultJSBundle];
-    }]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(__unused UIAlertAction *action) {
-      return;
-    }]];
-    [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
-  }]];
+  [items
+      addObject:[RCTDevMenuItem
+                    buttonItemWithTitleBlock:^NSString * {
+                      return @"Configure Bundler";
+                    }
+                    handler:^{
+                      UIAlertController *alertController = [UIAlertController
+                          alertControllerWithTitle:@"Configure Bundler"
+                                           message:@"Provide a custom bundler address, port, and entrypoint."
+                                    preferredStyle:UIAlertControllerStyleAlert];
+                      [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                        textField.placeholder = @"0.0.0.0";
+                      }];
+                      [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                        textField.placeholder = @"8081";
+                      }];
+                      [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                        textField.placeholder = @"index";
+                      }];
+                      [alertController
+                          addAction:[UIAlertAction
+                                        actionWithTitle:@"Apply Changes"
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(__unused UIAlertAction *action) {
+                                                  NSArray *textfields = alertController.textFields;
+                                                  UITextField *ipTextField = textfields[0];
+                                                  UITextField *portTextField = textfields[1];
+                                                  UITextField *bundleRootTextField = textfields[2];
+                                                  NSString *bundleRoot = bundleRootTextField.text;
+                                                  if (ipTextField.text.length == 0 && portTextField.text.length == 0) {
+                                                    [weakSelf setDefaultJSBundle];
+                                                    return;
+                                                  }
+                                                  NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+                                                  formatter.numberStyle = NSNumberFormatterDecimalStyle;
+                                                  NSNumber *portNumber =
+                                                      [formatter numberFromString:portTextField.text];
+                                                  if (portNumber == nil) {
+                                                    portNumber = [NSNumber numberWithInt:RCT_METRO_PORT];
+                                                  }
+                                                  [RCTBundleURLProvider sharedSettings].jsLocation = [NSString
+                                                      stringWithFormat:@"%@:%d", ipTextField.text, portNumber.intValue];
+                                                  __strong RCTBridge *strongBridge = bridge;
+                                                  if (strongBridge) {
+                                                    NSURL *bundleURL = bundleRoot.length
+                                                        ? [[RCTBundleURLProvider sharedSettings]
+                                                              jsBundleURLForBundleRoot:bundleRoot
+                                                                      fallbackResource:nil]
+                                                        : [strongBridge.delegate sourceURLForBridge:strongBridge];
+                                                    strongBridge.bundleURL = bundleURL;
+                                                    [strongBridge reload];
+                                                  }
+                                                }]];
+                      [alertController addAction:[UIAlertAction actionWithTitle:@"Reset to Default"
+                                                                          style:UIAlertActionStyleDefault
+                                                                        handler:^(__unused UIAlertAction *action) {
+                                                                          [weakSelf setDefaultJSBundle];
+                                                                        }]];
+                      [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                                                          style:UIAlertActionStyleCancel
+                                                                        handler:^(__unused UIAlertAction *action) {
+                                                                          return;
+                                                                        }]];
+                      [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
+                    }]];
 
   [items addObjectsFromArray:_extraMenuItems];
   return items;
@@ -353,12 +400,13 @@ RCT_EXPORT_METHOD(show)
   }
 
   NSString *bridgeDescription = _bridge.bridgeDescription;
-  NSString *description = bridgeDescription.length > 0
-    ? [NSString stringWithFormat:@"Running %@", bridgeDescription]
-    : nil;
+  NSString *description =
+      bridgeDescription.length > 0 ? [NSString stringWithFormat:@"Running %@", bridgeDescription] : nil;
 
   // On larger devices we don't have an anchor point for the action sheet
-  UIAlertControllerStyle style = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? UIAlertControllerStyleActionSheet : UIAlertControllerStyleAlert;
+  UIAlertControllerStyle style = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone
+      ? UIAlertControllerStyleActionSheet
+      : UIAlertControllerStyleAlert;
   _actionSheet = [UIAlertController alertControllerWithTitle:@"React Native Debug Menu"
                                                      message:description
                                               preferredStyle:style];
@@ -391,7 +439,8 @@ RCT_EXPORT_METHOD(show)
 
 #pragma mark - deprecated methods and properties
 
-#define WARN_DEPRECATED_DEV_MENU_EXPORT() RCTLogWarn(@"Using deprecated method %s, use RCTDevSettings instead", __func__)
+#define WARN_DEPRECATED_DEV_MENU_EXPORT() \
+  RCTLogWarn(@"Using deprecated method %s, use RCTDevSettings instead", __func__)
 
 - (void)setShakeToShow:(BOOL)shakeToShow
 {
@@ -409,13 +458,13 @@ RCT_EXPORT_METHOD(reload)
   [_bridge reload];
 }
 
-RCT_EXPORT_METHOD(debugRemotely:(BOOL)enableDebug)
+RCT_EXPORT_METHOD(debugRemotely : (BOOL)enableDebug)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
   _bridge.devSettings.isDebuggingRemotely = enableDebug;
 }
 
-RCT_EXPORT_METHOD(setProfilingEnabled:(BOOL)enabled)
+RCT_EXPORT_METHOD(setProfilingEnabled : (BOOL)enabled)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
   _bridge.devSettings.isProfilingEnabled = enabled;
@@ -426,18 +475,7 @@ RCT_EXPORT_METHOD(setProfilingEnabled:(BOOL)enabled)
   return _bridge.devSettings.isProfilingEnabled;
 }
 
-RCT_EXPORT_METHOD(setLiveReloadEnabled:(BOOL)enabled)
-{
-  WARN_DEPRECATED_DEV_MENU_EXPORT();
-  _bridge.devSettings.isLiveReloadEnabled = enabled;
-}
-
-- (BOOL)liveReloadEnabled
-{
-  return _bridge.devSettings.isLiveReloadEnabled;
-}
-
-RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
+RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
   _bridge.devSettings.isHotLoadingEnabled = enabled;
@@ -454,30 +492,49 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 
 @implementation RCTDevMenu
 
-- (void)show {}
-- (void)reload {}
-- (void)addItem:(NSString *)title handler:(dispatch_block_t)handler {}
-- (void)addItem:(RCTDevMenu *)item {}
-- (BOOL)isActionSheetShown { return NO; }
-+ (NSString *)moduleName { return @""; }
+- (void)show
+{
+}
+- (void)reload
+{
+}
+- (void)addItem:(NSString *)title handler:(dispatch_block_t)handler
+{
+}
+- (void)addItem:(RCTDevMenu *)item
+{
+}
+- (BOOL)isActionSheetShown
+{
+  return NO;
+}
++ (NSString *)moduleName
+{
+  return @"";
+}
 
 @end
 
 @implementation RCTDevMenuItem
 
-+ (instancetype)buttonItemWithTitle:(NSString *)title handler:(void(^)(void))handler {return nil;}
-+ (instancetype)buttonItemWithTitleBlock:(NSString * (^)(void))titleBlock
-                                 handler:(void(^)(void))handler {return nil;}
++ (instancetype)buttonItemWithTitle:(NSString *)title handler:(void (^)(void))handler
+{
+  return nil;
+}
++ (instancetype)buttonItemWithTitleBlock:(NSString * (^)(void))titleBlock handler:(void (^)(void))handler
+{
+  return nil;
+}
 
 @end
 
 #endif
 
-@implementation  RCTBridge (RCTDevMenu)
+@implementation RCTBridge (RCTDevMenu)
 
 - (RCTDevMenu *)devMenu
 {
-#if RCT_DEV
+#if RCT_DEV_MENU
   return [self moduleForClass:[RCTDevMenu class]];
 #else
   return nil;
