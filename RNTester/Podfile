@@ -9,12 +9,12 @@ end
 
 # Add Flipper Poods
 def flipper_pods()
-  flipperkit_version = '0.23.4'
+  flipperkit_version = '0.23.7'
   pod 'FlipperKit', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
-  pod 'FlipperKit/FlipperKitReactPlugin' '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitReactPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
 end
 
 # Post Install processing for Flipper
