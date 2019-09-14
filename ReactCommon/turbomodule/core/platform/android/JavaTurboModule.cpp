@@ -237,6 +237,9 @@ std::vector<jvalue> JavaTurboModule::convertJSIArgsToJNIArgs(
   auto jargs =
       std::vector<jvalue>(valueKind == PromiseKind ? count + 1 : count);
 
+  jclass booleanClass = nullptr;
+  jclass doubleClass = nullptr;
+
   for (unsigned int argIndex = 0; argIndex < count; argIndex += 1) {
     std::string type = methodArgTypes.at(argIndex);
 
@@ -283,7 +286,10 @@ std::vector<jvalue> JavaTurboModule::convertJSIArgsToJNIArgs(
             "number", argIndex, methodName, arg, &rt);
       }
 
-      jclass doubleClass = env->FindClass("java/lang/Double");
+      if (doubleClass == nullptr) {
+        doubleClass = env->FindClass("java/lang/Double");
+      }
+
       jmethodID doubleConstructor =
           env->GetMethodID(doubleClass, "<init>", "(D)V");
       jarg->l =
@@ -297,7 +303,10 @@ std::vector<jvalue> JavaTurboModule::convertJSIArgsToJNIArgs(
             "boolean", argIndex, methodName, arg, &rt);
       }
 
-      jclass booleanClass = env->FindClass("java/lang/Boolean");
+      if (booleanClass == nullptr) {
+        booleanClass = env->FindClass("java/lang/Boolean");
+      }
+
       jmethodID booleanConstructor =
           env->GetMethodID(booleanClass, "<init>", "(Z)V");
       jarg->l =
@@ -379,9 +388,33 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     const std::string &methodName,
     const std::string &methodSignature,
     const jsi::Value *args,
-    size_t count) {
+    size_t argCount) {
   JNIEnv *env = jni::Environment::current();
   auto instance = instance_.get();
+
+  /**
+   * To account for jclasses and other misc LocalReferences we create.
+   */
+  unsigned int buffer = 6;
+  /**
+   * For promises, we have to create a resolve fn, a reject fn, and a promise
+   * object. For normal returns, we just create the return object.
+   */
+  unsigned int maxReturnObjects = 3;
+  unsigned int estimatedLocalRefCount = argCount + maxReturnObjects + buffer;
+
+  /**
+   * This will push a new JNI stack frame for the LocalReferences in this
+   * function call. When the stack frame for invokeJavaMethod is popped,
+   * all LocalReferences are deleted.
+   *
+   * In total, there can be at most kJniLocalRefMax (= 512) Jni
+   * LocalReferences alive at a time. estimatedLocalRefCount is provided
+   * so that PushLocalFrame can throw an out of memory error when the total
+   * number of alive LocalReferences is estimatedLocalRefCount smaller than
+   * kJniLocalRefMax.
+   */
+  jni::JniLocalScope scope(env, estimatedLocalRefCount);
 
   jclass cls = env->GetObjectClass(instance);
   jmethodID methodID =
@@ -402,16 +435,13 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   std::vector<std::string> methodArgTypes =
       getMethodArgTypesFromSignature(methodSignature);
 
-  // Ensure all Java arguments created for the method invocation are released
-  // after the method call.
-  jni::JniLocalScope scope(env, valueKind == PromiseKind ? count + 1 : count);
   std::vector<jvalue> jargs = convertJSIArgsToJNIArgs(
       env,
       runtime,
       methodName,
       methodArgTypes,
       args,
-      count,
+      argCount,
       jsInvoker_,
       valueKind);
 
@@ -523,7 +553,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
           runtime,
           jsi::PropNameID::forAscii(runtime, "fn"),
           2,
-          [this, &jargs, count, instance, methodID, env](
+          [this, &jargs, argCount, instance, methodID, env](
               jsi::Runtime &runtime,
               const jsi::Value &thisVal,
               const jsi::Value *promiseConstructorArgs,
@@ -546,15 +576,17 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                               rejectJSIFn, runtime, jsInvoker_)
                               .release();
 
-            jclass cls =
+            jclass jPromiseImpl =
                 env->FindClass("com/facebook/react/bridge/PromiseImpl");
-            jmethodID constructor = env->GetMethodID(
-                cls,
+            jmethodID jPromiseImplConstructor = env->GetMethodID(
+                jPromiseImpl,
                 "<init>",
                 "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V");
-            jobject promise = env->NewObject(cls, constructor, resolve, reject);
 
-            jargs[count].l = promise;
+            jobject promise = env->NewObject(
+                jPromiseImpl, jPromiseImplConstructor, resolve, reject);
+
+            jargs[argCount].l = promise;
             env->CallVoidMethodA(instance, methodID, jargs.data());
 
             return jsi::Value::undefined();
