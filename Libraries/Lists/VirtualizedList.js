@@ -1077,8 +1077,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   componentDidUpdate(prevProps: Props) {
     const {data, extraData} = this.props;
     if (data !== prevProps.data || extraData !== prevProps.extraData) {
-      this._hasDataChangedSinceEndReached = true;
-
       // clear the viewableIndices cache to also trigger
       // the onViewableItemsChanged callback with the new data
       this._viewabilityTuples.forEach(tuple => {
@@ -1107,7 +1105,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _fillRateHelper: FillRateHelper;
   _frames = {};
   _footerLength = 0;
-  _hasDataChangedSinceEndReached = true;
   _hasDoneInitialScroll = false;
   _hasInteracted = false;
   _hasMore = false;
@@ -1137,6 +1134,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _totalCellsMeasured = 0;
   _updateCellsToRenderBatcher: Batchinator;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
+  _nextExpectedOnEndReachedOffset = 0;
 
   _captureScrollRef = ref => {
     this._scrollRef = ref;
@@ -1372,29 +1370,42 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _maybeCallOnEndReached() {
-    const {
-      data,
-      getItemCount,
-      onEndReached,
-      onEndReachedThreshold,
-    } = this.props;
-    const {contentLength, visibleLength, offset} = this._scrollMetrics;
-    const distanceFromEnd = contentLength - visibleLength - offset;
-    if (
-      onEndReached &&
-      this.state.last === getItemCount(data) - 1 &&
-      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.63 was deployed. To see the error delete this
-       * comment and run Flow. */
-      distanceFromEnd < onEndReachedThreshold * visibleLength &&
-      (this._hasDataChangedSinceEndReached ||
-        this._scrollMetrics.contentLength !== this._sentEndForContentLength)
-    ) {
-      // Only call onEndReached once for a given dataset + content length.
-      this._hasDataChangedSinceEndReached = false;
-      this._sentEndForContentLength = this._scrollMetrics.contentLength;
-      onEndReached({distanceFromEnd});
+    const {onEndReached, onEndReachedThreshold} = this.props;
+    if (!onEndReached) {
+      return;
     }
+
+    const {contentLength, visibleLength, offset, dOffset} = this._scrollMetrics;
+    // Scrolled in a direction that doesn't require a check,
+    // such as scrolling up in the vertical list
+    if (offset <= 0 || dOffset <= 0) {
+      return;
+    }
+
+    // contentLength did not change because no new data was added
+    if (contentLength === this._sentEndForContentLength) {
+      return;
+    }
+
+    const distanceFromEnd = contentLength - visibleLength - offset;
+
+    // $FlowFixMe
+    const minimumDistanceFromEnd = onEndReachedThreshold * visibleLength;
+    if (distanceFromEnd >= minimumDistanceFromEnd) {
+      return;
+    }
+
+    // Not as scrolling as expected after the last `onEndReached` call
+    if (
+      this._nextExpectedOnEndReachedOffset > 0 &&
+      offset < this._nextExpectedOnEndReachedOffset
+    ) {
+      return;
+    }
+
+    this._sentEndForContentLength = this._scrollMetrics.contentLength;
+    this._nextExpectedOnEndReachedOffset = offset + minimumDistanceFromEnd / 2;
+    onEndReached({distanceFromEnd});
   }
 
   _onContentSizeChange = (width: number, height: number) => {
