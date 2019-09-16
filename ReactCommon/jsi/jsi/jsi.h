@@ -347,7 +347,7 @@ class PropNameID : public Pointer {
   using Pointer::Pointer;
 
   PropNameID(Runtime& runtime, const PropNameID& other)
-      : PropNameID(runtime.clonePropNameID(other.ptr_)) {}
+      : Pointer(runtime.clonePropNameID(other.ptr_)) {}
 
   PropNameID(PropNameID&& other) = default;
   PropNameID& operator=(PropNameID&& other) = default;
