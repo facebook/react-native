@@ -250,6 +250,10 @@ void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {
   });
 }
 
+int64_t NativeToJsBridge::getPeakJsMemoryUsage() const noexcept {
+  return m_executor->getPeakJsMemoryUsage();
+}
+
 void NativeToJsBridge::destroy() {
   // All calls made through runOnExecutorQueue have an early exit if
   // m_destroyed is true. Setting this before the runOnQueueSync will cause

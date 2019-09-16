@@ -92,6 +92,13 @@ public:
 
   void handleMemoryPressure(int pressureLevel);
 
+   /**
+   * Returns the current peak memory usage due to the JavaScript
+   * execution environment in bytes. If the JavaScript execution
+   * environment does not track this information, return -1.
+   */
+  int64_t getPeakJsMemoryUsage() const noexcept;
+
   void invokeAsync(std::function<void()>&& func);
 
 private:

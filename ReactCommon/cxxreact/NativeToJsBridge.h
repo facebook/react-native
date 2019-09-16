@@ -85,6 +85,13 @@ public:
   void handleMemoryPressure(int pressureLevel);
 
   /**
+   * Returns the current peak memory usage due to m_executor's JavaScript
+   * execution environment in bytes. If m_executor does not track this
+   * information, return -1.
+   */
+  int64_t getPeakJsMemoryUsage() const noexcept;
+
+  /**
    * Synchronously tears down the bridge and the main executor.
    */
   void destroy();
