@@ -346,7 +346,6 @@ public class ReactScrollView extends ScrollView
 
   @Override
   public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
-    Log.e(getClass().toString(), "public override");
     // This is based on the Android ViewGroup implementation, modified to clip child rects
     // if overflow is set to ViewProps.HIDDEN. This effectively solves Issue #23870 which
     // appears to have been introduced by FLAG_CLIP_CHILDREN being forced false
