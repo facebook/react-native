@@ -273,4 +273,149 @@ describe('VirtualizedList', () => {
       }),
     );
   });
+
+  it('OnEndReached should not be called after initial rendering', () => {
+    const ITEM_HEIGHT = 100;
+    const APPENDED_ITEM_COUNT = 10;
+    const data = appendNewItems([], 10);
+    const onEndReached = jest.fn(function() {
+      appendNewItems(data, APPENDED_ITEM_COUNT);
+    });
+
+    const props = createPropsWithonEndReached(data, ITEM_HEIGHT, onEndReached);
+
+    const component = ReactTestRenderer.create(<VirtualizedList {...props} />);
+    const instance = component.getInstance();
+
+    const scroll = createScrollMethod(instance, ITEM_HEIGHT);
+    scroll(data, 0);
+
+    expect(onEndReached).not.toHaveBeenCalled();
+    expect(data.length).toBe(10);
+  });
+
+  it('OnEndReached should be called once after scrolling by 200', () => {
+    const ITEM_HEIGHT = 100;
+    const APPENDED_ITEM_COUNT = 10;
+    const data = appendNewItems([], 10);
+    const onEndReached = jest.fn(function() {
+      appendNewItems(data, APPENDED_ITEM_COUNT);
+    });
+
+    const props = createPropsWithonEndReached(data, ITEM_HEIGHT, onEndReached);
+
+    const component = ReactTestRenderer.create(<VirtualizedList {...props} />);
+    const instance = component.getInstance();
+
+    const scroll = createScrollMethod(instance, ITEM_HEIGHT);
+    scroll(data, 200);
+
+    expect(onEndReached).toHaveBeenCalledTimes(1);
+    expect(onEndReached).toHaveBeenLastCalledWith({
+      distanceFromEnd: 200,
+    });
+    expect(data.length).toBe(20);
+  });
+
+  it('OnEndReached should not be called twice in a short period while scrolling fast', () => {
+    const ITEM_HEIGHT = 100;
+    const APPENDED_ITEM_COUNT = 10;
+    const data = appendNewItems([], 10);
+    const onEndReached = jest.fn(function() {
+      appendNewItems(data, APPENDED_ITEM_COUNT);
+    });
+
+    const props = createPropsWithonEndReached(data, ITEM_HEIGHT, onEndReached);
+
+    const component = ReactTestRenderer.create(<VirtualizedList {...props} />);
+    const instance = component.getInstance();
+
+    const scroll = createScrollMethod(instance, ITEM_HEIGHT);
+    scroll(data, 200);
+    scroll(data, 300, 50);
+
+    expect(onEndReached).toHaveBeenCalledTimes(1);
+    expect(onEndReached).toHaveBeenLastCalledWith({
+      distanceFromEnd: 200,
+    });
+    expect(data.length).toBe(20);
+  });
+
+  it('OnEndReached should be called when required to load more items', () => {
+    const ITEM_HEIGHT = 100;
+    const APPENDED_ITEM_COUNT = 10;
+    const data = appendNewItems([], 10);
+    const onEndReached = jest.fn(function() {
+      appendNewItems(data, APPENDED_ITEM_COUNT);
+    });
+
+    const props = createPropsWithonEndReached(data, ITEM_HEIGHT, onEndReached);
+
+    const component = ReactTestRenderer.create(<VirtualizedList {...props} />);
+    const instance = component.getInstance();
+
+    const scroll = createScrollMethod(instance, ITEM_HEIGHT);
+    scroll(data, 200);
+    expect(onEndReached).toHaveBeenCalledTimes(1);
+    expect(data.length).toBe(20);
+
+    scroll(data, 1000);
+    expect(onEndReached).toHaveBeenCalledTimes(2);
+    expect(onEndReached).toHaveBeenLastCalledWith({
+      distanceFromEnd: 400,
+    });
+    expect(data.length).toBe(30);
+  });
 });
+
+function createPropsWithonEndReached(data, itemHeight, onEndReached) {
+  const props = {
+    data,
+    renderItem: ({item}) => <item value={item.key} />,
+    getItem: (items, index) => items[index],
+    getItemCount: items => items.length,
+    getItemLayout: (items, index) => ({
+      length: itemHeight,
+      offset: itemHeight * index,
+      index,
+    }),
+    onEndReached,
+  };
+
+  return props;
+}
+
+function appendNewItems(items, count) {
+  const nextId = (items.length > 0 ? items[items.length - 1].id : 0) + 1;
+
+  for (let loop = 1; loop <= count; loop++) {
+    const id = nextId + loop;
+    items.push({
+      id: id,
+      key: `k${id}`,
+    });
+  }
+
+  return items;
+}
+
+function createScrollMethod(instance, itemHeight) {
+  let scrollTimeStamp = 0;
+
+  return function scroll(items, y, delay = 1000) {
+    scrollTimeStamp += delay;
+
+    const nativeEvent = {
+      contentOffset: {y, x: 0},
+      layoutMeasurement: {width: 300, height: 600},
+      contentSize: {width: 300, height: items.length * itemHeight},
+      zoomScale: 1,
+      contentInset: {right: 0, top: 0, left: 0, bottom: 0},
+    };
+
+    instance._onScroll({
+      timeStamp: scrollTimeStamp,
+      nativeEvent,
+    });
+  };
+}
