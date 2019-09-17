@@ -10,7 +10,7 @@
 #import <React/RCTComponent.h>
 #import <React/RCTLayout.h>
 #import <React/RCTRootView.h>
-#import <Yoga/Yoga.h>
+#import <yoga/Yoga.h>
 
 @class RCTRootShadowView;
 @class RCTSparseArray;

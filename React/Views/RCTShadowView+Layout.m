@@ -7,7 +7,7 @@
 
 #import "RCTShadowView+Layout.h"
 
-#import <Yoga/Yoga.h>
+#import <yoga/Yoga.h>
 
 #import "RCTAssert.h"
 

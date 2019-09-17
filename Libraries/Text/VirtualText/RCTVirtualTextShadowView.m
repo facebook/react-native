@@ -8,7 +8,7 @@
 #import <React/RCTVirtualTextShadowView.h>
 
 #import <React/RCTShadowView+Layout.h>
-#import <Yoga/Yoga.h>
+#import <yoga/Yoga.h>
 
 #import <React/RCTRawTextShadowView.h>
 

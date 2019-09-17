@@ -7,7 +7,7 @@
 
 #import "RCTScrollContentShadowView.h"
 
-#import <Yoga/Yoga.h>
+#import <yoga/Yoga.h>
 
 #import "RCTUtils.h"
 
