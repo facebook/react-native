@@ -1134,7 +1134,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _totalCellsMeasured = 0;
   _updateCellsToRenderBatcher: Batchinator;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
-  _nextExpectedOnEndReachedOffset = 0;
 
   _captureScrollRef = ref => {
     this._scrollRef = ref;
@@ -1376,6 +1375,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
 
     const {contentLength, visibleLength, offset, dOffset} = this._scrollMetrics;
+
     // Scrolled in a direction that doesn't require a check,
     // such as scrolling up in the vertical list
     if (offset <= 0 || dOffset <= 0) {
@@ -1389,22 +1389,18 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
     const distanceFromEnd = contentLength - visibleLength - offset;
 
+    // If the distance is farther than can be seen on the screen
+    if (distanceFromEnd >= visibleLength) {
+      return;
+    }
+
     // $FlowFixMe
     const minimumDistanceFromEnd = onEndReachedThreshold * visibleLength;
     if (distanceFromEnd >= minimumDistanceFromEnd) {
       return;
     }
 
-    // Not as scrolling as expected after the last `onEndReached` call
-    if (
-      this._nextExpectedOnEndReachedOffset > 0 &&
-      offset < this._nextExpectedOnEndReachedOffset
-    ) {
-      return;
-    }
-
-    this._sentEndForContentLength = this._scrollMetrics.contentLength;
-    this._nextExpectedOnEndReachedOffset = offset + minimumDistanceFromEnd / 2;
+    this._sentEndForContentLength = contentLength;
     onEndReached({distanceFromEnd});
   }
 
