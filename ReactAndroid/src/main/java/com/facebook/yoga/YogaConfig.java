@@ -12,7 +12,7 @@ public class YogaConfig {
 
   public static int SPACING_TYPE = 1;
 
-  long mNativePointer;
+  private long mNativePointer;
   private YogaLogger mLogger;
   private YogaNodeCloneFunction mYogaNodeCloneFunction;
 
@@ -75,5 +75,9 @@ public class YogaConfig {
 
   public YogaLogger getLogger() {
     return mLogger;
+  }
+
+  long getNativePointer() {
+    return mNativePointer;
   }
 }
