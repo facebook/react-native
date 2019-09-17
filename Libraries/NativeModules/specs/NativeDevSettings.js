@@ -19,6 +19,7 @@ export interface Spec extends TurboModule {
   +setIsDebuggingRemotely: (isDebuggingRemotelyEnabled: boolean) => void;
   +setProfilingEnabled: (isProfilingEnabled: boolean) => void;
   +toggleElementInspector: () => void;
+  +addMenuItem: (title: string) => void;
 
   // iOS only.
   +setIsShakeToShowDevMenuEnabled: (enabled: boolean) => void;

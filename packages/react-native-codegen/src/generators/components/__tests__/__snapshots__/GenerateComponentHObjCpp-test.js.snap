@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
-  id<CommandNativeComponentViewProtocol> componentView,
+  id<RCTCommandNativeComponentViewProtocol> componentView,
   NSString const *commandName,
   NSArray const *args)
 {
@@ -125,9 +125,9 @@ RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
   }
 #endif
 
+  
 
-
-  [componentView flashScrollIndicators]
+  [componentView flashScrollIndicators];
   return;
 }
 
@@ -139,7 +139,7 @@ if ([commandName isEqualToString:@\\"allTypes\\"]) {
   }
 #endif
 
-#if RCT_DEBUG
+  #if RCT_DEBUG
   NSObject *arg0 = args[0];
   if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @\\"number\\", @\\"CommandNativeComponent\\", commandName, @\\"1st\\")) {
     return;
@@ -179,7 +179,7 @@ if ([commandName isEqualToString:@\\"allTypes\\"]) {
 #endif
   BOOL animated = [(NSNumber *)arg4 boolValue];
 
-  [componentView allTypes:x y:y z:z message:message animated:animated]
+  [componentView allTypes:x y:y z:z message:message animated:animated];
   return;
 }
 
@@ -212,7 +212,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
-  id<CommandNativeComponentViewProtocol> componentView,
+  id<RCTCommandNativeComponentViewProtocol> componentView,
   NSString const *commandName,
   NSArray const *args)
 {
@@ -224,7 +224,7 @@ RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
   }
 #endif
 
-#if RCT_DEBUG
+  #if RCT_DEBUG
   NSObject *arg0 = args[0];
   if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @\\"number\\", @\\"CommandNativeComponent\\", commandName, @\\"1st\\")) {
     return;
@@ -240,7 +240,7 @@ RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
 #endif
   NSInteger y = [(NSNumber *)arg1 intValue];
 
-  [componentView hotspotUpdate:x y:y]
+  [componentView hotspotUpdate:x y:y];
   return;
 }
 

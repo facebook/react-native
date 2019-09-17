@@ -36,7 +36,7 @@ import java.util.Map;
 @ReactModule(name = ReactDrawerLayoutManager.REACT_CLASS)
 public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout> {
 
-  protected static final String REACT_CLASS = "AndroidDrawerLayout";
+  public static final String REACT_CLASS = "AndroidDrawerLayout";
 
   public static final int OPEN_DRAWER = 1;
   public static final int CLOSE_DRAWER = 2;

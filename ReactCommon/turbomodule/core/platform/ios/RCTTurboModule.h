@@ -14,6 +14,7 @@
 #import <React/RCTModuleMethod.h>
 #import <ReactCommon/JSCallInvoker.h>
 #import <ReactCommon/TurboModule.h>
+#import <ReactCommon/TurboModuleUtils.h>
 #import <cxxreact/MessageQueueThread.h>
 #import <string>
 #import <unordered_map>
@@ -69,6 +70,11 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 
   BOOL hasMethodArgConversionSelector(NSString *methodName, int argIndex);
   SEL getMethodArgConversionSelector(NSString *methodName, int argIndex);
+
+  using PromiseInvocationBlock =
+      void (^)(jsi::Runtime &rt, RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper);
+  jsi::Value
+  createPromise(jsi::Runtime &runtime, std::shared_ptr<react::JSCallInvoker> jsInvoker, PromiseInvocationBlock invoke);
 };
 
 } // namespace react

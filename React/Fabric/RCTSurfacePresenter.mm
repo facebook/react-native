@@ -51,7 +51,6 @@ using namespace facebook::react;
 
 @implementation RCTSurfacePresenter {
   std::mutex _schedulerMutex;
-  std::mutex _contextContainerMutex;
   RCTScheduler
       *_Nullable _scheduler; // Thread-safe. Mutation of the instance variable is protected by `_schedulerMutex`.
   RCTMountingManager *_mountingManager; // Thread-safe.
@@ -59,6 +58,7 @@ using namespace facebook::react;
   RCTBridge *_bridge; // Unsafe. We are moving away from Bridge.
   RCTBridge *_batchedBridge;
   std::shared_ptr<const ReactNativeConfig> _reactNativeConfig;
+  ContextContainer::Shared _contextContainer;
   better::shared_mutex _observerListMutex;
   NSMutableArray<id<RCTSurfacePresenterObserver>> *_observers;
   RCTImageLoader *_imageLoader;
@@ -88,6 +88,8 @@ using namespace facebook::react;
       _reactNativeConfig = std::make_shared<const EmptyReactNativeConfig>();
     }
 
+    _contextContainer = std::make_shared<ContextContainer>();
+
     _observers = [NSMutableArray array];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -98,6 +100,8 @@ using namespace facebook::react;
                                              selector:@selector(handleJavaScriptDidLoadNotification:)
                                                  name:RCTJavaScriptDidLoadNotification
                                                object:_bridge];
+
+    [self _createScheduler];
   }
 
   return self;
@@ -118,10 +122,6 @@ using namespace facebook::react;
 - (void)registerSurface:(RCTFabricSurface *)surface
 {
   [_surfaceRegistry registerSurface:surface];
-}
-
-- (void)startSurface:(RCTFabricSurface *)surface
-{
   [self _startSurface:surface];
 }
 
@@ -186,13 +186,15 @@ using namespace facebook::react;
 
 #pragma mark - Private
 
-- (RCTScheduler *)_scheduler
+- (nullable RCTScheduler *)_scheduler
 {
   std::lock_guard<std::mutex> lock(_schedulerMutex);
+  return _scheduler;
+}
 
-  if (_scheduler) {
-    return _scheduler;
-  }
+- (void)_createScheduler
+{
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
 
   auto componentRegistryFactory = [factory = wrapManagedObject(self.componentViewFactory)](
                                       EventDispatcher::Weak const &eventDispatcher,
@@ -202,6 +204,8 @@ using namespace facebook::react;
   };
 
   auto runtimeExecutor = [self getRuntimeExecutor];
+
+  [self _updateContextContainerIfNeeded_DEPRECATED];
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = self.contextContainer;
@@ -218,11 +222,13 @@ using namespace facebook::react;
 
   _scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
   _scheduler.delegate = self;
-
-  return _scheduler;
 }
 
-@synthesize contextContainer = _contextContainer;
+- (void)_destroyScheduler
+{
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  _scheduler = nil;
+}
 
 - (RuntimeExecutor)getRuntimeExecutor
 {
@@ -250,16 +256,6 @@ using namespace facebook::react;
 
 - (ContextContainer::Shared)contextContainer
 {
-  std::lock_guard<std::mutex> lock(_contextContainerMutex);
-
-  if (_contextContainer) {
-    return _contextContainer;
-  }
-
-  _contextContainer = std::make_shared<ContextContainer>();
-
-  [self _updateContextContainerIfNeeded_DEPRECATED];
-
   return _contextContainer;
 }
 
@@ -409,34 +405,27 @@ using namespace facebook::react;
 
 - (void)handleBridgeWillReloadNotification:(NSNotification *)notification
 {
-  {
-    std::lock_guard<std::mutex> lock(_schedulerMutex);
-    if (!_scheduler) {
-      // Seems we are already in the realoding process.
-      return;
-    }
+  if (!self._scheduler) {
+    // Seems we are already in the reloading process.
+    return;
   }
 
   [self _stopAllSurfaces];
-
-  {
-    std::lock_guard<std::mutex> lock(_schedulerMutex);
-    _scheduler = nil;
-  }
+  [self _destroyScheduler];
 }
 
 - (void)handleJavaScriptDidLoadNotification:(NSNotification *)notification
 {
   RCTBridge *bridge = notification.userInfo[@"bridge"];
-  if (bridge != _batchedBridge) {
-    _batchedBridge = bridge;
-
-    // Some of the injected dependencies are tight to a particular instance of Bridge,
-    // so they need to be reinjected.
-    [self _updateContextContainerIfNeeded_DEPRECATED];
-
-    [self _startAllSurfaces];
+  if (bridge == _batchedBridge) {
+    // Nothing really changed.
+    return;
   }
+
+  _batchedBridge = bridge;
+
+  [self _createScheduler];
+  [self _startAllSurfaces];
 }
 
 @end

@@ -14,6 +14,7 @@
 #import <react/core/ReactPrimitives.h>
 #import <react/uimanager/ComponentDescriptorProviderRegistry.h>
 
+#import "RCTARTSurfaceViewComponentView.h"
 #import "RCTActivityIndicatorViewComponentView.h"
 #import "RCTImageComponentView.h"
 #import "RCTModalHostViewComponentView.h"
@@ -49,6 +50,7 @@ using namespace facebook::react;
   [componentViewFactory registerComponentViewClass:[RCTSwitchComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTUnimplementedNativeComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTModalHostViewComponentView class]];
+  [componentViewFactory registerComponentViewClass:[RCTARTSurfaceViewComponentView class]];
 
   return componentViewFactory;
 }

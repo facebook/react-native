@@ -36,7 +36,7 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
       const std::string &methodName,
       const std::string &methodSignature,
       const jsi::Value *args,
-      size_t count);
+      size_t argCount);
 
   /**
    * This dtor must be called from the JS Thread, since it accesses
