@@ -102,7 +102,7 @@ public class EventDispatcher implements LifecycleEventListener {
   public EventDispatcher(ReactApplicationContext reactContext) {
     mReactContext = reactContext;
     mReactContext.addLifecycleEventListener(this);
-    mReactEventEmitter = new ReactEventEmitter();
+    mReactEventEmitter = new ReactEventEmitter(mReactContext);
   }
 
   /** Sends the given Event to JS, coalescing eligible events if JS is backed up. */
