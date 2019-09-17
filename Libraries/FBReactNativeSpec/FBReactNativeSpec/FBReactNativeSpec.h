@@ -743,6 +743,7 @@ namespace facebook {
 - (void)setIsDebuggingRemotely:(BOOL)isDebuggingRemotelyEnabled;
 - (void)setProfilingEnabled:(BOOL)isProfilingEnabled;
 - (void)toggleElementInspector;
+- (void)addMenuItem:(NSString *)title;
 - (void)setIsShakeToShowDevMenuEnabled:(BOOL)enabled;
 
 @end
