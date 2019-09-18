@@ -528,6 +528,7 @@ jobs:
     steps:
       - restore_cache_checkout:
           checkout_type: android
+      - run_yarn
 
       # Validate if ReactAndroid builds with Gradle
       - run:
