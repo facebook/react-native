@@ -471,14 +471,14 @@ fb_native.android_prebuilt_aar(
 # Remote files
 fb_native.remote_file(
     name = "annotation.jar",
-    sha1 = "2dfd8f6b2a8fc466a1ae4e329fb79cd580f6393f",
-    url = "mvn:androidx.annotation:annotation:jar:1.0.1",
+    sha1 = "e3a6fb2f40e3a3842e6b7472628ba4ce416ea4c8",
+    url = "mvn:androidx.annotation:annotation:jar:1.1.0",
 )
 
 fb_native.remote_file(
     name = "appcompat-binary-aar",
-    sha1 = "002533a36c928bb27a3cc6843a25f83754b3c3ae",
-    url = "mvn:androidx.appcompat:appcompat:aar:1.0.2",
+    sha1 = "351d3409fe51f3d862bd2b1bcc0f3b6ded29460e",
+    url = "mvn:androidx.appcompat:appcompat:aar:1.1.0",
 )
 
 fb_native.remote_file(
@@ -489,20 +489,20 @@ fb_native.remote_file(
 
 fb_native.remote_file(
     name = "collection-binary.jar",
-    sha1 = "42858b26cafdaa69b6149f45dfc2894007bc2c7a",
-    url = "mvn:androidx.collection:collection:jar:1.0.0",
+    sha1 = "1f27220b47669781457de0d600849a5de0e89909",
+    url = "mvn:androidx.collection:collection:jar:1.1.0",
 )
 
 fb_native.remote_file(
     name = "core-binary-aar",
-    sha1 = "263deba7f9c24bd0cefb93c0aaaf402cc50828ee",
-    url = "mvn:androidx.core:core:aar:1.0.1",
+    sha1 = "b9addd897d6b9c8634fe789bdb82f993171432ae",
+    url = "mvn:androidx.core:core:aar:1.1.0",
 )
 
 fb_native.remote_file(
     name = "core-common-binary.jar",
-    sha1 = "bb21b9a11761451b51624ac428d1f1bb5deeac38",
-    url = "mvn:androidx.arch.core:core-common:jar:2.0.0",
+    sha1 = "b3152fc64428c9354344bd89848ecddc09b6f07e",
+    url = "mvn:androidx.arch.core:core-common:jar:2.1.0",
 )
 
 fb_native.remote_file(
@@ -543,8 +543,8 @@ fb_native.remote_file(
 
 fb_native.remote_file(
     name = "fragment-binary-aar",
-    sha1 = "0b40f6a2ae814f72d1e71a5df6dc1283c00cd52f",
-    url = "mvn:androidx.fragment:fragment:aar:1.0.0",
+    sha1 = "5f9efc7569e651415a0958d6b3e6226ef2825c24",
+    url = "mvn:androidx.fragment:fragment:aar:1.1.0",
 )
 
 fb_native.remote_file(
@@ -567,8 +567,8 @@ fb_native.remote_file(
 
 fb_native.remote_file(
     name = "lifecycle-common-binary.jar",
-    sha1 = "e070ffae07452331bc5684734fce6831d531785c",
-    url = "mvn:androidx.lifecycle:lifecycle-common:jar:2.0.0",
+    sha1 = "c67e7807d9cd6c329b9d0218b2ec4e505dd340b7",
+    url = "mvn:androidx.lifecycle:lifecycle-common:jar:2.1.0",
 )
 
 fb_native.remote_file(
@@ -585,14 +585,14 @@ fb_native.remote_file(
 
 fb_native.remote_file(
     name = "lifecycle-runtime-binary-aar",
-    sha1 = "ea27e9e79e9a0fbedfa4dbbef5ddccf0e1d9d73f",
-    url = "mvn:androidx.lifecycle:lifecycle-runtime:aar:2.0.0",
+    sha1 = "24af6c5162c83b5bf073e16608fd87821422fe48",
+    url = "mvn:androidx.lifecycle:lifecycle-runtime:aar:2.1.0",
 )
 
 fb_native.remote_file(
     name = "lifecycle-viewmodel-binary-aar",
-    sha1 = "6417c576c458137456d996914c50591e7f4acc24",
-    url = "mvn:androidx.lifecycle:lifecycle-viewmodel:aar:2.0.0",
+    sha1 = "682d06cc95e0632efdb9cfcc18828840ac941148",
+    url = "mvn:androidx.lifecycle:lifecycle-viewmodel:aar:2.1.0",
 )
 
 fb_native.remote_file(
@@ -627,8 +627,8 @@ fb_native.remote_file(
 
 fb_native.remote_file(
     name = "vectordrawable-binary-aar",
-    sha1 = "33d1eb71849dffbad12add134a25eb63cad4a1eb",
-    url = "mvn:androidx.vectordrawable:vectordrawable:aar:1.0.1",
+    sha1 = "eac7a364fff534035a2a6cb17770a1288315f69f",
+    url = "mvn:androidx.vectordrawable:vectordrawable:aar:1.1.0",
 )
 
 fb_native.remote_file(
@@ -639,8 +639,8 @@ fb_native.remote_file(
 
 fb_native.remote_file(
     name = "versionedparcelable-binary-aar",
-    sha1 = "52718baf7e51ccba173b468a1034caba8140752e",
-    url = "mvn:androidx.versionedparcelable:versionedparcelable:aar:1.0.0",
+    sha1 = "91acce73e00a17b524f6697f6c3893efb8ea349f",
+    url = "mvn:androidx.versionedparcelable:versionedparcelable:aar:1.1.0",
 )
 
 fb_native.remote_file(
