@@ -211,6 +211,11 @@ def findNdkBuildFullPath() {
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
 
+    if (System.getenv("ANDROID_NDK") != null) {
+        def ndkDir = System.getenv("ANDROID_NDK")
+        return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+    }
+
     def ndkDir = android.ndkDirectory ? android.ndkDirectory.absolutePath : null
 
     if (ndkDir) {
