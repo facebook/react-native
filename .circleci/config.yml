@@ -630,7 +630,7 @@ workflows:
           requires:
             - setup_android
       - test_android_gradle:
-          required:
+          requires:
             - setup_android
       - test_ios:
           requires:
