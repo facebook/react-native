@@ -533,7 +533,7 @@ jobs:
       # Validate if ReactAndroid builds with Gradle
       - run:
           name: Build ReactAndroid with Gradle
-          command: ./gradlew ReactAndroid:assemble
+          command: ./gradlew ReactAndroid:lint
 
   # -------------------------
   #    JOBS: Test Docker
