@@ -523,6 +523,14 @@ jobs:
       - store_test_results:
           path: ~/reports/junit
 
+  test_android_gradle:
+    executor: reactnativeandroid
+    steps:
+      # Validate if ReactAndroid builds with Gradle
+      - run:
+          name: Build ReactAndroid with Gradle
+          command: ./gradlew ReactAndroid:assemble
+
   # -------------------------
   #    JOBS: Test Docker
   # -------------------------
