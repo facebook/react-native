@@ -210,14 +210,14 @@ def findNdkBuildFullPath() {
         def ndkDir = property("ndk.path")
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
+
     if (System.getenv("ANDROID_NDK") != null) {
         def ndkDir = System.getenv("ANDROID_NDK")
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
-    def ndkDir = android.hasProperty("plugin") ? android.plugin.ndkFolder :
-            plugins.getPlugin("com.android.library").hasProperty("sdkHandler") ?
-                    plugins.getPlugin("com.android.library").sdkHandler.getNdkFolder() :
-                    android.ndkDirectory ? android.ndkDirectory.absolutePath : null
+
+    def ndkDir = android.ndkDirectory ? android.ndkDirectory.absolutePath : null
+
     if (ndkDir) {
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
@@ -253,7 +253,8 @@ def getNdkBuildFullPath() {
     return ndkBuildFullPath
 }
 
-task buildReactNdkLib(dependsOn: [prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
+def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
+    dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog)
     inputs.dir("$projectDir/../ReactCommon")
     inputs.dir("src/main/jni")
     inputs.dir("src/main/java/com/facebook/react/modules/blob")
@@ -272,7 +273,7 @@ task buildReactNdkLib(dependsOn: [prepareJSC, prepareHermes, prepareBoost, prepa
     )
 }
 
-task cleanReactNdkLib(type: Exec) {
+def cleanReactNdkLib = tasks.register("cleanReactNdkLib", Exec) {
     ignoreExitValue(true)
     errorOutput(new ByteArrayOutputStream())
     commandLine(getNdkBuildFullPath(),
@@ -287,14 +288,16 @@ task cleanReactNdkLib(type: Exec) {
     }
 }
 
-task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
+def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
+    dependsOn(buildReactNdkLib)
     from("$buildDir/react-ndk/all")
     into("$buildDir/react-ndk/exported")
     exclude("**/libjsc.so")
     exclude("**/libhermes.so")
 }
 
-task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
+def packageReactNdkLibsForBuck = tasks.register("packageReactNdkLibsForBuck", Copy) {
+    dependsOn(packageReactNdkLibs)
     from("$buildDir/react-ndk/exported")
     into("src/main/jni/prebuilt/lib")
 }
