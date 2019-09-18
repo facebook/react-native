@@ -1,5 +1,17 @@
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 
+fb_native.android_library(
+    name = "activity",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":annotation",
+        ":core",
+        ":lifecycle-runtime",
+        ":lifecycle-viewmodel",
+        ":savedstate",
+    ],
+)
+
 fb_native.prebuilt_jar(
     name = "annotation",
     binary_jar = ":annotation.jar",
@@ -125,6 +137,7 @@ fb_native.android_library(
     name = "fragment",
     visibility = ["PUBLIC"],
     exported_deps = [
+        ":activity",
         ":annotation",
         ":core",
         ":fragment-binary",
@@ -260,6 +273,17 @@ fb_native.android_library(
 )
 
 fb_native.android_library(
+    name = "savedstate",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":savedstate-binary",
+        ":annotation",
+        ":core-common",
+        ":lifecycle-common",
+    ],
+)
+
+fb_native.android_library(
     name = "slidingpanelayout",
     visibility = ["PUBLIC"],
     exported_deps = [
@@ -323,6 +347,11 @@ fb_native.android_library(
 )
 
 # Internal targets
+fb_native.android_prebuilt_aar(
+    name = "activity-binary",
+    aar = ":activity-binary-aar",
+)
+
 fb_native.android_prebuilt_aar(
     name = "appcompat-binary",
     aar = ":appcompat-binary-aar",
@@ -439,6 +468,11 @@ fb_native.android_prebuilt_aar(
 )
 
 fb_native.android_prebuilt_aar(
+    name = "savedstate-binary",
+    aar = ":savedstate-binary-aar",
+)
+
+fb_native.android_prebuilt_aar(
     name = "slidingpanelayout-binary",
     aar = ":slidingpanelayout-binary-aar",
 )
@@ -469,6 +503,11 @@ fb_native.android_prebuilt_aar(
 )
 
 # Remote files
+fb_native.remote_file(
+    name = "activity-binary-aar",
+    sha1 = "e3a6fb2f40e3a3842e6b7472628ba4ce416ea4c8",
+    url = "mvn:androidx.activity:activity:aar:1.0.0",
+)
 fb_native.remote_file(
     name = "annotation.jar",
     sha1 = "e3a6fb2f40e3a3842e6b7472628ba4ce416ea4c8",
@@ -611,6 +650,12 @@ fb_native.remote_file(
     name = "print-binary-aar",
     sha1 = "7722094652c48ebe27acc94d74a55e759e4635ff",
     url = "mvn:androidx.print:print:aar:1.0.0",
+)
+
+fb_native.remote_file(
+    name = "savedstate-binary-aar",
+    sha1 = "6d39721808cd67e3d3d0d60f194907615fcaa69c",
+    url = "mvn:androidx.savedstate:savedstate:aar:1.0.0",
 )
 
 fb_native.remote_file(
