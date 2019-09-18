@@ -7,10 +7,8 @@ package com.facebook.react.views.scroll;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.HorizontalScrollView;
 import androidx.core.view.ViewCompat;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
