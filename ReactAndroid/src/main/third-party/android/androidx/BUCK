@@ -542,7 +542,7 @@ fb_native.remote_file(
 
 fb_native.remote_file(
     name = "appcompat-resources-binary-aar",
-    sha1 = "351d3409fe51f3d862bd2b1bcc0f3b6ded29460e",
+    sha1 = "a573b2ab146d686244721ef1038d08043f18c67f",
     url = "mvn:androidx.appcompat:appcompat-resources:aar:1.1.0",
 )
 
