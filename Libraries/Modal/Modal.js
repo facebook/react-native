@@ -169,13 +169,10 @@ class Modal extends React.Component<Props> {
     };
   }
 
-  componentWillUnmount() {
-    if (this.props.onDismiss != null) {
+  UNSAFE_componentWillReceiveProps(nextProps: Props) {
+    if (!nextProps.visible && this.props.visible && this.props.onDismiss) {
       this.props.onDismiss();
     }
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps: Props) {
     Modal._confirmProps(nextProps);
   }
 
