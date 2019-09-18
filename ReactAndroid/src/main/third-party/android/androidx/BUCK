@@ -25,11 +25,25 @@ fb_native.android_library(
     exported_deps = [
         ":annotation",
         ":appcompat-binary",
+        ":appcompat-resources",
         ":collection",
         ":core",
         ":cursoradapter",
         ":fragment",
         ":legacy-support-core-utils",
+        ":vectordrawable",
+        ":vectordrawable-animated",
+    ],
+)
+
+fb_native.android_library(
+    name = "appcompat-resources",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":appcompat-resources-binary",
+        ":annotation",
+        ":collection",
+        ":core",
         ":vectordrawable",
         ":vectordrawable-animated",
     ],
@@ -359,6 +373,11 @@ fb_native.android_prebuilt_aar(
 )
 
 fb_native.android_prebuilt_aar(
+    name = "appcompat-resources-binary",
+    aar = ":appcompat-resources-binary-aar",
+)
+
+fb_native.android_prebuilt_aar(
     name = "asynclayoutinflater-binary",
     aar = ":asynclayoutinflater-binary-aar",
 )
@@ -519,6 +538,12 @@ fb_native.remote_file(
     name = "appcompat-binary-aar",
     sha1 = "351d3409fe51f3d862bd2b1bcc0f3b6ded29460e",
     url = "mvn:androidx.appcompat:appcompat:aar:1.1.0",
+)
+
+fb_native.remote_file(
+    name = "appcompat-resources-binary-aar",
+    sha1 = "351d3409fe51f3d862bd2b1bcc0f3b6ded29460e",
+    url = "mvn:androidx.appcompat:appcompat-resources:aar:1.1.0",
 )
 
 fb_native.remote_file(
