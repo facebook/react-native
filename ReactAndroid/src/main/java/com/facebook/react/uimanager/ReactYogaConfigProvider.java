@@ -7,6 +7,7 @@
 package com.facebook.react.uimanager;
 
 import com.facebook.yoga.YogaConfig;
+import com.facebook.yoga.YogaConfigFactory;
 
 public class ReactYogaConfigProvider {
 
@@ -14,7 +15,7 @@ public class ReactYogaConfigProvider {
 
   public static YogaConfig get() {
     if (YOGA_CONFIG == null) {
-      YOGA_CONFIG = new YogaConfig();
+      YOGA_CONFIG = YogaConfigFactory.create();
       YOGA_CONFIG.setPointScaleFactor(0f);
       YOGA_CONFIG.setUseLegacyStretchBehaviour(true);
     }

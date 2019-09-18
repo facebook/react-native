@@ -16,6 +16,8 @@
 #import "RCTProfile.h"
 #import "RCTUtils.h"
 
+#import <React/RCTDevMenu.h>
+
 static NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
 static NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
 static NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
@@ -111,8 +113,6 @@ static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 @implementation RCTDevSettings
 
-@synthesize bridge = _bridge;
-
 RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
@@ -152,8 +152,7 @@ RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  RCTAssert(_bridge == nil, @"RCTDevSettings module should not be reused");
-  _bridge = bridge;
+  [super setBridge:bridge];
 
 #if ENABLE_PACKAGER_CONNECTION
   RCTBridge *__weak weakBridge = bridge;
@@ -197,6 +196,11 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"didPressMenuItem"];
+}
+
 - (void)_updateSettingWithValue:(id)value forKey:(NSString *)key
 {
   [_dataSource updateSettingWithValue:value forKey:key];
@@ -210,7 +214,7 @@ RCT_EXPORT_MODULE()
 - (BOOL)isNuclideDebuggingAvailable
 {
 #if RCT_ENABLE_INSPECTOR
-  return _bridge.isInspectable;
+  return self.bridge.isInspectable;
 #else
   return false;
 #endif // RCT_ENABLE_INSPECTOR
@@ -227,12 +231,12 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)isHotLoadingAvailable
 {
-  return _bridge.bundleURL && !_bridge.bundleURL.fileURL; // Only works when running from server
+  return self.bridge.bundleURL && !self.bridge.bundleURL.fileURL; // Only works when running from server
 }
 
 RCT_EXPORT_METHOD(reload)
 {
-  [_bridge reload];
+  [self.bridge reload];
 }
 
 RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled : (BOOL)enabled)
@@ -285,10 +289,10 @@ RCT_EXPORT_METHOD(setProfilingEnabled : (BOOL)enabled)
   BOOL enabled = self.isProfilingEnabled;
   if (self.isHotLoadingAvailable && enabled != RCTProfileIsProfiling()) {
     if (enabled) {
-      [_bridge startProfiling];
+      [self.bridge startProfiling];
     } else {
-      [_bridge stopProfiling:^(NSData *logData) {
-        RCTProfileSendResult(self->_bridge, @"systrace", logData);
+      [self.bridge stopProfiling:^(NSData *logData) {
+        RCTProfileSendResult(self.bridge, @"systrace", logData);
       }];
     }
   }
@@ -302,9 +306,9 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
       if (enabled) {
-        [_bridge enqueueJSCall:@"HMRClient" method:@"enable" args:@[] completion:NULL];
+        [self.bridge enqueueJSCall:@"HMRClient" method:@"enable" args:@[] completion:NULL];
       } else {
-        [_bridge enqueueJSCall:@"HMRClient" method:@"disable" args:@[] completion:NULL];
+        [self.bridge enqueueJSCall:@"HMRClient" method:@"disable" args:@[] completion:NULL];
       }
 #pragma clang diagnostic pop
     }
@@ -329,6 +333,14 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   }
 }
 
+RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
+{
+  __weak __typeof(self) weakSelf = self;
+  [self.bridge.devMenu addItem:[RCTDevMenuItem buttonItemWithTitle:title handler:^{
+    [weakSelf sendEventWithName:@"didPressMenuItem" body:@{@"title": title}];
+  }]];
+}
+
 - (BOOL)isElementInspectorShown
 {
   return [[self settingForKey:kRCTDevSettingIsInspectorShown] boolValue];
@@ -347,17 +359,17 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 - (void)setExecutorClass:(Class)executorClass
 {
   _executorClass = executorClass;
-  if (_bridge.executorClass != executorClass) {
+  if (self.bridge.executorClass != executorClass) {
     // TODO (6929129): we can remove this special case test once we have better
     // support for custom executors in the dev menu. But right now this is
     // needed to prevent overriding a custom executor with the default if a
     // custom executor has been set directly on the bridge
-    if (executorClass == Nil && _bridge.executorClass != objc_lookUpClass("RCTWebSocketExecutor")) {
+    if (executorClass == Nil && self.bridge.executorClass != objc_lookUpClass("RCTWebSocketExecutor")) {
       return;
     }
 
-    _bridge.executorClass = executorClass;
-    [_bridge reload];
+    self.bridge.executorClass = executorClass;
+    [self.bridge reload];
   }
 }
 
@@ -386,7 +398,7 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 
 - (void)jsLoaded:(NSNotification *)notification
 {
-  if (notification.userInfo[@"bridge"] != _bridge) {
+  if (notification.userInfo[@"bridge"] != self.bridge) {
     return;
   }
 

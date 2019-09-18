@@ -195,6 +195,8 @@ static RCTResponseSenderBlock convertJSIFunctionToCallback(
       strongWrapper2->callback().call(strongWrapper2->runtime(), (const jsi::Value *)args.data(), args.size());
       strongWrapper2->destroy();
     });
+
+    wrapperWasCalled = YES;
   };
 }
 

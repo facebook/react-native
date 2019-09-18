@@ -73,10 +73,6 @@ export type ScrollResponderType = {
 
   setNativeProps: $PropertyType<ScrollView, 'setNativeProps'>,
   scrollTo: $PropertyType<ScrollView, 'scrollTo'>,
-  scrollWithoutAnimationTo: $PropertyType<
-    ScrollView,
-    'scrollWithoutAnimationTo',
-  >,
   flashScrollIndicators: $PropertyType<ScrollView, 'flashScrollIndicators'>,
 
   ...typeof ScrollResponder.Mixin,
@@ -838,16 +834,6 @@ class ScrollView extends React.Component<Props, State> {
     this._scrollResponder.scrollResponderScrollToEnd({
       animated: animated,
     });
-  }
-
-  /**
-   * Deprecated, use `scrollTo` instead.
-   */
-  scrollWithoutAnimationTo(y: number = 0, x: number = 0) {
-    console.warn(
-      '`scrollWithoutAnimationTo` is deprecated. Use `scrollTo` instead',
-    );
-    this.scrollTo({x, y, animated: false});
   }
 
   /**

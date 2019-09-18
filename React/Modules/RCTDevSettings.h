@@ -7,6 +7,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTDefines.h>
+#import <React/RCTEventEmitter.h>
 
 @protocol RCTPackagerClientMethod;
 
@@ -29,7 +30,7 @@
 
 @end
 
-@interface RCTDevSettings : NSObject
+@interface RCTDevSettings : RCTEventEmitter
 
 - (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource;
 

@@ -35,4 +35,7 @@ public interface DeveloperSettings {
 
   /** @return Whether Start Sampling Profiler on App Start is enabled. */
   boolean isStartSamplingProfilerOnInit();
+
+  /** Add an item to the dev menu. */
+  void addMenuItem(String title);
 }

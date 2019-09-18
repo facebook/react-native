@@ -52,4 +52,7 @@ public class ReactSettingsForTests implements DeveloperSettings {
   public boolean isStartSamplingProfilerOnInit() {
     return false;
   }
+
+  @Override
+  public void addMenuItem(String title) {}
 }
