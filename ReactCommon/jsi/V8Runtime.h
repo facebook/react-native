@@ -43,8 +43,6 @@ namespace v8runtime {
     virtual void initialize(v8::Isolate* isolate, v8::Local<v8::Context> context, const char* context_name /*must be null terminated*/) = 0;
 
     virtual void waitForDebugger() = 0;
-
-    virtual ~InspectorInterface();
   };
 
   // This might change in future.

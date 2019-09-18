@@ -331,7 +331,7 @@ const TouchableWithoutFeedback = ((createReactClass({
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,
       clickable:
-      this.props.clickable !== false && this.props.onPress !== undefined,
+        this.props.clickable !== false && this.props.onPress !== undefined,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this
         .touchableHandleResponderTerminationRequest,

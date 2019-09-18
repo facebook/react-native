@@ -451,7 +451,9 @@ class TouchableMouseEvents extends React.Component<{}, $FlowFixMeState> {
         <View
           testID="touchable_feedback_mouse_events_console"
           style={styles.eventLogBox}>
-          {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
+          {this.state.eventLog.map((e, ii) => (
+            <Text key={ii}>{e}</Text>
+          ))}
         </View>
       </View>
     );

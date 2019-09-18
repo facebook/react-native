@@ -329,7 +329,7 @@ type AndroidViewProps = $ReadOnly<{|
 
   accessibilityNodeInfo?: AccessibilityNodeInfoProp, // TODO(android ISS)
 
-   /**
+  /**
    * TV next focus down (see documentation for the View component).
    *
    * @platform android
