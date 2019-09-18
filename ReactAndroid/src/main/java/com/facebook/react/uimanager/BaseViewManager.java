@@ -179,6 +179,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     final ReadableMap accessibilityState = (ReadableMap) view.getTag(R.id.accessibility_state);
     final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
     final List<String> contentDescription = new ArrayList<>();
+    final ReadableMap accessibilityValue = (ReadableMap) view.getTag(R.id.accessibility_value);
     if (accessibilityLabel != null) {
       contentDescription.add(accessibilityLabel);
     }
@@ -205,6 +206,12 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         }
       }
     }
+    if (accessibilityValue != null && accessibilityValue.hasKey("text")) {
+      final Dynamic text = accessibilityValue.getDynamic("text");
+      if (text != null && text.getType() == ReadableType.String) {
+        contentDescription.add(text.asString());
+      }
+    }
     if (accessibilityHint != null) {
       contentDescription.add(accessibilityHint);
     }
@@ -221,6 +228,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
 
     view.setTag(R.id.accessibility_actions, accessibilityActions);
+  }
+
+  @ReactProp(name = ViewProps.ACCESSIBILITY_VALUE)
+  public void setAccessibilityValue(T view, ReadableMap accessibilityValue) {
+    if (accessibilityValue == null) {
+      return;
+    }
+
+    view.setTag(R.id.accessibility_value, accessibilityValue);
+    if (accessibilityValue.hasKey("text")) {
+      updateViewContentDescription(view);
+    }
   }
 
   @Override

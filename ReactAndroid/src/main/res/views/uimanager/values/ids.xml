@@ -24,4 +24,7 @@
   <!--tag is used to store accessibilityActions tag-->
   <item type="id" name="accessibility_actions"/>
 
+  <!--tag is used to store accessibilityValue tag -->
+  <item type="id" name="accessibility_value"/>
+
 </resources>
