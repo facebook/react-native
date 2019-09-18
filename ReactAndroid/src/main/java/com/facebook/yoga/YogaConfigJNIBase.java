@@ -6,13 +6,10 @@
  */
 package com.facebook.yoga;
 
-import com.facebook.soloader.SoLoader;
-
 public abstract class YogaConfigJNIBase extends YogaConfig {
 
   protected long mNativePointer;
   private YogaLogger mLogger;
-  private YogaNodeCloneFunction mYogaNodeCloneFunction;
 
   private YogaConfigJNIBase(long nativePointer) {
     if (nativePointer == 0) {
