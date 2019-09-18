@@ -12,7 +12,6 @@
 
 'use strict';
 
-const Button = require('Button');
 // const InputAccessoryView = require('InputAccessoryView'); // InputAccessoryView not supported on macOS
 var React = require('react');
 var ReactNative = require('react-native');

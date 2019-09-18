@@ -12,6 +12,7 @@
 const React = require('react');
 const View = require('../Components/View/View');
 const VirtualizedList = require('./VirtualizedList');
+const Platform = require('../Utilities/Platform'); // TODO(macOS ISS#2323203)
 
 const invariant = require('invariant');
 
@@ -457,7 +458,7 @@ class VirtualizedSectionList<
         const section = sections[selection.sectionIndex];
         if (selection.rowIndex < section.data.length) {
           const selectedItem = section.data[selection.rowIndex];
-          isSelected = item == selectedItem;
+          isSelected = item === selectedItem;
         }
       }
     }

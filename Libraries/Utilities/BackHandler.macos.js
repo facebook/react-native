@@ -14,10 +14,6 @@
 
 'use strict';
 
-type BackPressEventName = $Enum<{
-  backPress: string,
-}>;
-
 function emptyFunction() {}
 
 /**
