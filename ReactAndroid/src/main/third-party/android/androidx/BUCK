@@ -4,6 +4,7 @@ fb_native.android_library(
     name = "activity",
     visibility = ["PUBLIC"],
     exported_deps = [
+        ":activity-binary",
         ":annotation",
         ":core",
         ":lifecycle-runtime",
@@ -505,7 +506,7 @@ fb_native.android_prebuilt_aar(
 # Remote files
 fb_native.remote_file(
     name = "activity-binary-aar",
-    sha1 = "e3a6fb2f40e3a3842e6b7472628ba4ce416ea4c8",
+    sha1 = "ed7a64df6e3fbebf7d3d3dfc30b0f47efcc707f7",
     url = "mvn:androidx.activity:activity:aar:1.0.0",
 )
 fb_native.remote_file(
