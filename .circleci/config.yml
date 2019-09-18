@@ -526,6 +526,9 @@ jobs:
   test_android_gradle:
     executor: reactnativeandroid
     steps:
+      - restore_cache_checkout:
+          checkout_type: android
+
       # Validate if ReactAndroid builds with Gradle
       - run:
           name: Build ReactAndroid with Gradle
