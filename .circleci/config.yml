@@ -34,7 +34,7 @@ aliases:
     paths:
       - ~/buck
       - ~/okbuck
-    key: v4-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
+    key: v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
 
   - &restore-gradle-downloads-cache
     keys:
@@ -46,7 +46,7 @@ aliases:
       - ~/.gradle
       - ReactAndroid/build/downloads
       - ReactAndroid/build/third-party-ndk
-    key: v2-gradle-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
+    key: v1-gradle-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
 
   # -------------------------
   #  ALIASES: Shared Commands
@@ -164,7 +164,6 @@ android_defaults: &android_defaults
     - ADB_INSTALL_TIMEOUT: 10
     - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
     - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
-    - ANDROID_NDK: '/opt/ndk/android-ndk-r17c'
     - BUILD_THREADS: 2
 
 # iOS
@@ -529,15 +528,6 @@ jobs:
       - attach_workspace:
           at: ~/react-native
 
-      # Configure Android SDK and related dependencies
-      - run: *configure-android-path
-      # Android build deps install from the network faster than cache
-      - run: *install-android-build-dependencies
-
-      - restore-cache: *restore-cache-android-packages
-      - run: *install-android-packages
-      - save-cache: *save-cache-android-packages
-
       # Validate Android SDK installation and packages
       - run:
           name: Validate Android SDK Install
@@ -614,7 +604,6 @@ jobs:
             fi
             source scripts/android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
 
-      - restore-cache: *restore-cache-analysis
       - run:
           name: Build Android RNTester App
           command: ./gradlew RNTester:android:app:assembleRelease
@@ -682,18 +671,9 @@ jobs:
     <<: *android_defaults
     steps:
       - checkout
+
+      - restore-cache: *restore-yarn-cache
       - run: *yarn
-
-      # Configure Android SDK and related dependencies
-      - run: *configure-android-path
-      - run: *install-android-build-dependencies
-
-      - run: *install-android-packages
-
-      # Install Android NDK
-      - run: *create-ndk-directory
-      - restore-cache: *restore-cache-ndk
-      - run: *install-ndk
 
       # Fetch dependencies using Buck
       - restore-cache: *restore-buck-downloads-cache

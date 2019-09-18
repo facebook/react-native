@@ -26,7 +26,7 @@ jobs:
       run: nuget.exe restore ReactAndroid/packages.config -PackagesDirectory ReactAndroid/packages/ -Verbosity Detailed -NonInteractive
 
     - name: Create RNTester bundle
-      run: node cli.js bundle --entry-file .\RNTester\js\RNTesterApp.android.js --bundle-output RNTesterApp.android.bundle --platform android --reactNativePath .
+      run: node cli.js bundle --entry-file .\RNTester\js\RNTesterApp.android.js --bundle-output RNTesterApp.android.bundle --platform android
       
     - run: gradlew.bat "-Pparam=excludeLibs" installArchives
 
