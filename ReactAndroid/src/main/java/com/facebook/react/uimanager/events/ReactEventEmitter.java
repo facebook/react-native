@@ -20,7 +20,7 @@ import com.facebook.react.uimanager.common.ViewUtil;
 
 public class ReactEventEmitter implements RCTEventEmitter {
 
-  private static final String TAG = ReactEventEmitter.class.getSimpleName();
+  private static final String TAG = "ReactEventEmitter";
 
   private final SparseArray<RCTEventEmitter> mEventEmitters = new SparseArray<>();
 
