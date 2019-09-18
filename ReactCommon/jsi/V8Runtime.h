@@ -44,6 +44,7 @@ namespace v8runtime {
 
     virtual void waitForDebugger() = 0;
 
+    virtual ~InspectorInterface();
   };
 
   // This might change in future.

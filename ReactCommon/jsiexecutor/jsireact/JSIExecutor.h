@@ -131,5 +131,5 @@ class JSIExecutor : public JSExecutor {
 using Logger =
     std::function<void(const std::string &message, unsigned int logLevel)>;
 void bindNativeLogger(jsi::Runtime &runtime, Logger logger);
-} // namespace react
+} // namespace react    
 } // namespace facebook
