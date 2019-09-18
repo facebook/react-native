@@ -62,3 +62,25 @@ export type AccessibilityState = {
   busy?: boolean,
   expanded?: boolean,
 };
+
+export type AccessibilityValue = $ReadOnly<{|
+  /**
+   * The minimum value of this component's range. (should be an integer)
+   */
+  min?: number,
+
+  /**
+   * The maximum value of this component's range. (should be an integer)
+   */
+  max?: number,
+
+  /**
+   * The current value of this component's range. (should be an integer)
+   */
+  now?: number,
+
+  /**
+   * A textual description of this component's value. (will override minimum, current, and maximum if set)
+   */
+  text?: string,
+|}>;

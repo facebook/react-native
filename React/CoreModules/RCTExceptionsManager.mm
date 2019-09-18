@@ -38,7 +38,7 @@ RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
                   stack:(NSArray<NSDictionary *> *)stack
                   exceptionId:(double)exceptionId)
 {
-  [_bridge.redBox showErrorMessage:message withStack:stack];
+  [_bridge.redBox showErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
 
   if (_delegate) {
     [_delegate handleSoftJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
@@ -49,7 +49,7 @@ RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
                   stack:(NSArray<NSDictionary *> *)stack
                   exceptionId:(double) exceptionId)
 {
-  [_bridge.redBox showErrorMessage:message withStack:stack];
+  [_bridge.redBox showErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
 
   if (_delegate) {
     [_delegate handleFatalJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
@@ -70,7 +70,7 @@ RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
                   stack:(NSArray<NSDictionary *> *)stack
                   exceptionId:(double)exceptionId)
 {
-  [_bridge.redBox updateErrorMessage:message withStack:stack];
+  [_bridge.redBox updateErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
 
   if (_delegate && [_delegate respondsToSelector:@selector(updateJSExceptionWithMessage:stack:exceptionId:)]) {
     [_delegate updateJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
@@ -91,7 +91,34 @@ RCT_EXPORT_METHOD(dismissRedbox)
 
 RCT_EXPORT_METHOD(reportException:(JS::NativeExceptionsManager::ExceptionData &)data)
 {
+  NSString *message = data.message();
+  double exceptionId = data.id_();
 
+  // Reserialize data.stack() into an array of untyped dictionaries.
+  // TODO: (moti) T53588496 Replace `(NSArray<NSDictionary *> *)stack` in
+  // reportFatalException etc with a typed interface.
+  NSMutableArray<NSDictionary *> *stackArray = [NSMutableArray<NSDictionary *> new];
+  for (auto frame: data.stack()) {
+    NSMutableDictionary * frameDict = [NSMutableDictionary new];
+    if (frame.column().hasValue()) {
+      frameDict[@"column"] = @(frame.column().value());
+    }
+    frameDict[@"file"] = frame.file();
+    if (frame.lineNumber().hasValue()) {
+        frameDict[@"lineNumber"] = @(frame.lineNumber().value());
+    }
+    frameDict[@"methodName"] = frame.methodName();
+    if (frame.collapse().hasValue()) {
+        frameDict[@"collapse"] = @(frame.collapse().value());
+    }
+    [stackArray addObject:frameDict];
+  }
+
+  if (data.isFatal()) {
+    [self reportFatalException:message stack:stackArray exceptionId:exceptionId];
+  } else {
+    [self reportSoftException:message stack:stackArray exceptionId:exceptionId];
+  }
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:

@@ -639,6 +639,29 @@ const ARRAY_PROPS: SchemaType = {
                 },
               },
             },
+            {
+              name: 'arrayOfArrayOfObject',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ArrayTypeAnnotation',
+                  elementType: {
+                    type: 'ObjectTypeAnnotation',
+                    properties: [
+                      {
+                        name: 'stringProp',
+                        optional: true,
+                        typeAnnotation: {
+                          type: 'StringTypeAnnotation',
+                          default: '',
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
           ],
           commands: [],
         },
@@ -773,6 +796,19 @@ const OBJECT_PROPS: SchemaType = {
                       options: [
                         {
                           name: 'option1',
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    name: 'intEnumProp',
+                    optional: true,
+                    typeAnnotation: {
+                      type: 'Int32EnumTypeAnnotation',
+                      default: 0,
+                      options: [
+                        {
+                          value: 0,
                         },
                       ],
                     },
@@ -948,11 +984,11 @@ const MULTI_NATIVE_PROP: SchemaType = {
   },
 };
 
-const ENUM_PROP: SchemaType = {
+const STRING_ENUM_PROP: SchemaType = {
   modules: {
     Switch: {
       components: {
-        EnumPropsNativeComponent: {
+        StringEnumPropsNativeComponent: {
           extendsProps: [
             {
               type: 'ReactNativeBuiltInType',
@@ -976,6 +1012,46 @@ const ENUM_PROP: SchemaType = {
                   },
                   {
                     name: 'bottom-right',
+                  },
+                ],
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
+const INT32_ENUM_PROP: SchemaType = {
+  modules: {
+    Switch: {
+      components: {
+        Int32EnumPropsNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'maxInterval',
+              optional: true,
+              typeAnnotation: {
+                type: 'Int32EnumTypeAnnotation',
+                default: 0,
+                options: [
+                  {
+                    value: 0,
+                  },
+                  {
+                    value: 1,
+                  },
+                  {
+                    value: 2,
                   },
                 ],
               },
@@ -1413,7 +1489,8 @@ module.exports = {
   ARRAY_PROPS_WITH_NESTED_OBJECT,
   OBJECT_PROPS,
   MULTI_NATIVE_PROP,
-  ENUM_PROP,
+  STRING_ENUM_PROP,
+  INT32_ENUM_PROP,
   EVENT_PROPS,
   EVENTS_WITH_PAPER_NAME,
   EVENT_NESTED_OBJECT_PROPS,

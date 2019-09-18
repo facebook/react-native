@@ -14,6 +14,7 @@ def flipper_pods()
   pod 'FlipperKit/FlipperKitLayoutPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/SKIOSNetworkPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
   pod 'FlipperKit/FlipperKitUserDefaultsPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
+  pod 'FlipperKit/FlipperKitReactPlugin', '~>' + flipperkit_version, :configuration => 'Debug'
 end
 
 # Post Install processing for Flipper
@@ -60,8 +61,20 @@ end
 
 target 'RNTester' do
   pods()
-  if ENV['USE_FRAMEWORKS'] != '1'
-    flipper_pods()
+  flipper_pods()
+
+  if ENV['USE_FRAMEWORKS'] == '1'
+    $static_framework = ['FlipperKit', 'Flipper', 'Flipper-Folly']
+    pre_install do |installer|
+      Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
+      installer.pod_targets.each do |pod|
+          if $static_framework.include?(pod.name)
+            def pod.build_type;
+              Pod::Target::BuildType.static_library
+            end
+          end
+        end
+    end
   end
 end
 
@@ -76,9 +89,7 @@ target 'RNTesterIntegrationTests' do
 end
 
 post_install do |installer|
-  if ENV['USE_FRAMEWORKS'] != '1'
-    flipper_post_install(installer)
-  end
+  flipper_post_install(installer)
   installer.pods_project.targets.each do |target|
     puts target.name
   end

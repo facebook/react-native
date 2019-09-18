@@ -30,6 +30,7 @@ const ArrayPropsNativeComponentViewConfig = {
     sizes: true,
     object: true,
     array: true,
+    arrayOfArrayOfObject: true,
   },
 };
 
@@ -268,41 +269,6 @@ let nativeComponentName = 'DoublePropNativeComponent';
 registerGeneratedViewConfig(nativeComponentName, DoublePropNativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = DoublePropNativeComponentViewConfig;
-
-export default nativeComponentName;
-",
-}
-`;
-
-exports[`GenerateViewConfigJs can generate fixture ENUM_PROP 1`] = `
-Map {
-  "ENUM_PROPNativeViewConfig.js" => "
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @flow
- */
-
-'use strict';
-
-const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
-
-const EnumPropsNativeComponentViewConfig = {
-  uiViewClassName: 'EnumPropsNativeComponent',
-
-  validAttributes: {
-    alignment: true,
-  },
-};
-
-let nativeComponentName = 'EnumPropsNativeComponent';
-
-registerGeneratedViewConfig(nativeComponentName, EnumPropsNativeComponentViewConfig);
-
-export const __INTERNAL_VIEW_CONFIG = EnumPropsNativeComponentViewConfig;
 
 export default nativeComponentName;
 ",
@@ -556,6 +522,41 @@ export default nativeComponentName;
 }
 `;
 
+exports[`GenerateViewConfigJs can generate fixture INT32_ENUM_PROP 1`] = `
+Map {
+  "INT32_ENUM_PROPNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const Int32EnumPropsNativeComponentViewConfig = {
+  uiViewClassName: 'Int32EnumPropsNativeComponent',
+
+  validAttributes: {
+    maxInterval: true,
+  },
+};
+
+let nativeComponentName = 'Int32EnumPropsNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, Int32EnumPropsNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = Int32EnumPropsNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
 exports[`GenerateViewConfigJs can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "INTEGER_PROPSNativeViewConfig.js" => "
@@ -772,6 +773,41 @@ let nativeComponentName = 'PointPropNativeComponent';
 registerGeneratedViewConfig(nativeComponentName, PointPropNativeComponentViewConfig);
 
 export const __INTERNAL_VIEW_CONFIG = PointPropNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture STRING_ENUM_PROP 1`] = `
+Map {
+  "STRING_ENUM_PROPNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const StringEnumPropsNativeComponentViewConfig = {
+  uiViewClassName: 'StringEnumPropsNativeComponent',
+
+  validAttributes: {
+    alignment: true,
+  },
+};
+
+let nativeComponentName = 'StringEnumPropsNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, StringEnumPropsNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = StringEnumPropsNativeComponentViewConfig;
 
 export default nativeComponentName;
 ",

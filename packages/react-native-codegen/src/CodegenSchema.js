@@ -117,6 +117,13 @@ type PropTypeTypeAnnotation =
       |}>,
     |}>
   | $ReadOnly<{|
+      type: 'Int32EnumTypeAnnotation',
+      default: number,
+      options: $ReadOnlyArray<{|
+        value: number,
+      |}>,
+    |}>
+  | $ReadOnly<{|
       type: 'NativePrimitiveTypeAnnotation',
       name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
     |}>
@@ -156,6 +163,13 @@ type PropTypeTypeAnnotation =
         | $ReadOnly<{|
             type: 'NativePrimitiveTypeAnnotation',
             name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
+          |}>
+        | $ReadOnly<{|
+            type: 'ArrayTypeAnnotation',
+            elementType: $ReadOnly<{|
+              type: 'ObjectTypeAnnotation',
+              properties: $ReadOnlyArray<PropTypeShape>,
+            |}>,
           |}>,
     |}>;
 

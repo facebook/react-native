@@ -64,7 +64,7 @@ import java.util.Map;
 @ReactModule(name = ReactTextInputManager.REACT_CLASS)
 public class ReactTextInputManager extends BaseViewManager<ReactEditText, LayoutShadowNode> {
   public static final String TAG = ReactTextInputManager.class.getSimpleName();
-  protected static final String REACT_CLASS = "AndroidTextInput";
+  public static final String REACT_CLASS = "AndroidTextInput";
 
   private static final int[] SPACING_TYPES = {
     Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,

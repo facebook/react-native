@@ -41,7 +41,12 @@ class AsyncEventBeat : public EventBeat {
   }
 
   void induce() const override {
-    runtimeExecutor_([=](jsi::Runtime &runtime) {
+    runtimeExecutor_([this, ownerBox = ownerBox_](jsi::Runtime &runtime) {
+      auto owner = ownerBox->owner.lock();
+      if (!owner) {
+        return;
+      }
+
       this->beat(runtime);
     });
   }

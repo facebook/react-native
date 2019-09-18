@@ -26,4 +26,7 @@ public class EnumPropNativeComponentViewManager extends SimpleViewManager<ViewGr
 
   @Override
   public void setAlignment(ViewGroup view, String value) {}
+
+  @Override
+  public void setIntervals(ViewGroup view, Integer value) {}
 }

@@ -242,6 +242,9 @@ type ModuleProps = $ReadOnly<{|
   enum_optional_key?: WithDefault<'small' | 'large', 'small'>,
   enum_optional_both?: WithDefault<'small' | 'large', 'small'>,
 
+  // Int enum props
+  int_enum_optional_key?: WithDefault<0 | 1, 0>,
+
   // Object props
   object_optional_key?: $ReadOnly<{| prop: string |}>,
   object_optional_both?: ?$ReadOnly<{| prop: string |}>,
@@ -392,6 +395,29 @@ type ModuleProps = $ReadOnly<{|
       // This needs to be the same name as the top level array above
       array_object_optional_both: $ReadOnlyArray<$ReadOnly<{| prop?: ?string |}>>,
     |}>
+  >,
+
+  // Nested array of array of object types
+  array_of_array_of_object_required: $ReadOnlyArray<
+    $ReadOnlyArray<
+      $ReadOnly<{|
+        prop: string,
+      |}>,
+    >,
+  >,
+
+  // Nested array of array of object types (in file)
+  array_of_array_of_object_required_in_file: $ReadOnlyArray<
+    $ReadOnlyArray<ObjectType>,
+  >,
+
+  // Nested array of array of object types (with spread)
+  array_of_array_of_object_required_with_spread: $ReadOnlyArray<
+    $ReadOnlyArray<
+      $ReadOnly<{|
+        ...ObjectType
+      |}>,
+    >,
   >,
 |}>;
 

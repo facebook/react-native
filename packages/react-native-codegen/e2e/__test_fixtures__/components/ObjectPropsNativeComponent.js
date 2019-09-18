@@ -38,6 +38,7 @@ type NativeProps = $ReadOnly<{|
     floatProp: Float,
     intProp: Int32,
     stringEnumProp?: WithDefault<'small' | 'large', 'small'>,
+    intEnumProp?: WithDefault<0 | 1, 0>,
   |}>,
   objectArrayProp: ObjectArrayPropType,
   objectPrimitiveRequiredProp: $ReadOnly<{|

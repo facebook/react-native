@@ -151,29 +151,24 @@ void Scheduler::renderTemplateToSurface(
 void Scheduler::stopSurface(SurfaceId surfaceId) const {
   SystraceSection s("Scheduler::stopSurface");
 
+  // Note, we have to do in inside `visit` function while the Shadow Tree
+  // is still being registered.
   uiManager_->getShadowTreeRegistry().visit(
-      surfaceId, [](const ShadowTree &shadowTree) {
-        // As part of stopping the Surface, we have to commit an empty tree.
-        return shadowTree.tryCommit([&](const SharedRootShadowNode
-                                            &oldRootShadowNode) {
-          return std::make_shared<RootShadowNode>(
-              *oldRootShadowNode,
-              ShadowNodeFragment{
-                  /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                  /* .surfaceId = */
-                  ShadowNodeFragment::surfaceIdPlaceholder(),
-                  /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                  /* .eventEmitter = */
-                  ShadowNodeFragment::eventEmitterPlaceholder(),
-                  /* .children = */
-                  ShadowNode::emptySharedShadowNodeSharedList(),
-              });
-        });
+      surfaceId, [](ShadowTree const &shadowTree) {
+        // As part of stopping a Surface, we need to properly destroy all
+        // mounted views, so we need to commit an empty tree to trigger all
+        // side-effects that will perform that.
+        shadowTree.commitEmptyTree();
       });
 
-  auto shadowTree = uiManager_->getShadowTreeRegistry().remove(surfaceId);
-  shadowTree->setDelegate(nullptr);
+  // Waiting for all concurrent commits to be finished and unregistering the
+  // `ShadowTree`.
+  uiManager_->getShadowTreeRegistry().remove(surfaceId);
 
+  // We execute JavaScript/React part of the process at the very end to minimize
+  // any visible side-effects of stopping the Surface. Any possible commits from
+  // the JavaScript side will not be able to reference a `ShadowTree` and will
+  // fail silently.
   auto uiManager = uiManager_;
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     uiManager->visitBinding([&](UIManagerBinding const &uiManagerBinding) {

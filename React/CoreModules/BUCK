@@ -1,5 +1,5 @@
 load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_debug_preprocessor_flags", "get_fbobjc_enable_exception_lang_compiler_flags_DEPRECATED")
-load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "rn_apple_library", "rn_debug_flags")
+load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "rn_apple_library", "rn_extra_build_flags")
 load(
     "@fbsource//xplat/configurations/buck/apple/plugins/sad_xplat_hosted_configurations:react_module_registration.bzl",
     "react_module_plugin_providers",
@@ -25,7 +25,7 @@ rn_apple_library(
         "-weak_framework",
         "WebKit",
     ],
-    exported_preprocessor_flags = rn_debug_flags(),
+    exported_preprocessor_flags = rn_extra_build_flags(),
     frameworks = [
         "Foundation",
         "UIKit",
@@ -61,7 +61,7 @@ rn_apple_library(
                   name = "PlatformConstants",
                   native_class_func = "RCTPlatformCls",
               ),
-    preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_debug_flags() + [
+    preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_extra_build_flags() + [
         "-DRN_DISABLE_OSS_PLUGIN_HEADER",
     ],
     reexport_all_header_dependencies = True,

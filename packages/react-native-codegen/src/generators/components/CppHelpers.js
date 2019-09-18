@@ -12,6 +12,10 @@
 import type {PropTypeShape} from '../../CodegenSchema';
 
 function upperCaseFirst(inString: string): string {
+  if (inString.length === 0) {
+    return inString;
+  }
+
   return inString[0].toUpperCase() + inString.slice(1);
 }
 
@@ -20,6 +24,10 @@ function toSafeCppString(input: string): string {
     .split('-')
     .map(upperCaseFirst)
     .join('');
+}
+
+function toIntEnumValueName(propName: string, value: number): string {
+  return `${toSafeCppString(propName)}${value}`;
 }
 
 function getCppTypeForAnnotation(
@@ -143,9 +151,10 @@ function convertDefaultTypeToString(
           throw new Error('Received unknown NativePrimitiveTypeAnnotation');
       }
     case 'ArrayTypeAnnotation': {
-      switch (typeAnnotation.elementType.type) {
+      const elementType = typeAnnotation.elementType;
+      switch (elementType.type) {
         case 'StringEnumTypeAnnotation':
-          if (typeAnnotation.elementType.default == null) {
+          if (elementType.default == null) {
             throw new Error(
               'A default is required for array StringEnumTypeAnnotation',
             );
@@ -153,7 +162,7 @@ function convertDefaultTypeToString(
           const enumName = getEnumName(componentName, prop.name);
           const enumMaskName = getEnumMaskName(enumName);
           const defaultValue = `${enumName}::${toSafeCppString(
-            typeAnnotation.elementType.default || '',
+            elementType.default,
           )}`;
           return `static_cast<${enumMaskName}>(${defaultValue})`;
         default:
@@ -165,6 +174,11 @@ function convertDefaultTypeToString(
     }
     case 'StringEnumTypeAnnotation':
       return `${getEnumName(componentName, prop.name)}::${toSafeCppString(
+        typeAnnotation.default,
+      )}`;
+    case 'Int32EnumTypeAnnotation':
+      return `${getEnumName(componentName, prop.name)}::${toIntEnumValueName(
+        prop.name,
         typeAnnotation.default,
       )}`;
     default:
@@ -180,5 +194,6 @@ module.exports = {
   getEnumMaskName,
   getImports,
   toSafeCppString,
+  toIntEnumValueName,
   generateStructName,
 };

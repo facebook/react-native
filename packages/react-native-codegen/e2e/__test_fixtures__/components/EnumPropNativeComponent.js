@@ -20,6 +20,7 @@ type NativeProps = $ReadOnly<{|
 
   // Props
   alignment?: WithDefault<'top' | 'center' | 'bottom-right', 'center'>,
+  intervals?: WithDefault<0 | 15 | 30 | 60, 0>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(

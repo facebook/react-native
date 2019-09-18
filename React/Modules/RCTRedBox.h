@@ -20,10 +20,15 @@
 - (void)showErrorMessage:(NSString *)message;
 - (void)showErrorMessage:(NSString *)message withDetails:(NSString *)details;
 - (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack;
+- (void)showErrorMessage:(NSString *)message withRawStack:(NSString *)rawStack errorCookie:(int)errorCookie;
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack;
 - (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack;
+- (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack errorCookie:(int)errorCookie;
+- (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack errorCookie:(int)errorCookie;
 - (void)showErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack;
 - (void)updateErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack;
+- (void)showErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack errorCookie:(int)errorCookie;
+- (void)updateErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack errorCookie:(int)errorCookie;
 
 - (void)dismiss;
 

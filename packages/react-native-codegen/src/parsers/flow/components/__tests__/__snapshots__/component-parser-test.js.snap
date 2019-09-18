@@ -16,6 +16,16 @@ exports[`RN Codegen Flow Parser Fails with error message NON_OPTIONAL_KEY_WITH_D
 
 exports[`RN Codegen Flow Parser Fails with error message NULLABLE_WITH_DEFAULT 1`] = `"WithDefault<> is optional and does not need to be marked as optional. Please remove the ? annotation in front of it."`;
 
+exports[`RN Codegen Flow Parser Fails with error message PROP_ARRAY_ENUM_BOOLEAN 1`] = `"Unsupported union type for \\"someProp\\", recieved \\"BooleanLiteralTypeAnnotation\\""`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROP_ARRAY_ENUM_INT 1`] = `"Arrays of int enums are not supported (see: \\"someProp\\")"`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROP_ARRAY_MIXED_ENUM 1`] = `"Mixed types are not supported (see \\"someProp\\")"`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROP_ENUM_BOOLEAN 1`] = `"Unsupported union type for \\"someProp\\", received \\"BooleanLiteralTypeAnnotation\\""`;
+
+exports[`RN Codegen Flow Parser Fails with error message PROP_MIXED_ENUM 1`] = `"Mixed types are not supported (see \\"someProp\\")"`;
+
 exports[`RN Codegen Flow Parser Fails with error message PROP_NUMBER_TYPE 1`] = `"Cannot use \\"NumberTypeAnnotation\\" type annotation for \\"someProp\\": must use a specific numeric type like Int32, Double, or Float"`;
 
 exports[`RN Codegen Flow Parser Fails with error message PROPS_CONFLICT_NAMES 1`] = `"A prop was already defined with the name isEnabled"`;
@@ -245,6 +255,22 @@ Object {
                   },
                 ],
                 "type": "StringEnumTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "int_enum_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": 0,
+                "options": Array [
+                  Object {
+                    "value": 0,
+                  },
+                  Object {
+                    "value": 1,
+                  },
+                ],
+                "type": "Int32EnumTypeAnnotation",
               },
             },
             Object {
@@ -1027,6 +1053,75 @@ Object {
                     },
                   ],
                   "type": "ObjectTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_of_object_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "elementType": Object {
+                    "properties": Array [
+                      Object {
+                        "name": "prop",
+                        "optional": false,
+                        "typeAnnotation": Object {
+                          "default": null,
+                          "type": "StringTypeAnnotation",
+                        },
+                      },
+                    ],
+                    "type": "ObjectTypeAnnotation",
+                  },
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_of_object_required_in_file",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "elementType": Object {
+                    "properties": Array [
+                      Object {
+                        "name": "prop",
+                        "optional": false,
+                        "typeAnnotation": Object {
+                          "default": null,
+                          "type": "StringTypeAnnotation",
+                        },
+                      },
+                    ],
+                    "type": "ObjectTypeAnnotation",
+                  },
+                  "type": "ArrayTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_of_array_of_object_required_with_spread",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "elementType": Object {
+                    "properties": Array [
+                      Object {
+                        "name": "prop",
+                        "optional": false,
+                        "typeAnnotation": Object {
+                          "default": null,
+                          "type": "StringTypeAnnotation",
+                        },
+                      },
+                    ],
+                    "type": "ObjectTypeAnnotation",
+                  },
+                  "type": "ArrayTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
               },

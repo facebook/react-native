@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -5,12 +6,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <SystemConfiguration/SystemConfiguration.h>
+namespace facebook {
+namespace react {
 
-#import <React/RCTEventEmitter.h>
+extern const char RCTARTSurfaceViewComponentName[] = "ARTSurfaceView";
 
-@interface RCTNetInfo : RCTEventEmitter
-
-- (instancetype)initWithHost:(NSString *)host;
-
-@end
+} // namespace react
+} // namespace facebook

@@ -14,6 +14,7 @@
 #include <jsi/jsi.h>
 
 #include <ReactCommon/JSCallInvoker.h>
+#include <ReactCommon/LongLivedObject.h>
 
 using namespace facebook;
 
@@ -23,7 +24,7 @@ namespace react {
 jsi::Object deepCopyJSIObject(jsi::Runtime &rt, const jsi::Object &obj);
 jsi::Array deepCopyJSIArray(jsi::Runtime &rt, const jsi::Array &arr);
 
-struct Promise {
+struct Promise : public LongLivedObject {
   Promise(jsi::Runtime &rt, jsi::Function resolve, jsi::Function reject);
 
   void resolve(const jsi::Value &result);
@@ -41,7 +42,8 @@ jsi::Value createPromiseAsJSIValue(
     const PromiseSetupFunctionType func);
 
 // Helper for passing jsi::Function arg to other methods.
-class CallbackWrapper {
+// TODO (ramanpreet): Simplify with weak_ptr<>
+class CallbackWrapper : public LongLivedObject {
  private:
   struct Data {
     Data(
@@ -60,6 +62,16 @@ class CallbackWrapper {
   folly::Optional<Data> data_;
 
  public:
+  static std::weak_ptr<CallbackWrapper> createWeak(
+      jsi::Function callback,
+      jsi::Runtime &runtime,
+      std::shared_ptr<react::JSCallInvoker> jsInvoker) {
+    auto wrapper = std::make_shared<CallbackWrapper>(
+        std::move(callback), runtime, jsInvoker);
+    LongLivedObjectCollection::get().add(wrapper);
+    return wrapper;
+  }
+
   CallbackWrapper(
       jsi::Function callback,
       jsi::Runtime &runtime,
@@ -69,6 +81,7 @@ class CallbackWrapper {
   // Delete the enclosed jsi::Function
   void destroy() {
     data_ = folly::none;
+    allowRelease();
   }
 
   bool isDestroyed() {

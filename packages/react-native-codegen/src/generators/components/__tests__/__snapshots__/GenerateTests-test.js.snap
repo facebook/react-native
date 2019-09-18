@@ -224,61 +224,6 @@ TEST(DoublePropNativeComponentProps_DoesNotDie, etc) {
 }
 `;
 
-exports[`GenerateTests can generate fixture ENUM_PROP 1`] = `
-Map {
-  "Tests.cpp" => "/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-#include <gtest/gtest.h>
-#include <react/components/ENUM_PROP/Props.h>
-#include <react/core/RawProps.h>
-#include <react/core/RawPropsParser.h>
-#include <react/core/propsConversions.h>
-
-using namespace facebook::react;
-
-TEST(EnumPropsNativeComponentProps_DoesNotDie, etc) {
-  auto propParser = RawPropsParser();
-  propParser.prepare<EnumPropsNativeComponentProps>();
-  auto const &sourceProps = EnumPropsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
-  rawProps.parse(propParser);
-  EnumPropsNativeComponentProps(sourceProps, rawProps);
-}
-
-TEST(EnumPropsNativeComponentProps_alignment_Top, etc) {
-  auto propParser = RawPropsParser();
-  propParser.prepare<EnumPropsNativeComponentProps>();
-  auto const &sourceProps = EnumPropsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"top\\"));
-  rawProps.parse(propParser);
-  EnumPropsNativeComponentProps(sourceProps, rawProps);
-}
-
-TEST(EnumPropsNativeComponentProps_alignment_Center, etc) {
-  auto propParser = RawPropsParser();
-  propParser.prepare<EnumPropsNativeComponentProps>();
-  auto const &sourceProps = EnumPropsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"center\\"));
-  rawProps.parse(propParser);
-  EnumPropsNativeComponentProps(sourceProps, rawProps);
-}
-
-TEST(EnumPropsNativeComponentProps_alignment_BottomRight, etc) {
-  auto propParser = RawPropsParser();
-  propParser.prepare<EnumPropsNativeComponentProps>();
-  auto const &sourceProps = EnumPropsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"bottom-right\\"));
-  rawProps.parse(propParser);
-  EnumPropsNativeComponentProps(sourceProps, rawProps);
-}",
-}
-`;
-
 exports[`GenerateTests can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "Tests.cpp" => "/**
@@ -497,6 +442,34 @@ TEST(ImagePropNativeComponentProps_thumbImage, etc) {
   auto const &rawProps = RawProps(folly::dynamic::object(\\"thumbImage\\", folly::dynamic::object(\\"url\\", \\"testurl\\")));
   rawProps.parse(propParser);
   ImagePropNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture INT32_ENUM_PROP 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/INT32_ENUM_PROP/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(Int32EnumPropsNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<Int32EnumPropsNativeComponentProps>();
+  auto const &sourceProps = Int32EnumPropsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  Int32EnumPropsNativeComponentProps(sourceProps, rawProps);
 }",
 }
 `;
@@ -721,6 +694,61 @@ TEST(PointPropNativeComponentProps_startPoint, etc) {
   auto const &rawProps = RawProps(folly::dynamic::object(\\"startPoint\\", folly::dynamic::object(\\"x\\", 1)(\\"y\\", 1)));
   rawProps.parse(propParser);
   PointPropNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
+exports[`GenerateTests can generate fixture STRING_ENUM_PROP 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/STRING_ENUM_PROP/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(StringEnumPropsNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<StringEnumPropsNativeComponentProps>();
+  auto const &sourceProps = StringEnumPropsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  StringEnumPropsNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(StringEnumPropsNativeComponentProps_alignment_Top, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<StringEnumPropsNativeComponentProps>();
+  auto const &sourceProps = StringEnumPropsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"top\\"));
+  rawProps.parse(propParser);
+  StringEnumPropsNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(StringEnumPropsNativeComponentProps_alignment_Center, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<StringEnumPropsNativeComponentProps>();
+  auto const &sourceProps = StringEnumPropsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"center\\"));
+  rawProps.parse(propParser);
+  StringEnumPropsNativeComponentProps(sourceProps, rawProps);
+}
+
+TEST(StringEnumPropsNativeComponentProps_alignment_BottomRight, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<StringEnumPropsNativeComponentProps>();
+  auto const &sourceProps = StringEnumPropsNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"bottom-right\\"));
+  rawProps.parse(propParser);
+  StringEnumPropsNativeComponentProps(sourceProps, rawProps);
 }",
 }
 `;

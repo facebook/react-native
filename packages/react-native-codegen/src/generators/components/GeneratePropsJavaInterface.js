@@ -88,6 +88,9 @@ function getJavaValueForProp(prop: PropTypeShape, imports): string {
     case 'StringEnumTypeAnnotation':
       addNullable(imports);
       return '@Nullable String value';
+    case 'Int32EnumTypeAnnotation':
+      addNullable(imports);
+      return '@Nullable Integer value';
     default:
       (typeAnnotation: empty);
       throw new Error('Received invalid typeAnnotation');

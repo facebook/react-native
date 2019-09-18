@@ -10,8 +10,6 @@
 
 'use strict';
 
-// see also react-native.js
-
 declare var __DEV__: boolean;
 
 declare var __REACT_DEVTOOLS_GLOBAL_HOOK__: any; /*?{

@@ -139,7 +139,7 @@ import java.util.Map;
       case DeviceEventManagerModule.NAME:
         return new DeviceEventManagerModule(reactContext, mHardwareBackBtnHandler);
       case DevSettingsModule.NAME:
-        return new DevSettingsModule(mReactInstanceManager.getDevSupportManager());
+        return new DevSettingsModule(reactContext, mReactInstanceManager.getDevSupportManager());
       case ExceptionsManagerModule.NAME:
         return new ExceptionsManagerModule(mReactInstanceManager.getDevSupportManager());
       case HeadlessJsTaskSupportModule.NAME:
