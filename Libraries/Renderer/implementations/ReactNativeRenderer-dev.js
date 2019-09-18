@@ -6474,7 +6474,11 @@ function scheduleFibersWithFamiliesRecursively(
         if (staleFamilies.has(family)) {
           needsRemount = true;
         } else if (updatedFamilies.has(family)) {
-          needsRender = true;
+          if (tag === ClassComponent) {
+            needsRemount = true;
+          } else {
+            needsRender = true;
+          }
         }
       }
     }
@@ -17437,6 +17441,7 @@ function commitNestedUnmounts(root, renderPriorityLevel) {
 }
 
 function detachFiber(current$$1) {
+  var alternate = current$$1.alternate;
   // Cut off the return pointers to disconnect it from the tree. Ideally, we
   // should clear the child pointer of the parent alternate to let this
   // get GC:ed but we don't know which for sure which parent is the current
@@ -17447,13 +17452,13 @@ function detachFiber(current$$1) {
   current$$1.memoizedState = null;
   current$$1.updateQueue = null;
   current$$1.dependencies = null;
-  var alternate = current$$1.alternate;
+  current$$1.alternate = null;
+  current$$1.firstEffect = null;
+  current$$1.lastEffect = null;
+  current$$1.pendingProps = null;
+  current$$1.memoizedProps = null;
   if (alternate !== null) {
-    alternate.return = null;
-    alternate.child = null;
-    alternate.memoizedState = null;
-    alternate.updateQueue = null;
-    alternate.dependencies = null;
+    detachFiber(alternate);
   }
 }
 

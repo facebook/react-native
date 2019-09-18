@@ -5002,6 +5002,20 @@ function commitUnmount(current$$1$jscomp$0, renderPriorityLevel) {
       createChildNodeSet(current$$1$jscomp$0.stateNode.containerInfo);
   }
 }
+function detachFiber(current$$1) {
+  var alternate = current$$1.alternate;
+  current$$1.return = null;
+  current$$1.child = null;
+  current$$1.memoizedState = null;
+  current$$1.updateQueue = null;
+  current$$1.dependencies = null;
+  current$$1.alternate = null;
+  current$$1.firstEffect = null;
+  current$$1.lastEffect = null;
+  current$$1.pendingProps = null;
+  current$$1.memoizedProps = null;
+  null !== alternate && detachFiber(alternate);
+}
 function commitWork(current$$1, finishedWork) {
   switch (finishedWork.tag) {
     case 0:
@@ -6239,18 +6253,7 @@ function commitRootImpl(root, renderPriorityLevel) {
                   snapshot.sibling.return = snapshot.return;
                   snapshot = snapshot.sibling;
                 }
-              prevProps.return = null;
-              prevProps.child = null;
-              prevProps.memoizedState = null;
-              prevProps.updateQueue = null;
-              prevProps.dependencies = null;
-              var alternate = prevProps.alternate;
-              null !== alternate &&
-                ((alternate.return = null),
-                (alternate.child = null),
-                (alternate.memoizedState = null),
-                (alternate.updateQueue = null),
-                (alternate.dependencies = null));
+              detachFiber(prevProps);
           }
           nextEffect = nextEffect.nextEffect;
         }
@@ -6313,20 +6316,20 @@ function commitRootImpl(root, renderPriorityLevel) {
               case 3:
                 var _updateQueue = current$$1$jscomp$0.updateQueue;
                 if (null !== _updateQueue) {
-                  alternate = null;
+                  current$$1 = null;
                   if (null !== current$$1$jscomp$0.child)
                     switch (current$$1$jscomp$0.child.tag) {
                       case 5:
-                        alternate =
+                        current$$1 =
                           current$$1$jscomp$0.child.stateNode.canonical;
                         break;
                       case 1:
-                        alternate = current$$1$jscomp$0.child.stateNode;
+                        current$$1 = current$$1$jscomp$0.child.stateNode;
                     }
                   commitUpdateQueue(
                     current$$1$jscomp$0,
                     _updateQueue,
-                    alternate,
+                    current$$1,
                     currentRef
                   );
                 }
