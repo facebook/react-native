@@ -80,7 +80,7 @@ RNTester/build
 # CocoaPods
 /template/ios/Pods/
 /template/ios/Podfile.lock
-/RNTester/Pods/
+# (TODO: revisit) /RNTester/Pods/
 /RNTester/Gemfile.lock
 
 # react-native-codegen
