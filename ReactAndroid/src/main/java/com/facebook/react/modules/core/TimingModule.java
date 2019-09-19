@@ -25,13 +25,13 @@ import java.util.PriorityQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Native module for JS timer execution. Timers fire on frame boundaries. */
-@ReactModule(name = Timing.NAME)
-public final class Timing extends ReactContextBaseJavaModule
+@ReactModule(name = TimingModule.NAME)
+public final class TimingModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener, HeadlessJsTaskEventListener {
 
   public static final String NAME = "Timing";
 
-  // These timing contants should be kept in sync with the ones in `JSTimers.js`.
+  // These timing constants should be kept in sync with the ones in `JSTimers.js`.
   // The minimum time in milliseconds left in the frame to call idle callbacks.
   private static final float IDLE_CALLBACK_FRAME_DEADLINE_MS = 1.f;
   // The total duration of a frame in milliseconds, this assumes that devices run at 60 fps.
@@ -170,7 +170,7 @@ public final class Timing extends ReactContextBaseJavaModule
   private boolean mFrameIdleCallbackPosted = false;
   private boolean mSendIdleEvents = false;
 
-  public Timing(ReactApplicationContext reactContext, DevSupportManager devSupportManager) {
+  public TimingModule(ReactApplicationContext reactContext, DevSupportManager devSupportManager) {
     super(reactContext);
     mDevSupportManager = devSupportManager;
     // We store timers sorted by finish time.
