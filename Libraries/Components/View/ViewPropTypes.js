@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {PressEvent, Layout, LayoutEvent} from '../../Types/CoreEventTypes';
+import type {PressEvent, Layout, LayoutEvent, KeyboardEvent} from '../../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
@@ -56,7 +56,7 @@ type DirectEventProps = $ReadOnly<{|
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs accessibility key down gesture.
    */
-  onKeyDown?: ?(event: SyntheticEvent<{key: string}>) => mixed, // TODO(macOS ISS#2323203)
+  onKeyDown?: ?(event: KeyboardEvent) => mixed, // TODO(macOS ISS#2323203)
 
   onMouseEnter?: (event: SyntheticEvent<{}>) => mixed, // [TODO(macOS ISS#2323203)
 
@@ -288,16 +288,6 @@ type AndroidViewProps = $ReadOnly<{|
    */
 
   onClick?: ?(event: PressEvent) => mixed, // TODO(android ISS)
-  /**
-   * Indicates to accessibility services to treat UI component like a
-   * native one. Works for Android only.
-   *
-   * @platform android
-   *
-   * See http://facebook.github.io/react-native/docs/view.html#accessibilitycomponenttype
-   */
-
-  accessibilityComponentType?: ?AccessibilityComponentType,
 
   /**
    * Indicates to accessibility services whether the user should be notified
@@ -393,13 +383,6 @@ type IOSViewProps = $ReadOnly<{|
    * See http://facebook.github.io/react-native/docs/view.html#accessibilityElementsHidden
    */
   accessibilityElementsHidden?: ?boolean,
-
-  /**
-   * Whether this `View` should be rendered as a bitmap before compositing.
-   *
-   * @platform ios
-   */
-  onAccessibilityAction?: ?(event: SyntheticEvent<{}>) => mixed,
 
   onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 

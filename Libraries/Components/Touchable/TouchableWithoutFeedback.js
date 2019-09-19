@@ -314,10 +314,8 @@ const TouchableWithoutFeedback = ((createReactClass({
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
       accessibilityHint: this.props.accessibilityHint,
-      accessibilityComponentType: this.props.accessibilityComponentType,
       accessibilityRole: this.props.accessibilityRole,
       accessibilityStates: this.props.accessibilityStates,
-      accessibilityTraits: this.props.accessibilityTraits,
       onAccessibilityTap: this.props.onAccessibilityTap, // TODO(OSS Candidate ISS#2710739)
       acceptsKeyboardFocus:
         (this.props.acceptsKeyboardFocus === undefined ||

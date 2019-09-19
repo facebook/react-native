@@ -26,12 +26,12 @@ type Options = {
   onDismiss?: ?Function,
 };
 
-type AlertType = $Keys<{
+export type AlertType = $Keys<{
   default: string,
   'plain-text': string,
   'secure-text': string,
   'login-password': string,
-}>;
+}>;  // added export TODO(macOS ISS#2323203)
 
 export type AlertButtonStyle = $Keys<{
   default: string,

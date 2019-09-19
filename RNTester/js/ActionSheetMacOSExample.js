@@ -13,7 +13,6 @@ var ReactNative = require('react-native');
 var {
   ActionSheetIOS,
   StyleSheet,
-  takeSnapshot,
   Text,
   View,
 } = ReactNative;
