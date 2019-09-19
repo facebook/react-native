@@ -83,15 +83,15 @@ RNTester/build
 /RNTester/Gemfile.lock
 
 # RNTester Pods: all top level files of the Pods folder must be listed
-/RNTester/Pods/DoubleConversion
-/RNTester/Pods/Folly
-/RNTester/Pods/Headers
-/RNTester/Pods/Manifest.lock
-/RNTester/Pods/Local Podspecs
-/RNTester/Pods/Pods.xcodeproj
-/RNTester/Pods/Target Support Files
-/RNTester/Pods/boost-for-react-native
-/RNTester/Pods/glog
+RNTester/Pods/DoubleConversion
+RNTester/Pods/Folly
+RNTester/Pods/Headers
+RNTester/Pods/Manifest.lock
+RNTester/Pods/Local Podspecs
+RNTester/Pods/Pods.xcodeproj
+RNTester/Pods/Target Support Files
+RNTester/Pods/boost-for-react-native
+RNTester/Pods/glog
 
 # react-native-codegen
 /ReactCommon/fabric/components/rncore/
