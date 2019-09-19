@@ -1128,32 +1128,32 @@ exports.examples = [
       return (
         <View>
           <TextInput
-            style={[styles.singleLine, {fontFamily: 'sans-serif'}]}
+            style={[styles.default, {fontFamily: 'sans-serif'}]}
             placeholder="Custom fonts like Sans-Serif are supported"
           />
           <TextInput
             style={[
-              styles.singleLine,
+              styles.default,
               {fontFamily: 'sans-serif', fontWeight: 'bold'},
             ]}
             placeholder="Sans-Serif bold"
           />
           <TextInput
             style={[
-              styles.singleLine,
+              styles.default,
               {fontFamily: 'sans-serif', fontWeight: '500'},
             ]}
             placeholder="Sans-Serif 500"
           />
           <TextInput
             style={[
-              styles.singleLine,
+              styles.default,
               {fontFamily: 'sans-serif', fontStyle: 'italic'},
             ]}
             placeholder="Sans-Serif italic"
           />
           <TextInput
-            style={[styles.singleLine, {fontFamily: 'serif'}]}
+            style={[styles.default, {fontFamily: 'serif'}]}
             placeholder="Serif"
           />
         </View>
