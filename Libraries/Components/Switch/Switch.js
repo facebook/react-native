@@ -197,7 +197,7 @@ class Switch extends React.Component<Props> {
     );
   }
 
-  componentDidUpdate = () => {
+  componentDidUpdate() {
     // This is necessary in case native updates the switch and JS decides
     // that the update should be ignored and we should stick with the value
     // that we have in JS.
@@ -215,7 +215,7 @@ class Switch extends React.Component<Props> {
     ) {
       this._nativeSwitchRef.setNativeProps(nativeProps);
     }
-  };
+  }
 
   _handleChange = (event: SwitchChangeEvent) => {
     if (this.props.onChange != null) {
