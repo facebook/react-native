@@ -278,7 +278,33 @@ public class JavaTimerManager {
     }
   }
 
-  public void createTimer(
+  /**
+   * A method to be used for synchronously creating a timer. The timer will not be invoked until the
+   * next frame, regardless of whether it has already expired (i.e. the delay is 0).
+   *
+   * @param callbackID An identifier for the callback that can be passed to JS or C++ to invoke it.
+   * @param delay The time in ms before the callback should be invoked.
+   * @param repeat Whether the timer should be repeated (used for setInterval).
+   */
+  public void createTimer(final int callbackID, final long delay, final boolean repeat) {
+    long initialTargetTime = SystemClock.nanoTime() / 1000000 + delay;
+    Timer timer = new Timer(callbackID, initialTargetTime, (int) delay, repeat);
+    synchronized (mTimerGuard) {
+      mTimers.add(timer);
+      mTimerIdsToTimers.put(callbackID, timer);
+    }
+  }
+
+  /**
+   * A method to be used for asynchronously creating a timer. If the timer has already expired,
+   * (based on the provided jsSchedulingTime) then it will be immediately invoked.
+   *
+   * @param callbackID An identifier that can be passed back to JS to invoke the callback.
+   * @param duration The time in ms before the callback should be invoked.
+   * @param jsSchedulingTime The time (ms since epoch) when this timer was created in JS.
+   * @param repeat Whether the timer should be repeated (used for setInterval)
+   */
+  public void createAndMaybeCallTimer(
       final int callbackID,
       final int duration,
       final double jsSchedulingTime,
@@ -307,12 +333,7 @@ public class JavaTimerManager {
       return;
     }
 
-    long initialTargetTime = SystemClock.nanoTime() / 1000000 + adjustedDuration;
-    Timer timer = new Timer(callbackID, initialTargetTime, duration, repeat);
-    synchronized (mTimerGuard) {
-      mTimers.add(timer);
-      mTimerIdsToTimers.put(callbackID, timer);
-    }
+    createTimer(callbackID, adjustedDuration, repeat);
   }
 
   public void deleteTimer(int timerId) {

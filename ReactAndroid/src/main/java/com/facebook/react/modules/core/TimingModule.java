@@ -72,7 +72,7 @@ public final class TimingModule extends ReactContextBaseJavaModule
       final int duration,
       final double jsSchedulingTime,
       final boolean repeat) {
-    mJavaTimerManager.createTimer(callbackID, duration, jsSchedulingTime, repeat);
+    mJavaTimerManager.createAndMaybeCallTimer(callbackID, duration, jsSchedulingTime, repeat);
   }
 
   @ReactMethod
