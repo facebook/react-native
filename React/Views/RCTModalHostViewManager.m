@@ -10,6 +10,7 @@
 #import "RCTBridge.h"
 #import "RCTModalHostView.h"
 #import "RCTModalHostViewController.h"
+#import "RCTModalManager.h"
 #import "RCTShadowView.h"
 #import "RCTUtils.h"
 
@@ -80,10 +81,15 @@ RCT_EXPORT_MODULE()
 
 - (void)dismissModalHostView:(RCTModalHostView *)modalHostView withViewController:(RCTModalHostViewController *)viewController animated:(BOOL)animated
 {
+  dispatch_block_t completionBlock = ^{
+    if (modalHostView.identifier) {
+      [[self.bridge moduleForClass:[RCTModalManager class]] modalDismissed:modalHostView.identifier];
+    }
+  };
   if (_dismissalBlock) {
-    _dismissalBlock([modalHostView reactViewController], viewController, animated, nil);
+    _dismissalBlock([modalHostView reactViewController], viewController, animated, completionBlock);
   } else {
-    [viewController.presentingViewController dismissViewControllerAnimated:animated completion:nil];
+    [viewController.presentingViewController dismissViewControllerAnimated:animated completion:completionBlock];
   }
 }
 
