@@ -16,6 +16,7 @@ const Systrace = require('../Performance/Systrace');
 const deepFreezeAndThrowOnMutationInDev = require('../Utilities/deepFreezeAndThrowOnMutationInDev');
 const invariant = require('invariant');
 const stringifySafe = require('../Utilities/stringifySafe');
+const warnOnce = require('../Utilities/warnOnce');
 
 export type SpyData = {
   type: number,
@@ -225,11 +226,13 @@ class MessageQueue {
             const method = debug && this._remoteMethodTable[debug[0]][debug[1]];
             info[callID] = {module, method};
           });
-          console.error(
+          warnOnce(
+            'excessive-number-of-pending-callbacks',
             `Please report: Excessive number of pending callbacks: ${
               this._successCallbacks.size
-            }. Some pending callbacks that might have leaked by never being called from native code:`,
-            info,
+            }. Some pending callbacks that might have leaked by never being called from native code: ${stringifySafe(
+              info,
+            )}`,
           );
         }
       }
