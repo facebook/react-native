@@ -906,14 +906,18 @@ class ScrollView extends React.Component<Props, State> {
           this._handleScrollByKeyDown(event, {
             x:
               event.contentOffset.x +
-              -(this.props.horizontalLineScroll === undefined ? this.props.horizontalLineScroll : kMinScrollOffset),
+              -(this.props.horizontalLineScroll === undefined
+                ? this.props.horizontalLineScroll
+                : kMinScrollOffset),
             y: event.contentOffset.y,
           });
         } else if (key === 'RIGHT_ARROW') {
           this._handleScrollByKeyDown(event, {
             x:
               event.contentOffset.x +
-              (this.props.horizontalLineScroll === undefined ? this.props.horizontalLineScroll : kMinScrollOffset),
+              (this.props.horizontalLineScroll === undefined
+                ? this.props.horizontalLineScroll
+                : kMinScrollOffset),
             y: event.contentOffset.y,
           });
         } else if (key === 'DOWN_ARROW') {
@@ -921,14 +925,18 @@ class ScrollView extends React.Component<Props, State> {
             x: event.contentOffset.x,
             y:
               event.contentOffset.y +
-              (this.props.verticalLineScroll === undefined ? this.props.verticalLineScroll : kMinScrollOffset),
+              (this.props.verticalLineScroll === undefined
+                ? this.props.verticalLineScroll
+                : kMinScrollOffset),
           });
         } else if (key === 'UP_ARROW') {
           this._handleScrollByKeyDown(event, {
             x: event.contentOffset.x,
             y:
               event.contentOffset.y +
-              -(this.props.verticalLineScroll === undefined ? this.props.verticalLineScroll : kMinScrollOffset),
+              -(this.props.verticalLineScroll === undefined
+                ? this.props.verticalLineScroll
+                : kMinScrollOffset),
           });
         }
       }
@@ -936,8 +944,10 @@ class ScrollView extends React.Component<Props, State> {
   };
 
   _handleScrollByKeyDown = (e: ScrollEvent, newOffset) => {
-    const maxX = e.nativeEvent.contentSize.width - e.nativeEvent.layoutMeasurement.width;
-    const maxY = e.nativeEvent.contentSize.height - e.nativeEvent.layoutMeasurement.height;
+    const maxX =
+      e.nativeEvent.contentSize.width - e.nativeEvent.layoutMeasurement.width;
+    const maxY =
+      e.nativeEvent.contentSize.height - e.nativeEvent.layoutMeasurement.height;
     this.scrollTo({
       x: Math.max(0, Math.min(maxX, newOffset.x)),
       y: Math.max(0, Math.min(maxY, newOffset.y)),

@@ -10,7 +10,12 @@
 
 'use strict';
 
-import type {PressEvent, Layout, LayoutEvent, KeyboardEvent} from '../../Types/CoreEventTypes';
+import type {
+  PressEvent,
+  Layout,
+  LayoutEvent,
+  KeyboardEvent,
+} from '../../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';

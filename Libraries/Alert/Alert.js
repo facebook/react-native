@@ -31,7 +31,7 @@ export type AlertType = $Keys<{
   'plain-text': string,
   'secure-text': string,
   'login-password': string,
-}>;  // added export TODO(macOS ISS#2323203)
+}>; // added export TODO(macOS ISS#2323203)
 
 export type AlertButtonStyle = $Keys<{
   default: string,
