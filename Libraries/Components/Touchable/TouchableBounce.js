@@ -214,12 +214,6 @@ const TouchableBounce = ((createReactClass({
          * this comment and run Flow. */
         onResponderTerminate={this.touchableHandleResponderTerminate}
         tooltip={this.props.tooltip} // TODO(macOS/win ISS#2323203)
-        clickable={
-          this.props.clickable !== false &&
-          this.props.onPress !== undefined &&
-          !this.props.disabled
-        } // TODO(android ISS)
-        onClick={this.touchableHandlePress} // TODO(android ISS)
         onMouseEnter={this.props.onMouseEnter} // [TODO(macOS ISS#2323203)
         onMouseLeave={this.props.onMouseLeave}
         onDragEnter={this.props.onDragEnter}

@@ -13,16 +13,9 @@
 'use strict';
 
 const React = require('react');
-const PropTypes = require('prop-types');
-const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
-const ViewPropTypes = require('../View/ViewPropTypes');
 
 const RCTDatePickerNativeComponentMacOS = require('./RCTDatePickerNativeComponentMacOS');
-
-type DefaultProps = {
-  mode: 'single' | 'range',
-};
 
 type Event = Object;
 
@@ -100,7 +93,7 @@ class DatePickerMacOS extends React.Component<Props> {
 
   _onChange = (event: Event) => {
     const nativeTimeStamp = event.nativeEvent.timestamp;
-    this.props.onDateChange && 
+    this.props.onDateChange &&
       this.props.onDateChange(new Date(nativeTimeStamp));
     // $FlowFixMe(>=0.41.0)
     this.props.onChange && this.props.onChange(event);
@@ -141,6 +134,6 @@ class DatePickerMacOS extends React.Component<Props> {
       </View>
     );
   }
-};
+}
 
 module.exports = DatePickerMacOS;

@@ -140,3 +140,9 @@ export type SwitchChangeEvent = SyntheticEvent<
     value: boolean,
   |}>,
 >;
+
+export type KeyboardEvent = SyntheticEvent<
+  $ReadOnly<{|
+    key: string,
+  |}>,
+>;

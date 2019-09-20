@@ -424,7 +424,7 @@ exports.examples = [
         </View>
       );
     },
-  }, // ]TODO(macOS ISS#2323203)  
+  }, // ]TODO(macOS ISS#2323203)
   {
     title: 'BackfaceVisibility',
     render: function() {

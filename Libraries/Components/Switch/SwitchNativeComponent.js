@@ -24,9 +24,9 @@ type SwitchProps = $ReadOnly<{|
   ...ViewProps,
   disabled?: ?boolean,
   onChange?: ?(event: SwitchChangeEvent) => mixed,
-  thumbColor?: ?ColorValue,
-  trackColorForFalse?: ?ColorValue,
-  trackColorForTrue?: ?ColorValue,
+  thumbColor?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+  trackColorForFalse?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+  trackColorForTrue?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
   value?: ?boolean,
 |}>;
 

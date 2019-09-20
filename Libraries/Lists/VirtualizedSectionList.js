@@ -458,7 +458,7 @@ class VirtualizedSectionList<
         const section = sections[selection.sectionIndex];
         if (selection.rowIndex < section.data.length) {
           const selectedItem = section.data[selection.rowIndex];
-          isSelected = item == selectedItem;
+          isSelected = item === selectedItem;
         }
       }
     }

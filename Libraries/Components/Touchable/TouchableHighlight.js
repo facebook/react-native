@@ -447,10 +447,6 @@ const TouchableHighlight = ((createReactClass({
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}
         tooltip={this.props.tooltip} // TODO(macOS/win ISS#2323203)
-        clickable={
-          this.props.clickable !== false && this.props.onPress !== undefined
-        } // TODO(android ISS)
-        onClick={this.touchableHandlePress} // TODO(android ISS)
         onMouseEnter={this.props.onMouseEnter} // [TODO(macOS/win ISS#2323203)
         onMouseLeave={this.props.onMouseLeave}
         onDragEnter={this.props.onDragEnter}

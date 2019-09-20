@@ -38,7 +38,7 @@ public:
     return m_registry;
   }
   
-  bool isBatchActive() {
+  virtual bool isBatchActive() override {
     return m_batchHadNativeModuleCalls;
   }
 
@@ -248,6 +248,10 @@ void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {
   runOnExecutorQueue([=] (JSExecutor* executor) {
     executor->handleMemoryPressure(pressureLevel);
   });
+}
+
+int64_t NativeToJsBridge::getPeakJsMemoryUsage() const noexcept {
+  return m_executor->getPeakJsMemoryUsage();
 }
 
 void NativeToJsBridge::destroy() {

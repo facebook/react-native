@@ -18,7 +18,6 @@ const ReactNative = require('../Renderer/shims/ReactNative');
 const RefreshControl = require('../Components/RefreshControl/RefreshControl');
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const UIManager = require('../ReactNative/UIManager');
 const View = require('../Components/View/View');
 const ViewabilityHelper = require('./ViewabilityHelper');
 
@@ -744,7 +743,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           index={ii}
           inversionStyle={inversionStyle}
           item={item}
-          isSelected={this.state.selectedRowIndex == ii ? true : false} // TODO(macOS ISS#2323203)
+          isSelected={this.state.selectedRowIndex === ii ? true : false} // TODO(macOS ISS#2323203)
           key={key}
           prevCellKey={prevCellKey}
           onUpdateSeparators={this._onUpdateSeparators}
@@ -1301,7 +1300,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           newIndex = this._selectRowBelowIndex(prevIndex);
           this.ensureItemAtIndexIsVisible(newIndex);
 
-          if (this.props.onSelectionChanged && prevIndex != newIndex) {
+          if (this.props.onSelectionChanged && prevIndex !== newIndex) {
             const item = getItem(data, newIndex);
             this.props.onSelectionChanged({
               previousSelection: prevIndex,
@@ -1313,7 +1312,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           newIndex = this._selectRowAboveIndex(prevIndex);
           this.ensureItemAtIndexIsVisible(newIndex);
 
-          if (this.props.onSelectionChanged && prevIndex != newIndex) {
+          if (this.props.onSelectionChanged && prevIndex !== newIndex) {
             const item = getItem(data, newIndex);
             this.props.onSelectionChanged({
               previousSelection: prevIndex,

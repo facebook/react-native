@@ -452,11 +452,7 @@ public class ReactEditText extends EditText {
   }
 
   protected boolean showSoftKeyboard() {
-    // Don't show soft keyboard when a hardware keyboard is attached
-    if (!isHardwareKeyboardAvailable()) {
       return mInputMethodManager.showSoftInput(this, 0);
-    }
-    return false;
   }
 
   protected void hideSoftKeyboard() {

@@ -8,7 +8,7 @@
  * @flow
  */
 
- // TODO(macOS ISS#2323203)
+// TODO(macOS ISS#2323203)
 
 'use strict';
 
@@ -31,7 +31,7 @@ type NativeProps = $ReadOnly<{|
   minimumDate?: ?number,
   mode?: ?('single' | 'range'),
   onDateChange?: ?(event: Event) => void,
-  pickerStyle?: ?(['textfield-stepper', 'clock-calendar', 'textfield']),
+  pickerStyle?: ?['textfield-stepper', 'clock-calendar', 'textfield'],
   timeZoneOffsetInMinutes?: ?number,
 |}>;
 type RCTDatePickerNativeType = Class<NativeComponent<NativeProps>>;

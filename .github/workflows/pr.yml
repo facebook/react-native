@@ -26,7 +26,7 @@ jobs:
       run: nuget.exe restore ReactAndroid/packages.config -PackagesDirectory ReactAndroid/packages/ -Verbosity Detailed -NonInteractive
 
     - name: Create RNTester bundle
-      run: node cli.js bundle --entry-file .\RNTester\js\RNTesterApp.android.js --bundle-output RNTesterApp.android.bundle --platform android --reactNativePath .
+      run: node cli.js bundle --entry-file .\RNTester\js\RNTesterApp.android.js --bundle-output RNTesterApp.android.bundle --platform android
       
     - run: gradlew.bat "-Pparam=excludeLibs" installArchives
 
@@ -39,7 +39,7 @@ jobs:
 
     - name: Change pom file to always use version 1000
       run: |
-        (Get-Content android\com\facebook\react\react-native\0.59.0\react-native-0.59.0.pom).replace('<version>0.59.0</version>', '<version>1000.0.0-master</version>') | Set-Content android\com\facebook\react\react-native\0.59.0\react-native-0.59.0.pom
+        (Get-Content android\com\facebook\react\react-native\0.60.0\react-native-0.60.0.pom).replace('<version>0.60.0</version>', '<version>1000.0.0-master</version>') | Set-Content android\com\facebook\react\react-native\0.60.0\react-native-0.60.0.pom
       shell: powershell
 
     - run: nuget pack ReactAndroid/ReactAndroid.nuspec

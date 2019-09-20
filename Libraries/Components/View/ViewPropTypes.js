@@ -10,7 +10,12 @@
 
 'use strict';
 
-import type {PressEvent, Layout, LayoutEvent} from '../../Types/CoreEventTypes';
+import type {
+  PressEvent,
+  Layout,
+  LayoutEvent,
+  KeyboardEvent,
+} from '../../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {Node} from 'react';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
@@ -56,7 +61,7 @@ type DirectEventProps = $ReadOnly<{|
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs accessibility key down gesture.
    */
-  onKeyDown?: ?(event: Event) => mixed, // TODO(macOS ISS#2323203)
+  onKeyDown?: ?(event: KeyboardEvent) => mixed, // TODO(macOS ISS#2323203)
 
   onMouseEnter?: (event: SyntheticEvent<{}>) => mixed, // [TODO(macOS ISS#2323203)
 
@@ -281,6 +286,15 @@ type AndroidViewProps = $ReadOnly<{|
   clickable?: ?boolean, // TODO(android ISS)
 
   /**
+   * When `clickable` is true, the system will try to invoke this function
+   * when the user performs a click.
+   *
+   * @platform android
+   */
+
+  onClick?: ?(event: PressEvent) => mixed, // TODO(android ISS)
+
+  /**
    * Indicates to accessibility services whether the user should be notified
    * when this view changes. Works for Android API >= 19 only.
    *
@@ -310,7 +324,7 @@ type AndroidViewProps = $ReadOnly<{|
 
   accessibilityNodeInfo?: AccessibilityNodeInfoProp, // TODO(android ISS)
 
-   /**
+  /**
    * TV next focus down (see documentation for the View component).
    *
    * @platform android
@@ -382,6 +396,16 @@ type IOSViewProps = $ReadOnly<{|
    * See http://facebook.github.io/react-native/docs/view.html#accessibilityElementsHidden
    */
   accessibilityElementsHidden?: ?boolean,
+
+  onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
+
+  /**
+   * When `accessible` is true, the system will try to invoke this function
+   * when the user performs accessibility tap gesture.
+   *
+   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilitytap
+   */
+  onAccessibilityTap?: ?() => void,
 
   /**
    * When `accessible` is `true`, the system will invoke this function when the

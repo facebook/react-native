@@ -54,8 +54,7 @@ class AccessibilityAndroidExample extends React.Component {
 
   render() {
     return (
-    
-    <RNTesterPage title={'Accessibility Android APIs'}>
+      <RNTesterPage title={'Accessibility Android APIs'}>
         <RNTesterBlock title="LiveRegion">
           <TouchableWithoutFeedback onPress={this._addOne}>
             <View style={styles.embedded}>

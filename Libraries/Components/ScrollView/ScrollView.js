@@ -31,6 +31,7 @@ import type {
   PressEvent,
   ScrollEvent,
   LayoutEvent,
+  KeyboardEvent,
 } from '../../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {NativeMethodsMixinType} from '../../Renderer/shims/ReactNativeTypes';
@@ -882,8 +883,7 @@ class ScrollView extends React.Component<Props, State> {
   }
 
   // [TODO(macOS ISS#2323203)
-  // $FlowFixMe // Cannot use type Object
-  _handleKeyDown = (e: Object) => {
+  _handleKeyDown = (e: KeyboardEvent) => {
     if (this.props.onKeyDown) {
       this.props.onKeyDown(e);
     } else {
@@ -906,14 +906,18 @@ class ScrollView extends React.Component<Props, State> {
           this._handleScrollByKeyDown(event, {
             x:
               event.contentOffset.x +
-              -(this.props.horizontalLineScroll !== undefined ? this.props.horizontalLineScroll : kMinScrollOffset),
+              -(this.props.horizontalLineScroll === undefined
+                ? this.props.horizontalLineScroll
+                : kMinScrollOffset),
             y: event.contentOffset.y,
           });
         } else if (key === 'RIGHT_ARROW') {
           this._handleScrollByKeyDown(event, {
             x:
               event.contentOffset.x +
-              (this.props.horizontalLineScroll !== undefined ? this.props.horizontalLineScroll : kMinScrollOffset),
+              (this.props.horizontalLineScroll === undefined
+                ? this.props.horizontalLineScroll
+                : kMinScrollOffset),
             y: event.contentOffset.y,
           });
         } else if (key === 'DOWN_ARROW') {
@@ -921,14 +925,18 @@ class ScrollView extends React.Component<Props, State> {
             x: event.contentOffset.x,
             y:
               event.contentOffset.y +
-              (this.props.verticalLineScroll !== undefined ? this.props.verticalLineScroll : kMinScrollOffset),
+              (this.props.verticalLineScroll === undefined
+                ? this.props.verticalLineScroll
+                : kMinScrollOffset),
           });
         } else if (key === 'UP_ARROW') {
           this._handleScrollByKeyDown(event, {
             x: event.contentOffset.x,
             y:
               event.contentOffset.y +
-              -(this.props.verticalLineScroll !== undefined ? this.props.verticalLineScroll : kMinScrollOffset),
+              -(this.props.verticalLineScroll === undefined
+                ? this.props.verticalLineScroll
+                : kMinScrollOffset),
           });
         }
       }
@@ -936,10 +944,10 @@ class ScrollView extends React.Component<Props, State> {
   };
 
   _handleScrollByKeyDown = (e: ScrollEvent, newOffset) => {
-    // $FlowFixMe // Cannot get e.contentSize or e.layoutMeasurement because properties are missing in ScrollEvent
-    const maxX = e.contentSize.width - e.layoutMeasurement.width;
-    // $FlowFixMe // Cannot get e.contentSize or e.layoutMeasurement because properties are missing in ScrollEvent
-    const maxY = e.contentSize.height - e.layoutMeasurement.height;
+    const maxX =
+      e.nativeEvent.contentSize.width - e.nativeEvent.layoutMeasurement.width;
+    const maxY =
+      e.nativeEvent.contentSize.height - e.nativeEvent.layoutMeasurement.height;
     this.scrollTo({
       x: Math.max(0, Math.min(maxX, newOffset.x)),
       y: Math.max(0, Math.min(maxY, newOffset.y)),
