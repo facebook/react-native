@@ -10,6 +10,7 @@
 
 'use strict';
 
+const React = require('react');
 const Dimensions = require('../Utilities/Dimensions');
 const FrameRateLogger = require('../Interaction/FrameRateLogger');
 const Keyboard = require('./Keyboard/Keyboard');
@@ -551,19 +552,30 @@ const ScrollResponderMixin = {
    * @param {bool} preventNegativeScrolling Whether to allow pulling the content
    *        down to make it meet the keyboard's top. Default is false.
    */
-  scrollResponderScrollNativeHandleToKeyboard: function(
-    nodeHandle: number,
+  scrollResponderScrollNativeHandleToKeyboard: function<T>(
+    nodeHandle:
+      | number
+      | React.ElementRef<Class<ReactNative.NativeComponent<T>>>,
     additionalOffset?: number,
     preventNegativeScrollOffset?: boolean,
   ) {
     this.additionalScrollOffset = additionalOffset || 0;
     this.preventNegativeScrollOffset = !!preventNegativeScrollOffset;
-    UIManager.measureLayout(
-      nodeHandle,
-      ReactNative.findNodeHandle(this.getInnerViewNode()),
-      this.scrollResponderTextInputFocusError,
-      this.scrollResponderInputMeasureAndScrollToKeyboard,
-    );
+
+    if (typeof nodeHandle === 'number') {
+      UIManager.measureLayout(
+        nodeHandle,
+        ReactNative.findNodeHandle(this.getInnerViewNode()),
+        this.scrollResponderTextInputFocusError,
+        this.scrollResponderInputMeasureAndScrollToKeyboard,
+      );
+    } else {
+      nodeHandle.measureLayout(
+        this.getInnerViewRef(),
+        this.scrollResponderInputMeasureAndScrollToKeyboard,
+        this.scrollResponderTextInputFocusError,
+      );
+    }
   },
 
   /**
