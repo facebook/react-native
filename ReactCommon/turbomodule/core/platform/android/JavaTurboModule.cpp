@@ -26,8 +26,11 @@ namespace react {
 JavaTurboModule::JavaTurboModule(
     const std::string &name,
     jni::alias_ref<JTurboModule> instance,
-    std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(name, jsInvoker), instance_(jni::make_global(instance)) {}
+    std::shared_ptr<CallInvoker> jsInvoker,
+    std::shared_ptr<CallInvoker> nativeInvoker)
+    : TurboModule(name, jsInvoker),
+      instance_(jni::make_global(instance)),
+      nativeInvoker_(nativeInvoker) {}
 
 jni::local_ref<JCxxCallbackImpl::JavaPart>
 JavaTurboModule::createJavaCallbackFromJSIFunction(

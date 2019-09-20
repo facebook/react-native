@@ -29,7 +29,8 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
   JavaTurboModule(
       const std::string &name,
       jni::alias_ref<JTurboModule> instance,
-      std::shared_ptr<CallInvoker> jsInvoker);
+      std::shared_ptr<CallInvoker> jsInvoker,
+      std::shared_ptr<CallInvoker> nativeInvoker);
   jsi::Value invokeJavaMethod(
       jsi::Runtime &runtime,
       TurboModuleMethodValueKind valueKind,
@@ -48,6 +49,7 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
  private:
   jni::global_ref<JTurboModule> instance_;
   std::unordered_set<std::shared_ptr<CallbackWrapper>> callbackWrappers_;
+  std::shared_ptr<CallInvoker> nativeInvoker_;
 
   /**
    * This method must be called from the JS Thread, since it accesses
