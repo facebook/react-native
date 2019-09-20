@@ -7,6 +7,7 @@
 
 #import "RCTBackedTextInputViewProtocol.h"
 #import "RCTBackedTextInputDelegate.h"
+#import "../RCTTextUIKit.h" // TODO(macOS ISS#2323203)
 
 NS_ASSUME_NONNULL_BEGIN
 
