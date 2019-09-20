@@ -10,7 +10,6 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.jstasks.HeadlessJsTaskContext;
 import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
@@ -28,29 +27,8 @@ public final class TimingModule extends ReactContextBaseJavaModule
   public TimingModule(ReactApplicationContext reactContext, DevSupportManager devSupportManager) {
     super(reactContext);
 
-    JSTimers jsTimersProxy =
-        new JSTimers() {
-          @Override
-          public void callTimers(WritableArray timerIDs) {
-            getReactApplicationContext().getJSModule(JSTimers.class).callTimers(timerIDs);
-          }
-
-          @Override
-          public void callIdleCallbacks(double frameTime) {
-            getReactApplicationContext().getJSModule(JSTimers.class).callIdleCallbacks(frameTime);
-          }
-
-          @Override
-          public void emitTimeDriftWarning(String warningMessage) {
-            getReactApplicationContext()
-                .getJSModule(JSTimers.class)
-                .emitTimeDriftWarning(warningMessage);
-          }
-        };
-
     mJavaTimerManager =
-        new JavaTimerManager(
-            reactContext, jsTimersProxy, ReactChoreographer.getInstance(), devSupportManager);
+        new JavaTimerManager(reactContext, ReactChoreographer.getInstance(), devSupportManager);
   }
 
   @Override

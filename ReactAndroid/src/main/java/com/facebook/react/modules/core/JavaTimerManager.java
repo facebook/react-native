@@ -73,7 +73,7 @@ public class JavaTimerManager {
       }
 
       if (mTimersToCall != null) {
-        mJSTimers.callTimers(mTimersToCall);
+        mReactApplicationContext.getJSModule(JSTimers.class).callTimers(mTimersToCall);
         mTimersToCall = null;
       }
 
@@ -131,7 +131,9 @@ public class JavaTimerManager {
       }
 
       if (sendIdleEvents) {
-        mJSTimers.callIdleCallbacks(absoluteFrameStartTime);
+        mReactApplicationContext
+            .getJSModule(JSTimers.class)
+            .callIdleCallbacks(absoluteFrameStartTime);
       }
 
       mCurrentIdleCallbackRunnable = null;
@@ -143,7 +145,6 @@ public class JavaTimerManager {
   }
 
   private final ReactApplicationContext mReactApplicationContext;
-  private final JSTimers mJSTimers;
   private final ReactChoreographer mReactChoreographer;
   private final DevSupportManager mDevSupportManager;
   private final Object mTimerGuard = new Object();
@@ -161,11 +162,9 @@ public class JavaTimerManager {
 
   public JavaTimerManager(
       ReactApplicationContext reactContext,
-      JSTimers jsTimers,
       ReactChoreographer reactChoreographer,
       DevSupportManager devSupportManager) {
     mReactApplicationContext = reactContext;
-    mJSTimers = jsTimers;
     mReactChoreographer = reactChoreographer;
     mDevSupportManager = devSupportManager;
 
@@ -318,9 +317,11 @@ public class JavaTimerManager {
     if (mDevSupportManager.getDevSupportEnabled()) {
       long driftTime = Math.abs(remoteTime - deviceTime);
       if (driftTime > 60000) {
-        mJSTimers.emitTimeDriftWarning(
-            "Debugger and device times have drifted by more than 60s. Please correct this by "
-                + "running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your debugger machine.");
+        mReactApplicationContext
+            .getJSModule(JSTimers.class)
+            .emitTimeDriftWarning(
+                "Debugger and device times have drifted by more than 60s. Please correct this by "
+                    + "running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your debugger machine.");
       }
     }
 
@@ -329,7 +330,7 @@ public class JavaTimerManager {
     if (duration == 0 && !repeat) {
       WritableArray timerToCall = Arguments.createArray();
       timerToCall.pushInt(callbackID);
-      mJSTimers.callTimers(timerToCall);
+      mReactApplicationContext.getJSModule(JSTimers.class).callTimers(timerToCall);
       return;
     }
 
