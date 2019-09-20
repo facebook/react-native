@@ -28,6 +28,7 @@ public:
     jni::alias_ref<jhybridobject> jThis,
     jlong jsContext,
     jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
+    jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate
   );
   static void registerNatives();
@@ -36,6 +37,7 @@ private:
   jni::global_ref<TurboModuleManager::javaobject> javaPart_;
   jsi::Runtime* runtime_;
   std::shared_ptr<CallInvoker> jsCallInvoker_;
+  std::shared_ptr<CallInvoker> nativeCallInvoker_;
   jni::global_ref<TurboModuleManagerDelegate::javaobject> delegate_;
 
   /**
@@ -51,6 +53,7 @@ private:
     jni::alias_ref<TurboModuleManager::jhybridobject> jThis,
     jsi::Runtime *rt,
     std::shared_ptr<CallInvoker> jsCallInvoker,
+    std::shared_ptr<CallInvoker> nativeCallInvoker,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate
   );
 };

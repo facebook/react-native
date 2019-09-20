@@ -24,11 +24,13 @@ TurboModuleManager::TurboModuleManager(
   jni::alias_ref<TurboModuleManager::javaobject> jThis,
   jsi::Runtime* rt,
   std::shared_ptr<CallInvoker> jsCallInvoker,
+  std::shared_ptr<CallInvoker> nativeCallInvoker,
   jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate
 ):
   javaPart_(jni::make_global(jThis)),
   runtime_(rt),
   jsCallInvoker_(jsCallInvoker),
+  nativeCallInvoker_(nativeCallInvoker),
   delegate_(jni::make_global(delegate))
   {}
 
@@ -36,11 +38,13 @@ jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
   jni::alias_ref<jhybridobject> jThis,
   jlong jsContext,
   jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
+  jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
   jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate
 ) {
   auto jsCallInvoker = jsCallInvokerHolder->cthis()->getCallInvoker();
+  auto nativeCallInvoker = nativeCallInvokerHolder->cthis()->getCallInvoker();
 
-  return makeCxxInstance(jThis, (jsi::Runtime *) jsContext, jsCallInvoker, delegate);
+  return makeCxxInstance(jThis, (jsi::Runtime *) jsContext, jsCallInvoker, nativeCallInvoker, delegate);
 }
 
 void TurboModuleManager::registerNatives() {

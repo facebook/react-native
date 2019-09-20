@@ -39,8 +39,14 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   public TurboModuleManager(
       JavaScriptContextHolder jsContext,
       TurboModuleManagerDelegate tmmDelegate,
-      CallInvokerHolder instanceHolder) {
-    mHybridData = initHybrid(jsContext.get(), (CallInvokerHolderImpl) instanceHolder, tmmDelegate);
+      CallInvokerHolder jsCallInvokerHolder,
+      CallInvokerHolder nativeCallInvokerHolder) {
+    mHybridData =
+        initHybrid(
+            jsContext.get(),
+            (CallInvokerHolderImpl) jsCallInvokerHolder,
+            (CallInvokerHolderImpl) nativeCallInvokerHolder,
+            tmmDelegate);
     mTurbomoduleManagerDelegate = tmmDelegate;
   }
 
@@ -78,7 +84,10 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   }
 
   private native HybridData initHybrid(
-      long jsContext, CallInvokerHolderImpl jsQueue, TurboModuleManagerDelegate tmmDelegate);
+      long jsContext,
+      CallInvokerHolderImpl jsCallInvokerHolder,
+      CallInvokerHolderImpl nativeCallInvokerHolder,
+      TurboModuleManagerDelegate tmmDelegate);
 
   private native void installJSIBindings();
 
