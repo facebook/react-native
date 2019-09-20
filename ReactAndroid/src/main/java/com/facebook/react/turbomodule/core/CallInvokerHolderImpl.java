@@ -7,7 +7,7 @@
 package com.facebook.react.turbomodule.core;
 
 import com.facebook.jni.HybridData;
-import com.facebook.react.turbomodule.core.interfaces.JSCallInvokerHolder;
+import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.soloader.SoLoader;
 
 /**
@@ -15,14 +15,14 @@ import com.facebook.soloader.SoLoader;
  * TurboModuleManager. Therefore, we need to wrap JSCallInvoker within a hybrid class so that we may
  * pass it from CatalystInstance, through Java, to TurboModuleManager::initHybrid.
  */
-public class JSCallInvokerHolderImpl implements JSCallInvokerHolder {
+public class CallInvokerHolderImpl implements CallInvokerHolder {
   static {
     SoLoader.loadLibrary("turbomodulejsijni");
   }
 
   private final HybridData mHybridData;
 
-  private JSCallInvokerHolderImpl(HybridData hd) {
+  private CallInvokerHolderImpl(HybridData hd) {
     mHybridData = hd;
   }
 }

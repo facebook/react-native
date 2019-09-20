@@ -23,7 +23,7 @@ namespace react {
 TurboModuleManager::TurboModuleManager(
   jni::alias_ref<TurboModuleManager::javaobject> jThis,
   jsi::Runtime* rt,
-  std::shared_ptr<JSCallInvoker> jsCallInvoker,
+  std::shared_ptr<CallInvoker> jsCallInvoker,
   jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate
 ):
   javaPart_(jni::make_global(jThis)),
@@ -35,10 +35,10 @@ TurboModuleManager::TurboModuleManager(
 jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
   jni::alias_ref<jhybridobject> jThis,
   jlong jsContext,
-  jni::alias_ref<JSCallInvokerHolder::javaobject> jsCallInvokerHolder,
+  jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
   jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate
 ) {
-  auto jsCallInvoker = jsCallInvokerHolder->cthis()->getJSCallInvoker();
+  auto jsCallInvoker = jsCallInvokerHolder->cthis()->getCallInvoker();
 
   return makeCxxInstance(jThis, (jsi::Runtime *) jsContext, jsCallInvoker, delegate);
 }

@@ -18,7 +18,7 @@ LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
 LOCAL_STATIC_LIBRARIES = libreactnative
 
 # Name of this module.
-LOCAL_MODULE := jscallinvoker
+LOCAL_MODULE := callinvoker
 
 # Compile all local c++ files under ./ReactCommon
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/ReactCommon/*.cpp)

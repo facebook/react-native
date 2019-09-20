@@ -8,25 +8,25 @@
 #pragma once
 
 #include <fb/fbjni.h>
-#include <ReactCommon/JSCallInvoker.h>
+#include <ReactCommon/CallInvoker.h>
 #include <memory>
 
 namespace facebook {
 namespace react {
 
-class JSCallInvokerHolder
-    : public jni::HybridClass<JSCallInvokerHolder> {
+class CallInvokerHolder
+    : public jni::HybridClass<CallInvokerHolder> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/turbomodule/core/JSCallInvokerHolderImpl;";
+      "Lcom/facebook/react/turbomodule/core/CallInvokerHolderImpl;";
 
   static void registerNatives();
-  std::shared_ptr<JSCallInvoker> getJSCallInvoker();
+  std::shared_ptr<CallInvoker> getCallInvoker();
 
  private:
   friend HybridBase;
-  JSCallInvokerHolder(std::shared_ptr<JSCallInvoker> jsCallInvoker);
-  std::shared_ptr<JSCallInvoker> _jsCallInvoker;
+  CallInvokerHolder(std::shared_ptr<CallInvoker> callInvoker);
+  std::shared_ptr<CallInvoker> _callInvoker;
 };
 
 } // namespace react

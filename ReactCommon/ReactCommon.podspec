@@ -37,8 +37,8 @@ Pod::Spec.new do |s|
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
 
-  s.subspec "jscallinvoker" do |ss|
-    ss.source_files = "jscallinvoker/**/*.{cpp,h}"
+  s.subspec "callinvoker" do |ss|
+    ss.source_files = "callinvoker/**/*.{cpp,h}"
 
     ss.dependency "React-cxxreact", version
     ss.dependency "DoubleConversion"
@@ -47,7 +47,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "turbomodule" do |ss|
-    ss.dependency "ReactCommon/jscallinvoker", version
+    ss.dependency "ReactCommon/callinvoker", version
     ss.dependency "React-Core", version
     ss.dependency "React-cxxreact", version
     ss.dependency "React-jsi", version

@@ -1,7 +1,7 @@
 load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
 
 rn_xplat_cxx_library(
-    name = "jscallinvoker",
+    name = "callinvoker",
     srcs = glob(["**/*.cpp"]),
     header_namespace = "",
     exported_headers = subdir_glob(

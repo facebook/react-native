@@ -12,7 +12,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTModuleMethod.h>
-#import <ReactCommon/JSCallInvoker.h>
+#import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/TurboModule.h>
 #import <ReactCommon/TurboModuleUtils.h>
 #import <cxxreact/MessageQueueThread.h>
@@ -33,7 +33,7 @@ class Instance;
  */
 class JSI_EXPORT ObjCTurboModule : public TurboModule {
  public:
-  ObjCTurboModule(const std::string &name, id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker);
+  ObjCTurboModule(const std::string &name, id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
 
   jsi::Value invokeObjCMethod(
       jsi::Runtime &runtime,
@@ -61,7 +61,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       jsi::Runtime &runtime,
       TurboModuleMethodValueKind valueKind,
       const id<RCTTurboModule> module,
-      std::shared_ptr<JSCallInvoker> jsInvoker,
+      std::shared_ptr<CallInvoker> jsInvoker,
       const std::string &methodName,
       SEL selector,
       const jsi::Value *args,
@@ -74,7 +74,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
   using PromiseInvocationBlock =
       void (^)(jsi::Runtime &rt, RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper);
   jsi::Value
-  createPromise(jsi::Runtime &runtime, std::shared_ptr<react::JSCallInvoker> jsInvoker, PromiseInvocationBlock invoke);
+  createPromise(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> jsInvoker, PromiseInvocationBlock invoke);
 };
 
 } // namespace react
@@ -94,7 +94,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 @optional
 // This should be required, after migration is done.
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-    (std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker;
+    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
 @end
 

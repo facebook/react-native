@@ -26,14 +26,14 @@ namespace react {
 JavaTurboModule::JavaTurboModule(
     const std::string &name,
     jni::alias_ref<JTurboModule> instance,
-    std::shared_ptr<JSCallInvoker> jsInvoker)
+    std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(name, jsInvoker), instance_(jni::make_global(instance)) {}
 
 jni::local_ref<JCxxCallbackImpl::JavaPart>
 JavaTurboModule::createJavaCallbackFromJSIFunction(
     jsi::Function &function,
     jsi::Runtime &rt,
-    std::shared_ptr<JSCallInvoker> jsInvoker) {
+    std::shared_ptr<CallInvoker> jsInvoker) {
   auto wrapper = std::make_shared<react::CallbackWrapper>(
       std::move(function), rt, jsInvoker);
   callbackWrappers_.insert(wrapper);
@@ -223,7 +223,7 @@ std::vector<jvalue> JavaTurboModule::convertJSIArgsToJNIArgs(
     std::vector<std::string> methodArgTypes,
     const jsi::Value *args,
     size_t count,
-    std::shared_ptr<JSCallInvoker> jsInvoker,
+    std::shared_ptr<CallInvoker> jsInvoker,
     TurboModuleMethodValueKind valueKind) {
   unsigned int expectedArgumentCount = valueKind == PromiseKind
       ? methodArgTypes.size() - 1

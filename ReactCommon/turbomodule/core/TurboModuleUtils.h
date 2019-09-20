@@ -13,7 +13,7 @@
 #include <folly/Optional.h>
 #include <jsi/jsi.h>
 
-#include <ReactCommon/JSCallInvoker.h>
+#include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/LongLivedObject.h>
 
 using namespace facebook;
@@ -49,14 +49,14 @@ class CallbackWrapper : public LongLivedObject {
     Data(
         jsi::Function callback,
         jsi::Runtime &runtime,
-        std::shared_ptr<react::JSCallInvoker> jsInvoker)
+        std::shared_ptr<react::CallInvoker> jsInvoker)
         : callback(std::move(callback)),
           runtime(runtime),
           jsInvoker(std::move(jsInvoker)) {}
 
     jsi::Function callback;
     jsi::Runtime &runtime;
-    std::shared_ptr<react::JSCallInvoker> jsInvoker;
+    std::shared_ptr<react::CallInvoker> jsInvoker;
   };
 
   folly::Optional<Data> data_;
@@ -65,7 +65,7 @@ class CallbackWrapper : public LongLivedObject {
   static std::weak_ptr<CallbackWrapper> createWeak(
       jsi::Function callback,
       jsi::Runtime &runtime,
-      std::shared_ptr<react::JSCallInvoker> jsInvoker) {
+      std::shared_ptr<react::CallInvoker> jsInvoker) {
     auto wrapper = std::make_shared<CallbackWrapper>(
         std::move(callback), runtime, jsInvoker);
     LongLivedObjectCollection::get().add(wrapper);
@@ -75,7 +75,7 @@ class CallbackWrapper : public LongLivedObject {
   CallbackWrapper(
       jsi::Function callback,
       jsi::Runtime &runtime,
-      std::shared_ptr<react::JSCallInvoker> jsInvoker)
+      std::shared_ptr<react::CallInvoker> jsInvoker)
       : data_(Data{std::move(callback), runtime, jsInvoker}) {}
 
   // Delete the enclosed jsi::Function
@@ -98,7 +98,7 @@ class CallbackWrapper : public LongLivedObject {
     return data_->runtime;
   }
 
-  react::JSCallInvoker &jsInvoker() {
+  react::CallInvoker &jsInvoker() {
     assert(!isDestroyed());
     return *(data_->jsInvoker);
   }

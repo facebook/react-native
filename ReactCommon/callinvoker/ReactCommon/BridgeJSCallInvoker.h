@@ -10,7 +10,7 @@
 #include <functional>
 #include <memory>
 
-#include <ReactCommon/JSCallInvoker.h>
+#include <ReactCommon/CallInvoker.h>
 
 namespace facebook {
 namespace react {
@@ -27,7 +27,7 @@ class Instance;
  * API to call JS from native, whether synchronously or asynchronously.
  * Also, this class should not depend on `Instance` in the future.
  */
-class BridgeJSCallInvoker : public JSCallInvoker {
+class BridgeJSCallInvoker : public CallInvoker {
  public:
   BridgeJSCallInvoker(std::weak_ptr<Instance> reactInstance);
 

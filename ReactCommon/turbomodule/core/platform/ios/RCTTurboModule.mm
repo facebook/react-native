@@ -18,7 +18,7 @@
 #import <React/RCTManagedPointer.h>
 #import <React/RCTModuleMethod.h>
 #import <React/RCTUtils.h>
-#import <ReactCommon/JSCallInvoker.h>
+#import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/LongLivedObject.h>
 #import <ReactCommon/TurboModule.h>
 #import <ReactCommon/TurboModuleUtils.h>
@@ -93,16 +93,14 @@ static jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
 static id convertJSIValueToObjCObject(
     jsi::Runtime &runtime,
     const jsi::Value &value,
-    std::shared_ptr<react::JSCallInvoker> jsInvoker);
+    std::shared_ptr<react::CallInvoker> jsInvoker);
 static NSString *convertJSIStringToNSString(jsi::Runtime &runtime, const jsi::String &value)
 {
   return [NSString stringWithUTF8String:value.utf8(runtime).c_str()];
 }
 
-static NSArray *convertJSIArrayToNSArray(
-    jsi::Runtime &runtime,
-    const jsi::Array &value,
-    std::shared_ptr<react::JSCallInvoker> jsInvoker)
+static NSArray *
+convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value, std::shared_ptr<react::CallInvoker> jsInvoker)
 {
   size_t size = value.size(runtime);
   NSMutableArray *result = [NSMutableArray new];
@@ -117,7 +115,7 @@ static NSArray *convertJSIArrayToNSArray(
 static NSDictionary *convertJSIObjectToNSDictionary(
     jsi::Runtime &runtime,
     const jsi::Object &value,
-    std::shared_ptr<react::JSCallInvoker> jsInvoker)
+    std::shared_ptr<react::CallInvoker> jsInvoker)
 {
   jsi::Array propertyNames = value.getPropertyNames(runtime);
   size_t size = propertyNames.size(runtime);
@@ -136,11 +134,11 @@ static NSDictionary *convertJSIObjectToNSDictionary(
 static RCTResponseSenderBlock convertJSIFunctionToCallback(
     jsi::Runtime &runtime,
     const jsi::Function &value,
-    std::shared_ptr<react::JSCallInvoker> jsInvoker);
+    std::shared_ptr<react::CallInvoker> jsInvoker);
 static id convertJSIValueToObjCObject(
     jsi::Runtime &runtime,
     const jsi::Value &value,
-    std::shared_ptr<react::JSCallInvoker> jsInvoker)
+    std::shared_ptr<react::CallInvoker> jsInvoker)
 {
   if (value.isUndefined() || value.isNull()) {
     return nil;
@@ -171,7 +169,7 @@ static id convertJSIValueToObjCObject(
 static RCTResponseSenderBlock convertJSIFunctionToCallback(
     jsi::Runtime &runtime,
     const jsi::Function &value,
-    std::shared_ptr<react::JSCallInvoker> jsInvoker)
+    std::shared_ptr<react::CallInvoker> jsInvoker)
 {
   auto weakWrapper = react::CallbackWrapper::createWeak(value.getFunction(runtime), runtime, jsInvoker);
   BOOL __block wrapperWasCalled = NO;
@@ -205,7 +203,7 @@ namespace react {
 
 jsi::Value ObjCTurboModule::createPromise(
     jsi::Runtime &runtime,
-    std::shared_ptr<react::JSCallInvoker> jsInvoker,
+    std::shared_ptr<react::CallInvoker> jsInvoker,
     PromiseInvocationBlock invoke)
 {
   if (!invoke) {
@@ -328,7 +326,7 @@ jsi::Value performMethodInvocation(
     NSInvocation *inv,
     TurboModuleMethodValueKind valueKind,
     const id<RCTTurboModule> module,
-    std::shared_ptr<JSCallInvoker> jsInvoker,
+    std::shared_ptr<CallInvoker> jsInvoker,
     NSMutableArray *retainedObjectsForInvocation)
 {
   __block id result;
@@ -464,7 +462,7 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
     jsi::Runtime &runtime,
     TurboModuleMethodValueKind valueKind,
     const id<RCTTurboModule> module,
-    std::shared_ptr<JSCallInvoker> jsInvoker,
+    std::shared_ptr<CallInvoker> jsInvoker,
     const std::string &methodName,
     SEL selector,
     const jsi::Value *args,
@@ -601,7 +599,7 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
 ObjCTurboModule::ObjCTurboModule(
     const std::string &name,
     id<RCTTurboModule> instance,
-    std::shared_ptr<JSCallInvoker> jsInvoker)
+    std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(name, jsInvoker), instance_(instance)
 {
 }

@@ -226,7 +226,7 @@ PODS:
     - React-Core/RCTTextHeaders (= 1000.0.0)
   - React-RCTVibration (1000.0.0):
     - React-Core/RCTVibrationHeaders (= 1000.0.0)
-  - ReactCommon/jscallinvoker (1000.0.0):
+  - ReactCommon/callinvoker (1000.0.0):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
@@ -238,7 +238,7 @@ PODS:
     - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
-    - ReactCommon/jscallinvoker (= 1000.0.0)
+    - ReactCommon/callinvoker (= 1000.0.0)
   - ReactCommon/turbomodule/samples (1000.0.0):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
@@ -246,7 +246,7 @@ PODS:
     - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
-    - ReactCommon/jscallinvoker (= 1000.0.0)
+    - ReactCommon/callinvoker (= 1000.0.0)
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - Yoga (1.14.0)
 
@@ -279,7 +279,7 @@ DEPENDENCIES:
   - React-RCTTest (from `RCTTest`)
   - React-RCTText (from `../Libraries/Text`)
   - React-RCTVibration (from `../Libraries/Vibration`)
-  - ReactCommon/jscallinvoker (from `../ReactCommon`)
+  - ReactCommon/callinvoker (from `../ReactCommon`)
   - ReactCommon/turbomodule/core (from `../ReactCommon`)
   - ReactCommon/turbomodule/samples (from `../ReactCommon`)
   - Yoga (from `../ReactCommon/yoga`)
@@ -374,7 +374,7 @@ SPEC CHECKSUMS:
   React-RCTTest: 73df09ec226fcad6e7e058a313e5dd16cccf86a8
   React-RCTText: 9078167d3bc011162326f2d8ef4dd580ec1eca17
   React-RCTVibration: 63c20d89204937ff8c7bbc1e712383347e6fbd90
-  ReactCommon: 63d1a6355d5810a21a61efda9ac93804571a1b8b
+  ReactCommon: 9d212865526209dc2d01be40340c8d27b53e6bea
   Yoga: d88d8b51ee5b247f43211e2edf272438df1b484f
 
 PODFILE CHECKSUM: 060903e270072f1e192b064848e6c34528af1c87

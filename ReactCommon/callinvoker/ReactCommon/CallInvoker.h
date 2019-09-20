@@ -17,11 +17,11 @@ namespace react {
  * An interface for a generic native-to-JS call invoker. See BridgeJSCallInvoker
  * for an implementation.
  */
-class JSCallInvoker {
+class CallInvoker {
  public:
   virtual void invokeAsync(std::function<void()> &&func) = 0;
   // TODO: add sync support
-  virtual ~JSCallInvoker() {}
+  virtual ~CallInvoker() {}
 };
 
 } // namespace react

@@ -10,7 +10,7 @@
 #include <sstream>
 #include <vector>
 
-#include <ReactCommon/JSCallInvokerHolder.h>
+#include <ReactCommon/CallInvokerHolder.h>
 #include <cxxreact/CxxNativeModule.h>
 #include <cxxreact/Instance.h>
 #include <cxxreact/JSBigString.h>
@@ -281,12 +281,12 @@ void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
   instance_->handleMemoryPressure(pressureLevel);
 }
 
-jni::alias_ref<JSCallInvokerHolder::javaobject>
+jni::alias_ref<CallInvokerHolder::javaobject>
 CatalystInstanceImpl::getJSCallInvokerHolder() {
   if (!javaInstanceHolder_) {
     jsCallInvoker_ = std::make_shared<BridgeJSCallInvoker>(instance_);
     javaInstanceHolder_ =
-        jni::make_global(JSCallInvokerHolder::newObjectCxxArgs(jsCallInvoker_));
+        jni::make_global(CallInvokerHolder::newObjectCxxArgs(jsCallInvoker_));
   }
 
   return javaInstanceHolder_;

@@ -29,7 +29,7 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
   JavaTurboModule(
       const std::string &name,
       jni::alias_ref<JTurboModule> instance,
-      std::shared_ptr<JSCallInvoker> jsInvoker);
+      std::shared_ptr<CallInvoker> jsInvoker);
   jsi::Value invokeJavaMethod(
       jsi::Runtime &runtime,
       TurboModuleMethodValueKind valueKind,
@@ -56,7 +56,7 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
   jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
       jsi::Function &function,
       jsi::Runtime &rt,
-      std::shared_ptr<JSCallInvoker> jsInvoker);
+      std::shared_ptr<CallInvoker> jsInvoker);
   std::vector<jvalue> convertJSIArgsToJNIArgs(
       JNIEnv *env,
       jsi::Runtime &rt,
@@ -64,7 +64,7 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
       std::vector<std::string> methodArgTypes,
       const jsi::Value *args,
       size_t count,
-      std::shared_ptr<JSCallInvoker> jsInvoker,
+      std::shared_ptr<CallInvoker> jsInvoker,
       TurboModuleMethodValueKind valueKind);
 };
 
