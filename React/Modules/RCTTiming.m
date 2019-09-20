@@ -173,26 +173,32 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  [self stopTimers];
-  _bridge = nil;
+  [_bridge dispatchBlock:^{
+    [self stopTimers];
+    self->_bridge = nil;
+  } queue:RCTJSThread];
 }
 
 - (void)appDidMoveToBackground
 {
-  // Deactivate the CADisplayLink while in the background.
-  [self stopTimers];
-  _inBackground = YES;
-
-  // Issue one final timer callback, which will schedule a
-  // background NSTimer, if needed.
-  [self didUpdateFrame:nil];
+  [_bridge dispatchBlock:^{
+    // Deactivate the CADisplayLink while in the background.
+    [self stopTimers];
+    self->_inBackground = YES;
+    
+    // Issue one final timer callback, which will schedule a
+    // background NSTimer, if needed.
+    [self didUpdateFrame:nil];
+  } queue:RCTJSThread];
 }
 
 - (void)appDidMoveToForeground
 {
-  [self markEndOfBackgroundTaskIfNeeded];
-  _inBackground = NO;
-  [self startTimers];
+  [_bridge dispatchBlock:^{
+    [self markEndOfBackgroundTaskIfNeeded];
+    self->_inBackground = NO;
+    [self startTimers];
+  } queue:RCTJSThread];
 }
 
 - (void)stopTimers
@@ -225,9 +231,7 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)hasPendingTimers
 {
-  @synchronized (_timers) {
-    return _sendIdleEvents || _timers.count > 0;
-  }
+  return _sendIdleEvents || _timers.count > 0;
 }
 
 - (void)didUpdateFrame:(RCTFrameUpdate *)update
@@ -235,13 +239,11 @@ RCT_EXPORT_MODULE()
   NSDate *nextScheduledTarget = [NSDate distantFuture];
   NSMutableArray<_RCTTimer *> *timersToCall = [NSMutableArray new];
   NSDate *now = [NSDate date]; // compare all the timers to the same base time
-  @synchronized (_timers) {
-    for (_RCTTimer *timer in _timers.allValues) {
-      if ([timer shouldFire:now]) {
-        [timersToCall addObject:timer];
-      } else {
-        nextScheduledTarget = [nextScheduledTarget earlierDate:timer.target];
-      }
+  for (_RCTTimer *timer in _timers.allValues) {
+    if ([timer shouldFire:now]) {
+      [timersToCall addObject:timer];
+    } else {
+      nextScheduledTarget = [nextScheduledTarget earlierDate:timer.target];
     }
   }
 
@@ -261,9 +263,7 @@ RCT_EXPORT_MODULE()
       [timer reschedule];
       nextScheduledTarget = [nextScheduledTarget earlierDate:timer.target];
     } else {
-      @synchronized (_timers) {
-        [_timers removeObjectForKey:timer.callbackID];
-      }
+      [_timers removeObjectForKey:timer.callbackID];
     }
   }
 
@@ -282,10 +282,7 @@ RCT_EXPORT_MODULE()
   // Switch to a paused state only if we didn't call any timer this frame, so if
   // in response to this timer another timer is scheduled, we don't pause and unpause
   // the displaylink frivolously.
-  NSUInteger timerCount;
-  @synchronized (_timers) {
-    timerCount = _timers.count;
-  }
+  NSUInteger timerCount = _timers.count;
   if (_inBackground) {
     if (timerCount) {
       [self markStartOfBackgroundTaskIfNeeded];
@@ -307,18 +304,16 @@ RCT_EXPORT_MODULE()
 
 - (void)scheduleSleepTimer:(NSDate *)sleepTarget
 {
-  @synchronized (self) {
-    if (!_sleepTimer || !_sleepTimer.valid) {
-      _sleepTimer = [[NSTimer alloc] initWithFireDate:sleepTarget
-                                            interval:0
-                                              target:[_RCTTimingProxy proxyWithTarget:self]
-                                            selector:@selector(timerDidFire)
-                                            userInfo:nil
-                                              repeats:NO];
-      [[NSRunLoop currentRunLoop] addTimer:_sleepTimer forMode:NSDefaultRunLoopMode];
-    } else {
-      _sleepTimer.fireDate = [_sleepTimer.fireDate earlierDate:sleepTarget];
-    }
+  if (!_sleepTimer || !_sleepTimer.valid) {
+    _sleepTimer = [[NSTimer alloc] initWithFireDate:sleepTarget
+                                           interval:0
+                                             target:[_RCTTimingProxy proxyWithTarget:self]
+                                           selector:@selector(timerDidFire)
+                                           userInfo:nil
+                                            repeats:NO];
+    [[NSRunLoop currentRunLoop] addTimer:_sleepTimer forMode:NSDefaultRunLoopMode];
+  } else {
+    _sleepTimer.fireDate = [_sleepTimer.fireDate earlierDate:sleepTarget];
   }
 }
 
@@ -362,9 +357,7 @@ RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
                                                   interval:jsDuration
                                                 targetTime:targetTime
                                                    repeats:repeats];
-  @synchronized (_timers) {
-    _timers[callbackID] = timer;
-  }
+  _timers[callbackID] = timer;
 
   if (_inBackground) {
     [self markStartOfBackgroundTaskIfNeeded];
@@ -380,9 +373,7 @@ RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
 
 RCT_EXPORT_METHOD(deleteTimer:(nonnull NSNumber *)timerID)
 {
-  @synchronized (_timers) {
-    [_timers removeObjectForKey:timerID];
-  }
+  [_timers removeObjectForKey:timerID];
   if (![self hasPendingTimers]) {
     [self stopTimers];
   }
