@@ -6,6 +6,7 @@
  *
  * @flow
  * @format
+ * @generate-docs
  */
 
 'use strict';
