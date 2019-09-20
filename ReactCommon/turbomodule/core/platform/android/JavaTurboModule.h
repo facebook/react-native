@@ -19,6 +19,12 @@
 namespace facebook {
 namespace react {
 
+struct JNIArgs {
+  JNIArgs(size_t count) : args_(count) {}
+  std::vector<jvalue> args_;
+  std::vector<jobject> globalRefs_;
+};
+
 struct JTurboModule : jni::JavaClass<JTurboModule> {
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/turbomodule/core/interfaces/TurboModule;";
@@ -59,7 +65,7 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
       jsi::Function &function,
       jsi::Runtime &rt,
       std::shared_ptr<CallInvoker> jsInvoker);
-  std::vector<jvalue> convertJSIArgsToJNIArgs(
+  JNIArgs convertJSIArgsToJNIArgs(
       JNIEnv *env,
       jsi::Runtime &rt,
       std::string methodName,
