@@ -90,6 +90,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       NativeArray *arguments);
   void jniCallJSCallback(jint callbackId, NativeArray *arguments);
   jni::alias_ref<CallInvokerHolder::javaobject> getJSCallInvokerHolder();
+  jni::alias_ref<CallInvokerHolder::javaobject> getNativeCallInvokerHolder();
   void setGlobalVariable(std::string propName, std::string &&jsonValue);
   jlong getJavaScriptContext();
   void handleMemoryPressure(int pressureLevel);
@@ -99,8 +100,8 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   std::shared_ptr<Instance> instance_;
   std::shared_ptr<ModuleRegistry> moduleRegistry_;
   std::shared_ptr<JMessageQueueThread> moduleMessageQueue_;
-  jni::global_ref<CallInvokerHolder::javaobject> javaInstanceHolder_;
-  std::shared_ptr<BridgeJSCallInvoker> jsCallInvoker_;
+  jni::global_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder_;
+  jni::global_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder_;
 };
 
 } // namespace react

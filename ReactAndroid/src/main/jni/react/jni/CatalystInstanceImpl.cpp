@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <ReactCommon/CallInvokerHolder.h>
+#include <ReactCommon/MessageQueueThreadCallInvoker.h>
 #include <cxxreact/CxxNativeModule.h>
 #include <cxxreact/Instance.h>
 #include <cxxreact/JSBigString.h>
@@ -125,6 +126,9 @@ void CatalystInstanceImpl::registerNatives() {
       makeNativeMethod(
           "getJSCallInvokerHolder",
           CatalystInstanceImpl::getJSCallInvokerHolder),
+      makeNativeMethod(
+          "getNativeCallInvokerHolder",
+          CatalystInstanceImpl::getNativeCallInvokerHolder),
       makeNativeMethod(
           "jniHandleMemoryPressure",
           CatalystInstanceImpl::handleMemoryPressure),
@@ -283,13 +287,22 @@ void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
 
 jni::alias_ref<CallInvokerHolder::javaobject>
 CatalystInstanceImpl::getJSCallInvokerHolder() {
-  if (!javaInstanceHolder_) {
-    jsCallInvoker_ = std::make_shared<BridgeJSCallInvoker>(instance_);
-    javaInstanceHolder_ =
-        jni::make_global(CallInvokerHolder::newObjectCxxArgs(jsCallInvoker_));
+  if (!jsCallInvokerHolder_) {
+    jsCallInvokerHolder_ =
+        jni::make_global(CallInvokerHolder::newObjectCxxArgs(std::make_shared<BridgeJSCallInvoker>(instance_)));
   }
 
-  return javaInstanceHolder_;
+  return jsCallInvokerHolder_;
+}
+
+jni::alias_ref<CallInvokerHolder::javaobject>
+CatalystInstanceImpl::getNativeCallInvokerHolder() {
+  if (!nativeCallInvokerHolder_) {
+    nativeCallInvokerHolder_ =
+        jni::make_global(CallInvokerHolder::newObjectCxxArgs(std::make_shared<MessageQueueThreadCallInvoker>(moduleMessageQueue_)));
+  }
+
+  return nativeCallInvokerHolder_;
 }
 
 } // namespace react
