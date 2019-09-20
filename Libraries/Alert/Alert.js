@@ -26,7 +26,7 @@ type Options = {
   onDismiss?: ?Function,
 };
 
-type AlertType = $Keys<{
+export type AlertType = $Keys<{
   default: string,
   'plain-text': string,
   'secure-text': string,

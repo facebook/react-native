@@ -12,6 +12,7 @@
 const React = require('react');
 const View = require('../Components/View/View');
 const VirtualizedList = require('./VirtualizedList');
+const Platform = require('../Utilities/Platform'); // TODO(macOS ISS#2323203)
 
 const invariant = require('invariant');
 

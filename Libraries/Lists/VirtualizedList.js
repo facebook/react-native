@@ -1286,6 +1286,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.props.onKeyDown(e);
     } else {
       if (Platform.OS === 'macos') {
+        // $FlowFixMe Cannot get e.nativeEvent because property nativeEvent is missing in Event
         const event = e.nativeEvent;
         const key = event.key;
 

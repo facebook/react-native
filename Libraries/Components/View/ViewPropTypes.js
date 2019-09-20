@@ -56,7 +56,7 @@ type DirectEventProps = $ReadOnly<{|
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs accessibility key down gesture.
    */
-  onKeyDown?: ?(event: SyntheticEvent<{key: string}>) => mixed, // TODO(macOS ISS#2323203)
+  onKeyDown?: ?(event: Event) => mixed, // TODO(macOS ISS#2323203)
 
   onMouseEnter?: (event: SyntheticEvent<{}>) => mixed, // [TODO(macOS ISS#2323203)
 
@@ -281,25 +281,6 @@ type AndroidViewProps = $ReadOnly<{|
   clickable?: ?boolean, // TODO(android ISS)
 
   /**
-   * When `clickable` is true, the system will try to invoke this function
-   * when the user performs a click.
-   *
-   * @platform android
-   */
-
-  onClick?: ?(event: PressEvent) => mixed, // TODO(android ISS)
-  /**
-   * Indicates to accessibility services to treat UI component like a
-   * native one. Works for Android only.
-   *
-   * @platform android
-   *
-   * See http://facebook.github.io/react-native/docs/view.html#accessibilitycomponenttype
-   */
-
-  accessibilityComponentType?: ?AccessibilityComponentType,
-
-  /**
    * Indicates to accessibility services whether the user should be notified
    * when this view changes. Works for Android API >= 19 only.
    *
@@ -363,6 +344,14 @@ type AndroidViewProps = $ReadOnly<{|
    * @platform android
    */
   nextFocusUp?: ?number,
+
+  /**
+   * When `clickable` is true, the system will try to invoke this function
+   * when the user performs a click.
+   *
+   * @platform android
+   */
+  onClick?: ?(event: PressEvent) => mixed, // TODO(android ISS)
 |}>;
 
 type IOSViewProps = $ReadOnly<{|
@@ -393,23 +382,6 @@ type IOSViewProps = $ReadOnly<{|
    * See http://facebook.github.io/react-native/docs/view.html#accessibilityElementsHidden
    */
   accessibilityElementsHidden?: ?boolean,
-
-  /**
-   * Whether this `View` should be rendered as a bitmap before compositing.
-   *
-   * @platform ios
-   */
-  onAccessibilityAction?: ?(event: SyntheticEvent<{}>) => mixed,
-
-  onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
-
-  /**
-   * When `accessible` is true, the system will try to invoke this function
-   * when the user performs accessibility tap gesture.
-   *
-   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilitytap
-   */
-  onAccessibilityTap?: ?() => void,
 
   /**
    * When `accessible` is `true`, the system will invoke this function when the

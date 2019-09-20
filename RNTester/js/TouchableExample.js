@@ -441,8 +441,6 @@ class TouchableMouseEvents extends React.Component<{}, $FlowFixMeState> {
             style={styles.wrapper}
             testID="touchable_feedback_mouse_events_button"
             accessibilityLabel="touchable feedback mouse events"
-            accessibilityTraits="button"
-            accessibilityComponentType="button"
             onPressIn={e => this._appendEvent('MouseIn', e.nativeEvent)}
             onPressOut={e => this._appendEvent('MouseOut', e.nativeEvent)}>
             <Text style={styles.button}>Click Me</Text>

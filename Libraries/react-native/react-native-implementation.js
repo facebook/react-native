@@ -181,6 +181,9 @@ module.exports = {
   get Alert() {
     return require('Alert');
   },
+  get AlertMacOS() {
+    return require('AlertMacOS');
+  },
   get Animated() {
     return require('Animated');
   },
