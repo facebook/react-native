@@ -8,7 +8,7 @@ package com.facebook.yoga;
 
 public abstract class YogaConfigJNIBase extends YogaConfig {
 
-  protected long mNativePointer;
+  long mNativePointer;
   private YogaLogger mLogger;
 
   private YogaConfigJNIBase(long nativePointer) {
