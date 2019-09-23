@@ -10,8 +10,8 @@
 #include <react/imagemanager/ImageResponse.h>
 #include <react/imagemanager/ImageResponseObserver.h>
 
-#include <better/mutex.h>
 #include <better/small_vector.h>
+#include <mutex>
 #include <vector>
 
 namespace facebook {
@@ -27,6 +27,8 @@ class ImageResponseObserverCoordinator {
  public:
   /*
    * Interested parties may observe the image response.
+   * If the current image request status is not equal to `Loading`, the observer
+   * will be called immediately.
    */
   void addObserver(ImageResponseObserver *observer) const;
 
@@ -74,7 +76,7 @@ class ImageResponseObserverCoordinator {
   /*
    * Observer and data mutex.
    */
-  mutable better::shared_mutex mutex_;
+  mutable std::mutex mutex_;
 };
 
 } // namespace react
