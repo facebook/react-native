@@ -30,23 +30,23 @@ class ImageResponseObserverCoordinator {
    * If the current image request status is not equal to `Loading`, the observer
    * will be called immediately.
    */
-  void addObserver(ImageResponseObserver *observer) const;
+  void addObserver(ImageResponseObserver const &observer) const;
 
   /*
    * Interested parties may stop observing the image response.
    */
-  void removeObserver(ImageResponseObserver *observer) const;
+  void removeObserver(ImageResponseObserver const &observer) const;
 
   /*
    * Platform-specific image loader will call this method with progress updates.
    */
-  void nativeImageResponseProgress(float) const;
+  void nativeImageResponseProgress(float progress) const;
 
   /*
    * Platform-specific image loader will call this method with a completed image
    * response.
    */
-  void nativeImageResponseComplete(const ImageResponse &imageResponse) const;
+  void nativeImageResponseComplete(ImageResponse const &imageResponse) const;
 
   /*
    * Platform-specific image loader will call this method in case of any
@@ -59,7 +59,7 @@ class ImageResponseObserverCoordinator {
    * List of observers.
    * Mutable: protected by mutex_.
    */
-  mutable better::small_vector<ImageResponseObserver *, 1> observers_;
+  mutable better::small_vector<ImageResponseObserver const *, 1> observers_;
 
   /*
    * Current status of image loading.

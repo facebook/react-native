@@ -14,34 +14,34 @@ namespace facebook {
 namespace react {
 
 void ImageResponseObserverCoordinator::addObserver(
-    ImageResponseObserver *observer) const {
+    ImageResponseObserver const &observer) const {
   mutex_.lock();
   switch (status_) {
     case ImageResponse::Status::Loading: {
-      observers_.push_back(observer);
+      observers_.push_back(&observer);
       mutex_.unlock();
       break;
     }
     case ImageResponse::Status::Completed: {
       auto imageData = imageData_;
       mutex_.unlock();
-      observer->didReceiveImage(ImageResponse{imageData});
+      observer.didReceiveImage(ImageResponse{imageData});
       break;
     }
     case ImageResponse::Status::Failed: {
       mutex_.unlock();
-      observer->didReceiveFailure();
+      observer.didReceiveFailure();
       break;
     }
   }
 }
 
 void ImageResponseObserverCoordinator::removeObserver(
-    ImageResponseObserver *observer) const {
+    ImageResponseObserver const &observer) const {
   std::lock_guard<std::mutex> lock(mutex_);
 
   // We remove only one element to maintain a balance between add/remove calls.
-  auto position = std::find(observers_.begin(), observers_.end(), observer);
+  auto position = std::find(observers_.begin(), observers_.end(), &observer);
   if (position != observers_.end()) {
     observers_.erase(position, observers_.end());
   }
@@ -60,7 +60,7 @@ void ImageResponseObserverCoordinator::nativeImageResponseProgress(
 }
 
 void ImageResponseObserverCoordinator::nativeImageResponseComplete(
-    const ImageResponse &imageResponse) const {
+    ImageResponse const &imageResponse) const {
   mutex_.lock();
   imageData_ = imageResponse.getImage();
   assert(status_ == ImageResponse::Status::Loading);
