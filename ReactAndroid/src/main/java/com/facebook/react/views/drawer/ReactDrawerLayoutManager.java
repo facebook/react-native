@@ -8,7 +8,6 @@ package com.facebook.react.views.drawer;
 
 import android.view.Gravity;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -22,8 +21,11 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.viewmanagers.AndroidDrawerLayoutManagerDelegate;
+import com.facebook.react.viewmanagers.AndroidDrawerLayoutManagerInterface;
 import com.facebook.react.views.drawer.events.DrawerClosedEvent;
 import com.facebook.react.views.drawer.events.DrawerOpenedEvent;
 import com.facebook.react.views.drawer.events.DrawerSlideEvent;
@@ -32,12 +34,19 @@ import java.util.Map;
 
 /** View Manager for {@link ReactDrawerLayout} components. */
 @ReactModule(name = ReactDrawerLayoutManager.REACT_CLASS)
-public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout> {
+public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout>
+    implements AndroidDrawerLayoutManagerInterface<ReactDrawerLayout> {
 
   public static final String REACT_CLASS = "AndroidDrawerLayout";
 
   public static final int OPEN_DRAWER = 1;
   public static final int CLOSE_DRAWER = 2;
+
+  private final ViewManagerDelegate<ReactDrawerLayout> mDelegate;
+
+  public ReactDrawerLayoutManager() {
+    mDelegate = new AndroidDrawerLayoutManagerDelegate<>(this);
+  }
 
   @Override
   public @NonNull String getName() {
@@ -47,14 +56,22 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
   @Override
   protected void addEventEmitters(ThemedReactContext reactContext, ReactDrawerLayout view) {
     view.addDrawerListener(
-      new DrawerEventEmitter(
-        view, reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher())
-    );
+        new DrawerEventEmitter(
+            view, reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher()));
   }
 
   @Override
   protected @NonNull ReactDrawerLayout createViewInstance(@NonNull ThemedReactContext context) {
     return new ReactDrawerLayout(context);
+  }
+
+  @Override
+  public void setDrawerPosition(ReactDrawerLayout view, @Nullable String value) {
+    if (value == null) {
+      view.setDrawerPosition(Gravity.START);
+    } else {
+      setDrawerPositionInternal(view, value);
+    }
   }
 
   @ReactProp(name = "drawerPosition")
@@ -71,23 +88,25 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
             "Unknown drawerPosition " + drawerPositionNum);
       }
     } else if (drawerPosition.getType() == ReadableType.String) {
-      final String drawerPositionStr = drawerPosition.asString();
-
-      if (drawerPositionStr.equals("left")) {
-        view.setDrawerPosition(Gravity.START);
-      } else if (drawerPositionStr.equals("right")) {
-        view.setDrawerPosition(Gravity.END);
-      } else {
-        throw new JSApplicationIllegalArgumentException(
-            "drawerPosition must be 'left' or 'right', received" + drawerPositionStr);
-      }
+      setDrawerPositionInternal(view, drawerPosition.asString());
     } else {
       throw new JSApplicationIllegalArgumentException("drawerPosition must be a string or int");
     }
   }
 
+  private void setDrawerPositionInternal(ReactDrawerLayout view, String drawerPosition) {
+    if (drawerPosition.equals("left")) {
+      view.setDrawerPosition(Gravity.START);
+    } else if (drawerPosition.equals("right")) {
+      view.setDrawerPosition(Gravity.END);
+    } else {
+      throw new JSApplicationIllegalArgumentException(
+          "drawerPosition must be 'left' or 'right', received" + drawerPosition);
+    }
+  }
+
   @ReactProp(name = "drawerWidth", defaultFloat = Float.NaN)
-  public void getDrawerWidth(ReactDrawerLayout view, float width) {
+  public void setDrawerWidth(ReactDrawerLayout view, float width) {
     int widthInPx =
         Float.isNaN(width)
             ? ReactDrawerLayout.DEFAULT_DRAWER_WIDTH
@@ -95,6 +114,16 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     view.setDrawerWidth(widthInPx);
   }
 
+  @Override
+  public void setDrawerWidth(ReactDrawerLayout view, @Nullable Float width) {
+    int widthInPx =
+        width == null
+            ? ReactDrawerLayout.DEFAULT_DRAWER_WIDTH
+            : Math.round(PixelUtil.toPixelFromDIP(width));
+    view.setDrawerWidth(widthInPx);
+  }
+
+  @Override
   @ReactProp(name = "drawerLockMode")
   public void setDrawerLockMode(ReactDrawerLayout view, @Nullable String drawerLockMode) {
     if (drawerLockMode == null || "unlocked".equals(drawerLockMode)) {
@@ -107,6 +136,25 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
       throw new JSApplicationIllegalArgumentException("Unknown drawerLockMode " + drawerLockMode);
     }
   }
+
+  @Override
+  public void openDrawer(ReactDrawerLayout view) {
+    view.openDrawer();
+  }
+
+  @Override
+  public void closeDrawer(ReactDrawerLayout view) {
+    view.closeDrawer();
+  }
+
+  @Override
+  public void setKeyboardDismissMode(ReactDrawerLayout view, @Nullable String value) {}
+
+  @Override
+  public void setDrawerBackgroundColor(ReactDrawerLayout view, @Nullable Integer value) {}
+
+  @Override
+  public void setStatusBarBackgroundColor(ReactDrawerLayout view, @Nullable Integer value) {}
 
   @Override
   public void setElevation(@NonNull ReactDrawerLayout view, float elevation) {
@@ -181,6 +229,11 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     }
     parent.addView(child, index);
     parent.setDrawerProperties();
+  }
+
+  @Override
+  public ViewManagerDelegate<ReactDrawerLayout> getDelegate() {
+    return mDelegate;
   }
 
   public static class DrawerEventEmitter implements DrawerLayout.DrawerListener {

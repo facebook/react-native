@@ -64,7 +64,7 @@ type NativeProps = $ReadOnly<{|
    * from the edge of the window.
    */
 
-  drawerWidth?: ?Float,
+  drawerWidth?: WithDefault<Float, null>,
 
   /**
    * Specifies the lock mode of the drawer. The drawer can be locked in 3 states:
