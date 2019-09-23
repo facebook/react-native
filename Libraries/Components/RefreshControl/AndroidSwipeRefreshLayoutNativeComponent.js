@@ -28,7 +28,7 @@ type NativeProps = $ReadOnly<{|
   /**
    * Whether the pull to refresh functionality is enabled.
    */
-  enabled?: WithDefault<boolean, false>,
+  enabled?: WithDefault<boolean, true>,
   /**
    * The colors (at least one) that will be used to draw the refresh indicator.
    */
