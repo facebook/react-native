@@ -248,6 +248,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setFontStyle(fontStyle);
   }
 
+  @ReactProp(name = ViewProps.INCLUDE_FONT_PADDING, defaultBoolean = true)
+  public void setIncludeFontPadding(ReactEditText view, boolean includepad) {
+    view.setIncludeFontPadding(includepad);
+  }
+
   @ReactProp(name = "importantForAutofill")
   public void setImportantForAutofill(ReactEditText view, @Nullable String value) {
     int mode = View.IMPORTANT_FOR_AUTOFILL_AUTO;
