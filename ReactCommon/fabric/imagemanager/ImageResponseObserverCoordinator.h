@@ -11,6 +11,7 @@
 #include <react/imagemanager/ImageResponseObserver.h>
 
 #include <better/mutex.h>
+#include <better/small_vector.h>
 #include <vector>
 
 namespace facebook {
@@ -24,16 +25,6 @@ namespace react {
  */
 class ImageResponseObserverCoordinator {
  public:
-  /*
-   * Default constructor.
-   */
-  ImageResponseObserverCoordinator();
-
-  /*
-   * Default destructor.
-   */
-  ~ImageResponseObserverCoordinator();
-
   /*
    * Interested parties may observe the image response.
    */
@@ -66,19 +57,19 @@ class ImageResponseObserverCoordinator {
    * List of observers.
    * Mutable: protected by mutex_.
    */
-  mutable std::vector<ImageResponseObserver *> observers_;
+  mutable better::small_vector<ImageResponseObserver *, 1> observers_;
 
   /*
    * Current status of image loading.
    * Mutable: protected by mutex_.
    */
-  mutable ImageResponse::Status status_;
+  mutable ImageResponse::Status status_{ImageResponse::Status::Loading};
 
   /*
    * Cache image data.
    * Mutable: protected by mutex_.
    */
-  mutable std::shared_ptr<void> imageData_{};
+  mutable std::shared_ptr<void> imageData_;
 
   /*
    * Observer and data mutex.

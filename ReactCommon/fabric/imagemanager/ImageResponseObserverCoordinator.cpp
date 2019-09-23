@@ -12,12 +12,6 @@
 namespace facebook {
 namespace react {
 
-ImageResponseObserverCoordinator::ImageResponseObserverCoordinator() {
-  status_ = ImageResponse::Status::Loading;
-}
-
-ImageResponseObserverCoordinator::~ImageResponseObserverCoordinator() {}
-
 void ImageResponseObserverCoordinator::addObserver(
     ImageResponseObserver *observer) const {
   ImageResponse::Status status = [this] {
@@ -51,7 +45,7 @@ void ImageResponseObserverCoordinator::removeObserver(
 
 void ImageResponseObserverCoordinator::nativeImageResponseProgress(
     float progress) const {
-  std::vector<ImageResponseObserver *> observersCopy = [this] {
+  auto observersCopy = [this] {
     std::shared_lock<better::shared_mutex> read(mutex_);
     return observers_;
   }();
@@ -69,17 +63,13 @@ void ImageResponseObserverCoordinator::nativeImageResponseComplete(
     status_ = ImageResponse::Status::Completed;
   }
 
-  std::vector<ImageResponseObserver *> observersCopy = [this] {
+  auto observersCopy = [this] {
     std::shared_lock<better::shared_mutex> read(mutex_);
     return observers_;
   }();
 
   for (auto observer : observersCopy) {
-    ImageResponse imageResponseCopy = [this] {
-      std::unique_lock<better::shared_mutex> read(mutex_);
-      return ImageResponse(imageData_);
-    }();
-    observer->didReceiveImage(imageResponseCopy);
+    observer->didReceiveImage(imageResponse);
   }
 }
 
@@ -89,7 +79,7 @@ void ImageResponseObserverCoordinator::nativeImageResponseFailed() const {
     status_ = ImageResponse::Status::Failed;
   }
 
-  std::vector<ImageResponseObserver *> observersCopy = [this] {
+  auto observersCopy = [this] {
     std::shared_lock<better::shared_mutex> read(mutex_);
     return observers_;
   }();
