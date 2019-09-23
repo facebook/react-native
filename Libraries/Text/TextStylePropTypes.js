@@ -19,11 +19,6 @@ const TextStylePropTypes = {
 
   color: DeprecatedColorPropType,
   fontFamily: ReactPropTypes.string,
-  /**
-   * Specifies the fully qualified path of the font file.
-   * @platform android
-   */
-  fontPath: ReactPropTypes.string, // TODO(android ISS)
   fontSize: ReactPropTypes.number,
   fontStyle: ReactPropTypes.oneOf(['normal', 'italic']),
   /**

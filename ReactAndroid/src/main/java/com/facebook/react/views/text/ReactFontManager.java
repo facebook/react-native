@@ -149,20 +149,6 @@ public class ReactFontManager {
     return Typeface.create(fontFamilyName, style);
   }
 
-  private static
-  @Nullable Typeface createTypeface(
-    String fontPath,
-    String fontFamilyName,
-    int style) {
-    try {
-      return Typeface.createFromFile(fontPath);
-    } catch (RuntimeException e) {
-      // unfortunately Typeface.createFromFile throws an exception instead of returning null
-      // if the typeface doesn't exist
-    }
-    return Typeface.create(fontFamilyName, style);
-  }
-
   private static class FontFamily {
 
     private SparseArray<Typeface> mTypefaceSparseArray;
