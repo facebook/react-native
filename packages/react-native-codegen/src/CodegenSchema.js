@@ -91,7 +91,7 @@ export type ObjectPropertyType =
 type PropTypeTypeAnnotation =
   | $ReadOnly<{|
       type: 'BooleanTypeAnnotation',
-      default: boolean,
+      default: boolean | null,
     |}>
   | $ReadOnly<{|
       type: 'StringTypeAnnotation',

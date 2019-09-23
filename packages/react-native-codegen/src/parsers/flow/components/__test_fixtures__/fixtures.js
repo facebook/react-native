@@ -205,6 +205,10 @@ type ModuleProps = $ReadOnly<{|
   boolean_optional_key?: WithDefault<boolean, true>,
   boolean_optional_both?: WithDefault<boolean, true>,
 
+  // Boolean props, null default
+  boolean_null_optional_key?: WithDefault<boolean, null>,
+  boolean_null_optional_both?: WithDefault<boolean, null>,
+
   // String props
   string_required: string,
   string_optional_key?: WithDefault<string, ''>,

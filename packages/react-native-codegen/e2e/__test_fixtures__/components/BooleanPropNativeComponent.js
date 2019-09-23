@@ -20,6 +20,7 @@ type NativeProps = $ReadOnly<{|
 
   // Props
   disabled?: WithDefault<boolean, false>,
+  disabledNullable?: WithDefault<boolean, null>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(

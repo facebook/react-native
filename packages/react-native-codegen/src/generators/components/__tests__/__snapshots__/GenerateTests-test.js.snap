@@ -87,7 +87,7 @@ TEST(BooleanPropNativeComponentProps_disabled, etc) {
   auto propParser = RawPropsParser();
   propParser.prepare<BooleanPropNativeComponentProps>();
   auto const &sourceProps = BooleanPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", true));
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", false));
   rawProps.parse(propParser);
   BooleanPropNativeComponentProps(sourceProps, rawProps);
 }",
@@ -254,7 +254,7 @@ TEST(EventsNestedObjectNativeComponentProps_disabled, etc) {
   auto propParser = RawPropsParser();
   propParser.prepare<EventsNestedObjectNativeComponentProps>();
   auto const &sourceProps = EventsNestedObjectNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", true));
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", false));
   rawProps.parse(propParser);
   EventsNestedObjectNativeComponentProps(sourceProps, rawProps);
 }",
@@ -291,7 +291,7 @@ TEST(EventsNativeComponentProps_disabled, etc) {
   auto propParser = RawPropsParser();
   propParser.prepare<EventsNativeComponentProps>();
   auto const &sourceProps = EventsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", true));
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", false));
   rawProps.parse(propParser);
   EventsNativeComponentProps(sourceProps, rawProps);
 }",
@@ -829,7 +829,7 @@ TEST(MultiFile1NativeComponentProps_disabled, etc) {
   auto propParser = RawPropsParser();
   propParser.prepare<MultiFile1NativeComponentProps>();
   auto const &sourceProps = MultiFile1NativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", true));
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", false));
   rawProps.parse(propParser);
   MultiFile1NativeComponentProps(sourceProps, rawProps);
 }
@@ -884,7 +884,7 @@ TEST(MultiComponent1NativeComponentProps_disabled, etc) {
   auto propParser = RawPropsParser();
   propParser.prepare<MultiComponent1NativeComponentProps>();
   auto const &sourceProps = MultiComponent1NativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", true));
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"disabled\\", false));
   rawProps.parse(propParser);
   MultiComponent1NativeComponentProps(sourceProps, rawProps);
 }

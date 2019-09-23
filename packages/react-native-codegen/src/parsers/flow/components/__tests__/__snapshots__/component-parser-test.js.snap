@@ -74,6 +74,22 @@ Object {
               },
             },
             Object {
+              "name": "boolean_null_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "BooleanTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "boolean_null_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "BooleanTypeAnnotation",
+              },
+            },
+            Object {
               "name": "string_required",
               "optional": false,
               "typeAnnotation": Object {

@@ -71,7 +71,7 @@ function getTestCasesForProp(propName, typeAnnotation) {
   } else if (typeAnnotation.type === 'BooleanTypeAnnotation') {
     cases.push({
       propName: propName,
-      propValue: typeAnnotation.default || true,
+      propValue: typeAnnotation.default != null ? typeAnnotation.default : true,
     });
   } else if (typeAnnotation.type === 'IntegerTypeAnnotation') {
     cases.push({

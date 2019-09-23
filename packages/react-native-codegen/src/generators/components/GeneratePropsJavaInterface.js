@@ -52,7 +52,12 @@ function getJavaValueForProp(prop: PropTypeShape, imports): string {
 
   switch (typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
-      return 'boolean value';
+      if (typeAnnotation.default === null) {
+        addNullable(imports);
+        return '@Nullable Boolean value';
+      } else {
+        return 'boolean value';
+      }
     case 'StringTypeAnnotation':
       addNullable(imports);
       return '@Nullable String value';

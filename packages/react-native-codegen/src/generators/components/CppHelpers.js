@@ -120,6 +120,9 @@ function convertDefaultTypeToString(
   const typeAnnotation = prop.typeAnnotation;
   switch (typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
+      if (typeAnnotation.default == null) {
+        return '';
+      }
       return String(typeAnnotation.default);
     case 'StringTypeAnnotation':
       if (typeAnnotation.default == null) {

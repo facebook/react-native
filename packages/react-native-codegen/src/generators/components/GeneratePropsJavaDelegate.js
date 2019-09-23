@@ -70,7 +70,11 @@ function getJavaValueForProp(
 
   switch (typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
-      return `value == null ? ${typeAnnotation.default.toString()} : (boolean) value`;
+      if (typeAnnotation.default === null) {
+        return 'value == null ? null : (Boolean) value';
+      } else {
+        return `value == null ? ${typeAnnotation.default.toString()} : (boolean) value`;
+      }
     case 'StringTypeAnnotation':
       const defaultValueString =
         typeAnnotation.default === null
