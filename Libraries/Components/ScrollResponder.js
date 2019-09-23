@@ -18,13 +18,14 @@ const ReactNative = require('../Renderer/shims/ReactNative');
 const TextInputState = require('./TextInput/TextInputState');
 const UIManager = require('../ReactNative/UIManager');
 const Platform = require('../Utilities/Platform');
+const ScrollView = require('./ScrollView/ScrollView');
 
 const invariant = require('invariant');
 const nullthrows = require('nullthrows');
 const performanceNow = require('fbjs/lib/performanceNow');
-const warning = require('fbjs/lib/warning');
 
 import type {PressEvent, ScrollEvent} from '../Types/CoreEventTypes';
+import type {Props as ScrollViewProps} from './ScrollView/ScrollView';
 import type {KeyboardEvent} from './Keyboard/Keyboard';
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 
@@ -314,8 +315,8 @@ const ScrollResponderMixin = {
   },
 
   scrollResponderHandleScroll: function(e: ScrollEvent) {
-    this.state.observedScrollSinceBecomingResponder = true;
-    this.props.onScroll && this.props.onScroll(e);
+    (this: any).state.observedScrollSinceBecomingResponder = true;
+    (this: any).props.onScroll && (this: any).props.onScroll(e);
   },
 
   /**
@@ -506,11 +507,14 @@ const ScrollResponderMixin = {
         '`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead',
       );
     }
-
-    UIManager.dispatchViewManagerCommand(
-      this.scrollResponderGetScrollableNode(),
-      UIManager.getViewManagerConfig('RCTScrollView').Commands.zoomToRect,
-      [rect, animated !== false],
+    invariant(
+      this.getNativeScrollRef != null,
+      'Expected zoomToRect to be called on a scrollViewRef. If this exception occurs it is likely a bug in React Native',
+    );
+    ScrollView.Commands.zoomToRect(
+      this.getNativeScrollRef(),
+      rect,
+      animated !== false,
     );
   },
 
@@ -609,17 +613,20 @@ const ScrollResponderMixin = {
    * The `keyboardWillShow` is called before input focus.
    */
   UNSAFE_componentWillMount: function() {
-    const {keyboardShouldPersistTaps} = this.props;
-    warning(
-      typeof keyboardShouldPersistTaps !== 'boolean',
-      `'keyboardShouldPersistTaps={${keyboardShouldPersistTaps}}' is deprecated. ` +
-        `Use 'keyboardShouldPersistTaps="${
-          keyboardShouldPersistTaps ? 'always' : 'never'
-        }"' instead`,
-    );
+    const {keyboardShouldPersistTaps} = ((this: any).props: ScrollViewProps);
+    if (typeof keyboardShouldPersistTaps === 'boolean') {
+      console.warn(
+        `'keyboardShouldPersistTaps={${
+          keyboardShouldPersistTaps === true ? 'true' : 'false'
+        }}' is deprecated. ` +
+          `Use 'keyboardShouldPersistTaps="${
+            keyboardShouldPersistTaps ? 'always' : 'never'
+          }"' instead`,
+      );
+    }
 
-    this.keyboardWillOpenTo = null;
-    this.additionalScrollOffset = 0;
+    (this: any).keyboardWillOpenTo = null;
+    (this: any).additionalScrollOffset = 0;
     this._subscriptionKeyboardWillShow = Keyboard.addListener(
       'keyboardWillShow',
       this.scrollResponderKeyboardWillShow,
