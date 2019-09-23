@@ -28,6 +28,7 @@ type NativeProps = $ReadOnly<{|
   blurRadius4?: WithDefault<Float, 0>,
   blurRadius5?: WithDefault<Float, 1>,
   blurRadius6?: WithDefault<Float, -0.0>,
+  blurRadiusNullable?: WithDefault<Float, null>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(

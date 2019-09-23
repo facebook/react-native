@@ -94,7 +94,9 @@ function getJavaValueForProp(
         return 'value == null ? Double.NaN : ((Double) value).doubleValue()';
       }
     case 'FloatTypeAnnotation':
-      if (prop.optional) {
+      if (typeAnnotation.default === null) {
+        return 'value == null ? null : ((Double) value).floatValue()';
+      } else if (prop.optional) {
         return `value == null ? ${
           typeAnnotation.default
         }f : ((Double) value).floatValue()`;

@@ -356,7 +356,7 @@ TEST(FloatPropNativeComponentProps_blurRadius, etc) {
   auto propParser = RawPropsParser();
   propParser.prepare<FloatPropNativeComponentProps>();
   auto const &sourceProps = FloatPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius\\", 0.1));
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius\\", 0));
   rawProps.parse(propParser);
   FloatPropNativeComponentProps(sourceProps, rawProps);
 }
@@ -383,7 +383,7 @@ TEST(FloatPropNativeComponentProps_blurRadius4, etc) {
   auto propParser = RawPropsParser();
   propParser.prepare<FloatPropNativeComponentProps>();
   auto const &sourceProps = FloatPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius4\\", 0.1));
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius4\\", 0));
   rawProps.parse(propParser);
   FloatPropNativeComponentProps(sourceProps, rawProps);
 }
@@ -401,7 +401,7 @@ TEST(FloatPropNativeComponentProps_blurRadius6, etc) {
   auto propParser = RawPropsParser();
   propParser.prepare<FloatPropNativeComponentProps>();
   auto const &sourceProps = FloatPropNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius6\\", 0.1));
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"blurRadius6\\", 0));
   rawProps.parse(propParser);
   FloatPropNativeComponentProps(sourceProps, rawProps);
 }",

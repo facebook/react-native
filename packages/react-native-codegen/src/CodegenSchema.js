@@ -103,7 +103,7 @@ type PropTypeTypeAnnotation =
     |}>
   | $ReadOnly<{|
       type: 'FloatTypeAnnotation',
-      default: number,
+      default: number | null,
     |}>
   | $ReadOnly<{|
       type: 'Int32TypeAnnotation',

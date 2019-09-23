@@ -218,6 +218,22 @@ Object {
               },
             },
             Object {
+              "name": "float_null_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "FloatTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "float_null_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "FloatTypeAnnotation",
+              },
+            },
+            Object {
               "name": "int32_required",
               "optional": false,
               "typeAnnotation": Object {

@@ -237,6 +237,10 @@ type ModuleProps = $ReadOnly<{|
   float_optional_key?: WithDefault<Float, 1.1>,
   float_optional_both?: WithDefault<Float, 1.1>,
 
+  // Float props, null default
+  float_null_optional_key?: WithDefault<Float, null>,
+  float_null_optional_both?: WithDefault<Float, null>,
+
   // Int32 props
   int32_required: Int32,
   int32_optional_key?: WithDefault<Int32, 1>,

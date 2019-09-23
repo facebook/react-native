@@ -138,8 +138,11 @@ function convertDefaultTypeToString(
         : String(typeAnnotation.default);
     case 'FloatTypeAnnotation':
       const defaultFloatVal = typeAnnotation.default;
+      if (defaultFloatVal == null) {
+        return '';
+      }
       return parseInt(defaultFloatVal, 10) === defaultFloatVal
-        ? typeAnnotation.default.toFixed(1)
+        ? defaultFloatVal.toFixed(1)
         : String(typeAnnotation.default);
     case 'NativePrimitiveTypeAnnotation':
       switch (typeAnnotation.name) {

@@ -242,7 +242,9 @@ function getTypeAnnotation(
     case 'Float':
       return {
         type: 'FloatTypeAnnotation',
-        default: ((defaultValue ? defaultValue : 0): number),
+        default: withNullDefault
+          ? (defaultValue: number | null)
+          : ((defaultValue ? defaultValue : 0): number),
       };
     case 'BooleanTypeAnnotation':
       return {
@@ -378,16 +380,6 @@ function buildPropSchema(property, types: TypeMap): ?PropTypeShape {
         : typeAnnotation.type;
 
     if (defaultValueType === 'NullLiteralTypeAnnotation') {
-      if (
-        type !== 'StringTypeAnnotation' &&
-        type !== 'Stringish' &&
-        type !== 'BooleanTypeAnnotation'
-      ) {
-        throw new Error(
-          `WithDefault can only provide a 'null' default value for string and boolean types (see ${name})`,
-        );
-      }
-
       defaultValue = null;
       withNullDefault = true;
     }

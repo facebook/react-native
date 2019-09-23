@@ -81,7 +81,7 @@ function getTestCasesForProp(propName, typeAnnotation) {
   } else if (typeAnnotation.type === 'FloatTypeAnnotation') {
     cases.push({
       propName,
-      propValue: typeAnnotation.default || 0.1,
+      propValue: typeAnnotation.default != null ? typeAnnotation.default : 0.1,
     });
   } else if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
     if (typeAnnotation.name === 'ColorPrimitive') {
