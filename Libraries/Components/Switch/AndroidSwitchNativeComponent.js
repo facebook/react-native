@@ -30,7 +30,7 @@ type NativeProps = $ReadOnly<{|
 
   // Props
   disabled?: WithDefault<boolean, false>,
-  enabled?: WithDefault<boolean, false>,
+  enabled?: WithDefault<boolean, true>,
   thumbColor?: ?ColorValue,
   trackColorForFalse?: ?ColorValue,
   trackColorForTrue?: ?ColorValue,

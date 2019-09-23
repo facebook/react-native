@@ -26,7 +26,7 @@ public class AndroidSwitchManagerDelegate<T extends View, U extends BaseViewMana
         mViewManager.setDisabled(view, value == null ? false : (boolean) value);
         break;
       case "enabled":
-        mViewManager.setEnabled(view, value == null ? false : (boolean) value);
+        mViewManager.setEnabled(view, value == null ? true : (boolean) value);
         break;
       case "thumbColor":
         mViewManager.setThumbColor(view, value == null ? null : ((Double) value).intValue());
