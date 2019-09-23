@@ -27,7 +27,7 @@ public class SliderManagerDelegate<T extends View, U extends BaseViewManagerInte
         mViewManager.setDisabled(view, value == null ? false : (boolean) value);
         break;
       case "enabled":
-        mViewManager.setEnabled(view, value == null ? false : (boolean) value);
+        mViewManager.setEnabled(view, value == null ? true : (boolean) value);
         break;
       case "maximumTrackImage":
         mViewManager.setMaximumTrackImage(view, (ReadableMap) value);
@@ -36,7 +36,7 @@ public class SliderManagerDelegate<T extends View, U extends BaseViewManagerInte
         mViewManager.setMaximumTrackTintColor(view, value == null ? null : ((Double) value).intValue());
         break;
       case "maximumValue":
-        mViewManager.setMaximumValue(view, value == null ? 1f : ((Double) value).floatValue());
+        mViewManager.setMaximumValue(view, value == null ? 1f : ((Double) value).doubleValue());
         break;
       case "minimumTrackImage":
         mViewManager.setMinimumTrackImage(view, (ReadableMap) value);
@@ -45,10 +45,10 @@ public class SliderManagerDelegate<T extends View, U extends BaseViewManagerInte
         mViewManager.setMinimumTrackTintColor(view, value == null ? null : ((Double) value).intValue());
         break;
       case "minimumValue":
-        mViewManager.setMinimumValue(view, value == null ? 0f : ((Double) value).floatValue());
+        mViewManager.setMinimumValue(view, value == null ? 0f : ((Double) value).doubleValue());
         break;
       case "step":
-        mViewManager.setStep(view, value == null ? 0f : ((Double) value).floatValue());
+        mViewManager.setStep(view, value == null ? 0f : ((Double) value).doubleValue());
         break;
       case "testID":
         mViewManager.setTestID(view, value == null ? "" : (String) value);
@@ -63,7 +63,7 @@ public class SliderManagerDelegate<T extends View, U extends BaseViewManagerInte
         mViewManager.setTrackImage(view, (ReadableMap) value);
         break;
       case "value":
-        mViewManager.setValue(view, value == null ? 0f : ((Double) value).floatValue());
+        mViewManager.setValue(view, value == null ? 0f : ((Double) value).doubleValue());
         break;
       default:
         super.setProperty(view, propName, value);

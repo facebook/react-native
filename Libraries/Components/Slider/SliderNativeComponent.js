@@ -11,9 +11,9 @@
 'use strict';
 
 import type {
-  Float,
   BubblingEventHandler,
   DirectEventHandler,
+  Double,
   WithDefault,
 } from '../../Types/CodegenTypes';
 
@@ -25,7 +25,7 @@ import type {ImageSource} from '../../Image/ImageSource';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 type Event = $ReadOnly<{|
-  value: Float,
+  value: Double,
   fromUser?: boolean,
 |}>;
 
@@ -34,19 +34,19 @@ type NativeProps = $ReadOnly<{|
 
   // Props
   disabled?: WithDefault<boolean, false>,
-  enabled?: WithDefault<boolean, false>,
+  enabled?: WithDefault<boolean, true>,
   maximumTrackImage?: ?ImageSource,
   maximumTrackTintColor?: ?ColorValue,
-  maximumValue?: WithDefault<Float, 1>,
+  maximumValue?: WithDefault<Double, 1>,
   minimumTrackImage?: ?ImageSource,
   minimumTrackTintColor?: ?ColorValue,
-  minimumValue?: WithDefault<Float, 0>,
-  step?: WithDefault<Float, 0>,
+  minimumValue?: WithDefault<Double, 0>,
+  step?: WithDefault<Double, 0>,
   testID?: WithDefault<string, ''>,
   thumbImage?: ?ImageSource,
   thumbTintColor?: ?ColorValue,
   trackImage?: ?ImageSource,
-  value?: WithDefault<Float, 0>,
+  value?: WithDefault<Double, 0>,
 
   // Events
   onChange?: ?BubblingEventHandler<Event>,

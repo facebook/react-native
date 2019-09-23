@@ -18,14 +18,14 @@ public interface SliderManagerInterface<T extends View> {
   void setEnabled(T view, boolean value);
   void setMaximumTrackImage(T view, @Nullable ReadableMap value);
   void setMaximumTrackTintColor(T view, @Nullable Integer value);
-  void setMaximumValue(T view, float value);
+  void setMaximumValue(T view, double value);
   void setMinimumTrackImage(T view, @Nullable ReadableMap value);
   void setMinimumTrackTintColor(T view, @Nullable Integer value);
-  void setMinimumValue(T view, float value);
-  void setStep(T view, float value);
+  void setMinimumValue(T view, double value);
+  void setStep(T view, double value);
   void setTestID(T view, @Nullable String value);
   void setThumbImage(T view, @Nullable ReadableMap value);
   void setThumbTintColor(T view, @Nullable Integer value);
   void setTrackImage(T view, @Nullable ReadableMap value);
-  void setValue(T view, float value);
+  void setValue(T view, double value);
 }
