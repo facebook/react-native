@@ -11,7 +11,6 @@
 
 'use strict';
 
-const AndroidSwitchNativeComponent = require('./AndroidSwitchNativeComponent');
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
@@ -20,6 +19,7 @@ import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import SwitchNativeComponent from './SwitchNativeComponent';
+import AndroidSwitchNativeComponent from './AndroidSwitchNativeComponent';
 
 type SwitchChangeEvent = SyntheticEvent<
   $ReadOnly<{|
