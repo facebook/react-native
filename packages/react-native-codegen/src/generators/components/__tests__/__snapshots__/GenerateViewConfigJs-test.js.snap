@@ -522,6 +522,41 @@ export default nativeComponentName;
 }
 `;
 
+exports[`GenerateViewConfigJs can generate fixture INSETS_PROP 1`] = `
+Map {
+  "INSETS_PROPNativeViewConfig.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+'use strict';
+
+const registerGeneratedViewConfig = require('registerGeneratedViewConfig');
+
+const InsetsPropNativeComponentViewConfig = {
+  uiViewClassName: 'InsetsPropNativeComponent',
+
+  validAttributes: {
+    contentInset: { diff: require('insetsDiffer') },
+  },
+};
+
+let nativeComponentName = 'InsetsPropNativeComponent';
+
+registerGeneratedViewConfig(nativeComponentName, InsetsPropNativeComponentViewConfig);
+
+export const __INTERNAL_VIEW_CONFIG = InsetsPropNativeComponentViewConfig;
+
+export default nativeComponentName;
+",
+}
+`;
+
 exports[`GenerateViewConfigJs can generate fixture INT32_ENUM_PROP 1`] = `
 Map {
   "INT32_ENUM_PROPNativeViewConfig.js" => "

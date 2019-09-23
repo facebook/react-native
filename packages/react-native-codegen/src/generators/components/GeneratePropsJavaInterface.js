@@ -83,6 +83,9 @@ function getJavaValueForProp(prop: PropTypeShape, imports): string {
         case 'PointPrimitive':
           addNullable(imports);
           return '@Nullable ReadableMap value';
+        case 'EdgeInsetsPrimitive':
+          addNullable(imports);
+          return '@Nullable ReadableMap value';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Received unknown NativePrimitiveTypeAnnotation');

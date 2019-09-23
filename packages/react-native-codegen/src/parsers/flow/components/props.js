@@ -103,6 +103,11 @@ function getTypeAnnotationForArray(name, typeAnnotation, defaultValue, types) {
         type: 'NativePrimitiveTypeAnnotation',
         name: 'PointPrimitive',
       };
+    case 'EdgeInsetsValue':
+      return {
+        type: 'NativePrimitiveTypeAnnotation',
+        name: 'EdgeInsetsPrimitive',
+      };
     case 'Stringish':
       return {
         type: 'StringTypeAnnotation',
@@ -228,6 +233,11 @@ function getTypeAnnotation(
       return {
         type: 'NativePrimitiveTypeAnnotation',
         name: 'PointPrimitive',
+      };
+    case 'EdgeInsetsValue':
+      return {
+        type: 'NativePrimitiveTypeAnnotation',
+        name: 'EdgeInsetsPrimitive',
       };
     case 'Int32':
       return {

@@ -58,6 +58,8 @@ function getReactDiffProcessValue(typeAnnotation) {
             .expression`{ process: require('resolveAssetSource') }`;
         case 'PointPrimitive':
           return j.template.expression`{ diff: require('pointsDiffer') }`;
+        case 'EdgeInsetsPrimitive':
+          return j.template.expression`{ diff: require('insetsDiffer') }`;
         default:
           (typeAnnotation.name: empty);
           throw new Error(

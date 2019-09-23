@@ -64,6 +64,8 @@ function getImports(properties: $ReadOnlyArray<PropTypeShape>): Set<string> {
         return;
       case 'PointPrimitive':
         return;
+      case 'EdgeInsetsPrimitive':
+        return;
       case 'ImageSourcePrimitive':
         imports.add('#include <react/components/image/conversions.h>');
         return;
@@ -151,6 +153,8 @@ function convertDefaultTypeToString(
         case 'ImageSourcePrimitive':
           return '';
         case 'PointPrimitive':
+          return '';
+        case 'EdgeInsetsPrimitive':
           return '';
         default:
           (typeAnnotation.name: empty);

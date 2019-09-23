@@ -125,7 +125,11 @@ type PropTypeTypeAnnotation =
     |}>
   | $ReadOnly<{|
       type: 'NativePrimitiveTypeAnnotation',
-      name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
+      name:
+        | 'ColorPrimitive'
+        | 'ImageSourcePrimitive'
+        | 'PointPrimitive'
+        | 'EdgeInsetsPrimitive',
     |}>
   | $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
@@ -162,7 +166,11 @@ type PropTypeTypeAnnotation =
           |}>
         | $ReadOnly<{|
             type: 'NativePrimitiveTypeAnnotation',
-            name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
+            name:
+              | 'ColorPrimitive'
+              | 'ImageSourcePrimitive'
+              | 'PointPrimitive'
+              | 'EdgeInsetsPrimitive',
           |}>
         | $ReadOnly<{|
             type: 'ArrayTypeAnnotation',

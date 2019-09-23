@@ -192,7 +192,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
-import type {ColorValue, ColorArrayValue, PointValue} from 'StyleSheetTypes';
+import type {ColorValue, ColorArrayValue, PointValue, EdgeInsetsValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {NativeComponent} from 'codegenNativeComponent';
 
@@ -280,6 +280,12 @@ type ModuleProps = $ReadOnly<{|
   point_optional_key?: PointValue,
   point_optional_value: ?PointValue,
   point_optional_both?: ?PointValue,
+
+  // EdgeInsets props
+  insets_required: EdgeInsetsValue,
+  insets_optional_key?: EdgeInsetsValue,
+  insets_optional_value: ?EdgeInsetsValue,
+  insets_optional_both?: ?EdgeInsetsValue,
 |}>;
 
 export default (codegenNativeComponent<ModuleProps, Options>(
@@ -304,7 +310,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
-import type {ColorValue, PointValue} from 'StyleSheetTypes';
+import type {ColorValue, PointValue, EdgeInsetsValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {NativeComponent} from 'codegenNativeComponent';
 
@@ -372,6 +378,12 @@ type ModuleProps = $ReadOnly<{|
   array_point_optional_key?: $ReadOnlyArray<PointValue>,
   array_point_optional_value: ?$ReadOnlyArray<PointValue>,
   array_point_optional_both?: ?$ReadOnlyArray<PointValue>,
+
+  // EdgeInsetsValue props
+  array_insets_required: $ReadOnlyArray<EdgeInsetsValue>,
+  array_insets_optional_key?: $ReadOnlyArray<EdgeInsetsValue>,
+  array_insets_optional_value: ?$ReadOnlyArray<EdgeInsetsValue>,
+  array_insets_optional_both?: ?$ReadOnlyArray<EdgeInsetsValue>,
 
   // Object props
   array_object_required: $ReadOnlyArray<$ReadOnly<{| prop: string |}>>,
@@ -451,7 +463,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
-import type {ColorValue, PointValue} from 'StyleSheetTypes';
+import type {ColorValue, PointValue, EdgeInsetsValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {NativeComponent} from 'codegenNativeComponent';
 
@@ -501,6 +513,12 @@ type ModuleProps = $ReadOnly<{|
   point_optional_key: $ReadOnly<{|prop?: PointValue|}>,
   point_optional_value: $ReadOnly<{|prop: ?PointValue|}>,
   point_optional_both: $ReadOnly<{|prop?: ?PointValue|}>,
+
+  // EdgeInsetsValue props
+  insets_required: $ReadOnly<{|prop: EdgeInsetsValue|}>,
+  insets_optional_key: $ReadOnly<{|prop?: EdgeInsetsValue|}>,
+  insets_optional_value: $ReadOnly<{|prop: ?EdgeInsetsValue|}>,
+  insets_optional_both: $ReadOnly<{|prop?: ?EdgeInsetsValue|}>,
 
   // Nested object props
   object_required: $ReadOnly<{|prop: $ReadOnly<{nestedProp: string}>|}>,

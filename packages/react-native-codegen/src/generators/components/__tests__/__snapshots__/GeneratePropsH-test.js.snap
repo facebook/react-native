@@ -618,6 +618,39 @@ class ImagePropNativeComponentProps final : public ViewProps {
 }
 `;
 
+exports[`GeneratePropsH can generate fixture INSETS_PROP 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+#include <react/graphics/Geometry.h>
+
+namespace facebook {
+namespace react {
+
+class InsetsPropNativeComponentProps final : public ViewProps {
+ public:
+  InsetsPropNativeComponentProps() = default;
+  InsetsPropNativeComponentProps(const InsetsPropNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  const EdgeInsets contentInset{};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GeneratePropsH can generate fixture INT32_ENUM_PROP 1`] = `
 Map {
   "Props.h" => "

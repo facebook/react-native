@@ -446,6 +446,34 @@ TEST(ImagePropNativeComponentProps_thumbImage, etc) {
 }
 `;
 
+exports[`GenerateTests can generate fixture INSETS_PROP 1`] = `
+Map {
+  "Tests.cpp" => "/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <gtest/gtest.h>
+#include <react/components/INSETS_PROP/Props.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawPropsParser.h>
+#include <react/core/propsConversions.h>
+
+using namespace facebook::react;
+
+TEST(InsetsPropNativeComponentProps_DoesNotDie, etc) {
+  auto propParser = RawPropsParser();
+  propParser.prepare<InsetsPropNativeComponentProps>();
+  auto const &sourceProps = InsetsPropNativeComponentProps();
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"xx_invalid_xx\\", \\"xx_invalid_xx\\"));
+  rawProps.parse(propParser);
+  InsetsPropNativeComponentProps(sourceProps, rawProps);
+}",
+}
+`;
+
 exports[`GenerateTests can generate fixture INT32_ENUM_PROP 1`] = `
 Map {
   "Tests.cpp" => "/**

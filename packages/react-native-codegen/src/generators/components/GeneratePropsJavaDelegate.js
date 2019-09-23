@@ -111,6 +111,8 @@ function getJavaValueForProp(
           return '(ReadableMap) value';
         case 'PointPrimitive':
           return '(ReadableMap) value';
+        case 'EdgeInsetsPrimitive':
+          return '(ReadableMap) value';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Received unknown NativePrimitiveTypeAnnotation');
