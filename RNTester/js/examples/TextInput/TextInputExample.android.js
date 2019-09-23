@@ -614,6 +614,13 @@ exports.examples = [
           <TextInput
             style={[
               styles.singleLine,
+              {fontFamily: 'sans-serif', fontWeight: '500'},
+            ]}
+            placeholder="Sans-Serif 500"
+          />
+          <TextInput
+            style={[
+              styles.singleLine,
               {fontFamily: 'sans-serif', fontStyle: 'italic'},
             ]}
             placeholder="Sans-Serif italic"

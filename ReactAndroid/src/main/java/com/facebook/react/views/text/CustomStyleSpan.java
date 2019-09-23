@@ -71,37 +71,9 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
 
   private static void apply(
       Paint paint, int style, int weight, @Nullable String family, AssetManager assetManager) {
-    int oldStyle;
-    Typeface typeface = paint.getTypeface();
-    if (typeface == null) {
-      oldStyle = 0;
-    } else {
-      oldStyle = typeface.getStyle();
-    }
-
-    int want = 0;
-    if ((weight == Typeface.BOLD)
-        || ((oldStyle & Typeface.BOLD) != 0 && weight == ReactTextShadowNode.UNSET)) {
-      want |= Typeface.BOLD;
-    }
-
-    if ((style == Typeface.ITALIC)
-        || ((oldStyle & Typeface.ITALIC) != 0 && style == ReactTextShadowNode.UNSET)) {
-      want |= Typeface.ITALIC;
-    }
-
-    if (family != null) {
-      typeface = ReactFontManager.getInstance().getTypeface(family, want, weight, assetManager);
-    } else if (typeface != null) {
-      // TODO(t9055065): Fix custom fonts getting applied to text children with different style
-      typeface = Typeface.create(typeface, want);
-    }
-
-    if (typeface != null) {
-      paint.setTypeface(typeface);
-    } else {
-      paint.setTypeface(Typeface.defaultFromStyle(want));
-    }
+    Typeface typeface = ReactTypefaceUtils.applyStyles(
+      paint.getTypeface(), style, weight, family, assetManager);
+    paint.setTypeface(typeface);
     paint.setSubpixelText(true);
   }
 }
