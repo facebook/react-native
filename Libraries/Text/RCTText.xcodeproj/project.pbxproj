@@ -43,9 +43,7 @@
 		5956B16A200FF324008D9D16 /* RCTMultilineTextInputView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B117200FEBA9008D9D16 /* RCTMultilineTextInputView.h */; };
 		5956B16B200FF324008D9D16 /* RCTMultilineTextInputViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B114200FEBA9008D9D16 /* RCTMultilineTextInputViewManager.h */; };
 		5956B16C200FF324008D9D16 /* RCTUITextView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B116200FEBA9008D9D16 /* RCTUITextView.h */; };
-		5956B16D200FF324008D9D16 /* RCTBackedTextInputDelegate.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B10C200FEBA9008D9D16 /* RCTBackedTextInputDelegate.h */; };
 		5956B16E200FF324008D9D16 /* RCTBackedTextInputDelegateAdapter.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B107200FEBA9008D9D16 /* RCTBackedTextInputDelegateAdapter.h */; };
-		5956B16F200FF324008D9D16 /* RCTBackedTextInputViewProtocol.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B112200FEBA9008D9D16 /* RCTBackedTextInputViewProtocol.h */; };
 		5956B170200FF324008D9D16 /* RCTBaseTextInputShadowView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B109200FEBA9008D9D16 /* RCTBaseTextInputShadowView.h */; };
 		5956B171200FF324008D9D16 /* RCTBaseTextInputView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B10E200FEBA9008D9D16 /* RCTBaseTextInputView.h */; };
 		5956B172200FF324008D9D16 /* RCTBaseTextInputViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B10B200FEBA9008D9D16 /* RCTBaseTextInputViewManager.h */; };
@@ -118,9 +116,7 @@
 		9F5C18A3230DD84400E3E5A7 /* RCTBaseTextInputShadowView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B109200FEBA9008D9D16 /* RCTBaseTextInputShadowView.h */; };
 		9F5C18A4230DD84400E3E5A7 /* RCTBaseTextInputView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B10E200FEBA9008D9D16 /* RCTBaseTextInputView.h */; };
 		9F5C18A5230DD84400E3E5A7 /* RCTBaseTextInputViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B10B200FEBA9008D9D16 /* RCTBaseTextInputViewManager.h */; };
-		9F5C18A6230DDB6B00E3E5A7 /* RCTBackedTextInputViewProtocol.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B112200FEBA9008D9D16 /* RCTBackedTextInputViewProtocol.h */; };
 		9F5C18A7230DDB7400E3E5A7 /* RCTBackedTextInputDelegateAdapter.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B107200FEBA9008D9D16 /* RCTBackedTextInputDelegateAdapter.h */; };
-		9F5C18A8230DDB7B00E3E5A7 /* RCTBackedTextInputDelegate.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B10C200FEBA9008D9D16 /* RCTBackedTextInputDelegate.h */; };
 		9F5C18A9230DDB8400E3E5A7 /* RCTUITextView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B116200FEBA9008D9D16 /* RCTUITextView.h */; };
 		9F5C18AA230DDB8F00E3E5A7 /* RCTMultilineTextInputView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B117200FEBA9008D9D16 /* RCTMultilineTextInputView.h */; };
 		9F5C18AB230DDB9000E3E5A7 /* RCTMultilineTextInputViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5956B114200FEBA9008D9D16 /* RCTMultilineTextInputViewManager.h */; };
@@ -191,9 +187,7 @@
 				9F5C18AA230DDB8F00E3E5A7 /* RCTMultilineTextInputView.h in Copy Headers */,
 				9F5C18AB230DDB9000E3E5A7 /* RCTMultilineTextInputViewManager.h in Copy Headers */,
 				9F5C18A9230DDB8400E3E5A7 /* RCTUITextView.h in Copy Headers */,
-				9F5C18A8230DDB7B00E3E5A7 /* RCTBackedTextInputDelegate.h in Copy Headers */,
 				9F5C18A7230DDB7400E3E5A7 /* RCTBackedTextInputDelegateAdapter.h in Copy Headers */,
-				9F5C18A6230DDB6B00E3E5A7 /* RCTBackedTextInputViewProtocol.h in Copy Headers */,
 				9F5C18A3230DD84400E3E5A7 /* RCTBaseTextInputShadowView.h in Copy Headers */,
 				9F5C18A4230DD84400E3E5A7 /* RCTBaseTextInputView.h in Copy Headers */,
 				9F5C18A5230DD84400E3E5A7 /* RCTBaseTextInputViewManager.h in Copy Headers */,
@@ -227,9 +221,7 @@
 				5956B16A200FF324008D9D16 /* RCTMultilineTextInputView.h in Copy Headers */,
 				5956B16B200FF324008D9D16 /* RCTMultilineTextInputViewManager.h in Copy Headers */,
 				5956B16C200FF324008D9D16 /* RCTUITextView.h in Copy Headers */,
-				5956B16D200FF324008D9D16 /* RCTBackedTextInputDelegate.h in Copy Headers */,
 				5956B16E200FF324008D9D16 /* RCTBackedTextInputDelegateAdapter.h in Copy Headers */,
-				5956B16F200FF324008D9D16 /* RCTBackedTextInputViewProtocol.h in Copy Headers */,
 				5956B170200FF324008D9D16 /* RCTBaseTextInputShadowView.h in Copy Headers */,
 				5956B171200FF324008D9D16 /* RCTBaseTextInputView.h in Copy Headers */,
 				5956B172200FF324008D9D16 /* RCTBaseTextInputViewManager.h in Copy Headers */,
