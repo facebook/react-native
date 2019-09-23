@@ -5,8 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
+
 #import "RCTI18nManager.h"
-#import "RCTI18nUtil.h"
+#import <React/RCTI18nUtil.h>
+
+#import "CoreModulesPlugins.h"
+
+using namespace facebook::react;
+
+@interface RCTI18nManager () <NativeI18nManagerSpec>
+@end
 
 @implementation RCTI18nManager
 
@@ -45,4 +54,13 @@ RCT_EXPORT_METHOD(swapLeftAndRightInRTL:(BOOL)value)
   };
 }
 
+- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+{
+  return std::make_shared<NativeI18nManagerSpecJSI>(self, jsInvoker);
+}
+
 @end
+
+Class RCTI18nManagerCls(void) {
+  return RCTI18nManager.class;
+}

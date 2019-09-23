@@ -7,7 +7,16 @@
 
 #import "RCTSourceCode.h"
 
-#import "RCTBridge.h"
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
+
+#import <React/RCTBridge.h>
+
+#import "CoreModulesPlugins.h"
+
+using namespace facebook::react;
+
+@interface RCTSourceCode () <NativeSourceCodeSpec>
+@end
 
 @implementation RCTSourceCode
 
@@ -32,4 +41,13 @@ RCT_EXPORT_MODULE()
   };
 }
 
+- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+{
+  return std::make_shared<NativeSourceCodeSpecJSI>(self, jsInvoker);
+}
+
 @end
+
+Class RCTSourceCodeCls(void) {
+  return RCTSourceCode.class;
+}

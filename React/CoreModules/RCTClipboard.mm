@@ -7,7 +7,15 @@
 
 #import "RCTClipboard.h"
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <UIKit/UIKit.h>
+
+#import "CoreModulesPlugins.h"
+
+using namespace facebook::react;
+
+@interface RCTClipboard () <NativeClipboardSpec>
+@end
 
 @implementation RCTClipboard
 
@@ -26,10 +34,19 @@ RCT_EXPORT_METHOD(setString:(NSString *)content)
 }
 
 RCT_EXPORT_METHOD(getString:(RCTPromiseResolveBlock)resolve
-                  rejecter:(__unused RCTPromiseRejectBlock)reject)
+                  reject:(__unused RCTPromiseRejectBlock)reject)
 {
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   resolve((clipboard.string ? : @""));
 }
 
+- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+{
+  return std::make_shared<NativeClipboardSpecJSI>(self, jsInvoker);
+}
+
 @end
+
+Class RCTClipboardCls(void) {
+  return RCTClipboard.class;
+}

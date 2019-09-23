@@ -35,6 +35,9 @@ Class RCTDeviceInfoCls(void);
 Class RCTExceptionsManagerCls(void);
 Class RCTImageLoaderCls(void);
 Class RCTPlatformCls(void);
+Class RCTClipboardCls(void);
+Class RCTI18nManagerCls(void);
+Class RCTSourceCodeCls(void);
 
 #ifdef __cplusplus
 }

@@ -23,6 +23,9 @@ static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
 {"ExceptionsManager", RCTExceptionsManagerCls},
 {"ImageLoader", RCTImageLoaderCls},
 {"PlatformConstants", RCTPlatformCls},
+{"Clipboard", RCTClipboardCls},
+{"I18nManager", RCTI18nManagerCls},
+{"SourceCode", RCTSourceCodeCls},
 };
 
 Class RCTCoreModulesClassProvider(const char *name) {

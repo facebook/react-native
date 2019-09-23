@@ -37,30 +37,35 @@ rn_apple_library(
         "linux",
         ["-D PIC_MODIFIER=@PLT"],
     )],
-    plugins = react_module_plugin_providers(
-                  name = "AccessibilityManager",
-                  native_class_func = "RCTAccessibilityManagerCls",
-              ) +
-              react_module_plugin_providers(
-                  name = "Appearance",
-                  native_class_func = "RCTAppearanceCls",
-              ) +
-              react_module_plugin_providers(
-                  name = "DeviceInfo",
-                  native_class_func = "RCTDeviceInfoCls",
-              ) +
-              react_module_plugin_providers(
-                  name = "ExceptionsManager",
-                  native_class_func = "RCTExceptionsManagerCls",
-              ) +
-              react_module_plugin_providers(
-                  name = "ImageLoader",
-                  native_class_func = "RCTImageLoaderCls",
-              ) +
-              react_module_plugin_providers(
-                  name = "PlatformConstants",
-                  native_class_func = "RCTPlatformCls",
-              ),
+    plugins =
+        react_module_plugin_providers(
+            name = "AccessibilityManager",
+            native_class_func = "RCTAccessibilityManagerCls",
+        ) + react_module_plugin_providers(
+            name = "Appearance",
+            native_class_func = "RCTAppearanceCls",
+        ) + react_module_plugin_providers(
+            name = "DeviceInfo",
+            native_class_func = "RCTDeviceInfoCls",
+        ) + react_module_plugin_providers(
+            name = "ExceptionsManager",
+            native_class_func = "RCTExceptionsManagerCls",
+        ) + react_module_plugin_providers(
+            name = "ImageLoader",
+            native_class_func = "RCTImageLoaderCls",
+        ) + react_module_plugin_providers(
+            name = "PlatformConstants",
+            native_class_func = "RCTPlatformCls",
+        ) + react_module_plugin_providers(
+            name = "Clipboard",
+            native_class_func = "RCTClipboardCls",
+        ) + react_module_plugin_providers(
+            name = "I18nManager",
+            native_class_func = "RCTI18nManagerCls",
+        ) + react_module_plugin_providers(
+            name = "SourceCode",
+            native_class_func = "RCTSourceCodeCls",
+        ),
     preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_extra_build_flags() + [
         "-DRN_DISABLE_OSS_PLUGIN_HEADER",
     ],
