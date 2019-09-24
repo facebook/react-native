@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -36,20 +35,6 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   private final int mStyle;
   private final int mWeight;
   private final @Nullable String mFontFamily;
-  private final @Nullable String mFontPath;
-
-  public CustomStyleSpan(
-      int fontStyle,
-      int fontWeight,
-      @Nullable String fontFamily,
-      @Nullable String fontPath,
-      AssetManager assetManager) {
-    mStyle = fontStyle;
-    mWeight = fontWeight;
-    mFontFamily = fontFamily;
-    mFontPath = fontPath;
-    mAssetManager = assetManager;
-  }
 
   public CustomStyleSpan(
       int fontStyle,
@@ -59,18 +44,17 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     mStyle = fontStyle;
     mWeight = fontWeight;
     mFontFamily = fontFamily;
-    mFontPath = null;
     mAssetManager = assetManager;
   }
 
   @Override
   public void updateDrawState(TextPaint ds) {
-    apply(ds, mStyle, mWeight, mFontFamily, mFontPath, mAssetManager);
+    apply(ds, mStyle, mWeight, mFontFamily, mAssetManager);
   }
 
   @Override
   public void updateMeasureState(@NonNull TextPaint paint) {
-    apply(paint, mStyle, mWeight, mFontFamily, mFontPath, mAssetManager);
+    apply(paint, mStyle, mWeight, mFontFamily, mAssetManager);
   }
 
   /**
@@ -94,19 +78,11 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     return mFontFamily;
   }
 
-  /**
-   * Returns the font path set for this StyleSpan.
-   */
-  public @Nullable String getFontPath() {
-    return mFontPath;
-  }
-
   private static void apply(
       Paint paint,
       int style,
       int weight,
       @Nullable String family,
-      @Nullable String path,
       AssetManager assetManager) {
     int oldStyle;
     Typeface typeface = paint.getTypeface();
