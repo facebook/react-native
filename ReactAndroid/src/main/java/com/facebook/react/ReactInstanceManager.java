@@ -36,6 +36,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Process;
 import android.util.Log;
@@ -462,7 +463,9 @@ public class ReactInstanceManager {
       String action = intent.getAction();
       Uri uri = intent.getData();
 
-      if (Intent.ACTION_VIEW.equals(action) && uri != null) {
+      if (uri != null
+          && (Intent.ACTION_VIEW.equals(action)
+              || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
         DeviceEventManagerModule deviceEventManagerModule =
             currentContext.getNativeModule(DeviceEventManagerModule.class);
         deviceEventManagerModule.emitNewIntentReceived(uri);
