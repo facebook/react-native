@@ -56,6 +56,7 @@
     "!template/package-lock.json"
   ],
   "scripts": {
+    "build": "echo \"no build needed\" ",
     "start": "react-native start",
     "test": "jest",
     "test-ci": "jest --maxWorkers=2 --ci --reporters=\"default\" --reporters=\"jest-junit\"",
