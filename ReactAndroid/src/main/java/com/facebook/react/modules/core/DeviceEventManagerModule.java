@@ -9,6 +9,7 @@ package com.facebook.react.modules.core;
 import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -23,6 +24,7 @@ import com.facebook.react.module.annotations.ReactModule;
 public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
   public static final String NAME = "DeviceEventManager";
 
+  @DoNotStrip
   public interface RCTDeviceEventEmitter extends JavaScriptModule {
     void emit(@NonNull String eventName, @Nullable Object data);
   }
