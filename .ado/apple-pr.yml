@@ -27,7 +27,7 @@ jobs:
           xcode_scheme: 'RNTester-macOS'
           xcode_destination: 'platform=macOS,arch=x86_64'
     pool:
-      name: Hosted Mac Internal Mojave
+      vmImage: macOS-10.14
       demands: ['xcode', 'sh', 'npm']
     timeoutInMinutes: 60 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
