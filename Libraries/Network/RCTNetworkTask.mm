@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <mutex>
+
 #import <React/RCTLog.h>
 #import <React/RCTNetworkTask.h>
 #import <React/RCTUtils.h>
@@ -14,6 +16,7 @@
   NSMutableData *_data;
   id<RCTURLRequestHandler> _handler;
   dispatch_queue_t _callbackQueue;
+  std::mutex _mutex;
 
   RCTNetworkTask *_selfReference;
 }
@@ -159,12 +162,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return;
   }
 
-  if (!_data) {
-    _data = [NSMutableData new];
-  }
-  [_data appendData:data];
+  int64_t length = 0;
 
-  int64_t length = _data.length;
+  {
+    // NSData is not thread-safe and this method could be called from different threads as
+    // RCTURLRequestHandlers does not provide any guarantee of which thread we are called on.
+    std::lock_guard<std::mutex> lock(_mutex);
+    if (!_data) {
+      _data = [NSMutableData new];
+    }
+    [_data appendData:data];
+    length = _data.length;
+  }
+
   int64_t total = _response.expectedContentLength;
 
   if (_incrementalDataBlock) {
@@ -190,8 +200,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   _status = RCTNetworkTaskFinished;
   if (_completionBlock) {
     RCTURLRequestCompletionBlock completionBlock = _completionBlock;
+    NSData *dataCopy = nil;
+    {
+      std::lock_guard<std::mutex> lock(self->_mutex);
+      dataCopy = _data;
+      _data = nil;
+    }
     [self dispatchCallback:^{
-      completionBlock(self->_response, self->_data, error);
+      completionBlock(self->_response, dataCopy, error);
     }];
   }
   [self invalidate];
