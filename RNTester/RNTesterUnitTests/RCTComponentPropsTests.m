@@ -8,7 +8,11 @@
 
 #import <XCTest/XCTest.h>
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203), to run Mac tests
 #import <RCTTest/RCTTestRunner.h>
+#else
+#import "../RCTTest/RCTTestRunner.h"
+#endif // TODO(macOS ISS#2323203)
 #import <React/RCTRootShadowView.h>
 #import <React/RCTShadowView.h>
 #import <React/RCTUIManager.h>
@@ -134,13 +138,13 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
   
   dispatch_async(uiManager.methodQueue, ^{
     [uiManager createView:@2 viewName:@"RCTPropsTestView" rootTag:self->_rootViewReactTag props:@{}];
-    [uiManager addUIBlock:^(__unused RCTUIManager *_uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    [uiManager addUIBlock:^(__unused RCTUIManager *_uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
       view = (RCTPropsTestView *)viewRegistry[@2];
       XCTAssertEqual(view.layer.allowsGroupOpacity, TRUE);
       [initialExpectation fulfill];
     }];
     [uiManager updateView:@2 viewName:@"RCTPropsTestView" props:@{@"needsOffscreenAlphaCompositing": @NO}];
-    [uiManager addUIBlock:^(__unused RCTUIManager *_uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    [uiManager addUIBlock:^(__unused RCTUIManager *_uiManager, NSDictionary<NSNumber *, RCTUIView *> *viewRegistry) { // TODO(macOS ISS#3536887)
       view = (RCTPropsTestView *)viewRegistry[@2];
       XCTAssertEqual(view.layer.allowsGroupOpacity, FALSE);
       [updateExpectation fulfill];
