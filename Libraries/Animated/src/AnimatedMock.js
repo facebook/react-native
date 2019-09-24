@@ -30,7 +30,7 @@ import type {Mapping, EventConfig} from './AnimatedEvent';
  * animation functions from AnimatedImplementation with empty animations for
  * predictability in tests.
  */
-type CompositeAnimation = {
+export type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void,
   stop: () => void,
   reset: () => void,

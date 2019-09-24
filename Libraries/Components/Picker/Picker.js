@@ -49,6 +49,7 @@ type PickerItemProps = $ReadOnly<{|
 /**
  * Individual selectable item in a Picker.
  */
+export type {PickerItem};
 class PickerItem extends React.Component<PickerItemProps> {
   render() {
     // The items are not rendered directly
