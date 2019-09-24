@@ -73,7 +73,7 @@ public class JavaTimerManager {
       }
 
       if (mTimersToCall != null) {
-        mReactApplicationContext.getJSModule(JSTimers.class).callTimers(mTimersToCall);
+        mJavaScriptTimerManager.callTimers(mTimersToCall);
         mTimersToCall = null;
       }
 
@@ -131,9 +131,7 @@ public class JavaTimerManager {
       }
 
       if (sendIdleEvents) {
-        mReactApplicationContext
-            .getJSModule(JSTimers.class)
-            .callIdleCallbacks(absoluteFrameStartTime);
+        mJavaScriptTimerManager.callIdleCallbacks(absoluteFrameStartTime);
       }
 
       mCurrentIdleCallbackRunnable = null;
@@ -145,6 +143,7 @@ public class JavaTimerManager {
   }
 
   private final ReactApplicationContext mReactApplicationContext;
+  private final JavaScriptTimerManager mJavaScriptTimerManager;
   private final ReactChoreographer mReactChoreographer;
   private final DevSupportManager mDevSupportManager;
   private final Object mTimerGuard = new Object();
@@ -162,9 +161,11 @@ public class JavaTimerManager {
 
   public JavaTimerManager(
       ReactApplicationContext reactContext,
+      JavaScriptTimerManager javaScriptTimerManager,
       ReactChoreographer reactChoreographer,
       DevSupportManager devSupportManager) {
     mReactApplicationContext = reactContext;
+    mJavaScriptTimerManager = javaScriptTimerManager;
     mReactChoreographer = reactChoreographer;
     mDevSupportManager = devSupportManager;
 
@@ -317,11 +318,9 @@ public class JavaTimerManager {
     if (mDevSupportManager.getDevSupportEnabled()) {
       long driftTime = Math.abs(remoteTime - deviceTime);
       if (driftTime > 60000) {
-        mReactApplicationContext
-            .getJSModule(JSTimers.class)
-            .emitTimeDriftWarning(
-                "Debugger and device times have drifted by more than 60s. Please correct this by "
-                    + "running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your debugger machine.");
+        mJavaScriptTimerManager.emitTimeDriftWarning(
+            "Debugger and device times have drifted by more than 60s. Please correct this by "
+                + "running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your debugger machine.");
       }
     }
 
@@ -330,7 +329,7 @@ public class JavaTimerManager {
     if (duration == 0 && !repeat) {
       WritableArray timerToCall = Arguments.createArray();
       timerToCall.pushInt(callbackID);
-      mReactApplicationContext.getJSModule(JSTimers.class).callTimers(timerToCall);
+      mJavaScriptTimerManager.callTimers(timerToCall);
       return;
     }
 

@@ -10,6 +10,7 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.jstasks.HeadlessJsTaskContext;
 import com.facebook.react.jstasks.HeadlessJsTaskEventListener;
@@ -20,6 +21,23 @@ import com.facebook.react.module.annotations.ReactModule;
 public final class TimingModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener, HeadlessJsTaskEventListener {
 
+  public class BridgeTimerManager implements JavaScriptTimerManager {
+    @Override
+    public void callTimers(WritableArray timerIDs) {
+      getReactApplicationContext().getJSModule(JSTimers.class).callTimers(timerIDs);
+    }
+
+    @Override
+    public void callIdleCallbacks(double frameTime) {
+      getReactApplicationContext().getJSModule(JSTimers.class).callIdleCallbacks(frameTime);
+    }
+
+    @Override
+    public void emitTimeDriftWarning(String warningMessage) {
+      getReactApplicationContext().getJSModule(JSTimers.class).emitTimeDriftWarning(warningMessage);
+    }
+  }
+
   public static final String NAME = "Timing";
 
   private final JavaTimerManager mJavaTimerManager;
@@ -28,7 +46,11 @@ public final class TimingModule extends ReactContextBaseJavaModule
     super(reactContext);
 
     mJavaTimerManager =
-        new JavaTimerManager(reactContext, ReactChoreographer.getInstance(), devSupportManager);
+        new JavaTimerManager(
+            reactContext,
+            new BridgeTimerManager(),
+            ReactChoreographer.getInstance(),
+            devSupportManager);
   }
 
   @Override
