@@ -43,6 +43,7 @@ const PERMISSIONS = Object.freeze({
   GET_ACCOUNTS: 'android.permission.GET_ACCOUNTS',
   ACCESS_FINE_LOCATION: 'android.permission.ACCESS_FINE_LOCATION',
   ACCESS_COARSE_LOCATION: 'android.permission.ACCESS_COARSE_LOCATION',
+  ACCESS_BACKGROUND_LOCATION: 'android.permission.ACCESS_BACKGROUND_LOCATION',
   RECORD_AUDIO: 'android.permission.RECORD_AUDIO',
   READ_PHONE_STATE: 'android.permission.READ_PHONE_STATE',
   CALL_PHONE: 'android.permission.CALL_PHONE',
@@ -69,6 +70,7 @@ const PERMISSIONS = Object.freeze({
 
 class PermissionsAndroid {
   PERMISSIONS: {|
+    ACCESS_BACKGROUND_LOCATION: string,
     ACCESS_COARSE_LOCATION: string,
     ACCESS_FINE_LOCATION: string,
     ADD_VOICEMAIL: string,
