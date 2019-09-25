@@ -1,0 +1,229 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>LayoutAnimation · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="Automatically animates views to their new positions when the next layout happens."/><meta name="docsearch:version" content="0.60"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="LayoutAnimation · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/"/><meta property="og:description" content="Automatically animates views to their new positions when the next layout happens."/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/react-native/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/react-native/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/react-native/blog/feed.xml" title="React Native Blog RSS Feed"/><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/focus-visible@5.0.2/dist/focus-visible.min.js"></script><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><script type="text/javascript" src="/react-native/js/tabs.js"></script><script type="text/javascript" src="/react-native/js/2019_docs-survey.js"></script><script src="https://unpkg.com/vanilla-back-to-top@7.1.14/dist/vanilla-back-to-top.min.js"></script><script>
+        document.addEventListener('DOMContentLoaded', function() {
+          addBackToTop(
+            {"zIndex":100}
+          )
+        });
+        </script><script src="/react-native/js/scrollSpy.js"></script><link rel="stylesheet" href="/react-native/css/prism.css"/><link rel="stylesheet" href="/react-native/css/main.css"/><script src="/react-native/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.svg" alt="React Native"/><h2 class="headerTitleWithLogo">React Native</h2></a><a href="/react-native/versions"><h3>0.60</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/react-native/docs/0.60/getting-started" target="_self">Docs</a></li><li class="siteNavGroupActive"><a href="/react-native/docs/0.60/activityindicator" target="_self">API</a></li><li class=""><a href="/react-native/help" target="_self">Community</a></li><li class=""><a href="/react-native/blog/" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li><li class=""><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>APIs</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Components<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/activityindicator">ActivityIndicator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/button">Button</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/datepickerios">DatePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/drawerlayoutandroid">DrawerLayoutAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/flatlist">FlatList</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/image">Image</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/imagebackground">ImageBackground</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/inputaccessoryview">InputAccessoryView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/keyboardavoidingview">KeyboardAvoidingView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/maskedviewios">MaskedViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/modal">Modal</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/picker">Picker</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/pickerios">PickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/progressbarandroid">ProgressBarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/progressviewios">ProgressViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/refreshcontrol">RefreshControl</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/safeareaview">SafeAreaView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/scrollview">ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/sectionlist">SectionList</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/segmentedcontrolios">SegmentedControlIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/slider">Slider</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/statusbar">StatusBar</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/switch">Switch</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/tabbarios">TabBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/tabbarios-item">TabBarIOS.Item</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/text">Text</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/textinput">TextInput</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/toolbarandroid">ToolbarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/touchablehighlight">TouchableHighlight</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/touchablenativefeedback">TouchableNativeFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/touchableopacity">TouchableOpacity</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/touchablewithoutfeedback">TouchableWithoutFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/view">View</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/viewpagerandroid">ViewPagerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/virtualizedlist">VirtualizedList</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">APIs<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/accessibilityinfo">AccessibilityInfo</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/actionsheetios">ActionSheetIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/alert">Alert</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/alertios">AlertIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/animated">Animated</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/appregistry">AppRegistry</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/appstate">AppState</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/asyncstorage">AsyncStorage</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/backhandler">BackHandler</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/clipboard">Clipboard</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/datepickerandroid">DatePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/dimensions">Dimensions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/easing">Easing</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/imageeditor">ImageEditor</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/imagepickerios">ImagePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/image-style-props">Image Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/interactionmanager">InteractionManager</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/keyboard">Keyboard</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/layout-props">Layout Props</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/react-native/docs/0.60/layoutanimation">LayoutAnimation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/linking">Linking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/panresponder">PanResponder</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/permissionsandroid">PermissionsAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/pixelratio">PixelRatio</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/pushnotificationios">PushNotificationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/settings">Settings</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/shadow-props">Shadow Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/share">Share</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/statusbarios">StatusBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/stylesheet">StyleSheet</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/systrace">Systrace</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/text-style-props">Text Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/timepickerandroid">TimePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/toastandroid">ToastAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/transforms">Transforms</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/vibration">Vibration</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/view-style-props">View Style Props</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/layoutanimation.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">LayoutAnimation</h1></header><article><div><span><p>Automatically animates views to their new positions when the next layout happens.</p>
+<p>A common way to use this API is to call it before calling <code>setState</code>.</p>
+<p>Note that in order to get this to work on <strong>Android</strong> you need to set the following flags via <code>UIManager</code>:</p>
+<pre><code class="hljs css language-js"><span class="token keyword">if</span> <span class="token punctuation">(</span>Platform<span class="token punctuation">.</span><span class="token constant">OS</span> <span class="token operator">===</span> <span class="token string">'android'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>UIManager<span class="token punctuation">.</span>setLayoutAnimationEnabledExperimental<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    UIManager<span class="token punctuation">.</span><span class="token function">setLayoutAnimationEnabledExperimental</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Example usage:</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> React<span class="token punctuation">,</span> <span class="token punctuation">{</span>Component<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span>View<span class="token punctuation">,</span> Text<span class="token punctuation">,</span> TouchableOpacity<span class="token punctuation">,</span> Platform<span class="token punctuation">,</span> UIManager<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">if</span> <span class="token punctuation">(</span>
+  Platform<span class="token punctuation">.</span><span class="token constant">OS</span> <span class="token operator">===</span> <span class="token string">'android'</span> <span class="token operator">&amp;&amp;</span>
+  UIManager<span class="token punctuation">.</span>setLayoutAnimationEnabledExperimental
+<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  UIManager<span class="token punctuation">.</span><span class="token function">setLayoutAnimationEnabledExperimental</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">class</span> <span class="token class-name">AnimatedCollapsible</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+  state <span class="token operator">=</span> <span class="token punctuation">{</span>expanded<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>overflow<span class="token punctuation">:</span> <span class="token string">'hidden'</span><span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">TouchableOpacity</span></span>
+          <span class="token attr-name">onPress</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+            LayoutAnimation<span class="token punctuation">.</span><span class="token function">configureNext</span><span class="token punctuation">(</span>LayoutAnimation<span class="token punctuation">.</span>Presets<span class="token punctuation">.</span>spring<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>expanded<span class="token punctuation">:</span> <span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>expanded<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span>
+          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span>
+            Press me to <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>expanded <span class="token operator">?</span> <span class="token string">'collapse'</span> <span class="token punctuation">:</span> <span class="token string">'expand'</span><span class="token punctuation">}</span><span class="token operator">!</span>
+          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">TouchableOpacity</span></span><span class="token punctuation">></span></span>
+        <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>expanded <span class="token operator">&amp;&amp;</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token constant">I</span> disappear sometimes<span class="token operator">!</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token punctuation">}</span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<hr>
+<h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
+<h2><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
+<h3><a class="anchor" aria-hidden="true" id="configurenext"></a><a href="#configurenext" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>configureNext()</code></h3>
+<pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">configureNext</span><span class="token punctuation">(</span>config<span class="token punctuation">,</span> onAnimationDidEnd<span class="token operator">?</span><span class="token punctuation">)</span>
+</code></pre>
+<p>Schedules an animation to happen on the next layout.</p>
+<h4><a class="anchor" aria-hidden="true" id="parameters"></a><a href="#parameters" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Parameters:</h4>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>config</td><td>object</td><td>Yes</td><td>See config description below.</td></tr>
+<tr><td>onAnimationDidEnd</td><td>function</td><td>No</td><td>Called when the animation finished. Only supported on iOS.</td></tr>
+</tbody>
+</table>
+<p>The <code>config</code> parameter is an object with the keys below. <a href="/react-native/docs/0.60/layoutanimation#create"><code>create</code></a> returns a valid object for <code>config</code>, and the <a href="/react-native/docs/0.60/layoutanimation#presets"><code>Presets</code></a> objects can also all be passed as the <code>config</code>.</p>
+<ul>
+<li><code>duration</code> in milliseconds</li>
+<li><code>create</code>, optional config for animating in new views</li>
+<li><code>update</code>, optional config for animating views that have been updated</li>
+<li><code>delete</code>, optional config for animating views as they are removed</li>
+</ul>
+<p>The config that's passed to <code>create</code>, <code>update</code>, or <code>delete</code> has the following keys:</p>
+<ul>
+<li><code>type</code>, the <a href="/react-native/docs/0.60/layoutanimation#types">animation type</a> to use</li>
+<li><code>property</code>, the <a href="/react-native/docs/0.60/layoutanimation#properties">layout property</a> to animate (optional, but recommended for <code>create</code> and <code>delete</code>)</li>
+<li><code>springDamping</code> (number, optional and only for use with <code>type: Type.spring</code>)</li>
+<li><code>initialVelocity</code> (number, optional)</li>
+<li><code>delay</code> (number, optional)</li>
+<li><code>duration</code> (number, optional)</li>
+</ul>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="create"></a><a href="#create" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>create()</code></h3>
+<pre><code class="hljs css language-jsx"><span class="token keyword">static</span> <span class="token function">create</span><span class="token punctuation">(</span>duration<span class="token punctuation">,</span> type<span class="token punctuation">,</span> creationProp<span class="token punctuation">)</span>
+</code></pre>
+<p>Helper that creates an object (with <code>create</code>, <code>update</code>, and <code>delete</code> fields) to pass into <a href="/react-native/docs/0.60/layoutanimation#configurenext"><code>configureNext</code></a>. The <code>type</code> parameter is an <a href="/react-native/docs/0.60/layoutanimation#types">animation type</a>, and the <code>creationProp</code> parameter is a <a href="/react-native/docs/0.60/layoutanimation#properties">layout property</a>.</p>
+<p>Example usage:</p>
+<pre><code class="hljs css language-js">LayoutAnimation<span class="token punctuation">.</span><span class="token function">configureNext</span><span class="token punctuation">(</span>
+  LayoutAnimation<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span>
+    <span class="token number">500</span><span class="token punctuation">,</span>
+    LayoutAnimation<span class="token punctuation">.</span>Types<span class="token punctuation">.</span>spring<span class="token punctuation">,</span>
+    LayoutAnimation<span class="token punctuation">.</span>Properties<span class="token punctuation">.</span>scaleXY<span class="token punctuation">,</span>
+  <span class="token punctuation">)</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="properties"></a><a href="#properties" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Properties</h2>
+<h3><a class="anchor" aria-hidden="true" id="types"></a><a href="#types" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Types</h3>
+<p>An enumeration of animation types to be used in the <a href="/react-native/docs/0.60/layoutanimation#create"><code>create</code></a> method, or in the <code>create</code>/<code>update</code>/<code>delete</code> configs for <a href="/react-native/docs/0.60/layoutanimation#configurenext"><code>configureNext</code></a>. (example usage: <code>LayoutAnimation.Types.easeIn</code>)</p>
+<table>
+<thead>
+<tr><th>Types</th></tr>
+</thead>
+<tbody>
+<tr><td>spring</td></tr>
+<tr><td>linear</td></tr>
+<tr><td>easeInEaseOut</td></tr>
+<tr><td>easeIn</td></tr>
+<tr><td>easeOut</td></tr>
+<tr><td>keyboard</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="properties-1"></a><a href="#properties-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Properties</h3>
+<p>An enumeration of layout properties to be animated to be used in the <a href="/react-native/docs/0.60/layoutanimation#create"><code>create</code></a> method, or in the <code>create</code>/<code>update</code>/<code>delete</code> configs for <a href="/react-native/docs/0.60/layoutanimation#configurenext"><code>configureNext</code></a>. (example usage: <code>LayoutAnimation.Properties.opacity</code>)</p>
+<table>
+<thead>
+<tr><th>Properties</th></tr>
+</thead>
+<tbody>
+<tr><td>opacity</td></tr>
+<tr><td>scaleX</td></tr>
+<tr><td>scaleY</td></tr>
+<tr><td>scaleXY</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="presets"></a><a href="#presets" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Presets</h3>
+<p>A set of predefined animation configs to pass into <a href="/react-native/docs/0.60/layoutanimation#configurenext"><code>configureNext</code></a>.</p>
+<table>
+<thead>
+<tr><th>Presets</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>easeInEaseOut</td><td><code>create(300, 'easeInEaseOut', 'opacity')</code></td></tr>
+<tr><td>linear</td><td><code>create(500, 'linear', 'opacity')</code></td></tr>
+<tr><td>spring</td><td><code>{ duration: 700, create: { type: 'linear', property: 'opacity' }, update: { type: 'spring', springDamping: 0.4 }, delete: { type: 'linear', property: 'opacity' } }</code></td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="easeineaseout"></a><a href="#easeineaseout" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>easeInEaseOut()</code></h3>
+<p>Calls <code>configureNext()</code> with <code>Presets.easeInEaseOut</code>.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="linear"></a><a href="#linear" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>linear()</code></h3>
+<p>Calls <code>configureNext()</code> with <code>Presets.linear</code>.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="spring"></a><a href="#spring" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>spring()</code></h3>
+<p>Calls <code>configureNext()</code> with <code>Presets.spring</code>.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/react-native/docs/0.60/layout-props"><span class="arrow-prev">← </span><span>Layout Props</span></a><a class="docs-next button" href="/react-native/docs/0.60/linking"><span>Linking</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#configurenext"><code>configureNext()</code></a></li><li><a href="#create"><code>create()</code></a></li></ul></li><li><a href="#properties">Properties</a><ul class="toc-headings"><li><a href="#types">Types</a></li><li><a href="#properties-1">Properties</a></li><li><a href="#presets">Presets</a></li><li><a href="#easeineaseout"><code>easeInEaseOut()</code></a></li><li><a href="#linear"><code>linear()</code></a></li><li><a href="#spring"><code>spring()</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Tutorial</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/react-native/help.html">The React Native Community</a><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/react-native/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2019 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+                document.addEventListener('keyup', function(e) {
+                  if (e.target !== document.body) {
+                    return;
+                  }
+                  // keyCode for '/' (slash)
+                  if (e.keyCode === 191) {
+                    const search = document.getElementById('search_input_react');
+                    search && search.focus();
+                  }
+                });
+              </script><script>
+              var search = docsearch({
+                
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.60"],"hitsPerPage":5}
+              });
+            </script></body></html>

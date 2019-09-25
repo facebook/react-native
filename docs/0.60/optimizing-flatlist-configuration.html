@@ -1,0 +1,209 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Optimizing Flatlist Configuration · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="## Terms"/><meta name="docsearch:version" content="0.60"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Optimizing Flatlist Configuration · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/"/><meta property="og:description" content="## Terms"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/react-native/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/react-native/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/react-native/blog/feed.xml" title="React Native Blog RSS Feed"/><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/focus-visible@5.0.2/dist/focus-visible.min.js"></script><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><script type="text/javascript" src="/react-native/js/tabs.js"></script><script type="text/javascript" src="/react-native/js/2019_docs-survey.js"></script><script src="https://unpkg.com/vanilla-back-to-top@7.1.14/dist/vanilla-back-to-top.min.js"></script><script>
+        document.addEventListener('DOMContentLoaded', function() {
+          addBackToTop(
+            {"zIndex":100}
+          )
+        });
+        </script><script src="/react-native/js/scrollSpy.js"></script><link rel="stylesheet" href="/react-native/css/prism.css"/><link rel="stylesheet" href="/react-native/css/main.css"/><script src="/react-native/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.svg" alt="React Native"/><h2 class="headerTitleWithLogo">React Native</h2></a><a href="/react-native/versions"><h3>0.60</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/react-native/docs/0.60/getting-started" target="_self">Docs</a></li><li class=""><a href="/react-native/docs/0.60/activityindicator" target="_self">API</a></li><li class=""><a href="/react-native/help" target="_self">Community</a></li><li class=""><a href="/react-native/blog/" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li><li class=""><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Guides</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">The Basics<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/getting-started">Getting Started</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/tutorial">Learn the Basics</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/props">Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/state">State</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/style">Style</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/height-and-width">Height and Width</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/flexbox">Layout with Flexbox</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/handling-text-input">Handling Text Input</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/handling-touches">Handling Touches</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/using-a-scrollview">Using a ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/using-a-listview">Using List Views</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/network">Networking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/more-resources">More Resources</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Guides<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/components-and-apis">Components and APIs</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/platform-specific-code">Platform Specific Code</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/navigation">Navigating Between Screens</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/images">Images</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/animations">Animations</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/accessibility">Accessibility</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/improvingux">Improving User Experience</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/react-native/docs/0.60/optimizing-flatlist-configuration">Optimizing Flatlist Configuration</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/timers">Timers</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/debugging">Debugging</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/performance">Performance</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/gesture-responder-system">Gesture Responder System</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/javascript-environment">JavaScript Environment</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/typescript">Using TypeScript with React Native</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/direct-manipulation">Direct Manipulation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/colors">Color Reference</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/integration-with-existing-apps">Integration with Existing Apps</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/building-for-apple-tv">Building For TV Devices</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/running-on-device">Running On Device</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/upgrading">Upgrading to new React Native versions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/troubleshooting">Troubleshooting</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/native-modules-setup">Native Modules Setup</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/out-of-tree-platforms">Out-of-Tree Platforms</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Guides (iOS)<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/native-modules-ios">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/native-components-ios">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/linking-libraries-ios">Linking Libraries</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/running-on-simulator-ios">Running On Simulator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/communication-ios">Communication between native and React Native</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/app-extensions">App Extensions</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Guides (Android)<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/native-modules-android">Native Modules</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/native-components-android">Native UI Components</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/headless-js-android">Headless JS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/signed-apk-android">Publishing to Google Play Store</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/removing-default-permissions">Removing Default Permissions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/hermes">Using Hermes</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/optimizing-flatlist-configuration.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">Optimizing Flatlist Configuration</h1></header><article><div><span><h2><a class="anchor" aria-hidden="true" id="terms"></a><a href="#terms" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Terms</h2>
+<ul>
+<li><p><strong>VirtualizedList:</strong> The component behind <code>FlatList</code> (React Native's implementation of the <a href="https://bvaughn.github.io/react-virtualized/#/components/List"><code>Virtual List</code></a> concept.)</p></li>
+<li><p><strong>Memory consumption:</strong> How much information about your list is being stored in memory, which could lead to an app crash.</p></li>
+<li><p><strong>Responsiveness:</strong> Application ability to respond to interactions. Low responsiveness, for instance, is when you touch on a component and it waits a bit to respond, instead of responding immediately as expected.</p></li>
+<li><p><strong>Blank areas:</strong> When <code>VirtualizedList</code> can't render your items fast enough, you may enter a part of your list with non-rendered components that appear as blank white space.</p></li>
+<li><p><strong>Viewport:</strong> The visible area of content that is rendered to pixels.</p></li>
+<li><p><strong>Window:</strong> The area in which items should be mounted, which is generally much larger than the viewport.</p></li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="props"></a><a href="#props" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
+<p>Here are a list of props that can help to improve <code>FlatList</code> performance:</p>
+<h3><a class="anchor" aria-hidden="true" id="removeclippedsubviews"></a><a href="#removeclippedsubviews" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>removeClippedSubviews</h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Default</th></tr>
+</thead>
+<tbody>
+<tr><td>Boolean</td><td>False</td></tr>
+</tbody>
+</table>
+<p>If <code>true</code>, views that are outside of the viewport are detached from the native view hierarchy.</p>
+<p><strong>Pros:</strong> This reduces time spent on the main thread, and thus reduces the risk of dropped frames, by excluding views outside of the viewport from the native rendering and drawing traversals.</p>
+<p><strong>Cons:</strong> Be aware that this implementation can have bugs, such as missing content (mainly observed on iOS), especially if you are doing complex things with transforms and/or absolute positioning. Also note this does not save significant memory because the views are not deallocated, just detached.</p>
+<h3><a class="anchor" aria-hidden="true" id="maxtorenderperbatch"></a><a href="#maxtorenderperbatch" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>maxToRenderPerBatch</h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Default</th></tr>
+</thead>
+<tbody>
+<tr><td>Number</td><td>10</td></tr>
+</tbody>
+</table>
+<p>It is a <code>VirtualizedList</code> prop that can be passed through <code>FlatList</code>. This controls the amount of items rendered per batch, which is the next chunk of items rendered on every scroll.</p>
+<p><strong>Pros:</strong> Setting a bigger number means less visual blank areas when scrolling (increases the fill rate).</p>
+<p><strong>Cons:</strong> More items per batch means longer periods of JavaScript execution potentially blocking other event processing, like presses, hurting responsiveness.</p>
+<h3><a class="anchor" aria-hidden="true" id="updatecellsbatchingperiod"></a><a href="#updatecellsbatchingperiod" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>updateCellsBatchingPeriod</h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Default</th></tr>
+</thead>
+<tbody>
+<tr><td>Number</td><td>50</td></tr>
+</tbody>
+</table>
+<p>While <code>maxToRenderPerBatch</code> tells the amount of items rendered per batch, setting <code>updateCellsBatchingPeriod</code> tells your <code>VirtualizedList</code> the delay in milliseconds between batch renders (how frequently your component will be rendering the windowed items).</p>
+<p><strong>Pros:</strong> Combining this prop with <code>maxToRenderPerBatch</code> gives you the power to, for example, render more items in a less frequent batch, or less items in a more frequent batch.</p>
+<p><strong>Cons:</strong> Less frequent batches may cause blank areas, More frequent batches may cause responsiveness issues.</p>
+<h3><a class="anchor" aria-hidden="true" id="initialnumtorender"></a><a href="#initialnumtorender" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>initialNumToRender</h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Default</th></tr>
+</thead>
+<tbody>
+<tr><td>Number</td><td>10</td></tr>
+</tbody>
+</table>
+<p>The initial amount of items to render.</p>
+<p><strong>Pros:</strong> Define precise number of items that would cover the screen for every device. This can be a big performance boost for the initial render.</p>
+<p><strong>Cons:</strong> Setting a low <code>initialNumToRender</code> may cause blank areas, especially if it's too small to cover the viewport on initial render.</p>
+<h3><a class="anchor" aria-hidden="true" id="windowsize"></a><a href="#windowsize" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>windowSize</h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Default</th></tr>
+</thead>
+<tbody>
+<tr><td>Number</td><td>21</td></tr>
+</tbody>
+</table>
+<p>The number passed here is a measurement unit where 1 is equivalent to your viewport height. The default value is 21 (10 viewports above, 10 below, and one in between).</p>
+<p><strong>Pros:</strong> Bigger <code>windowSize</code> will result in less chance of seeing blank space while scrolling. On the other hand, smaller <code>windowSize</code> will result in fewer items mounted simultaneously, saving memory.</p>
+<p><strong>Cons:</strong> For a bigger <code>windowSize</code>, you will have more memory consumption. For a lower <code>windowSize</code>, you will have a bigger chance of seeing blank areas.</p>
+<h3><a class="anchor" aria-hidden="true" id="legacyimplementation"></a><a href="#legacyimplementation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>legacyImplementation</h3>
+<table>
+<thead>
+<tr><th>Type</th><th>Default</th></tr>
+</thead>
+<tbody>
+<tr><td>Boolean</td><td>False</td></tr>
+</tbody>
+</table>
+<p>Make <code>FlatList</code> rely on the older and deprecated <code>ListView</code> instead of <code>VirtualizedList</code>.</p>
+<p><strong>Pros:</strong> No risk of seeing blank areas while scrolling. May avoid bugs in <code>VirtualizedList</code>.</p>
+<p><strong>Cons:</strong> Extra memory consumption and more app crash risk in large lists (100+) with complex items. It also warns that the above tweaks will not work because now it is using <code>ListView</code>. Many other features are not supported. There may be other bugs since <code>ListView</code> is deprecated.</p>
+<h2><a class="anchor" aria-hidden="true" id="list-items"></a><a href="#list-items" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>List items</h2>
+<p>Below are some tips about list item components. They are the core of your list, so they need to be fast.</p>
+<h3><a class="anchor" aria-hidden="true" id="use-simple-components"></a><a href="#use-simple-components" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Use simple components</h3>
+<p>The more complex your components are, the slower they will render. Try to avoid a lot of logic and nesting in your list items. If you are reusing this list item component a lot in your app, create a component just for your big lists and make them with as little logic and nesting as possible.</p>
+<h3><a class="anchor" aria-hidden="true" id="use-light-components"></a><a href="#use-light-components" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Use light components</h3>
+<p>The heavier your components are, the slower they render. Avoid heavy images (use a cropped version or thumbnail for list items, as small as possible). Talk to your design team, use as little effects and interactions and information as possible in your list. Show them in your item's detail.</p>
+<h3><a class="anchor" aria-hidden="true" id="use-shouldcomponentupdate"></a><a href="#use-shouldcomponentupdate" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Use shouldComponentUpdate</h3>
+<p>Implement update verification to your components. React's <code>PureComponent</code> implement a <a href="https://reactjs.org/docs/react-component.html#shouldcomponentupdate"><code>shouldComponentUpdate</code></a> with shallow comparison. This is expensive here because it need to check all your props. If you want a good bit-level performance, create the strictest rules for your list item components, checking only props that could potentially change. If your list is simple enough, you could even use</p>
+<pre><code class="hljs css language-jsx"><span class="token function">shouldComponentUpdate</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token boolean">false</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="use-cached-optimized-images"></a><a href="#use-cached-optimized-images" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Use cached optimized images</h3>
+<p>You can use the community packages (such as <a href="https://github.com/DylanVann/react-native-fast-image">react-native-fast-image</a> from <a href="https://github.com/DylanVann">@DylanVann</a>) for more performant images. Every image in your list is a <code>new Image()</code> instance. The faster it reaches the <code>loaded</code> hook, the faster your Javascript thread will be free again.</p>
+<h3><a class="anchor" aria-hidden="true" id="use-getitemlayout"></a><a href="#use-getitemlayout" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Use getItemLayout</h3>
+<p>If all your list item components have the same height (or width, for a horizontal list), providing the <a href="https://facebook.github.io/react-native/docs/flatlist#getitemlayout">getItemLayout</a> prop removes the need for your <code>FlatList</code> to manage async layout calculations. This is a very desirable optimization technique.</p>
+<p>If your components have dynamic size and you really need performance, consider asking your design team if they may think of a redesign in order to perform better.</p>
+<h3><a class="anchor" aria-hidden="true" id="use-keyextractor-or-key"></a><a href="#use-keyextractor-or-key" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Use keyExtractor or key</h3>
+<p>You can set the <a href="https://facebook.github.io/react-native/docs/flatlist#keyextractor"><code>keyExtractor</code></a> to your <code>FlatList</code> component. This prop is used for caching and as the React <code>key</code> to track item re-ordering.</p>
+<p>You can also use a <code>key</code> prop in you item component.</p>
+<h3><a class="anchor" aria-hidden="true" id="avoid-anonymous-function-on-renderitem"></a><a href="#avoid-anonymous-function-on-renderitem" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Avoid anonymous function on renderItem</h3>
+<p>Move out the <code>renderItem</code> function to the outside of render function, so it won't recreate itself each time render function called.</p>
+<pre><code class="hljs css language-jsx"><span class="token function-variable function">renderItem</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> item <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">View</span></span> <span class="token attr-name">key</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>item<span class="token punctuation">.</span>key<span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token punctuation">{</span>item<span class="token punctuation">.</span>title<span class="token punctuation">}</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">Text</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token class-name">View</span></span><span class="token punctuation">></span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+  <span class="token comment">// ...</span>
+
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">FlatList</span></span>
+    <span class="token attr-name">data</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>items<span class="token punctuation">}</span></span>
+    <span class="token attr-name">renderItem</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>renderItem<span class="token punctuation">}</span></span>
+  <span class="token punctuation">/></span></span>
+
+  <span class="token comment">// ...</span>
+<span class="token punctuation">}</span>
+</code></pre>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/react-native/docs/0.60/improvingux"><span class="arrow-prev">← </span><span>Improving User Experience</span></a><a class="docs-next button" href="/react-native/docs/0.60/timers"><span>Timers</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#terms">Terms</a></li><li><a href="#props">Props</a><ul class="toc-headings"><li><a href="#removeclippedsubviews">removeClippedSubviews</a></li><li><a href="#maxtorenderperbatch">maxToRenderPerBatch</a></li><li><a href="#updatecellsbatchingperiod">updateCellsBatchingPeriod</a></li><li><a href="#initialnumtorender">initialNumToRender</a></li><li><a href="#windowsize">windowSize</a></li><li><a href="#legacyimplementation">legacyImplementation</a></li></ul></li><li><a href="#list-items">List items</a><ul class="toc-headings"><li><a href="#use-simple-components">Use simple components</a></li><li><a href="#use-light-components">Use light components</a></li><li><a href="#use-shouldcomponentupdate">Use shouldComponentUpdate</a></li><li><a href="#use-cached-optimized-images">Use cached optimized images</a></li><li><a href="#use-getitemlayout">Use getItemLayout</a></li><li><a href="#use-keyextractor-or-key">Use keyExtractor or key</a></li><li><a href="#avoid-anonymous-function-on-renderitem">Avoid anonymous function on renderItem</a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Tutorial</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/react-native/help.html">The React Native Community</a><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/react-native/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2019 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+                document.addEventListener('keyup', function(e) {
+                  if (e.target !== document.body) {
+                    return;
+                  }
+                  // keyCode for '/' (slash)
+                  if (e.keyCode === 191) {
+                    const search = document.getElementById('search_input_react');
+                    search && search.focus();
+                  }
+                });
+              </script><script>
+              var search = docsearch({
+                
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.60"],"hitsPerPage":5}
+              });
+            </script></body></html>

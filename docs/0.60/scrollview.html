@@ -1,0 +1,843 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>ScrollView · React Native</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="Component that wraps platform ScrollView while providing integration with touch locking &quot;responder&quot; system."/><meta name="docsearch:version" content="0.60"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="ScrollView · React Native"/><meta property="og:type" content="website"/><meta property="og:url" content="https://facebook.github.io/react-native/"/><meta property="og:description" content="Component that wraps platform ScrollView while providing integration with touch locking &quot;responder&quot; system."/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/react-native/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/solarized-dark.min.css"/><link rel="alternate" type="application/atom+xml" href="https://facebook.github.io/react-native/blog/atom.xml" title="React Native Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://facebook.github.io/react-native/blog/feed.xml" title="React Native Blog RSS Feed"/><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-41298772-2', 'auto');
+              ga('send', 'pageview');
+            </script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/focus-visible@5.0.2/dist/focus-visible.min.js"></script><script type="text/javascript" src="https://snack.expo.io/embed.js"></script><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script type="text/javascript" src="/react-native/js/codeblocks.js"></script><script type="text/javascript" src="/react-native/js/tabs.js"></script><script type="text/javascript" src="/react-native/js/2019_docs-survey.js"></script><script src="https://unpkg.com/vanilla-back-to-top@7.1.14/dist/vanilla-back-to-top.min.js"></script><script>
+        document.addEventListener('DOMContentLoaded', function() {
+          addBackToTop(
+            {"zIndex":100}
+          )
+        });
+        </script><script src="/react-native/js/scrollSpy.js"></script><link rel="stylesheet" href="/react-native/css/prism.css"/><link rel="stylesheet" href="/react-native/css/main.css"/><script src="/react-native/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/react-native/"><img class="logo" src="/react-native/img/header_logo.svg" alt="React Native"/><h2 class="headerTitleWithLogo">React Native</h2></a><a href="/react-native/versions"><h3>0.60</h3></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/react-native/docs/0.60/getting-started" target="_self">Docs</a></li><li class="siteNavGroupActive"><a href="/react-native/docs/0.60/activityindicator" target="_self">API</a></li><li class=""><a href="/react-native/help" target="_self">Community</a></li><li class=""><a href="/react-native/blog/" target="_self">Blog</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li><li class=""><a href="https://github.com/facebook/react-native" target="_self">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Components</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">Components<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/activityindicator">ActivityIndicator</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/button">Button</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/datepickerios">DatePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/drawerlayoutandroid">DrawerLayoutAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/flatlist">FlatList</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/image">Image</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/imagebackground">ImageBackground</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/inputaccessoryview">InputAccessoryView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/keyboardavoidingview">KeyboardAvoidingView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/maskedviewios">MaskedViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/modal">Modal</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/picker">Picker</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/pickerios">PickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/progressbarandroid">ProgressBarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/progressviewios">ProgressViewIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/refreshcontrol">RefreshControl</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/safeareaview">SafeAreaView</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/react-native/docs/0.60/scrollview">ScrollView</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/sectionlist">SectionList</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/segmentedcontrolios">SegmentedControlIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/slider">Slider</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/statusbar">StatusBar</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/switch">Switch</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/tabbarios">TabBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/tabbarios-item">TabBarIOS.Item</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/text">Text</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/textinput">TextInput</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/toolbarandroid">ToolbarAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/touchablehighlight">TouchableHighlight</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/touchablenativefeedback">TouchableNativeFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/touchableopacity">TouchableOpacity</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/touchablewithoutfeedback">TouchableWithoutFeedback</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/view">View</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/viewpagerandroid">ViewPagerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/virtualizedlist">VirtualizedList</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle collapsible">APIs<span class="arrow"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="#565656" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg></span></h3><ul class="hide"><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/accessibilityinfo">AccessibilityInfo</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/actionsheetios">ActionSheetIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/alert">Alert</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/alertios">AlertIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/animated">Animated</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/appregistry">AppRegistry</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/appstate">AppState</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/asyncstorage">AsyncStorage</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/backhandler">BackHandler</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/clipboard">Clipboard</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/datepickerandroid">DatePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/dimensions">Dimensions</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/easing">Easing</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/imageeditor">ImageEditor</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/imagepickerios">ImagePickerIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/image-style-props">Image Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/interactionmanager">InteractionManager</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/keyboard">Keyboard</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/layout-props">Layout Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/layoutanimation">LayoutAnimation</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/linking">Linking</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/panresponder">PanResponder</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/permissionsandroid">PermissionsAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/pixelratio">PixelRatio</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/pushnotificationios">PushNotificationIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/settings">Settings</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/shadow-props">Shadow Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/share">Share</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/statusbarios">StatusBarIOS</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/stylesheet">StyleSheet</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/systrace">Systrace</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/text-style-props">Text Style Props</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/timepickerandroid">TimePickerAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/toastandroid">ToastAndroid</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/transforms">Transforms</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/vibration">Vibration</a></li><li class="navListItem"><a class="navItem" href="/react-native/docs/0.60/view-style-props">View Style Props</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/scrollview.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">ScrollView</h1></header><article><div><span><p>Component that wraps platform ScrollView while providing integration with touch locking &quot;responder&quot; system.</p>
+<p>Keep in mind that ScrollViews must have a bounded height in order to work, since they contain unbounded-height children into a bounded container (via a scroll interaction). In order to bound the height of a ScrollView, either set the height of the view directly (discouraged) or make sure all parent views have bounded height. Forgetting to transfer <code>{flex: 1}</code> down the view stack can lead to errors here, which the element inspector makes easy to debug.</p>
+<p>Doesn't yet support other contained responders from blocking this scroll view from becoming the responder.</p>
+<p><code>&lt;ScrollView&gt;</code> vs <a href="/react-native/docs/0.60/flatlist"><code>&lt;FlatList&gt;</code></a> - which one to use?</p>
+<p><code>ScrollView</code> simply renders all its react child components at once. That makes it very easy to understand and use.</p>
+<p>On the other hand, this has a performance downside. Imagine you have a very long list of items you want to display, maybe several screens worth of content. Creating JS components and native views for everything all at once, much of which may not even be shown, will contribute to slow rendering and increased memory usage.</p>
+<p>This is where <code>FlatList</code> comes into play. <code>FlatList</code> renders items lazily, just when they are about to appear, and removes items that scroll way off screen to save memory and processing time.</p>
+<p><code>FlatList</code> is also handy if you want to render separators between your items, multiple columns, infinite scroll loading, or any number of other features it supports out of the box.</p>
+<h3><a class="anchor" aria-hidden="true" id="example"></a><a href="#example" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Example</h3>
+<div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> { StyleSheet, Text, SafeAreaView, ScrollView } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
+<span class="hljs-keyword">import</span> Constants <span class="hljs-keyword">from</span> <span class="hljs-string">'expo-constants'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">App</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">SafeAreaView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.container}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">ScrollView</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.scrollView}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">Text</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{styles.text}</span>&gt;</span>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+          aliquip ex ea commodo consequat. Duis aute irure dolor in
+          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+          culpa qui officia deserunt mollit anim id est laborum.
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Text</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">ScrollView</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">SafeAreaView</span>&gt;</span></span>
+  );
+}
+
+<span class="hljs-keyword">const</span> styles = StyleSheet.create({
+  <span class="hljs-attr">container</span>: {
+    <span class="hljs-attr">flex</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">marginTop</span>: Constants.statusBarHeight,
+  },
+  <span class="hljs-attr">scrollView</span>: {
+    <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'pink'</span>,
+    <span class="hljs-attr">marginHorizontal</span>: <span class="hljs-number">20</span>,
+  },
+  <span class="hljs-attr">text</span>: {
+    <span class="hljs-attr">fontSize</span>: <span class="hljs-number">42</span>,
+  },
+});
+</code></pre></div><div class="desktop-friendly-snack" style="margin-top: 15px; margin-bottom: 15px"><div
+        data-snack-name="ScrollView"
+        data-snack-description="Example usage"
+        data-snack-code="import%20React%20from%20'react'%3B%0Aimport%20%7B%20StyleSheet%2C%20Text%2C%20SafeAreaView%2C%20ScrollView%20%7D%20from%20'react-native'%3B%0Aimport%20Constants%20from%20'expo-constants'%3B%0A%0Aexport%20default%20function%20App()%20%7B%0A%20%20return%20(%0A%20%20%20%20%3CSafeAreaView%20style%3D%7Bstyles.container%7D%3E%0A%20%20%20%20%20%20%3CScrollView%20style%3D%7Bstyles.scrollView%7D%3E%0A%20%20%20%20%20%20%20%20%3CText%20style%3D%7Bstyles.text%7D%3E%0A%20%20%20%20%20%20%20%20%20%20Lorem%20ipsum%20dolor%20sit%20amet%2C%20consectetur%20adipiscing%20elit%2C%20sed%20do%0A%20%20%20%20%20%20%20%20%20%20eiusmod%20tempor%20incididunt%20ut%20labore%20et%20dolore%20magna%20aliqua.%20Ut%20enim%20ad%0A%20%20%20%20%20%20%20%20%20%20minim%20veniam%2C%20quis%20nostrud%20exercitation%20ullamco%20laboris%20nisi%20ut%0A%20%20%20%20%20%20%20%20%20%20aliquip%20ex%20ea%20commodo%20consequat.%20Duis%20aute%20irure%20dolor%20in%0A%20%20%20%20%20%20%20%20%20%20reprehenderit%20in%20voluptate%20velit%20esse%20cillum%20dolore%20eu%20fugiat%20nulla%0A%20%20%20%20%20%20%20%20%20%20pariatur.%20Excepteur%20sint%20occaecat%20cupidatat%20non%20proident%2C%20sunt%20in%0A%20%20%20%20%20%20%20%20%20%20culpa%20qui%20officia%20deserunt%20mollit%20anim%20id%20est%20laborum.%0A%20%20%20%20%20%20%20%20%3C%2FText%3E%0A%20%20%20%20%20%20%3C%2FScrollView%3E%0A%20%20%20%20%3C%2FSafeAreaView%3E%0A%20%20)%3B%0A%7D%0A%0Aconst%20styles%20%3D%20StyleSheet.create(%7B%0A%20%20container%3A%20%7B%0A%20%20%20%20flex%3A%201%2C%0A%20%20%20%20marginTop%3A%20Constants.statusBarHeight%2C%0A%20%20%7D%2C%0A%20%20scrollView%3A%20%7B%0A%20%20%20%20backgroundColor%3A%20'pink'%2C%0A%20%20%20%20marginHorizontal%3A%2020%2C%0A%20%20%7D%2C%0A%20%20text%3A%20%7B%0A%20%20%20%20fontSize%3A%2042%2C%0A%20%20%7D%2C%0A%7D)%3B%0A"
+        data-snack-platform="web"
+        data-snack-preview="true"
+        style="
+          overflow: hidden;
+          background: #fafafa;
+          border: 1px solid rgba(0,0,0,.16);
+          border-radius: 4px;
+          height: 514px;
+          width: 100%;
+        "
+      ></div></div></div><hr>
+<h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
+<h2><a class="anchor" aria-hidden="true" id="props"></a><a href="#props" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Props</h2>
+<p>Inherits <a href="/react-native/docs/0.60/view#props">View Props</a>.</p>
+<h3><a class="anchor" aria-hidden="true" id="alwaysbouncehorizontal"></a><a href="#alwaysbouncehorizontal" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>alwaysBounceHorizontal</code></h3>
+<p>When true, the scroll view bounces horizontally when it reaches the end even if the content is smaller than the scroll view itself. The default value is true when <code>horizontal={true}</code> and false otherwise.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="alwaysbouncevertical"></a><a href="#alwaysbouncevertical" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>alwaysBounceVertical</code></h3>
+<p>When true, the scroll view bounces vertically when it reaches the end even if the content is smaller than the scroll view itself. The default value is false when <code>horizontal={true}</code> and true otherwise.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="automaticallyadjustcontentinsets"></a><a href="#automaticallyadjustcontentinsets" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>automaticallyAdjustContentInsets</code></h3>
+<p>Controls whether iOS should automatically adjust the content inset for scroll views that are placed behind a navigation bar or tab bar/ toolbar. The default value is true.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="bounces"></a><a href="#bounces" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>bounces</code></h3>
+<p>When true, the scroll view bounces when it reaches the end of the content if the content is larger then the scroll view along the axis of the scroll direction. When false, it disables all bouncing even if the <code>alwaysBounce*</code> props are true. The default value is true.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="bounceszoom"></a><a href="#bounceszoom" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>bouncesZoom</code></h3>
+<p>When true, gestures can drive zoom past min/max and the zoom will animate to the min/max value at gesture end, otherwise the zoom will not exceed the limits.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="cancancelcontenttouches"></a><a href="#cancancelcontenttouches" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>canCancelContentTouches</code></h3>
+<p>When false, once tracking starts, won't try to drag if the touch moves. The default value is true.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="centercontent"></a><a href="#centercontent" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>centerContent</code></h3>
+<p>When true, the scroll view automatically centers the content when the content is smaller than the scroll view bounds; when the content is larger than the scroll view, this property has no effect. The default value is false.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="contentcontainerstyle"></a><a href="#contentcontainerstyle" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>contentContainerStyle</code></h3>
+<p>These styles will be applied to the scroll view content container which wraps all of the child views. Example:</p>
+<pre><code class="hljs">return (
+  <span class="hljs-params">&lt;ScrollView contentContainerStyle={styles.contentContainer}&gt;</span>
+  <span class="hljs-params">&lt;/ScrollView&gt;</span>
+);
+...
+const styles = StyleSheet.create({
+<span class="hljs-symbol">  contentContainer:</span> {
+<span class="hljs-symbol">    paddingVertical:</span> <span class="hljs-number">20</span>
+  }
+});
+</code></pre>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>StyleSheetPropType(View Style props)</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="contentinset"></a><a href="#contentinset" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>contentInset</code></h3>
+<p>The amount by which the scroll view content is inset from the edges of the scroll view. Defaults to <code>{top: 0, left: 0, bottom: 0, right: 0}</code>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>object: {top: number, left: number, bottom: number, right: number}</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="contentinsetadjustmentbehavior"></a><a href="#contentinsetadjustmentbehavior" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>contentInsetAdjustmentBehavior</code></h3>
+<p>This property specifies how the safe area insets are used to modify the content area of the scroll view. The default value of this property is &quot;never&quot;. Available on iOS 11 and later.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('automatic', 'scrollableAxes', 'never', 'always')</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="contentoffset"></a><a href="#contentoffset" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>contentOffset</code></h3>
+<p>Used to manually set the starting scroll offset. The default value is <code>{x: 0, y: 0}</code>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>PointPropType</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="decelerationrate"></a><a href="#decelerationrate" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>decelerationRate</code></h3>
+<p>A floating-point number that determines how quickly the scroll view decelerates after the user lifts their finger. You may also use string shortcuts <code>&quot;normal&quot;</code> and <code>&quot;fast&quot;</code> which match the underlying iOS settings for <code>UIScrollViewDecelerationRateNormal</code> and <code>UIScrollViewDecelerationRateFast</code> respectively.</p>
+<ul>
+<li><code>'normal'</code> (the default), 0.998 on iOS, 0.985 on Android.</li>
+<li><code>'fast'</code>, 0.99 on iOS, 0.9 on Android.</li>
+</ul>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('fast', 'normal'), ,number</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="directionallockenabled"></a><a href="#directionallockenabled" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>directionalLockEnabled</code></h3>
+<p>When true, the ScrollView will try to lock to only vertical or horizontal scrolling while dragging. The default value is false.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="disableintervalmomentum"></a><a href="#disableintervalmomentum" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>disableIntervalMomentum</code></h3>
+<p>When true, the scroll view stops on the next index (in relation to scroll position at release) regardless of how fast the gesture is. This can be used for horizontal pagination when the page is less than the width of the ScrollView. The default value is false.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="disablescrollviewpanresponder"></a><a href="#disablescrollviewpanresponder" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>disableScrollViewPanResponder</code></h3>
+<p>When true, the default JS pan responder on the ScrollView is disabled, and full control over touches inside the ScrollView is left to its child components. This is particularly useful if <code>snapToInterval</code> is enabled, since it does not follow typical touch patterns. Do not use this on regular ScrollView use cases without <code>snapToInterval</code> as it may cause unexpected touches to occur while scrolling. The default value is false.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="endfillcolor"></a><a href="#endfillcolor" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>endFillColor</code></h3>
+<p>Sometimes a scrollview takes up more space than its content fills. When this is the case, this prop will fill the rest of the scrollview with a color to avoid setting a background and creating unnecessary overdraw. This is an advanced optimization that is not needed in the general case.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="/react-native/docs/0.60/colors">color</a></td><td>No</td><td>Android</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="horizontal"></a><a href="#horizontal" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>horizontal</code></h3>
+<p>When true, the scroll view's children are arranged horizontally in a row instead of vertically in a column. The default value is false.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="indicatorstyle"></a><a href="#indicatorstyle" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>indicatorStyle</code></h3>
+<p>The style of the scroll indicators.</p>
+<ul>
+<li><code>'default'</code> (the default), same as <code>black</code>.</li>
+<li><code>'black'</code>, scroll indicator is black. This style is good against a light background.</li>
+<li><code>'white'</code>, scroll indicator is white. This style is good against a dark background.</li>
+</ul>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('default', 'black', 'white')</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="invertstickyheaders"></a><a href="#invertstickyheaders" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>invertStickyHeaders</code></h3>
+<p>If sticky headers should stick at the bottom instead of the top of the ScrollView. This is usually used with inverted ScrollViews.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="keyboarddismissmode"></a><a href="#keyboarddismissmode" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>keyboardDismissMode</code></h3>
+<p>Determines whether the keyboard gets dismissed in response to a drag.</p>
+<p><em>Cross platform</em></p>
+<ul>
+<li><code>'none'</code> (the default), drags do not dismiss the keyboard.</li>
+<li><code>'on-drag'</code>, the keyboard is dismissed when a drag begins.</li>
+</ul>
+<p><em>iOS Only</em></p>
+<ul>
+<li><code>'interactive'</code>, the keyboard is dismissed interactively with the drag and moves in synchrony with the touch; dragging upwards cancels the dismissal. On android this is not supported and it will have the same behavior as 'none'.</li>
+</ul>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('none', 'on-drag', 'interactive')</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="keyboardshouldpersisttaps"></a><a href="#keyboardshouldpersisttaps" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>keyboardShouldPersistTaps</code></h3>
+<p>Determines when the keyboard should stay visible after a tap.</p>
+<ul>
+<li><code>'never'</code> (the default), tapping outside of the focused text input when the keyboard is up dismisses the keyboard. When this happens, children won't receive the tap.</li>
+<li><code>'always'</code>, the keyboard will not dismiss automatically, and the scroll view will not catch taps, but children of the scroll view can catch taps.</li>
+<li><code>'handled'</code>, the keyboard will not dismiss automatically when the tap was handled by children of the scroll view (or captured by an ancestor).</li>
+<li><code>false</code>, <strong><em>deprecated</em></strong>, use 'never' instead</li>
+<li><code>true</code>, <strong><em>deprecated</em></strong>, use 'always' instead</li>
+</ul>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('always', 'never', 'handled', false, true)</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="maintainvisiblecontentposition"></a><a href="#maintainvisiblecontentposition" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>maintainVisibleContentPosition</code></h3>
+<p>When set, the scroll view will adjust the scroll position so that the first child that is currently visible and at or beyond <code>minIndexForVisible</code> will not change position. This is useful for lists that are loading content in both directions, e.g. a chat thread, where new messages coming in might otherwise cause the scroll position to jump. A value of 0 is common, but other values such as 1 can be used to skip loading spinners or other content that should not maintain position.</p>
+<p>The optional <code>autoscrollToTopThreshold</code> can be used to make the content automatically scroll to the top after making the adjustment if the user was within the threshold of the top before the adjustment was made. This is also useful for chat-like applications where you want to see new messages scroll into place, but not if the user has scrolled up a ways and it would be disruptive to scroll a bunch.</p>
+<p>Caveat 1: Reordering elements in the scrollview with this enabled will probably cause jumpiness and jank. It can be fixed, but there are currently no plans to do so. For now, don't re-order the content of any ScrollViews or Lists that use this feature.</p>
+<p>Caveat 2: This simply uses <code>contentOffset</code> and <code>frame.origin</code> in native code to compute visibility. Occlusion, transforms, and other complexity won't be taken into account as to whether content is &quot;visible&quot; or not.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>object: { minIndexForVisible: number, autoscrollToTopThreshold: number }</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="maximumzoomscale"></a><a href="#maximumzoomscale" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>maximumZoomScale</code></h3>
+<p>The maximum allowed zoom scale. The default value is 1.0.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="minimumzoomscale"></a><a href="#minimumzoomscale" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>minimumZoomScale</code></h3>
+<p>The minimum allowed zoom scale. The default value is 1.0.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="nestedscrollenabled"></a><a href="#nestedscrollenabled" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>nestedScrollEnabled</code></h3>
+<p>Enables nested scrolling for Android API level 21+. Nested scrolling is supported by default on iOS.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>Android</td></tr>
+</tbody>
+</table>
+<h3><a class="anchor" aria-hidden="true" id="oncontentsizechange"></a><a href="#oncontentsizechange" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onContentSizeChange</code></h3>
+<p>Called when scrollable content view of the ScrollView changes.</p>
+<p>Handler function is passed the content width and content height as parameters: <code>(contentWidth, contentHeight)</code></p>
+<p>It's implemented using onLayout handler attached to the content container which this ScrollView renders.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="onmomentumscrollbegin"></a><a href="#onmomentumscrollbegin" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onMomentumScrollBegin</code></h3>
+<p>Called when the momentum scroll starts (scroll which occurs as the ScrollView starts gliding).</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="onmomentumscrollend"></a><a href="#onmomentumscrollend" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onMomentumScrollEnd</code></h3>
+<p>Called when the momentum scroll ends (scroll which occurs as the ScrollView glides to a stop).</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="onscroll"></a><a href="#onscroll" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onScroll</code></h3>
+<p>Fires at most once per frame during scrolling. The frequency of the events can be controlled using the <code>scrollEventThrottle</code> prop. The event has the shape <code>{ nativeEvent: { contentInset: { bottom, left, right, top }, contentOffset: { x, y }, contentSize: { height, width }, layoutMeasurement: { height, width }, zoomScale } }</code>. All values are numbers.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="onscrollbegindrag"></a><a href="#onscrollbegindrag" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onScrollBeginDrag</code></h3>
+<p>Called when the user begins to drag the scroll view.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="onscrollenddrag"></a><a href="#onscrollenddrag" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onScrollEndDrag</code></h3>
+<p>Called when the user stops dragging the scroll view and it either stops or begins to glide.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="onscrolltotop"></a><a href="#onscrolltotop" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>onScrollToTop</code></h3>
+<p>Fires when the scroll view scrolls to top after the status bar has been tapped.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>function</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="overscrollmode"></a><a href="#overscrollmode" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>overScrollMode</code></h3>
+<p>Used to override default value of overScroll mode.</p>
+<p>Possible values:</p>
+<ul>
+<li><code>'auto'</code> - Default value, allow a user to over-scroll this view only if the content is large enough to meaningfully scroll.</li>
+<li><code>'always'</code> - Always allow a user to over-scroll this view.</li>
+<li><code>'never'</code> - Never allow a user to over-scroll this view.</li>
+</ul>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('auto', 'always', 'never')</td><td>No</td><td>Android</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="pagingenabled"></a><a href="#pagingenabled" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>pagingEnabled</code></h3>
+<p>When true, the scroll view stops on multiples of the scroll view's size when scrolling. This can be used for horizontal pagination. The default value is false.</p>
+<p>Note: Vertical pagination is not supported on Android.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="persistentscrollbar"></a><a href="#persistentscrollbar" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>persistentScrollbar</code></h3>
+<p>Causes the scrollbars not to turn transparent when they are not in use. The default value is false.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>Android</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="pinchgestureenabled"></a><a href="#pinchgestureenabled" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>pinchGestureEnabled</code></h3>
+<p>When true, ScrollView allows use of pinch gestures to zoom in and out. The default value is true.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="refreshcontrol"></a><a href="#refreshcontrol" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>refreshControl</code></h3>
+<p>A RefreshControl component, used to provide pull-to-refresh functionality for the ScrollView. Only works for vertical ScrollViews (<code>horizontal</code> prop must be <code>false</code>).</p>
+<p>See <a href="/react-native/docs/0.60/refreshcontrol">RefreshControl</a>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>element</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="removeclippedsubviews"></a><a href="#removeclippedsubviews" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>removeClippedSubviews</code></h3>
+<p>Experimental: When true, offscreen child views (whose <code>overflow</code> value is <code>hidden</code>) are removed from their native backing superview when offscreen. This can improve scrolling performance on long lists. The default value is true.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="scrollbarthumbimage"></a><a href="#scrollbarthumbimage" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollBarThumbImage</code></h3>
+<p>Optionally an image can be used for the scroll bar thumb. This will override the color. While the image is loading or the image fails to load the color will be used instead. Use an alpha of 0 in the color to avoid seeing it while the image is loading.</p>
+<ul>
+<li><code>uri</code>, a string representing the resource identifier for the image, which should be either a local file path or the name of a static image resource.</li>
+<li><code>number</code>, opaque type returned by something like <code>import IMAGE from './image.jpg'</code>.</li>
+</ul>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td><td>VR</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="scrollenabled"></a><a href="#scrollenabled" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollEnabled</code></h3>
+<p>When false, the view cannot be scrolled via touch interaction. The default value is true.</p>
+<p>Note that the view can always be scrolled by calling <code>scrollTo</code>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="scrolleventthrottle"></a><a href="#scrolleventthrottle" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollEventThrottle</code></h3>
+<p>This controls how often the scroll event will be fired while scrolling (as a time interval in ms). A lower number yields better accuracy for code that is tracking the scroll position, but can lead to scroll performance problems due to the volume of information being send over the bridge. You will not notice a difference between values set between 1-16 as the JS run loop is synced to the screen refresh rate. If you do not need precise scroll position tracking, set this value higher to limit the information being sent across the bridge. The default value is zero, which results in the scroll event being sent only once each time the view is scrolled.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="scrollindicatorinsets"></a><a href="#scrollindicatorinsets" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollIndicatorInsets</code></h3>
+<p>The amount by which the scroll view indicators are inset from the edges of the scroll view. This should normally be set to the same value as the <code>contentInset</code>. Defaults to <code>{0, 0, 0, 0}</code>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>object: {top: number, left: number, bottom: number, right: number}</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="scrollperftag"></a><a href="#scrollperftag" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollPerfTag</code></h3>
+<p>Tag used to log scroll performance on this scroll view. Will force momentum events to be turned on (see sendMomentumEvents). This doesn't do anything out of the box and you need to implement a custom native FpsListener for it to be useful.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>string</td><td>No</td><td>Android</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="scrolltooverflowenabled"></a><a href="#scrolltooverflowenabled" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollToOverflowEnabled</code></h3>
+<p>When true, the scroll view can be programmatically scrolled beyond its content size. The default value is false.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="scrollstotop"></a><a href="#scrollstotop" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollsToTop</code></h3>
+<p>When true, the scroll view scrolls to top when the status bar is tapped. The default value is true.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="deprecated_sendupdatedchildframes"></a><a href="#deprecated_sendupdatedchildframes" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>DEPRECATED_sendUpdatedChildFrames</code></h3>
+<p>When true, ScrollView will emit updateChildFrames data in scroll events, otherwise will not compute or emit child frame data. This only exists to support legacy issues, <code>onLayout</code> should be used instead to retrieve frame data. The default value is false.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="showshorizontalscrollindicator"></a><a href="#showshorizontalscrollindicator" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>showsHorizontalScrollIndicator</code></h3>
+<p>When true, shows a horizontal scroll indicator. The default value is true.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="showsverticalscrollindicator"></a><a href="#showsverticalscrollindicator" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>showsVerticalScrollIndicator</code></h3>
+<p>When true, shows a vertical scroll indicator. The default value is true.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>bool</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="snaptoalignment"></a><a href="#snaptoalignment" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>snapToAlignment</code></h3>
+<p>When <code>snapToInterval</code> is set, <code>snapToAlignment</code> will define the relationship of the snapping to the scroll view.</p>
+<ul>
+<li><code>'start'</code> (the default) will align the snap at the left (horizontal) or top (vertical).</li>
+<li><code>'center'</code> will align the snap in the center.</li>
+<li><code>'end'</code> will align the snap at the right (horizontal) or bottom (vertical).</li>
+</ul>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('start', 'center', 'end')</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="snaptoend"></a><a href="#snaptoend" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>snapToEnd</code></h3>
+<p>Use in conjunction with <code>snapToOffsets</code>. By default, the end of the list counts as a snap offset. Set <code>snapToEnd</code> to false to disable this behavior and allow the list to scroll freely between its end and the last <code>snapToOffsets</code> offset. The default value is true.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>boolean</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="snaptointerval"></a><a href="#snaptointerval" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>snapToInterval</code></h3>
+<p>When set, causes the scroll view to stop at multiples of the value of <code>snapToInterval</code>. This can be used for paginating through children that have lengths smaller than the scroll view. Typically used in combination with <code>snapToAlignment</code> and <code>decelerationRate=&quot;fast&quot;</code>. Overrides less configurable <code>pagingEnabled</code> prop.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="snaptooffsets"></a><a href="#snaptooffsets" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>snapToOffsets</code></h3>
+<p>When set, causes the scroll view to stop at the defined offsets. This can be used for paginating through variously sized children that have lengths smaller than the scroll view. Typically used in combination with <code>decelerationRate=&quot;fast&quot;</code>. Overrides less configurable <code>pagingEnabled</code> and <code>snapToInterval</code> props.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>array of number</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="snaptostart"></a><a href="#snaptostart" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>snapToStart</code></h3>
+<p>Use in conjunction with <code>snapToOffsets</code>. By default, the beginning of the list counts as a snap offset. Set <code>snapToStart</code> to false to disable this behavior and allow the list to scroll freely between its start and the first <code>snapToOffsets</code> offset. The default value is true.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>boolean</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="stickyheaderindices"></a><a href="#stickyheaderindices" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>stickyHeaderIndices</code></h3>
+<p>An array of child indices determining which children get docked to the top of the screen when scrolling. For example, passing <code>stickyHeaderIndices={[0]}</code> will cause the first child to be fixed to the top of the scroll view. This property is not supported in conjunction with <code>horizontal={true}</code>.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>array of number</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="zoomscale"></a><a href="#zoomscale" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>zoomScale</code></h3>
+<p>The current scale of the scroll view content. The default value is 1.0.</p>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>number</td><td>No</td><td>iOS</td></tr>
+</tbody>
+</table>
+<h2><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
+<h3><a class="anchor" aria-hidden="true" id="flashscrollindicators"></a><a href="#flashscrollindicators" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>flashScrollIndicators()</code></h3>
+<pre><code class="hljs css language-jsx"><span class="token function">flashScrollIndicators</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Displays the scroll indicators momentarily.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="scrollto"></a><a href="#scrollto" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollTo()</code></h3>
+<pre><code class="hljs css language-jsx"><span class="token function">scrollTo</span><span class="token punctuation">(</span>
+  options<span class="token operator">?</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>x<span class="token operator">?</span><span class="token punctuation">:</span> number<span class="token punctuation">,</span> y<span class="token operator">?</span><span class="token punctuation">:</span> number<span class="token punctuation">,</span> animated<span class="token operator">?</span><span class="token punctuation">:</span> boolean<span class="token punctuation">}</span> <span class="token operator">|</span> number<span class="token punctuation">,</span>
+  deprecatedX<span class="token operator">?</span><span class="token punctuation">:</span> number<span class="token punctuation">,</span>
+    deprecatedAnimated<span class="token operator">?</span><span class="token punctuation">:</span> boolean<span class="token punctuation">,</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Scrolls to a given x, y offset, either immediately, with a smooth animation.</p>
+<p>Example:</p>
+<p><code>scrollTo({x: 0, y: 0, animated: true})</code></p>
+<p>Note: The weird function signature is due to the fact that, for historical reasons, the function also accepts separate arguments as an alternative to the options object. This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="scrolltoend"></a><a href="#scrolltoend" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollToEnd()</code></h3>
+<pre><code class="hljs css language-jsx"><span class="token function">scrollToEnd</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">[</span>options<span class="token punctuation">]</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>animated<span class="token punctuation">:</span> boolean<span class="token punctuation">,</span> duration<span class="token punctuation">:</span> number<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>If this is a vertical ScrollView scrolls to the bottom. If this is a horizontal ScrollView scrolls to the right.</p>
+<p>Use <code>scrollToEnd({animated: true})</code> for smooth animated scrolling, <code>scrollToEnd({animated: false})</code> for immediate scrolling. For Android, you may specify a duration, e.g. <code>scrollToEnd({duration: 500})</code> for a controlled duration scroll. If no options are passed, <code>animated</code> defaults to true.</p>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="scrollwithoutanimationto"></a><a href="#scrollwithoutanimationto" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>scrollWithoutAnimationTo()</code></h3>
+<pre><code class="hljs css language-jsx"><span class="token function">scrollWithoutAnimationTo</span><span class="token punctuation">(</span>y<span class="token punctuation">,</span> x<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Deprecated, use <code>scrollTo</code> instead.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/react-native/docs/0.60/safeareaview"><span class="arrow-prev">← </span><span class="function-name-prevnext">SafeAreaView</span></a><a class="docs-next button" href="/react-native/docs/0.60/sectionlist"><span class="function-name-prevnext">SectionList</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#props">Props</a><ul class="toc-headings"><li><a href="#alwaysbouncehorizontal"><code>alwaysBounceHorizontal</code></a></li><li><a href="#alwaysbouncevertical"><code>alwaysBounceVertical</code></a></li><li><a href="#automaticallyadjustcontentinsets"><code>automaticallyAdjustContentInsets</code></a></li><li><a href="#bounces"><code>bounces</code></a></li><li><a href="#bounceszoom"><code>bouncesZoom</code></a></li><li><a href="#cancancelcontenttouches"><code>canCancelContentTouches</code></a></li><li><a href="#centercontent"><code>centerContent</code></a></li><li><a href="#contentcontainerstyle"><code>contentContainerStyle</code></a></li><li><a href="#contentinset"><code>contentInset</code></a></li><li><a href="#contentinsetadjustmentbehavior"><code>contentInsetAdjustmentBehavior</code></a></li><li><a href="#contentoffset"><code>contentOffset</code></a></li><li><a href="#decelerationrate"><code>decelerationRate</code></a></li><li><a href="#directionallockenabled"><code>directionalLockEnabled</code></a></li><li><a href="#disableintervalmomentum"><code>disableIntervalMomentum</code></a></li><li><a href="#disablescrollviewpanresponder"><code>disableScrollViewPanResponder</code></a></li><li><a href="#endfillcolor"><code>endFillColor</code></a></li><li><a href="#horizontal"><code>horizontal</code></a></li><li><a href="#indicatorstyle"><code>indicatorStyle</code></a></li><li><a href="#invertstickyheaders"><code>invertStickyHeaders</code></a></li><li><a href="#keyboarddismissmode"><code>keyboardDismissMode</code></a></li><li><a href="#keyboardshouldpersisttaps"><code>keyboardShouldPersistTaps</code></a></li><li><a href="#maintainvisiblecontentposition"><code>maintainVisibleContentPosition</code></a></li><li><a href="#maximumzoomscale"><code>maximumZoomScale</code></a></li><li><a href="#minimumzoomscale"><code>minimumZoomScale</code></a></li><li><a href="#nestedscrollenabled"><code>nestedScrollEnabled</code></a></li><li><a href="#oncontentsizechange"><code>onContentSizeChange</code></a></li><li><a href="#onmomentumscrollbegin"><code>onMomentumScrollBegin</code></a></li><li><a href="#onmomentumscrollend"><code>onMomentumScrollEnd</code></a></li><li><a href="#onscroll"><code>onScroll</code></a></li><li><a href="#onscrollbegindrag"><code>onScrollBeginDrag</code></a></li><li><a href="#onscrollenddrag"><code>onScrollEndDrag</code></a></li><li><a href="#onscrolltotop"><code>onScrollToTop</code></a></li><li><a href="#overscrollmode"><code>overScrollMode</code></a></li><li><a href="#pagingenabled"><code>pagingEnabled</code></a></li><li><a href="#persistentscrollbar"><code>persistentScrollbar</code></a></li><li><a href="#pinchgestureenabled"><code>pinchGestureEnabled</code></a></li><li><a href="#refreshcontrol"><code>refreshControl</code></a></li><li><a href="#removeclippedsubviews"><code>removeClippedSubviews</code></a></li><li><a href="#scrollbarthumbimage"><code>scrollBarThumbImage</code></a></li><li><a href="#scrollenabled"><code>scrollEnabled</code></a></li><li><a href="#scrolleventthrottle"><code>scrollEventThrottle</code></a></li><li><a href="#scrollindicatorinsets"><code>scrollIndicatorInsets</code></a></li><li><a href="#scrollperftag"><code>scrollPerfTag</code></a></li><li><a href="#scrolltooverflowenabled"><code>scrollToOverflowEnabled</code></a></li><li><a href="#scrollstotop"><code>scrollsToTop</code></a></li><li><a href="#deprecated_sendupdatedchildframes"><code>DEPRECATED_sendUpdatedChildFrames</code></a></li><li><a href="#showshorizontalscrollindicator"><code>showsHorizontalScrollIndicator</code></a></li><li><a href="#showsverticalscrollindicator"><code>showsVerticalScrollIndicator</code></a></li><li><a href="#snaptoalignment"><code>snapToAlignment</code></a></li><li><a href="#snaptoend"><code>snapToEnd</code></a></li><li><a href="#snaptointerval"><code>snapToInterval</code></a></li><li><a href="#snaptooffsets"><code>snapToOffsets</code></a></li><li><a href="#snaptostart"><code>snapToStart</code></a></li><li><a href="#stickyheaderindices"><code>stickyHeaderIndices</code></a></li><li><a href="#zoomscale"><code>zoomScale</code></a></li></ul></li><li><a href="#methods">Methods</a><ul class="toc-headings"><li><a href="#flashscrollindicators"><code>flashScrollIndicators()</code></a></li><li><a href="#scrollto"><code>scrollTo()</code></a></li><li><a href="#scrolltoend"><code>scrollToEnd()</code></a></li><li><a href="#scrollwithoutanimationto"><code>scrollWithoutAnimationTo()</code></a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Docs</h5><a href="/react-native/docs/getting-started.html">Getting Started</a><a href="/react-native/docs/tutorial.html">Tutorial</a><a href="/react-native/docs/components-and-apis.html">Components and APIs</a><a href="/react-native/docs/more-resources.html">More Resources</a></div><div><h5>Community</h5><a href="/react-native/help.html">The React Native Community</a><a href="/react-native/showcase.html">Who&#x27;s using React Native?</a><a href="http://stackoverflow.com/questions/tagged/react-native" target="_blank">Ask Questions on Stack Overflow</a><a href="https://github.com/facebook/react-native/blob/master/CONTRIBUTING.md">Contributor Guide</a><a href="https://dev.to/t/reactnative" target="_blank">DEV Community</a></div><div><h5>More Resources</h5><a href="/react-native/blog/">Blog</a><a href="https://twitter.com/reactnative" target="_blank">Twitter</a><a href="https://github.com/facebook/react-native" target="_blank">GitHub</a><a href="http://reactjs.org" target="_blank">React</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/react-native/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2019 Facebook Inc.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.fbAsyncInit = function() {FB.init({appId:'1677033832619985',xfbml:true,version:'v2.7'});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) {return;}js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_US/sdk.js';fjs.parentNode.insertBefore(js, fjs);}(document, 'script','facebook-jssdk'));
+                </script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+                document.addEventListener('keyup', function(e) {
+                  if (e.target !== document.body) {
+                    return;
+                  }
+                  // keyCode for '/' (slash)
+                  if (e.keyCode === 191) {
+                    const search = document.getElementById('search_input_react');
+                    search && search.focus();
+                  }
+                });
+              </script><script>
+              var search = docsearch({
+                
+                apiKey: '2c98749b4a1e588efec53b2acec13025',
+                indexName: 'react-native-versions',
+                inputSelector: '#search_input_react',
+                algoliaOptions: {"facetFilters":["tags:0.60"],"hitsPerPage":5}
+              });
+            </script></body></html>
