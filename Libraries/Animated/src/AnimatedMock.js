@@ -119,7 +119,7 @@ const loop = function(
   return emptyAnimation;
 };
 
-const event = function(argMapping: Array<?Mapping>, config?: EventConfig): any {
+const event = function(argMapping: Array<?Mapping>, config: EventConfig): any {
   return null;
 };
 
