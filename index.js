@@ -99,7 +99,9 @@ import typeof DeprecatedEdgeInsetsPropType from './Libraries/DeprecatedPropTypes
 import typeof DeprecatedPointPropType from './Libraries/DeprecatedPropTypes/DeprecatedPointPropType';
 import typeof DeprecatedViewPropTypes from './Libraries/DeprecatedPropTypes/DeprecatedViewPropTypes';
 
-import type {HostComponent} from './Libraries/Renderer/shims/ReactNativeTypes';
+import type {HostComponent as _HostComponentInternal} from './Libraries/Renderer/shims/ReactNativeTypes';
+
+export type HostComponent<T> = _HostComponentInternal<T>;
 
 const invariant = require('invariant');
 const warnOnce = require('./Libraries/Utilities/warnOnce');
