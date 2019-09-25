@@ -33,12 +33,10 @@ facebook::jni::local_ref<JYogaLogLevel> JYogaLogLevel::fromInt(jint logLevel) {
 }
 
 void JYogaLogger::log(
-    facebook::jni::alias_ref<JYogaNode> node,
     facebook::jni::alias_ref<JYogaLogLevel> logLevel,
     jstring message) {
   static auto javaMethod =
-      javaClassLocal()
-          ->getMethod<void(
-              alias_ref<JYogaNode>, alias_ref<JYogaLogLevel>, jstring)>("log");
-  javaMethod(self(), node, logLevel, message);
+      javaClassLocal()->getMethod<void(alias_ref<JYogaLogLevel>, jstring)>(
+          "log");
+  javaMethod(self(), logLevel, message);
 }

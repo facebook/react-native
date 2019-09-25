@@ -311,13 +311,10 @@ static int YGJNILogFunc(
   auto jloggerPtr =
       static_cast<global_ref<JYogaLogger>*>(YGConfigGetContext(config));
   if (jloggerPtr != nullptr) {
-    if (auto obj = YGNodeJobject(node, layoutContext)) {
-      (*jloggerPtr)
-          ->log(
-              obj,
-              JYogaLogLevel::fromInt(level),
-              Environment::current()->NewStringUTF(buffer.data()));
-    }
+    (*jloggerPtr)
+        ->log(
+            JYogaLogLevel::fromInt(level),
+            Environment::current()->NewStringUTF(buffer.data()));
   }
 
   return result;
