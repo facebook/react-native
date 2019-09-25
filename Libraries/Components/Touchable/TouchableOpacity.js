@@ -40,7 +40,7 @@ type TVProps = $ReadOnly<{|
   tvParallaxProperties?: ?TVParallaxPropertiesType,
 |}>;
 
-type Props = $ReadOnly<{|
+export type Props = $ReadOnly<{|
   ...TouchableWithoutFeedbackProps,
   ...TVProps,
   activeOpacity?: ?number,
