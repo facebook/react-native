@@ -11,7 +11,7 @@
 'use strict';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
 import type {
   DirectEventHandler,
@@ -67,4 +67,4 @@ type NativeProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<NativeProps>(
   'AndroidSwipeRefreshLayout',
-): NativeComponentType<NativeProps>);
+): HostComponent<NativeProps>);

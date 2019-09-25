@@ -15,7 +15,7 @@ import type {ViewProps} from '../View/ViewPropTypes';
 import type {Double, WithDefault} from '../../Types/CodegenTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -32,4 +32,4 @@ type NativeProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<NativeProps>(
   'AndroidProgressBar',
-): NativeComponentType<NativeProps>);
+): HostComponent<NativeProps>);
