@@ -89,7 +89,7 @@ import type {
   WithDefault,
 } from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -105,7 +105,7 @@ type ModuleProps = $ReadOnly<{|
 export default (codegenNativeComponent<ModuleProps>('Module', {
   interfaceOnly: true,
   paperComponentName: 'RCTModule',
-}): NativeComponent<ModuleProps>);
+}): HostComponent<ModuleProps>);
 `;
 
 const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS_NO_CAST = `
@@ -129,7 +129,7 @@ import type {
   WithDefault,
 } from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -164,7 +164,7 @@ const NO_PROPS_EVENTS_ONLY_DEPRECATED_VIEW_CONFIG_NAME_OPTION = `
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -172,7 +172,7 @@ type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>('Module', {
   deprecatedViewConfigName: 'DeprecateModuleName',
-}): NativeComponent<ModuleProps>);
+}): HostComponent<ModuleProps>);
 `;
 
 const ALL_PROP_TYPES_NO_EVENTS = `
@@ -194,7 +194,7 @@ import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
 import type {ColorValue, ColorArrayValue, PointValue, EdgeInsetsValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -290,7 +290,7 @@ type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps, Options>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const ARRAY_PROP_TYPES_NO_EVENTS = `
@@ -312,7 +312,7 @@ import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
 import type {ColorValue, PointValue, EdgeInsetsValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 type ObjectType = $ReadOnly<{| prop: string |}>;
 type ArrayObjectType = $ReadOnlyArray<$ReadOnly<{| prop: string |}>>;
@@ -443,7 +443,7 @@ type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const OBJECT_PROP_TYPES_NO_EVENTS = `
@@ -465,7 +465,7 @@ import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
 import type {ColorValue, PointValue, EdgeInsetsValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -529,7 +529,7 @@ type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const PROPS_ALIASED_LOCALLY = `
@@ -546,7 +546,7 @@ const PROPS_ALIASED_LOCALLY = `
 'use strict';
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -574,7 +574,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const EVENTS_DEFINED_INLINE_WITH_ALL_TYPES = `
@@ -590,7 +590,7 @@ const EVENTS_DEFINED_INLINE_WITH_ALL_TYPES = `
 
 'use strict';
 
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {
@@ -683,7 +683,7 @@ type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const EVENTS_DEFINED_AS_NULL_INLINE = `
@@ -703,7 +703,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {BubblingEventHandler, DirectEventHandler} from 'CodegenTypese';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -732,7 +732,7 @@ type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const PROPS_AND_EVENTS_TYPES_EXPORTED = `
@@ -753,7 +753,7 @@ import type {
   DirectEventHandler,
 } from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -775,7 +775,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const PROPS_AS_EXTERNAL_TYPES = `
@@ -793,7 +793,7 @@ const PROPS_AS_EXTERNAL_TYPES = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 export type String = string;
 export type AnotherArray = $ReadOnlyArray<String>;
@@ -805,7 +805,7 @@ export type ModuleProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<ModuleProps>(
   'Module',
-): NativeComponent<ModuleProps>);
+): HostComponent<ModuleProps>);
 `;
 
 const COMMANDS_DEFINED_WITH_ALL_TYPES = `
@@ -826,7 +826,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32, Double, Float} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 
 export type ModuleProps = $ReadOnly<{|
@@ -834,7 +834,7 @@ export type ModuleProps = $ReadOnly<{|
   // No props or events
 |}>;
 
-type NativeType = NativeComponent<ModuleProps>;
+type NativeType = HostComponent<ModuleProps>;
 
 interface NativeCommands {
   +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void;
@@ -874,7 +874,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32} from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 export type Boolean = boolean;
 export type Int = Int32;
@@ -885,7 +885,7 @@ export type ModuleProps = $ReadOnly<{|
   // No props or events
 |}>;
 
-type NativeType = NativeComponent<ModuleProps>;
+type NativeType = HostComponent<ModuleProps>;
 
 export type ScrollTo = (
   viewRef: React.ElementRef<NativeType>,
@@ -924,7 +924,7 @@ import type {
   DirectEventHandler,
 } from 'CodegenTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'codegenNativeComponent';
+import type {HostComponent} from 'react-native';
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
@@ -948,7 +948,7 @@ export type ModuleProps = $ReadOnly<{|
   onDirectEventDefinedInlineWithPaperName: DirectEventHandler<EventInFile, 'paperDirectEventDefinedInlineWithPaperName'>,
 |}>;
 
-type NativeType = NativeComponent<ModuleProps>;
+type NativeType = HostComponent<ModuleProps>;
 
 export type ScrollTo = (viewRef: React.ElementRef<NativeType>, y: Int, animated: Boolean) => Void;
 
