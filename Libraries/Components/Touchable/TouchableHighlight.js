@@ -51,7 +51,7 @@ type AndroidProps = $ReadOnly<{|
   nextFocusUp?: ?number,
 |}>;
 
-export type Props = $ReadOnly<{|
+type Props = $ReadOnly<{|
   ...TouchableWithoutFeedbackProps,
   ...IOSProps,
   ...AndroidProps,

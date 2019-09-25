@@ -83,7 +83,6 @@ export type ViewConfigGetter = () => ReactNativeBaseComponentViewConfig<>;
 /**
  * Class only exists for its Flow type.
  */
-export type {ReactNativeComponent};
 class ReactNativeComponent<Props> extends React.Component<Props> {
   blur(): void {}
   focus(): void {}
