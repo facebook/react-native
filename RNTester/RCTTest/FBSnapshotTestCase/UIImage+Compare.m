@@ -6,7 +6,6 @@
  */
 
 #import "UIImage+Compare.h"
-#import "../../../React/Base/RCTUIKit.h" // TODO(macOS ISS#2323203)
 
 @implementation UIImage (Compare)
 

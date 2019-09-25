@@ -55,13 +55,10 @@
 		18316E021EF9E0DE003DADF3 /* RCTFontTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA81B21F5E400C1F8F2 /* RCTFontTests.m */; };
 		18316E041EF9EAD1003DADF3 /* RCTGzipTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1300627E1B59179B0043FE5A /* RCTGzipTests.m */; };
 		18316E1B1EF9EB7D003DADF3 /* RCTAllocationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA41B21F5E400C1F8F2 /* RCTAllocationTests.m */; };
-		1834500B1EFAD54F0000CF82 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		183938D01F9A55AE00930D92 /* RNTesterTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = C654F0B21EB34A73000B7A9A /* RNTesterTestModule.m */; };
 		1879ECF921E84E2800D98372 /* RCTConvert_NSColorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1879ECDE21E84E2800D98372 /* RCTConvert_NSColorTests.m */; };
 		18AA4BD41EF9C724008C7756 /* RCTURLUtilsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B6C1A21C34225900D3FAF5 /* RCTURLUtilsTests.m */; };
-		18BFA4C51F01C46D00969486 /* OCMock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18BFA4931F01C46700969486 /* OCMock.framework */; };
 		18BFA4CB1F01C52400969486 /* RCTEventDispatcherTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA91B21F5E400C1F8F2 /* RCTEventDispatcherTests.m */; };
-		18CF508F1F9A6A3B0038A244 /* (null) in Resources */ = {isa = PBXBuildFile; };
 		18D5934D1EF9F8BC005F0CEC /* RCTImageLoaderHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */; };
 		18D593781EF9F8CB005F0CEC /* RCTImageLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */; };
 		18D593791EF9F8DA005F0CEC /* RCTImageUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 144D21231B2204C5006DB32B /* RCTImageUtilTests.m */; };
@@ -165,6 +162,12 @@
 		83636F8F1B53F22C009F943E /* RCTUIManagerScenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */; };
 		8385CEF51B873B5C00C6273E /* RCTImageLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */; };
 		8385CF041B87479200C6273E /* RCTImageLoaderHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */; };
+		9F1534BE233AB44F006DFE44 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F1534BD233AB44F006DFE44 /* JavaScriptCore.framework */; };
+		9F153508233AB998006DFE44 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D122242EFA400E7F88E /* libReact.a */; };
+		9F15350A233ABA82006DFE44 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F1534BD233AB44F006DFE44 /* JavaScriptCore.framework */; };
+		9F15350B233ACE27006DFE44 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D122242EFA400E7F88E /* libReact.a */; };
+		9F15350C233ACE3B006DFE44 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F1534BD233AB44F006DFE44 /* JavaScriptCore.framework */; };
+		9F15350D233ACE67006DFE44 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF92242EFA400E7F88E /* libRCTWebSocket.a */; };
 		9F5C1823230B4F3500E3E5A7 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF92242EFA400E7F88E /* libRCTWebSocket.a */; };
 		9F5C1824230B4F4000E3E5A7 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF12242EFA400E7F88E /* libRCTText.a */; };
 		9F5C1825230B4F4500E3E5A7 /* libRCTSettings-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6448A5D21F292F16006FF1F5 /* libRCTSettings-macOS.a */; };
@@ -176,7 +179,16 @@
 		9F5C182B230B4F7400E3E5A7 /* libRCTBlob-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6484CE5A201A7557004275A4 /* libRCTBlob-macOS.a */; };
 		9F5C182C230B7A6800E3E5A7 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D122242EFA400E7F88E /* libReact.a */; };
 		9F5C182D230B7A7E00E3E5A7 /* libRCTPushNotification-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6424F7B21F669A8E0025D741 /* libRCTPushNotification-macOS.a */; };
-		9F5C1958230F46CB00E3E5A7 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F5C1923230F46CB00E3E5A7 /* JavaScriptCore.framework */; };
+		9F7CD4122339A8FF005B9D55 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF92242EFA400E7F88E /* libRCTWebSocket.a */; };
+		9F7CD4132339A906005B9D55 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF12242EFA400E7F88E /* libRCTText.a */; };
+		9F7CD4142339A90C005B9D55 /* libRCTTest-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F5C181A230B4F2400E3E5A7 /* libRCTTest-macOS.a */; };
+		9F7CD4152339A913005B9D55 /* libRCTSettings-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6448A5D21F292F16006FF1F5 /* libRCTSettings-macOS.a */; };
+		9F7CD4162339A91A005B9D55 /* libRCTPushNotification-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6424F7B21F669A8E0025D741 /* libRCTPushNotification-macOS.a */; };
+		9F7CD4172339A920005B9D55 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CE72242EFA400E7F88E /* libRCTNetwork.a */; };
+		9F7CD4182339A925005B9D55 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CE12242EFA400E7F88E /* libRCTImage.a */; };
+		9F7CD4192339A92D005B9D55 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F5C1806230B4F2400E3E5A7 /* libRCTActionSheet.a */; };
+		9F7CD41A2339A936005B9D55 /* libRCTBlob-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6484CE5A201A7557004275A4 /* libRCTBlob-macOS.a */; };
+		9F7CD41B2339A95F005B9D55 /* libRCTTest-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F5C181A230B4F2400E3E5A7 /* libRCTTest-macOS.a */; };
 		AFEACA842223EB05004E5198 /* CrashyCrash.m in Sources */ = {isa = PBXBuildFile; fileRef = AFEACA832223EB05004E5198 /* CrashyCrash.m */; };
 		BC9C03401DC9F1D600B1C635 /* RCTDevMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BC9C033F1DC9F1D600B1C635 /* RCTDevMenuTests.m */; };
 		C60A228221C9726800B820FE /* RCTFormatErrorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C60A228121C9726800B820FE /* RCTFormatErrorTests.m */; };
@@ -351,13 +363,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 6BDE7AB21ECB8D6200CC951F;
 			remoteInfo = "RCTText-macos";
-		};
-		18FC779C1EF4770B002B3F17 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 18FC77851EF4770B002B3F17;
-			remoteInfo = "RNTester-macOS";
 		};
 		18FC77A71EF4770B002B3F17 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -896,6 +901,7 @@
 		8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderTests.m; sourceTree = "<group>"; };
 		8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderHelpers.m; sourceTree = "<group>"; };
 		8385CF051B8747A000C6273E /* RCTImageLoaderHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTImageLoaderHelpers.h; sourceTree = "<group>"; };
+		9F1534BD233AB44F006DFE44 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		9F5C1923230F46CB00E3E5A7 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		AFEACA822223EB05004E5198 /* CrashyCrash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CrashyCrash.h; sourceTree = "<group>"; };
 		AFEACA832223EB05004E5198 /* CrashyCrash.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CrashyCrash.m; sourceTree = "<group>"; };
@@ -970,7 +976,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F5C1958230F46CB00E3E5A7 /* JavaScriptCore.framework in Frameworks */,
+				9F15350A233ABA82006DFE44 /* JavaScriptCore.framework in Frameworks */,
 				9F5C182C230B7A6800E3E5A7 /* libReact.a in Frameworks */,
 				9F5C182B230B4F7400E3E5A7 /* libRCTBlob-macOS.a in Frameworks */,
 				9F5C182A230B4F7000E3E5A7 /* libART-macOS.a in Frameworks */,
@@ -990,9 +996,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F1534BE233AB44F006DFE44 /* JavaScriptCore.framework in Frameworks */,
+				9F153508233AB998006DFE44 /* libReact.a in Frameworks */,
+				9F7CD41A2339A936005B9D55 /* libRCTBlob-macOS.a in Frameworks */,
 				18FE57B02149BCDB000CB2A7 /* libRCTAnimation.a in Frameworks */,
-				1834500B1EFAD54F0000CF82 /* (null) in Frameworks */,
-				18BFA4C51F01C46D00969486 /* OCMock.framework in Frameworks */,
+				9F7CD4192339A92D005B9D55 /* libRCTActionSheet.a in Frameworks */,
+				9F7CD4182339A925005B9D55 /* libRCTImage.a in Frameworks */,
+				9F7CD4172339A920005B9D55 /* libRCTNetwork.a in Frameworks */,
+				9F7CD4162339A91A005B9D55 /* libRCTPushNotification-macOS.a in Frameworks */,
+				9F7CD4152339A913005B9D55 /* libRCTSettings-macOS.a in Frameworks */,
+				9F7CD4142339A90C005B9D55 /* libRCTTest-macOS.a in Frameworks */,
+				9F7CD4132339A906005B9D55 /* libRCTText.a in Frameworks */,
+				9F7CD4122339A8FF005B9D55 /* libRCTWebSocket.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1000,6 +1015,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F15350D233ACE67006DFE44 /* libRCTWebSocket.a in Frameworks */,
+				9F15350C233ACE3B006DFE44 /* JavaScriptCore.framework in Frameworks */,
+				9F15350B233ACE27006DFE44 /* libReact.a in Frameworks */,
+				9F7CD41B2339A95F005B9D55 /* libRCTTest-macOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1391,6 +1410,7 @@
 		2DE7E7D81FB2A4F3009E225D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9F1534BD233AB44F006DFE44 /* JavaScriptCore.framework */,
 				9F5C1923230F46CB00E3E5A7 /* JavaScriptCore.framework */,
 				ED2970982150247000B7C4FE /* JavaScriptCore.framework */,
 				EDEBC7DA214C681C00DD5AC8 /* JavaScriptCore.framework */,
@@ -1697,7 +1717,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				18FC779D1EF4770B002B3F17 /* PBXTargetDependency */,
 			);
 			name = "RNTester-macOSUnitTests";
 			productName = "RNTester-macOSTests";
@@ -2527,7 +2546,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				18CF508F1F9A6A3B0038A244 /* (null) in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3059,11 +3077,6 @@
 		18D8D9DF21C06C0A00E0CCAC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RCTWebSocket;
-		};
-		18FC779D1EF4770B002B3F17 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 18FC77851EF4770B002B3F17 /* RNTester-macOS */;
-			targetProxy = 18FC779C1EF4770B002B3F17 /* PBXContainerItemProxy */;
 		};
 		18FC77A81EF4770B002B3F17 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

@@ -10,8 +10,6 @@
 
 #import <objc/runtime.h>
 
-#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
-
 #import "UIImage+Compare.h"
 #import "UIImage+Diff.h"
 

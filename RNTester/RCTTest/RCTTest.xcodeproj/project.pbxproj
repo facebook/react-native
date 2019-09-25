@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		183938D21F9A563A00930D92 /* RCTTestRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 585135361AB3C56F00882537 /* RCTTestRunner.m */; };
 		183938D61F9A58A500930D92 /* FBSnapshotTestController.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE71AB964CD007446E2 /* FBSnapshotTestController.m */; };
-		1851280120AE30C600270B2D /* UIImage+Compare.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE91AB964CD007446E2 /* UIImage+Compare.m */; };
-		18B8F9E2214336C000CE911A /* UIImage+Diff.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */; };
 		18DF57141EFA052000BF4666 /* RCTTestRunner.h in Headers */ = {isa = PBXBuildFile; fileRef = 585135351AB3C56F00882537 /* RCTTestRunner.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		18DF57161EFA052000BF4666 /* RCTTestRunner.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 585135351AB3C56F00882537 /* RCTTestRunner.h */; };
 		18DF57191EFA052000BF4666 /* RCTSnapshotManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9913A84A1BBE833400D70E66 /* RCTSnapshotManager.m */; };
@@ -31,6 +29,8 @@
 		58E64FEE1AB964CD007446E2 /* UIImage+Compare.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE91AB964CD007446E2 /* UIImage+Compare.m */; };
 		58E64FEF1AB964CD007446E2 /* UIImage+Diff.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */; };
 		9913A84B1BBE833400D70E66 /* RCTSnapshotManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9913A84A1BBE833400D70E66 /* RCTSnapshotManager.m */; };
+		9F153502233AB5A1006DFE44 /* UIImage+Compare.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FE91AB964CD007446E2 /* UIImage+Compare.m */; };
+		9F153503233AB65F006DFE44 /* UIImage+Diff.m in Sources */ = {isa = PBXBuildFile; fileRef = 58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -87,6 +87,7 @@
 		58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Diff.m"; sourceTree = "<group>"; };
 		9913A8491BBE833400D70E66 /* RCTSnapshotManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSnapshotManager.h; sourceTree = "<group>"; };
 		9913A84A1BBE833400D70E66 /* RCTSnapshotManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSnapshotManager.m; sourceTree = "<group>"; };
+		9F153505233AB783006DFE44 /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +126,7 @@
 				585135351AB3C56F00882537 /* RCTTestRunner.h */,
 				585135361AB3C56F00882537 /* RCTTestRunner.m */,
 				580C37701AB104AF0015E709 /* Products */,
+				9F153504233AB783006DFE44 /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -154,6 +156,14 @@
 				58E64FEB1AB964CD007446E2 /* UIImage+Diff.m */,
 			);
 			path = FBSnapshotTestCase;
+			sourceTree = "<group>";
+		};
+		9F153504233AB783006DFE44 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9F153505233AB783006DFE44 /* libReact.a */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -263,6 +273,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 580C37661AB104AF0015E709;
@@ -282,9 +293,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1851280120AE30C600270B2D /* UIImage+Compare.m in Sources */,
+				9F153502233AB5A1006DFE44 /* UIImage+Compare.m in Sources */,
 				18DF57191EFA052000BF4666 /* RCTSnapshotManager.m in Sources */,
-				18B8F9E2214336C000CE911A /* UIImage+Diff.m in Sources */,
+				9F153503233AB65F006DFE44 /* UIImage+Diff.m in Sources */,
 				183938D61F9A58A500930D92 /* FBSnapshotTestController.m in Sources */,
 				183938D21F9A563A00930D92 /* RCTTestRunner.m in Sources */,
 				18DF571A1EFA052000BF4666 /* RCTTestModule.m in Sources */,
