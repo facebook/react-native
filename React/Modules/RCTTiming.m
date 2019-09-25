@@ -351,6 +351,9 @@ RCT_EXPORT_MODULE()
 }
 
 /**
+ * A method used for asynchronously creating a timer. If the timer has already expired,
+ * (based on the provided jsSchedulingTime) then it will be immediately invoked.
+ *
  * There's a small difference between the time when we call
  * setTimeout/setInterval/requestAnimation frame and the time it actually makes
  * it here. This is important and needs to be taken into account when
@@ -372,6 +375,21 @@ RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
     return;
   }
 
+  [self createTimerForNextFrame:callbackID
+                       duration:jsDuration
+               jsSchedulingTime:jsSchedulingTime
+                        repeats:repeats];
+}
+
+/**
+ * A method used for synchronously creating a timer. The timer will not be invoked until the
+ * next frame, regardless of whether it has already expired (i.e. jsSchedulingTime is 0).
+ */
+- (void)createTimerForNextFrame:(nonnull NSNumber *)callbackID
+                       duration:(NSTimeInterval)jsDuration
+               jsSchedulingTime:(NSDate *)jsSchedulingTime
+                        repeats:(BOOL)repeats
+{
   NSTimeInterval jsSchedulingOverhead = MAX(-jsSchedulingTime.timeIntervalSinceNow, 0);
 
   NSTimeInterval targetTime = jsDuration - jsSchedulingOverhead;
