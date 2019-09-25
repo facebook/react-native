@@ -8,7 +8,7 @@
  * @flow
  */
 
-import React from 'react';
+import * as React from 'react';
 
 export type MeasureOnSuccessCallback = (
   x: number,
@@ -112,6 +112,22 @@ export type NativeMethodsMixinType = {
   ): void,
   setNativeProps(nativeProps: Object): void,
 };
+
+export type HostComponent<T> = React.AbstractComponent<
+  T,
+  $ReadOnly<{|
+    blur(): void,
+    focus(): void,
+    measure(callback: MeasureOnSuccessCallback): void,
+    measureInWindow(callback: MeasureInWindowOnSuccessCallback): void,
+    measureLayout(
+      relativeToNativeNode: number | Object,
+      onSuccess: MeasureLayoutOnSuccessCallback,
+      onFail?: () => void,
+    ): void,
+    setNativeProps(nativeProps: Object): void,
+  |}>,
+>;
 
 type SecretInternalsType = {
   NativeMethodsMixin: NativeMethodsMixinType,

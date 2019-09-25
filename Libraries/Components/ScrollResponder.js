@@ -28,6 +28,7 @@ import type {PressEvent, ScrollEvent} from '../Types/CoreEventTypes';
 import type {Props as ScrollViewProps} from './ScrollView/ScrollView';
 import type {KeyboardEvent} from './Keyboard/Keyboard';
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 
 /**
  * Mixin that can be integrated in order to handle scrolling that plays well
@@ -543,6 +544,7 @@ const ScrollResponderMixin = {
   scrollResponderScrollNativeHandleToKeyboard: function<T>(
     nodeHandle:
       | number
+      | React.ElementRef<HostComponent<T>>
       | React.ElementRef<Class<ReactNative.NativeComponent<T>>>,
     additionalOffset?: number,
     preventNegativeScrollOffset?: boolean,

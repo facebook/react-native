@@ -17,12 +17,16 @@ const View = require('../../View/View');
 
 const requireNativeComponent = require('../../../ReactNative/requireNativeComponent');
 
-const RCTScrollView = requireNativeComponent('RCTScrollView');
+import type {HostComponent} from '../../../Renderer/shims/ReactNativeTypes';
+
+const RCTScrollView: HostComponent<mixed> = requireNativeComponent<mixed>(
+  'RCTScrollView',
+);
 
 const ScrollViewComponent: $FlowFixMe = jest.genMockFromModule('../ScrollView');
 
 class ScrollViewMock extends ScrollViewComponent {
-  render(): React.Element<string> {
+  render(): React.Element<typeof RCTScrollView> {
     return (
       <RCTScrollView {...this.props}>
         {this.props.refreshControl}
