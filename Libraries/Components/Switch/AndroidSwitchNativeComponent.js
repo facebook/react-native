@@ -16,7 +16,7 @@ import type {
 } from 'react-native/Libraries/Types/CodegenTypes';
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
-import type {NativeComponentType} from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
@@ -45,4 +45,4 @@ type NativeProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<NativeProps>(
   'AndroidSwitch',
-): NativeComponentType<NativeProps>);
+): HostComponent<NativeProps>);
