@@ -97,6 +97,11 @@ class ReactNativeComponent<Props> extends React.Component<Props> {
   setNativeProps(nativeProps: Object): void {}
 }
 
+// This type is only used for FlowTests. It shouldn't be imported directly
+export type ReactNativeComponentClass_ForTestsOnly<Props> = Class<
+  ReactNativeComponent<Props>,
+>;
+
 /**
  * This type keeps HostComponent and NativeMethodsMixin in sync.
  * It can also provide types for ReactNative applications that use NMM or refs.
