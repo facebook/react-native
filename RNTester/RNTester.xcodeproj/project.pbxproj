@@ -195,6 +195,11 @@
 		9F7CD4192339A92D005B9D55 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F5C1806230B4F2400E3E5A7 /* libRCTActionSheet.a */; };
 		9F7CD41A2339A936005B9D55 /* libRCTBlob-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6484CE5A201A7557004275A4 /* libRCTBlob-macOS.a */; };
 		9F7CD41B2339A95F005B9D55 /* libRCTTest-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F5C181A230B4F2400E3E5A7 /* libRCTTest-macOS.a */; };
+		9FBFA519233C7E88003D9A8D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18FC77911EF4770B002B3F17 /* Assets.xcassets */; };
+		9FBFA51A233C7E91003D9A8D /* RNTesterBundle-macOS.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9FBFA513233C7E4C003D9A8D /* RNTesterBundle-macOS.bundle */; };
+		9FBFA51B233C7E97003D9A8D /* legacy_image@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D2AFAF41D646CF80089D1A3 /* legacy_image@2x.png */; };
+		9FBFA51C233C7EAF003D9A8D /* ImageInBundle.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D13F8441D6F6AF200E69E0E /* ImageInBundle.png */; };
+		9FBFA51D233C7EB4003D9A8D /* OtherImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D13F8451D6F6AF200E69E0E /* OtherImages.xcassets */; };
 		AFEACA842223EB05004E5198 /* CrashyCrash.m in Sources */ = {isa = PBXBuildFile; fileRef = AFEACA832223EB05004E5198 /* CrashyCrash.m */; };
 		BC9C03401DC9F1D600B1C635 /* RCTDevMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BC9C033F1DC9F1D600B1C635 /* RCTDevMenuTests.m */; };
 		C60A228221C9726800B820FE /* RCTFormatErrorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C60A228121C9726800B820FE /* RCTFormatErrorTests.m */; };
@@ -566,13 +571,6 @@
 			remoteGlobalIDString = ADD01A681E09402E00F6D226;
 			remoteInfo = "RCTBlob-tvOS";
 		};
-		641DD8F11F16B77700B6415F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 641DD8E51F16AA8500B6415F;
-			remoteInfo = "RNTesterBundle-macOS";
-		};
 		6424F7B11F669A8E0025D741 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 14DC67E71AB71876001358AB /* RCTPushNotification.xcodeproj */;
@@ -910,6 +908,8 @@
 		8385CF051B8747A000C6273E /* RCTImageLoaderHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTImageLoaderHelpers.h; sourceTree = "<group>"; };
 		9F1534BD233AB44F006DFE44 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		9F5C1923230F46CB00E3E5A7 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
+		9FBFA513233C7E4C003D9A8D /* RNTesterBundle-macOS.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "RNTesterBundle-macOS.bundle"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9FBFA515233C7E4C003D9A8D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AFEACA822223EB05004E5198 /* CrashyCrash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CrashyCrash.h; sourceTree = "<group>"; };
 		AFEACA832223EB05004E5198 /* CrashyCrash.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CrashyCrash.m; sourceTree = "<group>"; };
 		BC9C033F1DC9F1D600B1C635 /* RCTDevMenuTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDevMenuTests.m; sourceTree = "<group>"; };
@@ -1086,13 +1086,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		641DD8E71F16AA8500B6415F /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		9F61696A225FB3F1008F89F1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1101,6 +1094,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		9F616990225FB40C008F89F1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9FBFA510233C7E4C003D9A8D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1538,6 +1538,7 @@
 				18FC77871EF4770B002B3F17 /* RNTester-macOS */,
 				18FC779E1EF4770B002B3F17 /* RNTester-macOSUnitTests */,
 				18FC77A91EF4770B002B3F17 /* RNTester-macOSIntegrationTests */,
+				9FBFA514233C7E4C003D9A8D /* RNTesterBundle-macOS */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2DE7E7D81FB2A4F3009E225D /* Frameworks */,
 			);
@@ -1560,8 +1561,17 @@
 				18FC779B1EF4770B002B3F17 /* RNTester-macOSUnitTests.xctest */,
 				18FC77A61EF4770B002B3F17 /* RNTester-macOSIntegrationTests.xctest */,
 				18D8D99F21C06BCE00E0CCAC /* libiosDeviceBuild.a */,
+				9FBFA513233C7E4C003D9A8D /* RNTesterBundle-macOS.bundle */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		9FBFA514233C7E4C003D9A8D /* RNTesterBundle-macOS */ = {
+			isa = PBXGroup;
+			children = (
+				9FBFA515233C7E4C003D9A8D /* Info.plist */,
+			);
+			path = "RNTesterBundle-macOS";
 			sourceTree = "<group>";
 		};
 		AFEACAB12223EB2C004E5198 /* NativeExampleModules */ = {
@@ -1710,7 +1720,6 @@
 				18CD94832149B235009E2179 /* PBXTargetDependency */,
 				18CD94872149B235009E2179 /* PBXTargetDependency */,
 				18CF93E9214723F400CDCB6F /* PBXTargetDependency */,
-				641DD8F21F16B77700B6415F /* PBXTargetDependency */,
 			);
 			name = "RNTester-macOS";
 			productName = "RNTester-macOS";
@@ -1835,22 +1844,6 @@
 			productReference = 3D13F83E1D6F6AE000E69E0E /* RNTesterBundle.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
-		641DD8E51F16AA8500B6415F /* RNTesterBundle-macOS */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 641DD8EB1F16AA8500B6415F /* Build configuration list for PBXNativeTarget "RNTesterBundle-macOS" */;
-			buildPhases = (
-				641DD8E61F16AA8500B6415F /* Sources */,
-				641DD8E71F16AA8500B6415F /* Frameworks */,
-				641DD8E81F16AA8500B6415F /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "RNTesterBundle-macOS";
-			productName = RNTesterBundle;
-			productType = "com.apple.product-type.bundle";
-		};
 		9F616959225FB3F1008F89F1 /* iosSimulatorBuild */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9F61697B225FB3F1008F89F1 /* Build configuration list for PBXNativeTarget "iosSimulatorBuild" */;
@@ -1911,6 +1904,23 @@
 			productName = DeviceBuild;
 			productType = "com.apple.product-type.library.static";
 		};
+		9FBFA512233C7E4C003D9A8D /* RNTesterBundle-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9FBFA516233C7E4C003D9A8D /* Build configuration list for PBXNativeTarget "RNTesterBundle-macOS" */;
+			buildPhases = (
+				9FBFA50F233C7E4C003D9A8D /* Sources */,
+				9FBFA510233C7E4C003D9A8D /* Frameworks */,
+				9FBFA511233C7E4C003D9A8D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RNTesterBundle-macOS";
+			productName = "RNTesterBundle-macOS";
+			productReference = 9FBFA513233C7E4C003D9A8D /* RNTesterBundle-macOS.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1961,7 +1971,9 @@
 					3D13F83D1D6F6AE000E69E0E = {
 						CreatedOnToolsVersion = 7.3.1;
 					};
-					641DD8E51F16AA8500B6415F = {
+					9FBFA512233C7E4C003D9A8D = {
+						CreatedOnToolsVersion = 11.0;
+						DevelopmentTeam = UBF8T346G9;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -2052,7 +2064,7 @@
 				18FC77851EF4770B002B3F17 /* RNTester-macOS */,
 				18FC779A1EF4770B002B3F17 /* RNTester-macOSUnitTests */,
 				18FC77A51EF4770B002B3F17 /* RNTester-macOSIntegrationTests */,
-				641DD8E51F16AA8500B6415F /* RNTesterBundle-macOS */,
+				9FBFA512233C7E4C003D9A8D /* RNTesterBundle-macOS */,
 				18D8D99E21C06BCE00E0CCAC /* iosDeviceBuild */,
 				9F616959225FB3F1008F89F1 /* iosSimulatorBuild */,
 				9F61697F225FB40C008F89F1 /* macOSBuild */,
@@ -2542,7 +2554,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9FBFA519233C7E88003D9A8D /* Assets.xcassets in Resources */,
+				9FBFA51A233C7E91003D9A8D /* RNTesterBundle-macOS.bundle in Resources */,
 				18FC77951EF4770B002B3F17 /* Main.storyboard in Resources */,
+				9FBFA51B233C7E97003D9A8D /* legacy_image@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2593,10 +2608,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		641DD8E81F16AA8500B6415F /* Resources */ = {
+		9FBFA511233C7E4C003D9A8D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9FBFA51D233C7EB4003D9A8D /* OtherImages.xcassets in Resources */,
+				9FBFA51C233C7EAF003D9A8D /* ImageInBundle.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2642,7 +2659,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\nPROJECT_ROOT=$SRCROOT/.. $SRCROOT/../scripts/react-native-xcode.sh RNTester/js/RNTesterApp.ios.js\n";
+			shellScript = "export NODE_BINARY=node\nPROJECT_ROOT=$SRCROOT/.. $SRCROOT/../scripts/react-native-xcode.sh RNTester/js/RNTesterApp.macos.js\n";
 		};
 		68CD48B71D2BCB2C007E06A9 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2837,13 +2854,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		641DD8E61F16AA8500B6415F /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		9F616969225FB3F1008F89F1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2852,6 +2862,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		9F61698F225FB40C008F89F1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9FBFA50F233C7E4C003D9A8D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -3104,11 +3121,6 @@
 			isa = PBXTargetDependency;
 			target = 3D13F83D1D6F6AE000E69E0E /* RNTesterBundle */;
 			targetProxy = 3D13F84B1D6F6B5F00E69E0E /* PBXContainerItemProxy */;
-		};
-		641DD8F21F16B77700B6415F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 641DD8E51F16AA8500B6415F /* RNTesterBundle-macOS */;
-			targetProxy = 641DD8F11F16B77700B6415F /* PBXContainerItemProxy */;
 		};
 		9F61695A225FB3F1008F89F1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3706,44 +3718,6 @@
 			};
 			name = Release;
 		};
-		641DD8EC1F16AA8500B6415F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = "";
-				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = "RNTesterBundle copy-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterBundle;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SDKROOT = macosx;
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Debug;
-		};
-		641DD8ED1F16AA8500B6415F /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = "";
-				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = "RNTesterBundle copy-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.RNTesterBundle;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SDKROOT = macosx;
-				WRAPPER_EXTENSION = bundle;
-			};
-			name = Release;
-		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3955,6 +3929,58 @@
 			};
 			name = Release;
 		};
+		9FBFA517233C7E4C003D9A8D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = UBF8T346G9;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "RNTesterBundle-macOS/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "Microsoft.RNTesterBundle-macOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		9FBFA518233C7E4C003D9A8D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = UBF8T346G9;
+				INFOPLIST_FILE = "RNTesterBundle-macOS/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "Microsoft.RNTesterBundle-macOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -4057,15 +4083,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		641DD8EB1F16AA8500B6415F /* Build configuration list for PBXNativeTarget "RNTesterBundle-macOS" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				641DD8EC1F16AA8500B6415F /* Debug */,
-				641DD8ED1F16AA8500B6415F /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "RNTester" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -4089,6 +4106,15 @@
 			buildConfigurations = (
 				9F6169A2225FB40C008F89F1 /* Debug */,
 				9F6169A3225FB40C008F89F1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9FBFA516233C7E4C003D9A8D /* Build configuration list for PBXNativeTarget "RNTesterBundle-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9FBFA517233C7E4C003D9A8D /* Debug */,
+				9FBFA518233C7E4C003D9A8D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
