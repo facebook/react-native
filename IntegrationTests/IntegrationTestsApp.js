@@ -25,7 +25,7 @@ const {
 // Keep this list in sync with RNTesterIntegrationTests.m
 const TESTS = [
   require('./IntegrationTestHarnessTest'),
-//  require('./TimersTest'),
+  //  require('./TimersTest'),
   require('./AsyncStorageTest'),
   require('./AppEventsTest'),
   // require('./ImageCachePolicyTest'),
