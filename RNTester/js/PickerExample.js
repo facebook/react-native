@@ -11,10 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const StyleSheet = require('StyleSheet');
-
-const {Picker, Text} = ReactNative;
+const {Picker, StyleSheet, Text} = require('react-native');
 
 const Item = Picker.Item;
 

@@ -37,6 +37,11 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\" \"$(PODS_ROOT)/DoubleConversion\"" }
   s.header_dir             = "jsi"
   s.default_subspec        = "Default"
+# Microsoft CocoaPod Support [
+	s.exclude_files          = "*V8*", # Android uses V8 files for Chromium that Apple platforms should ignore
+														 "FileUtils.*", # Used by Android JSI
+													   "**/test/*"
+# ] Microsoft CocoaPod Support
 
   s.dependency "boost-for-react-native", "1.63.0"
   s.dependency "DoubleConversion"

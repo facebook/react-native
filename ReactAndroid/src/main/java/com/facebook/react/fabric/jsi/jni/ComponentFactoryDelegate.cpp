@@ -4,24 +4,25 @@
 
 #include "ComponentFactoryDelegate.h"
 #include <android/log.h>
-#include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <fb/fbjni.h>
 #include <jsi/jsi.h>
+#include <react/uimanager/ComponentDescriptorRegistry.h>
 
 using namespace facebook::jsi;
 
 namespace facebook {
 namespace react {
 
-jni::local_ref<ComponentFactoryDelegate::jhybriddata> ComponentFactoryDelegate::initHybrid(
-    jni::alias_ref<jclass>) {
+jni::local_ref<ComponentFactoryDelegate::jhybriddata>
+ComponentFactoryDelegate::initHybrid(jni::alias_ref<jclass>) {
   return makeCxxInstance();
 }
 
 void ComponentFactoryDelegate::registerNatives() {
   registerHybrid({
-    makeNativeMethod("initHybrid", ComponentFactoryDelegate::initHybrid),
+      makeNativeMethod("initHybrid", ComponentFactoryDelegate::initHybrid),
   });
 }
 
-}}
+} // namespace react
+} // namespace facebook

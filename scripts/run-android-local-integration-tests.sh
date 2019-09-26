@@ -17,7 +17,7 @@ echo "Compiling native code..."
 ./gradlew :ReactAndroid:packageReactNdkLibsForBuck
 
 echo "Building JS bundle..."
-node cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js --reactNativePath .
+node cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 
 echo "Installing test app on the device..."
 buck fetch ReactAndroid/src/androidTest/buck-runner:instrumentation-tests

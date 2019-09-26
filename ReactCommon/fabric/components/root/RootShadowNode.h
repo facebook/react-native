@@ -37,7 +37,7 @@ class RootShadowNode final
   /*
    * Layouts the shadow tree.
    */
-  void layout();
+  void layout(std::vector<LayoutableShadowNode const *> *affectedNodes = {});
 
   /*
    * Clones the node with given `layoutConstraints` and `layoutContext`.

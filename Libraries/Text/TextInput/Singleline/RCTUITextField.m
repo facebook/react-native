@@ -11,6 +11,7 @@
 #import <React/UIView+React.h>
 
 #import "RCTBackedTextInputDelegateAdapter.h"
+#import "RCTTextAttributes.h"
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
 @interface RCTUITextFieldCell : NSTextFieldCell
@@ -74,7 +75,6 @@
 
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
-  NSMutableAttributedString *_attributesHolder;
 }
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
@@ -93,6 +93,8 @@ static RCTUIColor *defaultPlaceholderTextColor()
 
 #endif // ]TODO(macOS ISS#2323203)
 
+@synthesize reactTextAttributes = _reactTextAttributes;
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
@@ -108,7 +110,6 @@ static RCTUIColor *defaultPlaceholderTextColor()
 #endif // ]TODO(macOS ISS#2323203)
 
     _textInputDelegateAdapter = [[RCTBackedTextFieldDelegateAdapter alloc] initWithTextField:self];
-    _attributesHolder = [[NSMutableAttributedString alloc] init];
   }
 
   return self;
@@ -122,6 +123,15 @@ static RCTUIColor *defaultPlaceholderTextColor()
 - (void)_textDidChange
 {
   _textWasPasted = NO;
+}
+
+#pragma mark - Accessibility
+
+- (void)setIsAccessibilityElement:(BOOL)isAccessibilityElement
+{
+  // UITextField is accessible by default (some nested views are) and disabling that is not supported.
+  // On iOS accessible elements cannot be nested, therefore enabling accessibility for some container view
+  // (even in a case where this view is a part of public API of TextInput on iOS) shadows some features implemented inside the component.
 }
 
 #pragma mark - Properties
@@ -223,12 +233,29 @@ static RCTUIColor *defaultPlaceholderTextColor()
 
 - (NSString*)placeholder // [TODO(macOS ISS#2323203)
 {
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX 
   return super.placeholder;
 #else
   return self.placeholderAttributedString.string ?: self.placeholderString;
 #endif
 } // ]TODO(macOS ISS#2323203)
+
+- (void)setReactTextAttributes:(RCTTextAttributes *)reactTextAttributes
+{
+  if ([reactTextAttributes isEqual:_reactTextAttributes]) {
+    return;
+  }
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+  self.defaultTextAttributes = reactTextAttributes.effectiveTextAttributes;
+#endif // TODO(macOS ISS#2323203)
+  _reactTextAttributes = reactTextAttributes;
+  [self _updatePlaceholder];
+}
+
+- (RCTTextAttributes *)reactTextAttributes
+{
+  return _reactTextAttributes;
+}
 
 - (void)_updatePlaceholder
 {
@@ -279,6 +306,28 @@ static RCTUIColor *defaultPlaceholderTextColor()
   return NO;
 }
 
+#pragma mark - Placeholder
+
+- (NSDictionary<NSAttributedStringKey, id> *)placeholderEffectiveTextAttributes
+{
+  NSMutableDictionary<NSAttributedStringKey, id> *effectiveTextAttributes = [NSMutableDictionary dictionary];
+  
+  if (_placeholderColor) {
+    effectiveTextAttributes[NSForegroundColorAttributeName] = _placeholderColor;
+  }
+  // Kerning
+  if (!isnan(_reactTextAttributes.letterSpacing)) {
+    effectiveTextAttributes[NSKernAttributeName] = @(_reactTextAttributes.letterSpacing);
+  }
+  
+  NSParagraphStyle *paragraphStyle = [_reactTextAttributes effectiveParagraphStyle];
+  if (paragraphStyle) {
+    effectiveTextAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+  }
+  
+  return [effectiveTextAttributes copy];
+}
+
 #pragma mark - Context Menu
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
@@ -301,48 +350,6 @@ static RCTUIColor *defaultPlaceholderTextColor()
   return [super caretRectForPosition:position];
 }
 
-#pragma mark - Fix for CJK Languages
-
-/* 
- * The workaround to fix inputting complex locales (like CJK languages).
- * When we use `setAttrbutedText:` while user is inputting text in a complex
- * locale (like Chinese, Japanese or Korean), some internal state breaks and
- * input stops working.
- *
- * To workaround that, we don't skip underlying attributedString in the text
- * field if only attributes were changed. We keep track of these attributes in
- * a local variable.
- *
- * There are two methods that are altered by this workaround:
- *
- * (1) `-setAttributedText:` 
- *     Applies the attributed string change to a local variable `_attributesHolder` instead of calling `-[super setAttributedText:]`.
- *     If new attributed text differs from the existing one only in attributes,
- *     skips `-[super setAttributedText:`] completely.
- *
- * (2) `-attributedText` 
- *     Return `_attributesHolder` context.
- *     Updates `_atributesHolder` before returning if the underlying `super.attributedText.string` was changed.
- *
- */
-- (void)setAttributedText:(NSAttributedString *)attributedText
-{
-  BOOL textWasChanged = ![_attributesHolder.string isEqualToString:attributedText.string];
-  [_attributesHolder setAttributedString:attributedText];
-
-  if (textWasChanged) {
-    [super setAttributedText:attributedText];
-  }
-}
-
-- (NSAttributedString *)attributedText
-{
-  if (![super.attributedText.string isEqualToString:_attributesHolder.string]) {
-    [_attributesHolder setAttributedString:super.attributedText];
-  }
-
-  return _attributesHolder;
-}
 
 #pragma mark - Positioning Overrides
 
@@ -480,11 +487,12 @@ static RCTUIColor *defaultPlaceholderTextColor()
 {
   // Note: `placeholder` defines intrinsic size for `<TextInput>`.
   NSString *text = self.placeholder ?: @"";
-  CGSize size = [text sizeWithAttributes:@{NSFontAttributeName: self.font}];
   
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+  CGSize size = [text sizeWithAttributes:[self placeholderEffectiveTextAttributes]];
   size = CGSizeMake(RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height));
 #else // [TODO(macOS ISS#2323203)
+  CGSize size = [text sizeWithAttributes:@{NSFontAttributeName: self.font}];
   CGFloat scale = self.window.backingScaleFactor;
   RCTAssert(scale != 0.0, @"Layout occurs before the view is in a window?");
   if (scale == 0) {

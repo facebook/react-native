@@ -9,8 +9,7 @@
 
 'use strict';
 
-const React = require('React');
-const ReactNative = require('react-native');
+const React = require('react');
 const {
   KeyboardAvoidingView,
   Modal,
@@ -20,7 +19,7 @@ const {
   TextInput,
   TouchableHighlight,
   View,
-} = ReactNative;
+} = require('react-native');
 
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');

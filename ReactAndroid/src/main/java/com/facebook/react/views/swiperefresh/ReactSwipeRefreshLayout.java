@@ -7,7 +7,7 @@
 
 package com.facebook.react.views.swiperefresh;
 
-import android.support.v4.widget.SwipeRefreshLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 

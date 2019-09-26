@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
  * Based on Fresco's DrawableUtilsTest (https://github.com/facebook/fresco).
  */
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ColorUtilTest {
 
   @Rule

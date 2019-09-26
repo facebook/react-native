@@ -57,6 +57,9 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
 
 - (id)echoString:(NSString *)input { return input; }
 - (id)methodThatReturnsNil { return nil; }
+- (void)openURL:(NSURL *)URL resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {}
+- (void)openURL:(NSURL *)URL callback:(RCTResponseSenderBlock)callback {}
+- (id)methodThatCallsCallbackWithArg:(NSString *)input callback:(RCTResponseSenderBlock)callback { callback(@[input]); return nil; }
 
 - (void)testNonnull
 {
@@ -147,18 +150,50 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
     const char *methodSignature = "doFoo";
     RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(method.functionType == RCTFunctionTypeNormal);
+    XCTAssertFalse(RCTLogsError(^{
+      // Invoke method to trigger parsing
+      __unused SEL selector = method.selector;
+    }), @"Unexpected error when parsing normal function");
+  }
+
+  {
+    const char *methodSignature = "openURL:(NSURL *)URL callback:(RCTResponseSenderBlock)callBack";
+    RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
+    XCTAssertTrue(method.functionType == RCTFunctionTypeNormal);
+    XCTAssertFalse(RCTLogsError(^{
+      // Invoke method to trigger parsing
+      __unused SEL selector = method.selector;
+    }), @"Unexpected error when parsing normal function with callback");
   }
 
   {
     const char *methodSignature = "openURL:(NSURL *)URL resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject";
     RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(method.functionType == RCTFunctionTypePromise);
+    XCTAssertFalse(RCTLogsError(^{
+      // Invoke method to trigger parsing
+      __unused SEL selector = method.selector;
+    }), @"Unexpected error when parsing promise function");
   }
-
+  
   {
     const char *methodSignature = "echoString:(NSString *)input";
     RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(method.functionType == RCTFunctionTypeSync);
+    XCTAssertFalse(RCTLogsError(^{
+      // Invoke method to trigger parsing
+      __unused SEL selector = method.selector;
+    }), @"Unexpected error when parsing sync function");
+  }
+
+  {
+    const char *methodSignature = "methodThatCallsCallbackWithArg:(NSString *)input callback:(RCTResponseSenderBlock)callback";
+    RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
+    XCTAssertTrue(method.functionType == RCTFunctionTypeSync);
+    XCTAssertFalse(RCTLogsError(^{
+      // Invoke method to trigger parsing
+      __unused SEL selector = method.selector;
+    }), @"Unexpected error when parsing sync function with callback");
   }
 }
 

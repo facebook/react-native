@@ -10,11 +10,12 @@
 
 'use strict';
 
-const LayoutAnimation = require('LayoutAnimation');
+const LayoutAnimation = require('../../LayoutAnimation/LayoutAnimation');
 const invariant = require('invariant');
-const NativeEventEmitter = require('NativeEventEmitter');
-const KeyboardObserver = require('NativeModules').KeyboardObserver;
-const dismissKeyboard = require('dismissKeyboard');
+const NativeEventEmitter = require('../../EventEmitter/NativeEventEmitter');
+const KeyboardObserver = require('../../BatchedBridge/NativeModules')
+  .KeyboardObserver;
+const dismissKeyboard = require('../../Utilities/dismissKeyboard');
 const KeyboardEventEmitter = new NativeEventEmitter(KeyboardObserver);
 
 export type KeyboardEventName =

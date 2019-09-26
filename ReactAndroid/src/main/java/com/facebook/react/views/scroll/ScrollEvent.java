@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 
 import java.lang.Override;
 
-import android.support.v4.util.Pools;
+import androidx.core.util.Pools;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;

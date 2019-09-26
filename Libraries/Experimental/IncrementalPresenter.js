@@ -10,14 +10,14 @@
 
 'use strict';
 
-const IncrementalGroup = require('IncrementalGroup');
+const IncrementalGroup = require('./IncrementalGroup');
 const PropTypes = require('prop-types');
-const React = require('React');
-const View = require('View');
+const React = require('react');
+const View = require('../Components/View/View');
 
-import type {Context} from 'Incremental';
-import type {ViewStyleProp} from 'StyleSheet';
-import type {LayoutEvent} from 'CoreEventTypes';
+import type {Context} from './Incremental';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {LayoutEvent} from '../Types/CoreEventTypes';
 
 /**
  * WARNING: EXPERIMENTAL. Breaking changes will probably happen a lot and will

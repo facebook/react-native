@@ -32,7 +32,7 @@ static NSString *getServerHost(NSURL *bundleURL, NSNumber *port)
 
 static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 {
-  NSNumber *inspectorProxyPort = @8082;
+  NSNumber *inspectorProxyPort = @8081;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
 #else // [TODO(macOS ISS#2323203)
@@ -114,8 +114,8 @@ static void displayErrorAlert(UIViewController *view, NSString *message) {
 
   __weak UIViewController *viewCapture = view;
   [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:
-    ^(NSData *_Nullable data,
-      NSURLResponse *_Nullable response,
+    ^(__unused NSData *_Nullable data,
+      __unused NSURLResponse *_Nullable response,
       NSError *_Nullable error) {
       UIViewController *viewCaptureStrong = viewCapture;
       if (error != nullptr && viewCaptureStrong != nullptr) {

@@ -13,7 +13,7 @@
 const React = require('react');
 
 const RNTesterExampleContainer = require('./RNTesterExampleContainer');
-import type {RNTesterExample} from 'RNTesterTypes';
+import type {RNTesterExample} from './Shared/RNTesterTypes';
 
 const createExamplePage = function(
   title: ?string,

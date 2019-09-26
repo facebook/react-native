@@ -31,7 +31,7 @@
 #endif // ]TODO(macOS ISS#2323203)
 
 @property (nonatomic, copy) RCTBubblingEventBlock onValueChange;
-@property (nonatomic, copy) RCTBubblingEventBlock onSlidingComplete;
+@property (nonatomic, copy) RCTDirectEventBlock onSlidingComplete;
 
 @property (nonatomic, assign) float step;
 @property (nonatomic, assign) float lastValue;

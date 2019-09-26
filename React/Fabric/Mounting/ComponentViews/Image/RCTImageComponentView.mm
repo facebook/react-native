@@ -7,16 +7,15 @@
 
 #import "RCTImageComponentView.h"
 
+#import <React/RCTImageResponseObserverProxy.h>
+#import <react/components/image/ImageComponentDescriptor.h>
 #import <react/components/image/ImageEventEmitter.h>
 #import <react/components/image/ImageLocalData.h>
 #import <react/components/image/ImageProps.h>
-#import <react/components/image/ImageShadowNode.h>
 #import <react/imagemanager/ImageRequest.h>
 #import <react/imagemanager/RCTImagePrimitivesConversions.h>
-#import <React/RCTImageResponseObserverProxy.h>
 
 #import "RCTConversions.h"
-#import "MainQueueExecutor.h"
 
 @implementation RCTImageComponentView {
   UIImageView *_imageView;
@@ -35,7 +34,7 @@
     _imageView.clipsToBounds = YES;
 
     _imageView.contentMode = (UIViewContentMode)RCTResizeModeFromImageResizeMode(defaultProps->resizeMode);
-      
+
     _imageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>((__bridge void *)self);
 
     self.contentView = _imageView;
@@ -46,9 +45,9 @@
 
 #pragma mark - RCTComponentViewProtocol
 
-+ (ComponentHandle)componentHandle
++ (ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return ImageShadowNode::Handle();
+  return concreteComponentDescriptorProvider<ImageComponentDescriptor>();
 }
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
@@ -75,24 +74,24 @@
   }
 }
 
-- (void)updateLocalData:(SharedLocalData)localData
-           oldLocalData:(SharedLocalData)oldLocalData
+- (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
 {
   SharedImageLocalData previousData = _imageLocalData;
   _imageLocalData = std::static_pointer_cast<const ImageLocalData>(localData);
   assert(_imageLocalData);
   bool havePreviousData = previousData != nullptr;
-  
+
   if (!havePreviousData || _imageLocalData->getImageSource() != previousData->getImageSource()) {
-    self.coordinator = _imageLocalData->getImageRequest().getObserverCoordinator();
-    
+    self.coordinator = &_imageLocalData->getImageRequest().getObserverCoordinator();
+
     // Loading actually starts a little before this, but this is the first time we know
     // the image is loading and can fire an event from this component
     std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onLoadStart();
   }
 }
 
-- (void)setCoordinator:(const ImageResponseObserverCoordinator *)coordinator {
+- (void)setCoordinator:(const ImageResponseObserverCoordinator *)coordinator
+{
   if (_coordinator) {
     _coordinator->removeObserver(_imageResponseObserverProxy.get());
   }
@@ -110,7 +109,7 @@
   _imageLocalData.reset();
 }
 
--(void)dealloc
+- (void)dealloc
 {
   self.coordinator = nullptr;
   _imageResponseObserverProxy.reset();
@@ -118,7 +117,7 @@
 
 #pragma mark - RCTImageResponseDelegate
 
-- (void)didReceiveImage:(UIImage *)image fromObserver:(void*)observer
+- (void)didReceiveImage:(UIImage *)image fromObserver:(void *)observer
 {
   std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onLoad();
 
@@ -138,7 +137,7 @@
   }
 
   self->_imageView.image = image;
-  
+
   // Apply trilinear filtering to smooth out mis-sized images.
   self->_imageView.layer.minificationFilter = kCAFilterTrilinear;
   self->_imageView.layer.magnificationFilter = kCAFilterTrilinear;
@@ -146,13 +145,14 @@
   std::static_pointer_cast<const ImageEventEmitter>(self->_eventEmitter)->onLoadEnd();
 }
 
-- (void)didReceiveProgress:(float)progress fromObserver:(void*)observer {
+- (void)didReceiveProgress:(float)progress fromObserver:(void *)observer
+{
   std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onProgress(progress);
 }
 
-- (void)didReceiveFailureFromObserver:(void*)observer {
+- (void)didReceiveFailureFromObserver:(void *)observer
+{
   std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onError();
 }
-
 
 @end

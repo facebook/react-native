@@ -417,11 +417,14 @@ const stagger = function(
   );
 };
 
-type LoopAnimationConfig = {iterations: number};
+type LoopAnimationConfig = {
+  iterations: number,
+  resetBeforeIteration?: boolean,
+};
 
 const loop = function(
   animation: CompositeAnimation,
-  {iterations = -1}: LoopAnimationConfig = {},
+  {iterations = -1, resetBeforeIteration = true}: LoopAnimationConfig = {},
 ): CompositeAnimation {
   let isFinished = false;
   let iterationsSoFar = 0;
@@ -436,7 +439,7 @@ const loop = function(
           callback && callback(result);
         } else {
           iterationsSoFar++;
-          animation.reset();
+          resetBeforeIteration && animation.reset();
           animation.start(restart);
         }
       };

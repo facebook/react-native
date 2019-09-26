@@ -11,11 +11,11 @@
 
 'use strict';
 
-const React = require('React');
-const ActivityIndicator = require('ActivityIndicator');
+const React = require('react');
+const ActivityIndicator = require('../ActivityIndicator');
 const render = require('../../../../jest/renderer');
 
-describe('ActivityIndicator', () => {
+describe('<ActivityIndicator />', () => {
   it('should set displayName to prevent <Component /> regressions', () => {
     expect(ActivityIndicator.displayName).toBe('ActivityIndicator');
   });
@@ -35,7 +35,7 @@ describe('ActivityIndicator', () => {
   });
 
   it('should shallow render as <ForwardRef(ActivityIndicator)> when not mocked', () => {
-    jest.dontMock('ActivityIndicator');
+    jest.dontMock('../ActivityIndicator');
 
     const output = render.shallow(
       <ActivityIndicator size="large" color="#0000ff" />,
@@ -44,7 +44,7 @@ describe('ActivityIndicator', () => {
   });
 
   it('should render as <View> when not mocked', () => {
-    jest.dontMock('ActivityIndicator');
+    jest.dontMock('../ActivityIndicator');
 
     const instance = render.create(
       <ActivityIndicator size="large" color="#0000ff" />,

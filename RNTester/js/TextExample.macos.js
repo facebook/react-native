@@ -12,7 +12,7 @@
 
 'use strict';
 
-const Platform = require('Platform');
+import Platform from '../../Libraries/Utilities/Platform'; // TODO(OSS Candidate ISS#2710739)
 var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
@@ -722,9 +722,8 @@ exports.examples = [
             </Text>
           </Text>
           <Text style={{marginTop: 10}}>
-            You can disable scaling for your Text component by passing {'"'}allowFontScaling={
-              '{'
-            }false{'}"'} prop.
+            You can disable scaling for your Text component by passing {'"'}
+            allowFontScaling={'{'}false{'}"'} prop.
           </Text>
           <Text allowFontScaling={false} style={{marginTop: 20}}>
             This text will not scale.

@@ -18,14 +18,8 @@ global.__fetchSegment = function(
   options: {|+otaBuildNumber: ?string|},
   callback: (?Error) => void,
 ) {
-  const {SegmentFetcher} = require('NativeModules');
-  if (!SegmentFetcher) {
-    throw new Error(
-      'SegmentFetcher is missing. Please ensure that it is ' +
-        'included as a NativeModule.',
-    );
-  }
-
+  const SegmentFetcher = require('./SegmentFetcher/NativeSegmentFetcher')
+    .default;
   SegmentFetcher.fetchSegment(
     segmentId,
     options,

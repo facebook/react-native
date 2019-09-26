@@ -11,11 +11,15 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {StyleSheet, Text, ToastAndroid, TouchableWithoutFeedback} = ReactNative;
+const {
+  StyleSheet,
+  Text,
+  ToastAndroid,
+  TouchableWithoutFeedback,
+} = require('react-native');
 
-const RNTesterBlock = require('RNTesterBlock');
-const RNTesterPage = require('RNTesterPage');
+const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterPage = require('./RNTesterPage');
 
 type Props = $ReadOnly<{||}>;
 class ToastExample extends React.Component<Props> {

@@ -24,7 +24,7 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "xplat//folly:molly",
+        "fbsource//xplat/folly:molly",
     ],
 )
 
@@ -44,13 +44,16 @@ rn_xplat_cxx_library(
     ],
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     force_static = True,
+    preprocessor_flags = [
+        "-DWITH_FBREMAP=1",
+    ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
-        "xplat//folly:memory",
-        "xplat//folly:molly",
-        "xplat//folly:scope_guard",
+        "fbsource//xplat/folly:memory",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/folly:scope_guard",
     ],
 )
 
@@ -69,9 +72,9 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        "xplat//folly:memory",
-        "xplat//folly:molly",
-        "xplat//third-party/glog:glog",
+        "fbsource//xplat/folly:memory",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/third-party/glog:glog",
         ":module",
     ],
 )
@@ -136,15 +139,15 @@ rn_xplat_cxx_library(
     ],
     visibility = ["PUBLIC"],
     deps = [
-        "xplat//fbsystrace:fbsystrace",
-        "xplat//folly:headers_only",
-        "xplat//folly:memory",
-        "xplat//folly:molly",
+        "fbsource//xplat/fbsystrace:fbsystrace",
+        "fbsource//xplat/folly:headers_only",
+        "fbsource//xplat/folly:memory",
+        "fbsource//xplat/folly:molly",
         ":jsbigstring",
         ":module",
         react_native_xplat_target("jsinspector:jsinspector"),
         react_native_xplat_target("microprofiler:microprofiler"),
-        "xplat//folly:optional",
-        "xplat//third-party/glog:glog",
+        "fbsource//xplat/folly:optional",
+        "fbsource//xplat/third-party/glog:glog",
     ],
 )

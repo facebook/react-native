@@ -10,12 +10,12 @@
 
 'use strict';
 
-import type {SyntheticEvent, LayoutEvent} from 'CoreEventTypes';
-import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
-import type {ImageSource} from 'ImageSource';
-import type {ViewStyleProp, ImageStyleProp} from 'StyleSheet';
-import type {DimensionValue} from 'StyleSheetTypes';
-import type {ViewProps} from 'ViewPropTypes';
+import type {SyntheticEvent, LayoutEvent} from '../Types/CoreEventTypes';
+import type {EdgeInsetsProp} from '../StyleSheet/EdgeInsetsPropType';
+import type {ImageSource} from './ImageSource';
+import type {ViewStyleProp, ImageStyleProp} from '../StyleSheet/StyleSheet';
+import type {DimensionValue} from '../StyleSheet/StyleSheetTypes';
+import type {ViewProps} from '../Components/View/ViewPropTypes';
 
 export type ImageLoadEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -94,7 +94,13 @@ export type ImageProps = {|
    *
    * See https://facebook.github.io/react-native/docs/image.html#onerror
    */
-  onError?: ?(event: SyntheticEvent<$ReadOnly<{||}>>) => void,
+  onError?: ?(
+    event: SyntheticEvent<
+      $ReadOnly<{|
+        error: string,
+      |}>,
+    >,
+  ) => void,
 
   /**
    * Invoked on mount and layout changes with

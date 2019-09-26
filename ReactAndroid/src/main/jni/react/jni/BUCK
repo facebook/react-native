@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_xplat_dep", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_target", "react_native_xplat_dep", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 EXPORTED_HEADERS = [
     "CxxModuleWrapper.h",
@@ -8,6 +8,7 @@ EXPORTED_HEADERS = [
     "JavaScriptExecutorHolder.h",
     "JCallback.h",
     "JMessageQueueThread.h",
+    "JNativeRunnable.h",
     "JReactMarker.h",
     "JSLoader.h",
     "JSLogging.h",
@@ -52,11 +53,12 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = ([
-        "xplat//third-party/linker_lib:android",
-        "xplat//third-party/linker_lib:atomic",
-        "xplat//folly:molly",
+        "fbsource//xplat/third-party/linker_lib:android",
+        "fbsource//xplat/third-party/linker_lib:atomic",
+        "fbsource//xplat/folly:molly",
         "fbandroid//xplat/fbgloginit:fbgloginit",
-        "xplat//fbsystrace:fbsystrace",
+        "fbsource//xplat/fbsystrace:fbsystrace",
+        react_native_target("java/com/facebook/react/turbomodule/core/jni:jscallinvokerholder"),
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:jsbigstring"),
         react_native_xplat_target("cxxreact:module"),

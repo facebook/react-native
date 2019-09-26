@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {StyleSheet, Text, TextInput, View, Platform} = ReactNative;
+const {StyleSheet, Text, TextInput, View, Platform} = require('react-native');
 
 class XHRExampleFetch extends React.Component<any, any> {
   responseURL: ?string;

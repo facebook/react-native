@@ -13,7 +13,7 @@
  * Sets up the console and exception handling (redbox) for React Native.
  * You can use this module directly, or just require InitializeCore.
  */
-const ExceptionsManager = require('ExceptionsManager');
+const ExceptionsManager = require('./ExceptionsManager');
 ExceptionsManager.installConsoleErrorReporter();
 
 // Set up error handler
@@ -27,6 +27,6 @@ if (!global.__fbDisableExceptionsManager) {
     }
   };
 
-  const ErrorUtils = require('ErrorUtils');
+  const ErrorUtils = require('../vendor/core/ErrorUtils');
   ErrorUtils.setGlobalHandler(handleError);
 }

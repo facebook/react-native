@@ -10,10 +10,10 @@
 
 'use strict';
 
-const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
-const DeprecatedImageSourcePropType = require('DeprecatedImageSourcePropType');
-const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
-const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
+const DeprecatedEdgeInsetsPropType = require('./DeprecatedEdgeInsetsPropType');
+const DeprecatedImageSourcePropType = require('./DeprecatedImageSourcePropType');
+const DeprecatedImageStylePropTypes = require('./DeprecatedImageStylePropTypes');
+const DeprecatedStyleSheetPropType = require('./DeprecatedStyleSheetPropType');
 const PropTypes = require('prop-types');
 
 module.exports = {

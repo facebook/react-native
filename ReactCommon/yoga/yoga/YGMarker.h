@@ -62,16 +62,12 @@ struct MarkerData;
 template <>
 struct MarkerData<YGMarkerLayout> {
   using type = YGMarkerLayoutData;
-  static type*& get(YGMarkerData& d) {
-    return d.layout;
-  }
+  static type*& get(YGMarkerData& d) { return d.layout; }
 };
 
 struct NoMarkerData {
   using type = YGMarkerNoData;
-  static type*& get(YGMarkerData& d) {
-    return d.noData;
-  }
+  static type*& get(YGMarkerData& d) { return d.noData; }
 };
 
 template <>

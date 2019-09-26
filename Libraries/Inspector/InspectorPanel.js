@@ -10,17 +10,17 @@
 
 'use strict';
 
-const ElementProperties = require('ElementProperties');
-const NetworkOverlay = require('NetworkOverlay');
-const PerformanceOverlay = require('PerformanceOverlay');
-const React = require('React');
-const ScrollView = require('ScrollView');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const TouchableHighlight = require('TouchableHighlight');
-const View = require('View');
+const ElementProperties = require('./ElementProperties');
+const NetworkOverlay = require('./NetworkOverlay');
+const PerformanceOverlay = require('./PerformanceOverlay');
+const React = require('react');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Text = require('../Text/Text');
+const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
+const View = require('../Components/View/View');
 
-import type {ViewStyleProp} from 'StyleSheet';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 
 type Props = $ReadOnly<{|
   devtoolsIsOpen: boolean,

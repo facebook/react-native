@@ -12,6 +12,8 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
+import android.provider.Settings;
 
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.Promise;
@@ -58,7 +60,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
         String action = intent.getAction();
         Uri uri = intent.getData();
 
-        if (Intent.ACTION_VIEW.equals(action) && uri != null) {
+        if (uri != null && (Intent.ACTION_VIEW.equals(action) || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
           initialURL = uri.toString();
         }
       }
@@ -141,8 +143,35 @@ public class IntentModule extends ReactContextBaseJavaModule {
   }
 
   /**
+   * Starts an external activity to open app's settings into Android Settings
+   *
+   * @param promise a promise which is resolved when the Settings is opened
+   */
+  @ReactMethod
+  public void openSettings(Promise promise) {
+    try {
+      Intent intent = new Intent();
+      Activity currentActivity = getCurrentActivity();
+      String selfPackageName = getReactApplicationContext().getPackageName();
+
+      intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+      intent.addCategory(Intent.CATEGORY_DEFAULT);
+      intent.setData(Uri.parse("package:" + selfPackageName));
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+      intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+      currentActivity.startActivity(intent);
+
+      promise.resolve(true);
+    } catch (Exception e) {
+      promise.reject(new JSApplicationIllegalArgumentException(
+          "Could not open the Settings: " + e.getMessage()));
+    }
+  }
+
+  /**
    * Allows to send intents on Android
-   * 
+   *
    * For example, you can open the Notification Category screen for a specific application
    * passing action = 'android.settings.CHANNEL_NOTIFICATION_SETTINGS'
    * and extras = [

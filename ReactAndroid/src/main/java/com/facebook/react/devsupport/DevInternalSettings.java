@@ -88,6 +88,10 @@ public class DevInternalSettings implements
     return mPreferences.getBoolean(PREFS_JS_DEV_MODE_DEBUG_KEY, true);
   }
 
+  public void setJSDevModeEnabled(boolean value) {
+    mPreferences.edit().putBoolean(PREFS_JS_DEV_MODE_DEBUG_KEY, value).apply();
+  }
+
   @Override
   public boolean isJSMinifyEnabled() {
     return mPreferences.getBoolean(PREFS_JS_MINIFY_DEBUG_KEY, false);
@@ -132,7 +136,7 @@ public class DevInternalSettings implements
 
   @SuppressLint("SharedPreferencesUse")
   public boolean isBundleDeltasEnabled() {
-    return mPreferences.getBoolean(PREFS_JS_BUNDLE_DELTAS_KEY, true);
+    return mPreferences.getBoolean(PREFS_JS_BUNDLE_DELTAS_KEY, false);
   }
 
   @SuppressLint("SharedPreferencesUse")

@@ -42,8 +42,7 @@ try {
   throw new Error(`Can't parse schema to JSON. ${schemaPath}`);
 }
 
-RNCodegen.generate({
-  libraryName,
-  schema,
-  outputDirectory,
-});
+RNCodegen.generate(
+  {libraryName, schema, outputDirectory},
+  {generators: ['descriptors', 'events', 'props', 'tests', 'shadow-nodes']},
+);

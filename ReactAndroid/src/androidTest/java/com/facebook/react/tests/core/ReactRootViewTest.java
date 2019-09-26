@@ -8,19 +8,22 @@ package com.facebook.react.tests.core;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import android.app.Instrumentation;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.runner.AndroidJUnit4;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ReactRootView;
+import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.testing.StringRecordingModule;
 import com.facebook.react.testing.rule.ReactNativeTestRule;
+import com.facebook.react.uimanager.PixelUtil;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Provider;
@@ -31,6 +34,10 @@ import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class ReactRootViewTest {
+
+  private interface ReactRootViewTestModule extends JavaScriptModule {
+    void setHeight(int height);
+  }
 
   final StringRecordingModule mRecordingModule = new StringRecordingModule();
   final ReactPackage mReactPackage = new MainReactPackage() {
@@ -83,6 +90,40 @@ public class ReactRootViewTest {
     mReactNativeRule.waitForIdleSync();
 
     assertThat(newWidth).isEqualTo(childView.getWidth());
+  }
+
+  @Test
+  public void testRootViewWrapContent() {
+    final ReactRootView rootView = mReactNativeRule.getView();
+
+    Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+    instrumentation.runOnMainSync(
+      new Runnable() {
+        @Override
+        public void run() {
+          rootView.setLayoutParams(
+              new FrameLayout.LayoutParams(
+                  ViewGroup.LayoutParams.WRAP_CONTENT,
+                  ViewGroup.LayoutParams.WRAP_CONTENT));
+        }
+      });
+
+    instrumentation.waitForIdleSync();
+    mReactNativeRule.waitForIdleSync();
+
+    int newComponentHeight = 500;
+    mReactNativeRule
+      .getContext()
+      .getJSModule(ReactRootViewTestModule.class)
+      .setHeight(newComponentHeight);
+
+    instrumentation.waitForIdleSync();
+    mReactNativeRule.waitForIdleSync();
+    instrumentation.waitForIdleSync();
+
+    // added 0.5 to account for rounding issues
+    assertThat(rootView.getMeasuredHeight())
+      .isEqualTo((int) (PixelUtil.toPixelFromDIP(newComponentHeight) + 0.5));
   }
 
   /**

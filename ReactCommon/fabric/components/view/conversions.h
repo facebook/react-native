@@ -7,11 +7,15 @@
 
 #pragma once
 
+#include <better/map.h>
 #include <folly/Conv.h>
 #include <folly/dynamic.h>
+#include <glog/logging.h>
 #include <react/components/view/primitives.h>
 #include <react/core/LayoutMetrics.h>
 #include <react/graphics/Geometry.h>
+#include <react/graphics/Transform.h>
+#include <stdlib.h>
 #include <yoga/YGEnums.h>
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
@@ -20,44 +24,75 @@
 namespace facebook {
 namespace react {
 
+/*
+ * Yoga's `float` <-> React Native's `Float` (can be `double` or `float`)
+ *
+ * Regular Yoga `float` values represent some onscreen-position-related values.
+ * They can be real numbers or special value `YGUndefined` (which actually is
+ * `NaN`). Conceptually, layout computation process inside Yoga should never
+ * produce `NaN` values from non-`NaN` values. At the same time, ` YGUndefined`
+ * values have special "no limit" meaning in Yoga, therefore ` YGUndefined`
+ * usually corresponds to `Infinity` value.
+ */
 inline Float floatFromYogaFloat(float value) {
-  if (value == YGUndefined) {
-    return kFloatUndefined;
+  static_assert(
+      YGUndefined != YGUndefined,
+      "The code of this function assumes that YGUndefined is NaN.");
+  if (std::isnan(value) /* means: `value == YGUndefined` */) {
+    return std::numeric_limits<Float>::infinity();
   }
 
   return (Float)value;
 }
 
 inline float yogaFloatFromFloat(Float value) {
-  if (value == kFloatUndefined) {
+  if (std::isinf(value)) {
     return YGUndefined;
   }
 
   return (float)value;
 }
 
+/*
+ * `YGFloatOptional` <-> React Native's `Float`
+ *
+ * `YGFloatOptional` represents optional dimensionless float values in Yoga
+ * Style object (e.g. `flex`). The most suitable analogy to empty
+ * `YGFloatOptional` is `NaN` value.
+ * `YGFloatOptional` values are usually parsed from some outside data source
+ * which usually has some special corresponding representation for an empty
+ * value.
+ */
 inline Float floatFromYogaOptionalFloat(YGFloatOptional value) {
   if (value.isUndefined()) {
-    return kFloatUndefined;
+    return std::numeric_limits<Float>::quiet_NaN();
   }
 
   return floatFromYogaFloat(value.unwrap());
 }
 
 inline YGFloatOptional yogaOptionalFloatFromFloat(Float value) {
-  if (value == kFloatUndefined) {
+  if (std::isnan(value)) {
     return YGFloatOptional();
   }
 
-  return YGFloatOptional(yogaFloatFromFloat(value));
+  return YGFloatOptional((float)value);
 }
 
-inline YGValue yogaStyleValueFromFloat(const Float &value) {
-  if (std::isnan(value) || value == kFloatUndefined) {
+/*
+ * `YGValue` <-> `React Native's `Float`
+ *
+ * `YGValue` represents optional dimensionful (a real number and some unit, e.g.
+ * pixels).
+ */
+inline YGValue yogaStyleValueFromFloat(
+    const Float &value,
+    YGUnit unit = YGUnitPoint) {
+  if (std::isnan(value)) {
     return YGValueUndefined;
   }
 
-  return {(float)value, YGUnitPoint};
+  return {(float)value, unit};
 }
 
 inline folly::Optional<Float> optionalFloatFromYogaValue(
@@ -103,7 +138,7 @@ inline LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
       layoutMetrics.borderWidth.bottom +
           floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeBottom))};
 
-  layoutMetrics.displayType = yogaNode.getStyle().display == YGDisplayNone
+  layoutMetrics.displayType = yogaNode.getStyle().display() == YGDisplayNone
       ? DisplayType::None
       : DisplayType::Flex;
 
@@ -141,12 +176,17 @@ inline void fromRawValue(const RawValue &value, YGDirection &result) {
     result = YGDirectionRTL;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGDirection:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, YGFlexDirection &result) {
   assert(value.hasType<std::string>());
   auto stringValue = (std::string)value;
+  if (stringValue == "row") {
+    result = YGFlexDirectionRow;
+    return;
+  }
   if (stringValue == "column") {
     result = YGFlexDirectionColumn;
     return;
@@ -155,15 +195,12 @@ inline void fromRawValue(const RawValue &value, YGFlexDirection &result) {
     result = YGFlexDirectionColumnReverse;
     return;
   }
-  if (stringValue == "row") {
-    result = YGFlexDirectionRow;
-    return;
-  }
   if (stringValue == "row-reverse") {
     result = YGFlexDirectionRowReverse;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGFlexDirection:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, YGJustify &result) {
@@ -193,7 +230,8 @@ inline void fromRawValue(const RawValue &value, YGJustify &result) {
     result = YGJustifySpaceEvenly;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGJustify:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, YGAlign &result) {
@@ -231,7 +269,8 @@ inline void fromRawValue(const RawValue &value, YGAlign &result) {
     result = YGAlignSpaceAround;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGAlign:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, YGPositionType &result) {
@@ -245,13 +284,14 @@ inline void fromRawValue(const RawValue &value, YGPositionType &result) {
     result = YGPositionTypeAbsolute;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGPositionType:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, YGWrap &result) {
   assert(value.hasType<std::string>());
   auto stringValue = (std::string)value;
-  if (stringValue == "no-wrap") {
+  if (stringValue == "nowrap") {
     result = YGWrapNoWrap;
     return;
   }
@@ -263,7 +303,8 @@ inline void fromRawValue(const RawValue &value, YGWrap &result) {
     result = YGWrapWrapReverse;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGWrap:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, YGOverflow &result) {
@@ -281,7 +322,8 @@ inline void fromRawValue(const RawValue &value, YGOverflow &result) {
     result = YGOverflowScroll;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGOverflow:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, YGDisplay &result) {
@@ -295,12 +337,11 @@ inline void fromRawValue(const RawValue &value, YGDisplay &result) {
     result = YGDisplayNone;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGDisplay:" << stringValue;
+  assert(false);
 }
 
-inline void fromRawValue(
-    const RawValue &value,
-    decltype(YGStyle{}.margin[0]) /* type is subject to change */ &result) {
+inline void fromRawValue(const RawValue &value, YGStyle::ValueRepr &result) {
   if (value.hasType<Float>()) {
     result = yogaStyleValueFromFloat((Float)value);
     return;
@@ -335,7 +376,24 @@ inline void fromRawValue(const RawValue &value, YGFloatOptional &result) {
       return;
     }
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGFloatOptional";
+  assert(false);
+}
+
+inline Float toRadians(const RawValue &value) {
+  if (value.hasType<Float>()) {
+    return (Float)value;
+  }
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
+  char *suffixStart;
+  double num = strtod(
+      stringValue.c_str(), &suffixStart); // can't use std::stod, probably
+                                          // because of old Android NDKs
+  if (0 == strncmp(suffixStart, "deg", 3)) {
+    return num * M_PI / 180;
+  }
+  return num; // assume suffix is "rad"
 }
 
 inline void fromRawValue(const RawValue &value, Transform &result) {
@@ -344,8 +402,7 @@ inline void fromRawValue(const RawValue &value, Transform &result) {
   auto configurations = (std::vector<RawValue>)value;
 
   for (const auto &configuration : configurations) {
-    auto configurationPair =
-        (std::unordered_map<std::string, RawValue>)configuration;
+    auto configurationPair = (better::map<std::string, RawValue>)configuration;
     auto pair = configurationPair.begin();
     auto operation = pair->first;
     auto &parameters = pair->second;
@@ -363,13 +420,13 @@ inline void fromRawValue(const RawValue &value, Transform &result) {
           transformMatrix * Transform::Perspective((Float)parameters);
     } else if (operation == "rotateX") {
       transformMatrix =
-          transformMatrix * Transform::Rotate((Float)parameters, 0, 0);
+          transformMatrix * Transform::Rotate(toRadians(parameters), 0, 0);
     } else if (operation == "rotateY") {
       transformMatrix =
-          transformMatrix * Transform::Rotate(0, (Float)parameters, 0);
-    } else if (operation == "rotateZ") {
+          transformMatrix * Transform::Rotate(0, toRadians(parameters), 0);
+    } else if (operation == "rotateZ" || operation == "rotate") {
       transformMatrix =
-          transformMatrix * Transform::Rotate(0, 0, (Float)parameters);
+          transformMatrix * Transform::Rotate(0, 0, toRadians(parameters));
     } else if (operation == "scale") {
       auto number = (Float)parameters;
       transformMatrix =
@@ -394,9 +451,11 @@ inline void fromRawValue(const RawValue &value, Transform &result) {
       transformMatrix =
           transformMatrix * Transform::Translate(0, (Float)parameters, 0);
     } else if (operation == "skewX") {
-      transformMatrix = transformMatrix * Transform::Skew((Float)parameters, 0);
+      transformMatrix =
+          transformMatrix * Transform::Skew(toRadians(parameters), 0);
     } else if (operation == "skewY") {
-      transformMatrix = transformMatrix * Transform::Skew(0, (Float)parameters);
+      transformMatrix =
+          transformMatrix * Transform::Skew(0, toRadians(parameters));
     }
   }
 
@@ -422,7 +481,27 @@ inline void fromRawValue(const RawValue &value, PointerEventsMode &result) {
     result = PointerEventsMode::BoxOnly;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse PointerEventsMode:" << stringValue;
+  assert(false);
+}
+
+inline void fromRawValue(const RawValue &value, BackfaceVisibility &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
+  if (stringValue == "auto") {
+    result = BackfaceVisibility::Auto;
+    return;
+  }
+  if (stringValue == "visible") {
+    result = BackfaceVisibility::Visible;
+    return;
+  }
+  if (stringValue == "hidden") {
+    result = BackfaceVisibility::Hidden;
+    return;
+  }
+  LOG(FATAL) << "Could not parse BackfaceVisibility:" << stringValue;
+  assert(false);
 }
 
 inline void fromRawValue(const RawValue &value, BorderStyle &result) {
@@ -440,7 +519,8 @@ inline void fromRawValue(const RawValue &value, BorderStyle &result) {
     result = BorderStyle::Dashed;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse BorderStyle:" << stringValue;
+  assert(false);
 }
 
 inline std::string toString(

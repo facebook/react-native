@@ -10,7 +10,7 @@
 'use strict';
 
 const {AnimatedEvent, attachNativeEvent} = require('./AnimatedEvent');
-const AnimatedImplementation = require('AnimatedImplementation');
+const AnimatedImplementation = require('./AnimatedImplementation');
 const AnimatedInterpolation = require('./nodes/AnimatedInterpolation');
 const AnimatedNode = require('./nodes/AnimatedNode');
 const AnimatedProps = require('./nodes/AnimatedProps');
@@ -52,14 +52,28 @@ const spring = function(
   value: AnimatedValue | AnimatedValueXY,
   config: SpringAnimationConfig,
 ): CompositeAnimation {
-  return emptyAnimation;
+  const anyValue: any = value;
+  return {
+    ...emptyAnimation,
+    start: (callback?: ?EndCallback): void => {
+      anyValue.setValue(config.toValue);
+      callback && callback({finished: true});
+    },
+  };
 };
 
 const timing = function(
   value: AnimatedValue | AnimatedValueXY,
   config: TimingAnimationConfig,
 ): CompositeAnimation {
-  return emptyAnimation;
+  const anyValue: any = value;
+  return {
+    ...emptyAnimation,
+    start: (callback?: ?EndCallback): void => {
+      anyValue.setValue(config.toValue);
+      callback && callback({finished: true});
+    },
+  };
 };
 
 const decay = function(

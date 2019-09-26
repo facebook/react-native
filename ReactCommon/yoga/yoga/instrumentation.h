@@ -28,9 +28,12 @@ public:
   typename Data::type data = {};
 
   template <typename Ret, typename... Args>
-  static Ret wrap(YGNodeRef node, Ret (*fn)(Args...), Args... args) {
+  static Ret wrap(
+      YGNodeRef node,
+      Ret (YGNode::*method)(Args...),
+      Args... args) {
     MarkerSection<MarkerType> section{node};
-    return fn(std::forward<Args>(args)...);
+    return (node->*method)(std::forward<Args>(args)...);
   }
 
 private:

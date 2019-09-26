@@ -67,6 +67,11 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 - (NSDictionary<NSAttributedStringKey, id> *)effectiveTextAttributes;
 
 /**
+ * Constructed paragraph style.
+ */
+- (NSParagraphStyle *_Nullable)effectiveParagraphStyle;
+
+/**
  * Constructed font.
  */
 - (UIFont *)effectiveFont;

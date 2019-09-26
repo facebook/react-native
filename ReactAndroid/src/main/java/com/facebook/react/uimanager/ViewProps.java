@@ -86,7 +86,6 @@ public class ViewProps {
   public static final String FONT_WEIGHT = "fontWeight";
   public static final String FONT_STYLE = "fontStyle";
   public static final String FONT_FAMILY = "fontFamily";
-  public static final String FONT_PATH = "fontPath";
   public static final String LINE_HEIGHT = "lineHeight";
   public static final String LETTER_SPACING = "letterSpacing";
   public static final String NEEDS_OFFSCREEN_ALPHA_COMPOSITING = "needsOffscreenAlphaCompositing";
@@ -238,13 +237,13 @@ public class ViewProps {
         }
         return true;
       case BORDER_LEFT_COLOR:
-        return map.getInt(BORDER_LEFT_COLOR) == Color.TRANSPARENT;
+        return !map.isNull(BORDER_LEFT_COLOR) && map.getInt(BORDER_LEFT_COLOR) == Color.TRANSPARENT;
       case BORDER_RIGHT_COLOR:
-        return map.getInt(BORDER_RIGHT_COLOR) == Color.TRANSPARENT;
+        return !map.isNull(BORDER_RIGHT_COLOR) && map.getInt(BORDER_RIGHT_COLOR) == Color.TRANSPARENT;
       case BORDER_TOP_COLOR:
-        return map.getInt(BORDER_TOP_COLOR) == Color.TRANSPARENT;
+        return !map.isNull(BORDER_TOP_COLOR) && map.getInt(BORDER_TOP_COLOR) == Color.TRANSPARENT;
       case BORDER_BOTTOM_COLOR:
-        return map.getInt(BORDER_BOTTOM_COLOR) == Color.TRANSPARENT;
+        return !map.isNull(BORDER_BOTTOM_COLOR) && map.getInt(BORDER_BOTTOM_COLOR) == Color.TRANSPARENT;
       case BORDER_WIDTH:
         return map.isNull(BORDER_WIDTH) || map.getDouble(BORDER_WIDTH) == 0d;
       case BORDER_LEFT_WIDTH:

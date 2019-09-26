@@ -10,6 +10,10 @@
 #import <Foundation/NSMapTable.h>
 #import <React/RCTAssert.h>
 
+#import "RCTImageComponentView.h"
+#import "RCTParagraphComponentView.h"
+#import "RCTViewComponentView.h"
+
 using namespace facebook::react;
 
 #define LEGACY_UIMANAGER_INTEGRATION_ENABLED 1
@@ -87,9 +91,36 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
                                              selector:@selector(handleApplicationDidReceiveMemoryWarningNotification)
                                                  name:UIApplicationDidReceiveMemoryWarningNotification
                                                object:nil];
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      // Calling this a bit later, when the main thread is probably idle while JavaScript thread is busy.
+      [self preallocateViewComponents];
+    });
   }
 
   return self;
+}
+
+- (void)preallocateViewComponents
+{
+  // This data is based on empirical evidence which should represent the reality pretty well.
+  // Regular `<View>` has magnitude equals to `1` by definition.
+  std::vector<std::pair<ComponentHandle, float>> componentMagnitudes = {
+      {[RCTViewComponentView componentDescriptorProvider].handle, 1},
+      {[RCTImageComponentView componentDescriptorProvider].handle, 0.3},
+      {[RCTParagraphComponentView componentDescriptorProvider].handle, 0.3},
+  };
+
+  // `complexity` represents the complexity of a typical surface in a number of `<View>` components (with Flattening
+  // enabled).
+  float complexity = 100;
+
+  // The whole process should not take more than 10ms in the worst case, so there is no need to split it up.
+  for (const auto &componentMagnitude : componentMagnitudes) {
+    for (int i = 0; i < complexity * componentMagnitude.second; i++) {
+      [self optimisticallyCreateComponentViewWithComponentHandle:componentMagnitude.first];
+    }
+  }
 }
 
 - (void)dealloc
@@ -174,8 +205,6 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
                                    componentView:(UIView<RCTComponentViewProtocol> *)componentView
 {
   RCTAssertMainQueue();
-  [componentView prepareForRecycle];
-
   NSHashTable<UIView<RCTComponentViewProtocol> *> *componentViews =
       [_recyclePool objectForKey:(__bridge id)(void *)componentHandle];
   if (!componentViews) {
@@ -187,6 +216,7 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
     return;
   }
 
+  [componentView prepareForRecycle];
   [componentViews addObject:componentView];
 }
 

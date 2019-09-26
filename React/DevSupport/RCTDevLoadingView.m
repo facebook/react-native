@@ -96,7 +96,8 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(RCTUIColor *)color back
       // set a root VC so rotation is supported
       self->_window.rootViewController = [UIViewController new];
 
-      self->_label.font = [UIFont systemFontOfSize:12.0];
+      self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0
+                                                           weight:UIFontWeightRegular];
       self->_label.textAlignment = NSTextAlignmentCenter;
 #elif TARGET_OS_OSX // [TODO(macOS ISS#2323203)
       NSRect screenFrame = [NSScreen mainScreen].visibleFrame;

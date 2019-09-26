@@ -7,7 +7,7 @@
 package com.facebook.react.views.checkbox;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatCheckBox;
+import androidx.appcompat.widget.AppCompatCheckBox;
 
 /** CheckBox that has its value controlled by JS. */
 /*package*/ class ReactCheckBox extends AppCompatCheckBox {

@@ -10,8 +10,8 @@ package com.facebook.react.uimanager;
 import static org.mockito.Mockito.mock;
 
 import android.content.Context;
-import android.support.v4.view.ViewCompat;
-import com.facebook.react.uimanager.AccessibilityDelegateUtil.AccessibilityRole;
+import androidx.core.view.ViewCompat;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.react.R;

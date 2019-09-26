@@ -52,7 +52,7 @@ static RCTFontWeight weightOfFont(UIFont *font)
     ];
   });
 
-  for (NSInteger i = 0; i < fontNames.count; i++) {
+  for (NSInteger i = 0; i < 0 || i < (unsigned)fontNames.count; i++) {
     if ([font.fontName.lowercaseString hasSuffix:fontNames[i]]) {
       return (RCTFontWeight)[fontWeights[i] doubleValue];
     }
@@ -126,12 +126,12 @@ static NSString *FontWeightDescriptionFromUIFontWeight(UIFontWeight fontWeight)
 static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
 {
   static NSCache *fontCache;
-  static std::mutex fontCacheMutex;
+  static std::mutex *fontCacheMutex = new std::mutex;
 
   NSString *cacheKey = [NSString stringWithFormat:@"%.1f/%.2f", size, weight];
   UIFont *font;
   {
-    std::lock_guard<std::mutex> lock(fontCacheMutex);
+    std::lock_guard<std::mutex> lock(*fontCacheMutex);
     if (!fontCache) {
       fontCache = [NSCache new];
     }
@@ -149,19 +149,11 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
       font = [UIFont systemFontOfSize:size weight:weight];
 #pragma clang diagnostic pop // TODO(OSS Candidate ISS#2710739)
     } else {
-      if (weight >= UIFontWeightBold) {
-        font = [UIFont boldSystemFontOfSize:size];
-      } else if (weight >= UIFontWeightMedium) {
-        font = [UIFont fontWithName:@"HelveticaNeue-Medium" size:size];
-      } else if (weight <= UIFontWeightLight) {
-        font = [UIFont fontWithName:@"HelveticaNeue-Light" size:size];
-      } else {
-        font = [UIFont systemFontOfSize:size];
-      }
+      font = [UIFont systemFontOfSize:size weight:weight];
     }
 
     {
-      std::lock_guard<std::mutex> lock(fontCacheMutex);
+      std::lock_guard<std::mutex> lock(*fontCacheMutex);
       [fontCache setObject:font forKey:cacheKey];
     }
   }

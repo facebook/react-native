@@ -10,7 +10,7 @@
 
 'use strict';
 
-jest.unmock('NativeModules');
+jest.unmock('../NativeModules');
 
 let BatchedBridge;
 let NativeModules;
@@ -41,8 +41,8 @@ describe('MessageQueue', function() {
     jest.resetModules();
 
     global.__fbBatchedBridgeConfig = require('MessageQueueTestConfig');
-    BatchedBridge = require('BatchedBridge');
-    NativeModules = require('NativeModules');
+    BatchedBridge = require('../BatchedBridge');
+    NativeModules = require('../NativeModules');
   });
 
   it('should generate native modules', () => {

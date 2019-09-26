@@ -9,11 +9,12 @@
  */
 'use strict';
 
-const RCTImageStoreManager = require('NativeModules').ImageStoreManager;
+const RCTImageStoreManager = require('../BatchedBridge/NativeModules')
+  .ImageStoreManager;
 
-const Platform = require('Platform');
+const Platform = require('../Utilities/Platform');
 
-const warnOnce = require('warnOnce');
+const warnOnce = require('../Utilities/warnOnce');
 
 function warnUnimplementedMethod(methodName: string): void {
   warnOnce(

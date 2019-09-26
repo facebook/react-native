@@ -130,12 +130,19 @@ export type ScrollEvent = SyntheticEvent<
       y: number,
       x: number,
     |}>,
-    zoomScale: number,
+    zoomScale?: number,
+    responderIgnoreScroll?: boolean,
   |}>,
 >;
 
 export type SwitchChangeEvent = SyntheticEvent<
   $ReadOnly<{|
     value: boolean,
+  |}>,
+>;
+
+export type KeyboardEvent = SyntheticEvent<
+  $ReadOnly<{|
+    key: string,
   |}>,
 >;

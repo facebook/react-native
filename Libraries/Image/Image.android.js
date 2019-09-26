@@ -10,26 +10,26 @@
 
 'use strict';
 
-const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
-const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
-const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const ImageViewNativeComponent = require('ImageViewNativeComponent');
-const NativeModules = require('NativeModules');
+const DeprecatedImageStylePropTypes = require('../DeprecatedPropTypes/DeprecatedImageStylePropTypes');
+const DeprecatedStyleSheetPropType = require('../DeprecatedPropTypes/DeprecatedStyleSheetPropType');
+const DeprecatedViewPropTypes = require('../DeprecatedPropTypes/DeprecatedViewPropTypes');
+const ImageViewNativeComponent = require('./ImageViewNativeComponent');
+const NativeModules = require('../BatchedBridge/NativeModules');
 const PropTypes = require('prop-types');
-const React = require('React');
-const ReactNative = require('ReactNative'); // eslint-disable-line no-unused-vars
-const StyleSheet = require('StyleSheet');
-const TextAncestor = require('TextAncestor');
+const React = require('react');
+const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const TextAncestor = require('../Text/TextAncestor');
 
-const flattenStyle = require('flattenStyle');
-const merge = require('merge');
-const resolveAssetSource = require('resolveAssetSource');
+const flattenStyle = require('../StyleSheet/flattenStyle');
+const merge = require('../vendor/core/merge');
+const resolveAssetSource = require('./resolveAssetSource');
 
 const {ImageLoader} = NativeModules;
 
-const TextInlineImageNativeComponent = require('TextInlineImageNativeComponent');
+const TextInlineImageNativeComponent = require('./TextInlineImageNativeComponent');
 
-import type {ImageProps as ImagePropsType} from 'ImageProps';
+import type {ImageProps as ImagePropsType} from './ImageProps';
 
 let _requestId = 1;
 function generateRequestId() {
@@ -123,12 +123,41 @@ const ImageProps = {
   ]),
 };
 
+/**
+ * Retrieve the width and height (in pixels) of an image prior to displaying it
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#getsize
+ */
 function getSize(
   url: string,
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
 ) {
   return ImageLoader.getSize(url)
+    .then(function(sizes) {
+      success(sizes.width, sizes.height);
+    })
+    .catch(
+      failure ||
+        function() {
+          console.warn('Failed to get size for image: ' + url);
+        },
+    );
+}
+
+/**
+ * Retrieve the width and height (in pixels) of an image prior to displaying it
+ * with the ability to provide the headers for the request
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#getsizewithheaders
+ */
+function getSizeWithHeaders(
+  url: string,
+  headers: {[string]: string},
+  success: (width: number, height: number) => void,
+  failure?: (error: any) => void,
+) {
+  return ImageLoader.getSizeWithHeaders(url, headers)
     .then(function(sizes) {
       success(sizes.width, sizes.height);
     })
@@ -157,14 +186,13 @@ function abortPrefetch(requestId: number) {
  */
 async function queryCache(
   urls: Array<string>,
-): Promise<Map<string, 'memory' | 'disk'>> {
+): Promise<{[string]: 'memory' | 'disk' | 'disk/memory'}> {
   return await ImageLoader.queryCache(urls);
 }
 
-declare class ImageComponentType extends ReactNative.NativeComponent<
-  ImagePropsType,
-> {
+declare class ImageComponentType extends ReactNative.NativeComponent<ImagePropsType> {
   static getSize: typeof getSize;
+  static getSizeWithHeaders: typeof getSizeWithHeaders;
   static prefetch: typeof prefetch;
   static abortPrefetch: typeof abortPrefetch;
   static queryCache: typeof queryCache;
@@ -270,6 +298,17 @@ Image.displayName = 'Image';
  * error found when Flow v0.89 was deployed. To see the error, delete this
  * comment and run Flow. */
 Image.getSize = getSize;
+
+/**
+ * Retrieve the width and height (in pixels) of an image prior to displaying it
+ * with the ability to provide the headers for the request
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#getsizewithheaders
+ */
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+Image.getSizeWithHeaders = getSizeWithHeaders;
 
 /**
  * Prefetches a remote image for later use by downloading it to the disk

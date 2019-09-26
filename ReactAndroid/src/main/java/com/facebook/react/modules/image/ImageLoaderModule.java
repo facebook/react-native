@@ -22,6 +22,7 @@ import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -30,8 +31,10 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.views.imagehelper.ImageSource;
 
 @ReactModule(name = ImageLoaderModule.NAME)
 public class ImageLoaderModule extends ReactContextBaseJavaModule implements
@@ -77,8 +80,69 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
       return;
     }
 
-    Uri uri = Uri.parse(uriString);
-    ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri).build();
+    ImageSource source = new ImageSource(getReactApplicationContext(), uriString);
+    ImageRequest request = ImageRequestBuilder.newBuilderWithSource(source.getUri()).build();
+
+    DataSource<CloseableReference<CloseableImage>> dataSource =
+      Fresco.getImagePipeline().fetchDecodedImage(request, mCallerContext);
+
+    DataSubscriber<CloseableReference<CloseableImage>> dataSubscriber =
+      new BaseDataSubscriber<CloseableReference<CloseableImage>>() {
+        @Override
+        protected void onNewResultImpl(
+            DataSource<CloseableReference<CloseableImage>> dataSource) {
+          if (!dataSource.isFinished()) {
+            return;
+          }
+          CloseableReference<CloseableImage> ref = dataSource.getResult();
+          if (ref != null) {
+            try {
+              CloseableImage image = ref.get();
+
+              WritableMap sizes = Arguments.createMap();
+              sizes.putInt("width", image.getWidth());
+              sizes.putInt("height", image.getHeight());
+
+              promise.resolve(sizes);
+            } catch (Exception e) {
+              promise.reject(ERROR_GET_SIZE_FAILURE, e);
+            } finally {
+              CloseableReference.closeSafely(ref);
+            }
+          } else {
+            promise.reject(ERROR_GET_SIZE_FAILURE);
+          }
+        }
+
+        @Override
+        protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
+          promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.getFailureCause());
+        }
+      };
+    dataSource.subscribe(dataSubscriber, CallerThreadExecutor.getInstance());
+  }
+
+  /**
+   * Fetch the width and height of the given image with headers.
+   *
+   * @param uriString the URI of the remote image to prefetch
+   * @param headers headers send with the request
+   * @param promise the promise that is fulfilled when the image is successfully prefetched
+   *                or rejected when there is an error
+   */
+  @ReactMethod
+  public void getSizeWithHeaders(
+      final String uriString,
+      final ReadableMap headers,
+      final Promise promise) {
+    if (uriString == null || uriString.isEmpty()) {
+      promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI");
+      return;
+    }
+
+    ImageSource source = new ImageSource(getReactApplicationContext(), uriString);
+    ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(source.getUri());
+    ImageRequest request = ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers);
 
     DataSource<CloseableReference<CloseableImage>> dataSource =
       Fresco.getImagePipeline().fetchDecodedImage(request, mCallerContext);

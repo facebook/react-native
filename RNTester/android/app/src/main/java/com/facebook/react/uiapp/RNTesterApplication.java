@@ -22,12 +22,13 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.v8executor.V8ExecutorFactory;
 import com.facebook.react.jscexecutor.JSCExecutorFactory;
+import com.facebook.react.views.text.ReactFontManager;
+
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Nullable;
 
 import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriendlyDeviceName;
 
@@ -57,7 +58,7 @@ public class RNTesterApplication extends Application implements ReactApplication
     }
 
     @Override
-    public @Nullable String getBundleAssetName() {
+    public String getBundleAssetName() {
       return "RNTesterApp.android.bundle";
     }
 
@@ -97,6 +98,12 @@ public class RNTesterApplication extends Application implements ReactApplication
       }
     }
   };
+
+  @Override
+  public void onCreate() {
+    ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik);
+    super.onCreate();
+  }
 
   @Override
   public ReactNativeHost getReactNativeHost() {

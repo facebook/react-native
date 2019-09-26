@@ -9,7 +9,7 @@
 
 'use strict';
 
-const PooledClass = require('PooledClass');
+const PooledClass = require('./PooledClass');
 
 const twoArgumentPooler = PooledClass.twoArgumentPooler;
 

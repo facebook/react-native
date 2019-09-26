@@ -31,8 +31,12 @@
 {
   NSURL *scriptURL;
   if (getenv("CI_USE_PACKAGER")) {
+    NSString *bundlePrefix = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"RN_BUNDLE_PREFIX"];
+    if (bundlePrefix == nil) { // [TODO(macOS ISS#2323203) There's a convoluted crash if the bundler prefix is null, meaning the RN_BUNDLE_PREFIX wasn't set. New platforms won't have this set and don't need it to run, so default to a reasonable fallback.
+      bundlePrefix = @"";
+    } // TODO(macOS ISS#2323203)]
     NSString *app = @"IntegrationTests/IntegrationTestsApp";
-    scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=%@&dev=true", app, kRCTPlatformName]];
+    scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@%@.bundle?platform=ios&dev=true", bundlePrefix, app]];
   } else {
     scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
   }

@@ -26,7 +26,7 @@ ColorComponents colorComponentsFromColor(SharedColor color) {
     return ColorComponents{0, 0, 0, 0};
   }
 
-  auto numberOfComponents = CGColorGetNumberOfComponents(color.get());
+  auto numberOfComponents __unused = CGColorGetNumberOfComponents(color.get());
   assert(numberOfComponents == 4);
   const CGFloat *components = CGColorGetComponents(color.get());
   return ColorComponents{(float)components[0],

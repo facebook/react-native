@@ -15,7 +15,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import android.app.Application;
-import android.support.test.InstrumentationRegistry;
 import android.test.AndroidTestCase;
 import android.view.View;
 import android.view.ViewGroup;
@@ -164,7 +163,9 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
   }
 
   public void waitForIdleSync() {
-    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+    return;
+    // TODO: re-enable after cleanup of android-x migration
+    //InstrumentationRegistry.getInstrumentation().waitForIdleSync();
   }
 
   public void waitForBridgeAndUIIdle() {

@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   Modal,
   Picker,
@@ -21,7 +20,7 @@ const {
   Text,
   TouchableHighlight,
   View,
-} = ReactNative;
+} = require('react-native');
 
 const Item = Picker.Item;
 

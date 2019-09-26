@@ -16,7 +16,7 @@ If you are making a new change then one of the following should be done:
 - [ ] I am making a fix / change for the macOS implementation of react-native
 - [ ] I am making a change required for Microsoft usage of react-native
 
-#### Description of changes
+<!-- Help reviewers and the release process by writing your own changelog entry. See https://github.com/facebook/react-native/wiki/Changelog for an example. -->
 
 (give an overview)
 

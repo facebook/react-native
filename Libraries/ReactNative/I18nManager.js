@@ -17,7 +17,8 @@ type I18nManagerStatus = {
   swapLeftAndRightInRTL: (flipStyles: boolean) => {},
 };
 
-const I18nManager: I18nManagerStatus = require('NativeModules').I18nManager || {
+const I18nManager: I18nManagerStatus = require('../BatchedBridge/NativeModules')
+  .I18nManager || {
   isRTL: false,
   doLeftAndRightSwapInRTL: true,
   allowRTL: () => {},

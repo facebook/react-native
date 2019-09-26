@@ -6,7 +6,7 @@
  */
 package com.facebook.react.fabric.mounting.mountitems;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -26,7 +26,6 @@ public class DispatchCommandMountItem implements MountItem {
 
   @Override
   public void execute(MountingManager mountingManager) {
-    UiThreadUtil.assertOnUiThread();
     mountingManager.receiveCommand(mReactTag, mCommandId, mCommandArgs);
   }
 

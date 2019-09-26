@@ -10,8 +10,8 @@ fb_native.sh_binary(
     resources = [
         "buck_tests/copy-fixture.js",
         "buck_tests/copy_fixture.sh",
+        "fbsource//xplat/js:setup_env",
         "src/generators/__test_fixtures__/fixtures.js",
-        "xplat//js:setup_env",
     ],
 )
 
@@ -21,7 +21,7 @@ fb_native.sh_binary(
     resources = [
         "buck_tests/combine-js-to-schema.js",
         "buck_tests/combine_js_to_schema.sh",
-        "xplat//js:setup_env",
+        "fbsource//xplat/js:setup_env",
     ],
     visibility = ["PUBLIC"],
 )
@@ -37,42 +37,62 @@ fb_native.sh_binary(
     ) + [
         "buck_tests/generate-tests.js",
         "package.json",
-        "xplat//js:setup_env",
+        "fbsource//xplat/js:setup_env",
         "yarn.lock",
     ],
     visibility = ["PUBLIC"],
 )
 
 rn_codegen_test(
-    fixture_name = "SINGLE_COMPONENT_WITH_BOOLEAN_PROP",
+    fixture_name = "INTERFACE_ONLY",
 )
 
 rn_codegen_test(
-    fixture_name = "SINGLE_COMPONENT_WITH_STRING_PROP",
+    fixture_name = "BOOLEAN_PROP",
 )
 
 rn_codegen_test(
-    fixture_name = "SINGLE_COMPONENT_WITH_INTEGER_PROPS",
+    fixture_name = "STRING_PROP",
 )
 
 rn_codegen_test(
-    fixture_name = "SINGLE_COMPONENT_WITH_FLOAT_PROPS",
+    fixture_name = "INTEGER_PROPS",
 )
 
 rn_codegen_test(
-    fixture_name = "SINGLE_COMPONENT_WITH_COLOR_PROP",
+    fixture_name = "FLOAT_PROPS",
 )
 
 rn_codegen_test(
-    fixture_name = "SINGLE_COMPONENT_WITH_ENUM_PROP",
+    fixture_name = "COLOR_PROP",
 )
 
 rn_codegen_test(
-    fixture_name = "SINGLE_COMPONENT_WITH_EVENT_PROPS",
+    fixture_name = "IMAGE_PROP",
 )
 
 rn_codegen_test(
-    fixture_name = "SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS",
+    fixture_name = "POINT_PROP",
+)
+
+rn_codegen_test(
+    fixture_name = "ARRAY_PROPS",
+)
+
+rn_codegen_test(
+    fixture_name = "MULTI_NATIVE_PROP",
+)
+
+rn_codegen_test(
+    fixture_name = "ENUM_PROP",
+)
+
+rn_codegen_test(
+    fixture_name = "EVENT_PROPS",
+)
+
+rn_codegen_test(
+    fixture_name = "EVENT_NESTED_OBJECT_PROPS",
 )
 
 rn_codegen_test(
@@ -99,14 +119,19 @@ fb_xplat_cxx_binary(
     ],
     visibility = ["PUBLIC"],
     deps = [
-        ":generated_components-SINGLE_COMPONENT_WITH_BOOLEAN_PROP",
-        ":generated_components-SINGLE_COMPONENT_WITH_COLOR_PROP",
-        ":generated_components-SINGLE_COMPONENT_WITH_ENUM_PROP",
-        ":generated_components-SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS",
-        ":generated_components-SINGLE_COMPONENT_WITH_EVENT_PROPS",
-        ":generated_components-SINGLE_COMPONENT_WITH_FLOAT_PROPS",
-        ":generated_components-SINGLE_COMPONENT_WITH_INTEGER_PROPS",
-        ":generated_components-SINGLE_COMPONENT_WITH_STRING_PROP",
+        ":generated_components-ARRAY_PROPS",
+        ":generated_components-BOOLEAN_PROP",
+        ":generated_components-COLOR_PROP",
+        ":generated_components-ENUM_PROP",
+        ":generated_components-EVENT_NESTED_OBJECT_PROPS",
+        ":generated_components-EVENT_PROPS",
+        ":generated_components-FLOAT_PROPS",
+        ":generated_components-IMAGE_PROP",
+        ":generated_components-INTEGER_PROPS",
+        ":generated_components-INTERFACE_ONLY",
+        ":generated_components-MULTI_NATIVE_PROP",
+        ":generated_components-POINT_PROP",
+        ":generated_components-STRING_PROP",
         ":generated_components-TWO_COMPONENTS_DIFFERENT_FILES",
         ":generated_components-TWO_COMPONENTS_SAME_FILE",
     ],
@@ -131,14 +156,19 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        ":generated_components-SINGLE_COMPONENT_WITH_BOOLEAN_PROP",
-        ":generated_components-SINGLE_COMPONENT_WITH_COLOR_PROP",
-        ":generated_components-SINGLE_COMPONENT_WITH_ENUM_PROP",
-        ":generated_components-SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS",
-        ":generated_components-SINGLE_COMPONENT_WITH_EVENT_PROPS",
-        ":generated_components-SINGLE_COMPONENT_WITH_FLOAT_PROPS",
-        ":generated_components-SINGLE_COMPONENT_WITH_INTEGER_PROPS",
-        ":generated_components-SINGLE_COMPONENT_WITH_STRING_PROP",
+        ":generated_components-ARRAY_PROPS",
+        ":generated_components-BOOLEAN_PROP",
+        ":generated_components-COLOR_PROP",
+        ":generated_components-ENUM_PROP",
+        ":generated_components-EVENT_NESTED_OBJECT_PROPS",
+        ":generated_components-EVENT_PROPS",
+        ":generated_components-FLOAT_PROPS",
+        ":generated_components-IMAGE_PROP",
+        ":generated_components-INTEGER_PROPS",
+        ":generated_components-INTERFACE_ONLY",
+        ":generated_components-MULTI_NATIVE_PROP",
+        ":generated_components-POINT_PROP",
+        ":generated_components-STRING_PROP",
         ":generated_components-TWO_COMPONENTS_DIFFERENT_FILES",
         ":generated_components-TWO_COMPONENTS_SAME_FILE",
     ],

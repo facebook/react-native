@@ -54,6 +54,10 @@ class BasicSwitchExample extends React.Component<
           <Switch
             testID="on-off-initial-off"
             onValueChange={value => this.setState({falseSwitchIsOn: value})}
+            trackColor={{
+              true: 'yellow',
+              false: 'purple',
+            }}
             value={this.state.falseSwitchIsOn}
           />
           <OnOffIndicator

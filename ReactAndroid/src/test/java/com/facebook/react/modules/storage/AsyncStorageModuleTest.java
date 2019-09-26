@@ -55,7 +55,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
  * Tests for {@link AsyncStorageModule}.
  */
 @PrepareForTest({Arguments.class})
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*", "org.json.*"})
 @RunWith(RobolectricTestRunner.class)
 public class AsyncStorageModuleTest {
 

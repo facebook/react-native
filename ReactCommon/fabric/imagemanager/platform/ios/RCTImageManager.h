@@ -21,8 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithImageLoader:(RCTImageLoader *)imageLoader;
 
-- (facebook::react::ImageRequest)requestImage:
-    (const facebook::react::ImageSource &)imageSource;
+- (facebook::react::ImageRequest)requestImage:(facebook::react::ImageSource)imageSource;
 
 @end
 

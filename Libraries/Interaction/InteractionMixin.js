@@ -10,7 +10,7 @@
 
 'use strict';
 
-const InteractionManager = require('InteractionManager');
+const InteractionManager = require('./InteractionManager');
 
 /**
  * This mixin provides safe versions of InteractionManager start/end methods

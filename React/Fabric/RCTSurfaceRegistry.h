@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class RCTFabricSurface;
 
+typedef void(^RCTSurfaceEnumeratorBlock)(NSEnumerator<RCTFabricSurface *> *enumerator);
+
 /**
  * Registry of Surfaces.
  * Incapsulates storing Surface objects and quering them by root tag.
@@ -21,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTSurfaceRegistry : NSObject
 
-- (NSEnumerator<RCTFabricSurface *> *)enumerator;
+- (void)enumerateWithBlock:(RCTSurfaceEnumeratorBlock)block;
 
 /**
  * Adds Surface object into the registry.

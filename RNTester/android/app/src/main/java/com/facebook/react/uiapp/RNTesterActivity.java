@@ -8,9 +8,6 @@
 
 package com.facebook.react.uiapp;
 
-import android.app.Activity;
-import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.system.ErrnoException;
 import android.system.Os;

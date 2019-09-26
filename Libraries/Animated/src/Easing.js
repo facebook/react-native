@@ -216,7 +216,7 @@ class Easing {
     x2: number,
     y2: number,
   ): (t: number) => number {
-    const _bezier = require('bezier');
+    const _bezier = require('./bezier');
     return _bezier(x1, y1, x2, y2);
   }
 

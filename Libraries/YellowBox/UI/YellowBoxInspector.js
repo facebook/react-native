@@ -10,23 +10,23 @@
 
 'use strict';
 
-const Platform = require('Platform');
-const React = require('React');
-const ScrollView = require('ScrollView');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const View = require('View');
-const YellowBoxCategory = require('YellowBoxCategory');
-const YellowBoxInspectorFooter = require('YellowBoxInspectorFooter');
-const YellowBoxInspectorHeader = require('YellowBoxInspectorHeader');
-const YellowBoxInspectorSourceMapStatus = require('YellowBoxInspectorSourceMapStatus');
-const YellowBoxInspectorStackFrame = require('YellowBoxInspectorStackFrame');
-const YellowBoxStyle = require('YellowBoxStyle');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
+const ScrollView = require('../../Components/ScrollView/ScrollView');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const Text = require('../../Text/Text');
+const View = require('../../Components/View/View');
+const YellowBoxCategory = require('../Data/YellowBoxCategory');
+const YellowBoxInspectorFooter = require('./YellowBoxInspectorFooter');
+const YellowBoxInspectorHeader = require('./YellowBoxInspectorHeader');
+const YellowBoxInspectorSourceMapStatus = require('./YellowBoxInspectorSourceMapStatus');
+const YellowBoxInspectorStackFrame = require('./YellowBoxInspectorStackFrame');
+const YellowBoxStyle = require('./YellowBoxStyle');
 
-const openFileInEditor = require('openFileInEditor');
+const openFileInEditor = require('../../Core/Devtools/openFileInEditor');
 
-import type YellowBoxWarning from 'YellowBoxWarning';
-import type {SymbolicationRequest} from 'YellowBoxWarning';
+import type YellowBoxWarning from '../Data/YellowBoxWarning';
+import type {SymbolicationRequest} from '../Data/YellowBoxWarning';
 
 type Props = $ReadOnly<{|
   onDismiss: () => void,

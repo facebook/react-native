@@ -10,12 +10,12 @@
 
 'use strict';
 
-const ProgressBar = require('ProgressBarAndroid');
-const React = require('React');
-const RNTesterBlock = require('RNTesterBlock');
-const RNTesterPage = require('RNTesterPage');
+const React = require('react');
+const {ProgressBarAndroid: ProgressBar} = require('react-native');
+const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterPage = require('./RNTesterPage');
 
-import type {ProgressBarAndroidProps} from 'ProgressBarAndroid';
+import type {ProgressBarAndroidProps} from '../../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 
 type MovingBarProps = $ReadOnly<{|
   ...$Diff<
@@ -62,7 +62,7 @@ class ProgressBarAndroidExample extends React.Component<{}> {
       <RNTesterPage title="ProgressBar Examples">
         <RNTesterBlock title="Horizontal Indeterminate ProgressBar">
           {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-            * found when making Flow check .android.js files. */}
+           * found when making Flow check .android.js files. */}
           <ProgressBar styleAttr="Horizontal" />
         </RNTesterBlock>
 
@@ -72,7 +72,7 @@ class ProgressBarAndroidExample extends React.Component<{}> {
 
         <RNTesterBlock title="Horizontal Black Indeterminate ProgressBar">
           {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-            * found when making Flow check .android.js files. */}
+           * found when making Flow check .android.js files. */}
           <ProgressBar styleAttr="Horizontal" color="black" />
         </RNTesterBlock>
 

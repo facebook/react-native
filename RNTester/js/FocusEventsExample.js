@@ -12,7 +12,7 @@
 
 var React = require('react');
 var ReactNative = require('react-native');
-var Platform = require('Platform');
+import Platform from '../../Libraries/Utilities/Platform';
 var {StyleSheet, Text, View, TextInput} = ReactNative;
 
 type State = {

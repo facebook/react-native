@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<SafeAreaView /> should render as <SafeAreaView> when mocked 1`] = `
+<RCTSafeAreaView
+  emulateUnlessSupported={true}
+>
+  <View>
+    <Text>
+      Hello World!
+    </Text>
+  </View>
+</RCTSafeAreaView>
+`;
+
+exports[`<SafeAreaView /> should render as <SafeAreaView> when not mocked 1`] = `
+<RCTSafeAreaView
+  emulateUnlessSupported={true}
+>
+  <View>
+    <Text>
+      Hello World!
+    </Text>
+  </View>
+</RCTSafeAreaView>
+`;
+
+exports[`<SafeAreaView /> should shallow render as <ForwardRef(SafeAreaView)> when mocked 1`] = `
+<ForwardRef(_SafeAreaView)>
+  <View>
+    <Text>
+      Hello World!
+    </Text>
+  </View>
+</ForwardRef(_SafeAreaView)>
+`;
+
+exports[`<SafeAreaView /> should shallow render as <ForwardRef(SafeAreaView)> when not mocked 1`] = `
+<ForwardRef(_SafeAreaView)>
+  <View>
+    <Text>
+      Hello World!
+    </Text>
+  </View>
+</ForwardRef(_SafeAreaView)>
+`;

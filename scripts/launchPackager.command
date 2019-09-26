@@ -13,5 +13,7 @@ THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOUR
 # shellcheck source=/dev/null
 . "$THIS_DIR/packager.sh"
 
-echo "Process terminated. Press <enter> to close the window"
-read -r
+if [[ -z "$CI" ]]; then
+  echo "Process terminated. Press <enter> to close the window"
+  read -r
+fi

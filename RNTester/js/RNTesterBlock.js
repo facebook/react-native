@@ -12,7 +12,7 @@
 
 const React = require('react');
 const {StyleSheet, Text, View} = require('react-native');
-const Platform = require('Platform'); // TODO(macOS ISS#2323203)
+import Platform from '../../Libraries/Utilities/Platform'; // TODO(macOS ISS#2323203)
 
 type Props = $ReadOnly<{|
   children?: React.Node,

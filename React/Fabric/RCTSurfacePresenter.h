@@ -10,14 +10,24 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTComponentViewFactory.h>
-#import <react/uimanager/ContextContainer.h>
 #import <React/RCTPrimitives.h>
 #import <react/config/ReactNativeConfig.h>
+#import <react/utils/ContextContainer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class RCTFabricSurface;
 @class RCTMountingManager;
+
+@protocol RCTSurfacePresenterObserver <NSObject>
+
+@optional
+
+- (void)willMountComponentsWithRootTag:(ReactTag)rootTag;
+
+- (void)didMountComponentsWithRootTag:(ReactTag)rootTag;
+
+@end
 
 /**
  * Coordinates presenting of React Native Surfaces and represents application
@@ -31,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
                         config:(std::shared_ptr<const facebook::react::ReactNativeConfig>)config;
 
 @property (nonatomic, readonly) RCTComponentViewFactory *componentViewFactory;
-@property (nonatomic, readonly) facebook::react::SharedContextContainer contextContainer;
+@property (nonatomic, readonly) facebook::react::ContextContainer::Shared contextContainer;
 
 @end
 
@@ -66,14 +76,11 @@ NS_ASSUME_NONNULL_BEGIN
            maximumSize:(CGSize)maximumSize
                surface:(RCTFabricSurface *)surface;
 
-@end
+- (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
 
-@interface RCTSurfacePresenter (Deprecated)
+- (void)addObserver:(id<RCTSurfacePresenterObserver>)observer;
 
-/**
- * Returns a underlying bridge.
- */
-- (RCTBridge *)bridge_DO_NOT_USE;
+- (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer;
 
 @end
 

@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const Platform = require('Platform'); // TODO(OSS Candidate ISS#2710739)
+import Platform from '../../Libraries/Utilities/Platform'; // TODO(OSS Candidate ISS#2710739)
 const {ScrollView, StyleSheet, View} = require('react-native');
 
 const RNTesterTitle = require('./RNTesterTitle');

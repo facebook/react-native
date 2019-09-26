@@ -7,6 +7,8 @@
 
 package com.facebook.react.uimanager;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 import android.view.View;
@@ -39,6 +41,10 @@ public class ReactStylesDiffMap {
 
   public ReactStylesDiffMap(ReadableMap props) {
     mBackingMap = props;
+  }
+
+  public Map<String, Object> toMap () {
+    return mBackingMap.toHashMap();
   }
 
   public boolean hasKey(String name) {

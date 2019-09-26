@@ -14,12 +14,13 @@
 #import <React/RCTLog.h>
 #import <React/RCTNetworkTask.h>
 #import <React/RCTNetworking.h>
-#import <React/RCTURLRequestHandler.h>
 #import <React/RCTUtils.h>
 
 #import "RCTHTTPRequestHandler.h"
 
 typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSDictionary<NSString *, id> *result);
+
+NSString *const RCTNetworkingPHUploadHackScheme = @"ph-upload";
 
 @interface RCTNetworking ()
 
@@ -76,6 +77,16 @@ static NSString *RCTGenerateFormBoundary()
   _callback = callback;
   _multipartBody = [NSMutableData new];
   _boundary = RCTGenerateFormBoundary();
+
+  for (NSUInteger i = 0; i < _parts.count; i++) {
+    NSString *uri = _parts[i][@"uri"];
+    if (uri && [[uri substringToIndex:@"ph:".length] caseInsensitiveCompare:@"ph:"] == NSOrderedSame) {
+      uri = [RCTNetworkingPHUploadHackScheme stringByAppendingString:[uri substringFromIndex:@"ph".length]];
+      NSMutableDictionary *mutableDict = [_parts[i] mutableCopy];
+      mutableDict[@"uri"] = uri;
+      _parts[i] = mutableDict;
+    }
+  }
 
   return [_networker processDataForHTTPQuery:_parts[0] callback:^(NSError *error, NSDictionary<NSString *, id> *result) {
     return [self handleResult:result error:error];
@@ -135,6 +146,7 @@ static NSString *RCTGenerateFormBoundary()
   NSMutableDictionary<NSNumber *, RCTNetworkTask *> *_tasksByRequestID;
   std::mutex _handlersLock;
   NSArray<id<RCTURLRequestHandler>> *_handlers;
+  NSArray<id<RCTURLRequestHandler>> * (^_handlersProvider)(void);
   NSMutableArray<id<RCTNetworkingRequestHandler>> *_requestHandlers;
   NSMutableArray<id<RCTNetworkingResponseHandler>> *_responseHandlers;
 }
@@ -142,6 +154,14 @@ static NSString *RCTGenerateFormBoundary()
 @synthesize methodQueue = _methodQueue;
 
 RCT_EXPORT_MODULE()
+
+- (instancetype)initWithHandlersProvider:(NSArray<id<RCTURLRequestHandler>> * (^)(void))getHandlers
+{
+  if (self = [super init]) {
+    _handlersProvider = getHandlers;
+  }
+  return self;
+}
 
 - (void)invalidate
 {
@@ -174,8 +194,14 @@ RCT_EXPORT_MODULE()
     std::lock_guard<std::mutex> lock(_handlersLock);
 
     if (!_handlers) {
+      if (_handlersProvider) {
+        _handlers = _handlersProvider();
+      } else {
+        _handlers = [self.bridge modulesConformingToProtocol:@protocol(RCTURLRequestHandler)];
+      }
+
       // Get handlers, sorted in reverse priority order (highest priority first)
-      _handlers = [[self.bridge modulesConformingToProtocol:@protocol(RCTURLRequestHandler)] sortedArrayUsingComparator:^NSComparisonResult(id<RCTURLRequestHandler> a, id<RCTURLRequestHandler> b) {
+      _handlers = [_handlers sortedArrayUsingComparator:^NSComparisonResult(id<RCTURLRequestHandler> a, id<RCTURLRequestHandler> b) {
         float priorityA = [a respondsToSelector:@selector(handlerPriority)] ? [a handlerPriority] : 0;
         float priorityB = [b respondsToSelector:@selector(handlerPriority)] ? [b handlerPriority] : 0;
         if (priorityA > priorityB) {
@@ -245,10 +271,13 @@ RCT_EXPORT_MODULE()
   NSURL *URL = [RCTConvert NSURL:query[@"url"]]; // this is marked as nullable in JS, but should not be null
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
   request.HTTPMethod = [RCTConvert NSString:RCTNilIfNull(query[@"method"])].uppercaseString ?: @"GET";
+  request.HTTPShouldHandleCookies = [RCTConvert BOOL:query[@"withCredentials"]];
 
-  // Load and set the cookie header.
-  NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:URL];
-  request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+  if (request.HTTPShouldHandleCookies == YES) {
+    // Load and set the cookie header.
+    NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:URL];
+    request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+  }
 
   // Set supplied headers.
   NSDictionary *headers = [RCTConvert NSDictionary:query[@"headers"]];
@@ -259,7 +288,6 @@ RCT_EXPORT_MODULE()
   }];
 
   request.timeoutInterval = [RCTConvert NSTimeInterval:query[@"timeout"]];
-  request.HTTPShouldHandleCookies = [RCTConvert BOOL:query[@"withCredentials"]];
   NSDictionary<NSString *, id> *data = [RCTConvert NSDictionary:RCTNilIfNull(query[@"data"])];
   NSString *trackingName = data[@"trackingName"];
   if (trackingName) {

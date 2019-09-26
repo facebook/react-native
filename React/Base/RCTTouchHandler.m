@@ -213,7 +213,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 
 - (void)_updateReactTouchAtIndex:(NSInteger)touchIndex
 {
-#if !TARGET_OS_OSX  // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UITouch *nativeTouch = _nativeTouches[touchIndex];
   CGPoint windowLocation = [nativeTouch locationInView:nativeTouch.window];
   RCTAssert(_cachedRootView, @"We were unable to find a root view for the touch");

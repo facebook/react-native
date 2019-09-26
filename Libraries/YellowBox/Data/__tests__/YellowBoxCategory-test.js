@@ -11,7 +11,7 @@
 
 'use strict';
 
-const YellowBoxCategory = require('YellowBoxCategory');
+const YellowBoxCategory = require('../YellowBoxCategory');
 
 describe('YellowBoxCategory', () => {
   it('parses strings', () => {

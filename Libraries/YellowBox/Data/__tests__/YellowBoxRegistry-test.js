@@ -11,8 +11,8 @@
 
 'use strict';
 
-const YellowBoxCategory = require('YellowBoxCategory');
-const YellowBoxRegistry = require('YellowBoxRegistry');
+const YellowBoxCategory = require('../YellowBoxCategory');
+const YellowBoxRegistry = require('../YellowBoxRegistry');
 
 const registry = () => {
   const observer = jest.fn();
@@ -91,6 +91,22 @@ describe('YellowBoxRegistry', () => {
     expect(registry().size).toBe(1);
 
     YellowBoxRegistry.addIgnorePatterns(['?']);
+    expect(registry().size).toBe(0);
+  });
+
+  it('ignores warnings matching regexs or pattern', () => {
+    YellowBoxRegistry.add({args: ['There are 4 dogs'], framesToPop: 0});
+    YellowBoxRegistry.add({args: ['There are 3 cats'], framesToPop: 0});
+    YellowBoxRegistry.add({args: ['There are H cats'], framesToPop: 0});
+    expect(registry().size).toBe(3);
+
+    YellowBoxRegistry.addIgnorePatterns(['dogs']);
+    expect(registry().size).toBe(2);
+
+    YellowBoxRegistry.addIgnorePatterns([/There are \d+ cats/]);
+    expect(registry().size).toBe(1);
+
+    YellowBoxRegistry.addIgnorePatterns(['cats']);
     expect(registry().size).toBe(0);
   });
 

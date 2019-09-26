@@ -9,8 +9,10 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const Recording = require('NativeModules').Recording;
+const {NativeModules} = require('react-native');
+const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
+
+const {Recording} = NativeModules;
 
 const TestJSLocaleModule = {
   toUpper: function(s) {

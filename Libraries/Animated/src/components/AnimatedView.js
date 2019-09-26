@@ -10,8 +10,8 @@
 
 'use strict';
 
-const View = require('View');
+const View = require('../../../Components/View/View');
 
-const createAnimatedComponent = require('createAnimatedComponent');
+const createAnimatedComponent = require('../createAnimatedComponent');
 
 module.exports = createAnimatedComponent(View);

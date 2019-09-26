@@ -7,13 +7,11 @@
 
 #import "RCTSliderComponentView.h"
 
-#import <react/components/slider/SliderEventEmitter.h>
-#import <react/components/slider/SliderProps.h>
-#import <react/components/slider/SliderShadowNode.h>
-#import <react/components/slider/SliderLocalData.h>
 #import <React/RCTImageResponseObserverProxy.h>
-
-#import "MainQueueExecutor.h"
+#import <react/components/rncore/EventEmitters.h>
+#import <react/components/rncore/Props.h>
+#import <react/components/slider/SliderComponentDescriptor.h>
+#import <react/components/slider/SliderLocalData.h>
 
 using namespace facebook::react;
 
@@ -21,12 +19,12 @@ using namespace facebook::react;
   UISlider *_sliderView;
   float _previousValue;
   SharedSliderLocalData _sliderLocalData;
-    
+
   UIImage *_trackImage;
   UIImage *_minimumTrackImage;
   UIImage *_maximumTrackImage;
   UIImage *_thumbImage;
-  
+
   const ImageResponseObserverCoordinator *_trackImageCoordinator;
   const ImageResponseObserverCoordinator *_minimumTrackImageCoordinator;
   const ImageResponseObserverCoordinator *_maximumTrackImageCoordinator;
@@ -38,7 +36,6 @@ using namespace facebook::react;
   std::unique_ptr<RCTImageResponseObserverProxy> _thumbImageResponseObserverProxy;
 }
 
-
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
@@ -47,14 +44,10 @@ using namespace facebook::react;
 
     _sliderView = [[UISlider alloc] initWithFrame:self.bounds];
 
-    [_sliderView addTarget:self
-                    action:@selector(onChange:)
-          forControlEvents:UIControlEventValueChanged];
+    [_sliderView addTarget:self action:@selector(onChange:) forControlEvents:UIControlEventValueChanged];
     [_sliderView addTarget:self
                     action:@selector(sliderTouchEnd:)
-          forControlEvents:(UIControlEventTouchUpInside |
-                            UIControlEventTouchUpOutside |
-                            UIControlEventTouchCancel)];
+          forControlEvents:(UIControlEventTouchUpInside | UIControlEventTouchUpOutside | UIControlEventTouchCancel)];
 
     _sliderView.value = defaultProps->value;
 
@@ -74,7 +67,7 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
-  
+
   self.trackImageCoordinator = nullptr;
   self.minimumTrackImageCoordinator = nullptr;
   self.maximumTrackImageCoordinator = nullptr;
@@ -94,7 +87,7 @@ using namespace facebook::react;
   _thumbImage = nil;
 }
 
--(void)dealloc
+- (void)dealloc
 {
   self.trackImageCoordinator = nullptr;
   self.minimumTrackImageCoordinator = nullptr;
@@ -109,9 +102,9 @@ using namespace facebook::react;
 
 #pragma mark - RCTComponentViewProtocol
 
-+ (ComponentHandle)componentHandle
++ (ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return SliderShadowNode::Handle();
+  return concreteComponentDescriptorProvider<SliderComponentDescriptor>();
 }
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
@@ -158,29 +151,31 @@ using namespace facebook::react;
   }
 }
 
-- (void)updateLocalData:(SharedLocalData)localData
-           oldLocalData:(SharedLocalData)oldLocalData
+- (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
 {
   SharedSliderLocalData previousData = _sliderLocalData;
   _sliderLocalData = std::static_pointer_cast<const SliderLocalData>(localData);
   assert(_sliderLocalData);
   bool havePreviousData = previousData != nullptr;
-  
+
   if (!havePreviousData || _sliderLocalData->getTrackImageSource() != previousData->getTrackImageSource()) {
-    self.trackImageCoordinator = _sliderLocalData->getTrackImageRequest().getObserverCoordinator();
+    self.trackImageCoordinator = &_sliderLocalData->getTrackImageRequest().getObserverCoordinator();
   }
-  if (!havePreviousData || _sliderLocalData->getMinimumTrackImageSource() != previousData->getMinimumTrackImageSource()) {
-    self.minimumTrackImageCoordinator = _sliderLocalData->getMinimumTrackImageRequest().getObserverCoordinator();
+  if (!havePreviousData ||
+      _sliderLocalData->getMinimumTrackImageSource() != previousData->getMinimumTrackImageSource()) {
+    self.minimumTrackImageCoordinator = &_sliderLocalData->getMinimumTrackImageRequest().getObserverCoordinator();
   }
-  if (!havePreviousData || _sliderLocalData->getMaximumTrackImageSource() != previousData->getMaximumTrackImageSource()) {
-    self.maximumTrackImageCoordinator = _sliderLocalData->getMaximumTrackImageRequest().getObserverCoordinator();
+  if (!havePreviousData ||
+      _sliderLocalData->getMaximumTrackImageSource() != previousData->getMaximumTrackImageSource()) {
+    self.maximumTrackImageCoordinator = &_sliderLocalData->getMaximumTrackImageRequest().getObserverCoordinator();
   }
   if (!havePreviousData || _sliderLocalData->getThumbImageSource() != previousData->getThumbImageSource()) {
-    self.thumbImageCoordinator = _sliderLocalData->getThumbImageRequest().getObserverCoordinator();
+    self.thumbImageCoordinator = &_sliderLocalData->getThumbImageRequest().getObserverCoordinator();
   }
 }
 
-- (void)setTrackImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator {
+- (void)setTrackImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator
+{
   if (_trackImageCoordinator) {
     _trackImageCoordinator->removeObserver(_trackImageResponseObserverProxy.get());
   }
@@ -190,7 +185,8 @@ using namespace facebook::react;
   }
 }
 
-- (void)setMinimumTrackImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator {
+- (void)setMinimumTrackImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator
+{
   if (_minimumTrackImageCoordinator) {
     _minimumTrackImageCoordinator->removeObserver(_minimumTrackImageResponseObserverProxy.get());
   }
@@ -200,7 +196,8 @@ using namespace facebook::react;
   }
 }
 
-- (void)setMaximumTrackImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator {
+- (void)setMaximumTrackImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator
+{
   if (_maximumTrackImageCoordinator) {
     _maximumTrackImageCoordinator->removeObserver(_maximumTrackImageResponseObserverProxy.get());
   }
@@ -210,7 +207,8 @@ using namespace facebook::react;
   }
 }
 
-- (void)setThumbImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator {
+- (void)setThumbImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator
+{
   if (_thumbImageCoordinator) {
     _thumbImageCoordinator->removeObserver(_thumbImageResponseObserverProxy.get());
   }
@@ -220,56 +218,58 @@ using namespace facebook::react;
   }
 }
 
-- (void)setTrackImage:(UIImage *)trackImage {
+- (void)setTrackImage:(UIImage *)trackImage
+{
   if ([trackImage isEqual:_trackImage]) {
     return;
   }
-  
+
   _trackImage = trackImage;
   _minimumTrackImage = nil;
   _maximumTrackImage = nil;
   CGFloat width = trackImage.size.width / 2;
-  UIImage *minimumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){
-      0, width, 0, width
-  } resizingMode:UIImageResizingModeStretch];
-  UIImage *maximumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){
-      0, width, 0, width
-  } resizingMode:UIImageResizingModeStretch];
+  UIImage *minimumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){0, width, 0, width}
+                                                          resizingMode:UIImageResizingModeStretch];
+  UIImage *maximumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){0, width, 0, width}
+                                                          resizingMode:UIImageResizingModeStretch];
   [_sliderView setMinimumTrackImage:minimumTrackImage forState:UIControlStateNormal];
   [_sliderView setMaximumTrackImage:maximumTrackImage forState:UIControlStateNormal];
 }
 
--(void)setMinimumTrackImage:(UIImage *)minimumTrackImage {
+- (void)setMinimumTrackImage:(UIImage *)minimumTrackImage
+{
   if ([minimumTrackImage isEqual:_minimumTrackImage] && _trackImage == nil) {
     return;
   }
-  
+
   _trackImage = nil;
   _minimumTrackImage = minimumTrackImage;
-  _minimumTrackImage = [_minimumTrackImage resizableImageWithCapInsets:(UIEdgeInsets) {
-    0, _minimumTrackImage.size.width, 0, 0
-  } resizingMode:UIImageResizingModeStretch];
+  _minimumTrackImage =
+      [_minimumTrackImage resizableImageWithCapInsets:(UIEdgeInsets){0, _minimumTrackImage.size.width, 0, 0}
+                                         resizingMode:UIImageResizingModeStretch];
   [_sliderView setMinimumTrackImage:_minimumTrackImage forState:UIControlStateNormal];
 }
 
--(void)setMaximumTrackImage:(UIImage *)maximumTrackImage {
+- (void)setMaximumTrackImage:(UIImage *)maximumTrackImage
+{
   if ([maximumTrackImage isEqual:_maximumTrackImage] && _trackImage == nil) {
     return;
   }
-  
+
   _trackImage = nil;
   _maximumTrackImage = maximumTrackImage;
-  _maximumTrackImage = [_maximumTrackImage resizableImageWithCapInsets:(UIEdgeInsets) {
-    0, 0, 0, _maximumTrackImage.size.width
-  } resizingMode:UIImageResizingModeStretch];
+  _maximumTrackImage =
+      [_maximumTrackImage resizableImageWithCapInsets:(UIEdgeInsets){0, 0, 0, _maximumTrackImage.size.width}
+                                         resizingMode:UIImageResizingModeStretch];
   [_sliderView setMaximumTrackImage:_maximumTrackImage forState:UIControlStateNormal];
 }
 
--(void)setThumbImage:(UIImage *)thumbImage {
+- (void)setThumbImage:(UIImage *)thumbImage
+{
   if ([thumbImage isEqual:_thumbImage]) {
     return;
   }
-  
+
   _thumbImage = thumbImage;
   [_sliderView setThumbImage:thumbImage forState:UIControlStateNormal];
 }
@@ -289,24 +289,24 @@ using namespace facebook::react;
   float value = sender.value;
 
   const auto &props = *std::static_pointer_cast<const SliderProps>(_props);
- 
+
   if (props.step > 0 && value <= (props.maximumValue - props.minimumValue)) {
-    value = MAX(props.minimumValue,
-        MIN(props.maximumValue,
-            props.minimumValue + round((value - props.minimumValue) / props.step) * props.step
-            )
-        );
-    
+    value = MAX(
+        props.minimumValue,
+        MIN(props.maximumValue, props.minimumValue + round((value - props.minimumValue) / props.step) * props.step));
+
     [_sliderView setValue:value animated:YES];
   }
 
   if (continuous && _previousValue != value) {
-    std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)->onValueChange(value);
+    std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)
+        ->onValueChange(SliderOnValueChangeStruct{.value = static_cast<Float>(value)});
   }
   if (!continuous) {
-    std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)->onSlidingComplete(value);
+    std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)
+        ->onSlidingComplete(SliderOnSlidingCompleteStruct{.value = static_cast<Float>(value)});
   }
-  
+
   _previousValue = value;
 }
 
@@ -325,11 +325,12 @@ using namespace facebook::react;
   }
 }
 
-- (void)didReceiveProgress:(float)progress fromObserver:(void *)observer {
+- (void)didReceiveProgress:(float)progress fromObserver:(void *)observer
+{
 }
 
-- (void)didReceiveFailureFromObserver:(void *)observer {
+- (void)didReceiveFailureFromObserver:(void *)observer
+{
 }
-
 
 @end

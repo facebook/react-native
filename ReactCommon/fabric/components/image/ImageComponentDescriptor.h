@@ -10,7 +10,7 @@
 #include <react/components/image/ImageShadowNode.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 #include <react/imagemanager/ImageManager.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -22,14 +22,10 @@ class ImageComponentDescriptor final
     : public ConcreteComponentDescriptor<ImageShadowNode> {
  public:
   ImageComponentDescriptor(
-      SharedEventDispatcher eventDispatcher,
-      const SharedContextContainer &contextContainer)
+      EventDispatcher::Shared eventDispatcher,
+      ContextContainer::Shared const &contextContainer)
       : ConcreteComponentDescriptor(eventDispatcher),
-        imageManager_(
-            contextContainer
-                ? contextContainer->getInstance<SharedImageManager>(
-                      "ImageManager")
-                : nullptr) {}
+        imageManager_(std::make_shared<ImageManager>(contextContainer)){};
 
   void adopt(UnsharedShadowNode shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);

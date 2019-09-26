@@ -10,16 +10,23 @@
 
 'use strict';
 
-import type {ExtendedError} from 'parseErrorStack';
+import type {ExtendedError} from './Devtools/parseErrorStack';
+
+const INTERNAL_CALLSITES_REGEX = new RegExp(
+  [
+    '/Libraries/Renderer/oss/ReactNativeRenderer-dev\\.js$',
+    '/Libraries/BatchedBridge/MessageQueue\\.js$',
+  ].join('|'),
+);
 
 /**
  * Handles the developer-visible aspect of errors and exceptions
  */
 let exceptionID = 0;
 function reportException(e: ExtendedError, isFatal: boolean) {
-  const {ExceptionsManager} = require('NativeModules');
+  const {ExceptionsManager} = require('../BatchedBridge/NativeModules');
   if (ExceptionsManager) {
-    const parseErrorStack = require('parseErrorStack');
+    const parseErrorStack = require('./Devtools/parseErrorStack');
     const stack = parseErrorStack(e);
     const currentExceptionID = ++exceptionID;
     const message =
@@ -34,13 +41,18 @@ function reportException(e: ExtendedError, isFatal: boolean) {
       ExceptionsManager.reportSoftException(message, stack, currentExceptionID);
     }
     if (__DEV__) {
-      const symbolicateStackTrace = require('symbolicateStackTrace');
+      const symbolicateStackTrace = require('./Devtools/symbolicateStackTrace');
       symbolicateStackTrace(stack)
         .then(prettyStack => {
           if (prettyStack) {
+            const stackWithoutInternalCallsites = prettyStack.filter(
+              frame =>
+                frame.file &&
+                frame.file.match(INTERNAL_CALLSITES_REGEX) === null,
+            );
             ExceptionsManager.updateExceptionMessage(
-              e.message,
-              prettyStack,
+              message,
+              stackWithoutInternalCallsites,
               currentExceptionID,
             );
           } else {
@@ -87,7 +99,7 @@ function reactConsoleErrorHandler() {
   if (arguments[0] && arguments[0].stack) {
     reportException(arguments[0], /* isFatal */ false);
   } else {
-    const stringifySafe = require('stringifySafe');
+    const stringifySafe = require('../Utilities/stringifySafe');
     const str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
     if (str.slice(0, 10) === '"Warning: ') {
       // React warnings use console.error so that a stack trace is shown, but

@@ -6,6 +6,7 @@
  */
 
 #import "RCTBackedTextInputDelegateAdapter.h"
+#import "../RCTTextUIKit.h" // TODO(macOS ISS#2323203)
 
 #pragma mark - RCTBackedTextFieldDelegateAdapter (for UITextField)
 
@@ -303,6 +304,15 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 - (void)textViewDidChangeSelection:(__unused UITextView *)textView
 {
   [self textViewProbablyDidChangeSelection];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+  if ([_backedTextInputView.textInputDelegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
+    [_backedTextInputView.textInputDelegate scrollViewDidScroll:scrollView];
+  }
 }
 
 #endif // [TODO(macOS ISS#2323203)

@@ -236,6 +236,9 @@ RCT_EXPORT_METHOD(setDevModeEnabled:(BOOL)enabled)
 
 - (BOOL)isRemoteDebuggingAvailable
 {
+  if (RCTTurboModuleEnabled()) {
+    return NO;
+  }
   Class jsDebuggingExecutorClass = objc_lookUpClass("RCTWebSocketExecutor");
   return (jsDebuggingExecutorClass != nil);
 }

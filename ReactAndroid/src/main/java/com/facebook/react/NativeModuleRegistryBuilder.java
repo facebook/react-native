@@ -52,7 +52,7 @@ public class NativeModuleRegistryBuilder {
                   + name
                   + " tried to override "
                   + existingNativeModule.getClassName()
-                  + " for module name .Check the getPackages() method in MainApplication.java, it might be that module is being created twice. If this was your intention, set canOverrideExistingModule=true");
+                  + ". Check the getPackages() method in MainApplication.java, it might be that module is being created twice. If this was your intention, set canOverrideExistingModule=true");
         }
         mModules.remove(existingNativeModule);
       }

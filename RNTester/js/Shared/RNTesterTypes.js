@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {ComponentType} from 'React';
+import type {ComponentType} from 'react';
 import * as React from 'react';
 
 export type RNTesterProps = $ReadOnly<{|

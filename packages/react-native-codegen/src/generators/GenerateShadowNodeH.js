@@ -65,6 +65,10 @@ module.exports = {
         return Object.keys(components)
           .map(componentName => {
             const component = components[componentName];
+            if (component.interfaceOnly === true) {
+              return;
+            }
+
             const hasEvents = component.events.length > 0;
 
             if (hasEvents) {

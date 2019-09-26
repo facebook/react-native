@@ -10,8 +10,7 @@
 #include <react/imagemanager/ImageResponse.h>
 #include <react/imagemanager/ImageResponseObserver.h>
 
-#include <folly/SharedMutex.h>
-#include <shared_mutex>
+#include <better/mutex.h>
 #include <vector>
 
 namespace facebook {
@@ -84,7 +83,7 @@ class ImageResponseObserverCoordinator {
   /*
    * Observer and data mutex.
    */
-  mutable folly::SharedMutex mutex_;
+  mutable better::shared_mutex mutex_;
 };
 
 } // namespace react

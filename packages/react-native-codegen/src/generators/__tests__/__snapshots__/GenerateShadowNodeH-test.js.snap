@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`GenerateShadowNodeH can generate fixture SINGLE_COMPONENT_WITH_BOOLEAN_PROP 1`] = `
+exports[`GenerateShadowNodeH can generate fixture ARRAY_PROPS 1`] = `
 Map {
   "ShadowNodes.h" => "
 /**
@@ -12,7 +12,40 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_BOOLEAN_PROP/Props.h>
+#include <react/components/ARRAY_PROPS/Props.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+
+namespace facebook {
+namespace react {
+
+extern const char ArrayPropsNativeComponentComponentName[];
+
+/*
+ * \`ShadowNode\` for <ArrayPropsNativeComponent> component.
+ */
+using ArrayPropsNativeComponentShadowNode = ConcreteViewShadowNode<
+    ArrayPropsNativeComponentComponentName,
+    ArrayPropsNativeComponentProps>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeH can generate fixture BOOLEAN_PROP 1`] = `
+Map {
+  "ShadowNodes.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/BOOLEAN_PROP/Props.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
@@ -33,7 +66,7 @@ using BooleanPropNativeComponentShadowNode = ConcreteViewShadowNode<
 }
 `;
 
-exports[`GenerateShadowNodeH can generate fixture SINGLE_COMPONENT_WITH_COLOR_PROP 1`] = `
+exports[`GenerateShadowNodeH can generate fixture COLOR_PROP 1`] = `
 Map {
   "ShadowNodes.h" => "
 /**
@@ -45,7 +78,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_COLOR_PROP/Props.h>
+#include <react/components/COLOR_PROP/Props.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
@@ -66,7 +99,7 @@ using ColorPropNativeComponentShadowNode = ConcreteViewShadowNode<
 }
 `;
 
-exports[`GenerateShadowNodeH can generate fixture SINGLE_COMPONENT_WITH_ENUM_PROP 1`] = `
+exports[`GenerateShadowNodeH can generate fixture ENUM_PROP 1`] = `
 Map {
   "ShadowNodes.h" => "
 /**
@@ -78,7 +111,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_ENUM_PROP/Props.h>
+#include <react/components/ENUM_PROP/Props.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
@@ -99,7 +132,7 @@ using EnumPropsNativeComponentShadowNode = ConcreteViewShadowNode<
 }
 `;
 
-exports[`GenerateShadowNodeH can generate fixture SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS 1`] = `
+exports[`GenerateShadowNodeH can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "ShadowNodes.h" => "
 /**
@@ -111,8 +144,8 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS/EventEmitters.h>
-#include <react/components/SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS/Props.h>
+#include <react/components/EVENT_NESTED_OBJECT_PROPS/EventEmitters.h>
+#include <react/components/EVENT_NESTED_OBJECT_PROPS/Props.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
@@ -134,7 +167,7 @@ EventsNestedObjectNativeComponentEventEmitter>;
 }
 `;
 
-exports[`GenerateShadowNodeH can generate fixture SINGLE_COMPONENT_WITH_EVENT_PROPS 1`] = `
+exports[`GenerateShadowNodeH can generate fixture EVENT_PROPS 1`] = `
 Map {
   "ShadowNodes.h" => "
 /**
@@ -146,8 +179,8 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_EVENT_PROPS/EventEmitters.h>
-#include <react/components/SINGLE_COMPONENT_WITH_EVENT_PROPS/Props.h>
+#include <react/components/EVENT_PROPS/EventEmitters.h>
+#include <react/components/EVENT_PROPS/Props.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
@@ -169,7 +202,7 @@ EventsNativeComponentEventEmitter>;
 }
 `;
 
-exports[`GenerateShadowNodeH can generate fixture SINGLE_COMPONENT_WITH_FLOAT_PROPS 1`] = `
+exports[`GenerateShadowNodeH can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "ShadowNodes.h" => "
 /**
@@ -181,7 +214,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_FLOAT_PROPS/Props.h>
+#include <react/components/FLOAT_PROPS/Props.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
@@ -202,7 +235,7 @@ using FloatPropNativeComponentShadowNode = ConcreteViewShadowNode<
 }
 `;
 
-exports[`GenerateShadowNodeH can generate fixture SINGLE_COMPONENT_WITH_INTEGER_PROPS 1`] = `
+exports[`GenerateShadowNodeH can generate fixture IMAGE_PROP 1`] = `
 Map {
   "ShadowNodes.h" => "
 /**
@@ -214,7 +247,40 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_INTEGER_PROPS/Props.h>
+#include <react/components/IMAGE_PROP/Props.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+
+namespace facebook {
+namespace react {
+
+extern const char ImagePropNativeComponentComponentName[];
+
+/*
+ * \`ShadowNode\` for <ImagePropNativeComponent> component.
+ */
+using ImagePropNativeComponentShadowNode = ConcreteViewShadowNode<
+    ImagePropNativeComponentComponentName,
+    ImagePropNativeComponentProps>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeH can generate fixture INTEGER_PROPS 1`] = `
+Map {
+  "ShadowNodes.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/INTEGER_PROPS/Props.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
@@ -235,7 +301,7 @@ using IntegerPropNativeComponentShadowNode = ConcreteViewShadowNode<
 }
 `;
 
-exports[`GenerateShadowNodeH can generate fixture SINGLE_COMPONENT_WITH_STRING_PROP 1`] = `
+exports[`GenerateShadowNodeH can generate fixture INTERFACE_ONLY 1`] = `
 Map {
   "ShadowNodes.h" => "
 /**
@@ -247,7 +313,99 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_STRING_PROP/Props.h>
+#include <react/components/INTERFACE_ONLY/Props.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeH can generate fixture MULTI_NATIVE_PROP 1`] = `
+Map {
+  "ShadowNodes.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/MULTI_NATIVE_PROP/Props.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+
+namespace facebook {
+namespace react {
+
+extern const char ImageColorPropNativeComponentComponentName[];
+
+/*
+ * \`ShadowNode\` for <ImageColorPropNativeComponent> component.
+ */
+using ImageColorPropNativeComponentShadowNode = ConcreteViewShadowNode<
+    ImageColorPropNativeComponentComponentName,
+    ImageColorPropNativeComponentProps>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeH can generate fixture POINT_PROP 1`] = `
+Map {
+  "ShadowNodes.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/POINT_PROP/Props.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+
+namespace facebook {
+namespace react {
+
+extern const char PointPropNativeComponentComponentName[];
+
+/*
+ * \`ShadowNode\` for <PointPropNativeComponent> component.
+ */
+using PointPropNativeComponentShadowNode = ConcreteViewShadowNode<
+    PointPropNativeComponentComponentName,
+    PointPropNativeComponentProps>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeH can generate fixture STRING_PROP 1`] = `
+Map {
+  "ShadowNodes.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/STRING_PROP/Props.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {

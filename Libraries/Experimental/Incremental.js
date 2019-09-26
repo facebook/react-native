@@ -10,12 +10,12 @@
 
 'use strict';
 
-const InteractionManager = require('InteractionManager');
-const React = require('React');
+const InteractionManager = require('../Interaction/InteractionManager');
+const React = require('react');
 
 const PropTypes = require('prop-types');
 
-const infoLog = require('infoLog');
+const infoLog = require('../Utilities/infoLog');
 
 const DEBUG = false;
 

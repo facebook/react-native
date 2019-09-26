@@ -28,7 +28,6 @@ import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.i18nmanager.I18nManagerModule;
 import com.facebook.react.modules.image.ImageLoaderModule;
 import com.facebook.react.modules.intent.IntentModule;
-import com.facebook.react.modules.location.LocationModule;
 import com.facebook.react.modules.netinfo.NetInfoModule;
 import com.facebook.react.modules.network.NetworkingModule;
 import com.facebook.react.modules.permissions.PermissionsModule;
@@ -63,7 +62,6 @@ import com.facebook.react.views.textinput.ReactTextInputManager;
 import com.facebook.react.views.toolbar.ReactToolbarManager;
 import com.facebook.react.views.view.ReactViewManager;
 import com.facebook.react.views.viewpager.ReactViewPagerManager;
-import com.facebook.react.views.webview.ReactWebViewManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -88,7 +86,6 @@ import javax.inject.Provider;
   ImageLoaderModule.class,
   ImageStoreManager.class,
   IntentModule.class,
-  LocationModule.class,
   NativeAnimatedModule.class,
   NetworkingModule.class,
   NetInfoModule.class,
@@ -240,14 +237,6 @@ public class MainReactPackage extends LazyReactPackage {
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            LocationModule.class,
-            new Provider<NativeModule>() {
-              @Override
-              public NativeModule get() {
-                return new LocationModule(context);
-              }
-            }),
-        ModuleSpec.nativeModuleSpec(
             NativeAnimatedModule.class,
             new Provider<NativeModule>() {
               @Override
@@ -347,7 +336,6 @@ public class MainReactPackage extends LazyReactPackage {
     viewManagers.add(new ReactSliderManager());
     viewManagers.add(new ReactSwitchManager());
     viewManagers.add(new ReactToolbarManager());
-    viewManagers.add(new ReactWebViewManager());
     viewManagers.add(new SwipeRefreshLayoutManager());
 
     // Native equivalents

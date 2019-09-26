@@ -35,17 +35,17 @@ struct InstanceCallback {
 };
 
 enum class CachingType {
-    NoCaching,
-    PartialCaching,
-    PartialCachingWithNoLazy,
-    FullCaching,
-    FullCachingWithNoLazy
+  NoCaching,
+  PartialCaching,
+  PartialCachingWithNoLazy,
+  FullCaching,
+  FullCachingWithNoLazy
 };
 
 struct JSEConfigParams {
-    std::string cachePath;
-    CachingType cacheType;
-    int loggingLevel;
+  std::string cachePath;
+  CachingType cacheType;
+  int loggingLevel;
 };
 
 class RN_EXPORT Instance {
@@ -55,41 +55,42 @@ public:
   virtual void setModuleRegistry(std::shared_ptr<ModuleRegistry> moduleRegistry);
 
   virtual void initializeBridge(std::unique_ptr<InstanceCallback> callback,
-                        std::shared_ptr<ExecutorDelegateFactory> edf, // if nullptr, will use default delegate (JsToNativeBridge)
+                        std::shared_ptr<ExecutorDelegateFactory> edf, // if nullptr, will use default delegate (JsToNativeBridge) // TODO(OSS Candidate ISS#2710739)
                         std::shared_ptr<JSExecutorFactory> jsef,
                         std::shared_ptr<MessageQueueThread> jsQueue,
                         std::shared_ptr<ModuleRegistry> moduleRegistry);
 
-  virtual void setSourceURL(std::string sourceURL);
+  void setSourceURL(std::string sourceURL);
 
   virtual void loadScriptFromString(std::unique_ptr<const JSBigString> bundleString,
                             uint64_t bundleVersion, std::string bundleURL, bool loadSynchronously,
                             std::string&& bytecodeFileName);
   static bool isIndexedRAMBundle(const char *sourcePath);
-  virtual void loadRAMBundleFromFile(const std::string& sourcePath,
+  static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString>* string);
+  void loadRAMBundleFromString(std::unique_ptr<const JSBigString> script, const std::string& sourceURL);
+  void loadRAMBundleFromFile(const std::string& sourcePath,
                              const std::string& sourceURL,
                              bool loadSynchronously);
-  virtual void loadRAMBundle(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
+  void loadRAMBundle(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                      std::unique_ptr<const JSBigString> startupScript,
                      std::string startupScriptSourceURL, bool loadSynchronously);
   bool supportsProfiling();
-  virtual void setGlobalVariable(std::string propName,
+  void setGlobalVariable(std::string propName,
                          std::unique_ptr<const JSBigString> jsonValue);
-  virtual void *getJavaScriptContext();
-  virtual bool isInspectable();
+  void *getJavaScriptContext();
+  bool isInspectable();
   bool isBatchActive();
-  virtual void callJSFunction(std::string &&module, std::string &&method,
+  void callJSFunction(std::string &&module, std::string &&method,
                       folly::dynamic &&params);
-  virtual void callJSCallback(uint64_t callbackId, folly::dynamic &&params);
-  virtual void registerModules(std::vector<std::unique_ptr<NativeModule>>&& modules);
-  virtual void setJSEConfigParams(std::shared_ptr<JSEConfigParams>&& jseConfigParams);
+  void callJSCallback(uint64_t callbackId, folly::dynamic &&params);
 
-  virtual void registerBundle(uint32_t bundleId, const std::string& bundlePath);
+  // This method is experimental, and may be modified or removed.
+  void registerBundle(uint32_t bundleId, const std::string& bundlePath);
 
-  virtual const ModuleRegistry &getModuleRegistry() const;
-  virtual ModuleRegistry &getModuleRegistry();
+  const ModuleRegistry &getModuleRegistry() const;
+  ModuleRegistry &getModuleRegistry();
 
-  virtual void handleMemoryPressure(int pressureLevel);
+  void handleMemoryPressure(int pressureLevel);
 
    /**
    * Returns the current peak memory usage due to the JavaScript
@@ -98,23 +99,24 @@ public:
    */
   int64_t getPeakJsMemoryUsage() const noexcept;
 
-protected:
+  void invokeAsync(std::function<void()>&& func);
+
+private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);
   virtual void loadApplication(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                        std::unique_ptr<const JSBigString> bundle,
-                       uint64_t bundleVersion,
+                       uint64_t bundleVersion, // TODO(OSS Candidate ISS#2710739)
                        std::string bundleURL,
-                       std::string&& bytecodeFileName);
+                       std::string&& bytecodeFileName); // TODO(OSS Candidate ISS#2710739)
   virtual void loadApplicationSync(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                            std::unique_ptr<const JSBigString> bundle,
-                           uint64_t bundleVersion,
+                           uint64_t bundleVersion, // TODO(OSS Candidate ISS#2710739)
                            std::string bundleURL,
-                           std::string&& bytecodeFileName);
+                           std::string&& bytecodeFileName); // TODO(OSS Candidate ISS#2710739)
 
   std::shared_ptr<InstanceCallback> callback_;
   std::unique_ptr<NativeToJsBridge> nativeToJsBridge_;
   std::shared_ptr<ModuleRegistry> moduleRegistry_;
-  std::shared_ptr<JSEConfigParams> jseConfigParams_;
 
   std::mutex m_syncMutex;
   std::condition_variable m_syncCV;

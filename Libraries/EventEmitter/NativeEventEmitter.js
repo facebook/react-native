@@ -10,13 +10,13 @@
 
 'use strict';
 
-const EventEmitter = require('EventEmitter');
-const Platform = require('Platform');
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const EventEmitter = require('../vendor/emitter/EventEmitter');
+const Platform = require('../Utilities/Platform');
+const RCTDeviceEventEmitter = require('./RCTDeviceEventEmitter');
 
 const invariant = require('invariant');
 
-import type EmitterSubscription from 'EmitterSubscription';
+import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 
 type NativeModule = {
   +addListener: (eventType: string) => void,

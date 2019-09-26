@@ -226,14 +226,14 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 
 #pragma mark - RCTSurfaceDelegate
 
-- (void)surface:(RCTSurface *)surface didChangeStage:(RCTSurfaceStage)stage
+- (void)surface:(__unused RCTSurface *)surface didChangeStage:(RCTSurfaceStage)stage
 {
   RCTExecuteOnMainQueue(^{
     [self setStage:stage];
   });
 }
 
-- (void)surface:(RCTSurface *)surface didChangeIntrinsicSize:(CGSize)intrinsicSize
+- (void)surface:(__unused RCTSurface *)surface didChangeIntrinsicSize:(__unused CGSize)intrinsicSize
 {
   RCTExecuteOnMainQueue(^{
     [self _invalidateLayout];

@@ -10,6 +10,7 @@
 #include <string>
 
 #include <cxxreact/SystraceSection.h>
+#include <jsireact/LongLivedObject.h>
 
 using namespace facebook;
 
@@ -38,7 +39,7 @@ void TurboModuleBinding::install(
 }
 
 void TurboModuleBinding::invalidate() const {
-  // Nothing for now.
+  LongLivedObjectCollection::get().clear();
 }
 
 std::shared_ptr<TurboModule> TurboModuleBinding::getModule(const std::string &name) {

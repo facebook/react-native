@@ -10,20 +10,20 @@
 
 'use strict';
 
-const DeprecatedTextPropTypes = require('DeprecatedTextPropTypes');
-const React = require('React');
-const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-const TextAncestor = require('TextAncestor');
-const Touchable = require('Touchable');
-const UIManager = require('UIManager');
+const DeprecatedTextPropTypes = require('../DeprecatedPropTypes/DeprecatedTextPropTypes');
+const React = require('react');
+const ReactNativeViewAttributes = require('../Components/View/ReactNativeViewAttributes');
+const TextAncestor = require('./TextAncestor');
+const Touchable = require('../Components/Touchable/Touchable');
+const UIManager = require('../ReactNative/UIManager');
 
-const createReactNativeComponentClass = require('createReactNativeComponentClass');
+const createReactNativeComponentClass = require('../Renderer/shims/createReactNativeComponentClass');
 const nullthrows = require('nullthrows');
-const processColor = require('processColor');
+const processColor = require('../StyleSheet/processColor');
 
-import type {PressEvent} from 'CoreEventTypes';
-import type {NativeComponent} from 'ReactNative';
-import type {PressRetentionOffset, TextProps} from 'TextProps';
+import type {PressEvent} from '../Types/CoreEventTypes';
+import type {NativeComponent} from '../Renderer/shims/ReactNative';
+import type {PressRetentionOffset, TextProps} from './TextProps';
 
 type ResponseHandlers = $ReadOnly<{|
   onStartShouldSetResponder: () => boolean,
@@ -66,10 +66,15 @@ const viewConfig = {
     minimumFontScale: true,
     textBreakStrategy: true,
     onTextLayout: true,
+    onInlineViewLayout: true,
+    dataDetectorType: true,
   },
   directEventTypes: {
     topTextLayout: {
       registrationName: 'onTextLayout',
+    },
+    topInlineViewLayout: {
+      registrationName: 'onInlineViewLayout',
     },
   },
   uiViewClassName: 'RCTText',

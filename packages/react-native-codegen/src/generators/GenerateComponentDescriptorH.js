@@ -55,6 +55,9 @@ module.exports = {
 
         return Object.keys(components)
           .map(componentName => {
+            if (components[componentName].interfaceOnly === true) {
+              return;
+            }
             return componentTemplate.replace(/::_CLASSNAME_::/g, componentName);
           })
           .join('\n');

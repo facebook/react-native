@@ -7,19 +7,32 @@
 
 #import "RCTUIUtils.h"
 
+#import "RCTUtils.h"
+
 RCTDimensions RCTGetDimensions(CGFloat fontScale)
 {
   UIScreen *mainScreen = UIScreen.mainScreen;
   CGSize screenSize = mainScreen.bounds.size;
+
+  UIView *mainWindow;
+  mainWindow = RCTKeyWindow();
+  CGSize windowSize = mainWindow.bounds.size;
+
   RCTDimensions result;
-  typeof (result.window) dims = {
+  typeof (result.screen) dimsScreen = {
     .width = screenSize.width,
     .height = screenSize.height,
     .scale = mainScreen.scale,
     .fontScale = fontScale
   };
-  result.window = dims;
-  result.screen = dims;
+  typeof (result.window) dimsWindow = {
+    .width = windowSize.width,
+    .height = windowSize.height,
+    .scale = mainScreen.scale,
+    .fontScale = fontScale
+  };
+  result.screen = dimsScreen;
+  result.window = dimsWindow;
 
   return result;
 }

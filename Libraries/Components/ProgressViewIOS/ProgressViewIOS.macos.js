@@ -12,14 +12,9 @@
 
 'use strict';
 
-var Image = require('Image');
-var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
-var PropTypes = require('prop-types');
 var StyleSheet = require('StyleSheet');
-var ViewPropTypes = require('ViewPropTypes');
 
-var createReactClass = require('create-react-class');
 var requireNativeComponent = require('requireNativeComponent');
 
 import type {NativeComponent} from 'ReactNative';

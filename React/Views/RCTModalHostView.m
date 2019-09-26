@@ -129,8 +129,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:coder)
     [subview addGestureRecognizer:_menuButtonGestureRecognizer];
   }
 #endif
-  subview.autoresizingMask = UIViewAutoresizingFlexibleHeight |
-                             UIViewAutoresizingFlexibleWidth;
 
   [_modalViewController.view insertSubview:subview atIndex:0];
   _reactSubview = subview;

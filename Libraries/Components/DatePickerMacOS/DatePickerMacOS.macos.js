@@ -12,21 +12,69 @@
 
 'use strict';
 
-const NativeMethodsMixin = require('NativeMethodsMixin');
-const React = require('React');
-const PropTypes = require('prop-types');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
+const React = require('react');
+const View = require('../View/View');
 
-const createReactClass = require('create-react-class');
-const requireNativeComponent = require('requireNativeComponent');
-
-type DefaultProps = {
-  mode: 'single' | 'range',
-};
+const RCTDatePickerNativeComponentMacOS = require('./RCTDatePickerNativeComponentMacOS');
 
 type Event = Object;
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+
+  /**
+   * The currently selected date.
+   */
+  date?: ?Date,
+
+  /**
+   * Maximum date.
+   *
+   * Restricts the range of possible date/time values.
+   */
+  maximumDate?: ?Date,
+
+  /**
+   * Minimum date.
+   *
+   * Restricts the range of possible date/time values.
+   */
+  minimumDate?: ?Date,
+
+  /**
+   * The date picker mode.
+   */
+  mode?: ?('single' | 'range'),
+
+  /**
+   * Date change handler.
+   *
+   * This is called when the user changes the date or time in the UI.
+   * The first and only argument is a Date object representing the new
+   * date and time.
+   */
+  onDateChange: (date: Date) => void,
+
+  /**
+   * The date picker style.
+   */
+  pickerStyle: ?(['textfield-stepper', 'clock-calendar', 'textfield']),
+
+  /**
+   * Timezone offset in minutes.
+   *
+   * By default, the date picker will use the device's timezone. With this
+   * parameter, it is possible to force a certain timezone offset. For
+   * instance, to show times in Pacific Standard Time, pass -7 * 60.
+   */
+  timeZoneOffsetInMinutes?: ?number,
+
+  /**
+   *
+   * [Styles](docs/style.html)
+   */
+  style: ?style,
+|}>;
 
 /**
  * Use `DatePickerMacOS` to render a date/time picker (selector) on macOS.  This is
@@ -36,79 +84,17 @@ type Event = Object;
  * source of truth.
  */
 // $FlowFixMe(>=0.41.0)
-const DatePickerMacOS = createReactClass({
-  // TOOD: Put a better type for _picker
-  _picker: (undefined: ?$FlowFixMe),
-
-  mixins: [NativeMethodsMixin],
-
-  propTypes: {
-    ...ViewPropTypes,
-    /**
-     * The currently selected date.
-     */
-    date: PropTypes.instanceOf(Date).isRequired,
-
-    /**
-     * Date change handler.
-     *
-     * This is called when the user changes the date or time in the UI.
-     * The first and only argument is a Date object representing the new
-     * date and time.
-     */
-    onDateChange: PropTypes.func.isRequired,
-
-    /**
-     * Maximum date.
-     *
-     * Restricts the range of possible date/time values.
-     */
-    maximumDate: PropTypes.instanceOf(Date),
-
-    /**
-     * Minimum date.
-     *
-     * Restricts the range of possible date/time values.
-     */
-    minimumDate: PropTypes.instanceOf(Date),
-
-    /**
-     * The date picker mode.
-     */
-    mode: PropTypes.oneOf(['single', 'range']),
-
-    /**
-     * The date picker style.
-     */
-    pickerStyle: PropTypes.oneOf(['textfield-stepper', 'clock-calendar', 'textfield']),
-
-    /**
-     * Timezone offset in minutes.
-     *
-     * By default, the date picker will use the device's timezone. With this
-     * parameter, it is possible to force a certain timezone offset. For
-     * instance, to show times in Pacific Standard Time, pass -7 * 60.
-     */
-    timeZoneOffsetInMinutes: PropTypes.number,
-
-    /**
-     *
-     * [Styles](docs/style.html)
-     */
-    style: ViewPropTypes.style,
-  },
-
-  getDefaultProps: function(): DefaultProps {
-    return {
+class DatePickerMacOS extends React.Component<Props> {
+    static DefaultProps = {
       mode: 'range',
-    };
-  },
+  };
 
-  _onChange: function(event: Event) {
+  _picker: ?React.ElementRef<typeof RCTDatePickerNativeComponentMacOS> = null;
+
+  _onChange = (event: Event) => {
     const nativeTimeStamp = event.nativeEvent.timestamp;
-    this.props.onDateChange && this.props.onDateChange(
-      new Date(nativeTimeStamp)
-    );
+    this.props.onDateChange &&
+      this.props.onDateChange(new Date(nativeTimeStamp));
     // $FlowFixMe(>=0.41.0)
     this.props.onChange && this.props.onChange(event);
 
@@ -122,13 +108,13 @@ const DatePickerMacOS = createReactClass({
         date: propsTimeStamp,
       });
     }
-  },
+  }
 
-  render: function() {
+  render() {
     const props = this.props;
     return (
       <View style={props.style}>
-        <RCTDatePickerMacOS
+        <RCTDatePickerNativeComponentMacOS
           ref={ picker => { this._picker = picker; } }
           style={props.style}
           date={props.date.getTime()}
@@ -147,18 +133,7 @@ const DatePickerMacOS = createReactClass({
         />
       </View>
     );
-  },
-});
-
-const RCTDatePickerMacOS = requireNativeComponent('RCTDatePicker' /* TODO refactor as class that extends React.Component<Props>, {
-  propTypes: {
-    ...DatePickerMacOS.propTypes,
-    date: PropTypes.number,
-    minimumDate: PropTypes.number,
-    maximumDate: PropTypes.number,
-    onDateChange: () => null,
-    onChange: PropTypes.func,
   }
-}*/);
+}
 
 module.exports = DatePickerMacOS;

@@ -43,11 +43,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-import java.net.URLConnection;
+import java.net.URL;
 
 // TODO #6015104: rename to something less iOSish
 /**
@@ -97,7 +100,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
    * from wherever it may be to the external storage pictures directory, so that it can be scanned
    * by the MediaScanner.
    *
-   * @param uri the file:// URI of the image to save
+   * @param uri the file://, http:// or https:// URI of the image to save
    * @param promise to be resolved or rejected
    */
   @ReactMethod
@@ -108,6 +111,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
 
   private static class SaveToCameraRoll extends GuardedAsyncTask<Void, Void> {
 
+    private static final int SAVE_BUFFER_SIZE = 1048576; // 1MB
     private final Context mContext;
     private final Uri mUri;
     private final Promise mPromise;
@@ -121,9 +125,16 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
 
     @Override
     protected void doInBackgroundGuarded(Void... params) {
+      ReadableByteChannel input = null;
+      FileChannel output = null;
       File source = new File(mUri.getPath());
-      FileChannel input = null, output = null;
       try {
+        String scheme = mUri.getScheme();
+        if (scheme.equals("http") || scheme.equals("https")){
+          input = Channels.newChannel(new URL(mUri.toString()).openStream());
+        } else {
+          input = new FileInputStream(source).getChannel();
+        }
         File exportDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
         exportDir.mkdirs();
         if (!exportDir.isDirectory()) {
@@ -144,9 +155,19 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
         while (!dest.createNewFile()) {
           dest = new File(exportDir, sourceName + "_" + (n++) + sourceExt);
         }
-        input = new FileInputStream(source).getChannel();
         output = new FileOutputStream(dest).getChannel();
-        output.transferFrom(input, 0, input.size());
+        // Performs a buffered copy
+        final ByteBuffer buffer = ByteBuffer.allocate(SAVE_BUFFER_SIZE);
+        while (input.read(buffer) > 0) {
+          buffer.flip();
+          output.write(buffer);
+          buffer.compact();
+        }
+        // Drains the buffer
+        buffer.flip();
+        while (buffer.hasRemaining()){
+          output.write(buffer);
+        }
         input.close();
         output.close();
 
@@ -366,7 +387,8 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       WritableMap edge = new WritableNativeMap();
       WritableMap node = new WritableNativeMap();
       boolean imageInfoSuccess =
-          putImageInfo(resolver, media, node, idIndex, widthIndex, heightIndex, dataIndex);
+          putImageInfo(resolver, media, node, idIndex, widthIndex, heightIndex, dataIndex,
+                  mimeTypeIndex);
       if (imageInfoSuccess) {
         putBasicNodeInfo(media, node, mimeTypeIndex, groupNameIndex, dateTakenIndex);
         putLocationInfo(media, node, longitudeIndex, latitudeIndex);
@@ -401,14 +423,15 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
       int idIndex,
       int widthIndex,
       int heightIndex,
-      int dataIndex) {
+      int dataIndex,
+      int mimeTypeIndex) {
     WritableMap image = new WritableNativeMap();
     Uri photoUri = Uri.parse("file://" + media.getString(dataIndex));
     image.putString("uri", photoUri.toString());
     float width = media.getInt(widthIndex);
     float height = media.getInt(heightIndex);
 
-    String mimeType = URLConnection.guessContentTypeFromName(photoUri.toString());
+    String mimeType = media.getString(mimeTypeIndex);
 
     if (mimeType != null
         && mimeType.startsWith("video")) {

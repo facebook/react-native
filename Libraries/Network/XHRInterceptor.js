@@ -9,7 +9,7 @@
 
 'use strict';
 
-const XMLHttpRequest = require('XMLHttpRequest');
+const XMLHttpRequest = require('./XMLHttpRequest');
 const originalXHROpen = XMLHttpRequest.prototype.open;
 const originalXHRSend = XMLHttpRequest.prototype.send;
 const originalXHRSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;

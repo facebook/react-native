@@ -11,6 +11,7 @@ load(
 rn_android_library(
     name = "core",
     srcs = glob(["*.java"]),
+    is_androidx = True,
     deps = ([
         react_native_dep("third-party/java/espresso:espresso"),
         react_native_dep("third-party/java/fest:fest"),

@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   Animated,
   Image,
@@ -19,13 +18,12 @@ const {
   Text,
   TouchableHighlight,
   TouchableOpacity,
+  NativeModules,
   Platform,
   TouchableNativeFeedback,
   TouchableWithoutFeedback,
   View,
-} = ReactNative;
-
-const NativeModules = require('NativeModules');
+} = require('react-native');
 
 const forceTouchAvailable =
   (NativeModules.PlatformConstants &&
@@ -178,7 +176,9 @@ class TouchableFeedbackEvents extends React.Component<{}, $FlowFixMeState> {
         <View
           testID="touchable_feedback_events_console"
           style={styles.eventLogBox}>
-          {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
+          {this.state.eventLog.map((e, ii) => (
+            <Text key={ii}>{e}</Text>
+          ))}
         </View>
       </View>
     );
@@ -217,7 +217,9 @@ class TouchableDelayEvents extends React.Component<{}, $FlowFixMeState> {
         <View
           style={styles.eventLogBox}
           testID="touchable_delay_events_console">
-          {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
+          {this.state.eventLog.map((e, ii) => (
+            <Text key={ii}>{e}</Text>
+          ))}
         </View>
       </View>
     );
@@ -439,8 +441,6 @@ class TouchableMouseEvents extends React.Component<{}, $FlowFixMeState> {
             style={styles.wrapper}
             testID="touchable_feedback_mouse_events_button"
             accessibilityLabel="touchable feedback mouse events"
-            accessibilityTraits="button"
-            accessibilityComponentType="button"
             onPressIn={e => this._appendEvent('MouseIn', e.nativeEvent)}
             onPressOut={e => this._appendEvent('MouseOut', e.nativeEvent)}>
             <Text style={styles.button}>Click Me</Text>
@@ -449,7 +449,9 @@ class TouchableMouseEvents extends React.Component<{}, $FlowFixMeState> {
         <View
           testID="touchable_feedback_mouse_events_console"
           style={styles.eventLogBox}>
-          {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
+          {this.state.eventLog.map((e, ii) => (
+            <Text key={ii}>{e}</Text>
+          ))}
         </View>
       </View>
     );

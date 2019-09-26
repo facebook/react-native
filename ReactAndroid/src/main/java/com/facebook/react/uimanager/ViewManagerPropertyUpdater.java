@@ -6,25 +6,28 @@
 package com.facebook.react.uimanager;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import android.view.View;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
 public class ViewManagerPropertyUpdater {
   public interface Settable {
-     void getProperties(Map<String, String> props);
+    void getProperties(Map<String, String> props);
   }
 
   public interface ViewManagerSetter<T extends ViewManager, V extends View> extends Settable {
-    void setProperty(T manager, V view, String name, ReactStylesDiffMap props);
+    void setProperty(T manager, V view, String name, Object value);
   }
 
   public interface ShadowNodeSetter<T extends ReactShadowNode> extends Settable {
-    void setProperty(T node, String name, ReactStylesDiffMap props);
+    void setProperty(T node, String name, Object value);
   }
 
   private static final String TAG = "ViewManagerPropertyUpdater";
@@ -40,25 +43,21 @@ public class ViewManagerPropertyUpdater {
   }
 
   public static <T extends ViewManager, V extends View> void updateProps(
-      T manager,
-      V v,
-      ReactStylesDiffMap props) {
+      T manager, V v, ReactStylesDiffMap props) {
     ViewManagerSetter<T, V> setter = findManagerSetter(manager.getClass());
-    ReadableMap propMap = props.mBackingMap;
-    ReadableMapKeySetIterator iterator = propMap.keySetIterator();
-    while (iterator.hasNextKey()) {
-      String key = iterator.nextKey();
-      setter.setProperty(manager, v, key, props);
+    Iterator<Map.Entry<String, Object>> iterator = props.mBackingMap.getEntryIterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, Object> entry = iterator.next();
+      setter.setProperty(manager, v, entry.getKey(), entry.getValue());
     }
   }
 
   public static <T extends ReactShadowNode> void updateProps(T node, ReactStylesDiffMap props) {
     ShadowNodeSetter<T> setter = findNodeSetter(node.getClass());
-    ReadableMap propMap = props.mBackingMap;
-    ReadableMapKeySetIterator iterator = propMap.keySetIterator();
-    while (iterator.hasNextKey()) {
-      String key = iterator.nextKey();
-      setter.setProperty(node, key, props);
+    Iterator<Map.Entry<String, Object>> iterator = props.mBackingMap.getEntryIterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, Object> entry = iterator.next();
+      setter.setProperty(node, entry.getKey(), entry.getValue());
     }
   }
 
@@ -126,10 +125,10 @@ public class ViewManagerPropertyUpdater {
     }
 
     @Override
-    public void setProperty(T manager, V v, String name, ReactStylesDiffMap props) {
+    public void setProperty(T manager, V v, String name, Object value) {
       ViewManagersPropertyCache.PropSetter setter = mPropSetters.get(name);
       if (setter != null) {
-        setter.updateViewProp(manager, v, props);
+        setter.updateViewProp(manager, v, value);
       }
     }
 
@@ -151,10 +150,10 @@ public class ViewManagerPropertyUpdater {
     }
 
     @Override
-    public void setProperty(ReactShadowNode node, String name, ReactStylesDiffMap props) {
+    public void setProperty(ReactShadowNode node, String name, Object value) {
       ViewManagersPropertyCache.PropSetter setter = mPropSetters.get(name);
       if (setter != null) {
-        setter.updateShadowNodeProp(node, props);
+        setter.updateShadowNodeProp(node, value);
       }
     }
 

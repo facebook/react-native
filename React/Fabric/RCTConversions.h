@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -7,10 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import <react/components/view/primitives.h>
 #import <react/components/view/AccessibilityPrimitives.h>
+#import <react/components/view/primitives.h>
 #import <react/graphics/Color.h>
 #import <react/graphics/Geometry.h>
+#import <react/graphics/Transform.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,7 +32,13 @@ inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::Share
   return sharedColor ? [UIColor colorWithCGColor:sharedColor.get()] : nil;
 }
 
-inline CGColorRef RCTCGColorRefFromSharedColor(const facebook::react::SharedColor &sharedColor) {
+
+inline CF_RETURNS_NOT_RETAINED CGColorRef RCTCGColorRefUnretainedFromSharedColor(const facebook::react::SharedColor &sharedColor) {
+  return sharedColor ? sharedColor.get() : nil;
+}
+
+
+inline CF_RETURNS_RETAINED CGColorRef RCTCGColorRefFromSharedColor(const facebook::react::SharedColor &sharedColor) {
   return sharedColor ? CGColorCreateCopy(sharedColor.get()) : nil;
 }
 

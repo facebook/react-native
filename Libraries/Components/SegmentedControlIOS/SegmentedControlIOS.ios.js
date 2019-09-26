@@ -10,13 +10,13 @@
 
 'use strict';
 
-const React = require('React');
-const StyleSheet = require('StyleSheet');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
 
-const RCTSegmentedControlNativeComponent = require('RCTSegmentedControlNativeComponent');
+const RCTSegmentedControlNativeComponent = require('./RCTSegmentedControlNativeComponent');
 
-import type {SyntheticEvent} from 'CoreEventTypes';
-import type {ViewProps} from 'ViewPropTypes';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 type Event = SyntheticEvent<
   $ReadOnly<{|

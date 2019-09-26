@@ -168,7 +168,7 @@ public class EventDispatcher implements LifecycleEventListener {
 
   @Override
   public void onHostResume() {
-    mCurrentFrameCallback.maybePostFromNonUI();
+    maybePostFrameCallbackFromNonUI();
   }
 
   @Override

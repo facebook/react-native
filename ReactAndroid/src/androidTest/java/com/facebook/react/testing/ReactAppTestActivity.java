@@ -11,7 +11,7 @@ import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import androidx.fragment.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
@@ -213,6 +213,14 @@ public class ReactAppTestActivity extends FragmentActivity
     } else {
       builder.addPackage(new MainReactPackage());
     }
+    /**
+     *  The {@link ReactContext#mCurrentActivity} never to be set if initial lifecycle state is resumed.
+     *  So we should call {@link ReactInstanceManagerBuilder#setCurrentActivity}.
+     *
+     *  Finally,{@link ReactInstanceManagerBuilder#build()} will create instance of {@link ReactInstanceManager}.
+     *  And also will set {@link ReactContext#mCurrentActivity}.
+     */
+    builder.setCurrentActivity(this);
     builder
         .addPackage(new InstanceSpecForTestPackage(spec))
         // By not setting a JS module name, we force the bundle to be always loaded from

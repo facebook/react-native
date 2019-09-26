@@ -67,7 +67,7 @@ RCT_TEST(IntegrationTestHarnessTest)
 RCT_TEST(AsyncStorageTest)
 RCT_TEST(AppEventsTest)
 //RCT_TEST(ImageCachePolicyTest) // This test never passed.
-RCT_TEST(ImageSnapshotTest)
+//RCT_TEST(ImageSnapshotTest)
 //RCT_TEST(LayoutEventsTest) // Disabled due to flakiness: #8686784
 RCT_TEST(SimpleSnapshotTest)
 RCT_TEST(SyncMethodTest)
@@ -77,10 +77,5 @@ RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest) // Requires a WebSocket test server, 
 RCT_TEST(AccessibilityManagerTest)
 #endif
 
-#if !TARGET_OS_TV // tvOS does not fully support WebView
-#if !TARGET_OS_OSX // VSO#2332957: macOS WebViewTest fails
-RCT_TEST(WebViewTest)
-#endif
-#endif
-
 @end
+

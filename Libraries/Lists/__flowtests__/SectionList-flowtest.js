@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const SectionList = require('SectionList');
+const SectionList = require('../SectionList');
 
 function renderMyListItem(info: {item: {title: string}, index: number}) {
   return <span />;

@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DatePickerIOS should render as <View> when mocked 1`] = `
+<View>
+  <RCTDatePicker
+    date={1555883690956}
+    mode="date"
+    onChange={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "height": 216,
+      }
+    }
+  />
+</View>
+`;
+
+exports[`DatePickerIOS should render as <View> when not mocked 1`] = `
+<View>
+  <RCTDatePicker
+    date={1555883690956}
+    mode="date"
+    onChange={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "height": 216,
+      }
+    }
+  />
+</View>
+`;
+
+exports[`DatePickerIOS should shallow render as <DatePickerIOS> when mocked 1`] = `
+<DatePickerIOS
+  date={2019-04-21T21:54:50.956Z}
+  mode="date"
+  onDateChange={[MockFunction]}
+/>
+`;
+
+exports[`DatePickerIOS should shallow render as <DatePickerIOS> when not mocked 1`] = `
+<DatePickerIOS
+  date={2019-04-21T21:54:50.956Z}
+  mode="date"
+  onDateChange={[MockFunction]}
+/>
+`;

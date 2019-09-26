@@ -186,51 +186,41 @@ namespace std {
 template <>
 struct hash<facebook::react::Point> {
   size_t operator()(const facebook::react::Point &point) const {
-    auto seed = size_t{0};
-    folly::hash::hash_combine(seed, point.x, point.y);
-    return seed;
+    return folly::hash::hash_combine(0, point.x, point.y);
   }
 };
 
 template <>
 struct hash<facebook::react::Size> {
   size_t operator()(const facebook::react::Size &size) const {
-    auto seed = size_t{0};
-    folly::hash::hash_combine(seed, size.width, size.height);
-    return seed;
+    return folly::hash::hash_combine(0, size.width, size.height);
   }
 };
 
 template <>
 struct hash<facebook::react::Rect> {
   size_t operator()(const facebook::react::Rect &rect) const {
-    auto seed = size_t{0};
-    folly::hash::hash_combine(seed, rect.origin, rect.size);
-    return seed;
+    return folly::hash::hash_combine(0, rect.origin, rect.size);
   }
 };
 
 template <typename T>
 struct hash<facebook::react::RectangleEdges<T>> {
   size_t operator()(const facebook::react::RectangleEdges<T> &edges) const {
-    auto seed = size_t{0};
-    folly::hash::hash_combine(
-        seed, edges.left, edges.right, edges.top, edges.bottom);
-    return seed;
+    return folly::hash::hash_combine(
+        0, edges.left, edges.right, edges.top, edges.bottom);
   }
 };
 
 template <typename T>
 struct hash<facebook::react::RectangleCorners<T>> {
   size_t operator()(const facebook::react::RectangleCorners<T> &corners) const {
-    auto seed = size_t{0};
-    folly::hash::hash_combine(
-        seed,
+    return folly::hash::hash_combine(
+        0,
         corners.topLeft,
         corners.bottomLeft,
         corners.topRight,
         corners.bottomRight);
-    return seed;
   }
 };
 

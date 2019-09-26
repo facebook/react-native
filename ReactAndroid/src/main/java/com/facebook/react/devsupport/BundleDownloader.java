@@ -142,10 +142,12 @@ public class BundleDownloader {
             }
             mDownloadBundleFromURLCall = null;
 
+            String url = call.request().url().toString();
+
             callback.onFailure(
-                DebugServerException.makeGeneric(
+                DebugServerException.makeGeneric(url,
                     "Could not connect to development server.",
-                    "URL: " + call.request().url().toString(),
+                    "URL: " + url,
                     e));
           }
 
@@ -284,7 +286,7 @@ public class BundleDownloader {
     // Check for server errors. If the server error has the expected form, fail with more info.
     if (statusCode != 200) {
       String bodyString = body.readUtf8();
-      DebugServerException debugServerException = DebugServerException.parse(bodyString);
+      DebugServerException debugServerException = DebugServerException.parse(url, bodyString);
       if (debugServerException != null) {
         callback.onFailure(debugServerException);
       } else {

@@ -33,7 +33,7 @@ LOCAL_CFLAGS := \
 LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture -Wno-unused-variable
 
 LOCAL_STATIC_LIBRARIES := boost jsi
-LOCAL_SHARED_LIBRARIES := libfb libfolly_json libglog 
+LOCAL_SHARED_LIBRARIES := jsinspector libfb libfolly_json libglog 
 
 LOCAL_V8_FILES := \
     File.cpp \

@@ -1,21 +1,25 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AnimatedTransformTestModule
+ * @format
  */
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var View = require('View');
-var TouchableOpacity = require('TouchableOpacity');
-var Text = require('Text');
-var RecordingModule = require('NativeModules').Recording;
+const React = require('react');
+const {
+  NativeModules,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} = require('react-native');
+const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
+
+const {Recording: RecordingModule} = NativeModules;
 
 const styles = StyleSheet.create({
   base: {
@@ -62,7 +66,7 @@ class AnimatedTransformTestApp extends React.Component {
           onPress={this.toggle}
           testID="TouchableOpacity"
           style={[styles.base, this.state.flag ? styles.transformed : null]}>
-            <Text>TouchableOpacity</Text>
+          <Text>TouchableOpacity</Text>
         </TouchableOpacity>
       </View>
     );
@@ -75,7 +79,7 @@ var AnimatedTransformTestModule = {
 
 BatchedBridge.registerCallableModule(
   'AnimatedTransformTestModule',
-  AnimatedTransformTestModule
+  AnimatedTransformTestModule,
 );
 
 module.exports = AnimatedTransformTestModule;

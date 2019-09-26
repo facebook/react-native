@@ -11,7 +11,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 import java.lang.annotation.Retention;
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 @Retention(SOURCE)
 @IntDef({DEFAULT, FABRIC})

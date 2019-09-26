@@ -5,10 +5,10 @@
 
 package com.facebook.react.common;
 
-import android.support.v4.util.Pools;
+import androidx.core.util.Pools;
 
 /**
- * Like {@link android.support.v4.util.Pools.SynchronizedPool} with the option to clear the pool
+ * Like {@link androidx.core.util.Pools.SynchronizedPool} with the option to clear the pool
  * (e.g. on memory pressure).
  */
 public class ClearableSynchronizedPool<T> implements Pools.Pool<T> {

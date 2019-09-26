@@ -118,6 +118,12 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     minWidth.recycle();
   }
 
+  boolean mCollapsable;
+  @ReactProp(name = "collapsable")
+  public void setCollapsable(boolean collapsable) {
+    mCollapsable = collapsable;
+  }
+
   @ReactProp(name = ViewProps.MAX_WIDTH)
   public void setMaxWidth(Dynamic maxWidth) {
     if (isVirtual()) {

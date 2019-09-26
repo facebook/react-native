@@ -13,8 +13,12 @@
 /* eslint-disable react-native/no-inline-styles */
 
 const React = require('react');
-const {StyleSheet, Text, View} = require('react-native');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const {
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} = require('react-native');
 
 exports.title = '<View>';
 exports.description =
@@ -226,28 +230,92 @@ exports.examples = [
     },
   },
   {
-    // [TODO(macOS ISS#2323203)
-    title: 'ToolTip',
+    title: 'Offscreen Alpha Compositing',
     render() {
-      return (
-        <View tooltip="Parent View">
-          <Text style={{fontSize: 11}}>
-            This Parent View has tooltip "Parent View"
-          </Text>
-          <View tooltip="Child View 1">
-            <Text style={{fontSize: 11}}>
-              This view has tooltip "Child View 1"
-            </Text>
-          </View>
-          <View tooltip="Child View 2">
-            <Text style={{fontSize: 11}}>
-              This view has tooltip "Child View 2"
-            </Text>
-          </View>
-        </View>
-      );
+      type Props = $ReadOnly<{||}>;
+      type State = {|
+        active: boolean,
+      |};
+
+      const styles = StyleSheet.create({
+        alphaCompositing: {
+          justifyContent: 'space-around',
+          width: 100,
+          height: 50,
+          borderRadius: 100,
+        },
+      });
+
+      class OffscreenAlphaCompositing extends React.Component<Props, State> {
+        state = {
+          active: false,
+        };
+
+        render() {
+          return (
+            <TouchableWithoutFeedback onPress={this._handlePress}>
+              <View>
+                <Text style={{paddingBottom: 10}}>Blobs</Text>
+                <View
+                  style={{opacity: 1.0, paddingBottom: 30}}
+                  needsOffscreenAlphaCompositing={this.state.active}>
+                  <View
+                    style={[
+                      styles.alphaCompositing,
+                      {marginTop: 0, marginLeft: 0, backgroundColor: '#FF6F59'},
+                    ]}
+                  />
+                  <View
+                    style={[
+                      styles.alphaCompositing,
+                      {
+                        marginTop: -50,
+                        marginLeft: 50,
+                        backgroundColor: '#F7CB15',
+                      },
+                    ]}
+                  />
+                </View>
+                <Text style={{paddingBottom: 10}}>
+                  Same blobs, but their shared container have 0.5 opacity
+                </Text>
+                <Text style={{paddingBottom: 10}}>
+                  Tap to {this.state.active ? 'activate' : 'deactivate'}{' '}
+                  needsOffscreenAlphaCompositing
+                </Text>
+                <View
+                  style={{opacity: 0.8}}
+                  needsOffscreenAlphaCompositing={this.state.active}>
+                  <View
+                    style={[
+                      styles.alphaCompositing,
+                      {marginTop: 0, marginLeft: 0, backgroundColor: '#FF6F59'},
+                    ]}
+                  />
+                  <View
+                    style={[
+                      styles.alphaCompositing,
+                      {
+                        marginTop: -50,
+                        marginLeft: 50,
+                        backgroundColor: '#F7CB15',
+                      },
+                    ]}
+                  />
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          );
+        }
+
+        _handlePress = () => {
+          this.setState({active: !this.state.active});
+        };
+      }
+
+      return <OffscreenAlphaCompositing />;
     },
-  }, // ]TODO(macOS ISS#2323203)
+  },
   {
     title: 'ZIndex',
     render() {
@@ -334,6 +402,29 @@ exports.examples = [
       return <ZIndexExample />;
     },
   },
+  {
+    // [TODO(macOS ISS#2323203)
+    title: 'ToolTip',
+    render() {
+      return (
+        <View tooltip="Parent View">
+          <Text style={{fontSize: 11}}>
+            This Parent View has tooltip "Parent View"
+          </Text>
+          <View tooltip="Child View 1">
+            <Text style={{fontSize: 11}}>
+              This view has tooltip "Child View 1"
+            </Text>
+          </View>
+          <View tooltip="Child View 2">
+            <Text style={{fontSize: 11}}>
+              This view has tooltip "Child View 2"
+            </Text>
+          </View>
+        </View>
+      );
+    },
+  }, // ]TODO(macOS ISS#2323203)
   {
     title: 'BackfaceVisibility',
     render: function() {

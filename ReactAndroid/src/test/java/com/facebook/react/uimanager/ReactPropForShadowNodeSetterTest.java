@@ -32,7 +32,7 @@ import org.robolectric.RobolectricTestRunner;
  * of properties to be updated.
  */
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactPropForShadowNodeSetterTest {
 
   @Rule

@@ -20,7 +20,10 @@ const HeapCapture = {
       console.log('HeapCapture.captureHeap error: ' + e.toString());
       error = e.toString();
     }
-    require('NativeModules').JSCHeapCapture.captureComplete(path, error);
+    require('../BatchedBridge/NativeModules').JSCHeapCapture.captureComplete(
+      path,
+      error,
+    );
   },
 };
 

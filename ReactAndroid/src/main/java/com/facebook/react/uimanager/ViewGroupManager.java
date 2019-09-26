@@ -17,7 +17,8 @@ import javax.annotation.Nullable;
  * Class providing children management API for view managers of classes extending ViewGroup.
  */
 public abstract class ViewGroupManager <T extends ViewGroup>
-    extends BaseViewManager<T, LayoutShadowNode> {
+    extends BaseViewManager<T, LayoutShadowNode>
+    implements IViewManagerWithChildren {
 
   private static WeakHashMap<View, Integer> mZIndexHash = new WeakHashMap<>();
 
@@ -97,6 +98,7 @@ public abstract class ViewGroupManager <T extends ViewGroup>
    * through the ViewGroup's onLayout method. In that case, onLayout for this View type must *not*
    * call layout on its children.
    */
+  @Override
   public boolean needsCustomLayoutForChildren() {
     return false;
   }

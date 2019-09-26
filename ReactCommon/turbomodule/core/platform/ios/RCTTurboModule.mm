@@ -7,16 +7,21 @@
 
 #import "RCTTurboModule.h"
 
+#import <objc/message.h>
 #import <objc/runtime.h>
 #import <sstream>
 #import <vector>
 
+#import <React/RCTConvert.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTModuleMethod.h>
 #import <React/RCTUtils.h>
 #import <jsireact/JSCallInvoker.h>
 #import <jsireact/LongLivedObject.h>
 #import <jsireact/TurboModule.h>
 #import <jsireact/TurboModuleUtils.h>
+#import <React/RCTCxxConvert.h>
+#import <React/RCTManagedPointer.h>
 
 using namespace facebook;
 
@@ -87,6 +92,7 @@ static NSArray *convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array
   size_t size = value.size(runtime);
   NSMutableArray *result = [NSMutableArray new];
   for (size_t i = 0; i < size; i++) {
+    // Insert kCFNull when it's `undefined` value to preserve the indices.
     [result addObject:convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker) ?: (id)kCFNull];
   }
   return [result copy];
@@ -99,8 +105,10 @@ static NSDictionary *convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const
   for (size_t i = 0; i < size; i++) {
     jsi::String name = propertyNames.getValueAtIndex(runtime, i).getString(runtime);
     NSString *k = convertJSIStringToNSString(runtime, name);
-    id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker) ?: (id)kCFNull;
-    result[k] = v;
+    id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker);
+    if (v) {
+      result[k] = v;
+    }
   }
   return [result copy];
 }
@@ -270,78 +278,6 @@ namespace react {
 
 namespace {
 
-SEL resolveMethodSelector(
-    TurboModuleMethodValueKind valueKind,
-    id<RCTTurboModule> module,
-    std::string moduleName,
-    std::string methodName,
-    size_t argCount) {
-  // Assume the instance is properly bound to the right class at this point.
-  SEL selector = nil;
-
-  // PromiseKind expects 2 additional function args for resolve() and reject()
-  size_t adjustedCount = valueKind == PromiseKind ? argCount + 2 : argCount;
-  NSString *baseMethodName = [NSString stringWithUTF8String:methodName.c_str()];
-
-  if (adjustedCount == 0) {
-    selector = NSSelectorFromString(baseMethodName);
-    if (![module respondsToSelector:selector]) {
-      throw std::runtime_error("Unable to find method: " + methodName + " for module: " + moduleName + ". Make sure the module is installed correctly.");
-    }
-  } else if (adjustedCount == 1) {
-    selector = NSSelectorFromString([NSString stringWithFormat:@"%@:", baseMethodName]);
-    if (![module respondsToSelector:selector]) {
-      throw std::runtime_error("Unable to find method: " + methodName + " for module: " + moduleName + ". Make sure the module is installed correctly.");
-    }
-  } else {
-    // TODO: This may be expensive lookup. The codegen output should specify the exact selector name.
-    unsigned int numberOfMethods;
-    Method *methods = class_copyMethodList([module class], &numberOfMethods);
-    if (methods) {
-      for (unsigned int i = 0; i < numberOfMethods; i++) {
-        SEL s = method_getName(methods[i]);
-        if ([NSStringFromSelector(s) hasPrefix:[NSString stringWithFormat:@"%@:", baseMethodName]]) {
-          selector = s;
-          break;
-        }
-      }
-      free(methods);
-    }
-    if (!selector) {
-      throw std::runtime_error("Unable to find method: " + methodName + " for module: " + moduleName + ". Make sure the module is installed correctly.");
-    }
-  }
-
-  return selector;
-}
-
-NSInvocation *getMethodInvocation(
-    jsi::Runtime &runtime,
-    TurboModuleMethodValueKind valueKind,
-    const id<RCTTurboModule> module,
-    std::shared_ptr<JSCallInvoker> jsInvoker,
-    SEL selector,
-    const jsi::Value *args,
-    size_t count) {
-  NSInvocation *inv = [NSInvocation invocationWithMethodSignature:[[module class] instanceMethodSignatureForSelector:selector]];
-  [inv setSelector:selector];
-  for (size_t i = 0; i < count; i++) {
-    const jsi::Value *arg = &args[i];
-    if (arg->isBool()) {
-      bool v = arg->getBool();
-      [inv setArgument:(void *)&v atIndex:i + 2];
-    } else if (arg->isNumber()) {
-      double v = arg->getNumber();
-      [inv setArgument:(void *)&v atIndex:i + 2];
-    } else {
-      id v = convertJSIValueToObjCObject(runtime, *arg, jsInvoker);
-      [inv setArgument:(void *)&v atIndex:i + 2];
-    }
-  }
-  [inv retainArguments];
-  return inv;
-}
-
 /**
  * Perform method invocation on a specific queue as configured by the module class.
  * This serves as a backward-compatible support for RCTBridgeModule's methodQueue API.
@@ -351,49 +287,26 @@ NSInvocation *getMethodInvocation(
  * - ObjC module methods will be always be called from JS thread.
  *   They may decide to dispatch to a different queue as needed.
  */
-void performMethodInvocation(
+jsi::Value performMethodInvocation(
     jsi::Runtime &runtime,
     NSInvocation *inv,
     TurboModuleMethodValueKind valueKind,
     const id<RCTTurboModule> module,
     std::shared_ptr<JSCallInvoker> jsInvoker,
-    jsi::Value *result) {
-  *result = jsi::Value::undefined();
+    NSMutableArray *retainedObjectsForInvocation) {
+
+  __block id result;
   jsi::Runtime *rt = &runtime;
   void (^block)() = ^{
     [inv invokeWithTarget:module];
+    [retainedObjectsForInvocation removeAllObjects];
 
     if (valueKind == VoidKind) {
       return;
     }
-
-    void *rawResult = NULL;
+    void *rawResult;
     [inv getReturnValue:&rawResult];
-
-    // TODO: Re-use value conversion logic from existing impl, if possible.
-    switch (valueKind) {
-      case BooleanKind:
-        *result = convertNSNumberToJSIBoolean(*rt, (__bridge NSNumber *)rawResult);
-        break;
-      case NumberKind:
-        *result = convertNSNumberToJSINumber(*rt, (__bridge NSNumber *)rawResult);
-        break;
-      case StringKind:
-        *result = convertNSStringToJSIString(*rt, (__bridge NSString *)rawResult);
-        break;
-      case ObjectKind:
-        *result = convertNSDictionaryToJSIObject(*rt, (__bridge NSDictionary *)rawResult);
-        break;
-      case ArrayKind:
-        *result = convertNSArrayToJSIArray(*rt, (__bridge NSArray *)rawResult);
-        break;
-      case FunctionKind:
-        throw std::runtime_error("doInvokeTurboModuleMethod: FunctionKind is not supported yet.");
-      case PromiseKind:
-        throw std::runtime_error("doInvokeTurboModuleMethod: PromiseKind wasn't handled properly.");
-      case VoidKind:
-        throw std::runtime_error("doInvokeTurboModuleMethod: VoidKind wasn't handled properly.");
-    }
+    result = (__bridge id)rawResult;
   };
 
   // Backward-compatibility layer for calling module methods on specific queue.
@@ -422,9 +335,199 @@ void performMethodInvocation(
       dispatch_sync(methodQueue, block);
     }
   }
+
+  // TODO: Re-use value conversion logic from existing impl, if possible.
+  switch (valueKind) {
+    case VoidKind:
+      return jsi::Value::undefined();
+    case BooleanKind:
+      return convertNSNumberToJSIBoolean(*rt, (NSNumber *)result);
+    case NumberKind:
+      return convertNSNumberToJSINumber(*rt, (NSNumber *)result);
+    case StringKind:
+      return convertNSStringToJSIString(*rt, (NSString *)result);
+    case ObjectKind:
+      return convertNSDictionaryToJSIObject(*rt, (NSDictionary *)result);
+    case ArrayKind:
+      return convertNSArrayToJSIArray(*rt, (NSArray *)result);
+    case FunctionKind:
+      throw std::runtime_error("convertInvocationResultToJSIValue: FunctionKind is not supported yet.");
+    case PromiseKind:
+      throw std::runtime_error("convertInvocationResultToJSIValue: PromiseKind wasn't handled properly.");
+  }
 }
 
 } // namespace
+
+/**
+ * Given a method name, and an argument index, return type type of that argument.
+ * Prerequisite: You must wrap the method declaration inside some variant of the
+ * RCT_EXPORT_METHOD macro.
+ *
+ * This method returns nil if the method for which you're querying the argument type
+ * is not wrapped in an RCT_EXPORT_METHOD.
+ *
+ * Note: This is only being introduced for backward compatibility. It will be removed
+ *       in the future.
+ */
+NSString* ObjCTurboModule::getArgumentTypeName(NSString* methodName, int argIndex) {
+  if (!methodArgumentTypeNames_) {
+    NSMutableDictionary<NSString *, NSArray<NSString *> *> *methodArgumentTypeNames = [NSMutableDictionary new];
+
+    unsigned int numberOfMethods;
+    Class cls = [instance_ class];
+    Method *methods = class_copyMethodList(object_getClass(cls), &numberOfMethods);
+
+    if (methods) {
+      for (unsigned int i = 0; i < numberOfMethods; i++) {
+        SEL s = method_getName(methods[i]);
+        NSString* mName = NSStringFromSelector(s);
+        if (![mName hasPrefix:@"__rct_export__"]) {
+          continue;
+        }
+
+        // Message dispatch logic from old infra
+        RCTMethodInfo *(*getMethodInfo)(id, SEL) = (__typeof__(getMethodInfo))objc_msgSend;
+        RCTMethodInfo *methodInfo = getMethodInfo(cls, s);
+
+        NSArray<RCTMethodArgument *> *arguments;
+        NSString *otherMethodName = RCTParseMethodSignature(methodInfo->objcName, &arguments);
+
+        NSMutableArray* argumentTypes = [NSMutableArray arrayWithCapacity:[arguments count]];
+        for (int j = 0; j < [arguments count]; j += 1) {
+          [argumentTypes addObject:arguments[j].type];
+        }
+
+        NSString *normalizedOtherMethodName = [otherMethodName componentsSeparatedByString:@":"][0];
+        methodArgumentTypeNames[normalizedOtherMethodName] = argumentTypes;
+      }
+
+      free(methods);
+    }
+
+    methodArgumentTypeNames_ = methodArgumentTypeNames;
+  }
+
+  if (methodArgumentTypeNames_[methodName]) {
+    assert([methodArgumentTypeNames_[methodName] count] > argIndex);
+    return methodArgumentTypeNames_[methodName][argIndex];
+  }
+
+  return nil;
+}
+
+NSInvocation *ObjCTurboModule::getMethodInvocation(
+   jsi::Runtime &runtime,
+   TurboModuleMethodValueKind valueKind,
+   const id<RCTTurboModule> module,
+   std::shared_ptr<JSCallInvoker> jsInvoker,
+   const std::string& methodName,
+   SEL selector,
+   const jsi::Value *args,
+   size_t count,
+   NSMutableArray *retainedObjectsForInvocation) {
+  NSInvocation *inv = [NSInvocation invocationWithMethodSignature:[[module class] instanceMethodSignatureForSelector:selector]];
+  [inv setSelector:selector];
+
+  NSMethodSignature *methodSignature = [[module class] instanceMethodSignatureForSelector:selector];
+
+  for (size_t i = 0; i < count; i++) {
+    const jsi::Value *arg = &args[i];
+    const char *objCArgType = [methodSignature getArgumentTypeAtIndex:i + 2];
+
+    if (arg->isBool()) {
+      bool v = arg->getBool();
+
+      /**
+       * JS type checking ensures the Objective C argument here is either a BOOL or NSNumber*.
+       */
+      if (objCArgType[0] == _C_ID) {
+        id objCArg = [NSNumber numberWithBool:v];
+        [inv setArgument:(void *)&objCArg atIndex:i + 2];
+        [retainedObjectsForInvocation addObject:objCArg];
+      } else {
+        [inv setArgument:(void *)&v atIndex:i + 2];
+      }
+
+      continue;
+    }
+
+    if (arg->isNumber()) {
+      double v = arg->getNumber();
+
+      /**
+       * JS type checking ensures the Objective C argument here is either a double or NSNumber*.
+       */
+      if (objCArgType[0] == _C_ID) {
+        id objCArg = [NSNumber numberWithDouble:v];
+        [inv setArgument:(void *)&objCArg atIndex:i + 2];
+        [retainedObjectsForInvocation addObject:objCArg];
+      } else {
+        [inv setArgument:(void *)&v atIndex:i + 2];
+      }
+
+      continue;
+    }
+
+    /**
+     * Convert arg to ObjC objects.
+     */
+    id objCArg = convertJSIValueToObjCObject(runtime, *arg, jsInvoker);
+
+    if (objCArg) {
+      NSString *methodNameNSString = @(methodName.c_str());
+
+      /**
+       * Convert objects using RCTConvert.
+       */
+      if (objCArgType[0] == _C_ID) {
+        NSString* argumentType = getArgumentTypeName(methodNameNSString, i);
+        if (argumentType != nil) {
+          NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
+          SEL rctConvertSelector = NSSelectorFromString(rctConvertMethodName);
+
+          if ([RCTConvert respondsToSelector: rctConvertSelector]) {
+            // Message dispatch logic from old infra
+            id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
+            id convertedObjCArg = convert([RCTConvert class], rctConvertSelector, objCArg);
+
+            [inv setArgument:(void *)&convertedObjCArg atIndex:i + 2];
+            if (convertedObjCArg) {
+              [retainedObjectsForInvocation addObject:convertedObjCArg];
+            }
+            continue;
+          }
+        }
+      }
+
+      /**
+       * Convert objects using RCTCxxConvert to structs.
+       */
+      if ([objCArg isKindOfClass:[NSDictionary class]] && hasMethodArgConversionSelector(methodNameNSString, i)) {
+        SEL methodArgConversionSelector = getMethodArgConversionSelector(methodNameNSString, i);
+
+        // Message dispatch logic from old infra (link: https://git.io/fjf3U)
+        RCTManagedPointer *(*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
+        RCTManagedPointer *box = convert([RCTCxxConvert class], methodArgConversionSelector, objCArg);
+
+        void *pointer = box.voidPointer;
+        [inv setArgument:&pointer atIndex:i + 2];
+        [retainedObjectsForInvocation addObject:box];
+        continue;
+      }
+    }
+
+    /**
+     * Insert converted args unmodified.
+     */
+    [inv setArgument:(void *)&objCArg atIndex:i + 2];
+    if (objCArg) {
+      [retainedObjectsForInvocation addObject:objCArg];
+    }
+  }
+
+  return inv;
+}
 
 ObjCTurboModule::ObjCTurboModule(
     const std::string &name,
@@ -433,14 +536,16 @@ ObjCTurboModule::ObjCTurboModule(
   : TurboModule(name, jsInvoker),
   instance_(instance) {}
 
-jsi::Value ObjCTurboModule::invokeMethod(
+jsi::Value ObjCTurboModule::invokeObjCMethod(
     jsi::Runtime &runtime,
     TurboModuleMethodValueKind valueKind,
     const std::string &methodName,
+    SEL selector,
     const jsi::Value *args,
-    size_t count) {
-  SEL selector = resolveMethodSelector(valueKind, instance_, name_, methodName, count);
-  NSInvocation *inv = getMethodInvocation(runtime, valueKind, instance_, jsInvoker_, selector, args, count);
+    size_t count)
+{
+  NSMutableArray *retainedObjectsForInvocation = [NSMutableArray arrayWithCapacity:count + 2];
+  NSInvocation *inv = getMethodInvocation(runtime, valueKind, instance_, jsInvoker_, methodName, selector, args, count, retainedObjectsForInvocation);
 
   if (valueKind == PromiseKind) {
     // Promise return type is special cased today, i.e. it needs extra 2 function args for resolve() and reject(), to
@@ -453,15 +558,44 @@ jsi::Value ObjCTurboModule::invokeMethod(
           RCTPromiseRejectBlock rejectBlock = wrapper->rejectBlock();
           [inv setArgument:(void *)&resolveBlock atIndex:count + 2];
           [inv setArgument:(void *)&rejectBlock atIndex:count + 3];
+          [retainedObjectsForInvocation addObject:resolveBlock];
+          [retainedObjectsForInvocation addObject:rejectBlock];
           // The return type becomes void in the ObjC side.
-          jsi::Value result;
-          performMethodInvocation(rt, inv, VoidKind, instance_, jsInvoker_, &result);
+          performMethodInvocation(rt, inv, VoidKind, instance_, jsInvoker_, retainedObjectsForInvocation);
         });
   }
 
-  jsi::Value result;
-  performMethodInvocation(runtime, inv, valueKind, instance_, jsInvoker_, &result);
-  return result;
+  return performMethodInvocation(runtime, inv, valueKind, instance_, jsInvoker_, retainedObjectsForInvocation);
+}
+
+BOOL ObjCTurboModule::hasMethodArgConversionSelector(NSString *methodName, int argIndex) {
+  return methodArgConversionSelectors_ && methodArgConversionSelectors_[methodName] && ![methodArgConversionSelectors_[methodName][argIndex] isEqual:[NSNull null]];
+}
+
+SEL ObjCTurboModule::getMethodArgConversionSelector(NSString *methodName, int argIndex) {
+  assert(hasMethodArgConversionSelector(methodName, argIndex));
+  return (SEL)((NSValue *)methodArgConversionSelectors_[methodName][argIndex]).pointerValue;
+}
+
+void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName) {
+  if (!methodArgConversionSelectors_) {
+    methodArgConversionSelectors_ = [NSMutableDictionary new];
+  }
+
+  if (!methodArgConversionSelectors_[methodName]) {
+    auto metaData = methodMap_.at([methodName UTF8String]);
+    auto argCount = metaData.argCount;
+
+    methodArgConversionSelectors_[methodName] = [NSMutableArray arrayWithCapacity:argCount];
+    for (int i = 0; i < argCount; i += 1) {
+      [methodArgConversionSelectors_[methodName] addObject:[NSNull null]];
+    }
+  }
+
+  SEL selector = NSSelectorFromString(fnName);
+  NSValue *selectorValue = [NSValue valueWithPointer:selector];
+
+  methodArgConversionSelectors_[methodName][argIndex] = selectorValue;
 }
 
 } // namespace react

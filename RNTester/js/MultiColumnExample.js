@@ -11,12 +11,11 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {FlatList, StyleSheet, Text, View, Alert} = ReactNative;
+const {FlatList, StyleSheet, Text, View, Alert} = require('react-native');
 
 const RNTesterPage = require('./RNTesterPage');
 
-const infoLog = require('infoLog');
+const infoLog = require('../../Libraries/Utilities/infoLog');
 
 const {
   FooterComponent,

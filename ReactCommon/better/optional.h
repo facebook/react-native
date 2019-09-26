@@ -9,7 +9,7 @@
 
 #include <better/better.h>
 
-#ifdef BETTER_USE_FOLLY_CONTAINERS
+#if defined(BETTER_USE_FOLLY_CONTAINERS) || __cplusplus < 202000L
 
 #include <folly/Optional.h>
 
@@ -22,7 +22,7 @@
 namespace facebook {
 namespace better {
 
-#ifdef BETTER_USE_FOLLY_CONTAINERS
+#if defined(BETTER_USE_FOLLY_CONTAINERS) || __cplusplus < 202000L
 
 template <typename Value>
 using optional = folly::Optional<Value>;

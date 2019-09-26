@@ -9,14 +9,12 @@
 
 #include <react/core/LayoutMetrics.h>
 
-#include "ScrollViewLocalData.h"
-
 namespace facebook {
 namespace react {
 
 const char ScrollViewComponentName[] = "ScrollView";
 
-void ScrollViewShadowNode::updateLocalData() {
+void ScrollViewShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
   auto contentBoundingRect = Rect{};
@@ -24,16 +22,26 @@ void ScrollViewShadowNode::updateLocalData() {
     contentBoundingRect.unionInPlace(childNode->getLayoutMetrics().frame);
   }
 
-  const auto &localData =
-      std::make_shared<const ScrollViewLocalData>(contentBoundingRect);
-  setLocalData(localData);
+  auto state = getStateData();
+
+  if (state.contentBoundingRect != contentBoundingRect) {
+    state.contentBoundingRect = contentBoundingRect;
+    setStateData(std::move(state));
+  }
 }
 
 #pragma mark - LayoutableShadowNode
 
 void ScrollViewShadowNode::layout(LayoutContext layoutContext) {
   ConcreteViewShadowNode::layout(layoutContext);
-  updateLocalData();
+  updateStateIfNeeded();
+}
+
+Transform ScrollViewShadowNode::getTransform() const {
+  auto transform = ConcreteViewShadowNode::getTransform();
+  auto contentOffset = getStateData().contentOffset;
+  return transform *
+      Transform::Translate(-contentOffset.x, -contentOffset.y, 0);
 }
 
 } // namespace react

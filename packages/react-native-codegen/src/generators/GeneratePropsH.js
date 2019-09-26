@@ -10,8 +10,7 @@
 
 'use strict';
 
-const {getCppTypeForAnnotation} = require('./CppHelpers.js');
-const {upperCaseFirst} = require('../Helpers.js');
+const {getCppTypeForAnnotation, toSafeCppString} = require('./CppHelpers.js');
 
 import type {PropTypeShape, SchemaType} from '../CodegenSchema';
 
@@ -27,6 +26,7 @@ const template = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 ::_IMPORTS_::
 
@@ -106,10 +106,26 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           return 'SharedColor';
+        case 'ImageSourcePrimitive':
+          return 'ImageSource';
+        case 'PointPrimitive':
+          return 'Point';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');
       }
+    case 'ArrayTypeAnnotation': {
+      if (typeAnnotation.elementType.type === 'ArrayTypeAnnotation') {
+        throw new Error(
+          'ArrayTypeAnnotation of type ArrayTypeAnnotation not supported',
+        );
+      }
+      const itemAnnotation = getNativeTypeFromAnnotation(componentName, {
+        typeAnnotation: typeAnnotation.elementType,
+        name: componentName,
+      });
+      return `std::vector<${itemAnnotation}>`;
+    }
     case 'StringEnumTypeAnnotation':
       return getEnumName(componentName, prop.name);
     default:
@@ -136,14 +152,21 @@ function convertDefaultTypeToString(componentName: string, prop): string {
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           return '';
+        case 'ImageSourcePrimitive':
+          return '';
+        case 'PointPrimitive':
+          return '';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');
       }
+    case 'ArrayTypeAnnotation': {
+      return '';
+    }
     case 'StringEnumTypeAnnotation':
-      return `${getEnumName(componentName, prop.name)}::${
-        typeAnnotation.default
-      }`;
+      return `${getEnumName(componentName, prop.name)}::${toSafeCppString(
+        typeAnnotation.default,
+      )}`;
     default:
       (typeAnnotation: empty);
       throw new Error('Receieved invalid typeAnnotation');
@@ -151,12 +174,12 @@ function convertDefaultTypeToString(componentName: string, prop): string {
 }
 
 function getEnumName(componentName, propName): string {
-  const uppercasedPropName = upperCaseFirst(propName);
+  const uppercasedPropName = toSafeCppString(propName);
   return `${componentName}${uppercasedPropName}`;
 }
 
 function convertValueToEnumOption(value: string): string {
-  return upperCaseFirst(value);
+  return toSafeCppString(value);
 }
 
 function generateEnumString(componentName: string, component): string {
@@ -176,7 +199,7 @@ function generateEnumString(componentName: string, component): string {
               value,
             )}; return; }`,
         )
-        .join('\n');
+        .join('\n' + '  ');
 
       const toCases = values
         .map(
@@ -185,11 +208,11 @@ function generateEnumString(componentName: string, component): string {
               value,
             )}: return "${value}";`,
         )
-        .join('\n');
+        .join('\n' + '    ');
 
       return enumTemplate
         .replace(/::_ENUM_NAME_::/g, enumName)
-        .replace('::_VALUES_::', values.map(upperCaseFirst).join(', '))
+        .replace('::_VALUES_::', values.map(toSafeCppString).join(', '))
         .replace('::_FROM_CASES_::', fromCases)
         .replace('::_TO_CASES_::', toCases);
     })
@@ -208,7 +231,7 @@ function generatePropsString(
 
       return `const ${nativeType} ${prop.name}{${defaultValue}};`;
     })
-    .join('\n');
+    .join('\n' + '  ');
 }
 
 function getImports(component): Set<string> {
@@ -231,20 +254,41 @@ function getImports(component): Set<string> {
     }
   });
 
+  function addImportsForNativeName(name) {
+    switch (name) {
+      case 'ColorPrimitive':
+        imports.add('#include <react/graphics/Color.h>');
+        return;
+      case 'ImageSourcePrimitive':
+        imports.add('#include <react/imagemanager/primitives.h>');
+        return;
+      case 'PointPrimitive':
+        imports.add('#include <react/graphics/Geometry.h>');
+        return;
+      default:
+        (name: empty);
+        throw new Error(
+          `Invalid NativePrimitiveTypeAnnotation name, got ${name}`,
+        );
+    }
+  }
+
   component.props.forEach(prop => {
     const typeAnnotation = prop.typeAnnotation;
 
     if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
-      switch (typeAnnotation.name) {
-        case 'ColorPrimitive':
-          imports.add('#include <react/graphics/Color.h>');
-          return;
-        default:
-          (typeAnnotation.name: empty);
-          throw new Error(
-            `Invalid NativePrimitiveTypeAnnotation name, got ${prop.name}`,
-          );
-      }
+      addImportsForNativeName(typeAnnotation.name);
+    }
+
+    if (typeAnnotation.type === 'ArrayTypeAnnotation') {
+      imports.add('#include <vector>');
+    }
+
+    if (
+      typeAnnotation.type === 'ArrayTypeAnnotation' &&
+      typeAnnotation.elementType.type === 'NativePrimitiveTypeAnnotation'
+    ) {
+      addImportsForNativeName(typeAnnotation.elementType.name);
     }
   });
 

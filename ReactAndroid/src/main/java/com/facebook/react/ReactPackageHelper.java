@@ -7,7 +7,7 @@
 
 package com.facebook.react;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ModuleHolder;
 import com.facebook.react.bridge.NativeModule;

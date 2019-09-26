@@ -36,7 +36,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * annotations.
  */
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactPropAnnotationSetterTest {
 
   @Rule

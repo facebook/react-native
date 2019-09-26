@@ -3,8 +3,13 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_tar
 rn_android_library(
     name = "shell",
     srcs = glob(["**/*.java"]),
+    is_androidx = True,
     provided_deps = [
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+        react_native_dep("third-party/android/androidx:annotation"),
+        react_native_dep("third-party/android/androidx:core"),
+        react_native_dep("third-party/android/androidx:fragment"),
+        react_native_dep("third-party/android/androidx:legacy-support-core-ui"),
+        react_native_dep("third-party/android/androidx:legacy-support-core-utils"),
     ],
     visibility = [
         "PUBLIC",
@@ -33,7 +38,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/i18nmanager:i18nmanager"),
         react_native_target("java/com/facebook/react/modules/image:image"),
         react_native_target("java/com/facebook/react/modules/intent:intent"),
-        react_native_target("java/com/facebook/react/modules/location:location"),
         react_native_target("java/com/facebook/react/modules/netinfo:netinfo"),
         react_native_target("java/com/facebook/react/modules/network:network"),
         react_native_target("java/com/facebook/react/modules/permissions:permissions"),
@@ -62,7 +66,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/views/toolbar:toolbar"),
         react_native_target("java/com/facebook/react/views/view:view"),
         react_native_target("java/com/facebook/react/views/viewpager:viewpager"),
-        react_native_target("java/com/facebook/react/views/webview:webview"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("res:shell"),
     ],

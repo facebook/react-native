@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <better/map.h>
 #include <folly/dynamic.h>
 #include <react/core/RawProps.h>
 #include <react/graphics/Color.h>
@@ -70,9 +71,15 @@ inline std::string toString(const SharedColor &value) {
 #pragma mark - Geometry
 
 inline void fromRawValue(const RawValue &value, Point &result) {
-  if (value.hasType<std::unordered_map<std::string, Float>>()) {
-    auto map = (std::unordered_map<std::string, Float>)value;
-    result = {map.at("x"), map.at("y")};
+  if (value.hasType<better::map<std::string, Float>>()) {
+    auto map = (better::map<std::string, Float>)value;
+    for (const auto &pair : map) {
+      if (pair.first == "x") {
+        result.x = pair.second;
+      } else if (pair.first == "y") {
+        result.y = pair.second;
+      }
+    }
     return;
   }
 
@@ -87,9 +94,15 @@ inline void fromRawValue(const RawValue &value, Point &result) {
 }
 
 inline void fromRawValue(const RawValue &value, Size &result) {
-  if (value.hasType<std::unordered_map<std::string, Float>>()) {
-    auto map = (std::unordered_map<std::string, Float>)value;
-    result = {map.at("width"), map.at("height")};
+  if (value.hasType<better::map<std::string, Float>>()) {
+    auto map = (better::map<std::string, Float>)value;
+    for (const auto &pair : map) {
+      if (pair.first == "width") {
+        result.width = pair.second;
+      } else if (pair.first == "height") {
+        result.height = pair.second;
+      }
+    }
     return;
   }
 
@@ -109,9 +122,19 @@ inline void fromRawValue(const RawValue &value, EdgeInsets &result) {
     result = {number, number, number, number};
   }
 
-  if (value.hasType<std::unordered_map<std::string, Float>>()) {
-    auto map = (std::unordered_map<std::string, Float>)value;
-    result = {map.at("top"), map.at("left"), map.at("bottom"), map.at("right")};
+  if (value.hasType<better::map<std::string, Float>>()) {
+    auto map = (better::map<std::string, Float>)value;
+    for (const auto &pair : map) {
+      if (pair.first == "top") {
+        result.top = pair.second;
+      } else if (pair.first == "left") {
+        result.left = pair.second;
+      } else if (pair.first == "bottom") {
+        result.bottom = pair.second;
+      } else if (pair.first == "right") {
+        result.right = pair.second;
+      }
+    }
     return;
   }
 
@@ -131,12 +154,19 @@ inline void fromRawValue(const RawValue &value, CornerInsets &result) {
     result = {number, number, number, number};
   }
 
-  if (value.hasType<std::unordered_map<std::string, Float>>()) {
-    auto map = (std::unordered_map<std::string, Float>)value;
-    result = {map.at("topLeft"),
-              map.at("topRight"),
-              map.at("bottomLeft"),
-              map.at("bottomRight")};
+  if (value.hasType<better::map<std::string, Float>>()) {
+    auto map = (better::map<std::string, Float>)value;
+    for (const auto &pair : map) {
+      if (pair.first == "topLeft") {
+        result.topLeft = pair.second;
+      } else if (pair.first == "topRight") {
+        result.topRight = pair.second;
+      } else if (pair.first == "bottomLeft") {
+        result.bottomLeft = pair.second;
+      } else if (pair.first == "bottomRight") {
+        result.bottomRight = pair.second;
+      }
+    }
     return;
   }
 

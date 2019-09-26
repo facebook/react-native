@@ -44,7 +44,7 @@ class AttributedString : public Sealable, public DebugStringConvertible {
     bool operator!=(const Fragment &rhs) const;
   };
 
-  using Fragments = std::vector<Fragment>;
+  using Fragments = better::small_vector<Fragment, 1>;
 
   /*
    * Appends and prepends a `fragment` to the string.
@@ -69,6 +69,11 @@ class AttributedString : public Sealable, public DebugStringConvertible {
    */
   std::string getString() const;
 
+  /*
+   * Returns `true` if the string is empty (has no any fragments).
+   */
+  bool isEmpty() const;
+
   bool operator==(const AttributedString &rhs) const;
   bool operator!=(const AttributedString &rhs) const;
 
@@ -90,14 +95,12 @@ template <>
 struct hash<facebook::react::AttributedString::Fragment> {
   size_t operator()(
       const facebook::react::AttributedString::Fragment &fragment) const {
-    auto seed = size_t{0};
-    folly::hash::hash_combine(
-        seed,
+    return folly::hash::hash_combine(
+        0,
         fragment.string,
         fragment.textAttributes,
         fragment.shadowView,
         fragment.parentShadowView);
-    return seed;
   }
 };
 
@@ -108,7 +111,7 @@ struct hash<facebook::react::AttributedString> {
     auto seed = size_t{0};
 
     for (const auto &fragment : attributedString.getFragments()) {
-      folly::hash::hash_combine(seed, fragment);
+      seed = folly::hash::hash_combine(seed, fragment);
     }
 
     return seed;

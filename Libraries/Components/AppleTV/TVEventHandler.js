@@ -10,10 +10,10 @@
 
 'use strict';
 
-const Platform = require('Platform');
-const TVNavigationEventEmitter = require('NativeModules')
+const Platform = require('../../Utilities/Platform');
+const TVNavigationEventEmitter = require('../../BatchedBridge/NativeModules')
   .TVNavigationEventEmitter;
-const NativeEventEmitter = require('NativeEventEmitter');
+const NativeEventEmitter = require('../../EventEmitter/NativeEventEmitter');
 
 function TVEventHandler() {
   this.__nativeTVNavigationEventListener = null;

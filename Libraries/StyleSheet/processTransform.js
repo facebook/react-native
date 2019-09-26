@@ -10,11 +10,11 @@
 
 'use strict';
 
-const MatrixMath = require('MatrixMath');
-const Platform = require('Platform');
+const MatrixMath = require('../Utilities/MatrixMath');
+const Platform = require('../Utilities/Platform');
 
 const invariant = require('invariant');
-const stringifySafe = require('stringifySafe');
+const stringifySafe = require('../Utilities/stringifySafe');
 
 /**
  * Generate a transform matrix based on the provided transforms, and use that

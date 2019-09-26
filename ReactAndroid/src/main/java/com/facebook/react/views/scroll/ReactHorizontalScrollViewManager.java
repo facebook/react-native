@@ -8,7 +8,7 @@
 package com.facebook.react.views.scroll;
 
 import android.graphics.Color;
-import android.support.v4.view.ViewCompat;
+import androidx.core.view.ViewCompat;
 import android.util.DisplayMetrics;
 
 import com.facebook.react.bridge.ReadableArray;
@@ -78,6 +78,11 @@ public class ReactHorizontalScrollViewManager
   @ReactProp(name = "decelerationRate")
   public void setDecelerationRate(ReactHorizontalScrollView view, float decelerationRate) {
     view.setDecelerationRate(decelerationRate);
+  }
+
+  @ReactProp(name = "disableIntervalMomentum")
+  public void setDisableIntervalMomentum(ReactHorizontalScrollView view, boolean disbaleIntervalMomentum) {
+    view.setDisableIntervalMomentum(disbaleIntervalMomentum);
   }
 
   @ReactProp(name = "snapToInterval")

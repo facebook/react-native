@@ -7,14 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		18B8F9E32143371700CE911A /* RCTFileReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = ADDFBA6B1F33455F0064C998 /* RCTFileReaderModule.m */; };
-		18F3B9AD2142F00100AD247D /* RCTFileReaderModule.h in Headers */ = {isa = PBXBuildFile; fileRef = ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */; };
-		18F3B9AE2142F00400AD247D /* RCTBlobManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
-		18F3BA222142F91100AD247D /* RCTBlobManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = AD9A43C21DFC7126008DC588 /* RCTBlobManager.mm */; };
+		1946172A225F085900E4E008 /* RCTBlobCollector.h in Headers */ = {isa = PBXBuildFile; fileRef = 19461728225F085900E4E008 /* RCTBlobCollector.h */; };
+		1946172B225F085900E4E008 /* RCTBlobCollector.h in Headers */ = {isa = PBXBuildFile; fileRef = 19461728225F085900E4E008 /* RCTBlobCollector.h */; };
+		1946172C225F085900E4E008 /* RCTBlobCollector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 19461729225F085900E4E008 /* RCTBlobCollector.mm */; };
+		1946172D225F085900E4E008 /* RCTBlobCollector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 19461729225F085900E4E008 /* RCTBlobCollector.mm */; };
 		19BA88FE1F84391700741C5A /* RCTFileReaderModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */; };
 		19BA88FF1F84392900741C5A /* RCTFileReaderModule.h in Headers */ = {isa = PBXBuildFile; fileRef = ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */; };
 		19BA89001F84392F00741C5A /* RCTFileReaderModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */; };
 		19BA89011F84393D00741C5A /* RCTFileReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = ADDFBA6B1F33455F0064C998 /* RCTFileReaderModule.m */; };
+		19D9CA2622820DA40021BD26 /* RCTBlobCollector.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 19461728225F085900E4E008 /* RCTBlobCollector.h */; };
+		9F5C1891230DD18300E3E5A7 /* RCTBlobCollector.h in Headers */ = {isa = PBXBuildFile; fileRef = 19461728225F085900E4E008 /* RCTBlobCollector.h */; };
+		9F5C1892230DD18300E3E5A7 /* RCTFileReaderModule.h in Headers */ = {isa = PBXBuildFile; fileRef = ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */; };
+		9F5C1893230DD18300E3E5A7 /* RCTBlobManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
+		9F5C1894230DD18C00E3E5A7 /* RCTBlobCollector.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 19461728225F085900E4E008 /* RCTBlobCollector.h */; };
+		9F5C1895230DD18C00E3E5A7 /* RCTFileReaderModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */; };
+		9F5C1896230DD18C00E3E5A7 /* RCTBlobManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
+		9F5C1897230DD19300E3E5A7 /* RCTBlobCollector.mm in Sources */ = {isa = PBXBuildFile; fileRef = 19461729225F085900E4E008 /* RCTBlobCollector.mm */; };
+		9F5C1898230DD19300E3E5A7 /* RCTFileReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = ADDFBA6B1F33455F0064C998 /* RCTFileReaderModule.m */; };
+		9F5C1899230DD19300E3E5A7 /* RCTBlobManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = AD9A43C21DFC7126008DC588 /* RCTBlobManager.mm */; };
 		AD0871131E215B28007D136D /* RCTBlobManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
 		AD0871161E215EC9007D136D /* RCTBlobManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
 		AD0871181E215ED1007D136D /* RCTBlobManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
@@ -32,6 +42,7 @@
 			dstPath = include/RCTBlob;
 			dstSubfolderSpec = 16;
 			files = (
+				19D9CA2622820DA40021BD26 /* RCTBlobCollector.h in Copy Headers */,
 				19BA88FE1F84391700741C5A /* RCTFileReaderModule.h in Copy Headers */,
 				AD08711A1E2162C8007D136D /* RCTBlobManager.h in Copy Headers */,
 			);
@@ -44,6 +55,9 @@
 			dstPath = include/RCTBlob;
 			dstSubfolderSpec = 16;
 			files = (
+				9F5C1894230DD18C00E3E5A7 /* RCTBlobCollector.h in Copy Headers */,
+				9F5C1895230DD18C00E3E5A7 /* RCTFileReaderModule.h in Copy Headers */,
+				9F5C1896230DD18C00E3E5A7 /* RCTBlobManager.h in Copy Headers */,
 			);
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -63,6 +77,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		19461728225F085900E4E008 /* RCTBlobCollector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBlobCollector.h; sourceTree = "<group>"; };
+		19461729225F085900E4E008 /* RCTBlobCollector.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTBlobCollector.mm; sourceTree = "<group>"; };
 		358F4ED71D1E81A9004DF814 /* libRCTBlob.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTBlob.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		6484CE57201A74FA004275A4 /* libRCTBlob-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTBlob-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTBlobManager.h; sourceTree = "<group>"; };
@@ -76,6 +92,8 @@
 		358F4ECE1D1E81A9004DF814 = {
 			isa = PBXGroup;
 			children = (
+				19461728225F085900E4E008 /* RCTBlobCollector.h */,
+				19461729225F085900E4E008 /* RCTBlobCollector.mm */,
 				ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */,
 				ADDFBA6B1F33455F0064C998 /* RCTFileReaderModule.m */,
 				AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */,
@@ -104,8 +122,9 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				18F3B9AD2142F00100AD247D /* RCTFileReaderModule.h in Headers */,
-				18F3B9AE2142F00400AD247D /* RCTBlobManager.h in Headers */,
+				9F5C1891230DD18300E3E5A7 /* RCTBlobCollector.h in Headers */,
+				9F5C1892230DD18300E3E5A7 /* RCTFileReaderModule.h in Headers */,
+				9F5C1893230DD18300E3E5A7 /* RCTBlobManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,6 +133,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AD0871161E215EC9007D136D /* RCTBlobManager.h in Headers */,
+				1946172A225F085900E4E008 /* RCTBlobCollector.h in Headers */,
 				ADDFBA6C1F33455F0064C998 /* RCTFileReaderModule.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -123,6 +143,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				19BA88FF1F84392900741C5A /* RCTFileReaderModule.h in Headers */,
+				1946172B225F085900E4E008 /* RCTBlobCollector.h in Headers */,
 				AD0871181E215ED1007D136D /* RCTBlobManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -204,6 +225,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 358F4ECE1D1E81A9004DF814;
@@ -223,6 +245,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1946172C225F085900E4E008 /* RCTBlobCollector.mm in Sources */,
 				ADDFBA6D1F33455F0064C998 /* RCTFileReaderModule.m in Sources */,
 				AD9A43C31DFC7126008DC588 /* RCTBlobManager.mm in Sources */,
 			);
@@ -232,8 +255,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				18B8F9E32143371700CE911A /* RCTFileReaderModule.m in Sources */,
-				18F3BA222142F91100AD247D /* RCTBlobManager.mm in Sources */,
+				9F5C1897230DD19300E3E5A7 /* RCTBlobCollector.mm in Sources */,
+				9F5C1898230DD19300E3E5A7 /* RCTFileReaderModule.m in Sources */,
+				9F5C1899230DD19300E3E5A7 /* RCTBlobManager.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,6 +265,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1946172D225F085900E4E008 /* RCTBlobCollector.mm in Sources */,
 				19BA89011F84393D00741C5A /* RCTFileReaderModule.m in Sources */,
 				ADD01A711E09404A00F6D226 /* RCTBlobManager.mm in Sources */,
 			);

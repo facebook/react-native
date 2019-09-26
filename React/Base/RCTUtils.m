@@ -22,6 +22,16 @@
 
 NSString *const RCTErrorUnspecified = @"EUNSPECIFIED";
 
+// Returns the Path of Home directory
+NSString *__nullable RCTHomePath(void);
+
+// Returns the relative path within the Home for an absolute URL
+// (or nil, if the URL does not specify a path within the Home directory)
+NSString *__nullable RCTHomePathForURL(NSURL *__nullable URL);
+
+// Determines if a given image URL refers to a image in Home directory (~)
+BOOL RCTIsHomeAssetURL(NSURL *__nullable imageURL);
+
 static NSString *__nullable _RCTJSONStringifyNoRetry(id __nullable jsonObject, NSError **error)
 {
   if (!jsonObject) {
@@ -657,6 +667,16 @@ NSString *__nullable RCTLibraryPath(void)
     return libraryPath;
 }
 
+NSString *__nullable RCTHomePath(void)
+{
+  static NSString *homePath = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    homePath = NSHomeDirectory();
+  });
+  return homePath;
+}
+
 NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL)
 {
   return RCTRelativePathForURL([[NSBundle mainBundle] resourcePath], URL);
@@ -666,6 +686,11 @@ NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL)
 NSString *__nullable RCTLibraryPathForURL(NSURL *__nullable URL)
 {
   return RCTRelativePathForURL(RCTLibraryPath(), URL);
+}
+
+NSString *__nullable RCTHomePathForURL(NSURL *__nullable URL)
+{
+  return RCTRelativePathForURL(RCTHomePath(), URL);
 }
 
 static BOOL RCTIsImageAssetsPath(NSString *path)
@@ -684,9 +709,14 @@ BOOL RCTIsLibraryAssetURL(NSURL *__nullable imageURL)
   return RCTIsImageAssetsPath(RCTLibraryPathForURL(imageURL));
 }
 
+BOOL RCTIsHomeAssetURL(NSURL *__nullable imageURL)
+{
+  return RCTIsImageAssetsPath(RCTHomePathForURL(imageURL));
+}
+
 BOOL RCTIsLocalAssetURL(NSURL *__nullable imageURL)
 {
-  return RCTIsBundleAssetURL(imageURL) || RCTIsLibraryAssetURL(imageURL);
+  return RCTIsBundleAssetURL(imageURL) || RCTIsHomeAssetURL(imageURL);
 }
 
 static NSString *bundleName(NSBundle *bundle)
@@ -717,6 +747,19 @@ static NSBundle *bundleForPath(NSString *key)
   }
 
   return bundleCache[key];
+}
+
+UIImage *__nullable RCTImageFromLocalBundleAssetURL(NSURL *imageURL)
+{
+  if (![imageURL.scheme isEqualToString:@"file"]) {
+    // We only want to check for local file assets
+    return nil;
+  }
+  // Get the bundle URL, and add the image URL
+  // Note that we have to add both host and path, since host is the first "assets" part
+  // while path is the rest of the URL
+  NSURL *bundleImageUrl = [[[NSBundle mainBundle] bundleURL] URLByAppendingPathComponent:[imageURL.host stringByAppendingString:imageURL.path]];
+  return RCTImageFromLocalAssetURL(bundleImageUrl);
 }
 
 UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
@@ -753,27 +796,32 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
 #endif // ]TODO(macOS ISS#2323203)
 
   UIImage *image = nil;
-  if (bundle) {
+  if (imageName) {
+    if (bundle) {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-    image = [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
+      image = [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
 #else // [TODO(macOS ISS#2323203)
-    image = (bundleImageURL == nil) ? [bundle imageForResource:imageName] : [[NSImage alloc] initWithContentsOfURL:bundleImageURL];
+      image = (bundleImageURL == nil) ? [bundle imageForResource:imageName] : [[NSImage alloc] initWithContentsOfURL:bundleImageURL];
 #endif // ]TODO(macOS ISS#2323203)
-  } else {
-    image = [UIImage imageNamed:imageName];
+    } else {
+      image = [UIImage imageNamed:imageName];
+    }
   }
 
   if (!image) {
     // Attempt to load from the file system
-    NSString *filePath = [NSString stringWithUTF8String:[imageURL fileSystemRepresentation]];
-    if (filePath.pathExtension.length == 0) {
-      filePath = [filePath stringByAppendingPathExtension:@"png"];
-    }
+    const char* fileSystemCString = [imageURL fileSystemRepresentation];
+    if (fileSystemCString != NULL) {
+      NSString *filePath = [NSString stringWithUTF8String:fileSystemCString];
+      if (filePath.pathExtension.length == 0) {
+        filePath = [filePath stringByAppendingPathExtension:@"png"];
+      }
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-    image = [UIImage imageWithContentsOfFile:filePath];
+      image = [UIImage imageWithContentsOfFile:filePath];
 #else // TODO(macOS ISS#2323203)
-    image = [[NSImage alloc] initWithContentsOfFile:filePath]; // TODO(macOS ISS#2323203)
+      image = [[NSImage alloc] initWithContentsOfFile:filePath]; // TODO(macOS ISS#2323203)
 #endif // TODO(macOS ISS#2323203)
+    }
   }
 
   if (!image && !bundle) {
@@ -977,4 +1025,10 @@ RCT_EXTERN NSString *RCTDropReactPrefixes(NSString *s)
   }
 
   return s;
+}
+
+RCT_EXTERN BOOL RCTUIManagerTypeForTagIsFabric(NSNumber *reactTag)
+{
+  // See https://github.com/facebook/react/pull/12587
+  return [reactTag integerValue] % 2 == 0;
 }

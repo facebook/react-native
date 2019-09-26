@@ -182,6 +182,17 @@ public class ForwardingCookieHandler extends CookieHandler {
       } catch (IllegalArgumentException ex) {
         // https://bugs.chromium.org/p/chromium/issues/detail?id=559720
         return null;
+      } catch (Exception exception) {
+        String message = exception.getMessage();
+        // We cannot catch MissingWebViewPackageException as it is in a private / system API
+        // class. This validates the exception's message to ensure we are only handling this
+        // specific exception.
+        // https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/webkit/WebViewFactory.java#98
+        if (message != null && message.contains("No WebView installed")) {
+          return null;
+        } else {
+          throw exception;
+        }
       }
 
       if (USES_LEGACY_STORE) {

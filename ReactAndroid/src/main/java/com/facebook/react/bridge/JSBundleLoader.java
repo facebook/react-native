@@ -72,7 +72,7 @@ public abstract class JSBundleLoader {
           delegate.loadScriptFromFile(cachedFileLocation, sourceURL, false);
           return sourceURL;
         } catch (Exception e) {
-          throw DebugServerException.makeGeneric(e.getMessage(), e);
+          throw DebugServerException.makeGeneric(sourceURL, e.getMessage(), e);
         }
       }
     };
@@ -94,7 +94,7 @@ public abstract class JSBundleLoader {
           delegate.loadScriptFromDeltaBundle(sourceURL, nativeDeltaClient, false);
           return sourceURL;
         } catch (Exception e) {
-          throw DebugServerException.makeGeneric(e.getMessage(), e);
+          throw DebugServerException.makeGeneric(sourceURL, e.getMessage(), e);
         }
       }
     };

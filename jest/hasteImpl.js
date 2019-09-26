@@ -51,10 +51,9 @@ const pluginRoots /*: Array<
 
 const pluginNameReducers /*: Array<
   [RegExp, string],
-> */ = plugins.haste.platforms.map(name => [
-  new RegExp(`^(.*)\.(${name})$`),
-  '$1',
-]);
+> */ = plugins.haste.platforms.map(
+  name => [new RegExp(`^(.*)\.(${name})$`), '$1'],
+);
 
 const ROOTS = [path.resolve(__dirname, '..') + path.sep, ...pluginRoots];
 

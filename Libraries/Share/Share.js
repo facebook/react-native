@@ -10,12 +10,15 @@
 
 'use strict';
 
-const Platform = require('Platform');
+const Platform = require('../Utilities/Platform');
 
 const invariant = require('invariant');
-const processColor = require('processColor');
+const processColor = require('../StyleSheet/processColor');
 
-const {ActionSheetManager, ShareModule} = require('NativeModules');
+const {
+  ActionSheetManager,
+  ShareModule,
+} = require('../BatchedBridge/NativeModules');
 
 type Content =
   | {title?: string, message: string}

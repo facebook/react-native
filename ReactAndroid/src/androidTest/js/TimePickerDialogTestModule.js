@@ -9,12 +9,11 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const TimePickerAndroid = require('TimePickerAndroid');
-const React = require('React');
-const RecordingModule = require('NativeModules')
-  .TimePickerDialogRecordingModule;
-const View = require('View');
+const React = require('react');
+const {NativeModules, TimePickerAndroid, View} = require('react-native');
+const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
+
+const {TimePickerDialogRecordingModule: RecordingModule} = NativeModules;
 
 class TimePickerDialogTestApp extends React.Component {
   render() {

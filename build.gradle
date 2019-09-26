@@ -10,7 +10,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.3.1")
+        classpath("com.android.tools.build:gradle:3.4.1")
         classpath("de.undercouch:gradle-download-task:3.4.3")
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -26,15 +26,14 @@ def isSDXPlatform() {
     return true;
 }
 
+
 allprojects {
     repositories {
+        maven {
+            url = uri("$rootDir/node_modules/jsc-android/dist")
+        }
         mavenLocal()
         google()
         jcenter()
-
-        def androidSdk = System.getenv("ANDROID_SDK")
-        maven {
-            url("$androidSdk/extras/m2repository/")
-        }
     }
 }

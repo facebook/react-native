@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Animated, PanResponder, StyleSheet} = ReactNative;
+const {Animated, PanResponder, StyleSheet} = require('react-native');
 
 class AnExTilt extends React.Component<Object, any> {
   constructor(props: Object) {

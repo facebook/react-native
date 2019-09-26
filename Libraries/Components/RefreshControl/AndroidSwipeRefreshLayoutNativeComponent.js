@@ -10,13 +10,13 @@
 
 'use strict';
 
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
-import type {ColorValue} from 'StyleSheetTypes';
-import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'ReactNative';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 
-const AndroidSwipeRefreshLayout = require('UIManager').getViewManagerConfig(
+const AndroidSwipeRefreshLayout = require('../../ReactNative/UIManager').getViewManagerConfig(
   'AndroidSwipeRefreshLayout',
 );
 const RefreshLayoutConsts = AndroidSwipeRefreshLayout

@@ -10,7 +10,7 @@
     <CheckBoxPreference
         android:key="js_dev_mode_debug"
         android:title="JS Dev Mode"
-        android:summary="Load JavaScript bundle with __DEV__ = true for easier debugging.  Disable for performance testing. Reload for the change to take effect."
+        android:summary="Load JavaScript bundle with __DEV__ = true for easier debugging. Disable for performance testing. Reload for the change to take effect."
         android:defaultValue="true"
         />
     <CheckBoxPreference
@@ -23,7 +23,7 @@
       android:key="js_bundle_deltas"
       android:title="Use JS Deltas"
       android:summary="Request delta bundles from metro to get faster reloads (Experimental)"
-      android:defaultValue="true"
+      android:defaultValue="false"
       />
     <CheckBoxPreference
       android:key="js_bundle_deltas_cpp"

@@ -72,7 +72,7 @@ jobs:
       - task: CmdLine@2
         displayName: Create RNTester bundle
         inputs:
-          script: node cli.js bundle --entry-file .\RNTester\js\RNTesterApp.android.js --bundle-output RNTesterApp.android.bundle --platform android --reactNativePath .
+          script: node cli.js bundle --entry-file .\RNTester\js\RNTesterApp.android.js --bundle-output RNTesterApp.android.bundle --platform android
 
       - task: Gradle@1
         displayName: gradlew installArchives

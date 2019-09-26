@@ -6,7 +6,7 @@
 package com.facebook.react.views.scroll;
 
 import android.content.Context;
-import android.support.v4.view.ViewCompat;
+import androidx.core.view.ViewCompat;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import com.facebook.react.modules.i18nmanager.I18nUtil;

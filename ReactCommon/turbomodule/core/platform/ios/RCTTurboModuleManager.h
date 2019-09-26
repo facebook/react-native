@@ -36,11 +36,9 @@
 
 @interface RCTTurboModuleManager : NSObject<RCTTurboModuleLookupDelegate>
 
-- (instancetype)initWithRuntime:(facebook::jsi::Runtime *)runtime
-                         bridge:(RCTBridge *)bridge
-                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate;
+- (instancetype)initWithBridge:(RCTBridge *)bridge delegate:(id<RCTTurboModuleManagerDelegate>)delegate;
 
-- (void)installJSBinding;
+- (void)installJSBindingWithRuntime:(facebook::jsi::Runtime *)runtime;
 
 - (std::shared_ptr<facebook::react::TurboModule>)getModule:(const std::string &)name;
 

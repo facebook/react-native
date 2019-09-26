@@ -9,6 +9,8 @@
 
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import <MobileCoreServices/UTCoreTypes.h>
+#else
+#import <Quartz/Quartz.h> // TODO(macOS ISS#2323203) for CATiledLayer
 #endif // TODO(macOS ISS#2323203)
 
 #import <React/RCTAssert.h> // TODO(macOS ISS#2323203)
@@ -17,15 +19,28 @@
 
 #import "RCTTextShadowView.h"
 
+@interface RCTTextTiledLayer : CATiledLayer
+
+@end
+
+@implementation RCTTextTiledLayer
+
++ (CFTimeInterval)fadeDuration
+{
+  return 0.05;
+}
+
+@end
+
 #import <QuartzCore/QuartzCore.h> // TODO(macOS ISS#2323203)
 
 @implementation RCTTextView
 {
-  CAShapeLayer *_highlightLayer;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
 #endif // TODO(macOS ISS#2323203)
 
+  CAShapeLayer *_highlightLayer;
   NSArray<RCTUIView *> *_Nullable _descendantViews; // TODO(macOS ISS#3536887)
   NSTextStorage *_Nullable _textStorage;
   CGRect _contentFrame;
@@ -148,17 +163,13 @@
 
 - (void)drawRect:(CGRect)rect
 {
-// [TODO(OSS Candidate ISS#2710739): for macOS and iOS dark mode
-  [super drawRect:rect];
-// ]TODO(OSS Candidate ISS#2710739)
   if (!_textStorage) {
     return;
   }
 
-
   NSLayoutManager *layoutManager = _textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
-
+  
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
   [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:_contentFrame.origin];
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
@@ -166,6 +177,7 @@
   __block UIBezierPath *highlightPath = nil;
   NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange
                                                      actualGlyphRange:NULL];
+
   [_textStorage enumerateAttribute:RCTTextAttributesIsHighlightedAttributeName
                            inRange:characterRange
                            options:0
@@ -180,7 +192,11 @@
                                           inTextContainer:textContainer
                                                usingBlock:
         ^(CGRect enclosingRect, __unused BOOL *anotherStop) {
-          UIBezierPath *path = UIBezierPathWithRoundedRect(CGRectInset(enclosingRect, -2, -2), /*cornerRadius:*/2); // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS ISS#3536887)
+        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) cornerRadius:2];
+#else // TODO(macOS ISS#3536887)
+        NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) xRadius:2 yRadius:2];
+#endif // TODO(macOS ISS#3536887)
           if (highlightPath) {
             UIBezierPathAppendPath(highlightPath, path); // TODO(macOS ISS#2323203)
           } else {
@@ -203,7 +219,6 @@
     _highlightLayer = nil;
   }
 }
-
 
 - (NSNumber *)reactTagAtPoint:(CGPoint)point
 {
@@ -268,7 +283,8 @@
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
 {
-#if !TARGET_OS_TV
+  // TODO: Adopt showMenuFromRect (necessary for UIKitForMac)
+#if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
   UIMenuController *menuController = [UIMenuController sharedMenuController];
 
   if (menuController.isMenuVisible) {

@@ -42,10 +42,10 @@ t.start()
 def run():
   sp.Popen(['adb', 'wait-for-device']).communicate()
   if (test_class != None):
-    p = sp.Popen('adb shell am instrument -w -e class %s %s/android.support.test.runner.AndroidJUnitRunner'
+    p = sp.Popen('adb shell am instrument -w -e class %s %s/androidx.test.runner.AndroidJUnitRunner'
       % (test_class, test_app), shell=True, stdout=sp.PIPE, stderr=sp.PIPE, stdin=sp.PIPE)
   else :
-    p = sp.Popen('adb shell am instrument -w %s/android.support.test.runner.AndroidJUnitRunner'
+    p = sp.Popen('adb shell am instrument -w %s/androidx.test.runner.AndroidJUnitRunner'
       % (test_app), shell=True, stdout=sp.PIPE, stderr=sp.PIPE, stdin=sp.PIPE)
   return p.communicate()
 

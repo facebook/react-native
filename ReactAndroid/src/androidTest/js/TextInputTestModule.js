@@ -9,14 +9,17 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const TextInput = require('TextInput');
-const View = require('View');
+const React = require('react');
+const {
+  NativeModules,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} = require('react-native');
+const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
 
-const Recording = require('NativeModules').Recording;
+const {Recording} = NativeModules;
 
 let app;
 

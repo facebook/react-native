@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {StyleSheet, Text, TouchableHighlight, View} = ReactNative;
+const {StyleSheet, Text, TouchableHighlight, View} = require('react-native');
 
 class XHRExampleOnTimeOut extends React.Component<any, any> {
   xhr: XMLHttpRequest;

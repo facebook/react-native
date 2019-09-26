@@ -2,7 +2,8 @@ package com.facebook.react.tests.core;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
+import com.facebook.react.bridge.NoSuchKeyException;
 import com.facebook.react.bridge.UnexpectedNativeTypeException;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -27,7 +28,6 @@ public class WritableNativeMapTest {
     mMap.putMap("map", new WritableNativeMap());
     mMap.putArray("array", new WritableNativeArray());
     mMap.putBoolean("dvacca", true);
-    mMap.setUseNativeAccessor(true);
   }
 
   @Test
@@ -90,14 +90,13 @@ public class WritableNativeMapTest {
     mMap.getArray("string");
   }
 
-  @Ignore("Needs to be implemented")
   @Test
   public void testErrorMessageContainsKey() {
     String key = "fkg";
     try {
       mMap.getString(key);
-      Assert.fail("Expected an UnexpectedNativeTypeException to be thrown");
-    } catch (UnexpectedNativeTypeException e) {
+      Assert.fail("Expected an NoSuchKeyException to be thrown");
+    } catch (NoSuchKeyException e) {
       assertThat(e.getMessage()).contains(key);
     }
   }

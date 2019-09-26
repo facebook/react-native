@@ -9,12 +9,12 @@
  */
 'use strict';
 
-jest.setMock('NativeModules', {
+jest.setMock('../../BatchedBridge/NativeModules', {
   BlobModule: require('../__mocks__/BlobModule'),
 });
 
-const Blob = require('Blob');
-const File = require('File');
+const Blob = require('../Blob');
+const File = require('../File');
 
 describe('babel 7 smoke test', function() {
   it('should be able to extend a class with native name', function() {

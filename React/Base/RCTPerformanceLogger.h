@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+// Keep this in sync with _labelsForTags
 typedef NS_ENUM(NSUInteger, RCTPLTag) {
   RCTPLScriptDownload = 0,
   RCTPLScriptExecution,
@@ -20,11 +21,13 @@ typedef NS_ENUM(NSUInteger, RCTPLTag) {
   RCTPLNativeModuleMainThread,
   RCTPLNativeModulePrepareConfig,
   RCTPLNativeModuleMainThreadUsesCount,
+  RCTPLNativeModuleSetup,
+  RCTPLTurboModuleSetup,
   RCTPLJSCWrapperOpenLibrary,
   RCTPLBridgeStartup,
   RCTPLTTI,
   RCTPLBundleSize,
-  RCTPLSize
+  RCTPLSize // This is used to count the size
 };
 
 @interface RCTPerformanceLogger : NSObject

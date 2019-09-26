@@ -35,6 +35,20 @@
   return self;
 }
 
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+  [super didSetProps:changedProps];
+
+  // When applying a semi-transparent background color to Text component
+  // we must set the root text nodes text attribute background color to nil
+  // because the background color is drawn on the RCTTextView itself, as well
+  // as on the glphy background draw step. By setting this to nil, we allow
+  // the RCTTextView backgroundColor to be used, without affecting nested Text
+  // components.
+  self.textAttributes.backgroundColor = nil;
+  self.textAttributes.opacity = NAN;
+}
+
 - (BOOL)isYogaLeafNode
 {
   return YES;

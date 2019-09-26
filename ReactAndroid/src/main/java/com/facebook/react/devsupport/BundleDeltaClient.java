@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedHashMap;
+import java.util.TreeMap;
 import javax.annotation.Nullable;
 
 import android.util.JsonReader;
@@ -75,7 +75,7 @@ public abstract class BundleDeltaClient {
 
     byte[] mPreCode;
     byte[] mPostCode;
-    final LinkedHashMap<Number, byte[]> mModules = new LinkedHashMap<Number, byte[]>();
+    final TreeMap<Number, byte[]> mModules = new TreeMap<Number, byte[]>();
 
     @Override
     public boolean canHandle(ClientType type) {
@@ -146,7 +146,7 @@ public abstract class BundleDeltaClient {
       return Pair.create(Boolean.TRUE, null);
     }
 
-    private static int setModules(JsonReader jsonReader, LinkedHashMap<Number, byte[]> map)
+    private static int setModules(JsonReader jsonReader, TreeMap<Number, byte[]> map)
       throws IOException {
       jsonReader.beginArray();
 
@@ -167,7 +167,7 @@ public abstract class BundleDeltaClient {
       return numModules;
     }
 
-    private static int removeModules(JsonReader jsonReader, LinkedHashMap<Number, byte[]> map)
+    private static int removeModules(JsonReader jsonReader, TreeMap<Number, byte[]> map)
       throws IOException {
       jsonReader.beginArray();
 

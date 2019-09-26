@@ -137,6 +137,14 @@ void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>)
 - (RCTUIView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag; // TODO(macOS ISS#3536887)
 
 /**
+ * Register a view that is tagged with nativeID as its nativeID prop
+ *
+ * @param nativeID the id reference to native component relative to root view.
+ * @param view the view that is tagged with nativeID as its nativeID prop.
+ */
+- (void)setNativeID:(NSString *)nativeID forView:(RCTUIView *)view; // TODO(macOS ISS#2323203)
+
+/**
  * The view that is currently first responder, according to the JS context.
  */
 + (RCTPlatformView *)JSResponder; // TODO(macOS ISS#2323203)

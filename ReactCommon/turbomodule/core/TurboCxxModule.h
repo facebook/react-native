@@ -28,12 +28,12 @@ public:
 
   virtual facebook::jsi::Value get(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& propName) override;
 
-  virtual jsi::Value invokeMethod(
+  jsi::Value invokeMethod(
       jsi::Runtime &runtime,
       TurboModuleMethodValueKind valueKind,
       const std::string &methodName,
       const jsi::Value *args,
-      size_t count) override;
+      size_t count);
 
 private:
   std::vector<facebook::xplat::module::CxxModule::Method> cxxMethods_;

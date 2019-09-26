@@ -10,8 +10,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Image, StyleSheet, View} = ReactNative;
+const {Image, StyleSheet, View} = require('react-native');
 
 const styles = StyleSheet.create({
   box: {

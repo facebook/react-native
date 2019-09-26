@@ -10,8 +10,10 @@
 
 'use strict';
 
-const FlatList = require('FlatList');
+const FlatList = require('../../../Lists/FlatList');
 
-const createAnimatedComponent = require('createAnimatedComponent');
+const createAnimatedComponent = require('../createAnimatedComponent');
 
-module.exports = createAnimatedComponent(FlatList);
+module.exports = createAnimatedComponent(FlatList, {
+  scrollEventThrottle: 0.0001,
+});

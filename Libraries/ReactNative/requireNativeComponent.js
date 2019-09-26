@@ -10,8 +10,8 @@
 
 'use strict';
 
-const createReactNativeComponentClass = require('createReactNativeComponentClass');
-const getNativeComponentAttributes = require('getNativeComponentAttributes');
+const createReactNativeComponentClass = require('../Renderer/shims/createReactNativeComponentClass');
+const getNativeComponentAttributes = require('./getNativeComponentAttributes');
 
 /**
  * Creates values that can be used like React components which represent native

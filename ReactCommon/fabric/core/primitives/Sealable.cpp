@@ -30,7 +30,9 @@ Sealable::Sealable() : sealed_(false) {}
 
 Sealable::Sealable(const Sealable &other) : sealed_(false){};
 
-Sealable::Sealable(Sealable &&other) noexcept : sealed_(false){};
+Sealable::Sealable(Sealable &&other) noexcept : sealed_(false) {
+  other.ensureUnsealed();
+};
 
 Sealable::~Sealable() noexcept {};
 
@@ -41,6 +43,7 @@ Sealable &Sealable::operator=(const Sealable &other) {
 
 Sealable &Sealable::operator=(Sealable &&other) noexcept {
   ensureUnsealed();
+  other.ensureUnsealed();
   return *this;
 }
 

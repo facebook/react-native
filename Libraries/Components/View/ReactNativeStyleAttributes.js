@@ -10,13 +10,13 @@
 
 'use strict';
 
-const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
-const TextStylePropTypes = require('TextStylePropTypes');
-const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
+const DeprecatedImageStylePropTypes = require('../../DeprecatedPropTypes/DeprecatedImageStylePropTypes');
+const TextStylePropTypes = require('../../Text/TextStylePropTypes');
+const DeprecatedViewStylePropTypes = require('../../DeprecatedPropTypes/DeprecatedViewStylePropTypes');
 
-const processColor = require('processColor');
-const processTransform = require('processTransform');
-const sizesDiffer = require('sizesDiffer');
+const processColor = require('../../StyleSheet/processColor');
+const processTransform = require('../../StyleSheet/processTransform');
+const sizesDiffer = require('../../Utilities/differ/sizesDiffer');
 
 const ReactNativeStyleAttributes = {};
 

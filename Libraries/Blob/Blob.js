@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {BlobData, BlobOptions} from 'BlobTypes';
+import type {BlobData, BlobOptions} from './BlobTypes';
 
 /**
  * Opaque JS representation of some binary data in native.
@@ -58,7 +58,7 @@ class Blob {
    * Reference: https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob
    */
   constructor(parts: Array<Blob | string> = [], options?: BlobOptions) {
-    const BlobManager = require('BlobManager');
+    const BlobManager = require('./BlobManager');
     this.data = BlobManager.createFromParts(parts, options).data;
   }
 
@@ -80,7 +80,7 @@ class Blob {
   }
 
   slice(start?: number, end?: number): Blob {
-    const BlobManager = require('BlobManager');
+    const BlobManager = require('./BlobManager');
     let {offset, size} = this.data;
 
     if (typeof start === 'number') {
@@ -117,7 +117,7 @@ class Blob {
    * `new Blob([blob, ...])` actually copies the data in memory.
    */
   close() {
-    const BlobManager = require('BlobManager');
+    const BlobManager = require('./BlobManager');
     BlobManager.release(this.data.blobId);
     this.data = null;
   }

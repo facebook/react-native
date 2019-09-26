@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const {polyfillGlobal} = require('PolyfillFunctions');
+const {polyfillGlobal} = require('../Utilities/PolyfillFunctions');
 
 /**
  * Set up regenerator.

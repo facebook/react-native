@@ -10,10 +10,10 @@
  */
 'use strict';
 
-const React = require('React');
+const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
-const VirtualizedList = require('VirtualizedList');
+const VirtualizedList = require('../VirtualizedList');
 
 describe('VirtualizedList', () => {
   it('renders simple list', () => {

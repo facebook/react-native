@@ -10,7 +10,7 @@
 
 'use strict';
 
-const React = require('React');
+const React = require('react');
 const {Picker, Text, View} = require('react-native');
 
 class TextLegend extends React.Component<*, *> {

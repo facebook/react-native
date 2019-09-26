@@ -60,10 +60,22 @@ RCT_EXPORT_MODULE()
 {
   // Lazy setup
   if (!_session && [self isValid]) {
+    // You can override default NSURLSession instance property allowsCellularAccess (default value YES)
+    //  by providing the following key to your RN project (edit ios/project/Info.plist file in Xcode):
+    // <key>ReactNetworkForceWifiOnly</key>    <true/>
+    // This will set allowsCellularAccess to NO and force Wifi only for all network calls on iOS
+    // If you do not want to override default behavior, do nothing or set key with value false
+    NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+    NSNumber *useWifiOnly = [infoDictionary objectForKey:@"ReactNetworkForceWifiOnly"];
+    
     NSOperationQueue *callbackQueue = [NSOperationQueue new];
     callbackQueue.maxConcurrentOperationCount = 1;
     callbackQueue.underlyingQueue = [[_bridge networking] methodQueue];
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    // Set allowsCellularAccess to NO ONLY if key ReactNetworkForceWifiOnly exists AND its value is YES
+    if (useWifiOnly) {
+      configuration.allowsCellularAccess = ![useWifiOnly boolValue];
+    }
     [configuration setHTTPShouldSetCookies:YES];
     [configuration setHTTPCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     [configuration setHTTPCookieStorage:[NSHTTPCookieStorage sharedHTTPCookieStorage]];

@@ -14,12 +14,6 @@
 
 'use strict';
 
-const Platform = require('Platform');
-
-type BackPressEventName = $Enum<{
-  backPress: string,
-}>;
-
 function emptyFunction() {}
 
 /**

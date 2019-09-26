@@ -10,8 +10,8 @@
 
 'use strict';
 
-const AnimatedNode = require('AnimatedNode');
-import type {NativeOrDynamicColorType} from 'NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+const AnimatedNode = require('../Animated/src/nodes/AnimatedNode');
+import type {NativeOrDynamicColorType} from '../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 export type ColorValue = null | string | NativeOrDynamicColorType; // TODO(macOS ISS#2323203)
 export type DimensionValue = null | number | string | AnimatedNode;

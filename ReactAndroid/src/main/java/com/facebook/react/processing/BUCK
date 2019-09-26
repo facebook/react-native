@@ -2,6 +2,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_tar
 
 rn_java_annotation_processor(
     name = "processing",
+    does_not_affect_abi = True,
     processor_class = "com.facebook.react.processing.ReactPropertyProcessor",
     visibility = [
         "PUBLIC",
@@ -13,7 +14,7 @@ rn_java_annotation_processor(
 
 rn_java_library(
     name = "processing-lib",
-    srcs = glob(["ReactPropertyProcessor.java"]),
+    srcs = glob(["*.java"]),
     source = "7",
     target = "7",
     deps = [

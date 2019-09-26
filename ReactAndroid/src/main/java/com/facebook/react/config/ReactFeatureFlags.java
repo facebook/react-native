@@ -37,4 +37,10 @@ public class ReactFeatureFlags {
    * C++ CatalystInstanceImpl
    */
   public static boolean useTurboModules = false;
+
+  /**
+   * Log tags of when a view deleted on the native side
+   * {@link com.facebook.react.uimanager.NativeViewHierarchyManager dropView}
+   */
+  public static boolean logDroppedViews = false;
 }

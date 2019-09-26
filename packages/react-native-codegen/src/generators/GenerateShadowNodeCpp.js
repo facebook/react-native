@@ -52,6 +52,9 @@ module.exports = {
 
         return Object.keys(components)
           .map(componentName => {
+            if (components[componentName].interfaceOnly === true) {
+              return;
+            }
             const replacedTemplate = componentTemplate.replace(
               /::_CLASSNAME_::/g,
               componentName,

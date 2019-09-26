@@ -23,6 +23,7 @@ using SharedRootProps = std::shared_ptr<const RootProps>;
 class RootProps final : public ViewProps {
  public:
   RootProps() = default;
+  RootProps(const RootProps &sourceProps, const RawProps &rawProps);
   RootProps(
       const RootProps &sourceProps,
       const LayoutConstraints &layoutConstraints,

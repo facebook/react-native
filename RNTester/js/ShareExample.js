@@ -11,8 +11,13 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {StyleSheet, View, Text, TouchableHighlight, Share} = ReactNative;
+const {
+  StyleSheet,
+  View,
+  Text,
+  TouchableHighlight,
+  Share,
+} = require('react-native');
 
 type Props = $ReadOnly<{||}>;
 type State = {|result: string|};

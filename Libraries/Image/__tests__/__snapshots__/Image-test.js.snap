@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Image /> should render as <Image> when mocked 1`] = `
+<Image
+  source={
+    Object {
+      "uri": "foo-bar.jpg",
+    }
+  }
+/>
+`;
+
+exports[`<Image /> should render as <RCTImageView> when not mocked 1`] = `
+<RCTImageView
+  resizeMode="cover"
+  source={
+    Array [
+      Object {
+        "uri": "foo-bar.jpg",
+      },
+    ]
+  }
+  style={
+    Object {
+      "height": undefined,
+      "overflow": "hidden",
+      "width": undefined,
+    }
+  }
+/>
+`;
+
+exports[`<Image /> should shallow render as <ForwardRef(Image)> when not mocked 1`] = `
+<ForwardRef(Image)
+  source={
+    Object {
+      "uri": "foo-bar.jpg",
+    }
+  }
+/>
+`;
+
+exports[`<Image /> should shallow render as <Image> when mocked 1`] = `
+<Image
+  source={
+    Object {
+      "uri": "foo-bar.jpg",
+    }
+  }
+/>
+`;

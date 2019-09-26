@@ -131,12 +131,18 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
   // Whether observing changes to the window's backing scale
   BOOL _subscribedToWindowBackingNotifications;
 #endif // ]TODO(macOS ISS#2323203)
+
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  NSImageView *_imageView;
+#else
+  UIImageView *_imageView;
+#endif // [TODO(macOS ISS#2323203)
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  if ((self = [super init])) {
+  if ((self = [super initWithFrame:CGRectZero])) {
 #else // [TODO(macOS ISS#2323203)
   if ((self = [super initWithFrame:NSZeroRect])) {
 #endif // ]TODO(macOS ISS#2323203)
@@ -155,6 +161,9 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
                selector:@selector(clearImageIfDetached)
                    name:UIApplicationDidEnterBackgroundNotification
                  object:nil];
+    _imageView = [[UIImageView alloc] init];
+    _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self addSubview:_imageView];
 #endif // TODO(macOS ISS#2323203)
   }
   return self;
@@ -168,14 +177,17 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(NSRect)frame)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(NSRect)frame)
+#else
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
+RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 #endif // ]TODO(macOS ISS#2323203)
 
 - (void)updateWithImage:(UIImage *)image
 {
   if (!image) {
-    super.image = nil;
+    _imageView.image = nil;
     return;
   }
 
@@ -208,10 +220,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   }
 
   // Apply trilinear filtering to smooth out mis-sized images
-  self.layer.minificationFilter = kCAFilterTrilinear;
-  self.layer.magnificationFilter = kCAFilterTrilinear;
+  _imageView.layer.minificationFilter = kCAFilterTrilinear;
+  _imageView.layer.magnificationFilter = kCAFilterTrilinear;
 
-  super.image = image;
+  _imageView.image = image;
 }
 
 - (void)setImage:(UIImage *)image
@@ -225,6 +237,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 #endif // ]TODO(macOS ISS#2323203)
     [self updateWithImage:image];
   }
+}
+
+- (UIImage *)image {
+  return _imageView.image;
 }
 
 - (void)setBlurRadius:(CGFloat)blurRadius
@@ -275,13 +291,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
       // Repeat resize mode is handled by the UIImage. Use scale to fill
       // so the repeated image fills the UIImageView.
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-      self.contentMode = UIViewContentModeScaleToFill;
+      _imageView.contentMode = UIViewContentModeScaleToFill;
 #else // [TODO(macOS ISS#2323203)
       self.imageScaling = NSImageScaleAxesIndependently;
 #endif // ]TODO(macOS ISS#2323203)
     } else {
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-      self.contentMode = (UIViewContentMode)resizeMode;
+      _imageView.contentMode = (UIViewContentMode)resizeMode;
 #else // [TODO(macOS ISS#2323203)
       // This relies on having previously resampled the image to a size that exceeds the iamge view.
       if (resizeMode == RCTResizeModeCover) {
@@ -311,7 +327,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
 - (void)clearImage
 {
   [self cancelImageLoad];
-  [self.layer removeAnimationForKey:@"contents"];
+  [_imageView.layer removeAnimationForKey:@"contents"];
   self.image = nil;
   _imageSource = nil;
 }
@@ -460,10 +476,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
       self->_pendingImageSource = nil;
     }
 
+    [self->_imageView.layer removeAnimationForKey:@"contents"];
     if (image.reactKeyframeAnimation) {
-      [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
+      CGImageRef posterImageRef = (__bridge CGImageRef)[image.reactKeyframeAnimation.values firstObject];
+      if (!posterImageRef) {
+        return;
+      }
+      // Apply renderingMode to animated image.
+#if TARGET_OS_OSX // TODO(macOS ISS#2323203)
+      // NSImages don't have rendering modes, so ignore
+      self->_imageView.image = [[NSImage alloc] initWithCGImage:posterImageRef size:NSZeroSize /* shorthand for same size as CGImageRef */];
+#else // TODO(macOS ISS#2323203)
+      self->_imageView.image = [[UIImage imageWithCGImage:posterImageRef] imageWithRenderingMode:self->_renderingMode];
+#endif // TODO(macOS ISS#2323203)
+      [self->_imageView.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
     } else {
-      [self.layer removeAnimationForKey:@"contents"];
       self.image = image;
     }
 
@@ -513,10 +540,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   } else if ([self shouldReloadImageSourceAfterResize]) {
     CGSize imageSize = self.image.size;
     CGFloat imageScale = UIImageGetScale(self.image); // [TODO(macOS ISS#2323203)
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
     CGFloat windowScale = RCTScreenScale();
-    RCTResizeMode resizeMode = (RCTResizeMode)self.contentMode;
-#else
+    RCTResizeMode resizeMode = (RCTResizeMode)_imageView.contentMode;
+#else // [TODO(macOS ISS#2323203)
     CGFloat windowScale = self.window != nil ? self.window.backingScaleFactor : [NSScreen mainScreen].backingScaleFactor;
     RCTResizeMode resizeMode = self.resizeMode;
 
@@ -524,7 +551,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
     if (resizeMode == RCTResizeModeRepeat) {
       resizeMode = RCTResizeModeStretch;
     }
-#endif
+#endif // [TODO(macOS ISS#2323203)
     CGSize idealSize = RCTTargetSize(imageSize, imageScale, frame.size, windowScale,
                                      resizeMode, YES); // ]TODO(macOS ISS#2323203)
     // Don't reload if the current image or target image size is close enough
@@ -540,8 +567,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
       return;
     }
 
-    // Don't reload if the current image size is the maximum size of the image source
-    CGSize imageSourceSize = _imageSource.size;
+    // Don't reload if the current image size is the maximum size of either the pending image source or image source
+    CGSize imageSourceSize = (_imageSource ? _imageSource : _pendingImageSource).size;
     if (imageSize.width * imageScale == imageSourceSize.width * _imageSource.scale &&
         imageSize.height * imageScale == imageSourceSize.height * _imageSource.scale) {
       return;

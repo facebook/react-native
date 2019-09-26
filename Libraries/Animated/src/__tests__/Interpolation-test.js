@@ -11,7 +11,7 @@
 'use strict';
 
 const AnimatedInterpolation = require('../nodes/AnimatedInterpolation');
-const Easing = require('Easing');
+const Easing = require('../Easing');
 
 describe('Interpolation', () => {
   it('should work with defaults', () => {

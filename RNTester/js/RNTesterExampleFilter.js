@@ -10,11 +10,9 @@
 
 'use strict';
 
-const Platform = require('Platform'); // TODO(macOS ISS#2323203)
+import Platform from '../../Libraries/Utilities/Platform'; // TODO(macOS ISS#2323203)
 const React = require('react');
-const StyleSheet = require('StyleSheet');
-const TextInput = require('TextInput');
-const View = require('View');
+const {StyleSheet, TextInput, View} = require('react-native');
 
 type Props = {
   filter: Function,

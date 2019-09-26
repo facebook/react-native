@@ -14,19 +14,19 @@ import type {
   PressEvent,
   Layout,
   LayoutEvent,
-  SyntheticEvent,
-} from 'CoreEventTypes';
-import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
-import type React from 'React';
-import type {ViewStyleProp} from 'StyleSheet';
-import type {TVViewProps} from 'TVViewPropTypes';
+  KeyboardEvent,
+} from '../../Types/CoreEventTypes';
+import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {Node} from 'react';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {TVViewProps} from '../AppleTV/TVViewPropTypes';
 import type {
-  AccessibilityComponentType,
-  AccessibilityTrait,
-  AccessibilityNodeInfoProp, // TODO(android ISS)
   AccessibilityRole,
   AccessibilityStates,
-} from 'ViewAccessibility';
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+  AccessibilityNodeInfoProp, // TODO(android ISS)
+} from './ViewAccessibility';
 
 // [TODO(macOS ISS#2323203)
 import type {DraggedTypesType} from 'DraggedType';
@@ -40,9 +40,8 @@ type DirectEventProps = $ReadOnly<{|
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs an accessibility custom action.
    *
-   * @platform ios
    */
-  onAccessibilityAction?: ?(string) => void,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => void,
 
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -62,7 +61,7 @@ type DirectEventProps = $ReadOnly<{|
    * When `accessible` is true, the system will try to invoke this function
    * when the user performs accessibility key down gesture.
    */
-  onKeyDown?: ?(event: SyntheticEvent<{key: string}>) => mixed, // TODO(macOS ISS#2323203)
+  onKeyDown?: ?(event: KeyboardEvent) => mixed, // TODO(macOS ISS#2323203)
 
   onMouseEnter?: (event: SyntheticEvent<{}>) => mixed, // [TODO(macOS ISS#2323203)
 
@@ -294,16 +293,6 @@ type AndroidViewProps = $ReadOnly<{|
    */
 
   onClick?: ?(event: PressEvent) => mixed, // TODO(android ISS)
-  /**
-   * Indicates to accessibility services to treat UI component like a
-   * native one. Works for Android only.
-   *
-   * @platform android
-   *
-   * See http://facebook.github.io/react-native/docs/view.html#accessibilitycomponenttype
-   */
-
-  accessibilityComponentType?: ?AccessibilityComponentType,
 
   /**
    * Indicates to accessibility services whether the user should be notified
@@ -334,37 +323,58 @@ type AndroidViewProps = $ReadOnly<{|
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
 
   accessibilityNodeInfo?: AccessibilityNodeInfoProp, // TODO(android ISS)
+
+  /**
+   * TV next focus down (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusDown?: ?number,
+
+  /**
+   * TV next focus forward (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusForward?: ?number,
+
+  /**
+   * TV next focus left (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusLeft?: ?number,
+
+  /**
+   * TV next focus right (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusRight?: ?number,
+
+  /**
+   * TV next focus up (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusUp?: ?number,
+
+  /**
+   * When `clickable` is true, the system will try to invoke this function
+   * when the user performs a click.
+   *
+   * @platform android
+   */
+  onClick?: ?(event: PressEvent) => mixed, // TODO(android ISS)
 |}>;
 
 type IOSViewProps = $ReadOnly<{|
-  /**
-   * Provides an array of custom actions available for accessibility.
-   *
-   * @platform ios
-   */
-  accessibilityActions?: ?$ReadOnlyArray<string>,
-
   /**
    * Prevents view from being inverted if set to true and color inversion is turned on.
    *
    * @platform ios
    */
   accessibilityIgnoresInvertColors?: ?boolean,
-
-  /**
-   * Provides additional traits to screen reader. By default no traits are
-   * provided unless specified otherwise in element.
-   *
-   * You can provide one trait or an array of many traits.
-   *
-   * @platform ios
-   *
-   * See http://facebook.github.io/react-native/docs/view.html#accessibilitytraits
-   */
-  accessibilityTraits?: ?(
-    | AccessibilityTrait
-    | $ReadOnlyArray<AccessibilityTrait>
-  ),
 
   /**
    * A value indicating whether VoiceOver should ignore the elements
@@ -386,13 +396,6 @@ type IOSViewProps = $ReadOnly<{|
    * See http://facebook.github.io/react-native/docs/view.html#accessibilityElementsHidden
    */
   accessibilityElementsHidden?: ?boolean,
-
-  /**
-   * Whether this `View` should be rendered as a bitmap before compositing.
-   *
-   * @platform ios
-   */
-  onAccessibilityAction?: ?(event: SyntheticEvent<{}>) => mixed,
 
   onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed, // TODO(macOS ISS#2323203)
 
@@ -424,7 +427,7 @@ export type ViewProps = $ReadOnly<{|
   // so we must include TVViewProps
   ...TVViewProps,
 
-  children?: React.Node,
+  children?: Node,
   style?: ?ViewStyleProp,
 
   /**
@@ -463,6 +466,12 @@ export type ViewProps = $ReadOnly<{|
    * Indicates to accessibility services that UI Component is in a specific State.
    */
   accessibilityStates?: ?AccessibilityStates,
+
+  /**
+   * Provides an array of custom actions available for accessibility.
+   *
+   */
+  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
 
   /**
    * Used to locate this view in end-to-end tests.

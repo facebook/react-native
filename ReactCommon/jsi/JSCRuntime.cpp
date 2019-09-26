@@ -9,7 +9,7 @@
 #include <atomic>
 #include <condition_variable>
 #include <cstdlib>
-#include <jsilib.h>
+#include "jsi/jsilib.h"
 #include <mutex>
 #include <queue>
 #include <sstream>

@@ -8,12 +8,12 @@
  * @flow
  */
 
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
-const RCTMaskedViewNativeComponent = require('RCTMaskedViewNativeComponent');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const View = require('../View/View');
+const RCTMaskedViewNativeComponent = require('./RCTMaskedViewNativeComponent');
 
-import type {ViewProps} from 'ViewPropTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 type Props = $ReadOnly<{|
   ...ViewProps,

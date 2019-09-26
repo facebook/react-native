@@ -10,18 +10,20 @@
 
 'use strict';
 
-const Platform = require('Platform');
 const React = require('react');
-const SectionList = require('SectionList');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const TouchableHighlight = require('TouchableHighlight');
+const {
+  Platform,
+  SectionList,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} = require('react-native');
 const RNTesterActions = require('./RNTesterActions');
 const RNTesterExampleFilter = require('./RNTesterExampleFilter');
-const View = require('View');
 
-import type {RNTesterExample} from 'RNTesterTypes';
-import type {ViewStyleProp} from 'StyleSheet';
+import type {RNTesterExample} from './Shared/RNTesterTypes';
+import type {ViewStyleProp} from '../../Libraries/StyleSheet/StyleSheet';
 
 type Props = {
   onNavigate: Function,

@@ -10,14 +10,14 @@
 
 'use strict';
 
-jest.mock('NativeEventEmitter');
-jest.setMock('NativeModules', {
+jest.mock('../../EventEmitter/NativeEventEmitter');
+jest.setMock('../../BatchedBridge/NativeModules', {
   WebSocketModule: {
     connect: () => {},
   },
 });
 
-const WebSocket = require('WebSocket');
+const WebSocket = require('../WebSocket');
 
 describe('WebSocket', function() {
   it('should have connection lifecycle constants defined on the class', () => {

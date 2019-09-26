@@ -6,7 +6,6 @@ trigger:
   branches:
     include:
       - master
-      - fb60merge
       - fabric
   paths:
     exclude:

@@ -29,12 +29,17 @@ class YogaStylableProps {
 
 #pragma mark - Props
 
+ protected:
+  friend class YogaLayoutableShadowNode;
   const YGStyle yogaStyle{};
+
+#if RN_DEBUG_STRING_CONVERTIBLE
 
 #pragma mark - DebugStringConvertible (Partial)
 
-#if RN_DEBUG_STRING_CONVERTIBLE
+ public:
   SharedDebugStringConvertibleList getDebugProps() const;
+
 #endif
 };
 

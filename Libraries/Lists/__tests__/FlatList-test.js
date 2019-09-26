@@ -10,10 +10,10 @@
  */
 'use strict';
 
-const React = require('React');
+const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
-const FlatList = require('FlatList');
+const FlatList = require('../FlatList');
 
 describe('FlatList', () => {
   it('renders simple list', () => {

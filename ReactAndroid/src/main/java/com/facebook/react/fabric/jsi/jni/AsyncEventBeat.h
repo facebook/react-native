@@ -4,56 +4,60 @@
 
 #pragma once
 
-#include "EventBeatManager.h"
 #include <jsi/jsi.h>
-#include <react/events/EventBeat.h>
+#include <react/core/EventBeat.h>
+#include <react/uimanager/primitives.h>
+
+#include "EventBeatManager.h"
 
 namespace facebook {
 namespace react {
 
 namespace {
 
- class AsyncEventBeat:
-    public EventBeat {
+class AsyncEventBeat : public EventBeat {
+ private:
+  EventBeatManager* eventBeatManager_;
+  RuntimeExecutor runtimeExecutor_;
+  jni::global_ref<jobject> javaUIManager_;
 
-  private:
-    EventBeatManager *eventBeatManager_;
-    jsi::Runtime *runtime_;
-    jni::global_ref<jobject> javaUIManager_;
+ public:
+  friend class EventBeatManager;
 
-  public:
+  AsyncEventBeat(
+      EventBeatManager* eventBeatManager,
+      RuntimeExecutor runtimeExecutor,
+      jni::global_ref<jobject> javaUIManager) :
+      eventBeatManager_(eventBeatManager),
+      runtimeExecutor_(std::move(runtimeExecutor)),
+      javaUIManager_(javaUIManager) {
+    eventBeatManager->registerEventBeat(this);
+  }
 
-    friend class EventBeatManager;
+  ~AsyncEventBeat() {
+    eventBeatManager_->unregisterEventBeat(this);
+  }
 
-    AsyncEventBeat(EventBeatManager* eventBeatManager, jsi::Runtime *runtime, jni::global_ref<jobject> javaUIManager) {
-      eventBeatManager_ = eventBeatManager;
-      runtime_ = runtime;
-      javaUIManager_ = javaUIManager;
-      eventBeatManager->registerEventBeat(this);
-    }
+  void induce() const override {
+    runtimeExecutor_([=](jsi::Runtime &runtime) {
+      this->beat(runtime);
+    });
+  }
 
-    ~AsyncEventBeat() {
-      eventBeatManager_->unregisterEventBeat(this);
-    }
-
-    void induce() const override {
-      beat(*runtime_);
-    }
-
-    void request() const override {
-      bool alreadyRequested = isRequested_;
-      EventBeat::request();
-      if (!alreadyRequested) {
-        // Notifies java side that an event will be dispatched (e.g. LayoutEvent)
-        static auto onRequestEventBeat =
-           jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+  void request() const override {
+    bool alreadyRequested = isRequested_;
+    EventBeat::request();
+    if (!alreadyRequested) {
+      // Notifies java side that an event will be dispatched (e.g. LayoutEvent)
+      static auto onRequestEventBeat =
+          jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
               ->getMethod<void()>("onRequestEventBeat");
-        onRequestEventBeat(javaUIManager_);
-      }
+      onRequestEventBeat(javaUIManager_);
     }
-  };
+  }
+};
 
-}
+} // namespace
 
-}
-}
+} // namespace react
+} // namespace facebook

@@ -4,10 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
-apply plugin: 'com.android.application'
-
-import com.android.build.OutputFile
+plugins {
+    id("com.android.application")
+}
 
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
@@ -70,7 +69,6 @@ project.ext.react = [
     entryFile: file("../../js/RNTesterApp.android.js"),
     root: "$rootDir",
     inputExcludes: ["android/**", "./**", ".gradle/**"],
-    extraPackagerArgs: ["--reactNativePath", "$rootDir"]
 ]
 
 apply from: "../../../react.gradle"
@@ -90,6 +88,14 @@ def enableSeparateBuildPerCPUArchitecture = true
  * Run Proguard to shrink the Java bytecode in release builds.
  */
 def enableProguardInReleaseBuilds = true
+
+/**
+ * Use the international variant of JavaScriptCore
+ * This variant includes the ICU i18n library to make APIs like `Date.toLocaleString`
+ * and `String.localeCompare` work when using with locales other than en-US.
+ * Note that this variant is about 6MiB larger per architecture than the default.
+ */
+def useIntlJsc = false
 
 android {
     compileSdkVersion 28
@@ -142,7 +148,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:28.0.0'
 
     // Build React Native from source
     if (isSDXPlatform()) {
@@ -150,5 +155,11 @@ dependencies {
     }
     else {
         implementation project(':ReactAndroid')
+    }
+
+    if (useIntlJsc) {
+        implementation 'org.webkit:android-jsc-intl:+'
+    } else {
+        implementation 'org.webkit:android-jsc:+'
     }
 }

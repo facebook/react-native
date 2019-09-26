@@ -35,14 +35,18 @@ jest.mock(
   {virtual: true},
 );
 
+jest.mock('/test/module/NotASchema', () => ({}), {virtual: true});
+
 test('should combine files', () => {
-  const files = ['/test/module/SchemaOne', '/test/module/SchemaTwo'];
+  const files = [
+    '/test/module/SchemaOne',
+    '/test/module/SchemaTwo',
+    '/test/module/NotASchema',
+  ];
   expect(combine(files)).toMatchSnapshot();
 });
 
-test('should throw for failed require', () => {
+test('should not throw for failed require', () => {
   const files = ['/test/module/does/not/exist'];
-  expect(() => combine(files)).toThrow(
-    "Can't require file at /test/module/does/not/exist",
-  );
+  expect(() => combine(files)).not.toThrow();
 });

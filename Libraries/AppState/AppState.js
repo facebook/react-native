@@ -10,12 +10,11 @@
 
 'use strict';
 
-const MissingNativeEventEmitterShim = require('MissingNativeEventEmitterShim');
-const NativeEventEmitter = require('NativeEventEmitter');
-const NativeModules = require('NativeModules');
-const RCTAppState = NativeModules.AppState;
+const EventEmitter = require('../vendor/emitter/EventEmitter');
+const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
+import NativeAppState from './NativeAppState';
 
-const logError = require('logError');
+const logError = require('../Utilities/logError');
 const invariant = require('invariant');
 
 /**
@@ -27,10 +26,10 @@ const invariant = require('invariant');
 class AppState extends NativeEventEmitter {
   _eventHandlers: Object;
   currentState: ?string;
-  isAvailable: boolean = true;
+  isAvailable: boolean;
 
   constructor() {
-    super(RCTAppState);
+    super(NativeAppState);
 
     this.isAvailable = true;
     this._eventHandlers = {
@@ -38,9 +37,7 @@ class AppState extends NativeEventEmitter {
       memoryWarning: new Map(),
     };
 
-    // TODO: Remove the 'active' fallback after `initialAppState` is exported by
-    // the Android implementation.
-    this.currentState = RCTAppState.initialAppState || 'active';
+    this.currentState = NativeAppState.getConstants().initialAppState;
 
     let eventUpdated = false;
 
@@ -56,7 +53,7 @@ class AppState extends NativeEventEmitter {
     // TODO: see above - this request just populates the value of `currentState`
     // when the module is first initialized. Would be better to get rid of the
     // prop and expose `getCurrentAppState` method directly.
-    RCTAppState.getCurrentAppState(appStateData => {
+    NativeAppState.getCurrentAppState(appStateData => {
       // It's possible that the state will have changed here & listeners need to be notified
       if (!eventUpdated && this.currentState !== appStateData.app_state) {
         this.currentState = appStateData.app_state;
@@ -116,32 +113,48 @@ class AppState extends NativeEventEmitter {
   }
 }
 
-if (__DEV__ && !RCTAppState) {
-  class MissingNativeAppStateShim extends MissingNativeEventEmitterShim {
-    constructor() {
-      super('RCTAppState', 'AppState');
-    }
+function throwMissingNativeModule() {
+  invariant(
+    false,
+    'Cannot use AppState module when native RCTAppState is not included in the build.\n' +
+      'Either include it, or check AppState.isAvailable before calling any methods.',
+  );
+}
 
-    get currentState(): ?string {
-      this.throwMissingNativeModule();
-    }
+class MissingNativeAppStateShim extends EventEmitter {
+  // AppState
+  isAvailable: boolean = false;
+  currentState: ?string = null;
 
-    addEventListener(...args: Array<any>) {
-      this.throwMissingNativeModule();
-    }
-
-    removeEventListener(...args: Array<any>) {
-      this.throwMissingNativeModule();
-    }
+  addEventListener() {
+    throwMissingNativeModule();
   }
 
-  // This module depends on the native `RCTAppState` module. If you don't
-  // include it, `AppState.isAvailable` will return `false`, and any method
-  // calls will throw. We reassign the class variable to keep the autodoc
-  // generator happy.
-  AppState = new MissingNativeAppStateShim();
-} else {
+  removeEventListener() {
+    throwMissingNativeModule();
+  }
+
+  // EventEmitter
+  addListener() {
+    throwMissingNativeModule();
+  }
+
+  removeAllListeners() {
+    throwMissingNativeModule();
+  }
+
+  removeSubscription() {
+    throwMissingNativeModule();
+  }
+}
+
+// This module depends on the native `RCTAppState` module. If you don't include it,
+// `AppState.isAvailable` will return `false`, and any method calls will throw.
+// We reassign the class variable to keep the autodoc generator happy.
+if (NativeAppState) {
   AppState = new AppState();
+} else {
+  AppState = new MissingNativeAppStateShim();
 }
 
 module.exports = AppState;

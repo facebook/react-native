@@ -6,15 +6,15 @@
  */
 package com.facebook.react.fabric.mounting;
 
-import android.support.annotation.UiThread;
 import android.view.View;
-import com.facebook.react.bridge.UiThreadUtil;
+import androidx.annotation.UiThread;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import java.util.WeakHashMap;
 
 /** Class that provides pool for views based on {@link ThemedReactContext}. */
-public final class ContextBasedViewPool {
+public final class ContextBasedViewPool implements ViewFactory {
   private final WeakHashMap<ThemedReactContext, ViewPool> mContextViewPoolHashMap =
       new WeakHashMap<>();
   private final ViewManagerRegistry mViewManagerRegistry;
@@ -23,21 +23,21 @@ public final class ContextBasedViewPool {
     mViewManagerRegistry = viewManagerRegistry;
   }
 
+
   @UiThread
-  void createView(ThemedReactContext context, String componentName) {
-    UiThreadUtil.assertOnUiThread();
-    getViewPool(context).createView(componentName, context);
+  void createView(ThemedReactContext context, ReactStylesDiffMap props, String componentName) {
+    getViewPool(context).createView(componentName, props, context);
   }
 
   @UiThread
-  View getOrCreateView(String componentName, ThemedReactContext context) {
-    UiThreadUtil.assertOnUiThread();
-    return getViewPool(context).getOrCreateView(componentName, context);
+  @Override
+  public View getOrCreateView(String componentName, ReactStylesDiffMap props, ThemedReactContext context) {
+    return getViewPool(context).getOrCreateView(componentName, props, context);
   }
 
   @UiThread
-  void returnToPool(ThemedReactContext context, String componentName, View view) {
-    UiThreadUtil.assertOnUiThread();
+  @Override
+  public void recycle(ThemedReactContext context, String componentName, View view) {
     getViewPool(context).returnToPool(componentName, view);
   }
 

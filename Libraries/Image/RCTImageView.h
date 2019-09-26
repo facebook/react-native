@@ -6,7 +6,10 @@
  */
 
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
-
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+#import <UIKit/UIKit.h>
+#endif // [TODO(macOS ISS#2323203)
+#import <React/RCTView.h>
 #import <React/RCTResizeMode.h>
 
 @class RCTBridge;

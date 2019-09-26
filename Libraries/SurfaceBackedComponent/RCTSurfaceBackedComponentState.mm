@@ -18,7 +18,7 @@
 
 - (instancetype)initWithSurface:(RCTSurface *)surface
 {
-  if (self == [super init]) {
+  if (self = [super init]) {
     _surface = surface;
   }
 

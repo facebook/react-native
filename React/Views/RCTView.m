@@ -16,7 +16,11 @@
 #import "UIView+React.h"
 #import "RCTI18nUtil.h"
 
-@implementation RCTPlatformView (RCTViewUnmounting) // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
+#endif // TODO(macOS ISS#2323203)
+
+@implementation RCTPlatformView (RCTViewUnmounting)
 
 - (void)react_remountAllSubviews
 {
@@ -98,7 +102,7 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS I
       [str appendString:label];
     }
   }
-  return str;
+  return str.length == 0 ? nil : str;
 }
 
 @implementation RCTView
@@ -108,6 +112,8 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // TODO(macOS I
   NSTrackingArea *_trackingArea;
   BOOL _hasMouseOver;
 #endif // ]TODO(macOS ISS#2323203)
+  NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsNameMap;
+  NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsLabelMap;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -173,18 +179,38 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return RCTRecursiveAccessibilityLabel(self);
 }
 
+-(void)setAccessibilityActions:(NSArray *)actions
+{
+  if (!actions) {
+    return;
+  }
+  accessibilityActionsNameMap = [[NSMutableDictionary alloc] init];
+  accessibilityActionsLabelMap = [[NSMutableDictionary alloc] init];
+  for (NSDictionary *action in actions) {
+    if (action[@"name"]) {
+      accessibilityActionsNameMap[action[@"name"]] = action;
+    }
+    if (action[@"label"]) {
+      accessibilityActionsLabelMap[action[@"label"]] = action;
+    }
+  }
+  _accessibilityActions = [actions copy];
+}
+
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
-  if (!_accessibilityActions.count) {
+  if (!self.accessibilityActions.count) {
     return nil;
   }
 
   NSMutableArray *actions = [NSMutableArray array];
-  for (NSString *action in _accessibilityActions) {
-    [actions addObject:[[UIAccessibilityCustomAction alloc] initWithName:action
-                                                                  target:self
-                                                                selector:@selector(didActivateAccessibilityCustomAction:)]];
+  for (NSDictionary *action in self.accessibilityActions) {
+    if (action[@"label"]) {
+      [actions addObject:[[UIAccessibilityCustomAction alloc] initWithName:action[@"label"]
+                                                                    target:self
+                                                                  selector:@selector(didActivateAccessibilityCustomAction:)]];
+    }
   }
 
   return [actions copy];
@@ -192,18 +218,85 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
 {
-  if (!_onAccessibilityAction) {
+  if (!_onAccessibilityAction || !accessibilityActionsLabelMap) {
     return NO;
   }
 
-  _onAccessibilityAction(@{
-    @"action": action.name,
-    @"target": self.reactTag
-  });
+  // iOS defines the name as the localized label, so use our map to convert this back to the non-localized action namne when passing to JS. This allows for standard action names across platforms.
 
+  NSDictionary *actionObject = accessibilityActionsLabelMap[action.name];
+  if (actionObject) {
+    _onAccessibilityAction(@{
+      @"actionName": actionObject[@"name"],
+      @"actionTarget": self.reactTag
+    });
+  }
   return YES;
 }
 #endif // TODO(macOS ISS#2323203)
+
+- (NSString *)accessibilityValue
+{
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+  if ((self.accessibilityTraits & SwitchAccessibilityTrait) == SwitchAccessibilityTrait) {
+    for (NSString *state in self.accessibilityStates) {
+      if ([state isEqualToString:@"checked"]) {
+        return @"1";
+      } else if ([state isEqualToString:@"unchecked"]) {
+        return @"0";
+      }
+    }
+  }
+#endif // TODO(macOS ISS#2323203)
+  NSMutableArray *valueComponents = [NSMutableArray new];
+  static NSDictionary<NSString *, NSString *> *roleDescriptions = nil;
+  static dispatch_once_t onceToken1;
+  dispatch_once(&onceToken1, ^{
+    roleDescriptions = @{
+                         @"alert" : @"alert",
+                         @"checkbox" : @"checkbox",
+                         @"combobox" : @"combo box",
+                         @"menu" : @"menu",
+                         @"menubar" : @"menu bar",
+                         @"menuitem" : @"menu item",
+                         @"progressbar" : @"progress bar",
+                         @"radio" : @"radio button",
+                         @"radiogroup" : @"radio group",
+                         @"scrollbar" : @"scroll bar",
+                         @"spinbutton" : @"spin button",
+                         @"switch" : @"switch",
+                         @"tab" : @"tab",
+                         @"tablist" : @"tab list",
+                         @"timer" : @"timer",
+                         @"toolbar" : @"tool bar",
+                         };
+  });
+  static NSDictionary<NSString *, NSString *> *stateDescriptions = nil;
+  static dispatch_once_t onceToken2;
+  dispatch_once(&onceToken2, ^{
+    stateDescriptions = @{
+                          @"checked" : @"checked",
+                          @"unchecked" : @"not checked",
+                          @"busy" : @"busy",
+                          @"expanded" : @"expanded",
+                          @"collapsed" : @"collapsed",
+                          };
+  });
+  NSString *roleDescription = self.accessibilityRole ? roleDescriptions[self.accessibilityRole]: nil;
+  if (roleDescription) {
+    [valueComponents addObject:roleDescription];
+  }
+  for (NSString *state in self.accessibilityStates) {
+    NSString *stateDescription = state ? stateDescriptions[state] : nil;
+    if (stateDescription) {
+      [valueComponents addObject:stateDescription];
+    }
+  }
+  if (valueComponents.count > 0) {
+    return [valueComponents componentsJoinedByString:@",  "];
+  }
+  return nil;
+}
 
 - (void)setPointerEvents:(RCTPointerEvents)pointerEvents
 {
@@ -296,15 +389,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return NO;
 }
 
-#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-- (BOOL)isAccessibilitySelectorAllowed:(SEL)selector
+- (BOOL)performAccessibilityAction:(NSString *) name
 {
-  if (selector == @selector(accessibilityPerformPress)) {
-    return _onAccessibilityTap ? YES : NO;
+  if (_onAccessibilityAction && accessibilityActionsNameMap[name]) {
+    _onAccessibilityAction(@{
+                             @"actionName" : name,
+                             @"actionTarget" : self.reactTag
+                             });
+    return YES;
   }
-  return [super isAccessibilitySelectorAllowed:selector];
+  return NO;
 }
-#endif
 
 #if !TARGET_OS_OSX // ]TODO(macOS ISS#2323203)
 - (BOOL)accessibilityActivate
@@ -312,7 +407,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 - (BOOL)accessibilityPerformPress
 #endif // ]TODO(macOS ISS#2323203)
 {
-  if (_onAccessibilityTap) {
+  if ([self performAccessibilityAction:@"activate"]) {
+    return YES;
+  }
+  else if (_onAccessibilityTap) {
     _onAccessibilityTap(nil);
     return YES;
   } else {
@@ -323,7 +421,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (BOOL)accessibilityPerformMagicTap
 {
-  if (_onMagicTap) {
+  if ([self performAccessibilityAction:@"magicTap"]) {
+    return YES;
+  } else if (_onMagicTap) {
     _onMagicTap(nil);
     return YES;
   } else {
@@ -334,12 +434,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (BOOL)accessibilityPerformEscape
 {
-  if (_onAccessibilityEscape) {
+  if ([self performAccessibilityAction:@"escape"]) {
+    return YES;
+  } else if (_onAccessibilityEscape) {
     _onAccessibilityEscape(nil);
     return YES;
   } else {
     return NO;
   }
+}
+
+- (void)accessibilityIncrement
+{
+  [self performAccessibilityAction:@"increment"];
+}
+
+- (void)accessibilityDecrement
+{
+  [self performAccessibilityAction:@"decrement"];
 }
 
 - (NSString *)description
@@ -774,7 +886,6 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
   const RCTBorderColors borderColors = [self borderColors];
 
   BOOL useIOSBorderRendering =
-  !RCTRunningInTestEnvironment() &&
   RCTCornerRadiiAreEqual(cornerRadii) &&
   RCTBorderInsetsAreEqual(borderInsets) &&
   RCTBorderColorsAreEqual(borderColors) &&
@@ -860,28 +971,12 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
     );
   });
 
-#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
-  CGFloat scale = image.scale;
-#else // TODO(macOS ISS#2323203)
-  CGFloat scale = scaleFactor;
-#endif // ]TODO(macOS ISS#2323203)
-  if (RCTRunningInTestEnvironment()) {
-    const CGSize size = self.bounds.size;
-    if (size.width > 0 && size.height > 0) { // TODO(OSS Candidate ISS#2710739)
-      UIGraphicsBeginImageContextWithOptions(size, NO, scale); // TODO(macOS ISS#2323203)
-      [image drawInRect:(CGRect){CGPointZero, size}];
-      image = UIGraphicsGetImageFromCurrentImageContext();
-      UIGraphicsEndImageContext();
-    } // TODO(OSS Candidate ISS#2710739)
-    contentsCenter = CGRectMake(0, 0, 1, 1);
-  }
-
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   layer.contents = (id)image.CGImage;
   layer.contentsScale = image.scale;
 #else // [TODO(macOS ISS#2323203)
-  layer.contents = [image layerContentsForContentsScale:scale];
-  layer.contentsScale = scale;
+  layer.contents = [image layerContentsForContentsScale:scaleFactor];
+  layer.contentsScale = scaleFactor;
 #endif // ]TODO(macOS ISS#2323203)
   layer.needsDisplayOnBoundsChange = YES;
   layer.magnificationFilter = kCAFilterNearest;

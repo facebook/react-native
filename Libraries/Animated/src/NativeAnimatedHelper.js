@@ -9,8 +9,9 @@
  */
 'use strict';
 
-const NativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
-const NativeEventEmitter = require('NativeEventEmitter');
+const NativeAnimatedModule = require('../../BatchedBridge/NativeModules')
+  .NativeAnimatedModule;
+const NativeEventEmitter = require('../../EventEmitter/NativeEventEmitter');
 
 const invariant = require('invariant');
 

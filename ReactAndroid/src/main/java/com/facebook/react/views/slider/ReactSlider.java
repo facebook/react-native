@@ -8,7 +8,7 @@ package com.facebook.react.views.slider;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.v7.widget.AppCompatSeekBar;
+import androidx.appcompat.widget.AppCompatSeekBar;
 import android.util.AttributeSet;
 import javax.annotation.Nullable;
 

@@ -24,11 +24,6 @@ namespace react {
  */
 class ImageRequest final {
  public:
-  /*
-   * The exception which is thrown when `ImageRequest` is being deallocated
-   * if the future is not ready yet.
-   */
-  class ImageNoLongerNeededException;
 
   /*
    * The default constructor
@@ -53,9 +48,18 @@ class ImageRequest final {
   void setCancelationFunction(std::function<void(void)> cancelationFunction);
 
   /*
-   * Get observer coordinator.
+   * Returns stored observer coordinator as a shared pointer.
+   * Retain this *or* `ImageRequest` to ensure a correct lifetime of the object.
    */
-  const ImageResponseObserverCoordinator *getObserverCoordinator() const;
+  const std::shared_ptr<const ImageResponseObserverCoordinator>
+      &getSharedObserverCoordinator() const;
+
+  /*
+   * Returns stored observer coordinator as a reference.
+   * Use this if a correct lifetime of the object is ensured in some other way
+   * (e.g. by retaining an `ImageRequest`).
+   */
+  const ImageResponseObserverCoordinator &getObserverCoordinator() const;
 
  private:
   /*

@@ -10,22 +10,23 @@
 
 'use strict';
 
-const Platform = require('Platform');
-const ReactNative = require('ReactNative');
+const Platform = require('../../Utilities/Platform');
+const ReactNative = require('../../Renderer/shims/ReactNative');
 
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
-import type {SwitchChangeEvent} from 'CoreEventTypes';
-import type {ViewProps} from 'ViewPropTypes';
-import type {NativeOrDynamicColorType} from 'NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
+import type {SwitchChangeEvent} from '../../Types/CoreEventTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {NativeOrDynamicColorType} from '../../Color/NativeOrDynamicColorType'; // TODO(macOS ISS#2323203)
 
 type SwitchProps = $ReadOnly<{|
   ...ViewProps,
   disabled?: ?boolean,
   onChange?: ?(event: SwitchChangeEvent) => mixed,
-  thumbColor?: ?string,
-  trackColorForFalse?: ?string,
-  trackColorForTrue?: ?string,
+  thumbColor?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+  trackColorForFalse?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
+  trackColorForTrue?: ?(string | NativeOrDynamicColorType), // TODO(macOS ISS#2323203)
   value?: ?boolean,
 |}>;
 

@@ -10,13 +10,12 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   DatePickerAndroid,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
-} = ReactNative;
+} = require('react-native');
 
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');

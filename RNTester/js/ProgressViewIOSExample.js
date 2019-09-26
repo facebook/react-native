@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {ProgressViewIOS, StyleSheet, View} = ReactNative;
+const {ProgressViewIOS, StyleSheet, View} = require('react-native');
 
 type Props = {||};
 type State = {|

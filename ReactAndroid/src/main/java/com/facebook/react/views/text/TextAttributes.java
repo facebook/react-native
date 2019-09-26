@@ -27,7 +27,7 @@ public class TextAttributes {
   private float mLineHeight = Float.NaN;
   private float mLetterSpacing = Float.NaN;
   private float mMaxFontSizeMultiplier = Float.NaN;
-  private float mHeightOfTallestInlineImage = Float.NaN;
+  private float mHeightOfTallestInlineViewOrImage = Float.NaN;
   private TextTransform mTextTransform = TextTransform.UNSET;
 
   public TextAttributes() {
@@ -44,7 +44,7 @@ public class TextAttributes {
     result.mLineHeight = !Float.isNaN(child.mLineHeight) ? child.mLineHeight : mLineHeight;
     result.mLetterSpacing = !Float.isNaN(child.mLetterSpacing) ? child.mLetterSpacing : mLetterSpacing;
     result.mMaxFontSizeMultiplier = !Float.isNaN(child.mMaxFontSizeMultiplier) ? child.mMaxFontSizeMultiplier : mMaxFontSizeMultiplier;
-    result.mHeightOfTallestInlineImage = !Float.isNaN(child.mHeightOfTallestInlineImage) ? child.mHeightOfTallestInlineImage : mHeightOfTallestInlineImage;
+    result.mHeightOfTallestInlineViewOrImage = !Float.isNaN(child.mHeightOfTallestInlineViewOrImage) ? child.mHeightOfTallestInlineViewOrImage : mHeightOfTallestInlineViewOrImage;
     result.mTextTransform = child.mTextTransform != TextTransform.UNSET ? child.mTextTransform : mTextTransform;
 
     return result;
@@ -96,12 +96,12 @@ public class TextAttributes {
     mMaxFontSizeMultiplier = maxFontSizeMultiplier;
   }
 
-  public float getHeightOfTallestInlineImage() {
-    return mHeightOfTallestInlineImage;
+  public float getHeightOfTallestInlineViewOrImage() {
+    return mHeightOfTallestInlineViewOrImage;
   }
 
-  public void setHeightOfTallestInlineImage(float value) {
-    mHeightOfTallestInlineImage = value;
+  public void setHeightOfTallestInlineViewOrImage(float value) {
+    mHeightOfTallestInlineViewOrImage = value;
   }
 
   public TextTransform getTextTransform() {
@@ -137,9 +137,9 @@ public class TextAttributes {
     // Take into account the requested line height
     // and the height of the inline images.
     boolean useInlineViewHeight =
-      !Float.isNaN(mHeightOfTallestInlineImage)
-        && mHeightOfTallestInlineImage > lineHeight;
-    return useInlineViewHeight ? mHeightOfTallestInlineImage : lineHeight;
+      !Float.isNaN(mHeightOfTallestInlineViewOrImage)
+        && mHeightOfTallestInlineViewOrImage > lineHeight;
+    return useInlineViewHeight ? mHeightOfTallestInlineViewOrImage : lineHeight;
   }
 
   public float getEffectiveLetterSpacing() {
@@ -169,7 +169,7 @@ public class TextAttributes {
       + "\n  getAllowFontScaling(): " + getAllowFontScaling()
       + "\n  getFontSize(): " + getFontSize()
       + "\n  getEffectiveFontSize(): " + getEffectiveFontSize()
-      + "\n  getHeightOfTallestInlineImage(): " + getHeightOfTallestInlineImage()
+      + "\n  getHeightOfTallestInlineViewOrImage(): " + getHeightOfTallestInlineViewOrImage()
       + "\n  getLetterSpacing(): " + getLetterSpacing()
       + "\n  getEffectiveLetterSpacing(): " + getEffectiveLetterSpacing()
       + "\n  getLineHeight(): " + getLineHeight()

@@ -10,16 +10,16 @@
 
 'use strict';
 
-const Dimensions = require('Dimensions');
-const InspectorOverlay = require('InspectorOverlay');
-const InspectorPanel = require('InspectorPanel');
-const Platform = require('Platform');
-const React = require('React');
-const ReactNative = require('ReactNative');
-const StyleSheet = require('StyleSheet');
-const Touchable = require('Touchable');
-const UIManager = require('UIManager');
-const View = require('View');
+const Dimensions = require('../Utilities/Dimensions');
+const InspectorOverlay = require('./InspectorOverlay');
+const InspectorPanel = require('./InspectorPanel');
+const Platform = require('../Utilities/Platform');
+const React = require('react');
+const ReactNative = require('../Renderer/shims/ReactNative');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Touchable = require('../Components/Touchable/Touchable');
+const UIManager = require('../ReactNative/UIManager');
+const View = require('../Components/View/View');
 
 const invariant = require('invariant');
 
@@ -31,7 +31,7 @@ const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 const renderers = findRenderers();
 
 // required for devtools to be able to edit react native styles
-hook.resolveRNStyle = require('flattenStyle');
+hook.resolveRNStyle = require('../StyleSheet/flattenStyle');
 
 function findRenderers(): $ReadOnlyArray<ReactRenderer> {
   const allRenderers = Object.keys(hook._renderers).map(

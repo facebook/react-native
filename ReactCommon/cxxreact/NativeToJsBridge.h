@@ -41,11 +41,10 @@ public:
    */
   NativeToJsBridge(
     JSExecutorFactory* jsExecutorFactory,
-    std::shared_ptr<ExecutorDelegate> delegate,
+    std::shared_ptr<ExecutorDelegate> delegate, // TODO(OSS Candidate ISS#2710739)
     std::shared_ptr<ModuleRegistry> registry,
     std::shared_ptr<MessageQueueThread> jsQueue,
-    std::shared_ptr<InstanceCallback> callback,
-    std::shared_ptr<JSEConfigParams> jseConfigParams);
+    std::shared_ptr<InstanceCallback> callback);
   virtual ~NativeToJsBridge();
 
   /**
@@ -67,15 +66,15 @@ public:
   void loadApplication(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> bundle,
-    uint64_t bundleVersion,
+    uint64_t bundleVersion, // TODO(OSS Candidate ISS#2710739)
     std::string bundleURL,
-    std::string&& bytecodeFileName);
+    std::string&& bytecodeFileName); // TODO(OSS Candidate ISS#2710739)
   void loadApplicationSync(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> bundle,
-    uint64_t bundleVersion,
+    uint64_t bundleVersion, // TODO(OSS Candidate ISS#2710739)
     std::string bundleURL,
-    std::string&& bytecodeFileName);
+    std::string&& bytecodeFileName); // TODO(OSS Candidate ISS#2710739)
 
   void registerBundle(uint32_t bundleId, const std::string& bundlePath);
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
@@ -96,17 +95,23 @@ public:
    * Synchronously tears down the bridge and the main executor.
    */
   void destroy();
-private:
+
   void runOnExecutorQueue(std::function<void(JSExecutor*)> task);
 
+private:
   // This is used to avoid a race condition where a proxyCallback gets queued
   // after ~NativeToJsBridge(), on the same thread. In that case, the callback
   // will try to run the task on m_callback which will have been destroyed
   // within ~NativeToJsBridge(), thus causing a SIGSEGV.
   std::shared_ptr<bool> m_destroyed;
-  std::shared_ptr<react::ExecutorDelegate> m_delegate;
+  std::shared_ptr<react::ExecutorDelegate> m_delegate; // TODO(OSS Candidate ISS#2710739)
   std::unique_ptr<JSExecutor> m_executor;
   std::shared_ptr<MessageQueueThread> m_executorMessageQueueThread;
+
+  // Memoize this on the JS thread, so that it can be inspected from
+  // any thread later.  This assumes inspectability doesn't change for
+  // a JSExecutor instance, which is true for all existing implementations.
+  bool m_inspectable;
 
   // Keep track of whether the JS bundle containing the application logic causes
   // exception when evaluated initially. If so, more calls to JS will very

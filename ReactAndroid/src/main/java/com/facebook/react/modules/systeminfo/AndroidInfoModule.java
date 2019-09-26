@@ -9,10 +9,13 @@ package com.facebook.react.modules.systeminfo;
 
 import android.annotation.SuppressLint;
 import android.app.UiModeManager;
+import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Build;
 import android.provider.Settings.Secure;
 
+import com.facebook.react.R;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.common.build.ReactBuildConfig;
@@ -35,9 +38,7 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
   public static final String NAME = "PlatformConstants";
   private static final String IS_TESTING = "IS_TESTING";
 
-  public AndroidInfoModule(ReactApplicationContext reactContext) {
-    super(reactContext);
-  }
+  public AndroidInfoModule(ReactApplicationContext reactContext) { super(reactContext); }
 
   /**
    * See: https://developer.android.com/reference/android/app/UiModeManager.html#getCurrentModeType()
@@ -74,9 +75,10 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
     constants.put("Fingerprint", Build.FINGERPRINT);
     constants.put("Model", Build.MODEL);
     if (ReactBuildConfig.DEBUG) {
-      constants.put("ServerHost", AndroidInfoHelpers.getServerHost());
+      constants.put("ServerHost", getServerHost());
     }
-    constants.put("isTesting", "true".equals(System.getProperty(IS_TESTING)));
+    constants.put("isTesting", "true".equals(System.getProperty(IS_TESTING))
+    || isRunningScreenshotTest());
     constants.put("reactNativeVersion", ReactNativeVersion.VERSION);
     constants.put("uiMode", uiMode());
     return constants;
@@ -85,5 +87,22 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
   @ReactMethod(isBlockingSynchronousMethod = true)
   public String getAndroidID(){
     return Secure.getString(getReactApplicationContext().getContentResolver(),Secure.ANDROID_ID);
+  }
+
+  private Boolean isRunningScreenshotTest() {
+    try {
+      Class.forName("android.support.test.rule.ActivityTestRule");
+      return true;
+    } catch (ClassNotFoundException ignored) {
+      return false;
+    }
+  }
+
+  private String getServerHost() {
+    Resources resources = getReactApplicationContext().getApplicationContext().getResources();
+
+    Integer devServerPort = resources.getInteger(R.integer.react_native_dev_server_port);
+
+    return AndroidInfoHelpers.getServerHost(devServerPort);
   }
 }

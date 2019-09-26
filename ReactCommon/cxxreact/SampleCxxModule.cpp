@@ -94,13 +94,13 @@ auto SampleCxxModule::getMethods() -> std::vector<Method> {
                             jsArgAsString(args, 1))});
       }),
     Method("repeat", [this](dynamic args, Callback cb) {
-        cb({sample_->repeat(jsArgAsInt(args, 0),
+        cb({sample_->repeat((int)jsArgAsInt(args, 0),
                             jsArgAsString(args, 1))});
       }),
     Method("save", this, &SampleCxxModule::save),
     Method("load", this, &SampleCxxModule::load),
     Method("call_later", [this](dynamic args, Callback cb) {
-        sample_->call_later(jsArgAsInt(args, 0), [cb] {
+        sample_->call_later((int)jsArgAsInt(args, 0), [cb] {
             cb({});
           });
       }),
@@ -145,7 +145,7 @@ void SampleCxxModule::save(folly::dynamic args) {
   sample_->save(std::move(m));
 }
 
-void SampleCxxModule::load(folly::dynamic args, Callback cb) {
+void SampleCxxModule::load(__unused folly::dynamic args, Callback cb) {
   dynamic d = dynamic::object;
   for (const auto& p : sample_->load()) {
     d.insert(p.first, p.second);

@@ -10,10 +10,10 @@
  */
 'use strict';
 
-const React = require('React');
+const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
-const SectionList = require('SectionList');
+const SectionList = require('../SectionList');
 
 describe('SectionList', () => {
   it('renders empty list', () => {

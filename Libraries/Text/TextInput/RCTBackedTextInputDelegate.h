@@ -32,6 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)textInputShouldHandleDeleteForward:(id<RCTBackedTextInputViewProtocol>)sender; // Return `YES` to have the deleteForward event handled normally. Return `NO` to disallow it and handle it yourself.
 #endif  // ]TODO(macOS ISS#2323203)
 
+@optional
+- (void)scrollViewDidScroll:(RCTUIScrollView *)scrollView;
+
 @end
 
 NS_ASSUME_NONNULL_END

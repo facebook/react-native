@@ -27,13 +27,12 @@ public class EventBeatManager implements BatchEventDispatchedListener {
   @DoNotStrip private final HybridData mHybridData;
   private final ReactApplicationContext mReactApplicationContext;
 
-  private static native HybridData initHybrid(long jsContext);
+  private static native HybridData initHybrid();
 
   private native void beat();
 
-  public EventBeatManager(
-      JavaScriptContextHolder jsContext, ReactApplicationContext reactApplicationContext) {
-    mHybridData = initHybrid(jsContext.get());
+  public EventBeatManager(ReactApplicationContext reactApplicationContext) {
+    mHybridData = initHybrid();
     mReactApplicationContext = reactApplicationContext;
   }
 

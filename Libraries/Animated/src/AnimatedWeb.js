@@ -10,7 +10,7 @@
 
 'use strict';
 
-const AnimatedImplementation = require('AnimatedImplementation');
+const AnimatedImplementation = require('./AnimatedImplementation');
 
 module.exports = {
   ...AnimatedImplementation,

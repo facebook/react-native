@@ -12,10 +12,10 @@ import javax.annotation.Nullable;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Context;
 import android.os.Bundle;
+import androidx.fragment.app.DialogFragment;
 
 /**
  * A fragment used to display the dialog.

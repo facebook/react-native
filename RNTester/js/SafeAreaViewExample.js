@@ -9,15 +9,17 @@
  */
 'use strict';
 
-const Button = require('Button');
-const DeviceInfo = require('DeviceInfo');
-const Modal = require('Modal');
 const React = require('react');
-const SafeAreaView = require('SafeAreaView');
-const StyleSheet = require('StyleSheet');
-const Switch = require('Switch');
-const Text = require('Text');
-const View = require('View');
+const {
+  Button,
+  DeviceInfo,
+  Modal,
+  SafeAreaView,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} = require('react-native');
 
 class SafeAreaViewExample extends React.Component<
   {},

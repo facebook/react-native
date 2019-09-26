@@ -12,14 +12,12 @@
 
 import type {Item} from './ListExampleShared';
 
-const Alert = require('Alert');
 const React = require('react');
-const ReactNative = require('react-native');
-const {Animated, StyleSheet, View} = ReactNative;
+const {Alert, Animated, StyleSheet, View} = require('react-native');
 
 const RNTesterPage = require('./RNTesterPage');
 
-const infoLog = require('infoLog');
+const infoLog = require('../../Libraries/Utilities/infoLog');
 
 const {
   FooterComponent,

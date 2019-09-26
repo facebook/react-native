@@ -9,11 +9,11 @@
  */
 'use strict';
 
-const NativeModules = require('NativeModules');
-const Platform = require('Platform');
-const UIManagerProperties = require('UIManagerProperties');
+const NativeModules = require('../BatchedBridge/NativeModules');
+const Platform = require('../Utilities/Platform');
+const UIManagerProperties = require('./UIManagerProperties');
 
-const defineLazyObjectProperty = require('defineLazyObjectProperty');
+const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
 const invariant = require('invariant');
 
 const {UIManager} = NativeModules;
@@ -24,19 +24,6 @@ invariant(
   'UIManager is undefined. The native module config is probably incorrect.',
 );
 
-// In past versions of ReactNative users called UIManager.takeSnapshot()
-// However takeSnapshot was moved to ReactNative in order to support flat
-// bundles and to avoid a cyclic dependency between UIManager and ReactNative.
-// UIManager.takeSnapshot still exists though. In order to avoid confusion or
-// accidental usage, mask the method with a deprecation warning.
-UIManager.__takeSnapshot = UIManager.takeSnapshot;
-UIManager.takeSnapshot = function() {
-  invariant(
-    false,
-    'UIManager.takeSnapshot should not be called directly. ' +
-      'Use ReactNative.takeSnapshot instead.',
-  );
-};
 const triedLoadingConfig = new Set();
 UIManager.getViewManagerConfig = function(viewManagerName: string) {
   if (

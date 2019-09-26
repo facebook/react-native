@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {CheckBox, Text, View, StyleSheet} = ReactNative;
+const {CheckBox, Text, View, StyleSheet} = require('react-native');
 
 type BasicState = {|
   trueCheckBoxIsOn: boolean,
@@ -33,10 +32,12 @@ class BasicCheckBoxExample extends React.Component<BasicProps, BasicState> {
           onValueChange={value => this.setState({falseCheckBoxIsOn: value})}
           style={styles.checkbox}
           value={this.state.falseCheckBoxIsOn}
+          tintColors={{false: 'red'}}
         />
         <CheckBox
           onValueChange={value => this.setState({trueCheckBoxIsOn: value})}
           value={this.state.trueCheckBoxIsOn}
+          tintColors={{true: 'green'}}
         />
       </View>
     );
@@ -120,7 +121,8 @@ exports.displayName = 'CheckBoxExample';
 exports.description = 'Native boolean input';
 exports.examples = [
   {
-    title: 'CheckBoxes can be set to true or false',
+    title:
+      'CheckBoxes can be set to true or false, and the color of both states can be specified.',
     render(): React.Element<any> {
       return <BasicCheckBoxExample />;
     },

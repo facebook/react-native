@@ -25,7 +25,7 @@ import org.robolectric.RobolectricTestRunner;
  * Test that verifies that spec of methods annotated with @ReactProp is correct
  */
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactPropAnnotationSetterSpecTest {
 
   @Rule

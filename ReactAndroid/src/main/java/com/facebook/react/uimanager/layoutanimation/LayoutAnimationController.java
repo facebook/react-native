@@ -8,11 +8,14 @@ package com.facebook.react.uimanager.layoutanimation;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 
@@ -20,25 +23,22 @@ import com.facebook.react.bridge.UiThreadUtil;
  * Class responsible for animation layout changes, if a valid layout animation config has been
  * supplied. If not animation is available, layout change is applied immediately instead of
  * performing an animation.
- *
- * TODO(7613721): Invoke success callback at the end of animation and when animation gets cancelled.
  */
 @NotThreadSafe
 public class LayoutAnimationController {
-
-  private static final boolean ENABLED = true;
 
   private final AbstractLayoutAnimation mLayoutCreateAnimation = new LayoutCreateAnimation();
   private final AbstractLayoutAnimation mLayoutUpdateAnimation = new LayoutUpdateAnimation();
   private final AbstractLayoutAnimation mLayoutDeleteAnimation = new LayoutDeleteAnimation();
   private final SparseArray<LayoutHandlingAnimation> mLayoutHandlers = new SparseArray<>(0);
+
   private boolean mShouldAnimateLayout;
+  private long mMaxAnimationDuration = -1;
+  @Nullable private Runnable mCompletionRunnable;
 
-  public void initializeFromConfig(final @Nullable ReadableMap config) {
-    if (!ENABLED) {
-      return;
-    }
+  @Nullable private static Handler sCompletionHandler;
 
+  public void initializeFromConfig(final @Nullable ReadableMap config, final Callback completionCallback) {
     if (config == null) {
       reset();
       return;
@@ -61,13 +61,24 @@ public class LayoutAnimationController {
           config.getMap(LayoutAnimationType.toString(LayoutAnimationType.DELETE)), globalDuration);
       mShouldAnimateLayout = true;
     }
+
+    if (mShouldAnimateLayout && completionCallback != null) {
+      mCompletionRunnable = new Runnable() {
+        @Override
+        public void run() {
+          completionCallback.invoke(Boolean.TRUE);
+        }
+      };
+    }
   }
 
   public void reset() {
     mLayoutCreateAnimation.reset();
     mLayoutUpdateAnimation.reset();
     mLayoutDeleteAnimation.reset();
+    mCompletionRunnable = null;
     mShouldAnimateLayout = false;
+    mMaxAnimationDuration = -1;
   }
 
   public boolean shouldAnimateLayout(View viewToAnimate) {
@@ -94,10 +105,10 @@ public class LayoutAnimationController {
     UiThreadUtil.assertOnUiThread();
 
     final int reactTag = view.getId();
-    LayoutHandlingAnimation existingAnimation = mLayoutHandlers.get(reactTag);
 
     // Update an ongoing animation if possible, otherwise the layout update would be ignored as
     // the existing animation would still animate to the old layout.
+    LayoutHandlingAnimation existingAnimation = mLayoutHandlers.get(reactTag);
     if (existingAnimation != null) {
       existingAnimation.onLayoutUpdate(x, y, width, height);
       return;
@@ -132,6 +143,12 @@ public class LayoutAnimationController {
     }
 
     if (animation != null) {
+      long animationDuration = animation.getDuration();
+      if (animationDuration > mMaxAnimationDuration) {
+        mMaxAnimationDuration = animationDuration;
+        scheduleCompletionCallback(animationDuration);
+      }
+
       view.startAnimation(animation);
     }
   }
@@ -146,9 +163,7 @@ public class LayoutAnimationController {
   public void deleteView(final View view, final LayoutAnimationListener listener) {
     UiThreadUtil.assertOnUiThread();
 
-    AbstractLayoutAnimation layoutAnimation = mLayoutDeleteAnimation;
-
-    Animation animation = layoutAnimation.createAnimation(
+    Animation animation = mLayoutDeleteAnimation.createAnimation(
         view, view.getLeft(), view.getTop(), view.getWidth(), view.getHeight());
 
     if (animation != null) {
@@ -167,6 +182,12 @@ public class LayoutAnimationController {
         }
       });
 
+      long animationDuration = animation.getDuration();
+      if (animationDuration > mMaxAnimationDuration) {
+        scheduleCompletionCallback(animationDuration);
+        mMaxAnimationDuration = animationDuration;
+      }
+
       view.startAnimation(animation);
     } else {
       listener.onAnimationEnd();
@@ -183,6 +204,17 @@ public class LayoutAnimationController {
       for (int i = 0; i < viewGroup.getChildCount(); i++) {
         disableUserInteractions(viewGroup.getChildAt(i));
       }
+    }
+  }
+
+  private void scheduleCompletionCallback(long delayMillis) {
+    if (sCompletionHandler == null) {
+      sCompletionHandler = new Handler(Looper.getMainLooper());
+    }
+
+    if (mCompletionRunnable != null) {
+      sCompletionHandler.removeCallbacks(mCompletionRunnable);
+      sCompletionHandler.postDelayed(mCompletionRunnable, delayMillis);
     }
   }
 }

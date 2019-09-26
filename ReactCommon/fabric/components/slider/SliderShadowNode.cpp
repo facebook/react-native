@@ -21,6 +21,12 @@ void SliderShadowNode::setImageManager(const SharedImageManager &imageManager) {
   imageManager_ = imageManager;
 }
 
+void SliderShadowNode::setSliderMeasurementsManager(
+    const std::shared_ptr<SliderMeasurementsManager> &measurementsManager) {
+  ensureUnsealed();
+  measurementsManager_ = measurementsManager;
+}
+
 void SliderShadowNode::updateLocalData() {
   const auto &newTrackImageSource = getTrackImageSource();
   const auto &newMinimumTrackImageSource = getMinimumTrackImageSource();
@@ -85,6 +91,14 @@ ImageSource SliderShadowNode::getThumbImageSource() const {
 }
 
 #pragma mark - LayoutableShadowNode
+
+Size SliderShadowNode::measure(LayoutConstraints layoutConstraints) const {
+  if (SliderMeasurementsManager::shouldMeasureSlider()) {
+    return measurementsManager_->measure(layoutConstraints);
+  }
+
+  return {};
+}
 
 void SliderShadowNode::layout(LayoutContext layoutContext) {
   updateLocalData();

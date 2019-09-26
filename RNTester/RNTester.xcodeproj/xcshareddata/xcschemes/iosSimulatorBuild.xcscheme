@@ -29,7 +29,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "9F616959225FB3F1008F89F1"
-               BuildableName = "libiosSimulatorBuild.a"
+               BuildableName = "iosSimulatorBuild"
                BlueprintName = "iosSimulatorBuild"
                ReferencedContainer = "container:RNTester.xcodeproj">
             </BuildableReference>
@@ -47,7 +47,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9F616959225FB3F1008F89F1"
-            BuildableName = "libiosSimulatorBuild.a"
+            BuildableName = "iosSimulatorBuild"
             BlueprintName = "iosSimulatorBuild"
             ReferencedContainer = "container:RNTester.xcodeproj">
          </BuildableReference>
@@ -69,7 +69,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9F616959225FB3F1008F89F1"
-            BuildableName = "libiosSimulatorBuild.a"
+            BuildableName = "iosSimulatorBuild"
             BlueprintName = "iosSimulatorBuild"
             ReferencedContainer = "container:RNTester.xcodeproj">
          </BuildableReference>
@@ -87,7 +87,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9F616959225FB3F1008F89F1"
-            BuildableName = "libiosSimulatorBuild.a"
+            BuildableName = "iosSimulatorBuild"
             BlueprintName = "iosSimulatorBuild"
             ReferencedContainer = "container:RNTester.xcodeproj">
          </BuildableReference>

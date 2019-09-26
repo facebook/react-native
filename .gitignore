@@ -75,6 +75,9 @@ package-lock.json
 /ReactCommon/**/*.xcodeproj
 RNTester/build
 
+# CocoaPods
+/template/ios/Pods/
+/template/ios/Podfile.lock
 
 *.nupkg
 

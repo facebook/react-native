@@ -28,6 +28,8 @@ using SharedLocalData = std::shared_ptr<const LocalData>;
  */
 class LocalData : public Sealable, public DebugStringConvertible {
  public:
+  using Shared = std::shared_ptr<LocalData const>;
+
   virtual ~LocalData() = default;
 
   virtual folly::dynamic getDynamic() const {

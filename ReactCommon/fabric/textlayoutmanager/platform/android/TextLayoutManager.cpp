@@ -34,29 +34,37 @@ Size TextLayoutManager::measure(
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<jlong(
               jstring,
-              ReadableNativeMap::javaobject,
-              ReadableNativeMap::javaobject,
-              jint,
-              jint,
-              jint,
-              jint)>("measure");
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              ReadableMap::javaobject,
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloat)>("measure");
 
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
-  int minWidth = (int)minimumSize.width;
-  int minHeight = (int)minimumSize.height;
-  int maxWidth = (int)maximumSize.width;
-  int maxHeight = (int)maximumSize.height;
+
   local_ref<JString> componentName = make_jstring("RCTText");
+  local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
+      ReadableNativeMap::newObjectCxxArgs(toDynamic(attributedString));
+  local_ref<ReadableNativeMap::javaobject> paragraphAttributesRNM =
+      ReadableNativeMap::newObjectCxxArgs(toDynamic(paragraphAttributes));
+
+  local_ref<ReadableMap::javaobject> attributedStringRM = make_local(
+      reinterpret_cast<ReadableMap::javaobject>(attributedStringRNM.get()));
+  local_ref<ReadableMap::javaobject> paragraphAttributesRM = make_local(
+      reinterpret_cast<ReadableMap::javaobject>(paragraphAttributesRNM.get()));
   return yogaMeassureToSize(measure(
       fabricUIManager,
       componentName.get(),
-      ReadableNativeMap::newObjectCxxArgs(toDynamic(attributedString)).get(),
-      ReadableNativeMap::newObjectCxxArgs(toDynamic(paragraphAttributes)).get(),
-      minWidth,
-      maxWidth,
-      minHeight,
-      maxHeight));
+      attributedStringRM.get(),
+      paragraphAttributesRM.get(),
+      nullptr,
+      minimumSize.width,
+      maximumSize.width,
+      minimumSize.height,
+      maximumSize.height));
 }
 
 } // namespace react

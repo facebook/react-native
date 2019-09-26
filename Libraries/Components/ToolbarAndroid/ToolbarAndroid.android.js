@@ -10,17 +10,17 @@
 
 'use strict';
 
-const React = require('React');
-const UIManager = require('UIManager');
+const React = require('react');
+const UIManager = require('../../ReactNative/UIManager');
 
-const ToolbarAndroidNativeComponent = require('ToolbarAndroidNativeComponent');
-const resolveAssetSource = require('resolveAssetSource');
+const ToolbarAndroidNativeComponent = require('./ToolbarAndroidNativeComponent');
+const resolveAssetSource = require('../../Image/resolveAssetSource');
 
-import type {SyntheticEvent} from 'CoreEventTypes';
-import type {ImageSource} from 'ImageSource';
-import type {ColorValue} from 'StyleSheetTypes';
-import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'ReactNative';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {ImageSource} from '../../Image/ImageSource';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 
 /**
  * React component that wraps the Android-only [`Toolbar` widget][0]. A Toolbar can display a logo,

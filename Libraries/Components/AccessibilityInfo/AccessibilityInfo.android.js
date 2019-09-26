@@ -10,16 +10,19 @@
 
 'use strict';
 
-const NativeModules = require('NativeModules');
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-const UIManager = require('UIManager');
+const NativeModules = require('../../BatchedBridge/NativeModules');
+const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
+const UIManager = require('../../ReactNative/UIManager');
 
 const RCTAccessibilityInfo = NativeModules.AccessibilityInfo;
 
+const REDUCE_MOTION_EVENT = 'reduceMotionDidChange';
 const TOUCH_EXPLORATION_EVENT = 'touchExplorationDidChange';
 
-type ChangeEventName = $Enum<{
+type ChangeEventName = $Keys<{
   change: string,
+  reduceMotionChanged: string,
+  screenReaderChanged: string,
 }>;
 
 const _subscriptions = new Map();
@@ -35,26 +38,77 @@ const _subscriptions = new Map();
  */
 
 const AccessibilityInfo = {
-  /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-   * when making Flow check .android.js files. */
-  fetch: function(): Promise {
+  /**
+   * iOS only
+   */
+  isBoldTextEnabled: function(): Promise<boolean> {
+    return Promise.resolve(false);
+  },
+
+  /**
+   * iOS only
+   */
+  isGrayscaleEnabled: function(): Promise<boolean> {
+    return Promise.resolve(false);
+  },
+
+  /**
+   * iOS only
+   */
+  isInvertColorsEnabled: function(): Promise<boolean> {
+    return Promise.resolve(false);
+  },
+
+  isReduceMotionEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      RCTAccessibilityInfo.isTouchExplorationEnabled(function(resp) {
-        resolve(resp);
-      });
+      RCTAccessibilityInfo.isReduceMotionEnabled(resolve);
     });
+  },
+
+  /**
+   * iOS only
+   */
+  isReduceTransparencyEnabled: function(): Promise<boolean> {
+    return Promise.resolve(false);
+  },
+
+  isScreenReaderEnabled: function(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      RCTAccessibilityInfo.isTouchExplorationEnabled(resolve);
+    });
+  },
+
+  /**
+   * Deprecated
+   *
+   * Same as `isScreenReaderEnabled`
+   */
+  get fetch() {
+    return this.isScreenReaderEnabled;
   },
 
   addEventListener: function(
     eventName: ChangeEventName,
     handler: Function,
   ): void {
-    const listener = RCTDeviceEventEmitter.addListener(
-      TOUCH_EXPLORATION_EVENT,
-      enabled => {
-        handler(enabled);
-      },
-    );
+    let listener;
+
+    if (eventName === 'change' || eventName === 'screenReaderChanged') {
+      listener = RCTDeviceEventEmitter.addListener(
+        TOUCH_EXPLORATION_EVENT,
+        enabled => {
+          handler(enabled);
+        },
+      );
+    } else if (eventName === 'reduceMotionChanged') {
+      listener = RCTDeviceEventEmitter.addListener(
+        REDUCE_MOTION_EVENT,
+        enabled => {
+          handler(enabled);
+        },
+      );
+    }
+
     _subscriptions.set(handler, listener);
   },
 
@@ -80,6 +134,15 @@ const AccessibilityInfo = {
       reactTag,
       UIManager.AccessibilityEventTypes.typeViewFocused,
     );
+  },
+
+  /**
+   * Post a string to be announced by the screen reader.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#announceforaccessibility
+   */
+  announceForAccessibility: function(announcement: string): void {
+    RCTAccessibilityInfo.announceForAccessibility(announcement);
   },
 };
 

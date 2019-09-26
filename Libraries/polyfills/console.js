@@ -519,6 +519,12 @@ function consoleGroupEndPolyfill() {
   global.nativeLoggingHook(groupFormat(GROUP_CLOSE), LOG_LEVELS.info);
 }
 
+function consoleAssertPolyfill(expression, label) {
+  if (!expression) {
+    global.nativeLoggingHook('Assertion failed: ' + label, LOG_LEVELS.error);
+  }
+}
+
 if (global.nativeLoggingHook) {
   const originalConsole = global.console;
   // Preserve the original `console` as `originalConsole`
@@ -540,6 +546,7 @@ if (global.nativeLoggingHook) {
     group: consoleGroupPolyfill,
     groupEnd: consoleGroupEndPolyfill,
     groupCollapsed: consoleGroupCollapsedPolyfill,
+    assert: consoleAssertPolyfill,
   };
 
   // If available, also call the original `console` method since that is
@@ -550,7 +557,15 @@ if (global.nativeLoggingHook) {
       const reactNativeMethod = console[methodName];
       if (originalConsole[methodName]) {
         console[methodName] = function() {
-          originalConsole[methodName](...arguments);
+          // TODO(T43930203): remove this special case once originalConsole.assert properly checks
+          // the condition
+          if (methodName === 'assert') {
+            if (!arguments[0]) {
+              originalConsole.assert(...arguments);
+            }
+          } else {
+            originalConsole[methodName](...arguments);
+          }
           reactNativeMethod.apply(console, arguments);
         };
       }
@@ -560,7 +575,6 @@ if (global.nativeLoggingHook) {
     // we still should pass them to original console if they are
     // supported by it.
     [
-      'assert',
       'clear',
       'dir',
       'dirxml',

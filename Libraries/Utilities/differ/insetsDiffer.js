@@ -24,7 +24,7 @@ const dummyInsets = {
   bottom: undefined,
 };
 
-const insetsDiffer = function(one: ?Inset, two: ?Inset): boolean {
+const insetsDiffer = function(one: Inset, two: Inset) {
   one = one || dummyInsets;
   two = two || dummyInsets;
   return (

@@ -29,7 +29,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "9F61697F225FB40C008F89F1"
-               BuildableName = "libmacOSBuild.a"
+               BuildableName = "macOSBuild"
                BlueprintName = "macOSBuild"
                ReferencedContainer = "container:RNTester.xcodeproj">
             </BuildableReference>
@@ -47,7 +47,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9F61697F225FB40C008F89F1"
-            BuildableName = "libmacOSBuild.a"
+            BuildableName = "macOSBuild"
             BlueprintName = "macOSBuild"
             ReferencedContainer = "container:RNTester.xcodeproj">
          </BuildableReference>
@@ -69,7 +69,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9F61697F225FB40C008F89F1"
-            BuildableName = "libmacOSBuild.a"
+            BuildableName = "macOSBuild"
             BlueprintName = "macOSBuild"
             ReferencedContainer = "container:RNTester.xcodeproj">
          </BuildableReference>
@@ -87,7 +87,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9F61697F225FB40C008F89F1"
-            BuildableName = "libmacOSBuild.a"
+            BuildableName = "macOSBuild"
             BlueprintName = "macOSBuild"
             ReferencedContainer = "container:RNTester.xcodeproj">
          </BuildableReference>

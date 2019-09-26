@@ -7,10 +7,7 @@
 
 package com.facebook.react.bridge;
 
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.common.MeasureSpecProvider;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
-
+import android.view.View;
 import javax.annotation.Nullable;
 
 public interface UIManager extends JSIModule, PerformanceCounter {
@@ -18,7 +15,7 @@ public interface UIManager extends JSIModule, PerformanceCounter {
   /**
    * Registers a new root view.
    */
-  <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(final T rootView, WritableMap initialProps, @Nullable String initialUITemplate);
+  <T extends View> int addRootView(final T rootView, WritableMap initialProps, @Nullable String initialUITemplate);
 
   /**
    * Unregisters a new root view.
@@ -45,4 +42,14 @@ public interface UIManager extends JSIModule, PerformanceCounter {
 
   void clearJSResponder();
 
+  /**
+   * Used by native animated module to bypass the process of updating the values through the shadow
+   * view hierarchy. This method will directly update native views, which means that updates for
+   * layout-related propertied won't be handled properly.
+   * Make sure you know what you're doing before calling this method :)
+   *
+   * @param tag {@link int} that identifies the view that will be updated
+   * @param props {@link ReadableMap} props that should be immediately updated in view
+   */
+  void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props);
 }

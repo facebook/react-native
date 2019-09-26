@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   PermissionsAndroid,
   Picker,
@@ -19,7 +18,7 @@ const {
   Text,
   TouchableWithoutFeedback,
   View,
-} = ReactNative;
+} = require('react-native');
 
 const Item = Picker.Item;
 

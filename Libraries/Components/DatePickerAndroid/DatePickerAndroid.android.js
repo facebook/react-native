@@ -10,8 +10,9 @@
 
 'use strict';
 
-const DatePickerModule = require('NativeModules').DatePickerAndroid;
-import type {Options, DatePickerOpenAction} from 'DatePickerAndroidTypes';
+const DatePickerModule = require('../../BatchedBridge/NativeModules')
+  .DatePickerAndroid;
+import type {Options, DatePickerOpenAction} from './DatePickerAndroidTypes';
 
 /**
  * Convert a Date to a timestamp.

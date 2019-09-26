@@ -8,7 +8,7 @@
 package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
+import android.widget.FrameLayout;
 
 /**
  * View manager for ReactRootView components.
@@ -24,6 +24,6 @@ public class RootViewManager extends ViewGroupManager<ViewGroup> {
 
   @Override
   protected ViewGroup createViewInstance(ThemedReactContext reactContext) {
-    return new SizeMonitoringFrameLayout(reactContext);
+    return new FrameLayout(reactContext);
   }
 }

@@ -28,6 +28,7 @@
 #include <folly/Memory.h>
 #include <jni/Countable.h>
 #include <jni/LocalReference.h>
+#include <jsireact/JSCallInvokerHolder.h>
 
 #include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
@@ -114,6 +115,7 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("jniCallJSCallback", CatalystInstanceImpl::jniCallJSCallback),
     makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
     makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
+    makeNativeMethod("getJSCallInvokerHolder", CatalystInstanceImpl::getJSCallInvokerHolder),
     makeNativeMethod("jniHandleMemoryPressure", CatalystInstanceImpl::handleMemoryPressure),
     makeNativeMethod("getPointerOfInstancePointer", CatalystInstanceImpl::getPointerOfInstancePointer),
   });
@@ -206,6 +208,8 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
       sourceURL,
       loadSynchronously);
     return;
+  } else if (Instance::isIndexedRAMBundle(&script)) {
+    instance_->loadRAMBundleFromString(std::move(script), sourceURL);
   } else {
     instance_->loadScriptFromString(std::move(script), 0 /*bundleVersion*/, sourceURL, loadSynchronously, "" /*bytecodeFileName*/);
   }
@@ -275,6 +279,15 @@ void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
 
 jlong CatalystInstanceImpl::getPointerOfInstancePointer() {
   return (jlong) (intptr_t) (&instance_);
+}
+
+jni::alias_ref<JSCallInvokerHolder::javaobject> CatalystInstanceImpl::getJSCallInvokerHolder() {
+  if (!javaInstanceHolder_) {
+    jsCallInvoker_ = std::make_shared<BridgeJSCallInvoker>(instance_);
+    javaInstanceHolder_ = jni::make_global(JSCallInvokerHolder::newObjectCxxArgs(jsCallInvoker_));
+  }
+
+  return javaInstanceHolder_;
 }
 
 }}

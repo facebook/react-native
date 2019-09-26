@@ -27,6 +27,7 @@
 - (instancetype)init
 {
   if (self = [super init]) {
+    // Keep this in sync with RCTPLTag
     _labelsForTags = @[
       @"ScriptDownload",
       @"ScriptExecution",
@@ -39,10 +40,10 @@
       @"NativeModuleInit",
       @"NativeModuleMainThread",
       @"NativeModulePrepareConfig",
-      @"NativeModuleInjectConfig",
       @"NativeModuleMainThreadUsesCount",
+      @"NativeModuleSetup",
+      @"TurboModuleSetup",
       @"JSCWrapperOpenLibrary",
-      @"JSCExecutorSetup",
       @"BridgeStartup",
       @"RootViewTTI",
       @"BundleSize",

@@ -10,16 +10,13 @@
 
 'use strict';
 
-const NativeEventEmitter = require('NativeEventEmitter');
-const NativeModules = require('NativeModules');
-const Platform = require('Platform');
+const InteractionManager = require('../Interaction/InteractionManager');
+const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
+const Platform = require('../Utilities/Platform');
 
 const invariant = require('invariant');
 
-const LinkingManager =
-  Platform.OS === 'android'
-    ? NativeModules.IntentAndroid
-    : NativeModules.LinkingManager;
+import NativeLinking from './NativeLinking';
 
 /**
  * `Linking` gives you a general interface to interact with both incoming
@@ -29,7 +26,7 @@ const LinkingManager =
  */
 class Linking extends NativeEventEmitter {
   constructor() {
-    super(LinkingManager);
+    super(NativeLinking);
   }
 
   /**
@@ -58,7 +55,7 @@ class Linking extends NativeEventEmitter {
    */
   openURL(url: string): Promise<any> {
     this._validateURL(url);
-    return LinkingManager.openURL(url);
+    return NativeLinking.openURL(url);
   }
 
   /**
@@ -68,7 +65,16 @@ class Linking extends NativeEventEmitter {
    */
   canOpenURL(url: string): Promise<boolean> {
     this._validateURL(url);
-    return LinkingManager.canOpenURL(url);
+    return NativeLinking.canOpenURL(url);
+  }
+
+  /**
+   * Open app settings.
+   *
+   * See https://facebook.github.io/react-native/docs/linking.html#opensettings
+   */
+  openSettings(): Promise<any> {
+    return NativeLinking.openSettings();
   }
 
   /**
@@ -78,21 +84,28 @@ class Linking extends NativeEventEmitter {
    * See https://facebook.github.io/react-native/docs/linking.html#getinitialurl
    */
   getInitialURL(): Promise<?string> {
-    return LinkingManager.getInitialURL();
+    return Platform.OS === 'android'
+      ? InteractionManager.runAfterInteractions().then(() =>
+          NativeLinking.getInitialURL(),
+        )
+      : NativeLinking.getInitialURL();
   }
 
   /*
-  * Launch an Android intent with extras (optional)
-  *
-  * @platform android
-  *
-  * See https://facebook.github.io/react-native/docs/linking.html#sendintent
-  */
+   * Launch an Android intent with extras (optional)
+   *
+   * @platform android
+   *
+   * See https://facebook.github.io/react-native/docs/linking.html#sendintent
+   */
   sendIntent(
-    action: String,
-    extras?: [{key: string, value: string | number | boolean}],
-  ) {
-    return LinkingManager.sendIntent(action, extras);
+    action: string,
+    extras?: Array<{key: string, value: string | number | boolean}>,
+  ): Promise<void> {
+    if (Platform.OS === 'android') {
+      return NativeLinking.sendIntent(action, extras);
+    }
+    return new Promise((resolve, reject) => reject(new Error('Unsupported')));
   }
 
   _validateURL(url: string) {

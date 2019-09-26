@@ -6,7 +6,9 @@
  */
 
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
-
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= 12000) /* __IPHONE_12_0 */
+#import <UIKit/UIUserActivity.h>
+#endif
 #import <React/RCTEventEmitter.h>
 
 @interface RCTLinkingManager : RCTEventEmitter
@@ -28,8 +30,14 @@
 
 + (BOOL)application:(nonnull UIApplication *)application
     continueUserActivity:(nonnull NSUserActivity *)userActivity
-      restorationHandler:(nonnull void (^)(NSArray *__nullable))restorationHandler;
+      restorationHandler:
+        #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= 12000) /* __IPHONE_12_0 */
+            (nonnull void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))restorationHandler;
+        #else
+            (nonnull void (^)(NSArray *_Nullable))restorationHandler;
+        #endif
 #endif // TODO(macOS ISS#2323203)
+
 @end
 
 #pragma clang diagnostic pop

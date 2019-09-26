@@ -10,36 +10,7 @@
 
 'use strict';
 
-export type AccessibilityTrait =
-  | 'none'
-  | 'button'
-  | 'link'
-  | 'header'
-  | 'search'
-  | 'image'
-  | 'selected'
-  | 'plays'
-  | 'key'
-  | 'text'
-  | 'summary'
-  | 'disabled'
-  | 'frequentUpdates'
-  | 'startsMedia'
-  | 'adjustable'
-  | 'allowsDirectInteraction'
-  | 'pageTurn' // [TODO(macOS ISS#2323203)
-  | 'group'
-  | 'list'; // ]TODO(macOS ISS#2323203)
-
-export type AccessibilityTraits =
-  | AccessibilityTrait
-  | $ReadOnlyArray<AccessibilityTrait>;
-
-export type AccessibilityComponentType =
-  | 'none'
-  | 'button'
-  | 'radiobutton_checked'
-  | 'radiobutton_unchecked';
+import type {SyntheticEvent} from 'CoreEventTypes';
 
 // [TODO(android ISS)
 export type AccessibilityNodeInfoProp = {
@@ -76,83 +47,27 @@ export type AccessibilityRole =
   | 'timer'
   | 'toolbar';
 
-export type AccessibilityState =
-  | 'selected'
+// This must be kept in sync with the AccessibilityStatesMask in RCTViewManager.m
+export type AccessibilityStates = $ReadOnlyArray<
   | 'disabled'
+  | 'selected'
   | 'checked'
   | 'unchecked'
   | 'busy'
   | 'expanded'
-  | 'collapsed';
+  | 'collapsed'
+  | 'hasPopup',
+>;
 
-export type AccessibilityStates =
-  | AccessibilityState
-  | $ReadOnlyArray<AccessibilityState>;
+// the info associated with an accessibility action
+export type AccessibilityActionInfo = $ReadOnly<{
+  name: string,
+  label?: string,
+}>;
 
-module.exports = {
-  AccessibilityTraits: [
-    'none',
-    'button',
-    'link',
-    'header',
-    'search',
-    'image',
-    'selected',
-    'plays',
-    'key',
-    'text',
-    'summary',
-    'disabled',
-    'frequentUpdates',
-    'startsMedia',
-    'adjustable',
-    'allowsDirectInteraction',
-    'pageTurn',
-    'group', // [TODO(macOS ISS#2323203)
-    'list', // ]TODO(macOS ISS#2323203)
-  ],
-  AccessibilityComponentTypes: [
-    'none',
-    'button',
-    'radiobutton_checked',
-    'radiobutton_unchecked',
-  ],
-  AccessibilityRoles: [
-    'none',
-    'button',
-    'link',
-    'search',
-    'image',
-    'keyboardkey',
-    'text',
-    'adjustable',
-    'imagebutton',
-    'header',
-    'summary',
-    'alert',
-    'checkbox',
-    'combobox',
-    'menu',
-    'menubar',
-    'menuitem',
-    'progressbar',
-    'radio',
-    'radiogroup',
-    'scrollbar',
-    'spinbutton',
-    'switch',
-    'tab',
-    'tablist',
-    'timer',
-    'toolbar',
-  ],
-  AccessibilityStates: [
-    'selected',
-    'disabled',
-    'checked',
-    'unchecked',
-    'busy',
-    'expanded',
-    'collapsed',
-  ],
-};
+// The info included in the event sent to onAccessibilityAction
+export type AccessibilityActionEvent = SyntheticEvent<
+  $ReadOnly<{
+    actionName: string,
+  }>,
+>;

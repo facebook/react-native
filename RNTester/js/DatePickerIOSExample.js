@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {DatePickerIOS, StyleSheet, Text, View} = ReactNative;
+const {DatePickerIOS, StyleSheet, Text, View} = require('react-native');
 
 type State = {|
   date: Date,
@@ -44,6 +43,7 @@ class WithDatePickerData extends React.Component<Props, State> {
           <Text testID="date-indicator">
             {this.state.date.toLocaleDateString()}
           </Text>
+          <Text>&nbsp;</Text>
           <Text testID="time-indicator">
             {this.state.date.toLocaleTimeString([], {
               hour: '2-digit',
@@ -136,16 +136,16 @@ exports.examples = [
     },
   },
   {
-    title: 'Picker with 20-minute interval',
+    title: 'Time only picker, 20-minute interval',
     render: function(): React.Element<any> {
       return (
         <WithDatePickerData>
           {(state, onDateChange) => (
             <DatePickerIOS
-              testID="date-and-time-with-interval"
+              testID="time-with-interval"
               date={state.date}
               minuteInterval={20}
-              mode="datetime"
+              mode="time"
               onDateChange={onDateChange}
             />
           )}

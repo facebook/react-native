@@ -10,17 +10,21 @@
 
 'use strict';
 
-const Keyboard = require('Keyboard');
-const LayoutAnimation = require('LayoutAnimation');
-const Platform = require('Platform');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
+const Keyboard = require('./Keyboard');
+const LayoutAnimation = require('../../LayoutAnimation/LayoutAnimation');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const View = require('../View/View');
 
-import type EmitterSubscription from 'EmitterSubscription';
-import type {ViewStyleProp} from 'StyleSheet';
-import type {ViewProps, ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
-import type {KeyboardEvent} from 'Keyboard';
+import type EmitterSubscription from '../../vendor/emitter/EmitterSubscription';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {
+  ViewProps,
+  ViewLayout,
+  ViewLayoutEvent,
+} from '../View/ViewPropTypes';
+import type {KeyboardEvent} from './Keyboard';
 
 type Props = $ReadOnly<{|
   ...ViewProps,
@@ -65,6 +69,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   _frame: ?ViewLayout = null;
   _subscriptions: Array<EmitterSubscription> = [];
   viewRef: {current: React.ElementRef<any> | null};
+  _initialFrameHeight: number = 0;
 
   constructor(props: Props) {
     super(props);
@@ -113,19 +118,11 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
   _onLayout = (event: ViewLayoutEvent) => {
     this._frame = event.nativeEvent.layout;
-  };
-
-  UNSAFE_componentWillUpdate(nextProps: Props, nextState: State): void {
-    if (
-      nextState.bottom === this.state.bottom &&
-      this.props.behavior === 'height' &&
-      nextProps.behavior === 'height'
-    ) {
-      // If the component rerenders without an internal state change, e.g.
-      // triggered by parent component re-rendering, no need for bottom to change.
-      nextState.bottom = 0;
+    if (!this._initialFrameHeight) {
+      // save the initial frame height, before the keyboard is visible
+      this._initialFrameHeight = this._frame.height;
     }
-  }
+  };
 
   componentDidMount(): void {
     if (Platform.OS === 'ios') {
@@ -166,7 +163,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
           // this.frame.height will never go back to its original value.
           // When height changes, we need to disable flex.
           heightStyle = {
-            height: this._frame.height - bottomHeight,
+            height: this._initialFrameHeight - bottomHeight,
             flex: 0,
           };
         }

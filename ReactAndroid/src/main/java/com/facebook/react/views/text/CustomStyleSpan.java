@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -8,13 +7,14 @@
 
 package com.facebook.react.views.text;
 
-import javax.annotation.Nullable;
-
 import android.content.res.AssetManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
 
@@ -35,41 +35,26 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   private final int mStyle;
   private final int mWeight;
   private final @Nullable String mFontFamily;
-  private final @Nullable String mFontPath;
 
   public CustomStyleSpan(
       int fontStyle,
       int fontWeight,
       @Nullable String fontFamily,
-      @Nullable String fontPath,
-      AssetManager assetManager) {
+      @NonNull AssetManager assetManager) {
     mStyle = fontStyle;
     mWeight = fontWeight;
     mFontFamily = fontFamily;
-    mFontPath = fontPath;
-    mAssetManager = assetManager;
-  }
-
-  public CustomStyleSpan(
-      int fontStyle,
-      int fontWeight,
-      @Nullable String fontFamily,
-      AssetManager assetManager) {
-    mStyle = fontStyle;
-    mWeight = fontWeight;
-    mFontFamily = fontFamily;
-    mFontPath = null;
     mAssetManager = assetManager;
   }
 
   @Override
   public void updateDrawState(TextPaint ds) {
-    apply(ds, mStyle, mWeight, mFontFamily, mFontPath, mAssetManager);
+    apply(ds, mStyle, mWeight, mFontFamily, mAssetManager);
   }
 
   @Override
-  public void updateMeasureState(TextPaint paint) {
-    apply(paint, mStyle, mWeight, mFontFamily,mFontPath, mAssetManager);
+  public void updateMeasureState(@NonNull TextPaint paint) {
+    apply(paint, mStyle, mWeight, mFontFamily, mAssetManager);
   }
 
   /**
@@ -93,19 +78,11 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     return mFontFamily;
   }
 
-  /**
-   * Returns the font path set for this StyleSpan.
-   */
-  public @Nullable String getFontPath() {
-    return mFontPath;
-  }
-
   private static void apply(
       Paint paint,
       int style,
       int weight,
       @Nullable String family,
-      @Nullable String path,
       AssetManager assetManager) {
     int oldStyle;
     Typeface typeface = paint.getTypeface();
@@ -126,10 +103,8 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       want |= Typeface.ITALIC;
     }
 
-    if (path != null && family != null) {
-      typeface = ReactFontManager.getInstance().getTypeface(path, family, want);
-    } else if (family != null) {
-      typeface = ReactFontManager.getInstance().getTypeface(family, want, assetManager);
+    if (family != null) {
+      typeface = ReactFontManager.getInstance().getTypeface(family, want, weight, assetManager);
     } else if (typeface != null) {
       // TODO(t9055065): Fix custom fonts getting applied to text children with different style
       typeface = Typeface.create(typeface, want);
@@ -142,5 +117,4 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     }
     paint.setSubpixelText(true);
   }
-
 }

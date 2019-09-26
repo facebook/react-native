@@ -12,9 +12,12 @@
 #include <memory>
 #include <vector>
 
+#include <better/small_vector.h>
 #include <react/core/LayoutMetrics.h>
 #include <react/core/Sealable.h>
+#include <react/core/ShadowNode.h>
 #include <react/debug/DebugStringConvertible.h>
+#include <react/graphics/Transform.h>
 
 namespace facebook {
 namespace react {
@@ -28,6 +31,9 @@ struct LayoutContext;
  */
 class LayoutableShadowNode : public virtual Sealable {
  public:
+  using UnsharedList = better::
+      small_vector<LayoutableShadowNode *, kShadowNodeChildrenSmallVectorSize>;
+
   virtual ~LayoutableShadowNode() noexcept = default;
 
   /*
@@ -60,6 +66,14 @@ class LayoutableShadowNode : public virtual Sealable {
   virtual bool isLayoutOnly() const;
 
   /*
+   * Returns a transform object that represents transformations that will/should
+   * be applied on top of regular layout metrics by mounting layer.
+   * The `transform` value modifies a coordinate space of a layout system.
+   * Default implementation returns `Identity` transform.
+   */
+  virtual Transform getTransform() const;
+
+  /*
    * Returns layout metrics relatively to the given ancestor node.
    */
   LayoutMetrics getRelativeLayoutMetrics(
@@ -71,16 +85,16 @@ class LayoutableShadowNode : public virtual Sealable {
    * Indicates whether all nodes (and possibly their subtrees) along the path
    * to the root node should be re-layouted.
    */
-  virtual void cleanLayout();
-  virtual void dirtyLayout();
-  virtual bool getIsLayoutClean() const;
+  virtual void cleanLayout() = 0;
+  virtual void dirtyLayout() = 0;
+  virtual bool getIsLayoutClean() const = 0;
 
   /*
    * Indicates does the shadow node (or any descendand node of the node)
    * get a new layout metrics during a previous layout pass.
    */
-  virtual void setHasNewLayout(bool hasNewLayout);
-  virtual bool getHasNewLayout() const;
+  virtual void setHasNewLayout(bool hasNewLayout) = 0;
+  virtual bool getHasNewLayout() const = 0;
 
   /*
    * Applies layout for all children;
@@ -97,7 +111,7 @@ class LayoutableShadowNode : public virtual Sealable {
   /*
    * Returns layoutable children to interate on.
    */
-  virtual std::vector<LayoutableShadowNode *> getLayoutableChildNodes()
+  virtual LayoutableShadowNode::UnsharedList getLayoutableChildNodes()
       const = 0;
 
   /*
@@ -122,8 +136,6 @@ class LayoutableShadowNode : public virtual Sealable {
 
  private:
   LayoutMetrics layoutMetrics_{};
-  bool hasNewLayout_{false};
-  bool isLayoutClean_{false};
 };
 
 } // namespace react

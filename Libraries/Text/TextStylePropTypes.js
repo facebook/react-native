@@ -10,20 +10,15 @@
 
 'use strict';
 
-const DeprecatedColorPropType = require('DeprecatedColorPropType');
+const DeprecatedColorPropType = require('../DeprecatedPropTypes/DeprecatedColorPropType');
 const ReactPropTypes = require('prop-types');
-const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
+const DeprecatedViewStylePropTypes = require('../DeprecatedPropTypes/DeprecatedViewStylePropTypes');
 
 const TextStylePropTypes = {
   ...DeprecatedViewStylePropTypes,
 
   color: DeprecatedColorPropType,
   fontFamily: ReactPropTypes.string,
-  /**
-   * Specifies the fully qualified path of the font file.
-   * @platform android
-   */
-  fontPath: ReactPropTypes.string, // TODO(android ISS)
   fontSize: ReactPropTypes.number,
   fontStyle: ReactPropTypes.oneOf(['normal', 'italic']),
   /**

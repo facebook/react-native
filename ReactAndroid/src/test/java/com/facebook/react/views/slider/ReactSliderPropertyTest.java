@@ -29,7 +29,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
  * Verify {@link SeekBar} view property being applied properly by {@link ReactSliderManager}
  */
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactSliderPropertyTest {
 
   @Rule

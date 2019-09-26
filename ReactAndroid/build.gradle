@@ -25,7 +25,7 @@ def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File(
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
 // You need to have following folders in this directory:
-//   - boost_1_63_0
+//   - boost_1_68_0
 //   - double-conversion-1.1.6
 //   - folly-deprecate-dynamic-initializer
 //   - glog-0.3.5
@@ -37,14 +37,12 @@ def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
 // and the build will use that.
 def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH") ?: 'packages/boost.1.68.0.0/lib/native/include'
 
-def BoostNugetPath = 'packages/boost.1.68.0.0/lib/native/include'
 def DoubleConversionPath = '../double-conversion'
 def FollyPath = '..'
 def GlogPath = '..'
 def JSCPath = '../jsc'
 def V8Path = 'packages/ReactNative.V8.Android.7.0.276.32-v1'
 
-def hasBoostNuget = file(BoostNugetPath).exists()
 
 // Set the value of JSEngineUsed as 'V8' or 'JSC' to enable the respective engine
 def JSEngineUsed = 'V8'
@@ -63,21 +61,16 @@ task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
 }
 
 task prepareBoost(dependsOn: boostPath ? [] : [downloadBoost], type: Copy) {
-    logger.error(BoostNugetPath.toString())
-    from hasBoostNuget ? BoostNugetPath : tarTree(resources.gzip(downloadBoost.dest))
-    logger.error("hasBoostNuget: " + hasBoostNuget)
+    from(boostPath ?: tarTree(resources.gzip(downloadBoost.dest)))
     from("src/main/jni/third-party/boost/Android.mk")
-    include 'Android.mk', hasBoostNuget ? 'boost/**/*.hpp' : 'boost_1_63_0/boost/**/*.hpp'
+    include("Android.mk", "boost_${BOOST_VERSION}/boost/**/*.hpp", "boost/boost/**/*.hpp", "boost/**/*.hpp") // Due to the layout of the nuget, we need the version without an extra boot dir
     includeEmptyDirs = false
-    into("$thirdPartyNdkDir/boost_tmp")
-    doLast {
-        if (hasBoostNuget) {
-          file("$thirdPartyNdkDir/boost_tmp").renameTo("$thirdPartyNdkDir/boost")
-        } else {
-          file("$thirdPartyNdkDir/boost_tmp/boost_1_63_0").renameTo("$thirdPartyNdkDir/boost")
-        }
-        file("$thirdPartyNdkDir/boost_tmp/Android.mk").renameTo("$thirdPartyNdkDir/boost/Android.mk")
-    }
+    into("$thirdPartyNdkDir/boost")
+    
+    // Not sure where our diff is that causes this to not work for us
+    // doLast {
+    //     file("$thirdPartyNdkDir/boost/boost").renameTo("$thirdPartyNdkDir/boost/boost_${BOOST_VERSION}")
+    // }
 }
 
 task prepareDoubleConversion(dependsOn: createNativeDepsDirectories, type: Copy) {
@@ -128,47 +121,47 @@ task prepareGlog(dependsOn: createNativeDepsDirectories, type: Copy) {
 
     doLast {
         copy {
-            from fileTree(dir: "$thirdPartyNdkDir/glog", includes: ["stl_logging.h", "logging.h", "raw_logging.h", "vlog_is_on.h", "**/glog/log_severity.h"]).files
+            from(fileTree(dir: "$thirdPartyNdkDir/glog", includes: ["stl_logging.h", "logging.h", "raw_logging.h", "vlog_is_on.h", "**/src/glog/log_severity.h"]).files)
             includeEmptyDirs = false
             into("$thirdPartyNdkDir/glog/exported/glog")
         }
     }
 }
 
-task downloadJSC(dependsOn: createNativeDepsDirectories, type: Download) {
-    src("https://registry.npmjs.org/jsc-android/-/jsc-android-${JSC_VERSION}.tgz")
-    onlyIfNewer(true)
-    overwrite(false)
-    dest(new File(downloadsDir, "jsc-${JSC_VERSION}.tar.gz"))
-}
-
 // Create Android.mk library module based on jsc from npm
-task prepareJSC(dependsOn: JSEngineUsed=='V8' ? [] : [downloadJSC]) {
-    if (JSEngineUsed=='JSC'){
-        doLast {
-            def jscTar = tarTree(downloadJSC.dest)
-            def jscAAR = jscTar.matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
-            def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
+task prepareJSC {
+	if (JSEngineUsed=='JSC'){
+		doLast {
+			def jscPackageRoot = file("$projectDir/../node_modules/jsc-android/dist")
+			if (!jscPackageRoot.exists()) {
+				// For an app to build from RN source, the jsc-android is located at /path/to/app/node_modules
+				// and $projectDir may located at /path/to/app/node_modules/react-native/ReactAndroid
+				jscPackageRoot = file("$projectDir/../../jsc-android/dist")
+			}
+			def jscAAR = fileTree(jscPackageRoot).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
+			def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
 
-            def headerFiles = jscTar.matching({ it.include "**/include/*.h" })
+			def headerFiles = fileTree(jscPackageRoot).matching({ it.include "**/include/*.h" })
 
-            copy {
-                from(soFiles)
-                from(headerFiles)
-                from("src/main/jni/third-party/jsc/Android.mk")
-                filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
-                includeEmptyDirs(false)
-                into("$thirdPartyNdkDir/jsc")
-            }
-        }
-    }
+			copy {
+				from(soFiles)
+				from(headerFiles)
+				from("src/main/jni/third-party/jsc/Android.mk")
+
+				filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
+
+				includeEmptyDirs(false)
+				into("$thirdPartyNdkDir/jsc")
+
+			}
+		}
+	}
 }
 
 task downloadNdkBuildDependencies {
     if (!boostPath) {
         dependsOn(downloadBoost)
     }
-    dependsOn(downloadJSC)
 }
 
 def getNdkBuildName() {
@@ -196,11 +189,21 @@ def findNdkBuildFullPath() {
     def ndkDir = android.hasProperty("plugin") ? android.plugin.ndkFolder :
             plugins.getPlugin("com.android.library").hasProperty("sdkHandler") ?
                     plugins.getPlugin("com.android.library").sdkHandler.getNdkFolder() :
-                    android.ndkDirectory.absolutePath
+                    android.ndkDirectory ? android.ndkDirectory.absolutePath : null
     if (ndkDir) {
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
     return null
+}
+
+def reactNativeDevServerPort() {
+    def value = project.getProperties().get("reactNativeDevServerPort")
+    return value != null ? value : "8081"
+}
+
+def reactNativeInspectorProxyPort() {
+    def value = project.getProperties().get("reactNativeInspectorProxyPort")
+    return value != null ? value : reactNativeDevServerPort()
 }
 
 def getNdkBuildFullPath() {
@@ -223,7 +226,8 @@ def getNdkBuildFullPath() {
 }
 
 task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
-    inputs.dir("src/main/jni/react")
+    inputs.dir("$projectDir/../ReactCommon")
+    inputs.dir("src/main/jni")
     outputs.dir("$buildDir/react-ndk/all")
     commandLine(getNdkBuildFullPath(),
             "NDK_PROJECT_PATH=null",
@@ -300,8 +304,12 @@ android {
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
         buildConfigField("String", "JS_ENGINE_USED", "\"$JSEngineUsed\"")
         buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
+
+        resValue "integer", "react_native_dev_server_port", reactNativeDevServerPort()
+        resValue "integer", "react_native_inspector_proxy_port", reactNativeInspectorProxyPort()
+
         testApplicationId("com.facebook.react.tests.gradle")
-        testInstrumentationRunner("android.support.test.runner.AndroidJUnitRunner")
+        testInstrumentationRunner("androidx.test.runner.AndroidJUnitRunner")
     }
 
     sourceSets.main {
@@ -331,19 +339,17 @@ android {
 }
 
 dependencies {
-    if (System.getenv("BUCK_BUILD") != "1")
-    {
+    if (System.getenv("BUCK_BUILD") != "1") {
         if (isSDXPlatform()) {
-            annotationProcessor project(':react-native:processor');
+            annotationProcessor project(':react-native:processory');
         }
         else {
             annotationProcessor project(':processor');
         }
     }
-
     api("com.facebook.infer.annotation:infer-annotation:0.11.2")
     api("javax.inject:javax.inject:1")
-    api("com.android.support:appcompat-v7:28.0.0")
+    api("androidx.appcompat:appcompat:1.0.2")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
     api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
     api("com.facebook.soloader:soloader:${SO_LOADER_VERSION}")
@@ -351,9 +357,6 @@ dependencies {
     api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
     api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
     api("com.squareup.okio:okio:1.15.0")
-    if(JSEngineUsed=='JSC'){
-        compile 'org.webkit:android-jsc:r174650'
-    }
 
     testImplementation("junit:junit:${JUNIT_VERSION}")
     testImplementation("org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}")
@@ -364,8 +367,9 @@ dependencies {
     testImplementation("org.robolectric:robolectric:${ROBOLECTRIC_VERSION}")
 
     androidTestImplementation(fileTree(dir: "src/main/third-party/java/buck-android-support/", include: ["*.jar"]))
-    androidTestImplementation("com.android.support.test:runner:${ANDROID_SUPPORT_TEST_VERSION}")
-    androidTestImplementation("com.android.support.test:rules:${ANDROID_SUPPORT_TEST_VERSION}")
+    //TODO: Refactor to extract versions of androidx dependencies
+    androidTestImplementation("androidx.test:runner:1.1.0")
+    androidTestImplementation("androidx.test:rules:1.1.0")
     androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
 }
 

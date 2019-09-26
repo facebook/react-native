@@ -1,6 +1,7 @@
 [ignore]
 ; We fork some components by platform
 .*/*[.]android.js
+.*/*[.]macos.js
 
 ; Ignore templates for 'react-native init'
 <PROJECT_ROOT>/template/.*
@@ -22,16 +23,15 @@
 ; Ignore polyfills
 .*/Libraries/polyfills/.*
 
-; Ignore metro
-.*/node_modules/metro/.*
-.*/node_modules/metro-config/src/configTypes.flow.js.flow
-
-; Ignore rn-cli.config.js
-<PROJECT_ROOT>/rn-cli.config.js
+; Ignore metro.config.js
+<PROJECT_ROOT>/metro.config.js
 
 ; These should not be required directly
 ; require from fbjs/lib instead: require('fbjs/lib/warning')
 .*/node_modules/warning/.*
+
+; Flow doesn't support platforms
+.*/Libraries/Utilities/HMRLoadingView.js
 
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
@@ -47,6 +47,10 @@ emoji=true
 
 esproposal.optional_chaining=enable
 esproposal.nullish_coalescing=enable
+
+module.file_ext=.js
+module.file_ext=.json
+module.file_ext=.ios.js
 
 module.system=haste
 module.system.haste.use_name_reducers=true
@@ -70,7 +74,6 @@ module.system.haste.paths.blacklist=<PROJECT_ROOT>/Libraries/Animated/src/polyfi
 munge_underscores=true
 
 module.name_mapper='^[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\)$' -> 'RelativeImageStub'
-module.name_mapper='react-native' -> '<PROJECT_ROOT>'
 
 suppress_type=$FlowIssue
 suppress_type=$FlowFixMe
@@ -79,7 +82,6 @@ suppress_type=$FlowFixMeState
 
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)
 suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)?:? #[0-9]+
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 [lints]
@@ -92,7 +94,6 @@ deprecated-type=warn
 unsafe-getters-setters=warn
 inexact-spread=warn
 unnecessary-invariant=warn
-deprecated-call-syntax=warn
 signature-verification-failure=warn
 deprecated-utility=error
 
@@ -106,4 +107,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.92.0
+^0.98.0

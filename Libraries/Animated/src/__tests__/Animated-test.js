@@ -10,7 +10,7 @@
 
 'use strict';
 
-let Animated = require('Animated');
+let Animated = require('../Animated');
 describe('Animated tests', () => {
   beforeEach(() => {
     jest.resetModules();
@@ -445,6 +445,37 @@ describe('Animated tests', () => {
     });
   });
 
+  it('does not reset animation in a loop if resetBeforeIteration is false', () => {
+    const animation = {
+      start: jest.fn(),
+      reset: jest.fn(),
+      _isUsingNativeDriver: () => false,
+    };
+    const cb = jest.fn();
+
+    const loop = Animated.loop(animation, {resetBeforeIteration: false});
+
+    expect(animation.start).not.toBeCalled();
+
+    loop.start(cb);
+
+    expect(animation.start).toBeCalled();
+    expect(animation.reset).not.toBeCalled();
+    expect(cb).not.toBeCalled();
+
+    animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+    expect(animation.reset).not.toBeCalled();
+    expect(cb).not.toBeCalled();
+
+    animation.start.mock.calls[0][0]({finished: true}); // End of loop 2
+    expect(animation.reset).not.toBeCalled();
+    expect(cb).not.toBeCalled();
+
+    animation.start.mock.calls[0][0]({finished: true}); // End of loop 3
+    expect(animation.reset).not.toBeCalled();
+    expect(cb).not.toBeCalled();
+  });
+
   describe('Animated Parallel', () => {
     it('works with an empty parallel', () => {
       const cb = jest.fn();
@@ -614,13 +645,13 @@ describe('Animated tests', () => {
     let InteractionManager;
 
     beforeEach(() => {
-      jest.mock('InteractionManager');
-      Animated = require('Animated');
-      InteractionManager = require('InteractionManager');
+      jest.mock('../../../Interaction/InteractionManager');
+      Animated = require('../Animated');
+      InteractionManager = require('../../../Interaction/InteractionManager');
     });
 
     afterEach(() => {
-      jest.unmock('InteractionManager');
+      jest.unmock('../../../Interaction/InteractionManager');
     });
 
     it('registers an interaction by default', () => {
@@ -801,6 +832,47 @@ describe('Animated tests', () => {
       value1.setValue(1492);
       expect(listener.mock.calls.length).toBe(2);
       expect(value1.__getValue()).toBe(1492);
+    });
+
+    it('should get updates for derived animated nodes', () => {
+      const value1 = new Animated.Value(40);
+      const value2 = new Animated.Value(50);
+      const value3 = new Animated.Value(0);
+      const value4 = Animated.add(value3, Animated.multiply(value1, value2));
+      const callback = jest.fn();
+      const view = new Animated.__PropsOnlyForTests(
+        {
+          style: {
+            transform: [
+              {
+                translateX: value4,
+              },
+            ],
+          },
+        },
+        callback,
+      );
+      const listener = jest.fn();
+      const id = value4.addListener(listener);
+      value3.setValue(137);
+      expect(listener.mock.calls.length).toBe(1);
+      expect(listener).toBeCalledWith({value: 2137});
+      value1.setValue(0);
+      expect(listener.mock.calls.length).toBe(2);
+      expect(listener).toBeCalledWith({value: 137});
+      expect(view.__getValue()).toEqual({
+        style: {
+          transform: [
+            {
+              translateX: 137,
+            },
+          ],
+        },
+      });
+      value4.removeListener(id);
+      value1.setValue(40);
+      expect(listener.mock.calls.length).toBe(2);
+      expect(value4.__getValue()).toBe(2137);
     });
 
     it('should removeAll', () => {

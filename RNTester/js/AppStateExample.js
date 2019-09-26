@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {AppState, Text, View} = ReactNative;
+const {AppState, Text, View} = require('react-native');
 
 class AppStateSubscription extends React.Component<
   $FlowFixMeProps,

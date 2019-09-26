@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Animated, Easing, StyleSheet, Text, View} = ReactNative;
+const {Animated, Easing, StyleSheet, Text, View} = require('react-native');
 const RNTesterButton = require('./RNTesterButton');
 
 const styles = StyleSheet.create({

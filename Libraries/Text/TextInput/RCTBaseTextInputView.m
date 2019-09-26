@@ -19,6 +19,7 @@
 #import "RCTInputAccessoryViewContent.h"
 #import "RCTTextAttributes.h"
 #import "RCTTextSelection.h"
+#import "../RCTTextUIKit.h" // TODO(macOS ISS#2323203)
 
 @implementation RCTBaseTextInputView {
   __weak RCTBridge *_bridge;
@@ -73,9 +74,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       return;
     }
 
-    backedTextInputView.font = _textAttributes.effectiveFont;
-    backedTextInputView.textColor = _textAttributes.effectiveForegroundColor;
-    backedTextInputView.textAlignment = _textAttributes.alignment;
+    backedTextInputView.reactTextAttributes = _textAttributes;
   } // TODO(OSS Candidate ISS#2710739)
 }
 
@@ -274,7 +273,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                              };
 
           #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-            if (@available(iOS 11.0, tvOS 12.0, *)) {
+            if (@available(iOS 11.0, tvOS 11.0, *)) {
               NSDictionary<NSString *, NSString *> * iOS11extras = @{@"username": UITextContentTypeUsername,
                                                                      @"password": UITextContentTypePassword};
 
@@ -425,7 +424,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 
   if (_maxLength) {
-    NSUInteger allowedLength = _maxLength.integerValue - backedTextInputView.attributedText.string.length + range.length;
+    NSInteger allowedLength = MAX(_maxLength.integerValue - (NSInteger)backedTextInputView.attributedText.string.length + (NSInteger)range.length, 0);
 
     if (text.length > allowedLength) {
       // If we typed/pasted more than one character, limit the text inputted.
@@ -455,19 +454,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     }
   }
 
-  if (range.location + range.length > [[self predictedText] length]) { // TODO(OSS Candidate ISS#2710739)
-    // predictedText got out of sync in a bad way, so let's just force sync it.  Haven't been able to repro this, but
-    // it's causing a real crash here: #6523822
-    [self setPredictedText:backedTextInputView.attributedText.string]; // TODO(OSS Candidate ISS#2710739)
-  }
+  NSString *previousText = backedTextInputView.attributedText.string ?: @"";
 
-  NSString *predictedText = [self predictedText]; // TODO(OSS Candidate ISS#2710739)
-  NSString *previousText = [predictedText substringWithRange:range] ?: @"";
-
-  if (!_predictedText || backedTextInputView.attributedText.string.length == 0) {
-    [self setPredictedText:text]; // TODO(OSS Candidate ISS#2710739)
+  if (range.location + range.length > backedTextInputView.attributedText.string.length) {
+    _predictedText = backedTextInputView.attributedText.string;
   } else {
-    [self setPredictedText:[predictedText stringByReplacingCharactersInRange:range withString:text]]; // TODO(OSS Candidate ISS#2710739)
+    _predictedText = [backedTextInputView.attributedText.string stringByReplacingCharactersInRange:range withString:text];
   }
 
   if (_onTextInput) {
@@ -491,8 +483,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
 
-  // Detect when `backedTextInputView` updates happend that didn't invoke `shouldChangeTextInRange`
-  // (e.g. typing simplified chinese in pinyin will insert and remove spaces without
+  // Detect when `backedTextInputView` updates happened that didn't invoke `shouldChangeTextInRange`
+  // (e.g. typing simplified Chinese in pinyin will insert and remove spaces without
   // calling shouldChangeTextInRange).  This will cause JS to get out of sync so we
   // update the mismatched range.
   NSRange currentRange;

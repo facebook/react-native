@@ -7,7 +7,7 @@
 
 package com.facebook.react.uimanager;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.View;
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
 

@@ -9,7 +9,7 @@ package com.facebook.react.bridge;
 
 import javax.annotation.Nullable;
 
-import android.support.v4.util.Pools;
+import androidx.core.util.Pools;
 
 /**
  * Implementation of Dynamic wrapping a ReadableArray.

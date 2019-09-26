@@ -56,9 +56,7 @@ static BOOL isStreamTaskSupported() {
   NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]
                                                         delegate:self delegateQueue:nil];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:_url];
-  if (isStreamTaskSupported()) {
-    [request addValue:@"multipart/mixed" forHTTPHeaderField:@"Accept"];
-  }
+  [request addValue:@"multipart/mixed" forHTTPHeaderField:@"Accept"];
   NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request];
   [dataTask resume];
   [session finishTasksAndInvalidate];

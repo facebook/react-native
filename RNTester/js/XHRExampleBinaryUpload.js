@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   Alert,
   Linking,
@@ -20,7 +19,7 @@ const {
   Text,
   TouchableHighlight,
   View,
-} = ReactNative;
+} = require('react-native');
 
 const BINARY_TYPES = {
   String,

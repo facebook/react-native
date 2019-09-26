@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ActivityIndicator should render as <ActivityIndicator> when mocked 1`] = `
+exports[`<ActivityIndicator /> should render as <ActivityIndicator> when mocked 1`] = `
 <ActivityIndicator
   animating={true}
   color="#0000ff"
@@ -9,7 +9,7 @@ exports[`ActivityIndicator should render as <ActivityIndicator> when mocked 1`] 
 />
 `;
 
-exports[`ActivityIndicator should render as <View> when not mocked 1`] = `
+exports[`<ActivityIndicator /> should render as <View> when not mocked 1`] = `
 <View
   style={
     Object {
@@ -35,7 +35,7 @@ exports[`ActivityIndicator should render as <View> when not mocked 1`] = `
 </View>
 `;
 
-exports[`ActivityIndicator should shallow render as <ActivityIndicator> when mocked 1`] = `
+exports[`<ActivityIndicator /> should shallow render as <ActivityIndicator> when mocked 1`] = `
 <ActivityIndicator
   animating={true}
   color="#0000ff"
@@ -44,7 +44,7 @@ exports[`ActivityIndicator should shallow render as <ActivityIndicator> when moc
 />
 `;
 
-exports[`ActivityIndicator should shallow render as <ForwardRef(ActivityIndicator)> when not mocked 1`] = `
+exports[`<ActivityIndicator /> should shallow render as <ForwardRef(ActivityIndicator)> when not mocked 1`] = `
 <ForwardRef(ActivityIndicator)
   animating={true}
   color="#0000ff"

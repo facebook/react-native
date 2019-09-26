@@ -127,19 +127,21 @@ public:
    */
   virtual std::string getDescription() = 0;
 
-  virtual void handleMemoryPressure(int /* pressureLevel */) {}
+  virtual void handleMemoryPressure(__unused int pressureLevel) {}
 
   /**
    * Returns the current peak memory usage due to the JavaScript
    * execution environment in bytes. If the JavaScript execution
    * environment does not track this information, return -1.
    */
-  virtual int64_t getPeakJsMemoryUsage() const noexcept {
+  virtual int64_t getPeakJsMemoryUsage() const noexcept { // ISS
     return -1;
   }
 
   virtual void destroy() {}
   virtual ~JSExecutor() {}
+
+  virtual void flush() {}
 
   static std::string getSyntheticBundlePath(
       uint32_t bundleId,

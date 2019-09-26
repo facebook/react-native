@@ -115,71 +115,77 @@ static inline YGStyle convertRawProp(
     const RawProps &rawProps,
     const YGStyle &sourceValue) {
   auto yogaStyle = YGStyle{};
-  yogaStyle.direction = convertRawProp(
-      rawProps, "direction", sourceValue.direction, yogaStyle.direction);
-  yogaStyle.flexDirection = convertRawProp(
+  yogaStyle.direction() = convertRawProp(
+      rawProps, "direction", sourceValue.direction(), yogaStyle.direction());
+  yogaStyle.flexDirection() = convertRawProp(
       rawProps,
       "flexDirection",
-      sourceValue.flexDirection,
-      yogaStyle.flexDirection);
-  yogaStyle.justifyContent = convertRawProp(
+      sourceValue.flexDirection(),
+      yogaStyle.flexDirection());
+  yogaStyle.justifyContent() = convertRawProp(
       rawProps,
       "justifyContent",
-      sourceValue.justifyContent,
-      yogaStyle.justifyContent);
-  yogaStyle.alignContent = convertRawProp(
+      sourceValue.justifyContent(),
+      yogaStyle.justifyContent());
+  yogaStyle.alignContent() = convertRawProp(
       rawProps,
       "alignContent",
-      sourceValue.alignContent,
-      yogaStyle.alignContent);
-  yogaStyle.alignItems = convertRawProp(
-      rawProps, "alignItems", sourceValue.alignItems, yogaStyle.alignItems);
-  yogaStyle.alignSelf = convertRawProp(
-      rawProps, "alignSelf", sourceValue.alignSelf, yogaStyle.alignSelf);
-  yogaStyle.positionType = convertRawProp(
-      rawProps, "position", sourceValue.positionType, yogaStyle.positionType);
-  yogaStyle.flexWrap = convertRawProp(
-      rawProps, "flexWrap", sourceValue.flexWrap, yogaStyle.flexWrap);
-  yogaStyle.overflow = convertRawProp(
-      rawProps, "overflow", sourceValue.overflow, yogaStyle.overflow);
-  yogaStyle.display = convertRawProp(
-      rawProps, "display", sourceValue.display, yogaStyle.display);
-  yogaStyle.flex =
-      convertRawProp(rawProps, "flex", sourceValue.flex, yogaStyle.flex);
-  yogaStyle.flexGrow = convertRawProp(
-      rawProps, "flexGrow", sourceValue.flexGrow, yogaStyle.flexGrow);
-  yogaStyle.flexShrink = convertRawProp(
-      rawProps, "flexShrink", sourceValue.flexShrink, yogaStyle.flexShrink);
-  yogaStyle.flexBasis = convertRawProp(
-      rawProps, "flexBasis", sourceValue.flexBasis, yogaStyle.flexBasis);
-  yogaStyle.margin = convertRawProp(
-      rawProps, "margin", "", sourceValue.margin, yogaStyle.margin);
-  yogaStyle.position =
-      convertRawProp(rawProps, sourceValue.position, yogaStyle.position);
-  yogaStyle.padding = convertRawProp(
-      rawProps, "padding", "", sourceValue.padding, yogaStyle.padding);
-  yogaStyle.border = convertRawProp(
-      rawProps, "border", "Width", sourceValue.border, yogaStyle.border);
-  yogaStyle.dimensions = convertRawProp(
+      sourceValue.alignContent(),
+      yogaStyle.alignContent());
+  yogaStyle.alignItems() = convertRawProp(
+      rawProps, "alignItems", sourceValue.alignItems(), yogaStyle.alignItems());
+  yogaStyle.alignSelf() = convertRawProp(
+      rawProps, "alignSelf", sourceValue.alignSelf(), yogaStyle.alignSelf());
+  yogaStyle.positionType() = convertRawProp(
+      rawProps,
+      "position",
+      sourceValue.positionType(),
+      yogaStyle.positionType());
+  yogaStyle.flexWrap() = convertRawProp(
+      rawProps, "flexWrap", sourceValue.flexWrap(), yogaStyle.flexWrap());
+  yogaStyle.overflow() = convertRawProp(
+      rawProps, "overflow", sourceValue.overflow(), yogaStyle.overflow());
+  yogaStyle.display() = convertRawProp(
+      rawProps, "display", sourceValue.display(), yogaStyle.display());
+  yogaStyle.flex() =
+      convertRawProp(rawProps, "flex", sourceValue.flex(), yogaStyle.flex());
+  yogaStyle.flexGrow() = convertRawProp(
+      rawProps, "flexGrow", sourceValue.flexGrow(), yogaStyle.flexGrow());
+  yogaStyle.flexShrink() = convertRawProp(
+      rawProps, "flexShrink", sourceValue.flexShrink(), yogaStyle.flexShrink());
+  yogaStyle.flexBasis() = convertRawProp(
+      rawProps, "flexBasis", sourceValue.flexBasis(), yogaStyle.flexBasis());
+  yogaStyle.margin() = convertRawProp(
+      rawProps, "margin", "", sourceValue.margin(), yogaStyle.margin());
+  yogaStyle.position() =
+      convertRawProp(rawProps, sourceValue.position(), yogaStyle.position());
+  yogaStyle.padding() = convertRawProp(
+      rawProps, "padding", "", sourceValue.padding(), yogaStyle.padding());
+  yogaStyle.border() = convertRawProp(
+      rawProps, "border", "Width", sourceValue.border(), yogaStyle.border());
+  yogaStyle.dimensions() = convertRawProp(
       rawProps,
       "width",
       "height",
-      sourceValue.dimensions,
-      yogaStyle.dimensions);
-  yogaStyle.minDimensions = convertRawProp(
+      sourceValue.dimensions(),
+      yogaStyle.dimensions());
+  yogaStyle.minDimensions() = convertRawProp(
       rawProps,
       "minWidth",
       "minHeight",
-      sourceValue.minDimensions,
-      yogaStyle.minDimensions);
-  yogaStyle.maxDimensions = convertRawProp(
+      sourceValue.minDimensions(),
+      yogaStyle.minDimensions());
+  yogaStyle.maxDimensions() = convertRawProp(
       rawProps,
       "maxWidth",
       "maxHeight",
-      sourceValue.maxDimensions,
-      yogaStyle.maxDimensions);
-  yogaStyle.aspectRatio = convertRawProp(
-      rawProps, "aspectRatio", sourceValue.aspectRatio, yogaStyle.aspectRatio);
+      sourceValue.maxDimensions(),
+      yogaStyle.maxDimensions());
+  yogaStyle.aspectRatio() = convertRawProp(
+      rawProps,
+      "aspectRatio",
+      sourceValue.aspectRatio(),
+      yogaStyle.aspectRatio());
   return yogaStyle;
 }
 
