@@ -31,7 +31,8 @@ TurboModuleManager::TurboModuleManager(
   runtime_(rt),
   jsCallInvoker_(jsCallInvoker),
   nativeCallInvoker_(nativeCallInvoker),
-  delegate_(jni::make_global(delegate))
+  delegate_(jni::make_global(delegate)),
+  turboModuleCache_(std::make_shared<TurboModuleCache>())
   {}
 
 jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
@@ -58,39 +59,57 @@ void TurboModuleManager::installJSIBindings() {
   if (!runtime_) {
     return; // Runtime doesn't exist when attached to Chrome debugger.
   }
+
   TurboModuleBinding::install(*runtime_, std::make_shared<TurboModuleBinding>(
-      [this](const std::string &name) -> std::shared_ptr<TurboModule> {
-        auto turboModuleLookup = turboModuleCache_.find(name);
-        if (turboModuleLookup != turboModuleCache_.end()) {
-          return turboModuleLookup->second;
-        }
+    [
+      turboModuleCache_ = std::weak_ptr<TurboModuleCache>(turboModuleCache_),
+      jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
+      nativeCallInvoker_ = std::weak_ptr<CallInvoker>(nativeCallInvoker_),
+      delegate_ = jni::make_weak(delegate_),
+      javaPart_ = jni::make_weak(javaPart_)
+    ]
+    (const std::string &name) -> std::shared_ptr<TurboModule> {
+      auto turboModuleCache = turboModuleCache_.lock();
+      auto jsCallInvoker = jsCallInvoker_.lock();
+      auto nativeCallInvoker = nativeCallInvoker_.lock();
+      auto delegate = delegate_.lockLocal();
+      auto javaPart = javaPart_.lockLocal();
 
-        auto cxxModule = delegate_->cthis()->getTurboModule(name, jsCallInvoker_);
-        if (cxxModule) {
-          turboModuleCache_.insert({name, cxxModule});
-          return cxxModule;
-        }
+      if (!turboModuleCache || !jsCallInvoker || !nativeCallInvoker || !delegate || !javaPart) {
+        return nullptr;
+      }
 
-        static auto getLegacyCxxModule = delegate_->getClass()->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(const std::string&)>("getLegacyCxxModule");
-        auto legacyCxxModule = getLegacyCxxModule(delegate_.get(), name);
+      auto turboModuleLookup = turboModuleCache->find(name);
+      if (turboModuleLookup != turboModuleCache->end()) {
+        return turboModuleLookup->second;
+      }
 
-        if (legacyCxxModule) {
-          auto turboModule = std::make_shared<react::TurboCxxModule>(legacyCxxModule->cthis()->getModule(), jsCallInvoker_);
-          turboModuleCache_.insert({name, turboModule});
-          return turboModule;
-        }
+      auto cxxModule = delegate->cthis()->getTurboModule(name, jsCallInvoker);
+      if (cxxModule) {
+        turboModuleCache->insert({name, cxxModule});
+        return cxxModule;
+      }
 
-        static auto getJavaModule = javaClassStatic()->getMethod<jni::alias_ref<JTurboModule>(const std::string&)>("getJavaModule");
-        auto moduleInstance = getJavaModule(javaPart_.get(), name);
+      static auto getLegacyCxxModule = delegate->getClass()->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(const std::string&)>("getLegacyCxxModule");
+      auto legacyCxxModule = getLegacyCxxModule(delegate.get(), name);
 
-        if (moduleInstance) {
-          auto turboModule = delegate_->cthis()->getTurboModule(name, moduleInstance, jsCallInvoker_, nativeCallInvoker_);
-          turboModuleCache_.insert({name, turboModule});
-          return turboModule;
-        }
+      if (legacyCxxModule) {
+        auto turboModule = std::make_shared<react::TurboCxxModule>(legacyCxxModule->cthis()->getModule(), jsCallInvoker);
+        turboModuleCache->insert({name, turboModule});
+        return turboModule;
+      }
 
-        return std::shared_ptr<TurboModule>(nullptr);
-      })
+      static auto getJavaModule = javaPart->getClass()->getMethod<jni::alias_ref<JTurboModule>(const std::string&)>("getJavaModule");
+      auto moduleInstance = getJavaModule(javaPart.get(), name);
+
+      if (moduleInstance) {
+        auto turboModule = delegate->cthis()->getTurboModule(name, moduleInstance, jsCallInvoker, nativeCallInvoker);
+        turboModuleCache->insert({name, turboModule});
+        return turboModule;
+      }
+
+      return nullptr;
+    })
   );
 }
 
