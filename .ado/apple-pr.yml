@@ -16,11 +16,12 @@ jobs:
           xcode_sdk: iphonesimulator
           xcode_scheme: 'RNTester'
           xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 8'
-        tvos:
-          packager_platform: 'ios'
-          xcode_sdk: appletvsimulator
-          xcode_scheme: 'RNTester-tvOS'
-          xcode_destination: 'platform=tvOS Simulator,OS=latest,name=Apple TV'
+        # Microsoft- We don't use tvOS, so don't bother maintaining the infra
+        # tvos:
+        #   packager_platform: 'ios'
+        #   xcode_sdk: appletvsimulator
+        #   xcode_scheme: 'RNTester-tvOS'
+        #   xcode_destination: 'platform=tvOS Simulator,OS=latest,name=Apple TV'
         macos:
           packager_platform: 'macos'
           xcode_sdk: macosx
