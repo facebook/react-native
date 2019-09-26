@@ -28,8 +28,8 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "641DD8E51F16AA8500B6415F"
-               BuildableName = "RNTesterBundle-macOS"
+               BlueprintIdentifier = "9FBFA512233C7E4C003D9A8D"
+               BuildableName = "RNTesterBundle-macOS.bundle"
                BlueprintName = "RNTesterBundle-macOS"
                ReferencedContainer = "container:RNTester.xcodeproj">
             </BuildableReference>
