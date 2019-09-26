@@ -1,6 +1,4 @@
 let child_process = require('child_process');
-const fs = require('fs');
-const path = require('path');
 
 const branchName = 'rn-to-sdx';
 const vsoApiUrl = process.env.VSO_API_URL ? process.env.VSO_API_URL : 'https://office.visualstudio.com/DefaultCollection/_apis';

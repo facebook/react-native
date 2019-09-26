@@ -16,7 +16,7 @@ import Platform from '../../Libraries/Utilities/Platform'; // TODO(OSS Candidate
 var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
-var {Image, Text, TextInput, View, LayoutAnimation, Button} = ReactNative;
+var {Text, TextInput, View, LayoutAnimation, Button} = ReactNative;
 
 type TextAlignExampleRTLState = {|
   isRTL: boolean,

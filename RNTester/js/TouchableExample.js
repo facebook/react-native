@@ -462,9 +462,9 @@ class TouchableMouseEvents extends React.Component<{}, $FlowFixMeState> {
     var eventLog = this.state.eventLog.slice(0, limit - 1);
 
     var eventType = '';
-    if (nativeEvent.button == 0) {
+    if (nativeEvent.button === 0) {
       eventType = 'left';
-    } else if (nativeEvent.button == 2) {
+    } else if (nativeEvent.button === 2) {
       eventType = 'right';
     }
     var modifier = '';
