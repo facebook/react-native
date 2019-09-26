@@ -35,7 +35,7 @@ const TESTS = [
   require('./SyncMethodTest'),
   require('./PromiseTest'),
   require('./WebSocketTest'),
-  // require('./AccessibilityManagerTest'),
+  require('./AccessibilityManagerTest'),
 ];
 
 TESTS.forEach(
