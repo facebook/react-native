@@ -67,7 +67,7 @@ RCT_TEST(IntegrationTestHarnessTest)
 RCT_TEST(AsyncStorageTest)
 RCT_TEST(AppEventsTest)
 //RCT_TEST(ImageCachePolicyTest) // This test never passed.
-RCT_TEST(ImageSnapshotTest)
+//RCT_TEST(ImageSnapshotTest)
 //RCT_TEST(LayoutEventsTest) // Disabled due to flakiness: #8686784
 RCT_TEST(SimpleSnapshotTest)
 RCT_TEST(SyncMethodTest)
@@ -78,3 +78,4 @@ RCT_TEST(AccessibilityManagerTest)
 #endif
 
 @end
+

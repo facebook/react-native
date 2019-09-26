@@ -168,6 +168,12 @@
 		9F15350B233ACE27006DFE44 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D122242EFA400E7F88E /* libReact.a */; };
 		9F15350C233ACE3B006DFE44 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F1534BD233AB44F006DFE44 /* JavaScriptCore.framework */; };
 		9F15350D233ACE67006DFE44 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF92242EFA400E7F88E /* libRCTWebSocket.a */; };
+		9F15356B233C2CC5006DFE44 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CE72242EFA400E7F88E /* libRCTNetwork.a */; };
+		9F15359E233C2D6A006DFE44 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF12242EFA400E7F88E /* libRCTText.a */; };
+		9F153610233C32AF006DFE44 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CE12242EFA400E7F88E /* libRCTImage.a */; };
+		9F153611233C32B8006DFE44 /* libRCTLinking-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D429028F1F1CE21600685AE7 /* libRCTLinking-macOS.a */; };
+		9F153612233C37AE006DFE44 /* OCMock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18BFA4931F01C46700969486 /* OCMock.framework */; };
+		9F153613233C37C8006DFE44 /* OCMock.framework in Copy Framework */ = {isa = PBXBuildFile; fileRef = 18BFA4931F01C46700969486 /* OCMock.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9F5C1823230B4F3500E3E5A7 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF92242EFA400E7F88E /* libRCTWebSocket.a */; };
 		9F5C1824230B4F4000E3E5A7 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF12242EFA400E7F88E /* libRCTText.a */; };
 		9F5C1825230B4F4500E3E5A7 /* libRCTSettings-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6448A5D21F292F16006FF1F5 /* libRCTSettings-macOS.a */; };
@@ -779,6 +785,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				9F153613233C37C8006DFE44 /* OCMock.framework in Copy Framework */,
 			);
 			name = "Copy Framework";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -996,8 +1003,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F153612233C37AE006DFE44 /* OCMock.framework in Frameworks */,
 				9F1534BE233AB44F006DFE44 /* JavaScriptCore.framework in Frameworks */,
-				9F153508233AB998006DFE44 /* libReact.a in Frameworks */,
 				9F7CD41A2339A936005B9D55 /* libRCTBlob-macOS.a in Frameworks */,
 				18FE57B02149BCDB000CB2A7 /* libRCTAnimation.a in Frameworks */,
 				9F7CD4192339A92D005B9D55 /* libRCTActionSheet.a in Frameworks */,
@@ -1008,6 +1015,7 @@
 				9F7CD4142339A90C005B9D55 /* libRCTTest-macOS.a in Frameworks */,
 				9F7CD4132339A906005B9D55 /* libRCTText.a in Frameworks */,
 				9F7CD4122339A8FF005B9D55 /* libRCTWebSocket.a in Frameworks */,
+				9F153508233AB998006DFE44 /* libReact.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1015,8 +1023,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F15350D233ACE67006DFE44 /* libRCTWebSocket.a in Frameworks */,
 				9F15350C233ACE3B006DFE44 /* JavaScriptCore.framework in Frameworks */,
+				9F153611233C32B8006DFE44 /* libRCTLinking-macOS.a in Frameworks */,
+				9F153610233C32AF006DFE44 /* libRCTImage.a in Frameworks */,
+				9F15359E233C2D6A006DFE44 /* libRCTText.a in Frameworks */,
+				9F15356B233C2CC5006DFE44 /* libRCTNetwork.a in Frameworks */,
+				9F15350D233ACE67006DFE44 /* libRCTWebSocket.a in Frameworks */,
 				9F15350B233ACE27006DFE44 /* libReact.a in Frameworks */,
 				9F7CD41B2339A95F005B9D55 /* libRCTTest-macOS.a in Frameworks */,
 			);
