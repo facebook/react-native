@@ -97,7 +97,8 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
       if (success) {
         resolve(@YES);
       } else {
-        reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
+        RCTLogWarn([NSString stringWithFormat:@"Unable to open URL: %@", URL]);
+        reject([NSString stringWithFormat:@"Unable to open URL: %@", URL]);
       }
     }];
   } else {
@@ -107,7 +108,8 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
     if (opened) {
       resolve(@YES);
     } else {
-      reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
+      RCTLogWarn([NSString stringWithFormat:@"Unable to open URL: %@", URL]);
+      reject([NSString stringWithFormat:@"Unable to open URL: %@", URL]);
     }
 #endif
   }
