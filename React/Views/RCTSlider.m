@@ -84,4 +84,24 @@
   return [self thumbImageForState:UIControlStateNormal];
 }
 
+- (void)accessibilityIncrement
+{
+  [super accessibilityIncrement];
+  if (_onSlidingComplete) {
+    _onSlidingComplete(@{
+        @"value": @(self.value),
+    });
+  }
+}
+
+- (void)accessibilityDecrement
+{
+  [super accessibilityDecrement];
+  if (_onSlidingComplete) {
+    _onSlidingComplete(@{
+        @"value": @(self.value),
+    });
+  }
+}
+
 @end
