@@ -200,6 +200,7 @@
 		9FBFA51B233C7E97003D9A8D /* legacy_image@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D2AFAF41D646CF80089D1A3 /* legacy_image@2x.png */; };
 		9FBFA51C233C7EAF003D9A8D /* ImageInBundle.png in Resources */ = {isa = PBXBuildFile; fileRef = 3D13F8441D6F6AF200E69E0E /* ImageInBundle.png */; };
 		9FBFA51D233C7EB4003D9A8D /* OtherImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D13F8451D6F6AF200E69E0E /* OtherImages.xcassets */; };
+		9FBFA5CF233C9469003D9A8D /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D91DA2DD8B000FE1B8 /* libReact.a */; };
 		AFEACA842223EB05004E5198 /* CrashyCrash.m in Sources */ = {isa = PBXBuildFile; fileRef = AFEACA832223EB05004E5198 /* CrashyCrash.m */; };
 		BC9C03401DC9F1D600B1C635 /* RCTDevMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BC9C033F1DC9F1D600B1C635 /* RCTDevMenuTests.m */; };
 		C60A228221C9726800B820FE /* RCTFormatErrorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C60A228121C9726800B820FE /* RCTFormatErrorTests.m */; };
@@ -662,6 +663,13 @@
 			remoteGlobalIDString = 9FD21D94224305AA00E7F88E;
 			remoteInfo = "jsiexecutor-macOS";
 		};
+		9FBFA7AB233D53BA003D9A8D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9FBFA512233C7E4C003D9A8D;
+			remoteInfo = "RNTesterBundle-macOS";
+		};
 		9FD21CD42242EE5B00E7F88E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
@@ -1046,6 +1054,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9FBFA5CF233C9469003D9A8D /* libReact.a in Frameworks */,
 				ED2970992150247000B7C4FE /* JavaScriptCore.framework in Frameworks */,
 				52C11BE11EEACA7800C1A058 /* libRCTBlob-tvOS.a in Frameworks */,
 				2D66FF901ECA407E00F0A767 /* libART-tvOS.a in Frameworks */,
@@ -1708,6 +1717,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				9FBFA7AC233D53BA003D9A8D /* PBXTargetDependency */,
 				18CD94732149B235009E2179 /* PBXTargetDependency */,
 				18CD946F2149B235009E2179 /* PBXTargetDependency */,
 				18CD94712149B235009E2179 /* PBXTargetDependency */,
@@ -3242,6 +3252,11 @@
 			isa = PBXTargetDependency;
 			name = RCTWebSocket;
 		};
+		9FBFA7AC233D53BA003D9A8D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9FBFA512233C7E4C003D9A8D /* RNTesterBundle-macOS */;
+			targetProxy = 9FBFA7AB233D53BA003D9A8D /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
@@ -3428,7 +3443,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				BUNDLE_CONFIG = "$(SRCROOT)/../rn-cli.config.js";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "-";
@@ -3446,7 +3460,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				BUNDLE_CONFIG = "$(SRCROOT)/../rn-cli.config.js";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "-";
@@ -3598,7 +3611,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
-				BUNDLE_CONFIG = "$(SRCROOT)/../rn-cli.config.js";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
@@ -3618,7 +3630,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
-				BUNDLE_CONFIG = "$(SRCROOT)/../rn-cli.config.js";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
