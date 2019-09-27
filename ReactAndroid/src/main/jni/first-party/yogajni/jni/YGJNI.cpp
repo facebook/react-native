@@ -15,6 +15,7 @@
 #include <map>
 
 #include "YGJTypes.h"
+#include "YGJNIVanilla.h"
 
 using namespace facebook::jni;
 using namespace std;
@@ -893,7 +894,7 @@ void jni_YGNodeStyleSetBorder(jlong nativePointer, jint edge, jfloat border) {
   makeCriticalNativeMethod_DO_NOT_USE_OR_YOU_WILL_BE_FIRED(#name, name)
 
 jint JNI_OnLoad(JavaVM* vm, void*) {
-  return initialize(vm, [] {
+  jint ret = initialize(vm, [] {
     registerNatives(
         "com/facebook/yoga/YogaNative",
         {
@@ -993,4 +994,6 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
                 jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour),
         });
   });
+  YGJNIVanilla::registerNatives(Environment::current());
+  return ret;
 }

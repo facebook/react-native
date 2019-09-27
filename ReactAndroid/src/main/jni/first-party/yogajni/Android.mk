@@ -11,7 +11,8 @@ LOCAL_MODULE := yoga
 
 LOCAL_SRC_FILES := \
   jni/YGJNI.cpp \
-  jni/YGJTypes.cpp
+  jni/YGJTypes.cpp \
+  jni/YGJNIVanilla.cpp
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/jni
 
