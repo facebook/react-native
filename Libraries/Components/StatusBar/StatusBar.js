@@ -13,6 +13,7 @@
 const Platform = require('../../Utilities/Platform');
 const RootTagContext = require('../../ReactNative/RootTagContext');
 import ReactNative from '../../Renderer/shims/ReactNative';
+const React = require('react');
 
 const processColor = require('../../StyleSheet/processColor');
 
