@@ -46,6 +46,8 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   private boolean mHasNewLayout = true;
 
+  private boolean useVanillaJNI = false;
+
   private YogaNodeJNIBase(long nativePointer) {
     if (nativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
@@ -59,6 +61,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   YogaNodeJNIBase(YogaConfig config) {
     this(YogaNative.jni_YGNodeNewWithConfig(((YogaConfigJNIBase)config).mNativePointer));
+    this.useVanillaJNI = config.useVanillaJNI();
   }
 
   public void reset() {
@@ -284,7 +287,11 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   public void setFlex(float flex) {
-    YogaNative.jni_YGNodeStyleSetFlex(mNativePointer, flex);
+    if (useVanillaJNI) {
+      YogaNative.jni_YGNodeStyleSetFlexJNI(mNativePointer, flex);
+    } else {
+      YogaNative.jni_YGNodeStyleSetFlex(mNativePointer, flex);
+    }
   }
 
   public float getFlexGrow() {
