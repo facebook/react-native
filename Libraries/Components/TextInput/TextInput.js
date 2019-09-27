@@ -410,7 +410,7 @@ type AndroidProps = $ReadOnly<{|
   showSoftInputOnFocus?: ?boolean,
 |}>;
 
-type Props = $ReadOnly<{|
+export type Props = $ReadOnly<{|
   ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
   ...IOSProps,
   ...AndroidProps,
