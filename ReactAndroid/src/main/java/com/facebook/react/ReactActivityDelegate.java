@@ -47,7 +47,7 @@ public class ReactActivityDelegate {
   }
 
   protected ReactRootView createRootView() {
-    return mReactDelegate.createRootView();
+    return new ReactRootView(getContext());
   }
 
   /**
@@ -73,7 +73,12 @@ public class ReactActivityDelegate {
     String mainComponentName = getMainComponentName();
     mReactDelegate =
         new ReactDelegate(
-            getPlainActivity(), getReactNativeHost(), mainComponentName, getLaunchOptions());
+            getPlainActivity(), getReactNativeHost(), mainComponentName, getLaunchOptions()) {
+          @Override
+          protected ReactRootView createRootView() {
+            return ReactActivityDelegate.this.createRootView();
+          }
+        };
     if (mMainComponentName != null) {
       loadApp(mainComponentName);
     }

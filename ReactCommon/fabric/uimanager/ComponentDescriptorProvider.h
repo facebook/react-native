@@ -20,7 +20,7 @@ namespace react {
  */
 class ComponentDescriptorParameters {
  public:
-  EventDispatcher::Shared eventDispatcher;
+  EventDispatcher::Weak eventDispatcher;
   ContextContainer::Shared contextContainer;
 };
 
@@ -30,7 +30,7 @@ class ComponentDescriptorParameters {
  * abstract type and ownership of the newly created object.
  */
 using ComponentDescriptorConstructor = ComponentDescriptor::Unique(
-    EventDispatcher::Shared const &eventDispatcher,
+    EventDispatcher::Weak const &eventDispatcher,
     ContextContainer::Shared const &contextContainer);
 
 /*
@@ -52,7 +52,7 @@ class ComponentDescriptorProvider final {
  */
 template <typename ComponentDescriptorT>
 ComponentDescriptor::Unique concreteComponentDescriptorConstructor(
-    EventDispatcher::Shared const &eventDispatcher,
+    EventDispatcher::Weak const &eventDispatcher,
     ContextContainer::Shared const &contextContainer) {
   static_assert(
       std::is_base_of<ComponentDescriptor, ComponentDescriptorT>::value,

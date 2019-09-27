@@ -92,8 +92,8 @@ class ShadowNode : public virtual Sealable,
 
 #pragma mark - Getters
 
-  virtual ComponentHandle getComponentHandle() const = 0;
-  virtual ComponentName getComponentName() const = 0;
+  ComponentName getComponentName() const;
+  ComponentHandle getComponentHandle() const;
 
   SharedProps const &getProps() const;
   SharedShadowNodeList const &getChildren() const;

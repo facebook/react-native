@@ -11,6 +11,22 @@
 #import <React/RCTFrameUpdate.h>
 #import <React/RCTInvalidating.h>
 
-@interface RCTTiming : NSObject <RCTBridgeModule, RCTInvalidating, RCTFrameUpdateObserver>
+@protocol RCTTimingDelegate
+
+- (void)callTimers:(NSArray<NSNumber *> *)timers;
+- (void)immediatelyCallTimer:(nonnull NSNumber *)callbackID;
+- (void)callIdleCallbacks:(nonnull NSNumber *)absoluteFrameStartMS;
 
 @end
+
+@interface RCTTiming : NSObject <RCTBridgeModule, RCTInvalidating, RCTFrameUpdateObserver>
+
+- (instancetype)initWithDelegate:(id<RCTTimingDelegate>) delegate;
+- (void)createTimerForNextFrame:(nonnull NSNumber *)callbackID
+                       duration:(NSTimeInterval)jsDuration
+               jsSchedulingTime:(NSDate *)jsSchedulingTime
+                        repeats:(BOOL)repeats;
+- (void)deleteTimer:(nonnull NSNumber *)timerID;
+
+@end
+

@@ -11,7 +11,7 @@ namespace facebook {
 namespace react {
 
 ComponentDescriptor::ComponentDescriptor(
-    EventDispatcher::Shared const &eventDispatcher,
+    EventDispatcher::Weak const &eventDispatcher,
     ContextContainer::Shared const &contextContainer)
     : eventDispatcher_(eventDispatcher), contextContainer_(contextContainer) {}
 

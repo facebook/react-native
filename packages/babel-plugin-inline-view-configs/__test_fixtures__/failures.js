@@ -16,18 +16,21 @@ const COMMANDS_EXPORTED_WITH_DIFFERENT_NAME = `
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 |}>;
 
+type NativeType = NativeComponent<ModuleProps>;
+
 interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'Module'>) => void;
+  +hotspotUpdate: (viewRef: React.ElementRef<NativeType>) => void;
 }
 
 export const Foo = codegenNativeCommands<NativeCommands>();
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>('Module'): NativeType);
 `;
 
 const OTHER_COMMANDS_EXPORT = `
@@ -36,24 +39,28 @@ const OTHER_COMMANDS_EXPORT = `
 const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 |}>;
 
+type NativeType = NativeComponent<ModuleProps>;
+
 interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'Module'>) => void;
+  +hotspotUpdate: (viewRef: React.ElementRef<NativeType>) => void;
 }
 
 export const Commands = 4;
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>('Module'): NativeType);
 `;
 
 const COMMANDS_EXPORTED_WITH_SHORTHAND = `
 // @flow
 
 const codegenNativeComponent = require('codegenNativeComponent');
+import type {NativeComponent} from 'codegenNativeComponent';
 
 import type {ViewProps} from 'ViewPropTypes';
 
@@ -61,15 +68,17 @@ type ModuleProps = $ReadOnly<{|
   ...ViewProps,
 |}>;
 
+type NativeType = NativeComponent<ModuleProps>;
+
 interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'Module'>) => void;
+  +hotspotUpdate: (viewRef: React.ElementRef<NativeType>) => void;
 }
 
 const Commands = 4;
 
 export {Commands};
 
-export default codegenNativeComponent<ModuleProps>('Module');
+export default (codegenNativeComponent<ModuleProps>('Module'): NativeType);
 `;
 
 module.exports = {

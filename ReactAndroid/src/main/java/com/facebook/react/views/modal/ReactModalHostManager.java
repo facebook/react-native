@@ -8,6 +8,8 @@ package com.facebook.react.views.modal;
 
 import android.content.DialogInterface;
 import android.graphics.Point;
+import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -16,15 +18,25 @@ import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.viewmanagers.ModalHostViewManagerDelegate;
+import com.facebook.react.viewmanagers.ModalHostViewManagerInterface;
 import java.util.Map;
 
 /** View manager for {@link ReactModalHostView} components. */
 @ReactModule(name = ReactModalHostManager.REACT_CLASS)
-public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> {
+public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
+    implements ModalHostViewManagerInterface<ReactModalHostView> {
 
   public static final String REACT_CLASS = "RCTModalHostView";
+
+  private final ViewManagerDelegate<ReactModalHostView> mDelegate;
+
+  public ReactModalHostManager() {
+    mDelegate = new ModalHostViewManagerDelegate<>(this);
+  }
 
   @Override
   public String getName() {
@@ -52,20 +64,37 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
     view.onDropInstance();
   }
 
+  @Override
   @ReactProp(name = "animationType")
-  public void setAnimationType(ReactModalHostView view, String animationType) {
-    view.setAnimationType(animationType);
+  public void setAnimationType(ReactModalHostView view, @Nullable String animationType) {
+    if (animationType != null) {
+      view.setAnimationType(animationType);
+    }
   }
 
+  @Override
   @ReactProp(name = "transparent")
   public void setTransparent(ReactModalHostView view, boolean transparent) {
     view.setTransparent(transparent);
   }
 
+  @Override
   @ReactProp(name = "hardwareAccelerated")
   public void setHardwareAccelerated(ReactModalHostView view, boolean hardwareAccelerated) {
     view.setHardwareAccelerated(hardwareAccelerated);
   }
+
+  @Override
+  public void setPresentationStyle(ReactModalHostView view, @Nullable String value) {}
+
+  @Override
+  public void setAnimated(ReactModalHostView view, boolean value) {}
+
+  @Override
+  public void setSupportedOrientations(ReactModalHostView view, @Nullable ReadableArray value) {}
+
+  @Override
+  public void setIdentifier(ReactModalHostView view, int value) {}
 
   @Override
   protected void addEventEmitters(ThemedReactContext reactContext, final ReactModalHostView view) {
@@ -107,5 +136,10 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> 
     Point modalSize = ModalHostHelper.getModalHostSize(view.getContext());
     view.updateState(stateWrapper, modalSize.x, modalSize.y);
     return null;
+  }
+
+  @Override
+  public ViewManagerDelegate<ReactModalHostView> getDelegate() {
+    return mDelegate;
   }
 }

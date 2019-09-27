@@ -10,39 +10,39 @@
 
 'use strict';
 
-const {NativeComponent} = require('../../Renderer/shims/ReactNative');
+import type {
+  WithDefault,
+  BubblingEventHandler,
+} from 'react-native/Libraries/Types/CodegenTypes';
 
-const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
-type SwitchChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
-    value: boolean,
-  |}>,
->;
+type SwitchChangeEvent = $ReadOnly<{|
+  value: boolean,
+|}>;
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
   // Props
-  disabled?: ?boolean,
-  enabled?: ?boolean,
-  thumbColor?: ?string,
-  trackColorForFalse?: ?string,
-  trackColorForTrue?: ?string,
-  value?: ?boolean,
-  on?: ?boolean,
-  thumbTintColor?: ?string,
-  trackTintColor?: ?string,
+  disabled?: WithDefault<boolean, false>,
+  enabled?: WithDefault<boolean, true>,
+  thumbColor?: ?ColorValue,
+  trackColorForFalse?: ?ColorValue,
+  trackColorForTrue?: ?ColorValue,
+  value?: WithDefault<boolean, false>,
+  on?: WithDefault<boolean, false>,
+  thumbTintColor?: ?ColorValue,
+  trackTintColor?: ?ColorValue,
 
   // Events
-  onChange?: ?(event: SwitchChangeEvent) => mixed,
+  onChange?: BubblingEventHandler<SwitchChangeEvent>,
 |}>;
 
-type SwitchNativeComponentType = Class<NativeComponent<NativeProps>>;
-
-module.exports = ((requireNativeComponent(
+export default (codegenNativeComponent<NativeProps>(
   'AndroidSwitch',
-): any): SwitchNativeComponentType);
+): HostComponent<NativeProps>);

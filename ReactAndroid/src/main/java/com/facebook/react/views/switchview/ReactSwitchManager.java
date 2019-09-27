@@ -16,15 +16,19 @@ import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.viewmanagers.AndroidSwitchManagerDelegate;
+import com.facebook.react.viewmanagers.AndroidSwitchManagerInterface;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
 
 /** View manager for {@link ReactSwitch} components. */
-public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
+public class ReactSwitchManager extends SimpleViewManager<ReactSwitch>
+    implements AndroidSwitchManagerInterface<ReactSwitch> {
 
   public static final String REACT_CLASS = "AndroidSwitch";
 
@@ -78,6 +82,12 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
         }
       };
 
+  private final ViewManagerDelegate<ReactSwitch> mDelegate;
+
+  public ReactSwitchManager() {
+    mDelegate = new AndroidSwitchManagerDelegate<>(this);
+  }
+
   @Override
   public String getName() {
     return REACT_CLASS;
@@ -100,21 +110,25 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
     return view;
   }
 
+  @Override
   @ReactProp(name = "disabled", defaultBoolean = false)
   public void setDisabled(ReactSwitch view, boolean disabled) {
     view.setEnabled(!disabled);
   }
 
+  @Override
   @ReactProp(name = ViewProps.ENABLED, defaultBoolean = true)
   public void setEnabled(ReactSwitch view, boolean enabled) {
     view.setEnabled(enabled);
   }
 
+  @Override
   @ReactProp(name = ViewProps.ON)
   public void setOn(ReactSwitch view, boolean on) {
     this.setValue(view, on);
   }
 
+  @Override
   @ReactProp(name = "value")
   public void setValue(ReactSwitch view, boolean value) {
     // we set the checked change listener to null and then restore it so that we don't fire an
@@ -124,26 +138,31 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
     view.setOnCheckedChangeListener(ON_CHECKED_CHANGE_LISTENER);
   }
 
+  @Override
   @ReactProp(name = "thumbTintColor", customType = "Color")
   public void setThumbTintColor(ReactSwitch view, @Nullable Integer color) {
     this.setThumbColor(view, color);
   }
 
+  @Override
   @ReactProp(name = "thumbColor", customType = "Color")
   public void setThumbColor(ReactSwitch view, @Nullable Integer color) {
     view.setThumbColor(color);
   }
 
+  @Override
   @ReactProp(name = "trackColorForFalse", customType = "Color")
   public void setTrackColorForFalse(ReactSwitch view, @Nullable Integer color) {
     view.setTrackColorForFalse(color);
   }
 
+  @Override
   @ReactProp(name = "trackColorForTrue", customType = "Color")
   public void setTrackColorForTrue(ReactSwitch view, @Nullable Integer color) {
     view.setTrackColorForTrue(color);
   }
 
+  @Override
   @ReactProp(name = "trackTintColor", customType = "Color")
   public void setTrackTintColor(ReactSwitch view, @Nullable Integer color) {
     view.setTrackColor(color);
@@ -152,5 +171,10 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
   @Override
   protected void addEventEmitters(final ThemedReactContext reactContext, final ReactSwitch view) {
     view.setOnCheckedChangeListener(ON_CHECKED_CHANGE_LISTENER);
+  }
+
+  @Override
+  protected ViewManagerDelegate<ReactSwitch> getDelegate() {
+    return mDelegate;
   }
 }

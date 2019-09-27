@@ -17,17 +17,44 @@
 #if !TARGET_OS_TV
 @implementation RCTConvert (UIStatusBar)
 
-RCT_ENUM_CONVERTER(UIStatusBarStyle, (@{
-  @"default": @(UIStatusBarStyleDefault),
-  @"light-content": @(UIStatusBarStyleLightContent),
-  @"dark-content": @(UIStatusBarStyleDefault),
-}), UIStatusBarStyleDefault, integerValue);
++ (UIStatusBarStyle)UIStatusBarStyle:(id)json RCT_DYNAMIC
+{
+  static NSDictionary *mapping;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    if (@available(iOS 13.0, *)) {
+      mapping = @{
+        @"default" : @(UIStatusBarStyleDefault),
+        @"light-content" : @(UIStatusBarStyleLightContent),
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+        @"dark-content" : @(UIStatusBarStyleDarkContent)
+#else
+          @"dark-content": @(UIStatusBarStyleDefault)
+#endif
+      };
 
-RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
-  @"none": @(UIStatusBarAnimationNone),
-  @"fade": @(UIStatusBarAnimationFade),
-  @"slide": @(UIStatusBarAnimationSlide),
-}), UIStatusBarAnimationNone, integerValue);
+    } else {
+      mapping = @{
+        @"default" : @(UIStatusBarStyleDefault),
+        @"light-content" : @(UIStatusBarStyleLightContent),
+        @"dark-content" : @(UIStatusBarStyleDefault)
+      };
+    }
+  });
+  return _RCT_CAST(
+      type, [RCTConvertEnumValue("UIStatusBarStyle", mapping, @(UIStatusBarStyleDefault), json) integerValue]);
+}
+
+RCT_ENUM_CONVERTER(
+    UIStatusBarAnimation,
+    (@{
+      @"none" : @(UIStatusBarAnimationNone),
+      @"fade" : @(UIStatusBarAnimationFade),
+      @"slide" : @(UIStatusBarAnimationSlide),
+    }),
+    UIStatusBarAnimationNone,
+    integerValue);
 
 @end
 #endif
@@ -39,8 +66,9 @@ static BOOL RCTViewControllerBasedStatusBarAppearance()
   static BOOL value;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    value = [[[NSBundle mainBundle] objectForInfoDictionaryKey:
-              @"UIViewControllerBasedStatusBarAppearance"] ?: @YES boolValue];
+    value =
+        [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIViewControllerBasedStatusBarAppearance"]
+                ?: @YES boolValue];
   });
 
   return value;
@@ -50,8 +78,7 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"statusBarFrameDidChange",
-           @"statusBarFrameWillChange"];
+  return @[ @"statusBarFrameDidChange", @"statusBarFrameWillChange" ];
 }
 
 #if !TARGET_OS_TV
@@ -59,8 +86,14 @@ RCT_EXPORT_MODULE()
 - (void)startObserving
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  [nc addObserver:self selector:@selector(applicationDidChangeStatusBarFrame:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
-  [nc addObserver:self selector:@selector(applicationWillChangeStatusBarFrame:) name:UIApplicationWillChangeStatusBarFrameNotification object:nil];
+  [nc addObserver:self
+         selector:@selector(applicationDidChangeStatusBarFrame:)
+             name:UIApplicationDidChangeStatusBarFrameNotification
+           object:nil];
+  [nc addObserver:self
+         selector:@selector(applicationWillChangeStatusBarFrame:)
+             name:UIApplicationWillChangeStatusBarFrameNotification
+           object:nil];
 }
 
 - (void)stopObserving
@@ -77,11 +110,11 @@ RCT_EXPORT_MODULE()
 {
   CGRect frame = [notification.userInfo[UIApplicationStatusBarFrameUserInfoKey] CGRectValue];
   NSDictionary *event = @{
-    @"frame": @{
-      @"x": @(frame.origin.x),
-      @"y": @(frame.origin.y),
-      @"width": @(frame.size.width),
-      @"height": @(frame.size.height),
+    @"frame" : @{
+      @"x" : @(frame.origin.x),
+      @"y" : @(frame.origin.y),
+      @"width" : @(frame.size.width),
+      @"height" : @(frame.size.height),
     },
   };
   [self sendEventWithName:eventName body:event];
@@ -119,9 +152,9 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(getHeight:(RCTResponseSenderBlock)callback)
 {
-  callback(@[@{
-    @"height": @(RCTSharedApplication().statusBarFrame.size.height),
-  }]);
+  callback(@[ @{
+    @"height" : @(RCTSharedApplication().statusBarFrame.size.height),
+  } ]);
 }
 
 RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)style
@@ -164,7 +197,7 @@ RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
   }
 }
 
-RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)
+RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible)
 {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -172,6 +205,6 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)
 #pragma clang diagnostic pop
 }
 
-#endif //TARGET_OS_TV
+#endif // TARGET_OS_TV
 
 @end

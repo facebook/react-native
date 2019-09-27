@@ -177,44 +177,44 @@ using namespace facebook::react;
 - (void)setTrackImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator
 {
   if (_trackImageCoordinator) {
-    _trackImageCoordinator->removeObserver(_trackImageResponseObserverProxy.get());
+    _trackImageCoordinator->removeObserver(*_trackImageResponseObserverProxy);
   }
   _trackImageCoordinator = coordinator;
   if (_trackImageCoordinator) {
-    _trackImageCoordinator->addObserver(_trackImageResponseObserverProxy.get());
+    _trackImageCoordinator->addObserver(*_trackImageResponseObserverProxy);
   }
 }
 
 - (void)setMinimumTrackImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator
 {
   if (_minimumTrackImageCoordinator) {
-    _minimumTrackImageCoordinator->removeObserver(_minimumTrackImageResponseObserverProxy.get());
+    _minimumTrackImageCoordinator->removeObserver(*_minimumTrackImageResponseObserverProxy);
   }
   _minimumTrackImageCoordinator = coordinator;
   if (_minimumTrackImageCoordinator) {
-    _minimumTrackImageCoordinator->addObserver(_minimumTrackImageResponseObserverProxy.get());
+    _minimumTrackImageCoordinator->addObserver(*_minimumTrackImageResponseObserverProxy);
   }
 }
 
 - (void)setMaximumTrackImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator
 {
   if (_maximumTrackImageCoordinator) {
-    _maximumTrackImageCoordinator->removeObserver(_maximumTrackImageResponseObserverProxy.get());
+    _maximumTrackImageCoordinator->removeObserver(*_maximumTrackImageResponseObserverProxy);
   }
   _maximumTrackImageCoordinator = coordinator;
   if (_maximumTrackImageCoordinator) {
-    _maximumTrackImageCoordinator->addObserver(_maximumTrackImageResponseObserverProxy.get());
+    _maximumTrackImageCoordinator->addObserver(*_maximumTrackImageResponseObserverProxy);
   }
 }
 
 - (void)setThumbImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator
 {
   if (_thumbImageCoordinator) {
-    _thumbImageCoordinator->removeObserver(_thumbImageResponseObserverProxy.get());
+    _thumbImageCoordinator->removeObserver(*_thumbImageResponseObserverProxy);
   }
   _thumbImageCoordinator = coordinator;
   if (_thumbImageCoordinator) {
-    _thumbImageCoordinator->addObserver(_thumbImageResponseObserverProxy.get());
+    _thumbImageCoordinator->addObserver(*_thumbImageResponseObserverProxy);
   }
 }
 

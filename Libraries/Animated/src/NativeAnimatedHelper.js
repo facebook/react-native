@@ -265,6 +265,13 @@ function assertNativeAnimatedModule(): void {
 let _warnedMissingNativeAnimated = false;
 
 function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
+  if (config.useNativeDriver == null) {
+    console.warn(
+      'Animated: `useNativeDriver` was not specified. This is a required ' +
+        'option and must be explicitly set to `true` or `false`',
+    );
+  }
+
   if (config.useNativeDriver === true && !NativeAnimatedModule) {
     if (!_warnedMissingNativeAnimated) {
       console.warn(

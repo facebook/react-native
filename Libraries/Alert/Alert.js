@@ -30,9 +30,9 @@ export type Buttons = Array<{
 }>;
 
 type Options = {
-  cancelable?: ?boolean,
-  onDismiss?: ?() => void,
-  surface?: mixed,
+  +cancelable?: ?boolean,
+  +onDismiss?: ?() => void,
+  +surface?: mixed,
 };
 
 type PromptOptions = {

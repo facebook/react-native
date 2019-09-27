@@ -5194,6 +5194,20 @@ function commitUnmount(current$$1$jscomp$0, renderPriorityLevel) {
       unmountHostComponents(current$$1$jscomp$0, renderPriorityLevel);
   }
 }
+function detachFiber(current$$1) {
+  var alternate = current$$1.alternate;
+  current$$1.return = null;
+  current$$1.child = null;
+  current$$1.memoizedState = null;
+  current$$1.updateQueue = null;
+  current$$1.dependencies = null;
+  current$$1.alternate = null;
+  current$$1.firstEffect = null;
+  current$$1.lastEffect = null;
+  current$$1.pendingProps = null;
+  current$$1.memoizedProps = null;
+  null !== alternate && detachFiber(alternate);
+}
 function isHostParent(fiber) {
   return 5 === fiber.tag || 3 === fiber.tag || 4 === fiber.tag;
 }
@@ -6517,20 +6531,9 @@ function commitRootImpl(root, renderPriorityLevel) {
               commitWork(nextEffect.alternate, nextEffect);
               break;
             case 8:
-              prevProps = nextEffect;
-              unmountHostComponents(prevProps, current$$1);
-              prevProps.return = null;
-              prevProps.child = null;
-              prevProps.memoizedState = null;
-              prevProps.updateQueue = null;
-              prevProps.dependencies = null;
-              var alternate = prevProps.alternate;
-              null !== alternate &&
-                ((alternate.return = null),
-                (alternate.child = null),
-                (alternate.memoizedState = null),
-                (alternate.updateQueue = null),
-                (alternate.dependencies = null));
+              (prevProps = nextEffect),
+                unmountHostComponents(prevProps, current$$1),
+                detachFiber(prevProps);
           }
           nextEffect = nextEffect.nextEffect;
         }
@@ -6552,10 +6555,10 @@ function commitRootImpl(root, renderPriorityLevel) {
         ) {
           var effectTag$jscomp$0 = nextEffect.effectTag;
           if (effectTag$jscomp$0 & 36) {
-            current$$1 = effectTag;
+            prevProps = effectTag;
             var current$$1$jscomp$1 = nextEffect.alternate;
             currentRef = nextEffect;
-            alternate = current$$1$jscomp$0;
+            current$$1 = current$$1$jscomp$0;
             switch (currentRef.tag) {
               case 0:
               case 11:
@@ -6587,26 +6590,26 @@ function commitRootImpl(root, renderPriorityLevel) {
                     currentRef,
                     updateQueue,
                     instance$jscomp$0,
-                    alternate
+                    current$$1
                   );
                 break;
               case 3:
                 var _updateQueue = currentRef.updateQueue;
                 if (null !== _updateQueue) {
-                  current$$1 = null;
+                  prevProps = null;
                   if (null !== currentRef.child)
                     switch (currentRef.child.tag) {
                       case 5:
-                        current$$1 = currentRef.child.stateNode;
+                        prevProps = currentRef.child.stateNode;
                         break;
                       case 1:
-                        current$$1 = currentRef.child.stateNode;
+                        prevProps = currentRef.child.stateNode;
                     }
                   commitUpdateQueue(
                     currentRef,
                     _updateQueue,
-                    current$$1,
-                    alternate
+                    prevProps,
+                    current$$1
                   );
                 }
                 break;
@@ -6626,7 +6629,7 @@ function commitRootImpl(root, renderPriorityLevel) {
                     currentRef.treeBaseDuration,
                     currentRef.actualStartTime,
                     commitTime,
-                    current$$1.memoizedInteractions
+                    prevProps.memoizedInteractions
                   );
                 break;
               case 13:

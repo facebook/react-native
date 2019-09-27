@@ -9,7 +9,7 @@ Array [
       }
     }
   >
-    "A"
+    A
   </Text>,
 ]
 `;
@@ -31,7 +31,7 @@ Array [
       }
     }
   >
-    "A"
+    A
   </Text>,
   <Text>
      
@@ -43,7 +43,7 @@ Array [
       }
     }
   >
-    "B"
+    B
   </Text>,
   <Text>
      
@@ -55,7 +55,7 @@ Array [
       }
     }
   >
-    "C"
+    C
   </Text>,
 ]
 `;
@@ -72,7 +72,7 @@ Array [
       }
     }
   >
-    "A"
+    A
   </Text>,
 ]
 `;
@@ -86,7 +86,7 @@ Array [
       }
     }
   >
-    "A"
+    A
   </Text>,
   <Text>
     !

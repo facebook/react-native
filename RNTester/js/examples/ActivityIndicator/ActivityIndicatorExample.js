@@ -42,7 +42,7 @@ class ToggleAnimatingActivityIndicator extends Component<Props, State> {
     }, 2000);
   }
 
-  render() {
+  render(): Node {
     return (
       <ActivityIndicator
         animating={this.state.animating}

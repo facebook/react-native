@@ -111,4 +111,8 @@ public class YogaNative {
   static native void jni_YGNodePrint(long nativePointer);
   static native void jni_YGNodeSetStyleInputs(long nativePointer, float[] styleInputsArray, int size);
   static native long jni_YGNodeClone(long nativePointer);
+
+
+  // JNI methods that use Vanilla JNI
+  public static native void jni_YGNodeStyleSetFlexJNI(long nativePointer, float flex);
 }

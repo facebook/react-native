@@ -11,10 +11,9 @@
 'use strict';
 
 import codegenNativeComponent from '../Utilities/codegenNativeComponent';
-import {type NativeComponentType} from '../Utilities/codegenNativeComponent';
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {
   WithDefault,
-  BubblingEventHandler,
   DirectEventHandler,
   Int32,
 } from '../Types/CodegenTypes';
@@ -116,4 +115,4 @@ type NativeProps = $ReadOnly<{|
 export default (codegenNativeComponent<NativeProps>('ModalHostView', {
   interfaceOnly: true,
   paperComponentName: 'RCTModalHostView',
-}): NativeComponentType<NativeProps>);
+}): HostComponent<NativeProps>);

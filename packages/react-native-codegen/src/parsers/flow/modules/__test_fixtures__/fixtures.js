@@ -50,7 +50,7 @@ const NATIVE_MODULE_WITH_COMPLEX_OBJECTS = `
 import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
-export type String = string
+export type String = string;
 
 export interface Spec extends TurboModule {
   // Exported methods.
@@ -208,7 +208,7 @@ import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getObject(o : Object) => Object,
+  +getObject: (o : Object) => Object,
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -390,7 +390,7 @@ const NATIVE_MODULE_WITH_PROMISE = `/**
 import type {TurboModule} from '../RCTExport';
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
-export type String = string
+export type String = string;
 export type SomeObj = {| a: string |};
 
 export interface Spec extends TurboModule {

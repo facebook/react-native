@@ -380,7 +380,7 @@ const TouchableMixin = {
           cmp.touchableHandleFocus(evt);
         } else if (evt.eventType === 'blur') {
           cmp.touchableHandleBlur(evt);
-        } else if (evt.eventType === 'select') {
+        } else if (evt.eventType === 'select' && Platform.OS !== 'android') {
           cmp.touchableHandlePress &&
             !cmp.props.disabled &&
             cmp.touchableHandlePress(evt);

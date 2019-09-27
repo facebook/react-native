@@ -19,6 +19,7 @@
 // this.
 
 template class folly::Future<folly::Unit>;
+template class folly::Future<bool>;
 
 namespace folly {
 namespace futures {

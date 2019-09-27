@@ -26,5 +26,5 @@ public class InterfaceOnlyNativeComponentViewManager extends SimpleViewManager<V
   }
 
   @Override
-  public void setAccessibilityHint(ViewGroup view, String value) {}
+  public void setTitle(ViewGroup view, String value) {}
 }

@@ -203,13 +203,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 - (NSString *)accessibilityValue
 {
   if ((self.accessibilityTraits & SwitchAccessibilityTrait) == SwitchAccessibilityTrait) {
-    for (NSString *state in self.accessibilityStates) {
-      if ([state isEqualToString:@"checked"]) {
-        return @"1";
-      } else if ([state isEqualToString:@"unchecked"]) {
-        return @"0";
-      }
-    }
     for (NSString *state in self.accessibilityState) {
       id val = self.accessibilityState[state];
       if (!val) {
@@ -259,12 +252,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   if (roleDescription) {
     [valueComponents addObject:roleDescription];
   }
-  for (NSString *state in self.accessibilityStates) {
-    NSString *stateDescription = state ? stateDescriptions[state] : nil;
-    if (stateDescription) {
-      [valueComponents addObject:stateDescription];
-    }
-  }
   for (NSString *state in self.accessibilityState) {
     id val = self.accessibilityState[state];
     if (!val) {
@@ -284,6 +271,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
       [valueComponents addObject:stateDescriptions[@"busy"]];
     }
   }
+  
+  // handle accessibilityValue
+
+  if (self.accessibilityValueInternal) {
+    id min = self.accessibilityValueInternal[@"min"];
+    id now = self.accessibilityValueInternal[@"now"];
+    id max = self.accessibilityValueInternal[@"max"];
+    id text = self.accessibilityValueInternal[@"text"];
+    if (text && [text isKindOfClass:[NSString class]]) {
+      [valueComponents addObject:text];
+    } else if ([min isKindOfClass:[NSNumber class]] &&
+        [now isKindOfClass:[NSNumber class]] &&
+        [max isKindOfClass:[NSNumber class]] &&
+        ([min intValue] < [max intValue]) &&
+        ([min intValue] <= [now intValue] && [now intValue] <= [max intValue])) {
+      int val = ([now intValue]*100)/([max intValue]-[min intValue]);
+      [valueComponents addObject:[NSString stringWithFormat:@"%d percent", val]];
+    }
+  }
+
   if (valueComponents.count > 0) {
     return [valueComponents componentsJoinedByString:@", "];
   }

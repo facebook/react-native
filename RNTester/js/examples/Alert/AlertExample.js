@@ -31,7 +31,9 @@ const alertMessage =
 type Props = $ReadOnly<{||}>;
 
 class SimpleAlertExampleBlock extends React.Component<Props> {
-  viewRef: React.Ref<React.ElementRef<View> | undefined> = React.createRef();
+  viewRef: React.MutableRefObject<React.ElementRef<
+    typeof View,
+  > | void> = React.createRef();
 
   render() {
     return (

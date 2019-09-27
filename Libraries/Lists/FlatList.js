@@ -18,6 +18,7 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 
 const invariant = require('invariant');
 
+import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
@@ -233,6 +234,10 @@ type OptionalProps<ItemT> = {
    * will be called when its corresponding ViewabilityConfig's conditions are met.
    */
   viewabilityConfigCallbackPairs?: Array<ViewabilityConfigCallbackPair>,
+  /**
+   * See `ScrollView` for flow type and further documentation.
+   */
+  fadingEdgeLength?: ?number,
 };
 export type Props<ItemT> = RequiredProps<ItemT> &
   OptionalProps<ItemT> &
@@ -441,7 +446,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   /**
    * Provides a handle to the underlying scroll responder.
    */
-  getScrollResponder(): any {
+  getScrollResponder(): ?ScrollResponderType {
     if (this._listRef) {
       return this._listRef.getScrollResponder();
     }
@@ -560,7 +565,12 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   _getItemCount = (data: ?Array<ItemT>): number => {
-    return data ? Math.ceil(data.length / this.props.numColumns) : 0;
+    if (data) {
+      const {numColumns} = this.props;
+      return numColumns > 1 ? Math.ceil(data.length / numColumns) : data.length;
+    } else {
+      return 0;
+    }
   };
 
   _keyExtractor = (items: ItemT | Array<ItemT>, index: number) => {

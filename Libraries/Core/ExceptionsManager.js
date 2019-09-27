@@ -11,9 +11,40 @@
 'use strict';
 
 import type {ExtendedError} from './Devtools/parseErrorStack';
+import type {ExceptionData} from './NativeExceptionsManager';
 
 class SyntheticError extends Error {
   name: string = '';
+}
+
+type ExceptionDecorator = ExceptionData => ExceptionData;
+
+let userExceptionDecorator: ?ExceptionDecorator;
+let inUserExceptionDecorator = false;
+
+/**
+ * Allows the app to add information to the exception report before it is sent
+ * to native. This API is not final.
+ */
+
+function unstable_setExceptionDecorator(
+  exceptionDecorator: ?ExceptionDecorator,
+) {
+  userExceptionDecorator = exceptionDecorator;
+}
+
+function preprocessException(data: ExceptionData): ExceptionData {
+  if (userExceptionDecorator && !inUserExceptionDecorator) {
+    inUserExceptionDecorator = true;
+    try {
+      return userExceptionDecorator(data);
+    } catch {
+      // Fall through
+    } finally {
+      inUserExceptionDecorator = false;
+    }
+  }
+  return data;
 }
 
 /**
@@ -49,7 +80,8 @@ function reportException(e: ExtendedError, isFatal: boolean) {
 
     message =
       e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
-    NativeExceptionsManager.reportException({
+
+    const data = preprocessException({
       message,
       originalMessage: message === originalMessage ? null : originalMessage,
       name: e.name == null || e.name === '' ? null : e.name,
@@ -64,6 +96,9 @@ function reportException(e: ExtendedError, isFatal: boolean) {
         framesPopped: e.framesToPop,
       },
     });
+
+    NativeExceptionsManager.reportException(data);
+
     if (__DEV__) {
       if (e.preventSymbolication === true) {
         return;
@@ -76,7 +111,7 @@ function reportException(e: ExtendedError, isFatal: boolean) {
               frame => !frame.collapse,
             );
             NativeExceptionsManager.updateExceptionMessage(
-              message,
+              data.message,
               stackWithoutCollapsedFrames,
               currentExceptionID,
             );
@@ -158,4 +193,9 @@ function installConsoleErrorReporter() {
   }
 }
 
-module.exports = {handleException, installConsoleErrorReporter, SyntheticError};
+module.exports = {
+  handleException,
+  installConsoleErrorReporter,
+  SyntheticError,
+  unstable_setExceptionDecorator,
+};

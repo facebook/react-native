@@ -47,6 +47,14 @@ class ShadowTreeRegistry final {
       SurfaceId surfaceId,
       std::function<void(const ShadowTree &shadowTree)> callback) const;
 
+  /*
+   * Enumerates all stored shadow trees.
+   * Set `stop` to `true` to interrupt the enumeration.
+   * Can be called from any thread.
+   */
+  void enumerate(std::function<void(const ShadowTree &shadowTree, bool &stop)>
+                     callback) const;
+
  private:
   mutable better::shared_mutex mutex_;
   mutable std::unordered_map<SurfaceId, std::unique_ptr<ShadowTree>>

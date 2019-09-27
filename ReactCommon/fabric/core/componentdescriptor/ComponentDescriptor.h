@@ -34,7 +34,7 @@ class ComponentDescriptor {
   using Unique = std::unique_ptr<ComponentDescriptor const>;
 
   ComponentDescriptor(
-      EventDispatcher::Shared const &eventDispatcher,
+      EventDispatcher::Weak const &eventDispatcher,
       ContextContainer::Shared const &contextContainer);
 
   virtual ~ComponentDescriptor() = default;
@@ -111,7 +111,7 @@ class ComponentDescriptor {
       const StateData::Shared &data) const = 0;
 
  protected:
-  EventDispatcher::Shared eventDispatcher_;
+  EventDispatcher::Weak eventDispatcher_;
   ContextContainer::Shared contextContainer_;
   RawPropsParser rawPropsParser_{};
 };

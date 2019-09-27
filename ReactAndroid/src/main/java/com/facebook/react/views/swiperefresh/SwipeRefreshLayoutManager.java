@@ -20,8 +20,11 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
+import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.viewmanagers.AndroidSwipeRefreshLayoutManagerDelegate;
+import com.facebook.react.viewmanagers.AndroidSwipeRefreshLayoutManagerInterface;
 import java.util.Map;
 
 /**
@@ -29,9 +32,16 @@ import java.util.Map;
  * child view. Emits an {@code onRefresh} event when this happens.
  */
 @ReactModule(name = REACT_CLASS)
-public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefreshLayout> {
+public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefreshLayout>
+    implements AndroidSwipeRefreshLayoutManagerInterface<ReactSwipeRefreshLayout> {
 
   public static final String REACT_CLASS = "AndroidSwipeRefreshLayout";
+
+  private final ViewManagerDelegate<ReactSwipeRefreshLayout> mDelegate;
+
+  public SwipeRefreshLayoutManager() {
+    mDelegate = new AndroidSwipeRefreshLayoutManagerDelegate<>(this);
+  }
 
   @Override
   protected ReactSwipeRefreshLayout createViewInstance(ThemedReactContext reactContext) {
@@ -43,11 +53,13 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
     return REACT_CLASS;
   }
 
+  @Override
   @ReactProp(name = ViewProps.ENABLED, defaultBoolean = true)
   public void setEnabled(ReactSwipeRefreshLayout view, boolean enabled) {
     view.setEnabled(enabled);
   }
 
+  @Override
   @ReactProp(name = "colors", customType = "ColorArray")
   public void setColors(ReactSwipeRefreshLayout view, @Nullable ReadableArray colors) {
     if (colors != null) {
@@ -61,9 +73,16 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
     }
   }
 
-  @ReactProp(name = "progressBackgroundColor", defaultInt = Color.TRANSPARENT, customType = "Color")
-  public void setProgressBackgroundColor(ReactSwipeRefreshLayout view, int color) {
-    view.setProgressBackgroundColorSchemeColor(color);
+  @Override
+  @ReactProp(name = "progressBackgroundColor", customType = "Color")
+  public void setProgressBackgroundColor(ReactSwipeRefreshLayout view, Integer color) {
+    view.setProgressBackgroundColorSchemeColor(color == null ? Color.TRANSPARENT : color);
+  }
+
+  // TODO(T46143833): Remove this method once the 'size' prop has been migrated to String in JS.
+  @Override
+  public void setSize(ReactSwipeRefreshLayout view, int value) {
+    view.setSize(value);
   }
 
   // This prop temporarily takes both 0 and 1 as well as 'default' and 'large'.
@@ -90,11 +109,13 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
     }
   }
 
+  @Override
   @ReactProp(name = "refreshing")
   public void setRefreshing(ReactSwipeRefreshLayout view, boolean refreshing) {
     view.setRefreshing(refreshing);
   }
 
+  @Override
   @ReactProp(name = "progressViewOffset", defaultFloat = 0)
   public void setProgressViewOffset(final ReactSwipeRefreshLayout view, final float offset) {
     view.setProgressViewOffset(offset);
@@ -128,5 +149,10 @@ public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefres
     return MapBuilder.<String, Object>builder()
         .put("topRefresh", MapBuilder.of("registrationName", "onRefresh"))
         .build();
+  }
+
+  @Override
+  protected ViewManagerDelegate<ReactSwipeRefreshLayout> getDelegate() {
+    return mDelegate;
   }
 }

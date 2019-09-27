@@ -6,7 +6,6 @@
  */
 package com.facebook.react;
 
-import static com.facebook.react.bridge.ReactMarkerConstants.*;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_END;
@@ -24,7 +23,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
 import com.facebook.react.modules.core.HeadlessJsTaskSupportModule;
-import com.facebook.react.modules.core.Timing;
+import com.facebook.react.modules.core.TimingModule;
 import com.facebook.react.modules.debug.DevSettingsModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
@@ -51,7 +50,7 @@ import java.util.Map;
       ExceptionsManagerModule.class,
       HeadlessJsTaskSupportModule.class,
       SourceCodeModule.class,
-      Timing.class,
+      TimingModule.class,
       UIManagerModule.class,
     })
 /* package */ class CoreModulesPackage extends TurboReactPackage implements ReactPackageLogger {
@@ -96,7 +95,7 @@ import java.util.Map;
             ExceptionsManagerModule.class,
             HeadlessJsTaskSupportModule.class,
             SourceCodeModule.class,
-            Timing.class,
+            TimingModule.class,
             UIManagerModule.class
           };
 
@@ -139,15 +138,15 @@ import java.util.Map;
       case DeviceEventManagerModule.NAME:
         return new DeviceEventManagerModule(reactContext, mHardwareBackBtnHandler);
       case DevSettingsModule.NAME:
-        return new DevSettingsModule(mReactInstanceManager.getDevSupportManager());
+        return new DevSettingsModule(reactContext, mReactInstanceManager.getDevSupportManager());
       case ExceptionsManagerModule.NAME:
         return new ExceptionsManagerModule(mReactInstanceManager.getDevSupportManager());
       case HeadlessJsTaskSupportModule.NAME:
         return new HeadlessJsTaskSupportModule(reactContext);
       case SourceCodeModule.NAME:
         return new SourceCodeModule(reactContext);
-      case Timing.NAME:
-        return new Timing(reactContext, mReactInstanceManager.getDevSupportManager());
+      case TimingModule.NAME:
+        return new TimingModule(reactContext, mReactInstanceManager.getDevSupportManager());
       case UIManagerModule.NAME:
         return createUIManager(reactContext);
       case DeviceInfoModule.NAME:

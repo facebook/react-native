@@ -11,4 +11,4 @@
 # shellcheck disable=SC2038
 
 find "$PWD/../Libraries" -name "*NativeComponent.js" -print | xargs yarn flow-node packages/react-native-codegen/src/cli/combine/combine-js-to-schema-cli.js schema-rncore.json
-yarn flow-node packages/react-native-codegen/buck_tests/generate-tests.js schema-rncore.json rncore ReactCommon/fabric/components/rncore
+yarn flow-node packages/react-native-codegen/buck_tests/generate-tests.js schema-rncore.json rncore ReactCommon/fabric/components/rncore rncore

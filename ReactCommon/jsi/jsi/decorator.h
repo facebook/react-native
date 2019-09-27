@@ -325,7 +325,8 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     return plain().instrumentation().getRecordedGCStats();
   }
 
-  Value getHeapInfo(bool includeExpensive) override {
+  std::unordered_map<std::string, int64_t> getHeapInfo(
+      bool includeExpensive) override {
     return plain().instrumentation().getHeapInfo(includeExpensive);
   }
 

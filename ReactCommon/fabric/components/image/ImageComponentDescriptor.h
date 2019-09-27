@@ -22,7 +22,7 @@ class ImageComponentDescriptor final
     : public ConcreteComponentDescriptor<ImageShadowNode> {
  public:
   ImageComponentDescriptor(
-      EventDispatcher::Shared eventDispatcher,
+      EventDispatcher::Weak eventDispatcher,
       ContextContainer::Shared const &contextContainer)
       : ConcreteComponentDescriptor(eventDispatcher),
         imageManager_(std::make_shared<ImageManager>(contextContainer)){};

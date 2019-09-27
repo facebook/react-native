@@ -93,6 +93,12 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
 static BOOL turboModuleEnabled = NO;
 BOOL RCTTurboModuleEnabled(void)
 {
+#if RCT_DEBUG
+  // TODO(T53341772): Allow TurboModule for test environment. Right now this breaks RNTester tests if enabled.
+  if (RCTRunningInTestEnvironment()) {
+    return NO;
+  }
+#endif
   return turboModuleEnabled;
 }
 
@@ -393,7 +399,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self enqueueJSCall:module method:method args:args completion:NULL];
 }
 
-- (void)enqueueJSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion
+- (void)enqueueJSCall:(NSString *)module
+               method:(NSString *)method
+                 args:(NSArray *)args
+           completion:(dispatch_block_t)completion
 {
   [self.batchedBridge enqueueJSCall:module method:method args:args completion:completion];
 }

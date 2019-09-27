@@ -71,14 +71,6 @@ class ConcreteShadowNode : public ShadowNode {
     return {};
   }
 
-  ComponentName getComponentName() const override {
-    return ComponentName(concreteComponentName);
-  }
-
-  ComponentHandle getComponentHandle() const override {
-    return reinterpret_cast<ComponentHandle>(concreteComponentName);
-  }
-
   const SharedConcreteProps getProps() const {
     assert(props_ && "Props must not be `nullptr`.");
     assert(

@@ -71,8 +71,8 @@ Instrumentation& Runtime::instrumentation() {
       return "";
     }
 
-    Value getHeapInfo(bool) override {
-      return Value::undefined();
+    std::unordered_map<std::string, int64_t> getHeapInfo(bool) override {
+      return std::unordered_map<std::string, int64_t>{};
     }
 
     void collectGarbage() override {}

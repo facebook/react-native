@@ -39,5 +39,18 @@ bool ShadowTreeRegistry::visit(
   return true;
 }
 
+void ShadowTreeRegistry::enumerate(
+    std::function<void(const ShadowTree &shadowTree, bool &stop)> callback)
+    const {
+  std::shared_lock<better::shared_mutex> lock(mutex_);
+  bool stop = false;
+  for (auto const &pair : registry_) {
+    callback(*pair.second, stop);
+    if (stop) {
+      break;
+    }
+  }
+}
+
 } // namespace react
 } // namespace facebook

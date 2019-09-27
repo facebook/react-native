@@ -20,14 +20,14 @@
 @implementation RCTImageComponentView {
   UIImageView *_imageView;
   SharedImageLocalData _imageLocalData;
-  const ImageResponseObserverCoordinator *_coordinator;
+  ImageResponseObserverCoordinator const *_coordinator;
   std::unique_ptr<RCTImageResponseObserverProxy> _imageResponseObserverProxy;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ImageProps>();
+    static auto const defaultProps = std::make_shared<ImageProps const>();
     _props = defaultProps;
 
     _imageView = [[UIImageView alloc] initWithFrame:self.bounds];
@@ -52,8 +52,8 @@
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &oldImageProps = *std::static_pointer_cast<const ImageProps>(_props);
-  const auto &newImageProps = *std::static_pointer_cast<const ImageProps>(props);
+  auto const &oldImageProps = *std::static_pointer_cast<ImageProps const>(_props);
+  auto const &newImageProps = *std::static_pointer_cast<ImageProps const>(props);
 
   // `resizeMode`
   if (oldImageProps.resizeMode != newImageProps.resizeMode) {
@@ -76,7 +76,7 @@
 
 - (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
 {
-  auto imageLocalData = std::static_pointer_cast<const ImageLocalData>(localData);
+  auto imageLocalData = std::static_pointer_cast<ImageLocalData const>(localData);
 
   // This call (setting `coordinator`) must be unconditional (at the same block as setting `LocalData`)
   // because the setter stores a raw pointer to object that `LocalData` owns.
@@ -96,18 +96,18 @@
   if (!havePreviousData || _imageLocalData->getImageSource() != previousData->getImageSource()) {
     // Loading actually starts a little before this, but this is the first time we know
     // the image is loading and can fire an event from this component
-    std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onLoadStart();
+    std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadStart();
   }
 }
 
-- (void)setCoordinator:(const ImageResponseObserverCoordinator *)coordinator
+- (void)setCoordinator:(ImageResponseObserverCoordinator const *)coordinator
 {
   if (_coordinator) {
-    _coordinator->removeObserver(_imageResponseObserverProxy.get());
+    _coordinator->removeObserver(*_imageResponseObserverProxy);
   }
   _coordinator = coordinator;
   if (_coordinator != nullptr) {
-    _coordinator->addObserver(_imageResponseObserverProxy.get());
+    _coordinator->addObserver(*_imageResponseObserverProxy);
   }
 }
 
@@ -127,7 +127,7 @@
 
 #pragma mark - RCTImageResponseDelegate
 
-- (void)didReceiveImage:(UIImage *)image fromObserver:(void *)observer
+- (void)didReceiveImage:(UIImage *)image fromObserver:(void const *)observer
 {
   if (!_eventEmitter) {
     // Notifications are delivered asynchronously and might arrive after the view is already recycled.
@@ -136,9 +136,9 @@
     return;
   }
 
-  std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onLoad();
+  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoad();
 
-  const auto &imageProps = *std::static_pointer_cast<const ImageProps>(_props);
+  const auto &imageProps = *std::static_pointer_cast<ImageProps const>(_props);
 
   if (imageProps.tintColor) {
     image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -159,27 +159,27 @@
   self->_imageView.layer.minificationFilter = kCAFilterTrilinear;
   self->_imageView.layer.magnificationFilter = kCAFilterTrilinear;
 
-  std::static_pointer_cast<const ImageEventEmitter>(self->_eventEmitter)->onLoadEnd();
+  std::static_pointer_cast<ImageEventEmitter const>(self->_eventEmitter)->onLoadEnd();
 }
 
-- (void)didReceiveProgress:(float)progress fromObserver:(void *)observer
+- (void)didReceiveProgress:(float)progress fromObserver:(void const *)observer
 {
   if (!_eventEmitter) {
     return;
   }
 
-  std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onProgress(progress);
+  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onProgress(progress);
 }
 
-- (void)didReceiveFailureFromObserver:(void *)observer
+- (void)didReceiveFailureFromObserver:(void const *)observer
 {
-  if (!_eventEmitter) {
-    return;
-  }
-
   _imageView.image = nil;
 
-  std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onError();
+  if (!_eventEmitter) {
+    return;
+  }
+
+  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onError();
 }
 
 @end

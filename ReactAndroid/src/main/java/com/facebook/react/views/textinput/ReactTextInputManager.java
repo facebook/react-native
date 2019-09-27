@@ -6,6 +6,7 @@
  */
 package com.facebook.react.views.textinput;
 
+import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -20,6 +21,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -29,6 +31,7 @@ import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
@@ -50,7 +53,9 @@ import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.TextInlineImageSpan;
+import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaMeasureMode;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.Map;
@@ -59,7 +64,7 @@ import java.util.Map;
 @ReactModule(name = ReactTextInputManager.REACT_CLASS)
 public class ReactTextInputManager extends BaseViewManager<ReactEditText, LayoutShadowNode> {
   public static final String TAG = ReactTextInputManager.class.getSimpleName();
-  protected static final String REACT_CLASS = "AndroidTextInput";
+  public static final String REACT_CLASS = "AndroidTextInput";
 
   private static final int[] SPACING_TYPES = {
     Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
@@ -90,6 +95,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final String KEYBOARD_TYPE_VISIBLE_PASSWORD = "visible-password";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
   private static final int UNSET = -1;
+
+  @Nullable private static EditText mDummyEditText = null;
 
   @Override
   public String getName() {
@@ -223,14 +230,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = ViewProps.FONT_FAMILY)
   public void setFontFamily(ReactEditText view, String fontFamily) {
-    int style = Typeface.NORMAL;
-    if (view.getTypeface() != null) {
-      style = view.getTypeface().getStyle();
-    }
-    Typeface newTypeface =
-        ReactFontManager.getInstance()
-            .getTypeface(fontFamily, style, view.getContext().getAssets());
-    view.setTypeface(newTypeface);
+    view.setFontFamily(fontFamily);
   }
 
   @ReactProp(name = ViewProps.MAX_FONT_SIZE_MULTIPLIER, defaultFloat = Float.NaN)
@@ -238,50 +238,19 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
   }
 
-  /**
-   * /* This code was taken from the method setFontWeight of the class ReactTextShadowNode /* TODO:
-   * Factor into a common place they can both use
-   */
   @ReactProp(name = ViewProps.FONT_WEIGHT)
-  public void setFontWeight(ReactEditText view, @Nullable String fontWeightString) {
-    int fontWeightNumeric =
-        fontWeightString != null ? parseNumericFontWeight(fontWeightString) : -1;
-    int fontWeight = UNSET;
-    if (fontWeightNumeric >= 500 || "bold".equals(fontWeightString)) {
-      fontWeight = Typeface.BOLD;
-    } else if ("normal".equals(fontWeightString)
-        || (fontWeightNumeric != -1 && fontWeightNumeric < 500)) {
-      fontWeight = Typeface.NORMAL;
-    }
-    Typeface currentTypeface = view.getTypeface();
-    if (currentTypeface == null) {
-      currentTypeface = Typeface.DEFAULT;
-    }
-    if (fontWeight != currentTypeface.getStyle()) {
-      view.setTypeface(currentTypeface, fontWeight);
-    }
+  public void setFontWeight(ReactEditText view, @Nullable String fontWeight) {
+    view.setFontWeight(fontWeight);
   }
 
-  /**
-   * /* This code was taken from the method setFontStyle of the class ReactTextShadowNode /* TODO:
-   * Factor into a common place they can both use
-   */
   @ReactProp(name = ViewProps.FONT_STYLE)
-  public void setFontStyle(ReactEditText view, @Nullable String fontStyleString) {
-    int fontStyle = UNSET;
-    if ("italic".equals(fontStyleString)) {
-      fontStyle = Typeface.ITALIC;
-    } else if ("normal".equals(fontStyleString)) {
-      fontStyle = Typeface.NORMAL;
-    }
+  public void setFontStyle(ReactEditText view, @Nullable String fontStyle) {
+    view.setFontStyle(fontStyle);
+  }
 
-    Typeface currentTypeface = view.getTypeface();
-    if (currentTypeface == null) {
-      currentTypeface = Typeface.DEFAULT;
-    }
-    if (fontStyle != currentTypeface.getStyle()) {
-      view.setTypeface(currentTypeface, fontStyle);
-    }
+  @ReactProp(name = ViewProps.INCLUDE_FONT_PADDING, defaultBoolean = true)
+  public void setIncludeFontPadding(ReactEditText view, boolean includepad) {
+    view.setIncludeFontPadding(includepad);
   }
 
   @ReactProp(name = "importantForAutofill")
@@ -793,6 +762,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @Override
   protected void onAfterUpdateTransaction(ReactEditText view) {
     super.onAfterUpdateTransaction(view);
+    view.maybeUpdateTypeface();
     view.commitStagedInputType();
   }
 
@@ -804,23 +774,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       updateStagedInputTypeFlag(
           view, InputType.TYPE_TEXT_VARIATION_PASSWORD, InputType.TYPE_NUMBER_VARIATION_PASSWORD);
     }
-  }
-
-  /**
-   * This code was taken from the method parseNumericFontWeight of the class ReactTextShadowNode
-   * TODO: Factor into a common place they can both use
-   *
-   * <p>Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900),
-   * otherwise return the weight.
-   */
-  private static int parseNumericFontWeight(String fontWeightString) {
-    // This should be much faster than using regex to verify input and Integer.parseInt
-    return fontWeightString.length() == 3
-            && fontWeightString.endsWith("00")
-            && fontWeightString.charAt(0) <= '9'
-            && fontWeightString.charAt(0) >= '1'
-        ? 100 * (fontWeightString.charAt(0) - '0')
-        : -1;
   }
 
   private static void updateStagedInputTypeFlag(
@@ -1074,5 +1027,19 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             InputType.TYPE_TEXT_FLAG_CAP_WORDS,
             "sentences",
             InputType.TYPE_TEXT_FLAG_CAP_SENTENCES));
+  }
+  /** Measure function for Fabric. */
+  @Override
+  public long measure(
+      Context context,
+      ReadableMap localData,
+      ReadableMap props,
+      ReadableMap state,
+      float width,
+      YogaMeasureMode widthMode,
+      float height,
+      YogaMeasureMode heightMode) {
+    return TextLayoutManager.measureText(
+        context, localData, props, width, widthMode, height, heightMode);
   }
 }

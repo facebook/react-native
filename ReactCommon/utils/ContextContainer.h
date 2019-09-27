@@ -47,6 +47,20 @@ class ContextContainer final {
   }
 
   /*
+   * Removes an instance stored for a given `key`.
+   * Does nothing if the instance was not found.
+   */
+  void erase(std::string const &key) const {
+    std::unique_lock<better::shared_mutex> lock(mutex_);
+
+    instances_.erase(key);
+
+#ifndef NDEBUG
+    typeNames_.erase(key);
+#endif
+  }
+
+  /*
    * Returns a previously registered instance of the particular type `T`
    * for `key`.
    * Throws an exception if the instance could not be found.

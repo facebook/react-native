@@ -14,7 +14,6 @@
 #include <react/core/LayoutConstraints.h>
 #include <react/mounting/ShadowTree.h>
 #include <react/mounting/ShadowTreeDelegate.h>
-#include <react/mounting/ShadowTreeRegistry.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/SchedulerDelegate.h>
@@ -108,8 +107,9 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
   std::unique_ptr<const RootComponentDescriptor> rootComponentDescriptor_;
   ShadowTreeRegistry shadowTreeRegistry_;
   RuntimeExecutor runtimeExecutor_;
-  std::shared_ptr<UIManagerBinding> uiManagerBinding_;
+  std::shared_ptr<UIManager> uiManager_;
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
+  EventDispatcher::Shared eventDispatcher_;
 };
 
 } // namespace react

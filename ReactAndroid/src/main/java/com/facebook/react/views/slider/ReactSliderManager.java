@@ -13,6 +13,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
@@ -20,8 +21,11 @@ import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.ViewManagerDelegate;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.viewmanagers.SliderManagerDelegate;
+import com.facebook.react.viewmanagers.SliderManagerInterface;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
@@ -33,7 +37,8 @@ import java.util.Map;
  *
  * <p>Note that the slider is _not_ a controlled component.
  */
-public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
+public class ReactSliderManager extends SimpleViewManager<ReactSlider>
+    implements SliderManagerInterface<ReactSlider> {
 
   private static final int STYLE = android.R.attr.seekBarStyle;
 
@@ -104,6 +109,12 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
         }
       };
 
+  private final ViewManagerDelegate<ReactSlider> mDelegate;
+
+  public ReactSliderManager() {
+    mDelegate = new SliderManagerDelegate<>(this);
+  }
+
   @Override
   public String getName() {
     return REACT_CLASS;
@@ -124,11 +135,13 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     return new ReactSlider(context, null, STYLE);
   }
 
+  @Override
   @ReactProp(name = ViewProps.ENABLED, defaultBoolean = true)
   public void setEnabled(ReactSlider view, boolean enabled) {
     view.setEnabled(enabled);
   }
 
+  @Override
   @ReactProp(name = "value", defaultDouble = 0d)
   public void setValue(ReactSlider view, double value) {
     view.setOnSeekBarChangeListener(null);
@@ -136,21 +149,25 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     view.setOnSeekBarChangeListener(ON_CHANGE_LISTENER);
   }
 
+  @Override
   @ReactProp(name = "minimumValue", defaultDouble = 0d)
   public void setMinimumValue(ReactSlider view, double value) {
     view.setMinValue(value);
   }
 
+  @Override
   @ReactProp(name = "maximumValue", defaultDouble = 1d)
   public void setMaximumValue(ReactSlider view, double value) {
     view.setMaxValue(value);
   }
 
+  @Override
   @ReactProp(name = "step", defaultDouble = 0d)
   public void setStep(ReactSlider view, double value) {
     view.setStep(value);
   }
 
+  @Override
   @ReactProp(name = "thumbTintColor", customType = "Color")
   public void setThumbTintColor(ReactSlider view, Integer color) {
     if (color == null) {
@@ -160,6 +177,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     }
   }
 
+  @Override
   @ReactProp(name = "minimumTrackTintColor", customType = "Color")
   public void setMinimumTrackTintColor(ReactSlider view, Integer color) {
     LayerDrawable drawable = (LayerDrawable) view.getProgressDrawable().getCurrent();
@@ -171,6 +189,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     }
   }
 
+  @Override
   @ReactProp(name = "maximumTrackTintColor", customType = "Color")
   public void setMaximumTrackTintColor(ReactSlider view, Integer color) {
     LayerDrawable drawable = (LayerDrawable) view.getProgressDrawable().getCurrent();
@@ -181,6 +200,26 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
       background.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
   }
+
+  @Override
+  public void setDisabled(ReactSlider view, boolean value) {}
+
+  @Override
+  public void setMaximumTrackImage(ReactSlider view, @Nullable ReadableMap value) {}
+
+  @Override
+  public void setMinimumTrackImage(ReactSlider view, @Nullable ReadableMap value) {}
+
+  @Override
+  public void setTestID(ReactSlider view, @Nullable String value) {
+    super.setTestId(view, value);
+  }
+
+  @Override
+  public void setThumbImage(ReactSlider view, @Nullable ReadableMap value) {}
+
+  @Override
+  public void setTrackImage(ReactSlider view, @Nullable ReadableMap value) {}
 
   @Override
   protected void addEventEmitters(final ThemedReactContext reactContext, final ReactSlider view) {
@@ -211,5 +250,10 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
     reactSlider.measure(spec, spec);
 
     return YogaMeasureOutput.make(reactSlider.getMeasuredWidth(), reactSlider.getMeasuredHeight());
+  }
+
+  @Override
+  protected ViewManagerDelegate<ReactSlider> getDelegate() {
+    return mDelegate;
   }
 }

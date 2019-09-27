@@ -26,16 +26,6 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
 
   static void registerNatives();
 
-  jni::global_ref<jobject> javaUIManager_;
-  std::mutex javaUIManagerMutex_;
-
-  std::shared_ptr<Scheduler> scheduler_;
-  std::mutex schedulerMutex_;
-
-  std::recursive_mutex commitMutex_;
-
-  float pointScaleFactor_ = 1;
-
  private:
   jni::global_ref<jobject> getJavaUIManager();
   std::shared_ptr<Scheduler> getScheduler();
@@ -98,6 +88,20 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
   void schedulerDidClearJSResponder();
 
   void uninstallFabricUIManager();
+
+  // Private member variables
+  jni::global_ref<jobject> javaUIManager_;
+  std::mutex javaUIManagerMutex_;
+
+  std::shared_ptr<Scheduler> scheduler_;
+  std::mutex schedulerMutex_;
+
+  std::recursive_mutex commitMutex_;
+
+  float pointScaleFactor_ = 1;
+
+  std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
+  bool shouldCollateRemovesAndDeletes_{false};
 };
 
 } // namespace react

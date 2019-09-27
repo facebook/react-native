@@ -21,7 +21,7 @@ Class RNTesterTurboModuleClassProvider(const char *name) {
   return RCTCoreModulesClassProvider(name);
 }
 
-std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name, std::shared_ptr<JSCallInvoker> jsInvoker) {
+std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name, std::shared_ptr<CallInvoker> jsInvoker) {
   if (name == "SampleTurboCxxModule") {
     return std::make_shared<SampleTurboCxxModule>(jsInvoker);
   }
@@ -31,7 +31,7 @@ std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name
 
 std::shared_ptr<TurboModule> RNTesterTurboModuleProvider(const std::string &name,
                                                          id<RCTTurboModule> instance,
-                                                         std::shared_ptr<JSCallInvoker> jsInvoker) {
+                                                         std::shared_ptr<CallInvoker> jsInvoker) {
   if (name == "SampleTurboModule") {
     return std::make_shared<NativeSampleTurboModuleSpecJSI>(instance, jsInvoker);
   }
