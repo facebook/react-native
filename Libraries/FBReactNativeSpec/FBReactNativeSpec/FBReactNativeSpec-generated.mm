@@ -1148,9 +1148,16 @@ namespace facebook {
   namespace react {
 
     
+    static facebook::jsi::Value __hostFunction_NativeImageLoaderSpecJSI_getSize(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "getSize", @selector(getSize:resolve:reject:), args, count);
+    }
+
 
     NativeImageLoaderSpecJSI::NativeImageLoaderSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
       : ObjCTurboModule("ImageLoader", instance, jsInvoker) {
+        
+        methodMap_["getSize"] = MethodMetadata {1, __hostFunction_NativeImageLoaderSpecJSI_getSize};
+        
         
 
     }

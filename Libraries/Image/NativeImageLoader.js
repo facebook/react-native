@@ -15,6 +15,8 @@ import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +getConstants: () => {||};
+  // Return [width, height] of image uri
+  +getSize: (uri: string) => Promise<$ReadOnlyArray<number>>;
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>('ImageLoader'): Spec);

@@ -949,6 +949,22 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
   return std::make_shared<facebook::react::NativeImageLoaderSpecJSI>(self, jsInvoker);
 }
 
+RCT_EXPORT_METHOD(getSize:(NSString *)uri resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+{
+  NSURLRequest *request = [RCTConvert NSURLRequest:uri];
+  [self getImageSizeForURLRequest:request
+   block:^(NSError *error, CGSize size) {
+     if (error) {
+       reject(
+        @"Error",
+        [NSString stringWithFormat: @"Failed to getSize of %@", uri],
+        error);
+     } else {
+       resolve(@[@(size.width), @(size.height)]);
+     }
+   }];
+}
+
 @end
 
 /**

@@ -1128,6 +1128,11 @@ namespace facebook {
   } // namespace react
 } // namespace facebook
 @protocol NativeImageLoaderSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)getSize:(NSString *)uri
+        resolve:(RCTPromiseResolveBlock)resolve
+         reject:(RCTPromiseRejectBlock)reject;
+
 @end
 namespace facebook {
   namespace react {
