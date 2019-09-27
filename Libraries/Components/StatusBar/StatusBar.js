@@ -361,7 +361,7 @@ class StatusBar extends React.Component<Props> {
    *
    * @param props Object containing the StatusBar props to use in the stack entry.
    */
-  static pushStackEntry(props: any, surface?: mixed) {
+  static pushStackEntry(props: any, surface?: mixed): any {
     const entry = createStackEntry(props);
     StatusBar._propsStack.push(entry);
     StatusBar._updatePropsStack(surface);
@@ -387,7 +387,7 @@ class StatusBar extends React.Component<Props> {
    * @param entry Entry returned from `pushStackEntry` to replace.
    * @param props Object containing the StatusBar props to use in the replacement stack entry.
    */
-  static replaceStackEntry(entry: any, props: any, surface?: mixed) {
+  static replaceStackEntry(entry: any, props: any, surface?: mixed): any {
     const newEntry = createStackEntry(props);
     const index = StatusBar._propsStack.indexOf(entry);
     if (index !== -1) {
@@ -405,6 +405,7 @@ class StatusBar extends React.Component<Props> {
     showHideTransition: 'fade',
   };
 
+  // $FlowFixMe (signature-verification-failure)
   static contextType = RootTagContext;
 
   _stackEntry = null;
