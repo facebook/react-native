@@ -7,6 +7,7 @@ package com.facebook.react.uimanager;
 
 import android.graphics.Color;
 import android.text.TextUtils;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.View;
 import android.view.ViewParent;
 import androidx.annotation.NonNull;
@@ -170,6 +171,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
               && accessibilityState.getType(STATE_CHECKED) == ReadableType.String)) {
         updateViewContentDescription(view);
         break;
+      } else if (view.isAccessibilityFocused()) {
+        // Send a click event to make sure Talkback get notified for the state
+        // changes that don't happen upon users' click. For the state changes
+        // that happens immediatly, Talkback will skip the duplicated click event.
+        view.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
       }
     }
   }

@@ -206,9 +206,13 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
   }
   if (newState.count > 0) {
     view.reactAccessibilityElement.accessibilityState = newState;
+    // Post a layout change notification to make sure VoiceOver get notified for the state
+    // changes that don't happen upon users' click.
+    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, nil);
   } else {
     view.reactAccessibilityElement.accessibilityState = nil;
   }
+
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(nativeID, NSString *, RCTView)
