@@ -1,4 +1,4 @@
-load("@fbsource//tools/build_defs:default_platform_defs.bzl", "CXX")
+load("@fbsource//tools/build_defs:platform_defs.bzl", "CXX")
 load(
     "@fbsource//tools/build_defs/apple:flag_defs.bzl",
     "get_debug_preprocessor_flags",
