@@ -32,6 +32,7 @@ import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent, ScrollEvent} from '../../Types/CoreEventTypes';
 import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
 let AndroidTextInput;
 let RCTMultilineTextInputView;
@@ -904,6 +905,10 @@ const TextInput = createReactClass({
     this._inputRef = ref;
   },
 
+  getNativeRef: function(): ?React.ElementRef<HostComponent<mixed>> {
+    return this._inputRef;
+  },
+
   _renderIOSLegacy: function() {
     let textContainer;
 
@@ -991,7 +996,6 @@ const TextInput = createReactClass({
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
-        accessibilityStates={props.accessibilityStates}
         accessibilityState={props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={props.testID}>
@@ -1044,7 +1048,6 @@ const TextInput = createReactClass({
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
-        accessibilityStates={props.accessibilityStates}
         accessibilityState={props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={props.testID}>
@@ -1100,7 +1103,6 @@ const TextInput = createReactClass({
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityRole={this.props.accessibilityRole}
-        accessibilityStates={this.props.accessibilityStates}
         accessibilityState={this.props.accessibilityState}
         nativeID={this.props.nativeID}
         testID={this.props.testID}>
@@ -1226,6 +1228,8 @@ const TextInput = createReactClass({
 
 class InternalTextInputType extends ReactNative.NativeComponent<Props> {
   clear() {}
+
+  getNativeRef(): ?React.ElementRef<HostComponent<mixed>> {}
 
   // $FlowFixMe
   isFocused(): boolean {}

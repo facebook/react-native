@@ -251,10 +251,15 @@ static void RNPerformMountInstructions(ShadowViewMutationList const &mutations, 
   }
 
   auto surfaceId = transaction->getSurfaceId();
+  auto &mutations = transaction->getMutations();
+
+  if (mutations.size() == 0) {
+    return;
+  }
 
   RCTAssertMainQueue();
   [self.delegate mountingManager:self willMountComponentsWithRootTag:surfaceId];
-  RNPerformMountInstructions(transaction->getMutations(), self.componentViewRegistry);
+  RNPerformMountInstructions(mutations, self.componentViewRegistry);
   [self.delegate mountingManager:self didMountComponentsWithRootTag:surfaceId];
 }
 

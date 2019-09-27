@@ -46,6 +46,14 @@
 #endif
 #endif
 
+/**
+ * RCT_DEV_MENU can be used to toggle the dev menu separately from RCT_DEV.
+ * By default though, it will inherit from RCT_DEV.
+ */
+#ifndef RCT_DEV_MENU
+#define RCT_DEV_MENU RCT_DEV
+#endif
+
 #ifndef RCT_ENABLE_INSPECTOR
 #if RCT_DEV && __has_include(<React/RCTInspectorDevServerHelper.h>)
 #define RCT_ENABLE_INSPECTOR 1

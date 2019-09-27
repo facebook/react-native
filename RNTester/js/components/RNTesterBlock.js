@@ -13,6 +13,7 @@
 const React = require('react');
 
 const {StyleSheet, Text, View} = require('react-native');
+import {RNTesterThemeContext} from './RNTesterTheme';
 
 type Props = $ReadOnly<{|
   children?: React.Node,
@@ -29,17 +30,47 @@ class RNTesterBlock extends React.Component<Props, State> {
 
   render(): React.Node {
     const description = this.props.description ? (
-      <Text style={styles.descriptionText}>{this.props.description}</Text>
+      <RNTesterThemeContext.Consumer>
+        {theme => {
+          return (
+            <Text style={[styles.descriptionText, {color: theme.LabelColor}]}>
+              {this.props.description}
+            </Text>
+          );
+        }}
+      </RNTesterThemeContext.Consumer>
     ) : null;
 
     return (
-      <View style={styles.container}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>{this.props.title}</Text>
-          {description}
-        </View>
-        <View style={styles.children}>{this.props.children}</View>
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => {
+          return (
+            <View
+              style={[
+                styles.container,
+                {
+                  borderColor: theme.SeparatorColor,
+                  backgroundColor: theme.SystemBackgroundColor,
+                },
+              ]}>
+              <View
+                style={[
+                  styles.titleContainer,
+                  {
+                    borderBottomColor: theme.SeparatorColor,
+                    backgroundColor: theme.QuaternarySystemFillColor,
+                  },
+                ]}>
+                <Text style={[styles.titleText, {color: theme.LabelColor}]}>
+                  {this.props.title}
+                </Text>
+                {description}
+              </View>
+              <View style={styles.children}>{this.props.children}</View>
+            </View>
+          );
+        }}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }
@@ -48,8 +79,6 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 3,
     borderWidth: 0.5,
-    borderColor: '#d6d7da',
-    backgroundColor: '#ffffff',
     margin: 10,
     marginVertical: 5,
     overflow: 'hidden',
@@ -58,8 +87,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderTopLeftRadius: 3,
     borderTopRightRadius: 2.5,
-    borderBottomColor: '#d6d7da',
-    backgroundColor: '#f6f7f8',
     paddingHorizontal: 10,
     paddingVertical: 5,
   },

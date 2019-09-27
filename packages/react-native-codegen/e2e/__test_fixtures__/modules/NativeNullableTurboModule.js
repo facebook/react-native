@@ -22,4 +22,6 @@ export interface Spec extends TurboModule {
   +getValueWithPromise: () => ?Promise<string>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+export default (TurboModuleRegistry.getEnforcing<Spec>(
+  'SampleTurboModule',
+): Spec);

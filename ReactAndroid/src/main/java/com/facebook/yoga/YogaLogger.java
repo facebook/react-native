@@ -15,5 +15,5 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public interface YogaLogger {
   @DoNotStrip
-  void log(YogaNode node, YogaLogLevel level, String message);
+  void log(YogaLogLevel level, String message);
 }

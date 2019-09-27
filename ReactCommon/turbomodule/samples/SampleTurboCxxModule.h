@@ -21,7 +21,7 @@ namespace react {
  */
 class SampleTurboCxxModule : public NativeSampleTurboCxxModuleSpecJSI {
  public:
-  SampleTurboCxxModule(std::shared_ptr<JSCallInvoker> jsInvoker);
+  SampleTurboCxxModule(std::shared_ptr<CallInvoker> jsInvoker);
 
   void voidFunc(jsi::Runtime &rt) override;
   bool getBool(jsi::Runtime &rt, bool arg) override;

@@ -58,6 +58,11 @@ class ShadowTree final {
    */
   void commit(ShadowTreeCommitTransaction transaction) const;
 
+  /*
+   * Commit an empty tree (a new `RootShadowNode` with no children).
+   */
+  void commitEmptyTree() const;
+
 #pragma mark - Delegate
 
   /*

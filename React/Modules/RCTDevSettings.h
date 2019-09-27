@@ -7,6 +7,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTDefines.h>
+#import <React/RCTEventEmitter.h>
 
 @protocol RCTPackagerClientMethod;
 
@@ -29,7 +30,7 @@
 
 @end
 
-@interface RCTDevSettings : NSObject
+@interface RCTDevSettings : RCTEventEmitter
 
 - (instancetype)initWithDataSource:(id<RCTDevSettingsDataSource>)dataSource;
 
@@ -56,12 +57,6 @@
 @property (nonatomic, assign, setter=setProfilingEnabled:) BOOL isProfilingEnabled;
 
 /**
- * Whether automatic polling for JS code changes is enabled. Only applicable when
- * running the app from a server.
- */
-@property (nonatomic, assign, setter=setLiveReloadEnabled:) BOOL isLiveReloadEnabled;
-
-/**
  * Whether hot loading is enabled.
  */
 @property (nonatomic, assign, setter=setHotLoadingEnabled:) BOOL isHotLoadingEnabled;
@@ -86,8 +81,9 @@
  */
 @property (nonatomic, assign) BOOL isPerfMonitorShown;
 
-#if RCT_DEV
-- (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name __deprecated_msg("Use RCTPackagerConnection directly instead");
+#if RCT_DEV_MENU
+- (void)addHandler:(id<RCTPackagerClientMethod>)handler
+    forPackagerMethod:(NSString *)name __deprecated_msg("Use RCTPackagerConnection directly instead");
 #endif
 
 @end

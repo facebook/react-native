@@ -28,6 +28,13 @@ class State {
   explicit State(StateCoordinator::Shared const &stateCoordinator);
   virtual ~State() = default;
 
+  /*
+   * Returns a momentary value of the most recently committed state
+   * associated with a family of nodes which this state belongs to.
+   * Sequential calls might return different values.
+   */
+  State::Shared getMostRecentState() const;
+
 #ifdef ANDROID
   virtual const folly::dynamic getDynamic() const;
   virtual void updateState(folly::dynamic data) const;
@@ -46,9 +53,12 @@ class State {
   void commit(const ShadowNode &shadowNode) const;
 
   /*
-   * Must be used by `ShadowNode` *only*.
+   * Indicates that the state was committed once and then was replaced by a
+   * newer one.
+   * To be used by `StateCoordinator` only.
+   * Protected by mutex inside `StateCoordinator`.
    */
-  State::Shared getCommitedState() const;
+  mutable bool isObsolete_{false};
 };
 
 } // namespace react

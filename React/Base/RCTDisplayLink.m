@@ -112,12 +112,15 @@
   for (RCTModuleData *moduleData in _frameUpdateObservers) {
     id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
     if (!observer.paused) {
-      RCTProfileBeginFlowEvent();
-
-      [self dispatchBlock:^{
-        RCTProfileEndFlowEvent();
+      if (moduleData.methodQueue) {
+        RCTProfileBeginFlowEvent();
+        [self dispatchBlock:^{
+          RCTProfileEndFlowEvent();
+          [observer didUpdateFrame:frameUpdate];
+        } queue:moduleData.methodQueue];
+      } else {
         [observer didUpdateFrame:frameUpdate];
-      } queue:moduleData.methodQueue];
+      }
     }
   }
 

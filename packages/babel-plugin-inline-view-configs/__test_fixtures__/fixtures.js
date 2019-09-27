@@ -27,13 +27,9 @@ import type {
   DirectEventHandler,
   WithDefault,
 } from 'CodegenFlowtypes';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 import type {ViewProps} from 'ViewPropTypes';
-
-interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
-  +scrollTo: (viewRef: React.Ref<'RCTView'>, y: Int32, animated: boolean) => void;
-}
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -45,6 +41,13 @@ type ModuleProps = $ReadOnly<{|
   onDirectEventDefinedInlineNull: DirectEventHandler<null>,
   onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
 |}>;
+
+type NativeType = NativeComponent<ModuleProps>;
+
+interface NativeCommands {
+  +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void;
+  +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void;
+}
 
 export const Commands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['hotspotUpdate', 'scrollTo'],
@@ -61,7 +64,7 @@ const FULL_NATIVE_COMPONENT_WITH_TYPE_EXPORT = `
 
 const codegenNativeCommands = require('codegenNativeCommands');
 const codegenNativeComponent = require('codegenNativeComponent');
-import type {NativeComponent} from 'ReactNative';
+import type {NativeComponent} from 'codegenNativeComponent';
 
 import type {
   Int32,
@@ -71,11 +74,6 @@ import type {
 } from 'CodegenFlowtypes';
 
 import type {ViewProps} from 'ViewPropTypes';
-
-interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
-  +scrollTo: (viewRef: React.Ref<'RCTView'>, y: Int32, animated: boolean) => void;
-}
 
 type ModuleProps = $ReadOnly<{|
   ...ViewProps,
@@ -88,16 +86,21 @@ type ModuleProps = $ReadOnly<{|
   onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
 |}>;
 
+type NativeType = NativeComponent<ModuleProps>;
+
+interface NativeCommands {
+  +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void;
+  +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void;
+}
+
 export const Commands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['hotspotUpdate', 'scrollTo'],
 });
 
-type NativeComponentType = Class<NativeComponent<NativeProps>>;
-
 export default (codegenNativeComponent<ModuleProps>('Module', {
   interfaceOnly: true,
   paperComponentName: 'RCTModule',
-}): NativeComponentType);
+}): NativeType);
 `;
 
 module.exports = {

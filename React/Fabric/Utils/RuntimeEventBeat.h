@@ -20,7 +20,9 @@ namespace react {
  */
 class RuntimeEventBeat : public EventBeat {
  public:
-  RuntimeEventBeat(RuntimeExecutor runtimeExecutor);
+  RuntimeEventBeat(
+      EventBeat::SharedOwnerBox const &ownerBox,
+      RuntimeExecutor runtimeExecutor);
   ~RuntimeEventBeat();
 
   void induce() const override;

@@ -35,7 +35,7 @@ static Class getFallbackClassFromName(const char *name)
 
 @implementation RCTTurboModuleManager {
   jsi::Runtime *_runtime;
-  std::shared_ptr<facebook::react::JSCallInvoker> _jsInvoker;
+  std::shared_ptr<facebook::react::CallInvoker> _jsInvoker;
   std::shared_ptr<react::TurboModuleBinding> _binding;
   __weak id<RCTTurboModuleManagerDelegate> _delegate;
   __weak RCTBridge *_bridge;

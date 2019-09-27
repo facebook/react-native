@@ -19,6 +19,12 @@
 namespace facebook {
 namespace react {
 
+struct JNIArgs {
+  JNIArgs(size_t count) : args_(count) {}
+  std::vector<jvalue> args_;
+  std::vector<jobject> globalRefs_;
+};
+
 struct JTurboModule : jni::JavaClass<JTurboModule> {
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/turbomodule/core/interfaces/TurboModule;";
@@ -29,14 +35,15 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
   JavaTurboModule(
       const std::string &name,
       jni::alias_ref<JTurboModule> instance,
-      std::shared_ptr<JSCallInvoker> jsInvoker);
+      std::shared_ptr<CallInvoker> jsInvoker,
+      std::shared_ptr<CallInvoker> nativeInvoker);
   jsi::Value invokeJavaMethod(
       jsi::Runtime &runtime,
       TurboModuleMethodValueKind valueKind,
       const std::string &methodName,
       const std::string &methodSignature,
       const jsi::Value *args,
-      size_t count);
+      size_t argCount);
 
   /**
    * This dtor must be called from the JS Thread, since it accesses
@@ -48,6 +55,7 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
  private:
   jni::global_ref<JTurboModule> instance_;
   std::unordered_set<std::shared_ptr<CallbackWrapper>> callbackWrappers_;
+  std::shared_ptr<CallInvoker> nativeInvoker_;
 
   /**
    * This method must be called from the JS Thread, since it accesses
@@ -56,15 +64,15 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
   jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
       jsi::Function &function,
       jsi::Runtime &rt,
-      std::shared_ptr<JSCallInvoker> jsInvoker);
-  std::vector<jvalue> convertJSIArgsToJNIArgs(
+      std::shared_ptr<CallInvoker> jsInvoker);
+  JNIArgs convertJSIArgsToJNIArgs(
       JNIEnv *env,
       jsi::Runtime &rt,
       std::string methodName,
       std::vector<std::string> methodArgTypes,
       const jsi::Value *args,
       size_t count,
-      std::shared_ptr<JSCallInvoker> jsInvoker,
+      std::shared_ptr<CallInvoker> jsInvoker,
       TurboModuleMethodValueKind valueKind);
 };
 

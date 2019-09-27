@@ -64,9 +64,6 @@ public class DisabledDevSupportManager implements DevSupportManager {
   public void setRemoteJSDebugEnabled(boolean isRemoteJSDebugEnabled) {}
 
   @Override
-  public void setReloadOnJSChangeEnabled(boolean isReloadOnJSChangeEnabled) {}
-
-  @Override
   public void setFpsDebugEnabled(boolean isFpsDebugEnabled) {}
 
   @Override

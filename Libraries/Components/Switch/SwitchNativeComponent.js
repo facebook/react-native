@@ -15,7 +15,7 @@ import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-import {type NativeComponentType} from '../../Utilities/codegenNativeComponent';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
 type SwitchChangeEvent = $ReadOnly<{|
   value: boolean,
@@ -42,4 +42,4 @@ type NativeProps = $ReadOnly<{|
 
 export default (codegenNativeComponent<NativeProps>('Switch', {
   paperComponentName: 'RCTSwitch',
-}): NativeComponentType<NativeProps>);
+}): HostComponent<NativeProps>);

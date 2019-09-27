@@ -60,6 +60,15 @@ class MountingCoordinator final {
    */
   void push(ShadowTreeRevision &&revision) const;
 
+  /*
+   * Revokes the last pushed `ShadowTreeRevision`.
+   * Generating a `MountingTransaction` requires some resources which the
+   * `MountingCoordinator` does not own (e.g. `ComponentDescriptor`s). Revoking
+   * committed revisions allows the owner (a Shadow Tree) to make sure that
+   * those resources will not be accessed (e.g. by the Mouting Layer).
+   */
+  void revoke() const;
+
  private:
   SurfaceId const surfaceId_;
 

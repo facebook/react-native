@@ -11,6 +11,8 @@
 'use strict';
 
 const AnimatedImplementation = require('../../Animated/src/AnimatedImplementation');
+const codegenNativeCommands = require('../../Utilities/codegenNativeCommands')
+  .default;
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const ReactNative = require('../../Renderer/shims/ReactNative');
@@ -64,7 +66,18 @@ if (Platform.OS === 'android') {
 }
 
 export type ScrollResponderType = {
-  ...ScrollView,
+  // We'd like to do ...ScrollView here, however Flow doesn't seem
+  // to see the imperative methods of ScrollView that way. Workaround the
+  // issue by specifying them manually.
+  getScrollableNode: $PropertyType<ScrollView, 'getScrollableNode'>,
+  getInnerViewNode: $PropertyType<ScrollView, 'getInnerViewNode'>,
+  getInnerViewRef: $PropertyType<ScrollView, 'getInnerViewRef'>,
+  getNativeScrollRef: $PropertyType<ScrollView, 'getNativeScrollRef'>,
+
+  setNativeProps: $PropertyType<ScrollView, 'setNativeProps'>,
+  scrollTo: $PropertyType<ScrollView, 'scrollTo'>,
+  flashScrollIndicators: $PropertyType<ScrollView, 'flashScrollIndicators'>,
+
   ...typeof ScrollResponder.Mixin,
 };
 
@@ -335,6 +348,18 @@ type AndroidProps = $ReadOnly<{|
    * @platform android
    */
   persistentScrollbar?: ?boolean,
+  /**
+   * Fades out the edges of the the scroll content.
+   *
+   * If the value is greater than 0, the fading edges will be set accordingly
+   * to the current scroll direction and position,
+   * indicating if there is more content to show.
+   *
+   * The default value is 0.
+   *
+   * @platform android
+   */
+  fadingEdgeLength?: ?number,
 |}>;
 
 type VRProps = $ReadOnly<{|
@@ -565,6 +590,22 @@ export type Props = $ReadOnly<{|
   children?: React.Node,
 |}>;
 
+type ScrollViewNativeComponentType = Class<ReactNative.NativeComponent<Props>>;
+
+interface NativeCommands {
+  +zoomToRect: (
+    viewRef: React.ElementRef<ScrollViewNativeComponentType>,
+    rect: {|
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      animated?: boolean,
+    |},
+    animated?: boolean,
+  ) => void;
+}
+
 type State = {|
   layoutHeight: ?number,
   ...ScrollResponderState,
@@ -627,6 +668,7 @@ const standardVerticalContext: ContextType = Object.freeze({horizontal: false});
  * supports out of the box.
  */
 class ScrollView extends React.Component<Props, State> {
+  static Commands: NativeCommands;
   static Context: React$Context<ContextType> = Context;
   /**
    * Part 1: Removing ScrollResponder.Mixin:
@@ -757,7 +799,15 @@ class ScrollView extends React.Component<Props, State> {
     return ReactNative.findNodeHandle(this._innerViewRef);
   }
 
-  getNativeScrollRef(): ?ScrollView {
+  getInnerViewRef(): ?React.ElementRef<
+    Class<ReactNative.NativeComponent<mixed>>,
+  > {
+    return this._innerViewRef;
+  }
+
+  getNativeScrollRef(): ?React.ElementRef<
+    Class<ReactNative.NativeComponent<mixed>>,
+  > {
     return this._scrollViewRef;
   }
 
@@ -812,16 +862,6 @@ class ScrollView extends React.Component<Props, State> {
     this._scrollResponder.scrollResponderScrollToEnd({
       animated: animated,
     });
-  }
-
-  /**
-   * Deprecated, use `scrollTo` instead.
-   */
-  scrollWithoutAnimationTo(y: number = 0, x: number = 0) {
-    console.warn(
-      '`scrollWithoutAnimationTo` is deprecated. Use `scrollTo` instead',
-    );
-    this.scrollTo({x, y, animated: false});
   }
 
   /**
@@ -930,13 +970,21 @@ class ScrollView extends React.Component<Props, State> {
       this.props.onContentSizeChange(width, height);
   };
 
-  _scrollViewRef: ?ScrollView = null;
-  _setScrollViewRef = (ref: ?ScrollView) => {
+  _scrollViewRef: ?React.ElementRef<
+    Class<ReactNative.NativeComponent<mixed>>,
+  > = null;
+  _setScrollViewRef = (
+    ref: ?React.ElementRef<Class<ReactNative.NativeComponent<mixed>>>,
+  ) => {
     this._scrollViewRef = ref;
   };
 
-  _innerViewRef: ?NativeMethodsMixinType = null;
-  _setInnerViewRef = (ref: ?NativeMethodsMixinType) => {
+  _innerViewRef: ?React.ElementRef<
+    Class<ReactNative.NativeComponent<mixed>>,
+  > = null;
+  _setInnerViewRef = (
+    ref: ?React.ElementRef<Class<ReactNative.NativeComponent<mixed>>>,
+  ) => {
     this._innerViewRef = ref;
   };
 
@@ -1201,6 +1249,10 @@ const styles = StyleSheet.create({
   contentContainerHorizontal: {
     flexDirection: 'row',
   },
+});
+
+ScrollView.Commands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['zoomToRect'],
 });
 
 module.exports = ScrollView;

@@ -15,10 +15,7 @@
   <!--tag is used to store accessibilityRole tag-->
   <item type="id" name="accessibility_role"/>
 
-  <!--tag is used to store accessibilityStates tag-->
-  <item type="id" name="accessibility_states"/>
-
-  <!--tag is used to store accessibilityState tag-->
+  <!--tag is used to store accessibilityState -->
   <item type="id" name="accessibility_state"/>
 
   <!--tag is used to store accessibilityLabel tag-->
@@ -26,5 +23,8 @@
 
   <!--tag is used to store accessibilityActions tag-->
   <item type="id" name="accessibility_actions"/>
+
+  <!--tag is used to store accessibilityValue tag -->
+  <item type="id" name="accessibility_value"/>
 
 </resources>

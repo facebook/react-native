@@ -410,8 +410,20 @@ function getNativeLogFunction(level) {
         .join(', ');
     }
 
+    // TRICKY
+    // If more than one argument is provided, the code above collapses them all
+    // into a single formatted string. This transform wraps string arguments in
+    // single quotes (e.g. "foo" -> "'foo'") which then breaks the "Warning:"
+    // check below. So it's important that we look at the first argument, rather
+    // than the formatted argument string.
+    const firstArg = arguments[0];
+
     let logLevel = level;
-    if (str.slice(0, 9) === 'Warning: ' && logLevel >= LOG_LEVELS.error) {
+    if (
+      typeof firstArg === 'string' &&
+      firstArg.slice(0, 9) === 'Warning: ' &&
+      logLevel >= LOG_LEVELS.error
+    ) {
       // React warnings use console.error so that a stack trace is shown,
       // but we don't (currently) want these to show a redbox
       // (Note: Logic duplicated in ExceptionsManager.js.)

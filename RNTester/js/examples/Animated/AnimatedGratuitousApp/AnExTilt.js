@@ -38,6 +38,7 @@ class AnExTilt extends React.Component<Object, any> {
       },
       onPanResponderMove: Animated.event(
         [null, {dx: this.state.panX}], // panX is linked to the gesture
+        {useNativeDriver: false},
       ),
       onPanResponderRelease: (e, gestureState) => {
         let toValue = 0;

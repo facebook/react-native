@@ -7,7 +7,6 @@
 
 #import <React/RCTBaseTextInputView.h>
 
-#import <React/RCTAccessibilityManager.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
@@ -68,7 +67,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 - (void)enforceTextAttributesIfNeeded
 {
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
-  backedTextInputView.reactTextAttributes = _textAttributes;
+  backedTextInputView.defaultTextAttributes = [_textAttributes effectiveTextAttributes];
 }
 
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets

@@ -29,7 +29,14 @@ const {
   pressItem,
   renderSmallSwitchOption,
 } = require('../../components/ListExampleShared');
-const {Alert, Animated, StyleSheet, View} = require('react-native');
+const {
+  Alert,
+  Animated,
+  Platform,
+  StyleSheet,
+  TextInput,
+  View,
+} = require('react-native');
 
 import type {Item} from '../../components/ListExampleShared';
 
@@ -51,6 +58,7 @@ type State = {|
   virtualized: boolean,
   empty: boolean,
   useFlatListItemComponent: boolean,
+  fadingEdgeLength: number,
 |};
 
 class FlatListExample extends React.PureComponent<Props, State> {
@@ -65,6 +73,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     virtualized: true,
     empty: false,
     useFlatListItemComponent: false,
+    fadingEdgeLength: 0,
   };
 
   _onChangeFilterText = filterText => {
@@ -124,11 +133,26 @@ class FlatListExample extends React.PureComponent<Props, State> {
               {renderSmallSwitchOption(this, 'empty')}
               {renderSmallSwitchOption(this, 'debug')}
               {renderSmallSwitchOption(this, 'useFlatListItemComponent')}
+              {Platform.OS === 'android' && (
+                <View>
+                  <TextInput
+                    placeholder="Fading edge length"
+                    underlineColorAndroid="black"
+                    keyboardType={'numeric'}
+                    onChange={event =>
+                      this.setState({
+                        fadingEdgeLength: Number(event.nativeEvent.text),
+                      })
+                    }
+                  />
+                </View>
+              )}
               <Spindicator value={this._scrollPos} />
             </View>
           </View>
           <SeparatorComponent />
           <Animated.FlatList
+            fadingEdgeLength={this.state.fadingEdgeLength}
             ItemSeparatorComponent={ItemSeparatorComponent}
             ListHeaderComponent={<HeaderComponent />}
             ListFooterComponent={FooterComponent}

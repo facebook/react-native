@@ -34,8 +34,28 @@ class YellowBoxWarning {
     message: Message,
     stack: Stack,
   |} {
+    let mutableArgs: Array<mixed> = [...args];
+
+    // This detects a very narrow case of a simple warning string,
+    // with a component stack appended by React DevTools.
+    // In this case, we convert the component stack to a substituion,
+    // because YellowBox formats those pleasantly.
+    // If there are other subtituations or formatting,
+    // we bail to avoid potentially corrupting the data.
+    if (mutableArgs.length === 2) {
+      const first = mutableArgs[0];
+      const last = mutableArgs[1];
+      if (
+        typeof first === 'string' &&
+        typeof last === 'string' &&
+        /^\n {4}in/.exec(last)
+      ) {
+        mutableArgs[0] = first + '%s';
+      }
+    }
+
     return {
-      ...YellowBoxCategory.parse(args),
+      ...YellowBoxCategory.parse(mutableArgs),
       stack: createStack({framesToPop: framesToPop + 1}),
     };
   }

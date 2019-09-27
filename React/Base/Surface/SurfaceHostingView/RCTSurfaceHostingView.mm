@@ -80,10 +80,8 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
     &maximumSize
   );
 
-  if (RCTSurfaceStageIsRunning(_stage)) {
     [_surface setMinimumSize:minimumSize
                  maximumSize:maximumSize];
-  }
 }
 
 - (CGSize)intrinsicContentSize

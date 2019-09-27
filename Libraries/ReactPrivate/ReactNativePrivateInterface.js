@@ -8,39 +8,54 @@
  * @flow strict-local
  */
 
+import typeof BatchedBridge from '../BatchedBridge/BatchedBridge.js';
+import typeof ExceptionsManager from '../Core/ExceptionsManager';
+import typeof Platform from '../Utilities/Platform';
+import typeof RCTEventEmitter from '../EventEmitter/RCTEventEmitter';
+import typeof ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
+import typeof TextInputState from '../Components/TextInput/TextInputState';
+import typeof UIManager from '../ReactNative/UIManager';
+import typeof deepDiffer from '../Utilities/differ/deepDiffer';
+import typeof deepFreezeAndThrowOnMutationInDev from '../Utilities/deepFreezeAndThrowOnMutationInDev';
+import typeof flattenStyle from '../StyleSheet/flattenStyle';
+import typeof ReactFiberErrorDialog from '../Core/ReactFiberErrorDialog';
+
 // flowlint unsafe-getters-setters:off
 module.exports = {
-  get BatchedBridge() {
+  get BatchedBridge(): BatchedBridge {
     return require('../BatchedBridge/BatchedBridge.js');
   },
-  get ExceptionsManager() {
+  get ExceptionsManager(): ExceptionsManager {
     return require('../Core/ExceptionsManager');
   },
-  get Platform() {
+  get Platform(): Platform {
     return require('../Utilities/Platform');
   },
-  get RCTEventEmitter() {
+  get RCTEventEmitter(): RCTEventEmitter {
     return require('../EventEmitter/RCTEventEmitter');
   },
-  get ReactNativeViewConfigRegistry() {
+  get ReactNativeViewConfigRegistry(): ReactNativeViewConfigRegistry {
     return require('../Renderer/shims/ReactNativeViewConfigRegistry');
   },
-  get TextInputState() {
+  get TextInputState(): TextInputState {
     return require('../Components/TextInput/TextInputState');
   },
-  get UIManager() {
+  get UIManager(): UIManager {
     return require('../ReactNative/UIManager');
   },
-  get deepDiffer() {
+  get deepDiffer(): deepDiffer {
     return require('../Utilities/differ/deepDiffer');
   },
-  get deepFreezeAndThrowOnMutationInDev() {
+  get deepFreezeAndThrowOnMutationInDev(): deepFreezeAndThrowOnMutationInDev<
+    // $FlowFixMe - can't properly parameterize the getter's type
+    *,
+  > {
     return require('../Utilities/deepFreezeAndThrowOnMutationInDev');
   },
-  get flattenStyle() {
+  get flattenStyle(): flattenStyle {
     return require('../StyleSheet/flattenStyle');
   },
-  get ReactFiberErrorDialog() {
+  get ReactFiberErrorDialog(): ReactFiberErrorDialog {
     return require('../Core/ReactFiberErrorDialog');
   },
 };

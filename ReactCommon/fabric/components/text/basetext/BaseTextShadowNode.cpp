@@ -19,7 +19,7 @@ namespace react {
 
 AttributedString BaseTextShadowNode::getAttributedString(
     const TextAttributes &textAttributes,
-    const SharedShadowNode &parentNode) const {
+    const SharedShadowNode &parentNode) {
   auto attributedString = AttributedString{};
 
   for (const auto &childNode : parentNode->getChildren()) {

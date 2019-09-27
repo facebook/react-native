@@ -19,7 +19,9 @@ namespace react {
  */
 class MainRunLoopEventBeat final : public EventBeat {
  public:
-  MainRunLoopEventBeat(RuntimeExecutor runtimeExecutor);
+  MainRunLoopEventBeat(
+      EventBeat::SharedOwnerBox const &ownerBox,
+      RuntimeExecutor runtimeExecutor);
   ~MainRunLoopEventBeat();
 
   void induce() const override;

@@ -15,6 +15,7 @@
 #include <map>
 
 #include "YGJTypes.h"
+#include "YGJNIVanilla.h"
 
 using namespace facebook::jni;
 using namespace std;
@@ -311,13 +312,10 @@ static int YGJNILogFunc(
   auto jloggerPtr =
       static_cast<global_ref<JYogaLogger>*>(YGConfigGetContext(config));
   if (jloggerPtr != nullptr) {
-    if (auto obj = YGNodeJobject(node, layoutContext)) {
-      (*jloggerPtr)
-          ->log(
-              obj,
-              JYogaLogLevel::fromInt(level),
-              Environment::current()->NewStringUTF(buffer.data()));
-    }
+    (*jloggerPtr)
+        ->log(
+            JYogaLogLevel::fromInt(level),
+            Environment::current()->NewStringUTF(buffer.data()));
   }
 
   return result;
@@ -896,7 +894,7 @@ void jni_YGNodeStyleSetBorder(jlong nativePointer, jint edge, jfloat border) {
   makeCriticalNativeMethod_DO_NOT_USE_OR_YOU_WILL_BE_FIRED(#name, name)
 
 jint JNI_OnLoad(JavaVM* vm, void*) {
-  return initialize(vm, [] {
+  jint ret = initialize(vm, [] {
     registerNatives(
         "com/facebook/yoga/YogaNative",
         {
@@ -996,4 +994,6 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
                 jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour),
         });
   });
+  YGJNIVanilla::registerNatives(Environment::current());
+  return ret;
 }

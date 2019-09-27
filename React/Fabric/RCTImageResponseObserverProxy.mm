@@ -18,26 +18,26 @@ RCTImageResponseObserverProxy::RCTImageResponseObserverProxy(void *delegate)
 {
 }
 
-void RCTImageResponseObserverProxy::didReceiveImage(const ImageResponse &imageResponse)
+void RCTImageResponseObserverProxy::didReceiveImage(ImageResponse const &imageResponse) const
 {
   UIImage *image = (__bridge UIImage *)imageResponse.getImage().get();
-  void *this_ = this;
+  auto this_ = this;
   dispatch_async(dispatch_get_main_queue(), ^{
     [delegate_ didReceiveImage:image fromObserver:this_];
   });
 }
 
-void RCTImageResponseObserverProxy::didReceiveProgress(float p)
+void RCTImageResponseObserverProxy::didReceiveProgress(float progress) const
 {
-  void *this_ = this;
+  auto this_ = this;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [delegate_ didReceiveProgress:p fromObserver:this_];
+    [delegate_ didReceiveProgress:progress fromObserver:this_];
   });
 }
 
-void RCTImageResponseObserverProxy::didReceiveFailure()
+void RCTImageResponseObserverProxy::didReceiveFailure() const
 {
-  void *this_ = this;
+  auto this_ = this;
   dispatch_async(dispatch_get_main_queue(), ^{
     [delegate_ didReceiveFailureFromObserver:this_];
   });

@@ -6,6 +6,9 @@
  */
 
 #import <React/RCTAnimatedImage.h>
+#import <React/RCTDefines.h>
+
+RCT_EXTERN void RCTUIImageViewEnableWeakProxy(BOOL enabled);
 
 @interface RCTUIImageViewAnimated : UIImageView
 

@@ -17,10 +17,15 @@
 #import <unordered_map>
 
 static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
-  {"DeviceInfo", RCTDeviceInfoCls},
+  {"AccessibilityManager", RCTAccessibilityManagerCls},
+{"Appearance", RCTAppearanceCls},
+{"DeviceInfo", RCTDeviceInfoCls},
 {"ExceptionsManager", RCTExceptionsManagerCls},
 {"ImageLoader", RCTImageLoaderCls},
 {"PlatformConstants", RCTPlatformCls},
+{"Clipboard", RCTClipboardCls},
+{"I18nManager", RCTI18nManagerCls},
+{"SourceCode", RCTSourceCodeCls},
 };
 
 Class RCTCoreModulesClassProvider(const char *name) {

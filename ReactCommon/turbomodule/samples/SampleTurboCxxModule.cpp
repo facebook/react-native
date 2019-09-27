@@ -15,7 +15,7 @@ namespace facebook {
 namespace react {
 
 SampleTurboCxxModule::SampleTurboCxxModule(
-    std::shared_ptr<JSCallInvoker> jsInvoker)
+    std::shared_ptr<CallInvoker> jsInvoker)
     : NativeSampleTurboCxxModuleSpecJSI(jsInvoker) {}
 
 void SampleTurboCxxModule::voidFunc(jsi::Runtime &rt) {

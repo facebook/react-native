@@ -1,6 +1,7 @@
 package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import com.facebook.react.viewmanagers.FloatPropsNativeComponentViewManagerDelegate;
 import com.facebook.react.viewmanagers.FloatPropsNativeComponentViewManagerInterface;
 
@@ -41,4 +42,7 @@ public class FloatPropsNativeComponentViewManager extends SimpleViewManager<View
 
   @Override
   public void setBlurRadius6(ViewGroup view, float value) {}
+
+  @Override
+  public void setBlurRadiusNullable(ViewGroup view, @Nullable Float value) {}
 }

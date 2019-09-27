@@ -22,7 +22,7 @@ class ModalHostViewComponentDescriptor final
     : public ConcreteComponentDescriptor<ModalHostViewShadowNode> {
  public:
 #ifdef ANDROID
-  ModalHostViewComponentDescriptor(EventDispatcher::Shared eventDispatcher)
+  ModalHostViewComponentDescriptor(EventDispatcher::Weak eventDispatcher)
       : ConcreteComponentDescriptor(eventDispatcher) {}
 #else
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;

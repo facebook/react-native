@@ -131,20 +131,18 @@ jest
     Animated.View.__skipSetNativeProps_FOR_TESTS_ONLY = true;
     return Animated;
   })
-  .mock('../Libraries/Animated/src/AnimatedImplementation', () => {
-    const AnimatedImplementation = jest.requireActual(
-      '../Libraries/Animated/src/AnimatedImplementation',
+  .mock('../Libraries/Animated/src/createAnimatedComponent', () => {
+    const createAnimatedComponent = jest.requireActual(
+      '../Libraries/Animated/src/createAnimatedComponent',
     );
-    const oldCreate = AnimatedImplementation.createAnimatedComponent;
-    AnimatedImplementation.createAnimatedComponent = function(
-      Component,
-      defaultProps,
-    ) {
-      const Wrapped = oldCreate(Component, defaultProps);
+
+    return (Component, defaultProps) => {
+      const Wrapped = createAnimatedComponent(Component, defaultProps);
+
       Wrapped.__skipSetNativeProps_FOR_TESTS_ONLY = true;
+
       return Wrapped;
     };
-    return AnimatedImplementation;
   })
   .mock('../Libraries/AppState/AppState', () => ({
     addEventListener: jest.fn(),

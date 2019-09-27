@@ -31,7 +31,6 @@ import type {
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {
   AccessibilityRole,
-  AccessibilityStates,
   AccessibilityState,
   AccessibilityActionInfo,
   AccessibilityActionEvent,
@@ -53,7 +52,6 @@ const OVERRIDE_PROPS = [
   'accessibilityHint',
   'accessibilityIgnoresInvertColors',
   'accessibilityRole',
-  'accessibilityStates',
   'accessibilityState',
   'accessibilityActions',
   'onAccessibilityAction',
@@ -71,7 +69,6 @@ export type Props = $ReadOnly<{|
   accessibilityHint?: ?Stringish,
   accessibilityIgnoresInvertColors?: ?boolean,
   accessibilityRole?: ?AccessibilityRole,
-  accessibilityStates?: ?AccessibilityStates,
   accessibilityState?: ?AccessibilityState,
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   children?: ?React.Node,
@@ -112,7 +109,6 @@ const TouchableWithoutFeedback = ((createReactClass({
     accessibilityHint: PropTypes.string,
     accessibilityIgnoresInvertColors: PropTypes.bool,
     accessibilityRole: PropTypes.oneOf(DeprecatedAccessibilityRoles),
-    accessibilityStates: PropTypes.array,
     accessibilityState: PropTypes.object,
     accessibilityActions: PropTypes.array,
     onAccessibilityAction: PropTypes.func,

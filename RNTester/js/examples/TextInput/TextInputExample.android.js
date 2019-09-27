@@ -11,6 +11,7 @@
 'use strict';
 
 const React = require('react');
+
 const {
   Text,
   TextInput,
@@ -82,9 +83,6 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
 }
 
 class RewriteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
-  /* $FlowFixMe(>=0.85.0 site=react_native_android_fb) This comment suppresses
-   * an error found when Flow v0.85 was deployed. To see the error, delete this
-   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -123,9 +121,6 @@ class TokenizedTextExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  /* $FlowFixMe(>=0.85.0 site=react_native_android_fb) This comment suppresses
-   * an error found when Flow v0.85 was deployed. To see the error, delete this
-   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: 'Hello #World'};
@@ -450,7 +445,7 @@ exports.description = 'Single and multi-line text inputs.';
 exports.examples = [
   {
     title: 'Auto-focus',
-    render: function() {
+    render: function(): React.Node {
       return (
         <TextInput
           autoFocus={true}
@@ -465,13 +460,13 @@ exports.examples = [
   },
   {
     title: "Live Re-Write (<sp>  ->  '_')",
-    render: function() {
+    render: function(): React.Node {
       return <RewriteExample />;
     },
   },
   {
     title: 'Auto-capitalize',
-    render: function() {
+    render: function(): React.Node {
       const autoCapitalizeTypes = ['none', 'sentences', 'words', 'characters'];
       const examples = autoCapitalizeTypes.map(type => {
         return (
@@ -488,7 +483,7 @@ exports.examples = [
   },
   {
     title: 'Auto-correct',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -507,7 +502,7 @@ exports.examples = [
   },
   {
     title: 'Keyboard types',
-    render: function() {
+    render: function(): React.Node {
       const keyboardTypes = [
         'default',
         'email-address',
@@ -541,7 +536,7 @@ exports.examples = [
   },
   {
     title: 'Colors and text inputs',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -591,7 +586,7 @@ exports.examples = [
   },
   {
     title: 'Text input, themes and heights',
-    render: function() {
+    render: function(): React.Node {
       return (
         <TextInput
           placeholder="If you set height, beware of padding set from themes"
@@ -602,7 +597,7 @@ exports.examples = [
   },
   {
     title: 'fontFamily, fontWeight and fontStyle',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -615,6 +610,13 @@ exports.examples = [
               {fontFamily: 'sans-serif', fontWeight: 'bold'},
             ]}
             placeholder="Sans-Serif bold"
+          />
+          <TextInput
+            style={[
+              styles.singleLine,
+              {fontFamily: 'sans-serif', fontWeight: '500'},
+            ]}
+            placeholder="Sans-Serif 500"
           />
           <TextInput
             style={[
@@ -633,7 +635,7 @@ exports.examples = [
   },
   {
     title: 'letterSpacing',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -658,7 +660,7 @@ exports.examples = [
   },
   {
     title: 'Passwords',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -678,7 +680,7 @@ exports.examples = [
   },
   {
     title: 'Editable',
-    render: function() {
+    render: function(): React.Node {
       return (
         <TextInput
           defaultValue="Can't touch this! (>'-')> ^(' - ')^ <('-'<) (>'-')> ^(' - ')^"
@@ -690,7 +692,7 @@ exports.examples = [
   },
   {
     title: 'Multiline',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -732,7 +734,7 @@ exports.examples = [
   {
     title: 'Fixed number of lines',
     platform: 'android',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -751,7 +753,7 @@ exports.examples = [
   },
   {
     title: 'Auto-expanding',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <AutogrowingTextInputExample
@@ -775,13 +777,13 @@ exports.examples = [
   },
   {
     title: 'Attributed text',
-    render: function() {
+    render: function(): React.Node {
       return <TokenizedTextExample />;
     },
   },
   {
     title: 'Return key',
-    render: function() {
+    render: function(): React.Node {
       const returnKeyTypes = [
         'none',
         'go',
@@ -822,7 +824,7 @@ exports.examples = [
   },
   {
     title: 'Inline Images',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <TextInput
@@ -846,13 +848,13 @@ exports.examples = [
   },
   {
     title: 'Toggle Default Padding',
-    render: function(): React.Element<any> {
+    render: function(): React.Node {
       return <ToggleDefaultPaddingExample />;
     },
   },
   {
     title: 'Text selection & cursor placement',
-    render: function() {
+    render: function(): React.Node {
       return (
         <View>
           <SelectionExample

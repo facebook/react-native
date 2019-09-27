@@ -15,7 +15,7 @@
 #include <ReactCommon/JavaTurboModule.h>
 #include <react/jni/CxxModuleWrapper.h>
 #include <react/jni/JMessageQueueThread.h>
-#include <ReactCommon/JSCallInvokerHolder.h>
+#include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/TurboModuleManagerDelegate.h>
 
 namespace facebook {
@@ -27,7 +27,8 @@ public:
   static jni::local_ref<jhybriddata> initHybrid(
     jni::alias_ref<jhybridobject> jThis,
     jlong jsContext,
-    jni::alias_ref<JSCallInvokerHolder::javaobject> jsCallInvokerHolder,
+    jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
+    jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate
   );
   static void registerNatives();
@@ -35,8 +36,11 @@ private:
   friend HybridBase;
   jni::global_ref<TurboModuleManager::javaobject> javaPart_;
   jsi::Runtime* runtime_;
-  std::shared_ptr<JSCallInvoker> jsCallInvoker_;
+  std::shared_ptr<CallInvoker> jsCallInvoker_;
+  std::shared_ptr<CallInvoker> nativeCallInvoker_;
   jni::global_ref<TurboModuleManagerDelegate::javaobject> delegate_;
+
+  using TurboModuleCache = std::unordered_map<std::string, std::shared_ptr<react::TurboModule>>;
 
   /**
    * TODO(T48018690):
@@ -44,13 +48,14 @@ private:
    * We need to come up with a mechanism to allow modules to specify whether
    * they want to be long-lived or short-lived.
    */
-  std::unordered_map<std::string, std::shared_ptr<react::TurboModule>> turboModuleCache_;
+  std::shared_ptr<TurboModuleCache> turboModuleCache_;
 
   void installJSIBindings();
   explicit TurboModuleManager(
     jni::alias_ref<TurboModuleManager::jhybridobject> jThis,
     jsi::Runtime *rt,
-    std::shared_ptr<JSCallInvoker> jsCallInvoker,
+    std::shared_ptr<CallInvoker> jsCallInvoker,
+    std::shared_ptr<CallInvoker> nativeCallInvoker,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate
   );
 };

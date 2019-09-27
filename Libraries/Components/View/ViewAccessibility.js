@@ -42,18 +42,6 @@ export type AccessibilityRole =
   | 'timer'
   | 'toolbar';
 
-// This must be kept in sync with the AccessibilityStatesMask in RCTViewManager.m
-export type AccessibilityStates = $ReadOnlyArray<
-  | 'disabled'
-  | 'selected'
-  | 'checked'
-  | 'unchecked'
-  | 'busy'
-  | 'expanded'
-  | 'collapsed'
-  | 'hasPopup',
->;
-
 // the info associated with an accessibility action
 export type AccessibilityActionInfo = $ReadOnly<{
   name: string,
@@ -74,3 +62,25 @@ export type AccessibilityState = {
   busy?: boolean,
   expanded?: boolean,
 };
+
+export type AccessibilityValue = $ReadOnly<{|
+  /**
+   * The minimum value of this component's range. (should be an integer)
+   */
+  min?: number,
+
+  /**
+   * The maximum value of this component's range. (should be an integer)
+   */
+  max?: number,
+
+  /**
+   * The current value of this component's range. (should be an integer)
+   */
+  now?: number,
+
+  /**
+   * A textual description of this component's value. (will override minimum, current, and maximum if set)
+   */
+  text?: string,
+|}>;

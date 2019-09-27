@@ -251,6 +251,19 @@ class RawValue {
   }
 
   template <typename T>
+  static std::vector<std::vector<T>> castValue(
+      const folly::dynamic &dynamic,
+      std::vector<std::vector<T>> *type) noexcept {
+    assert(dynamic.isArray());
+    auto result = std::vector<std::vector<T>>{};
+    result.reserve(dynamic.size());
+    for (const auto &item : dynamic) {
+      result.push_back(castValue(item, (std::vector<T> *)nullptr));
+    }
+    return result;
+  }
+
+  template <typename T>
   static better::map<std::string, T> castValue(
       const folly::dynamic &dynamic,
       better::map<std::string, T> *type) noexcept {

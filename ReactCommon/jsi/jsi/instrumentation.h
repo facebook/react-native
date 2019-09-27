@@ -8,6 +8,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <unordered_map>
 
 #include <jsi/jsi.h>
 
@@ -17,6 +18,8 @@ namespace jsi {
 /// Methods for starting and collecting instrumentation, an \c Instrumentation
 /// instance is associated with a particular \c Runtime instance, which it
 /// controls the instrumentation of.
+/// None of these functions should return newly created jsi values, nor should
+/// it modify the values of any jsi values in the heap (although GCs are fine).
 class Instrumentation {
  public:
   virtual ~Instrumentation() = default;
@@ -40,9 +43,10 @@ class Instrumentation {
   /// function can be called at any time, and should produce information that is
   /// correct at the instant it is called (i.e, not stale).
   ///
-  /// \return a jsi Value containing whichever statistics the runtime supports
-  ///   for its heap.
-  virtual Value getHeapInfo(bool includeExpensive) = 0;
+  /// \return a map from a string key to a number associated with that
+  /// statistic.
+  virtual std::unordered_map<std::string, int64_t> getHeapInfo(
+      bool includeExpensive) = 0;
 
   /// perform a full garbage collection
   virtual void collectGarbage() = 0;
