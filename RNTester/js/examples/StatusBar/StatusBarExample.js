@@ -10,7 +10,7 @@
 
 'use strict';
 
-import React from 'react';
+const React = require('react');
 const {
   StatusBar,
   StyleSheet,
