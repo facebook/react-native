@@ -66,6 +66,11 @@ using namespace facebook::react;
   return self;
 }
 
+- (void)dealloc
+{
+  [_scrollViewDelegateSplitter removeDelegate:self];
+}
+
 #pragma mark - RCTComponentViewProtocol
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
