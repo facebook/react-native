@@ -58,6 +58,11 @@ public class DevSettingsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void onFastRefresh() {
+    // noop
+  }
+
+  @ReactMethod
   public void setHotLoadingEnabled(boolean isHotLoadingEnabled) {
     mDevSupportManager.setHotModuleReplacementEnabled(isHotLoadingEnabled);
   }

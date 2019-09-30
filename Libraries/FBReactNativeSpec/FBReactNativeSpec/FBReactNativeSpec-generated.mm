@@ -789,6 +789,10 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "reloadWithReason", @selector(reloadWithReason:), args, count);
     }
 
+    static facebook::jsi::Value __hostFunction_NativeDevSettingsSpecJSI_onFastRefresh(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "onFastRefresh", @selector(onFastRefresh), args, count);
+    }
+
     static facebook::jsi::Value __hostFunction_NativeDevSettingsSpecJSI_setHotLoadingEnabled(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setHotLoadingEnabled", @selector(setHotLoadingEnabled:), args, count);
     }
@@ -821,6 +825,9 @@ namespace facebook {
         
         
         methodMap_["reloadWithReason"] = MethodMetadata {1, __hostFunction_NativeDevSettingsSpecJSI_reloadWithReason};
+        
+        
+        methodMap_["onFastRefresh"] = MethodMetadata {0, __hostFunction_NativeDevSettingsSpecJSI_onFastRefresh};
         
         
         methodMap_["setHotLoadingEnabled"] = MethodMetadata {1, __hostFunction_NativeDevSettingsSpecJSI_setHotLoadingEnabled};

@@ -47,6 +47,12 @@ class DevSettings extends NativeEventEmitter {
     }
   }
 
+  onFastRefresh() {
+    if (typeof NativeDevSettings.onFastRefresh === 'function') {
+      NativeDevSettings.onFastRefresh();
+    }
+  }
+
   // TODO: Add other dev setting methods exposed by the native module.
 }
 

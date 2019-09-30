@@ -740,6 +740,7 @@ namespace facebook {
 
 - (void)reload;
 - (void)reloadWithReason:(NSString *)reason;
+- (void)onFastRefresh;
 - (void)setHotLoadingEnabled:(BOOL)isHotLoadingEnabled;
 - (void)setIsDebuggingRemotely:(BOOL)isDebuggingRemotelyEnabled;
 - (void)setProfilingEnabled:(BOOL)isProfilingEnabled;

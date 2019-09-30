@@ -16,6 +16,7 @@ import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
 export interface Spec extends TurboModule {
   +reload: () => void;
   +reloadWithReason?: (reason: string) => void;
+  +onFastRefresh?: () => void;
   +setHotLoadingEnabled: (isHotLoadingEnabled: boolean) => void;
   +setIsDebuggingRemotely: (isDebuggingRemotelyEnabled: boolean) => void;
   +setProfilingEnabled: (isProfilingEnabled: boolean) => void;

@@ -245,6 +245,11 @@ RCT_EXPORT_METHOD(reloadWithReason : (NSString *) reason)
 
 }
 
+RCT_EXPORT_METHOD(onFastRefresh)
+{
+    [self.bridge onFastRefresh];
+}
+
 RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled : (BOOL)enabled)
 {
   [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingShakeToShowDevMenu];

@@ -31,6 +31,7 @@ NSString *const RCTDidSetupModuleNotification = @"RCTDidSetupModuleNotification"
 NSString *const RCTDidSetupModuleNotificationModuleNameKey = @"moduleName";
 NSString *const RCTDidSetupModuleNotificationSetupTimeKey = @"setupTime";
 NSString *const RCTBridgeWillReloadNotification = @"RCTBridgeWillReloadNotification";
+NSString *const RCTBridgeFastRefreshNotification = @"RCTBridgeFastRefreshNotification";
 NSString *const RCTBridgeWillDownloadScriptNotification = @"RCTBridgeWillDownloadScriptNotification";
 NSString *const RCTBridgeDidDownloadScriptNotification = @"RCTBridgeDidDownloadScriptNotification";
 NSString *const RCTBridgeWillInvalidateModulesNotification = @"RCTBridgeWillInvalidateModulesNotification";
@@ -318,6 +319,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     self->_launchOptions = nil;
     [self setUp];
   });
+}
+
+- (void)onFastRefresh
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeFastRefreshNotification object:self];
 }
 
 - (void)requestReload

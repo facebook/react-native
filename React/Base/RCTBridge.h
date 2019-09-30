@@ -74,6 +74,11 @@ RCT_EXTERN NSString *const RCTDidSetupModuleNotificationSetupTimeKey;
 RCT_EXTERN NSString *const RCTBridgeWillReloadNotification;
 
 /**
+ * This notification fires whenever a fast refresh happens.
+ */
+RCT_EXTERN NSString *const RCTBridgeFastRefreshNotification;
+
+/**
  * This notification fires just before the bridge begins downloading a script
  * from the packager.
  */
@@ -260,6 +265,11 @@ RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
  * Reload the bundle and reset executor & modules. Safe to call from any thread.
  */
 - (void)reloadWithReason:(NSString *)reason;
+
+/**
+ * Handle notifications for a fast refresh. Safe to call from any thread.
+ */
+- (void)onFastRefresh;
 
 /**
  * Inform the bridge, and anything subscribing to it, that it should reload.
