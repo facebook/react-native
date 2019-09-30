@@ -22,6 +22,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -255,7 +256,9 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider>
             ViewGroup.LayoutParams.WRAP_CONTENT, View.MeasureSpec.UNSPECIFIED);
     reactSlider.measure(spec, spec);
 
-    return YogaMeasureOutput.make(reactSlider.getMeasuredWidth(), reactSlider.getMeasuredHeight());
+    return YogaMeasureOutput.make(
+        PixelUtil.toDIPFromPixel(reactSlider.getMeasuredWidth()),
+        PixelUtil.toDIPFromPixel(reactSlider.getMeasuredHeight()));
   }
 
   @Override
