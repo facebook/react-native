@@ -200,7 +200,7 @@ RCT_EXPORT_MODULE()
   [[RCTBundleURLProvider sharedSettings] resetToDefaults];
   self->_bridge.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackResource:nil
                                                                                 fallbackExtension:nil];
-  [self->_bridge reload];
+  [self->_bridge reloadWithReason:@"Dev menu - reset to default"];
 }
 
 - (NSArray<RCTDevMenuItem *> *)_menuItemsToPresent
@@ -214,7 +214,7 @@ RCT_EXPORT_MODULE()
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Reload"
                                                handler:^{
-                                                 [bridge reload];
+                                                 [bridge reloadWithReason:@"Dev menu - reload"];
                                                }]];
 
   if (!devSettings.isProfilingEnabled) {
@@ -373,7 +373,7 @@ RCT_EXPORT_MODULE()
                                                                       fallbackResource:nil]
                                                         : [strongBridge.delegate sourceURLForBridge:strongBridge];
                                                     strongBridge.bundleURL = bundleURL;
-                                                    [strongBridge reload];
+                                                    [strongBridge reloadWithReason:@"Dev menu - apply changes"];
                                                   }
                                                 }]];
                       [alertController addAction:[UIAlertAction actionWithTitle:@"Reset to Default"
@@ -455,7 +455,7 @@ RCT_EXPORT_METHOD(show)
 RCT_EXPORT_METHOD(reload)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
-  [_bridge reload];
+    [_bridge reloadWithReason:@"Unknown from JS"];
 }
 
 RCT_EXPORT_METHOD(debugRemotely : (BOOL)enableDebug)

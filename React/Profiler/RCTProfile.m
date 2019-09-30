@@ -372,7 +372,7 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
 
 + (void)reload
 {
-  [RCTProfilingBridge() reload];
+  [RCTProfilingBridge() reloadWithReason:@"Profiling controls"];
 }
 
 + (void)toggle:(UIButton *)target

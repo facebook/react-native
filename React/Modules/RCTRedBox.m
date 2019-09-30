@@ -607,7 +607,7 @@ RCT_EXPORT_METHOD(dismiss)
     if (_overrideReloadAction) {
         _overrideReloadAction();
     } else {
-        [_bridge reload];
+        [_bridge reloadWithReason:@"Redbox"];
     }
     [self dismiss];
 }

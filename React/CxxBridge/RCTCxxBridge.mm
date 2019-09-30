@@ -487,7 +487,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     }
     return moduleData.instance;
   }
-  
+
   static NSSet<NSString *> *ignoredModuleLoadFailures = [NSSet setWithArray: @[@"UIManager"]];
 
   // Module may not be loaded yet, so attempt to force load it here.
@@ -1009,7 +1009,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   if (!_valid) {
     RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
   }
-  [_parentBridge reload];
+  [_parentBridge reloadWithReason:@"Unknown from cxx bridge"];
+}
+
+- (void)reloadWithReason:(NSString *)reason
+{
+  if (!_valid) {
+    RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
+  }
+  [_parentBridge reloadWithReason:reason];
 }
 
 - (Class)executorClass

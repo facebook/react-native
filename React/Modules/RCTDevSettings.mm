@@ -161,7 +161,7 @@ RCT_EXPORT_MODULE()
         if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
           weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
         }
-        [weakBridge reload];
+        [weakBridge reloadWithReason:@"Global hotkey"];
       }
                        queue:dispatch_get_main_queue()
                    forMethod:@"reload"];
@@ -236,7 +236,13 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(reload)
 {
-  [self.bridge reload];
+  [self.bridge reloadWithReason:@"Unknown From JS"];
+}
+
+RCT_EXPORT_METHOD(reloadWithReason : (NSString *) reason)
+{
+  [self.bridge reloadWithReason:reason];
+
 }
 
 RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled : (BOOL)enabled)
@@ -369,7 +375,7 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
     }
 
     self.bridge.executorClass = executorClass;
-    [self.bridge reload];
+    [self.bridge reloadWithReason:@"Custom executor class reset"];
   }
 }
 
@@ -440,6 +446,9 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
   return nil;
 }
 - (void)reload
+{
+}
+- (void)reloadWithReason
 {
 }
 - (void)toggleElementInspector

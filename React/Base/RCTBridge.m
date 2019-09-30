@@ -244,7 +244,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)didReceiveReloadCommand
 {
-  [self reload];
+  [self reloadWithReason:@"Command"];
 }
 
 - (NSArray<Class> *)moduleClasses
@@ -290,14 +290,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleIsInitialized:moduleClass];
 }
 
+/**
+ * Legacy reload, please use reloadWithReason and provide a reason for stats.
+ */
 - (void)reload
+{
+   [self reloadWithReason:@"Unknown from bridge"];
+}
+
+- (void)reloadWithReason:(NSString *)reason
 {
   #if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC
   // Disable debugger to resume the JsVM & avoid thread locks while reloading
   [RCTInspectorDevServerHelper disableDebugger];
   #endif
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillReloadNotification object:self];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillReloadNotification object:self userInfo:@{@"reason": reason} ];
 
   /**
    * Any thread
@@ -314,7 +322,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)requestReload
 {
-  [self reload];
+  [self reloadWithReason:@"Requested from bridge"];
 }
 
 - (Class)bridgeClass
