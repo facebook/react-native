@@ -40,6 +40,7 @@ if (__DEV__) {
         return;
       }
       ReactRefreshRuntime.performReactRefresh();
+      DevSettings.onFastRefresh();
     },
   };
 
