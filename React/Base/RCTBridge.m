@@ -37,6 +37,7 @@ NSString *const RCTBridgeDidDownloadScriptNotification = @"RCTBridgeDidDownloadS
 NSString *const RCTBridgeWillInvalidateModulesNotification = @"RCTBridgeWillInvalidateModulesNotification";
 NSString *const RCTBridgeDidInvalidateModulesNotification = @"RCTBridgeDidInvalidateModulesNotification";
 NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey = @"source";
+NSString *const RCTBridgeDidDownloadScriptNotificationReasonKey = @"reason";
 NSString *const RCTBridgeDidDownloadScriptNotificationBridgeDescriptionKey = @"bridgeDescription";
 
 static NSMutableArray<Class> *RCTModuleClasses;
@@ -306,7 +307,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [RCTInspectorDevServerHelper disableDebugger];
   #endif
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillReloadNotification object:self userInfo:@{@"reason": reason} ];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillReloadNotification object:self userInfo:@{RCTBridgeDidDownloadScriptNotificationReasonKey: reason} ];
 
   /**
    * Any thread

@@ -108,6 +108,12 @@ RCT_EXTERN NSString *const RCTBridgeDidInvalidateModulesNotification;
  */
 RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey;
 
+
+/**
+ * Key for the reload reason in the RCTBridgeWillReloadNotification userInfo dictionary.
+ */
+RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotificationReasonKey;
+
 /**
  * Key for the bridge description (NSString_ in the
  * RCTBridgeDidDownloadScriptNotification userInfo dictionary.
