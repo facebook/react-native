@@ -190,6 +190,7 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   _scrollView.contentOffset = CGPointZero;
+  _state.reset();
   [super prepareForRecycle];
 }
 
