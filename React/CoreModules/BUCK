@@ -65,6 +65,9 @@ rn_apple_library(
         ) + react_module_plugin_providers(
             name = "SourceCode",
             native_class_func = "RCTSourceCodeCls",
+        ) + react_module_plugin_providers(
+            name = "ActionSheetManager",
+            native_class_func = "RCTActionSheetManagerCls",
         ),
     preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_extra_build_flags() + [
         "-DRN_DISABLE_OSS_PLUGIN_HEADER",

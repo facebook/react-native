@@ -26,6 +26,7 @@ static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
 {"Clipboard", RCTClipboardCls},
 {"I18nManager", RCTI18nManagerCls},
 {"SourceCode", RCTSourceCodeCls},
+{"ActionSheetManager", RCTActionSheetManagerCls},
 };
 
 Class RCTCoreModulesClassProvider(const char *name) {

@@ -38,6 +38,7 @@ Class RCTPlatformCls(void);
 Class RCTClipboardCls(void);
 Class RCTI18nManagerCls(void);
 Class RCTSourceCodeCls(void);
+Class RCTActionSheetManagerCls(void);
 
 #ifdef __cplusplus
 }

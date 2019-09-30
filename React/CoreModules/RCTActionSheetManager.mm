@@ -13,7 +13,13 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 
-@interface RCTActionSheetManager () <UIActionSheetDelegate>
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
+
+#import "CoreModulesPlugins.h"
+
+using namespace facebook::react;
+
+@interface RCTActionSheetManager () <UIActionSheetDelegate, NativeActionSheetManagerSpec>
 @end
 
 @implementation RCTActionSheetManager
@@ -49,7 +55,27 @@ RCT_EXPORT_MODULE()
   [parentViewController presentViewController:alertController animated:YES completion:nil];
 }
 
-RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
+namespace {
+
+  NSArray<NSString *> *convertLazyVectorToNSArray(facebook::react::LazyVector<NSString *> vec) {
+    NSMutableArray<NSString *> *array = [NSMutableArray new];
+    for (auto it = vec.begin(); it != vec.end(); it++) {
+      [array addObject:*it];
+    }
+    return array;
+  }
+
+  NSArray<NSNumber *> *convertLazyVectorToNSArray(facebook::react::LazyVector<double> vec) {
+    NSMutableArray<NSNumber *> *array = [NSMutableArray new];
+    for (auto it = vec.begin(); it != vec.end(); it++) {
+      [array addObject:@(*it)];
+    }
+    return array;
+  }
+
+} // namespace
+
+RCT_EXPORT_METHOD(showActionSheetWithOptions:(JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions &)options
                   callback:(RCTResponseSenderBlock)callback)
 {
   if (RCTRunningInAppExtension()) {
@@ -61,22 +87,32 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
     _callbacks = [NSMapTable strongToStrongObjectsMapTable];
   }
 
-  NSString *title = [RCTConvert NSString:options[@"title"]];
-  NSString *message = [RCTConvert NSString:options[@"message"]];
-  NSArray<NSString *> *buttons = [RCTConvert NSStringArray:options[@"options"]];
-  NSInteger cancelButtonIndex = options[@"cancelButtonIndex"] ? [RCTConvert NSInteger:options[@"cancelButtonIndex"]] : -1;
+  NSString *title = options.title();
+  NSString *message = options.message();
+  NSArray<NSString *> *buttons = [RCTConvert NSStringArray:options.options() ? convertLazyVectorToNSArray(*options.options()) : nil];
+  NSInteger cancelButtonIndex = options.cancelButtonIndex() ? [RCTConvert NSInteger:@(*options.cancelButtonIndex())] : -1;
   NSArray<NSNumber *> *destructiveButtonIndices;
-  if ([options[@"destructiveButtonIndex"] isKindOfClass:[NSArray class]]) {
-    destructiveButtonIndices = [RCTConvert NSArray:options[@"destructiveButtonIndex"]];
+  if (options.destructiveButtonIndices()) {
+    destructiveButtonIndices = [RCTConvert NSArray:convertLazyVectorToNSArray(*options.destructiveButtonIndices())];
   } else {
-    NSNumber *destructiveButtonIndex = options[@"destructiveButtonIndex"] ? [RCTConvert NSNumber:options[@"destructiveButtonIndex"]] : @-1;
+    NSNumber *destructiveButtonIndex = @-1;
     destructiveButtonIndices = @[destructiveButtonIndex];
   }
 
   UIViewController *controller = RCTPresentedViewController();
+  NSNumber *anchor = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
+  UIColor *tintColor = [RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];
 
   if (controller == nil) {
-    RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", options);
+    RCTLogError(@"Tried to display action sheet but there is no application window. options: %@", @{
+                                                                                      @"title": title,
+                                                                                    @"message": message,
+                                                                                    @"options": buttons,
+                                                                          @"cancelButtonIndex": @(cancelButtonIndex),
+                                                                   @"destructiveButtonIndices": destructiveButtonIndices,
+                                                                                     @"anchor": anchor,
+                                                                                  @"tintColor": tintColor,
+    });
     return;
   }
 
@@ -85,8 +121,8 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
    * popup to point to, on iPads running iOS 8. If it is not passed, it
    * defaults to centering the share popup on screen without any arrows.
    */
-  NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
-  
+  NSNumber *anchorViewTag = anchor;
+
   UIAlertController *alertController =
   [UIAlertController alertControllerWithTitle:title
                                       message:message
@@ -111,12 +147,12 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
     index++;
   }
 
-  alertController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
+  alertController.view.tintColor = tintColor;
   [self presentViewController:alertController onParentViewController:controller anchorViewTag:anchorViewTag];
 }
 
-RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
-                  failureCallback:(RCTResponseErrorBlock)failureCallback
+RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions &)options
+                  failureCallback:(RCTResponseSenderBlock)failureCallback
                   successCallback:(RCTResponseSenderBlock)successCallback)
 {
   if (RCTRunningInAppExtension()) {
@@ -125,11 +161,11 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   }
 
   NSMutableArray<id> *items = [NSMutableArray array];
-  NSString *message = [RCTConvert NSString:options[@"message"]];
+  NSString *message = options.message();
   if (message) {
     [items addObject:message];
   }
-  NSURL *URL = [RCTConvert NSURL:options[@"url"]];
+  NSURL *URL = [RCTConvert NSURL:options.url()];
   if (URL) {
     if ([URL.scheme.lowercaseString isEqualToString:@"data"]) {
       NSError *error;
@@ -137,7 +173,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
                                            options:(NSDataReadingOptions)0
                                              error:&error];
       if (!data) {
-        failureCallback(error);
+        failureCallback(@[RCTJSErrorFromNSError(error)]);
         return;
       }
       [items addObject:data];
@@ -152,12 +188,12 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
 
   UIActivityViewController *shareController = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
 
-  NSString *subject = [RCTConvert NSString:options[@"subject"]];
+  NSString *subject = options.subject();
   if (subject) {
     [shareController setValue:subject forKey:@"subject"];
   }
 
-  NSArray *excludedActivityTypes = [RCTConvert NSStringArray:options[@"excludedActivityTypes"]];
+  NSArray *excludedActivityTypes = [RCTConvert NSStringArray:options.excludedActivityTypes() ? convertLazyVectorToNSArray(*options.excludedActivityTypes()) : nil];
   if (excludedActivityTypes) {
     shareController.excludedActivityTypes = excludedActivityTypes;
   }
@@ -165,16 +201,25 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
   UIViewController *controller = RCTPresentedViewController();
   shareController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
     if (activityError) {
-      failureCallback(activityError);
+      failureCallback(@[RCTJSErrorFromNSError(activityError)]);
     } else if (completed) {
       successCallback(@[@(completed), RCTNullIfNil(activityType)]);
     }
   };
 
-  NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
-  shareController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
-  
+  NSNumber *anchorViewTag = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
+  shareController.view.tintColor = [RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];
+
   [self presentViewController:shareController onParentViewController:controller anchorViewTag:anchorViewTag];
 }
 
+- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+{
+  return std::make_shared<NativeActionSheetManagerSpecJSI>(self, jsInvoker);
+}
+
 @end
+
+Class RCTActionSheetManagerCls(void) {
+  return RCTActionSheetManager.class;
+}
