@@ -53,6 +53,11 @@ public class DevSettingsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void reloadWithReason(String reason) {
+    this.reload();
+  }
+
+  @ReactMethod
   public void setHotLoadingEnabled(boolean isHotLoadingEnabled) {
     mDevSupportManager.setHotModuleReplacementEnabled(isHotLoadingEnabled);
   }

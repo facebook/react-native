@@ -739,6 +739,7 @@ namespace facebook {
 @protocol NativeDevSettingsSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)reload;
+- (void)reloadWithReason:(NSString *)reason;
 - (void)setHotLoadingEnabled:(BOOL)isHotLoadingEnabled;
 - (void)setIsDebuggingRemotely:(BOOL)isDebuggingRemotelyEnabled;
 - (void)setProfilingEnabled:(BOOL)isProfilingEnabled;

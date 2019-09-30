@@ -1,6 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
  * @format
  */
 
@@ -36,8 +39,12 @@ class DevSettings extends NativeEventEmitter {
     });
   }
 
-  reload() {
-    NativeDevSettings.reload();
+  reload(reason: string) {
+    if (typeof NativeDevSettings.reloadWithReason === 'function') {
+      NativeDevSettings.reloadWithReason(reason || 'Uncategorized from JS');
+    } else {
+      NativeDevSettings.reload();
+    }
   }
 
   // TODO: Add other dev setting methods exposed by the native module.
