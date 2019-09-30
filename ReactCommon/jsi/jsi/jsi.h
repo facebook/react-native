@@ -252,6 +252,10 @@ class Runtime {
   virtual String createStringFromUtf8(const uint8_t* utf8, size_t length) = 0;
   virtual std::string utf8(const String&) = 0;
 
+  // \return a \c Value created from a utf8-encoded JSON string. The default
+  // implementation creates a \c String and invokes JSON.parse.
+  virtual Value createValueFromJsonUtf8(const uint8_t* json, size_t length);
+
   virtual Object createObject() = 0;
   virtual Object createObject(std::shared_ptr<HostObject> ho) = 0;
   virtual std::shared_ptr<HostObject> getHostObject(const jsi::Object&) = 0;
@@ -974,7 +978,9 @@ class Value {
 
   // \return a \c Value created from a utf8-encoded JSON string.
   static Value
-  createFromJsonUtf8(Runtime& runtime, const uint8_t* json, size_t length);
+  createFromJsonUtf8(Runtime& runtime, const uint8_t* json, size_t length) {
+    return runtime.createValueFromJsonUtf8(json, length);
+  }
 
   /// \return according to the SameValue algorithm see more here:
   //  https://www.ecma-international.org/ecma-262/5.1/#sec-11.9.4

@@ -102,6 +102,13 @@ Instrumentation& Runtime::instrumentation() {
   return sharedInstance;
 }
 
+Value Runtime::createValueFromJsonUtf8(const uint8_t* json, size_t length) {
+  Function parseJson = global()
+                           .getPropertyAsObject(*this, "JSON")
+                           .getPropertyAsFunction(*this, "parse");
+  return parseJson.call(*this, String::createFromUtf8(*this, json, length));
+}
+
 Pointer& Pointer::operator=(Pointer&& other) {
   if (ptr_) {
     ptr_->invalidate();
@@ -212,16 +219,6 @@ Value::~Value() {
   if (kind_ >= PointerKind) {
     data_.pointer.~Pointer();
   }
-}
-
-Value Value::createFromJsonUtf8(
-    Runtime& runtime,
-    const uint8_t* json,
-    size_t length) {
-  Function parseJson = runtime.global()
-                           .getPropertyAsObject(runtime, "JSON")
-                           .getPropertyAsFunction(runtime, "parse");
-  return parseJson.call(runtime, String::createFromUtf8(runtime, json, length));
 }
 
 bool Value::strictEquals(Runtime& runtime, const Value& a, const Value& b) {
