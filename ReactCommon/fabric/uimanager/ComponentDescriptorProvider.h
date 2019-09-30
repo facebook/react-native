@@ -79,8 +79,8 @@ ComponentDescriptorProvider concreteComponentDescriptorProvider() {
 
   return {ComponentDescriptorT::ConcreteShadowNode::Handle(),
           ComponentDescriptorT::ConcreteShadowNode::Name(),
-          &concreteComponentDescriptorConstructor<ComponentDescriptorT>,
-          nullptr};
+          nullptr,
+          &concreteComponentDescriptorConstructor<ComponentDescriptorT>};
 }
 
 } // namespace react

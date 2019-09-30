@@ -6,14 +6,16 @@
 #include "ComponentDescriptorRegistry.h"
 
 #include <react/core/ShadowNodeFragment.h>
+#include <react/uimanager/ComponentDescriptorProviderRegistry.h>
 #include <react/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {
 
 ComponentDescriptorRegistry::ComponentDescriptorRegistry(
-    ComponentDescriptorParameters const &parameters)
-    : parameters_(parameters) {}
+    ComponentDescriptorParameters const &parameters,
+    ComponentDescriptorProviderRegistry const &providerRegistry)
+    : parameters_(parameters), providerRegistry_(&providerRegistry) {}
 
 void ComponentDescriptorRegistry::add(
     ComponentDescriptorProvider componentDescriptorProvider) const {
@@ -122,6 +124,17 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
 
   auto it = _registryByName.find(unifiedComponentName);
   if (it == _registryByName.end()) {
+    assert(providerRegistry_);
+
+    mutex_.unlock_shared();
+    providerRegistry_->request(unifiedComponentName.c_str());
+    mutex_.lock_shared();
+
+    it = _registryByName.find(unifiedComponentName);
+    assert(it != _registryByName.end());
+  }
+
+  if (it == _registryByName.end()) {
     if (_fallbackComponentDescriptor == nullptr) {
       throw std::invalid_argument(
           ("Unable to find componentDescriptor for " + unifiedComponentName)
@@ -129,6 +142,7 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
     }
     return *_fallbackComponentDescriptor.get();
   }
+
   return *it->second;
 }
 

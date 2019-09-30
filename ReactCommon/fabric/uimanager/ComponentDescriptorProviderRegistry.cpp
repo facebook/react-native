@@ -40,13 +40,34 @@ void ComponentDescriptorProviderRegistry::remove(
   }
 }
 
+void ComponentDescriptorProviderRegistry::setComponentDescriptorProviderRequest(
+    ComponentDescriptorProviderRequest componentDescriptorProviderRequest)
+    const {
+  std::shared_lock<better::shared_mutex> lock(mutex_);
+  componentDescriptorProviderRequest_ = componentDescriptorProviderRequest;
+}
+
+void ComponentDescriptorProviderRegistry::request(
+    ComponentName componentName) const {
+  ComponentDescriptorProviderRequest componentDescriptorProviderRequest;
+
+  {
+    std::shared_lock<better::shared_mutex> lock(mutex_);
+    componentDescriptorProviderRequest = componentDescriptorProviderRequest_;
+  }
+
+  if (componentDescriptorProviderRequest) {
+    componentDescriptorProviderRequest(componentName);
+  }
+}
+
 ComponentDescriptorRegistry::Shared
 ComponentDescriptorProviderRegistry::createComponentDescriptorRegistry(
     ComponentDescriptorParameters const &parameters) const {
   std::shared_lock<better::shared_mutex> lock(mutex_);
 
   auto registry =
-      std::make_shared<ComponentDescriptorRegistry const>(parameters);
+      std::make_shared<ComponentDescriptorRegistry const>(parameters, *this);
 
   for (auto const &pair : componentDescriptorProviders_) {
     registry->add(pair.second);
