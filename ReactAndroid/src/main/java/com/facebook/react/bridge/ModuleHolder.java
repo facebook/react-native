@@ -99,7 +99,7 @@ public class ModuleHolder {
     }
   }
 
-  /* pacakge */ synchronized boolean hasInstance() {
+  /* package */ synchronized boolean hasInstance() {
     return mModule != null;
   }
 
