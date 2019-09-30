@@ -175,6 +175,17 @@
                          range:NSMakeRange(0, attributedText.length)];
 }
 
+static UIImage *emptyImg = NULL;
+- (UIImage*)getEmptyImg
+{
+  if (emptyImg == NULL) {
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(1, 1), NO, 0);
+    emptyImg = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+  }
+  return emptyImg;
+}
+
 - (NSAttributedString *)attributedTextWithMeasuredAttachmentsThatFitSize:(CGSize)size
 {
   NSMutableAttributedString *attributedText =
@@ -195,6 +206,7 @@
                                                    maximumSize:size];
       NSTextAttachment *attachment = [NSTextAttachment new];
       attachment.bounds = (CGRect){CGPointZero, fittingSize};
+      [attachment setImage:[self getEmptyImg]];
       [attributedText addAttribute:NSAttachmentAttributeName value:attachment range:range];
     }
   ];
