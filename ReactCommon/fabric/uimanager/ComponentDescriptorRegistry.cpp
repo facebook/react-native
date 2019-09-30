@@ -101,6 +101,10 @@ static std::string componentNameByReactViewName(std::string viewName) {
     return "ShimmeringView";
   }
 
+  if (viewName == "RefreshControl") {
+    return "PullToRefreshView";
+  }
+
   if (viewName == "AndroidProgressBar") {
     return "ActivityIndicatorView";
   }
