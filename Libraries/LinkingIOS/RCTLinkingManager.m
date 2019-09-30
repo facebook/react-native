@@ -101,7 +101,7 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
         #if TARGET_OS_SIMULATOR
           // Simulator-specific code
           if([URL.absoluteString hasPrefix:@"tel:"]){
-            RCTLogWarn(@"Unable to open phone dialer app in the simulator for Telephone URLs. URL:  %@", URL);
+            RCTLogWarn(@"Unable to open the Phone app in the simulator for telephone URLs. URL:  %@", URL);
             resolve(@NO);
           } else {
             reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
@@ -122,7 +122,7 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
       #if TARGET_OS_SIMULATOR
         // Simulator-specific code
         if([URL.absoluteString hasPrefix:@"tel:"]){
-          RCTLogWarn(@"Unable to open phone dialer app in the simulator for Telephone URLs. URL:  %@", URL);
+          RCTLogWarn(@"Unable to open the Phone app in the simulator for telephone URLs. URL:  %@", URL);
           resolve(@NO);
         } else {
           reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
