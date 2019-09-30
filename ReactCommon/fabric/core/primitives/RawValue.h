@@ -95,7 +95,7 @@ class RawValue {
     return castValue(dynamic_, (T *)nullptr);
   }
 
-  inline explicit operator folly::dynamic() const {
+  inline explicit operator folly::dynamic() const noexcept {
     return dynamic_;
   }
 

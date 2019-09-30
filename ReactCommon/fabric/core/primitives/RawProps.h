@@ -74,7 +74,7 @@ class RawProps final {
   RawProps(RawProps const &other) noexcept = delete;
   RawProps &operator=(RawProps const &other) noexcept = delete;
 
-  void parse(RawPropsParser const &parser) const;
+  void parse(RawPropsParser const &parser) const noexcept;
 
 #ifdef ANDROID
   /*

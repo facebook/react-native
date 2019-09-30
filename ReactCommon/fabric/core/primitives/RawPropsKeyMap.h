@@ -27,22 +27,24 @@ class RawPropsKeyMap final {
   /*
    * Stores `value` with by given `key`.
    */
-  void insert(RawPropsKey const &key, RawPropsValueIndex value);
+  void insert(RawPropsKey const &key, RawPropsValueIndex value) noexcept;
 
   /*
    * Reindexes the stored data.
    * Must be called before `at` (after calling a bunch of `add`s).
    */
-  void reindex();
+  void reindex() noexcept;
 
   /*
    * Finds and returns the `value` (some index) by given `key`.
    * Returns `kRawPropsValueIndexEmpty` if the value wan't found.
    */
-  RawPropsValueIndex at(char const *name, RawPropsPropNameLength length);
+  RawPropsValueIndex at(
+      char const *name,
+      RawPropsPropNameLength length) noexcept;
 
  private:
-  static int comparator(void const *lhs, void const *rhs);
+  static int comparator(void const *lhs, void const *rhs) noexcept;
 
   struct Item {
     RawPropsValueIndex value;

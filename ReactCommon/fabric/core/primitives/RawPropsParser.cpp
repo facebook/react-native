@@ -15,7 +15,7 @@ namespace react {
 
 RawValue const *RawPropsParser::at(
     RawProps const &rawProps,
-    RawPropsKey const &key) const {
+    RawPropsKey const &key) const noexcept {
   if (UNLIKELY(!ready_)) {
     // This is not thread-safe part; this happens only during initialization of
     // a `ComponentDescriptor` where it is actually safe.
@@ -38,12 +38,12 @@ RawValue const *RawPropsParser::at(
                                                 : &rawProps.values_[valueIndex];
 }
 
-void RawPropsParser::postPrepare() {
+void RawPropsParser::postPrepare() noexcept {
   ready_ = true;
   nameToIndex_.reindex();
 }
 
-void RawPropsParser::preparse(RawProps const &rawProps) const {
+void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
   rawProps.keyIndexToValueIndex_.resize(size_, kRawPropsValueIndexEmpty);
 
   // Resetting the cursor, the next increment will give `0`.
