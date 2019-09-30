@@ -23,8 +23,9 @@ class ImageComponentDescriptor final
  public:
   ImageComponentDescriptor(
       EventDispatcher::Weak eventDispatcher,
-      ContextContainer::Shared const &contextContainer)
-      : ConcreteComponentDescriptor(eventDispatcher),
+      ContextContainer::Shared const &contextContainer,
+      ComponentDescriptor::Flavor const &flavor = {})
+      : ConcreteComponentDescriptor(eventDispatcher, contextContainer, flavor),
         imageManager_(std::make_shared<ImageManager>(contextContainer)){};
 
   void adopt(UnsharedShadowNode shadowNode) const override {

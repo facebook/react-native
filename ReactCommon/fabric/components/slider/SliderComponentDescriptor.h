@@ -22,8 +22,9 @@ class SliderComponentDescriptor final
  public:
   SliderComponentDescriptor(
       EventDispatcher::Weak eventDispatcher,
-      ContextContainer::Shared const &contextContainer)
-      : ConcreteComponentDescriptor(eventDispatcher),
+      ContextContainer::Shared const &contextContainer,
+      ComponentDescriptor::Flavor const &flavor = {})
+      : ConcreteComponentDescriptor(eventDispatcher, contextContainer, flavor),
         imageManager_(std::make_shared<ImageManager>(contextContainer)),
         measurementsManager_(
             SliderMeasurementsManager::shouldMeasureSlider()

@@ -20,7 +20,9 @@ void ComponentDescriptorRegistry::add(
   std::unique_lock<better::shared_mutex> lock(mutex_);
 
   auto componentDescriptor = componentDescriptorProvider.constructor(
-      parameters_.eventDispatcher, parameters_.contextContainer);
+      {parameters_.eventDispatcher,
+       parameters_.contextContainer,
+       componentDescriptorProvider.flavor});
   assert(
       componentDescriptor->getComponentHandle() ==
       componentDescriptorProvider.handle);

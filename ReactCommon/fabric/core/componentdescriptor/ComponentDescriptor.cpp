@@ -12,8 +12,11 @@ namespace react {
 
 ComponentDescriptor::ComponentDescriptor(
     EventDispatcher::Weak const &eventDispatcher,
-    ContextContainer::Shared const &contextContainer)
-    : eventDispatcher_(eventDispatcher), contextContainer_(contextContainer) {}
+    ContextContainer::Shared const &contextContainer,
+    ComponentDescriptor::Flavor const &flavor)
+    : eventDispatcher_(eventDispatcher),
+      contextContainer_(contextContainer),
+      flavor_(flavor) {}
 
 ContextContainer::Shared const &ComponentDescriptor::getContextContainer()
     const {
