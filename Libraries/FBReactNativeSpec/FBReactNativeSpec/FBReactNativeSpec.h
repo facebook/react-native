@@ -2236,7 +2236,7 @@ namespace facebook {
 } // namespace facebook
 @protocol NativeVibrationSpec <RCTBridgeModule, RCTTurboModule>
 
-- (void)vibrate:(double)pattern;
+- (void)vibrate:(NSNumber *)pattern;
 - (void)vibrateByPattern:(NSArray *)pattern
                   repeat:(double)repeat;
 - (void)cancel;

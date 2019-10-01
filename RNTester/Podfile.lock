@@ -225,6 +225,8 @@ PODS:
   - React-RCTText (1000.0.0):
     - React-Core/RCTTextHeaders (= 1000.0.0)
   - React-RCTVibration (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly (= 2018.10.22.00)
     - React-Core/RCTVibrationHeaders (= 1000.0.0)
   - ReactCommon/callinvoker (1000.0.0):
     - DoubleConversion
@@ -373,7 +375,7 @@ SPEC CHECKSUMS:
   React-RCTSettings: dd4009546ce88c3647c32f0b5922459ab313fdca
   React-RCTTest: 73df09ec226fcad6e7e058a313e5dd16cccf86a8
   React-RCTText: 9078167d3bc011162326f2d8ef4dd580ec1eca17
-  React-RCTVibration: 63c20d89204937ff8c7bbc1e712383347e6fbd90
+  React-RCTVibration: bf05159719598f876ba763e5a58ccbad21e2e82f
   ReactCommon: 9d212865526209dc2d01be40340c8d27b53e6bea
   Yoga: d88d8b51ee5b247f43211e2edf272438df1b484f
 
