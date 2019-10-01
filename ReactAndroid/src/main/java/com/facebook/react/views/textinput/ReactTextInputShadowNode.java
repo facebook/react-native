@@ -156,6 +156,18 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   @ReactProp(name = PROP_TEXT)
   public void setText(@Nullable String text) {
     mText = text;
+    if (text != null) {
+      // The selection shouldn't be bigger than the length of the text
+      if (mSelectionStart > text.length()) {
+        mSelectionStart = text.length();
+      }
+      if (mSelectionEnd > text.length()) {
+        mSelectionEnd = text.length();
+      }
+    } else {
+      mSelectionStart = UNSET;
+      mSelectionEnd = UNSET;
+    }
     markUpdated();
   }
 
