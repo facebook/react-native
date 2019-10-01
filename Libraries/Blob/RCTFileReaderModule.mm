@@ -8,11 +8,16 @@
 
 #import <React/RCTFileReaderModule.h>
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 
 #import <React/RCTBlobManager.h>
 
+#import "RCTBlobPlugins.h"
+
+@interface RCTFileReaderModule() <NativeFileReaderModuleSpec>
+@end
 
 @implementation RCTFileReaderModule
 
@@ -66,4 +71,15 @@ RCT_EXPORT_METHOD(readAsDataURL:(NSDictionary<NSString *, id> *)blob
   }
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
+  (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeFileReaderModuleSpecJSI>(self, jsInvoker);
+}
+
 @end
+
+Class RCTFileReaderModuleCls(void)
+{
+  return RCTFileReaderModule.class;
+}

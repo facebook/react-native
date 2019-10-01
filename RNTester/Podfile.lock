@@ -205,6 +205,8 @@ PODS:
   - React-RCTAnimation (1000.0.0):
     - React-Core/RCTAnimationHeaders (= 1000.0.0)
   - React-RCTBlob (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly (= 2018.10.22.00)
     - React-Core/RCTBlobHeaders (= 1000.0.0)
     - React-Core/RCTWebSocket (= 1000.0.0)
     - React-jsi (= 1000.0.0)
@@ -369,7 +371,7 @@ SPEC CHECKSUMS:
   React-jsinspector: ea0a218071a11c3687cef2480580180caa6a64c0
   React-RCTActionSheet: 090e7bd7c5774d919c47c4eeff78223a7fd8c19c
   React-RCTAnimation: 73d536fff417a101724d9529189c95a94263710c
-  React-RCTBlob: 86017e0ba937b94445c5f680fef27ab831700fe7
+  React-RCTBlob: acd519b1d6ec5d66f98b7cf8e70d0cd76642426f
   React-RCTImage: 7f5c9bff34905f1bc216be512ba0ae68f872208a
   React-RCTLinking: d7d7f792e63a8d57380cecbb9b7a3b31f92d1bb6
   React-RCTNetwork: c8f9d40297f35ea3792ea81866f33e8b45c25935

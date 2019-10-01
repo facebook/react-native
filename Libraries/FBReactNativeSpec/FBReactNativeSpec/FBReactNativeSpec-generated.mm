@@ -624,11 +624,11 @@ namespace facebook {
     }
 
     static facebook::jsi::Value __hostFunction_NativeBlobModuleSpecJSI_sendOverSocket(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "sendOverSocket", @selector(sendOverSocket:id:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "sendOverSocket", @selector(sendOverSocket:socketID:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeBlobModuleSpecJSI_createFromParts(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "createFromParts", @selector(createFromParts:blobId:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "createFromParts", @selector(createFromParts:withId:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeBlobModuleSpecJSI_release(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
