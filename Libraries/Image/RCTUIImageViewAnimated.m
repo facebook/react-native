@@ -31,7 +31,7 @@ static NSUInteger RCTDeviceFreeMemory() {
   if (kern != KERN_SUCCESS) return 0;
   kern = host_statistics(host_port, HOST_VM_INFO, (host_info_t)&vm_stat, &host_size);
   if (kern != KERN_SUCCESS) return 0;
-  return vm_stat.free_count * page_size;
+  return (vm_stat.free_count - vm_stat.speculative_count) * page_size;
 }
 
 @interface RCTUIImageViewAnimated () <CALayerDelegate>
