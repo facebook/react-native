@@ -7,10 +7,16 @@
 
 #import <React/RCTSettingsManager.h>
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTUtils.h>
+
+#import "RCTSettingsPlugins.h"
+
+@interface RCTSettingsManager() <NativeSettingsManagerSpec>
+@end
 
 @implementation RCTSettingsManager
 {
@@ -51,14 +57,16 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (NSDictionary<NSString *, id> *)constantsToExport
+- (facebook::react::ModuleConstants<JS::NativeSettingsManager::Constants>)constantsToExport
 {
-  return [self getConstants];
+  return (facebook::react::ModuleConstants<JS::NativeSettingsManager::Constants>)[self getConstants];
 }
 
-- (NSDictionary<NSString *, id> *)getConstants
+- (facebook::react::ModuleConstants<JS::NativeSettingsManager::Constants>)getConstants
 {
-  return @{@"settings": RCTJSONClean([_defaults dictionaryRepresentation])};
+  return facebook::react::typedConstants<JS::NativeSettingsManager::Constants>({
+    .settings = RCTJSONClean([_defaults dictionaryRepresentation])
+  });
 }
 
 - (void)userDefaultsDidChange:(NSNotification *)note
@@ -109,4 +117,15 @@ RCT_EXPORT_METHOD(deleteValues:(NSArray<NSString *> *)keys)
   _ignoringUpdates = NO;
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
+  (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeSettingsManagerSpecJSI>(self, jsInvoker);
+}
+
 @end
+
+Class RCTSettingsManagerCls(void)
+{
+  return RCTSettingsManager.class;
+}
