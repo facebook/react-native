@@ -80,7 +80,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
       @Nullable StateWrapper stateWrapper,
       JSResponderHandler jsResponderHandler) {
     T view = createViewInstance(reactContext, props, stateWrapper);
-    addEventEmitters(reactContext, view);
     if (view instanceof ReactInterceptingViewGroup) {
       ((ReactInterceptingViewGroup) view).setOnInterceptTouchEventListener(jsResponderHandler);
     }
@@ -137,6 +136,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
       @Nullable ReactStylesDiffMap initialProps,
       @Nullable StateWrapper stateWrapper) {
     T view = createViewInstance(reactContext);
+    addEventEmitters(reactContext, view);
     if (initialProps != null) {
       updateProperties(view, initialProps);
     }
