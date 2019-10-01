@@ -8,7 +8,6 @@ package com.facebook.react.views.textinput;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Editable;
@@ -50,7 +49,6 @@ import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.react.views.scroll.ScrollEvent;
 import com.facebook.react.views.scroll.ScrollEventType;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
-import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.TextLayoutManager;
@@ -1041,5 +1039,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       YogaMeasureMode heightMode) {
     return TextLayoutManager.measureText(
         context, localData, props, width, widthMode, height, heightMode);
+  }
+
+  @Override
+  public void setPadding(ReactEditText view, int left, int top, int right, int bottom) {
+    view.setPadding(left, top, right, bottom);
   }
 }

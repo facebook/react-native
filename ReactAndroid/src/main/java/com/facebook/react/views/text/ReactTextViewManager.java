@@ -123,4 +123,9 @@ public class ReactTextViewManager
     return TextLayoutManager.measureText(
         context, localData, props, width, widthMode, height, heightMode);
   }
+
+  @Override
+  public void setPadding(ReactTextView view, int left, int top, int right, int bottom) {
+    view.setPadding(left, top, right, bottom);
+  }
 }

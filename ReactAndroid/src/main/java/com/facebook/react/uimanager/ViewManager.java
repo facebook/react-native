@@ -297,4 +297,10 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
       YogaMeasureMode heightMode) {
     return 0;
   }
+
+  /**
+   * Subclasses can override this method to set padding for the given View in Fabric. Since not all
+   * components support setting padding, the default implementation of this method does nothing.
+   */
+  public void setPadding(T view, int left, int top, int right, int bottom) {}
 }
