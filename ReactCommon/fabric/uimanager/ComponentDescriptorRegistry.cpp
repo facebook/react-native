@@ -135,7 +135,15 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
     mutex_.lock_shared();
 
     it = _registryByName.find(unifiedComponentName);
-    assert(it != _registryByName.end());
+
+    /*
+     * TODO: T54849676
+     * Uncomment the `assert` after the following block that checks
+     * `_fallbackComponentDescriptor` is no longer needed. The assert assumes
+     * that `componentDescriptorProviderRequest` is always not null and register
+     * some component on every single request.
+     */
+    // assert(it != _registryByName.end());
   }
 
   if (it == _registryByName.end()) {
