@@ -7,8 +7,9 @@
 
 #import "RCTAssetsLibraryRequestHandler.h"
 
-#import <stdatomic.h>
+#import <atomic>
 #import <dlfcn.h>
+#import <memory>
 #import <objc/runtime.h>
 
 #import <Photos/Photos.h>
@@ -17,6 +18,12 @@
 #import <React/RCTBridge.h>
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
+#import <ReactCommon/RCTTurboModule.h>
+
+#import "RCTCameraRollPlugins.h"
+
+@interface RCTAssetsLibraryRequestHandler() <RCTTurboModule>
+@end
 
 @implementation RCTAssetsLibraryRequestHandler
 
@@ -38,9 +45,9 @@ RCT_EXPORT_MODULE()
 - (id)sendRequest:(NSURLRequest *)request
      withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
-  __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
+  auto cancelled = std::make_shared<std::atomic<bool>>(false);
   void (^cancellationBlock)(void) = ^{
-    atomic_store(&cancelled, YES);
+    cancelled->store(true);
   };
 
   NSURL *requestURL = request.URL;
@@ -48,15 +55,15 @@ RCT_EXPORT_MODULE()
   if (isPHUpload) {
     requestURL = [NSURL URLWithString:[@"ph" stringByAppendingString:[requestURL.absoluteString substringFromIndex:RCTNetworkingPHUploadHackScheme.length]]];
   }
-  
+
   if (!requestURL) {
     NSString *const msg = [NSString stringWithFormat:@"Cannot send request without URL"];
     [delegate URLRequest:cancellationBlock didCompleteWithError:RCTErrorWithMessage(msg)];
     return cancellationBlock;
   }
-  
+
   PHFetchResult<PHAsset *> *fetchResult;
- 
+
   if ([requestURL.scheme caseInsensitiveCompare:@"ph"] == NSOrderedSame) {
     // Fetch assets using PHAsset localIdentifier (recommended)
     NSString *const localIdentifier = [requestURL.absoluteString substringFromIndex:@"ph://".length];
@@ -70,7 +77,7 @@ RCT_EXPORT_MODULE()
     [delegate URLRequest:cancellationBlock didCompleteWithError:RCTErrorWithMessage(msg)];
     return cancellationBlock;
   }
-  
+
   if (![fetchResult firstObject]) {
     NSString *errorMessage = [NSString stringWithFormat:@"Failed to load asset"
                               " at URL %@ with no error message.", requestURL];
@@ -78,8 +85,8 @@ RCT_EXPORT_MODULE()
     [delegate URLRequest:cancellationBlock didCompleteWithError:error];
     return cancellationBlock;
   }
-  
-  if (atomic_load(&cancelled)) {
+
+  if (cancelled->load()) {
     return cancellationBlock;
   }
 
@@ -149,7 +156,7 @@ RCT_EXPORT_MODULE()
       [delegate URLRequest:cancellationBlock didCompleteWithError:nil];
     }];
   }
-  
+
   return cancellationBlock;
 }
 
@@ -159,3 +166,7 @@ RCT_EXPORT_MODULE()
 }
 
 @end
+
+Class RCTAssetsLibraryRequestHandlerCls(void) {
+  return RCTAssetsLibraryRequestHandler.class;
+}

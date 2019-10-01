@@ -8,6 +8,7 @@
 
 #import "RCTImagePickerManager.h"
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <UIKit/UIKit.h>
 
@@ -15,6 +16,8 @@
 #import <React/RCTImageStoreManager.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
+
+#import "RCTCameraRollPlugins.h"
 
 @interface RCTImagePickerController : UIImagePickerController
 
@@ -26,8 +29,7 @@
 
 @end
 
-@interface RCTImagePickerManager () <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
-
+@interface RCTImagePickerManager () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, NativeImagePickerIOSSpec>
 @end
 
 @implementation RCTImagePickerManager
@@ -78,7 +80,7 @@ RCT_EXPORT_METHOD(canUseCamera:(RCTResponseSenderBlock)callback)
   callback(@[@([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])]);
 }
 
-RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config
+RCT_EXPORT_METHOD(openCameraDialog:(JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig &)config
                   successCallback:(RCTResponseSenderBlock)callback
                   cancelCallback:(RCTResponseSenderBlock)cancelCallback)
 {
@@ -92,9 +94,9 @@ RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config
   imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
   NSArray<NSString *> *availableMediaTypes = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];
   imagePicker.mediaTypes = availableMediaTypes;
-  imagePicker.unmirrorFrontFacingCamera = [RCTConvert BOOL:config[@"unmirrorFrontFacingCamera"]];
+  imagePicker.unmirrorFrontFacingCamera = config.unmirrorFrontFacingCamera() ? YES : NO;
 
-  if ([RCTConvert BOOL:config[@"videoMode"]]) {
+  if (config.videoMode()) {
     imagePicker.cameraCaptureMode = UIImagePickerControllerCameraCaptureModeVideo;
   }
 
@@ -103,7 +105,7 @@ RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config
         cancelCallback:cancelCallback];
 }
 
-RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
+RCT_EXPORT_METHOD(openSelectDialog:(JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig &)config
                   successCallback:(RCTResponseSenderBlock)callback
                   cancelCallback:(RCTResponseSenderBlock)cancelCallback)
 {
@@ -117,10 +119,10 @@ RCT_EXPORT_METHOD(openSelectDialog:(NSDictionary *)config
   imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 
   NSMutableArray<NSString *> *allowedTypes = [NSMutableArray new];
-  if ([RCTConvert BOOL:config[@"showImages"]]) {
+  if (config.showImages()) {
     [allowedTypes addObject:(NSString *)kUTTypeImage];
   }
-  if ([RCTConvert BOOL:config[@"showVideos"]]) {
+  if (config.showVideos()) {
     [allowedTypes addObject:(NSString *)kUTTypeMovie];
   }
 
@@ -222,4 +224,13 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
   }
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeImagePickerIOSSpecJSI>(self, jsInvoker);
+}
+
 @end
+
+Class RCTImagePickerManagerCls(void) {
+  return RCTImagePickerManager.class;
+}

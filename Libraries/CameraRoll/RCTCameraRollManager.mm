@@ -7,6 +7,7 @@
 
 #import "RCTCameraRollManager.h"
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -21,6 +22,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
+#import "RCTCameraRollPlugins.h"
 #import "RCTAssetsLibraryRequestHandler.h"
 
 @implementation RCTConvert (PHAssetCollectionSubtype)
@@ -135,7 +137,7 @@ RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
       }
     }];
   };
-  
+
   void (^loadBlock)(void) = ^void() {
     if ([type isEqualToString:@"video"]) {
       inputURI = request.URL;
@@ -146,13 +148,13 @@ RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
           reject(kErrorUnableToLoad, nil, error);
           return;
         }
-        
+
         inputImage = image;
         saveBlock();
       }];
     }
   };
-  
+
   requestPhotoLibraryAccess(reject, loadBlock);
 }
 
@@ -214,13 +216,13 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
   if (groupName != nil) {
     collectionFetchOptions.predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"localizedTitle == '%@'", groupName]];
   }
-  
+
   requestPhotoLibraryAccess(reject, ^{
     PHFetchResult<PHAssetCollection *> *const assetCollectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:collectionType subtype:collectionSubtype options:collectionFetchOptions];
     [assetCollectionFetchResult enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull assetCollection, NSUInteger collectionIdx, BOOL * _Nonnull stopCollections) {
       // Enumerate assets within the collection
       PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:assetFetchOptions];
-      
+
       [assetsFetchResult enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger assetIdx, BOOL * _Nonnull stopAssets) {
         NSString *const uri = [NSString stringWithFormat:@"ph://%@", [asset localIdentifier]];
         if (afterCursor && !foundAfter) {
@@ -229,18 +231,18 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
           }
           return; // skip until we get to the first one
         }
-        
+
         // Get underlying resources of an asset - this includes files as well as details about edited PHAssets
         if ([mimeTypes count] > 0) {
           NSArray<PHAssetResource *> *const assetResources = [PHAssetResource assetResourcesForAsset:asset];
           if (![assetResources firstObject]) {
             return;
           }
-          
+
           PHAssetResource *const _Nonnull resource = [assetResources firstObject];
           CFStringRef const uti = (__bridge CFStringRef _Nonnull)(resource.uniformTypeIdentifier);
           NSString *const mimeType = (NSString *)CFBridgingRelease(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType));
-          
+
           BOOL __block mimeTypeFound = NO;
           [mimeTypes enumerateObjectsUsingBlock:^(NSString * _Nonnull mimeTypeFilter, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([mimeType isEqualToString:mimeTypeFilter]) {
@@ -248,12 +250,12 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
               *stop = YES;
             }
           }];
-          
+
           if (!mimeTypeFound) {
             return;
           }
         }
-        
+
         // If we've accumulated enough results to resolve a single promise
         if (first == assets.count) {
           *stopAssets = YES;
@@ -264,7 +266,7 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
           resolvedPromise = YES;
           return;
         }
-        
+
         NSString *const assetMediaTypeLabel = (asset.mediaType == PHAssetMediaTypeVideo
                                                ? @"video"
                                                : (asset.mediaType == PHAssetMediaTypeImage
@@ -273,7 +275,7 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
                                                      ? @"audio"
                                                      : @"unknown")));
         CLLocation *const loc = asset.location;
-        
+
         // A note on isStored: in the previous code that used ALAssets, isStored
         // was always set to YES, probably because iCloud-synced images were never returned (?).
         // To get the "isStored" information and filename, we would need to actually request the
@@ -304,7 +306,7 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
         }];
       }];
     }];
-    
+
     // If we get this far and haven't resolved the promise yet, we reached the end of the list of photos
     if (!resolvedPromise) {
       hasNextPage = NO;
@@ -345,3 +347,7 @@ static void checkPhotoLibraryConfig()
 }
 
 @end
+
+Class RCTCameraRollManagerCls(void) {
+  return RCTCameraRollManager.class;
+}

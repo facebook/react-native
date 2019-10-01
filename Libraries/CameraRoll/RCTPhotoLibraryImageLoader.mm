@@ -8,8 +8,14 @@
 #import "RCTPhotoLibraryImageLoader.h"
 
 #import <Photos/Photos.h>
-
+#import <React/RCTLog.h>
 #import <React/RCTUtils.h>
+#import <ReactCommon/RCTTurboModule.h>
+
+#import "RCTCameraRollPlugins.h"
+
+@interface RCTPhotoLibraryImageLoader () <RCTTurboModule>
+@end
 
 @implementation RCTPhotoLibraryImageLoader
 
@@ -109,3 +115,7 @@ RCT_EXPORT_MODULE()
 }
 
 @end
+
+Class RCTPhotoLibraryImageLoaderCls(void) {
+  return RCTPhotoLibraryImageLoader.class;
+}
