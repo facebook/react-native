@@ -16,7 +16,17 @@
 #import "RCTRedBoxExtraDataViewController.h"
 #import "RCTUtils.h"
 
-#if RCT_DEBUG
+#if RCT_DEV
+static BOOL redBoxEnabled = YES;
+#else
+static BOOL redBoxEnabled = NO;
+#endif
+
+void RCTRedBoxSetEnabled(BOOL enabled) {
+  redBoxEnabled = enabled;
+}
+
+#if RCT_DEV_MENU
 
 @class RCTRedBoxWindow;
 
@@ -618,7 +628,7 @@ RCT_EXPORT_METHOD(dismiss)
 
 - (RCTRedBox *)redBox
 {
-  return [self moduleIsInitialized:[RCTRedBox class]] ? [self moduleForClass:[RCTRedBox class]] : nil;
+  return redBoxEnabled && [self moduleIsInitialized:[RCTRedBox class]] ? [self moduleForClass:[RCTRedBox class]] : nil;
 }
 
 @end
