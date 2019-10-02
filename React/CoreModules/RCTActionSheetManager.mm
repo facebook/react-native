@@ -14,6 +14,7 @@
 #import <React/RCTUtils.h>
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <RCTTypeSafety/RCTConvertHelpers.h>
 
 #import "CoreModulesPlugins.h"
 
@@ -55,26 +56,6 @@ RCT_EXPORT_MODULE()
   [parentViewController presentViewController:alertController animated:YES completion:nil];
 }
 
-namespace {
-
-  NSArray<NSString *> *convertLazyVectorToNSArray(facebook::react::LazyVector<NSString *> vec) {
-    NSMutableArray<NSString *> *array = [NSMutableArray new];
-    for (auto it = vec.begin(); it != vec.end(); it++) {
-      [array addObject:*it];
-    }
-    return array;
-  }
-
-  NSArray<NSNumber *> *convertLazyVectorToNSArray(facebook::react::LazyVector<double> vec) {
-    NSMutableArray<NSNumber *> *array = [NSMutableArray new];
-    for (auto it = vec.begin(); it != vec.end(); it++) {
-      [array addObject:@(*it)];
-    }
-    return array;
-  }
-
-} // namespace
-
 RCT_EXPORT_METHOD(showActionSheetWithOptions:(JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions &)options
                   callback:(RCTResponseSenderBlock)callback)
 {
@@ -89,11 +70,11 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(JS::NativeActionSheetManager::Spec
 
   NSString *title = options.title();
   NSString *message = options.message();
-  NSArray<NSString *> *buttons = [RCTConvert NSStringArray:options.options() ? convertLazyVectorToNSArray(*options.options()) : nil];
+  NSArray<NSString *> *buttons = RCTConvertOptionalVecToArray(options.options(), ^id(NSString *element) { return element; });
   NSInteger cancelButtonIndex = options.cancelButtonIndex() ? [RCTConvert NSInteger:@(*options.cancelButtonIndex())] : -1;
   NSArray<NSNumber *> *destructiveButtonIndices;
   if (options.destructiveButtonIndices()) {
-    destructiveButtonIndices = [RCTConvert NSArray:convertLazyVectorToNSArray(*options.destructiveButtonIndices())];
+    destructiveButtonIndices = RCTConvertVecToArray(*options.destructiveButtonIndices(), ^id(double element) { return @(element); });
   } else {
     NSNumber *destructiveButtonIndex = @-1;
     destructiveButtonIndices = @[destructiveButtonIndex];
@@ -193,7 +174,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(JS::NativeActionSheetManager:
     [shareController setValue:subject forKey:@"subject"];
   }
 
-  NSArray *excludedActivityTypes = [RCTConvert NSStringArray:options.excludedActivityTypes() ? convertLazyVectorToNSArray(*options.excludedActivityTypes()) : nil];
+  NSArray *excludedActivityTypes = RCTConvertOptionalVecToArray(options.excludedActivityTypes(), ^id(NSString *element) { return element; });
   if (excludedActivityTypes) {
     shareController.excludedActivityTypes = excludedActivityTypes;
   }
