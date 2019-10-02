@@ -76,7 +76,7 @@ void JSIExecutor::loadApplicationScript(
 
   // TODO: check for and use precompiled HBC
 
-  runtime_->nullptr
+  runtime_ = nullptr;
 
   runtime_->global().setProperty(
       *runtime_,
