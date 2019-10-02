@@ -446,6 +446,10 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   jmethodID methodID =
       env->GetMethodID(cls, methodName.c_str(), methodSignature.c_str());
 
+  // If the method signature doesn't match, show a redbox here instead of
+  // crashing later.
+  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
+
   // TODO(T43933641): Refactor to remove this special-casing
   if (methodName == "getConstants") {
     auto constantsMap = (jobject)env->CallObjectMethod(instance, methodID);
