@@ -996,6 +996,12 @@ RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
    }];
 }
 
+RCT_EXPORT_METHOD(queryCache:(NSArray *)uris
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  resolve([self getImageCacheStatus:uris]);
+}
 @end
 
 /**

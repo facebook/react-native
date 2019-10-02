@@ -1156,6 +1156,9 @@ namespace JS {
 - (void)prefetchImage:(NSString *)uri
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject;
+- (void)queryCache:(NSArray *)uris
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject;
 
 @end
 namespace facebook {

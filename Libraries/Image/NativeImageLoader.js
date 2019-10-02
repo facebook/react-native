@@ -22,6 +22,9 @@ export interface Spec extends TurboModule {
     headers: {[string]: string},
   ) => Promise<$ReadOnly<{width: number, height: number}>>;
   +prefetchImage: (uri: string) => Promise<boolean>;
+  +queryCache: (
+    uris: Array<string>,
+  ) => Promise<{[string]: 'memory' | 'disk' | 'disk/memory'}>;
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>('ImageLoader'): Spec);
