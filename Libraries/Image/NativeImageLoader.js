@@ -17,6 +17,10 @@ export interface Spec extends TurboModule {
   +getConstants: () => {||};
   // Return [width, height] of image uri
   +getSize: (uri: string) => Promise<$ReadOnlyArray<number>>;
+  +getSizeWithHeaders: (
+    uri: string,
+    headers: {[string]: string},
+  ) => Promise<$ReadOnly<{width: number, height: number}>>;
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>('ImageLoader'): Spec);

@@ -956,12 +956,28 @@ RCT_EXPORT_METHOD(getSize:(NSString *)uri resolve:(RCTPromiseResolveBlock)resolv
    block:^(NSError *error, CGSize size) {
      if (error) {
        reject(
-        @"Error",
+        @"E_GET_SIZE_FAILURE",
         [NSString stringWithFormat: @"Failed to getSize of %@", uri],
         error);
      } else {
        resolve(@[@(size.width), @(size.height)]);
      }
+   }];
+}
+
+RCT_EXPORT_METHOD(getSizeWithHeaders:(NSString *)uri
+                  headers:(JS::NativeImageLoader::SpecGetSizeWithHeadersHeaders &)headers
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  NSURLRequest *request = [RCTConvert NSURLRequest:uri];
+  [self getImageSizeForURLRequest:request
+   block:^(NSError *error, CGSize size) {
+     if (error) {
+       reject(@"E_GET_SIZE_FAILURE", nil, error);
+       return;
+     }
+     resolve(@{@"width":@(size.width),@"height":@(size.height)});
    }];
 }
 

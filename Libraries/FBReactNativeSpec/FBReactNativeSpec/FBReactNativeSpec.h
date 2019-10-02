@@ -1129,11 +1129,30 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+
+namespace JS {
+  namespace NativeImageLoader {
+    struct SpecGetSizeWithHeadersHeaders {
+
+      SpecGetSizeWithHeadersHeaders(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeImageLoader_SpecGetSizeWithHeadersHeaders)
++ (RCTManagedPointer *)JS_NativeImageLoader_SpecGetSizeWithHeadersHeaders:(id)json;
+@end
 @protocol NativeImageLoaderSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)getSize:(NSString *)uri
         resolve:(RCTPromiseResolveBlock)resolve
          reject:(RCTPromiseRejectBlock)reject;
+- (void)getSizeWithHeaders:(NSString *)uri
+                   headers:(JS::NativeImageLoader::SpecGetSizeWithHeadersHeaders &)headers
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject;
 
 @end
 namespace facebook {
@@ -2741,6 +2760,7 @@ inline JS::NativeI18nManager::Constants::Builder::Builder(const Input i) : _fact
 inline JS::NativeI18nManager::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
+
 inline bool JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig::unmirrorFrontFacingCamera() const
 {
   id const p = _v[@"unmirrorFrontFacingCamera"];

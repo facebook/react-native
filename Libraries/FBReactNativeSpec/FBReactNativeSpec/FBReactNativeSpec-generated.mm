@@ -1158,6 +1158,12 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
+@implementation RCTCxxConvert (NativeImageLoader_SpecGetSizeWithHeadersHeaders)
++ (RCTManagedPointer *)JS_NativeImageLoader_SpecGetSizeWithHeadersHeaders:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeImageLoader::SpecGetSizeWithHeadersHeaders>(json);
+}
+@end
 namespace facebook {
   namespace react {
 
@@ -1166,12 +1172,20 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "getSize", @selector(getSize:resolve:reject:), args, count);
     }
 
+    static facebook::jsi::Value __hostFunction_NativeImageLoaderSpecJSI_getSizeWithHeaders(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "getSizeWithHeaders", @selector(getSizeWithHeaders:headers:resolve:reject:), args, count);
+    }
+
 
     NativeImageLoaderSpecJSI::NativeImageLoaderSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
       : ObjCTurboModule("ImageLoader", instance, jsInvoker) {
         
         methodMap_["getSize"] = MethodMetadata {1, __hostFunction_NativeImageLoaderSpecJSI_getSize};
         
+        
+        methodMap_["getSizeWithHeaders"] = MethodMetadata {2, __hostFunction_NativeImageLoaderSpecJSI_getSizeWithHeaders};
+        
+        setMethodArgConversionSelector(@"getSizeWithHeaders", 1, @"JS_NativeImageLoader_SpecGetSizeWithHeadersHeaders:");
         
 
     }
