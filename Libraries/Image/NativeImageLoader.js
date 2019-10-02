@@ -21,6 +21,7 @@ export interface Spec extends TurboModule {
     uri: string,
     headers: {[string]: string},
   ) => Promise<$ReadOnly<{width: number, height: number}>>;
+  +prefetchImage: (uri: string) => Promise<boolean>;
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>('ImageLoader'): Spec);

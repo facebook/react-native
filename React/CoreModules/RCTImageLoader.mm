@@ -981,6 +981,21 @@ RCT_EXPORT_METHOD(getSizeWithHeaders:(NSString *)uri
    }];
 }
 
+RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject)
+{
+  NSURLRequest *request = [RCTConvert NSURLRequest:uri];
+  [self loadImageWithURLRequest:request
+   callback:^(NSError *error, UIImage *image) {
+     if (error) {
+       reject(@"E_PREFETCH_FAILURE", nil, error);
+       return;
+     }
+     resolve(@YES);
+   }];
+}
+
 @end
 
 /**

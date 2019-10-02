@@ -1153,6 +1153,9 @@ namespace JS {
                    headers:(JS::NativeImageLoader::SpecGetSizeWithHeadersHeaders &)headers
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject;
+- (void)prefetchImage:(NSString *)uri
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject;
 
 @end
 namespace facebook {
