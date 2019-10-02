@@ -1134,6 +1134,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _totalCellsMeasured = 0;
   _updateCellsToRenderBatcher: Batchinator;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
+  _hasDoneFirstScroll = false;
 
   _captureScrollRef = ref => {
     this._scrollRef = ref;
@@ -1368,7 +1369,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     return !this.props.horizontal ? metrics.y : metrics.x;
   }
 
-  _maybeCallOnEndReached() {
+  _maybeCallOnEndReached(hasShrinkedContentLength: boolean = false) {
     const {onEndReached, onEndReachedThreshold} = this.props;
     if (!onEndReached) {
       return;
@@ -1376,21 +1377,29 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
     const {contentLength, visibleLength, offset, dOffset} = this._scrollMetrics;
 
-    // Scrolled in a direction that doesn't require a check,
-    // such as scrolling up in the vertical list
-    if (offset <= 0 || dOffset <= 0) {
+    // If this is just after the initial rendering
+    if (
+      !hasShrinkedContentLength &&
+      !this._hasDoneFirstScroll &&
+      offset === 0
+    ) {
       return;
     }
 
-    // contentLength did not change because no new data was added
+    // If scrolled up in the vertical list
+    if (dOffset < 0) {
+      return;
+    }
+
+    // If contentLength has not changed
     if (contentLength === this._sentEndForContentLength) {
       return;
     }
 
     const distanceFromEnd = contentLength - visibleLength - offset;
 
-    // If the distance is farther than can be seen on the screen
-    if (distanceFromEnd >= visibleLength) {
+    // If the distance is so farther than the area shown on the screen
+    if (distanceFromEnd >= visibleLength * 1.5) {
       return;
     }
 
@@ -1421,9 +1430,24 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (this.props.onContentSizeChange) {
       this.props.onContentSizeChange(width, height);
     }
-    this._scrollMetrics.contentLength = this._selectLength({height, width});
+    const {contentLength: currentContentLength} = this._scrollMetrics;
+    const contentLength = this._selectLength({height, width});
+    this._scrollMetrics.contentLength = contentLength;
     this._scheduleCellsToRenderUpdate();
-    this._maybeCallOnEndReached();
+
+    const hasShrinkedContentLength =
+      currentContentLength > 0 &&
+      contentLength > 0 &&
+      contentLength < currentContentLength;
+
+    if (
+      hasShrinkedContentLength &&
+      this._sentEndForContentLength >= contentLength
+    ) {
+      this._sentEndForContentLength = 0;
+    }
+
+    this._maybeCallOnEndReached(hasShrinkedContentLength);
   };
 
   /* Translates metrics from a scroll event in a parent VirtualizedList into
@@ -1510,6 +1534,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (!this.props) {
       return;
     }
+    this._hasDoneFirstScroll = true;
     this._maybeCallOnEndReached();
     if (velocity !== 0) {
       this._fillRateHelper.activate();
