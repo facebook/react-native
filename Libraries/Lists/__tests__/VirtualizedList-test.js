@@ -277,12 +277,16 @@ describe('VirtualizedList', () => {
 
 describe('VirtualizedList > OnEndReached', () => {
   const ITEM_HEIGHT = 100;
+  const INITIAL_ITEM_COUNT = 20;
   const APPENDED_ITEM_COUNT = 10;
 
   let listItems, onEndReached, instance;
+  let shrinkedItemHeight;
 
   beforeEach(() => {
-    listItems = appendNewItems([], 10);
+    shrinkedItemHeight = 0;
+
+    listItems = appendNewItems([], INITIAL_ITEM_COUNT);
 
     onEndReached = jest.fn(function() {
       appendNewItems(listItems, APPENDED_ITEM_COUNT);
@@ -292,48 +296,60 @@ describe('VirtualizedList > OnEndReached', () => {
   });
 
   it('should not be called after initial rendering', () => {
+    expect(onEndReached).not.toHaveBeenCalled();
+    expect(listItems.length).toBe(INITIAL_ITEM_COUNT);
+  });
+
+  it('should be called when the item layout is shrinked', () => {
+    expect(onEndReached).not.toHaveBeenCalled();
+    expect(listItems.length).toBe(INITIAL_ITEM_COUNT);
+
+    shrinkedItemHeight = ITEM_HEIGHT / 2;
+
     const scroll = createScrollMethod();
     scroll(0);
 
-    expect(onEndReached).not.toHaveBeenCalled();
-    expect(listItems.length).toBe(10);
+    expect(onEndReached).toHaveBeenCalledTimes(1);
+    expect(listItems.length).toBe(INITIAL_ITEM_COUNT + APPENDED_ITEM_COUNT);
   });
 
-  it('should be called once after scrolling by 200', () => {
+  it('should be called once after scrolling by 800', () => {
     const scroll = createScrollMethod();
-    scroll(200);
+    scroll(800);
 
     expect(onEndReached).toHaveBeenCalledTimes(1);
     expect(onEndReached).toHaveBeenLastCalledWith({
-      distanceFromEnd: 200,
+      distanceFromEnd: 464,
     });
-    expect(listItems.length).toBe(20);
+    expect(listItems.length).toBe(INITIAL_ITEM_COUNT + APPENDED_ITEM_COUNT);
   });
 
   it('should not be called twice in a short period while scrolling fast', () => {
     const scroll = createScrollMethod();
-    scroll(200);
-    scroll(300, 50);
+    scroll(800);
 
     expect(onEndReached).toHaveBeenCalledTimes(1);
     expect(onEndReached).toHaveBeenLastCalledWith({
-      distanceFromEnd: 200,
+      distanceFromEnd: 464,
     });
-    expect(listItems.length).toBe(20);
+    expect(listItems.length).toBe(INITIAL_ITEM_COUNT + APPENDED_ITEM_COUNT);
+
+    scroll(850, 50);
+    expect(onEndReached).toHaveBeenCalledTimes(1);
   });
 
   it('should be called when required to load more items', () => {
     const scroll = createScrollMethod();
-    scroll(200);
+    scroll(800);
     expect(onEndReached).toHaveBeenCalledTimes(1);
-    expect(listItems.length).toBe(20);
+    expect(listItems.length).toBe(INITIAL_ITEM_COUNT + APPENDED_ITEM_COUNT);
 
-    scroll(1000);
+    scroll(1600);
     expect(onEndReached).toHaveBeenCalledTimes(2);
     expect(onEndReached).toHaveBeenLastCalledWith({
-      distanceFromEnd: 400,
+      distanceFromEnd: 664,
     });
-    expect(listItems.length).toBe(30);
+    expect(listItems.length).toBe(INITIAL_ITEM_COUNT + APPENDED_ITEM_COUNT * 2);
   });
 
   function createComponentInstance() {
@@ -343,8 +359,8 @@ describe('VirtualizedList > OnEndReached', () => {
       getItem: (items, index) => items[index],
       getItemCount: items => items.length,
       getItemLayout: (items, index) => ({
-        length: ITEM_HEIGHT,
-        offset: ITEM_HEIGHT * index,
+        length: shrinkedItemHeight ? shrinkedItemHeight : ITEM_HEIGHT,
+        offset: (shrinkedItemHeight ? shrinkedItemHeight : ITEM_HEIGHT) * index,
         index,
       }),
       onEndReached,
@@ -376,8 +392,13 @@ describe('VirtualizedList > OnEndReached', () => {
 
       const nativeEvent = {
         contentOffset: {y, x: 0},
-        layoutMeasurement: {width: 300, height: 600},
-        contentSize: {width: 300, height: listItems.length * ITEM_HEIGHT},
+        layoutMeasurement: {width: 414, height: 736},
+        contentSize: {
+          width: 414,
+          height:
+            listItems.length *
+            (shrinkedItemHeight ? shrinkedItemHeight : ITEM_HEIGHT),
+        },
         zoomScale: 1,
         contentInset: {right: 0, top: 0, left: 0, bottom: 0},
       };
