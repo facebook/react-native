@@ -618,7 +618,7 @@ RCT_EXPORT_METHOD(dismiss)
 
 - (RCTRedBox *)redBox
 {
-    return [self moduleForClass:[RCTRedBox class]];
+  return [self moduleIsInitialized:[RCTRedBox class]] ? [self moduleForClass:[RCTRedBox class]] : nil;
 }
 
 @end
