@@ -506,7 +506,9 @@ jobs:
 
       - run:
           name: Build Android RNTester App
-          command: ./gradlew RNTester:android:app:assembleRelease
+          command: |
+            ./gradlew RNTester:android:app:assembleDebug
+            ./gradlew RNTester:android:app:assembleRelease
 
       # Collect Results
       - run:

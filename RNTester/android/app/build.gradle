@@ -151,6 +151,14 @@ android {
             signingConfig signingConfigs.release
         }
     }
+
+    // The Flipper dependency pulls in a second runtime library
+    packagingOptions {
+        pickFirst '**/armeabi-v7a/libc++_shared.so'
+        pickFirst '**/x86/libc++_shared.so'
+        pickFirst '**/arm64-v8a/libc++_shared.so'
+        pickFirst '**/x86_64/libc++_shared.so'
+    }
 }
 
 dependencies {
