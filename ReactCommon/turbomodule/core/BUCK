@@ -61,6 +61,7 @@ rn_xplat_cxx_library(
             "platform/ios/**/*.mm",
         ],
     ),
+    labels = ["supermodule:ios/isolation/infra.react_native"],
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",

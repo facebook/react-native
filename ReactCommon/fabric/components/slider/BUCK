@@ -72,6 +72,7 @@ rn_xplat_cxx_library(
     ios_srcs = glob(
         ["platform/ios/*.cpp"],
     ),
+    labels = ["supermodule:ios/isolation/infra.react_native"],
     platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",

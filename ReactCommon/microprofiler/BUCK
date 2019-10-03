@@ -17,6 +17,7 @@ cxx_library(
         "-fno-data-sections",
     ],
     force_static = True,
+    labels = ["supermodule:ios/isolation/infra.react_native"],
     visibility = [
         "PUBLIC",
     ],
