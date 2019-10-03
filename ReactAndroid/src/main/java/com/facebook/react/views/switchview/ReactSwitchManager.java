@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -194,6 +195,8 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch>
     view.setShowText(false);
     int measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
     view.measure(measureSpec, measureSpec);
-    return YogaMeasureOutput.make(view.getMeasuredWidth(), view.getMeasuredHeight());
+    return YogaMeasureOutput.make(
+        PixelUtil.toDIPFromPixel(view.getMeasuredWidth()),
+        PixelUtil.toDIPFromPixel(view.getMeasuredHeight()));
   }
 }
