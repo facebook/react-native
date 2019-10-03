@@ -268,6 +268,9 @@ using namespace facebook::react;
   _contextContainer->erase("ReactNativeConfig");
   _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
 
+  _contextContainer->erase("Bridge");
+  _contextContainer->insert("Bridge", wrapManagedObject(_bridge));
+
   // TODO T47869586 petetheheat: Delete else case when TM rollout 100%
   _contextContainer->erase("RCTImageLoader");
   if (_imageLoader) {

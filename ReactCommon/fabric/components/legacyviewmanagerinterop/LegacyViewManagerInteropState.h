@@ -7,7 +7,7 @@
 
 #pragma once
 
-#import <string>
+#import <memory>
 
 namespace facebook {
 namespace react {
@@ -17,7 +17,7 @@ namespace react {
  */
 class LegacyViewManagerInteropState final {
  public:
-  std::string componentName;
+  std::shared_ptr<void> coordinator;
 };
 
 } // namespace react

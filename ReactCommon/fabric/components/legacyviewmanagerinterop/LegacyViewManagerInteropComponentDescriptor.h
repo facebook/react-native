@@ -18,6 +18,10 @@ class LegacyViewManagerInteropComponentDescriptor final
  public:
   using ConcreteComponentDescriptor::ConcreteComponentDescriptor;
 
+  LegacyViewManagerInteropComponentDescriptor(
+      EventDispatcher::Weak const &eventDispatcher,
+      ContextContainer::Shared const &contextContainer = {},
+      ComponentDescriptor::Flavor const &flavor = {});
   /*
    * Returns `name` and `handle` based on a `flavor`, not on static data from
    * `LegacyViewManagerInteropShadowNode`.
@@ -27,6 +31,9 @@ class LegacyViewManagerInteropComponentDescriptor final
 
  protected:
   void adopt(ShadowNode::Unshared shadowNode) const override;
+
+ private:
+  std::shared_ptr<void> const _coordinator;
 };
 
 } // namespace react

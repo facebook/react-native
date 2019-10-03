@@ -9,23 +9,13 @@
 
 #import <react/components/legacyviewmanagerinterop/LegacyViewManagerInteropComponentDescriptor.h>
 #import <react/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewProps.h>
+#import <react/components/legacyviewmanagerinterop/RCTLegacyViewManagerInteropCoordinator.h>
+#import <react/utils/ManagedObjectWrapper.h>
 
 using namespace facebook::react;
 
-static std::string propNames(LegacyViewManagerInteropViewProps const &props)
-{
-  std::string propNames;
-  for (auto const &prop : props.otherProps) {
-    propNames += prop.first + ", ";
-  }
-  if (propNames.size() > 1) {
-    propNames.resize(propNames.size() - 2);
-  }
-  return propNames;
-}
-
 @implementation RCTLegacyViewManagerInteropComponentView {
-  UILabel *_label;
+  UIView *_view;
   LegacyViewManagerInteropShadowNode::ConcreteState::Shared _state;
 }
 
@@ -34,17 +24,6 @@ static std::string propNames(LegacyViewManagerInteropViewProps const &props)
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps = std::make_shared<const LegacyViewManagerInteropViewProps>();
     _props = defaultProps;
-
-    CGRect bounds = self.bounds;
-    _label = [[UILabel alloc] initWithFrame:bounds];
-    _label.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.3];
-    _label.layoutMargins = UIEdgeInsetsMake(12, 12, 12, 12);
-    _label.lineBreakMode = NSLineBreakByWordWrapping;
-    _label.numberOfLines = 0;
-    _label.textAlignment = NSTextAlignmentCenter;
-    _label.textColor = [UIColor whiteColor];
-
-    self.contentView = _label;
   }
 
   return self;
@@ -52,7 +31,7 @@ static std::string propNames(LegacyViewManagerInteropViewProps const &props)
 
 + (BOOL)isSupported:(NSString *)componentName
 {
-  static NSSet<NSString *> *supportedComponents = [NSSet new];
+  static NSSet<NSString *> *supportedComponents = [NSSet setWithObjects:@"ActivityIndicatorView", nil];
   return [supportedComponents containsObject:componentName];
 }
 
@@ -71,11 +50,13 @@ static std::string propNames(LegacyViewManagerInteropViewProps const &props)
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
   [super finalizeUpdates:updateMask];
-  if (_props && _state) {
-    const auto &props = *std::static_pointer_cast<const LegacyViewManagerInteropViewProps>(_props);
-
-    _label.text = [NSString
-        stringWithFormat:@"name: %s, props: %s", _state->getData().componentName.c_str(), propNames(props).c_str()];
+  assert(_props && _state);
+  if (!_view) {
+    const auto &state = _state->getData();
+    RCTLegacyViewManagerInteropCoordinator *coordinator = unwrapManagedObject(state.coordinator);
+    UIView *view = [coordinator view];
+    self.contentView = view;
+    _view = view;
   }
 }
 
