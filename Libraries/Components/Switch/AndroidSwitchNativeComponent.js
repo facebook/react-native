@@ -43,6 +43,6 @@ type NativeProps = $ReadOnly<{|
   onChange?: BubblingEventHandler<SwitchChangeEvent>,
 |}>;
 
-export default (codegenNativeComponent<NativeProps>(
-  'AndroidSwitch',
-): HostComponent<NativeProps>);
+export default (codegenNativeComponent<NativeProps>('AndroidSwitch', {
+  interfaceOnly: true,
+}): HostComponent<NativeProps>);

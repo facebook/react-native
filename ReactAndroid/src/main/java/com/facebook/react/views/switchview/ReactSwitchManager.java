@@ -8,10 +8,12 @@
 // switchview because switch is a keyword
 package com.facebook.react.views.switchview;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.CompoundButton;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -176,5 +178,22 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch>
   @Override
   protected ViewManagerDelegate<ReactSwitch> getDelegate() {
     return mDelegate;
+  }
+
+  @Override
+  public long measure(
+      Context context,
+      ReadableMap localData,
+      ReadableMap props,
+      ReadableMap state,
+      float width,
+      YogaMeasureMode widthMode,
+      float height,
+      YogaMeasureMode heightMode) {
+    ReactSwitch view = new ReactSwitch(context);
+    view.setShowText(false);
+    int measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+    view.measure(measureSpec, measureSpec);
+    return YogaMeasureOutput.make(view.getMeasuredWidth(), view.getMeasuredHeight());
   }
 }
