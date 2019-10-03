@@ -18,6 +18,10 @@ public class ReactBridge {
 
   private static boolean sDidInit = false;
 
+  public static boolean isInitialized() {
+    return sDidInit;
+  }
+
   public static synchronized void staticInit() {
     if (sDidInit) {
       return;
