@@ -5,6 +5,7 @@
  * directory of this source tree.
  */
 package com.facebook.react.views.modal;
+import android.util.Log;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -66,6 +67,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   private DialogRootViewGroup mHostView;
   private @Nullable Dialog mDialog;
   private boolean mTransparent;
+  private boolean mStatusBarTranslucent;
   private String mAnimationType;
   private boolean mHardwareAccelerated;
   // Set this flag to true if changing a particular property on the view requires a new Dialog to
@@ -165,6 +167,12 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
   protected void setTransparent(boolean transparent) {
     mTransparent = transparent;
+  }
+
+  protected void setStatusBarTranslucent(boolean statusBarTranslucent) {
+    Log.v("asd", statusBarTranslucent+"");
+    mStatusBarTranslucent = statusBarTranslucent;
+    mPropertyRequiresNewDialog = true;
   }
 
   protected void setAnimationType(String animationType) {
@@ -306,7 +314,12 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   private View getContentView() {
     FrameLayout frameLayout = new FrameLayout(getContext());
     frameLayout.addView(mHostView);
-    frameLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+    frameLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+    if (mStatusBarTranslucent) {
+      frameLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+    } else {
+      frameLayout.setFitsSystemWindows(true);
+    }
     return frameLayout;
   }
 
