@@ -37,6 +37,13 @@ using namespace facebook::react;
 
 #pragma mark - RCTComponentViewProtocol
 
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  [_view removeFromSuperview];
+  _view = NULL;
+}
+
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
   return concreteComponentDescriptorProvider<LegacyViewManagerInteropComponentDescriptor>();
@@ -51,12 +58,18 @@ using namespace facebook::react;
 {
   [super finalizeUpdates:updateMask];
   assert(_props && _state);
+  const auto &state = _state->getData();
+  RCTLegacyViewManagerInteropCoordinator *coordinator = unwrapManagedObject(state.coordinator);
+
   if (!_view) {
-    const auto &state = _state->getData();
-    RCTLegacyViewManagerInteropCoordinator *coordinator = unwrapManagedObject(state.coordinator);
     UIView *view = [coordinator view];
     self.contentView = view;
     _view = view;
+  }
+
+  if (updateMask & RNComponentViewUpdateMaskProps) {
+    const auto &newProps = *std::static_pointer_cast<const LegacyViewManagerInteropViewProps>(_props);
+    [coordinator setProps:newProps.otherProps forView:_view];
   }
 }
 

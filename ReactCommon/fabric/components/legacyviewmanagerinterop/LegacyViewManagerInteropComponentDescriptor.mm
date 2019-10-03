@@ -7,6 +7,7 @@
 
 #include "LegacyViewManagerInteropComponentDescriptor.h"
 #include <React/RCTBridge.h>
+#include <React/RCTComponentData.h>
 #include <React/RCTUIManager.h>
 #include <react/utils/ContextContainer.h>
 #include <react/utils/ManagedObjectWrapper.h>
@@ -18,7 +19,7 @@ namespace react {
 
 static std::string moduleNameFromComponentName(const std::string &componentName)
 {
-  return componentName + "Manager";
+  return "RCT" + componentName + "Manager";
 }
 
 inline NSString *RCTNSStringFromString(const std::string &string)
@@ -32,9 +33,11 @@ static std::shared_ptr<void> const contructCoordinator(
 {
   auto componentName = *std::static_pointer_cast<std::string const>(flavor);
   auto moduleName = moduleNameFromComponentName(componentName);
+  Class module = NSClassFromString(RCTNSStringFromString(moduleName));
+  assert(module);
   RCTBridge *bridge = (RCTBridge *)unwrapManagedObject(contextContainer->at<std::shared_ptr<void>>("Bridge"));
-  RCTViewManager *viewManager = [bridge moduleForName:RCTNSStringFromString(moduleName) lazilyLoadIfNecessary:YES];
-  return wrapManagedObject([[RCTLegacyViewManagerInteropCoordinator alloc] initWithViewManager:viewManager]);
+  RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:module bridge:bridge];
+  return wrapManagedObject([[RCTLegacyViewManagerInteropCoordinator alloc] initWithComponentData:componentData]);
 }
 
 LegacyViewManagerInteropComponentDescriptor::LegacyViewManagerInteropComponentDescriptor(

@@ -7,16 +7,19 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#include <folly/dynamic.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class RCTViewManager;
+@class RCTComponentData;
 
 @interface RCTLegacyViewManagerInteropCoordinator : NSObject
 
-- (instancetype)initWithViewManager:(RCTViewManager *)viewManager;
+- (instancetype)initWithComponentData:(RCTComponentData *)componentData;
 
 - (UIView *)view;
+
+- (void)setProps:(folly::dynamic const &)props forView:(UIView *)view;
 
 @end
 

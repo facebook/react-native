@@ -21,7 +21,7 @@ class LegacyViewManagerInteropViewProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const std::unordered_map<std::string, folly::dynamic> otherProps;
+  folly::dynamic const otherProps;
 };
 
 } // namespace react
