@@ -92,7 +92,6 @@ import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeA
 import typeof NativeModules from './Libraries/BatchedBridge/NativeModules';
 import typeof Platform from './Libraries/Utilities/Platform';
 import typeof processColor from './Libraries/StyleSheet/processColor';
-import typeof requireNativeComponent from './Libraries/ReactNative/requireNativeComponent';
 import typeof RootTagContext from './Libraries/ReactNative/RootTagContext';
 import typeof DeprecatedColorPropType from './Libraries/DeprecatedPropTypes/DeprecatedColorPropType';
 import typeof DeprecatedEdgeInsetsPropType from './Libraries/DeprecatedPropTypes/DeprecatedEdgeInsetsPropType';

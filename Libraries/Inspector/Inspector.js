@@ -204,7 +204,6 @@ class Inspector extends React.Component<
 
     if (this.state.devtoolsAgent) {
       // Skip host leafs
-      const offsetFromLeaf = hierarchy.length - 1 - selection;
       this.state.devtoolsAgent.selectNode(touchedViewTag);
     }
 
