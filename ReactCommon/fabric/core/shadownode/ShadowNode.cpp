@@ -8,7 +8,6 @@
 #include "ShadowNode.h"
 
 #include <better/small_vector.h>
-#include <string>
 
 #include <react/core/ComponentDescriptor.h>
 #include <react/core/ShadowNodeFragment.h>

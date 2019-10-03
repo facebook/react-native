@@ -76,14 +76,12 @@ class RawProps final {
 
   void parse(RawPropsParser const &parser) const noexcept;
 
-#ifdef ANDROID
   /*
    * Deprecated. Do not use.
    * The support for explicit conversion to `folly::dynamic` is deprecated and
    * will be removed as soon Android implementation does not need it.
    */
   explicit operator folly::dynamic() const noexcept;
-#endif
 
   /*
    * Returns `true` if the object is empty.
