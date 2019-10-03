@@ -27,7 +27,7 @@ const ensurePositiveDelayProps = require('./ensurePositiveDelayProps');
 import type {PressEvent} from '../../Types/CoreEventTypes';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import type {Props as TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
+import type {TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
 import type {TVParallaxPropertiesType} from '../AppleTV/TVViewPropTypes';
 
 const DEFAULT_PROPS = {

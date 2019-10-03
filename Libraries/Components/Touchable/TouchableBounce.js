@@ -23,7 +23,7 @@ const createReactClass = require('create-react-class');
 
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {Props as TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
+import type {TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
 import type {PressEvent} from '../../Types/CoreEventTypes';
 
 type State = {

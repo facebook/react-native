@@ -63,7 +63,7 @@ const OVERRIDE_PROPS = [
   'testID',
 ];
 
-export type Props = $ReadOnly<{|
+export type TouchableWithoutFeedbackProps = $ReadOnly<{|
   accessible?: ?boolean,
   accessibilityLabel?: ?Stringish,
   accessibilityHint?: ?Stringish,
@@ -279,6 +279,6 @@ const TouchableWithoutFeedback = ((createReactClass({
       children,
     });
   },
-}): any): React.ComponentType<Props>);
+}): any): React.ComponentType<TouchableWithoutFeedbackProps>);
 
 module.exports = TouchableWithoutFeedback;

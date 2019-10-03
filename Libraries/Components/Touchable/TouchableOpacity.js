@@ -23,7 +23,7 @@ const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('./ensurePositiveDelayProps');
 const flattenStyle = require('../../StyleSheet/flattenStyle');
 
-import type {Props as TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
+import type {TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {TVParallaxPropertiesType} from '../AppleTV/TVViewPropTypes';
 import type {PressEvent} from '../../Types/CoreEventTypes';
