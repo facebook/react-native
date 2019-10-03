@@ -29,7 +29,7 @@ extern "C" {
 Class RCTVibrationClassProvider(const char *name);
 
 // Lookup functions
-Class RCTVibrationCls(void);
+Class RCTVibrationCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }

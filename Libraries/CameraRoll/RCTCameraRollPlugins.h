@@ -29,10 +29,10 @@ extern "C" {
 Class RCTCameraRollClassProvider(const char *name);
 
 // Lookup functions
-Class RCTAssetsLibraryRequestHandlerCls(void);
-Class RCTCameraRollManagerCls(void);
-Class RCTImagePickerManagerCls(void);
-Class RCTPhotoLibraryImageLoaderCls(void);
+Class RCTAssetsLibraryRequestHandlerCls(void) __attribute__((used));
+Class RCTCameraRollManagerCls(void) __attribute__((used));
+Class RCTImagePickerManagerCls(void) __attribute__((used));
+Class RCTPhotoLibraryImageLoaderCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }

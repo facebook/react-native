@@ -29,7 +29,7 @@ extern "C" {
 Class RCTSettingsClassProvider(const char *name);
 
 // Lookup functions
-Class RCTSettingsManagerCls(void);
+Class RCTSettingsManagerCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }

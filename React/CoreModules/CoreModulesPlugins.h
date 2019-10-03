@@ -29,16 +29,16 @@ extern "C" {
 Class RCTCoreModulesClassProvider(const char *name);
 
 // Lookup functions
-Class RCTAccessibilityManagerCls(void);
-Class RCTAppearanceCls(void);
-Class RCTDeviceInfoCls(void);
-Class RCTExceptionsManagerCls(void);
-Class RCTImageLoaderCls(void);
-Class RCTPlatformCls(void);
-Class RCTClipboardCls(void);
-Class RCTI18nManagerCls(void);
-Class RCTSourceCodeCls(void);
-Class RCTActionSheetManagerCls(void);
+Class RCTAccessibilityManagerCls(void) __attribute__((used));
+Class RCTAppearanceCls(void) __attribute__((used));
+Class RCTDeviceInfoCls(void) __attribute__((used));
+Class RCTExceptionsManagerCls(void) __attribute__((used));
+Class RCTImageLoaderCls(void) __attribute__((used));
+Class RCTPlatformCls(void) __attribute__((used));
+Class RCTClipboardCls(void) __attribute__((used));
+Class RCTI18nManagerCls(void) __attribute__((used));
+Class RCTSourceCodeCls(void) __attribute__((used));
+Class RCTActionSheetManagerCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }
