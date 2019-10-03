@@ -314,7 +314,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   private View getContentView() {
     FrameLayout frameLayout = new FrameLayout(getContext());
     frameLayout.addView(mHostView);
-    frameLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     if (mStatusBarTranslucent) {
       frameLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     } else {
