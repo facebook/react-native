@@ -5,7 +5,6 @@
  * directory of this source tree.
  */
 package com.facebook.react.views.modal;
-import android.util.Log;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -170,7 +169,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   }
 
   protected void setStatusBarTranslucent(boolean statusBarTranslucent) {
-    Log.v("asd", statusBarTranslucent+"");
     mStatusBarTranslucent = statusBarTranslucent;
     mPropertyRequiresNewDialog = true;
   }
