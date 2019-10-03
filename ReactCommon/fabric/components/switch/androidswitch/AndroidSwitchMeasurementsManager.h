@@ -20,7 +20,7 @@ class AndroidSwitchMeasurementsManager {
       const ContextContainer::Shared &contextContainer)
       : contextContainer_(contextContainer) {}
 
-  Size measure(LayoutConstraints layoutConstraints) const;
+  Size measure(SurfaceId surfaceId, LayoutConstraints layoutConstraints) const;
 
  private:
   const ContextContainer::Shared contextContainer_;

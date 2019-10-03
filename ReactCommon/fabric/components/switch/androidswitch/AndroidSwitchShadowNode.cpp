@@ -23,7 +23,7 @@ void AndroidSwitchShadowNode::setAndroidSwitchMeasurementsManager(
 
 Size AndroidSwitchShadowNode::measure(
     LayoutConstraints layoutConstraints) const {
-  return measurementsManager_->measure(layoutConstraints);
+  return measurementsManager_->measure(getSurfaceId(), layoutConstraints);
 }
 
 } // namespace react

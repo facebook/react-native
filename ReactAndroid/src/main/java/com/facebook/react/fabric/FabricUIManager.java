@@ -333,6 +333,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @DoNotStrip
   @SuppressWarnings("unused")
   private long measure(
+      int rootTag,
       String componentName,
       ReadableMap localData,
       ReadableMap props,
@@ -341,7 +342,29 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       float maxWidth,
       float minHeight,
       float maxHeight) {
+    return mMountingManager.measure(
+        mReactContextForRootTag.get(rootTag),
+        componentName,
+        localData,
+        props,
+        state,
+        getYogaSize(minWidth, maxWidth),
+        getYogaMeasureMode(minWidth, maxWidth),
+        getYogaSize(minHeight, maxHeight),
+        getYogaMeasureMode(minHeight, maxHeight));
+  }
 
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private long measure(
+      String componentName,
+      ReadableMap localData,
+      ReadableMap props,
+      ReadableMap state,
+      float minWidth,
+      float maxWidth,
+      float minHeight,
+      float maxHeight) {
     return mMountingManager.measure(
         mReactApplicationContext,
         componentName,
