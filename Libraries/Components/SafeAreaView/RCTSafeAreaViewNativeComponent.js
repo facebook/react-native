@@ -23,6 +23,7 @@ type NativeProps = $ReadOnly<{|
   emulateUnlessSupported?: WithDefault<boolean, false>,
 |}>;
 
-export default (codegenNativeComponent<NativeProps>(
-  'RCTSafeAreaView',
-): HostComponent<NativeProps>);
+export default (codegenNativeComponent<NativeProps>('SafeAreaView', {
+  paperComponentName: 'RCTSafeAreaView',
+  interfaceOnly: true,
+}): HostComponent<NativeProps>);

@@ -23,6 +23,7 @@
 #import "RCTParagraphComponentView.h"
 #import "RCTPullToRefreshViewComponentView.h"
 #import "RCTRootComponentView.h"
+#import "RCTSafeAreaViewComponentView.h"
 #import "RCTScrollViewComponentView.h"
 #import "RCTSliderComponentView.h"
 #import "RCTSwitchComponentView.h"
@@ -53,6 +54,7 @@ using namespace facebook::react;
   [componentViewFactory registerComponentViewClass:[RCTUnimplementedNativeComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTModalHostViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTARTSurfaceViewComponentView class]];
+  [componentViewFactory registerComponentViewClass:[RCTSafeAreaViewComponentView class]];
 
   auto providerRegistry = &componentViewFactory->_providerRegistry;
 
