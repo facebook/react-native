@@ -129,11 +129,11 @@ const State::Shared &ShadowNode::getState() const {
 
 State::Shared ShadowNode::getMostRecentState() const {
   if (state_) {
-    auto commitedState = state_->getMostRecentState();
+    auto committedState = state_->getMostRecentState();
 
-    // Commited state can be `null` in case if no one node was commited yet;
+    // Committed state can be `null` in case if no one node was committed yet;
     // in this case we return own `state`.
-    return commitedState ? commitedState : state_;
+    return committedState ? committedState : state_;
   }
 
   return ShadowNodeFragment::statePlaceholder();
