@@ -52,7 +52,8 @@ public final class ViewManagerRegistry {
         mViewManagers.put(className, viewManager);
         return viewManager;
       }
+      throw new IllegalViewOperationException("ViewManagerResolver returned null for " + className);
     }
-    throw new IllegalViewOperationException("No ViewManager defined for class " + className);
+    throw new IllegalViewOperationException("No ViewManager found for class " + className);
   }
 }
