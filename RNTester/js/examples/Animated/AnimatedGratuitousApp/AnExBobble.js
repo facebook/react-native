@@ -86,7 +86,7 @@ class AnExBobble extends React.Component<Object, any> {
       },
       onPanResponderMove: Animated.event(
         [null, {dx: this.state.bobbles[0].x, dy: this.state.bobbles[0].y}],
-        {listener: bobblePanListener}, // async state changes with arbitrary logic
+        {listener: bobblePanListener, useNativeDriver: false}, // async state changes with arbitrary logic
       ),
       onPanResponderRelease: releaseBobble,
       onPanResponderTerminate: releaseBobble,

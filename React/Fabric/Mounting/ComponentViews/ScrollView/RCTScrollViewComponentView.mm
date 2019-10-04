@@ -66,6 +66,11 @@ using namespace facebook::react;
   return self;
 }
 
+- (void)dealloc
+{
+  [_scrollViewDelegateSplitter removeDelegate:self];
+}
+
 #pragma mark - RCTComponentViewProtocol
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -185,6 +190,7 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   _scrollView.contentOffset = CGPointZero;
+  _state.reset();
   [super prepareForRecycle];
 }
 

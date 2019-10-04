@@ -334,7 +334,7 @@ RCT_EXPORT_METHOD(getCurrentVoiceOverState:(RCTResponseSenderBlock)onSuccess
 
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
+(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
   return std::make_shared<facebook::react::NativeAccessibilityManagerSpecJSI>(self, jsInvoker);
 }

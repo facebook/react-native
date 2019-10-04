@@ -23,9 +23,8 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.turbomodule.core.JSCallInvokerHolderImpl;
+import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.systrace.Systrace;
@@ -101,13 +100,16 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private JavaScriptContextHolder mJavaScriptContextHolder;
   private @Nullable TurboModuleRegistry mTurboModuleRegistry = null;
+  private @Nullable JSIModule mTurboModuleManagerJSIModule = null;
 
   // C++ parts
   private final HybridData mHybridData;
 
   private static native HybridData initHybrid();
 
-  public native JSCallInvokerHolderImpl getJSCallInvokerHolder();
+  public native CallInvokerHolderImpl getJSCallInvokerHolder();
+
+  public native CallInvokerHolderImpl getNativeCallInvokerHolder();
 
   private CatalystInstanceImpl(
       final ReactQueueConfigurationSpec reactQueueConfigurationSpec,
@@ -351,11 +353,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
               }
             }
 
-            final JSIModule turboModuleManager =
-                ReactFeatureFlags.useTurboModules
-                    ? mJSIModuleRegistry.getModule(JSIModuleType.TurboModuleManager)
-                    : null;
-
             getReactQueueConfiguration()
                 .getJSQueueThread()
                 .runOnQueue(
@@ -363,8 +360,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
                       @Override
                       public void run() {
                         // We need to destroy the TurboModuleManager on the JS Thread
-                        if (turboModuleManager != null) {
-                          turboModuleManager.onCatalystInstanceDestroy();
+                        if (mTurboModuleManagerJSIModule != null) {
+                          mTurboModuleManagerJSIModule.onCatalystInstanceDestroy();
                         }
 
                         getReactQueueConfiguration()
@@ -561,8 +558,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
     }
   }
 
-  public void setTurboModuleManager(JSIModule getter) {
-    mTurboModuleRegistry = (TurboModuleRegistry) getter;
+  public void setTurboModuleManager(JSIModule module) {
+    mTurboModuleRegistry = (TurboModuleRegistry) module;
+    mTurboModuleManagerJSIModule = module;
   }
 
   private void decrementPendingJSCalls() {

@@ -20,7 +20,6 @@ const View = require('../Components/View/View');
 
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
-import type {SyntheticEvent} from '../Types/CoreEventTypes';
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
 /**

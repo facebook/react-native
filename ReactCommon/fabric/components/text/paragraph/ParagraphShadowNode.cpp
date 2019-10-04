@@ -43,7 +43,14 @@ void ParagraphShadowNode::updateStateIfNeeded() {
 
   auto attributedString = getAttributedString();
   auto const &state = getStateData();
-  if (state.attributedString == attributedString) {
+
+  assert(textLayoutManager_);
+  assert(
+      (!state.layoutManager || state.layoutManager == textLayoutManager_) &&
+      "`StateData` refers to a different `TextLayoutManager`");
+
+  if (state.attributedString == attributedString &&
+      state.layoutManager == textLayoutManager_) {
     return;
   }
 

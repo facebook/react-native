@@ -32,6 +32,7 @@ import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent, ScrollEvent} from '../../Types/CoreEventTypes';
 import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
 let AndroidTextInput;
 let RCTMultilineTextInputView;
@@ -409,7 +410,7 @@ type AndroidProps = $ReadOnly<{|
   showSoftInputOnFocus?: ?boolean,
 |}>;
 
-type Props = $ReadOnly<{|
+export type Props = $ReadOnly<{|
   ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
   ...IOSProps,
   ...AndroidProps,
@@ -904,6 +905,10 @@ const TextInput = createReactClass({
     this._inputRef = ref;
   },
 
+  getNativeRef: function(): ?React.ElementRef<HostComponent<mixed>> {
+    return this._inputRef;
+  },
+
   _renderIOSLegacy: function() {
     let textContainer;
 
@@ -1223,6 +1228,8 @@ const TextInput = createReactClass({
 
 class InternalTextInputType extends ReactNative.NativeComponent<Props> {
   clear() {}
+
+  getNativeRef(): ?React.ElementRef<HostComponent<mixed>> {}
 
   // $FlowFixMe
   isFocused(): boolean {}

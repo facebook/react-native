@@ -17,6 +17,7 @@ namespace facebook {
 namespace react {
 
 Size SliderMeasurementsManager::measure(
+    SurfaceId surfaceId,
     LayoutConstraints layoutConstraints) const {
   {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -31,6 +32,7 @@ Size SliderMeasurementsManager::measure(
   static auto measure =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<jlong(
+              jint,
               jstring,
               ReadableMap::javaobject,
               ReadableMap::javaobject,
@@ -47,6 +49,7 @@ Size SliderMeasurementsManager::measure(
 
   auto measurement = yogaMeassureToSize(measure(
       fabricUIManager,
+      surfaceId,
       componentName.get(),
       nullptr,
       nullptr,

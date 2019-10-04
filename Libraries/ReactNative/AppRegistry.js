@@ -24,7 +24,7 @@ import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
 
 type Task = (taskData: any) => Promise<void>;
-type TaskProvider = () => Task;
+export type TaskProvider = () => Task;
 type TaskCanceller = () => void;
 type TaskCancelProvider = () => TaskCanceller;
 

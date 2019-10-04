@@ -31,6 +31,7 @@ rn_xplat_cxx_library(
         "-Wall",
     ],
     force_static = True,
+    labels = ["supermodule:ios/isolation/infra.react_native"],
     macosx_tests_override = [],
     platforms = (ANDROID),
     preprocessor_flags = [

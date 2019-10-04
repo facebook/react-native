@@ -47,6 +47,9 @@ public class ArrayPropsNativeComponentViewManager extends SimpleViewManager<View
   public void setPoints(ViewGroup view, ReadableArray value) {}
 
   @Override
+  public void setEdgeInsets(ViewGroup view, ReadableArray value) {}
+
+  @Override
   public void setSizes(ViewGroup view, ReadableArray value) {}
 
   @Override

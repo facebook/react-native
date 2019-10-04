@@ -207,15 +207,15 @@ async function queryCache(
   return await ImageLoader.queryCache(urls);
 }
 
-declare class ImageComponentType extends ReactNative.NativeComponent<ImagePropsType> {
-  static getSize: typeof getSize;
-  static getSizeWithHeaders: typeof getSizeWithHeaders;
-  static prefetch: typeof prefetch;
-  static abortPrefetch: typeof abortPrefetch;
-  static queryCache: typeof queryCache;
-  static resolveAssetSource: typeof resolveAssetSource;
-  static propTypes: typeof ImageProps;
-}
+type ImageComponentStatics = $ReadOnly<{|
+  getSize: typeof getSize,
+  getSizeWithHeaders: typeof getSizeWithHeaders,
+  prefetch: typeof prefetch,
+  abortPrefetch: typeof abortPrefetch,
+  queryCache: typeof queryCache,
+  resolveAssetSource: typeof resolveAssetSource,
+  propTypes: typeof ImageProps,
+|}>;
 
 /**
  * A React component for displaying different types of images,
@@ -224,10 +224,7 @@ declare class ImageComponentType extends ReactNative.NativeComponent<ImagePropsT
  *
  * See https://facebook.github.io/react-native/docs/image.html
  */
-let Image = (
-  props: ImagePropsType,
-  forwardedRef: ?React.Ref<'RCTTextInlineImage' | 'ImageViewNativeComponent'>,
-) => {
+let Image = (props: ImagePropsType, forwardedRef) => {
   let source = resolveAssetSource(props.source);
   const defaultSource = resolveAssetSource(props.defaultSource);
   const loadingIndicatorSource = resolveAssetSource(
@@ -303,7 +300,12 @@ let Image = (
   );
 };
 
-Image = React.forwardRef(Image);
+Image = React.forwardRef<
+  ImagePropsType,
+  | React.ElementRef<typeof TextInlineImageNativeComponent>
+  | React.ElementRef<typeof ImageViewNativeComponent>,
+>(Image);
+
 Image.displayName = 'Image';
 
 /**
@@ -379,7 +381,9 @@ const styles = StyleSheet.create({
   },
 });
 
-/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
- * error found when Flow v0.89 was deployed. To see the error, delete this
- * comment and run Flow. */
-module.exports = (Image: Class<ImageComponentType>);
+module.exports = ((Image: any): React.AbstractComponent<
+  ImagePropsType,
+  | React.ElementRef<typeof TextInlineImageNativeComponent>
+  | React.ElementRef<typeof ImageViewNativeComponent>,
+> &
+  ImageComponentStatics);

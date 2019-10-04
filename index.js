@@ -12,7 +12,6 @@
 
 import typeof AccessibilityInfo from './Libraries/Components/AccessibilityInfo/AccessibilityInfo';
 import typeof ActivityIndicator from './Libraries/Components/ActivityIndicator/ActivityIndicator';
-import typeof ReactNativeART from './Libraries/ART/ReactNativeART';
 import typeof Button from './Libraries/Components/Button';
 import typeof CheckBox from './Libraries/Components/CheckBox/CheckBox';
 import typeof DatePickerIOS from './Libraries/Components/DatePicker/DatePickerIOS';
@@ -57,6 +56,7 @@ import typeof BackHandler from './Libraries/Utilities/BackHandler';
 import typeof Clipboard from './Libraries/Components/Clipboard/Clipboard';
 import typeof DatePickerAndroid from './Libraries/Components/DatePickerAndroid/DatePickerAndroid';
 import typeof DeviceInfo from './Libraries/Utilities/DeviceInfo';
+import typeof DevSettings from './Libraries/Utilities/DevSettings';
 import typeof Dimensions from './Libraries/Utilities/Dimensions';
 import typeof Easing from './Libraries/Animated/src/Easing';
 import typeof ReactNative from './Libraries/Renderer/shims/ReactNative';
@@ -78,7 +78,6 @@ import typeof Share from './Libraries/Share/Share';
 import typeof StatusBarIOS from './Libraries/Components/StatusBar/StatusBarIOS';
 import typeof StyleSheet from './Libraries/StyleSheet/StyleSheet';
 import typeof Systrace from './Libraries/Performance/Systrace';
-import typeof TimePickerAndroid from './Libraries/Components/TimePickerAndroid/TimePickerAndroid';
 import typeof ToastAndroid from './Libraries/Components/ToastAndroid/ToastAndroid';
 import typeof * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistry';
 import typeof TVEventHandler from './Libraries/Components/AppleTV/TVEventHandler';
@@ -93,17 +92,19 @@ import typeof RCTNativeAppEventEmitter from './Libraries/EventEmitter/RCTNativeA
 import typeof NativeModules from './Libraries/BatchedBridge/NativeModules';
 import typeof Platform from './Libraries/Utilities/Platform';
 import typeof processColor from './Libraries/StyleSheet/processColor';
-import typeof requireNativeComponent from './Libraries/ReactNative/requireNativeComponent';
 import typeof RootTagContext from './Libraries/ReactNative/RootTagContext';
 import typeof DeprecatedColorPropType from './Libraries/DeprecatedPropTypes/DeprecatedColorPropType';
 import typeof DeprecatedEdgeInsetsPropType from './Libraries/DeprecatedPropTypes/DeprecatedEdgeInsetsPropType';
 import typeof DeprecatedPointPropType from './Libraries/DeprecatedPropTypes/DeprecatedPointPropType';
 import typeof DeprecatedViewPropTypes from './Libraries/DeprecatedPropTypes/DeprecatedViewPropTypes';
 
+import type {HostComponent as _HostComponentInternal} from './Libraries/Renderer/shims/ReactNativeTypes';
+
+export type HostComponent<T> = _HostComponentInternal<T>;
+
 const invariant = require('invariant');
 const warnOnce = require('./Libraries/Utilities/warnOnce');
 
-// Export React, plus some native additions.
 module.exports = {
   // Components
   get AccessibilityInfo(): AccessibilityInfo {
@@ -111,15 +112,6 @@ module.exports = {
   },
   get ActivityIndicator(): ActivityIndicator {
     return require('./Libraries/Components/ActivityIndicator/ActivityIndicator');
-  },
-  get ART(): ReactNativeART {
-    warnOnce(
-      'art-moved',
-      'React Native ART has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/art' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/art',
-    );
-    return require('./Libraries/ART/ReactNativeART');
   },
   get Button(): Button {
     return require('./Libraries/Components/Button');
@@ -303,6 +295,9 @@ module.exports = {
   get DeviceInfo(): DeviceInfo {
     return require('./Libraries/Utilities/DeviceInfo');
   },
+  get DevSettings(): DevSettings {
+    return require('./Libraries/Utilities/DevSettings');
+  },
   get Dimensions(): Dimensions {
     return require('./Libraries/Utilities/Dimensions');
   },
@@ -384,15 +379,6 @@ module.exports = {
   get Systrace(): Systrace {
     return require('./Libraries/Performance/Systrace');
   },
-  get TimePickerAndroid(): TimePickerAndroid {
-    warnOnce(
-      'TimePickerAndroid-merged',
-      'TimePickerAndroid has been merged with DatePickerIOS and DatePickerAndroid and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-datetimepicker',
-    );
-    return require('./Libraries/Components/TimePickerAndroid/TimePickerAndroid');
-  },
   get ToastAndroid(): ToastAndroid {
     return require('./Libraries/Components/ToastAndroid/ToastAndroid');
   },
@@ -444,7 +430,9 @@ module.exports = {
   get processColor(): processColor {
     return require('./Libraries/StyleSheet/processColor');
   },
-  get requireNativeComponent(): requireNativeComponent {
+  get requireNativeComponent(): <T>(
+    uiViewClassName: string,
+  ) => HostComponent<T> {
     return require('./Libraries/ReactNative/requireNativeComponent');
   },
   get unstable_RootTagContext(): RootTagContext {
@@ -467,6 +455,19 @@ module.exports = {
 };
 
 if (__DEV__) {
+  // $FlowFixMe This is intentional: Flow will error when attempting to access ART.
+  Object.defineProperty(module.exports, 'ART', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'ART has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-community/art' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-art',
+      );
+    },
+  });
+
   // $FlowFixMe This is intentional: Flow will error when attempting to access ListView.
   Object.defineProperty(module.exports, 'ListView', {
     configurable: true,
@@ -513,7 +514,7 @@ if (__DEV__) {
       invariant(
         false,
         'NetInfo has been removed from React Native. ' +
-          "It can now be installed and imported from 'react-native-netinfo' instead of 'react-native'. " +
+          "It can now be installed and imported from '@react-native-community/netinfo' instead of 'react-native'. " +
           'See https://github.com/react-native-community/react-native-netinfo',
       );
     },
@@ -526,7 +527,7 @@ if (__DEV__) {
       invariant(
         false,
         'CameraRoll has been removed from React Native. ' +
-          "It can now be installed and imported from 'react-native-cameraroll' instead of 'react-native'. " +
+          "It can now be installed and imported from '@react-native-community/cameraroll' instead of 'react-native'. " +
           'See https://github.com/react-native-community/react-native-cameraroll',
       );
     },
@@ -553,8 +554,21 @@ if (__DEV__) {
       invariant(
         false,
         'ImageEditor has been removed from React Native. ' +
-          "It can now be installed and imported from 'react-native-image-editor' instead of 'react-native'. " +
+          "It can now be installed and imported from '@react-native-community/image-editor' instead of 'react-native'. " +
           'See https://github.com/react-native-community/react-native-image-editor',
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access TimePickerAndroid.
+  Object.defineProperty(module.exports, 'TimePickerAndroid', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'TimePickerAndroid has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-datetimepicker',
       );
     },
   });
@@ -566,7 +580,7 @@ if (__DEV__) {
       invariant(
         false,
         'ViewPagerAndroid has been removed from React Native. ' +
-          "It can now be installed and imported from 'react-native-viewpager' instead of 'react-native'. " +
+          "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
           'See https://github.com/react-native-community/react-native-viewpager',
       );
     },

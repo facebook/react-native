@@ -18,6 +18,12 @@ export type PointValue = {|
   x: number,
   y: number,
 |};
+export type EdgeInsetsValue = {|
+  top: number,
+  left: number,
+  right: number,
+  bottom: number,
+|};
 export type DimensionValue = null | number | string | AnimatedNode;
 
 /**

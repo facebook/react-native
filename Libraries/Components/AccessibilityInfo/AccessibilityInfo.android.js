@@ -91,6 +91,9 @@ const AccessibilityInfo = {
    * Same as `isScreenReaderEnabled`
    */
   get fetch(): () => Promise<boolean> {
+    console.warn(
+      'AccessibilityInfo.fetch is deprecated, call Accessibility.isScreenReaderEnabled instead',
+    );
     return this.isScreenReaderEnabled;
   },
 

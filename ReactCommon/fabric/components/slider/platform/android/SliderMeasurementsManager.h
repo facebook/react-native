@@ -27,7 +27,7 @@ class SliderMeasurementsManager {
     return true;
   }
 
-  Size measure(LayoutConstraints layoutConstraints) const;
+  Size measure(SurfaceId surfaceId, LayoutConstraints layoutConstraints) const;
 
  private:
   const ContextContainer::Shared contextContainer_;

@@ -26,7 +26,7 @@ class SliderMeasurementsManager {
     return false;
   }
 
-  Size measure(LayoutConstraints layoutConstraints) const;
+  Size measure(SurfaceId surfaceId, LayoutConstraints layoutConstraints) const;
 };
 
 } // namespace react

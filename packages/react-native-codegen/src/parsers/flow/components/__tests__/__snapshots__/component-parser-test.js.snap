@@ -74,6 +74,22 @@ Object {
               },
             },
             Object {
+              "name": "boolean_null_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "BooleanTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "boolean_null_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "BooleanTypeAnnotation",
+              },
+            },
+            Object {
               "name": "string_required",
               "optional": false,
               "typeAnnotation": Object {
@@ -198,6 +214,22 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "default": 1.1,
+                "type": "FloatTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "float_null_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": null,
+                "type": "FloatTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "float_null_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "default": null,
                 "type": "FloatTypeAnnotation",
               },
             },
@@ -453,6 +485,38 @@ Object {
               "optional": true,
               "typeAnnotation": Object {
                 "name": "PointPrimitive",
+                "type": "NativePrimitiveTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "insets_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "name": "EdgeInsetsPrimitive",
+                "type": "NativePrimitiveTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "insets_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "name": "EdgeInsetsPrimitive",
+                "type": "NativePrimitiveTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "insets_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "name": "EdgeInsetsPrimitive",
+                "type": "NativePrimitiveTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "insets_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "name": "EdgeInsetsPrimitive",
                 "type": "NativePrimitiveTypeAnnotation",
               },
             },
@@ -844,6 +908,50 @@ Object {
               "typeAnnotation": Object {
                 "elementType": Object {
                   "name": "PointPrimitive",
+                  "type": "NativePrimitiveTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_insets_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "name": "EdgeInsetsPrimitive",
+                  "type": "NativePrimitiveTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_insets_optional_key",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "name": "EdgeInsetsPrimitive",
+                  "type": "NativePrimitiveTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_insets_optional_value",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "name": "EdgeInsetsPrimitive",
+                  "type": "NativePrimitiveTypeAnnotation",
+                },
+                "type": "ArrayTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "array_insets_optional_both",
+              "optional": true,
+              "typeAnnotation": Object {
+                "elementType": Object {
+                  "name": "EdgeInsetsPrimitive",
                   "type": "NativePrimitiveTypeAnnotation",
                 },
                 "type": "ArrayTypeAnnotation",
@@ -5433,6 +5541,74 @@ Object {
                     "optional": true,
                     "typeAnnotation": Object {
                       "name": "PointPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "insets_required",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": false,
+                    "typeAnnotation": Object {
+                      "name": "EdgeInsetsPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "insets_optional_key",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "EdgeInsetsPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "insets_optional_value",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "EdgeInsetsPrimitive",
+                      "type": "NativePrimitiveTypeAnnotation",
+                    },
+                  },
+                ],
+                "type": "ObjectTypeAnnotation",
+              },
+            },
+            Object {
+              "name": "insets_optional_both",
+              "optional": false,
+              "typeAnnotation": Object {
+                "properties": Array [
+                  Object {
+                    "name": "prop",
+                    "optional": true,
+                    "typeAnnotation": Object {
+                      "name": "EdgeInsetsPrimitive",
                       "type": "NativePrimitiveTypeAnnotation",
                     },
                   },

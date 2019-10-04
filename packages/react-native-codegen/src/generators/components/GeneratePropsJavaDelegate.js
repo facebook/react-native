@@ -70,7 +70,11 @@ function getJavaValueForProp(
 
   switch (typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
-      return `value == null ? ${typeAnnotation.default.toString()} : (boolean) value`;
+      if (typeAnnotation.default === null) {
+        return 'value == null ? null : (Boolean) value';
+      } else {
+        return `value == null ? ${typeAnnotation.default.toString()} : (boolean) value`;
+      }
     case 'StringTypeAnnotation':
       const defaultValueString =
         typeAnnotation.default === null
@@ -90,7 +94,9 @@ function getJavaValueForProp(
         return 'value == null ? Double.NaN : ((Double) value).doubleValue()';
       }
     case 'FloatTypeAnnotation':
-      if (prop.optional) {
+      if (typeAnnotation.default === null) {
+        return 'value == null ? null : ((Double) value).floatValue()';
+      } else if (prop.optional) {
         return `value == null ? ${
           typeAnnotation.default
         }f : ((Double) value).floatValue()`;
@@ -104,6 +110,8 @@ function getJavaValueForProp(
         case 'ImageSourcePrimitive':
           return '(ReadableMap) value';
         case 'PointPrimitive':
+          return '(ReadableMap) value';
+        case 'EdgeInsetsPrimitive':
           return '(ReadableMap) value';
         default:
           (typeAnnotation.name: empty);

@@ -31,7 +31,7 @@ static NSUInteger RCTDeviceFreeMemory() {
   if (kern != KERN_SUCCESS) return 0;
   kern = host_statistics(host_port, HOST_VM_INFO, (host_info_t)&vm_stat, &host_size);
   if (kern != KERN_SUCCESS) return 0;
-  return vm_stat.free_count * page_size;
+  return (vm_stat.free_count - vm_stat.speculative_count) * page_size;
 }
 
 @interface RCTUIImageViewAnimated () <CALayerDelegate>
@@ -151,14 +151,18 @@ static NSUInteger RCTDeviceFreeMemory() {
 
 - (CADisplayLink *)displayLink
 {
-  // We only need a displayLink in the case of animated images, so short-circuit this code and don't create one for most of the use cases.
-  // Since this class is used for all RCTImageView's, this is especially important.
-  if (!_animatedImage) {
-    return nil;
+  // TODO (T53783620): This logic should always be enabled.
+  if (weakProxyEnabled) {
+    // We only need a displayLink in the case of animated images, so short-circuit this code and don't create one for most of the use cases.
+    // Since this class is used for all RCTImageView's, this is especially important.
+    if (!_animatedImage) {
+      return nil;
+    }
   }
 
   if (!_displayLink) {
     __weak typeof(self) weakSelf = self;
+    // TODO (T53783620): This logic should always be enabled.
     id target = weakProxyEnabled ? [RCTWeakProxy weakProxyWithTarget:self] : weakSelf;
     _displayLink = [CADisplayLink displayLinkWithTarget:target selector:@selector(displayDidRefresh:)];
     NSString *runLoopMode = [NSProcessInfo processInfo].activeProcessorCount > 1 ? NSRunLoopCommonModes : NSDefaultRunLoopMode;

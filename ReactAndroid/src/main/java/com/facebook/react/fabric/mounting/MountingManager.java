@@ -307,7 +307,13 @@ public class MountingManager {
       throw new IllegalStateException("Unable to find View for tag: " + reactTag);
     }
 
-    viewToUpdate.setPadding(left, top, right, bottom);
+    ViewManager viewManager = viewState.mViewManager;
+    if (viewManager == null) {
+      throw new IllegalStateException("Unable to find ViewManager for view: " + viewState);
+    }
+
+    //noinspection unchecked
+    viewManager.setPadding(viewToUpdate, left, top, right, bottom);
   }
 
   @UiThread

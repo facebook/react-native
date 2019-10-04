@@ -28,6 +28,7 @@ Pod::Spec.new do |spec|
   spec.source = source
 
   spec.module_name = 'yoga'
+  spec.header_dir = 'yoga'
   spec.requires_arc = false
   spec.pod_target_xcconfig = {
       'DEFINES_MODULE' => 'YES'

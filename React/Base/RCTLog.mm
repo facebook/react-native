@@ -192,10 +192,8 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
       logFunction(level, RCTLogSourceNative, fileName ? @(fileName) : nil, lineNumber > 0 ? @(lineNumber) : nil, message);
     }
 
-#if RCT_DEBUG
-
-    // Log to red box in debug mode.
-    if (RCTSharedApplication() && level >= RCTLOG_REDBOX_LEVEL) {
+    // Log to red box if one is configured.
+    if (RCTSharedApplication() && [RCTBridge currentBridge].redBox && level >= RCTLOG_REDBOX_LEVEL) {
       NSArray<NSString *> *stackSymbols = [NSThread callStackSymbols];
       NSMutableArray<NSDictionary *> *stack =
         [NSMutableArray arrayWithCapacity:(stackSymbols.count - 1)];
@@ -232,12 +230,12 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
         [[RCTBridge currentBridge].redBox showErrorMessage:message withStack:stack];
       });
     }
-
+    
+#if RCT_DEBUG
     if (!RCTRunningInTestEnvironment()) {
       // Log to JS executor
       [[RCTBridge currentBridge] logMessage:message level:level ? @(RCTLogLevels[level]) : @"info"];
     }
-
 #endif
 
   }

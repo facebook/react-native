@@ -11,17 +11,15 @@
 'use strict';
 
 const Platform = require('../../Utilities/Platform');
-const ReactNative = require('../../Renderer/shims/ReactNative');
 const ReactNativeViewViewConfigAndroid = require('./ReactNativeViewViewConfigAndroid');
 
 const registerGeneratedViewConfig = require('../../Utilities/registerGeneratedViewConfig');
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
 import type {ViewProps} from './ViewPropTypes';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
-export type ViewNativeComponentType = Class<
-  ReactNative.NativeComponent<ViewProps>,
->;
+export type ViewNativeComponentType = HostComponent<ViewProps>;
 
 let NativeViewComponent;
 let viewConfig:

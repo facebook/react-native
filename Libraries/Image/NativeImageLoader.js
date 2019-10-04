@@ -15,6 +15,16 @@ import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +getConstants: () => {||};
+  // Return [width, height] of image uri
+  +getSize: (uri: string) => Promise<$ReadOnlyArray<number>>;
+  +getSizeWithHeaders: (
+    uri: string,
+    headers: {[string]: string},
+  ) => Promise<$ReadOnly<{width: number, height: number}>>;
+  +prefetchImage: (uri: string) => Promise<boolean>;
+  +queryCache: (
+    uris: Array<string>,
+  ) => Promise<{[string]: 'memory' | 'disk' | 'disk/memory'}>;
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>('ImageLoader'): Spec);

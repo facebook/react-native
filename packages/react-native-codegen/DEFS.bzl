@@ -1,5 +1,5 @@
-load("@fbsource//tools/build_defs:default_platform_defs.bzl", "IOS", "MACOSX")
 load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("@fbsource//tools/build_defs:platform_defs.bzl", "IOS", "MACOSX")
 load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
@@ -203,6 +203,7 @@ def rn_codegen_components(
         ],
         fbobjc_compiler_flags = get_apple_compiler_flags(),
         fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+        labels = ["supermodule:ios/isolation/infra.react_native"],
         platforms = (ANDROID, APPLE, CXX),
         preprocessor_flags = [
             "-DLOG_TAG=\"ReactNative\"",

@@ -47,8 +47,9 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
   ConcreteComponentDescriptor(
       EventDispatcher::Weak const &eventDispatcher,
-      ContextContainer::Shared const &contextContainer = {})
-      : ComponentDescriptor(eventDispatcher, contextContainer) {
+      ContextContainer::Shared const &contextContainer = {},
+      ComponentDescriptor::Flavor const &flavor = {})
+      : ComponentDescriptor(eventDispatcher, contextContainer, flavor) {
     rawPropsParser_.prepare<ConcreteProps>();
   }
 

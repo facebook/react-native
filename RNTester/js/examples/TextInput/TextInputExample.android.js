@@ -83,9 +83,6 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
 }
 
 class RewriteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
-  /* $FlowFixMe(>=0.85.0 site=react_native_android_fb) This comment suppresses
-   * an error found when Flow v0.85 was deployed. To see the error, delete this
-   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -124,9 +121,6 @@ class TokenizedTextExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  /* $FlowFixMe(>=0.85.0 site=react_native_android_fb) This comment suppresses
-   * an error found when Flow v0.85 was deployed. To see the error, delete this
-   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: 'Hello #World'};
@@ -616,6 +610,13 @@ exports.examples = [
               {fontFamily: 'sans-serif', fontWeight: 'bold'},
             ]}
             placeholder="Sans-Serif bold"
+          />
+          <TextInput
+            style={[
+              styles.singleLine,
+              {fontFamily: 'sans-serif', fontWeight: '500'},
+            ]}
+            placeholder="Sans-Serif 500"
           />
           <TextInput
             style={[

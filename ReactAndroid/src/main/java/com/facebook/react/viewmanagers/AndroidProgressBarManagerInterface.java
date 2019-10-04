@@ -16,7 +16,7 @@ public interface AndroidProgressBarManagerInterface<T extends View> {
   void setStyleAttr(T view, @Nullable String value);
   void setTypeAttr(T view, @Nullable String value);
   void setIndeterminate(T view, boolean value);
-  void setProgress(T view, float value);
+  void setProgress(T view, double value);
   void setAnimating(T view, boolean value);
   void setColor(T view, @Nullable Integer value);
   void setTestID(T view, @Nullable String value);

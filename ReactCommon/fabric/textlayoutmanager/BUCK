@@ -102,6 +102,7 @@ rn_xplat_cxx_library(
             "platform/ios/**/*.mm",
         ],
     ),
+    labels = ["supermodule:ios/isolation/infra.react_native"],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [

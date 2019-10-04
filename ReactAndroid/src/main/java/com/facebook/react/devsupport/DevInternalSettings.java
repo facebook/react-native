@@ -123,6 +123,11 @@ public class DevInternalSettings
     return mPreferences.getBoolean(PREFS_START_SAMPLING_PROFILER_ON_INIT, false);
   }
 
+  @Override
+  public void addMenuItem(String title) {
+    // Not supported.
+  }
+
   public interface Listener {
     void onInternalSettingsChanged();
   }

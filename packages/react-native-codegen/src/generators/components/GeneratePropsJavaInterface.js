@@ -52,7 +52,12 @@ function getJavaValueForProp(prop: PropTypeShape, imports): string {
 
   switch (typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
-      return 'boolean value';
+      if (typeAnnotation.default === null) {
+        addNullable(imports);
+        return '@Nullable Boolean value';
+      } else {
+        return 'boolean value';
+      }
     case 'StringTypeAnnotation':
       addNullable(imports);
       return '@Nullable String value';
@@ -61,7 +66,12 @@ function getJavaValueForProp(prop: PropTypeShape, imports): string {
     case 'DoubleTypeAnnotation':
       return 'double value';
     case 'FloatTypeAnnotation':
-      return 'float value';
+      if (typeAnnotation.default === null) {
+        addNullable(imports);
+        return '@Nullable Float value';
+      } else {
+        return 'float value';
+      }
     case 'NativePrimitiveTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
@@ -71,6 +81,9 @@ function getJavaValueForProp(prop: PropTypeShape, imports): string {
           addNullable(imports);
           return '@Nullable ReadableMap value';
         case 'PointPrimitive':
+          addNullable(imports);
+          return '@Nullable ReadableMap value';
+        case 'EdgeInsetsPrimitive':
           addNullable(imports);
           return '@Nullable ReadableMap value';
         default:

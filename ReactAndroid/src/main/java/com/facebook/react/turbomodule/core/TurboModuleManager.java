@@ -12,7 +12,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.turbomodule.core.interfaces.JSCallInvokerHolder;
+import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.soloader.SoLoader;
@@ -39,9 +39,14 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   public TurboModuleManager(
       JavaScriptContextHolder jsContext,
       TurboModuleManagerDelegate tmmDelegate,
-      JSCallInvokerHolder instanceHolder) {
+      CallInvokerHolder jsCallInvokerHolder,
+      CallInvokerHolder nativeCallInvokerHolder) {
     mHybridData =
-        initHybrid(jsContext.get(), (JSCallInvokerHolderImpl) instanceHolder, tmmDelegate);
+        initHybrid(
+            jsContext.get(),
+            (CallInvokerHolderImpl) jsCallInvokerHolder,
+            (CallInvokerHolderImpl) nativeCallInvokerHolder,
+            tmmDelegate);
     mTurbomoduleManagerDelegate = tmmDelegate;
   }
 
@@ -79,7 +84,10 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   }
 
   private native HybridData initHybrid(
-      long jsContext, JSCallInvokerHolderImpl jsQueue, TurboModuleManagerDelegate tmmDelegate);
+      long jsContext,
+      CallInvokerHolderImpl jsCallInvokerHolder,
+      CallInvokerHolderImpl nativeCallInvokerHolder,
+      TurboModuleManagerDelegate tmmDelegate);
 
   private native void installJSIBindings();
 

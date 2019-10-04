@@ -27,7 +27,7 @@ class JSI_EXPORT TurboCxxModule : public TurboModule {
  public:
   TurboCxxModule(
       std::unique_ptr<facebook::xplat::module::CxxModule> cxxModule,
-      std::shared_ptr<JSCallInvoker> jsInvoker);
+      std::shared_ptr<CallInvoker> jsInvoker);
 
   virtual facebook::jsi::Value get(
       facebook::jsi::Runtime &runtime,

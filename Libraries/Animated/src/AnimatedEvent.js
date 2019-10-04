@@ -20,7 +20,7 @@ const {shouldUseNativeDriver} = require('./NativeAnimatedHelper');
 export type Mapping = {[key: string]: Mapping} | AnimatedValue;
 export type EventConfig = {
   listener?: ?Function,
-  useNativeDriver?: boolean,
+  useNativeDriver: boolean,
 };
 
 function attachNativeEvent(
@@ -87,8 +87,14 @@ class AnimatedEvent {
   };
   __isNative: boolean;
 
-  constructor(argMapping: Array<?Mapping>, config?: EventConfig = {}) {
+  constructor(argMapping: Array<?Mapping>, config: EventConfig) {
     this._argMapping = argMapping;
+
+    if (config == null) {
+      console.warn('Animated.event now requires a second argument for options');
+      config = {};
+    }
+
     if (config.listener) {
       this.__addListener(config.listener);
     }

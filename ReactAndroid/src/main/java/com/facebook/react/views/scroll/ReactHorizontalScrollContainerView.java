@@ -6,17 +6,13 @@
 package com.facebook.react.views.scroll;
 
 import android.content.Context;
-import android.graphics.Rect;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import androidx.core.view.ViewCompat;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
-import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
-import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.views.view.ReactViewGroup;
 
 /** Container of Horizontal scrollViews that supports RTL scrolling. */
-public class ReactHorizontalScrollContainerView extends ViewGroup {
+public class ReactHorizontalScrollContainerView extends ReactViewGroup {
 
   private int mLayoutDirection;
   private int mCurrentWidth;
@@ -48,10 +44,5 @@ public class ReactHorizontalScrollContainerView extends ViewGroup {
       parent.scrollTo(offsetX, parent.getScrollY());
     }
     mCurrentWidth = getWidth();
-  }
-
-  @Override
-  public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
-    return ReactClippingViewGroupHelper.getChildVisibleRectHelper(child, r, offset, this, ViewProps.SCROLL);
   }
 }

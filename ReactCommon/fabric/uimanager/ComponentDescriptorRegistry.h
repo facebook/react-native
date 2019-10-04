@@ -16,6 +16,7 @@
 namespace facebook {
 namespace react {
 
+class ComponentDescriptorProviderRegistry;
 class ComponentDescriptorRegistry;
 
 using SharedComponentDescriptorRegistry =
@@ -37,7 +38,9 @@ class ComponentDescriptorRegistry {
    * Creates an object with stored `ComponentDescriptorParameters`  which will
    * be used later to create `ComponentDescriptor`s.
    */
-  ComponentDescriptorRegistry(ComponentDescriptorParameters const &parameters);
+  ComponentDescriptorRegistry(
+      ComponentDescriptorParameters const &parameters,
+      ComponentDescriptorProviderRegistry const &providerRegistry);
 
   /*
    * Deprecated. Use `add` instead.
@@ -76,6 +79,7 @@ class ComponentDescriptorRegistry {
   mutable better::map<std::string, SharedComponentDescriptor> _registryByName;
   ComponentDescriptor::Shared _fallbackComponentDescriptor;
   ComponentDescriptorParameters parameters_{};
+  ComponentDescriptorProviderRegistry const *providerRegistry_{};
 };
 
 } // namespace react

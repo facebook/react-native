@@ -8,6 +8,7 @@
 #import "RCTComponentViewFactory.h"
 
 #import <React/RCTAssert.h>
+#import <React/RCTConversions.h>
 #import <better/map.h>
 #import <better/mutex.h>
 
@@ -17,10 +18,12 @@
 #import "RCTARTSurfaceViewComponentView.h"
 #import "RCTActivityIndicatorViewComponentView.h"
 #import "RCTImageComponentView.h"
+#import "RCTLegacyViewManagerInteropComponentView.h"
 #import "RCTModalHostViewComponentView.h"
 #import "RCTParagraphComponentView.h"
 #import "RCTPullToRefreshViewComponentView.h"
 #import "RCTRootComponentView.h"
+#import "RCTSafeAreaViewComponentView.h"
 #import "RCTScrollViewComponentView.h"
 #import "RCTSliderComponentView.h"
 #import "RCTSwitchComponentView.h"
@@ -51,6 +54,23 @@ using namespace facebook::react;
   [componentViewFactory registerComponentViewClass:[RCTUnimplementedNativeComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTModalHostViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTARTSurfaceViewComponentView class]];
+  [componentViewFactory registerComponentViewClass:[RCTSafeAreaViewComponentView class]];
+
+  auto providerRegistry = &componentViewFactory->_providerRegistry;
+
+  providerRegistry->setComponentDescriptorProviderRequest([providerRegistry,
+                                                           componentViewFactory](ComponentName requestedComponentName) {
+    if ([RCTLegacyViewManagerInteropComponentView isSupported:RCTNSStringFromString(requestedComponentName)]) {
+      auto flavor = std::make_shared<std::string const>(requestedComponentName);
+      auto componentName = ComponentName{flavor->c_str()};
+      auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
+      auto constructor = [RCTLegacyViewManagerInteropComponentView componentDescriptorProvider].constructor;
+
+      providerRegistry->add(ComponentDescriptorProvider{componentHandle, componentName, flavor, constructor});
+
+      componentViewFactory->_componentViewClasses[componentHandle] = [RCTLegacyViewManagerInteropComponentView class];
+    }
+  });
 
   return componentViewFactory;
 }

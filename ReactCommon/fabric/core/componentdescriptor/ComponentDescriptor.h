@@ -33,9 +33,21 @@ class ComponentDescriptor {
   using Shared = std::shared_ptr<ComponentDescriptor const>;
   using Unique = std::unique_ptr<ComponentDescriptor const>;
 
+  /*
+   * `Flavor` is a special concept designed to allow registering instances of
+   * the exact same `ComponentDescriptor` class with different `ComponentName`
+   * and `ComponentHandle` (the particular custom implementation might use
+   * stored `flavor` to return different values from those virtual methods).
+   * Since it's a very niche requirement (e.g. we plan to use it for
+   * an interoperability layer with Paper), we are thinking about removing this
+   * feature completely after it's no longer needed.
+   */
+  using Flavor = std::shared_ptr<void const>;
+
   ComponentDescriptor(
       EventDispatcher::Weak const &eventDispatcher,
-      ContextContainer::Shared const &contextContainer);
+      ContextContainer::Shared const &contextContainer,
+      ComponentDescriptor::Flavor const &flavor);
 
   virtual ~ComponentDescriptor() = default;
 
@@ -114,6 +126,7 @@ class ComponentDescriptor {
   EventDispatcher::Weak eventDispatcher_;
   ContextContainer::Shared contextContainer_;
   RawPropsParser rawPropsParser_{};
+  Flavor flavor_;
 };
 
 } // namespace react

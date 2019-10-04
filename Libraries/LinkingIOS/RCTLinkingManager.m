@@ -10,6 +10,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTUtils.h>
+#import <React/RCTLog.h>
 
 static NSString *const kOpenURLNotification = @"RCTOpenURLNotification";
 
@@ -97,7 +98,18 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
       if (success) {
         resolve(@YES);
       } else {
-        reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
+        #if TARGET_OS_SIMULATOR
+          // Simulator-specific code
+          if([URL.absoluteString hasPrefix:@"tel:"]){
+            RCTLogWarn(@"Unable to open the Phone app in the simulator for telephone URLs. URL:  %@", URL);
+            resolve(@NO);
+          } else {
+            reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
+          }
+        #else
+          // Device-specific code
+          reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
+        #endif
       }
     }];
   } else {
@@ -107,7 +119,18 @@ RCT_EXPORT_METHOD(openURL:(NSURL *)URL
     if (opened) {
       resolve(@YES);
     } else {
-      reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
+      #if TARGET_OS_SIMULATOR
+        // Simulator-specific code
+        if([URL.absoluteString hasPrefix:@"tel:"]){
+          RCTLogWarn(@"Unable to open the Phone app in the simulator for telephone URLs. URL:  %@", URL);
+          resolve(@NO);
+        } else {
+          reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
+        }
+      #else
+        // Device-specific code
+        reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@", URL], nil);
+      #endif
     }
 #endif
   }

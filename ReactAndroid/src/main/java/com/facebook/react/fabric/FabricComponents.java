@@ -33,6 +33,7 @@ public class FabricComponents {
     sComponentNames.put("ShimmeringView", "RKShimmeringView");
     sComponentNames.put("TemplateView", "RCTTemplateView");
     sComponentNames.put("AxialGradientView", "RCTAxialGradientView");
+    sComponentNames.put("Video", "RCTVideo");
   }
 
   /** @return the name of component in the Fabric environment */

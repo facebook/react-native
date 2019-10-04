@@ -31,11 +31,13 @@ NSString *const RCTDidSetupModuleNotification = @"RCTDidSetupModuleNotification"
 NSString *const RCTDidSetupModuleNotificationModuleNameKey = @"moduleName";
 NSString *const RCTDidSetupModuleNotificationSetupTimeKey = @"setupTime";
 NSString *const RCTBridgeWillReloadNotification = @"RCTBridgeWillReloadNotification";
+NSString *const RCTBridgeFastRefreshNotification = @"RCTBridgeFastRefreshNotification";
 NSString *const RCTBridgeWillDownloadScriptNotification = @"RCTBridgeWillDownloadScriptNotification";
 NSString *const RCTBridgeDidDownloadScriptNotification = @"RCTBridgeDidDownloadScriptNotification";
 NSString *const RCTBridgeWillInvalidateModulesNotification = @"RCTBridgeWillInvalidateModulesNotification";
 NSString *const RCTBridgeDidInvalidateModulesNotification = @"RCTBridgeDidInvalidateModulesNotification";
 NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey = @"source";
+NSString *const RCTBridgeDidDownloadScriptNotificationReasonKey = @"reason";
 NSString *const RCTBridgeDidDownloadScriptNotificationBridgeDescriptionKey = @"bridgeDescription";
 
 static NSMutableArray<Class> *RCTModuleClasses;
@@ -244,7 +246,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)didReceiveReloadCommand
 {
-  [self reload];
+  [self reloadWithReason:@"Command"];
 }
 
 - (NSArray<Class> *)moduleClasses
@@ -290,14 +292,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleIsInitialized:moduleClass];
 }
 
+/**
+ * Legacy reload, please use reloadWithReason and provide a reason for stats.
+ */
 - (void)reload
+{
+   [self reloadWithReason:@"Unknown from bridge"];
+}
+
+- (void)reloadWithReason:(NSString *)reason
 {
   #if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC
   // Disable debugger to resume the JsVM & avoid thread locks while reloading
   [RCTInspectorDevServerHelper disableDebugger];
   #endif
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillReloadNotification object:self];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillReloadNotification object:self userInfo:@{RCTBridgeDidDownloadScriptNotificationReasonKey: reason} ];
 
   /**
    * Any thread
@@ -312,9 +322,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   });
 }
 
+- (void)onFastRefresh
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeFastRefreshNotification object:self];
+}
+
 - (void)requestReload
 {
-  [self reload];
+  [self reloadWithReason:@"Requested from bridge"];
 }
 
 - (Class)bridgeClass
@@ -399,7 +414,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self enqueueJSCall:module method:method args:args completion:NULL];
 }
 
-- (void)enqueueJSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion
+- (void)enqueueJSCall:(NSString *)module
+               method:(NSString *)method
+                 args:(NSArray *)args
+           completion:(dispatch_block_t)completion
 {
   [self.batchedBridge enqueueJSCall:module method:method args:args completion:completion];
 }

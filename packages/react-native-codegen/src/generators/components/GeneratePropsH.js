@@ -229,6 +229,8 @@ function getNativeTypeFromAnnotation(
           return 'ImageSource';
         case 'PointPrimitive':
           return 'Point';
+        case 'EdgeInsetsPrimitive':
+          return 'EdgeInsets';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Received unknown NativePrimitiveTypeAnnotation');
@@ -496,6 +498,9 @@ function getLocalImports(
         imports.add('#include <react/imagemanager/primitives.h>');
         return;
       case 'PointPrimitive':
+        imports.add('#include <react/graphics/Geometry.h>');
+        return;
+      case 'EdgeInsetsPrimitive':
         imports.add('#include <react/graphics/Geometry.h>');
         return;
       default:

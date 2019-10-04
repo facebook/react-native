@@ -11,6 +11,7 @@ namespace facebook {
 namespace react {
 
 Size SliderMeasurementsManager::measure(
+    SurfaceId surfaceId,
     LayoutConstraints layoutConstraints) const {
   assert(false); // should never reach this point
   return {};

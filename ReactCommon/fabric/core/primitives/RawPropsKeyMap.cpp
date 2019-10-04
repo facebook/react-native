@@ -14,7 +14,7 @@
 namespace facebook {
 namespace react {
 
-int RawPropsKeyMap::comparator(void const *lhs, void const *rhs) {
+int RawPropsKeyMap::comparator(void const *lhs, void const *rhs) noexcept {
   auto a = static_cast<RawPropsKeyMap::Item const *>(lhs);
   auto b = static_cast<RawPropsKeyMap::Item const *>(rhs);
 
@@ -25,14 +25,16 @@ int RawPropsKeyMap::comparator(void const *lhs, void const *rhs) {
   return std::memcmp(a->name, b->name, a->length);
 }
 
-void RawPropsKeyMap::insert(RawPropsKey const &key, RawPropsValueIndex value) {
+void RawPropsKeyMap::insert(
+    RawPropsKey const &key,
+    RawPropsValueIndex value) noexcept {
   auto item = Item{};
   item.value = value;
   key.render(item.name, &item.length);
   items_.push_back(item);
 }
 
-void RawPropsKeyMap::reindex() {
+void RawPropsKeyMap::reindex() noexcept {
   // Sorting `items_` by property names length and then lexicographically.
   std::qsort(
       items_.data(),
@@ -60,7 +62,7 @@ void RawPropsKeyMap::reindex() {
 
 RawPropsValueIndex RawPropsKeyMap::at(
     char const *name,
-    RawPropsPropNameLength length) {
+    RawPropsPropNameLength length) noexcept {
   assert(length > 0);
   assert(length < kPropNameLengthHardCap);
   // 1. Find the bucket.

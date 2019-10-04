@@ -33,7 +33,7 @@ public class AndroidDrawerLayoutManagerDelegate<T extends View, U extends BaseVi
         mViewManager.setDrawerPosition(view, (String) value);
         break;
       case "drawerWidth":
-        mViewManager.setDrawerWidth(view, value == null ? 0f : ((Double) value).floatValue());
+        mViewManager.setDrawerWidth(view, value == null ? null : ((Double) value).floatValue());
         break;
       case "drawerLockMode":
         mViewManager.setDrawerLockMode(view, (String) value);

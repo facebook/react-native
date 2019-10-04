@@ -479,6 +479,35 @@ const POINT_PROP: SchemaType = {
   },
 };
 
+const INSETS_PROP: SchemaType = {
+  modules: {
+    ScrollView: {
+      components: {
+        InsetsPropNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'contentInset',
+              optional: true,
+              typeAnnotation: {
+                type: 'NativePrimitiveTypeAnnotation',
+                name: 'EdgeInsetsPrimitive',
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
 const ARRAY_PROPS: SchemaType = {
   modules: {
     Slider: {
@@ -1485,6 +1514,7 @@ module.exports = {
   COLOR_PROP,
   IMAGE_PROP,
   POINT_PROP,
+  INSETS_PROP,
   ARRAY_PROPS,
   ARRAY_PROPS_WITH_NESTED_OBJECT,
   OBJECT_PROPS,

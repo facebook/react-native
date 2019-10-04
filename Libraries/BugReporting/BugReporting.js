@@ -11,7 +11,6 @@
 'use strict';
 
 const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
-const infoLog = require('../Utilities/infoLog');
 
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 import NativeBugReporting from './NativeBugReporting';

@@ -16,6 +16,9 @@
 namespace facebook {
 namespace react {
 
+using ComponentDescriptorProviderRequest =
+    std::function<void(ComponentName componentName)>;
+
 /*
  * Registry of `ComponentDescriptorProvider`s (and managed
  * `ComponentDescriptorRegistry`s). The class maintains a list of
@@ -27,23 +30,42 @@ class ComponentDescriptorProviderRegistry final {
   /*
    * Adds (or removes) a `ComponentDescriptorProvider`s and update the managed
    * `ComponentDescriptorRegistry`s accordingly.
+   * The methods can be called on any thread.
    */
   void add(ComponentDescriptorProvider provider) const;
   void remove(ComponentDescriptorProvider provider) const;
 
   /*
+   * ComponenDescriptorRegistry will call the `request` in case if a component
+   * with given name wasn't registered yet.
+   * The request handler must register a ComponentDescripor with requested name
+   * synchronously during handling the request.
+   * The request can be called on any thread.
+   * The methods can be called on any thread.
+   */
+  void setComponentDescriptorProviderRequest(
+      ComponentDescriptorProviderRequest request) const;
+
+  /*
    * Creates managed `ComponentDescriptorRegistry` based on a stored list of
    * `ComponentDescriptorProvider`s and given `ComponentDescriptorParameters`.
+   * The methods can be called on any thread.
    */
   ComponentDescriptorRegistry::Shared createComponentDescriptorRegistry(
       ComponentDescriptorParameters const &parameters) const;
 
  private:
+  friend class ComponentDescriptorRegistry;
+
+  void request(ComponentName componentName) const;
+
   mutable better::shared_mutex mutex_;
   mutable std::vector<std::weak_ptr<ComponentDescriptorRegistry const>>
       componentDescriptorRegistries_;
   mutable better::map<ComponentHandle, ComponentDescriptorProvider const>
       componentDescriptorProviders_;
+  mutable ComponentDescriptorProviderRequest
+      componentDescriptorProviderRequest_;
 };
 
 } // namespace react

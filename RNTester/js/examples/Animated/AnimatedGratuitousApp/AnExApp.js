@@ -65,10 +65,13 @@ class Circle extends React.Component<any, any> {
     this.setState(
       {
         panResponder: PanResponder.create({
-          onPanResponderMove: Animated.event([
-            null, // native event - ignore      (step1: uncomment)
-            {dx: this.state.pan.x, dy: this.state.pan.y}, // links pan to gestureState  (step1: uncomment)
-          ]),
+          onPanResponderMove: Animated.event(
+            [
+              null, // native event - ignore      (step1: uncomment)
+              {dx: this.state.pan.x, dy: this.state.pan.y}, // links pan to gestureState  (step1: uncomment)
+            ],
+            {useNativeDriver: false},
+          ),
           onPanResponderRelease: (e, gestureState) => {
             LayoutAnimation.easeInEaseOut(); // @flowfixme animates layout update as one batch (step3: uncomment)
             Animated.spring(this.state.pop, {

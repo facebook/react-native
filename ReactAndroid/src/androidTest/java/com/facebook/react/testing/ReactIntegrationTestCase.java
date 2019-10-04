@@ -23,7 +23,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.futures.SimpleSettableFuture;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.modules.core.ReactChoreographer;
-import com.facebook.react.modules.core.Timing;
+import com.facebook.react.modules.core.TimingModule;
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
 import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
 import com.facebook.soloader.SoLoader;
@@ -131,15 +131,17 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
   /**
    * Timing module needs to be created on the main thread so that it gets the correct Choreographer.
    */
-  protected Timing createTimingModule() {
-    final SimpleSettableFuture<Timing> simpleSettableFuture = new SimpleSettableFuture<Timing>();
+  protected TimingModule createTimingModule() {
+    final SimpleSettableFuture<TimingModule> simpleSettableFuture =
+        new SimpleSettableFuture<TimingModule>();
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
           public void run() {
             ReactChoreographer.initialize();
-            Timing timing = new Timing(getContext(), mock(DevSupportManager.class));
-            simpleSettableFuture.set(timing);
+            TimingModule timingModule =
+                new TimingModule(getContext(), mock(DevSupportManager.class));
+            simpleSettableFuture.set(timingModule);
           }
         });
     try {

@@ -944,11 +944,64 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-  (std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
+  (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
   return std::make_shared<facebook::react::NativeImageLoaderSpecJSI>(self, jsInvoker);
 }
 
+RCT_EXPORT_METHOD(getSize:(NSString *)uri resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+{
+  NSURLRequest *request = [RCTConvert NSURLRequest:uri];
+  [self getImageSizeForURLRequest:request
+   block:^(NSError *error, CGSize size) {
+     if (error) {
+       reject(
+        @"E_GET_SIZE_FAILURE",
+        [NSString stringWithFormat: @"Failed to getSize of %@", uri],
+        error);
+     } else {
+       resolve(@[@(size.width), @(size.height)]);
+     }
+   }];
+}
+
+RCT_EXPORT_METHOD(getSizeWithHeaders:(NSString *)uri
+                  headers:(JS::NativeImageLoader::SpecGetSizeWithHeadersHeaders &)headers
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  NSURLRequest *request = [RCTConvert NSURLRequest:uri];
+  [self getImageSizeForURLRequest:request
+   block:^(NSError *error, CGSize size) {
+     if (error) {
+       reject(@"E_GET_SIZE_FAILURE", nil, error);
+       return;
+     }
+     resolve(@{@"width":@(size.width),@"height":@(size.height)});
+   }];
+}
+
+RCT_EXPORT_METHOD(prefetchImage:(NSString *)uri
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject)
+{
+  NSURLRequest *request = [RCTConvert NSURLRequest:uri];
+  [self loadImageWithURLRequest:request
+   callback:^(NSError *error, UIImage *image) {
+     if (error) {
+       reject(@"E_PREFETCH_FAILURE", nil, error);
+       return;
+     }
+     resolve(@YES);
+   }];
+}
+
+RCT_EXPORT_METHOD(queryCache:(NSArray *)uris
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  resolve([self getImageCacheStatus:uris]);
+}
 @end
 
 /**

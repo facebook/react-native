@@ -15,28 +15,37 @@ using namespace facebook::react;
 
 @implementation RCTSwitchComponentView {
   UISwitch *_switchView;
-  BOOL _wasOn;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const SwitchProps>();
-    _props = defaultProps;
-
     _switchView = [[UISwitch alloc] initWithFrame:self.bounds];
 
     [_switchView addTarget:self action:@selector(onChange:) forControlEvents:UIControlEventValueChanged];
 
-    _switchView.on = defaultProps->value;
-
     self.contentView = _switchView;
+
+    [self setPropsToDefault];
   }
 
   return self;
 }
 
+- (void)setPropsToDefault
+{
+  static const auto defaultProps = std::make_shared<const SwitchProps>();
+  _props = defaultProps;
+  _switchView.on = defaultProps->value;
+}
+
 #pragma mark - RCTComponentViewProtocol
+
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  [self setPropsToDefault];
+}
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
@@ -51,7 +60,6 @@ using namespace facebook::react;
   // `value`
   if (oldSwitchProps.value != newSwitchProps.value) {
     _switchView.on = newSwitchProps.value;
-    _wasOn = newSwitchProps.value;
   }
 
   // `disabled`
@@ -79,10 +87,10 @@ using namespace facebook::react;
 
 - (void)onChange:(UISwitch *)sender
 {
-  if (_wasOn == sender.on) {
+  const auto &props = *std::static_pointer_cast<const SwitchProps>(_props);
+  if (props.value == sender.on) {
     return;
   }
-  _wasOn = sender.on;
 
   std::dynamic_pointer_cast<const SwitchEventEmitter>(_eventEmitter)
       ->onChange(SwitchOnChangeStruct{.value = static_cast<bool>(sender.on)});

@@ -91,7 +91,7 @@ export type ObjectPropertyType =
 type PropTypeTypeAnnotation =
   | $ReadOnly<{|
       type: 'BooleanTypeAnnotation',
-      default: boolean,
+      default: boolean | null,
     |}>
   | $ReadOnly<{|
       type: 'StringTypeAnnotation',
@@ -103,7 +103,7 @@ type PropTypeTypeAnnotation =
     |}>
   | $ReadOnly<{|
       type: 'FloatTypeAnnotation',
-      default: number,
+      default: number | null,
     |}>
   | $ReadOnly<{|
       type: 'Int32TypeAnnotation',
@@ -125,7 +125,11 @@ type PropTypeTypeAnnotation =
     |}>
   | $ReadOnly<{|
       type: 'NativePrimitiveTypeAnnotation',
-      name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
+      name:
+        | 'ColorPrimitive'
+        | 'ImageSourcePrimitive'
+        | 'PointPrimitive'
+        | 'EdgeInsetsPrimitive',
     |}>
   | $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
@@ -162,7 +166,11 @@ type PropTypeTypeAnnotation =
           |}>
         | $ReadOnly<{|
             type: 'NativePrimitiveTypeAnnotation',
-            name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
+            name:
+              | 'ColorPrimitive'
+              | 'ImageSourcePrimitive'
+              | 'PointPrimitive'
+              | 'EdgeInsetsPrimitive',
           |}>
         | $ReadOnly<{|
             type: 'ArrayTypeAnnotation',

@@ -23,7 +23,6 @@ public class AppearanceModule extends ReactContextBaseJavaModule {
   public static final String NAME = "Appearance";
 
   private static final String APPEARANCE_CHANGED_EVENT_NAME = "appearanceChanged";
-  private static final int ANDROID_TEN = 29;
 
   private String mColorScheme = "light";
 
@@ -34,8 +33,8 @@ public class AppearanceModule extends ReactContextBaseJavaModule {
   }
 
   private static String colorSchemeForCurrentConfiguration(Context context) {
-    // TODO: (hramos) T52929922: Switch to Build.VERSION_CODES.ANDROID_TEN or equivalent
-    if (Build.VERSION.SDK_INT >= ANDROID_TEN) {
+    // Night Mode is only available in Android P and up.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       int currentNightMode =
           context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
       switch (currentNightMode) {

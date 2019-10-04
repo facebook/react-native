@@ -57,7 +57,7 @@ RCT_EXPORT_MODULE(Appearance)
   return dispatch_get_main_queue();
 }
 
-- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<JSCallInvoker>)jsInvoker
+- (std::shared_ptr<TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
 {
   return std::make_shared<NativeAppearanceSpecJSI>(self, jsInvoker);
 }

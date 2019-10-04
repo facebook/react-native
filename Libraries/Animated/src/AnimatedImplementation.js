@@ -508,7 +508,7 @@ function unforkEvent(
   }
 }
 
-const event = function(argMapping: Array<?Mapping>, config?: EventConfig): any {
+const event = function(argMapping: Array<?Mapping>, config: EventConfig): any {
   const animatedEvent = new AnimatedEvent(argMapping, config);
   if (animatedEvent.__isNative) {
     return animatedEvent;

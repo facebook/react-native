@@ -26,12 +26,9 @@ struct JYogaLogLevel : public facebook::jni::JavaClass<JYogaLogLevel> {
 };
 
 struct JYogaLogger : public facebook::jni::JavaClass<JYogaLogger> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaLogger";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaLogger;";
 
-  void log(
-      facebook::jni::alias_ref<JYogaNode>,
-      facebook::jni::alias_ref<JYogaLogLevel>,
-      jstring);
+  void log(facebook::jni::alias_ref<JYogaLogLevel>, jstring);
 };
 
 class PtrJNodeMap {

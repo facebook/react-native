@@ -9,7 +9,7 @@
 
 #include <fb/fbjni.h>
 #include <ReactCommon/JavaTurboModule.h>
-#include <ReactCommon/JSCallInvoker.h>
+#include <ReactCommon/CallInvoker.h>
 #include <string>
 #include <memory>
 
@@ -20,8 +20,8 @@ class TurboModuleManagerDelegate : public jni::HybridClass<TurboModuleManagerDel
 public:
   static auto constexpr kJavaDescriptor = "Lcom/facebook/react/turbomodule/core/TurboModuleManagerDelegate;";
 
-  virtual std::shared_ptr<TurboModule> getTurboModule(std::string name, jni::alias_ref<JTurboModule> turboModule, std::shared_ptr<JSCallInvoker> jsInvoker) = 0;
-  virtual std::shared_ptr<TurboModule> getTurboModule(std::string name, std::shared_ptr<JSCallInvoker> jsInvoker) = 0;
+  virtual std::shared_ptr<TurboModule> getTurboModule(std::string name, jni::alias_ref<JTurboModule> turboModule, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<CallInvoker> nativeInvoker) = 0;
+  virtual std::shared_ptr<TurboModule> getTurboModule(std::string name, std::shared_ptr<CallInvoker> jsInvoker) = 0;
 
 private:
   friend HybridBase;

@@ -64,6 +64,8 @@ function getImports(properties: $ReadOnlyArray<PropTypeShape>): Set<string> {
         return;
       case 'PointPrimitive':
         return;
+      case 'EdgeInsetsPrimitive':
+        return;
       case 'ImageSourcePrimitive':
         imports.add('#include <react/components/image/conversions.h>');
         return;
@@ -120,6 +122,9 @@ function convertDefaultTypeToString(
   const typeAnnotation = prop.typeAnnotation;
   switch (typeAnnotation.type) {
     case 'BooleanTypeAnnotation':
+      if (typeAnnotation.default == null) {
+        return '';
+      }
       return String(typeAnnotation.default);
     case 'StringTypeAnnotation':
       if (typeAnnotation.default == null) {
@@ -135,8 +140,11 @@ function convertDefaultTypeToString(
         : String(typeAnnotation.default);
     case 'FloatTypeAnnotation':
       const defaultFloatVal = typeAnnotation.default;
+      if (defaultFloatVal == null) {
+        return '';
+      }
       return parseInt(defaultFloatVal, 10) === defaultFloatVal
-        ? typeAnnotation.default.toFixed(1)
+        ? defaultFloatVal.toFixed(1)
         : String(typeAnnotation.default);
     case 'NativePrimitiveTypeAnnotation':
       switch (typeAnnotation.name) {
@@ -145,6 +153,8 @@ function convertDefaultTypeToString(
         case 'ImageSourcePrimitive':
           return '';
         case 'PointPrimitive':
+          return '';
+        case 'EdgeInsetsPrimitive':
           return '';
         default:
           (typeAnnotation.name: empty);

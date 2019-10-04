@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 #include <unordered_set>
 
 namespace facebook {
@@ -32,7 +33,7 @@ class LongLivedObject {
 };
 
 /**
- * A singleton collection for the `LongLivedObject`s.
+ * A singleton, thread-safe, write-only collection for the `LongLivedObject`s.
  */
 class LongLivedObjectCollection {
  public:
@@ -41,13 +42,14 @@ class LongLivedObjectCollection {
   LongLivedObjectCollection(LongLivedObjectCollection const &) = delete;
   void operator=(LongLivedObjectCollection const &) = delete;
 
-  void add(std::shared_ptr<LongLivedObject> o);
-  void remove(const LongLivedObject *o);
-  void clear();
+  void add(std::shared_ptr<LongLivedObject> o) const;
+  void remove(const LongLivedObject *o) const;
+  void clear() const;
 
  private:
   LongLivedObjectCollection();
-  std::unordered_set<std::shared_ptr<LongLivedObject>> collection_;
+  mutable std::unordered_set<std::shared_ptr<LongLivedObject>> collection_;
+  mutable std::mutex collectionMutex_;
 };
 
 } // namespace react

@@ -11,7 +11,6 @@
 
 const Platform = require('../Utilities/Platform');
 const React = require('react');
-const ScrollView = require('../Components/ScrollView/ScrollView');
 const VirtualizedSectionList = require('./VirtualizedSectionList');
 
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
