@@ -23,6 +23,9 @@
 
 [include]
 
+[declarations]
+.*/node_modules/.*
+
 [libs]
 interface.js
 flow/
@@ -79,4 +82,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.108.0
+^0.109.0
