@@ -576,7 +576,7 @@ if (__DEV__) {
     },
   });
 
-  // $FlowFixMe This is intentional: Flow will error when attempting to access ViewPagerAndroid.
+  // $FlowFixMe This is intentional: Flow will error when attempting to access DatePickerAndroid.
   Object.defineProperty(module.exports, 'DatePickerAndroid', {
     configurable: true,
     get() {
