@@ -22,7 +22,6 @@ require('./TestJavaToJSReturnValuesModule');
 require('./UIManagerTestModule');
 
 require('./CatalystRootViewTestModule');
-require('./DatePickerDialogTestModule');
 require('./MeasureLayoutTestModule');
 require('./PickerAndroidTestModule');
 require('./ScrollViewTestModule');
@@ -43,11 +42,6 @@ const apps = [
     appKey: 'CatalystRootViewTestApp',
     component: () =>
       require('./CatalystRootViewTestModule').CatalystRootViewTestApp,
-  },
-  {
-    appKey: 'DatePickerDialogTestApp',
-    component: () =>
-      require('./DatePickerDialogTestModule').DatePickerDialogTestApp,
   },
   {
     appKey: 'JSResponderTestApp',

@@ -24,7 +24,6 @@ import com.facebook.react.modules.camera.CameraRollManager;
 import com.facebook.react.modules.camera.ImageEditingManager;
 import com.facebook.react.modules.camera.ImageStoreManager;
 import com.facebook.react.modules.clipboard.ClipboardModule;
-import com.facebook.react.modules.datepicker.DatePickerDialogModule;
 import com.facebook.react.modules.dialog.DialogModule;
 import com.facebook.react.modules.fresco.FrescoModule;
 import com.facebook.react.modules.i18nmanager.I18nManagerModule;
@@ -36,7 +35,6 @@ import com.facebook.react.modules.share.ShareModule;
 import com.facebook.react.modules.sound.SoundManagerModule;
 import com.facebook.react.modules.statusbar.StatusBarModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
-import com.facebook.react.modules.timepicker.TimePickerDialogModule;
 import com.facebook.react.modules.toast.ToastModule;
 import com.facebook.react.modules.vibration.VibrationModule;
 import com.facebook.react.modules.websocket.WebSocketModule;
@@ -79,7 +77,6 @@ import java.util.Map;
       AsyncStorageModule.class,
       CameraRollManager.class,
       ClipboardModule.class,
-      DatePickerDialogModule.class,
       DialogModule.class,
       FrescoModule.class,
       I18nManagerModule.class,
@@ -93,7 +90,6 @@ import java.util.Map;
       ShareModule.class,
       SoundManagerModule.class,
       StatusBarModule.class,
-      TimePickerDialogModule.class,
       ToastModule.class,
       VibrationModule.class,
       WebSocketModule.class,
@@ -128,8 +124,6 @@ public class MainReactPackage extends TurboReactPackage {
         return new CameraRollManager(context);
       case ClipboardModule.NAME:
         return new ClipboardModule(context);
-      case DatePickerDialogModule.FRAGMENT_TAG:
-        return new DatePickerDialogModule(context);
       case DialogModule.NAME:
         return new DialogModule(context);
       case FrescoModule.NAME:
@@ -156,8 +150,6 @@ public class MainReactPackage extends TurboReactPackage {
         return new StatusBarModule(context);
       case SoundManagerModule.NAME:
         return new SoundManagerModule(context);
-      case TimePickerDialogModule.FRAGMENT_TAG:
-        return new TimePickerDialogModule(context);
       case ToastModule.NAME:
         return new ToastModule(context);
       case VibrationModule.NAME:
@@ -221,7 +213,6 @@ public class MainReactPackage extends TurboReactPackage {
             AsyncStorageModule.class,
             CameraRollManager.class,
             ClipboardModule.class,
-            DatePickerDialogModule.class,
             DialogModule.class,
             FrescoModule.class,
             I18nManagerModule.class,
@@ -235,7 +226,6 @@ public class MainReactPackage extends TurboReactPackage {
             ShareModule.class,
             StatusBarModule.class,
             SoundManagerModule.class,
-            TimePickerDialogModule.class,
             ToastModule.class,
             VibrationModule.class,
             WebSocketModule.class
