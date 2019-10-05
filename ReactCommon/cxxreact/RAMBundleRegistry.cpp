@@ -5,8 +5,9 @@
 
 #include "RAMBundleRegistry.h"
 
-#include <folly/Memory.h>
 #include <folly/String.h>
+
+#include <memory>
 
 namespace facebook {
 namespace react {
@@ -15,13 +16,13 @@ constexpr uint32_t RAMBundleRegistry::MAIN_BUNDLE_ID;
 
 std::unique_ptr<RAMBundleRegistry> RAMBundleRegistry::singleBundleRegistry(
     std::unique_ptr<JSModulesUnbundle> mainBundle) {
-  return folly::make_unique<RAMBundleRegistry>(std::move(mainBundle));
+  return std::make_unique<RAMBundleRegistry>(std::move(mainBundle));
 }
 
 std::unique_ptr<RAMBundleRegistry> RAMBundleRegistry::multipleBundlesRegistry(
     std::unique_ptr<JSModulesUnbundle> mainBundle,
     std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> factory) {
-  return folly::make_unique<RAMBundleRegistry>(
+  return std::make_unique<RAMBundleRegistry>(
       std::move(mainBundle), std::move(factory));
 }
 

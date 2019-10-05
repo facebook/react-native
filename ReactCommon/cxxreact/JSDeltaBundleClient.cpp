@@ -5,9 +5,8 @@
 
 #include "JSDeltaBundleClient.h"
 
+#include <memory>
 #include <sstream>
-
-#include <folly/Memory.h>
 
 namespace facebook {
 namespace react {
@@ -87,7 +86,7 @@ JSModulesUnbundle::Module JSDeltaBundleClient::getModule(uint32_t moduleId) cons
 }
 
 std::unique_ptr<const JSBigString> JSDeltaBundleClient::getStartupCode() const {
-  return folly::make_unique<JSBigStdString>(startupCode_);
+  return std::make_unique<JSBigStdString>(startupCode_);
 }
 
 void JSDeltaBundleClient::clear() {

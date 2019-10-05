@@ -11,9 +11,10 @@
 
 #include <glog/logging.h>
 
-#include <folly/Memory.h>
 #include <folly/portability/SysMman.h>
 #include <folly/ScopeGuard.h>
+
+#include <memory>
 
 namespace facebook {
 namespace react {
@@ -149,7 +150,7 @@ std::unique_ptr<const JSBigFileString> JSBigFileString::fromPath(const std::stri
   struct stat fileInfo;
   folly::checkUnixError(::fstat(fd, &fileInfo), "fstat on bundle failed.");
 
-  return folly::make_unique<const JSBigFileString>(fd, fileInfo.st_size);
+  return std::make_unique<const JSBigFileString>(fd, fileInfo.st_size);
 }
 
 }  // namespace react

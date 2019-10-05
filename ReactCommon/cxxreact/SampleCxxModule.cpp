@@ -6,9 +6,9 @@
 #include "SampleCxxModule.h"
 #include <cxxreact/JsArgumentHelpers.h>
 
-#include <folly/Memory.h>
 #include <glog/logging.h>
 
+#include <memory>
 #include <thread>
 
 using namespace folly;
@@ -158,5 +158,5 @@ void SampleCxxModule::load(__unused folly::dynamic args, Callback cb) {
 // By convention, the function name should be the same as the class name.
 facebook::xplat::module::CxxModule *SampleCxxModule() {
   return new facebook::xplat::samples::SampleCxxModule(
-    folly::make_unique<facebook::xplat::samples::Sample>());
+    std::make_unique<facebook::xplat::samples::Sample>());
 }

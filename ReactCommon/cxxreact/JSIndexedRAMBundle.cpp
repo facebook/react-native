@@ -6,16 +6,16 @@
 #include "JSIndexedRAMBundle.h"
 
 #include <glog/logging.h>
+#include <memory>
 #include <fstream>
 #include <sstream>
-#include <folly/Memory.h>
 
 namespace facebook {
 namespace react {
 
 std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> JSIndexedRAMBundle::buildFactory() {
   return [](const std::string& bundlePath){
-    return folly::make_unique<JSIndexedRAMBundle>(bundlePath.c_str());
+    return std::make_unique<JSIndexedRAMBundle>(bundlePath.c_str());
   };
 }
 

@@ -6,6 +6,7 @@
 #include "CatalystInstanceImpl.h"
 
 #include <condition_variable>
+#include <memory>
 #include <mutex>
 #include <sstream>
 #include <vector>
@@ -23,7 +24,6 @@
 #include <cxxreact/RecoverableError.h>
 #include <fb/fbjni/ByteBuffer.h>
 #include <fb/log.h>
-#include <folly/Memory.h>
 #include <folly/dynamic.h>
 #include <jni/Countable.h>
 #include <jni/LocalReference.h>
@@ -91,7 +91,7 @@ CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass>) {
 }
 
 CatalystInstanceImpl::CatalystInstanceImpl()
-    : instance_(folly::make_unique<Instance>()) {}
+    : instance_(std::make_unique<Instance>()) {}
 
 CatalystInstanceImpl::~CatalystInstanceImpl() {
   if (moduleMessageQueue_ != NULL) {
@@ -179,7 +179,7 @@ void CatalystInstanceImpl::initializeBridge(
   instance_->initializeBridge(
       std::make_unique<JInstanceCallback>(callback, moduleMessageQueue_),
       jseh->getExecutorFactory(),
-      folly::make_unique<JMessageQueueThread>(jsQueue),
+      std::make_unique<JMessageQueueThread>(jsQueue),
       moduleRegistry_);
 }
 
@@ -274,7 +274,7 @@ void CatalystInstanceImpl::setGlobalVariable(
 
   instance_->setGlobalVariable(
       std::move(propName),
-      folly::make_unique<JSBigStdString>(std::move(jsonValue)));
+      std::make_unique<JSBigStdString>(std::move(jsonValue)));
 }
 
 jlong CatalystInstanceImpl::getJavaScriptContext() {

@@ -16,7 +16,6 @@
 #include "SystraceSection.h"
 
 #include <cxxreact/JSIndexedRAMBundle.h>
-#include <folly/Memory.h>
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
 
@@ -24,6 +23,7 @@
 
 #include <condition_variable>
 #include <fstream>
+#include <memory>
 #include <mutex>
 #include <string>
 
@@ -44,7 +44,7 @@ void Instance::initializeBridge(
   callback_ = std::move(callback);
   moduleRegistry_ = std::move(moduleRegistry);
   jsQueue->runOnQueueSync([this, &jsef, jsQueue]() mutable {
-    nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
+    nativeToJsBridge_ = std::make_unique<NativeToJsBridge>(
         jsef.get(), moduleRegistry_, jsQueue, callback_);
 
     std::lock_guard<std::mutex> lock(m_syncMutex);
@@ -116,7 +116,7 @@ bool Instance::isIndexedRAMBundle(std::unique_ptr<const JSBigString>* script) {
 }
 
 void Instance::loadRAMBundleFromString(std::unique_ptr<const JSBigString> script, const std::string& sourceURL) {
-  auto bundle = folly::make_unique<JSIndexedRAMBundle>(std::move(script));
+  auto bundle = std::make_unique<JSIndexedRAMBundle>(std::move(script));
   auto startupScript = bundle->getStartupCode();
   auto registry = RAMBundleRegistry::singleBundleRegistry(std::move(bundle));
   loadRAMBundle(
@@ -129,7 +129,7 @@ void Instance::loadRAMBundleFromString(std::unique_ptr<const JSBigString> script
 void Instance::loadRAMBundleFromFile(const std::string& sourcePath,
                            const std::string& sourceURL,
                            bool loadSynchronously) {
-    auto bundle = folly::make_unique<JSIndexedRAMBundle>(sourcePath.c_str());
+    auto bundle = std::make_unique<JSIndexedRAMBundle>(sourcePath.c_str());
     auto startupScript = bundle->getStartupCode();
     auto registry = RAMBundleRegistry::multipleBundlesRegistry(std::move(bundle), JSIndexedRAMBundle::buildFactory());
     loadRAMBundle(
@@ -166,7 +166,7 @@ void *Instance::getJavaScriptContext() {
 bool Instance::isInspectable() {
   return nativeToJsBridge_ ? nativeToJsBridge_->isInspectable() : false;
 }
-  
+
 bool Instance::isBatchActive() {
   return nativeToJsBridge_ ? nativeToJsBridge_->isBatchActive() : false;
 }

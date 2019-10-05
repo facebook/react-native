@@ -6,7 +6,6 @@
 #include "NativeToJsBridge.h"
 
 #include <folly/json.h>
-#include <folly/Memory.h>
 #include <folly/MoveWrapper.h>
 #include <glog/logging.h>
 
@@ -17,6 +16,8 @@
 #include "MessageQueueThread.h"
 #include "ModuleRegistry.h"
 #include "RAMBundleRegistry.h"
+
+#include <memory>
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
@@ -37,7 +38,7 @@ public:
   std::shared_ptr<ModuleRegistry> getModuleRegistry() override {
     return m_registry;
   }
-  
+
   bool isBatchActive() {
     return m_batchHadNativeModuleCalls;
   }
@@ -228,7 +229,7 @@ void* NativeToJsBridge::getJavaScriptContext() {
 bool NativeToJsBridge::isInspectable() {
   return m_inspectable;
 }
-  
+
 bool NativeToJsBridge::isBatchActive() {
   return m_delegate->isBatchActive();
 }
