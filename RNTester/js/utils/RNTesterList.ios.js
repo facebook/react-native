@@ -24,11 +24,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'DatePickerIOSExample',
-    module: require('../examples/DatePicker/DatePickerIOSExample'),
-    supportsTVOS: false,
-  },
-  {
     key: 'FlatListExample',
     module: require('../examples/FlatList/FlatListExample'),
     supportsTVOS: true,

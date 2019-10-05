@@ -14,7 +14,6 @@ import typeof AccessibilityInfo from './Libraries/Components/AccessibilityInfo/A
 import typeof ActivityIndicator from './Libraries/Components/ActivityIndicator/ActivityIndicator';
 import typeof Button from './Libraries/Components/Button';
 import typeof CheckBox from './Libraries/Components/CheckBox/CheckBox';
-import typeof DatePickerIOS from './Libraries/Components/DatePicker/DatePickerIOS';
 import typeof DrawerLayoutAndroid from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 import typeof FlatList from './Libraries/Lists/FlatList';
 import typeof Image from './Libraries/Image/Image';
@@ -123,15 +122,6 @@ module.exports = {
         'See https://github.com/react-native-community/react-native-checkbox',
     );
     return require('./Libraries/Components/CheckBox/CheckBox');
-  },
-  get DatePickerIOS(): DatePickerIOS {
-    warnOnce(
-      'DatePickerIOS-merged',
-      'DatePickerIOS has been merged with DatePickerAndroid and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-datetimepicker',
-    );
-    return require('./Libraries/Components/DatePicker/DatePickerIOS');
   },
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
     return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid');
@@ -583,6 +573,19 @@ if (__DEV__) {
       invariant(
         false,
         'DatePickerAndroid has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-community/react-native-datetimepicker' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-datetimepicker',
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access DatePickeriOS.
+  Object.defineProperty(module.exports, 'DatePickeriOS', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'DatePickeriOS has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/react-native-datetimepicker' instead of 'react-native'. " +
           'See https://github.com/react-native-community/react-native-datetimepicker',
       );
