@@ -54,7 +54,6 @@ import typeof AppState from './Libraries/AppState/AppState';
 import typeof AsyncStorage from './Libraries/Storage/AsyncStorage';
 import typeof BackHandler from './Libraries/Utilities/BackHandler';
 import typeof Clipboard from './Libraries/Components/Clipboard/Clipboard';
-import typeof DatePickerAndroid from './Libraries/Components/DatePickerAndroid/DatePickerAndroid';
 import typeof DeviceInfo from './Libraries/Utilities/DeviceInfo';
 import typeof DevSettings from './Libraries/Utilities/DevSettings';
 import typeof Dimensions from './Libraries/Utilities/Dimensions';
@@ -282,15 +281,6 @@ module.exports = {
   },
   get Clipboard(): Clipboard {
     return require('./Libraries/Components/Clipboard/Clipboard');
-  },
-  get DatePickerAndroid(): DatePickerAndroid {
-    warnOnce(
-      'DatePickerAndroid-merged',
-      'DatePickerAndroid has been merged with DatePickerIOS and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-datetimepicker',
-    );
-    return require('./Libraries/Components/DatePickerAndroid/DatePickerAndroid');
   },
   get DeviceInfo(): DeviceInfo {
     return require('./Libraries/Utilities/DeviceInfo');
@@ -582,6 +572,19 @@ if (__DEV__) {
         'ViewPagerAndroid has been removed from React Native. ' +
           "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
           'See https://github.com/react-native-community/react-native-viewpager',
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access ViewPagerAndroid.
+  Object.defineProperty(module.exports, 'DatePickerAndroid', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'DatePickerAndroid has been removed from React Native. ' +
+          "It can now be installed and imported from '@react-native-community/react-native-datetimepicker' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-datetimepicker',
       );
     },
   });

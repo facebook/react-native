@@ -153,10 +153,6 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('../examples/Crash/CrashExample'),
   },
   {
-    key: 'DatePickerAndroidExample',
-    module: require('../examples/DatePicker/DatePickerAndroidExample'),
-  },
-  {
     key: 'DevSettings',
     module: require('../examples/DevSettings/DevSettingsExample'),
   },

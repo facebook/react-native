@@ -695,26 +695,6 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
-@protocol NativeDatePickerAndroidSpec <RCTBridgeModule, RCTTurboModule>
-
-- (void)open:(NSDictionary *)options
-     resolve:(RCTPromiseResolveBlock)resolve
-      reject:(RCTPromiseRejectBlock)reject;
-
-@end
-namespace facebook {
-  namespace react {
-    /**
-     * ObjC++ class for module 'DatePickerAndroid'
-     */
-
-    class JSI_EXPORT NativeDatePickerAndroidSpecJSI : public ObjCTurboModule {
-    public:
-      NativeDatePickerAndroidSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
-
-    };
-  } // namespace react
-} // namespace facebook
 @protocol NativeDevLoadingViewSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)showMessage:(NSString *)message
