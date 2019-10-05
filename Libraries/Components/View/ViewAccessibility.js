@@ -26,7 +26,6 @@ export type AccessibilityRole =
   | 'header'
   | 'summary'
   | 'alert'
-  | 'checkbox'
   | 'combobox'
   | 'menu'
   | 'menubar'

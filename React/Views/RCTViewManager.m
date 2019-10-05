@@ -47,7 +47,6 @@ RCT_MULTI_ENUM_CONVERTER(UIAccessibilityTraits, (@{
   @"allowsDirectInteraction": @(UIAccessibilityTraitAllowsDirectInteraction),
   @"pageTurn": @(UIAccessibilityTraitCausesPageTurn),
   @"alert": @(UIAccessibilityTraitNone),
-  @"checkbox": @(UIAccessibilityTraitNone),
   @"combobox": @(UIAccessibilityTraitNone),
   @"menu": @(UIAccessibilityTraitNone),
   @"menubar": @(UIAccessibilityTraitNone),

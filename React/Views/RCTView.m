@@ -219,7 +219,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   dispatch_once(&onceToken1, ^{
     roleDescriptions = @{
                          @"alert" : @"alert",
-                         @"checkbox" : @"checkbox",
                          @"combobox" : @"combo box",
                          @"menu" : @"menu",
                          @"menubar" : @"menu bar",

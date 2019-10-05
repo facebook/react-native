@@ -84,7 +84,6 @@ module.exports = {
     | 'header'
     | 'summary'
     | 'alert'
-    | 'checkbox'
     | 'combobox'
     | 'menu'
     | 'menubar'

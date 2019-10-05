@@ -27,6 +27,8 @@
       android:key="pref_key_catalyst_debug"
       android:title="Debugging"
       >
+        case CHECKBOX:
+          return "android.widget.CheckBox";
     <EditTextPreference
         android:key="debug_http_host"
         android:title="Debug server host &amp; port for device"

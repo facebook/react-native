@@ -85,7 +85,6 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     SUMMARY,
     HEADER,
     ALERT,
-    CHECKBOX,
     COMBOBOX,
     MENU,
     MENUBAR,
@@ -117,8 +116,6 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
           return "android.widget.TextView";
         case ADJUSTABLE:
           return "android.widget.SeekBar";
-        case CHECKBOX:
-          return "android.widget.CheckBox";
         case RADIO:
           return "android.widget.RadioButton";
         case SPINBUTTON:
