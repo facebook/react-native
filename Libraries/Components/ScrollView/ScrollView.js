@@ -1138,9 +1138,6 @@ class ScrollView extends React.Component<Props, State> {
         .scrollResponderHandleResponderReject,
       onResponderRelease: this._scrollResponder
         .scrollResponderHandleResponderRelease,
-      // $FlowFixMe
-      onResponderTerminate: this._scrollResponder
-        .scrollResponderHandleTerminate,
       onResponderTerminationRequest: this._scrollResponder
         .scrollResponderHandleTerminationRequest,
       onScrollBeginDrag: this._scrollResponder
