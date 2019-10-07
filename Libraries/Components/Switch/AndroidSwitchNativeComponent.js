@@ -10,11 +10,14 @@
 
 'use strict';
 
+import * as React from 'react';
+
 import type {
   WithDefault,
   BubblingEventHandler,
 } from 'react-native/Libraries/Types/CodegenTypes';
 
+import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
@@ -43,6 +46,19 @@ type NativeProps = $ReadOnly<{|
   onChange?: BubblingEventHandler<SwitchChangeEvent>,
 |}>;
 
+type NativeType = HostComponent<NativeProps>;
+
+interface NativeCommands {
+  +setNativeValue: (
+    viewRef: React.ElementRef<NativeType>,
+    value: boolean,
+  ) => void;
+}
+
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['setNativeValue'],
+});
+
 export default (codegenNativeComponent<NativeProps>('AndroidSwitch', {
   interfaceOnly: true,
-}): HostComponent<NativeProps>);
+}): NativeType);

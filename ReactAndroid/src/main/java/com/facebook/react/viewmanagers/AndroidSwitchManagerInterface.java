@@ -22,4 +22,5 @@ public interface AndroidSwitchManagerInterface<T extends View> {
   void setOn(T view, boolean value);
   void setThumbTintColor(T view, @Nullable Integer value);
   void setTrackTintColor(T view, @Nullable Integer value);
+  void setNativeValue(T view, boolean value);
 }

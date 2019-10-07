@@ -11,6 +11,7 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.BaseViewManagerDelegate;
 import com.facebook.react.uimanager.BaseViewManagerInterface;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -51,6 +52,14 @@ public class AndroidSwitchManagerDelegate<T extends View, U extends BaseViewMana
         break;
       default:
         super.setProperty(view, propName, value);
+    }
+  }
+
+  public void receiveCommand(AndroidSwitchManagerInterface<T> viewManager, T view, String commandName, ReadableArray args) {
+    switch (commandName) {
+      case "setNativeValue":
+        viewManager.setNativeValue(view, args.getBoolean(0));
+        break;
     }
   }
 }
