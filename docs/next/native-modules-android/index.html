@@ -330,7 +330,7 @@ params<span class="token punctuation">.</span><span class="token function">putSt
     <span class="token keyword">const</span> eventEmitter <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">NativeEventEmitter</span><span class="token punctuation">(</span>NativeModules<span class="token punctuation">.</span>ToastExample<span class="token punctuation">)</span><span class="token punctuation">;</span>
     eventEmitter<span class="token punctuation">.</span><span class="token function">addListener</span><span class="token punctuation">(</span><span class="token string">'EventReminder'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span>eventProperty<span class="token punctuation">)</span> <span class="token comment">// "someValue"</span>
-    <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token operator">...</span>
   <span class="token punctuation">}</span>
 </code></pre>
