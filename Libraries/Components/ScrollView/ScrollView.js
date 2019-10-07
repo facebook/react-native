@@ -713,10 +713,7 @@ class ScrollView extends React.Component<Props, State> {
       this.props.contentOffset ? this.props.contentOffset.y : 0,
     );
     this._scrollAnimatedValue.setOffset(
-      /* $FlowFixMe(>=0.98.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.98 was deployed. To see the error delete this
-       * comment and run Flow. */
-      this.props.contentInset ? this.props.contentInset.top : 0,
+      this.props.contentInset ? this.props.contentInset.top || 0 : 0,
     );
     this._stickyHeaderRefs = new Map();
     this._headerLayoutYs = new Map();
