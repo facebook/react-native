@@ -26,8 +26,6 @@ public class ReactBridge {
     if (sDidInit) {
       return;
     }
-    sDidInit = true;
-
     sLoadStartTime = SystemClock.uptimeMillis();
     Systrace.beginSection(
         TRACE_TAG_REACT_JAVA_BRIDGE, "ReactBridge.staticInit::load:reactnativejni");
@@ -36,6 +34,7 @@ public class ReactBridge {
     ReactMarker.logMarker(ReactMarkerConstants.LOAD_REACT_NATIVE_SO_FILE_END);
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     sLoadEndTime = SystemClock.uptimeMillis();
+    sDidInit = true;
   }
 
   public static long getLoadStartTime() {
