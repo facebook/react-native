@@ -35,8 +35,6 @@ type RCTPickerIOSType = Class<
     $ReadOnly<{|
       items: $ReadOnlyArray<RCTPickerIOSItemType>,
       onChange: (event: PickerIOSChangeEvent) => void,
-      onResponderTerminationRequest: () => boolean,
-      onStartShouldSetResponder: () => boolean,
       selectedIndex: number,
       style?: ?TextStyleProp,
       testID?: ?string,

@@ -44,8 +44,6 @@ type RCTPickerIOSType = Class<
     $ReadOnly<{|
       items: $ReadOnlyArray<RCTPickerIOSItemType>,
       onChange: (event: PickerIOSChangeEvent) => void,
-      onResponderTerminationRequest: () => boolean,
-      onStartShouldSetResponder: () => boolean,
       selectedIndex: number,
       style?: ?TextStyleProp,
       testID?: ?string,
@@ -119,8 +117,6 @@ class PickerIOS extends React.Component<Props, State> {
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}
           onChange={this._onChange}
-          onStartShouldSetResponder={() => true}
-          onResponderTerminationRequest={() => false}
         />
       </View>
     );
