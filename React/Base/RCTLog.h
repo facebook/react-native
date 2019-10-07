@@ -79,6 +79,16 @@ RCT_EXTERN NSString *RCTFormatLog(
 );
 
 /**
+ * A method to generate a string RCTLogLevel
+ */
+RCT_EXTERN NSString *RCTFormatLogLevel(RCTLogLevel);
+
+/**
+ * A method to generate a string from a RCTLogSource
+ */
+RCT_EXTERN NSString *RCTFormatLogSource(RCTLogSource);
+
+/**
  * The default logging function used by RCTLogXX.
  */
 extern RCTLogFunction RCTDefaultLogFunction;

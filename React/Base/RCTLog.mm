@@ -162,6 +162,25 @@ NSString *RCTFormatLog(
   return log;
 }
 
+NSString *RCTFormatLogLevel(RCTLogLevel level)
+{
+    NSDictionary *levelsToString = @{@(RCTLogLevelTrace) : @"trace",
+                                    @(RCTLogLevelInfo)    : @"info",
+                                    @(RCTLogLevelWarning) : @"warning",
+                                    @(RCTLogLevelFatal)   : @"fatal",
+                                    @(RCTLogLevelError)   : @"error"};
+    
+    return levelsToString[@(level)];
+}
+
+NSString *RCTFormatLogSource(RCTLogSource source)
+{
+    NSDictionary *sourcesToString = @{@(RCTLogSourceNative) : @"native",
+                                     @(RCTLogSourceJavaScript)    : @"js"};
+    
+    return sourcesToString[@(source)];
+}
+
 static NSRegularExpression *nativeStackFrameRegex()
 {
   static dispatch_once_t onceToken;
