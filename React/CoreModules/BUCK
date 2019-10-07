@@ -70,6 +70,7 @@ rn_apple_library(
             name = "ActionSheetManager",
             native_class_func = "RCTActionSheetManagerCls",
         ),
+    plugins_header = "FBCoreModulesPlugins.h",
     preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_extra_build_flags() + [
         "-DRN_DISABLE_OSS_PLUGIN_HEADER",
     ],
