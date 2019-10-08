@@ -66,10 +66,10 @@ class TimingAnimation extends Animation {
   __getNativeAnimationConfig(): any {
     const frameDuration = 1000.0 / 60.0;
     const frames = [];
-    const numFrames = Math.round(this._duration / frameDuration);
-    for (let frame = 0; frame <= numFrames; frame++) {
-      frames.push(this._easing(frame / numFrames));
+    for (let dt = 0.0; dt < this._duration; dt += frameDuration) {
+      frames.push(this._easing(dt / this._duration));
     }
+    frames.push(this._easing(1));
     return {
       type: 'frames',
       frames,
