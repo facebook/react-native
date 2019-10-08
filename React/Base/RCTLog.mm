@@ -212,7 +212,7 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
     }
 
     // Log to red box if one is configured.
-    if (RCTSharedApplication() && [RCTBridge currentBridge].redBox && level >= RCTLOG_REDBOX_LEVEL) {
+    if (RCTSharedApplication() && RCTRedBoxGetEnabled() && level >= RCTLOG_REDBOX_LEVEL) {
       NSArray<NSString *> *stackSymbols = [NSThread callStackSymbols];
       NSMutableArray<NSDictionary *> *stack =
         [NSMutableArray arrayWithCapacity:(stackSymbols.count - 1)];

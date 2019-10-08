@@ -26,6 +26,10 @@ void RCTRedBoxSetEnabled(BOOL enabled) {
   redBoxEnabled = enabled;
 }
 
+BOOL RCTRedBoxGetEnabled() {
+  return redBoxEnabled;
+}
+
 #if RCT_DEV_MENU
 
 @class RCTRedBoxWindow;
@@ -628,7 +632,7 @@ RCT_EXPORT_METHOD(dismiss)
 
 - (RCTRedBox *)redBox
 {
-  return redBoxEnabled && [self moduleIsInitialized:[RCTRedBox class]] ? [self moduleForClass:[RCTRedBox class]] : nil;
+  return redBoxEnabled ? [self moduleForClass:[RCTRedBox class]] : nil;
 }
 
 @end

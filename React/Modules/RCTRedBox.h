@@ -53,3 +53,4 @@
 // In debug builds, the red box is enabled by default but it is further customizable using this method.
 // However, this method only has an effect in builds where RCTRedBox is actually compiled in.
 RCT_EXTERN void RCTRedBoxSetEnabled(BOOL enabled);
+RCT_EXTERN BOOL RCTRedBoxGetEnabled(void);
