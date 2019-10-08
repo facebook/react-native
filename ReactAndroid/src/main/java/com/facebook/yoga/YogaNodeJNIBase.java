@@ -203,83 +203,113 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   public YogaDirection getStyleDirection() {
-    return YogaDirection.fromInt(YogaNative.jni_YGNodeStyleGetDirection(mNativePointer));
+    return YogaDirection.fromInt(useVanillaJNI ? YogaNative.jni_YGNodeStyleGetDirectionJNI(mNativePointer) : YogaNative.jni_YGNodeStyleGetDirection(mNativePointer));
   }
 
   public void setDirection(YogaDirection direction) {
-    YogaNative.jni_YGNodeStyleSetDirection(mNativePointer, direction.intValue());
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetDirectionJNI(mNativePointer, direction.intValue());
+    else
+      YogaNative.jni_YGNodeStyleSetDirection(mNativePointer, direction.intValue());
   }
 
   public YogaFlexDirection getFlexDirection() {
-    return YogaFlexDirection.fromInt(YogaNative.jni_YGNodeStyleGetFlexDirection(mNativePointer));
+    return YogaFlexDirection.fromInt(useVanillaJNI ? YogaNative.jni_YGNodeStyleGetFlexDirectionJNI(mNativePointer) : YogaNative.jni_YGNodeStyleGetFlexDirection(mNativePointer));
   }
 
   public void setFlexDirection(YogaFlexDirection flexDirection) {
-    YogaNative.jni_YGNodeStyleSetFlexDirection(mNativePointer, flexDirection.intValue());
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetFlexDirectionJNI(mNativePointer, flexDirection.intValue());
+    else
+      YogaNative.jni_YGNodeStyleSetFlexDirection(mNativePointer, flexDirection.intValue());
   }
 
   public YogaJustify getJustifyContent() {
-    return YogaJustify.fromInt(YogaNative.jni_YGNodeStyleGetJustifyContent(mNativePointer));
+    return YogaJustify.fromInt(useVanillaJNI ? YogaNative.jni_YGNodeStyleGetJustifyContentJNI(mNativePointer) : YogaNative.jni_YGNodeStyleGetJustifyContent(mNativePointer));
   }
 
   public void setJustifyContent(YogaJustify justifyContent) {
-    YogaNative.jni_YGNodeStyleSetJustifyContent(mNativePointer, justifyContent.intValue());
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetJustifyContentJNI(mNativePointer, justifyContent.intValue());
+    else
+      YogaNative.jni_YGNodeStyleSetJustifyContent(mNativePointer, justifyContent.intValue());
   }
 
   public YogaAlign getAlignItems() {
-    return YogaAlign.fromInt(YogaNative.jni_YGNodeStyleGetAlignItems(mNativePointer));
+    return YogaAlign.fromInt(useVanillaJNI ? YogaNative.jni_YGNodeStyleGetAlignItemsJNI(mNativePointer) : YogaNative.jni_YGNodeStyleGetAlignItems(mNativePointer));
   }
 
   public void setAlignItems(YogaAlign alignItems) {
-    YogaNative.jni_YGNodeStyleSetAlignItems(mNativePointer, alignItems.intValue());
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetAlignItemsJNI(mNativePointer, alignItems.intValue());
+    else
+      YogaNative.jni_YGNodeStyleSetAlignItems(mNativePointer, alignItems.intValue());
   }
 
   public YogaAlign getAlignSelf() {
-    return YogaAlign.fromInt(YogaNative.jni_YGNodeStyleGetAlignSelf(mNativePointer));
+    return YogaAlign.fromInt(useVanillaJNI ? YogaNative.jni_YGNodeStyleGetAlignSelfJNI(mNativePointer) : YogaNative.jni_YGNodeStyleGetAlignSelf(mNativePointer));
   }
 
   public void setAlignSelf(YogaAlign alignSelf) {
-    YogaNative.jni_YGNodeStyleSetAlignSelf(mNativePointer, alignSelf.intValue());
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetAlignSelfJNI(mNativePointer, alignSelf.intValue());
+    else
+      YogaNative.jni_YGNodeStyleSetAlignSelf(mNativePointer, alignSelf.intValue());
   }
 
   public YogaAlign getAlignContent() {
-    return YogaAlign.fromInt(YogaNative.jni_YGNodeStyleGetAlignContent(mNativePointer));
+    return YogaAlign.fromInt(useVanillaJNI ? YogaNative.jni_YGNodeStyleGetAlignContentJNI(mNativePointer) : YogaNative.jni_YGNodeStyleGetAlignContent(mNativePointer));
   }
 
   public void setAlignContent(YogaAlign alignContent) {
-    YogaNative.jni_YGNodeStyleSetAlignContent(mNativePointer, alignContent.intValue());
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetAlignContentJNI(mNativePointer, alignContent.intValue());
+    else
+      YogaNative.jni_YGNodeStyleSetAlignContent(mNativePointer, alignContent.intValue());
   }
 
   public YogaPositionType getPositionType() {
-    return YogaPositionType.fromInt(YogaNative.jni_YGNodeStyleGetPositionType(mNativePointer));
+    return YogaPositionType.fromInt(useVanillaJNI ? YogaNative.jni_YGNodeStyleGetPositionTypeJNI(mNativePointer) : YogaNative.jni_YGNodeStyleGetPositionType(mNativePointer));
   }
 
   public void setPositionType(YogaPositionType positionType) {
-    YogaNative.jni_YGNodeStyleSetPositionType(mNativePointer, positionType.intValue());
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetPositionTypeJNI(mNativePointer, positionType.intValue());
+    else
+      YogaNative.jni_YGNodeStyleSetPositionType(mNativePointer, positionType.intValue());
   }
 
   public YogaWrap getWrap() {
-    return YogaWrap.fromInt(YogaNative.jni_YGNodeStyleGetFlexWrap(mNativePointer));
+    return YogaWrap.fromInt(useVanillaJNI ? YogaNative.jni_YGNodeStyleGetFlexWrapJNI(mNativePointer) : YogaNative.jni_YGNodeStyleGetFlexWrap(mNativePointer));
   }
 
   public void setWrap(YogaWrap flexWrap) {
-    YogaNative.jni_YGNodeStyleSetFlexWrap(mNativePointer, flexWrap.intValue());
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetFlexWrapJNI(mNativePointer, flexWrap.intValue());
+    else
+      YogaNative.jni_YGNodeStyleSetFlexWrap(mNativePointer, flexWrap.intValue());
   }
 
   public YogaOverflow getOverflow() {
-    return YogaOverflow.fromInt(YogaNative.jni_YGNodeStyleGetOverflow(mNativePointer));
+    return YogaOverflow.fromInt(useVanillaJNI ? YogaNative.jni_YGNodeStyleGetOverflowJNI(mNativePointer) : YogaNative.jni_YGNodeStyleGetOverflow(mNativePointer));
   }
 
   public void setOverflow(YogaOverflow overflow) {
-    YogaNative.jni_YGNodeStyleSetOverflow(mNativePointer, overflow.intValue());
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetOverflowJNI(mNativePointer, overflow.intValue());
+    else
+      YogaNative.jni_YGNodeStyleSetOverflow(mNativePointer, overflow.intValue());
   }
 
   public YogaDisplay getDisplay() {
-    return YogaDisplay.fromInt(YogaNative.jni_YGNodeStyleGetDisplay(mNativePointer));
+    return YogaDisplay.fromInt(useVanillaJNI ? YogaNative.jni_YGNodeStyleGetDisplayJNI(mNativePointer) : YogaNative.jni_YGNodeStyleGetDisplay(mNativePointer));
   }
 
   public void setDisplay(YogaDisplay display) {
-    YogaNative.jni_YGNodeStyleSetDisplay(mNativePointer, display.intValue());
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetDisplayJNI(mNativePointer, display.intValue());
+    else
+      YogaNative.jni_YGNodeStyleSetDisplay(mNativePointer, display.intValue());
   }
 
   public float getFlex() {
@@ -295,19 +325,25 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   public float getFlexGrow() {
-    return YogaNative.jni_YGNodeStyleGetFlexGrow(mNativePointer);
+    return useVanillaJNI ? YogaNative.jni_YGNodeStyleGetFlexGrowJNI(mNativePointer) : YogaNative.jni_YGNodeStyleGetFlexGrow(mNativePointer);
   }
 
   public void setFlexGrow(float flexGrow) {
-    YogaNative.jni_YGNodeStyleSetFlexGrow(mNativePointer, flexGrow);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetFlexGrowJNI(mNativePointer, flexGrow);
+    else
+      YogaNative.jni_YGNodeStyleSetFlexGrow(mNativePointer, flexGrow);
   }
 
   public float getFlexShrink() {
-    return YogaNative.jni_YGNodeStyleGetFlexShrink(mNativePointer);
+    return useVanillaJNI ? YogaNative.jni_YGNodeStyleGetFlexShrinkJNI(mNativePointer) : YogaNative.jni_YGNodeStyleGetFlexShrink(mNativePointer);
   }
 
   public void setFlexShrink(float flexShrink) {
-    YogaNative.jni_YGNodeStyleSetFlexShrink(mNativePointer, flexShrink);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetFlexShrinkJNI(mNativePointer, flexShrink);
+    else
+      YogaNative.jni_YGNodeStyleSetFlexShrink(mNativePointer, flexShrink);
   }
 
   public YogaValue getFlexBasis() {
@@ -455,11 +491,14 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   public float getAspectRatio() {
-    return YogaNative.jni_YGNodeStyleGetAspectRatio(mNativePointer);
+    return useVanillaJNI ? YogaNative.jni_YGNodeStyleGetAspectRatioJNI(mNativePointer) : YogaNative.jni_YGNodeStyleGetAspectRatio(mNativePointer);
   }
 
   public void setAspectRatio(float aspectRatio) {
-    YogaNative.jni_YGNodeStyleSetAspectRatio(mNativePointer, aspectRatio);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetAspectRatioJNI(mNativePointer, aspectRatio);
+    else
+      YogaNative.jni_YGNodeStyleSetAspectRatio(mNativePointer, aspectRatio);
   }
 
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {

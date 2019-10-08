@@ -114,5 +114,31 @@ public class YogaNative {
 
 
   // JNI methods that use Vanilla JNI
+  static native int jni_YGNodeStyleGetDirectionJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetDirectionJNI(long nativePointer, int direction);
+  static native int jni_YGNodeStyleGetFlexDirectionJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetFlexDirectionJNI(long nativePointer, int flexDirection);
+  static native int jni_YGNodeStyleGetJustifyContentJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetJustifyContentJNI(long nativePointer, int justifyContent);
+  static native int jni_YGNodeStyleGetAlignItemsJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetAlignItemsJNI(long nativePointer, int alignItems);
+  static native int jni_YGNodeStyleGetAlignSelfJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetAlignSelfJNI(long nativePointer, int alignSelf);
+  static native int jni_YGNodeStyleGetAlignContentJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetAlignContentJNI(long nativePointer, int alignContent);
+  static native int jni_YGNodeStyleGetPositionTypeJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetPositionTypeJNI(long nativePointer, int positionType);
+  static native int jni_YGNodeStyleGetFlexWrapJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetFlexWrapJNI(long nativePointer, int wrapType);
+  static native int jni_YGNodeStyleGetOverflowJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetOverflowJNI(long nativePointer, int overflow);
+  static native int jni_YGNodeStyleGetDisplayJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetDisplayJNI(long nativePointer, int display);
   public static native void jni_YGNodeStyleSetFlexJNI(long nativePointer, float flex);
+  static native float jni_YGNodeStyleGetFlexGrowJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetFlexGrowJNI(long nativePointer, float flexGrow);
+  static native float jni_YGNodeStyleGetFlexShrinkJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetFlexShrinkJNI(long nativePointer, float flexShrink);
+  static native float jni_YGNodeStyleGetAspectRatioJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetAspectRatioJNI(long nativePointer, float aspectRatio);
 }
