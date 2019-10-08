@@ -11,6 +11,10 @@ public class YogaConfigJNIFinalizer extends YogaConfigJNIBase {
     super();
   }
 
+  public YogaConfigJNIFinalizer(boolean useVanillaJNI) {
+    super(useVanillaJNI);
+  }
+
   @Override
   protected void finalize() throws Throwable {
     try {

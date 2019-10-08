@@ -14,6 +14,78 @@ static inline YGNodeRef _jlong2YGNodeRef(jlong addr) {
   return reinterpret_cast<YGNodeRef>(static_cast<intptr_t>(addr));
 }
 
+static inline YGConfigRef _jlong2YGConfigRef(jlong addr) {
+  return reinterpret_cast<YGConfigRef>(static_cast<intptr_t>(addr));
+}
+
+static jlong jni_YGConfigNewJNI(JNIEnv* env, jobject obj) {
+  return reinterpret_cast<jlong>(YGConfigNew());
+}
+
+// void jni_YGConfigFreeJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
+//   const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+//   // unique_ptr will destruct the underlying global_ref, if present.
+//   auto context = std::unique_ptr<global_ref<JYogaLogger>>{
+//       static_cast<global_ref<JYogaLogger>*>(YGConfigGetContext(config))};
+//   YGConfigFree(config);
+// }
+
+static void jni_YGConfigSetExperimentalFeatureEnabledJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jint feature,
+    jboolean enabled) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetExperimentalFeatureEnabled(
+      config, static_cast<YGExperimentalFeature>(feature), enabled);
+}
+
+static void jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviourJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jboolean enabled) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(config, enabled);
+}
+
+static void jni_YGConfigSetUseWebDefaultsJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jboolean useWebDefaults) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetUseWebDefaults(config, useWebDefaults);
+}
+
+static void jni_YGConfigSetPrintTreeFlagJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jboolean enable) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetPrintTreeFlag(config, enable);
+}
+
+static void jni_YGConfigSetPointScaleFactorJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jfloat pixelsInPoint) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetPointScaleFactor(config, pixelsInPoint);
+}
+
+static void jni_YGConfigSetUseLegacyStretchBehaviourJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jboolean useLegacyStretchBehaviour) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetUseLegacyStretchBehaviour(config, useLegacyStretchBehaviour);
+}
+
 static void jni_YGNodeFreeJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
   if (nativePointer == 0) {
     return;
@@ -347,6 +419,27 @@ void registerNativeMethods(
 }
 
 static JNINativeMethod methods[] = {
+    {"jni_YGConfigNewJNI", "()J", (void*) jni_YGConfigNewJNI},
+    //    {"jni_YGConfigFreeJNI", "(J)V", (void*) jni_YGConfigFreeJNI},
+    {"jni_YGConfigSetExperimentalFeatureEnabledJNI",
+     "(JIZ)V",
+     (void*) jni_YGConfigSetExperimentalFeatureEnabledJNI},
+    {"jni_YGConfigSetUseWebDefaultsJNI",
+     "(JZ)V",
+     (void*) jni_YGConfigSetUseWebDefaultsJNI},
+    {"jni_YGConfigSetPrintTreeFlagJNI",
+     "(JZ)V",
+     (void*) jni_YGConfigSetPrintTreeFlagJNI},
+    {"jni_YGConfigSetPointScaleFactorJNI",
+     "(JF)V",
+     (void*) jni_YGConfigSetPointScaleFactorJNI},
+    {"jni_YGConfigSetUseLegacyStretchBehaviourJNI",
+     "(JZ)V",
+     (void*) jni_YGConfigSetUseLegacyStretchBehaviourJNI},
+    {"jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviourJNI",
+     "(JZ)V",
+     (void*) jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviourJNI},
+    //  {"jni_YGConfigSetLoggerJNI", "(JO)V", (void*) jni_YGConfigSetLoggerJNI},
     {"jni_YGNodeFreeJNI", "(J)V", (void*) jni_YGNodeFreeJNI},
     {"jni_YGNodeResetJNI", "(J)V", (void*) jni_YGNodeResetJNI},
     {"jni_YGNodeInsertChildJNI", "(JJI)V", (void*) jni_YGNodeInsertChildJNI},
