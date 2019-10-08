@@ -664,7 +664,10 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   public void setStyleInputs(float[] styleInputsArray, int size) {
-    YogaNative.jni_YGNodeSetStyleInputs(mNativePointer, styleInputsArray, size);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeSetStyleInputsJNI(mNativePointer, styleInputsArray, size);
+    else
+      YogaNative.jni_YGNodeSetStyleInputs(mNativePointer, styleInputsArray, size);
   }
 
   /**

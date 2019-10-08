@@ -396,6 +396,17 @@ static jlong jni_YGNodeCloneJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
 // Yoga specific properties, not compatible with flexbox specification
 YG_NODE_JNI_STYLE_PROP(jfloat, float, AspectRatio);
 
+static void jni_YGNodeSetStyleInputsJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jfloatArray styleInputs,
+    jint size) {
+  float result[size];
+  env->GetFloatArrayRegion(styleInputs, 0, size, result);
+  YGNodeSetStyleInputs(_jlong2YGNodeRef(nativePointer), result, size);
+}
+
 void assertNoPendingJniException(JNIEnv* env) {
   // This method cannot call any other method of the library, since other
   // methods of the library use it to check for exceptions too
@@ -642,6 +653,9 @@ static JNINativeMethod methods[] = {
      "(JF)V",
      (void*) jni_YGNodeStyleSetAspectRatioJNI},
     {"jni_YGNodePrintJNI", "(J)V", (void*) jni_YGNodePrintJNI},
+    {"jni_YGNodeSetStyleInputsJNI",
+     "(J[FI)V",
+     (void*) jni_YGNodeSetStyleInputsJNI},
     {"jni_YGNodeCloneJNI", "(J)J", (void*) jni_YGNodeCloneJNI},
 };
 
