@@ -6,10 +6,12 @@
  */
 package com.facebook.react.testing;
 
+import android.app.Instrumentation;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
+import androidx.test.InstrumentationRegistry;
 import com.android.internal.util.Predicate;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.NativeModuleRegistryBuilder;
@@ -110,13 +112,11 @@ public class ReactTestHelper {
   }
 
   public static ReactTestFactory getReactTestFactory() {
-    // TODO: re-enable after cleanup of android-x migration
-    //    Instrumentation inst = InstrumentationRegistry.getInstrumentation();
-    //    if (!(inst instanceof ReactTestFactory)) {
-    return new DefaultReactTestFactory();
-    //    }
-    //
-    //    return (ReactTestFactory) inst;
+    Instrumentation inst = InstrumentationRegistry.getInstrumentation();
+    if (!(inst instanceof ReactTestFactory)) {
+      return new DefaultReactTestFactory();
+    }
+    return (ReactTestFactory) inst;
   }
 
   public static ReactTestFactory.ReactInstanceEasyBuilder catalystInstanceBuilder(
@@ -142,14 +142,15 @@ public class ReactTestHelper {
             final CatalystInstance instance = builder.build();
             testCase.initializeWithInstance(instance);
             instance.runJSBundle();
-            // TODO: re-enable after cleanup of android-x migration
-            //          InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            //            @Override
-            //            public void run() {
-            ReactChoreographer.initialize();
-            instance.initialize();
-            //            }
-            //          });
+            InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                    new Runnable() {
+                      @Override
+                      public void run() {
+                        ReactChoreographer.initialize();
+                        instance.initialize();
+                      }
+                    });
             testCase.waitForBridgeAndUIIdle();
             return instance;
           }

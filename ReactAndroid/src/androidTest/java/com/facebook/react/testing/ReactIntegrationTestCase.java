@@ -12,6 +12,7 @@ import android.test.AndroidTestCase;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
+import androidx.test.InstrumentationRegistry;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.CatalystInstance;
@@ -163,9 +164,7 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
   }
 
   public void waitForIdleSync() {
-    return;
-    // TODO: re-enable after cleanup of android-x migration
-    // InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
   }
 
   public void waitForBridgeAndUIIdle() {
