@@ -114,6 +114,17 @@ public class YogaNative {
 
 
   // JNI methods that use Vanilla JNI
+  static native void jni_YGNodeFreeJNI(long nativePointer);
+  static native void jni_YGNodeResetJNI(long nativePointer);
+  static native void jni_YGNodeInsertChildJNI(long nativePointer, long childPointer, int index);
+  static native void jni_YGNodeSetIsReferenceBaselineJNI(long nativePointer, boolean isReferenceBaseline);
+  static native boolean jni_YGNodeIsReferenceBaselineJNI(long nativePointer);
+  static native void jni_YGNodeClearChildrenJNI(long nativePointer);
+  static native void jni_YGNodeRemoveChildJNI(long nativePointer, long childPointer);
+  static native void jni_YGNodeMarkDirtyJNI(long nativePointer);
+  static native void jni_YGNodeMarkDirtyAndPropogateToDescendantsJNI(long nativePointer);
+  static native boolean jni_YGNodeIsDirtyJNI(long nativePointer);
+  static native void jni_YGNodeCopyStyleJNI(long dstNativePointer, long srcNativePointer);
   static native int jni_YGNodeStyleGetDirectionJNI(long nativePointer);
   static native void jni_YGNodeStyleSetDirectionJNI(long nativePointer, int direction);
   static native int jni_YGNodeStyleGetFlexDirectionJNI(long nativePointer);
@@ -178,4 +189,7 @@ public class YogaNative {
   static native void jni_YGNodeStyleSetMaxHeightPercentJNI(long nativePointer, float percent);
   static native float jni_YGNodeStyleGetAspectRatioJNI(long nativePointer);
   static native void jni_YGNodeStyleSetAspectRatioJNI(long nativePointer, float aspectRatio);
+  static native void jni_YGNodePrintJNI(long nativePointer);
+  static native void jni_YGNodeSetStyleInputsJNI(long nativePointer, float[] styleInputsArray, int size);
+  static native long jni_YGNodeCloneJNI(long nativePointer);
 }

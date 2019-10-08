@@ -14,6 +14,94 @@ static inline YGNodeRef _jlong2YGNodeRef(jlong addr) {
   return reinterpret_cast<YGNodeRef>(static_cast<intptr_t>(addr));
 }
 
+static void jni_YGNodeFreeJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
+  if (nativePointer == 0) {
+    return;
+  }
+  const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
+  YGNodeFree(node);
+}
+
+static void jni_YGNodeResetJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
+  const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
+  void* context = node->getContext();
+  YGNodeReset(node);
+  node->setContext(context);
+}
+
+static void jni_YGNodeInsertChildJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jlong childPointer,
+    jint index) {
+  YGNodeInsertChild(
+      _jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer), index);
+}
+
+static void jni_YGNodeSetIsReferenceBaselineJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jboolean isReferenceBaseline) {
+  YGNodeSetIsReferenceBaseline(
+      _jlong2YGNodeRef(nativePointer), isReferenceBaseline);
+}
+
+static jboolean jni_YGNodeIsReferenceBaselineJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer) {
+  return YGNodeIsReferenceBaseline(_jlong2YGNodeRef(nativePointer));
+}
+
+static void jni_YGNodeClearChildrenJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer) {
+  const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
+  node->clearChildren();
+}
+
+static void jni_YGNodeRemoveChildJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jlong childPointer) {
+  YGNodeRemoveChild(
+      _jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer));
+}
+
+static void jni_YGNodeMarkDirtyJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer) {
+  YGNodeMarkDirty(_jlong2YGNodeRef(nativePointer));
+}
+
+static void jni_YGNodeMarkDirtyAndPropogateToDescendantsJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer) {
+  YGNodeMarkDirtyAndPropogateToDescendants(_jlong2YGNodeRef(nativePointer));
+}
+
+static jboolean jni_YGNodeIsDirtyJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer) {
+  return (jboolean) _jlong2YGNodeRef(nativePointer)->isDirty();
+}
+
+static void jni_YGNodeCopyStyleJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong dstNativePointer,
+    jlong srcNativePointer) {
+  YGNodeCopyStyle(
+      _jlong2YGNodeRef(dstNativePointer), _jlong2YGNodeRef(srcNativePointer));
+}
+
 #define YG_NODE_JNI_STYLE_PROP(javatype, type, name)                         \
   static javatype jni_YGNodeStyleGet##name##JNI(                             \
       JNIEnv* env, jobject obj, jlong nativePointer) {                       \
@@ -215,6 +303,24 @@ static void jni_YGNodeStyleSetBorderJNI(
       yogaNodeRef, static_cast<YGEdge>(edge), static_cast<float>(border));
 }
 
+static void jni_YGNodePrintJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
+#ifdef DEBUG
+  const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
+  YGNodePrint(
+      node,
+      (YGPrintOptions)(
+          YGPrintOptionsStyle | YGPrintOptionsLayout | YGPrintOptionsChildren));
+#endif
+}
+
+static jlong jni_YGNodeCloneJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
+  auto node = _jlong2YGNodeRef(nativePointer);
+  const YGNodeRef clonedYogaNode = YGNodeClone(node);
+  clonedYogaNode->setContext(node->getContext());
+
+  return reinterpret_cast<jlong>(clonedYogaNode);
+}
+
 // Yoga specific properties, not compatible with flexbox specification
 YG_NODE_JNI_STYLE_PROP(jfloat, float, AspectRatio);
 
@@ -241,6 +347,23 @@ void registerNativeMethods(
 }
 
 static JNINativeMethod methods[] = {
+    {"jni_YGNodeFreeJNI", "(J)V", (void*) jni_YGNodeFreeJNI},
+    {"jni_YGNodeResetJNI", "(J)V", (void*) jni_YGNodeResetJNI},
+    {"jni_YGNodeInsertChildJNI", "(JJI)V", (void*) jni_YGNodeInsertChildJNI},
+    {"jni_YGNodeSetIsReferenceBaselineJNI",
+     "(JZ)V",
+     (void*) jni_YGNodeSetIsReferenceBaselineJNI},
+    {"jni_YGNodeIsReferenceBaselineJNI",
+     "(J)Z",
+     (void*) jni_YGNodeIsReferenceBaselineJNI},
+    {"jni_YGNodeClearChildrenJNI", "(J)V", (void*) jni_YGNodeClearChildrenJNI},
+    {"jni_YGNodeRemoveChildJNI", "(JJ)V", (void*) jni_YGNodeRemoveChildJNI},
+    {"jni_YGNodeMarkDirtyJNI", "(J)V", (void*) jni_YGNodeMarkDirtyJNI},
+    {"jni_YGNodeMarkDirtyAndPropogateToDescendantsJNI",
+     "(J)V",
+     (void*) jni_YGNodeMarkDirtyAndPropogateToDescendantsJNI},
+    {"jni_YGNodeIsDirtyJNI", "(J)Z", (void*) jni_YGNodeIsDirtyJNI},
+    {"jni_YGNodeCopyStyleJNI", "(JJ)V", (void*) jni_YGNodeCopyStyleJNI},
     {"jni_YGNodeStyleGetDirectionJNI",
      "(J)I",
      (void*) jni_YGNodeStyleGetDirectionJNI},
@@ -425,6 +548,8 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeStyleSetAspectRatioJNI",
      "(JF)V",
      (void*) jni_YGNodeStyleSetAspectRatioJNI},
+    {"jni_YGNodePrintJNI", "(J)V", (void*) jni_YGNodePrintJNI},
+    {"jni_YGNodeCloneJNI", "(J)J", (void*) jni_YGNodeCloneJNI},
 };
 
 void YGJNIVanilla::registerNatives(JNIEnv* env) {

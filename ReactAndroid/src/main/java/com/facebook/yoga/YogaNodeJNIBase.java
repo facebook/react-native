@@ -46,7 +46,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   private boolean mHasNewLayout = true;
 
-  private boolean useVanillaJNI = false;
+  protected boolean useVanillaJNI = false;
 
   private YogaNodeJNIBase(long nativePointer) {
     if (nativePointer == 0) {
@@ -72,7 +72,10 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     mHasNewLayout = true;
     mLayoutDirection = 0;
 
-    YogaNative.jni_YGNodeReset(mNativePointer);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeResetJNI(mNativePointer);
+    else
+      YogaNative.jni_YGNodeReset(mNativePointer);
   }
 
   public int getChildCount() {
@@ -97,22 +100,28 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     }
     mChildren.add(i, child);
     child.mOwner = this;
-    YogaNative.jni_YGNodeInsertChild(mNativePointer, child.mNativePointer, i);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeInsertChildJNI(mNativePointer, child.mNativePointer, i);
+    else
+      YogaNative.jni_YGNodeInsertChild(mNativePointer, child.mNativePointer, i);
   }
 
   public void setIsReferenceBaseline(boolean isReferenceBaseline) {
-    YogaNative.jni_YGNodeSetIsReferenceBaseline(mNativePointer, isReferenceBaseline);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeSetIsReferenceBaselineJNI(mNativePointer, isReferenceBaseline);
+    else
+      YogaNative.jni_YGNodeSetIsReferenceBaseline(mNativePointer, isReferenceBaseline);
   }
 
   public boolean isReferenceBaseline() {
-    return YogaNative.jni_YGNodeIsReferenceBaseline(mNativePointer);
+    return useVanillaJNI ? YogaNative.jni_YGNodeIsReferenceBaselineJNI(mNativePointer) : YogaNative.jni_YGNodeIsReferenceBaseline(mNativePointer);
   }
 
   @Override
   public YogaNodeJNIBase cloneWithoutChildren() {
     try {
       YogaNodeJNIBase clonedYogaNode = (YogaNodeJNIBase) super.clone();
-      long clonedNativePointer = YogaNative.jni_YGNodeClone(mNativePointer);
+      long clonedNativePointer = useVanillaJNI ? YogaNative.jni_YGNodeCloneJNI(mNativePointer) : YogaNative.jni_YGNodeClone(mNativePointer);;
       clonedYogaNode.mOwner = null;
       clonedYogaNode.mNativePointer = clonedNativePointer;
       clonedYogaNode.clearChildren();
@@ -125,7 +134,10 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   private void clearChildren() {
     mChildren = null;
-    YogaNative.jni_YGNodeClearChildren(mNativePointer);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeClearChildrenJNI(mNativePointer);
+    else
+      YogaNative.jni_YGNodeClearChildren(mNativePointer);
   }
 
   public YogaNodeJNIBase removeChildAt(int i) {
@@ -135,7 +147,10 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     }
     final YogaNodeJNIBase child = mChildren.remove(i);
     child.mOwner = null;
-    YogaNative.jni_YGNodeRemoveChild(mNativePointer, child.mNativePointer);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeRemoveChildJNI(mNativePointer, child.mNativePointer);
+    else
+      YogaNative.jni_YGNodeRemoveChild(mNativePointer, child.mNativePointer);
     return child;
   }
 
@@ -186,20 +201,29 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   public void dirty() {
-    YogaNative.jni_YGNodeMarkDirty(mNativePointer);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeMarkDirtyJNI(mNativePointer);
+    else
+      YogaNative.jni_YGNodeMarkDirty(mNativePointer);
   }
 
   public void dirtyAllDescendants() {
-    YogaNative.jni_YGNodeMarkDirtyAndPropogateToDescendants(mNativePointer);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeMarkDirtyAndPropogateToDescendantsJNI(mNativePointer);
+    else
+      YogaNative.jni_YGNodeMarkDirtyAndPropogateToDescendants(mNativePointer);
   }
 
   public boolean isDirty() {
-    return YogaNative.jni_YGNodeIsDirty(mNativePointer);
+    return useVanillaJNI ? YogaNative.jni_YGNodeIsDirtyJNI(mNativePointer) : YogaNative.jni_YGNodeIsDirty(mNativePointer);
   }
 
   @Override
   public void copyStyle(YogaNode srcNode) {
-    YogaNative.jni_YGNodeCopyStyle(mNativePointer, ((YogaNodeJNIBase) srcNode).mNativePointer);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeCopyStyleJNI(mNativePointer, ((YogaNodeJNIBase) srcNode).mNativePointer);
+    else
+      YogaNative.jni_YGNodeCopyStyle(mNativePointer, ((YogaNodeJNIBase) srcNode).mNativePointer);
   }
 
   public YogaDirection getStyleDirection() {
@@ -633,7 +657,10 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
    * layout of the tree rooted at this node.
    */
   public void print() {
-    YogaNative.jni_YGNodePrint(mNativePointer);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodePrintJNI(mNativePointer);
+    else
+      YogaNative.jni_YGNodePrint(mNativePointer);
   }
 
   public void setStyleInputs(float[] styleInputsArray, int size) {
