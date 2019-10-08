@@ -23,6 +23,8 @@ typedef void (^InterceptorBlock)(std::string eventName, folly::dynamic event);
 
 - (void)setProps:(folly::dynamic const &)props forView:(UIView *)view;
 
+- (NSString *)componentViewName;
+
 @end
 
 NS_ASSUME_NONNULL_END

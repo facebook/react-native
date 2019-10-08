@@ -46,6 +46,13 @@ using namespace facebook::react;
   }
 }
 
+- (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN
+{
+  const auto &state = _state->getData();
+  RCTLegacyViewManagerInteropCoordinator *coordinator = unwrapManagedObject(state.coordinator);
+  return coordinator.componentViewName;
+}
+
 #pragma mark - RCTComponentViewProtocol
 
 + (ComponentDescriptorProvider)componentDescriptorProvider

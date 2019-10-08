@@ -8,6 +8,7 @@
 #include "RCTLegacyViewManagerInteropCoordinator.h"
 #include <React/RCTComponentData.h>
 #include <React/RCTFollyConvert.h>
+#include <React/RCTUtils.h>
 #include <folly/json.h>
 
 using namespace facebook::react;
@@ -52,6 +53,11 @@ using namespace facebook::react;
 {
   NSDictionary<NSString *, id> *convertedProps = convertFollyDynamicToId(props);
   [_componentData setProps:convertedProps forView:view];
+}
+
+- (NSString *)componentViewName
+{
+  return RCTDropReactPrefixes(_componentData.name);
 }
 
 @end
