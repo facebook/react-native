@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Working fork for Microsoft internal usage
 ### **It is not our goal to have a long term fork of facebook/react-native/**
 
@@ -11,7 +10,7 @@ The reasons for this fork to exist currently are 3 fold.
 The eventual goal is for this fork to stop existing, or certainly have a much smaller delta between this fork and facebook/react-native.
 
 # [React Native](https://facebook.github.io/react-native/) &middot;  [![Circle CI Status](https://circleci.com/gh/facebook/react-native.svg?style=shield)](https://circleci.com/gh/facebook/react-native) [![Build status](https://ci.appveyor.com/api/projects/status/g8d58ipi3auqdtrk/branch/master?svg=true)](https://ci.appveyor.com/project/facebook/react-native/branch/master) [![npm version](https://badge.fury.io/js/react-native.svg)](https://badge.fury.io/js/react-native) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md#pull-requests)
-=======
+
 <h1 align="center">
   <a href="https://facebook.github.io/react-native/">
     React Native
