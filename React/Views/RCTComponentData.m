@@ -20,6 +20,7 @@
 
 typedef void (^RCTPropBlock)(id<RCTComponent> view, id json);
 typedef NSMutableDictionary<NSString *, RCTPropBlock> RCTPropBlockDictionary;
+typedef void (^InterceptorBlock)(NSString *eventName, NSDictionary *event, id sender);
 
 /**
  * Get the converter function for the specified type
@@ -101,7 +102,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 }
 
-static RCTPropBlock createEventSetter(NSString *propName, SEL setter, RCTBridge *bridge)
+static RCTPropBlock createEventSetter(NSString *propName, SEL setter,InterceptorBlock eventInterceptor, RCTBridge *bridge)
 {
   __weak RCTBridge *weakBridge = bridge;
   return ^(id target, id json) {
@@ -115,10 +116,14 @@ static RCTPropBlock createEventSetter(NSString *propName, SEL setter, RCTBridge 
           return;
         }
 
-        RCTComponentEvent *componentEvent = [[RCTComponentEvent alloc] initWithName:propName
-                                                                            viewTag:strongTarget.reactTag
-                                                                               body:event];
-        [weakBridge.eventDispatcher sendEvent:componentEvent];
+        if (eventInterceptor) {
+          eventInterceptor(propName, event, strongTarget);
+        } else {
+          RCTComponentEvent *componentEvent = [[RCTComponentEvent alloc] initWithName:propName
+                                                                              viewTag:strongTarget.reactTag
+                                                                                 body:event];
+          [weakBridge.eventDispatcher sendEvent:componentEvent];
+        }
       };
     }
     ((void (*)(id, SEL, id))objc_msgSend)(target, setter, eventHandler);
@@ -244,7 +249,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     if (type == NSSelectorFromString(@"RCTBubblingEventBlock:") ||
         type == NSSelectorFromString(@"RCTDirectEventBlock:")) {
       // Special case for event handlers
-      setterBlock = createEventSetter(name, setter, _bridge);
+      setterBlock = createEventSetter(name, setter, self.eventInterceptor, _bridge);
     } else {
       // Ordinary property handlers
       NSMethodSignature *typeSignature = [[RCTConvert class] methodSignatureForSelector:type];

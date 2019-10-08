@@ -29,6 +29,8 @@
 - (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView;
 
+@property (nonatomic, copy, nullable) void (^eventInterceptor)(NSString *eventName, NSDictionary *event, id sender);
+
 - (NSDictionary<NSString *, id> *)viewConfig;
 
 @end

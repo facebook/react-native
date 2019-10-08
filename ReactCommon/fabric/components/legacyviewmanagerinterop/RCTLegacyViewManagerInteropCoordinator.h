@@ -13,11 +13,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class RCTComponentData;
 
+typedef void (^InterceptorBlock)(std::string eventName, folly::dynamic event);
+
 @interface RCTLegacyViewManagerInteropCoordinator : NSObject
 
 - (instancetype)initWithComponentData:(RCTComponentData *)componentData;
 
-- (UIView *)view;
+- (UIView *)viewWithInterceptor:(InterceptorBlock)block;
 
 - (void)setProps:(folly::dynamic const &)props forView:(UIView *)view;
 

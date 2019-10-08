@@ -7,6 +7,7 @@
 
 #import "RCTLegacyViewManagerInteropComponentView.h"
 
+#import <React/UIView+React.h>
 #import <react/components/legacyviewmanagerinterop/LegacyViewManagerInteropComponentDescriptor.h>
 #import <react/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewProps.h>
 #import <react/components/legacyviewmanagerinterop/RCTLegacyViewManagerInteropCoordinator.h>
@@ -31,18 +32,21 @@ using namespace facebook::react;
 
 + (BOOL)isSupported:(NSString *)componentName
 {
-  static NSSet<NSString *> *supportedComponents = [NSSet setWithObjects:@"ActivityIndicatorView", nil];
+  static NSSet<NSString *> *supportedComponents = [NSSet setWithObjects:@"Picker", @"DatePicker", nil];
   return [supportedComponents containsObject:componentName];
 }
 
-#pragma mark - RCTComponentViewProtocol
-
-- (void)prepareForRecycle
+- (RCTLegacyViewManagerInteropCoordinator *)coordinator
 {
-  [super prepareForRecycle];
-  [_view removeFromSuperview];
-  _view = NULL;
+  if (_state != nullptr) {
+    const auto &state = _state->getData();
+    return unwrapManagedObject(state.coordinator);
+  } else {
+    return NULL;
+  }
 }
+
+#pragma mark - RCTComponentViewProtocol
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
@@ -58,18 +62,24 @@ using namespace facebook::react;
 {
   [super finalizeUpdates:updateMask];
   assert(_props && _state);
-  const auto &state = _state->getData();
-  RCTLegacyViewManagerInteropCoordinator *coordinator = unwrapManagedObject(state.coordinator);
 
   if (!_view) {
-    UIView *view = [coordinator view];
+    __weak __typeof(self) weakSelf = self;
+    UIView *view = [self.coordinator viewWithInterceptor:^(std::string eventName, folly::dynamic event) {
+      if (weakSelf) {
+        __typeof(self) strongSelf = weakSelf;
+        auto eventEmitter =
+            std::static_pointer_cast<LegacyViewManagerInteropViewEventEmitter const>(strongSelf->_eventEmitter);
+        eventEmitter->dispatchEvent(eventName, event);
+      }
+    }];
     self.contentView = view;
     _view = view;
   }
 
   if (updateMask & RNComponentViewUpdateMaskProps) {
     const auto &newProps = *std::static_pointer_cast<const LegacyViewManagerInteropViewProps>(_props);
-    [coordinator setProps:newProps.otherProps forView:_view];
+    [self.coordinator setProps:newProps.otherProps forView:_view];
   }
 }
 
