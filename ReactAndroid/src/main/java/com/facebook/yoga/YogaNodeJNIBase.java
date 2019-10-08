@@ -372,51 +372,75 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   public YogaValue getMargin(YogaEdge edge) {
-    return valueFromLong(YogaNative.jni_YGNodeStyleGetMargin(mNativePointer, edge.intValue()));
+    return valueFromLong(useVanillaJNI ? YogaNative.jni_YGNodeStyleGetMarginJNI(mNativePointer, edge.intValue()) : YogaNative.jni_YGNodeStyleGetMargin(mNativePointer, edge.intValue()));
   }
 
   public void setMargin(YogaEdge edge, float margin) {
-    YogaNative.jni_YGNodeStyleSetMargin(mNativePointer, edge.intValue(), margin);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetMarginJNI(mNativePointer, edge.intValue(), margin);
+    else
+      YogaNative.jni_YGNodeStyleSetMargin(mNativePointer, edge.intValue(), margin);
   }
 
   public void setMarginPercent(YogaEdge edge, float percent) {
-    YogaNative.jni_YGNodeStyleSetMarginPercent(mNativePointer, edge.intValue(), percent);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetMarginPercentJNI(mNativePointer, edge.intValue(), percent);
+    else
+      YogaNative.jni_YGNodeStyleSetMarginPercent(mNativePointer, edge.intValue(), percent);
   }
 
   public void setMarginAuto(YogaEdge edge) {
-    YogaNative.jni_YGNodeStyleSetMarginAuto(mNativePointer, edge.intValue());
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetMarginAutoJNI(mNativePointer, edge.intValue());
+    else
+      YogaNative.jni_YGNodeStyleSetMarginAuto(mNativePointer, edge.intValue());
   }
 
   public YogaValue getPadding(YogaEdge edge) {
-    return valueFromLong(YogaNative.jni_YGNodeStyleGetPadding(mNativePointer, edge.intValue()));
+    return valueFromLong(useVanillaJNI ? YogaNative.jni_YGNodeStyleGetPaddingJNI(mNativePointer, edge.intValue()) : YogaNative.jni_YGNodeStyleGetPadding(mNativePointer, edge.intValue()));
   }
 
   public void setPadding(YogaEdge edge, float padding) {
-    YogaNative.jni_YGNodeStyleSetPadding(mNativePointer, edge.intValue(), padding);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetPaddingJNI(mNativePointer, edge.intValue(), padding);
+    else
+      YogaNative.jni_YGNodeStyleSetPadding(mNativePointer, edge.intValue(), padding);
   }
 
   public void setPaddingPercent(YogaEdge edge, float percent) {
-    YogaNative.jni_YGNodeStyleSetPaddingPercent(mNativePointer, edge.intValue(), percent);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetPaddingPercentJNI(mNativePointer, edge.intValue(), percent);
+    else
+      YogaNative.jni_YGNodeStyleSetPaddingPercent(mNativePointer, edge.intValue(), percent);
   }
 
   public float getBorder(YogaEdge edge) {
-    return YogaNative.jni_YGNodeStyleGetBorder(mNativePointer, edge.intValue());
+    return useVanillaJNI ? YogaNative.jni_YGNodeStyleGetBorderJNI(mNativePointer, edge.intValue()) : YogaNative.jni_YGNodeStyleGetBorder(mNativePointer, edge.intValue());
   }
 
   public void setBorder(YogaEdge edge, float border) {
-    YogaNative.jni_YGNodeStyleSetBorder(mNativePointer, edge.intValue(), border);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetBorderJNI(mNativePointer, edge.intValue(), border);
+    else
+      YogaNative.jni_YGNodeStyleSetBorder(mNativePointer, edge.intValue(), border);
   }
 
   public YogaValue getPosition(YogaEdge edge) {
-    return valueFromLong(YogaNative.jni_YGNodeStyleGetPosition(mNativePointer, edge.intValue()));
+    return valueFromLong(useVanillaJNI ? YogaNative.jni_YGNodeStyleGetPositionJNI(mNativePointer, edge.intValue()) : YogaNative.jni_YGNodeStyleGetPosition(mNativePointer, edge.intValue()));
   }
 
   public void setPosition(YogaEdge edge, float position) {
-    YogaNative.jni_YGNodeStyleSetPosition(mNativePointer, edge.intValue(), position);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetPositionJNI(mNativePointer, edge.intValue(), position);
+    else
+      YogaNative.jni_YGNodeStyleSetPosition(mNativePointer, edge.intValue(), position);
   }
 
   public void setPositionPercent(YogaEdge edge, float percent) {
-    YogaNative.jni_YGNodeStyleSetPositionPercent(mNativePointer, edge.intValue(), percent);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeStyleSetPositionPercentJNI(mNativePointer, edge.intValue(), percent);
+    else
+      YogaNative.jni_YGNodeStyleSetPositionPercent(mNativePointer, edge.intValue(), percent);
   }
 
   public YogaValue getWidth() {

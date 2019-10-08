@@ -10,6 +10,7 @@
 #include <yoga/Yoga-internal.h>
 #include <yoga/log.h>
 #include <cstdint>
+#include <cstring>
 #include <iostream>
 #include <map>
 

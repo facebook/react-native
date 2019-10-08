@@ -144,6 +144,18 @@ public class YogaNative {
   static native void jni_YGNodeStyleSetFlexBasisJNI(long nativePointer, float flexBasis);
   static native void jni_YGNodeStyleSetFlexBasisPercentJNI(long nativePointer, float percent);
   static native void jni_YGNodeStyleSetFlexBasisAutoJNI(long nativePointer);
+  static native long jni_YGNodeStyleGetMarginJNI(long nativePointer, int edge);
+  static native void jni_YGNodeStyleSetMarginJNI(long nativePointer, int edge, float margin);
+  static native void jni_YGNodeStyleSetMarginPercentJNI(long nativePointer, int edge, float percent);
+  static native void jni_YGNodeStyleSetMarginAutoJNI(long nativePointer, int edge);
+  static native long jni_YGNodeStyleGetPaddingJNI(long nativePointer, int edge);
+  static native void jni_YGNodeStyleSetPaddingJNI(long nativePointer, int edge, float padding);
+  static native void jni_YGNodeStyleSetPaddingPercentJNI(long nativePointer, int edge, float percent);
+  static native float jni_YGNodeStyleGetBorderJNI(long nativePointer, int edge);
+  static native void jni_YGNodeStyleSetBorderJNI(long nativePointer, int edge, float border);
+  static native long jni_YGNodeStyleGetPositionJNI(long nativePointer, int edge);
+  static native void jni_YGNodeStyleSetPositionJNI(long nativePointer, int edge, float position);
+  static native void jni_YGNodeStyleSetPositionPercentJNI(long nativePointer, int edge, float percent);
   static native long jni_YGNodeStyleGetWidthJNI(long nativePointer);
   static native void jni_YGNodeStyleSetWidthJNI(long nativePointer, float width);
   static native void jni_YGNodeStyleSetWidthPercentJNI(long nativePointer, float percent);

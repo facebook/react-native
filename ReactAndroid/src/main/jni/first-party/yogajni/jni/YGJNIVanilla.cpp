@@ -7,6 +7,7 @@
 #include "jni.h"
 #include "YGJNIVanilla.h"
 #include <yoga/YGNode.h>
+#include <cstring>
 #include "YGJNI.h"
 
 static inline YGNodeRef _jlong2YGNodeRef(jlong addr) {
@@ -51,6 +52,37 @@ static inline YGNodeRef _jlong2YGNodeRef(jlong addr) {
     YGNodeStyleSet##name##Auto(_jlong2YGNodeRef(nativePointer)); \
   }
 
+#define YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(name)                        \
+  static jlong jni_YGNodeStyleGet##name##JNI(                         \
+      JNIEnv* env, jobject obj, jlong nativePointer, jint edge) {     \
+    return YogaValue::asJavaLong(YGNodeStyleGet##name(                \
+        _jlong2YGNodeRef(nativePointer), static_cast<YGEdge>(edge))); \
+  }                                                                   \
+                                                                      \
+  static void jni_YGNodeStyleSet##name##JNI(                          \
+      JNIEnv* env,                                                    \
+      jobject obj,                                                    \
+      jlong nativePointer,                                            \
+      jint edge,                                                      \
+      jfloat value) {                                                 \
+    YGNodeStyleSet##name(                                             \
+        _jlong2YGNodeRef(nativePointer),                              \
+        static_cast<YGEdge>(edge),                                    \
+        static_cast<float>(value));                                   \
+  }                                                                   \
+                                                                      \
+  static void jni_YGNodeStyleSet##name##PercentJNI(                   \
+      JNIEnv* env,                                                    \
+      jobject obj,                                                    \
+      jlong nativePointer,                                            \
+      jint edge,                                                      \
+      jfloat value) {                                                 \
+    YGNodeStyleSet##name##Percent(                                    \
+        _jlong2YGNodeRef(nativePointer),                              \
+        static_cast<YGEdge>(edge),                                    \
+        static_cast<float>(value));                                   \
+  }
+
 YG_NODE_JNI_STYLE_PROP(jint, YGDirection, Direction);
 YG_NODE_JNI_STYLE_PROP(jint, YGFlexDirection, FlexDirection);
 YG_NODE_JNI_STYLE_PROP(jint, YGJustify, JustifyContent);
@@ -72,6 +104,116 @@ YG_NODE_JNI_STYLE_UNIT_PROP(MaxWidth);
 YG_NODE_JNI_STYLE_UNIT_PROP_AUTO(Height);
 YG_NODE_JNI_STYLE_UNIT_PROP(MinHeight);
 YG_NODE_JNI_STYLE_UNIT_PROP(MaxHeight);
+
+YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(Position);
+
+static jlong jni_YGNodeStyleGetMarginJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jint edge) {
+  YGNodeRef yogaNodeRef = _jlong2YGNodeRef(nativePointer);
+  if (!YGNodeEdges{yogaNodeRef}.has(YGNodeEdges::MARGIN)) {
+    return YogaValue::undefinedAsJavaLong();
+  }
+  return YogaValue::asJavaLong(
+      YGNodeStyleGetMargin(yogaNodeRef, static_cast<YGEdge>(edge)));
+}
+
+static void jni_YGNodeStyleSetMarginJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jint edge,
+    jfloat margin) {
+  YGNodeRef yogaNodeRef = _jlong2YGNodeRef(nativePointer);
+  YGNodeEdges{yogaNodeRef}.add(YGNodeEdges::MARGIN).setOn(yogaNodeRef);
+  YGNodeStyleSetMargin(
+      yogaNodeRef, static_cast<YGEdge>(edge), static_cast<float>(margin));
+}
+
+static void jni_YGNodeStyleSetMarginPercentJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jint edge,
+    jfloat percent) {
+  YGNodeRef yogaNodeRef = _jlong2YGNodeRef(nativePointer);
+  YGNodeEdges{yogaNodeRef}.add(YGNodeEdges::MARGIN).setOn(yogaNodeRef);
+  YGNodeStyleSetMarginPercent(
+      yogaNodeRef, static_cast<YGEdge>(edge), static_cast<float>(percent));
+}
+
+static void jni_YGNodeStyleSetMarginAutoJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jint edge) {
+  YGNodeRef yogaNodeRef = _jlong2YGNodeRef(nativePointer);
+  YGNodeEdges{yogaNodeRef}.add(YGNodeEdges::MARGIN).setOn(yogaNodeRef);
+  YGNodeStyleSetMarginAuto(yogaNodeRef, static_cast<YGEdge>(edge));
+}
+
+static jlong jni_YGNodeStyleGetPaddingJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jint edge) {
+  YGNodeRef yogaNodeRef = _jlong2YGNodeRef(nativePointer);
+  if (!YGNodeEdges{yogaNodeRef}.has(YGNodeEdges::PADDING)) {
+    return YogaValue::undefinedAsJavaLong();
+  }
+  return YogaValue::asJavaLong(
+      YGNodeStyleGetPadding(yogaNodeRef, static_cast<YGEdge>(edge)));
+}
+
+static void jni_YGNodeStyleSetPaddingJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jint edge,
+    jfloat padding) {
+  YGNodeRef yogaNodeRef = _jlong2YGNodeRef(nativePointer);
+  YGNodeEdges{yogaNodeRef}.add(YGNodeEdges::PADDING).setOn(yogaNodeRef);
+  YGNodeStyleSetPadding(
+      yogaNodeRef, static_cast<YGEdge>(edge), static_cast<float>(padding));
+}
+
+static void jni_YGNodeStyleSetPaddingPercentJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jint edge,
+    jfloat percent) {
+  YGNodeRef yogaNodeRef = _jlong2YGNodeRef(nativePointer);
+  YGNodeEdges{yogaNodeRef}.add(YGNodeEdges::PADDING).setOn(yogaNodeRef);
+  YGNodeStyleSetPaddingPercent(
+      yogaNodeRef, static_cast<YGEdge>(edge), static_cast<float>(percent));
+}
+
+static jfloat jni_YGNodeStyleGetBorderJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jint edge) {
+  YGNodeRef yogaNodeRef = _jlong2YGNodeRef(nativePointer);
+  if (!YGNodeEdges{yogaNodeRef}.has(YGNodeEdges::BORDER)) {
+    return (jfloat) YGUndefined;
+  }
+  return (jfloat) YGNodeStyleGetBorder(yogaNodeRef, static_cast<YGEdge>(edge));
+}
+
+static void jni_YGNodeStyleSetBorderJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jint edge,
+    jfloat border) {
+  YGNodeRef yogaNodeRef = _jlong2YGNodeRef(nativePointer);
+  YGNodeEdges{yogaNodeRef}.add(YGNodeEdges::BORDER).setOn(yogaNodeRef);
+  YGNodeStyleSetBorder(
+      yogaNodeRef, static_cast<YGEdge>(edge), static_cast<float>(border));
+}
 
 // Yoga specific properties, not compatible with flexbox specification
 YG_NODE_JNI_STYLE_PROP(jfloat, float, AspectRatio);
@@ -185,6 +327,42 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeStyleSetFlexBasisAutoJNI",
      "(J)V",
      (void*) jni_YGNodeStyleSetFlexBasisAutoJNI},
+    {"jni_YGNodeStyleGetMarginJNI",
+     "(JI)J",
+     (void*) jni_YGNodeStyleGetMarginJNI},
+    {"jni_YGNodeStyleSetMarginJNI",
+     "(JIF)V",
+     (void*) jni_YGNodeStyleSetMarginJNI},
+    {"jni_YGNodeStyleSetMarginPercentJNI",
+     "(JIF)V",
+     (void*) jni_YGNodeStyleSetMarginPercentJNI},
+    {"jni_YGNodeStyleSetMarginAutoJNI",
+     "(JI)V",
+     (void*) jni_YGNodeStyleSetMarginAutoJNI},
+    {"jni_YGNodeStyleGetPaddingJNI",
+     "(JI)J",
+     (void*) jni_YGNodeStyleGetPaddingJNI},
+    {"jni_YGNodeStyleSetPaddingJNI",
+     "(JIF)V",
+     (void*) jni_YGNodeStyleSetPaddingJNI},
+    {"jni_YGNodeStyleSetPaddingPercentJNI",
+     "(JIF)V",
+     (void*) jni_YGNodeStyleSetPaddingPercentJNI},
+    {"jni_YGNodeStyleGetBorderJNI",
+     "(JI)F",
+     (void*) jni_YGNodeStyleGetBorderJNI},
+    {"jni_YGNodeStyleSetBorderJNI",
+     "(JIF)V",
+     (void*) jni_YGNodeStyleSetBorderJNI},
+    {"jni_YGNodeStyleGetPositionJNI",
+     "(JI)J",
+     (void*) jni_YGNodeStyleGetPositionJNI},
+    {"jni_YGNodeStyleSetPositionJNI",
+     "(JIF)V",
+     (void*) jni_YGNodeStyleSetPositionJNI},
+    {"jni_YGNodeStyleSetPositionPercentJNI",
+     "(JIF)V",
+     (void*) jni_YGNodeStyleSetPositionPercentJNI},
     {"jni_YGNodeStyleGetWidthJNI", "(J)J", (void*) jni_YGNodeStyleGetWidthJNI},
     {"jni_YGNodeStyleSetWidthJNI", "(JF)V", (void*) jni_YGNodeStyleSetWidthJNI},
     {"jni_YGNodeStyleSetWidthPercentJNI",
