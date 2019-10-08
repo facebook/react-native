@@ -313,7 +313,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   public float getFlex() {
-    return YogaNative.jni_YGNodeStyleGetFlex(mNativePointer);
+    return useVanillaJNI ? YogaNative.jni_YGNodeStyleGetFlexJNI(mNativePointer) : YogaNative.jni_YGNodeStyleGetFlex(mNativePointer);
   }
 
   public void setFlex(float flex) {

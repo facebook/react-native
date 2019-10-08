@@ -34,17 +34,9 @@ YG_NODE_JNI_STYLE_PROP(jint, YGPositionType, PositionType);
 YG_NODE_JNI_STYLE_PROP(jint, YGWrap, FlexWrap);
 YG_NODE_JNI_STYLE_PROP(jint, YGOverflow, Overflow);
 YG_NODE_JNI_STYLE_PROP(jint, YGDisplay, Display);
+YG_NODE_JNI_STYLE_PROP(jfloat, float, Flex);
 YG_NODE_JNI_STYLE_PROP(jfloat, float, FlexGrow);
 YG_NODE_JNI_STYLE_PROP(jfloat, float, FlexShrink);
-
-void jni_YGNodeStyleSetFlexJNI(
-    JNIEnv* env,
-    jobject obj,
-    jlong nativePointer,
-    jfloat value) {
-  YGNodeStyleSetFlex(
-      _jlong2YGNodeRef(nativePointer), static_cast<float>(value));
-}
 
 // Yoga specific properties, not compatible with flexbox specification
 YG_NODE_JNI_STYLE_PROP(jfloat, float, AspectRatio);
@@ -72,7 +64,6 @@ void registerNativeMethods(
 }
 
 static JNINativeMethod methods[] = {
-    {"jni_YGNodeStyleSetFlexJNI", "(JF)V", (void*) jni_YGNodeStyleSetFlexJNI},
     {"jni_YGNodeStyleGetDirectionJNI",
      "(J)I",
      (void*) jni_YGNodeStyleGetDirectionJNI},
@@ -133,6 +124,8 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeStyleSetDisplayJNI",
      "(JI)V",
      (void*) jni_YGNodeStyleSetDisplayJNI},
+    {"jni_YGNodeStyleGetFlexJNI", "(J)F", (void*) jni_YGNodeStyleGetFlexJNI},
+    {"jni_YGNodeStyleSetFlexJNI", "(JF)V", (void*) jni_YGNodeStyleSetFlexJNI},
     {"jni_YGNodeStyleGetFlexGrowJNI",
      "(J)F",
      (void*) jni_YGNodeStyleGetFlexGrowJNI},

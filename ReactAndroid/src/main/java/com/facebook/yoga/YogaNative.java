@@ -134,7 +134,8 @@ public class YogaNative {
   static native void jni_YGNodeStyleSetOverflowJNI(long nativePointer, int overflow);
   static native int jni_YGNodeStyleGetDisplayJNI(long nativePointer);
   static native void jni_YGNodeStyleSetDisplayJNI(long nativePointer, int display);
-  public static native void jni_YGNodeStyleSetFlexJNI(long nativePointer, float flex);
+  static native float jni_YGNodeStyleGetFlexJNI(long nativePointer);
+  static native void jni_YGNodeStyleSetFlexJNI(long nativePointer, float flex);
   static native float jni_YGNodeStyleGetFlexGrowJNI(long nativePointer);
   static native void jni_YGNodeStyleSetFlexGrowJNI(long nativePointer, float flexGrow);
   static native float jni_YGNodeStyleGetFlexShrinkJNI(long nativePointer);
