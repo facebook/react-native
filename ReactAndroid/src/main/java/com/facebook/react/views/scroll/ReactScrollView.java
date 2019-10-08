@@ -343,6 +343,12 @@ public class ReactScrollView extends ScrollView
   }
 
   @Override
+  public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
+    return ReactClippingViewGroupHelper.getChildVisibleRectHelper(
+        child, r, offset, this, mOverflow);
+  }
+
+  @Override
   public void fling(int velocityY) {
     // Workaround.
     // On Android P if a ScrollView is inverted, we will get a wrong sign for

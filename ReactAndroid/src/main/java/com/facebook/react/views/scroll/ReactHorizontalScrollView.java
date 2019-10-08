@@ -491,6 +491,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     outClippingRect.set(Assertions.assertNotNull(mClippingRect));
   }
 
+  @Override
+  public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
+    return ReactClippingViewGroupHelper.getChildVisibleRectHelper(
+        child, r, offset, this, mOverflow);
+  }
+
   private int getSnapInterval() {
     if (mSnapInterval != 0) {
       return mSnapInterval;

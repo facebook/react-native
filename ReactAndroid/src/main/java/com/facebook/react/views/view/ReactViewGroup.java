@@ -456,6 +456,12 @@ public class ReactViewGroup extends ViewGroup
   }
 
   @Override
+  public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
+    return ReactClippingViewGroupHelper.getChildVisibleRectHelper(
+        child, r, offset, this, mOverflow);
+  }
+
+  @Override
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);
     if (mRemoveClippedSubviews) {
