@@ -98,7 +98,7 @@ class ReactNativeComponent<Props> extends React.Component<Props> {
 }
 
 // This type is only used for FlowTests. It shouldn't be imported directly
-export type ReactNativeComponentClass_ForTestsOnly<Props> = Class<
+export type _InternalReactNativeComponentClass<Props> = Class<
   ReactNativeComponent<Props>,
 >;
 
@@ -144,7 +144,6 @@ export type ReactNativeType = {
   NativeComponent: typeof ReactNativeComponent,
   findNodeHandle(componentOrHandle: any): ?number,
   dispatchCommand(handle: any, command: string, args: Array<any>): void,
-  setNativeProps(handle: any, nativeProps: Object): void,
   render(
     element: React$Element<any>,
     containerTag: any,
@@ -161,7 +160,6 @@ export type ReactFabricType = {
   NativeComponent: typeof ReactNativeComponent,
   findNodeHandle(componentOrHandle: any): ?number,
   dispatchCommand(handle: any, command: string, args: Array<any>): void,
-  setNativeProps(handle: any, nativeProps: Object): void,
   render(
     element: React$Element<any>,
     containerTag: any,

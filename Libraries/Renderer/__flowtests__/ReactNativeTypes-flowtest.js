@@ -13,7 +13,7 @@
 import * as React from 'react';
 import type {
   HostComponent,
-  ReactNativeComponentClass_ForTestsOnly,
+  _InternalReactNativeComponentClass,
 } from '../shims/ReactNativeTypes';
 
 function takesHostComponentInstance(
@@ -34,7 +34,7 @@ const MyHostComponent = (('Host': any): HostComponent<mixed>);
   }}
 />;
 
-declare var NativeComponent: ReactNativeComponentClass_ForTestsOnly<{}>;
+declare var NativeComponent: _InternalReactNativeComponentClass<{}>;
 class MyNativeComponent extends NativeComponent {}
 
 <MyNativeComponent

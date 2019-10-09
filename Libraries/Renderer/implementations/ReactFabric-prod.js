@@ -7605,7 +7605,6 @@ var roots = new Map(),
       })(React.Component);
     })(findNodeHandle, findHostInstance),
     findNodeHandle: findNodeHandle,
-    setNativeProps: function() {},
     dispatchCommand: function(handle, command, args) {
       null != handle._nativeTag &&
         null != handle._internalInstanceHandle &&

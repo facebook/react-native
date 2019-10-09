@@ -2654,7 +2654,6 @@ var enableProfilerTimer = true;
 var enableSchedulerTracing = true;
 var enableSuspenseServerRenderer = false;
 
-var warnAboutDeprecatedSetNativeProps = false;
 var enableFlareAPI = false;
 var enableFundamentalAPI = false;
 
@@ -3924,9 +3923,13 @@ var ReactNativeFiberHostComponent = (function() {
     } else if (relativeToNativeNode._nativeTag) {
       relativeNode = relativeToNativeNode._nativeTag;
     } else if (
+      /* $FlowFixMe canonical doesn't exist on the node.
+     I think this branch is dead and will remove it in a followup */
       relativeToNativeNode.canonical &&
       relativeToNativeNode.canonical._nativeTag
     ) {
+      /* $FlowFixMe canonical doesn't exist on the node.
+       I think this branch is dead and will remove it in a followup */
       relativeNode = relativeToNativeNode.canonical._nativeTag;
     }
 
@@ -3951,15 +3954,6 @@ var ReactNativeFiberHostComponent = (function() {
     nativeProps
   ) {
     {
-      if (warnAboutDeprecatedSetNativeProps) {
-        warningWithoutStack$1(
-          false,
-          "Warning: Calling ref.setNativeProps(nativeProps) " +
-            "is deprecated and will be removed in a future release. " +
-            "Use the setNativeProps export from the react-native package instead." +
-            "\n\timport {setNativeProps} from 'react-native';\n\tsetNativeProps(ref, nativeProps);\n"
-        );
-      }
       warnForStyleProps(nativeProps, this.viewConfig.validAttributes);
     }
 
@@ -22370,18 +22364,6 @@ var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
         return;
       }
 
-      {
-        if (warnAboutDeprecatedSetNativeProps) {
-          warningWithoutStack$1(
-            false,
-            "Warning: Calling ref.setNativeProps(nativeProps) " +
-              "is deprecated and will be removed in a future release. " +
-              "Use the setNativeProps export from the react-native package instead." +
-              "\n\timport {setNativeProps} from 'react-native';\n\tsetNativeProps(ref, nativeProps);\n"
-          );
-        }
-      }
-
       var nativeTag =
         maybeInstance._nativeTag || maybeInstance.canonical._nativeTag;
       var viewConfig =
@@ -22757,18 +22739,6 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
         return;
       }
 
-      {
-        if (warnAboutDeprecatedSetNativeProps) {
-          warningWithoutStack$1(
-            false,
-            "Warning: Calling ref.setNativeProps(nativeProps) " +
-              "is deprecated and will be removed in a future release. " +
-              "Use the setNativeProps export from the react-native package instead." +
-              "\n\timport {setNativeProps} from 'react-native';\n\tsetNativeProps(ref, nativeProps);\n"
-          );
-        }
-      }
-
       var nativeTag =
         maybeInstance._nativeTag || maybeInstance.canonical._nativeTag;
       var viewConfig =
@@ -22903,36 +22873,6 @@ var getInspectorDataForViewTag = void 0;
   };
 }
 
-// Module provided by RN:
-function setNativeProps(handle, nativeProps) {
-  if (handle._nativeTag == null) {
-    !(handle._nativeTag != null)
-      ? warningWithoutStack$1(
-          false,
-          "setNativeProps was called with a ref that isn't a " +
-            "native component. Use React.forwardRef to get access to the underlying native component"
-        )
-      : void 0;
-    return;
-  }
-
-  {
-    warnForStyleProps(nativeProps, handle.viewConfig.validAttributes);
-  }
-
-  var updatePayload = create(nativeProps, handle.viewConfig.validAttributes);
-  // Avoid the overhead of bridge calls if there's no update.
-  // This is an expensive no-op for Android, and causes an unnecessary
-  // view invalidation for certain components (eg RCTTextInput) on iOS.
-  if (updatePayload != null) {
-    ReactNativePrivateInterface.UIManager.updateView(
-      handle._nativeTag,
-      handle.viewConfig.uiViewClassName,
-      updatePayload
-    );
-  }
-}
-
 // TODO: direct imports like some-package/src/* are bad. Fix me.
 // Module provided by RN:
 var ReactCurrentOwner = ReactSharedInternals.ReactCurrentOwner;
@@ -23027,9 +22967,6 @@ var ReactNativeRenderer = {
       args
     );
   },
-
-  setNativeProps: setNativeProps,
-
   render: function(element, containerTag, callback) {
     var root = roots.get(containerTag);
 

@@ -7783,21 +7783,6 @@ var roots = new Map(),
           args
         );
     },
-    setNativeProps: function(handle, nativeProps) {
-      null != handle._nativeTag &&
-        ((nativeProps = diffProperties(
-          null,
-          emptyObject,
-          nativeProps,
-          handle.viewConfig.validAttributes
-        )),
-        null != nativeProps &&
-          ReactNativePrivateInterface.UIManager.updateView(
-            handle._nativeTag,
-            handle.viewConfig.uiViewClassName,
-            nativeProps
-          ));
-    },
     render: function(element, containerTag, callback) {
       var root = roots.get(containerTag);
       if (!root) {

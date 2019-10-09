@@ -2804,7 +2804,6 @@ var debugRenderPhaseSideEffectsForStrictMode = true;
 
 var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
 var warnAboutDeprecatedLifecycles = true;
-var warnAboutDeprecatedSetNativeProps = true;
 var enableFlareAPI = false;
 var enableFundamentalAPI = false;
 
@@ -3826,6 +3825,8 @@ var ReactNativeComponent = (function(_React$Component) {
 
   return ReactNativeComponent;
 })(React.Component);
+
+// This type is only used for FlowTests. It shouldn't be imported directly
 
 /**
  * This type keeps ReactNativeFiberHostComponent and NativeMethodsMixin in sync.
@@ -22798,18 +22799,6 @@ var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
         return;
       }
 
-      {
-        if (warnAboutDeprecatedSetNativeProps) {
-          warningWithoutStack$1(
-            false,
-            "Warning: Calling ref.setNativeProps(nativeProps) " +
-              "is deprecated and will be removed in a future release. " +
-              "Use the setNativeProps export from the react-native package instead." +
-              "\n\timport {setNativeProps} from 'react-native';\n\tsetNativeProps(ref, nativeProps);\n"
-          );
-        }
-      }
-
       var nativeTag =
         maybeInstance._nativeTag || maybeInstance.canonical._nativeTag;
       var viewConfig =
@@ -23185,18 +23174,6 @@ var ReactNativeComponent$1 = function(findNodeHandle, findHostInstance) {
         return;
       }
 
-      {
-        if (warnAboutDeprecatedSetNativeProps) {
-          warningWithoutStack$1(
-            false,
-            "Warning: Calling ref.setNativeProps(nativeProps) " +
-              "is deprecated and will be removed in a future release. " +
-              "Use the setNativeProps export from the react-native package instead." +
-              "\n\timport {setNativeProps} from 'react-native';\n\tsetNativeProps(ref, nativeProps);\n"
-          );
-        }
-      }
-
       var nativeTag =
         maybeInstance._nativeTag || maybeInstance.canonical._nativeTag;
       var viewConfig =
@@ -23408,14 +23385,6 @@ var ReactFabric = {
 
   findNodeHandle: findNodeHandle,
 
-  setNativeProps: function(handle, nativeProps) {
-    warningWithoutStack$1(
-      false,
-      "Warning: setNativeProps is not currently supported in Fabric"
-    );
-
-    return;
-  },
   dispatchCommand: function(handle, command, args) {
     var invalid =
       handle._nativeTag == null || handle._internalInstanceHandle == null;
