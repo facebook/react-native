@@ -11,22 +11,14 @@
 
 // OSS-compatibility layer
 
-#import "CoreModulesPlugins.h"
+#import "RCTImagePlugins.h"
 
 #import <string>
 #import <unordered_map>
 
-Class RCTCoreModulesClassProvider(const char *name) {
+Class RCTImageClassProvider(const char *name) {
   static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
-    {"AccessibilityManager", RCTAccessibilityManagerCls},
-    {"Appearance", RCTAppearanceCls},
-    {"DeviceInfo", RCTDeviceInfoCls},
-    {"ExceptionsManager", RCTExceptionsManagerCls},
-    {"PlatformConstants", RCTPlatformCls},
-    {"Clipboard", RCTClipboardCls},
-    {"I18nManager", RCTI18nManagerCls},
-    {"SourceCode", RCTSourceCodeCls},
-    {"ActionSheetManager", RCTActionSheetManagerCls},
+    {"ImageLoader", RCTImageLoaderCls},
   };
 
   auto p = sCoreModuleClassMap.find(name);

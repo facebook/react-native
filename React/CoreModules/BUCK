@@ -52,9 +52,6 @@ rn_apple_library(
             name = "ExceptionsManager",
             native_class_func = "RCTExceptionsManagerCls",
         ) + react_module_plugin_providers(
-            name = "ImageLoader",
-            native_class_func = "RCTImageLoaderCls",
-        ) + react_module_plugin_providers(
             name = "PlatformConstants",
             native_class_func = "RCTPlatformCls",
         ) + react_module_plugin_providers(
@@ -77,7 +74,6 @@ rn_apple_library(
     reexport_all_header_dependencies = True,
     visibility = ["PUBLIC"],
     exported_deps = [
-        "fbsource//xplat/js:RCTImageApple",
         "fbsource//xplat/js/react-native-github:ReactInternalApple",
         "fbsource//xplat/js/react-native-github/Libraries/FBReactNativeSpec:FBReactNativeSpecApple",
     ],

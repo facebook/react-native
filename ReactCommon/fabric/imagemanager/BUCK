@@ -59,7 +59,6 @@ rn_xplat_cxx_library(
     ios_deps = [
         "fbsource//xplat/js:RCTImage",
         "fbsource//xplat/js/react-native-github:RCTCxxBridge",
-        "fbsource//xplat/js/react-native-github/React/CoreModules:CoreModules",
     ],
     ios_exported_headers = subdir_glob(
         [

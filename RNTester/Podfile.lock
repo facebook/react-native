@@ -212,6 +212,8 @@ PODS:
     - React-jsi (= 1000.0.0)
     - React-RCTNetwork (= 1000.0.0)
   - React-RCTImage (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly (= 2018.10.22.00)
     - React-Core/RCTImageHeaders (= 1000.0.0)
     - React-RCTNetwork (= 1000.0.0)
   - React-RCTLinking (1000.0.0):
@@ -372,7 +374,7 @@ SPEC CHECKSUMS:
   React-RCTActionSheet: 090e7bd7c5774d919c47c4eeff78223a7fd8c19c
   React-RCTAnimation: 73d536fff417a101724d9529189c95a94263710c
   React-RCTBlob: acd519b1d6ec5d66f98b7cf8e70d0cd76642426f
-  React-RCTImage: 7f5c9bff34905f1bc216be512ba0ae68f872208a
+  React-RCTImage: 4d2a090c491e29665f27f87c58feb4dfcb2f4cfa
   React-RCTLinking: d7d7f792e63a8d57380cecbb9b7a3b31f92d1bb6
   React-RCTNetwork: c8f9d40297f35ea3792ea81866f33e8b45c25935
   React-RCTPushNotification: acffa8af6a20e6d41b041a8c4cb4bea0de9df0dd
