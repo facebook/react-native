@@ -1145,10 +1145,8 @@
     shell-quote "1.6.1"
     ws "^1.1.0"
 
-"@react-native-community/eslint-plugin@1.0.0":
+"@react-native-community/eslint-plugin@file:packages/eslint-plugin-react-native-community":
   version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/eslint-plugin/-/eslint-plugin-1.0.0.tgz#ae9a430f2c5795debca491f15a989fce86ea75a0"
-  integrity sha512-GLhSN8dRt4lpixPQh+8prSCy6PYk/MT/mvji/ojAd5yshowDo6HFsimCSTD/uWAdjpUq91XK9tVdTNWfGRlKQA==
 
 "@reactions/component@^2.0.2":
   version "2.0.2"
