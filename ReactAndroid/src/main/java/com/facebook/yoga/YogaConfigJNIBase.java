@@ -10,7 +10,7 @@ public abstract class YogaConfigJNIBase extends YogaConfig {
 
   long mNativePointer;
   private YogaLogger mLogger;
-  private boolean useVanillaJNI = false;
+  protected boolean useVanillaJNI = false;
 
   private YogaConfigJNIBase(long nativePointer) {
     if (nativePointer == 0) {
@@ -85,7 +85,10 @@ public abstract class YogaConfigJNIBase extends YogaConfig {
 
   public void setLogger(YogaLogger logger) {
     mLogger = logger;
-    YogaNative.jni_YGConfigSetLogger(mNativePointer, logger);
+    if (useVanillaJNI)
+      YogaNative.jni_YGConfigSetLoggerJNI(mNativePointer, logger);
+    else
+      YogaNative.jni_YGConfigSetLogger(mNativePointer, logger);
   }
 
   public YogaLogger getLogger() {

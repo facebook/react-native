@@ -116,14 +116,14 @@ public class YogaNative {
   // JNI methods that use Vanilla JNI
   // YGConfig related
   static native long jni_YGConfigNewJNI();
-//  static native void jni_YGConfigFreeJNI(long nativePointer);
+  static native void jni_YGConfigFreeJNI(long nativePointer);
   static native void jni_YGConfigSetExperimentalFeatureEnabledJNI(long nativePointer, int feature, boolean enabled);
   static native void jni_YGConfigSetUseWebDefaultsJNI(long nativePointer, boolean useWebDefaults);
   static native void jni_YGConfigSetPrintTreeFlagJNI(long nativePointer, boolean enable);
   static native void jni_YGConfigSetPointScaleFactorJNI(long nativePointer, float pixelsInPoint);
   static native void jni_YGConfigSetUseLegacyStretchBehaviourJNI(long nativePointer, boolean useLegacyStretchBehaviour);
   static native void jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviourJNI(long nativePointer, boolean shouldDiffLayoutWithoutLegacyStretchBehaviour);
-//  static native void jni_YGConfigSetLoggerJNI(long nativePointer, Object logger);
+  static native void jni_YGConfigSetLoggerJNI(long nativePointer, YogaLogger logger);
 
   // YGNode related
   static native long jni_YGNodeNewJNI();

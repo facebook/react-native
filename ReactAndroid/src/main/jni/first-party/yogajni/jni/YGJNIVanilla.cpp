@@ -13,6 +13,7 @@
 #include "YGJTypesVanilla.h"
 #include <yoga/log.h>
 #include <iostream>
+#include <memory>
 
 using namespace facebook::yoga::vanillajni;
 using facebook::yoga::detail::Log;
@@ -43,13 +44,13 @@ static jlong jni_YGConfigNewJNI(JNIEnv* env, jobject obj) {
   return reinterpret_cast<jlong>(YGConfigNew());
 }
 
-// void jni_YGConfigFreeJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
-//   const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
-//   // unique_ptr will destruct the underlying global_ref, if present.
-//   auto context = std::unique_ptr<global_ref<JYogaLogger>>{
-//       static_cast<global_ref<JYogaLogger>*>(YGConfigGetContext(config))};
-//   YGConfigFree(config);
-// }
+static void jni_YGConfigFreeJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  // unique_ptr will destruct the underlying global_ref, if present.
+  auto context = std::unique_ptr<ScopedGlobalRef<jobject>>{
+      static_cast<ScopedGlobalRef<jobject>*>(YGConfigGetContext(config))};
+  YGConfigFree(config);
+}
 
 static void jni_YGConfigSetExperimentalFeatureEnabledJNI(
     JNIEnv* env,
@@ -133,6 +134,76 @@ static jlong jni_YGNodeNewWithConfigJNI(
   const YGNodeRef node = YGNodeNewWithConfig(_jlong2YGConfigRef(configPointer));
   node->setContext(YGNodeContext{}.asVoidPtr);
   return reinterpret_cast<jlong>(node);
+}
+
+static int YGJNILogFunc(
+    const YGConfigRef config,
+    const YGNodeRef node,
+    YGLogLevel level,
+    void* layoutContext,
+    const char* format,
+    va_list args) {
+  int result = vsnprintf(NULL, 0, format, args);
+  std::vector<char> buffer(1 + result);
+  vsnprintf(buffer.data(), buffer.size(), format, args);
+
+  auto jloggerPtr =
+      static_cast<ScopedGlobalRef<jobject>*>(YGConfigGetContext(config));
+  if (jloggerPtr != nullptr) {
+    if (*jloggerPtr) {
+      JNIEnv* env = getCurrentEnv();
+
+      jclass cl = env->FindClass("Lcom/facebook/yoga/YogaLogLevel;");
+      static const jmethodID smethodId =
+          facebook::yoga::vanillajni::getStaticMethodId(
+              env, cl, "fromInt", "(I)Lcom/facebook/yoga/YogaLogLevel;");
+      ScopedLocalRef<jobject> logLevel =
+          facebook::yoga::vanillajni::callStaticObjectMethod(
+              env, cl, smethodId, level);
+
+      auto objectClass = facebook::yoga::vanillajni::make_local_ref(
+          env, env->GetObjectClass((*jloggerPtr).get()));
+      static const jmethodID methodId = facebook::yoga::vanillajni::getMethodId(
+          env,
+          objectClass.get(),
+          "log",
+          "(Lcom/facebook/yoga/YogaLogLevel;Ljava/lang/String;)V");
+      facebook::yoga::vanillajni::callVoidMethod(
+          env,
+          (*jloggerPtr).get(),
+          methodId,
+          logLevel.get(),
+          env->NewStringUTF(buffer.data()));
+    }
+  }
+
+  return result;
+}
+
+static void jni_YGConfigSetLoggerJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jobject logger) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  auto context =
+      reinterpret_cast<ScopedGlobalRef<jobject>*>(YGConfigGetContext(config));
+
+  if (logger) {
+    if (context == nullptr) {
+      context = new ScopedGlobalRef<jobject>();
+      YGConfigSetContext(config, context);
+    }
+
+    *context = newGlobalRef(env, logger);
+    config->setLogger(YGJNILogFunc);
+  } else {
+    if (context != nullptr) {
+      delete context;
+      YGConfigSetContext(config, nullptr);
+    }
+    config->setLogger(nullptr);
+  }
 }
 
 static void jni_YGNodeFreeJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
@@ -666,7 +737,7 @@ static void jni_YGNodeSetStyleInputsJNI(
 
 static JNINativeMethod methods[] = {
     {"jni_YGConfigNewJNI", "()J", (void*) jni_YGConfigNewJNI},
-    //    {"jni_YGConfigFreeJNI", "(J)V", (void*) jni_YGConfigFreeJNI},
+    {"jni_YGConfigFreeJNI", "(J)V", (void*) jni_YGConfigFreeJNI},
     {"jni_YGConfigSetExperimentalFeatureEnabledJNI",
      "(JIZ)V",
      (void*) jni_YGConfigSetExperimentalFeatureEnabledJNI},
@@ -685,7 +756,9 @@ static JNINativeMethod methods[] = {
     {"jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviourJNI",
      "(JZ)V",
      (void*) jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviourJNI},
-    //  {"jni_YGConfigSetLoggerJNI", "(JO)V", (void*) jni_YGConfigSetLoggerJNI},
+    {"jni_YGConfigSetLoggerJNI",
+     "(JLcom/facebook/yoga/YogaLogger;)V",
+     (void*) jni_YGConfigSetLoggerJNI},
     {"jni_YGNodeNewJNI", "()J", (void*) jni_YGNodeNewJNI},
     {"jni_YGNodeNewWithConfigJNI", "(J)J", (void*) jni_YGNodeNewWithConfigJNI},
     {"jni_YGNodeFreeJNI", "(J)V", (void*) jni_YGNodeFreeJNI},
