@@ -5,6 +5,10 @@ public abstract class YogaNodeFactory {
     return new YogaNodeJNIFinalizer();
   }
 
+  public static YogaNode create(boolean useVanillaJNI) {
+    return new YogaNodeJNIFinalizer(useVanillaJNI);
+  }
+
   public static YogaNode create(YogaConfig config) {
     return new YogaNodeJNIFinalizer(config);
   }

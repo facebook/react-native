@@ -11,6 +11,10 @@ public class YogaNodeJNIFinalizer extends YogaNodeJNIBase {
     super();
   }
 
+  public YogaNodeJNIFinalizer(boolean useVanillaJNI) {
+    super(useVanillaJNI);
+  }
+
   public YogaNodeJNIFinalizer(YogaConfig config) {
     super(config);
   }

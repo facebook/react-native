@@ -12,6 +12,7 @@
 #include "common.h"
 #include "YGJTypesVanilla.h"
 #include <yoga/log.h>
+#include <iostream>
 
 using namespace facebook::yoga::vanillajni;
 using facebook::yoga::detail::Log;
@@ -90,6 +91,18 @@ static void jni_YGConfigSetPointScaleFactorJNI(
   YGConfigSetPointScaleFactor(config, pixelsInPoint);
 }
 
+static void YGPrint(YGNodeRef node, void* layoutContext) {
+  if (auto obj = YGNodeJobject(node, layoutContext)) {
+    // TODO cout << obj.get()->toString() << endl;
+  } else {
+    Log::log(
+        node,
+        YGLogLevelError,
+        nullptr,
+        "Java YGNode was GCed during layout calculation\n");
+  }
+}
+
 static void jni_YGConfigSetUseLegacyStretchBehaviourJNI(
     JNIEnv* env,
     jobject obj,
@@ -97,6 +110,22 @@ static void jni_YGConfigSetUseLegacyStretchBehaviourJNI(
     jboolean useLegacyStretchBehaviour) {
   const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
   YGConfigSetUseLegacyStretchBehaviour(config, useLegacyStretchBehaviour);
+}
+
+static jlong jni_YGNodeNewJNI(JNIEnv* env, jobject obj) {
+  const YGNodeRef node = YGNodeNew();
+  node->setContext(YGNodeContext{}.asVoidPtr);
+  node->setPrintFunc(YGPrint);
+  return reinterpret_cast<jlong>(node);
+}
+
+static jlong jni_YGNodeNewWithConfigJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong configPointer) {
+  const YGNodeRef node = YGNodeNewWithConfig(_jlong2YGConfigRef(configPointer));
+  node->setContext(YGNodeContext{}.asVoidPtr);
+  return reinterpret_cast<jlong>(node);
 }
 
 static void jni_YGNodeFreeJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
@@ -558,6 +587,8 @@ static JNINativeMethod methods[] = {
      "(JZ)V",
      (void*) jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviourJNI},
     //  {"jni_YGConfigSetLoggerJNI", "(JO)V", (void*) jni_YGConfigSetLoggerJNI},
+    {"jni_YGNodeNewJNI", "()J", (void*) jni_YGNodeNewJNI},
+    {"jni_YGNodeNewWithConfigJNI", "(J)J", (void*) jni_YGNodeNewWithConfigJNI},
     {"jni_YGNodeFreeJNI", "(J)V", (void*) jni_YGNodeFreeJNI},
     {"jni_YGNodeResetJNI", "(J)V", (void*) jni_YGNodeResetJNI},
     {"jni_YGNodeInsertChildJNI", "(JJI)V", (void*) jni_YGNodeInsertChildJNI},

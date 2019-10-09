@@ -125,6 +125,9 @@ public class YogaNative {
   static native void jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviourJNI(long nativePointer, boolean shouldDiffLayoutWithoutLegacyStretchBehaviour);
 //  static native void jni_YGConfigSetLoggerJNI(long nativePointer, Object logger);
 
+  // YGNode related
+  static native long jni_YGNodeNewJNI();
+  static native long jni_YGNodeNewWithConfigJNI(long configPointer);
   static native void jni_YGNodeFreeJNI(long nativePointer);
   static native void jni_YGNodeResetJNI(long nativePointer);
   static native void jni_YGNodeInsertChildJNI(long nativePointer, long childPointer, int index);
