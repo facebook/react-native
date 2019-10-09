@@ -227,15 +227,6 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
 {
   RCTAssert(self.canHaveSubviews, @"Attempt to insert subview inside leaf view.");
 
-  // TODO(T55181688): Delete after getting crashes with a view hierarchy.
-  if (atIndex > [_reactSubviews count]) {
-    RCTShadowView *ancestor = self;
-    for (NSInteger i = 0; i < 5 && [ancestor superview]; i++) {
-      ancestor = [ancestor superview];
-    }
-    RCTAssert(NO, @"Tried to insert subview on view %@ with ancestor description %@", self, ancestor);
-  }
-
   [_reactSubviews insertObject:subview atIndex:atIndex];
   if (![self isYogaLeafNode]) {
     YGNodeInsertChild(_yogaNode, subview.yogaNode, (uint32_t)atIndex);
