@@ -66,6 +66,9 @@ rn_apple_library(
         ) + react_module_plugin_providers(
             name = "ActionSheetManager",
             native_class_func = "RCTActionSheetManagerCls",
+        ) + react_module_plugin_providers(
+            name = "AlertManager",
+            native_class_func = "RCTAlertManagerCls",
         ),
     plugins_header = "FBCoreModulesPlugins.h",
     preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_extra_build_flags() + [

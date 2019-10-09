@@ -196,7 +196,7 @@ namespace JS {
     struct Args {
       NSString *title() const;
       NSString *message() const;
-      id<NSObject> _Nullable buttons() const;
+      folly::Optional<facebook::react::LazyVector<id<NSObject>>> buttons() const;
       NSString *type() const;
       NSString *defaultValue() const;
       NSString *cancelButtonKey() const;
@@ -2502,10 +2502,10 @@ inline NSString *JS::NativeAlertManager::Args::message() const
   id const p = _v[@"message"];
   return RCTBridgingToString(p);
 }
-inline id<NSObject> _Nullable JS::NativeAlertManager::Args::buttons() const
+inline folly::Optional<facebook::react::LazyVector<id<NSObject>>> JS::NativeAlertManager::Args::buttons() const
 {
   id const p = _v[@"buttons"];
-  return p;
+  return RCTBridgingToOptionalVec(p, ^id<NSObject>(id itemValue_0) { return itemValue_0; });
 }
 inline NSString *JS::NativeAlertManager::Args::type() const
 {
