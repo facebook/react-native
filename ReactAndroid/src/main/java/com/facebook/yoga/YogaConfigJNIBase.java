@@ -100,6 +100,11 @@ public abstract class YogaConfigJNIBase extends YogaConfig {
   }
 
   @Override
+  public void setUseVanillaJNI(boolean useVanillaJNI) {
+    this.useVanillaJNI = useVanillaJNI;
+  }
+
+  @Override
   public boolean useVanillaJNI() {
     return this.useVanillaJNI;
   }
