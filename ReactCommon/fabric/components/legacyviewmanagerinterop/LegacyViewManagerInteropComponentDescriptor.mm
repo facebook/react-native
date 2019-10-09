@@ -35,7 +35,7 @@ static std::shared_ptr<void> const contructCoordinator(
   auto moduleName = moduleNameFromComponentName(componentName);
   Class module = NSClassFromString(RCTNSStringFromString(moduleName));
   assert(module);
-  RCTBridge *bridge = (RCTBridge *)unwrapManagedObject(contextContainer->at<std::shared_ptr<void>>("Bridge"));
+  RCTBridge *bridge = (RCTBridge *)unwrapManagedObjectWeakly(contextContainer->at<std::shared_ptr<void>>("Bridge"));
   RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:module bridge:bridge];
   return wrapManagedObject([[RCTLegacyViewManagerInteropCoordinator alloc] initWithComponentData:componentData]);
 }
