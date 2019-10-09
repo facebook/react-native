@@ -28,6 +28,7 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"SourceCode", RCTSourceCodeCls},
     {"ActionSheetManager", RCTActionSheetManagerCls},
     {"AlertManager", RCTAlertManagerCls},
+    {"AsyncLocalStorage", RCTAsyncLocalStorageCls},
   };
 
   auto p = sCoreModuleClassMap.find(name);

@@ -9,12 +9,15 @@
 
 #import <Foundation/Foundation.h>
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <CommonCrypto/CommonCryptor.h>
 #import <CommonCrypto/CommonDigest.h>
 
-#import "RCTConvert.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
+#import <React/RCTConvert.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
+
+#import "CoreModulesPlugins.h"
 
 static NSString *const RCTStorageDirectory = @"RCTAsyncLocalStorage_V1";
 static NSString *const RCTManifestFileName = @"manifest.json";
@@ -157,6 +160,9 @@ static NSDictionary *RCTDeleteStorageDirectory()
 }
 
 #pragma mark - RCTAsyncLocalStorage
+
+@interface RCTAsyncLocalStorage() <NativeAsyncStorageSpec>
+@end
 
 @implementation RCTAsyncLocalStorage
 {
@@ -455,4 +461,13 @@ RCT_EXPORT_METHOD(getAllKeys:(RCTResponseSenderBlock)callback)
   }
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeAsyncStorageSpecJSI>(self, jsInvoker);
+}
+
 @end
+
+Class RCTAsyncLocalStorageCls(void) {
+  return RCTAsyncLocalStorage.class;
+}
