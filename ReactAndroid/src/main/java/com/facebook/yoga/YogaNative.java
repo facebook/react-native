@@ -132,6 +132,7 @@ public class YogaNative {
   static native boolean jni_YGNodeIsReferenceBaselineJNI(long nativePointer);
   static native void jni_YGNodeClearChildrenJNI(long nativePointer);
   static native void jni_YGNodeRemoveChildJNI(long nativePointer, long childPointer);
+  static native void jni_YGNodeCalculateLayoutJNI(long nativePointer, float width, float height, long[] nativePointers, YogaNodeJNIBase[] nodes);
   static native void jni_YGNodeMarkDirtyJNI(long nativePointer);
   static native void jni_YGNodeMarkDirtyAndPropogateToDescendantsJNI(long nativePointer);
   static native boolean jni_YGNodeIsDirtyJNI(long nativePointer);

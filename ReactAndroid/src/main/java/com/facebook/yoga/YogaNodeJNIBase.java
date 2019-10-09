@@ -197,7 +197,10 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
       nativePointers[i] = nodes[i].mNativePointer;
     }
 
-    YogaNative.jni_YGNodeCalculateLayout(mNativePointer, width, height, nativePointers, nodes);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeCalculateLayoutJNI(mNativePointer, width, height, nativePointers, nodes);
+    else
+      YogaNative.jni_YGNodeCalculateLayout(mNativePointer, width, height, nativePointers, nodes);
   }
 
   public void dirty() {

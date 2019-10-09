@@ -9,6 +9,19 @@
 #include <yoga/YGNode.h>
 #include <cstring>
 #include "YGJNI.h"
+#include "common.h"
+#include "YGJTypesVanilla.h"
+#include <yoga/log.h>
+
+using namespace facebook::yoga::vanillajni;
+using facebook::yoga::detail::Log;
+
+static inline ScopedLocalRef<jobject> YGNodeJobject(
+    YGNodeRef node,
+    void* layoutContext) {
+  return reinterpret_cast<PtrJNodeMap*>(layoutContext)
+      ->ref(getCurrentEnv(), node);
+}
 
 static inline YGNodeRef _jlong2YGNodeRef(jlong addr) {
   return reinterpret_cast<YGNodeRef>(static_cast<intptr_t>(addr));
@@ -142,6 +155,122 @@ static void jni_YGNodeRemoveChildJNI(
     jlong childPointer) {
   YGNodeRemoveChild(
       _jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer));
+}
+
+static void YGTransferLayoutOutputsRecursive(
+    JNIEnv* env,
+    jobject thiz,
+    YGNodeRef root,
+    void* layoutContext) {
+  if (!root->getHasNewLayout()) {
+    return;
+  }
+  auto obj = YGNodeJobject(root, layoutContext);
+  if (!obj) {
+    Log::log(
+        root,
+        YGLogLevelError,
+        nullptr,
+        "Java YGNode was GCed during layout calculation\n");
+    return;
+  }
+
+  auto edgesSet = YGNodeEdges{root};
+
+  bool marginFieldSet = edgesSet.has(YGNodeEdges::MARGIN);
+  bool paddingFieldSet = edgesSet.has(YGNodeEdges::PADDING);
+  bool borderFieldSet = edgesSet.has(YGNodeEdges::BORDER);
+
+  int fieldFlags = edgesSet.get();
+  fieldFlags |= HAS_NEW_LAYOUT;
+  if (YGNodeLayoutGetDidLegacyStretchFlagAffectLayout(root)) {
+    fieldFlags |= DOES_LEGACY_STRETCH_BEHAVIOUR;
+  }
+
+  const int arrSize = 6 + (marginFieldSet ? 4 : 0) + (paddingFieldSet ? 4 : 0) +
+      (borderFieldSet ? 4 : 0);
+  float arr[18];
+  arr[LAYOUT_EDGE_SET_FLAG_INDEX] = fieldFlags;
+  arr[LAYOUT_WIDTH_INDEX] = YGNodeLayoutGetWidth(root);
+  arr[LAYOUT_HEIGHT_INDEX] = YGNodeLayoutGetHeight(root);
+  arr[LAYOUT_LEFT_INDEX] = YGNodeLayoutGetLeft(root);
+  arr[LAYOUT_TOP_INDEX] = YGNodeLayoutGetTop(root);
+  arr[LAYOUT_DIRECTION_INDEX] =
+      static_cast<jint>(YGNodeLayoutGetDirection(root));
+  if (marginFieldSet) {
+    arr[LAYOUT_MARGIN_START_INDEX] = YGNodeLayoutGetMargin(root, YGEdgeLeft);
+    arr[LAYOUT_MARGIN_START_INDEX + 1] = YGNodeLayoutGetMargin(root, YGEdgeTop);
+    arr[LAYOUT_MARGIN_START_INDEX + 2] =
+        YGNodeLayoutGetMargin(root, YGEdgeRight);
+    arr[LAYOUT_MARGIN_START_INDEX + 3] =
+        YGNodeLayoutGetMargin(root, YGEdgeBottom);
+  }
+  if (paddingFieldSet) {
+    int paddingStartIndex =
+        LAYOUT_PADDING_START_INDEX - (marginFieldSet ? 0 : 4);
+    arr[paddingStartIndex] = YGNodeLayoutGetPadding(root, YGEdgeLeft);
+    arr[paddingStartIndex + 1] = YGNodeLayoutGetPadding(root, YGEdgeTop);
+    arr[paddingStartIndex + 2] = YGNodeLayoutGetPadding(root, YGEdgeRight);
+    arr[paddingStartIndex + 3] = YGNodeLayoutGetPadding(root, YGEdgeBottom);
+  }
+
+  if (borderFieldSet) {
+    int borderStartIndex = LAYOUT_BORDER_START_INDEX -
+        (marginFieldSet ? 0 : 4) - (paddingFieldSet ? 0 : 4);
+    arr[borderStartIndex] = YGNodeLayoutGetBorder(root, YGEdgeLeft);
+    arr[borderStartIndex + 1] = YGNodeLayoutGetBorder(root, YGEdgeTop);
+    arr[borderStartIndex + 2] = YGNodeLayoutGetBorder(root, YGEdgeRight);
+    arr[borderStartIndex + 3] = YGNodeLayoutGetBorder(root, YGEdgeBottom);
+  }
+
+  // Don't change this field name without changing the name of the field in
+  // Database.java
+  auto objectClass = facebook::yoga::vanillajni::make_local_ref(
+      env, env->GetObjectClass(obj.get()));
+  static const jfieldID arrField = facebook::yoga::vanillajni::getFieldId(
+      env, objectClass.get(), "arr", "[F");
+
+  ScopedLocalRef<jfloatArray> arrFinal =
+      make_local_ref(env, env->NewFloatArray(arrSize));
+  env->SetFloatArrayRegion(arrFinal.get(), 0, arrSize, arr);
+  env->SetObjectField(obj.get(), arrField, arrFinal.get());
+
+  root->setHasNewLayout(false);
+
+  for (uint32_t i = 0; i < YGNodeGetChildCount(root); i++) {
+    YGTransferLayoutOutputsRecursive(
+        env, thiz, YGNodeGetChild(root, i), layoutContext);
+  }
+}
+
+static void jni_YGNodeCalculateLayoutJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jfloat width,
+    jfloat height,
+    jlongArray nativePointers,
+    jobjectArray javaNodes) {
+
+  void* layoutContext = nullptr;
+  auto map = PtrJNodeMap{};
+  if (nativePointers) {
+    size_t nativePointersSize = env->GetArrayLength(nativePointers);
+    jlong result[nativePointersSize];
+    env->GetLongArrayRegion(nativePointers, 0, nativePointersSize, result);
+
+    map = PtrJNodeMap{result, nativePointersSize, javaNodes};
+    layoutContext = &map;
+  }
+
+  const YGNodeRef root = _jlong2YGNodeRef(nativePointer);
+  YGNodeCalculateLayoutWithContext(
+      root,
+      static_cast<float>(width),
+      static_cast<float>(height),
+      YGNodeStyleGetDirection(_jlong2YGNodeRef(nativePointer)),
+      layoutContext);
+  YGTransferLayoutOutputsRecursive(env, obj, root, layoutContext);
 }
 
 static void jni_YGNodeMarkDirtyJNI(
@@ -407,28 +536,6 @@ static void jni_YGNodeSetStyleInputsJNI(
   YGNodeSetStyleInputs(_jlong2YGNodeRef(nativePointer), result, size);
 }
 
-void assertNoPendingJniException(JNIEnv* env) {
-  // This method cannot call any other method of the library, since other
-  // methods of the library use it to check for exceptions too
-  if (env->ExceptionCheck()) {
-    env->ExceptionDescribe();
-  }
-}
-
-void registerNativeMethods(
-    JNIEnv* env,
-    const char* className,
-    JNINativeMethod methods[],
-    size_t numMethods) {
-  jclass clazz = env->FindClass(className);
-
-  assertNoPendingJniException(env);
-
-  env->RegisterNatives(clazz, methods, numMethods);
-
-  assertNoPendingJniException(env);
-}
-
 static JNINativeMethod methods[] = {
     {"jni_YGConfigNewJNI", "()J", (void*) jni_YGConfigNewJNI},
     //    {"jni_YGConfigFreeJNI", "(J)V", (void*) jni_YGConfigFreeJNI},
@@ -462,6 +569,9 @@ static JNINativeMethod methods[] = {
      (void*) jni_YGNodeIsReferenceBaselineJNI},
     {"jni_YGNodeClearChildrenJNI", "(J)V", (void*) jni_YGNodeClearChildrenJNI},
     {"jni_YGNodeRemoveChildJNI", "(JJ)V", (void*) jni_YGNodeRemoveChildJNI},
+    {"jni_YGNodeCalculateLayoutJNI",
+     "(JFF[J[Lcom/facebook/yoga/YogaNodeJNIBase;)V",
+     (void*) jni_YGNodeCalculateLayoutJNI},
     {"jni_YGNodeMarkDirtyJNI", "(J)V", (void*) jni_YGNodeMarkDirtyJNI},
     {"jni_YGNodeMarkDirtyAndPropogateToDescendantsJNI",
      "(J)V",
@@ -660,7 +770,7 @@ static JNINativeMethod methods[] = {
 };
 
 void YGJNIVanilla::registerNatives(JNIEnv* env) {
-  registerNativeMethods(
+  facebook::yoga::vanillajni::registerNatives(
       env,
       "com/facebook/yoga/YogaNative",
       methods,

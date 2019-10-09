@@ -47,7 +47,20 @@ enum YGStyleInput {
   IsReferenceBaseline,
 };
 
+const short int LAYOUT_EDGE_SET_FLAG_INDEX = 0;
+const short int LAYOUT_WIDTH_INDEX = 1;
+const short int LAYOUT_HEIGHT_INDEX = 2;
+const short int LAYOUT_LEFT_INDEX = 3;
+const short int LAYOUT_TOP_INDEX = 4;
+const short int LAYOUT_DIRECTION_INDEX = 5;
+const short int LAYOUT_MARGIN_START_INDEX = 6;
+const short int LAYOUT_PADDING_START_INDEX = 10;
+const short int LAYOUT_BORDER_START_INDEX = 14;
+
 namespace {
+
+const int DOES_LEGACY_STRETCH_BEHAVIOUR = 8;
+const int HAS_NEW_LAYOUT = 16;
 
 union YGNodeContext {
   uintptr_t edgesSet = 0;
