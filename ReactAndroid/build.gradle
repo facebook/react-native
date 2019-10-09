@@ -341,7 +341,7 @@ android {
 dependencies {
     if (System.getenv("BUCK_BUILD") != "1") {
         if (isSDXPlatform()) {
-            annotationProcessor project(':react-native:processory');
+            annotationProcessor project(':react-native:processor');
         }
         else {
             annotationProcessor project(':processor');
