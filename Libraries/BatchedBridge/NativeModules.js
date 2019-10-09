@@ -94,10 +94,9 @@ function loadModule(name: string, moduleID: number): ?Object {
 function genMethod(moduleID: number, methodID: number, type: MethodType) {
   let fn = null;
   if (type === 'promise') {
-    fn = function(...args: Array<any>) {
+    fn = function promiseMethodWrapper(...args: Array<any>) {
       // In case we reject, capture a useful stack trace here.
       const enqueueingFrameError: ExtendedError = new Error();
-      enqueueingFrameError.framesToPop = 1;
       return new Promise((resolve, reject) => {
         BatchedBridge.enqueueNativeCall(
           moduleID,
@@ -110,7 +109,7 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
       });
     };
   } else {
-    fn = function(...args: Array<any>) {
+    fn = function nonPromiseMethodWrapper(...args: Array<any>) {
       const lastArg = args.length > 0 ? args[args.length - 1] : null;
       const secondLastArg = args.length > 1 ? args[args.length - 2] : null;
       const hasSuccessCallback = typeof lastArg === 'function';
