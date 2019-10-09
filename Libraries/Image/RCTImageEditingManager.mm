@@ -7,8 +7,6 @@
 
 #import <React/RCTImageEditingManager.h>
 
-#import <UIKit/UIKit.h>
-
 #import <React/RCTConvert.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTImageStoreManager.h>
@@ -16,6 +14,11 @@
 #import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
+#import <UIKit/UIKit.h>
+
+#import <UIKit/UIKit.h>
+
+#import "RCTImagePlugins.h"
 
 @implementation RCTImageEditingManager
 
@@ -79,3 +82,7 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
 }
 
 @end
+
+Class RCTImageEditingManagerCls() {
+  return RCTImageEditingManager.class;
+}

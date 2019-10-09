@@ -7,16 +7,17 @@
 
 #import <React/RCTImageStoreManager.h>
 
-#import <stdatomic.h>
+#import <atomic>
+#import <memory>
 
 #import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/UTType.h>
-
 #import <React/RCTAssert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
-
 #import <React/RCTImageUtils.h>
+
+#import "RCTImagePlugins.h"
 
 static NSString *const RCTImageStoreURLScheme = @"rct-image-store";
 
@@ -140,14 +141,14 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 
 - (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
-  __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
+  __block auto cancelled = std::make_shared<std::atomic<bool>>(false);
   void (^cancellationBlock)(void) = ^{
-    atomic_store(&cancelled, YES);
+    cancelled->store(true);
   };
 
   // Dispatch async to give caller time to cancel the request
   dispatch_async(_methodQueue, ^{
-    if (atomic_load(&cancelled)) {
+    if (cancelled->load()) {
       return;
     }
 
@@ -238,3 +239,7 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 }
 
 @end
+
+Class RCTImageStoreManagerCls(void) {
+  return RCTImageStoreManager.class;
+}
