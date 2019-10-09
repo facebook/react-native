@@ -212,6 +212,24 @@ describe('Animated tests', () => {
       expect(cb).toBeCalledWith({finished: true});
     });
 
+    it('supports starting the same sequence multiple times', () => {
+      const anim1 = {start: jest.fn()};
+      const anim2 = {start: jest.fn()};
+      const cb = jest.fn();
+
+      const seq = Animated.sequence([anim1, anim2]);
+
+      seq.start(cb);
+      anim1.start.mock.calls[0][0]({finished: true});
+      anim2.start.mock.calls[0][0]({finished: true});
+      expect(cb).toBeCalledTimes(1);
+
+      seq.start(cb);
+      anim1.start.mock.calls[0][0]({finished: true});
+      anim2.start.mock.calls[0][0]({finished: true});
+      expect(cb).toBeCalledTimes(2);
+    });
+
     it('supports interrupting sequence', () => {
       const anim1 = {start: jest.fn()};
       const anim2 = {start: jest.fn()};

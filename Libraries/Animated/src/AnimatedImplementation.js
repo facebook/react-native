@@ -282,6 +282,7 @@ const sequence = function(
     start: function(callback?: ?EndCallback) {
       const onComplete = function(result) {
         if (!result.finished) {
+          current = 0;
           callback && callback(result);
           return;
         }
@@ -289,6 +290,7 @@ const sequence = function(
         current++;
 
         if (current === animations.length) {
+          current = 0;
           callback && callback(result);
           return;
         }
