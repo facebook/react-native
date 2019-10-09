@@ -25,6 +25,7 @@ TextLayoutManager::~TextLayoutManager()
 
 void *TextLayoutManager::getNativeTextLayoutManager() const
 {
+  assert(self_ && "Stored NativeTextLayoutManager must not be null.");
   return self_;
 }
 
