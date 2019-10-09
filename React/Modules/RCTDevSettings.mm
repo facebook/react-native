@@ -37,6 +37,16 @@ static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 #import "RCTInspectorDevServerHelper.h"
 #endif
 
+#if RCT_DEV
+static BOOL devSettingsMenuEnabled = YES;
+#else
+static BOOL devSettingsMenuEnabled = NO;
+#endif
+
+void RCTDevSettingsSetEnabled(BOOL enabled) {
+  devSettingsMenuEnabled = enabled;
+}
+
 #if RCT_DEV_MENU
 
 @interface RCTDevSettingsUserDefaultsDataSource : NSObject <RCTDevSettingsDataSource>
@@ -468,8 +478,8 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 
 - (RCTDevSettings *)devSettings
 {
-#if RCT_DEV
-  return [self moduleForClass:[RCTDevSettings class]];
+#if RCT_DEV_MENU
+  return devSettingsMenuEnabled ? [self moduleForClass:[RCTDevSettings class]] : nil;
 #else
   return nil;
 #endif

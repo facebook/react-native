@@ -93,3 +93,8 @@
 @property (nonatomic, readonly) RCTDevSettings *devSettings;
 
 @end
+
+// In debug builds, the dev menu is enabled by default but it is further customizable using this method.
+// However, this method only has an effect in builds where the dev menu is actually compiled in.
+// (i.e. RCT_DEV or RCT_DEV_MENU is set)
+RCT_EXTERN void RCTDevSettingsSetEnabled(BOOL enabled);
