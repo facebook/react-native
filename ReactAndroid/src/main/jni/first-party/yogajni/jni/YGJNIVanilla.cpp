@@ -24,6 +24,13 @@ static inline ScopedLocalRef<jobject> YGNodeJobject(
       ->ref(getCurrentEnv(), node);
 }
 
+static inline ScopedLocalRef<jobject> YGNodeJobject(
+    JNIEnv* env,
+    YGNodeRef node,
+    void* layoutContext) {
+  return reinterpret_cast<PtrJNodeMap*>(layoutContext)->ref(env, node);
+}
+
 static inline YGNodeRef _jlong2YGNodeRef(jlong addr) {
   return reinterpret_cast<YGNodeRef>(static_cast<intptr_t>(addr));
 }
@@ -194,7 +201,7 @@ static void YGTransferLayoutOutputsRecursive(
   if (!root->getHasNewLayout()) {
     return;
   }
-  auto obj = YGNodeJobject(root, layoutContext);
+  auto obj = YGNodeJobject(env, root, layoutContext);
   if (!obj) {
     Log::log(
         root,
@@ -533,6 +540,98 @@ static void jni_YGNodeStyleSetBorderJNI(
       yogaNodeRef, static_cast<YGEdge>(edge), static_cast<float>(border));
 }
 
+static void YGTransferLayoutDirection(YGNodeRef node, jobject javaNode) {
+  // Don't change this field name without changing the name of the field in
+  // Database.java
+  JNIEnv* env = getCurrentEnv();
+  auto objectClass = facebook::yoga::vanillajni::make_local_ref(
+      env, env->GetObjectClass(javaNode));
+  static const jfieldID layoutDirectionField =
+      facebook::yoga::vanillajni::getFieldId(
+          env, objectClass.get(), "mLayoutDirection", "I");
+  env->SetIntField(
+      javaNode,
+      layoutDirectionField,
+      static_cast<jint>(YGNodeLayoutGetDirection(node)));
+}
+
+static YGSize YGJNIMeasureFunc(
+    YGNodeRef node,
+    float width,
+    YGMeasureMode widthMode,
+    float height,
+    YGMeasureMode heightMode,
+    void* layoutContext) {
+  if (auto obj = YGNodeJobject(node, layoutContext)) {
+    YGTransferLayoutDirection(node, obj.get());
+    JNIEnv* env = getCurrentEnv();
+    auto objectClass = facebook::yoga::vanillajni::make_local_ref(
+        env, env->GetObjectClass(obj.get()));
+    static const jmethodID methodId = facebook::yoga::vanillajni::getMethodId(
+        env, objectClass.get(), "measure", "(FIFI)J");
+    const auto measureResult = facebook::yoga::vanillajni::callLongMethod(
+        env, obj.get(), methodId, width, widthMode, height, heightMode);
+
+    static_assert(
+        sizeof(measureResult) == 8,
+        "Expected measureResult to be 8 bytes, or two 32 bit ints");
+
+    int32_t wBits = 0xFFFFFFFF & (measureResult >> 32);
+    int32_t hBits = 0xFFFFFFFF & measureResult;
+
+    const float* measuredWidth = reinterpret_cast<float*>(&wBits);
+    const float* measuredHeight = reinterpret_cast<float*>(&hBits);
+
+    return YGSize{*measuredWidth, *measuredHeight};
+  } else {
+    Log::log(
+        node,
+        YGLogLevelError,
+        nullptr,
+        "Java YGNode was GCed during layout calculation\n");
+    return YGSize{
+        widthMode == YGMeasureModeUndefined ? 0 : width,
+        heightMode == YGMeasureModeUndefined ? 0 : height,
+    };
+  }
+}
+
+static void jni_YGNodeSetHasMeasureFuncJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jboolean hasMeasureFunc) {
+  _jlong2YGNodeRef(nativePointer)
+      ->setMeasureFunc(hasMeasureFunc ? YGJNIMeasureFunc : nullptr);
+}
+
+static float YGJNIBaselineFunc(
+    YGNodeRef node,
+    float width,
+    float height,
+    void* layoutContext) {
+  if (auto obj = YGNodeJobject(node, layoutContext)) {
+    JNIEnv* env = getCurrentEnv();
+    auto objectClass = facebook::yoga::vanillajni::make_local_ref(
+        env, env->GetObjectClass(obj.get()));
+    static const jmethodID methodId = facebook::yoga::vanillajni::getMethodId(
+        env, objectClass.get(), "baseline", "(FF)F");
+    return facebook::yoga::vanillajni::callFloatMethod(
+        env, obj.get(), methodId, width, height);
+  } else {
+    return height;
+  }
+}
+
+static void jni_YGNodeSetHasBaselineFuncJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jboolean hasBaselineFunc) {
+  _jlong2YGNodeRef(nativePointer)
+      ->setBaselineFunc(hasBaselineFunc ? YGJNIBaselineFunc : nullptr);
+}
+
 static void jni_YGNodePrintJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
 #ifdef DEBUG
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
@@ -793,6 +892,12 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeStyleSetAspectRatioJNI",
      "(JF)V",
      (void*) jni_YGNodeStyleSetAspectRatioJNI},
+    {"jni_YGNodeSetHasMeasureFuncJNI",
+     "(JZ)V",
+     (void*) jni_YGNodeSetHasMeasureFuncJNI},
+    {"jni_YGNodeSetHasBaselineFuncJNI",
+     "(JZ)V",
+     (void*) jni_YGNodeSetHasBaselineFuncJNI},
     {"jni_YGNodePrintJNI", "(J)V", (void*) jni_YGNodePrintJNI},
     {"jni_YGNodeSetStyleInputsJNI",
      "(J[FI)V",
