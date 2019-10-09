@@ -9,10 +9,7 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := yoga
 
-LOCAL_SRC_FILES := \
-  jni/YGJNI.cpp \
-  jni/YGJTypes.cpp \
-  jni/YGJNIVanilla.cpp
+LOCAL_SRC_FILES := $(wildcard jni/*.cpp)
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/jni
 
