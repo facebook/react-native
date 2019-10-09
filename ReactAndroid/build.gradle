@@ -9,6 +9,8 @@ plugins {
     id("de.undercouch.download")
 }
 
+import java.nio.file.Paths
+
 import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.ReplaceTokens
@@ -92,8 +94,14 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
 }
 
 task prepareHermes() {
-    def hermesAAR = file("$projectDir/../node_modules/hermes-engine/android/hermes-debug.aar")
-    if (!hermesAAR.exists()) {
+    def hermesAAR = null
+    def hermesPackagePath = findNodeModulePath(projectDir, "hermes-engine")
+    if (hermesPackagePath) {
+        hermesAAR = file("$hermesPackagePath/android/hermes-debug.aar")
+        if (!hermesAAR.exists()) {
+            throw new GradleScriptException("The hermes-engine npm package is missing \"android/hermes-debug.aar\"")
+        }
+    } else {
         // For an app to build from RN source, hermes-engine is located at /path/to/app/node_modules
         // and $projectDir is located at /path/to/app/node_modules/react-native/ReactAndroid
         hermesAAR = file("$projectDir/../../hermes-engine/android/hermes-debug.aar")
@@ -160,16 +168,22 @@ task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) 
 // Create Android.mk library module based on jsc from npm
 task prepareJSC {
     doLast {
-        def jscPackageRoot = file("$projectDir/../node_modules/jsc-android/dist")
-        if (!jscPackageRoot.exists()) {
+        def jscDist = null
+        def jscPackagePath = findNodeModulePath(projectDir, "jsc-android")
+        if (jscPackagePath) {
+            jscDist = file("$jscPackagePath/dist")
+            if (!jscDist.exists()) {
+                throw new GradleScriptException("The jsc-android npm package is missing its \"dist\" directory")
+            }
+        } else {
             // For an app to build from RN source, the jsc-android is located at /path/to/app/node_modules
             // and $projectDir may located at /path/to/app/node_modules/react-native/ReactAndroid
-            jscPackageRoot = file("$projectDir/../../jsc-android/dist")
+            jscDist = file("$projectDir/../../jsc-android/dist")
         }
-        def jscAAR = fileTree(jscPackageRoot).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
+        def jscAAR = fileTree(jscDist).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
         def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
 
-        def headerFiles = fileTree(jscPackageRoot).matching({ it.include "**/include/*.h" })
+        def headerFiles = fileTree(jscDist).matching({ it.include "**/include/*.h" })
 
         copy {
             from(soFiles)
@@ -190,6 +204,20 @@ task downloadNdkBuildDependencies {
     dependsOn(downloadDoubleConversion)
     dependsOn(downloadFolly)
     dependsOn(downloadGlog)
+}
+
+def findNodeModulePath(baseDir, packageName) {
+    def basePath = baseDir.toPath().normalize()
+    // Node's module resolution algorithm searches up to the root directory,
+    // after which the base path will be null 
+    while (basePath) {
+        def candidatePath = Paths.get(basePath.toString(), "node_modules", packageName)
+        if (candidatePath.toFile().exists()) {
+            return candidatePath.toString()
+        }
+        basePath = basePath.getParent()
+    }
+    return null
 }
 
 def getNdkBuildName() {
