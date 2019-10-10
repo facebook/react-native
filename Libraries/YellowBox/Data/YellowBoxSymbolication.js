@@ -66,11 +66,19 @@ const sanitize = (maybeStack: mixed): Stack => {
     if (typeof maybeFrame.methodName !== 'string') {
       throw new Error('Expected stack frame `methodName` to be a string.');
     }
+    let collapse = false;
+    if ('collapse' in maybeFrame) {
+      if (typeof maybeFrame.collapse !== 'boolean') {
+        throw new Error('Expected stack frame `collapse` to be a boolean.');
+      }
+      collapse = maybeFrame.collapse;
+    }
     stack.push({
       column: maybeFrame.column,
       file: maybeFrame.file,
       lineNumber: maybeFrame.lineNumber,
       methodName: maybeFrame.methodName,
+      collapse,
     });
   }
   return stack;

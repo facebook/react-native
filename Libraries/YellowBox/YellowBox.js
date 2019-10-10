@@ -145,16 +145,7 @@ if (__DEV__) {
   };
 
   const registerWarning = (...args): void => {
-    // YellowBox should ignore the top 3-4 stack frames:
-    // 1: registerWarning() itself
-    // 2: YellowBox's own console override (in this file)
-    // 3: React DevTools console.error override (to add component stack)
-    //    (The override feature may be disabled by a runtime preference.)
-    // 4: The actual console method itself.
-    // $FlowFixMe This prop is how the DevTools override is observable.
-    const isDevToolsOvveride = !!console.warn
-      .__REACT_DEVTOOLS_ORIGINAL_METHOD__;
-    YellowBoxRegistry.add({args, framesToPop: isDevToolsOvveride ? 4 : 3});
+    YellowBoxRegistry.add({args});
   };
 } else {
   YellowBox = class extends React.Component<Props, State> {
