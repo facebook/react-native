@@ -13,13 +13,13 @@
 using namespace facebook::yoga::vanillajni;
 using namespace std;
 
-class PtrJNodeMap {
+class PtrJNodeMapVanilla {
   std::map<YGNodeRef, size_t> ptrsToIdxs_;
   jobjectArray javaNodes_;
 
 public:
-  PtrJNodeMap() : ptrsToIdxs_{}, javaNodes_{} {}
-  PtrJNodeMap(
+  PtrJNodeMapVanilla() : ptrsToIdxs_{}, javaNodes_{} {}
+  PtrJNodeMapVanilla(
       jlong* nativePointers,
       size_t nativePointersSize,
       jobjectArray javaNodes)

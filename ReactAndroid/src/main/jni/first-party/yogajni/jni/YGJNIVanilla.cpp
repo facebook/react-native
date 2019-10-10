@@ -21,7 +21,7 @@ using facebook::yoga::detail::Log;
 static inline ScopedLocalRef<jobject> YGNodeJobject(
     YGNodeRef node,
     void* layoutContext) {
-  return reinterpret_cast<PtrJNodeMap*>(layoutContext)
+  return reinterpret_cast<PtrJNodeMapVanilla*>(layoutContext)
       ->ref(getCurrentEnv(), node);
 }
 
@@ -353,13 +353,13 @@ static void jni_YGNodeCalculateLayoutJNI(
     jobjectArray javaNodes) {
 
   void* layoutContext = nullptr;
-  auto map = PtrJNodeMap{};
+  auto map = PtrJNodeMapVanilla{};
   if (nativePointers) {
     size_t nativePointersSize = env->GetArrayLength(nativePointers);
     jlong result[nativePointersSize];
     env->GetLongArrayRegion(nativePointers, 0, nativePointersSize, result);
 
-    map = PtrJNodeMap{result, nativePointersSize, javaNodes};
+    map = PtrJNodeMapVanilla{result, nativePointersSize, javaNodes};
     layoutContext = &map;
   }
 
