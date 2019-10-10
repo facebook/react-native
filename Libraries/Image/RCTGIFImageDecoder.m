@@ -9,14 +9,9 @@
 
 #import <ImageIO/ImageIO.h>
 #import <QuartzCore/QuartzCore.h>
-#import <React/RCTAnimatedImage.h>
+
 #import <React/RCTUtils.h>
-#import <ReactCommon/RCTTurboModule.h>
-
-#import "RCTImagePlugins.h"
-
-@interface RCTGIFImageDecoder() <RCTTurboModule>
-@end
+#import <React/RCTAnimatedImage.h>
 
 @implementation RCTGIFImageDecoder
 
@@ -37,18 +32,14 @@ RCT_EXPORT_MODULE()
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   RCTAnimatedImage *image = [[RCTAnimatedImage alloc] initWithData:imageData scale:scale];
-
+  
   if (!image) {
     completionHandler(nil, nil);
     return ^{};
   }
-
+  
   completionHandler(nil, image);
   return ^{};
 }
 
 @end
-
-Class RCTGIFImageDecoderCls() {
-  return RCTGIFImageDecoder.class;
-}

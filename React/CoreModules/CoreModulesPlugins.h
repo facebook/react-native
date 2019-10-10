@@ -33,13 +33,12 @@ Class RCTAccessibilityManagerCls(void) __attribute__((used));
 Class RCTAppearanceCls(void) __attribute__((used));
 Class RCTDeviceInfoCls(void) __attribute__((used));
 Class RCTExceptionsManagerCls(void) __attribute__((used));
+Class RCTImageLoaderCls(void) __attribute__((used));
 Class RCTPlatformCls(void) __attribute__((used));
 Class RCTClipboardCls(void) __attribute__((used));
 Class RCTI18nManagerCls(void) __attribute__((used));
 Class RCTSourceCodeCls(void) __attribute__((used));
 Class RCTActionSheetManagerCls(void) __attribute__((used));
-Class RCTAlertManagerCls(void) __attribute__((used));
-Class RCTAsyncLocalStorageCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }

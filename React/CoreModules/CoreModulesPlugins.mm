@@ -22,13 +22,12 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"Appearance", RCTAppearanceCls},
     {"DeviceInfo", RCTDeviceInfoCls},
     {"ExceptionsManager", RCTExceptionsManagerCls},
+    {"ImageLoader", RCTImageLoaderCls},
     {"PlatformConstants", RCTPlatformCls},
     {"Clipboard", RCTClipboardCls},
     {"I18nManager", RCTI18nManagerCls},
     {"SourceCode", RCTSourceCodeCls},
     {"ActionSheetManager", RCTActionSheetManagerCls},
-    {"AlertManager", RCTAlertManagerCls},
-    {"AsyncLocalStorage", RCTAsyncLocalStorageCls},
   };
 
   auto p = sCoreModuleClassMap.find(name);

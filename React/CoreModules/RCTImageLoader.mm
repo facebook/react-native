@@ -20,7 +20,7 @@
 #import <React/RCTNetworking.h>
 #import <React/RCTUtils.h>
 
-#import "RCTImagePlugins.h"
+#import "CoreModulesPlugins.h"
 
 static NSInteger RCTImageBytesForImage(UIImage *image)
 {
