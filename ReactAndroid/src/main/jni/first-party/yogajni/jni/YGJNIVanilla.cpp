@@ -25,13 +25,6 @@ static inline ScopedLocalRef<jobject> YGNodeJobject(
       ->ref(getCurrentEnv(), node);
 }
 
-static inline ScopedLocalRef<jobject> YGNodeJobject(
-    JNIEnv* env,
-    YGNodeRef node,
-    void* layoutContext) {
-  return reinterpret_cast<PtrJNodeMap*>(layoutContext)->ref(env, node);
-}
-
 static inline YGNodeRef _jlong2YGNodeRef(jlong addr) {
   return reinterpret_cast<YGNodeRef>(static_cast<intptr_t>(addr));
 }
@@ -272,7 +265,7 @@ static void YGTransferLayoutOutputsRecursive(
   if (!root->getHasNewLayout()) {
     return;
   }
-  auto obj = YGNodeJobject(env, root, layoutContext);
+  auto obj = YGNodeJobject(root, layoutContext);
   if (!obj) {
     Log::log(
         root,
