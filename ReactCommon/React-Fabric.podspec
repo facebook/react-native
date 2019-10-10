@@ -160,6 +160,24 @@ Pod::Spec.new do |s|
       sss.header_dir           = "react/components/view"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
     end
+
+    ss.subspec "safeareaview" do |sss|
+      sss.dependency             folly_dep_name, folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "fabric/components/safeareaview/**/*.{m,mm,cpp,h}"
+      sss.exclude_files        = "**/tests/*"
+      sss.header_dir           = "react/components/safeareaview"
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
+    end
+
+    ss.subspec "legacyviewmanagerinterop" do |sss|
+      sss.dependency             folly_dep_name, folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "fabric/components/legacyviewmanagerinterop/**/*.{m,mm,cpp,h}"
+      sss.exclude_files        = "**/tests/*"
+      sss.header_dir           = "react/components/legacyviewmanagerinterop"
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
+    end
   end
 
   s.subspec "debug" do |ss|
