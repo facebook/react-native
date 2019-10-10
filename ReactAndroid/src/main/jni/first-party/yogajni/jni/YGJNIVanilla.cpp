@@ -21,8 +21,7 @@ using facebook::yoga::detail::Log;
 static inline ScopedLocalRef<jobject> YGNodeJobject(
     YGNodeRef node,
     void* layoutContext) {
-  return reinterpret_cast<PtrJNodeMapVanilla*>(layoutContext)
-      ->ref(getCurrentEnv(), node);
+  return reinterpret_cast<PtrJNodeMapVanilla*>(layoutContext)->ref(node);
 }
 
 static inline YGNodeRef _jlong2YGNodeRef(jlong addr) {

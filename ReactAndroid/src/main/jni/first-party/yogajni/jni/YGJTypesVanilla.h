@@ -29,7 +29,8 @@ public:
     }
   }
 
-  ScopedLocalRef<jobject> ref(JNIEnv* env, YGNodeRef node) {
+  ScopedLocalRef<jobject> ref(YGNodeRef node) {
+    JNIEnv* env = getCurrentEnv();
     auto idx = ptrsToIdxs_.find(node);
     if (idx == ptrsToIdxs_.end()) {
       return ScopedLocalRef<jobject>(env);
