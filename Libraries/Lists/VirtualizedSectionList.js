@@ -208,7 +208,7 @@ class VirtualizedSectionList<
         data: props.sections,
         getItemCount: () => itemCount,
         // $FlowFixMe
-        getItem: (sections, index) => getItem(props, sections, index),
+        getItem: (sections, index) => this._getItem(props, sections, index),
         keyExtractor: this._keyExtractor,
         onViewableItemsChanged: props.onViewableItemsChanged
           ? this._onViewableItemsChanged
@@ -225,6 +225,34 @@ class VirtualizedSectionList<
       <VirtualizedList {...this.state.childProps} ref={this._captureRef} />
     );
   }
+
+  _getItem = (
+    props: Props<SectionT>,
+    sections: ?$ReadOnlyArray<Item>,
+    index: number,
+  ): ?Item => {
+    if (!sections) {
+      return null;
+    }
+    let itemIdx = index - 1;
+    for (let i = 0; i < sections.length; i++) {
+      const section = sections[i];
+      const sectionData = section.data;
+      const itemCount = props.getItemCount(sectionData);
+      if (itemIdx === -1 || itemIdx === itemCount) {
+        // We intend for there to be overflow by one on both ends of the list.
+        // This will be for headers and footers. When returning a header or footer
+        // item the section itself is the item.
+        return section;
+      } else if (itemIdx < itemCount) {
+        // If we are in the bounds of the list's data then return the item.
+        return props.getItem(sectionData, itemIdx);
+      } else {
+        itemIdx -= itemCount + 2; // Add two for the header and footer
+      }
+    }
+    return null;
+  };
 
   _keyExtractor = (item: Item, index: number) => {
     const info = this._subExtractor(index);
@@ -544,34 +572,6 @@ class ItemWithSeparator extends React.Component<
       element
     );
   }
-}
-
-function getItem(
-  props: Props<SectionBase<any>>,
-  sections: ?$ReadOnlyArray<Item>,
-  index: number,
-): ?Item {
-  if (!sections) {
-    return null;
-  }
-  let itemIdx = index - 1;
-  for (let i = 0; i < sections.length; i++) {
-    const section = sections[i];
-    const sectionData = section.data;
-    const itemCount = props.getItemCount(sectionData);
-    if (itemIdx === -1 || itemIdx === itemCount) {
-      // We intend for there to be overflow by one on both ends of the list.
-      // This will be for headers and footers. When returning a header or footer
-      // item the section itself is the item.
-      return section;
-    } else if (itemIdx < itemCount) {
-      // If we are in the bounds of the list's data then return the item.
-      return props.getItem(sectionData, itemIdx);
-    } else {
-      itemIdx -= itemCount + 2; // Add two for the header and footer
-    }
-  }
-  return null;
 }
 
 module.exports = VirtualizedSectionList;
