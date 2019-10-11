@@ -147,8 +147,6 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
                     style={{backgroundColor: theme.SystemBackgroundColor}}
                     sections={filteredSections}
                     renderItem={this._renderItem}
-                    enableEmptySections={true}
-                    itemShouldUpdate={this._itemShouldUpdate}
                     keyboardShouldPersistTaps="handled"
                     automaticallyAdjustContentInsets={false}
                     keyboardDismissMode="on-drag"
@@ -165,10 +163,6 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
         }}
       </RNTesterThemeContext.Consumer>
     );
-  }
-
-  _itemShouldUpdate(curr, prev) {
-    return curr.item !== prev.item;
   }
 
   _renderItem = ({item, separators}) => (
