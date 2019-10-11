@@ -32,6 +32,9 @@ public class ModalHostViewManagerDelegate<T extends View, U extends BaseViewMana
       case "transparent":
         mViewManager.setTransparent(view, value == null ? false : (boolean) value);
         break;
+      case "statusBarTranslucent":
+        mViewManager.setStatusBarTranslucent(view, value == null ? false : (boolean) value);
+        break;
       case "hardwareAccelerated":
         mViewManager.setHardwareAccelerated(view, value == null ? false : (boolean) value);
         break;

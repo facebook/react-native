@@ -17,6 +17,7 @@ public interface ModalHostViewManagerInterface<T extends View> {
   void setAnimationType(T view, @Nullable String value);
   void setPresentationStyle(T view, @Nullable String value);
   void setTransparent(T view, boolean value);
+  void setStatusBarTranslucent(T view, boolean value);
   void setHardwareAccelerated(T view, boolean value);
   void setAnimated(T view, boolean value);
   void setSupportedOrientations(T view, @Nullable ReadableArray value);

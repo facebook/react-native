@@ -79,6 +79,13 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   }
 
   @Override
+  @ReactProp(name = "statusBarTranslucent")
+  public void setStatusBarTranslucent(ReactModalHostView view, boolean statusBarTranslucent) {
+    view.setStatusBarTranslucent(statusBarTranslucent);
+  }
+
+
+  @Override
   @ReactProp(name = "hardwareAccelerated")
   public void setHardwareAccelerated(ReactModalHostView view, boolean hardwareAccelerated) {
     view.setHardwareAccelerated(hardwareAccelerated);
