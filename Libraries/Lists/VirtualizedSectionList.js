@@ -341,8 +341,9 @@ class VirtualizedSectionList<
     viewableItems: Array<ViewToken>,
     changed: Array<ViewToken>,
   }) => {
-    if (this.props.onViewableItemsChanged) {
-      this.props.onViewableItemsChanged({
+    const onViewableItemsChanged = this.props.onViewableItemsChanged;
+    if (onViewableItemsChanged != null) {
+      onViewableItemsChanged({
         viewableItems: viewableItems
           .map(this._convertViewable, this)
           .filter(Boolean),
