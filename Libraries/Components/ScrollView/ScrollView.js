@@ -37,6 +37,7 @@ import type {
   ScrollEvent,
   LayoutEvent,
 } from '../../Types/CoreEventTypes';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {State as ScrollResponderState} from '../ScrollResponder';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
@@ -769,15 +770,11 @@ class ScrollView extends React.Component<Props, State> {
     return ReactNative.findNodeHandle(this._innerViewRef);
   }
 
-  getInnerViewRef(): ?React.ElementRef<
-    Class<ReactNative.NativeComponent<mixed>>,
-  > {
+  getInnerViewRef(): ?React.ElementRef<HostComponent<mixed>> {
     return this._innerViewRef;
   }
 
-  getNativeScrollRef(): ?React.ElementRef<
-    Class<ReactNative.NativeComponent<mixed>>,
-  > {
+  getNativeScrollRef(): ?React.ElementRef<HostComponent<mixed>> {
     return this._scrollViewRef;
   }
 
@@ -950,21 +947,13 @@ class ScrollView extends React.Component<Props, State> {
       this.props.onContentSizeChange(width, height);
   };
 
-  _scrollViewRef: ?React.ElementRef<
-    Class<ReactNative.NativeComponent<mixed>>,
-  > = null;
-  _setScrollViewRef = (
-    ref: ?React.ElementRef<Class<ReactNative.NativeComponent<mixed>>>,
-  ) => {
+  _scrollViewRef: ?React.ElementRef<HostComponent<mixed>> = null;
+  _setScrollViewRef = (ref: ?React.ElementRef<HostComponent<mixed>>) => {
     this._scrollViewRef = ref;
   };
 
-  _innerViewRef: ?React.ElementRef<
-    Class<ReactNative.NativeComponent<mixed>>,
-  > = null;
-  _setInnerViewRef = (
-    ref: ?React.ElementRef<Class<ReactNative.NativeComponent<mixed>>>,
-  ) => {
+  _innerViewRef: ?React.ElementRef<HostComponent<mixed>> = null;
+  _setInnerViewRef = (ref: ?React.ElementRef<HostComponent<mixed>>) => {
     this._innerViewRef = ref;
   };
 
@@ -1068,7 +1057,6 @@ class ScrollView extends React.Component<Props, State> {
     const contentContainer = (
       <ScrollContentContainerViewClass
         {...contentSizeChangeProps}
-        // $FlowFixMe Invalid prop usage
         ref={this._setInnerViewRef}
         style={contentContainerStyle}
         removeClippedSubviews={
@@ -1178,7 +1166,6 @@ class ScrollView extends React.Component<Props, State> {
         // On iOS the RefreshControl is a child of the ScrollView.
         // tvOS lacks native support for RefreshControl, so don't include it in that case
         return (
-          // $FlowFixMe
           <ScrollViewClass {...props} ref={this._setScrollViewRef}>
             {Platform.isTV ? null : refreshControl}
             {contentContainer}
@@ -1197,7 +1184,6 @@ class ScrollView extends React.Component<Props, State> {
           <ScrollViewClass
             {...props}
             style={[baseStyle, inner]}
-            // $FlowFixMe
             ref={this._setScrollViewRef}>
             {contentContainer}
           </ScrollViewClass>,
@@ -1205,7 +1191,6 @@ class ScrollView extends React.Component<Props, State> {
       }
     }
     return (
-      // $FlowFixMe
       <ScrollViewClass {...props} ref={this._setScrollViewRef}>
         {contentContainer}
       </ScrollViewClass>
