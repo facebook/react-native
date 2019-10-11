@@ -212,6 +212,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mEventDispatcher.removeBatchEventDispatchedListener(mEventBeatManager);
     mEventDispatcher.unregisterEventEmitter(FABRIC);
     mBinding.unregister();
+    mBinding = null;
     ViewManagerPropertyUpdater.clear();
   }
 
