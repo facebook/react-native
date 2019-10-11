@@ -29,7 +29,7 @@ Libraries/NativeAnimation/* @janicduplessis
 Libraries/Image/* @shergin
 Libraries/Text/* @shergin
 
-# Modifications to package.json typically require 
+# Modifications to package.json typically require
 # additional effort from a Facebook employee to land
 /package.json @hramos @cpojer
 
