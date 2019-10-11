@@ -25,6 +25,7 @@ export type PermissionType =
   | 'android.permission.READ_CONTACTS'
   | 'android.permission.WRITE_CONTACTS'
   | 'android.permission.GET_ACCOUNTS'
+  | 'android.permission.ACCESS_BACKGROUND_LOCATION'
   | 'android.permission.ACCESS_FINE_LOCATION'
   | 'android.permission.ACCESS_COARSE_LOCATION'
   | 'android.permission.RECORD_AUDIO'
