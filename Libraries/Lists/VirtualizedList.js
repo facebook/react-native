@@ -126,8 +126,37 @@ type OptionalProps = {
    */
   CellRendererComponent?: ?React.ComponentType<any>,
   /**
-   * Each data item is rendered using this element. Can be a React Component Class,
-   * or a render function.
+   * Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
+   * `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`
+   * which will update the `highlighted` prop, but you can also add custom props with
+   * `separators.updateProps`.
+   */
+  ItemSeparatorComponent?: ?React.ComponentType<any>,
+  /**
+   * Takes an item from `data` and renders it into the list. Example usage:
+   *
+   *     <FlatList
+   *       ItemSeparatorComponent={Platform.OS !== 'android' && ({highlighted}) => (
+   *         <View style={[style.separator, highlighted && {marginLeft: 0}]} />
+   *       )}
+   *       data={[{title: 'Title Text', key: 'item1'}]}
+   *       ListItemComponent={({item, separators}) => (
+   *         <TouchableHighlight
+   *           onPress={() => this._onPress(item)}
+   *           onShowUnderlay={separators.highlight}
+   *           onHideUnderlay={separators.unhighlight}>
+   *           <View style={{backgroundColor: 'white'}}>
+   *             <Text>{item.title}</Text>
+   *           </View>
+   *         </TouchableHighlight>
+   *       )}
+   *     />
+   *
+   * Provides additional metadata like `index` if you need it, as well as a more generic
+   * `separators.updateProps` function which let's you set whatever props you want to change the
+   * rendering of either the leading separator or trailing separator in case the more common
+   * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
+   * your use-case.
    */
   ListItemComponent?: ?React.ComponentType<any>,
   /**
@@ -165,14 +194,23 @@ type OptionalProps = {
    * interfere with responding to button taps or other interactions.
    */
   maxToRenderPerBatch: number,
+  /**
+   * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
+   * content.
+   */
   onEndReached?: ?(info: {distanceFromEnd: number}) => void,
-  onEndReachedThreshold?: ?number, // units of visible length
-  onLayout?: ?Function,
+  /**
+   * How far from the end (in units of visible length of the list) the bottom edge of the
+   * list must be from the end of the content to trigger the `onEndReached` callback.
+   * Thus a value of 0.5 will trigger `onEndReached` when the end of the content is
+   * within half the visible length of the list.
+   */
+  onEndReachedThreshold?: ?number,
   /**
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
    * sure to also set the `refreshing` prop correctly.
    */
-  onRefresh?: ?Function,
+  onRefresh?: ?() => void,
   /**
    * Used to handle failures when scrolling to an index that has not been measured yet. Recommended
    * action is to either compute your own offset and `scrollTo` it, or scroll as far as possible and
@@ -222,6 +260,9 @@ type OptionalProps = {
    * screen. Similar fill rate/responsiveness tradeoff as `maxToRenderPerBatch`.
    */
   updateCellsBatchingPeriod: number,
+  /**
+   * See `ViewabilityHelper` for flow type and further documentation.
+   */
   viewabilityConfig?: ViewabilityConfig,
   /**
    * List of ViewabilityConfig/onViewableItemsChanged pairs. A specific onViewableItemsChanged
