@@ -1810,7 +1810,10 @@ type CellRendererProps = {
   onUnmount: (cellKey: string) => void,
   onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
   parentProps: {
-    getItemLayout?: ?Function,
+    getItemLayout?: (
+      data: any,
+      index: number,
+    ) => {length: number, offset: number, index: number}, // e.g. height, y,
     renderItem?: ?RenderItemType<Item>,
     ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
   },
