@@ -19,6 +19,7 @@ import android.annotation.SuppressLint;
 import android.os.SystemClock;
 import android.view.View;
 import androidx.annotation.GuardedBy;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
@@ -92,28 +93,34 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     FabricSoLoader.staticInit();
   }
 
-  private Binding mBinding;
-  private final ReactApplicationContext mReactApplicationContext;
-  private final MountingManager mMountingManager;
-  private final EventDispatcher mEventDispatcher;
+  @Nullable private Binding mBinding;
+  @NonNull private final ReactApplicationContext mReactApplicationContext;
+  @NonNull private final MountingManager mMountingManager;
+  @NonNull private final EventDispatcher mEventDispatcher;
+
+  @NonNull
   private final ConcurrentHashMap<Integer, ThemedReactContext> mReactContextForRootTag =
       new ConcurrentHashMap<>();
-  private final EventBeatManager mEventBeatManager;
-  private final Object mMountItemsLock = new Object();
-  private final Object mPreMountItemsLock = new Object();
+
+  @NonNull private final EventBeatManager mEventBeatManager;
+  @NonNull private final Object mMountItemsLock = new Object();
+  @NonNull private final Object mPreMountItemsLock = new Object();
 
   @GuardedBy("mMountItemsLock")
+  @NonNull
   private List<MountItem> mMountItems = new ArrayList<>();
 
   @GuardedBy("mPreMountItemsLock")
+  @NonNull
   private ArrayDeque<MountItem> mPreMountItems =
       new ArrayDeque<>(PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY);
 
   @ThreadConfined(UI)
+  @NonNull
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
 
   @ThreadConfined(UI)
-  private boolean mIsMountingEnabled = true;
+  private volatile boolean mIsMountingEnabled = true;
 
   private long mRunStartTime = 0l;
   private long mBatchedExecutionTime = 0l;
@@ -207,6 +214,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mEventDispatcher.addBatchEventDispatchedListener(mEventBeatManager);
   }
 
+  // This is called on the JS thread (see CatalystInstanceImpl).
   @Override
   public void onCatalystInstanceDestroy() {
     if (DEBUG) {
@@ -214,8 +222,21 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
     mEventDispatcher.removeBatchEventDispatchedListener(mEventBeatManager);
     mEventDispatcher.unregisterEventEmitter(FABRIC);
+
+    // Remove lifecycle listeners (onHostResume, onHostPause) since the FabricUIManager is going
+    // away. This and setting `mIsMountingEnabled` to false will cause the choreographer
+    // callbacks to stop firing.
+    mReactApplicationContext.removeLifecycleEventListener(this);
+    onHostPause();
+
+    // This is not technically thread-safe, since it's read on the UI thread and written
+    // here on the JS thread. We've marked it as volatile so that this writes to UI-thread
+    // memory immediately.
+    mIsMountingEnabled = false;
+
     mBinding.unregister();
     mBinding = null;
+
     ViewManagerPropertyUpdater.clear();
   }
 
