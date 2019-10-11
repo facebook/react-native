@@ -610,7 +610,10 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {
     mMeasureFunction = measureFunction;
-    YogaNative.jni_YGNodeSetHasMeasureFunc(mNativePointer, measureFunction != null);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeSetHasMeasureFuncJNI(mNativePointer, measureFunction != null);
+    else
+      YogaNative.jni_YGNodeSetHasMeasureFunc(mNativePointer, measureFunction != null);
   }
 
   // Implementation Note: Why this method needs to stay final
@@ -634,7 +637,10 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   public void setBaselineFunction(YogaBaselineFunction baselineFunction) {
     mBaselineFunction = baselineFunction;
-    YogaNative.jni_YGNodeSetHasBaselineFunc(mNativePointer, baselineFunction != null);
+    if (useVanillaJNI)
+      YogaNative.jni_YGNodeSetHasBaselineFuncJNI(mNativePointer, baselineFunction != null);
+    else
+      YogaNative.jni_YGNodeSetHasBaselineFunc(mNativePointer, baselineFunction != null);
   }
 
   @DoNotStrip
