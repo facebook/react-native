@@ -119,10 +119,15 @@ using namespace facebook::react;
     // Zero means "send value only once per significant logical event".
     // Prop value is in milliseconds.
     // iOS implementation uses `NSTimeInterval` (in seconds).
-    // 16 ms is the minimum allowed value.
-    _scrollEventThrottle = newScrollViewProps.scrollEventThrottle <= 0
-        ? INFINITY
-        : std::max(newScrollViewProps.scrollEventThrottle / 1000.0, 1.0 / 60.0);
+    CGFloat throttleInSeconds = newScrollViewProps.scrollEventThrottle / 1000.0;
+    CGFloat msPerFrame = 1.0 / 60.0;
+    if (throttleInSeconds < 0) {
+      _scrollEventThrottle = INFINITY;
+    } else if (throttleInSeconds <= msPerFrame) {
+      _scrollEventThrottle = 0;
+    } else {
+      _scrollEventThrottle = throttleInSeconds;
+    }
   }
 
   MAP_SCROLL_VIEW_PROP(zoomScale);
