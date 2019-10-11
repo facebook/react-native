@@ -6,6 +6,7 @@
  */
 package com.facebook.react.fabric;
 
+import static com.facebook.infer.annotation.ThreadConfined.ANY;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.react.fabric.FabricComponents.getFabricComponentName;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMaxSize;
@@ -162,6 +163,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     return rootTag;
   }
 
+  @ThreadConfined(ANY)
   public <T extends View> int startSurface(
       final T rootView,
       final String moduleName,
@@ -194,6 +196,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mEventDispatcher.dispatchAllEvents();
   }
 
+  @ThreadConfined(ANY)
   public void stopSurface(int surfaceID) {
     mBinding.stopSurface(surfaceID);
   }
@@ -379,7 +382,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @Override
+  @ThreadConfined(UI)
   public void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props) {
+    UiThreadUtil.assertOnUiThread();
     long time = SystemClock.uptimeMillis();
     int commitNumber = mCurrentSynchronousCommitNumber++;
     try {
