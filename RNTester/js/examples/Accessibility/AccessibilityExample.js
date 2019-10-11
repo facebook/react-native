@@ -564,7 +564,7 @@ class FakeSliderExample extends React.Component {
           }}>
           <Text>Fake Slider</Text>
         </View>
-        <View
+        <TouchableWithoutFeedback
           accessible={true}
           accessibilityLabel="Equalizer"
           accessibilityRole="adjustable"
@@ -588,8 +588,10 @@ class FakeSliderExample extends React.Component {
             }
           }}
           accessibilityValue={{text: this.state.textualValue}}>
-          <Text>Equalizer</Text>
-        </View>
+          <View>
+            <Text>Equalizer</Text>
+          </View>
+        </TouchableWithoutFeedback>
       </View>
     );
   }

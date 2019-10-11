@@ -34,6 +34,7 @@ import type {
   AccessibilityState,
   AccessibilityActionInfo,
   AccessibilityActionEvent,
+  AccessibilityValue,
 } from '../View/ViewAccessibility';
 
 type TargetEvent = SyntheticEvent<
@@ -55,6 +56,7 @@ const OVERRIDE_PROPS = [
   'accessibilityState',
   'accessibilityActions',
   'onAccessibilityAction',
+  'accessibilityValue',
   'hitSlop',
   'nativeID',
   'onBlur',
@@ -71,6 +73,7 @@ export type Props = $ReadOnly<{|
   accessibilityRole?: ?AccessibilityRole,
   accessibilityState?: ?AccessibilityState,
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+  accessibilityValue?: ?AccessibilityValue,
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,
@@ -112,6 +115,7 @@ const TouchableWithoutFeedback = ((createReactClass({
     accessibilityState: PropTypes.object,
     accessibilityActions: PropTypes.array,
     onAccessibilityAction: PropTypes.func,
+    accessibilityValue: PropTypes.object,
     /**
      * When `accessible` is true (which is the default) this may be called when
      * the OS-specific concept of "focus" occurs. Some platforms may not have
