@@ -4,15 +4,16 @@
 # LICENSE file in the root directory of this source tree.
 
 LOCAL_PATH := $(call my-dir)
-
-include $(CLEAR_VARS)
 REACT_NATIVE := $(LOCAL_PATH)/../../../../../../../..
+
+include $(REACT_NATIVE)/ReactCommon/common.mk
+include $(CLEAR_VARS)
 
 LOCAL_MODULE := hermes-executor-release
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi $(REACT_NATIVE)/node_modules/hermes-engine/android/include $(REACT_NATIVE)/../hermes-engine/android/include $(REACT_NATIVE)/../node_modules/hermes-engine/include
+LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi $(call find-node-module,$(LOCAL_PATH),hermes-engine)/android/include
 
 LOCAL_CPP_FEATURES := exceptions
 
@@ -23,14 +24,13 @@ include $(BUILD_SHARED_LIBRARY)
 
 
 include $(CLEAR_VARS)
-REACT_NATIVE := $(LOCAL_PATH)/../../../../../../../..
 
 LOCAL_MODULE := hermes-executor-debug
 LOCAL_CFLAGS := -DHERMES_ENABLE_DEBUGGER=1
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi $(REACT_NATIVE)/node_modules/hermes-engine/android/include $(REACT_NATIVE)/../hermes-engine/android/include $(REACT_NATIVE)/../node_modules/hermes-engine/include
+LOCAL_C_INCLUDES := $(LOCAL_PATH) $(REACT_NATIVE)/ReactCommon/jsi $(call find-node-module,$(LOCAL_PATH),hermes-engine)/android/include
 
 LOCAL_CPP_FEATURES := exceptions
 
