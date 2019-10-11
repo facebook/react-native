@@ -80,14 +80,6 @@ export type ScrollResponderType = {
   ...typeof ScrollResponder.Mixin,
 };
 
-type TouchableProps = $ReadOnly<{|
-  onTouchStart?: (event: PressEvent) => void,
-  onTouchMove?: (event: PressEvent) => void,
-  onTouchEnd?: (event: PressEvent) => void,
-  onTouchCancel?: (event: PressEvent) => void,
-  onTouchEndCapture?: (event: PressEvent) => void,
-|}>;
-
 type IOSProps = $ReadOnly<{|
   /**
    * Controls whether iOS should automatically adjust the content inset
@@ -383,7 +375,6 @@ type StickyHeaderComponentType = React.ComponentType<ScrollViewStickyHeaderProps
 
 export type Props = $ReadOnly<{|
   ...ViewProps,
-  ...TouchableProps,
   ...IOSProps,
   ...AndroidProps,
   ...VRProps,
