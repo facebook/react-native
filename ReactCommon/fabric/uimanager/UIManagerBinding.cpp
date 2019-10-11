@@ -155,7 +155,7 @@ jsi::Value UIManagerBinding::get(
     jsi::Runtime &runtime,
     const jsi::PropNameID &name) {
   auto methodName = name.utf8(runtime);
-  auto uiManager = uiManager_;
+  UIManager *uiManager = uiManager_.get();
 
   // Semantic: Creates a new node with given pieces.
   if (methodName == "createNode") {
