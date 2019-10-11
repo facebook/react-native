@@ -190,9 +190,19 @@ class VirtualizedSectionList<
         }, 0)
       : 0;
 
+    const {
+      SectionSeparatorComponent,
+      renderItem,
+      renderSectionFooter,
+      renderSectionHeader,
+      sections: _sections,
+      stickySectionHeadersEnabled,
+      ...restProps
+    } = props;
+
     return {
       childProps: {
-        ...props,
+        ...restProps,
         renderItem: this._renderItem,
         ItemSeparatorComponent: undefined, // Rendered with renderItem
         data: props.sections,
