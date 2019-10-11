@@ -1143,6 +1143,8 @@ namespace JS {
 - (void)openSelectDialog:(JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig &)config
          successCallback:(RCTResponseSenderBlock)successCallback
           cancelCallback:(RCTResponseSenderBlock)cancelCallback;
+- (void)clearAllPendingVideos;
+- (void)removePendingVideo:(NSString *)url;
 
 @end
 namespace facebook {

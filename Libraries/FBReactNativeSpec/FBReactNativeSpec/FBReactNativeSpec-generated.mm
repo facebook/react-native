@@ -1125,6 +1125,14 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "openSelectDialog", @selector(openSelectDialog:successCallback:cancelCallback:), args, count);
     }
 
+    static facebook::jsi::Value __hostFunction_NativeImagePickerIOSSpecJSI_clearAllPendingVideos(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "clearAllPendingVideos", @selector(clearAllPendingVideos), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeImagePickerIOSSpecJSI_removePendingVideo(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "removePendingVideo", @selector(removePendingVideo:), args, count);
+    }
+
 
     NativeImagePickerIOSSpecJSI::NativeImagePickerIOSSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
       : ObjCTurboModule("ImagePickerIOS", instance, jsInvoker) {
@@ -1142,6 +1150,12 @@ namespace facebook {
         methodMap_["openSelectDialog"] = MethodMetadata {3, __hostFunction_NativeImagePickerIOSSpecJSI_openSelectDialog};
         
         setMethodArgConversionSelector(@"openSelectDialog", 0, @"JS_NativeImagePickerIOS_SpecOpenSelectDialogConfig:");
+        
+        methodMap_["clearAllPendingVideos"] = MethodMetadata {0, __hostFunction_NativeImagePickerIOSSpecJSI_clearAllPendingVideos};
+        
+        
+        methodMap_["removePendingVideo"] = MethodMetadata {1, __hostFunction_NativeImagePickerIOSSpecJSI_removePendingVideo};
+        
         
 
     }
