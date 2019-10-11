@@ -460,26 +460,26 @@ export type Props = $ReadOnly<{|
   /**
    * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
    */
-  onMomentumScrollBegin?: (event: ScrollEvent) => void,
+  onMomentumScrollBegin?: ?(event: ScrollEvent) => void,
   /**
    * Called when the momentum scroll ends (scroll which occurs as the ScrollView glides to a stop).
    */
-  onMomentumScrollEnd?: (event: ScrollEvent) => void,
+  onMomentumScrollEnd?: ?(event: ScrollEvent) => void,
 
   /**
    * Fires at most once per frame during scrolling. The frequency of the
    * events can be controlled using the `scrollEventThrottle` prop.
    */
-  onScroll?: (event: ScrollEvent) => void,
+  onScroll?: ?(event: ScrollEvent) => void,
   /**
    * Called when the user begins to drag the scroll view.
    */
-  onScrollBeginDrag?: (event: ScrollEvent) => void,
+  onScrollBeginDrag?: ?(event: ScrollEvent) => void,
   /**
    * Called when the user stops dragging the scroll view and it either stops
    * or begins to glide.
    */
-  onScrollEndDrag?: (event: ScrollEvent) => void,
+  onScrollEndDrag?: ?(event: ScrollEvent) => void,
   /**
    * Called when scrollable content view of the ScrollView changes.
    *
