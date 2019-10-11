@@ -130,8 +130,8 @@ class FillRateHelper {
 
   computeBlankness(
     props: {
-      data: Array<any>,
-      getItemCount: (data: Array<any>) => number,
+      data: any,
+      getItemCount: (data: any) => number,
       initialNumToRender: number,
     },
     state: {
