@@ -41,7 +41,7 @@ export type SectionBase<SectionItemT> = {
       unhighlight: () => void,
       updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
     },
-  }) => ?React.Element<any>,
+  }) => null | React.Element<any>,
   ItemSeparatorComponent?: ?React.ComponentType<any>,
   keyExtractor?: (item: SectionItemT, index?: ?number) => string,
 };
@@ -71,15 +71,15 @@ type OptionalProps<SectionT: SectionBase<any>> = {
       unhighlight: () => void,
       updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
     },
-  }) => ?React.Element<any>,
+  }) => null | React.Element<any>,
   /**
    * Rendered at the top of each section.
    */
-  renderSectionHeader?: ?({section: SectionT}) => ?React.Element<any>,
+  renderSectionHeader?: ?({section: SectionT}) => null | React.Element<any>,
   /**
    * Rendered at the bottom of each section.
    */
-  renderSectionFooter?: ?({section: SectionT}) => ?React.Element<any>,
+  renderSectionFooter?: ?({section: SectionT}) => null | React.Element<any>,
   /**
    * Rendered at the bottom of every Section, except the very last one, in place of the normal
    * ItemSeparatorComponent.

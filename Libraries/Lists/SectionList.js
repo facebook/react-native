@@ -53,7 +53,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
       unhighlight: () => void,
       updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
     },
-  }) => ?React.Element<any>,
+  }) => null | React.Element<any>,
   /**
    * Rendered in between each item, but not at the top or bottom. By default, `highlighted`,
    * `section`, and `[leading/trailing][Item/Separator]` props are provided. `renderItem` provides
@@ -146,11 +146,15 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    * Rendered at the top of each section. These stick to the top of the `ScrollView` by default on
    * iOS. See `stickySectionHeadersEnabled`.
    */
-  renderSectionHeader?: ?(info: {section: SectionT}) => ?React.Element<any>,
+  renderSectionHeader?: ?(info: {
+    section: SectionT,
+  }) => null | React.Element<any>,
   /**
    * Rendered at the bottom of each section.
    */
-  renderSectionFooter?: ?(info: {section: SectionT}) => ?React.Element<any>,
+  renderSectionFooter?: ?(info: {
+    section: SectionT,
+  }) => null | React.Element<any>,
   /**
    * Makes section headers stick to the top of the screen until the next one pushes it off. Only
    * enabled by default on iOS because that is the platform standard there.
