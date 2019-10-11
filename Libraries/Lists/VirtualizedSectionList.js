@@ -75,11 +75,15 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   /**
    * Rendered at the top of each section.
    */
-  renderSectionHeader?: ?({section: SectionT}) => null | React.Element<any>,
+  renderSectionHeader?: ?(info: {
+    section: SectionT,
+  }) => null | React.Element<any>,
   /**
    * Rendered at the bottom of each section.
    */
-  renderSectionFooter?: ?({section: SectionT}) => null | React.Element<any>,
+  renderSectionFooter?: ?(info: {
+    section: SectionT,
+  }) => null | React.Element<any>,
   /**
    * Rendered at the bottom of every Section, except the very last one, in place of the normal
    * ItemSeparatorComponent.
