@@ -491,7 +491,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
-  getScrollableNode(): any {
+  getScrollableNode(): ?number {
     if (this._scrollRef && this._scrollRef.getScrollableNode) {
       return this._scrollRef.getScrollableNode();
     } else {
@@ -499,7 +499,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
-  getScrollRef(): any {
+  getScrollRef(): ?React.ElementRef<typeof ScrollView> {
     if (this._scrollRef && this._scrollRef.getScrollRef) {
       return this._scrollRef.getScrollRef();
     } else {
