@@ -369,9 +369,12 @@ type VRProps = $ReadOnly<{|
   scrollBarThumbImage?: ?($ReadOnly<{||}> | number), // Opaque type returned by import IMAGE from './image.jpg'
 |}>;
 
-type StickyHeaderComponentType = React.ComponentType<ScrollViewStickyHeaderProps> & {
-  setNextHeaderY: number => void,
-};
+type StickyHeaderComponentType = React.AbstractComponent<
+  ScrollViewStickyHeaderProps,
+  $ReadOnly<{
+    setNextHeaderY: number => void,
+  }>,
+>;
 
 export type Props = $ReadOnly<{|
   ...ViewProps,
@@ -716,7 +719,10 @@ class ScrollView extends React.Component<Props, State> {
     0,
   );
   _scrollAnimatedValueAttachment: ?{detach: () => void} = null;
-  _stickyHeaderRefs: Map<string, StickyHeaderComponentType> = new Map();
+  _stickyHeaderRefs: Map<
+    string,
+    React.ElementRef<StickyHeaderComponentType>,
+  > = new Map();
   _headerLayoutYs: Map<string, number> = new Map();
 
   state: State = {
@@ -881,7 +887,10 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
-  _setStickyHeaderRef(key: string, ref: ?StickyHeaderComponentType) {
+  _setStickyHeaderRef(
+    key: string,
+    ref: ?React.ElementRef<StickyHeaderComponentType>,
+  ) {
     if (ref) {
       this._stickyHeaderRefs.set(key, ref);
     } else {
@@ -1041,7 +1050,6 @@ class ScrollView extends React.Component<Props, State> {
           return (
             <StickyHeaderComponent
               key={key}
-              // $FlowFixMe - inexact mixed is incompatible with exact React.Element
               ref={ref => this._setStickyHeaderRef(key, ref)}
               nextHeaderLayoutY={this._headerLayoutYs.get(
                 this._getKeyForIndex(nextIndex, childArray),
