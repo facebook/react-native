@@ -14,7 +14,6 @@ const React = require('react');
 const VirtualizedSectionList = require('./VirtualizedSectionList');
 
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
-import type {ViewToken} from './ViewabilityHelper';
 import type {
   SectionBase as _SectionBase,
   Props as VirtualizedSectionListProps,
@@ -25,7 +24,7 @@ type Item = any;
 
 export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
 
-type RequiredProps<SectionT: SectionBase<any>> = {
+type RequiredProps<SectionT: SectionBase<any>> = {|
   /**
    * The actual data to render, akin to the `data` prop in [`<FlatList>`](/react-native/docs/flatlist.html).
    *
@@ -38,9 +37,9 @@ type RequiredProps<SectionT: SectionBase<any>> = {
    *     }>
    */
   sections: $ReadOnlyArray<SectionT>,
-};
+|};
 
-type OptionalProps<SectionT: SectionBase<any>> = {
+type OptionalProps<SectionT: SectionBase<any>> = {|
   /**
    * Default renderer for every item in every section. Can be over-ridden on a per-section basis.
    */
@@ -54,36 +53,6 @@ type OptionalProps<SectionT: SectionBase<any>> = {
       updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
     },
   }) => null | React.Element<any>,
-  /**
-   * Rendered in between each item, but not at the top or bottom. By default, `highlighted`,
-   * `section`, and `[leading/trailing][Item/Separator]` props are provided. `renderItem` provides
-   * `separators.highlight`/`unhighlight` which will update the `highlighted` prop, but you can also
-   * add custom props with `separators.updateProps`.
-   */
-  ItemSeparatorComponent?: ?React.ComponentType<any>,
-  /**
-   * Rendered at the very beginning of the list. Can be a React Component Class, a render function, or
-   * a rendered element.
-   */
-  ListHeaderComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Rendered when the list is empty. Can be a React Component Class, a render function, or
-   * a rendered element.
-   */
-  ListEmptyComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Rendered at the very end of the list. Can be a React Component Class, a render function, or
-   * a rendered element.
-   */
-  ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Rendered at the top and bottom of each section (note this is different from
-   * `ItemSeparatorComponent` which is only rendered between items). These are intended to separate
-   * sections from the headers above and below and typically have the same highlight response as
-   * `ItemSeparatorComponent`. Also receives `highlighted`, `[leading/trailing][Item/Separator]`,
-   * and any custom props from `separators.updateProps`.
-   */
-  SectionSeparatorComponent?: ?React.ComponentType<any>,
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -113,63 +82,31 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    */
   onEndReached?: ?(info: {distanceFromEnd: number}) => void,
   /**
-   * How far from the end (in units of visible length of the list) the bottom edge of the
-   * list must be from the end of the content to trigger the `onEndReached` callback.
-   * Thus a value of 0.5 will trigger `onEndReached` when the end of the content is
-   * within half the visible length of the list.
-   */
-  onEndReachedThreshold?: ?number,
-  /**
-   * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
-   * sure to also set the `refreshing` prop correctly.
-   */
-  onRefresh?: ?() => void,
-  /**
-   * Called when the viewability of rows changes, as defined by the
-   * `viewabilityConfig` prop.
-   */
-  onViewableItemsChanged?: ?(info: {
-    viewableItems: Array<ViewToken>,
-    changed: Array<ViewToken>,
-  }) => void,
-  /**
-   * Set this true while waiting for new data from a refresh.
-   */
-  refreshing?: ?boolean,
-  /**
    * Note: may have bugs (missing content) in some circumstances - use at your own risk.
    *
    * This may improve scroll performance for large lists.
    */
   removeClippedSubviews?: boolean,
-  /**
-   * Rendered at the top of each section. These stick to the top of the `ScrollView` by default on
-   * iOS. See `stickySectionHeadersEnabled`.
-   */
-  renderSectionHeader?: ?(info: {
-    section: SectionT,
-  }) => null | React.Element<any>,
-  /**
-   * Rendered at the bottom of each section.
-   */
-  renderSectionFooter?: ?(info: {
-    section: SectionT,
-  }) => null | React.Element<any>,
-  /**
-   * Makes section headers stick to the top of the screen until the next one pushes it off. Only
-   * enabled by default on iOS because that is the platform standard there.
-   */
-  stickySectionHeadersEnabled?: boolean,
+|};
 
-  /**
-   * The legacy implementation is no longer supported.
-   */
-  legacyImplementation?: empty,
-};
-
-export type Props<SectionT> = RequiredProps<SectionT> &
-  OptionalProps<SectionT> &
-  VirtualizedSectionListProps<SectionT>;
+export type Props<SectionT> = {|
+  ...$Diff<
+    VirtualizedSectionListProps<SectionT>,
+    {
+      getItem: $PropertyType<VirtualizedSectionListProps<SectionT>, 'getItem'>,
+      getItemCount: $PropertyType<
+        VirtualizedSectionListProps<SectionT>,
+        'getItemCount',
+      >,
+      renderItem: $PropertyType<
+        VirtualizedSectionListProps<SectionT>,
+        'renderItem',
+      >,
+    },
+  >,
+  ...RequiredProps<SectionT>,
+  ...OptionalProps<SectionT>,
+|};
 
 const defaultProps = {
   ...VirtualizedSectionList.defaultProps,

@@ -61,7 +61,7 @@ type ViewabilityHelperCallbackTuple = {
   }) => void,
 };
 
-type RequiredProps = {
+type RequiredProps = {|
   /**
    * The default accessor functions assume this is an Array<{key: string} | {id: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
@@ -75,11 +75,9 @@ type RequiredProps = {
    * Determines how many items are in the data blob.
    */
   getItemCount: (data: any) => number,
-};
-type OptionalProps = {
-  // TODO: Conflicts with the optional `renderItem` in
-  // `VirtualizedSectionList`'s props.
-  renderItem?: $FlowFixMe<?RenderItemType<Item>>,
+|};
+type OptionalProps = {|
+  renderItem?: ?RenderItemType<Item>,
   /**
    * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
    * implementation, but with a significant perf hit.
@@ -158,7 +156,7 @@ type OptionalProps = {
    * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
    * your use-case.
    */
-  ListItemComponent?: ?React.ComponentType<any>,
+  ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
    * Rendered when the list is empty. Can be a React Component Class, a render function, or
    * a rendered element.
@@ -277,10 +275,17 @@ type OptionalProps = {
    * chance that fast scrolling may reveal momentary blank areas of unrendered content.
    */
   windowSize: number,
-};
-/* $FlowFixMe - this Props seems to be missing a bunch of stuff. Remove this
- * comment to see the errors */
-export type Props = RequiredProps & OptionalProps;
+  /**
+   * The legacy implementation is no longer supported.
+   */
+  legacyImplementation?: empty,
+|};
+
+type Props = {|
+  ...React.ElementConfig<typeof ScrollView>,
+  ...RequiredProps,
+  ...OptionalProps,
+|};
 
 type DefaultProps = {|
   disableVirtualization: boolean,
@@ -689,6 +694,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   constructor(props: Props, context: Object) {
     super(props, context);
     invariant(
+      // $FlowFixMe
       !props.onScroll || !props.onScroll.__isNative,
       'Components based on VirtualizedList must be wrapped with Animated.createAnimatedComponent ' +
         'to support native onScroll events with useNativeDriver',

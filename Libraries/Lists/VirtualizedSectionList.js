@@ -16,7 +16,6 @@ const VirtualizedList = require('./VirtualizedList');
 const invariant = require('invariant');
 
 import type {ViewToken} from './ViewabilityHelper';
-import type {Props as VirtualizedListProps} from './VirtualizedList';
 
 type Item = any;
 
@@ -46,19 +45,11 @@ export type SectionBase<SectionItemT> = {
   keyExtractor?: (item: SectionItemT, index?: ?number) => string,
 };
 
-type RequiredProps<SectionT: SectionBase<any>> = {
+type RequiredProps<SectionT: SectionBase<any>> = {|
   sections: $ReadOnlyArray<SectionT>,
-};
+|};
 
-type OptionalProps<SectionT: SectionBase<any>> = {
-  /**
-   * Rendered after the last item in the last section.
-   */
-  ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Rendered at the very beginning of the list.
-   */
-  ListHeaderComponent?: ?(React.ComponentType<any> | React.Element<any>),
+type OptionalProps<SectionT: SectionBase<any>> = {|
   /**
    * Default renderer for every item in every section.
    */
@@ -73,7 +64,8 @@ type OptionalProps<SectionT: SectionBase<any>> = {
     },
   }) => null | React.Element<any>,
   /**
-   * Rendered at the top of each section.
+   * Rendered at the top of each section. These stick to the top of the `ScrollView` by default on
+   * iOS. See `stickySectionHeadersEnabled`.
    */
   renderSectionHeader?: ?(info: {
     section: SectionT,
@@ -85,44 +77,33 @@ type OptionalProps<SectionT: SectionBase<any>> = {
     section: SectionT,
   }) => null | React.Element<any>,
   /**
-   * Rendered at the bottom of every Section, except the very last one, in place of the normal
-   * ItemSeparatorComponent.
+   * Rendered at the top and bottom of each section (note this is different from
+   * `ItemSeparatorComponent` which is only rendered between items). These are intended to separate
+   * sections from the headers above and below and typically have the same highlight response as
+   * `ItemSeparatorComponent`. Also receives `highlighted`, `[leading/trailing][Item/Separator]`,
+   * and any custom props from `separators.updateProps`.
    */
   SectionSeparatorComponent?: ?React.ComponentType<any>,
   /**
-   * Rendered at the bottom of every Item except the very last one in the last section.
+   * Makes section headers stick to the top of the screen until the next one pushes it off. Only
+   * enabled by default on iOS because that is the platform standard there.
    */
-  ItemSeparatorComponent?: ?React.ComponentType<any>,
-  /**
-   * DEPRECATED: Virtualization provides significant performance and memory optimizations, but fully
-   * unmounts react instances that are outside of the render window. You should only need to disable
-   * this for debugging purposes.
-   */
-  disableVirtualization?: ?boolean,
-  keyExtractor: (item: Item, index: number) => string,
+  stickySectionHeadersEnabled?: boolean,
   onEndReached?: ?({distanceFromEnd: number}) => void,
-  /**
-   * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
-   * sure to also set the `refreshing` prop correctly.
-   */
-  onRefresh?: ?() => void,
-  /**
-   * Called when the viewability of rows changes, as defined by the
-   * `viewabilityConfig` prop.
-   */
-  onViewableItemsChanged?: ?({
-    viewableItems: Array<ViewToken>,
-    changed: Array<ViewToken>,
-  }) => void,
-  /**
-   * Set this true while waiting for new data from a refresh.
-   */
-  refreshing?: ?boolean,
-};
+|};
 
-export type Props<SectionT> = RequiredProps<SectionT> &
-  OptionalProps<SectionT> &
-  VirtualizedListProps;
+type VirtualizedListProps = React.ElementProps<typeof VirtualizedList>;
+
+export type Props<SectionT> = {|
+  ...RequiredProps<SectionT>,
+  ...OptionalProps<SectionT>,
+  ...$Diff<
+    VirtualizedListProps,
+    {
+      renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>,
+    },
+  >,
+|};
 export type ScrollToLocationParamsType = {|
   animated?: ?boolean,
   itemIndex: number,

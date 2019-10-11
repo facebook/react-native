@@ -21,24 +21,19 @@ const invariant = require('invariant');
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
-  ViewabilityConfig,
   ViewToken,
   ViewabilityConfigCallbackPair,
 } from './ViewabilityHelper';
-import type {
-  Props as VirtualizedListProps,
-  RenderItemType,
-  RenderItemProps,
-} from './VirtualizedList';
+import type {RenderItemType, RenderItemProps} from './VirtualizedList';
 
-type RequiredProps<ItemT> = {
+type RequiredProps<ItemT> = {|
   /**
    * For simplicity, data is just a plain array. If you want to use something else, like an
    * immutable list, use the underlying `VirtualizedList` directly.
    */
   data: ?$ReadOnlyArray<ItemT>,
-};
-type OptionalProps<ItemT> = {
+|};
+type OptionalProps<ItemT> = {|
   /**
    * Takes an item from `data` and renders it into the list. Example usage:
    *
@@ -66,63 +61,7 @@ type OptionalProps<ItemT> = {
    * your use-case.
    */
   renderItem?: ?RenderItemType<ItemT>,
-  /**
-   * Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
-   * `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`
-   * which will update the `highlighted` prop, but you can also add custom props with
-   * `separators.updateProps`.
-   */
-  ItemSeparatorComponent?: ?React.ComponentType<any>,
-  /**
-   * Takes an item from `data` and renders it into the list. Example usage:
-   *
-   *     <FlatList
-   *       ItemSeparatorComponent={Platform.OS !== 'android' && ({highlighted}) => (
-   *         <View style={[style.separator, highlighted && {marginLeft: 0}]} />
-   *       )}
-   *       data={[{title: 'Title Text', key: 'item1'}]}
-   *       ListItemComponent={({item, separators}) => (
-   *         <TouchableHighlight
-   *           onPress={() => this._onPress(item)}
-   *           onShowUnderlay={separators.highlight}
-   *           onHideUnderlay={separators.unhighlight}>
-   *           <View style={{backgroundColor: 'white'}}>
-   *             <Text>{item.title}</Text>
-   *           </View>
-   *         </TouchableHighlight>
-   *       )}
-   *     />
-   *
-   * Provides additional metadata like `index` if you need it, as well as a more generic
-   * `separators.updateProps` function which let's you set whatever props you want to change the
-   * rendering of either the leading separator or trailing separator in case the more common
-   * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
-   * your use-case.
-   */
-  ListItemComponent?: ?React.ComponentType<any>,
-  /**
-   * Rendered when the list is empty. Can be a React Component Class, a render function, or
-   * a rendered element.
-   */
-  ListEmptyComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
-   * a rendered element.
-   */
-  ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Styling for internal View for ListFooterComponent
-   */
-  ListFooterComponentStyle?: ViewStyleProp,
-  /**
-   * Rendered at the top of all the items. Can be a React Component Class, a render function, or
-   * a rendered element.
-   */
-  ListHeaderComponent?: ?(React.ComponentType<any> | React.Element<any>),
-  /**
-   * Styling for internal View for ListHeaderComponent
-   */
-  ListHeaderComponentStyle?: ViewStyleProp,
+
   /**
    * Optional custom style for multi-item rows generated when numColumns > 1.
    */
@@ -183,65 +122,31 @@ type OptionalProps<ItemT> = {
    */
   numColumns: number,
   /**
-   * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
-   * content.
-   */
-  onEndReached?: ?(info: {distanceFromEnd: number}) => void,
-  /**
-   * How far from the end (in units of visible length of the list) the bottom edge of the
-   * list must be from the end of the content to trigger the `onEndReached` callback.
-   * Thus a value of 0.5 will trigger `onEndReached` when the end of the content is
-   * within half the visible length of the list.
-   */
-  onEndReachedThreshold?: ?number,
-  /**
-   * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
-   * sure to also set the `refreshing` prop correctly.
-   */
-  onRefresh?: ?() => void,
-  /**
-   * Called when the viewability of rows changes, as defined by the `viewabilityConfig` prop.
-   */
-  onViewableItemsChanged?: ?(info: {
-    viewableItems: Array<ViewToken>,
-    changed: Array<ViewToken>,
-  }) => void,
-  /**
-   * Set this when offset is needed for the loading indicator to show correctly.
-   * @platform android
-   */
-  progressViewOffset?: number,
-  /**
-   * The legacy implementation is no longer supported.
-   */
-  legacyImplementation?: empty,
-  /**
-   * Set this true while waiting for new data from a refresh.
-   */
-  refreshing?: ?boolean,
-  /**
-   * Note: may have bugs (missing content) in some circumstances - use at your own risk.
-   *
-   * This may improve scroll performance for large lists.
-   */
-  removeClippedSubviews?: boolean,
-  /**
-   * See `ViewabilityHelper` for flow type and further documentation.
-   */
-  viewabilityConfig?: ViewabilityConfig,
-  /**
-   * List of ViewabilityConfig/onViewableItemsChanged pairs. A specific onViewableItemsChanged
-   * will be called when its corresponding ViewabilityConfig's conditions are met.
-   */
-  viewabilityConfigCallbackPairs?: Array<ViewabilityConfigCallbackPair>,
-  /**
    * See `ScrollView` for flow type and further documentation.
    */
   fadingEdgeLength?: ?number,
+|};
+
+type FlatListProps<ItemT> = {|
+  ...RequiredProps<ItemT>,
+  ...OptionalProps<ItemT>,
+|};
+
+type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
+
+export type Props<ItemT> = {
+  ...$Diff<
+    VirtualizedListProps,
+    {
+      getItem: $PropertyType<VirtualizedListProps, 'getItem'>,
+      getItemCount: $PropertyType<VirtualizedListProps, 'getItemCount'>,
+      getItemLayout: $PropertyType<VirtualizedListProps, 'getItemLayout'>,
+      renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>,
+      keyExtractor: $PropertyType<VirtualizedListProps, 'keyExtractor'>,
+    },
+  >,
+  ...FlatListProps<ItemT>,
 };
-export type Props<ItemT> = RequiredProps<ItemT> &
-  OptionalProps<ItemT> &
-  VirtualizedListProps;
 
 const defaultProps = {
   ...VirtualizedList.defaultProps,
@@ -521,7 +426,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
 
   _checkProps(props: Props<ItemT>) {
     const {
+      // $FlowFixMe this prop doesn't exist, is only used for an invariant
       getItem,
+      // $FlowFixMe this prop doesn't exist, is only used for an invariant
       getItemCount,
       horizontal,
       numColumns,
@@ -586,6 +493,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         .map((it, kk) => keyExtractor(it, index * numColumns + kk))
         .join(':');
     } else {
+      // $FlowFixMe Can't call keyExtractor with an array
       return keyExtractor(items, index);
     }
   };
@@ -638,8 +546,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       ? 'ListItemComponent'
       : 'renderItem';
 
-    const renderer = props => {
+    const renderer = (props): React.Node => {
       if (ListItemComponent) {
+        // $FlowFixMe Component isn't valid
         return <ListItemComponent {...props} />;
       } else if (renderItem) {
         return renderItem(props);
