@@ -151,10 +151,6 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
                     automaticallyAdjustContentInsets={false}
                     keyboardDismissMode="on-drag"
                     renderSectionHeader={renderSectionHeader}
-                    backgroundColor={Platform.select({
-                      ios: 'transparent',
-                      default: undefined,
-                    })}
                   />
                 )}
               />
