@@ -314,9 +314,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         this._footerLength -
         this._scrollMetrics.visibleLength,
     );
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
+
+    if (this._scrollRef == null) {
+      return;
+    }
+
     this._scrollRef.scrollTo(
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
@@ -364,9 +366,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           (viewPosition || 0) *
             (this._scrollMetrics.visibleLength - frame.length),
       ) - (viewOffset || 0);
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
+
+    if (this._scrollRef == null) {
+      return;
+    }
+
     this._scrollRef.scrollTo(
       horizontal ? {x: offset, animated} : {y: offset, animated},
     );
@@ -402,9 +406,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
    */
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     const {animated, offset} = params;
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
+
+    if (this._scrollRef == null) {
+      return;
+    }
+
     this._scrollRef.scrollTo(
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
@@ -421,9 +427,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   flashScrollIndicators() {
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
+    if (this._scrollRef == null) {
+      return;
+    }
+
     this._scrollRef.flashScrollIndicators();
   }
 
@@ -1019,13 +1026,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           ? this.props.invertStickyHeaders
           : this.props.inverted,
       stickyHeaderIndices,
+      style: inversionStyle
+        ? [inversionStyle, this.props.style]
+        : this.props.style,
     };
-    if (inversionStyle) {
-      /* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.70 was deployed. To see the error delete
-       * this comment and run Flow. */
-      scrollProps.style = [inversionStyle, this.props.style];
-    }
 
     this._hasMore =
       this.state.last < this.props.getItemCount(this.props.data) - 1;
