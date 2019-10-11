@@ -335,7 +335,22 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 - (NSString *)viewNameForReactTag:(NSNumber *)reactTag
 {
   RCTAssertUIManagerQueue();
-  return _shadowViewRegistry[reactTag].viewName;
+  NSString *name = _shadowViewRegistry[reactTag].viewName;
+  if (name) {
+    return name;
+  }
+  
+  UIView *view = _viewRegistry[reactTag];
+  
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+
+  if ([view respondsToSelector:@selector(componentViewName_DO_NOT_USE_THIS_IS_BROKEN)]) {
+    return [view performSelector:@selector(componentViewName_DO_NOT_USE_THIS_IS_BROKEN)];
+  }
+
+#pragma clang diagnostic pop
+  return nil;
 }
 
 - (UIView *)viewForReactTag:(NSNumber *)reactTag

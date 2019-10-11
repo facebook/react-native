@@ -8,6 +8,8 @@
 #import "RCTScrollViewComponentView.h"
 
 #import <React/RCTAssert.h>
+#import <React/RCTBridge+Private.h>
+#import <React/RCTScrollEvent.h>
 
 #import <react/components/scrollview/ScrollViewComponentDescriptor.h>
 #import <react/components/scrollview/ScrollViewEventEmitter.h>
@@ -19,6 +21,21 @@
 #import "RCTEnhancedScrollView.h"
 
 using namespace facebook::react;
+
+static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteger tag)
+{
+  static uint16_t coalescingKey = 0;
+  RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithEventName:@"onScroll"
+                                                                 reactTag:[NSNumber numberWithInt:tag]
+                                                  scrollViewContentOffset:scrollView.contentOffset
+                                                   scrollViewContentInset:scrollView.contentInset
+                                                    scrollViewContentSize:scrollView.contentSize
+                                                          scrollViewFrame:scrollView.frame
+                                                      scrollViewZoomScale:scrollView.zoomScale
+                                                                 userData:nil
+                                                            coalescingKey:coalescingKey];
+  [[RCTBridge currentBridge].eventDispatcher sendEvent:scrollEvent];
+}
 
 @interface RCTScrollViewComponentView () <UIScrollViewDelegate>
 
@@ -211,6 +228,9 @@ using namespace facebook::react;
   if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
     _lastScrollEventDispatchTime = now;
     std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
+    // Once Fabric implements proper NativeAnimationDriver, this should be removed.
+    // This is just a workaround to allow animations based on onScroll event.
+    RCTSendPaperScrollEvent_DEPRECATED(scrollView, self.tag);
   }
 }
 
