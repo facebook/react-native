@@ -5,9 +5,6 @@
 
 #pragma once
 
-#include <fcntl.h>
-#include <sys/mman.h>
-
 #include <folly/Exception.h>
 
 #ifndef RN_EXPORT

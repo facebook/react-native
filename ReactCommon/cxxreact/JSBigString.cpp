@@ -5,14 +5,13 @@
 
 #include "JSBigString.h"
 
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
 #include <glog/logging.h>
 
 #include <folly/Memory.h>
+#include <folly/portability/Fcntl.h>
 #include <folly/portability/SysMman.h>
+#include <folly/portability/SysStat.h>
+#include <folly/portability/Unistd.h>
 #include <folly/ScopeGuard.h>
 
 namespace facebook {
@@ -29,7 +28,7 @@ JSBigFileString::JSBigFileString(int fd, size_t size, off_t offset /*= 0*/)
   // of the offset within the page that we must alter the mmap pointer by to
   // get the final desired offset.
   if (offset != 0) {
-    const static auto ps = getpagesize();
+    const static auto ps = sysconf(_SC_PAGESIZE);
     auto d = lldiv(offset, ps);
 
     m_mapOff = d.quot;
@@ -82,7 +81,7 @@ static off_t maybeRemap(char *data, size_t size, int fd) {
   {
     // System page size must be at least as granular as the remapping.
     // TODO: Consider fallback that reads entire file into memory.
-    const size_t systemPS = getpagesize();
+    const size_t systemPS = sysconf(_SC_PAGESIZE);
     CHECK(filePS >= systemPS)
       << "filePS: " << filePS
       << "systemPS: " << systemPS;
