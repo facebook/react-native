@@ -12,7 +12,6 @@
 
 const DeprecatedColorPropType = require('./DeprecatedColorPropType');
 const DeprecatedViewPropTypes = require('./DeprecatedViewPropTypes');
-const DocumentSelectionState = require('../vendor/document/selection/DocumentSelectionState');
 const PropTypes = require('prop-types');
 const Text = require('../Text/Text');
 
@@ -388,22 +387,6 @@ module.exports = {
    * The highlight and cursor color of the text input.
    */
   selectionColor: DeprecatedColorPropType,
-  /**
-   * An instance of `DocumentSelectionState`, this is some state that is responsible for
-   * maintaining selection information for a document.
-   *
-   * Some functionality that can be performed with this instance is:
-   *
-   * - `blur()`
-   * - `focus()`
-   * - `update()`
-   *
-   * > You can reference `DocumentSelectionState` in
-   * > [`vendor/document/selection/DocumentSelectionState.js`](https://github.com/facebook/react-native/blob/master/Libraries/vendor/document/selection/DocumentSelectionState.js)
-   *
-   * @platform ios
-   */
-  selectionState: (PropTypes.instanceOf(DocumentSelectionState): void),
   /**
    * The start and end of the text input's selection. Set start and end to
    * the same value to position the cursor.

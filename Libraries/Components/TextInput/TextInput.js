@@ -10,7 +10,6 @@
 'use strict';
 
 const DeprecatedTextInputPropTypes = require('../../DeprecatedPropTypes/DeprecatedTextInputPropTypes');
-const DocumentSelectionState = require('../../vendor/document/selection/DocumentSelectionState');
 const NativeMethodsMixin = require('../../Renderer/shims/NativeMethodsMixin');
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
@@ -220,23 +219,6 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   enablesReturnKeyAutomatically?: ?boolean,
-
-  /**
-   * An instance of `DocumentSelectionState`, this is some state that is responsible for
-   * maintaining selection information for a document.
-   *
-   * Some functionality that can be performed with this instance is:
-   *
-   * - `blur()`
-   * - `focus()`
-   * - `update()`
-   *
-   * > You can reference `DocumentSelectionState` in
-   * > [`vendor/document/selection/DocumentSelectionState.js`](https://github.com/facebook/react-native/blob/master/Libraries/vendor/document/selection/DocumentSelectionState.js)
-   *
-   * @platform ios
-   */
-  selectionState?: ?DocumentSelectionState,
 
   /**
    * When the clear button should appear on the right side of the text view.
@@ -1115,10 +1097,6 @@ const TextInput = createReactClass({
     if (this.props.onFocus) {
       this.props.onFocus(event);
     }
-
-    if (this.props.selectionState) {
-      this.props.selectionState.focus();
-    }
   },
 
   _onPress: function(event: PressEvent) {
@@ -1161,7 +1139,7 @@ const TextInput = createReactClass({
 
     this._lastNativeSelection = event.nativeEvent.selection;
 
-    if (this.props.selection || this.props.selectionState) {
+    if (this.props.selection) {
       this.forceUpdate();
     }
   },
@@ -1198,10 +1176,6 @@ const TextInput = createReactClass({
     ) {
       this._inputRef.setNativeProps(nativeProps);
     }
-
-    if (this.props.selectionState && selection) {
-      this.props.selectionState.update(selection.start, selection.end);
-    }
   },
 
   _onBlur: function(event: BlurEvent) {
@@ -1210,10 +1184,6 @@ const TextInput = createReactClass({
     this.blur();
     if (this.props.onBlur) {
       this.props.onBlur(event);
-    }
-
-    if (this.props.selectionState) {
-      this.props.selectionState.blur();
     }
   },
 
