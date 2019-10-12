@@ -22,7 +22,6 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 const TextAncestor = require('../Text/TextAncestor');
 
 const flattenStyle = require('../StyleSheet/flattenStyle');
-const merge = require('../vendor/core/merge');
 const resolveAssetSource = require('./resolveAssetSource');
 
 const {ImageLoader} = NativeModules;
@@ -273,7 +272,8 @@ let Image = (props: ImagePropsType, forwardedRef) => {
   }
 
   const {onLoadStart, onLoad, onLoadEnd, onError} = props;
-  const nativeProps = merge(props, {
+  const nativeProps = {
+    ...props,
     style,
     shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
     src: sources,
@@ -285,7 +285,7 @@ let Image = (props: ImagePropsType, forwardedRef) => {
       ? loadingIndicatorSource.uri
       : null,
     ref: forwardedRef,
-  });
+  };
 
   return (
     <TextAncestor.Consumer>
