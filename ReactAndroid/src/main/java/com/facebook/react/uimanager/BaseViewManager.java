@@ -172,9 +172,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         updateViewContentDescription(view);
         break;
       } else if (view.isAccessibilityFocused()) {
-        // Send a click event to make sure Talkback get notified for the state
-        // changes that don't happen upon users' click. For the state changes
-        // that happens immediatly, Talkback will skip the duplicated click event.
+        // Internally Talkback ONLY uses TYPE_VIEW_CLICKED for "checked" and
+        // "selected" announcements. Send a click event to make sure Talkback
+        // get notified for the state changes that don't happen upon users' click.
+        // For the state changes that happens immediately, Talkback will skip
+        // the duplicated click event.
         view.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
       }
     }
