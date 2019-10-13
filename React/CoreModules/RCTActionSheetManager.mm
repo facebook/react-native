@@ -183,7 +183,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(JS::NativeActionSheetManager:
   shareController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
     if (activityError) {
       failureCallback(@[RCTJSErrorFromNSError(activityError)]);
-    } else if (completed) {
+    } else if (completed || activityType == nil) {
       successCallback(@[@(completed), RCTNullIfNil(activityType)]);
     }
   };
