@@ -236,7 +236,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
    * This runs only on the main thread, but crashes the subclass
    * RCTAssertMainQueue();
    */
-  [self invalidate];
+  [self invalidate:nil];
 }
 
 - (void)setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate
@@ -313,12 +313,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
    * Any thread
    */
   dispatch_async(dispatch_get_main_queue(), ^{
-    // WARNING: Invalidation is async, so it may not finish before re-setting up the bridge,
-    // causing some issues. TODO: revisit this post-Fabric/TurboModule.
-    [self invalidate];
-    // Reload is a special case, do not preserve launchOptions and treat reload as a fresh start
-    self->_launchOptions = nil;
-    [self setUp];
+    [self invalidate:^{
+    	// Reload is a special case, do not preserve launchOptions and treat reload as a fresh start
+      self->_launchOptions = nil;
+      [self setUp];
+	  }];
   });
 }
 
@@ -384,14 +383,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [_batchedBridge isBatchActive];
 }
 
-- (void)invalidate
+- (void)invalidate:(dispatch_block_t)block
 {
   RCTBridge *batchedBridge = self.batchedBridge;
   self.batchedBridge = nil;
 
   if (batchedBridge) {
     RCTExecuteOnMainQueue(^{
-      [batchedBridge invalidate];
+      [batchedBridge invalidate:nil];
     });
   }
 }

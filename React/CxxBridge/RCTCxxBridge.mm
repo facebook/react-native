@@ -463,6 +463,9 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
 {
+  if (_didInvalidate) {
+    return nil;
+  }
   if (RCTTurboModuleEnabled() && _turboModuleLookupDelegate) {
     const char* moduleNameCStr = [moduleName UTF8String];
     if (lazilyLoad || [_turboModuleLookupDelegate moduleIsInitialized:moduleNameCStr]) {
@@ -1059,9 +1062,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 #pragma mark - RCTInvalidating
 
-- (void)invalidate
+- (void)invalidate:(dispatch_block_t)block
 {
   if (_didInvalidate) {
+    if (block) {
+      block();
+    }
     return;
   }
 
@@ -1132,6 +1138,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
     [self->_jsThread cancel];
     self->_jsThread = nil;
     CFRunLoopStop(CFRunLoopGetCurrent());
+    if (block) {
+      block();
+    }
   }];
 }
 
