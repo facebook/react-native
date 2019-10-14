@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>OfficeReact.Apple</id>
-    <version>__BuildBuildNumber__</version>
+    <version>$buildNumber$</version>
     <description>Contains Mac and iOS Implementations of React-Native</description>
     <authors>Microsoft</authors>
     <projectUrl>https://github.com/microsoft/react-native</projectUrl>
