@@ -73,7 +73,7 @@
 <p>Some caveats:</p>
 <ul>
 <li>Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.</li>
-<li>This is a <code>PureComponent</code> which means that it will not re-render if <code>props</code> remain shallow-equal. Make sure that everything your <code>renderItem</code> function depends on is passed as a prop (e.g. <code>extraData</code>) that is not <code>===</code> after updates, otherwise your UI may not update on changes. This includes the <code>data</code> prop and parent component state.</li>
+<li>This is a <code>PureComponent</code> which means that it will not re-render if <code>props</code> are shallow-equal. Make sure that everything your <code>renderItem</code> function depends on is passed as a prop (e.g. <code>extraData</code>) that is not <code>===</code> after updates, otherwise your UI may not update on changes. This includes the <code>data</code> prop and parent component state.</li>
 <li>In order to constrain memory and enable smooth scrolling, content is rendered asynchronously offscreen. This means it's possible to scroll faster than the fill rate and momentarily see blank content. This is a tradeoff that can be adjusted to suit the needs of each application, and we are working on improving it behind the scenes.</li>
 <li>By default, the list looks for a <code>key</code> prop on each item and uses that for the React key. Alternatively, you can provide a custom <code>keyExtractor</code> prop.</li>
 </ul>
