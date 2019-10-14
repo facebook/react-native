@@ -17,9 +17,9 @@ import type {
   Int32,
   WithDefault,
 } from '../../Types/CodegenTypes';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 import type {ViewProps} from '../../Components/View/ViewPropTypes';
 
 type PickerItem = $ReadOnly<{|
@@ -46,8 +46,8 @@ type NativeProps = $ReadOnly<{|
   onSelect?: DirectEventHandler<PickerItemSelectEvent>,
 |}>;
 
-type ReactPicker = Class<NativeComponent<NativeProps>>;
-
-module.exports = ((requireNativeComponent(
+const AndroidDropdownPickerNativeComponent: HostComponent<NativeProps> = requireNativeComponent<NativeProps>(
   'AndroidDropdownPicker',
-): any): ReactPicker);
+);
+
+module.exports = AndroidDropdownPickerNativeComponent;

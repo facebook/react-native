@@ -12,9 +12,9 @@
 
 const {requireNativeComponent} = require('react-native');
 
+import type {HostComponent} from '../../Libraries/Renderer/shims/ReactNativeTypes';
 import type {SyntheticEvent} from '../../Libraries/Types/CoreEventTypes';
 import type {ViewProps} from '../../Libraries/Components/View/ViewPropTypes';
-import type {NativeComponent} from '../../Libraries/Renderer/shims/ReactNative';
 
 type SnapshotReadyEvent = SyntheticEvent<
   $ReadOnly<{
@@ -28,8 +28,8 @@ type NativeProps = $ReadOnly<{|
   testIdentifier?: ?string,
 |}>;
 
-type SnapshotViewNativeType = Class<NativeComponent<NativeProps>>;
-
-module.exports = ((requireNativeComponent(
+const RCTSnapshotNativeComponent: HostComponent<NativeProps> = requireNativeComponent<NativeProps>(
   'RCTSnapshot',
-): any): SnapshotViewNativeType);
+);
+
+module.exports = RCTSnapshotNativeComponent;

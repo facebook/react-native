@@ -19,7 +19,7 @@ import type {
   Int32,
   WithDefault,
 } from 'react-native/Libraries/Types/CodegenTypes';
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import {requireNativeComponent} from 'react-native';
@@ -534,8 +534,8 @@ export type NativeProps = $ReadOnly<{|
   text?: ?string,
 |}>;
 
-type AndroidTextInputComponentType = Class<NativeComponent<NativeProps>>;
-
-export default ((requireNativeComponent(
+const AndroidTextInputNativeComponent: HostComponent<NativeProps> = requireNativeComponent<NativeProps>(
   'AndroidTextInput',
-): any): AndroidTextInputComponentType);
+);
+
+export default AndroidTextInputNativeComponent;

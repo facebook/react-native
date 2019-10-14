@@ -11,9 +11,9 @@
 
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
-import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 
 type CheckBoxEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -45,8 +45,8 @@ type NativeProps = $ReadOnly<{|
   tintColors: {|true: ?number, false: ?number|} | typeof undefined,
 |}>;
 
-type CheckBoxNativeType = Class<NativeComponent<NativeProps>>;
-
-module.exports = ((requireNativeComponent(
+const AndroidCheckBoxNativeComponent: HostComponent<NativeProps> = requireNativeComponent<NativeProps>(
   'AndroidCheckBox',
-): any): CheckBoxNativeType);
+);
+
+module.exports = AndroidCheckBoxNativeComponent;
