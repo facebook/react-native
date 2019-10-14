@@ -477,15 +477,57 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
 
   for (size_t i = 0; i < count; i++) {
     const jsi::Value *arg = &args[i];
-    const char *objCArgType = [methodSignature getArgumentTypeAtIndex:i + 2];
+    const std::string objCArgType = [methodSignature getArgumentTypeAtIndex:i + 2];
 
     if (arg->isBool()) {
       bool v = arg->getBool();
 
       /**
+       * Convert numbers using RCTConvert if possible.
+       */
+      NSString *methodNameNSString = @(methodName.c_str());
+      NSString *argumentType = getArgumentTypeName(methodNameNSString, i);
+
+      if (argumentType != nil) {
+        NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
+        SEL rctConvertSelector = NSSelectorFromString(rctConvertMethodName);
+
+        if ([RCTConvert respondsToSelector:rctConvertSelector]) {
+          if (objCArgType == @encode(id)) {
+            id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
+            id convertedObjCArg = convert([RCTConvert class], rctConvertSelector, [NSNumber numberWithBool:v]);
+
+            [inv setArgument:(void *)&convertedObjCArg atIndex:i + 2];
+            if (convertedObjCArg) {
+              [retainedObjectsForInvocation addObject:convertedObjCArg];
+            }
+
+            continue;
+          }
+
+          /**
+           * This is necessary because RCTConvert could be responsible for converting BOOLs to
+           * type aliases of BOOL.
+           */
+          if (objCArgType == @encode(BOOL)) {
+            BOOL (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
+            BOOL convertedObjCArg = convert([RCTConvert class], rctConvertSelector, [NSNumber numberWithBool:v]);
+            [inv setArgument:(void *)&convertedObjCArg atIndex:i + 2];
+
+            continue;
+          }
+
+          throw std::runtime_error(
+              "Error when invoking TurboModule method " + name_ + "." + methodName + "(). Could not convert argument " +
+              std::to_string(i) + " from JS boolean to ObjC type '" + std::to_string(objCArgType[0]) +
+              "'. Supported types are BOOL (\"" + @encode(BOOL) + "\") and object (\"" + @encode(id) + "\").");
+        }
+      }
+
+      /**
        * JS type checking ensures the Objective C argument here is either a BOOL or NSNumber*.
        */
-      if (objCArgType[0] == _C_ID) {
+      if (objCArgType == @encode(id)) {
         id objCArg = [NSNumber numberWithBool:v];
         [inv setArgument:(void *)&objCArg atIndex:i + 2];
         [retainedObjectsForInvocation addObject:objCArg];
@@ -500,33 +542,57 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
       double v = arg->getNumber();
 
       /**
-       * JS type checking ensures the Objective C argument here is either a double or NSNumber*.
+       * Convert numbers using RCTConvert if possible.
        */
-      if (objCArgType[0] == _C_ID) {
-        id objCArg = [NSNumber numberWithDouble:v];
-        NSString *methodNameNSString = @(methodName.c_str());
+      NSString *methodNameNSString = @(methodName.c_str());
+      NSString *argumentType = getArgumentTypeName(methodNameNSString, i);
 
-        /**
-         * Convert numbers using RCTConvert if possible.
-         */
-        NSString *argumentType = getArgumentTypeName(methodNameNSString, i);
-        if (argumentType != nil) {
-          NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
-          SEL rctConvertSelector = NSSelectorFromString(rctConvertMethodName);
+      if (argumentType != nil) {
+        NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
+        SEL rctConvertSelector = NSSelectorFromString(rctConvertMethodName);
 
-          if ([RCTConvert respondsToSelector:rctConvertSelector]) {
-            // Message dispatch logic from old infra
+        if ([RCTConvert respondsToSelector:rctConvertSelector]) {
+          if (objCArgType == @encode(id)) {
             id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
-            id convertedObjCArg = convert([RCTConvert class], rctConvertSelector, objCArg);
+            id convertedObjCArg = convert([RCTConvert class], rctConvertSelector, [NSNumber numberWithDouble:v]);
 
             [inv setArgument:(void *)&convertedObjCArg atIndex:i + 2];
             if (convertedObjCArg) {
               [retainedObjectsForInvocation addObject:convertedObjCArg];
             }
+
             continue;
           }
-        }
 
+          /**
+           * This is necessary because RCTConvert could be responsible for converting doubles to
+           * type aliases of double. For example:
+           *
+           * Consider the following typedef:
+           *   typedef double NSTimeInterval;
+           *
+           * RCTConvert will convert our doubles to NSTimeInterval by dividing them by 1000.
+           */
+          if (objCArgType == @encode(double)) {
+            double (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
+            double convertedObjCArg = convert([RCTConvert class], rctConvertSelector, [NSNumber numberWithDouble:v]);
+            [inv setArgument:(void *)&convertedObjCArg atIndex:i + 2];
+
+            continue;
+          }
+
+          throw std::runtime_error(
+              "Error when invoking TurboModule method " + name_ + "." + methodName + "(). Could not convert argument " +
+              std::to_string(i) + " from JS number to ObjC type '" + std::to_string(objCArgType[0]) +
+              "'. Supported types are double (\"" + @encode(double) + "\") and object (\"" + @encode(id) + "\").");
+        }
+      }
+
+      /**
+       * JS type checking ensures the Objective C argument here is either a double or NSNumber*.
+       */
+      if (objCArgType == @encode(id)) {
+        id objCArg = [NSNumber numberWithDouble:v];
         [inv setArgument:(void *)&objCArg atIndex:i + 2];
         [retainedObjectsForInvocation addObject:objCArg];
       } else {
@@ -547,7 +613,7 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
       /**
        * Convert objects using RCTConvert.
        */
-      if (objCArgType[0] == _C_ID) {
+      if (objCArgType == @encode(id)) {
         NSString *argumentType = getArgumentTypeName(methodNameNSString, i);
         if (argumentType != nil) {
           NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
