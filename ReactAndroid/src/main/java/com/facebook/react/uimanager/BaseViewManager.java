@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewParent;
+import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
@@ -170,6 +171,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
               && accessibilityState.getType(STATE_CHECKED) == ReadableType.String)) {
         updateViewContentDescription(view);
         break;
+      } else if (view.isAccessibilityFocused()) {
+        // Internally Talkback ONLY uses TYPE_VIEW_CLICKED for "checked" and
+        // "selected" announcements. Send a click event to make sure Talkback
+        // get notified for the state changes that don't happen upon users' click.
+        // For the state changes that happens immediately, Talkback will skip
+        // the duplicated click event.
+        view.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
       }
     }
   }
