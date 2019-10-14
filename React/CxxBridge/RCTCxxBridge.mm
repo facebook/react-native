@@ -463,6 +463,9 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
 {
+  if (!_moduleDataByName) {
+    return nil;
+  }
   if (RCTTurboModuleEnabled() && _turboModuleLookupDelegate) {
     const char* moduleNameCStr = [moduleName UTF8String];
     if (lazilyLoad || [_turboModuleLookupDelegate moduleIsInitialized:moduleNameCStr]) {
