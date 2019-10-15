@@ -22,25 +22,28 @@ RCTImageResponseObserverProxy::RCTImageResponseObserverProxy(id<RCTImageResponse
 void RCTImageResponseObserverProxy::didReceiveImage(ImageResponse const &imageResponse) const
 {
   UIImage *image = (UIImage *)unwrapManagedObject(imageResponse.getImage());
+  id<RCTImageResponseDelegate> delegate = delegate_;
   auto this_ = this;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [delegate_ didReceiveImage:image fromObserver:this_];
+    [delegate didReceiveImage:image fromObserver:this_];
   });
 }
 
 void RCTImageResponseObserverProxy::didReceiveProgress(float progress) const
 {
   auto this_ = this;
+  id<RCTImageResponseDelegate> delegate = delegate_;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [delegate_ didReceiveProgress:progress fromObserver:this_];
+    [delegate didReceiveProgress:progress fromObserver:this_];
   });
 }
 
 void RCTImageResponseObserverProxy::didReceiveFailure() const
 {
   auto this_ = this;
+  id<RCTImageResponseDelegate> delegate = delegate_;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [delegate_ didReceiveFailureFromObserver:this_];
+    [delegate didReceiveFailureFromObserver:this_];
   });
 }
 
