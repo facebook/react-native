@@ -24,7 +24,7 @@ rn_android_prebuilt_aar(
 
 fb_native.remote_file(
     name = "monitor-binary-aar",
-    sha1 = "810a7aacb5106d92cdf648b2497694c4ebf73500",
+    sha1 = "443c2f33d4e19f868cd4e4437909ec8dcf43f053",
     url = "mvn:androidx.test:monitor:aar:1.1.1",
 )
 
