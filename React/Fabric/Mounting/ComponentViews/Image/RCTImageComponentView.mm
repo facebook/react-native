@@ -7,6 +7,7 @@
 
 #import "RCTImageComponentView.h"
 
+#import <React/RCTImageResponseDelegate.h>
 #import <React/RCTImageResponseObserverProxy.h>
 #import <react/components/image/ImageComponentDescriptor.h>
 #import <react/components/image/ImageEventEmitter.h>
@@ -16,6 +17,9 @@
 #import <react/imagemanager/RCTImagePrimitivesConversions.h>
 
 #import "RCTConversions.h"
+
+@interface RCTImageComponentView () <RCTImageResponseDelegate>
+@end
 
 @implementation RCTImageComponentView {
   UIImageView *_imageView;

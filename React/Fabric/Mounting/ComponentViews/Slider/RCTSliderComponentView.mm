@@ -7,6 +7,7 @@
 
 #import "RCTSliderComponentView.h"
 
+#import <React/RCTImageResponseDelegate.h>
 #import <React/RCTImageResponseObserverProxy.h>
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
@@ -14,6 +15,9 @@
 #import <react/components/slider/SliderLocalData.h>
 
 using namespace facebook::react;
+
+@interface RCTSliderComponentView () <RCTImageResponseDelegate>
+@end
 
 @implementation RCTSliderComponentView {
   UISlider *_sliderView;
@@ -312,7 +316,7 @@ using namespace facebook::react;
 
 #pragma mark - RCTImageResponseDelegate
 
-- (void)didReceiveImage:(UIImage *)image fromObserver:(void *)observer
+- (void)didReceiveImage:(UIImage *)image fromObserver:(void const *)observer
 {
   if (observer == _trackImageResponseObserverProxy.get()) {
     self.trackImage = image;
@@ -325,11 +329,11 @@ using namespace facebook::react;
   }
 }
 
-- (void)didReceiveProgress:(float)progress fromObserver:(void *)observer
+- (void)didReceiveProgress:(float)progress fromObserver:(void const *)observer
 {
 }
 
-- (void)didReceiveFailureFromObserver:(void *)observer
+- (void)didReceiveFailureFromObserver:(void const *)observer
 {
 }
 
