@@ -45,5 +45,5 @@ type NativeProps = $ReadOnly<{|
 |}>;
 
 export default (codegenNativeComponent<NativeProps>('PullToRefreshView', {
-  paperComponentName: 'RCTRefreshControl',
+  paperComponentNameDeprecated: 'RCTRefreshControl',
 }): HostComponent<NativeProps>);

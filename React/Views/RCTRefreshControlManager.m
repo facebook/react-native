@@ -11,7 +11,7 @@
 
 @implementation RCTRefreshControlManager
 
-RCT_EXPORT_MODULE()
+RCT_EXPORT_MODULE(PullToRefreshView)
 
 - (UIView *)view
 {
