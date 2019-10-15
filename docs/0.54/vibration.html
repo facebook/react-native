@@ -72,7 +72,7 @@
 <p>There will be no effect on devices that do not support Vibration, eg. the simulator.</p>
 <p><strong>Note for Android:</strong> add <code>&lt;uses-permission android:name=&quot;android.permission.VIBRATE&quot;/&gt;</code> to <code>AndroidManifest.xml</code></p>
 <p>Since the <strong>vibration duration in iOS is not configurable</strong>, so there are some differences with Android. In Android, if <code>pattern</code> is a number, it specifies the vibration duration in ms. If <code>pattern</code> is an array, those odd indices are the vibration duration, while the even ones are the separation time.</p>
-<p>In iOS, invoking <code>vibrate(duration)</code> will just ignore the duration and vibrate for a fixed time. While the <code>pattern</code> array is used to define the duration between each vibration. See below example for more.</p>
+<p>In iOS, invoking <code>vibrate(duration)</code> will ignore the duration and vibrate for a fixed time. While the <code>pattern</code> array is used to define the duration between each vibration. See below example for more.</p>
 <p>Repeatable vibration is also supported, the vibration will repeat with defined pattern until <code>cancel()</code> is called.</p>
 <p>Example:</p>
 <pre><code class="hljs">const DURATION = <span class="hljs-number">10000</span>
