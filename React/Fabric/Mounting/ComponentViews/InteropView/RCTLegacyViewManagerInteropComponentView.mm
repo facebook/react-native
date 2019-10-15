@@ -32,7 +32,8 @@ using namespace facebook::react;
 
 + (BOOL)isSupported:(NSString *)componentName
 {
-  static NSSet<NSString *> *supportedComponents = [NSSet setWithObjects:@"Picker", @"DatePicker", @"ProgressView", nil];
+  static NSSet<NSString *> *supportedComponents =
+      [NSSet setWithObjects:@"Picker", @"DatePicker", @"ProgressView", @"SegmentedControl", nil];
   return [supportedComponents containsObject:componentName];
 }
 
