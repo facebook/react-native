@@ -360,7 +360,7 @@ static Class getFallbackClassFromName(const char *name)
                       object:strongBridge
                     userInfo:@{
                       @"module" : module,
-                      @"bridge" : RCTNullIfNil(strongBridge == nil ? nil : strongBridge.parentBridge)
+                      @"bridge" : RCTNullIfNil([strongBridge parentBridge])
                     }];
   };
 
