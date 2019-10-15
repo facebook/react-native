@@ -109,16 +109,16 @@ npm start <span class="hljs-comment"># you can also use: expo start</span>
 </ul>
 <p>If you're curious to learn more about React Native, continue on to the <a href="/react-native/docs/0.47/tutorial">Tutorial</a>.</p>
 <p><h3>Running your app on a simulator or virtual device</h3></p>
-<p>Expo CLI makes it really easy to run your React Native app on a physical device without setting up a development environment. If you want to run your app on the iOS Simulator or an Android Virtual Device, please refer to the instructions for &quot;React Native CLI Quickstart&quot; to learn how to install Xcode or set up your Android development environment.</p>
+<p>Expo CLI allows you to run your React Native app on a physical device without setting up a development environment. If you want to run your app on the iOS Simulator or an Android Virtual Device, please refer to the instructions for &quot;React Native CLI Quickstart&quot; to learn how to install Xcode or set up your Android development environment.</p>
 <p>Once you've set these up, you can launch your app on an Android Virtual Device by running <code>npm run android</code>, or on the iOS Simulator by running <code>npm run ios</code> (macOS only).</p>
 <p><h3>Caveats</h3></p>
 <p>Because you don't build any native code when using Expo to create a project, it's not possible to include custom native modules beyond the React Native APIs and components that are available in the Expo client app.</p>
-<p>If you know that you'll eventually need to include your own native code, Expo is still a good way to get started. In that case you'll just need to &quot;<a href="https://docs.expo.io/versions/latest/workflow/customizing/">eject</a>&quot; eventually to create your own native builds. If you do eject, the &quot;React Native CLI Quickstart&quot; instructions will be required to continue working on your project.</p>
+<p>If you know that you'll eventually need to include your own native code, Expo is still a good way to get started. In that case you'll need to &quot;<a href="https://docs.expo.io/versions/latest/workflow/customizing/">eject</a>&quot; eventually to create your own native builds. If you do eject, the &quot;React Native CLI Quickstart&quot; instructions will be required to continue working on your project.</p>
 <p>Expo CLI configures your project to use the most recent React Native version that is supported by the Expo client app. The Expo client app usually gains support for a given React Native version about a week after the React Native version is released as stable. You can check <a href="https://docs.expo.io/versions/latest/sdk/overview/#sdk-version">this document</a> to find out what versions are supported.</p>
 <p>If you're integrating React Native into an existing project, you'll want to skip Expo CLI and go directly to setting up the native build environment. Select &quot;React Native CLI Quickstart&quot; above for instructions on configuring a native build environment for React Native.</p>
 <p><block class="native mac windows linux ios android" /></p>
 <p>Follow these instructions if you need to build native code in your project. For example, if you are integrating React Native into an existing application, or if you "ejected" from <a href="getting-started" onclick="displayTab('guide', 'quickstart')">Expo</a>, you'll need this section.</p>
-<p>The instructions are a bit different depending on your development operating system, and whether you want to start developing for iOS or Android. If you want to develop for both iOS and Android, that's fine - you just have to pick one to start with, since the setup is a bit different.</p>
+<p>The instructions are a bit different depending on your development operating system, and whether you want to start developing for iOS or Android. If you want to develop for both iOS and Android, that's fine - you can pick one to start with, since the setup is a bit different.</p>
 <div class="toggler">
   <span>Development OS:</span>
   <span role="tablist" id="toggle-os">
@@ -327,7 +327,7 @@ npm start <span class="hljs-comment"># you can also use: expo start</span>
 <p><h3>Using a virtual device</h3></p>
 <p>If you use Android Studio to open <code>./AwesomeProject/android</code>, you can see the list of available Android Virtual Devices (AVDs) by opening the &quot;AVD Manager&quot; from within Android Studio. Look for an icon that looks like this:</p>
 <p><img src="/react-native/docs/assets/GettingStartedAndroidStudioAVD.png" alt="Android Studio AVD Manager"></p>
-<p>If you have just installed Android Studio, you will likely need to <a href="https://developer.android.com/studio/run/managing-avds.html">create a new AVD</a>. Select &quot;Create Virtual Device...&quot;, then pick any Phone from the list and click &quot;Next&quot;, then select the <strong>Pie</strong> API Level 28 image.</p>
+<p>If you have recently installed Android Studio, you will likely need to <a href="https://developer.android.com/studio/run/managing-avds.html">create a new AVD</a>. Select &quot;Create Virtual Device...&quot;, then pick any Phone from the list and click &quot;Next&quot;, then select the <strong>Pie</strong> API Level 28 image.</p>
 <p><block class="native linux android" /></p>
 <blockquote>
 <p>We recommend configuring <a href="https://developer.android.com/studio/run/emulator-acceleration.html#vm-linux">VM acceleration</a> on your system to improve performance. Once you've followed those instructions, go back to the AVD Manager.</p>
@@ -350,7 +350,7 @@ react-native <span class="hljs-keyword">run</span><span class="bash">-ios</span>
 </code></pre>
 <p>You should see your new app running in the iOS Simulator shortly.</p>
 <p><img src="/react-native/docs/assets/GettingStartediOSSuccess.png" alt="AwesomeProject on iOS"></p>
-<p><code>react-native run-ios</code> is just one way to run your app. You can also run it directly from within Xcode.</p>
+<p><code>react-native run-ios</code> is one way to run your app. You can also run it directly from within Xcode.</p>
 <blockquote>
 <p>If you can't get this to work, see the <a href="/react-native/docs/0.47/troubleshooting#content">Troubleshooting</a> page.</p>
 </blockquote>
@@ -368,7 +368,7 @@ react-native <span class="hljs-keyword">run</span><span class="bash">-android</s
 <p><block class="native windows android" /></p>
 <p><img src="/react-native/docs/assets/GettingStartedAndroidSuccessWindows.png" alt="AwesomeProject on Android"></p>
 <p><block class="native mac windows linux android" /></p>
-<p><code>react-native run-android</code> is just one way to run your app - you can also run it directly from within Android Studio.</p>
+<p><code>react-native run-android</code> is one way to run your app - you can also run it directly from within Android Studio.</p>
 <blockquote>
 <p>If you can't get this to work, see the <a href="/react-native/docs/0.47/troubleshooting#content">Troubleshooting</a> page.</p>
 </blockquote>

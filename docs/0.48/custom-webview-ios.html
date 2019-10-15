@@ -189,7 +189,7 @@ RCT_EXPORT_VIEW_PROPERTY(finalUrl, <span class="hljs-built_in">NSString</span>)
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 </code></pre>
-<p>Just like for regular native components, you must provide all your prop types in the component to have them forwarded on to the native component. However, if you have some prop types that are only used internally in component, you can add them to the <code>nativeOnly</code> property of the third argument previously mentioned. For event handlers, you have to use the value <code>true</code> instead of a regular prop type.</p>
+<p>Similar to regular native components, you must provide all your prop types in the component to have them forwarded on to the native component. However, if you have some prop types that are only used internally in component, you can add them to the <code>nativeOnly</code> property of the third argument previously mentioned. For event handlers, you have to use the value <code>true</code> instead of a regular prop type.</p>
 <p>For example, if you wanted to add an internal event handler called <code>onScrollToBottom</code>, you would use,</p>
 <pre><code class="hljs css language-jsx"><span class="token keyword">const</span> RCTCustomWebView <span class="token operator">=</span> <span class="token function">requireNativeComponent</span><span class="token punctuation">(</span>
   <span class="token string">'RCTCustomWebView'</span><span class="token punctuation">,</span>

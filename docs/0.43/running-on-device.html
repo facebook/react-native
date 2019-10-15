@@ -223,10 +223,12 @@ emulator-<span class="hljs-number">5554</span> offline   <span class="hljs-comme
 <li>Make sure your laptop and your phone are on the <strong>same</strong> Wi-Fi network.</li>
 <li>Open your React Native app on your device.</li>
 <li>You'll see a <a href="/react-native/docs/0.43/debugging#in-app-errors-and-warnings">red screen with an error</a>. This is OK. The following steps will fix that.</li>
-<li>Open the in-app <a href="/react-native/docs/0.43/debugging#accessing-the-in-app-developer-menu">Developer menu</a>.</li>
-<li>Go to <strong>Dev Settings</strong> → <strong>Debug server host &amp; port for device</strong>.</li>
-<li>Type in your machine's IP address and the port of the local dev server (e.g. 10.0.1.1:8081).</li>
-<li>Go back to the <strong>Developer menu</strong> and select <strong>Reload JS</strong>.</li>
+<li>Open the in-app <a href="/react-native/docs/0.43/debugging#accessing-the-in-app-developer-menu">Developer menu</a>.
+   <!-- alex ignore host -->
+5. Go to **Dev Settings** → **Debug server host & port for device**.
+6. Type in your machine's IP address and the port of the local dev server (e.g. 10.0.1.1:8081).
+7. Go back to the **Developer menu** and select **Reload JS**.
+</li>
 </ol>
 <p>You can now enable Live reloading from the <a href="/react-native/docs/0.43/debugging#accessing-the-in-app-developer-menu">Developer menu</a>. Your app will reload whenever your JavaScript code has changed.</p>
 <p><block class="mac ios" /></p>
@@ -246,7 +248,7 @@ emulator-<span class="hljs-number">5554</span> offline   <span class="hljs-comme
 <p>To configure your app to be built using the <code>Release</code> scheme, go to <strong>Product</strong> → <strong>Scheme</strong> → <strong>Edit Scheme</strong>. Select the <strong>Run</strong> tab in the sidebar, then set the Build Configuration dropdown to <code>Release</code>.</p>
 <p><img src="/react-native/docs/assets/ConfigureReleaseScheme.png" alt=""></p>
 <h4><a class="anchor" aria-hidden="true" id="pro-tips"></a><a href="#pro-tips" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Pro Tips</h4>
-<p>As your App Bundle grows in size, you may start to see a white screen flash between your splash screen and the display of your root application view. If this is the case, you can add the following code to <code>AppDelegate.m</code> in order to keep your splash screen displayed during the transition.</p>
+<p>As your App Bundle grows in size, you may start to see a blank screen flash between your splash screen and the display of your root application view. If this is the case, you can add the following code to <code>AppDelegate.m</code> in order to keep your splash screen displayed during the transition.</p>
 <pre><code class="hljs css language-objc">  <span class="hljs-comment">// Place this code after "[self.window makeKeyAndVisible]" and before "return YES;"</span>
   <span class="hljs-built_in">UIView</span>* launchScreenView = [[[<span class="hljs-built_in">NSBundle</span> mainBundle] loadNibNamed:<span class="hljs-string">@"LaunchScreen"</span> owner:<span class="hljs-keyword">self</span> options:<span class="hljs-literal">nil</span>] objectAtIndex:<span class="hljs-number">0</span>];
   launchScreenView.frame = <span class="hljs-keyword">self</span>.window.bounds;
