@@ -85,7 +85,8 @@ static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteg
 
 - (void)dealloc
 {
-  [_scrollViewDelegateSplitter removeDelegate:self];
+  // This is not strictly necessary but that prevents a crash caused by a bug in UIKit.
+  _scrollView.delegate = nil;
 }
 
 #pragma mark - RCTComponentViewProtocol
