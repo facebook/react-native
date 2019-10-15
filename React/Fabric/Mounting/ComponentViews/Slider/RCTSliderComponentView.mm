@@ -55,10 +55,10 @@ using namespace facebook::react;
 
     _sliderView.value = defaultProps->value;
 
-    _trackImageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>((__bridge void *)self);
-    _minimumTrackImageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>((__bridge void *)self);
-    _maximumTrackImageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>((__bridge void *)self);
-    _thumbImageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>((__bridge void *)self);
+    _trackImageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>(self);
+    _minimumTrackImageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>(self);
+    _maximumTrackImageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>(self);
+    _thumbImageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>(self);
 
     self.contentView = _sliderView;
   }

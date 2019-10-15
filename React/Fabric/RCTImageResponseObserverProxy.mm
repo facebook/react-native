@@ -14,8 +14,8 @@
 namespace facebook {
 namespace react {
 
-RCTImageResponseObserverProxy::RCTImageResponseObserverProxy(void *delegate)
-    : delegate_((__bridge id<RCTImageResponseDelegate>)delegate)
+RCTImageResponseObserverProxy::RCTImageResponseObserverProxy(id<RCTImageResponseDelegate> delegate)
+    : delegate_(delegate)
 {
 }
 

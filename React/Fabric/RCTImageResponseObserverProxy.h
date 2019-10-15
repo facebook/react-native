@@ -18,7 +18,7 @@ namespace react {
 
 class RCTImageResponseObserverProxy final : public ImageResponseObserver {
  public:
-  RCTImageResponseObserverProxy(void *delegate);
+  RCTImageResponseObserverProxy(id<RCTImageResponseDelegate> delegate);
 
   void didReceiveImage(ImageResponse const &imageResponse) const override;
   void didReceiveProgress(float progress) const override;

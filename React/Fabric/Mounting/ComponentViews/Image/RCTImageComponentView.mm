@@ -39,7 +39,7 @@
 
     _imageView.contentMode = (UIViewContentMode)RCTResizeModeFromImageResizeMode(defaultProps->resizeMode);
 
-    _imageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>((__bridge void *)self);
+    _imageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>(self);
 
     self.contentView = _imageView;
   }
