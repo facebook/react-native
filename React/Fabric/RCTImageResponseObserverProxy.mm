@@ -9,6 +9,7 @@
 
 #import <react/imagemanager/ImageResponse.h>
 #import <react/imagemanager/ImageResponseObserver.h>
+#import <react/utils/ManagedObjectWrapper.h>
 
 namespace facebook {
 namespace react {
@@ -20,7 +21,7 @@ RCTImageResponseObserverProxy::RCTImageResponseObserverProxy(void *delegate)
 
 void RCTImageResponseObserverProxy::didReceiveImage(ImageResponse const &imageResponse) const
 {
-  UIImage *image = (__bridge UIImage *)imageResponse.getImage().get();
+  UIImage *image = (UIImage *)unwrapManagedObject(imageResponse.getImage());
   auto this_ = this;
   dispatch_async(dispatch_get_main_queue(), ^{
     [delegate_ didReceiveImage:image fromObserver:this_];
