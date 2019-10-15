@@ -28,6 +28,7 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"I18nManager", RCTI18nManagerCls},
     {"SourceCode", RCTSourceCodeCls},
     {"ActionSheetManager", RCTActionSheetManagerCls},
+    {"AlertManager", RCTAlertManagerCls},
   };
 
   auto p = sCoreModuleClassMap.find(name);
