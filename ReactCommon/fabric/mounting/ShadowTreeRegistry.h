@@ -19,6 +19,7 @@ namespace react {
 class ShadowTreeRegistry final {
  public:
   ShadowTreeRegistry() = default;
+  ~ShadowTreeRegistry();
 
   /*
    * Adds a `ShadowTree` instance to the registry.
