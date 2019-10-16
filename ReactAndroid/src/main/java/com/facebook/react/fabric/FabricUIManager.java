@@ -217,9 +217,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   // This is called on the JS thread (see CatalystInstanceImpl).
   @Override
   public void onCatalystInstanceDestroy() {
-    if (DEBUG) {
-      FLog.d(TAG, "Destroying Catalyst Instance");
-    }
+    FLog.i(TAG, "FabricUIManager.onCatalystInstanceDestroy");
+
     mEventDispatcher.removeBatchEventDispatchedListener(mEventBeatManager);
     mEventDispatcher.unregisterEventEmitter(FABRIC);
 
