@@ -13,7 +13,9 @@ import NativeSoundManager from './NativeSoundManager';
 
 const SoundManager = {
   playTouchSound: function(): void {
-    NativeSoundManager.playTouchSound();
+    if (NativeSoundManager) {
+      NativeSoundManager.playTouchSound();
+    }
   },
 };
 
