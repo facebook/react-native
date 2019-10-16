@@ -7,6 +7,7 @@
  * @format
  * @flow
  */
+
 // TODO: move this file to shims/ReactNative (requires React update and sync)
 
 'use strict';
