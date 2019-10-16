@@ -13,13 +13,11 @@ fb_native.android_library(
 rn_android_prebuilt_aar(
     name = "monitor-binary",
     aar = ":monitor-binary-aar",
-    visibility = ["//ReactAndroid/..."],
 )
 
 rn_android_prebuilt_aar(
     name = "runner-binary",
     aar = ":runner-binary-aar",
-    visibility = ["//ReactAndroid/..."],
 )
 
 fb_native.remote_file(
