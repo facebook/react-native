@@ -38,6 +38,7 @@ rn_xplat_cxx_library(
         "-fobjc-arc-exceptions",
     ],
     fbobjc_inherited_buck_flags = get_static_library_ios_flags(),
+    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
     fbobjc_preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags(),
     force_static = True,
     ios_deps = [
@@ -61,7 +62,6 @@ rn_xplat_cxx_library(
             "platform/ios/**/*.mm",
         ],
     ),
-    labels = ["supermodule:ios/isolation/infra.react_native"],
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
