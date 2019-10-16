@@ -966,7 +966,7 @@ RCT_EXPORT_METHOD(getSize:(NSString *)uri resolve:(RCTPromiseResolveBlock)resolv
 }
 
 RCT_EXPORT_METHOD(getSizeWithHeaders:(NSString *)uri
-                  headers:(JS::NativeImageLoader::SpecGetSizeWithHeadersHeaders &)headers
+                  headers:(NSDictionary *)headers
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {

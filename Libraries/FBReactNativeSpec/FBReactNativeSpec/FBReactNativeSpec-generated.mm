@@ -1158,12 +1158,6 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
-@implementation RCTCxxConvert (NativeImageLoader_SpecGetSizeWithHeadersHeaders)
-+ (RCTManagedPointer *)JS_NativeImageLoader_SpecGetSizeWithHeadersHeaders:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeImageLoader::SpecGetSizeWithHeadersHeaders>(json);
-}
-@end
 namespace facebook {
   namespace react {
 
@@ -1193,7 +1187,6 @@ namespace facebook {
         
         methodMap_["getSizeWithHeaders"] = MethodMetadata {2, __hostFunction_NativeImageLoaderSpecJSI_getSizeWithHeaders};
         
-        setMethodArgConversionSelector(@"getSizeWithHeaders", 1, @"JS_NativeImageLoader_SpecGetSizeWithHeadersHeaders:");
         
         methodMap_["prefetchImage"] = MethodMetadata {1, __hostFunction_NativeImageLoaderSpecJSI_prefetchImage};
         

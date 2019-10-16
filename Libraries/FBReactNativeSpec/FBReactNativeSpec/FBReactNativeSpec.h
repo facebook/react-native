@@ -783,11 +783,105 @@ namespace facebook {
 
 namespace JS {
   namespace NativeDeviceInfo {
+    struct DisplayMetrics {
+
+      struct Builder {
+        struct Input {
+          RCTRequired<double> width;
+          RCTRequired<double> height;
+          RCTRequired<double> scale;
+          RCTRequired<double> fontScale;
+        };
+
+        /** Initialize with a set of values */
+        Builder(const Input i);
+        /** Initialize with an existing DisplayMetrics */
+        Builder(DisplayMetrics i);
+        /** Builds the object. Generally used only by the infrastructure. */
+        NSDictionary *buildUnsafeRawValue() const { return _factory(); };
+      private:
+        NSDictionary *(^_factory)(void);
+      };
+
+      static DisplayMetrics fromUnsafeRawValue(NSDictionary *const v) { return {v}; }
+      NSDictionary *unsafeRawValue() const { return _v; }
+    private:
+      DisplayMetrics(NSDictionary *const v) : _v(v) {}
+      NSDictionary *_v;
+    };
+  }
+}
+
+namespace JS {
+  namespace NativeDeviceInfo {
+    struct DisplayMetricsAndroid {
+
+      struct Builder {
+        struct Input {
+          RCTRequired<double> width;
+          RCTRequired<double> height;
+          RCTRequired<double> scale;
+          RCTRequired<double> fontScale;
+          RCTRequired<double> densityDpi;
+        };
+
+        /** Initialize with a set of values */
+        Builder(const Input i);
+        /** Initialize with an existing DisplayMetricsAndroid */
+        Builder(DisplayMetricsAndroid i);
+        /** Builds the object. Generally used only by the infrastructure. */
+        NSDictionary *buildUnsafeRawValue() const { return _factory(); };
+      private:
+        NSDictionary *(^_factory)(void);
+      };
+
+      static DisplayMetricsAndroid fromUnsafeRawValue(NSDictionary *const v) { return {v}; }
+      NSDictionary *unsafeRawValue() const { return _v; }
+    private:
+      DisplayMetricsAndroid(NSDictionary *const v) : _v(v) {}
+      NSDictionary *_v;
+    };
+  }
+}
+
+namespace JS {
+  namespace NativeDeviceInfo {
+    struct DimensionsPayload {
+
+      struct Builder {
+        struct Input {
+          folly::Optional<JS::NativeDeviceInfo::DisplayMetrics::Builder> window;
+          folly::Optional<JS::NativeDeviceInfo::DisplayMetrics::Builder> screen;
+          folly::Optional<JS::NativeDeviceInfo::DisplayMetricsAndroid::Builder> windowPhysicalPixels;
+          folly::Optional<JS::NativeDeviceInfo::DisplayMetricsAndroid::Builder> screenPhysicalPixels;
+        };
+
+        /** Initialize with a set of values */
+        Builder(const Input i);
+        /** Initialize with an existing DimensionsPayload */
+        Builder(DimensionsPayload i);
+        /** Builds the object. Generally used only by the infrastructure. */
+        NSDictionary *buildUnsafeRawValue() const { return _factory(); };
+      private:
+        NSDictionary *(^_factory)(void);
+      };
+
+      static DimensionsPayload fromUnsafeRawValue(NSDictionary *const v) { return {v}; }
+      NSDictionary *unsafeRawValue() const { return _v; }
+    private:
+      DimensionsPayload(NSDictionary *const v) : _v(v) {}
+      NSDictionary *_v;
+    };
+  }
+}
+
+namespace JS {
+  namespace NativeDeviceInfo {
     struct Constants {
 
       struct Builder {
         struct Input {
-          RCTRequired<id<NSObject>> Dimensions;
+          RCTRequired<JS::NativeDeviceInfo::DimensionsPayload::Builder> Dimensions;
           folly::Optional<bool> isIPhoneX_deprecated;
         };
 
@@ -1129,28 +1223,13 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
-
-namespace JS {
-  namespace NativeImageLoader {
-    struct SpecGetSizeWithHeadersHeaders {
-
-      SpecGetSizeWithHeadersHeaders(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeImageLoader_SpecGetSizeWithHeadersHeaders)
-+ (RCTManagedPointer *)JS_NativeImageLoader_SpecGetSizeWithHeadersHeaders:(id)json;
-@end
 @protocol NativeImageLoaderSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)getSize:(NSString *)uri
         resolve:(RCTPromiseResolveBlock)resolve
          reject:(RCTPromiseRejectBlock)reject;
 - (void)getSizeWithHeaders:(NSString *)uri
-                   headers:(JS::NativeImageLoader::SpecGetSizeWithHeadersHeaders &)headers
+                   headers:(NSDictionary *)headers
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject;
 - (void)prefetchImage:(NSString *)uri
@@ -2619,10 +2698,57 @@ inline JS::NativeBlobModule::Constants::Builder::Builder(const Input i) : _facto
 inline JS::NativeBlobModule::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
+inline JS::NativeDeviceInfo::DisplayMetrics::Builder::Builder(const Input i) : _factory(^{
+  NSMutableDictionary *d = [NSMutableDictionary new];
+  auto width = i.width.get();
+  d[@"width"] = @(width);
+  auto height = i.height.get();
+  d[@"height"] = @(height);
+  auto scale = i.scale.get();
+  d[@"scale"] = @(scale);
+  auto fontScale = i.fontScale.get();
+  d[@"fontScale"] = @(fontScale);
+  return d;
+}) {}
+inline JS::NativeDeviceInfo::DisplayMetrics::Builder::Builder(DisplayMetrics i) : _factory(^{
+  return i.unsafeRawValue();
+}) {}
+inline JS::NativeDeviceInfo::DisplayMetricsAndroid::Builder::Builder(const Input i) : _factory(^{
+  NSMutableDictionary *d = [NSMutableDictionary new];
+  auto width = i.width.get();
+  d[@"width"] = @(width);
+  auto height = i.height.get();
+  d[@"height"] = @(height);
+  auto scale = i.scale.get();
+  d[@"scale"] = @(scale);
+  auto fontScale = i.fontScale.get();
+  d[@"fontScale"] = @(fontScale);
+  auto densityDpi = i.densityDpi.get();
+  d[@"densityDpi"] = @(densityDpi);
+  return d;
+}) {}
+inline JS::NativeDeviceInfo::DisplayMetricsAndroid::Builder::Builder(DisplayMetricsAndroid i) : _factory(^{
+  return i.unsafeRawValue();
+}) {}
+inline JS::NativeDeviceInfo::DimensionsPayload::Builder::Builder(const Input i) : _factory(^{
+  NSMutableDictionary *d = [NSMutableDictionary new];
+  auto window = i.window;
+  d[@"window"] = window.hasValue() ? window.value().buildUnsafeRawValue() : nil;
+  auto screen = i.screen;
+  d[@"screen"] = screen.hasValue() ? screen.value().buildUnsafeRawValue() : nil;
+  auto windowPhysicalPixels = i.windowPhysicalPixels;
+  d[@"windowPhysicalPixels"] = windowPhysicalPixels.hasValue() ? windowPhysicalPixels.value().buildUnsafeRawValue() : nil;
+  auto screenPhysicalPixels = i.screenPhysicalPixels;
+  d[@"screenPhysicalPixels"] = screenPhysicalPixels.hasValue() ? screenPhysicalPixels.value().buildUnsafeRawValue() : nil;
+  return d;
+}) {}
+inline JS::NativeDeviceInfo::DimensionsPayload::Builder::Builder(DimensionsPayload i) : _factory(^{
+  return i.unsafeRawValue();
+}) {}
 inline JS::NativeDeviceInfo::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto Dimensions = i.Dimensions.get();
-  d[@"Dimensions"] = Dimensions;
+  d[@"Dimensions"] = Dimensions.buildUnsafeRawValue();
   auto isIPhoneX_deprecated = i.isIPhoneX_deprecated;
   d[@"isIPhoneX_deprecated"] = isIPhoneX_deprecated.hasValue() ? @((BOOL)isIPhoneX_deprecated.value()) : nil;
   return d;
@@ -2768,7 +2894,6 @@ inline JS::NativeI18nManager::Constants::Builder::Builder(const Input i) : _fact
 inline JS::NativeI18nManager::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-
 inline bool JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig::unmirrorFrontFacingCamera() const
 {
   id const p = _v[@"unmirrorFrontFacingCamera"];
