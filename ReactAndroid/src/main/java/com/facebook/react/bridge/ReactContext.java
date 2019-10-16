@@ -6,6 +6,8 @@
  */
 package com.facebook.react.bridge;
 
+import static com.facebook.infer.annotation.ThreadConfined.UI;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -14,6 +16,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
@@ -219,6 +222,7 @@ public class ReactContext extends ContextWrapper {
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_RESUME_END);
   }
 
+  @ThreadConfined(UI)
   public void onNewIntent(@Nullable Activity activity, Intent intent) {
     UiThreadUtil.assertOnUiThread();
     mCurrentActivity = new WeakReference(activity);
@@ -246,6 +250,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   /** Should be called by the hosting Fragment in {@link Fragment#onDestroy} */
+  @ThreadConfined(UI)
   public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_CREATE;
@@ -260,6 +265,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   /** Destroy this instance, making it unusable. */
+  @ThreadConfined(UI)
   public void destroy() {
     UiThreadUtil.assertOnUiThread();
 
@@ -279,6 +285,7 @@ public class ReactContext extends ContextWrapper {
     }
   }
 
+  @ThreadConfined(UI)
   public void onWindowFocusChange(boolean hasFocus) {
     UiThreadUtil.assertOnUiThread();
     for (WindowFocusChangeListener listener : mWindowFocusEventListeners) {
