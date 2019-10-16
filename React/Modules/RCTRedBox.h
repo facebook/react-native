@@ -13,6 +13,8 @@
 
 @class RCTJSStackFrame;
 
+typedef void (^RCTRedBoxButtonPressHandler)(void);
+
 @interface RCTRedBox : NSObject <RCTBridgeModule>
 
 - (void)registerErrorCustomizer:(id<RCTErrorCustomizer>)errorCustomizer;
@@ -31,6 +33,8 @@
 - (void)updateErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack errorCookie:(int)errorCookie;
 
 - (void)dismiss;
+
+- (void)addCustomButton:(NSString *)title onPressHandler:(RCTRedBoxButtonPressHandler)handler;
 
 /** Overrides bridge.bundleURL. Modify on main thread only. You shouldn't need to use this. */
 @property (nonatomic, strong) NSURL *overrideBundleURL;
