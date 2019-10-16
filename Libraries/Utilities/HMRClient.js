@@ -23,6 +23,7 @@ let hmrClient = null;
 let hmrUnavailableReason: string | null = null;
 let currentCompileErrorMessage: string | null = null;
 let didConnect: boolean = false;
+let pendingLogs: Array<[LogLevel, Array<mixed>]> = [];
 
 type LogLevel =
   | 'trace'
@@ -101,39 +102,46 @@ const HMRClient: HMRClientNativeInterface = {
   },
 
   log(level: LogLevel, data: Array<mixed>) {
+    if (!hmrClient) {
+      // Catch a reasonable number of early logs
+      // in case hmrClient gets initialized later.
+      pendingLogs.push([level, data]);
+      if (pendingLogs.length > 100) {
+        pendingLogs.shift();
+      }
+      return;
+    }
     try {
-      if (hmrClient) {
-        let message;
-        if (global.Symbol) {
+      let message;
+      if (global.Symbol) {
+        message = JSON.stringify({
+          type: 'log',
+          level,
+          data: data.map(item =>
+            typeof item === 'string'
+              ? item
+              : require('pretty-format')(item, {
+                  escapeString: true,
+                  highlight: true,
+                  maxDepth: 3,
+                  min: true,
+                  plugins: [require('pretty-format').plugins.ReactElement],
+                }),
+          ),
+        });
+      } else {
+        try {
+          message = JSON.stringify({type: 'log', level, data});
+        } catch (error) {
           message = JSON.stringify({
             type: 'log',
             level,
-            data: data.map(item =>
-              typeof item === 'string'
-                ? item
-                : require('pretty-format')(item, {
-                    escapeString: true,
-                    highlight: true,
-                    maxDepth: 3,
-                    min: true,
-                    plugins: [require('pretty-format').plugins.ReactElement],
-                  }),
-            ),
+            data: [error.message],
           });
-        } else {
-          try {
-            message = JSON.stringify({type: 'log', level, data});
-          } catch (error) {
-            message = JSON.stringify({
-              type: 'log',
-              level,
-              data: [error.message],
-            });
-          }
         }
-
-        hmrClient.send(message);
       }
+
+      hmrClient.send(message);
     } catch (error) {
       // If sending logs causes any failures we want to silently ignore them
       // to ensure we do not cause infinite-logging loops.
@@ -244,6 +252,7 @@ Error: ${e.message}`;
     }
 
     registerBundleEntryPoints(hmrClient);
+    flushEarlyLogs(hmrClient);
   },
 };
 
@@ -273,6 +282,16 @@ function registerBundleEntryPoints(client) {
       }),
     );
     pendingEntryPoints.length = 0;
+  }
+}
+
+function flushEarlyLogs(client) {
+  try {
+    pendingLogs.forEach(([level: LogLevel, data: Array<mixed>]) => {
+      HMRClient.log(level, data);
+    });
+  } finally {
+    pendingLogs.length = 0;
   }
 }
 
