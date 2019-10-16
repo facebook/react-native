@@ -18,7 +18,7 @@ extern "C" {
 // Get window and screen dimensions
 typedef struct {
   struct {
-    CGFloat width, height, scale, fontScale;
+    CGFloat width, height, scale, fontScale, topSafeAreaInset, leftSafeAreaInset, rightSafeAreaInset, bottomSafeAreaInset;
   } window, screen;
 } RCTDimensions;
 extern __attribute__((visibility("default")))

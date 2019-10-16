@@ -19,6 +19,10 @@ type DisplayMetricsAndroid = {|
   scale: number,
   fontScale: number,
   densityDpi: number,
+  topSafeAreaInset: number,
+  bottomSafeAreaInset: number,
+  leftSafeAreaInset: number,
+  rightSafeAreaInset: number,
 |};
 
 export type DisplayMetrics = {|
@@ -26,6 +30,10 @@ export type DisplayMetrics = {|
   height: number,
   scale: number,
   fontScale: number,
+  topSafeAreaInset: number,
+  bottomSafeAreaInset: number,
+  leftSafeAreaInset: number,
+  rightSafeAreaInset: number,
 |};
 
 export type DimensionsPayload = {|

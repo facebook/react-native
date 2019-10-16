@@ -97,14 +97,22 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
       @"width": @(window.width),
       @"height": @(window.height),
       @"scale": @(window.scale),
-      @"fontScale": @(window.fontScale)
+      @"fontScale": @(window.fontScale),
+      @"topSafeAreaInset": @(window.topSafeAreaInset),
+      @"bottomSafeAreaInset": @(window.bottomSafeAreaInset),
+      @"leftSafeAreaInset": @(window.leftSafeAreaInset),
+      @"rightSafeAreaInset": @(window.rightSafeAreaInset),
   };
   __typeof(dimensions.screen) screen = dimensions.screen;
   NSDictionary<NSString *, NSNumber *> *dimsScreen = @{
       @"width": @(screen.width),
       @"height": @(screen.height),
       @"scale": @(screen.scale),
-      @"fontScale": @(screen.fontScale)
+      @"fontScale": @(screen.fontScale),
+      @"topSafeAreaInset": @(screen.topSafeAreaInset),
+      @"bottomSafeAreaInset": @(screen.bottomSafeAreaInset),
+      @"leftSafeAreaInset": @(screen.leftSafeAreaInset),
+      @"rightSafeAreaInset": @(screen.rightSafeAreaInset),
   };
   return @{
       @"window": dimsWindow,

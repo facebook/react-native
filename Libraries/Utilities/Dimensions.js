@@ -65,6 +65,14 @@ class Dimensions {
         height: windowPhysicalPixels.height / windowPhysicalPixels.scale,
         scale: windowPhysicalPixels.scale,
         fontScale: windowPhysicalPixels.fontScale,
+        topSafeAreaInset:
+          windowPhysicalPixels.topSafeAreaInset / windowPhysicalPixels.scale,
+        bottomSafeAreaInset:
+          windowPhysicalPixels.bottomSafeAreaInset / windowPhysicalPixels.scale,
+        leftSafeAreaInset:
+          windowPhysicalPixels.leftSafeAreaInset / windowPhysicalPixels.scale,
+        rightSafeAreaInset:
+          windowPhysicalPixels.rightSafeAreaInset / windowPhysicalPixels.scale,
       };
     }
     const {screenPhysicalPixels} = dims;
@@ -74,6 +82,14 @@ class Dimensions {
         height: screenPhysicalPixels.height / screenPhysicalPixels.scale,
         scale: screenPhysicalPixels.scale,
         fontScale: screenPhysicalPixels.fontScale,
+        topSafeAreaInset:
+          screenPhysicalPixels.topSafeAreaInset / screenPhysicalPixels.scale,
+        bottomSafeAreaInset:
+          screenPhysicalPixels.bottomSafeAreaInset / screenPhysicalPixels.scale,
+        leftSafeAreaInset:
+          screenPhysicalPixels.leftSafeAreaInset / screenPhysicalPixels.scale,
+        rightSafeAreaInset:
+          screenPhysicalPixels.rightSafeAreaInset / screenPhysicalPixels.scale,
       };
     } else if (screen == null) {
       screen = window;

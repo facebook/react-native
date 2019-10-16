@@ -17,20 +17,36 @@ RCTDimensions RCTGetDimensions(CGFloat fontScale)
   UIView *mainWindow;
   mainWindow = RCTKeyWindow();
   CGSize windowSize = mainWindow.bounds.size;
-
+    
   RCTDimensions result;
   typeof (result.screen) dimsScreen = {
     .width = screenSize.width,
     .height = screenSize.height,
     .scale = mainScreen.scale,
-    .fontScale = fontScale
+    .fontScale = fontScale,
+    .topSafeAreaInset = 0.0,
+    .bottomSafeAreaInset = 0.0,
+    .leftSafeAreaInset = 0.0,
+    .rightSafeAreaInset = 0.0,
   };
   typeof (result.window) dimsWindow = {
     .width = windowSize.width,
     .height = windowSize.height,
     .scale = mainScreen.scale,
-    .fontScale = fontScale
+    .fontScale = fontScale,
+    .topSafeAreaInset = 0.0,
+    .bottomSafeAreaInset = 0.0,
+    .leftSafeAreaInset = 0.0,
+    .rightSafeAreaInset = 0.0,
   };
+    
+  if (@available(iOS 11.0, *)) {
+    dimsWindow.topSafeAreaInset = mainWindow.safeAreaInsets.top;
+    dimsWindow.bottomSafeAreaInset = mainWindow.safeAreaInsets.bottom;
+    dimsWindow.leftSafeAreaInset = mainWindow.safeAreaInsets.left;
+    dimsWindow.rightSafeAreaInset = mainWindow.safeAreaInsets.right;
+  }
+
   result.screen = dimsScreen;
   result.window = dimsWindow;
 
