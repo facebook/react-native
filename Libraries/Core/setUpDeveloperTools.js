@@ -59,7 +59,9 @@ if (__DEV__) {
       JSInspector.registerAgent(require('../JSInspector/NetworkAgent'));
     }
 
-    if (!Platform.isTesting) {
+    // Only attach metro logging if we're in a native app environment,
+    // otherwise continue to use the native logging for the envionment we're in.
+    if (!Platform.isTesting && global.nativeLoggingHook) {
       const HMRClient = require('../Utilities/HMRClient');
       [
         'trace',
