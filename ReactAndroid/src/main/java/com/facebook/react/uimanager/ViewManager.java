@@ -282,7 +282,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * this component type.
    */
   public @Nullable Object updateState(
-      @NonNull T view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
+      @NonNull T view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
     return null;
   }
 

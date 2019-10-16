@@ -6,15 +6,16 @@
  */
 package com.facebook.react.fabric.mounting.mountitems;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.uimanager.StateWrapper;
 
 public class UpdateStateMountItem implements MountItem {
 
   private final int mReactTag;
-  private final StateWrapper mStateWrapper;
+  @Nullable private final StateWrapper mStateWrapper;
 
-  public UpdateStateMountItem(int reactTag, StateWrapper stateWrapper) {
+  public UpdateStateMountItem(int reactTag, @Nullable StateWrapper stateWrapper) {
     mReactTag = reactTag;
     mStateWrapper = stateWrapper;
   }

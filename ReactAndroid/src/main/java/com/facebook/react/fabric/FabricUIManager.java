@@ -339,7 +339,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @DoNotStrip
   @SuppressWarnings("unused")
-  private MountItem updateStateMountItem(int reactTag, Object stateWrapper) {
+  private MountItem updateStateMountItem(int reactTag, @Nullable Object stateWrapper) {
     return new UpdateStateMountItem(reactTag, (StateWrapper) stateWrapper);
   }
 

@@ -369,11 +369,12 @@ public class MountingManager {
   }
 
   @UiThread
-  public void updateState(final int reactTag, StateWrapper stateWrapper) {
+  public void updateState(final int reactTag, @Nullable StateWrapper stateWrapper) {
     UiThreadUtil.assertOnUiThread();
     ViewState viewState = getViewState(reactTag);
-    ReadableNativeMap newState = stateWrapper.getState();
-    if (viewState.mCurrentState != null && viewState.mCurrentState.equals(newState)) {
+    @Nullable ReadableNativeMap newState = stateWrapper == null ? null : stateWrapper.getState();
+    if ((viewState.mCurrentState != null && viewState.mCurrentState.equals(newState))
+        || (viewState.mCurrentState == null && stateWrapper == null)) {
       return;
     }
     viewState.mCurrentState = newState;
