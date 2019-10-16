@@ -4,12 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *
- * This is a controlled component version of RCTDatePickerIOS
- *
  * @format
  * @flow strict-local
  */
+
+// This is a controlled component version of RCTDatePickerIOS.
 
 'use strict';
 

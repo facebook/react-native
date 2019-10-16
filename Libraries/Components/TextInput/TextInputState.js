@@ -4,14 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *
- * This class is responsible for coordinating the "focused"
- * state for TextInputs. All calls relating to the keyboard
- * should be funneled through here
- *
  * @format
  * @flow strict-local
  */
+
+// This class is responsible for coordinating the "focused" state for
+// TextInputs. All calls relating to the keyboard should be funneled
+// through here.
 
 'use strict';
 

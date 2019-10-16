@@ -4,13 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * BezierEasing - use bezier curve for transition easing function
- * https://github.com/gre/bezier-easing
- *
- * @copyright 2014-2015 Gaetan Renaudeau. MIT License.
  * @emails oncall+react_native
  * @flow
  * @format
+ */
+
+/**
+ * BezierEasing - use bezier curve for transition easing function
+ * https://github.com/gre/bezier-easing
+ * @copyright 2014-2015 Gaetan Renaudeau. MIT License.
  */
 
 'use strict';

@@ -4,15 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * Modified from https://raw.githubusercontent.com/flow-typed/flow-typed/master/definitions/npm/jest_v23.x.x/flow_v0.39.x-/jest_v23.x.x.js
- * List of modifications:
- *  - fix some [] -> Array lint warnings
- *  - make it.each/describe.each take $ReadOnlyArray instead of Array<mixed>
- *  - added definition for `isolateModules`
- *
- * TODO(T35016336) remove the .each modifications if flow-typed adopts them
  * @format
  */
+
+// Modified from https://raw.githubusercontent.com/flow-typed/flow-typed/master/definitions/npm/jest_v23.x.x/flow_v0.39.x-/jest_v23.x.x.js
+// List of modifications:
+//  - fix some [] -> Array lint warnings
+//  - make it.each/describe.each take $ReadOnlyArray instead of Array<mixed>
+//  - added definition for `isolateModules`
+//
+// TODO(T35016336) remove the .each modifications if flow-typed adopts them
 
 type JestMockFn<TArguments: $ReadOnlyArray<mixed>, TReturn> = {|
   (...args: TArguments): TReturn,

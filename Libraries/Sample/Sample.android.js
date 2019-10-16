@@ -4,11 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * Stub of Sample for Android.
- *
  * @format
  * @flow
  */
+
+// Stub of Sample for Android.
 
 'use strict';
 
