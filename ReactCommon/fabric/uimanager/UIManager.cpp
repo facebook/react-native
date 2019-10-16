@@ -42,6 +42,19 @@ SharedShadowNode UIManager::createNode(
       /* .state = */ state,
   });
 
+  // state->commit(x) associates a ShadowNode with the State object.
+  // state->commit(x) must be called before calling updateState; updateState
+  // fails silently otherwise. In between "now", when this node is created, and
+  // when this node is actually committed, the State object would otherwise not
+  // have any reference back to the ShadowNode that owns it. On platforms that
+  // do view preallocation (like Android), this State would be sent to the
+  // mounting layer with valid data but without an update mechanism. We
+  // explicitly associate the ShadowNode with the State here so that updateState
+  // is always safe and effectful.
+  if (state) {
+    state->commit(*shadowNode);
+  }
+
   if (delegate_) {
     delegate_->uiManagerDidCreateShadowNode(shadowNode);
   }

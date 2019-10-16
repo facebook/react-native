@@ -46,6 +46,7 @@ class State {
  private:
   friend class ShadowNode;
   friend class StateCoordinator;
+  friend class UIManager;
 
   /*
    * Must be used by `ShadowNode` *only*.
