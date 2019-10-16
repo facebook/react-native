@@ -69,7 +69,7 @@
               }
             });
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/textinput.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">TextInput</h1></header><article><div><span><p>A foundational component for inputting text into the app via a keyboard. Props provide configurability for several features, such as auto-correction, auto-capitalization, placeholder text, and different keyboard types, such as a numeric keypad.</p>
-<p>The simplest use case is to plop down a <code>TextInput</code> and subscribe to the <code>onChangeText</code> events to read the user input. There are also other events, such as <code>onSubmitEditing</code> and <code>onFocus</code> that can be subscribed to. A simple example:</p>
+<p>A basic use case is to plop down a <code>TextInput</code> and subscribe to the <code>onChangeText</code> events to read the user input. There are also other events, such as <code>onSubmitEditing</code> and <code>onFocus</code> that can be subscribed to. For example:</p>
 <div class="snack-player"><div class="mobile-friendly-snack" style="display: none"><pre><code class="hljs css javascript"><span class="hljs-keyword">import</span> React, { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { AppRegistry, TextInput } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-native'</span>;
 
@@ -276,7 +276,7 @@ AppRegistry.registerComponent(
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="defaultvalue"></a><a href="#defaultvalue" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>defaultValue</code></h3>
-<p>Provides an initial value that will change when the user starts typing. Useful for simple use-cases where you do not want to deal with listening to events and updating the value prop to keep the controlled state in sync.</p>
+<p>Provides an initial value that will change when the user starts typing. Useful for basic use-cases where you do not want to deal with listening to events and updating the value prop to keep the controlled state in sync.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
@@ -562,7 +562,7 @@ AppRegistry.registerComponent(
 </table>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="value"></a><a href="#value" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>value</code></h3>
-<p>The value to show for the text input. <code>TextInput</code> is a controlled component, which means the native value will be forced to match this value prop if provided. For most uses, this works great, but in some cases this may cause flickering - one common cause is preventing edits by keeping value the same. In addition to simply setting the same value, either set <code>editable={false}</code>, or set/update <code>maxLength</code> to prevent unwanted edits without flicker.</p>
+<p>The value to show for the text input. <code>TextInput</code> is a controlled component, which means the native value will be forced to match this value prop if provided. For most uses, this works great, but in some cases this may cause flickering - one common cause is preventing edits by keeping value the same. In addition setting the same value, either set <code>editable={false}</code>, or set/update <code>maxLength</code> to prevent unwanted edits without flicker.</p>
 <table>
 <thead>
 <tr><th>Type</th><th>Required</th></tr>
