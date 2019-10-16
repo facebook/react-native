@@ -48,7 +48,7 @@ public class DisplayMetricsHolder {
     initDisplayMetrics(context);
   }
 
-  public static void initDisplayMetrics(Context context) {
+  private static void initDisplayMetrics(Context context) {
     DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
     DisplayMetricsHolder.setWindowDisplayMetrics(displayMetrics);
 
@@ -57,6 +57,8 @@ public class DisplayMetricsHolder {
     WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     Assertions.assertNotNull(wm, "WindowManager is null!");
     Display display = wm.getDefaultDisplay();
+
+    // Todo figure out how to call getWindow().getDecorView().getRootWindowInsets()
 
     // Get the real display metrics if we are using API level 17 or higher.
     // The real metrics include system decor elements (e.g. soft menu bar).
@@ -133,6 +135,10 @@ public class DisplayMetricsHolder {
     result.put("scale", displayMetrics.density);
     result.put("fontScale", fontScale);
     result.put("densityDpi", displayMetrics.densityDpi);
+    result.put("topSafeAreaInset", 0);
+    result.put("bottomSafeAreaInset", 0);
+    result.put("leftSafeAreaInset", 0);
+    result.put("rightSafeAreaInset", 0);
     return result;
   }
 
@@ -144,6 +150,10 @@ public class DisplayMetricsHolder {
     result.putDouble("scale", displayMetrics.density);
     result.putDouble("fontScale", fontScale);
     result.putDouble("densityDpi", displayMetrics.densityDpi);
+    result.putInt("topSafeAreaInset", 0);
+    result.putInt("bottomSafeAreaInset", 0);
+    result.putInt("leftSafeAreaInset", 0);
+    result.putInt("rightSafeAreaInset", 0);
     return result;
   }
 }
