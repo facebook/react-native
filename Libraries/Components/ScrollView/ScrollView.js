@@ -16,6 +16,7 @@ const codegenNativeCommands = require('../../Utilities/codegenNativeCommands')
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const ReactNative = require('../../Renderer/shims/ReactNative');
+require('../../Renderer/shims/ReactNative'); // Force side effects to prevent T55744311
 const ScrollResponder = require('../ScrollResponder');
 const ScrollViewStickyHeader = require('./ScrollViewStickyHeader');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
