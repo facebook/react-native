@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const binaryToBase64 = require('../Utilities/binaryToBase64');

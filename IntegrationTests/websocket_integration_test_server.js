@@ -9,6 +9,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 /* eslint-env node */

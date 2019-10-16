@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 if (__DEV__) {

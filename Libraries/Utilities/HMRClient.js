@@ -7,6 +7,7 @@
  * @format
  * @flow
  */
+
 'use strict';
 
 const Platform = require('./Platform');

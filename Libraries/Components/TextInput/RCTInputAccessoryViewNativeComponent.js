@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';

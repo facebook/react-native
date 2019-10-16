@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const DeprecatedImagePropType = require('../DeprecatedPropTypes/DeprecatedImagePropType');

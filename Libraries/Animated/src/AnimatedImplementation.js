@@ -8,6 +8,7 @@
  * @format
  * @preventMunge
  */
+
 'use strict';
 
 const {AnimatedEvent, attachNativeEvent} = require('./AnimatedEvent');

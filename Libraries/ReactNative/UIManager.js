@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 import type {Spec} from './NativeUIManager';

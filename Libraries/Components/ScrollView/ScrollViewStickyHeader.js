@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const AnimatedImplementation = require('../../Animated/src/AnimatedImplementation');

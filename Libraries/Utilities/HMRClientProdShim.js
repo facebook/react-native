@@ -7,6 +7,7 @@
  * @format
  * @flow
  */
+
 'use strict';
 
 import type {HMRClientNativeInterface} from './HMRClient';
