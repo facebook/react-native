@@ -100,53 +100,10 @@ BOOL RCTRedBoxGetEnabled() {
         NSString *extraText = @"Extra Info";
 #endif
 
-        UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        dismissButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin;
-        dismissButton.accessibilityIdentifier = @"redbox-dismiss";
-        dismissButton.titleLabel.font = [UIFont systemFontOfSize:13];
-        dismissButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        dismissButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        dismissButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-        [dismissButton setTitle:dismissText forState:UIControlStateNormal];
-        [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [dismissButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
-        [dismissButton addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
-
-        UIButton *reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        reloadButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
-        reloadButton.accessibilityIdentifier = @"redbox-reload";
-        reloadButton.titleLabel.font = [UIFont systemFontOfSize:13];
-        reloadButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        reloadButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        reloadButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-        [reloadButton setTitle:reloadText forState:UIControlStateNormal];
-        [reloadButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [reloadButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
-        [reloadButton addTarget:self action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
-
-        UIButton *copyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        copyButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
-        copyButton.accessibilityIdentifier = @"redbox-copy";
-        copyButton.titleLabel.font = [UIFont systemFontOfSize:13];
-        copyButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        copyButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        copyButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-        [copyButton setTitle:copyText forState:UIControlStateNormal];
-        [copyButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [copyButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
-        [copyButton addTarget:self action:@selector(copyStack) forControlEvents:UIControlEventTouchUpInside];
-
-        UIButton *extraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        extraButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
-        extraButton.accessibilityIdentifier = @"redbox-extra";
-        extraButton.titleLabel.font = [UIFont systemFontOfSize:13];
-        extraButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        extraButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        extraButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-        [extraButton setTitle:extraText forState:UIControlStateNormal];
-        [extraButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [extraButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
-        [extraButton addTarget:self action:@selector(showExtraDataViewController) forControlEvents:UIControlEventTouchUpInside];
+        UIButton *dismissButton = [self redBoxButton:dismissText accessibilityIdentifier:@"redbox-dismiss" selector:@selector(dismiss)];
+        UIButton *reloadButton = [self redBoxButton:reloadText accessibilityIdentifier:@"redbox-reload" selector:@selector(reload)];
+        UIButton *copyButton = [self redBoxButton:copyText accessibilityIdentifier:@"redbox-copy" selector:@selector(copyStack)];
+        UIButton *extraButton = [self redBoxButton:extraText accessibilityIdentifier:@"redbox-extra" selector:@selector(showExtraDataViewController)];
 
         CGFloat buttonWidth = self.bounds.size.width / 4;
         CGFloat bottomButtonHeight = self.bounds.size.height - buttonHeight - [self bottomSafeViewHeight];
@@ -172,6 +129,22 @@ BOOL RCTRedBoxGetEnabled() {
         [rootView addSubview:bottomSafeView];
     }
     return self;
+}
+
+- (UIButton *)redBoxButton:(NSString *)title accessibilityIdentifier:(NSString *)accessibilityIdentifier selector:(SEL)selector
+{
+  UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+  button.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin;
+  button.accessibilityIdentifier = accessibilityIdentifier;
+  button.titleLabel.font = [UIFont systemFontOfSize:13];
+  button.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+  button.titleLabel.textAlignment = NSTextAlignmentCenter;
+  button.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+  [button setTitle:title forState:UIControlStateNormal];
+  [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+  [button setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
+  [button addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
+  return button;
 }
 
 - (NSInteger)bottomSafeViewHeight
