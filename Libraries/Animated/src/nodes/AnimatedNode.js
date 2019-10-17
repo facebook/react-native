@@ -150,14 +150,17 @@ class AnimatedNode {
     NativeAnimatedAPI.stopListeningToAnimatedNodeValue(this.__getNativeTag());
   }
 
-  __getNativeTag(): ?number {
+  __getNativeTag(): number {
     NativeAnimatedHelper.assertNativeAnimatedModule();
     invariant(
       this.__isNative,
       'Attempt to get native tag from node not marked as "native"',
     );
+
+    const nativeTag =
+      this.__nativeTag ?? NativeAnimatedHelper.generateNewNodeTag();
+
     if (this.__nativeTag == null) {
-      const nativeTag: ?number = NativeAnimatedHelper.generateNewNodeTag();
       this.__nativeTag = nativeTag;
       NativeAnimatedHelper.API.createAnimatedNode(
         nativeTag,
@@ -165,7 +168,8 @@ class AnimatedNode {
       );
       this.__shouldUpdateListenersForNewNativeTag = true;
     }
-    return this.__nativeTag;
+
+    return nativeTag;
   }
   __getNativeConfig(): Object {
     throw new Error(

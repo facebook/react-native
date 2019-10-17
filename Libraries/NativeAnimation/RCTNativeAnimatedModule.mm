@@ -5,11 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTNativeAnimatedModule.h>
-
 #import <React/RCTNativeAnimatedNodesManager.h>
 
+#import <RCTTypeSafety/RCTConvertHelpers.h>
+
+#import "RCTAnimationPlugins.h"
+
 typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
+
+@interface RCTNativeAnimatedModule() <NativeAnimatedModuleSpec>
+@end
 
 @implementation RCTNativeAnimatedModule
 {
@@ -56,148 +63,155 @@ RCT_EXPORT_MODULE();
 
 #pragma mark -- API
 
-RCT_EXPORT_METHOD(createAnimatedNode:(nonnull NSNumber *)tag
+RCT_EXPORT_METHOD(createAnimatedNode:(double)tag
                   config:(NSDictionary<NSString *, id> *)config)
 {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager createAnimatedNode:tag config:config];
+    [nodesManager createAnimatedNode:[NSNumber numberWithDouble:tag] config:config];
   }];
 }
 
-RCT_EXPORT_METHOD(connectAnimatedNodes:(nonnull NSNumber *)parentTag
-                  childTag:(nonnull NSNumber *)childTag)
+RCT_EXPORT_METHOD(connectAnimatedNodes:(double)parentTag
+                  childTag:(double)childTag)
 {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager connectAnimatedNodes:parentTag childTag:childTag];
+    [nodesManager connectAnimatedNodes:[NSNumber numberWithDouble:parentTag] childTag:[NSNumber numberWithDouble:childTag]];
   }];
 }
 
-RCT_EXPORT_METHOD(disconnectAnimatedNodes:(nonnull NSNumber *)parentTag
-                  childTag:(nonnull NSNumber *)childTag)
+RCT_EXPORT_METHOD(disconnectAnimatedNodes:(double)parentTag
+                  childTag:(double)childTag)
 {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager disconnectAnimatedNodes:parentTag childTag:childTag];
+    [nodesManager disconnectAnimatedNodes:[NSNumber numberWithDouble:parentTag] childTag:[NSNumber numberWithDouble:childTag]];
   }];
 }
 
-RCT_EXPORT_METHOD(startAnimatingNode:(nonnull NSNumber *)animationId
-                  nodeTag:(nonnull NSNumber *)nodeTag
+RCT_EXPORT_METHOD(startAnimatingNode:(double)animationId
+                  nodeTag:(double)nodeTag
                   config:(NSDictionary<NSString *, id> *)config
                   endCallback:(RCTResponseSenderBlock)callBack)
 {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager startAnimatingNode:animationId nodeTag:nodeTag config:config endCallback:callBack];
+    [nodesManager startAnimatingNode:[NSNumber numberWithDouble:animationId] nodeTag:[NSNumber numberWithDouble:nodeTag] config:config endCallback:callBack];
   }];
 
   RCTExecuteOnMainQueue(^{
-    if (![self->_nodesManager isNodeManagedByFabric:nodeTag]) {
+    if (![self->_nodesManager isNodeManagedByFabric:[NSNumber numberWithDouble:nodeTag]]) {
       return;
     }
 
     RCTExecuteOnUIManagerQueue(^{
-      self->_animIdIsManagedByFabric[animationId] = @YES;
+      self->_animIdIsManagedByFabric[[NSNumber numberWithDouble:animationId]] = @YES;
       [self flushOperationQueues];
     });
   });
 }
 
-RCT_EXPORT_METHOD(stopAnimation:(nonnull NSNumber *)animationId)
+RCT_EXPORT_METHOD(stopAnimation:(double)animationId)
 {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager stopAnimation:animationId];
+    [nodesManager stopAnimation:[NSNumber numberWithDouble:animationId]];
   }];
-  if ([_animIdIsManagedByFabric[animationId] boolValue]) {
+  if ([_animIdIsManagedByFabric[[NSNumber numberWithDouble:animationId]] boolValue]) {
     [self flushOperationQueues];
   }
 }
 
-RCT_EXPORT_METHOD(setAnimatedNodeValue:(nonnull NSNumber *)nodeTag
-                  value:(nonnull NSNumber *)value)
+RCT_EXPORT_METHOD(setAnimatedNodeValue:(double)nodeTag
+                  value:(double)value)
 {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager setAnimatedNodeValue:nodeTag value:value];
+    [nodesManager setAnimatedNodeValue:[NSNumber numberWithDouble:nodeTag] value:[NSNumber numberWithDouble:value]];
   }];
 }
 
-RCT_EXPORT_METHOD(setAnimatedNodeOffset:(nonnull NSNumber *)nodeTag
-                  offset:(nonnull NSNumber *)offset)
+RCT_EXPORT_METHOD(setAnimatedNodeOffset:(double)nodeTag
+                  offset:(double)offset)
 {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager setAnimatedNodeOffset:nodeTag offset:offset];
+    [nodesManager setAnimatedNodeOffset:[NSNumber numberWithDouble:nodeTag] offset:[NSNumber numberWithDouble:offset]];
   }];
 }
 
-RCT_EXPORT_METHOD(flattenAnimatedNodeOffset:(nonnull NSNumber *)nodeTag)
+RCT_EXPORT_METHOD(flattenAnimatedNodeOffset:(double)nodeTag)
 {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager flattenAnimatedNodeOffset:nodeTag];
+    [nodesManager flattenAnimatedNodeOffset:[NSNumber numberWithDouble:nodeTag]];
   }];
 }
 
-RCT_EXPORT_METHOD(extractAnimatedNodeOffset:(nonnull NSNumber *)nodeTag)
+RCT_EXPORT_METHOD(extractAnimatedNodeOffset:(double)nodeTag)
 {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager extractAnimatedNodeOffset:nodeTag];
+    [nodesManager extractAnimatedNodeOffset:[NSNumber numberWithDouble:nodeTag]];
   }];
 }
 
-RCT_EXPORT_METHOD(connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag
-                  viewTag:(nonnull NSNumber *)viewTag)
+RCT_EXPORT_METHOD(connectAnimatedNodeToView:(double)nodeTag
+                  viewTag:(double)viewTag)
 {
-  NSString *viewName = [self.bridge.uiManager viewNameForReactTag:viewTag];
+  NSString *viewName = [self.bridge.uiManager viewNameForReactTag:[NSNumber numberWithDouble:viewTag]];
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager connectAnimatedNodeToView:nodeTag viewTag:viewTag viewName:viewName];
+    [nodesManager connectAnimatedNodeToView:[NSNumber numberWithDouble:nodeTag] viewTag:[NSNumber numberWithDouble:viewTag] viewName:viewName];
   }];
 }
 
-RCT_EXPORT_METHOD(disconnectAnimatedNodeFromView:(nonnull NSNumber *)nodeTag
-                  viewTag:(nonnull NSNumber *)viewTag)
+RCT_EXPORT_METHOD(disconnectAnimatedNodeFromView:(double)nodeTag
+                  viewTag:(double)viewTag)
 {
   [self addPreOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager restoreDefaultValues:nodeTag];
+    [nodesManager restoreDefaultValues:[NSNumber numberWithDouble:nodeTag]];
   }];
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager disconnectAnimatedNodeFromView:nodeTag viewTag:viewTag];
+    [nodesManager disconnectAnimatedNodeFromView:[NSNumber numberWithDouble:nodeTag] viewTag:[NSNumber numberWithDouble:viewTag]];
   }];
 }
 
-RCT_EXPORT_METHOD(dropAnimatedNode:(nonnull NSNumber *)tag)
+RCT_EXPORT_METHOD(dropAnimatedNode:(double)tag)
 {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager dropAnimatedNode:tag];
+    [nodesManager dropAnimatedNode:[NSNumber numberWithDouble:tag]];
   }];
 }
 
-RCT_EXPORT_METHOD(startListeningToAnimatedNodeValue:(nonnull NSNumber *)tag)
+RCT_EXPORT_METHOD(startListeningToAnimatedNodeValue:(double)tag)
 {
   __weak id<RCTValueAnimatedNodeObserver> valueObserver = self;
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager startListeningToAnimatedNodeValue:tag valueObserver:valueObserver];
+    [nodesManager startListeningToAnimatedNodeValue:[NSNumber numberWithDouble:tag] valueObserver:valueObserver];
   }];
 }
 
-RCT_EXPORT_METHOD(stopListeningToAnimatedNodeValue:(nonnull NSNumber *)tag)
+RCT_EXPORT_METHOD(stopListeningToAnimatedNodeValue:(double)tag)
 {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager stopListeningToAnimatedNodeValue:tag];
+    [nodesManager stopListeningToAnimatedNodeValue:[NSNumber numberWithDouble:tag]];
   }];
 }
 
-RCT_EXPORT_METHOD(addAnimatedEventToView:(nonnull NSNumber *)viewTag
+RCT_EXPORT_METHOD(addAnimatedEventToView:(double)viewTag
                   eventName:(nonnull NSString *)eventName
-                  eventMapping:(NSDictionary<NSString *, id> *)eventMapping)
+                  eventMapping:(JS::NativeAnimatedModule::EventMapping &)eventMapping)
 {
+  NSMutableDictionary *eventMappingDict = [NSMutableDictionary new];
+  eventMappingDict[@"nativeEventPath"] = RCTConvertVecToArray(eventMapping.nativeEventPath());
+
+  if (eventMapping.animatedValueTag()) {
+    eventMappingDict[@"animatedValueTag"] = @(*eventMapping.animatedValueTag());
+  }
+
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager addAnimatedEventToView:viewTag eventName:eventName eventMapping:eventMapping];
+    [nodesManager addAnimatedEventToView:[NSNumber numberWithDouble:viewTag] eventName:eventName eventMapping:eventMappingDict];
   }];
 }
 
-RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
+RCT_EXPORT_METHOD(removeAnimatedEventFromView:(double)viewTag
                   eventName:(nonnull NSString *)eventName
-            animatedNodeTag:(nonnull NSNumber *)animatedNodeTag)
+            animatedNodeTag:(double)animatedNodeTag)
 {
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
-    [nodesManager removeAnimatedEventFromView:viewTag eventName:eventName animatedNodeTag:animatedNodeTag];
+    [nodesManager removeAnimatedEventFromView:[NSNumber numberWithDouble:viewTag] eventName:eventName animatedNodeTag:[NSNumber numberWithDouble:animatedNodeTag]];
   }];
 }
 
@@ -317,4 +331,13 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
   });
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeAnimatedModuleSpecJSI>(self, jsInvoker);
+}
+
 @end
+
+Class RCTNativeAnimatedModuleCls(void) {
+  return RCTNativeAnimatedModule.class;
+}

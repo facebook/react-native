@@ -213,18 +213,6 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
-@implementation RCTCxxConvert (NativeAnimatedModule_AnimatedNodeConfig)
-+ (RCTManagedPointer *)JS_NativeAnimatedModule_AnimatedNodeConfig:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeAnimatedModule::AnimatedNodeConfig>(json);
-}
-@end
-@implementation RCTCxxConvert (NativeAnimatedModule_AnimatingNodeConfig)
-+ (RCTManagedPointer *)JS_NativeAnimatedModule_AnimatingNodeConfig:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeAnimatedModule::AnimatingNodeConfig>(json);
-}
-@end
 @implementation RCTCxxConvert (NativeAnimatedModule_EndResult)
 + (RCTManagedPointer *)JS_NativeAnimatedModule_EndResult:(id)json
 {
@@ -319,7 +307,6 @@ namespace facebook {
         
         methodMap_["createAnimatedNode"] = MethodMetadata {2, __hostFunction_NativeAnimatedModuleSpecJSI_createAnimatedNode};
         
-        setMethodArgConversionSelector(@"createAnimatedNode", 1, @"JS_NativeAnimatedModule_AnimatedNodeConfig:");
         
         methodMap_["startListeningToAnimatedNodeValue"] = MethodMetadata {1, __hostFunction_NativeAnimatedModuleSpecJSI_startListeningToAnimatedNodeValue};
         
@@ -335,7 +322,6 @@ namespace facebook {
         
         methodMap_["startAnimatingNode"] = MethodMetadata {4, __hostFunction_NativeAnimatedModuleSpecJSI_startAnimatingNode};
         
-        setMethodArgConversionSelector(@"startAnimatingNode", 2, @"JS_NativeAnimatedModule_AnimatingNodeConfig:");
         
         methodMap_["stopAnimation"] = MethodMetadata {1, __hostFunction_NativeAnimatedModuleSpecJSI_stopAnimation};
         

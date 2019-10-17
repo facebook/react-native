@@ -235,38 +235,6 @@ namespace facebook {
 
 namespace JS {
   namespace NativeAnimatedModule {
-    struct AnimatedNodeConfig {
-      NSString *type() const;
-
-      AnimatedNodeConfig(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeAnimatedModule_AnimatedNodeConfig)
-+ (RCTManagedPointer *)JS_NativeAnimatedModule_AnimatedNodeConfig:(id)json;
-@end
-
-namespace JS {
-  namespace NativeAnimatedModule {
-    struct AnimatingNodeConfig {
-      NSString *type() const;
-
-      AnimatingNodeConfig(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeAnimatedModule_AnimatingNodeConfig)
-+ (RCTManagedPointer *)JS_NativeAnimatedModule_AnimatingNodeConfig:(id)json;
-@end
-
-namespace JS {
-  namespace NativeAnimatedModule {
     struct EndResult {
       bool finished() const;
 
@@ -299,36 +267,36 @@ namespace JS {
 @end
 @protocol NativeAnimatedModuleSpec <RCTBridgeModule, RCTTurboModule>
 
-- (void)createAnimatedNode:(NSNumber *)tag
-                    config:(JS::NativeAnimatedModule::AnimatedNodeConfig &)config;
-- (void)startListeningToAnimatedNodeValue:(NSNumber *)tag;
-- (void)stopListeningToAnimatedNodeValue:(NSNumber *)tag;
-- (void)connectAnimatedNodes:(NSNumber *)parentTag
-                    childTag:(NSNumber *)childTag;
-- (void)disconnectAnimatedNodes:(NSNumber *)parentTag
-                       childTag:(NSNumber *)childTag;
-- (void)startAnimatingNode:(NSNumber *)animationId
-                   nodeTag:(NSNumber *)nodeTag
-                    config:(JS::NativeAnimatedModule::AnimatingNodeConfig &)config
+- (void)createAnimatedNode:(double)tag
+                    config:(NSDictionary *)config;
+- (void)startListeningToAnimatedNodeValue:(double)tag;
+- (void)stopListeningToAnimatedNodeValue:(double)tag;
+- (void)connectAnimatedNodes:(double)parentTag
+                    childTag:(double)childTag;
+- (void)disconnectAnimatedNodes:(double)parentTag
+                       childTag:(double)childTag;
+- (void)startAnimatingNode:(double)animationId
+                   nodeTag:(double)nodeTag
+                    config:(NSDictionary *)config
                endCallback:(RCTResponseSenderBlock)endCallback;
-- (void)stopAnimation:(NSNumber *)animationId;
-- (void)setAnimatedNodeValue:(NSNumber *)nodeTag
-                       value:(NSNumber *)value;
-- (void)setAnimatedNodeOffset:(NSNumber *)nodeTag
-                       offset:(NSNumber *)offset;
-- (void)flattenAnimatedNodeOffset:(NSNumber *)nodeTag;
-- (void)extractAnimatedNodeOffset:(NSNumber *)nodeTag;
-- (void)connectAnimatedNodeToView:(NSNumber *)nodeTag
-                          viewTag:(NSNumber *)viewTag;
-- (void)disconnectAnimatedNodeFromView:(NSNumber *)nodeTag
-                               viewTag:(NSNumber *)viewTag;
-- (void)dropAnimatedNode:(NSNumber *)tag;
-- (void)addAnimatedEventToView:(NSNumber *)viewTag
+- (void)stopAnimation:(double)animationId;
+- (void)setAnimatedNodeValue:(double)nodeTag
+                       value:(double)value;
+- (void)setAnimatedNodeOffset:(double)nodeTag
+                       offset:(double)offset;
+- (void)flattenAnimatedNodeOffset:(double)nodeTag;
+- (void)extractAnimatedNodeOffset:(double)nodeTag;
+- (void)connectAnimatedNodeToView:(double)nodeTag
+                          viewTag:(double)viewTag;
+- (void)disconnectAnimatedNodeFromView:(double)nodeTag
+                               viewTag:(double)viewTag;
+- (void)dropAnimatedNode:(double)tag;
+- (void)addAnimatedEventToView:(double)viewTag
                      eventName:(NSString *)eventName
                   eventMapping:(JS::NativeAnimatedModule::EventMapping &)eventMapping;
-- (void)removeAnimatedEventFromView:(NSNumber *)viewTag
+- (void)removeAnimatedEventFromView:(double)viewTag
                           eventName:(NSString *)eventName
-                    animatedNodeTag:(NSNumber *)animatedNodeTag;
+                    animatedNodeTag:(double)animatedNodeTag;
 - (void)addListener:(NSString *)eventName;
 - (void)removeListeners:(double)count;
 
@@ -2611,16 +2579,6 @@ inline NSString *JS::NativeAlertManager::Args::destructiveButtonKey() const
 inline NSString *JS::NativeAlertManager::Args::keyboardType() const
 {
   id const p = _v[@"keyboardType"];
-  return RCTBridgingToString(p);
-}
-inline NSString *JS::NativeAnimatedModule::AnimatedNodeConfig::type() const
-{
-  id const p = _v[@"type"];
-  return RCTBridgingToString(p);
-}
-inline NSString *JS::NativeAnimatedModule::AnimatingNodeConfig::type() const
-{
-  id const p = _v[@"type"];
   return RCTBridgingToString(p);
 }
 inline bool JS::NativeAnimatedModule::EndResult::finished() const

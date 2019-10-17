@@ -58,23 +58,27 @@ function attachNativeEvent(
 
   const viewTag = ReactNative.findNodeHandle(viewRef);
 
-  eventMappings.forEach(mapping => {
-    NativeAnimatedHelper.API.addAnimatedEventToView(
-      viewTag,
-      eventName,
-      mapping,
-    );
-  });
+  if (viewTag != null) {
+    eventMappings.forEach(mapping => {
+      NativeAnimatedHelper.API.addAnimatedEventToView(
+        viewTag,
+        eventName,
+        mapping,
+      );
+    });
+  }
 
   return {
     detach() {
-      eventMappings.forEach(mapping => {
-        NativeAnimatedHelper.API.removeAnimatedEventFromView(
-          viewTag,
-          eventName,
-          mapping.animatedValueTag,
-        );
-      });
+      if (viewTag != null) {
+        eventMappings.forEach(mapping => {
+          NativeAnimatedHelper.API.removeAnimatedEventFromView(
+            viewTag,
+            eventName,
+            mapping.animatedValueTag,
+          );
+        });
+      }
     },
   };
 }
