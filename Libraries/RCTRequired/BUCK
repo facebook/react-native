@@ -4,6 +4,6 @@ fb_apple_library(
     name = "RCTRequired",
     autoglob = True,
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    labels = ["supermodule:ios/isolation/infra.react_native"],
     frameworks = ["Foundation"],
+    labels = ["supermodule:ios/isolation/infra.react_native"],
 )

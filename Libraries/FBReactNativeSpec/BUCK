@@ -10,11 +10,11 @@ fb_apple_library(
         prefix = "FBReactNativeSpec",
     ),
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    labels = ["supermodule:ios/isolation/infra.react_native"],
     frameworks = [
         "Foundation",
         "UIKit",
     ],
+    labels = ["supermodule:ios/isolation/infra.react_native"],
     reexport_all_header_dependencies = True,
     deps = [
         "fbsource//xplat/js/react-native-github:RCTTypeSafety",
