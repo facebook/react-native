@@ -169,6 +169,13 @@ class ShadowNode : public virtual Sealable,
   std::string getDebugValue() const override;
   SharedDebugStringConvertibleList getDebugChildren() const override;
   SharedDebugStringConvertibleList getDebugProps() const override;
+
+  /*
+   * A number of the generation of the ShadowNode instance;
+   * is used and useful for debug-printing purposes *only*.
+   * Do not access this value in any circumstances.
+   */
+  int const revision_;
 #endif
 
  protected:
@@ -194,13 +201,6 @@ class ShadowNode : public virtual Sealable,
    * to be cloned before the first mutation.
    */
   bool childrenAreShared_;
-
-  /*
-   * A number of the generation of the ShadowNode instance;
-   * is used and useful for debug-printing purposes *only*.
-   * Do not access this value in any circumstances.
-   */
-  const int revision_;
 };
 
 } // namespace react

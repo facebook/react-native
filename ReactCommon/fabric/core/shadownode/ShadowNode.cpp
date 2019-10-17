@@ -34,7 +34,11 @@ bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
 ShadowNode::ShadowNode(
     const ShadowNodeFragment &fragment,
     const ComponentDescriptor &componentDescriptor)
-    : props_(fragment.props),
+    :
+#if RN_DEBUG_STRING_CONVERTIBLE
+      revision_(1),
+#endif
+      props_(fragment.props),
       children_(
           fragment.children ? fragment.children
                             : emptySharedShadowNodeSharedList()),
@@ -44,8 +48,7 @@ ShadowNode::ShadowNode(
           fragment.surfaceId,
           fragment.eventEmitter,
           componentDescriptor)),
-      childrenAreShared_(true),
-      revision_(1) {
+      childrenAreShared_(true) {
   assert(props_);
   assert(children_);
 
@@ -57,7 +60,11 @@ ShadowNode::ShadowNode(
 ShadowNode::ShadowNode(
     const ShadowNode &sourceShadowNode,
     const ShadowNodeFragment &fragment)
-    : props_(fragment.props ? fragment.props : sourceShadowNode.props_),
+    :
+#if RN_DEBUG_STRING_CONVERTIBLE
+      revision_(sourceShadowNode.revision_ + 1),
+#endif
+      props_(fragment.props ? fragment.props : sourceShadowNode.props_),
       children_(
           fragment.children ? fragment.children : sourceShadowNode.children_),
       localData_(
@@ -67,8 +74,7 @@ ShadowNode::ShadowNode(
           fragment.state ? fragment.state
                          : sourceShadowNode.getMostRecentState()),
       family_(sourceShadowNode.family_),
-      childrenAreShared_(true),
-      revision_(sourceShadowNode.revision_ + 1) {
+      childrenAreShared_(true) {
   // `tag`, `surfaceId`, and `eventEmitter` cannot be changed with cloning.
   assert(fragment.tag == ShadowNodeFragment::tagPlaceholder());
   assert(fragment.surfaceId == ShadowNodeFragment::surfaceIdPlaceholder());
