@@ -1,5 +1,4 @@
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
-load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_prebuilt_aar")
 
 fb_native.android_library(
     name = "runner",
@@ -10,12 +9,12 @@ fb_native.android_library(
     visibility = ["PUBLIC"],
 )
 
-rn_android_prebuilt_aar(
+fb_native.android_prebuilt_aar(
     name = "monitor-binary",
     aar = ":monitor-binary-aar",
 )
 
-rn_android_prebuilt_aar(
+fb_native.android_prebuilt_aar(
     name = "runner-binary",
     aar = ":runner-binary-aar",
 )
@@ -32,7 +31,7 @@ fb_native.remote_file(
     url = "mvn:androidx.test:runner:aar:1.1.1",
 )
 
-rn_android_prebuilt_aar(
+fb_native.android_prebuilt_aar(
     name = "exposed-instrumentation-api",
     aar = ":testing-support-instrumentation",
     visibility = ["//ReactAndroid/..."],
