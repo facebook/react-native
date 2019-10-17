@@ -26,12 +26,12 @@ rn_apple_library(
         "WebKit",
     ],
     exported_preprocessor_flags = rn_extra_build_flags(),
-    labels = ["supermodule:ios/isolation/infra.react_native"],
     frameworks = [
         "Foundation",
         "UIKit",
     ],
     header_path_prefix = "React",
+    labels = ["supermodule:ios/isolation/infra.react_native"],
     lang_compiler_flags = get_fbobjc_enable_exception_lang_compiler_flags_DEPRECATED(),
     link_whole = True,
     platform_preprocessor_flags = [(
@@ -75,6 +75,9 @@ rn_apple_library(
         ) + react_module_plugin_providers(
             name = "AsyncLocalStorage",
             native_class_func = "RCTAsyncLocalStorageCls",
+        ) + react_module_plugin_providers(
+            name = "Timing",
+            native_class_func = "RCTTimingCls",
         ),
     plugins_header = "FBCoreModulesPlugins.h",
     preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_extra_build_flags() + [

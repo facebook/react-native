@@ -7,11 +7,16 @@
 
 #import "RCTTiming.h"
 
-#import "RCTAssert.h"
-#import "RCTBridge+Private.h"
-#import "RCTBridge.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
+
+#import <React/RCTAssert.h>
+#import <React/RCTBridge+Private.h>
+#import <React/RCTBridge.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
+#import <React/RCTConvert.h>
+
+#import "CoreModulesPlugins.h"
 
 static const NSTimeInterval kMinimumSleepInterval = 1;
 
@@ -91,6 +96,9 @@ static const NSTimeInterval kIdleCallbackFrameDeadline = 0.001;
 
 @end
 
+@interface RCTTiming() <NativeTimingSpec>
+@end
+
 @implementation RCTTiming
 {
   NSMutableDictionary<NSNumber *, _RCTTimer *> *_timers;
@@ -158,10 +166,10 @@ RCT_EXPORT_MODULE()
 - (void)markStartOfBackgroundTaskIfNeeded
 {
   if (_backgroundTaskIdentifier == UIBackgroundTaskInvalid) {
-    __weak typeof(self) weakSelf = self;
+    __weak RCTTiming *weakSelf = self;
     // Marks the beginning of a new long-running background task. We can run the timer in the background.
     _backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"rct.timing.gb.task" expirationHandler:^{
-      typeof(self) strongSelf = weakSelf;
+      RCTTiming *strongSelf = weakSelf;
       if (!strongSelf) {
         return;
       }
@@ -360,24 +368,26 @@ RCT_EXPORT_MODULE()
  * calculating the timer's target time. We calculate this by passing in
  * Date.now() from JS and then subtracting that from the current time here.
  */
-RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
+RCT_EXPORT_METHOD(createTimer:(double)callbackID
                   duration:(NSTimeInterval)jsDuration
-                  jsSchedulingTime:(NSDate *)jsSchedulingTime
+                  jsSchedulingTime:(double)jsSchedulingTime
                   repeats:(BOOL)repeats)
 {
+  NSNumber *callbackIdObjc = [NSNumber numberWithDouble:callbackID];
+  NSDate *schedulingTime = [RCTConvert NSDate:[NSNumber numberWithDouble: jsSchedulingTime]];
   if (jsDuration == 0 && repeats == NO) {
     // For super fast, one-off timers, just enqueue them immediately rather than waiting a frame.
     if (_bridge) {
-      [_bridge _immediatelyCallTimer:callbackID];
+      [_bridge _immediatelyCallTimer:callbackIdObjc];
     } else {
-      [_timingDelegate immediatelyCallTimer:callbackID];
+      [_timingDelegate immediatelyCallTimer:callbackIdObjc];
     }
     return;
   }
 
-  [self createTimerForNextFrame:callbackID
+  [self createTimerForNextFrame:callbackIdObjc
                        duration:jsDuration
-               jsSchedulingTime:jsSchedulingTime
+               jsSchedulingTime:schedulingTime
                         repeats:repeats];
 }
 
@@ -417,10 +427,10 @@ RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
   }
 }
 
-RCT_EXPORT_METHOD(deleteTimer:(nonnull NSNumber *)timerID)
+RCT_EXPORT_METHOD(deleteTimer:(double)timerID)
 {
   @synchronized (_timers) {
-    [_timers removeObjectForKey:timerID];
+    [_timers removeObjectForKey:[NSNumber numberWithDouble:timerID]];
   }
   if (![self hasPendingTimers]) {
     [self stopTimers];
@@ -437,4 +447,13 @@ RCT_EXPORT_METHOD(setSendIdleEvents:(BOOL)sendIdleEvents)
   }
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeTimingSpecJSI>(self, jsInvoker);
+}
+
 @end
+
+Class RCTTimingCls(void) {
+  return RCTTiming.class;
+}

@@ -26,7 +26,7 @@
                        duration:(NSTimeInterval)jsDuration
                jsSchedulingTime:(NSDate *)jsSchedulingTime
                         repeats:(BOOL)repeats;
-- (void)deleteTimer:(nonnull NSNumber *)timerID;
+- (void)deleteTimer:(double)timerID;
 
 @end
 

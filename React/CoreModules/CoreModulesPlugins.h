@@ -41,6 +41,7 @@ Class RCTSourceCodeCls(void) __attribute__((used));
 Class RCTActionSheetManagerCls(void) __attribute__((used));
 Class RCTAlertManagerCls(void) __attribute__((used));
 Class RCTAsyncLocalStorageCls(void) __attribute__((used));
+Class RCTTimingCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }
