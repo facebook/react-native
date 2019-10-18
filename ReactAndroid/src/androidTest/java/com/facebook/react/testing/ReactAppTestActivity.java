@@ -207,6 +207,10 @@ public class ReactAppTestActivity extends FragmentActivity
     if (spec.getJavaScriptExecutorFactory() != null) {
       builder.setJavaScriptExecutorFactory(spec.getJavaScriptExecutorFactory());
     }
+    if (spec.getNativeModuleCallExceptionHandler() != null) {
+      builder.setNativeModuleCallExceptionHandler(spec.getNativeModuleCallExceptionHandler());
+    }
+
     if (!spec.getAlternativeReactPackagesForTest().isEmpty()) {
       builder.addPackages(spec.getAlternativeReactPackagesForTest());
     } else {

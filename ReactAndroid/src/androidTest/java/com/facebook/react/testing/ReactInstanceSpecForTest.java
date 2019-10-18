@@ -13,6 +13,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.uimanager.ViewManager;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,12 +32,23 @@ public class ReactInstanceSpecForTest {
   private final List<Class<? extends JavaScriptModule>> mJSModuleSpecs = new ArrayList<>();
   private final List<ViewManager> mViewManagers = new ArrayList<>();
   private final ArrayList<ReactPackage> mReactPackages = new ArrayList<>();
+  @Nullable private NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler = null;
   @Nullable private FabricUIManagerFactory mFabricUIManagerFactory = null;
   @Nullable private JavaScriptExecutorFactory mJavaScriptExecutorFactory = null;
 
   public ReactInstanceSpecForTest addNativeModule(NativeModule module) {
     mNativeModules.add(module);
     return this;
+  }
+
+  public ReactInstanceSpecForTest setNativeModuleCallExceptionHandler(
+      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
+    mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
+    return this;
+  }
+
+  public NativeModuleCallExceptionHandler getNativeModuleCallExceptionHandler() {
+    return mNativeModuleCallExceptionHandler;
   }
 
   public ReactInstanceSpecForTest setJavaScriptExecutorFactory(
