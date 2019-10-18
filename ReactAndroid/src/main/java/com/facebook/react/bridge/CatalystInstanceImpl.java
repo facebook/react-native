@@ -7,6 +7,7 @@
 
 package com.facebook.react.bridge;
 
+import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.res.AssetManager;
@@ -15,6 +16,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.MessageQueueThread;
@@ -326,6 +328,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
    * fully shut down other threads.
    */
   @Override
+  @ThreadConfined(UI)
   public void destroy() {
     Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() start");
     UiThreadUtil.assertOnUiThread();
