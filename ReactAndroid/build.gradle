@@ -345,7 +345,7 @@ def packageReactNdkLibsForBuck = tasks.register("packageReactNdkLibsForBuck", Co
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     compileOptions {
         sourceCompatibility(JavaVersion.VERSION_1_8)
