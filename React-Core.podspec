@@ -33,6 +33,7 @@ header_subspecs = {
   'RCTSettingsHeaders'          => 'Libraries/Settings/*.h',
   'RCTTextHeaders'              => 'Libraries/Text/**/*.h',
   'RCTVibrationHeaders'         => 'Libraries/Vibration/*.h',
+  'RCTWrapperHeaders'           => 'Libraries/Wrapper/*.h',
 }
 
 Pod::Spec.new do |s|
