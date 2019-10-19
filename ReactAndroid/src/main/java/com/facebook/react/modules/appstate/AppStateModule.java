@@ -7,23 +7,28 @@
 
 package com.facebook.react.modules.appstate;
 
+import android.util.Log;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.WindowFocusChangeListener;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 @ReactModule(name = AppStateModule.NAME)
 public class AppStateModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener, WindowFocusChangeListener {
+  public static final String TAG = AppStateModule.class.getSimpleName();
 
   public static final String NAME = "AppState";
 
@@ -81,9 +86,7 @@ public class AppStateModule extends ReactContextBaseJavaModule
 
   @Override
   public void onWindowFocusChange(boolean hasFocus) {
-    getReactApplicationContext()
-        .getJSModule(RCTDeviceEventEmitter.class)
-        .emit("appStateFocusChange", hasFocus);
+    sendEvent("appStateFocusChange", hasFocus);
   }
 
   private WritableMap createAppStateEventMap() {
@@ -92,9 +95,26 @@ public class AppStateModule extends ReactContextBaseJavaModule
     return appState;
   }
 
+  private void sendEvent(String eventName, @Nullable Object data) {
+    ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+
+    if (reactApplicationContext.hasActiveCatalystInstance()) {
+      reactApplicationContext.getJSModule(RCTDeviceEventEmitter.class).emit(eventName, data);
+    } else {
+      // We want to collect data about how often this happens, but this will cause a crash
+      // in debug, which isn't desirable.
+      String msg =
+          "sendAppStateChangeEvent: trying to update app state when Catalyst Instance has already disappeared: "
+              + eventName;
+      if (ReactBuildConfig.DEBUG) {
+        Log.e(AppStateModule.TAG, msg);
+      } else {
+        ReactSoftException.logSoftException(AppStateModule.TAG, new RuntimeException(msg));
+      }
+    }
+  }
+
   private void sendAppStateChangeEvent() {
-    getReactApplicationContext()
-        .getJSModule(RCTDeviceEventEmitter.class)
-        .emit("appStateDidChange", createAppStateEventMap());
+    sendEvent("appStateDidChange", createAppStateEventMap());
   }
 }
