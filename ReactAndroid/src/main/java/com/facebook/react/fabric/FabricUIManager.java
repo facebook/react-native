@@ -34,6 +34,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
@@ -122,6 +123,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @ThreadConfined(UI)
   private volatile boolean mIsMountingEnabled = true;
+
+  /**
+   * This is used to keep track of whether or not the FabricUIManager has been destroyed. Once the
+   * Catalyst instance is being destroyed, we should cease all operation here.
+   */
+  private volatile boolean mDestroyed = false;
 
   private long mRunStartTime = 0l;
   private long mBatchedExecutionTime = 0l;
@@ -220,6 +227,19 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void onCatalystInstanceDestroy() {
     FLog.i(TAG, "FabricUIManager.onCatalystInstanceDestroy");
 
+    if (mDestroyed) {
+      ReactSoftException.logSoftException(
+          FabricUIManager.TAG, new IllegalStateException("Cannot double-destroy FabricUIManager"));
+      return;
+    }
+
+    mDestroyed = true;
+
+    // This is not technically thread-safe, since it's read on the UI thread and written
+    // here on the JS thread. We've marked it as volatile so that this writes to UI-thread
+    // memory immediately.
+    mIsMountingEnabled = false;
+
     mEventDispatcher.removeBatchEventDispatchedListener(mEventBeatManager);
     mEventDispatcher.unregisterEventEmitter(FABRIC);
 
@@ -228,11 +248,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // callbacks to stop firing.
     mReactApplicationContext.removeLifecycleEventListener(this);
     onHostPause();
-
-    // This is not technically thread-safe, since it's read on the UI thread and written
-    // here on the JS thread. We've marked it as volatile so that this writes to UI-thread
-    // memory immediately.
-    mIsMountingEnabled = false;
 
     mBinding.unregister();
     mBinding = null;
@@ -700,7 +715,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     @Override
     public void doFrameGuarded(long frameTimeNanos) {
-      if (!mIsMountingEnabled) {
+      if (!mIsMountingEnabled || mDestroyed) {
         FLog.w(
             ReactConstants.TAG,
             "Not flushing pending UI operations because of previously thrown Exception");
