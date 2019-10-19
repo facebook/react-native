@@ -23,11 +23,7 @@ const {
   DeprecatedAccessibilityRoles,
 } = require('../../DeprecatedPropTypes/DeprecatedViewAccessibility');
 
-import type {
-  SyntheticEvent,
-  LayoutEvent,
-  PressEvent,
-} from '../../Types/CoreEventTypes';
+import type {LayoutEvent, PressEvent} from '../../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {
   AccessibilityRole,
@@ -36,15 +32,6 @@ import type {
   AccessibilityActionEvent,
   AccessibilityValue,
 } from '../View/ViewAccessibility';
-
-type TargetEvent = SyntheticEvent<
-  $ReadOnly<{|
-    target: number,
-  |}>,
->;
-
-type BlurEvent = TargetEvent;
-type FocusEvent = TargetEvent;
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
@@ -65,34 +52,44 @@ const OVERRIDE_PROPS = [
   'testID',
 ];
 
+type TVEvent = {
+  dispatchConfig: {},
+  tag: number,
+};
+
+type TVTouchableProps = $ReadOnly<{|
+  onBlur?: ?(event: TVEvent) => mixed,
+  onFocus?: ?(event: TVEvent) => mixed,
+|}>;
+
 export type Props = $ReadOnly<{|
-  accessible?: ?boolean,
-  accessibilityLabel?: ?Stringish,
+  ...TVTouchableProps,
+  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   accessibilityHint?: ?Stringish,
   accessibilityIgnoresInvertColors?: ?boolean,
+  accessibilityLabel?: ?Stringish,
   accessibilityRole?: ?AccessibilityRole,
   accessibilityState?: ?AccessibilityState,
-  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   accessibilityValue?: ?AccessibilityValue,
+  accessible?: ?boolean,
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,
   delayPressOut?: ?number,
   disabled?: ?boolean,
+  focusable?: ?boolean,
   hitSlop?: ?EdgeInsetsProp,
   nativeID?: ?string,
-  touchSoundDisabled?: ?boolean,
-  onBlur?: ?(e: BlurEvent) => void,
-  onFocus?: ?(e: FocusEvent) => void,
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   onLayout?: ?(event: LayoutEvent) => mixed,
   onLongPress?: ?(event: PressEvent) => mixed,
   onPress?: ?(event: PressEvent) => mixed,
   onPressIn?: ?(event: PressEvent) => mixed,
   onPressOut?: ?(event: PressEvent) => mixed,
-  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => void,
   pressRetentionOffset?: ?EdgeInsetsProp,
   rejectResponderTermination?: ?boolean,
   testID?: ?string,
+  touchSoundDisabled?: ?boolean,
 |}>;
 
 /**
