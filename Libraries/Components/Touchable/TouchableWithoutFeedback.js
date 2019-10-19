@@ -10,6 +10,8 @@
 
 'use strict';
 
+import TouchableWithoutFeedbackInjection from './TouchableWithoutFeedbackInjection';
+
 const DeprecatedEdgeInsetsPropType = require('../../DeprecatedPropTypes/DeprecatedEdgeInsetsPropType');
 const React = require('react');
 const PropTypes = require('prop-types');
@@ -99,7 +101,7 @@ export type Props = $ReadOnly<{|
  * TouchableWithoutFeedback supports only one child.
  * If you wish to have several child components, wrap them in a View.
  */
-const TouchableWithoutFeedback = ((createReactClass({
+const TouchableWithoutFeedbackImpl = ((createReactClass({
   displayName: 'TouchableWithoutFeedback',
   mixins: [Touchable.Mixin],
 
@@ -281,5 +283,10 @@ const TouchableWithoutFeedback = ((createReactClass({
     });
   },
 }): any): React.ComponentType<Props>);
+
+const TouchableWithoutFeedback: React.ComponentType<Props> =
+  TouchableWithoutFeedbackInjection.unstable_Override == null
+    ? TouchableWithoutFeedbackImpl
+    : TouchableWithoutFeedbackInjection.unstable_Override;
 
 module.exports = TouchableWithoutFeedback;
