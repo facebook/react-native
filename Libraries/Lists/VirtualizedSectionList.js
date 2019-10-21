@@ -554,9 +554,9 @@ class ItemWithSeparator extends React.Component<
        * error found when Flow v0.89 was deployed. To see the error, delete
        * this comment and run Flow. */
       <View>
-        {!inverted
-          ? [leadingSeparator, element, separator]
-          : [separator, element, leadingSeparator]}
+        {!inverted ? leadingSeparator : separator}
+        {element}
+        {!inverted ? separator : leadingSeparator}
       </View>
     ) : (
       element
