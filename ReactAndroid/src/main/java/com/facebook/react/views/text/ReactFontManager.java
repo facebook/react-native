@@ -102,8 +102,12 @@ public class ReactFontManager {
   public void addCustomFont(@NonNull Context context, @NonNull String fontFamily, int fontId) {
     Typeface font = ResourcesCompat.getFont(context, fontId);
     if (font != null) {
-      mCustomTypefaceCache.put(fontFamily, font);
+      addCustomFont(fontFamily, font);
     }
+  }
+
+  public void addCustomFont(@NonNull String fontFamily, @NonNull Typeface font) {
+    mCustomTypefaceCache.put(fontFamily, font);
   }
 
   /**

@@ -57,7 +57,7 @@ void Instance::initializeBridge(
 
   jsQueue->runOnQueueSync([this, delegate, &jsef, jsQueue]() mutable {
     nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
-        jsef.get(), delegate, moduleRegistry_, jsQueue, callback_);
+        jsef.get(), delegate, moduleRegistry_, jsQueue, callback_, jseConfigParams_);
 
     std::lock_guard<std::mutex> lock(m_syncMutex);
     m_syncReady = true;
@@ -199,6 +199,10 @@ void Instance::callJSCallback(uint64_t callbackId, folly::dynamic &&params) {
   SystraceSection s("Instance::callJSCallback");
   callback_->incrementPendingJSCalls();
   nativeToJsBridge_->invokeCallback((double)callbackId, std::move(params));
+}
+
+void Instance::setJSEConfigParams(std::shared_ptr<JSEConfigParams>&& jseConfigParams) {
+  jseConfigParams_ = std::move(jseConfigParams);
 }
 
 void Instance::registerBundle(uint32_t bundleId, const std::string& bundlePath) {

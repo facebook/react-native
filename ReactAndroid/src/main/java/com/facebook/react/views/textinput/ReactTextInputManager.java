@@ -718,6 +718,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setBorderStyle(borderStyle);
   }
 
+  @ReactProp(name = "showSoftInputOnFocus", defaultBoolean = true)
+  public void showKeyboardOnFocus(ReactEditText view, boolean showKeyboardOnFocus) {
+    view.setShowSoftInputOnFocus(showKeyboardOnFocus);
+  }
+
   @ReactPropGroup(names = {
       ViewProps.BORDER_WIDTH,
       ViewProps.BORDER_LEFT_WIDTH,
@@ -852,11 +857,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               eventDispatcher.dispatchEvent(
                   new ReactTextInputFocusEvent(
                       editText.getId()));
-              // Show keyboard when a EditText view gains focus
-              editText.showSoftKeyboard();
             } else {
-              // Hide keyboard when a EditText view looses focus
-              editText.hideSoftKeyboard();
               eventDispatcher.dispatchEvent(
                   new ReactTextInputBlurEvent(
                       editText.getId()));
@@ -909,8 +910,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               return false;
             }
 
-            // If its not an action we handle, perform default behavior
-            return false;
+            return true;
           }
         });
   }
