@@ -19,6 +19,7 @@ using namespace facebook::react;
 #include <react/components/view/ViewComponentDescriptor.h>
 #include <react/config/ReactNativeConfig.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
+#include <react/uimanager/ComponentDescriptorProviderRegistry.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/utils/ContextContainer.h>
 
@@ -28,15 +29,15 @@ namespace react {
 static ComponentRegistryFactory getComponentRegistryFactory() {
   return [](const EventDispatcher::Weak &eventDispatcher,
             const ContextContainer::Shared &contextContainer) {
-    auto registry = std::make_shared<ComponentDescriptorRegistry>();
-    registry->registerComponentDescriptor(
-        std::make_shared<ViewComponentDescriptor>(eventDispatcher));
-    registry->registerComponentDescriptor(
-        std::make_shared<ScrollViewComponentDescriptor>(eventDispatcher));
-    registry->registerComponentDescriptor(
-        std::make_shared<ActivityIndicatorViewComponentDescriptor>(
-            eventDispatcher));
-    return registry;
+    ComponentDescriptorProviderRegistry providerRegistry{};
+    providerRegistry.add(
+        concreteComponentDescriptorProvider<ViewComponentDescriptor>());
+    providerRegistry.add(
+        concreteComponentDescriptorProvider<ScrollViewComponentDescriptor>());
+    providerRegistry.add(concreteComponentDescriptorProvider<
+                         ActivityIndicatorViewComponentDescriptor>());
+    return providerRegistry.createComponentDescriptorRegistry(
+        {eventDispatcher, contextContainer});
   };
 }
 
