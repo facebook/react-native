@@ -35,8 +35,7 @@ AttributedString AndroidTextInputShadowNode::getAttributedString() const {
   textAttributes.apply(getProps()->textAttributes);
 
   // Use BaseTextShadowNode to get attributed string from children
-  return BaseTextShadowNode::getAttributedString(
-      textAttributes, shared_from_this());
+  return BaseTextShadowNode::getAttributedString(textAttributes, *this);
 }
 
 #pragma mark - LayoutableShadowNode

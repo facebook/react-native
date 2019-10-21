@@ -19,8 +19,8 @@ AttributedString ParagraphShadowNode::getAttributedString() const {
     auto textAttributes = TextAttributes::defaultTextAttributes();
     textAttributes.apply(getProps()->textAttributes);
 
-    cachedAttributedString_ = BaseTextShadowNode::getAttributedString(
-        textAttributes, shared_from_this());
+    cachedAttributedString_ =
+        BaseTextShadowNode::getAttributedString(textAttributes, *this);
   }
 
   return cachedAttributedString_.value();
