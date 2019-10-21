@@ -132,10 +132,10 @@ class ShadowNode : public virtual Sealable,
 
 #pragma mark - Mutating Methods
 
-  void appendChild(const SharedShadowNode &child);
+  void appendChild(ShadowNode::Shared const &child);
   void replaceChild(
-      const SharedShadowNode &oldChild,
-      const SharedShadowNode &newChild,
+      ShadowNode const &oldChild,
+      ShadowNode::Shared const &newChild,
       int suggestedIndex = -1);
 
   /*

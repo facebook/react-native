@@ -177,27 +177,36 @@ void ShadowNode::appendChild(const SharedShadowNode &child) {
 }
 
 void ShadowNode::replaceChild(
-    const SharedShadowNode &oldChild,
-    const SharedShadowNode &newChild,
+    ShadowNode const &oldChild,
+    ShadowNode::Shared const &newChild,
     int suggestedIndex) {
   ensureUnsealed();
 
   cloneChildrenIfShared();
 
-  auto nonConstChildren =
-      std::const_pointer_cast<SharedShadowNodeList>(children_);
+  newChild->family_->setParent(family_);
 
-  if (suggestedIndex != -1 && suggestedIndex < nonConstChildren->size()) {
-    if (nonConstChildren->at(suggestedIndex) == oldChild) {
-      (*nonConstChildren)[suggestedIndex] = newChild;
+  auto &children =
+      *std::const_pointer_cast<ShadowNode::ListOfShared>(children_);
+  auto size = children.size();
+
+  if (suggestedIndex != -1 && suggestedIndex < size) {
+    // If provided `suggestedIndex` is accurate,
+    // replacing in place using the index.
+    if (children.at(suggestedIndex).get() == &oldChild) {
+      children[suggestedIndex] = newChild;
       return;
     }
   }
 
-  std::replace(
-      nonConstChildren->begin(), nonConstChildren->end(), oldChild, newChild);
+  for (auto index = 0; index < size; index++) {
+    if (children.at(index).get() == &oldChild) {
+      children[index] = newChild;
+      return;
+    }
+  }
 
-  newChild->family_->setParent(family_);
+  assert(false && "Child to replace was not found.");
 }
 
 void ShadowNode::setLocalData(const SharedLocalData &localData) {

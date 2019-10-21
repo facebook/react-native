@@ -104,9 +104,7 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
         std::static_pointer_cast<ConcreteViewShadowNode>(
             childShadowNode->clone({}));
     ShadowNode::replaceChild(
-        childShadowNode->shared_from_this(),
-        clonedChildShadowNode,
-        suggestedIndex);
+        *childShadowNode, clonedChildShadowNode, suggestedIndex);
     return clonedChildShadowNode.get();
   }
 

@@ -114,7 +114,7 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
   ASSERT_EQ(node1Children.at(1), node3);
 
   auto node4 = std::make_shared<TestShadowNode>(*node2, ShadowNodeFragment{});
-  node1->replaceChild(node2, node4);
+  node1->replaceChild(*node2, node4);
   node1Children = node1->getChildren();
   ASSERT_EQ(node1Children.size(), 2);
   ASSERT_EQ(node1Children.at(0), node4);
