@@ -50,7 +50,7 @@ class StateTarget {
   const ShadowNode &getShadowNode() const;
 
  private:
-  std::shared_ptr<const void> shadowNode_;
+  std::shared_ptr<ShadowNode const> shadowNode_;
 };
 
 } // namespace react
