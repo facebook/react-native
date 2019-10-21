@@ -458,10 +458,21 @@ const ScrollResponderMixin = {
     } else {
       ({x, y, animated} = x || {});
     }
-    UIManager.dispatchViewManagerCommand(
-      nullthrows(this.scrollResponderGetScrollableNode()),
-      UIManager.getViewManagerConfig('RCTScrollView').Commands.scrollTo,
-      [x || 0, y || 0, animated !== false],
+
+    const thisRef: React.ElementRef<typeof ScrollView> = (this: any);
+    invariant(
+      thisRef.getNativeScrollRef != null,
+      'Expected scrollTo to be called on a scrollViewRef. If this exception occurs it is likely a bug in React Native',
+    );
+    const nativeScrollRef = thisRef.getNativeScrollRef();
+    if (nativeScrollRef == null) {
+      return;
+    }
+    ScrollView.Commands.scrollTo(
+      nativeScrollRef,
+      x || 0,
+      y || 0,
+      animated !== false,
     );
   },
 
@@ -476,11 +487,18 @@ const ScrollResponderMixin = {
   scrollResponderScrollToEnd: function(options?: {animated?: boolean}) {
     // Default to true
     const animated = (options && options.animated) !== false;
-    UIManager.dispatchViewManagerCommand(
-      this.scrollResponderGetScrollableNode(),
-      UIManager.getViewManagerConfig('RCTScrollView').Commands.scrollToEnd,
-      [animated],
+
+    const thisRef: React.ElementRef<typeof ScrollView> = (this: any);
+    invariant(
+      thisRef.getNativeScrollRef != null,
+      'Expected scrollToEnd to be called on a scrollViewRef. If this exception occurs it is likely a bug in React Native',
     );
+    const nativeScrollRef = thisRef.getNativeScrollRef();
+    if (nativeScrollRef == null) {
+      return;
+    }
+
+    ScrollView.Commands.scrollToEnd(nativeScrollRef, animated);
   },
 
   /**
@@ -508,27 +526,33 @@ const ScrollResponderMixin = {
         '`scrollResponderZoomTo` `animated` argument is deprecated. Use `options.animated` instead',
       );
     }
+
+    const thisRef: React.ElementRef<typeof ScrollView> = this;
     invariant(
-      this.getNativeScrollRef != null,
+      thisRef.getNativeScrollRef != null,
       'Expected zoomToRect to be called on a scrollViewRef. If this exception occurs it is likely a bug in React Native',
     );
-    ScrollView.Commands.zoomToRect(
-      this.getNativeScrollRef(),
-      rect,
-      animated !== false,
-    );
+    const nativeScrollRef = thisRef.getNativeScrollRef();
+    if (nativeScrollRef == null) {
+      return;
+    }
+    ScrollView.Commands.zoomToRect(nativeScrollRef, rect, animated !== false);
   },
 
   /**
    * Displays the scroll indicators momentarily.
    */
   scrollResponderFlashScrollIndicators: function() {
-    UIManager.dispatchViewManagerCommand(
-      this.scrollResponderGetScrollableNode(),
-      UIManager.getViewManagerConfig('RCTScrollView').Commands
-        .flashScrollIndicators,
-      [],
+    const thisRef: React.ElementRef<typeof ScrollView> = (this: any);
+    invariant(
+      thisRef.getNativeScrollRef != null,
+      'Expected flashScrollIndicators to be called on a scrollViewRef. If this exception occurs it is likely a bug in React Native',
     );
+    const nativeScrollRef = thisRef.getNativeScrollRef();
+    if (nativeScrollRef == null) {
+      return;
+    }
+    ScrollView.Commands.flashScrollIndicators(nativeScrollRef);
   },
 
   /**
