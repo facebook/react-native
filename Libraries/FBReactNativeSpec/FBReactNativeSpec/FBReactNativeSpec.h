@@ -1191,6 +1191,97 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+
+namespace JS {
+  namespace NativeImageEditor {
+    struct OptionsOffset {
+      double x() const;
+      double y() const;
+
+      OptionsOffset(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeImageEditor_OptionsOffset)
++ (RCTManagedPointer *)JS_NativeImageEditor_OptionsOffset:(id)json;
+@end
+
+namespace JS {
+  namespace NativeImageEditor {
+    struct OptionsSize {
+      double width() const;
+      double height() const;
+
+      OptionsSize(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeImageEditor_OptionsSize)
++ (RCTManagedPointer *)JS_NativeImageEditor_OptionsSize:(id)json;
+@end
+
+namespace JS {
+  namespace NativeImageEditor {
+    struct OptionsDisplaySize {
+      double width() const;
+      double height() const;
+
+      OptionsDisplaySize(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeImageEditor_OptionsDisplaySize)
++ (RCTManagedPointer *)JS_NativeImageEditor_OptionsDisplaySize:(id)json;
+@end
+
+namespace JS {
+  namespace NativeImageEditor {
+    struct Options {
+      JS::NativeImageEditor::OptionsOffset offset() const;
+      JS::NativeImageEditor::OptionsSize size() const;
+      folly::Optional<JS::NativeImageEditor::OptionsDisplaySize> displaySize() const;
+      NSString *resizeMode() const;
+
+      Options(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeImageEditor_Options)
++ (RCTManagedPointer *)JS_NativeImageEditor_Options:(id)json;
+@end
+@protocol NativeImageEditorSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)cropImage:(NSString *)uri
+         cropData:(JS::NativeImageEditor::Options &)cropData
+  successCallback:(RCTResponseSenderBlock)successCallback
+    errorCallback:(RCTResponseSenderBlock)errorCallback;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'ImageEditor'
+     */
+
+    class JSI_EXPORT NativeImageEditorSpecJSI : public ObjCTurboModule {
+    public:
+      NativeImageEditorSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
 @protocol NativeImageLoaderSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)getSize:(NSString *)uri
@@ -1278,6 +1369,48 @@ namespace facebook {
     class JSI_EXPORT NativeImagePickerIOSSpecJSI : public ObjCTurboModule {
     public:
       NativeImagePickerIOSSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
+
+namespace JS {
+  namespace NativeImageStore {
+    struct SpecAddImageFromBase64ErrorCallbackError {
+      NSString *message() const;
+
+      SpecAddImageFromBase64ErrorCallbackError(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeImageStore_SpecAddImageFromBase64ErrorCallbackError)
++ (RCTManagedPointer *)JS_NativeImageStore_SpecAddImageFromBase64ErrorCallbackError:(id)json;
+@end
+@protocol NativeImageStoreSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)getBase64ForTag:(NSString *)uri
+        successCallback:(RCTResponseSenderBlock)successCallback
+          errorCallback:(RCTResponseSenderBlock)errorCallback;
+- (void)hasImageForTag:(NSString *)uri
+              callback:(RCTResponseSenderBlock)callback;
+- (void)removeImageForTag:(NSString *)uri;
+- (void)addImageFromBase64:(NSString *)base64ImageData
+           successCallback:(RCTResponseSenderBlock)successCallback
+             errorCallback:(RCTResponseSenderBlock)errorCallback;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'ImageStore'
+     */
+
+    class JSI_EXPORT NativeImageStoreSpecJSI : public ObjCTurboModule {
+    public:
+      NativeImageStoreSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
 
     };
   } // namespace react
@@ -2852,6 +2985,56 @@ inline JS::NativeI18nManager::Constants::Builder::Builder(const Input i) : _fact
 inline JS::NativeI18nManager::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
+inline double JS::NativeImageEditor::OptionsOffset::x() const
+{
+  id const p = _v[@"x"];
+  return RCTBridgingToDouble(p);
+}
+inline double JS::NativeImageEditor::OptionsOffset::y() const
+{
+  id const p = _v[@"y"];
+  return RCTBridgingToDouble(p);
+}
+inline double JS::NativeImageEditor::OptionsSize::width() const
+{
+  id const p = _v[@"width"];
+  return RCTBridgingToDouble(p);
+}
+inline double JS::NativeImageEditor::OptionsSize::height() const
+{
+  id const p = _v[@"height"];
+  return RCTBridgingToDouble(p);
+}
+inline double JS::NativeImageEditor::OptionsDisplaySize::width() const
+{
+  id const p = _v[@"width"];
+  return RCTBridgingToDouble(p);
+}
+inline double JS::NativeImageEditor::OptionsDisplaySize::height() const
+{
+  id const p = _v[@"height"];
+  return RCTBridgingToDouble(p);
+}
+inline JS::NativeImageEditor::OptionsOffset JS::NativeImageEditor::Options::offset() const
+{
+  id const p = _v[@"offset"];
+  return JS::NativeImageEditor::OptionsOffset(p);
+}
+inline JS::NativeImageEditor::OptionsSize JS::NativeImageEditor::Options::size() const
+{
+  id const p = _v[@"size"];
+  return JS::NativeImageEditor::OptionsSize(p);
+}
+inline folly::Optional<JS::NativeImageEditor::OptionsDisplaySize> JS::NativeImageEditor::Options::displaySize() const
+{
+  id const p = _v[@"displaySize"];
+  return (p == nil ? folly::none : folly::make_optional(JS::NativeImageEditor::OptionsDisplaySize(p)));
+}
+inline NSString *JS::NativeImageEditor::Options::resizeMode() const
+{
+  id const p = _v[@"resizeMode"];
+  return RCTBridgingToString(p);
+}
 inline bool JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig::unmirrorFrontFacingCamera() const
 {
   id const p = _v[@"unmirrorFrontFacingCamera"];
@@ -2871,6 +3054,11 @@ inline bool JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig::showVideos() c
 {
   id const p = _v[@"showVideos"];
   return RCTBridgingToBool(p);
+}
+inline NSString *JS::NativeImageStore::SpecAddImageFromBase64ErrorCallbackError::message() const
+{
+  id const p = _v[@"message"];
+  return RCTBridgingToString(p);
 }
 inline JS::NativeJSDevSupport::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];

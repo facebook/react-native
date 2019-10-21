@@ -7,6 +7,7 @@
 
 #import <React/RCTImageEditingManager.h>
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTConvert.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTImageStoreManager.h>
@@ -17,6 +18,9 @@
 #import <UIKit/UIKit.h>
 
 #import "RCTImagePlugins.h"
+
+@interface RCTImageEditingManager() <NativeImageEditorSpec>
+@end
 
 @implementation RCTImageEditingManager
 
@@ -35,19 +39,25 @@ RCT_EXPORT_MODULE()
  *        All units are in px (not points).
  */
 RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
-                  cropData:(NSDictionary *)cropData
+                  cropData:(JS::NativeImageEditor::Options &)cropData
                   successCallback:(RCTResponseSenderBlock)successCallback
-                  errorCallback:(RCTResponseErrorBlock)errorCallback)
+                  errorCallback:(RCTResponseSenderBlock)errorCallback)
 {
   CGRect rect = {
-    [RCTConvert CGPoint:cropData[@"offset"]],
-    [RCTConvert CGSize:cropData[@"size"]]
+    [RCTConvert CGPoint:@{
+      @"x": @(cropData.offset().x()),
+      @"y": @(cropData.offset().y()),
+    }],
+    [RCTConvert CGSize:@{
+      @"width": @(cropData.size().width()),
+      @"height": @(cropData.size().height()),
+    }]
   };
 
   [[_bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES]
    loadImageWithURLRequest:imageRequest callback:^(NSError *error, UIImage *image) {
      if (error) {
-       errorCallback(error);
+       errorCallback(@[RCTJSErrorFromNSError(error)]);
        return;
      }
 
@@ -58,9 +68,9 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
      UIImage *croppedImage = RCTTransformImage(image, targetSize, image.scale, transform);
 
      // Scale image
-     if (cropData[@"displaySize"]) {
-       targetSize = [RCTConvert CGSize:cropData[@"displaySize"]]; // in pixels
-       RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:cropData[@"resizeMode"] ?: @"contain"];
+     if (cropData.displaySize()) {
+       targetSize = [RCTConvert CGSize:@{@"width": @(cropData.displaySize()->width()), @"height": @(cropData.displaySize()->height())}]; // in pixels
+       RCTResizeMode resizeMode = [RCTConvert RCTResizeMode:cropData.resizeMode() ?: @"contain"];
        targetRect = RCTTargetRect(croppedImage.size, targetSize, 1, resizeMode);
        transform = RCTTransformFromTargetRect(croppedImage.size, targetRect);
        croppedImage = RCTTransformImage(croppedImage, targetSize, image.scale, transform);
@@ -71,12 +81,18 @@ RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
        if (!croppedImageTag) {
          NSString *errorMessage = @"Error storing cropped image in RCTImageStoreManager";
          RCTLogWarn(@"%@", errorMessage);
-         errorCallback(RCTErrorWithMessage(errorMessage));
+         errorCallback(@[RCTJSErrorFromNSError(RCTErrorWithMessage(errorMessage))]);
          return;
        }
        successCallback(@[croppedImageTag]);
      }];
    }];
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
+  (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeImageEditorSpecJSI>(self, jsInvoker);
 }
 
 @end
