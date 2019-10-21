@@ -99,6 +99,7 @@ afterEvaluate {
         // Additional node and packager commandline arguments
         def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
         def extraPackagerArgs = config.extraPackagerArgs ?: []
+        def npx = Os.isFamily(Os.FAMILY_WINDOWS) ? "npx.cmd" : "npx"
 
         def execCommand = []
 
@@ -109,7 +110,7 @@ afterEvaluate {
                 execCommand.addAll([*nodeExecutableAndArgs, cliPath])
             }
         } else {
-            execCommand.addAll(["npx", "react-native"])
+            execCommand.addAll([npx, "react-native"])
         }
 
         def enableHermes = enableHermesForVariant(variant)
