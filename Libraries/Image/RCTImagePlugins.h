@@ -29,7 +29,11 @@ extern "C" {
 Class RCTImageClassProvider(const char *name);
 
 // Lookup functions
+Class RCTGIFImageDecoderCls(void) __attribute__((used));
+Class RCTImageEditingManagerCls(void) __attribute__((used));
 Class RCTImageLoaderCls(void) __attribute__((used));
+Class RCTImageStoreManagerCls(void) __attribute__((used));
+Class RCTLocalAssetImageLoaderCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }
