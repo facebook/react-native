@@ -20,7 +20,6 @@ import java.util.Map;
 
 @ReactModule(name = JSDevSupport.MODULE_NAME)
 public class JSDevSupport extends ReactContextBaseJavaModule {
-
   public static final String MODULE_NAME = "JSDevSupport";
 
   public static final int ERROR_CODE_EXCEPTION = 0;
@@ -55,8 +54,14 @@ public class JSDevSupport extends ReactContextBaseJavaModule {
   }
 
   public synchronized void getJSHierarchy(int reactTag, DevSupportCallback callback) {
-    JSDevSupportModule jsDevSupportModule =
-        getReactApplicationContext().getJSModule(JSDevSupportModule.class);
+    ReactApplicationContext reactApplicationContext =
+        getReactApplicationContextIfActiveOrWarn(MODULE_NAME, "getJSHierarchy");
+
+    JSDevSupportModule jsDevSupportModule = null;
+    if (reactApplicationContext != null) {
+      jsDevSupportModule = reactApplicationContext.getJSModule(JSDevSupportModule.class);
+    }
+
     if (jsDevSupportModule == null) {
       callback.onFailure(
           ERROR_CODE_EXCEPTION,

@@ -21,6 +21,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEm
 /** Module that exposes the user's preferred color scheme. For API >= 29. */
 @ReactModule(name = AppearanceModule.NAME)
 public class AppearanceModule extends ReactContextBaseJavaModule {
+
   public static final String NAME = "Appearance";
 
   private static final String APPEARANCE_CHANGED_EVENT_NAME = "appearanceChanged";
@@ -85,8 +86,13 @@ public class AppearanceModule extends ReactContextBaseJavaModule {
     WritableMap appearancePreferences = Arguments.createMap();
     appearancePreferences.putString("colorScheme", colorScheme);
 
-    getReactApplicationContext()
-        .getJSModule(RCTDeviceEventEmitter.class)
-        .emit(APPEARANCE_CHANGED_EVENT_NAME, appearancePreferences);
+    ReactApplicationContext reactApplicationContext =
+        getReactApplicationContextIfActiveOrWarn(NAME, "emitAppearanceChanged");
+
+    if (reactApplicationContext != null) {
+      reactApplicationContext
+          .getJSModule(RCTDeviceEventEmitter.class)
+          .emit(APPEARANCE_CHANGED_EVENT_NAME, appearancePreferences);
+    }
   }
 }

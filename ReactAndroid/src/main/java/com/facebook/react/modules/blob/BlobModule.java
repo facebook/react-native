@@ -286,37 +286,61 @@ public class BlobModule extends ReactContextBaseJavaModule {
     return type;
   }
 
-  private WebSocketModule getWebSocketModule() {
-    return getReactApplicationContext().getNativeModule(WebSocketModule.class);
+  private WebSocketModule getWebSocketModule(String reason) {
+    ReactApplicationContext reactApplicationContext =
+        getReactApplicationContextIfActiveOrWarn(NAME, reason);
+
+    if (reactApplicationContext != null) {
+      return reactApplicationContext.getNativeModule(WebSocketModule.class);
+    }
+
+    return null;
   }
 
   @ReactMethod
   public void addNetworkingHandler() {
-    NetworkingModule networkingModule =
-        getReactApplicationContext().getNativeModule(NetworkingModule.class);
-    networkingModule.addUriHandler(mNetworkingUriHandler);
-    networkingModule.addRequestBodyHandler(mNetworkingRequestBodyHandler);
-    networkingModule.addResponseHandler(mNetworkingResponseHandler);
+    ReactApplicationContext reactApplicationContext =
+        getReactApplicationContextIfActiveOrWarn(NAME, "addNetworkingHandler");
+
+    if (reactApplicationContext != null) {
+      NetworkingModule networkingModule =
+          reactApplicationContext.getNativeModule(NetworkingModule.class);
+      networkingModule.addUriHandler(mNetworkingUriHandler);
+      networkingModule.addRequestBodyHandler(mNetworkingRequestBodyHandler);
+      networkingModule.addResponseHandler(mNetworkingResponseHandler);
+    }
   }
 
   @ReactMethod
   public void addWebSocketHandler(final int id) {
-    getWebSocketModule().setContentHandler(id, mWebSocketContentHandler);
+    WebSocketModule webSocketModule = getWebSocketModule("addWebSocketHandler");
+
+    if (webSocketModule != null) {
+      webSocketModule.setContentHandler(id, mWebSocketContentHandler);
+    }
   }
 
   @ReactMethod
   public void removeWebSocketHandler(final int id) {
-    getWebSocketModule().setContentHandler(id, null);
+    WebSocketModule webSocketModule = getWebSocketModule("removeWebSocketHandler");
+
+    if (webSocketModule != null) {
+      webSocketModule.setContentHandler(id, null);
+    }
   }
 
   @ReactMethod
   public void sendOverSocket(ReadableMap blob, int id) {
-    byte[] data = resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
+    WebSocketModule webSocketModule = getWebSocketModule("sendOverSocket");
 
-    if (data != null) {
-      getWebSocketModule().sendBinary(ByteString.of(data), id);
-    } else {
-      getWebSocketModule().sendBinary((ByteString) null, id);
+    if (webSocketModule != null) {
+      byte[] data = resolve(blob.getString("blobId"), blob.getInt("offset"), blob.getInt("size"));
+
+      if (data != null) {
+        webSocketModule.sendBinary(ByteString.of(data), id);
+      } else {
+        webSocketModule.sendBinary((ByteString) null, id);
+      }
     }
   }
 

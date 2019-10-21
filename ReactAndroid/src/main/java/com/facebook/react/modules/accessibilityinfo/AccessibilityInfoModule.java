@@ -116,18 +116,29 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
 
     if (mReduceMotionEnabled != isReduceMotionEnabled) {
       mReduceMotionEnabled = isReduceMotionEnabled;
-      getReactApplicationContext()
-          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-          .emit(REDUCE_MOTION_EVENT_NAME, mReduceMotionEnabled);
+
+      ReactApplicationContext reactApplicationContext =
+          getReactApplicationContextIfActiveOrWarn(NAME, "updateAndSendReduceMotionChangeEvent");
+      if (reactApplicationContext != null) {
+        reactApplicationContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit(REDUCE_MOTION_EVENT_NAME, mReduceMotionEnabled);
+      }
     }
   }
 
   private void updateAndSendTouchExplorationChangeEvent(boolean enabled) {
     if (mTouchExplorationEnabled != enabled) {
       mTouchExplorationEnabled = enabled;
-      getReactApplicationContext()
-          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-          .emit(TOUCH_EXPLORATION_EVENT_NAME, mTouchExplorationEnabled);
+
+      ReactApplicationContext reactApplicationContext =
+          getReactApplicationContextIfActiveOrWarn(
+              NAME, "updateAndSendTouchExplorationChangeEvent");
+      if (reactApplicationContext != null) {
+        getReactApplicationContext()
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit(TOUCH_EXPLORATION_EVENT_NAME, mTouchExplorationEnabled);
+      }
     }
   }
 

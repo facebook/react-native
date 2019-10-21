@@ -47,16 +47,26 @@ public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
 
   /** Sends an event to the JS instance that the hardware back has been pressed. */
   public void emitHardwareBackPressed() {
-    getReactApplicationContext()
-        .getJSModule(RCTDeviceEventEmitter.class)
-        .emit("hardwareBackPress", null);
+    ReactApplicationContext reactApplicationContext =
+        getReactApplicationContextIfActiveOrWarn(NAME, "emitHardwareBackPressed");
+
+    if (reactApplicationContext != null) {
+      reactApplicationContext
+          .getJSModule(RCTDeviceEventEmitter.class)
+          .emit("hardwareBackPress", null);
+    }
   }
 
   /** Sends an event to the JS instance that a new intent was received. */
   public void emitNewIntentReceived(Uri uri) {
-    WritableMap map = Arguments.createMap();
-    map.putString("url", uri.toString());
-    getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class).emit("url", map);
+    ReactApplicationContext reactApplicationContext =
+        getReactApplicationContextIfActiveOrWarn(NAME, "emitHardwareBackPressed");
+
+    if (reactApplicationContext != null) {
+      WritableMap map = Arguments.createMap();
+      map.putString("url", uri.toString());
+      reactApplicationContext.getJSModule(RCTDeviceEventEmitter.class).emit("url", map);
+    }
   }
 
   /**
@@ -65,6 +75,9 @@ public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void invokeDefaultBackPressHandler() {
+    // There should be no need to check if the catalyst instance is alive. After initialization
+    // the thread instances cannot be null, and scheduling on a thread after ReactApplicationContext
+    // teardown is a noop.
     getReactApplicationContext().runOnUiQueueThread(mInvokeDefaultBackPressRunnable);
   }
 

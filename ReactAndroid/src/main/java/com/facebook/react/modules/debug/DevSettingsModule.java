@@ -92,9 +92,15 @@ public class DevSettingsModule extends ReactContextBaseJavaModule {
           public void onOptionSelected() {
             WritableMap data = Arguments.createMap();
             data.putString("title", title);
-            getReactApplicationContext()
-                .getJSModule(RCTDeviceEventEmitter.class)
-                .emit("didPressMenuItem", data);
+
+            ReactApplicationContext reactApplicationContext =
+                getReactApplicationContextIfActiveOrWarn(NAME, "onOptionSelected");
+
+            if (reactApplicationContext != null) {
+              reactApplicationContext
+                  .getJSModule(RCTDeviceEventEmitter.class)
+                  .emit("didPressMenuItem", data);
+            }
           }
         });
   }

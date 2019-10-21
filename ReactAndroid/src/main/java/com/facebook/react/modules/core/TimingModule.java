@@ -25,17 +25,32 @@ public final class TimingModule extends ReactContextBaseJavaModule
   public class BridgeTimerManager implements JavaScriptTimerManager {
     @Override
     public void callTimers(WritableArray timerIDs) {
-      getReactApplicationContext().getJSModule(JSTimers.class).callTimers(timerIDs);
+      ReactApplicationContext reactApplicationContext =
+          getReactApplicationContextIfActiveOrWarn(NAME, "callTimers");
+
+      if (reactApplicationContext != null) {
+        reactApplicationContext.getJSModule(JSTimers.class).callTimers(timerIDs);
+      }
     }
 
     @Override
     public void callIdleCallbacks(double frameTime) {
-      getReactApplicationContext().getJSModule(JSTimers.class).callIdleCallbacks(frameTime);
+      ReactApplicationContext reactApplicationContext =
+          getReactApplicationContextIfActiveOrWarn(NAME, "callIdleCallbacks");
+
+      if (reactApplicationContext != null) {
+        reactApplicationContext.getJSModule(JSTimers.class).callIdleCallbacks(frameTime);
+      }
     }
 
     @Override
     public void emitTimeDriftWarning(String warningMessage) {
-      getReactApplicationContext().getJSModule(JSTimers.class).emitTimeDriftWarning(warningMessage);
+      ReactApplicationContext reactApplicationContext =
+          getReactApplicationContextIfActiveOrWarn(NAME, "emitTimeDriftWarning");
+
+      if (reactApplicationContext != null) {
+        reactApplicationContext.getJSModule(JSTimers.class).emitTimeDriftWarning(warningMessage);
+      }
     }
   }
 

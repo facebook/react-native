@@ -249,7 +249,10 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
           withCredentials);
     } catch (Throwable th) {
       FLog.e(TAG, "Failed to send url request: " + url, th);
-      ResponseUtil.onRequestError(getEventEmitter(), requestId, th.getMessage(), th);
+      final RCTDeviceEventEmitter eventEmitter = getEventEmitter("sendRequest error");
+      if (eventEmitter != null) {
+        ResponseUtil.onRequestError(eventEmitter, requestId, th.getMessage(), th);
+      }
     }
   }
 
@@ -264,7 +267,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       final boolean useIncrementalUpdates,
       int timeout,
       boolean withCredentials) {
-    final RCTDeviceEventEmitter eventEmitter = getEventEmitter();
+    final RCTDeviceEventEmitter eventEmitter = getEventEmitter("sendRequestInternal");
 
     try {
       Uri uri = Uri.parse(url);
@@ -664,7 +667,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   private @Nullable MultipartBody.Builder constructMultipartBody(
       ReadableArray body, String contentType, int requestId) {
-    RCTDeviceEventEmitter eventEmitter = getEventEmitter();
+    RCTDeviceEventEmitter eventEmitter = getEventEmitter("constructMultipartBody");
     MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
     multipartBuilder.setType(MediaType.parse(contentType));
 
@@ -750,7 +753,14 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     return headersBuilder.build();
   }
 
-  private RCTDeviceEventEmitter getEventEmitter() {
-    return getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class);
+  private RCTDeviceEventEmitter getEventEmitter(String reason) {
+    ReactApplicationContext reactApplicationContext =
+        getReactApplicationContextIfActiveOrWarn(TAG, reason);
+
+    if (reactApplicationContext != null) {
+      return getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class);
+    }
+
+    return null;
   }
 }
