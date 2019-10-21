@@ -557,6 +557,11 @@ if (global.nativeLoggingHook) {
     assert: consoleAssertPolyfill,
   };
 
+  Object.defineProperty(console, '_isPolyfilled', {
+    value: true,
+    enumerable: false,
+  });
+
   // If available, also call the original `console` method since that is
   // sometimes useful. Ex: on OS X, this will let you see rich output in
   // the Safari Web Inspector console.
@@ -608,4 +613,9 @@ if (global.nativeLoggingHook) {
     debug: log,
     table: log,
   };
+
+  Object.defineProperty(console, '_isPolyfilled', {
+    value: true,
+    enumerable: false,
+  });
 }
