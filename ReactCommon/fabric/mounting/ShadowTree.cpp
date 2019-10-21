@@ -135,7 +135,7 @@ bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
   auto telemetry = MountingTelemetry{};
   telemetry.willCommit();
 
-  SharedRootShadowNode oldRootShadowNode;
+  RootShadowNode::Shared oldRootShadowNode;
 
   {
     // Reading `rootShadowNode_` in shared manner.
@@ -143,7 +143,7 @@ bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
     oldRootShadowNode = rootShadowNode_;
   }
 
-  UnsharedRootShadowNode newRootShadowNode = transaction(oldRootShadowNode);
+  RootShadowNode::Unshared newRootShadowNode = transaction(oldRootShadowNode);
 
   if (!newRootShadowNode) {
     return false;
@@ -197,8 +197,8 @@ bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
 
 void ShadowTree::commitEmptyTree() const {
   commit(
-      [](const SharedRootShadowNode &oldRootShadowNode)
-          -> UnsharedRootShadowNode {
+      [](RootShadowNode::Shared const &oldRootShadowNode)
+          -> RootShadowNode::Unshared {
         return std::make_shared<RootShadowNode>(
             *oldRootShadowNode,
             ShadowNodeFragment{

@@ -18,9 +18,6 @@ namespace react {
 
 class RootShadowNode;
 
-using SharedRootShadowNode = std::shared_ptr<const RootShadowNode>;
-using UnsharedRootShadowNode = std::shared_ptr<RootShadowNode>;
-
 extern const char RootComponentName[];
 
 /*
@@ -34,6 +31,9 @@ class RootShadowNode final
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
+  using Shared = std::shared_ptr<RootShadowNode const>;
+  using Unshared = std::shared_ptr<RootShadowNode>;
+
   /*
    * Layouts the shadow tree.
    */
@@ -42,9 +42,9 @@ class RootShadowNode final
   /*
    * Clones the node with given `layoutConstraints` and `layoutContext`.
    */
-  UnsharedRootShadowNode clone(
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext) const;
+  RootShadowNode::Unshared clone(
+      LayoutConstraints const &layoutConstraints,
+      LayoutContext const &layoutContext) const;
 
   /*
    * Clones the node replacing a given old shadow node with a new one in the
@@ -52,9 +52,9 @@ class RootShadowNode final
    * the tree. Returns `nullptr` if the operation cannot be finished
    * successfully.
    */
-  UnsharedRootShadowNode clone(
-      const SharedShadowNode &oldShadowNode,
-      const SharedShadowNode &newShadowNode) const;
+  RootShadowNode::Unshared clone(
+      ShadowNode const &oldShadowNode,
+      ShadowNode::Shared const &newShadowNode) const;
 
  private:
   using YogaLayoutableShadowNode::layout;

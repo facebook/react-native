@@ -33,10 +33,10 @@ void RootShadowNode::layout(
   }
 }
 
-UnsharedRootShadowNode RootShadowNode::clone(
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext) const {
-  auto props = std::make_shared<const RootProps>(
+RootShadowNode::Unshared RootShadowNode::clone(
+    LayoutConstraints const &layoutConstraints,
+    LayoutContext const &layoutContext) const {
+  auto props = std::make_shared<RootProps const>(
       *getProps(), layoutConstraints, layoutContext);
   auto newRootShadowNode = std::make_shared<RootShadowNode>(
       *this,
@@ -48,13 +48,13 @@ UnsharedRootShadowNode RootShadowNode::clone(
   return newRootShadowNode;
 }
 
-UnsharedRootShadowNode RootShadowNode::clone(
-    SharedShadowNode const &oldShadowNode,
-    SharedShadowNode const &newShadowNode) const {
-  auto ancestors = oldShadowNode->getAncestors(*this);
+RootShadowNode::Unshared RootShadowNode::clone(
+    ShadowNode const &oldShadowNode,
+    ShadowNode::Shared const &newShadowNode) const {
+  auto ancestors = oldShadowNode.getAncestors(*this);
 
   if (ancestors.size() == 0) {
-    return UnsharedRootShadowNode{nullptr};
+    return RootShadowNode::Unshared{nullptr};
   }
 
   auto childNode = newShadowNode;
