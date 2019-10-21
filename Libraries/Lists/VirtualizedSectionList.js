@@ -373,6 +373,7 @@ class VirtualizedSectionList<
           section={info.section}
           trailingItem={info.trailingItem}
           trailingSection={info.trailingSection}
+          inverted={!!this.props.inverted}
         />
       );
     }
@@ -434,6 +435,7 @@ type ItemWithSeparatorProps = $ReadOnly<{|
   onUpdateSeparator: (cellKey: string, newProps: Object) => void,
   prevCellKey?: ?string,
   renderItem: Function,
+  inverted: boolean,
 |}>;
 
 type ItemWithSeparatorState = {
@@ -533,6 +535,7 @@ class ItemWithSeparator extends React.Component<
       item,
       index,
       section,
+      inverted,
     } = this.props;
     const element = this.props.renderItem({
       item,
@@ -551,9 +554,9 @@ class ItemWithSeparator extends React.Component<
        * error found when Flow v0.89 was deployed. To see the error, delete
        * this comment and run Flow. */
       <View>
-        {leadingSeparator}
-        {element}
-        {separator}
+        {!inverted
+          ? [leadingSeparator, element, separator]
+          : [separator, element, leadingSeparator]}
       </View>
     ) : (
       element
