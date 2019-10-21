@@ -17,7 +17,7 @@ namespace react {
 ComponentDescriptorRegistry::ComponentDescriptorRegistry(
     ComponentDescriptorParameters const &parameters,
     ComponentDescriptorProviderRegistry const &providerRegistry)
-    : parameters_(parameters), providerRegistry_(&providerRegistry) {}
+    : parameters_(parameters), providerRegistry_(providerRegistry) {}
 
 void ComponentDescriptorRegistry::add(
     ComponentDescriptorProvider componentDescriptorProvider) const {
@@ -130,16 +130,8 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
 
   auto it = _registryByName.find(unifiedComponentName);
   if (it == _registryByName.end()) {
-    // TODO: T54849676 Refactor this condition when RN Fabric Android starts
-    // using ComponentDescriptorProviderRegistry class
-    if (!providerRegistry_) {
-      throw std::invalid_argument(
-          ("Unable to find componentDescriptor for " + unifiedComponentName)
-              .c_str());
-    }
-
     mutex_.unlock_shared();
-    providerRegistry_->request(unifiedComponentName.c_str());
+    providerRegistry_.request(unifiedComponentName.c_str());
     mutex_.lock_shared();
 
     it = _registryByName.find(unifiedComponentName);
