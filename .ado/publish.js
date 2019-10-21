@@ -128,8 +128,12 @@ function doPublish() {
       }
 
       console.log("Created GitHub Release: " + JSON.stringify(body, null, 2));
+      if (body.id) {
       uploadReleaseAssetUrl = assetUpdateUrl.replace(/{id}/, body.id);
       uploadTarBallToRelease();
+      } else {
+        console.warn('Unable to find release to upload tar...skipping custom tar for release.')
+      }
     }
   );
 }
