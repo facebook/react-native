@@ -7,22 +7,18 @@
 
 package com.facebook.react.modules.websocket;
 
-import android.util.Log;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.network.ForwardingCookieHandler;
@@ -43,6 +39,8 @@ import okio.ByteString;
 
 @ReactModule(name = WebSocketModule.NAME, hasConstants = false)
 public final class WebSocketModule extends ReactContextBaseJavaModule {
+  public static final String TAG = WebSocketModule.class.getSimpleName();
+
   public static final String NAME = "WebSocketModule";
 
   public interface ContentHandler {
@@ -54,30 +52,22 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
   private final Map<Integer, WebSocket> mWebSocketConnections = new ConcurrentHashMap<>();
   private final Map<Integer, ContentHandler> mContentHandlers = new ConcurrentHashMap<>();
 
-  private ReactContext mReactContext;
   private ForwardingCookieHandler mCookieHandler;
 
   public WebSocketModule(ReactApplicationContext context) {
     super(context);
-    mReactContext = context;
     mCookieHandler = new ForwardingCookieHandler(context);
   }
 
   private void sendEvent(String eventName, WritableMap params) {
-    if (mReactContext.hasActiveCatalystInstance()) {
-      mReactContext
+    ReactApplicationContext reactApplicationContext =
+        getReactApplicationContextIfActiveOrWarn(
+            TAG, "sendAppStateChangeEvent: trying to update app state");
+
+    if (reactApplicationContext != null) {
+      reactApplicationContext
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit(eventName, params);
-    } else {
-      // We want to collect data about how often this happens, but raising a SoftException in Debug
-      // will cause a crash, which isn't desirable.
-      String msg =
-          "sendEvent: trying to update app state when Catalyst Instance has already disappeared";
-      if (ReactBuildConfig.DEBUG) {
-        Log.e(NAME, msg);
-      } else {
-        ReactSoftException.logSoftException(NAME, new IllegalStateException(msg));
-      }
     }
   }
 
