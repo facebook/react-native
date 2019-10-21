@@ -24,12 +24,12 @@ class StateTarget {
   /*
    * Creates an empty target.
    */
-  StateTarget();
+  explicit StateTarget();
 
   /*
    * Creates a target which points to a given `ShadowNode`.
    */
-  StateTarget(const ShadowNode &shadowNode);
+  explicit StateTarget(const ShadowNode &shadowNode);
 
   /*
    * Copyable and moveable.
