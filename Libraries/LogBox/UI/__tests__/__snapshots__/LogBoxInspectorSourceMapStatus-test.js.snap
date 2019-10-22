@@ -1,0 +1,68 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LogBoxInspectorSourceMapStatus should render complete 1`] = `
+<LogBoxButton
+  backgroundColor={
+    Object {
+      "default": "transparent",
+      "pressed": "rgba(51, 51, 51, 1)",
+    }
+  }
+  hitSlop={
+    Object {
+      "bottom": 8,
+      "left": 8,
+      "right": 8,
+      "top": 8,
+    }
+  }
+  onPress={[Function]}
+  style={
+    Object {
+      "alignItems": "center",
+      "borderRadius": 12,
+      "flexDirection": "row",
+      "height": 24,
+      "paddingHorizontal": 8,
+    }
+  }
+>
+  <AnimatedComponent
+    source={
+      Object {
+        "height": 16,
+        "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAf0lEQVRYhe2UvQ2AIBQGL3EBR3AESkv3bxxFN8DmWUgwvkI+En1X0cBd+IMg+DuDyDMCs413kfMiX4EMbD3l8oCaPIU85B4mYLEF5XJscrYFPRGvb/sZ4IlocubJGdH0wj1FSG77XYT0qdUi5O+8jOjyyZQRUnkZ0UUeBMF3OQC/0VsyGlxligAAAABJRU5ErkJggg==",
+        "width": 16,
+      }
+    }
+    style={
+      Array [
+        Object {
+          "marginEnd": 4,
+          "tintColor": "rgba(255, 255, 255, 0.4)",
+        },
+        Object {
+          "tintColor": "rgba(255, 255, 255, 0.4)",
+        },
+        null,
+      ]
+    }
+  />
+  <Text
+    style={
+      Array [
+        Object {
+          "fontSize": 12,
+          "includeFontPadding": false,
+          "lineHeight": 16,
+        },
+        Object {
+          "color": "rgba(255, 255, 255, 0.4)",
+        },
+      ]
+    }
+  >
+    Source Map
+  </Text>
+</LogBoxButton>
+`;

@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LogBoxContainer should render null with no logs 1`] = `null`;
+
+exports[`LogBoxContainer should render the latest log 1`] = `
+<View
+  style={
+    Object {
+      "bottom": 10,
+      "left": 10,
+      "position": "absolute",
+      "right": 10,
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "borderRadius": 8,
+        "overflow": "hidden",
+      }
+    }
+  >
+    <LogBoxLogNotification
+      log={
+        LogBoxLog {
+          "category": "Some kind of message (latest)",
+          "componentStack": Array [],
+          "count": 1,
+          "ignored": false,
+          "message": Object {
+            "content": "Some kind of message (latest)",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+        }
+      }
+      onPressDismiss={[Function]}
+      onPressList={[Function]}
+      onPressOpen={[Function]}
+    />
+  </View>
+  <ForwardRef(SafeAreaView)
+    style={
+      Object {
+        "flex": 1,
+      }
+    }
+  />
+</View>
+`;

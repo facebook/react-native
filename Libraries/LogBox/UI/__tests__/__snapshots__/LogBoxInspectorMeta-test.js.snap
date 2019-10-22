@@ -1,0 +1,93 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LogBoxInspectorMeta should render meta information 1`] = `
+<View
+  style={
+    Object {
+      "marginTop": 15,
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "marginBottom": 10,
+        "paddingHorizontal": 12,
+      }
+    }
+  >
+    <Text
+      style={
+        Object {
+          "color": "rgba(255, 255, 255, 1)",
+          "flex": 1,
+          "fontSize": 20,
+          "fontWeight": "600",
+          "includeFontPadding": false,
+          "lineHeight": 20,
+        }
+      }
+    >
+      Meta
+    </Text>
+  </View>
+  <View
+    style={
+      Object {
+        "flexDirection": "row",
+        "justifyContent": "space-between",
+        "paddingBottom": 100,
+        "paddingLeft": 25,
+        "paddingRight": 25,
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "flex": 0,
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 1)",
+            "flex": 0,
+            "flexGrow": 0,
+            "fontSize": 14,
+            "includeFontPadding": false,
+            "lineHeight": 20,
+          }
+        }
+      >
+        Engine
+      </Text>
+    </View>
+    <View
+      style={
+        Object {
+          "flex": 0,
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 1)",
+            "flex": 0,
+            "flexGrow": 0,
+            "fontSize": 14,
+            "includeFontPadding": false,
+            "lineHeight": 20,
+          }
+        }
+      >
+        Unknown
+      </Text>
+    </View>
+  </View>
+</View>
+`;

@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LogBoxMessage should render message 1`] = `
+<React.Fragment>
+  <Text>
+    Some kind of message
+  </Text>
+</React.Fragment>
+`;
