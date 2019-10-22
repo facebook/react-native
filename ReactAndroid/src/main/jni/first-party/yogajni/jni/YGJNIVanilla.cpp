@@ -352,25 +352,29 @@ static void jni_YGNodeCalculateLayoutJNI(
     jlongArray nativePointers,
     jobjectArray javaNodes) {
 
-  void* layoutContext = nullptr;
-  auto map = PtrJNodeMapVanilla{};
-  if (nativePointers) {
-    size_t nativePointersSize = env->GetArrayLength(nativePointers);
-    jlong result[nativePointersSize];
-    env->GetLongArrayRegion(nativePointers, 0, nativePointersSize, result);
+  try {
+    void* layoutContext = nullptr;
+    auto map = PtrJNodeMapVanilla{};
+    if (nativePointers) {
+      size_t nativePointersSize = env->GetArrayLength(nativePointers);
+      jlong result[nativePointersSize];
+      env->GetLongArrayRegion(nativePointers, 0, nativePointersSize, result);
 
-    map = PtrJNodeMapVanilla{result, nativePointersSize, javaNodes};
-    layoutContext = &map;
+      map = PtrJNodeMapVanilla{result, nativePointersSize, javaNodes};
+      layoutContext = &map;
+    }
+
+    const YGNodeRef root = _jlong2YGNodeRef(nativePointer);
+    YGNodeCalculateLayoutWithContext(
+        root,
+        static_cast<float>(width),
+        static_cast<float>(height),
+        YGNodeStyleGetDirection(_jlong2YGNodeRef(nativePointer)),
+        layoutContext);
+    YGTransferLayoutOutputsRecursive(env, obj, root, layoutContext);
+  } catch (jthrowable throwable) {
+    env->Throw(throwable);
   }
-
-  const YGNodeRef root = _jlong2YGNodeRef(nativePointer);
-  YGNodeCalculateLayoutWithContext(
-      root,
-      static_cast<float>(width),
-      static_cast<float>(height),
-      YGNodeStyleGetDirection(_jlong2YGNodeRef(nativePointer)),
-      layoutContext);
-  YGTransferLayoutOutputsRecursive(env, obj, root, layoutContext);
 }
 
 static void jni_YGNodeMarkDirtyJNI(
