@@ -17,7 +17,7 @@ import View from '../../Components/View/View';
 import LogBoxInspector from './LogBoxInspector';
 import LogBoxLog from '../Data/LogBoxLog';
 import LogBoxLogNotification from './LogBoxLogNotification';
-import type {LogBoxLogs} from '../Data/LogBoxLogData';
+import type {LogBoxLogs} from '../Data/LogBoxData';
 
 type Props = $ReadOnly<{|
   onDismiss: (log: LogBoxLog) => void,

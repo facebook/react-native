@@ -12,7 +12,7 @@
 'use strict';
 
 const LogBox = require('../LogBox');
-const LogBoxLogData = require('../Data/LogBoxLogData');
+const LogBoxData = require('../Data/LogBoxData');
 
 declare var console: any;
 
@@ -37,12 +37,12 @@ describe('LogBox', () => {
     LogBox.install();
 
     expect(console.disableLogBox).toBe(false);
-    expect(LogBoxLogData.isDisabled()).toBe(false);
+    expect(LogBoxData.isDisabled()).toBe(false);
 
     console.disableLogBox = true;
 
     expect(console.disableLogBox).toBe(true);
-    expect(LogBoxLogData.isDisabled()).toBe(true);
+    expect(LogBoxData.isDisabled()).toBe(true);
   });
 
   it('can set `disableLogBox` before installing', () => {
@@ -52,28 +52,28 @@ describe('LogBox', () => {
     LogBox.install();
 
     expect(console.disableLogBox).toBe(true);
-    expect(LogBoxLogData.isDisabled()).toBe(true);
+    expect(LogBoxData.isDisabled()).toBe(true);
   });
 
   it('registers warnings', () => {
-    jest.mock('../Data/LogBoxLogData');
+    jest.mock('../Data/LogBoxData');
 
     LogBox.install();
 
-    expect(LogBoxLogData.add).not.toBeCalled();
+    expect(LogBoxData.add).not.toBeCalled();
     console.warn('...');
-    expect(LogBoxLogData.add).toBeCalled();
+    expect(LogBoxData.add).toBeCalled();
   });
 
   it('registers errors beginning with "Warning: " as warnings', () => {
-    jest.mock('../Data/LogBoxLogData');
+    jest.mock('../Data/LogBoxData');
 
     LogBox.install();
 
     console.error('...');
-    expect(LogBoxLogData.add).not.toBeCalled();
+    expect(LogBoxData.add).not.toBeCalled();
 
     console.error('Warning: ...');
-    expect(LogBoxLogData.add).toBeCalled();
+    expect(LogBoxData.add).toBeCalled();
   });
 });

@@ -18,7 +18,7 @@ import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import LogBoxMessage from './LogBoxMessage';
 
-import type {Message} from '../Data/LogBoxLogParser';
+import type {Message} from '../Data/parseLogBoxLog';
 
 type Props = $ReadOnly<{|
   collapsed: boolean,

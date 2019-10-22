@@ -14,13 +14,9 @@ import * as React from 'react';
 import Platform from '../Utilities/Platform';
 import RCTLog from '../Utilities/RCTLog';
 import LogBoxContainer from './UI/LogBoxContainer';
-import * as LogBoxLogData from './Data/LogBoxLogData';
+import * as LogBoxData from './Data/LogBoxData';
 
-import type {
-  LogBoxLogs,
-  Subscription,
-  IgnorePattern,
-} from './Data/LogBoxLogData';
+import type {LogBoxLogs, Subscription, IgnorePattern} from './Data/LogBoxData';
 
 import LogBoxLog from './Data/LogBoxLog';
 
@@ -55,7 +51,7 @@ if (__DEV__) {
     }
 
     static ignoreLogs(patterns: $ReadOnlyArray<IgnorePattern>): void {
-      LogBoxLogData.addIgnorePatterns(patterns);
+      LogBoxData.addIgnorePatterns(patterns);
     }
 
     static install(): void {
@@ -73,12 +69,12 @@ if (__DEV__) {
       };
 
       if ((console: any).disableLogBox === true) {
-        LogBoxLogData.setDisabled(true);
+        LogBoxData.setDisabled(true);
       }
       (Object.defineProperty: any)(console, 'disableLogBox', {
         configurable: true,
-        get: () => LogBoxLogData.isDisabled(),
-        set: value => LogBoxLogData.setDisabled(value),
+        get: () => LogBoxData.isDisabled(),
+        set: value => LogBoxData.setDisabled(value),
       });
 
       if (Platform.isTesting) {
@@ -114,7 +110,7 @@ if (__DEV__) {
     }
 
     componentDidMount(): void {
-      this._subscription = LogBoxLogData.observe(logs => {
+      this._subscription = LogBoxData.observe(logs => {
         this.setState({logs});
       });
     }
@@ -126,16 +122,16 @@ if (__DEV__) {
     }
 
     _handleDismissAll(): void {
-      LogBoxLogData.clear();
+      LogBoxData.clear();
     }
 
     _handleDismiss(log: LogBoxLog): void {
-      LogBoxLogData.dismiss(log);
+      LogBoxData.dismiss(log);
     }
   };
 
   const registerLog = (...args): void => {
-    LogBoxLogData.add({args});
+    LogBoxData.add(args);
   };
 } else {
   LogBoxComponent = class extends React.Component<Props, State> {

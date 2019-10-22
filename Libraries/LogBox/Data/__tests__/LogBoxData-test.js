@@ -14,17 +14,17 @@ jest.mock('../../../Core/Devtools/parseErrorStack', () => {
   return {__esModule: true, default: jest.fn(() => [])};
 });
 
-const LogBoxLogData = require('../LogBoxLogData');
+const LogBoxData = require('../LogBoxData');
 
 const registry = () => {
   const observer = jest.fn();
-  LogBoxLogData.observe(observer).unsubscribe();
+  LogBoxData.observe(observer).unsubscribe();
   return Array.from(observer.mock.calls[0][0]);
 };
 
 const filteredRegistry = () => {
   const observer = jest.fn();
-  LogBoxLogData.observe(observer).unsubscribe();
+  LogBoxData.observe(observer).unsubscribe();
   return Array.from(observer.mock.calls[0][0]);
 };
 
@@ -32,41 +32,41 @@ const observe = () => {
   const observer = jest.fn();
   return {
     observer,
-    subscription: LogBoxLogData.observe(observer),
+    subscription: LogBoxData.observe(observer),
   };
 };
 
-describe('LogBoxLogData', () => {
+describe('LogBoxData', () => {
   beforeEach(() => {
     jest.resetModules();
   });
 
   it('adds and dismisses logs', () => {
-    LogBoxLogData.add({args: ['A']});
+    LogBoxData.add(['A']);
 
     expect(registry().length).toBe(1);
     expect(registry()[0]).toBeDefined();
 
-    LogBoxLogData.dismiss(registry()[0]);
+    LogBoxData.dismiss(registry()[0]);
     expect(registry().length).toBe(0);
     expect(registry()[0]).toBeUndefined();
   });
 
   it('clears all logs', () => {
-    LogBoxLogData.add({args: ['A']});
-    LogBoxLogData.add({args: ['B']});
-    LogBoxLogData.add({args: ['C']});
+    LogBoxData.add(['A']);
+    LogBoxData.add(['B']);
+    LogBoxData.add(['C']);
 
     expect(registry().length).toBe(3);
 
-    LogBoxLogData.clear();
+    LogBoxData.clear();
     expect(registry().length).toBe(0);
   });
 
   it('keeps logs in chronological order', () => {
-    LogBoxLogData.add({args: ['A']});
-    LogBoxLogData.add({args: ['B']});
-    LogBoxLogData.add({args: ['C']});
+    LogBoxData.add(['A']);
+    LogBoxData.add(['B']);
+    LogBoxData.add(['C']);
 
     let logs = registry();
     expect(logs.length).toBe(3);
@@ -74,7 +74,7 @@ describe('LogBoxLogData', () => {
     expect(logs[1].category).toEqual('B');
     expect(logs[2].category).toEqual('C');
 
-    LogBoxLogData.add({args: ['A']});
+    LogBoxData.add(['A']);
 
     // Expect `A` to be added to the end of the registry.
     logs = registry();
@@ -86,8 +86,8 @@ describe('LogBoxLogData', () => {
   });
 
   it('increments the count of previous log with matching category', () => {
-    LogBoxLogData.add({args: ['A']});
-    LogBoxLogData.add({args: ['B']});
+    LogBoxData.add(['A']);
+    LogBoxData.add(['B']);
 
     let logs = registry();
     expect(logs.length).toBe(2);
@@ -96,7 +96,7 @@ describe('LogBoxLogData', () => {
     expect(logs[1].category).toEqual('B');
     expect(logs[1].count).toBe(1);
 
-    LogBoxLogData.add({args: ['B']});
+    LogBoxData.add(['B']);
 
     // Expect `B` to be rolled into the last log.
     logs = registry();
@@ -108,98 +108,98 @@ describe('LogBoxLogData', () => {
   });
 
   it('ignores logs matching patterns', () => {
-    LogBoxLogData.add({args: ['A!']});
-    LogBoxLogData.add({args: ['B?']});
-    LogBoxLogData.add({args: ['C!']});
+    LogBoxData.add(['A!']);
+    LogBoxData.add(['B?']);
+    LogBoxData.add(['C!']);
     expect(filteredRegistry().length).toBe(3);
 
-    LogBoxLogData.addIgnorePatterns(['!']);
+    LogBoxData.addIgnorePatterns(['!']);
     expect(filteredRegistry().length).toBe(1);
 
-    LogBoxLogData.addIgnorePatterns(['?']);
+    LogBoxData.addIgnorePatterns(['?']);
     expect(filteredRegistry().length).toBe(0);
   });
 
   it('ignores logs matching regexs or pattern', () => {
-    LogBoxLogData.add({args: ['There are 4 dogs']});
-    LogBoxLogData.add({args: ['There are 3 cats']});
-    LogBoxLogData.add({args: ['There are H cats']});
+    LogBoxData.add(['There are 4 dogs']);
+    LogBoxData.add(['There are 3 cats']);
+    LogBoxData.add(['There are H cats']);
     expect(filteredRegistry().length).toBe(3);
 
-    LogBoxLogData.addIgnorePatterns(['dogs']);
+    LogBoxData.addIgnorePatterns(['dogs']);
     expect(filteredRegistry().length).toBe(2);
 
-    LogBoxLogData.addIgnorePatterns([/There are \d+ cats/]);
+    LogBoxData.addIgnorePatterns([/There are \d+ cats/]);
     expect(filteredRegistry().length).toBe(1);
 
-    LogBoxLogData.addIgnorePatterns(['cats']);
+    LogBoxData.addIgnorePatterns(['cats']);
     expect(filteredRegistry().length).toBe(0);
   });
 
   it('ignores all logs when disabled', () => {
-    LogBoxLogData.add({args: ['A!']});
-    LogBoxLogData.add({args: ['B?']});
-    LogBoxLogData.add({args: ['C!']});
+    LogBoxData.add(['A!']);
+    LogBoxData.add(['B?']);
+    LogBoxData.add(['C!']);
     expect(registry().length).toBe(3);
 
-    LogBoxLogData.setDisabled(true);
+    LogBoxData.setDisabled(true);
     expect(registry().length).toBe(0);
 
-    LogBoxLogData.setDisabled(false);
+    LogBoxData.setDisabled(false);
     expect(registry().length).toBe(3);
   });
 
   it('groups consecutive logs by format string categories', () => {
-    LogBoxLogData.add({args: ['%s', 'A']});
+    LogBoxData.add(['%s', 'A']);
     expect(registry().length).toBe(1);
     expect(registry()[0].count).toBe(1);
 
-    LogBoxLogData.add({args: ['%s', 'B']});
+    LogBoxData.add(['%s', 'B']);
     expect(registry().length).toBe(1);
     expect(registry()[0].count).toBe(2);
 
-    LogBoxLogData.add({args: ['A']});
+    LogBoxData.add(['A']);
     expect(registry().length).toBe(2);
     expect(registry()[1].count).toBe(1);
 
-    LogBoxLogData.add({args: ['B']});
+    LogBoxData.add(['B']);
     expect(registry().length).toBe(3);
     expect(registry()[2].count).toBe(1);
   });
 
   it('groups warnings with consideration for arguments', () => {
-    LogBoxLogData.add({args: ['A', 'B']});
+    LogBoxData.add(['A', 'B']);
     expect(registry().length).toBe(1);
     expect(registry()[0].count).toBe(1);
 
-    LogBoxLogData.add({args: ['A', 'B']});
+    LogBoxData.add(['A', 'B']);
     expect(registry().length).toBe(1);
     expect(registry()[0].count).toBe(2);
 
-    LogBoxLogData.add({args: ['A', 'C']});
+    LogBoxData.add(['A', 'C']);
     expect(registry().length).toBe(2);
     expect(registry()[1].count).toBe(1);
 
-    LogBoxLogData.add({args: ['%s', 'A', 'A']});
+    LogBoxData.add(['%s', 'A', 'A']);
     expect(registry().length).toBe(3);
     expect(registry()[2].count).toBe(1);
 
-    LogBoxLogData.add({args: ['%s', 'B', 'A']});
+    LogBoxData.add(['%s', 'B', 'A']);
     expect(registry().length).toBe(3);
     expect(registry()[2].count).toBe(2);
 
-    LogBoxLogData.add({args: ['%s', 'B', 'B']});
+    LogBoxData.add(['%s', 'B', 'B']);
     expect(registry().length).toBe(4);
     expect(registry()[3].count).toBe(1);
   });
 
   it('ignores logs starting with "(ADVICE)"', () => {
-    LogBoxLogData.add({args: ['(ADVICE) ...']});
+    LogBoxData.add(['(ADVICE) ...']);
     expect(registry().length).toBe(0);
   });
 
   it('does not ignore logs formatted to start with "(ADVICE)"', () => {
-    LogBoxLogData.add({args: ['%s ...', '(ADVICE)']});
+    LogBoxData.add(['%s ...', '(ADVICE)']);
     expect(registry().length).toBe(1);
   });
 
@@ -209,7 +209,7 @@ describe('LogBoxLogData', () => {
     expect(observerOne.mock.calls.length).toBe(1);
 
     const observerTwo = jest.fn();
-    LogBoxLogData.observe(observerTwo).unsubscribe();
+    LogBoxData.observe(observerTwo).unsubscribe();
     expect(observerTwo.mock.calls.length).toBe(1);
     expect(observerOne.mock.calls[0][0]).toEqual(observerTwo.mock.calls[0][0]);
   });
@@ -218,8 +218,8 @@ describe('LogBoxLogData', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    LogBoxLogData.add({args: ['A']});
-    LogBoxLogData.add({args: ['B']});
+    LogBoxData.add(['A']);
+    LogBoxData.add(['B']);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
 
@@ -235,7 +235,7 @@ describe('LogBoxLogData', () => {
     expect(observerOne.mock.calls.length).toBe(1);
 
     const observerTwo = jest.fn();
-    LogBoxLogData.observe(observerTwo).unsubscribe();
+    LogBoxData.observe(observerTwo).unsubscribe();
     expect(observerTwo.mock.calls.length).toBe(1);
     expect(observerOne.mock.calls[0][0]).toEqual(observerTwo.mock.calls[0][0]);
   });
@@ -244,17 +244,17 @@ describe('LogBoxLogData', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    LogBoxLogData.add({args: ['A']});
+    LogBoxData.add(['A']);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
 
     const lastLog = Array.from(observer.mock.calls[1][0])[0];
-    LogBoxLogData.dismiss(lastLog);
+    LogBoxData.dismiss(lastLog);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(3);
 
     // Does nothing when category does not exist.
-    LogBoxLogData.dismiss(lastLog);
+    LogBoxData.dismiss(lastLog);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(3);
   });
@@ -263,16 +263,16 @@ describe('LogBoxLogData', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    LogBoxLogData.add({args: ['A']});
+    LogBoxData.add(['A']);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
 
-    LogBoxLogData.clear();
+    LogBoxData.clear();
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(3);
 
     // Does nothing when already empty.
-    LogBoxLogData.clear();
+    LogBoxData.clear();
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(3);
   });
@@ -281,16 +281,16 @@ describe('LogBoxLogData', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    LogBoxLogData.addIgnorePatterns(['?']);
+    LogBoxData.addIgnorePatterns(['?']);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
 
-    LogBoxLogData.addIgnorePatterns(['!']);
+    LogBoxData.addIgnorePatterns(['!']);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(3);
 
     // Does nothing for an existing ignore pattern.
-    LogBoxLogData.addIgnorePatterns(['!']);
+    LogBoxData.addIgnorePatterns(['!']);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(3);
   });
@@ -299,21 +299,21 @@ describe('LogBoxLogData', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    LogBoxLogData.setDisabled(true);
+    LogBoxData.setDisabled(true);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
 
     // Does nothing when already disabled.
-    LogBoxLogData.setDisabled(true);
+    LogBoxData.setDisabled(true);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
 
-    LogBoxLogData.setDisabled(false);
+    LogBoxData.setDisabled(false);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(3);
 
     // Does nothing when already enabled.
-    LogBoxLogData.setDisabled(false);
+    LogBoxData.setDisabled(false);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(3);
   });

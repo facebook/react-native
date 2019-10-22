@@ -15,11 +15,11 @@ jest.mock('../../../Core/Devtools/parseErrorStack', () => {
   return {__esModule: true, default: jest.fn(() => [])};
 });
 
-const LogBoxLogParser = require('../LogBoxLogParser').default;
+const parseLogBoxLog = require('../parseLogBoxLog').default;
 
-describe('LogBoxLogParser', () => {
+describe('parseLogBoxLog', () => {
   it('parses strings', () => {
-    expect(LogBoxLogParser({args: ['A']})).toEqual({
+    expect(parseLogBoxLog(['A'])).toEqual({
       componentStack: [],
       stack: [],
       category: 'A',
@@ -31,7 +31,7 @@ describe('LogBoxLogParser', () => {
   });
 
   it('parses strings with arguments', () => {
-    expect(LogBoxLogParser({args: ['A', 'B', 'C']})).toEqual({
+    expect(parseLogBoxLog(['A', 'B', 'C'])).toEqual({
       componentStack: [],
       stack: [],
       category: 'A B C',
@@ -43,7 +43,7 @@ describe('LogBoxLogParser', () => {
   });
 
   it('parses formatted strings', () => {
-    expect(LogBoxLogParser({args: ['%s', 'A']})).toEqual({
+    expect(parseLogBoxLog(['%s', 'A'])).toEqual({
       componentStack: [],
       stack: [],
       category: '\ufeff%s',
@@ -60,7 +60,7 @@ describe('LogBoxLogParser', () => {
   });
 
   it('parses formatted strings with insufficient arguments', () => {
-    expect(LogBoxLogParser({args: ['%s %s', 'A']})).toEqual({
+    expect(parseLogBoxLog(['%s %s', 'A'])).toEqual({
       componentStack: [],
       stack: [],
       category: '\ufeff%s %s',
@@ -81,7 +81,7 @@ describe('LogBoxLogParser', () => {
   });
 
   it('parses formatted strings with excess arguments', () => {
-    expect(LogBoxLogParser({args: ['%s', 'A', 'B']})).toEqual({
+    expect(parseLogBoxLog(['%s', 'A', 'B'])).toEqual({
       componentStack: [],
       stack: [],
       category: '\ufeff%s B',
@@ -98,7 +98,7 @@ describe('LogBoxLogParser', () => {
   });
 
   it('treats "%s" in arguments as literals', () => {
-    expect(LogBoxLogParser({args: ['%s', '%s', 'A']})).toEqual({
+    expect(parseLogBoxLog(['%s', '%s', 'A'])).toEqual({
       componentStack: [],
       stack: [],
       category: '\ufeff%s A',
@@ -116,12 +116,10 @@ describe('LogBoxLogParser', () => {
 
   it('detects a component stack in the second argument', () => {
     expect(
-      LogBoxLogParser({
-        args: [
-          'Some kind of message',
-          '\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
-        ],
-      }),
+      parseLogBoxLog([
+        'Some kind of message',
+        '\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
+      ]),
     ).toEqual({
       componentStack: [
         {component: 'MyComponent', location: 'filename.js:1'},
@@ -138,14 +136,12 @@ describe('LogBoxLogParser', () => {
 
   it('detects a component stack in the nth argument', () => {
     expect(
-      LogBoxLogParser({
-        args: [
-          'Some kind of message',
-          'Some other kind of message',
-          '\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
-          'Some third kind of message',
-        ],
-      }),
+      parseLogBoxLog([
+        'Some kind of message',
+        'Some other kind of message',
+        '\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
+        'Some third kind of message',
+      ]),
     ).toEqual({
       componentStack: [
         {component: 'MyComponent', location: 'filename.js:1'},

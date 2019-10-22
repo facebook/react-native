@@ -12,7 +12,7 @@
 
 import * as LogBoxSymbolication from './LogBoxSymbolication';
 
-import type {Category, Message, ComponentStack} from './LogBoxLogParser';
+import type {Category, Message, ComponentStack} from './parseLogBoxLog';
 import type {Stack} from './LogBoxSymbolication';
 
 export type SymbolicationRequest = $ReadOnly<{|

@@ -112,11 +112,9 @@ function parseCategory(
   };
 }
 
-function parseMessage({
-  args,
-}: $ReadOnly<{|
+function parseLog(
   args: $ReadOnlyArray<mixed>,
-|}>): {|
+): {|
   componentStack: ComponentStack,
   category: Category,
   message: Message,
@@ -159,4 +157,4 @@ function parseMessage({
   };
 }
 
-export default parseMessage;
+export default parseLog;

@@ -14,7 +14,7 @@ import * as React from 'react';
 import Text from '../../Text/Text';
 
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
-import type {Message} from '../Data/LogBoxLogParser';
+import type {Message} from '../Data/parseLogBoxLog';
 
 type Props = {
   message: Message,

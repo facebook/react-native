@@ -11,7 +11,7 @@
 ('use strict');
 
 import LogBoxLog from './LogBoxLog';
-import LogBoxLogParser from './LogBoxLogParser';
+import parseLogBoxLog from './parseLogBoxLog';
 
 export type LogBoxLogs = Set<LogBoxLog>;
 
@@ -52,19 +52,13 @@ function handleUpdate(): void {
   }
 }
 
-export function add({
-  args,
-}: $ReadOnly<{|
-  args: $ReadOnlyArray<mixed>,
-|}>): void {
+export function add(args: $ReadOnlyArray<mixed>): void {
   // This is carried over from the old YellowBox, but it is not clear why.
   if (typeof args[0] === 'string' && args[0].startsWith('(ADVICE)')) {
     return;
   }
 
-  const {category, message, stack, componentStack} = LogBoxLogParser({
-    args,
-  });
+  const {category, message, stack, componentStack} = parseLogBoxLog(args);
 
   // We don't want to store these logs because they trigger a
   // state update whenever we add them to the store, which is
