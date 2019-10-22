@@ -52,7 +52,7 @@ function getSizeWithHeaders(
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
 ): any {
-  return ImageViewManager.getSizeWithHeaders({uri, headers})
+  return NativeImageLoader.getSizeWithHeaders(uri, headers)
     .then(function(sizes) {
       success(sizes.width, sizes.height);
     })
