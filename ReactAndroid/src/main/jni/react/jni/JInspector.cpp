@@ -7,6 +7,8 @@
 
 #include "JInspector.h"
 
+#include <memory>
+
 #ifdef WITH_INSPECTOR
 
 namespace facebook {
@@ -80,7 +82,7 @@ jni::local_ref<jni::JArrayClass<JPage::javaobject>> JInspector::getPages() {
 }
 
 jni::local_ref<JLocalConnection::javaobject> JInspector::connect(int pageId, jni::alias_ref<JRemoteConnection::javaobject> remote) {
-  auto localConnection = inspector_->connect(pageId, folly::make_unique<RemoteConnection>(std::move(remote)));
+  auto localConnection = inspector_->connect(pageId, std::make_unique<RemoteConnection>(std::move(remote)));
   return JLocalConnection::newObjectCxxArgs(std::move(localConnection));
 }
 

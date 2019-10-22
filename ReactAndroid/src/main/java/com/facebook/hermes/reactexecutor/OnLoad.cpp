@@ -8,13 +8,14 @@
 #include <../instrumentation/HermesMemoryDumper.h>
 #include <HermesExecutorFactory.h>
 #include <fb/fbjni.h>
-#include <folly/Memory.h>
 #include <hermes/Public/GCConfig.h>
 #include <hermes/Public/RuntimeConfig.h>
 #include <jni.h>
 #include <react/jni/JReactMarker.h>
 #include <react/jni/JSLogging.h>
 #include <react/jni/JavaScriptExecutorHolder.h>
+
+#include <memory>
 
 namespace facebook {
 namespace react {
@@ -103,7 +104,7 @@ class HermesExecutorHolder
     JReactMarker::setLogPerfMarkerIfNeeded();
 
     return makeCxxInstance(
-        folly::make_unique<HermesExecutorFactory>(installBindings));
+        std::make_unique<HermesExecutorFactory>(installBindings));
   }
 
   static jni::local_ref<jhybriddata> initHybrid(
@@ -124,7 +125,7 @@ class HermesExecutorHolder
         heapDumper,
         tripWireCooldownMS,
         tripWireLimitBytes);
-    return makeCxxInstance(folly::make_unique<HermesExecutorFactory>(
+    return makeCxxInstance(std::make_unique<HermesExecutorFactory>(
         installBindings, JSIExecutor::defaultTimeoutInvoker, runtimeConfig));
   }
 

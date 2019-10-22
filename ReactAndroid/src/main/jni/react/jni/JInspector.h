@@ -12,7 +12,8 @@
 #include <jsinspector/InspectorInterfaces.h>
 
 #include <fb/fbjni.h>
-#include <folly/Memory.h>
+
+#include <memory>
 
 namespace facebook {
 namespace react {
