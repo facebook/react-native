@@ -191,7 +191,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
               style={StyleSheet.compose(
                 contentContainerStyle,
                 {
-                  bottom: bottomHeight,
+                  bottom: bottomHeight + contentContainerStyle.bottom,
                 },
               )}>
               {children}
