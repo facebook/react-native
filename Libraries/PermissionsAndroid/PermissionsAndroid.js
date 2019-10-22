@@ -253,6 +253,6 @@ class PermissionsAndroid {
   }
 }
 
-PermissionsAndroid = new PermissionsAndroid();
+const PermissionsAndroidInstance: PermissionsAndroid = new PermissionsAndroid();
 
-module.exports = PermissionsAndroid;
+module.exports = PermissionsAndroidInstance;
