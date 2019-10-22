@@ -585,22 +585,9 @@ export type Props = $ReadOnly<{|
   children?: React.Node,
 |}>;
 
-type ScrollViewNativeComponentType = HostComponent<mixed>;
+type ScrollViewNativeComponentType = Class<ReactNative.NativeComponent<Props>>;
 
 interface NativeCommands {
-  +flashScrollIndicators: (
-    viewRef: React.ElementRef<ScrollViewNativeComponentType>,
-  ) => void;
-  +scrollTo: (
-    viewRef: React.ElementRef<ScrollViewNativeComponentType>,
-    x: number,
-    y: number,
-    animated: boolean,
-  ) => void;
-  +scrollToEnd: (
-    viewRef: React.ElementRef<ScrollViewNativeComponentType>,
-    animated: boolean,
-  ) => void;
   +zoomToRect: (
     viewRef: React.ElementRef<ScrollViewNativeComponentType>,
     rect: {|
@@ -1243,12 +1230,7 @@ const styles = StyleSheet.create({
 });
 
 ScrollView.Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: [
-    'flashScrollIndicators',
-    'scrollTo',
-    'scrollToEnd',
-    'zoomToRect',
-  ],
+  supportedCommands: ['zoomToRect'],
 });
 
 module.exports = ScrollView;
