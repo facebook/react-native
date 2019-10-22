@@ -99,7 +99,7 @@ public class ReactTextViewManager
         textViewProps.getTopPadding(),
         textViewProps.getEndPadding(),
         textViewProps.getBottomPadding(),
-        0,
+        textViewProps.getTextAlign(),
         textBreakStrategy,
         justificationMode);
   }
