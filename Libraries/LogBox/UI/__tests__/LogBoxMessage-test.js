@@ -30,5 +30,45 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  // TODO: Add tests for text substitutions
+  it('should render message with substitution', () => {
+    const output = render.shallowRender(
+      <LogBoxMessage
+        style={{}}
+        message={{
+          content: 'normal substitution normal',
+          substitutions: [{length: 12, offset: 7}],
+        }}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('Should strip "Warning: " without breaking substitution', () => {
+    const output = render.shallowRender(
+      <LogBoxMessage
+        style={{}}
+        message={{
+          content: 'Warning: normal substitution normal',
+          substitutions: [{length: 12, offset: 16}],
+        }}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('Should strip "Warning: Warning: " without breaking substitution', () => {
+    const output = render.shallowRender(
+      <LogBoxMessage
+        style={{}}
+        message={{
+          content: 'Warning: Warning: normal substitution normal',
+          substitutions: [{length: 12, offset: 25}],
+        }}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
 });

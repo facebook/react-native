@@ -21,6 +21,8 @@ type Props = {
   style: TextStyleProp,
 };
 
+const cleanContent = content => content.replace(/Warning: /g, '');
+
 function LogBoxMessage(props: Props): React.Node {
   const {content, substitutions}: Message = props.message;
   const substitutionStyle: TextStyleProp = props.style;
@@ -30,18 +32,21 @@ function LogBoxMessage(props: Props): React.Node {
     const key = String(index);
 
     if (substitution.offset > prevOffset) {
-      const prevPart = content
-        .substr(prevOffset, substitution.offset - prevOffset)
-        .replace('Warning: ', '');
-      elements.push(<Text key={key}>{prevPart}</Text>);
+      const prevPart = content.substr(
+        prevOffset,
+        substitution.offset - prevOffset,
+      );
+
+      elements.push(<Text key={key}>{cleanContent(prevPart)}</Text>);
     }
 
-    const substititionPart = content
-      .substr(substitution.offset, substitution.length)
-      .replace('Warning: ', '');
+    const substititionPart = content.substr(
+      substitution.offset,
+      substitution.length,
+    );
     elements.push(
       <Text key={key + '.5'} style={substitutionStyle}>
-        {substititionPart}
+        {cleanContent(substititionPart)}
       </Text>,
     );
 
@@ -49,8 +54,8 @@ function LogBoxMessage(props: Props): React.Node {
   }, 0);
 
   if (lastOffset < content.length) {
-    const lastPart = content.substr(lastOffset).replace('Warning: ', '');
-    elements.push(<Text key="-1">{lastPart}</Text>);
+    const lastPart = content.substr(lastOffset);
+    elements.push(<Text key="-1">{cleanContent(lastPart)}</Text>);
   }
 
   return <>{elements}</>;

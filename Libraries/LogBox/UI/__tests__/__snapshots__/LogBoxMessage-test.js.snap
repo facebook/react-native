@@ -1,9 +1,57 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`LogBoxMessage Should strip "Warning: " without breaking substitution 1`] = `
+<React.Fragment>
+  <Text>
+    normal 
+  </Text>
+  <Text
+    style={Object {}}
+  >
+    substitution
+  </Text>
+  <Text>
+     normal
+  </Text>
+</React.Fragment>
+`;
+
+exports[`LogBoxMessage Should strip "Warning: Warning: " without breaking substitution 1`] = `
+<React.Fragment>
+  <Text>
+    normal 
+  </Text>
+  <Text
+    style={Object {}}
+  >
+    substitution
+  </Text>
+  <Text>
+     normal
+  </Text>
+</React.Fragment>
+`;
+
 exports[`LogBoxMessage should render message 1`] = `
 <React.Fragment>
   <Text>
     Some kind of message
+  </Text>
+</React.Fragment>
+`;
+
+exports[`LogBoxMessage should render message with substitution 1`] = `
+<React.Fragment>
+  <Text>
+    normal 
+  </Text>
+  <Text
+    style={Object {}}
+  >
+    substitution
+  </Text>
+  <Text>
+     normal
   </Text>
 </React.Fragment>
 `;
