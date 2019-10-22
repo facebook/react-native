@@ -71,7 +71,7 @@ function prefetch(url: string): any {
 async function queryCache(
   urls: Array<string>,
 ): Promise<{[string]: 'memory' | 'disk' | 'disk/memory'}> {
-  return await ImageViewManager.queryCache(urls);
+  return await NativeImageLoader.queryCache(urls);
 }
 
 type ImageComponentStatics = $ReadOnly<{|
