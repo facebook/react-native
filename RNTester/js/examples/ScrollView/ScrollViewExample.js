@@ -21,6 +21,8 @@ const {
   View,
 } = require('react-native');
 
+const nullthrows = require('nullthrows');
+
 import type {ViewStyleProp} from '../../../../Libraries/StyleSheet/StyleSheet';
 
 exports.displayName = 'ScrollViewExample';
@@ -33,12 +35,11 @@ exports.examples = [
     description:
       'To make content scrollable, wrap it within a <ScrollView> component',
     render: function(): React.Node {
-      let _scrollView: ScrollView;
+      let _scrollView: ?React.ElementRef<typeof ScrollView>;
       return (
         <View>
           <ScrollView
             ref={scrollView => {
-              // $FlowFixMe Invalid prop usage
               _scrollView = scrollView;
             }}
             automaticallyAdjustContentInsets={false}
@@ -52,19 +53,19 @@ exports.examples = [
           <Button
             label="Scroll to top"
             onPress={() => {
-              _scrollView.scrollTo({y: 0});
+              nullthrows(_scrollView).scrollTo({y: 0});
             }}
           />
           <Button
             label="Scroll to bottom"
             onPress={() => {
-              _scrollView.scrollToEnd({animated: true});
+              nullthrows(_scrollView).scrollToEnd({animated: true});
             }}
           />
           <Button
             label="Flash scroll indicators"
             onPress={() => {
-              _scrollView.flashScrollIndicators();
+              nullthrows(_scrollView).flashScrollIndicators();
             }}
           />
         </View>
@@ -80,7 +81,7 @@ exports.examples = [
         title: string,
         additionalStyles: ViewStyleProp,
       ) {
-        let _scrollView: ?ScrollView;
+        let _scrollView: ?React.ElementRef<typeof ScrollView>;
         return (
           <View style={additionalStyles}>
             <Text style={styles.text}>{title}</Text>
@@ -96,22 +97,19 @@ exports.examples = [
             <Button
               label="Scroll to start"
               onPress={() => {
-                // $FlowFixMe Invalid prop usage
-                _scrollView.scrollTo({x: 0});
+                nullthrows(_scrollView).scrollTo({x: 0});
               }}
             />
             <Button
               label="Scroll to end"
               onPress={() => {
-                // $FlowFixMe Invalid prop usage
-                _scrollView.scrollToEnd({animated: true});
+                nullthrows(_scrollView).scrollToEnd({animated: true});
               }}
             />
             <Button
               label="Flash scroll indicators"
               onPress={() => {
-                // $FlowFixMe Invalid prop usage
-                _scrollView.flashScrollIndicators();
+                nullthrows(_scrollView).flashScrollIndicators();
               }}
             />
           </View>
