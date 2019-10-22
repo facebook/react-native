@@ -122,24 +122,18 @@ function parseMessage({
   message: Message,
   stack: Stack,
 |} {
-  let mutableArgs: Array<mixed> = [...args];
-
   // This detects a very narrow case of a simple log string,
   // with a component stack appended by React DevTools.
   // In this case, we extract the component stack,
   // because LogBox formats those pleasantly.
   // If there are other substitutions or formatting,
-  // we bail to avoid potentially corrupting the data.
+  // this could potentially corrupt the data, but there
+  // are currently no known cases of that happening.
   let componentStack = [];
-  if (mutableArgs.length === 2) {
-    const first = mutableArgs[0];
-    const last = mutableArgs[1];
-    if (
-      typeof first === 'string' &&
-      typeof last === 'string' &&
-      /^\n {4}in/.exec(last)
-    ) {
-      componentStack = last
+  let argsWithoutComponentStack = [];
+  for (const arg of args) {
+    if (typeof arg === 'string' && /^\n {4}in/.exec(arg)) {
+      componentStack = arg
         .split(/\n {4}in /g)
         .map(s => {
           if (!s) {
@@ -152,13 +146,13 @@ function parseMessage({
           return {component, location: location && location.replace(')', '')};
         })
         .filter(Boolean);
-
-      mutableArgs = [first];
+    } else {
+      argsWithoutComponentStack.push(arg);
     }
   }
 
   return {
-    ...parseCategory(mutableArgs),
+    ...parseCategory(argsWithoutComponentStack),
     componentStack,
     // TODO: Use Error.captureStackTrace on Hermes
     stack: parseErrorStack(new Error()),

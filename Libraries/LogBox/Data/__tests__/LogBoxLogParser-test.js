@@ -136,23 +136,27 @@ describe('LogBoxLogParser', () => {
     });
   });
 
-  it('does not detect a component stack in the third argument', () => {
+  it('detects a component stack in the nth argument', () => {
     expect(
       LogBoxLogParser({
         args: [
           'Some kind of message',
           'Some other kind of message',
           '\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
+          'Some third kind of message',
         ],
       }),
     ).toEqual({
-      componentStack: [],
+      componentStack: [
+        {component: 'MyComponent', location: 'filename.js:1'},
+        {component: 'MyOtherComponent', location: 'filename2.js:1'},
+      ],
       stack: [],
       category:
-        'Some kind of message Some other kind of message \n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
+        'Some kind of message Some other kind of message Some third kind of message',
       message: {
         content:
-          'Some kind of message Some other kind of message \n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
+          'Some kind of message Some other kind of message Some third kind of message',
         substitutions: [],
       },
     });
