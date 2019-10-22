@@ -82,6 +82,8 @@ function LogBoxContainer(props: Props): React.Node {
       <View style={styles.toast}>
         <LogBoxLogNotification
           log={getVisibleLog()}
+          level="warn"
+          totalLogCount={logs.length}
           onPressOpen={handleRowPress}
           onPressList={() => {
             /* TODO: open log list */

@@ -23,6 +23,8 @@ import LogBoxMessage from './LogBoxMessage';
 
 type Props = $ReadOnly<{|
   log: LogBoxLog,
+  totalLogCount: number,
+  level: 'warn' | 'error',
   onPressOpen: (index: number) => void,
   onPressList: () => void,
   onPressDismiss: () => void,
@@ -55,7 +57,7 @@ class LogBoxLogNotification extends React.Component<Props> {
   };
 
   render(): React.Node {
-    const {log} = this.props;
+    const {totalLogCount, level, log} = this.props;
 
     return (
       <View style={toastStyles.container}>
@@ -67,7 +69,7 @@ class LogBoxLogNotification extends React.Component<Props> {
             pressed: LogBoxStyle.getBackgroundColor(0.9),
           }}>
           <View style={toastStyles.content}>
-            <CountBadge count={log.count} level="warn" />
+            <CountBadge count={totalLogCount} level={level} />
             <Message message={log.message} />
             <DismissButton onPress={this._handlePressDismiss} />
           </View>

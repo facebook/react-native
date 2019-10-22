@@ -31,6 +31,8 @@ describe('LogBoxLogNotification', () => {
     const output = render.shallowRender(
       <LogBoxLogNotification
         log={log}
+        totalLogCount={1}
+        level="warn"
         onPressOpen={() => {}}
         onPressList={() => {}}
         onPressDismiss={() => {}}

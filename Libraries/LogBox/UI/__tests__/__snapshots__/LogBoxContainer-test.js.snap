@@ -22,6 +22,7 @@ exports[`LogBoxContainer should render the latest log 1`] = `
     }
   >
     <LogBoxLogNotification
+      level="warn"
       log={
         LogBoxLog {
           "category": "Some kind of message (latest)",
@@ -42,6 +43,7 @@ exports[`LogBoxContainer should render the latest log 1`] = `
       onPressDismiss={[Function]}
       onPressList={[Function]}
       onPressOpen={[Function]}
+      totalLogCount={2}
     />
   </View>
   <ForwardRef(SafeAreaView)
