@@ -21,7 +21,6 @@ exports[`LogBoxContainer should render first log with selectedIndex 0 1`] = `
         "category": "Some kind of message (first)",
         "componentStack": Array [],
         "count": 1,
-        "ignored": false,
         "message": Object {
           "content": "Some kind of message (first)",
           "substitutions": Array [],
@@ -66,7 +65,6 @@ exports[`LogBoxContainer should render second log with selectedIndex 1 1`] = `
         "category": "Some kind of message (second)",
         "componentStack": Array [],
         "count": 1,
-        "ignored": false,
         "message": Object {
           "content": "Some kind of message (second)",
           "substitutions": Array [],

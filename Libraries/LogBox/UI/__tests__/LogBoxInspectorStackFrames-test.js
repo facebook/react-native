@@ -40,7 +40,6 @@ const log = new LogBoxLog(
   ],
   'Some kind of message (latest)',
   [],
-  false,
 );
 
 describe('LogBoxInspectorStackFrame', () => {

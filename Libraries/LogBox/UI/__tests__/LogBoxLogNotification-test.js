@@ -24,7 +24,6 @@ const log = new LogBoxLog(
   [],
   'Some kind of message',
   [],
-  false,
 );
 
 describe('LogBoxLogNotification', () => {

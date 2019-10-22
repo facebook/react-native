@@ -25,7 +25,6 @@ const logs = [
     [],
     'Some kind of message (first)',
     [],
-    false,
   ),
   new LogBoxLog(
     {
@@ -35,7 +34,6 @@ const logs = [
     [],
     'Some kind of message (second)',
     [],
-    false,
   ),
 ];
 

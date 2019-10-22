@@ -13,8 +13,7 @@
 import LogBoxLog from './LogBoxLog';
 import LogBoxLogParser from './LogBoxLogParser';
 
-export type LogBoxLogs = Array<LogBoxLog>;
-export type LogBoxLogsStore = Set<LogBoxLog>;
+export type LogBoxLogs = Set<LogBoxLog>;
 
 export type Observer = (logs: LogBoxLogs) => void;
 
@@ -26,10 +25,9 @@ export type Subscription = $ReadOnly<{|
 
 const observers: Set<{observer: Observer}> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
-const logs: LogBoxLogsStore = new Set();
-
-let _isDisabled = false;
+const logs: LogBoxLogs = new Set();
 let updateTimeout = null;
+let _isDisabled = false;
 
 function isMessageIgnored(message: string): boolean {
   for (const pattern of ignorePatterns) {
@@ -46,9 +44,9 @@ function handleUpdate(): void {
   if (updateTimeout == null) {
     updateTimeout = setImmediate(() => {
       updateTimeout = null;
-      const logsArray = _isDisabled ? [] : Array.from(logs);
+      const logsSet = _isDisabled ? new Set() : logs;
       for (const {observer} of observers) {
-        observer(logsArray);
+        observer(logsSet);
       }
     });
   }
@@ -68,28 +66,22 @@ export function add({
     args,
   });
 
-  // In most cases, the "last log" will be the "last log not ignored".
-  // This will result in out of order logs when we display ignored logs,
-  // but is a reasonable compromise.
-  const lastLog = Array.from(logs)
-    .filter(log => !log.ignored)
-    .pop();
+  // We don't want to store these logs because they trigger a
+  // state update whenever we add them to the store, which is
+  // expensive to noisy logs. If we later want to display these
+  // we will store them in a different state object.
+  if (isMessageIgnored(message.content)) {
+    return;
+  }
 
   // If the next log has the same category as the previous one
   // then we want to roll it up into the last log in the list
   // by incrementing the count (simar to how Chrome does it).
+  const lastLog = Array.from(logs).pop();
   if (lastLog && lastLog.category === category) {
     lastLog.incrementCount();
   } else {
-    logs.add(
-      new LogBoxLog(
-        message,
-        stack,
-        category,
-        componentStack,
-        isMessageIgnored(message.content),
-      ),
-    );
+    logs.add(new LogBoxLog(message, stack, category, componentStack));
   }
 
   handleUpdate();
@@ -135,12 +127,14 @@ export function addIgnorePatterns(
   for (const pattern of newPatterns) {
     ignorePatterns.add(pattern);
 
-    // We need to update all of the ignore flags in the existing logs.
+    // We need to recheck all of the existing logs.
     // This allows adding an ignore pattern anywhere in the codebase.
     // Without this, if you ignore a pattern after the a log is created,
-    // then we would always show the log.
+    // then we would keep showing the log.
     for (let log of logs) {
-      log.ignored = isMessageIgnored(log.message.content);
+      if (isMessageIgnored(log.message.content)) {
+        logs.delete(log);
+      }
     }
   }
   handleUpdate();
@@ -162,8 +156,8 @@ export function observe(observer: Observer): Subscription {
   const subscription = {observer};
   observers.add(subscription);
 
-  const logsToObserve = _isDisabled ? [] : logs;
-  observer(Array.from(logsToObserve));
+  const logsToObserve = _isDisabled ? new Set() : logs;
+  observer(logsToObserve);
 
   return {
     unsubscribe(): void {

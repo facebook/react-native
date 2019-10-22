@@ -22,7 +22,7 @@ describe('LogBoxContainer', () => {
       <LogBoxContainer
         onDismiss={() => {}}
         onDismissAll={() => {}}
-        logs={[]}
+        logs={new Set()}
       />,
     );
 
@@ -34,28 +34,28 @@ describe('LogBoxContainer', () => {
       <LogBoxContainer
         onDismiss={() => {}}
         onDismissAll={() => {}}
-        logs={[
-          new LogBoxLog(
-            {
-              content: 'Some kind of message',
-              substitutions: [],
-            },
-            [],
-            'Some kind of message',
-            [],
-            false,
-          ),
-          new LogBoxLog(
-            {
-              content: 'Some kind of message (latest)',
-              substitutions: [],
-            },
-            [],
-            'Some kind of message (latest)',
-            [],
-            false,
-          ),
-        ]}
+        logs={
+          new Set([
+            new LogBoxLog(
+              {
+                content: 'Some kind of message',
+                substitutions: [],
+              },
+              [],
+              'Some kind of message',
+              [],
+            ),
+            new LogBoxLog(
+              {
+                content: 'Some kind of message (latest)',
+                substitutions: [],
+              },
+              [],
+              'Some kind of message (latest)',
+              [],
+            ),
+          ])
+        }
       />,
     );
 

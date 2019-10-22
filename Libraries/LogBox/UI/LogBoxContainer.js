@@ -28,13 +28,13 @@ type Props = $ReadOnly<{|
 function LogBoxContainer(props: Props): React.Node {
   const [selectedLogIndex, setSelectedLog] = React.useState(null);
 
-  const filteredLogs = props.logs.filter(log => !log.ignored);
+  const logs = Array.from(props.logs);
 
   function getVisibleLog() {
     // TODO: currently returns the newest log but later will need to return
     // the newest log of the highest level. For example, we want to show
     // the latest error message even if there are newer warnings.
-    return filteredLogs[filteredLogs.length - 1];
+    return logs[logs.length - 1];
   }
 
   function handleInspectorDismissAll() {
@@ -46,12 +46,12 @@ function LogBoxContainer(props: Props): React.Node {
     // was either the last log, or when the current index
     // is now outside the bounds of the log array.
     if (selectedLogIndex != null) {
-      if (props.logs.length - 1 <= 0) {
+      if (logs.length - 1 <= 0) {
         setSelectedLog(null);
-      } else if (selectedLogIndex >= props.logs.length - 1) {
+      } else if (selectedLogIndex >= logs.length - 1) {
         setSelectedLog(selectedLogIndex - 1);
       }
-      props.onDismiss(props.logs[selectedLogIndex]);
+      props.onDismiss(logs[selectedLogIndex]);
     }
   }
 
@@ -60,7 +60,7 @@ function LogBoxContainer(props: Props): React.Node {
   }
 
   function handleRowPress(index: number) {
-    setSelectedLog(filteredLogs.length - 1);
+    setSelectedLog(logs.length - 1);
   }
 
   if (selectedLogIndex != null) {
@@ -70,14 +70,14 @@ function LogBoxContainer(props: Props): React.Node {
           onDismiss={handleInspectorDismiss}
           onMinimize={handleInspectorMinimize}
           onChangeSelectedIndex={setSelectedLog}
-          logs={filteredLogs}
+          logs={logs}
           selectedIndex={selectedLogIndex}
         />
       </View>
     );
   }
 
-  return filteredLogs.length === 0 ? null : (
+  return logs.length === 0 ? null : (
     <View style={styles.list}>
       <View style={styles.toast}>
         <LogBoxLogNotification

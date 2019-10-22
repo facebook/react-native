@@ -19,13 +19,13 @@ const LogBoxLogData = require('../LogBoxLogData');
 const registry = () => {
   const observer = jest.fn();
   LogBoxLogData.observe(observer).unsubscribe();
-  return observer.mock.calls[0][0];
+  return Array.from(observer.mock.calls[0][0]);
 };
 
 const filteredRegistry = () => {
   const observer = jest.fn();
   LogBoxLogData.observe(observer).unsubscribe();
-  return observer.mock.calls[0][0].filter(log => !log.ignored);
+  return Array.from(observer.mock.calls[0][0]);
 };
 
 const observe = () => {
@@ -204,10 +204,14 @@ describe('LogBoxLogData', () => {
   });
 
   it('immediately updates new observers', () => {
-    const {observer} = observe();
+    const {observer: observerOne} = observe();
 
-    expect(observer.mock.calls.length).toBe(1);
-    expect(observer.mock.calls[0][0]).toEqual(registry());
+    expect(observerOne.mock.calls.length).toBe(1);
+
+    const observerTwo = jest.fn();
+    LogBoxLogData.observe(observerTwo).unsubscribe();
+    expect(observerTwo.mock.calls.length).toBe(1);
+    expect(observerOne.mock.calls[0][0]).toEqual(observerTwo.mock.calls[0][0]);
   });
 
   it('sends batched updates asynchronously', () => {
@@ -218,14 +222,22 @@ describe('LogBoxLogData', () => {
     LogBoxLogData.add({args: ['B']});
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
+
+    // We expect observers to recieve the same Set object in sequential updates
+    // so that it doesn't break memoization for components observing state.
+    expect(observer.mock.calls[0][0]).toBe(observer.mock.calls[1][0]);
   });
 
   it('stops sending updates to unsubscribed observers', () => {
-    const {observer, subscription} = observe();
+    const {observer: observerOne, subscription} = observe();
     subscription.unsubscribe();
 
-    expect(observer.mock.calls.length).toBe(1);
-    expect(observer.mock.calls[0][0]).toEqual(registry());
+    expect(observerOne.mock.calls.length).toBe(1);
+
+    const observerTwo = jest.fn();
+    LogBoxLogData.observe(observerTwo).unsubscribe();
+    expect(observerTwo.mock.calls.length).toBe(1);
+    expect(observerOne.mock.calls[0][0]).toEqual(observerTwo.mock.calls[0][0]);
   });
 
   it('updates observers when a log is added or dismissed', () => {
@@ -236,7 +248,7 @@ describe('LogBoxLogData', () => {
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
 
-    const lastLog = observer.mock.calls[1][0][0];
+    const lastLog = Array.from(observer.mock.calls[1][0])[0];
     LogBoxLogData.dismiss(lastLog);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(3);

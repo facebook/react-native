@@ -23,7 +23,6 @@ function getLogBoxLog() {
     createStack(['A', 'B', 'C']),
     'Message category...',
     [{component: 'LogBoxLog', location: 'LogBoxLog.js:1'}],
-    true,
   );
 }
 
@@ -62,7 +61,6 @@ describe('LogBoxLog', () => {
     expect(log.componentStack).toEqual([
       {component: 'LogBoxLog', location: 'LogBoxLog.js:1'},
     ]);
-    expect(log.ignored).toEqual(true);
   });
 
   it('increments LogBoxLog count', () => {

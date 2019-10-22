@@ -30,7 +30,6 @@ describe('LogBoxInspectorReactFrames', () => {
             [],
             'Some kind of message',
             [],
-            false,
           )
         }
       />,
@@ -56,7 +55,6 @@ describe('LogBoxInspectorReactFrames', () => {
                 location: 'MyComponentFile.js:1',
               },
             ],
-            false,
           )
         }
       />,

@@ -25,7 +25,6 @@ class LogBoxLog {
   componentStack: ComponentStack;
   stack: Stack;
   count: number;
-  ignored: boolean;
   symbolicated:
     | $ReadOnly<{|error: null, stack: null, status: 'NONE'|}>
     | $ReadOnly<{|error: null, stack: null, status: 'PENDING'|}>
@@ -41,13 +40,11 @@ class LogBoxLog {
     stack: Stack,
     category: string,
     componentStack: ComponentStack,
-    ignored: boolean,
   ) {
     this.message = message;
     this.stack = stack;
     this.category = category;
     this.componentStack = componentStack;
-    this.ignored = ignored;
     this.count = 1;
   }
 
