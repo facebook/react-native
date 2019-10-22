@@ -65,7 +65,7 @@ function getSizeWithHeaders(
 }
 
 function prefetch(url: string): any {
-  return ImageViewManager.prefetchImage(url);
+  return NativeImageLoader.prefetchImage(url);
 }
 
 async function queryCache(
