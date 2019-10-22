@@ -91,11 +91,16 @@ class AppContainer extends React.Component<Props, State> {
   }
 
   render(): React.Node {
-    let yellowBox = null;
+    let logBox = null;
     if (__DEV__) {
       if (!global.__RCTProfileIsProfiling) {
-        const YellowBox = require('../YellowBox/YellowBox');
-        yellowBox = <YellowBox />;
+        if (global.__reactExperimentalLogBox) {
+          const LogBox = require('../LogBox/LogBox');
+          logBox = <LogBox />;
+        } else {
+          const YellowBox = require('../YellowBox/YellowBox');
+          logBox = <YellowBox />;
+        }
       }
     }
 
@@ -128,7 +133,7 @@ class AppContainer extends React.Component<Props, State> {
       <RootTagContext.Provider value={this.props.rootTag}>
         <View style={styles.appContainer} pointerEvents="box-none">
           {innerView}
-          {yellowBox}
+          {logBox}
           {this.state.inspector}
         </View>
       </RootTagContext.Provider>
@@ -144,8 +149,13 @@ const styles = StyleSheet.create({
 
 if (__DEV__) {
   if (!global.__RCTProfileIsProfiling) {
-    const YellowBox = require('../YellowBox/YellowBox');
-    YellowBox.install();
+    if (global.__reactExperimentalLogBox) {
+      const LogBox = require('../LogBox/LogBox');
+      LogBox.install();
+    } else {
+      const YellowBox = require('../YellowBox/YellowBox');
+      YellowBox.install();
+    }
   }
 }
 

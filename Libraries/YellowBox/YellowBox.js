@@ -18,7 +18,7 @@ import type {
   Subscription,
   IgnorePattern,
 } from './Data/YellowBoxRegistry';
-
+import * as LogBoxLogData from '../LogBox/Data/LogBoxLogData';
 type Props = $ReadOnly<{||}>;
 type State = {|
   registry: ?Registry,
@@ -65,6 +65,7 @@ if (__DEV__) {
   // eslint-disable-next-line no-shadow
   YellowBox = class YellowBox extends React.Component<Props, State> {
     static ignoreWarnings(patterns: $ReadOnlyArray<IgnorePattern>): void {
+      LogBoxLogData.addIgnorePatterns(patterns);
       YellowBoxRegistry.addIgnorePatterns(patterns);
     }
 
