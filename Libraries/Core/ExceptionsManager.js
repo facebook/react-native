@@ -93,7 +93,6 @@ function reportException(e: ExtendedError, isFatal: boolean) {
       extraData: {
         jsEngine: e.jsEngine,
         rawStack: e.stack,
-        framesPopped: e.framesToPop,
       },
     });
 
@@ -169,7 +168,6 @@ function reactConsoleErrorHandler() {
     }
     const error: ExtendedError = new SyntheticError(str);
     error.name = 'console.error';
-    error.framesToPop = (error.framesToPop || 0) + 1;
     reportException(error, /* isFatal */ false);
   }
 }
