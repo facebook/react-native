@@ -35,7 +35,6 @@ public class TextAttributeProps {
   private static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
 
   protected float mLineHeight = Float.NaN;
-  protected float mLetterSpacing = Float.NaN;
   protected boolean mIsColorSet = false;
   protected boolean mAllowFontScaling = true;
   protected int mColor;
@@ -197,10 +196,17 @@ public class TextAttributeProps {
 
   public void setLetterSpacing(float letterSpacing) {
     mLetterSpacingInput = letterSpacing;
-    mLetterSpacing =
+  }
+
+  public float getLetterSpacing() {
+    float letterSpacingPixels =
         mAllowFontScaling
             ? PixelUtil.toPixelFromSP(mLetterSpacingInput)
             : PixelUtil.toPixelFromDIP(mLetterSpacingInput);
+
+    // `letterSpacingPixels` and `mFontSize` are both in pixels,
+    // yielding an accurate em value.
+    return letterSpacingPixels / mFontSize;
   }
 
   public void setAllowFontScaling(boolean allowFontScaling) {
