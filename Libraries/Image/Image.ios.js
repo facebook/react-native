@@ -22,7 +22,9 @@ const resolveAssetSource = require('./resolveAssetSource');
 
 import type {ImageProps as ImagePropsType} from './ImageProps';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+
 import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
+import NativeImageLoader from './NativeImageLoader';
 
 const ImageViewManager = NativeModules.ImageViewManager;
 const RCTImageView: HostComponent<mixed> = requireNativeComponent(
@@ -34,14 +36,14 @@ function getSize(
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
 ) {
-  ImageViewManager.getSize(
-    uri,
-    success,
-    failure ||
-      function() {
-        console.warn('Failed to get size for image: ' + uri);
-      },
-  );
+  NativeImageLoader.getSize(uri)
+    .then(([width, height]) => success(width, height))
+    .catch(
+      failure ||
+        function() {
+          console.warn('Failed to get size for image ' + uri);
+        },
+    );
 }
 
 function getSizeWithHeaders(
