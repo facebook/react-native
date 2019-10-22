@@ -36,6 +36,9 @@ public interface StackFrame {
    */
   public String getFileName();
 
+  /** Whether this frame is collapsed. */
+  public boolean isCollapsed();
+
   /** Convert the stack frame to a JSON representation. */
   public JSONObject toJSON();
 }

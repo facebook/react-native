@@ -353,7 +353,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
-        cell.textLabel.textColor = [UIColor whiteColor];
         cell.textLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:14];
         cell.textLabel.lineBreakMode = NSLineBreakByCharWrapping;
         cell.textLabel.numberOfLines = 2;
@@ -371,6 +370,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     } else {
         cell.detailTextLabel.text = @"";
     }
+    cell.textLabel.textColor = stackFrame.collapse ? [UIColor lightGrayColor] : [UIColor whiteColor];
+    cell.detailTextLabel.textColor = stackFrame.collapse ?
+      [UIColor colorWithRed:0.50 green:0.50 blue:0.50 alpha:1.0] :
+      [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
     return cell;
 }
 

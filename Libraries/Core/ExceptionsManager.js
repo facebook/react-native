@@ -106,12 +106,9 @@ function reportException(e: ExtendedError, isFatal: boolean) {
       symbolicateStackTrace(stack)
         .then(prettyStack => {
           if (prettyStack) {
-            const stackWithoutCollapsedFrames = prettyStack.filter(
-              frame => !frame.collapse,
-            );
             NativeExceptionsManager.updateExceptionMessage(
               data.message,
-              stackWithoutCollapsedFrames,
+              prettyStack,
               currentExceptionID,
             );
           } else {

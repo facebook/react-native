@@ -186,6 +186,8 @@ import org.json.JSONObject;
         FrameViewHolder holder = (FrameViewHolder) convertView.getTag();
         holder.mMethodView.setText(frame.getMethod());
         holder.mFileView.setText(StackTraceHelper.formatFrameSource(frame));
+        holder.mMethodView.setTextColor(frame.isCollapsed() ? 0xFFAAAAAA : Color.WHITE);
+        holder.mFileView.setTextColor(frame.isCollapsed() ? 0xFF808080 : 0xFFB3B3B3);
         return convertView;
       }
     }

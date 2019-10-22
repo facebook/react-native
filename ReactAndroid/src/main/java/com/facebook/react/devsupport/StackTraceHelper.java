@@ -38,13 +38,19 @@ public class StackTraceHelper {
     private final int mLine;
     private final int mColumn;
     private final String mFileName;
+    private final boolean mIsCollapsed;
 
-    private StackFrameImpl(String file, String method, int line, int column) {
+    private StackFrameImpl(String file, String method, int line, int column, boolean isCollapsed) {
       mFile = file;
       mMethod = method;
       mLine = line;
       mColumn = column;
       mFileName = file != null ? new File(file).getName() : "";
+      mIsCollapsed = isCollapsed;
+    }
+
+    private StackFrameImpl(String file, String method, int line, int column) {
+      this(file, method, line, column, false);
     }
 
     private StackFrameImpl(String file, String fileName, String method, int line, int column) {
@@ -53,6 +59,7 @@ public class StackTraceHelper {
       mMethod = method;
       mLine = line;
       mColumn = column;
+      mIsCollapsed = false;
     }
 
     /**
@@ -90,6 +97,10 @@ public class StackTraceHelper {
       return mFileName;
     }
 
+    public boolean isCollapsed() {
+      return mIsCollapsed;
+    }
+
     /** Convert the stack frame to a JSON representation. */
     public JSONObject toJSON() {
       return new JSONObject(
@@ -97,7 +108,8 @@ public class StackTraceHelper {
               "file", getFile(),
               "methodName", getMethod(),
               "lineNumber", getLine(),
-              "column", getColumn()));
+              "column", getColumn(),
+              "collapse", isCollapsed()));
     }
   }
 
@@ -114,6 +126,8 @@ public class StackTraceHelper {
         ReadableMap frame = stack.getMap(i);
         String methodName = frame.getString("methodName");
         String fileName = frame.getString("file");
+        boolean collapse =
+            frame.hasKey("collapse") && !frame.isNull("collapse") && frame.getBoolean("collapse");
         int lineNumber = -1;
         if (frame.hasKey(LINE_NUMBER_KEY) && !frame.isNull(LINE_NUMBER_KEY)) {
           lineNumber = frame.getInt(LINE_NUMBER_KEY);
@@ -122,7 +136,7 @@ public class StackTraceHelper {
         if (frame.hasKey(COLUMN_KEY) && !frame.isNull(COLUMN_KEY)) {
           columnNumber = frame.getInt(COLUMN_KEY);
         }
-        result[i] = new StackFrameImpl(fileName, methodName, lineNumber, columnNumber);
+        result[i] = new StackFrameImpl(fileName, methodName, lineNumber, columnNumber, collapse);
       } else if (type == ReadableType.String) {
         result[i] = new StackFrameImpl(null, stack.getString(i), -1, -1);
       }
@@ -150,7 +164,9 @@ public class StackTraceHelper {
         if (frame.has(COLUMN_KEY) && !frame.isNull(COLUMN_KEY)) {
           columnNumber = frame.getInt(COLUMN_KEY);
         }
-        result[i] = new StackFrameImpl(fileName, methodName, lineNumber, columnNumber);
+        boolean collapse =
+            frame.has("collapse") && !frame.isNull("collapse") && frame.getBoolean("collapse");
+        result[i] = new StackFrameImpl(fileName, methodName, lineNumber, columnNumber, collapse);
       }
     } catch (JSONException exception) {
       throw new RuntimeException(exception);
