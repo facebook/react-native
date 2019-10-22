@@ -224,9 +224,6 @@ void ShadowNode::cloneChildrenIfShared() {
 
 void ShadowNode::setMounted(bool mounted) const {
   family_->eventEmitter_->setEnabled(mounted);
-  if (mounted && state_) {
-    state_->commit(*this);
-  }
 }
 
 AncestorList ShadowNode::getAncestors(

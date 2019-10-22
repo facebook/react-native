@@ -40,8 +40,7 @@ using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
 
 class ShadowNode : public virtual Sealable,
-                   public virtual DebugStringConvertible,
-                   public std::enable_shared_from_this<ShadowNode> {
+                   public virtual DebugStringConvertible {
  public:
   using Shared = std::shared_ptr<ShadowNode const>;
   using Weak = std::weak_ptr<ShadowNode const>;

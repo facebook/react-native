@@ -57,7 +57,7 @@ SharedShadowNode UIManager::createNode(
   // explicitly associate the ShadowNode with the State here so that updateState
   // is always safe and effectful.
   if (state) {
-    state->commit(*shadowNode);
+    state->commit(shadowNode);
   }
 
   if (delegate_) {

@@ -29,7 +29,7 @@ class StateTarget {
   /*
    * Creates a target which points to a given `ShadowNode`.
    */
-  explicit StateTarget(const ShadowNode &shadowNode);
+  explicit StateTarget(std::shared_ptr<ShadowNode const> shadowNode);
 
   /*
    * Copyable and moveable.

@@ -13,8 +13,8 @@ namespace react {
 
 StateTarget::StateTarget() : shadowNode_(nullptr) {}
 
-StateTarget::StateTarget(const ShadowNode &shadowNode)
-    : shadowNode_(shadowNode.shared_from_this()) {}
+StateTarget::StateTarget(std::shared_ptr<ShadowNode const> shadowNode)
+    : shadowNode_(shadowNode) {}
 
 StateTarget::operator bool() const {
   return (bool)shadowNode_;
