@@ -286,9 +286,11 @@ class JSCRuntime : public jsi::Runtime {
 namespace {
 std::string JSStringToSTLString(JSStringRef str) {
   size_t maxBytes = JSStringGetMaximumUTF8CStringSize(str);
-  std::vector<char> buffer(maxBytes);
-  JSStringGetUTF8CString(str, buffer.data(), maxBytes);
-  return std::string(buffer.data());
+  char* buffer = new char[maxBytes];
+  size_t actualBytes = JSStringGetUTF8CString(str, buffer, maxBytes);
+  std::string stlString = std::string(buffer, actualBytes -1);
+  delete [] buffer;
+  return stlString;
 }
 
 JSStringRef getLengthString() {
