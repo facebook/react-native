@@ -57,7 +57,7 @@ function doPublish() {
 
   const assetUpdateUrl = `https://uploads.github.com/repos/microsoft/react-native/releases/{id}/assets?name=react-native-${releaseVersion}.tgz`;
   const authHeader =
-    "Basic " + new Buffer(":" + process.env.APIAUTHHEADER).toString("base64");
+    "Basic " + new Buffer(":" + process.env.SYSTEM_ACCESSTOKEN).toString("base64");
   const userAgent = "Microsoft-React-Native-Release-Agent";
 
   let uploadReleaseAssetUrl = "";
@@ -124,16 +124,30 @@ function doPublish() {
     function(err, res, body) {
       if (err) {
         console.log(err);
-        throw new Error("Error fetching release id.");
+        throw new Error("Error creating release");
       }
 
       console.log("Created GitHub Release: " + JSON.stringify(body, null, 2));
-      if (body.id) {
-      uploadReleaseAssetUrl = assetUpdateUrl.replace(/{id}/, body.id);
-      uploadTarBallToRelease();
-      } else {
-        console.warn('Unable to find release to upload tar...skipping custom tar for release.')
-      }
+
+      request.get({
+        url: `https://api.github.com/repos/microsoft/react-native/releases/tags/v${releaseVersion}`,
+        headers: {
+          "User-Agent": userAgent,
+          Authorization: authHeader
+        },
+        json: true,
+      },
+      function(err, res, body) {
+        if (err) {
+          console.log(err);
+          throw new Error("Error fetching release id.");
+        }
+        
+        console.log("Getting GitHub Release ID: " + JSON.stringify(body, null, 2));
+
+        uploadReleaseAssetUrl = assetUpdateUrl.replace(/{id}/, body.id);
+        uploadTarBallToRelease();
+      });
     }
   );
 }
