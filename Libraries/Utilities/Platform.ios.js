@@ -12,8 +12,9 @@
 
 import NativePlatformConstantsIOS from './NativePlatformConstantsIOS';
 
-export type PlatformSelectSpec<D, I> = {
+export type PlatformSelectSpec<D, N, I> = {
   default?: D,
+  native?: N,
   ios?: I,
 };
 
@@ -59,8 +60,8 @@ const Platform = {
     }
     return false;
   },
-  select: <D, I>(spec: PlatformSelectSpec<D, I>): D | I =>
-    'ios' in spec ? spec.ios : spec.default,
+  select: <D, N, I>(spec: PlatformSelectSpec<D, N, I>): D | N | I =>
+    'ios' in spec ? spec.ios : 'native' in spec ? spec.native : spec.default,
 };
 
 module.exports = Platform;
