@@ -10,6 +10,8 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
 
+RCT_EXTERN void RCTEnableAppearancePreference(BOOL enabled);
+
 NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
 
 @interface RCTAppearance : RCTEventEmitter <RCTBridgeModule>

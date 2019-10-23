@@ -17,6 +17,11 @@ using namespace facebook::react;
 NSString *const RCTAppearanceColorSchemeLight = @"light";
 NSString *const RCTAppearanceColorSchemeDark = @"dark";
 
+static BOOL sAppearancePreferenceEnabled = YES;
+void RCTEnableAppearancePreference(BOOL enabled) {
+  sAppearancePreferenceEnabled = enabled;
+}
+
 static NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
@@ -30,6 +35,11 @@ static NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
                       @(UIUserInterfaceStyleDark): RCTAppearanceColorSchemeDark
                       };
     });
+
+    if (!sAppearancePreferenceEnabled) {
+      // Return the default if the app doesn't allow different color schemes.
+      return RCTAppearanceColorSchemeLight;
+    }
 
     traitCollection = traitCollection ?: [UITraitCollection currentTraitCollection];
     return appearances[@(traitCollection.userInterfaceStyle)] ?: RCTAppearanceColorSchemeLight;
