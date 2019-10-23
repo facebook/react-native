@@ -678,13 +678,6 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
       YogaNative.jni_YGNodePrint(mNativePointer);
   }
 
-  public void setStyleInputs(float[] styleInputsArray, int size) {
-    if (useVanillaJNI)
-      YogaNative.jni_YGNodeSetStyleInputsJNI(mNativePointer, styleInputsArray, size);
-    else
-      YogaNative.jni_YGNodeSetStyleInputs(mNativePointer, styleInputsArray, size);
-  }
-
   /**
    * This method replaces the child at childIndex position with the newNode received by parameter.
    * This is different than calling removeChildAt and addChildAt because this method ONLY replaces

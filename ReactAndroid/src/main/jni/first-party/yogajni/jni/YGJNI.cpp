@@ -531,16 +531,6 @@ void jni_YGConfigSetLogger(
   }
 }
 
-void jni_YGNodeSetStyleInputs(
-    alias_ref<jclass>,
-    jlong nativePointer,
-    alias_ref<JArrayFloat> styleInputs,
-    jint size) {
-  float result[size];
-  styleInputs->getRegion(0, size, result);
-  YGNodeSetStyleInputs(_jlong2YGNodeRef(nativePointer), result, size);
-}
-
 jlong jni_YGNodeStyleGetMargin(jlong nativePointer, jint edge) {
   YGNodeRef yogaNodeRef = _jlong2YGNodeRef(nativePointer);
   if (!YGNodeEdges{yogaNodeRef}.has(YGNodeEdges::MARGIN)) {
@@ -706,7 +696,6 @@ jint YGJNI::registerNativeMethods(JavaVM* vm) {
             YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAspectRatio),
             YGMakeCriticalNativeMethod(jni_YGNodePrint),
             YGMakeNativeMethod(jni_YGNodeClone),
-            YGMakeNativeMethod(jni_YGNodeSetStyleInputs),
             YGMakeNativeMethod(jni_YGConfigNew),
             YGMakeNativeMethod(jni_YGConfigFree),
             YGMakeNativeMethod(jni_YGConfigSetExperimentalFeatureEnabled),
