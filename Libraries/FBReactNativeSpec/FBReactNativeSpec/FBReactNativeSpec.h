@@ -1598,7 +1598,7 @@ namespace JS {
           requestId:(double)requestId
             headers:(NSArray *)headers
                data:(NSDictionary *)data
-       responseType:(NSDictionary *)responseType
+       responseType:(NSString *)responseType
 useIncrementalUpdates:(BOOL)useIncrementalUpdates
             timeout:(double)timeout
     withCredentials:(BOOL)withCredentials;
