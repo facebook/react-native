@@ -9,10 +9,9 @@ package com.facebook.react.modules.websocket;
 
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeWebSocketModuleSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
@@ -38,7 +37,7 @@ import okhttp3.WebSocketListener;
 import okio.ByteString;
 
 @ReactModule(name = WebSocketModule.NAME, hasConstants = false)
-public final class WebSocketModule extends ReactContextBaseJavaModule {
+public final class WebSocketModule extends NativeWebSocketModuleSpec {
   public static final String TAG = WebSocketModule.class.getSimpleName();
 
   public static final String NAME = "WebSocketModule";
@@ -84,12 +83,13 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
+  @Override
   public void connect(
       final String url,
       @Nullable final ReadableArray protocols,
       @Nullable final ReadableMap options,
-      final int id) {
+      final double socketID) {
+    final int id = (int) socketID;
     OkHttpClient client =
         new OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
@@ -212,8 +212,9 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
     client.dispatcher().executorService().shutdown();
   }
 
-  @ReactMethod
-  public void close(int code, String reason, int id) {
+  @Override
+  public void close(double code, String reason, double socketID) {
+    int id = (int) socketID;
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
       // WebSocket is already closed
@@ -221,7 +222,7 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
       return;
     }
     try {
-      client.close(code, reason);
+      client.close((int) code, reason);
       mWebSocketConnections.remove(id);
       mContentHandlers.remove(id);
     } catch (Exception e) {
@@ -229,8 +230,9 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
-  public void send(String message, int id) {
+  @Override
+  public void send(String message, double socketID) {
+    final int id = (int) socketID;
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
       // This is a programmer error -- display development warning
@@ -254,8 +256,9 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
-  public void sendBinary(String base64String, int id) {
+  @Override
+  public void sendBinary(String base64String, double socketID) {
+    final int id = (int) socketID;
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
       // This is a programmer error -- display development warning
@@ -303,8 +306,9 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
     }
   }
 
-  @ReactMethod
-  public void ping(int id) {
+  @Override
+  public void ping(double socketID) {
+    final int id = (int) socketID;
     WebSocket client = mWebSocketConnections.get(id);
     if (client == null) {
       // This is a programmer error -- display development warning
@@ -396,4 +400,10 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
       throw new IllegalArgumentException("Unable to get cookie from " + uri);
     }
   }
+
+  @Override
+  public void addListener(String eventName) {}
+
+  @Override
+  public void removeListeners(double count) {}
 }
