@@ -55,7 +55,11 @@ const Platform = {
     return this.constants.uiMode === 'tv';
   },
   select: <A, N, D>(spec: PlatformSelectSpec<A, N, D>): A | N | D =>
-    'android' in spec ? spec.android : 'native' in spec ? spec.native : spec.default,
+    'android' in spec
+      ? spec.android
+      : 'native' in spec
+      ? spec.native
+      : spec.default,
 };
 
 module.exports = Platform;
