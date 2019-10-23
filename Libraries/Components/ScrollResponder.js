@@ -19,9 +19,9 @@ const TextInputState = require('./TextInput/TextInputState');
 const UIManager = require('../ReactNative/UIManager');
 const Platform = require('../Utilities/Platform');
 const ScrollView = require('./ScrollView/ScrollView');
+import Commands from './ScrollView/ScrollViewCommands';
 
 const invariant = require('invariant');
-const nullthrows = require('nullthrows');
 const performanceNow = require('fbjs/lib/performanceNow');
 
 import type {PressEvent, ScrollEvent} from '../Types/CoreEventTypes';
@@ -468,12 +468,7 @@ const ScrollResponderMixin = {
     if (nativeScrollRef == null) {
       return;
     }
-    ScrollView.Commands.scrollTo(
-      nativeScrollRef,
-      x || 0,
-      y || 0,
-      animated !== false,
-    );
+    Commands.scrollTo(nativeScrollRef, x || 0, y || 0, animated !== false);
   },
 
   /**
@@ -498,7 +493,7 @@ const ScrollResponderMixin = {
       return;
     }
 
-    ScrollView.Commands.scrollToEnd(nativeScrollRef, animated);
+    Commands.scrollToEnd(nativeScrollRef, animated);
   },
 
   /**
@@ -536,7 +531,7 @@ const ScrollResponderMixin = {
     if (nativeScrollRef == null) {
       return;
     }
-    ScrollView.Commands.zoomToRect(nativeScrollRef, rect, animated !== false);
+    Commands.zoomToRect(nativeScrollRef, rect, animated !== false);
   },
 
   /**
@@ -552,7 +547,7 @@ const ScrollResponderMixin = {
     if (nativeScrollRef == null) {
       return;
     }
-    ScrollView.Commands.flashScrollIndicators(nativeScrollRef);
+    Commands.flashScrollIndicators(nativeScrollRef);
   },
 
   /**
