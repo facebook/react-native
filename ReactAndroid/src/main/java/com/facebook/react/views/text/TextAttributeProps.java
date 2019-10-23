@@ -204,6 +204,10 @@ public class TextAttributeProps {
             ? PixelUtil.toPixelFromSP(mLetterSpacingInput)
             : PixelUtil.toPixelFromDIP(mLetterSpacingInput);
 
+    if (mFontSize <= 0) {
+      throw new IllegalArgumentException(
+          "FontSize should be a positive value. Current value: " + mFontSize);
+    }
     // `letterSpacingPixels` and `mFontSize` are both in pixels,
     // yielding an accurate em value.
     return letterSpacingPixels / mFontSize;
