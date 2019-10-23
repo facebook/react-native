@@ -119,6 +119,7 @@ jobs:
           BUILD_STAGINGDIRECTORY: $(Build.StagingDirectory)
           BUILD_SOURCEBRANCH: $(Build.SourceBranch)
           SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+          APIAUTHHEADER: $(apiAuthHeader)
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish final artifacts'
