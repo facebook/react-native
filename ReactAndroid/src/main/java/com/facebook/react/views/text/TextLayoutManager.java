@@ -92,6 +92,7 @@ public class TextLayoutManager {
                   new CustomStyleSpan(
                       textAttributes.mFontStyle,
                       textAttributes.mFontWeight,
+                      textAttributes.mFontFeatureSettings,
                       textAttributes.mFontFamily,
                       context.getAssets())));
         }
