@@ -116,6 +116,13 @@ const API = {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     NativeAnimatedModule.disconnectAnimatedNodeFromView(nodeTag, viewTag);
   },
+  restoreDefaultValues: function(nodeTag: number): void {
+    invariant(NativeAnimatedModule, 'Native animated module is not available');
+    // Backwards compat with older native runtimes, can be removed later.
+    if (NativeAnimatedModule.restoreDefaultValues != null) {
+      NativeAnimatedModule.restoreDefaultValues(nodeTag);
+    }
+  },
   dropAnimatedNode: function(tag: number): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
     NativeAnimatedModule.dropAnimatedNode(tag);

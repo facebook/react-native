@@ -111,7 +111,10 @@ function createAnimatedComponent<Props: {+[string]: mixed}, Instance>(
       // This way the intermediate state isn't to go to 0 and trigger
       // this expensive recursive detaching to then re-attach everything on
       // the very next operation.
-      oldPropsAnimated && oldPropsAnimated.__detach();
+      if (oldPropsAnimated) {
+        oldPropsAnimated.__restoreDefaultValues();
+        oldPropsAnimated.__detach();
+      }
     }
 
     _setComponentRef = setAndForwardRef({

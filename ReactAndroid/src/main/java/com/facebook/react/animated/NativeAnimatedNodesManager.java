@@ -318,7 +318,7 @@ import java.util.Queue;
     propsAnimatedNode.disconnectFromView(viewTag);
   }
 
-  public void restoreDefaultValues(int animatedNodeTag, int viewTag) {
+  public void restoreDefaultValues(int animatedNodeTag) {
     AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
     // Restoring default values needs to happen before UIManager operations so it is
     // possible the node hasn't been created yet if it is being connected and

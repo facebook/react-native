@@ -147,6 +147,16 @@ class AnimatedProps extends AnimatedNode {
     );
   }
 
+  __restoreDefaultValues(): void {
+    // When using the native driver, view properties need to be restored to
+    // their default values manually since react no longer tracks them. This
+    // is needed to handle cases where a prop driven by native animated is removed
+    // after having been changed natively by an animation.
+    if (this.__isNative) {
+      NativeAnimatedHelper.API.restoreDefaultValues(this.__getNativeTag());
+    }
+  }
+
   __getNativeConfig(): Object {
     const propsConfig = {};
     for (const propKey in this._props) {
