@@ -54,6 +54,9 @@ static NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 @end
 
 @implementation RCTAppearance
+{
+  NSString *_currentColorScheme;
+}
 
 RCT_EXPORT_MODULE(Appearance)
 
@@ -74,7 +77,8 @@ RCT_EXPORT_MODULE(Appearance)
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
-  return RCTColorSchemePreference(nil);
+  _currentColorScheme =  RCTColorSchemePreference(nil);
+  return _currentColorScheme;
 }
 
 - (void)appearanceChanged:(NSNotification *)notification
@@ -84,7 +88,11 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
   if (userInfo) {
     traitCollection = userInfo[@"traitCollection"];
   }
-  [self sendEventWithName:@"appearanceChanged" body:@{@"colorScheme": RCTColorSchemePreference(traitCollection)}];
+  NSString *newColorScheme = RCTColorSchemePreference(traitCollection);
+  if (![_currentColorScheme isEqualToString:newColorScheme]) {
+    _currentColorScheme = newColorScheme;
+    [self sendEventWithName:@"appearanceChanged" body:@{@"colorScheme": newColorScheme}];
+  }
 }
 
 #pragma mark - RCTEventEmitter
