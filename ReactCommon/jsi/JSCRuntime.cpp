@@ -286,11 +286,16 @@ class JSCRuntime : public jsi::Runtime {
 namespace {
 std::string JSStringToSTLString(JSStringRef str) {
   size_t maxBytes = JSStringGetMaximumUTF8CStringSize(str);
-  char* buffer = new char[maxBytes];
-  size_t actualBytes = JSStringGetUTF8CString(str, buffer, maxBytes);
-  std::string stlString = std::string(buffer, actualBytes -1);
-  delete [] buffer;
-  return stlString;
+
+  if (maxBytes < 21) {
+    char buffer[20];
+    size_t actualBytes = JSStringGetUTF8CString(str, buffer, maxBytes);
+    return std::string(buffer, actualBytes - 1);
+  }
+
+  auto buffer = std::make_unique<char[]>(maxBytes);
+  size_t actualBytes = JSStringGetUTF8CString(str, buffer.get(), maxBytes);
+  return std::string(buffer.get(), actualBytes - 1);
 }
 
 JSStringRef getLengthString() {
