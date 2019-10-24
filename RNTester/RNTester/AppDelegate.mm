@@ -13,6 +13,9 @@
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLinkingManager.h>
+#import <React/RCTImageLoader.h>
+#import <React/RCTLocalAssetImageLoader.h>
+#import <React/RCTGIFImageDecoder.h>
 #import <React/RCTRootView.h>
 
 #import <cxxreact/JSExecutor.h>
@@ -142,6 +145,13 @@
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
+  if (moduleClass == RCTImageLoader.class) {
+    return [[moduleClass alloc] initWithRedirectDelegate:nil loadersProvider:^NSArray<id<RCTImageURLLoader>> *{
+      return @[[RCTLocalAssetImageLoader new]];
+    } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *{
+      return @[[RCTGIFImageDecoder new]];
+    }];
+  }
   // No custom initializer here.
   return [moduleClass new];
 }
