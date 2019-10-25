@@ -83,7 +83,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressLint("MissingNativeLoadLibrary")
 public class FabricUIManager implements UIManager, LifecycleEventListener {
 
-  public static final String TAG = FabricUIManager.class.getSimpleName();
+  public static final String TAG = "FabricUIManager";
   public static final boolean DEBUG =
       ReactFeatureFlags.enableFabricLogs
           || PrinterHolder.getPrinter()
@@ -401,9 +401,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @SuppressWarnings("unused")
   private long measure(
       String componentName,
-      ReadableMap localData,
-      ReadableMap props,
-      ReadableMap state,
+      @NonNull ReadableMap localData,
+      @NonNull ReadableMap props,
+      @NonNull ReadableMap state,
       float minWidth,
       float maxWidth,
       float minHeight,
@@ -422,7 +422,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @Override
   @ThreadConfined(UI)
-  public void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props) {
+  public void synchronouslyUpdateViewOnUIThread(int reactTag, @NonNull ReadableMap props) {
     UiThreadUtil.assertOnUiThread();
     long time = SystemClock.uptimeMillis();
     int commitNumber = mCurrentSynchronousCommitNumber++;
@@ -447,7 +447,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @DoNotStrip
   @SuppressWarnings("unused")
   private void scheduleMountItem(
-      final MountItem mountItem,
+      @NonNull final MountItem mountItem,
       int commitNumber,
       long commitStartTime,
       long diffStartTime,
