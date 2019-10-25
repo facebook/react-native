@@ -7,6 +7,7 @@
 
 package com.facebook.react.fabric.mounting.mountitems;
 
+import androidx.annotation.NonNull;
 import com.facebook.react.fabric.mounting.MountingManager;
 
 public class SendAccessibilityEvent implements MountItem {
@@ -20,7 +21,7 @@ public class SendAccessibilityEvent implements MountItem {
   }
 
   @Override
-  public void execute(MountingManager mountingManager) {
+  public void execute(@NonNull MountingManager mountingManager) {
     mountingManager.sendAccessibilityEvent(mReactTag, mEventType);
   }
 

@@ -7,25 +7,26 @@
 
 package com.facebook.react.fabric.mounting.mountitems;
 
+import androidx.annotation.NonNull;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.mounting.MountingManager;
 
 public class UpdateLocalDataMountItem implements MountItem {
 
   private final int mReactTag;
-  private final ReadableMap mNewLocalData;
+  @NonNull private final ReadableMap mNewLocalData;
 
-  public UpdateLocalDataMountItem(int reactTag, ReadableMap newLocalData) {
+  public UpdateLocalDataMountItem(int reactTag, @NonNull ReadableMap newLocalData) {
     mReactTag = reactTag;
     mNewLocalData = newLocalData;
   }
 
   @Override
-  public void execute(MountingManager mountingManager) {
+  public void execute(@NonNull MountingManager mountingManager) {
     mountingManager.updateLocalData(mReactTag, mNewLocalData);
   }
 
-  public ReadableMap getNewLocalData() {
+  public @NonNull ReadableMap getNewLocalData() {
     return mNewLocalData;
   }
 

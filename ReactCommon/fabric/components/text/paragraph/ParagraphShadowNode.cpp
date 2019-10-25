@@ -6,6 +6,7 @@
  */
 
 #include "ParagraphShadowNode.h"
+#include <Glog/logging.h>
 #include "ParagraphMeasurementCache.h"
 #include "ParagraphState.h"
 
@@ -54,7 +55,8 @@ void ParagraphShadowNode::updateStateIfNeeded() {
     return;
   }
 
-  setStateData(ParagraphState{attributedString, textLayoutManager_});
+  setStateData(ParagraphState{
+      attributedString, getProps()->paragraphAttributes, textLayoutManager_});
 }
 
 #pragma mark - LayoutableShadowNode

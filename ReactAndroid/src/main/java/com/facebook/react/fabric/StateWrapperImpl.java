@@ -8,6 +8,7 @@
 package com.facebook.react.fabric;
 
 import android.annotation.SuppressLint;
+import androidx.annotation.NonNull;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
@@ -36,10 +37,10 @@ public class StateWrapperImpl implements StateWrapper {
   @Override
   public native ReadableNativeMap getState();
 
-  public native void updateStateImpl(NativeMap map);
+  public native void updateStateImpl(@NonNull NativeMap map);
 
   @Override
-  public void updateState(WritableMap map) {
+  public void updateState(@NonNull WritableMap map) {
     updateStateImpl((NativeMap) map);
   }
 }

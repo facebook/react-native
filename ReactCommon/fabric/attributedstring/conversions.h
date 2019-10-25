@@ -20,6 +20,8 @@
 #include <react/graphics/conversions.h>
 #include <cmath>
 
+#include <Glog/logging.h>
+
 namespace facebook {
 namespace react {
 
@@ -52,6 +54,34 @@ inline void fromRawValue(const RawValue &value, EllipsizeMode &result) {
   }
   if (string == "middle") {
     result = EllipsizeMode::Middle;
+    return;
+  }
+  abort();
+}
+
+inline std::string toString(const TextBreakStrategy &textBreakStrategy) {
+  switch (textBreakStrategy) {
+    case TextBreakStrategy::Simple:
+      return "simple";
+    case TextBreakStrategy::HighQuality:
+      return "highQuality";
+    case TextBreakStrategy::Balanced:
+      return "balanced";
+  }
+}
+
+inline void fromRawValue(const RawValue &value, TextBreakStrategy &result) {
+  auto string = (std::string)value;
+  if (string == "simple") {
+    result = TextBreakStrategy::Simple;
+    return;
+  }
+  if (string == "highQuality") {
+    result = TextBreakStrategy::HighQuality;
+    return;
+  }
+  if (string == "balanced") {
+    result = TextBreakStrategy::Balanced;
     return;
   }
   abort();
@@ -386,6 +416,7 @@ inline folly::dynamic toDynamic(
   auto values = folly::dynamic::object();
   values("maximumNumberOfLines", paragraphAttributes.maximumNumberOfLines);
   values("ellipsizeMode", toString(paragraphAttributes.ellipsizeMode));
+  values("textBreakStrategy", toString(paragraphAttributes.textBreakStrategy));
   values("adjustsFontSizeToFit", paragraphAttributes.adjustsFontSizeToFit);
   return values;
 }

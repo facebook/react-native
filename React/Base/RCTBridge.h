@@ -103,11 +103,17 @@ RCT_EXTERN NSString *const RCTBridgeWillInvalidateModulesNotification;
 RCT_EXTERN NSString *const RCTBridgeDidInvalidateModulesNotification;
 
 /**
+ * This notification fires right before the bridge starting invalidation process.
+ * Handle this notification to perform additional invalidation.
+ * The notification can be issued on any thread.
+ */
+RCT_EXTERN NSString *const RCTBridgeWillBeInvalidatedNotification;
+
+/**
  * Key for the RCTSource object in the RCTBridgeDidDownloadScriptNotification
  * userInfo dictionary.
  */
 RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey;
-
 
 /**
  * Key for the reload reason in the RCTBridgeWillReloadNotification userInfo dictionary.

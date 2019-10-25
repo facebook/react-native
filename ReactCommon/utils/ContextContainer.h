@@ -63,6 +63,25 @@ class ContextContainer final {
   }
 
   /*
+   * Updates the container with values from a given container.
+   * Values with keys that already exist in the container will be replaced with
+   * values from the given container.
+   */
+  void update(ContextContainer const &contextContainer) const {
+    std::unique_lock<better::shared_mutex> lock(mutex_);
+
+    for (auto const &pair : contextContainer.instances_) {
+      instances_.erase(pair.first);
+      instances_.insert(pair);
+#ifndef NDEBUG
+      typeNames_.erase(pair.first);
+      typeNames_.insert(
+          {pair.first, contextContainer.typeNames_.at(pair.first)});
+#endif
+    }
+  }
+
+  /*
    * Returns a previously registered instance of the particular type `T`
    * for `key`.
    * Throws an exception if the instance could not be found.
