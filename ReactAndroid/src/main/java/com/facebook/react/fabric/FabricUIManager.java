@@ -19,6 +19,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import android.annotation.SuppressLint;
 import android.os.SystemClock;
 import android.view.View;
+import androidx.annotation.AnyThread;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -120,9 +121,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @ThreadConfined(UI)
   @NonNull
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
-
-  @ThreadConfined(UI)
-  private volatile boolean mIsMountingEnabled = true;
 
   /**
    * This is used to keep track of whether or not the FabricUIManager has been destroyed. Once the
@@ -238,16 +236,21 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // This is not technically thread-safe, since it's read on the UI thread and written
     // here on the JS thread. We've marked it as volatile so that this writes to UI-thread
     // memory immediately.
-    mIsMountingEnabled = false;
+    mDispatchUIFrameCallback.stop();
 
     mEventDispatcher.removeBatchEventDispatchedListener(mEventBeatManager);
     mEventDispatcher.unregisterEventEmitter(FABRIC);
 
     // Remove lifecycle listeners (onHostResume, onHostPause) since the FabricUIManager is going
-    // away. This and setting `mIsMountingEnabled` to false will cause the choreographer
+    // away. Then stop the mDispatchUIFrameCallback false will cause the choreographer
     // callbacks to stop firing.
     mReactApplicationContext.removeLifecycleEventListener(this);
     onHostPause();
+
+    // This is not technically thread-safe, since it's read on the UI thread and written
+    // here on the JS thread. We've marked it as volatile so that this writes to UI-thread
+    // memory immediately.
+    mDispatchUIFrameCallback.stop();
 
     mBinding.unregister();
     mBinding = null;
@@ -709,8 +712,15 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   private class DispatchUIFrameCallback extends GuardedFrameCallback {
 
-    private DispatchUIFrameCallback(ReactContext reactContext) {
+    private volatile boolean mIsMountingEnabled = true;
+
+    private DispatchUIFrameCallback(@NonNull ReactContext reactContext) {
       super(reactContext);
+    }
+
+    @AnyThread
+    void stop() {
+      mIsMountingEnabled = false;
     }
 
     @Override
@@ -730,7 +740,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
       } catch (Exception ex) {
         FLog.i(ReactConstants.TAG, "Exception thrown when executing UIFrameGuarded", ex);
-        mIsMountingEnabled = false;
+        stop();
         throw ex;
       } finally {
         ReactChoreographer.getInstance()
