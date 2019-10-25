@@ -474,10 +474,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       mMountItems.add(mountItem);
     }
 
-    // Post markers outside of lock
+    if (UiThreadUtil.isOnUiThread()) {
+      dispatchMountItems();
+    }
+
+    // Post markers outside of lock and after sync mounting finishes its execution
     if (isBatchMountItem) {
       ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_COMMIT_START, null, commitNumber, mCommitStartTime);
+          ReactMarkerConstants.FABRIC_COMMIT_START, null, commitNumber, commitStartTime);
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_FINISH_TRANSACTION_START,
           null,
@@ -497,10 +501,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_LAYOUT_END, null, commitNumber, layoutEndTime);
       ReactMarker.logFabricMarker(ReactMarkerConstants.FABRIC_COMMIT_END, null, commitNumber);
-    }
-
-    if (UiThreadUtil.isOnUiThread()) {
-      dispatchMountItems();
     }
   }
 
