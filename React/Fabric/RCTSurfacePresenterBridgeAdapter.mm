@@ -143,6 +143,10 @@ static RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
                                            selector:@selector(handleJavaScriptDidLoadNotification:)
                                                name:RCTJavaScriptDidLoadNotification
                                              object:bridge];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleRCTBridgeWillBeInvalidatedNotification:)
+                                               name:RCTBridgeWillBeInvalidatedNotification
+                                             object:bridge];
 }
 
 - (void)_removeBridgeObservers:(RCTBridge *)bridge
@@ -153,11 +157,17 @@ static RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
 
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillReloadNotification object:bridge];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidLoadNotification object:bridge];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillBeInvalidatedNotification object:bridge];
 }
 
 #pragma mark - Bridge events
 
 - (void)handleBridgeWillReloadNotification:(NSNotification *)notification
+{
+  [_surfacePresenter suspend];
+}
+
+- (void)handleRCTBridgeWillBeInvalidatedNotification:(NSNotification *)notification
 {
   [_surfacePresenter suspend];
 }
