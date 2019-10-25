@@ -67,6 +67,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -477,10 +479,15 @@ public class ReactInstanceManager {
 
   private void toggleElementInspector() {
     ReactContext currentContext = getCurrentReactContext();
-    if (currentContext != null) {
+    if (currentContext != null && currentContext.hasActiveCatalystInstance()) {
       currentContext
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit("toggleElementInspector", null);
+    } else {
+      ReactSoftException.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Cannot toggleElementInspector, CatalystInstance not available"));
     }
   }
 
