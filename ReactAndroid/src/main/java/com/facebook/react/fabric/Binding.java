@@ -8,6 +8,7 @@
 package com.facebook.react.fabric;
 
 import android.annotation.SuppressLint;
+import androidx.annotation.NonNull;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JavaScriptContextHolder;
@@ -40,7 +41,8 @@ public class Binding {
       ComponentFactoryDelegate componentsRegistry,
       Object reactNativeConfig);
 
-  public native void startSurface(int surfaceId, String moduleName, NativeMap initialProps);
+  public native void startSurface(
+      int surfaceId, @NonNull String moduleName, @NonNull NativeMap initialProps);
 
   public native void startSurfaceWithConstraints(
       int surfaceId,
@@ -61,12 +63,12 @@ public class Binding {
       int surfaceId, float minWidth, float maxWidth, float minHeight, float maxHeight);
 
   public void register(
-      JavaScriptContextHolder jsContext,
-      FabricUIManager fabricUIManager,
-      EventBeatManager eventBeatManager,
-      MessageQueueThread jsMessageQueueThread,
-      ComponentFactoryDelegate componentFactoryDelegate,
-      ReactNativeConfig reactNativeConfig) {
+      @NonNull JavaScriptContextHolder jsContext,
+      @NonNull FabricUIManager fabricUIManager,
+      @NonNull EventBeatManager eventBeatManager,
+      @NonNull MessageQueueThread jsMessageQueueThread,
+      @NonNull ComponentFactoryDelegate componentFactoryDelegate,
+      @NonNull ReactNativeConfig reactNativeConfig) {
     fabricUIManager.setBinding(this);
     installFabricUIManager(
         jsContext.get(),
