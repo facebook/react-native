@@ -8,6 +8,7 @@
 package com.facebook.react.fabric.events;
 
 import android.annotation.SuppressLint;
+import androidx.annotation.NonNull;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -31,7 +32,7 @@ public class EventBeatManager implements BatchEventDispatchedListener {
 
   private native void beat();
 
-  public EventBeatManager(ReactApplicationContext reactApplicationContext) {
+  public EventBeatManager(@NonNull ReactApplicationContext reactApplicationContext) {
     mHybridData = initHybrid();
     mReactApplicationContext = reactApplicationContext;
   }
