@@ -93,9 +93,7 @@ public class AppStateModule extends ReactContextBaseJavaModule
   }
 
   private void sendEvent(String eventName, @Nullable Object data) {
-    ReactApplicationContext reactApplicationContext =
-        getReactApplicationContextIfActiveOrWarn(
-            TAG, "sendAppStateChangeEvent: trying to update app state");
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
       reactApplicationContext.getJSModule(RCTDeviceEventEmitter.class).emit(eventName, data);

@@ -754,8 +754,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   }
 
   private RCTDeviceEventEmitter getEventEmitter(String reason) {
-    ReactApplicationContext reactApplicationContext =
-        getReactApplicationContextIfActiveOrWarn(TAG, reason);
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
       return getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class);

@@ -45,15 +45,15 @@ public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
    * thread-safe.
    */
   @ThreadConfined(ANY)
-  protected @Nullable final ReactApplicationContext getReactApplicationContextIfActiveOrWarn(
-      String tag, String reason) {
+  protected @Nullable final ReactApplicationContext getReactApplicationContextIfActiveOrWarn() {
     if (mReactApplicationContext.hasActiveCatalystInstance()) {
       return mReactApplicationContext;
     }
 
     // We want to collect data about how often this happens, but SoftExceptions will cause a crash
     // in debug mode, which isn't usually desirable.
-    String msg = "Catalyst Instance has already disappeared: " + reason;
+    String msg = "Catalyst Instance has already disappeared: requested by " + this.getName();
+    String tag = "ReactContextBaseJavaModule";
     if (ReactBuildConfig.DEBUG) {
       FLog.w(tag, msg);
     } else {

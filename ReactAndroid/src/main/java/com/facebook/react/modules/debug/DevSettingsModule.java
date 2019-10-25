@@ -94,7 +94,7 @@ public class DevSettingsModule extends ReactContextBaseJavaModule {
             data.putString("title", title);
 
             ReactApplicationContext reactApplicationContext =
-                getReactApplicationContextIfActiveOrWarn(NAME, "onOptionSelected");
+                getReactApplicationContextIfActiveOrWarn();
 
             if (reactApplicationContext != null) {
               reactApplicationContext

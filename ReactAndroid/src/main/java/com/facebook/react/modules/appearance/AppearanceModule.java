@@ -86,8 +86,7 @@ public class AppearanceModule extends ReactContextBaseJavaModule {
     WritableMap appearancePreferences = Arguments.createMap();
     appearancePreferences.putString("colorScheme", colorScheme);
 
-    ReactApplicationContext reactApplicationContext =
-        getReactApplicationContextIfActiveOrWarn(NAME, "emitAppearanceChanged");
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
       reactApplicationContext

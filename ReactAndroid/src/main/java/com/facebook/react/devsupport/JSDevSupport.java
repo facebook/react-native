@@ -54,8 +54,7 @@ public class JSDevSupport extends ReactContextBaseJavaModule {
   }
 
   public synchronized void getJSHierarchy(int reactTag, DevSupportCallback callback) {
-    ReactApplicationContext reactApplicationContext =
-        getReactApplicationContextIfActiveOrWarn(MODULE_NAME, "getJSHierarchy");
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     JSDevSupportModule jsDevSupportModule = null;
     if (reactApplicationContext != null) {
