@@ -6,10 +6,13 @@
  */
 
 #include "ParagraphProps.h"
+#include "../../../attributedstring/primitives.h"
 
 #include <react/attributedstring/conversions.h>
 #include <react/core/propsConversions.h>
 #include <react/debug/debugStringConvertibleUtils.h>
+
+#include <Glog/logging.h>
 
 namespace facebook {
 namespace react {
@@ -25,6 +28,10 @@ static ParagraphAttributes convertRawProp(
       defaultParagraphAttributes.maximumNumberOfLines);
   paragraphAttributes.ellipsizeMode = convertRawProp(
       rawProps, "ellipsizeMode", defaultParagraphAttributes.ellipsizeMode);
+  paragraphAttributes.textBreakStrategy = convertRawProp(
+      rawProps,
+      "textBreakStrategy",
+      defaultParagraphAttributes.textBreakStrategy);
   paragraphAttributes.adjustsFontSizeToFit = convertRawProp(
       rawProps,
       "adjustsFontSizeToFit",
