@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
@@ -77,9 +79,16 @@ public class DeviceInfoModule extends BaseJavaModule
       return;
     }
 
-    mReactApplicationContext
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit("didUpdateDimensions", DisplayMetricsHolder.getDisplayMetricsNativeMap(mFontScale));
+    if (mReactApplicationContext.hasActiveCatalystInstance()) {
+      mReactApplicationContext
+          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+          .emit("didUpdateDimensions", DisplayMetricsHolder.getDisplayMetricsNativeMap(mFontScale));
+    } else {
+      ReactSoftException.logSoftException(
+          NAME,
+          new ReactNoCrashSoftException(
+              "No active CatalystInstance, cannot emitUpdateDimensionsEvent"));
+    }
   }
 
   @Override
