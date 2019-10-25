@@ -38,6 +38,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) RCTComponentViewFactory *componentViewFactory;
 @property (nonatomic, readonly) facebook::react::ContextContainer::Shared contextContainer;
 
+/*
+ * Suspends/resumes all surfaces associated with the presenter.
+ * Suspending is a process or gracefull stopping all surfaces and destroying all underlying infrastructure
+ * with a future possibility of recreating the infrastructure and restarting the surfaces from scratch.
+ * Suspending is usually a part of a bundle reloading process.
+ * Can be called on any thread.
+ */
+- (BOOL)suspend;
+- (BOOL)resume;
+
 @end
 
 @interface RCTSurfacePresenter (Surface) <RCTSurfacePresenterStub>

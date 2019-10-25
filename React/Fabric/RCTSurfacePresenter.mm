@@ -101,7 +101,7 @@ using namespace facebook::react;
                                                  name:RCTJavaScriptDidLoadNotification
                                                object:_bridge];
 
-    [self _createScheduler];
+    _scheduler = [self _createScheduler];
   }
 
   return self;
@@ -121,18 +121,25 @@ using namespace facebook::react;
 
 - (void)registerSurface:(RCTFabricSurface *)surface
 {
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
   [_surfaceRegistry registerSurface:surface];
-  [self _startSurface:surface];
+  if (_scheduler) {
+    [self _startSurface:surface];
+  }
 }
 
 - (void)unregisterSurface:(RCTFabricSurface *)surface
 {
-  [self _stopSurface:surface];
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  if (_scheduler) {
+    [self _stopSurface:surface];
+  }
   [_surfaceRegistry unregisterSurface:surface];
 }
 
 - (void)setProps:(NSDictionary *)props surface:(RCTFabricSurface *)surface
 {
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
   // This implementation is suboptimal indeed but still better than nothing for now.
   [self _stopSurface:surface];
   [self _startSurface:surface];
@@ -147,55 +154,48 @@ using namespace facebook::react;
                       maximumSize:(CGSize)maximumSize
                           surface:(RCTFabricSurface *)surface
 {
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
   LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
 
   LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
                                          .maximumSize = RCTSizeFromCGSize(maximumSize)};
 
-  return [self._scheduler measureSurfaceWithLayoutConstraints:layoutConstraints
-                                                layoutContext:layoutContext
-                                                    surfaceId:surface.rootTag];
+  return [_scheduler measureSurfaceWithLayoutConstraints:layoutConstraints
+                                           layoutContext:layoutContext
+                                               surfaceId:surface.rootTag];
 }
 
 - (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize surface:(RCTFabricSurface *)surface
 {
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
   LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
 
   LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
                                          .maximumSize = RCTSizeFromCGSize(maximumSize)};
 
-  [self._scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
-                                                  layoutContext:layoutContext
-                                                      surfaceId:surface.rootTag];
+  [_scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
+                                             layoutContext:layoutContext
+                                                 surfaceId:surface.rootTag];
 }
 
 - (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props
 {
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
   ReactTag tag = [reactTag integerValue];
   UIView<RCTComponentViewProtocol> *componentView = [_mountingManager.componentViewRegistry componentViewByTag:tag];
   if (componentView == nil) {
     return NO; // This view probably isn't managed by Fabric
   }
   ComponentHandle handle = [[componentView class] componentDescriptorProvider].handle;
-  const facebook::react::ComponentDescriptor &componentDescriptor = [self._scheduler getComponentDescriptor:handle];
-  [self->_mountingManager synchronouslyUpdateViewOnUIThread:tag
-                                               changedProps:props
-                                        componentDescriptor:componentDescriptor];
+  const facebook::react::ComponentDescriptor &componentDescriptor = [_scheduler getComponentDescriptor:handle];
+  [_mountingManager synchronouslyUpdateViewOnUIThread:tag changedProps:props componentDescriptor:componentDescriptor];
   return YES;
 }
 
 #pragma mark - Private
 
-- (nullable RCTScheduler *)_scheduler
+- (RCTScheduler *)_createScheduler
 {
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
-  return _scheduler;
-}
-
-- (void)_createScheduler
-{
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
-
   auto componentRegistryFactory = [factory = wrapManagedObject(self.componentViewFactory)](
                                       EventDispatcher::Weak const &eventDispatcher,
                                       ContextContainer::Shared const &contextContainer) {
@@ -220,14 +220,10 @@ using namespace facebook::react;
     return std::make_unique<RuntimeEventBeat>(ownerBox, runtimeExecutor);
   };
 
-  _scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
-  _scheduler.delegate = self;
-}
+  RCTScheduler *scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
+  scheduler.delegate = self;
 
-- (void)_destroyScheduler
-{
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
-  _scheduler = nil;
+  return scheduler;
 }
 
 - (RuntimeExecutor)getRuntimeExecutor
@@ -293,16 +289,16 @@ using namespace facebook::react;
   LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(surface.minimumSize),
                                          .maximumSize = RCTSizeFromCGSize(surface.maximumSize)};
 
-  [self._scheduler startSurfaceWithSurfaceId:surface.rootTag
-                                  moduleName:surface.moduleName
-                                initialProps:surface.properties
-                           layoutConstraints:layoutConstraints
-                               layoutContext:layoutContext];
+  [_scheduler startSurfaceWithSurfaceId:surface.rootTag
+                             moduleName:surface.moduleName
+                           initialProps:surface.properties
+                      layoutConstraints:layoutConstraints
+                          layoutContext:layoutContext];
 }
 
 - (void)_stopSurface:(RCTFabricSurface *)surface
 {
-  [self._scheduler stopSurfaceWithSurfaceId:surface.rootTag];
+  [_scheduler stopSurfaceWithSurfaceId:surface.rootTag];
 
   RCTMountingManager *mountingManager = _mountingManager;
   RCTExecuteOnMainQueue(^{
@@ -332,6 +328,32 @@ using namespace facebook::react;
       [self _stopSurface:surface];
     }
   }];
+}
+
+- (BOOL)suspend
+{
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  if (!_scheduler) {
+    return NO;
+  }
+
+  [self _stopAllSurfaces];
+  _scheduler = nil;
+
+  return YES;
+}
+
+- (BOOL)resume
+{
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  if (_scheduler) {
+    return NO;
+  }
+
+  _scheduler = [self _createScheduler];
+  [self _startAllSurfaces];
+
+  return YES;
 }
 
 #pragma mark - RCTSchedulerDelegate
@@ -408,13 +430,7 @@ using namespace facebook::react;
 
 - (void)handleBridgeWillReloadNotification:(NSNotification *)notification
 {
-  if (!self._scheduler) {
-    // Seems we are already in the reloading process.
-    return;
-  }
-
-  [self _stopAllSurfaces];
-  [self _destroyScheduler];
+  [self suspend];
 }
 
 - (void)handleJavaScriptDidLoadNotification:(NSNotification *)notification
@@ -427,8 +443,7 @@ using namespace facebook::react;
 
   _batchedBridge = bridge;
 
-  [self _createScheduler];
-  [self _startAllSurfaces];
+  [self resume];
 }
 
 @end
