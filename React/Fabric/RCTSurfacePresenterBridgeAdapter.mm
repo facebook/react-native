@@ -42,22 +42,25 @@ static ContextContainer::Shared RCTContextContainerFromBridge(RCTBridge *bridge)
 
 static RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
 {
-  RCTBridge *batchedBridge = [bridge batchedBridge] ?: bridge;
+  auto bridgeWeakWrapper = wrapManagedObjectWeakly([bridge batchedBridge] ?: bridge);
 
-  auto messageQueueThread = batchedBridge.jsMessageThread;
-  if (messageQueueThread) {
-    // Make sure initializeBridge completed
-    messageQueueThread->runOnQueueSync([] {});
-  }
+  RuntimeExecutor runtimeExecutor = [bridgeWeakWrapper](
+                                        std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
+    [unwrapManagedObjectWeakly(bridgeWeakWrapper) invokeAsync:[bridgeWeakWrapper, callback = std::move(callback)]() {
+      RCTCxxBridge *batchedBridge = (RCTCxxBridge *)unwrapManagedObjectWeakly(bridgeWeakWrapper);
 
-  auto runtime = (facebook::jsi::Runtime *)((RCTCxxBridge *)batchedBridge).runtime;
+      if (!batchedBridge) {
+        return;
+      }
 
-  RuntimeExecutor runtimeExecutor = [batchedBridge,
-                                     runtime](std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
-    // For now, ask the bridge to queue the callback asynchronously to ensure that
-    // it's not invoked too early, e.g. before the bridge is fully ready.
-    // Revisit this after Fabric/TurboModule is fully rolled out.
-    [((RCTCxxBridge *)batchedBridge) invokeAsync:[runtime, callback = std::move(callback)]() { callback(*runtime); }];
+      auto runtime = (facebook::jsi::Runtime *)(batchedBridge.runtime);
+
+      if (!runtime) {
+        return;
+      }
+
+      callback(*runtime);
+    }];
   };
 
   return runtimeExecutor;
