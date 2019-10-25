@@ -7,18 +7,13 @@
 
 #import "RCTSurfacePresenter.h"
 
-#import <cxxreact/MessageQueueThread.h>
-#import <jsi/jsi.h>
-#import <objc/runtime.h>
 #import <mutex>
 
 #import <React/RCTAssert.h>
-#import <React/RCTBridge+Private.h>
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewRegistry.h>
 #import <React/RCTFabricSurface.h>
 #import <React/RCTFollyConvert.h>
-#import <React/RCTImageLoader.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTMountingManagerDelegate.h>
 #import <React/RCTScheduler.h>
@@ -41,11 +36,6 @@
 
 using namespace facebook::react;
 
-@interface RCTBridge ()
-- (std::shared_ptr<facebook::react::MessageQueueThread>)jsMessageThread;
-- (void)invokeAsync:(std::function<void()> &&)func;
-@end
-
 @interface RCTSurfacePresenter () <RCTSchedulerDelegate, RCTMountingManagerDelegate>
 @end
 
@@ -53,53 +43,28 @@ using namespace facebook::react;
   std::mutex _schedulerMutex;
   RCTScheduler
       *_Nullable _scheduler; // Thread-safe. Mutation of the instance variable is protected by `_schedulerMutex`.
+  ContextContainer::Shared _contextContainer;
+  RuntimeExecutor _runtimeExecutor;
   RCTMountingManager *_mountingManager; // Thread-safe.
   RCTSurfaceRegistry *_surfaceRegistry; // Thread-safe.
-  RCTBridge *_bridge; // Unsafe. We are moving away from Bridge.
-  RCTBridge *_batchedBridge;
-  std::shared_ptr<const ReactNativeConfig> _reactNativeConfig;
-  ContextContainer::Shared _contextContainer;
   better::shared_mutex _observerListMutex;
   NSMutableArray<id<RCTSurfacePresenterObserver>> *_observers;
-  RCTImageLoader *_imageLoader;
-  RuntimeExecutor _runtimeExecutor;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *_Nullable)bridge
-                        config:(std::shared_ptr<const ReactNativeConfig>)config
-                   imageLoader:(RCTImageLoader *)imageLoader
-               runtimeExecutor:(RuntimeExecutor)runtimeExecutor
+- (instancetype)initWithContextContainer:(ContextContainer::Shared)contextContainer
+                         runtimeExecutor:(RuntimeExecutor)runtimeExecutor
 {
   if (self = [super init]) {
-    _imageLoader = imageLoader;
+    assert(contextContainer && "RuntimeExecutor must be not null.");
+
     _runtimeExecutor = runtimeExecutor;
-    _bridge = bridge;
-    _batchedBridge = [_bridge batchedBridge] ?: _bridge;
-    [_batchedBridge setSurfacePresenter:self];
+    _contextContainer = contextContainer;
 
     _surfaceRegistry = [[RCTSurfaceRegistry alloc] init];
-
     _mountingManager = [[RCTMountingManager alloc] init];
     _mountingManager.delegate = self;
 
-    if (config != nullptr) {
-      _reactNativeConfig = config;
-    } else {
-      _reactNativeConfig = std::make_shared<const EmptyReactNativeConfig>();
-    }
-
-    _contextContainer = std::make_shared<ContextContainer>();
-
     _observers = [NSMutableArray array];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleBridgeWillReloadNotification:)
-                                                 name:RCTBridgeWillReloadNotification
-                                               object:_bridge];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleJavaScriptDidLoadNotification:)
-                                                 name:RCTJavaScriptDidLoadNotification
-                                               object:_bridge];
 
     _scheduler = [self _createScheduler];
   }
@@ -107,14 +72,33 @@ using namespace facebook::react;
   return self;
 }
 
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (RCTComponentViewFactory *)componentViewFactory
 {
   return _mountingManager.componentViewRegistry.componentViewFactory;
+}
+
+- (ContextContainer::Shared)contextContainer
+{
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  return _contextContainer;
+}
+
+- (void)setContextContainer:(ContextContainer::Shared)contextContainer
+{
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  _contextContainer = contextContainer;
+}
+
+- (void)setRuntimeExecutor:(RuntimeExecutor)runtimeExecutor
+{
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  _runtimeExecutor = runtimeExecutor;
+}
+
+- (RuntimeExecutor)runtimeExecutor
+{
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
+  return _runtimeExecutor;
 }
 
 #pragma mark - Internal Surface-dedicated Interface
@@ -156,10 +140,8 @@ using namespace facebook::react;
 {
   std::lock_guard<std::mutex> lock(_schedulerMutex);
   LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
-
   LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
                                          .maximumSize = RCTSizeFromCGSize(maximumSize)};
-
   return [_scheduler measureSurfaceWithLayoutConstraints:layoutConstraints
                                            layoutContext:layoutContext
                                                surfaceId:surface.rootTag];
@@ -169,10 +151,8 @@ using namespace facebook::react;
 {
   std::lock_guard<std::mutex> lock(_schedulerMutex);
   LayoutContext layoutContext = {.pointScaleFactor = RCTScreenScale()};
-
   LayoutConstraints layoutConstraints = {.minimumSize = RCTSizeFromCGSize(minimumSize),
                                          .maximumSize = RCTSizeFromCGSize(maximumSize)};
-
   [_scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
                                              layoutContext:layoutContext
                                                  surfaceId:surface.rootTag];
@@ -187,8 +167,36 @@ using namespace facebook::react;
     return NO; // This view probably isn't managed by Fabric
   }
   ComponentHandle handle = [[componentView class] componentDescriptorProvider].handle;
-  const facebook::react::ComponentDescriptor &componentDescriptor = [_scheduler getComponentDescriptor:handle];
+  ComponentDescriptor const &componentDescriptor = [_scheduler getComponentDescriptor:handle];
   [_mountingManager synchronouslyUpdateViewOnUIThread:tag changedProps:props componentDescriptor:componentDescriptor];
+  return YES;
+}
+
+- (BOOL)suspend
+{
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
+
+  if (!_scheduler) {
+    return NO;
+  }
+
+  [self _stopAllSurfaces];
+  _scheduler = nil;
+
+  return YES;
+}
+
+- (BOOL)resume
+{
+  std::lock_guard<std::mutex> lock(_schedulerMutex);
+
+  if (_scheduler) {
+    return NO;
+  }
+
+  _scheduler = [self _createScheduler];
+  [self _startAllSurfaces];
+
   return YES;
 }
 
@@ -203,12 +211,10 @@ using namespace facebook::react;
         createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
   };
 
-  auto runtimeExecutor = [self getRuntimeExecutor];
-
-  [self _updateContextContainerIfNeeded_DEPRECATED];
+  auto runtimeExecutor = _runtimeExecutor;
 
   auto toolbox = SchedulerToolbox{};
-  toolbox.contextContainer = self.contextContainer;
+  toolbox.contextContainer = _contextContainer;
   toolbox.componentRegistryFactory = componentRegistryFactory;
   toolbox.runtimeExecutor = runtimeExecutor;
 
@@ -224,56 +230,6 @@ using namespace facebook::react;
   scheduler.delegate = self;
 
   return scheduler;
-}
-
-- (RuntimeExecutor)getRuntimeExecutor
-{
-  if (_runtimeExecutor) {
-    return _runtimeExecutor;
-  }
-
-  auto messageQueueThread = _batchedBridge.jsMessageThread;
-  if (messageQueueThread) {
-    // Make sure initializeBridge completed
-    messageQueueThread->runOnQueueSync([] {});
-  }
-
-  auto runtime = (facebook::jsi::Runtime *)((RCTCxxBridge *)_batchedBridge).runtime;
-
-  RuntimeExecutor runtimeExecutor = [self, runtime](std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
-    // For now, ask the bridge to queue the callback asynchronously to ensure that
-    // it's not invoked too early, e.g. before the bridge is fully ready.
-    // Revisit this after Fabric/TurboModule is fully rolled out.
-    [((RCTCxxBridge *)_batchedBridge) invokeAsync:[runtime, callback = std::move(callback)]() { callback(*runtime); }];
-  };
-
-  return runtimeExecutor;
-}
-
-- (ContextContainer::Shared)contextContainer
-{
-  return _contextContainer;
-}
-
-- (void)_updateContextContainerIfNeeded_DEPRECATED
-{
-  // Please do not add stuff here; `SurfacePresenter` must not alter `ContextContainer`.
-  // Those two pieces eventually should be moved out there:
-  // * `RCTImageLoader` should be moved to `RCTImageComponentView`.
-  // * `ReactNativeConfig` should be set by outside product code.
-  _contextContainer->erase("ReactNativeConfig");
-  _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
-
-  _contextContainer->erase("Bridge");
-  _contextContainer->insert("Bridge", wrapManagedObjectWeakly(_bridge));
-
-  // TODO T47869586 petetheheat: Delete else case when TM rollout 100%
-  _contextContainer->erase("RCTImageLoader");
-  if (_imageLoader) {
-    _contextContainer->insert("RCTImageLoader", wrapManagedObject(_imageLoader));
-  } else {
-    _contextContainer->insert("RCTImageLoader", wrapManagedObject([_bridge moduleForClass:[RCTImageLoader class]]));
-  }
 }
 
 - (void)_startSurface:(RCTFabricSurface *)surface
@@ -330,35 +286,9 @@ using namespace facebook::react;
   }];
 }
 
-- (BOOL)suspend
-{
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
-  if (!_scheduler) {
-    return NO;
-  }
-
-  [self _stopAllSurfaces];
-  _scheduler = nil;
-
-  return YES;
-}
-
-- (BOOL)resume
-{
-  std::lock_guard<std::mutex> lock(_schedulerMutex);
-  if (_scheduler) {
-    return NO;
-  }
-
-  _scheduler = [self _createScheduler];
-  [self _startAllSurfaces];
-
-  return YES;
-}
-
 #pragma mark - RCTSchedulerDelegate
 
-- (void)schedulerDidFinishTransaction:(facebook::react::MountingCoordinator::Shared const &)mountingCoordinator
+- (void)schedulerDidFinishTransaction:(MountingCoordinator::Shared const &)mountingCoordinator
 {
   RCTFabricSurface *surface = [_surfaceRegistry surfaceForRootTag:mountingCoordinator->getSurfaceId()];
 
@@ -367,7 +297,7 @@ using namespace facebook::react;
   [_mountingManager scheduleTransaction:mountingCoordinator];
 }
 
-- (void)schedulerDidDispatchCommand:(facebook::react::ShadowView const &)shadowView
+- (void)schedulerDidDispatchCommand:(ShadowView const &)shadowView
                         commandName:(std::string const &)commandName
                                args:(folly::dynamic const)args
 {
@@ -424,26 +354,6 @@ using namespace facebook::react;
       [observer didMountComponentsWithRootTag:rootTag];
     }
   }
-}
-
-#pragma mark - Bridge events
-
-- (void)handleBridgeWillReloadNotification:(NSNotification *)notification
-{
-  [self suspend];
-}
-
-- (void)handleJavaScriptDidLoadNotification:(NSNotification *)notification
-{
-  RCTBridge *bridge = notification.userInfo[@"bridge"];
-  if (bridge == _batchedBridge) {
-    // Nothing really changed.
-    return;
-  }
-
-  _batchedBridge = bridge;
-
-  [self resume];
 }
 
 @end
