@@ -3,7 +3,8 @@ parameters:
   xcode_sdk: ''
   xcode_configuration: ''
   xcode_scheme: ''
-  xcode_actions: ''
+  xcode_actions_debug: ''
+  xcode_actions_release: ''
   xcode_destination: ''
 
 steps:
@@ -46,7 +47,7 @@ steps:
       xcode_configuration: Debug
       xcode_workspacePath: RNTester/RNTester.xcodeproj
       xcode_scheme: ${{ parameters.xcode_scheme }}
-      xcode_actions: 'build test'
+      xcode_actions: ${{ parameters.xcode_actions_debug }}
       xcode_useXcpretty: true
       xcode_destination: ${{ parameters.xcode_destination }}
 
@@ -56,7 +57,7 @@ steps:
       xcode_configuration: Release
       xcode_workspacePath: RNTester/RNTester.xcodeproj
       xcode_scheme: ${{ parameters.xcode_scheme }}
-      xcode_actions: 'build'
+      xcode_actions: ${{ parameters.xcode_actions_release }}
       xcode_useXcpretty: false
       xcode_destination: ${{ parameters.xcode_destination }}
 
