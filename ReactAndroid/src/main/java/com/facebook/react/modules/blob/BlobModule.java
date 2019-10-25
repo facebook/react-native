@@ -287,8 +287,7 @@ public class BlobModule extends ReactContextBaseJavaModule {
   }
 
   private WebSocketModule getWebSocketModule(String reason) {
-    ReactApplicationContext reactApplicationContext =
-        getReactApplicationContextIfActiveOrWarn(NAME, reason);
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
       return reactApplicationContext.getNativeModule(WebSocketModule.class);
@@ -299,8 +298,7 @@ public class BlobModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void addNetworkingHandler() {
-    ReactApplicationContext reactApplicationContext =
-        getReactApplicationContextIfActiveOrWarn(NAME, "addNetworkingHandler");
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
       NetworkingModule networkingModule =

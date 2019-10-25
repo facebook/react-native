@@ -56,8 +56,7 @@ public class JSCHeapCapture extends ReactContextBaseJavaModule {
     File f = new File(path + "/capture.json");
     f.delete();
 
-    ReactApplicationContext reactApplicationContext =
-        getReactApplicationContextIfActiveOrWarn(TAG, "captureHeap");
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
       HeapCapture heapCapture = reactApplicationContext.getJSModule(HeapCapture.class);

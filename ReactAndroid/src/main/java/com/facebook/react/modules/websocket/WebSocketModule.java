@@ -59,9 +59,7 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
   }
 
   private void sendEvent(String eventName, WritableMap params) {
-    ReactApplicationContext reactApplicationContext =
-        getReactApplicationContextIfActiveOrWarn(
-            TAG, "sendAppStateChangeEvent: trying to update app state");
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
       reactApplicationContext

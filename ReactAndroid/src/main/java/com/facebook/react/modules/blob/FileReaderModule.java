@@ -31,8 +31,7 @@ public class FileReaderModule extends ReactContextBaseJavaModule {
   }
 
   private BlobModule getBlobModule(String reason) {
-    ReactApplicationContext reactApplicationContext =
-        getReactApplicationContextIfActiveOrWarn(NAME, reason);
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
       return reactApplicationContext.getNativeModule(BlobModule.class);

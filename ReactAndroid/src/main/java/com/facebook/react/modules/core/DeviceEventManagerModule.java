@@ -47,8 +47,7 @@ public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
 
   /** Sends an event to the JS instance that the hardware back has been pressed. */
   public void emitHardwareBackPressed() {
-    ReactApplicationContext reactApplicationContext =
-        getReactApplicationContextIfActiveOrWarn(NAME, "emitHardwareBackPressed");
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
       reactApplicationContext
@@ -59,8 +58,7 @@ public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
 
   /** Sends an event to the JS instance that a new intent was received. */
   public void emitNewIntentReceived(Uri uri) {
-    ReactApplicationContext reactApplicationContext =
-        getReactApplicationContextIfActiveOrWarn(NAME, "emitHardwareBackPressed");
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
       WritableMap map = Arguments.createMap();

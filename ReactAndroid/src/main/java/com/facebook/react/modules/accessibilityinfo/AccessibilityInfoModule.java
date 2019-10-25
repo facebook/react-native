@@ -117,8 +117,7 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
     if (mReduceMotionEnabled != isReduceMotionEnabled) {
       mReduceMotionEnabled = isReduceMotionEnabled;
 
-      ReactApplicationContext reactApplicationContext =
-          getReactApplicationContextIfActiveOrWarn(NAME, "updateAndSendReduceMotionChangeEvent");
+      ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
       if (reactApplicationContext != null) {
         reactApplicationContext
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -131,9 +130,7 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
     if (mTouchExplorationEnabled != enabled) {
       mTouchExplorationEnabled = enabled;
 
-      ReactApplicationContext reactApplicationContext =
-          getReactApplicationContextIfActiveOrWarn(
-              NAME, "updateAndSendTouchExplorationChangeEvent");
+      ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
       if (reactApplicationContext != null) {
         getReactApplicationContext()
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)

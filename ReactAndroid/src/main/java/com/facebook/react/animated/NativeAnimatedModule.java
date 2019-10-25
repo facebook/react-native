@@ -116,8 +116,7 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
 
   @Override
   public void initialize() {
-    ReactApplicationContext reactApplicationContext =
-        getReactApplicationContextIfActiveOrWarn(NAME, "initialize");
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
       UIManagerModule uiManager = reactApplicationContext.getNativeModule(UIManagerModule.class);
@@ -179,8 +178,7 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
 
   private NativeAnimatedNodesManager getNodesManager() {
     if (mNodesManager == null) {
-      ReactApplicationContext reactApplicationContext =
-          getReactApplicationContextIfActiveOrWarn(NAME, "getNodesManager");
+      ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
       if (reactApplicationContext != null) {
         UIManagerModule uiManager = reactApplicationContext.getNativeModule(UIManagerModule.class);
@@ -229,8 +227,7 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
             onAnimatedValueData.putDouble("value", value);
 
             ReactApplicationContext reactApplicationContext =
-                getReactApplicationContextIfActiveOrWarn(
-                    NAME, "startListeningToAnimatedNodeValue.onValueUpdate");
+                getReactApplicationContextIfActiveOrWarn();
             if (reactApplicationContext != null) {
               reactApplicationContext
                   .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
