@@ -280,7 +280,7 @@
 		6490EA781F683C2000E20046 /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = include/React;
+			dstPath = include/RCTText;
 			dstSubfolderSpec = 16;
 			files = (
 				9F4659E42362634A000929DF /* RCTBackedTextInputDelegate.h in Copy Headers */,
