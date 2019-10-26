@@ -23,6 +23,8 @@
  *     will unfortunately fail silently :(
  *   - If the object is already frozen or sealed, it will not continue the
  *     deep traversal and will leave leaf nodes unfrozen.
+ *   - If the object is JSI host object, it will not continue the
+ *     deep traversal as JSI host object may be changed from C++ native side.
  *
  * Freezing the object and adding the throw mechanism is expensive and will
  * only be used in DEV.
@@ -33,7 +35,8 @@ function deepFreezeAndThrowOnMutationInDev<T: Object>(object: T): T {
       typeof object !== 'object' ||
       object === null ||
       Object.isFrozen(object) ||
-      Object.isSealed(object)
+      Object.isSealed(object) ||
+      (global.__jsiUtils && global.__jsiUtils.isHostObject(object))
     ) {
       return object;
     }

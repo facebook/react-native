@@ -67,6 +67,7 @@ JSIExecutor::JSIExecutor(
       runtimeInstaller_(runtimeInstaller) {
   runtime_->global().setProperty(
       *runtime, "__jsiExecutorDescription", runtime->description());
+  runtime_->global().setProperty(*runtime, "__jsiUtils", createJSIUtils());
 }
 
 void JSIExecutor::loadApplicationScript(
@@ -373,6 +374,56 @@ Value JSIExecutor::nativeCallSyncHook(const Value *args, size_t count) {
     return Value::undefined();
   }
   return valueFromDynamic(*runtime_, result.value());
+}
+
+Value JSIExecutor::createJSIUtils() {
+  Object object(*runtime_);
+
+  object.setProperty(
+      *runtime_,
+      "isHostObject",
+      Function::createFromHostFunction(
+          *runtime_,
+          PropNameID::forAscii(*runtime_, "isHostObject"),
+          1,
+          [](jsi::Runtime &runtime,
+             const jsi::Value &,
+             const jsi::Value *args,
+             size_t count) {
+            if (count != 1) {
+              throw std::invalid_argument("isHostObject arg count must be 1");
+            }
+            if (!args[0].isObject()) {
+              throw std::invalid_argument("isHostObject arg is not a object");
+            }
+            auto obj = args[0].asObject(runtime);
+            return Value(obj.isHostObject(runtime));
+          }));
+
+  object.setProperty(
+      *runtime_,
+      "isHostFunction",
+      Function::createFromHostFunction(
+          *runtime_,
+          PropNameID::forAscii(*runtime_, "isHostFunction"),
+          1,
+          [](jsi::Runtime &runtime,
+             const jsi::Value &,
+             const jsi::Value *args,
+             size_t count) {
+            if (count != 1) {
+              throw std::invalid_argument("isHostFunction arg count must be 1");
+            }
+            if (!args[0].isObject() ||
+                !args[0].asObject(runtime).isFunction(runtime)) {
+              throw std::invalid_argument(
+                  "isHostFunction arg is not a function");
+            }
+            auto function = args[0].asObject(runtime).asFunction(runtime);
+            return Value(function.isHostFunction(runtime));
+          }));
+
+  return object;
 }
 
 #if DEBUG
