@@ -41,7 +41,7 @@
   <span> · </span>
   <a href="https://facebook.github.io/react-native/en/help">Community</a>
   <span> · </span>
-  <a href="https://github.com/facebook/react-native/blob/master/.github/SUPPORT">Support</a>
+  <a href="https://github.com/facebook/react-native/blob/master/.github/SUPPORT.md">Support</a>
 </h3>
 
 React Native brings [**React**'s][r] declarative UI framework to iOS and Android. With React Native, you use native UI controls and have full access to the native platform.
