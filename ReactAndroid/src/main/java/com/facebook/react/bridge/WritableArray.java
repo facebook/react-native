@@ -24,5 +24,5 @@ public interface WritableArray extends ReadableArray {
 
   void pushArray(@Nullable ReadableArray array);
 
-  void pushMap(@Nullable ReadableMap map);
+  void pushIntoMap(@Nullable ReadableMap map);
 }
