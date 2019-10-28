@@ -59,13 +59,15 @@ if (__DEV__) {
         error.call(console, ...args);
         // Show LogBox for the `warning` module.
         if (typeof args[0] === 'string' && args[0].startsWith('Warning: ')) {
-          registerLog(...args);
+          registerWarning(...args);
+        } else {
+          registerError(...args);
         }
       };
 
       warnImpl = function(...args) {
         warn.call(console, ...args);
-        registerLog(...args);
+        registerWarning(...args);
       };
 
       if ((console: any).disableLogBox === true) {
@@ -82,7 +84,7 @@ if (__DEV__) {
       }
 
       RCTLog.setWarningHandler((...args) => {
-        registerLog(...args);
+        registerWarning(...args);
       });
     }
 
@@ -130,8 +132,12 @@ if (__DEV__) {
     }
   };
 
-  const registerLog = (...args): void => {
-    LogBoxData.add(args);
+  const registerWarning = (...args): void => {
+    LogBoxData.add('warn', args);
+  };
+
+  const registerError = (...args): void => {
+    LogBoxData.add('error', args);
   };
 } else {
   LogBoxComponent = class extends React.Component<Props, State> {

@@ -71,9 +71,9 @@ describe('LogBox', () => {
     LogBox.install();
 
     console.error('...');
-    expect(LogBoxData.add).not.toBeCalled();
+    expect(LogBoxData.add).toBeCalledWith('error', ['...']);
 
     console.error('Warning: ...');
-    expect(LogBoxData.add).toBeCalled();
+    expect(LogBoxData.add).toBeCalledWith('warn', ['Warning: ...']);
   });
 });

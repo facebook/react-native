@@ -23,6 +23,7 @@ describe('LogBoxInspectorReactFrames', () => {
       <LogBoxInspectorReactFrames
         log={
           new LogBoxLog(
+            'warn',
             {
               content: 'Some kind of message',
               substitutions: [],
@@ -43,6 +44,7 @@ describe('LogBoxInspectorReactFrames', () => {
       <LogBoxInspectorReactFrames
         log={
           new LogBoxLog(
+            'warn',
             {
               content: 'Some kind of message',
               substitutions: [],

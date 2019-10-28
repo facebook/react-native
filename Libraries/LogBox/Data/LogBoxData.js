@@ -12,6 +12,7 @@
 
 import LogBoxLog from './LogBoxLog';
 import parseLogBoxLog from './parseLogBoxLog';
+import type {LogLevel} from './LogBoxLog';
 
 export type LogBoxLogs = Set<LogBoxLog>;
 
@@ -52,7 +53,7 @@ function handleUpdate(): void {
   }
 }
 
-export function add(args: $ReadOnlyArray<mixed>): void {
+export function add(level: LogLevel, args: $ReadOnlyArray<mixed>): void {
   // This is carried over from the old YellowBox, but it is not clear why.
   if (typeof args[0] === 'string' && args[0].startsWith('(ADVICE)')) {
     return;
@@ -75,7 +76,7 @@ export function add(args: $ReadOnlyArray<mixed>): void {
   if (lastLog && lastLog.category === category) {
     lastLog.incrementCount();
   } else {
-    logs.add(new LogBoxLog(message, stack, category, componentStack));
+    logs.add(new LogBoxLog(level, message, stack, category, componentStack));
   }
 
   handleUpdate();

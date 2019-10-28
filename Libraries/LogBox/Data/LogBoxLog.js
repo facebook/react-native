@@ -15,6 +15,8 @@ import * as LogBoxSymbolication from './LogBoxSymbolication';
 import type {Category, Message, ComponentStack} from './parseLogBoxLog';
 import type {Stack} from './LogBoxSymbolication';
 
+export type LogLevel = 'warn' | 'error';
+
 export type SymbolicationRequest = $ReadOnly<{|
   abort: () => void,
 |}>;
@@ -25,6 +27,7 @@ class LogBoxLog {
   componentStack: ComponentStack;
   stack: Stack;
   count: number;
+  level: LogLevel;
   symbolicated:
     | $ReadOnly<{|error: null, stack: null, status: 'NONE'|}>
     | $ReadOnly<{|error: null, stack: null, status: 'PENDING'|}>
@@ -36,11 +39,13 @@ class LogBoxLog {
   };
 
   constructor(
+    level: LogLevel,
     message: Message,
     stack: Stack,
     category: string,
     componentStack: ComponentStack,
   ) {
+    this.level = level;
     this.message = message;
     this.stack = stack;
     this.category = category;

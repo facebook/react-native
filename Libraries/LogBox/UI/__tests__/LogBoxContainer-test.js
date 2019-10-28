@@ -37,6 +37,7 @@ describe('LogBoxContainer', () => {
         logs={
           new Set([
             new LogBoxLog(
+              'warn',
               {
                 content: 'Some kind of message',
                 substitutions: [],
@@ -46,6 +47,7 @@ describe('LogBoxContainer', () => {
               [],
             ),
             new LogBoxLog(
+              'warn',
               {
                 content: 'Some kind of message (latest)',
                 substitutions: [],

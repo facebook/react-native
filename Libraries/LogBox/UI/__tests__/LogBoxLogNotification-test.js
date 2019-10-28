@@ -17,6 +17,7 @@ const LogBoxLog = require('../../Data/LogBoxLog').default;
 const render = require('../../../../jest/renderer');
 
 const log = new LogBoxLog(
+  'warn',
   {
     content: 'Some kind of message',
     substitutions: [],

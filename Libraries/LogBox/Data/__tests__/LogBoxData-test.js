@@ -42,7 +42,7 @@ describe('LogBoxData', () => {
   });
 
   it('adds and dismisses logs', () => {
-    LogBoxData.add(['A']);
+    LogBoxData.add('warn', ['A']);
 
     expect(registry().length).toBe(1);
     expect(registry()[0]).toBeDefined();
@@ -53,9 +53,9 @@ describe('LogBoxData', () => {
   });
 
   it('clears all logs', () => {
-    LogBoxData.add(['A']);
-    LogBoxData.add(['B']);
-    LogBoxData.add(['C']);
+    LogBoxData.add('warn', ['A']);
+    LogBoxData.add('warn', ['B']);
+    LogBoxData.add('warn', ['C']);
 
     expect(registry().length).toBe(3);
 
@@ -64,9 +64,9 @@ describe('LogBoxData', () => {
   });
 
   it('keeps logs in chronological order', () => {
-    LogBoxData.add(['A']);
-    LogBoxData.add(['B']);
-    LogBoxData.add(['C']);
+    LogBoxData.add('warn', ['A']);
+    LogBoxData.add('warn', ['B']);
+    LogBoxData.add('warn', ['C']);
 
     let logs = registry();
     expect(logs.length).toBe(3);
@@ -74,7 +74,7 @@ describe('LogBoxData', () => {
     expect(logs[1].category).toEqual('B');
     expect(logs[2].category).toEqual('C');
 
-    LogBoxData.add(['A']);
+    LogBoxData.add('warn', ['A']);
 
     // Expect `A` to be added to the end of the registry.
     logs = registry();
@@ -86,8 +86,8 @@ describe('LogBoxData', () => {
   });
 
   it('increments the count of previous log with matching category', () => {
-    LogBoxData.add(['A']);
-    LogBoxData.add(['B']);
+    LogBoxData.add('warn', ['A']);
+    LogBoxData.add('warn', ['B']);
 
     let logs = registry();
     expect(logs.length).toBe(2);
@@ -96,7 +96,7 @@ describe('LogBoxData', () => {
     expect(logs[1].category).toEqual('B');
     expect(logs[1].count).toBe(1);
 
-    LogBoxData.add(['B']);
+    LogBoxData.add('warn', ['B']);
 
     // Expect `B` to be rolled into the last log.
     logs = registry();
@@ -108,9 +108,9 @@ describe('LogBoxData', () => {
   });
 
   it('ignores logs matching patterns', () => {
-    LogBoxData.add(['A!']);
-    LogBoxData.add(['B?']);
-    LogBoxData.add(['C!']);
+    LogBoxData.add('warn', ['A!']);
+    LogBoxData.add('warn', ['B?']);
+    LogBoxData.add('warn', ['C!']);
     expect(filteredRegistry().length).toBe(3);
 
     LogBoxData.addIgnorePatterns(['!']);
@@ -121,9 +121,9 @@ describe('LogBoxData', () => {
   });
 
   it('ignores logs matching regexs or pattern', () => {
-    LogBoxData.add(['There are 4 dogs']);
-    LogBoxData.add(['There are 3 cats']);
-    LogBoxData.add(['There are H cats']);
+    LogBoxData.add('warn', ['There are 4 dogs']);
+    LogBoxData.add('warn', ['There are 3 cats']);
+    LogBoxData.add('warn', ['There are H cats']);
     expect(filteredRegistry().length).toBe(3);
 
     LogBoxData.addIgnorePatterns(['dogs']);
@@ -137,9 +137,9 @@ describe('LogBoxData', () => {
   });
 
   it('ignores all logs when disabled', () => {
-    LogBoxData.add(['A!']);
-    LogBoxData.add(['B?']);
-    LogBoxData.add(['C!']);
+    LogBoxData.add('warn', ['A!']);
+    LogBoxData.add('warn', ['B?']);
+    LogBoxData.add('warn', ['C!']);
     expect(registry().length).toBe(3);
 
     LogBoxData.setDisabled(true);
@@ -150,56 +150,56 @@ describe('LogBoxData', () => {
   });
 
   it('groups consecutive logs by format string categories', () => {
-    LogBoxData.add(['%s', 'A']);
+    LogBoxData.add('warn', ['%s', 'A']);
     expect(registry().length).toBe(1);
     expect(registry()[0].count).toBe(1);
 
-    LogBoxData.add(['%s', 'B']);
+    LogBoxData.add('warn', ['%s', 'B']);
     expect(registry().length).toBe(1);
     expect(registry()[0].count).toBe(2);
 
-    LogBoxData.add(['A']);
+    LogBoxData.add('warn', ['A']);
     expect(registry().length).toBe(2);
     expect(registry()[1].count).toBe(1);
 
-    LogBoxData.add(['B']);
+    LogBoxData.add('warn', ['B']);
     expect(registry().length).toBe(3);
     expect(registry()[2].count).toBe(1);
   });
 
   it('groups warnings with consideration for arguments', () => {
-    LogBoxData.add(['A', 'B']);
+    LogBoxData.add('warn', ['A', 'B']);
     expect(registry().length).toBe(1);
     expect(registry()[0].count).toBe(1);
 
-    LogBoxData.add(['A', 'B']);
+    LogBoxData.add('warn', ['A', 'B']);
     expect(registry().length).toBe(1);
     expect(registry()[0].count).toBe(2);
 
-    LogBoxData.add(['A', 'C']);
+    LogBoxData.add('warn', ['A', 'C']);
     expect(registry().length).toBe(2);
     expect(registry()[1].count).toBe(1);
 
-    LogBoxData.add(['%s', 'A', 'A']);
+    LogBoxData.add('warn', ['%s', 'A', 'A']);
     expect(registry().length).toBe(3);
     expect(registry()[2].count).toBe(1);
 
-    LogBoxData.add(['%s', 'B', 'A']);
+    LogBoxData.add('warn', ['%s', 'B', 'A']);
     expect(registry().length).toBe(3);
     expect(registry()[2].count).toBe(2);
 
-    LogBoxData.add(['%s', 'B', 'B']);
+    LogBoxData.add('warn', ['%s', 'B', 'B']);
     expect(registry().length).toBe(4);
     expect(registry()[3].count).toBe(1);
   });
 
   it('ignores logs starting with "(ADVICE)"', () => {
-    LogBoxData.add(['(ADVICE) ...']);
+    LogBoxData.add('warn', ['(ADVICE) ...']);
     expect(registry().length).toBe(0);
   });
 
   it('does not ignore logs formatted to start with "(ADVICE)"', () => {
-    LogBoxData.add(['%s ...', '(ADVICE)']);
+    LogBoxData.add('warn', ['%s ...', '(ADVICE)']);
     expect(registry().length).toBe(1);
   });
 
@@ -218,8 +218,8 @@ describe('LogBoxData', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    LogBoxData.add(['A']);
-    LogBoxData.add(['B']);
+    LogBoxData.add('warn', ['A']);
+    LogBoxData.add('warn', ['B']);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
 
@@ -244,7 +244,7 @@ describe('LogBoxData', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    LogBoxData.add(['A']);
+    LogBoxData.add('warn', ['A']);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
 
@@ -263,7 +263,7 @@ describe('LogBoxData', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    LogBoxData.add(['A']);
+    LogBoxData.add('warn', ['A']);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
 

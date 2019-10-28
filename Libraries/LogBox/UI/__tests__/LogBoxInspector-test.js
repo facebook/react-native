@@ -18,6 +18,7 @@ const render = require('../../../../jest/renderer');
 
 const logs = [
   new LogBoxLog(
+    'warn',
     {
       content: 'Some kind of message (first)',
       substitutions: [],
@@ -27,6 +28,7 @@ const logs = [
     [],
   ),
   new LogBoxLog(
+    'warn',
     {
       content: 'Some kind of message (second)',
       substitutions: [],
