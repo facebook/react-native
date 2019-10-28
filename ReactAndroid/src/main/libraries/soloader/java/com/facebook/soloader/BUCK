@@ -8,6 +8,6 @@ fb_native.android_prebuilt_aar(
 
 fb_native.remote_file(
     name = "soloader-binary-aar",
-    sha1 = "71378622ece36680b9bab7863c3d0259b442305e",
-    url = "mvn:com.facebook.soloader:soloader:aar:0.8.0",
+    sha1 = "4de8f64830aff60beb52fb27dffb2fcbe54c39df",
+    url = "mvn:com.facebook.soloader:soloader:aar:0.6.0",
 )
