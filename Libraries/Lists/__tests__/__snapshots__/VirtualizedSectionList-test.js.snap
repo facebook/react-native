@@ -751,10 +751,10 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
       }
     >
       <View>
+        <separator />
         <item
           value="0"
         />
-        <separator />
       </View>
     </View>
     <View
@@ -774,10 +774,10 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
       }
     >
       <View>
+        <separator />
         <item
           value="1"
         />
-        <separator />
       </View>
     </View>
     <View
@@ -797,10 +797,10 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
       }
     >
       <View>
+        <separator />
         <item
           value="2"
         />
-        <separator />
       </View>
     </View>
     <View
@@ -820,10 +820,10 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
       }
     >
       <View>
+        <separator />
         <item
           value="3"
         />
-        <separator />
       </View>
     </View>
     <View
