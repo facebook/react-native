@@ -10,6 +10,7 @@
 #include <float.h>
 #include <string.h>
 #include <algorithm>
+#include <atomic>
 #include <memory>
 #include "Utils.h"
 #include "YGNode.h"
@@ -927,7 +928,7 @@ bool YGNodeLayoutGetDidLegacyStretchFlagAffectLayout(const YGNodeRef node) {
   return node->getLayout().doesLegacyStretchFlagAffectsLayout();
 }
 
-uint32_t gCurrentGenerationCount = 0;
+std::atomic<uint32_t> gCurrentGenerationCount(0);
 
 bool YGLayoutNodeInternal(
     const YGNodeRef node,
@@ -1846,7 +1847,7 @@ static float YGNodeComputeFlexBasisForChildren(
     const uint32_t generationCount) {
   float totalOuterFlexBasis = 0.0f;
   YGNodeRef singleFlexChild = nullptr;
-  const YGVector &children = node->getChildren();
+  const YGVector& children = node->getChildren();
   YGMeasureMode measureModeMainDim =
       YGFlexDirectionIsRow(mainAxis) ? widthMeasureMode : heightMeasureMode;
   // If there is only one child with flexGrow + flexShrink it means we can set
@@ -4079,7 +4080,7 @@ void YGNodeCalculateLayoutWithContext(
   // Increment the generation count. This will force the recursive routine to
   // visit all dirty nodes at least once. Subsequent visits will be skipped if
   // the input parameters don't change.
-  gCurrentGenerationCount++;
+  gCurrentGenerationCount.fetch_add(1, std::memory_order_relaxed);
   node->resolveDimension();
   float width = YGUndefined;
   YGMeasureMode widthMeasureMode = YGMeasureModeUndefined;
@@ -4136,7 +4137,7 @@ void YGNodeCalculateLayoutWithContext(
           markerData,
           layoutContext,
           0, // tree root
-          gCurrentGenerationCount)) {
+          gCurrentGenerationCount.load(std::memory_order_relaxed))) {
     node->setPosition(
         node->getLayout().direction(), ownerWidth, ownerHeight, ownerWidth);
     YGRoundToPixelGrid(node, node->getConfig()->pointScaleFactor, 0.0f, 0.0f);
@@ -4167,7 +4168,7 @@ void YGNodeCalculateLayoutWithContext(
     nodeWithoutLegacyFlag->resolveDimension();
     // Recursively mark nodes as dirty
     nodeWithoutLegacyFlag->markDirtyAndPropogateDownwards();
-    gCurrentGenerationCount++;
+    gCurrentGenerationCount.fetch_add(1, std::memory_order_relaxed);
     // Rerun the layout, and calculate the diff
     unsetUseLegacyFlagRecursively(nodeWithoutLegacyFlag);
     LayoutData layoutMarkerData = {};
@@ -4186,7 +4187,7 @@ void YGNodeCalculateLayoutWithContext(
             layoutMarkerData,
             layoutContext,
             0, // tree root
-            gCurrentGenerationCount)) {
+            gCurrentGenerationCount.load(std::memory_order_relaxed))) {
       nodeWithoutLegacyFlag->setPosition(
           nodeWithoutLegacyFlag->getLayout().direction(),
           ownerWidth,
