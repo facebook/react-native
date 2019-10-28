@@ -25,6 +25,9 @@ public class AndroidInfoHelpers {
 
   public static final String METRO_HOST_PROP_NAME = "metro.host";
 
+  public static Integer sDevServerPortOverride = null;
+  public static Integer sInspectorProxyPortOverride = null;
+
   private static final String TAG = AndroidInfoHelpers.class.getSimpleName();
 
   private static boolean isRunningOnGenymotion() {
@@ -68,13 +71,27 @@ public class AndroidInfoHelpers {
   }
 
   private static Integer getDevServerPort(Context context) {
+    if (sDevServerPortOverride != null) {
+      return sDevServerPortOverride;
+    }
     Resources resources = context.getResources();
     return resources.getInteger(R.integer.react_native_dev_server_port);
   }
 
   private static Integer getInspectorProxyPort(Context context) {
+    if (sInspectorProxyPortOverride != null) {
+      return sInspectorProxyPortOverride;
+    }
     Resources resources = context.getResources();
     return resources.getInteger(R.integer.react_native_dev_server_port);
+  }
+
+  public static void setDevServerPort(Integer port) {
+    sDevServerPortOverride = port;
+  }
+
+  public static void setInspectorProxyPort(Integer port) {
+    sInspectorProxyPortOverride = port;
   }
 
   private static String getServerIpAddress(int port) {
