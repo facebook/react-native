@@ -74,7 +74,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
         <Image
           source={{
             uri:
-              'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' +
+              'https://facebook.github.io/react-native/img/favicon.ico?cacheBust=notinCache' +
               Date.now(),
             cache: 'default',
           }}
@@ -85,7 +85,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
         <Image
           source={{
             uri:
-              'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' +
+              'https://facebook.github.io/react-native/img/favicon.ico?cacheBust=notinCache' +
               Date.now(),
             cache: 'reload',
           }}
@@ -96,7 +96,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
         <Image
           source={{
             uri:
-              'https://facebook.github.io/react-native/img/favicon.png?cacheBust=notinCache' +
+              'https://facebook.github.io/react-native/img/favicon.ico?cacheBust=notinCache' +
               Date.now(),
             cache: 'force-cache',
           }}
