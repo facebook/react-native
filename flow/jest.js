@@ -7,7 +7,7 @@
  * @format
  */
 
-// Modified from https://raw.githubusercontent.com/flow-typed/flow-typed/master/definitions/npm/jest_v23.x.x/flow_v0.39.x-/jest_v23.x.x.js
+// Modified from https://raw.githubusercontent.com/flow-typed/flow-typed/master/definitions/npm/jest_v23.x.x/flow_v0.39.x-v0.103.x/jest_v23.x.x.js
 // List of modifications:
 //  - fix some [] -> Array lint warnings
 //  - make it.each/describe.each take $ReadOnlyArray instead of Array<mixed>
