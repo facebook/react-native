@@ -17,9 +17,26 @@ const LogBoxInspectorMessageHeader = require('../LogBoxInspectorMessageHeader')
 const render = require('../../../../jest/renderer');
 
 describe('LogBoxInspectorMessageHeader', () => {
+  it('should not render error', () => {
+    const output = render.shallowRender(
+      <LogBoxInspectorMessageHeader
+        level="error"
+        collapsed={false}
+        message={{
+          content: 'Short',
+          substitutions: [],
+        }}
+        onPress={() => {}}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
   it('should not render collapse button for short content', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
+        level="warn"
         collapsed={false}
         message={{
           content: 'Short',
@@ -35,6 +52,7 @@ describe('LogBoxInspectorMessageHeader', () => {
   it('should render "collapse" if expanded', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
+        level="warn"
         collapsed={false}
         message={{content: '#'.repeat(200), substitutions: []}}
         onPress={() => {}}
@@ -47,6 +65,7 @@ describe('LogBoxInspectorMessageHeader', () => {
   it('should render "see more" if collapsed', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
+        level="warn"
         collapsed={true}
         message={{
           content: '#'.repeat(200),

@@ -20,11 +20,12 @@ import View from '../../Components/View/View';
 import LogBoxImageSource from './LogBoxImageSource';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
-
+import type {LogLevel} from '../Data/LogBoxLog';
 type Props = $ReadOnly<{|
   onSelectIndex: (selectedIndex: number) => void,
   selectedIndex: number,
   total: number,
+  level: LogLevel,
 |}>;
 
 function LogBoxInspectorHeader(props: Props): React.Node {
@@ -37,10 +38,11 @@ function LogBoxInspectorHeader(props: Props): React.Node {
       : `Log ${props.selectedIndex + 1} of ${props.total}`;
 
   return (
-    <SafeAreaView style={styles.root}>
+    <SafeAreaView style={styles[props.level]}>
       <View style={styles.header}>
         <LogBoxInspectorHeaderButton
           disabled={prevIndex < 0}
+          level={props.level}
           image={LogBoxImageSource.chevronLeft}
           onPress={() => props.onSelectIndex(prevIndex)}
         />
@@ -49,6 +51,7 @@ function LogBoxInspectorHeader(props: Props): React.Node {
         </View>
         <LogBoxInspectorHeaderButton
           disabled={nextIndex >= props.total}
+          level={props.level}
           image={LogBoxImageSource.chevronRight}
           onPress={() => props.onSelectIndex(nextIndex)}
         />
@@ -61,14 +64,21 @@ function LogBoxInspectorHeaderButton(
   props: $ReadOnly<{|
     disabled: boolean,
     image: string,
+    level: LogLevel,
     onPress?: ?() => void,
   |}>,
 ): React.Node {
   return (
     <LogBoxButton
       backgroundColor={{
-        default: LogBoxStyle.getWarningColor(),
-        pressed: LogBoxStyle.getWarningDarkColor(),
+        default:
+          props.level === 'warn'
+            ? LogBoxStyle.getWarningColor()
+            : LogBoxStyle.getErrorColor(),
+        pressed:
+          props.level === 'warn'
+            ? LogBoxStyle.getWarningDarkColor()
+            : LogBoxStyle.getErrorDarkColor(),
       }}
       onPress={props.disabled ? null : props.onPress}
       style={headerStyles.button}>
@@ -99,8 +109,11 @@ const headerStyles = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
-  root: {
-    backgroundColor: LogBoxStyle.getWarningColor(1),
+  warn: {
+    backgroundColor: LogBoxStyle.getWarningColor(),
+  },
+  error: {
+    backgroundColor: LogBoxStyle.getErrorColor(),
   },
   header: {
     flexDirection: 'row',

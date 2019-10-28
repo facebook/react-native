@@ -17,12 +17,13 @@ import View from '../../Components/View/View';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import LogBoxMessage from './LogBoxMessage';
-
+import type {LogLevel} from '../Data/LogBoxLog';
 import type {Message} from '../Data/parseLogBoxLog';
 
 type Props = $ReadOnly<{|
   collapsed: boolean,
   message: Message,
+  level: LogLevel,
   onPress: () => void,
 |}>;
 
@@ -49,7 +50,9 @@ function LogBoxInspectorMessageHeader(props: Props): React.Node {
   return (
     <View style={messageStyles.body}>
       <View style={messageStyles.heading}>
-        <Text style={messageStyles.headingText}>Warning</Text>
+        <Text style={[messageStyles.headingText, messageStyles[props.level]]}>
+          {props.level === 'warn' ? 'Warning' : 'Error'}
+        </Text>
         {renderShowMore()}
       </View>
       <Text
@@ -91,12 +94,17 @@ const messageStyles = StyleSheet.create({
     marginBottom: 5,
   },
   headingText: {
-    color: LogBoxStyle.getWarningColor(1),
     flex: 1,
     fontSize: 20,
     fontWeight: '600',
     includeFontPadding: false,
     lineHeight: 28,
+  },
+  warn: {
+    color: LogBoxStyle.getWarningColor(1),
+  },
+  error: {
+    color: LogBoxStyle.getErrorColor(1),
   },
   messageText: {
     color: LogBoxStyle.getTextColor(0.6),

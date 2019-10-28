@@ -34,6 +34,10 @@ export function getErrorColor(opacity?: number): string {
   return `rgba(243, 83, 105, ${opacity == null ? 1 : opacity})`;
 }
 
+export function getErrorDarkColor(opacity?: number): string {
+  return `rgba(208, 75, 95, ${opacity == null ? 1 : opacity})`;
+}
+
 export function getLogColor(opacity?: number): string {
   return `rgba(119, 119, 119, ${opacity == null ? 1 : opacity})`;
 }

@@ -30,13 +30,6 @@ function LogBoxContainer(props: Props): React.Node {
 
   const logs = Array.from(props.logs);
 
-  function getVisibleLog() {
-    // TODO: currently returns the newest log but later will need to return
-    // the newest log of the highest level. For example, we want to show
-    // the latest error message even if there are newer warnings.
-    return logs[logs.length - 1];
-  }
-
   function handleInspectorDismissAll() {
     props.onDismissAll();
   }
@@ -59,8 +52,12 @@ function LogBoxContainer(props: Props): React.Node {
     setSelectedLog(null);
   }
 
-  function handleRowPress(index: number) {
-    setSelectedLog(logs.length - 1);
+  function openLog(log: LogBoxLog) {
+    let index = logs.length - 1;
+    while (index > 0 && logs[index] !== log) {
+      index -= 1;
+    }
+    setSelectedLog(index);
   }
 
   if (selectedLogIndex != null) {
@@ -77,20 +74,42 @@ function LogBoxContainer(props: Props): React.Node {
     );
   }
 
-  return logs.length === 0 ? null : (
+  if (logs.length === 0) {
+    return null;
+  }
+
+  const warnings = logs.filter(log => log.level === 'warn');
+  const errors = logs.filter(log => log.level === 'error');
+  return (
     <View style={styles.list}>
-      <View style={styles.toast}>
-        <LogBoxLogNotification
-          log={getVisibleLog()}
-          level="warn"
-          totalLogCount={logs.length}
-          onPressOpen={handleRowPress}
-          onPressList={() => {
-            /* TODO: open log list */
-          }}
-          onPressDismiss={handleInspectorDismissAll}
-        />
-      </View>
+      {warnings.length > 0 && (
+        <View style={styles.toast}>
+          <LogBoxLogNotification
+            log={warnings[warnings.length - 1]}
+            level="warn"
+            totalLogCount={warnings.length}
+            onPressOpen={() => openLog(warnings[warnings.length - 1])}
+            onPressList={() => {
+              /* TODO: open log list */
+            }}
+            onPressDismiss={handleInspectorDismissAll}
+          />
+        </View>
+      )}
+      {errors.length > 0 && (
+        <View style={styles.toast}>
+          <LogBoxLogNotification
+            log={errors[errors.length - 1]}
+            level="error"
+            totalLogCount={errors.length}
+            onPressOpen={() => openLog(errors[errors.length - 1])}
+            onPressList={() => {
+              /* TODO: open log list */
+            }}
+            onPressDismiss={handleInspectorDismissAll}
+          />
+        </View>
+      )}
       <SafeAreaView style={styles.safeArea} />
     </View>
   );
@@ -105,6 +124,7 @@ const styles = StyleSheet.create({
   },
   toast: {
     borderRadius: 8,
+    marginBottom: 5,
     overflow: 'hidden',
   },
   safeArea: {

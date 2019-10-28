@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`LogBoxContainer should render first log with selectedIndex 0 1`] = `
+exports[`LogBoxContainer should render error with selectedIndex 1 1`] = `
 <View
   style={
     Object {
@@ -11,19 +11,20 @@ exports[`LogBoxContainer should render first log with selectedIndex 0 1`] = `
   }
 >
   <LogBoxInspectorHeader
+    level="error"
     onSelectIndex={[Function]}
-    selectedIndex={0}
+    selectedIndex={1}
     total={2}
   />
   <LogBoxInspectorBody
     log={
       LogBoxLog {
-        "category": "Some kind of message (first)",
+        "category": "Some kind of message (second)",
         "componentStack": Array [],
         "count": 1,
-        "level": "warn",
+        "level": "error",
         "message": Object {
-          "content": "Some kind of message (first)",
+          "content": "Some kind of message (second)",
           "substitutions": Array [],
         },
         "stack": Array [],
@@ -45,7 +46,7 @@ exports[`LogBoxContainer should render first log with selectedIndex 0 1`] = `
 
 exports[`LogBoxContainer should render null with no logs 1`] = `null`;
 
-exports[`LogBoxContainer should render second log with selectedIndex 1 1`] = `
+exports[`LogBoxContainer should render warning with selectedIndex 0 1`] = `
 <View
   style={
     Object {
@@ -56,19 +57,20 @@ exports[`LogBoxContainer should render second log with selectedIndex 1 1`] = `
   }
 >
   <LogBoxInspectorHeader
+    level="warn"
     onSelectIndex={[Function]}
-    selectedIndex={1}
+    selectedIndex={0}
     total={2}
   />
   <LogBoxInspectorBody
     log={
       LogBoxLog {
-        "category": "Some kind of message (second)",
+        "category": "Some kind of message (first)",
         "componentStack": Array [],
         "count": 1,
         "level": "warn",
         "message": Object {
-          "content": "Some kind of message (second)",
+          "content": "Some kind of message (first)",
           "substitutions": Array [],
         },
         "stack": Array [],

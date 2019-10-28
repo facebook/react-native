@@ -55,6 +55,7 @@ class LogBoxInspector extends React.Component<Props> {
           onSelectIndex={this._handleSelectIndex}
           selectedIndex={selectedIndex}
           total={logs.length}
+          level={log.level}
         />
         <LogBoxInspectorBody
           log={log}
@@ -113,6 +114,7 @@ function LogBoxInspectorBody(props) {
           collapsed={collapsed}
           onPress={() => setCollapsed(!collapsed)}
           message={props.log.message}
+          level={props.log.level}
         />
         <ScrollView style={styles.scrollBody}>
           <LogBoxInspectorReactFrames log={props.log} />
@@ -128,6 +130,7 @@ function LogBoxInspectorBody(props) {
         collapsed={collapsed}
         onPress={() => setCollapsed(!collapsed)}
         message={props.log.message}
+        level={props.log.level}
       />
       <LogBoxInspectorReactFrames log={props.log} />
       <LogBoxInspectorStackFrames log={props.log} onRetry={props.onRetry} />

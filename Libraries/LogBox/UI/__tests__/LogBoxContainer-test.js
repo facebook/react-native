@@ -29,7 +29,7 @@ describe('LogBoxContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render the latest log', () => {
+  it('should render the latest warning', () => {
     const output = render.shallowRender(
       <LogBoxContainer
         onDismiss={() => {}}
@@ -48,6 +48,76 @@ describe('LogBoxContainer', () => {
             ),
             new LogBoxLog(
               'warn',
+              {
+                content: 'Some kind of message (latest)',
+                substitutions: [],
+              },
+              [],
+              'Some kind of message (latest)',
+              [],
+            ),
+          ])
+        }
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should render the latest error', () => {
+    const output = render.shallowRender(
+      <LogBoxContainer
+        onDismiss={() => {}}
+        onDismissAll={() => {}}
+        logs={
+          new Set([
+            new LogBoxLog(
+              'error',
+              {
+                content: 'Some kind of message',
+                substitutions: [],
+              },
+              [],
+              'Some kind of message',
+              [],
+            ),
+            new LogBoxLog(
+              'error',
+              {
+                content: 'Some kind of message (latest)',
+                substitutions: [],
+              },
+              [],
+              'Some kind of message (latest)',
+              [],
+            ),
+          ])
+        }
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should render both an error and warning', () => {
+    const output = render.shallowRender(
+      <LogBoxContainer
+        onDismiss={() => {}}
+        onDismissAll={() => {}}
+        logs={
+          new Set([
+            new LogBoxLog(
+              'warn',
+              {
+                content: 'Some kind of message',
+                substitutions: [],
+              },
+              [],
+              'Some kind of message',
+              [],
+            ),
+            new LogBoxLog(
+              'error',
               {
                 content: 'Some kind of message (latest)',
                 substitutions: [],

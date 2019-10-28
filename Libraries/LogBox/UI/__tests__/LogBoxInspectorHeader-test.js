@@ -22,6 +22,7 @@ describe('LogBoxInspectorHeader', () => {
         onSelectIndex={() => {}}
         selectedIndex={0}
         total={1}
+        level="warn"
       />,
     );
 
@@ -34,18 +35,33 @@ describe('LogBoxInspectorHeader', () => {
         onSelectIndex={() => {}}
         selectedIndex={1}
         total={2}
+        level="warn"
       />,
     );
 
     expect(output).toMatchSnapshot();
   });
 
-  it('should render two buttons for three total, middle selected', () => {
+  it('should render two buttons for three total, middle selected (warning)', () => {
     const output = render.shallowRender(
       <LogBoxInspectorHeader
         onSelectIndex={() => {}}
         selectedIndex={0}
         total={1}
+        level="warn"
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should render two buttons for three total, middle selected (error)', () => {
+    const output = render.shallowRender(
+      <LogBoxInspectorHeader
+        onSelectIndex={() => {}}
+        selectedIndex={0}
+        total={1}
+        level="error"
       />,
     );
 
@@ -58,6 +74,7 @@ describe('LogBoxInspectorHeader', () => {
         onSelectIndex={() => {}}
         selectedIndex={0}
         total={2}
+        level="warn"
       />,
     );
 

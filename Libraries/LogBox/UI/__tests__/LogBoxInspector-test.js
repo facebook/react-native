@@ -28,7 +28,7 @@ const logs = [
     [],
   ),
   new LogBoxLog(
-    'warn',
+    'error',
     {
       content: 'Some kind of message (second)',
       substitutions: [],
@@ -54,7 +54,7 @@ describe('LogBoxContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render first log with selectedIndex 0', () => {
+  it('should render warning with selectedIndex 0', () => {
     const output = render.shallowRender(
       <LogBoxInspector
         onDismiss={() => {}}
@@ -68,7 +68,7 @@ describe('LogBoxContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render second log with selectedIndex 1', () => {
+  it('should render error with selectedIndex 1', () => {
     const output = render.shallowRender(
       <LogBoxInspector
         onDismiss={() => {}}
