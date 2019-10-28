@@ -238,6 +238,8 @@ void Binding::installFabricUIManager(
   reactNativeConfig_ = config;
   shouldCollateRemovesAndDeletes_ = reactNativeConfig_->getBool("react_fabric:enable_removedelete_collation_android");
 
+  disablePreallocateViews_ = reactNativeConfig_->getBool("react_fabric:disabled_view_preallocation_android");
+
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
@@ -602,7 +604,7 @@ void Binding::schedulerDidFinishTransaction(
 
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
-        if (mutation.newChildShadowView.props->revision > 1 ||
+        if (disablePreallocateViews_ || mutation.newChildShadowView.props->revision > 1 ||
             deletedViewTags.find(mutation.newChildShadowView.tag) !=
                 deletedViewTags.end()) {
           mountItems[position++] =
@@ -683,7 +685,7 @@ void Binding::schedulerDidFinishTransaction(
           mountItems[position++] =
               createInsertMountItem(localJavaUIManager, mutation);
 
-          if (mutation.newChildShadowView.props->revision > 1 ||
+          if (disablePreallocateViews_ || mutation.newChildShadowView.props->revision > 1 ||
               deletedViewTags.find(mutation.newChildShadowView.tag) !=
                   deletedViewTags.end()) {
             mountItems[position++] =
@@ -779,6 +781,10 @@ void Binding::setPixelDensity(float pointScaleFactor) {
 void Binding::schedulerDidRequestPreliminaryViewAllocation(
     const SurfaceId surfaceId,
     const ShadowView &shadowView) {
+
+  if (disablePreallocateViews_) {
+    return;
+  }
 
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {

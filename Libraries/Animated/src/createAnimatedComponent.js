@@ -17,7 +17,18 @@ const DeprecatedViewStylePropTypes = require('../../DeprecatedPropTypes/Deprecat
 
 const invariant = require('invariant');
 
-function createAnimatedComponent(Component: any, defaultProps: any): any {
+export type AnimatedComponentType<Props, Instance> = React.AbstractComponent<
+  any,
+  $ReadOnly<{
+    setNativeProps: Object => void,
+    getNode: () => React.ElementRef<React.AbstractComponent<Props, Instance>>,
+  }>,
+>;
+
+function createAnimatedComponent<Props, Instance>(
+  Component: React.AbstractComponent<Props, Instance>,
+  defaultProps: any,
+): AnimatedComponentType<Props, Instance> {
   invariant(
     typeof Component !== 'function' ||
       (Component.prototype && Component.prototype.isReactComponent),
@@ -180,6 +191,7 @@ function createAnimatedComponent(Component: any, defaultProps: any): any {
     }
   }
 
+  // $FlowFixMe We don't want people using propTypes so we don't include it in the type
   const propTypes = Component.propTypes;
 
   AnimatedComponent.propTypes = {

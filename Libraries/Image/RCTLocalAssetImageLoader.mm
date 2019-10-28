@@ -7,9 +7,16 @@
 
 #import <React/RCTLocalAssetImageLoader.h>
 
-#import <stdatomic.h>
+#import <atomic>
+#import <memory>
 
 #import <React/RCTUtils.h>
+#import <ReactCommon/RCTTurboModule.h>
+
+#import "RCTImagePlugins.h"
+
+@interface RCTLocalAssetImageLoader() <RCTTurboModule>
+@end
 
 @implementation RCTLocalAssetImageLoader
 
@@ -42,9 +49,9 @@ RCT_EXPORT_MODULE()
                                  partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
                                   completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
-  __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
+  __block auto cancelled = std::make_shared<std::atomic<bool>>(false);
   RCTExecuteOnMainQueue(^{
-    if (atomic_load(&cancelled)) {
+    if (cancelled->load()) {
       return;
     }
 
@@ -62,8 +69,12 @@ RCT_EXPORT_MODULE()
   });
 
   return ^{
-    atomic_store(&cancelled, YES);
+    cancelled->store(true);
   };
 }
 
 @end
+
+Class RCTLocalAssetImageLoaderCls(void) {
+  return RCTLocalAssetImageLoader.class;
+}

@@ -17,6 +17,11 @@ using namespace facebook::react;
 NSString *const RCTAppearanceColorSchemeLight = @"light";
 NSString *const RCTAppearanceColorSchemeDark = @"dark";
 
+static BOOL sAppearancePreferenceEnabled = YES;
+void RCTEnableAppearancePreference(BOOL enabled) {
+  sAppearancePreferenceEnabled = enabled;
+}
+
 static NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
@@ -31,6 +36,11 @@ static NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
                       };
     });
 
+    if (!sAppearancePreferenceEnabled) {
+      // Return the default if the app doesn't allow different color schemes.
+      return RCTAppearanceColorSchemeLight;
+    }
+
     traitCollection = traitCollection ?: [UITraitCollection currentTraitCollection];
     return appearances[@(traitCollection.userInterfaceStyle)] ?: RCTAppearanceColorSchemeLight;
   }
@@ -44,6 +54,9 @@ static NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 @end
 
 @implementation RCTAppearance
+{
+  NSString *_currentColorScheme;
+}
 
 RCT_EXPORT_MODULE(Appearance)
 
@@ -64,7 +77,8 @@ RCT_EXPORT_MODULE(Appearance)
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
-  return RCTColorSchemePreference(nil);
+  _currentColorScheme =  RCTColorSchemePreference(nil);
+  return _currentColorScheme;
 }
 
 - (void)appearanceChanged:(NSNotification *)notification
@@ -74,7 +88,11 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
   if (userInfo) {
     traitCollection = userInfo[@"traitCollection"];
   }
-  [self sendEventWithName:@"appearanceChanged" body:@{@"colorScheme": RCTColorSchemePreference(traitCollection)}];
+  NSString *newColorScheme = RCTColorSchemePreference(traitCollection);
+  if (![_currentColorScheme isEqualToString:newColorScheme]) {
+    _currentColorScheme = newColorScheme;
+    [self sendEventWithName:@"appearanceChanged" body:@{@"colorScheme": newColorScheme}];
+  }
 }
 
 #pragma mark - RCTEventEmitter

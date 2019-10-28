@@ -23,8 +23,8 @@
 namespace facebook {
 namespace react {
 
-using ShadowTreeCommitTransaction = std::function<UnsharedRootShadowNode(
-    const SharedRootShadowNode &oldRootShadowNode)>;
+using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
+    RootShadowNode::Shared const &oldRootShadowNode)>;
 
 /*
  * Represents the shadow tree and its lifecycle.
@@ -36,9 +36,9 @@ class ShadowTree final {
    */
   ShadowTree(
       SurfaceId surfaceId,
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext,
-      const RootComponentDescriptor &rootComponentDescriptor);
+      LayoutConstraints const &layoutConstraints,
+      LayoutContext const &layoutContext,
+      RootComponentDescriptor const &rootComponentDescriptor);
 
   ~ShadowTree();
 
@@ -76,17 +76,18 @@ class ShadowTree final {
   ShadowTreeDelegate const *getDelegate() const;
 
  private:
-  UnsharedRootShadowNode cloneRootShadowNode(
-      const SharedRootShadowNode &oldRootShadowNode,
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext) const;
+  RootShadowNode::Unshared cloneRootShadowNode(
+      RootShadowNode::Shared const &oldRootShadowNode,
+      LayoutConstraints const &layoutConstraints,
+      LayoutContext const &layoutContext) const;
 
   void emitLayoutEvents(
       std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
 
   SurfaceId const surfaceId_;
   mutable better::shared_mutex commitMutex_;
-  mutable SharedRootShadowNode rootShadowNode_; // Protected by `commitMutex_`.
+  mutable RootShadowNode::Shared
+      rootShadowNode_; // Protected by `commitMutex_`.
   mutable ShadowTreeRevision::Number revisionNumber_{
       0}; // Protected by `commitMutex_`.
   ShadowTreeDelegate const *delegate_;

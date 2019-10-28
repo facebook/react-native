@@ -7,6 +7,7 @@
 
 package com.facebook.react.fabric.mounting.mountitems;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.uimanager.StateWrapper;
@@ -22,7 +23,7 @@ public class UpdateStateMountItem implements MountItem {
   }
 
   @Override
-  public void execute(MountingManager mountingManager) {
+  public void execute(@NonNull MountingManager mountingManager) {
     mountingManager.updateState(mReactTag, mStateWrapper);
   }
 

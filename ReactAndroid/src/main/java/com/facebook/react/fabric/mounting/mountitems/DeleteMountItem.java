@@ -7,6 +7,7 @@
 
 package com.facebook.react.fabric.mounting.mountitems;
 
+import androidx.annotation.NonNull;
 import com.facebook.react.fabric.mounting.MountingManager;
 
 public class DeleteMountItem implements MountItem {
@@ -18,7 +19,7 @@ public class DeleteMountItem implements MountItem {
   }
 
   @Override
-  public void execute(MountingManager mountingManager) {
+  public void execute(@NonNull MountingManager mountingManager) {
     mountingManager.deleteView(mReactTag);
   }
 

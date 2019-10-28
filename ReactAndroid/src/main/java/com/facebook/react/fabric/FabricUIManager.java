@@ -19,6 +19,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import android.annotation.SuppressLint;
 import android.os.SystemClock;
 import android.view.View;
+import androidx.annotation.AnyThread;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +35,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
@@ -81,7 +83,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressLint("MissingNativeLoadLibrary")
 public class FabricUIManager implements UIManager, LifecycleEventListener {
 
-  public static final String TAG = FabricUIManager.class.getSimpleName();
+  public static final String TAG = "FabricUIManager";
   public static final boolean DEBUG =
       ReactFeatureFlags.enableFabricLogs
           || PrinterHolder.getPrinter()
@@ -120,8 +122,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @NonNull
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
 
-  @ThreadConfined(UI)
-  private volatile boolean mIsMountingEnabled = true;
+  /**
+   * This is used to keep track of whether or not the FabricUIManager has been destroyed. Once the
+   * Catalyst instance is being destroyed, we should cease all operation here.
+   */
+  private volatile boolean mDestroyed = false;
 
   private long mRunStartTime = 0l;
   private long mBatchedExecutionTime = 0l;
@@ -220,11 +225,24 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void onCatalystInstanceDestroy() {
     FLog.i(TAG, "FabricUIManager.onCatalystInstanceDestroy");
 
+    if (mDestroyed) {
+      ReactSoftException.logSoftException(
+          FabricUIManager.TAG, new IllegalStateException("Cannot double-destroy FabricUIManager"));
+      return;
+    }
+
+    mDestroyed = true;
+
+    // This is not technically thread-safe, since it's read on the UI thread and written
+    // here on the JS thread. We've marked it as volatile so that this writes to UI-thread
+    // memory immediately.
+    mDispatchUIFrameCallback.stop();
+
     mEventDispatcher.removeBatchEventDispatchedListener(mEventBeatManager);
     mEventDispatcher.unregisterEventEmitter(FABRIC);
 
     // Remove lifecycle listeners (onHostResume, onHostPause) since the FabricUIManager is going
-    // away. This and setting `mIsMountingEnabled` to false will cause the choreographer
+    // away. Then stop the mDispatchUIFrameCallback false will cause the choreographer
     // callbacks to stop firing.
     mReactApplicationContext.removeLifecycleEventListener(this);
     onHostPause();
@@ -232,7 +250,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // This is not technically thread-safe, since it's read on the UI thread and written
     // here on the JS thread. We've marked it as volatile so that this writes to UI-thread
     // memory immediately.
-    mIsMountingEnabled = false;
+    mDispatchUIFrameCallback.stop();
 
     mBinding.unregister();
     mBinding = null;
@@ -383,9 +401,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @SuppressWarnings("unused")
   private long measure(
       String componentName,
-      ReadableMap localData,
-      ReadableMap props,
-      ReadableMap state,
+      @NonNull ReadableMap localData,
+      @NonNull ReadableMap props,
+      @NonNull ReadableMap state,
       float minWidth,
       float maxWidth,
       float minHeight,
@@ -404,7 +422,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @Override
   @ThreadConfined(UI)
-  public void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props) {
+  public void synchronouslyUpdateViewOnUIThread(int reactTag, @NonNull ReadableMap props) {
     UiThreadUtil.assertOnUiThread();
     long time = SystemClock.uptimeMillis();
     int commitNumber = mCurrentSynchronousCommitNumber++;
@@ -429,7 +447,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @DoNotStrip
   @SuppressWarnings("unused")
   private void scheduleMountItem(
-      final MountItem mountItem,
+      @NonNull final MountItem mountItem,
       int commitNumber,
       long commitStartTime,
       long diffStartTime,
@@ -456,10 +474,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       mMountItems.add(mountItem);
     }
 
-    // Post markers outside of lock
+    if (UiThreadUtil.isOnUiThread()) {
+      dispatchMountItems();
+    }
+
+    // Post markers outside of lock and after sync mounting finishes its execution
     if (isBatchMountItem) {
       ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_COMMIT_START, null, commitNumber, mCommitStartTime);
+          ReactMarkerConstants.FABRIC_COMMIT_START, null, commitNumber, commitStartTime);
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_FINISH_TRANSACTION_START,
           null,
@@ -479,10 +501,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_LAYOUT_END, null, commitNumber, layoutEndTime);
       ReactMarker.logFabricMarker(ReactMarkerConstants.FABRIC_COMMIT_END, null, commitNumber);
-    }
-
-    if (UiThreadUtil.isOnUiThread()) {
-      dispatchMountItems();
     }
   }
 
@@ -694,13 +712,20 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   private class DispatchUIFrameCallback extends GuardedFrameCallback {
 
-    private DispatchUIFrameCallback(ReactContext reactContext) {
+    private volatile boolean mIsMountingEnabled = true;
+
+    private DispatchUIFrameCallback(@NonNull ReactContext reactContext) {
       super(reactContext);
+    }
+
+    @AnyThread
+    void stop() {
+      mIsMountingEnabled = false;
     }
 
     @Override
     public void doFrameGuarded(long frameTimeNanos) {
-      if (!mIsMountingEnabled) {
+      if (!mIsMountingEnabled || mDestroyed) {
         FLog.w(
             ReactConstants.TAG,
             "Not flushing pending UI operations because of previously thrown Exception");
@@ -715,7 +740,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
       } catch (Exception ex) {
         FLog.i(ReactConstants.TAG, "Exception thrown when executing UIFrameGuarded", ex);
-        mIsMountingEnabled = false;
+        stop();
         throw ex;
       } finally {
         ReactChoreographer.getInstance()

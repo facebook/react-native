@@ -27,8 +27,8 @@ class BaseTextShadowNode {
    * function, or if TextInput should inherit from BaseTextShadowNode.
    */
   static AttributedString getAttributedString(
-      const TextAttributes &baseTextAttributes,
-      const SharedShadowNode &parentNode);
+      TextAttributes const &baseTextAttributes,
+      ShadowNode const &parentNode);
 };
 
 } // namespace react

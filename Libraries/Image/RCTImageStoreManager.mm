@@ -7,18 +7,23 @@
 
 #import <React/RCTImageStoreManager.h>
 
-#import <stdatomic.h>
+#import <atomic>
+#import <memory>
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/UTType.h>
-
 #import <React/RCTAssert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
-
 #import <React/RCTImageUtils.h>
 
+#import "RCTImagePlugins.h"
+
 static NSString *const RCTImageStoreURLScheme = @"rct-image-store";
+
+@interface RCTImageStoreManager() <NativeImageStoreSpec>
+@end
 
 @implementation RCTImageStoreManager
 {
@@ -100,11 +105,11 @@ RCT_EXPORT_METHOD(hasImageForTag:(NSString *)imageTag
 // TODO (#5906496): Name could be more explicit - something like getBase64EncodedDataForTag:?
 RCT_EXPORT_METHOD(getBase64ForTag:(NSString *)imageTag
                   successCallback:(RCTResponseSenderBlock)successCallback
-                  errorCallback:(RCTResponseErrorBlock)errorCallback)
+                  errorCallback:(RCTResponseSenderBlock)errorCallback)
 {
   NSData *imageData = _store[imageTag];
   if (!imageData) {
-    errorCallback(RCTErrorWithMessage([NSString stringWithFormat:@"Invalid imageTag: %@", imageTag]));
+    errorCallback(@[RCTJSErrorFromNSError(RCTErrorWithMessage([NSString stringWithFormat:@"Invalid imageTag: %@", imageTag]))]);
     return;
   }
   // Dispatching to a background thread to perform base64 encoding
@@ -115,7 +120,7 @@ RCT_EXPORT_METHOD(getBase64ForTag:(NSString *)imageTag
 
 RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
                   successCallback:(RCTResponseSenderBlock)successCallback
-                  errorCallback:(RCTResponseErrorBlock)errorCallback)
+                  errorCallback:(RCTResponseSenderBlock)errorCallback)
 
 {
   // Dispatching to a background thread to perform base64 decoding
@@ -126,7 +131,7 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
         successCallback(@[[self _storeImageData:imageData]]);
       });
     } else {
-      errorCallback(RCTErrorWithMessage(@"Failed to add image from base64String"));
+      errorCallback(@[RCTJSErrorFromNSError(RCTErrorWithMessage(@"Failed to add image from base64String"))]);
     }
   });
 }
@@ -140,14 +145,14 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 
 - (id)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
-  __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
+  __block auto cancelled = std::make_shared<std::atomic<bool>>(false);
   void (^cancellationBlock)(void) = ^{
-    atomic_store(&cancelled, YES);
+    cancelled->store(true);
   };
 
   // Dispatch async to give caller time to cancel the request
   dispatch_async(_methodQueue, ^{
-    if (atomic_load(&cancelled)) {
+    if (cancelled->load()) {
       return;
     }
 
@@ -228,6 +233,12 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
   });
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
+  (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeImageStoreSpecJSI>(self, jsInvoker);
+}
+
 @end
 
 @implementation RCTBridge (RCTImageStoreManager)
@@ -238,3 +249,7 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
 }
 
 @end
+
+Class RCTImageStoreManagerCls(void) {
+  return RCTImageStoreManager.class;
+}

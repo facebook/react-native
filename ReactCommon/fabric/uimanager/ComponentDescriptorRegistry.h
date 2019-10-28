@@ -32,23 +32,12 @@ class ComponentDescriptorRegistry {
   using Shared = std::shared_ptr<const ComponentDescriptorRegistry>;
 
   /*
-   * Deprecated. Use custom constructor instead.
-   */
-  ComponentDescriptorRegistry() = default;
-
-  /*
    * Creates an object with stored `ComponentDescriptorParameters`  which will
    * be used later to create `ComponentDescriptor`s.
    */
   ComponentDescriptorRegistry(
       ComponentDescriptorParameters const &parameters,
       ComponentDescriptorProviderRegistry const &providerRegistry);
-
-  /*
-   * Deprecated. Use `add` instead.
-   */
-  void registerComponentDescriptor(
-      SharedComponentDescriptor componentDescriptor) const;
 
   ComponentDescriptor const &at(std::string const &componentName) const;
   ComponentDescriptor const &at(ComponentHandle componentHandle) const;
@@ -66,6 +55,9 @@ class ComponentDescriptorRegistry {
  private:
   friend class ComponentDescriptorProviderRegistry;
 
+  void registerComponentDescriptor(
+      SharedComponentDescriptor componentDescriptor) const;
+
   /*
    * Adds (or removes) a `ComponentDescriptor ` created using given
    * `ComponentDescriptorProvider` and stored `ComponentDescriptorParameters`.
@@ -81,7 +73,7 @@ class ComponentDescriptorRegistry {
   mutable better::map<std::string, SharedComponentDescriptor> _registryByName;
   ComponentDescriptor::Shared _fallbackComponentDescriptor;
   ComponentDescriptorParameters parameters_{};
-  ComponentDescriptorProviderRegistry const *providerRegistry_{};
+  ComponentDescriptorProviderRegistry const &providerRegistry_;
 };
 
 } // namespace react

@@ -57,7 +57,7 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 experimental.well_formed_exports=true
-experimental.well_formed_exports.whitelist=<PROJECT_ROOT>
+experimental.types_first=true
 
 [lints]
 sketchy-null-number=warn
@@ -82,4 +82,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.109.0
+^0.110.0

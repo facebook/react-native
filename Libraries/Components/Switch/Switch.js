@@ -156,7 +156,7 @@ class Switch extends React.Component<Props> {
         <AndroidSwitchNativeComponent
           {...props}
           {...platformProps}
-          accessibilityRole={props.accessibilityRole ?? 'button'}
+          accessibilityRole={props.accessibilityRole ?? 'switch'}
           onChange={this._handleChange}
           onResponderTerminationRequest={returnsFalse}
           onStartShouldSetResponder={returnsTrue}
@@ -189,7 +189,7 @@ class Switch extends React.Component<Props> {
       <SwitchNativeComponent
         {...props}
         {...platformProps}
-        accessibilityRole={props.accessibilityRole ?? 'button'}
+        accessibilityRole={props.accessibilityRole ?? 'switch'}
         onChange={this._handleChange}
         onResponderTerminationRequest={returnsFalse}
         onStartShouldSetResponder={returnsTrue}

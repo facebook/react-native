@@ -85,7 +85,6 @@ export type ReactEventResponderInstance<E, C> = {|
   responder: ReactEventResponder<E, C>,
   rootEventTypes: null | Set<string>,
   state: Object,
-  target: mixed,
 |};
 
 export type ReactEventResponderListener<E, C> = {|
@@ -97,6 +96,7 @@ export type ReactEventResponder<E, C> = {
   $$typeof: Symbol | number,
   displayName: string,
   targetEventTypes: null | Array<string>,
+  targetPortalPropagation: boolean,
   rootEventTypes: null | Array<string>,
   getInitialState: null | ((props: Object) => Object),
   onEvent:
@@ -107,9 +107,6 @@ export type ReactEventResponder<E, C> = {
     | ((event: E, context: C, props: Object, state: Object) => void),
   onMount: null | ((context: C, props: Object, state: Object) => void),
   onUnmount: null | ((context: C, props: Object, state: Object) => void),
-  onOwnershipChange:
-    | null
-    | ((context: C, props: Object, state: Object) => void),
 };
 
 export type EventPriority = 0 | 1 | 2;
@@ -161,4 +158,27 @@ export type ReactFundamentalImpl<C, H> = {
 export type ReactFundamentalComponent<C, H> = {|
   $$typeof: Symbol | number,
   impl: ReactFundamentalImpl<C, H>,
+|};
+
+export type ReactScope = {|
+  $$typeof: Symbol | number,
+|};
+
+export type ReactScopeMethods = {|
+  getChildren(): null | Array<ReactScopeMethods>,
+  getChildrenFromRoot(): null | Array<ReactScopeMethods>,
+  getParent(): null | ReactScopeMethods,
+  getProps(): Object,
+  queryAllNodes(
+    (type: string | Object, props: Object) => boolean,
+  ): null | Array<Object>,
+  queryFirstNode(
+    (type: string | Object, props: Object) => boolean,
+  ): null | Object,
+  containsNode(Object): boolean,
+|};
+
+export type ReactScopeInstance = {|
+  fiber: Object,
+  methods: null | ReactScopeMethods,
 |};

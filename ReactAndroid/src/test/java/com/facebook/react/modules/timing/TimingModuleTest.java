@@ -74,6 +74,7 @@ public class TimingModuleTest {
     CatalystInstance reactInstance = mock(CatalystInstance.class);
     ReactApplicationContext reactContext = mock(ReactApplicationContext.class);
     when(reactContext.getCatalystInstance()).thenReturn(reactInstance);
+    when(reactContext.hasActiveCatalystInstance()).thenReturn(true);
 
     mCurrentTimeNs = 0;
     mPostFrameCallbackHandler = new PostFrameCallbackHandler();

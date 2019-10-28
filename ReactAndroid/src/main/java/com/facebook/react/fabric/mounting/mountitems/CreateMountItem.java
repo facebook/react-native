@@ -7,6 +7,7 @@
 
 package com.facebook.react.fabric.mounting.mountitems;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.mounting.MountingManager;
@@ -15,21 +16,21 @@ import com.facebook.react.uimanager.ThemedReactContext;
 
 public class CreateMountItem implements MountItem {
 
-  private final String mComponent;
+  @NonNull private final String mComponent;
   private final int mRootTag;
   private final int mReactTag;
-  private final ThemedReactContext mContext;
+  @NonNull private final ThemedReactContext mContext;
   private final @Nullable ReadableMap mProps;
   private final @Nullable StateWrapper mStateWrapper;
   private final boolean mIsLayoutable;
 
   public CreateMountItem(
-      ThemedReactContext context,
+      @NonNull ThemedReactContext context,
       int rootTag,
       int reactTag,
-      String component,
+      @NonNull String component,
       @Nullable ReadableMap props,
-      StateWrapper stateWrapper,
+      @NonNull StateWrapper stateWrapper,
       boolean isLayoutable) {
     mContext = context;
     mComponent = component;
@@ -41,7 +42,7 @@ public class CreateMountItem implements MountItem {
   }
 
   @Override
-  public void execute(MountingManager mountingManager) {
+  public void execute(@NonNull MountingManager mountingManager) {
     mountingManager.createView(
         mContext, mComponent, mReactTag, mProps, mStateWrapper, mIsLayoutable);
   }

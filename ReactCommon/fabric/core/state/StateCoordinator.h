@@ -16,8 +16,6 @@
 namespace facebook {
 namespace react {
 
-class ShadowNode;
-
 /*
  * Coordinates a vision of the same state values between shadow nodes from
  * the same family.

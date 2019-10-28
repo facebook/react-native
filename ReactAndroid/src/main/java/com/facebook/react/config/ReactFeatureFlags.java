@@ -55,4 +55,10 @@ public class ReactFeatureFlags {
    * ...$$PropsSetter} class will be used instead.
    */
   public static boolean useViewManagerDelegates = false;
+
+  /**
+   * Should this application use Catalyst Teardown V2? This is an experiment to use a V2 of the
+   * CatalystInstanceImpl `destroy` method.
+   */
+  public static boolean useCatalystTeardownV2 = false;
 }

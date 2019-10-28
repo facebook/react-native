@@ -7,21 +7,22 @@
 
 package com.facebook.react.fabric.mounting.mountitems;
 
+import androidx.annotation.NonNull;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager;
 
 public class UpdateEventEmitterMountItem implements MountItem {
 
-  private final EventEmitterWrapper mEventHandler;
+  @NonNull private final EventEmitterWrapper mEventHandler;
   private final int mReactTag;
 
-  public UpdateEventEmitterMountItem(int reactTag, EventEmitterWrapper EventHandler) {
+  public UpdateEventEmitterMountItem(int reactTag, @NonNull EventEmitterWrapper EventHandler) {
     mReactTag = reactTag;
     mEventHandler = EventHandler;
   }
 
   @Override
-  public void execute(MountingManager mountingManager) {
+  public void execute(@NonNull MountingManager mountingManager) {
     mountingManager.updateEventEmitter(mReactTag, mEventHandler);
   }
 

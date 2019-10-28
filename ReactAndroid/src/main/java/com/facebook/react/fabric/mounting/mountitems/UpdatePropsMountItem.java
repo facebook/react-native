@@ -7,21 +7,22 @@
 
 package com.facebook.react.fabric.mounting.mountitems;
 
+import androidx.annotation.NonNull;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.mounting.MountingManager;
 
 public class UpdatePropsMountItem implements MountItem {
 
   private final int mReactTag;
-  private final ReadableMap mUpdatedProps;
+  @NonNull private final ReadableMap mUpdatedProps;
 
-  public UpdatePropsMountItem(int reactTag, ReadableMap updatedProps) {
+  public UpdatePropsMountItem(int reactTag, @NonNull ReadableMap updatedProps) {
     mReactTag = reactTag;
     mUpdatedProps = updatedProps;
   }
 
   @Override
-  public void execute(MountingManager mountingManager) {
+  public void execute(@NonNull MountingManager mountingManager) {
     mountingManager.updateProps(mReactTag, mUpdatedProps);
   }
 

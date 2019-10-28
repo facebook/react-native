@@ -40,18 +40,13 @@ class State {
   virtual void updateState(folly::dynamic data) const;
 #endif
 
+  void commit(std::shared_ptr<ShadowNode const> const &shadowNode) const;
+
  protected:
   StateCoordinator::Shared stateCoordinator_;
 
  private:
-  friend class ShadowNode;
   friend class StateCoordinator;
-  friend class UIManager;
-
-  /*
-   * Must be used by `ShadowNode` *only*.
-   */
-  void commit(const ShadowNode &shadowNode) const;
 
   /*
    * Indicates that the state was committed once and then was replaced by a

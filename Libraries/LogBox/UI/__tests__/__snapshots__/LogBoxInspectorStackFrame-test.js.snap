@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LogBoxInspectorStackFrame should render stack frame 1`] = `
+<LogBoxButton
+  backgroundColor={
+    Object {
+      "default": "transparent",
+      "pressed": "rgba(51, 51, 51, 1)",
+    }
+  }
+  onPress={[Function]}
+  style={
+    Object {
+      "paddingHorizontal": 25,
+      "paddingVertical": 4,
+    }
+  }
+>
+  <Text
+    style={
+      Object {
+        "color": "rgba(255, 255, 255, 1)",
+        "fontSize": 14,
+        "includeFontPadding": false,
+        "lineHeight": 18,
+      }
+    }
+  >
+    foo
+  </Text>
+  <Text
+    ellipsizeMode="middle"
+    numberOfLines={1}
+    style={
+      Object {
+        "color": "rgba(255, 255, 255, 0.7)",
+        "fontSize": 12,
+        "fontWeight": "300",
+        "includeFontPadding": false,
+        "lineHeight": 16,
+        "paddingLeft": 10,
+      }
+    }
+  >
+    app.js:1:1
+  </Text>
+</LogBoxButton>
+`;

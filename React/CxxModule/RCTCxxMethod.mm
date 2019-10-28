@@ -12,9 +12,10 @@
 #import <React/RCTConvert.h>
 #import <React/RCTFollyConvert.h>
 #import <cxxreact/JsArgumentHelpers.h>
-#import <folly/Memory.h>
 
 #import "RCTCxxUtils.h"
+
+#import <memory>
 
 using facebook::xplat::module::CxxModule;
 using namespace facebook::react;
@@ -27,7 +28,7 @@ using namespace facebook::react;
 - (instancetype)initWithCxxMethod:(const CxxModule::Method &)method
 {
   if ((self = [super init])) {
-    _method = folly::make_unique<CxxModule::Method>(method);
+    _method = std::make_unique<CxxModule::Method>(method);
   }
   return self;
 }

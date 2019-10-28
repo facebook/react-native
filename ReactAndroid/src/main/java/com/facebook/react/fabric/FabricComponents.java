@@ -7,6 +7,7 @@
 
 package com.facebook.react.fabric;
 
+import androidx.annotation.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ import java.util.Map;
  */
 public class FabricComponents {
 
-  private static final Map<String, String> sComponentNames = new HashMap<>();
+  private static @NonNull final Map<String, String> sComponentNames = new HashMap<>();
 
   static {
     // TODO T31905686: unify component names between JS - Android - iOS - C++

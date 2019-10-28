@@ -551,7 +551,7 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
           uiManager->setNativeProps(
-              shadowNodeFromValue(runtime, arguments[0]),
+              *shadowNodeFromValue(runtime, arguments[0]),
               RawProps(runtime, arguments[1]));
 
           return jsi::Value::undefined();

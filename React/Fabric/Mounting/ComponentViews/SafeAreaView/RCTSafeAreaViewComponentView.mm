@@ -49,16 +49,25 @@ static UIScrollView *findScrollView(UIView *view, uint recursionDepth = 0)
   return self;
 }
 
+- (UIEdgeInsets)_safeAreaInsets
+{
+  if (@available(iOS 11.0, tvOS 11.0, *)) {
+    return self.safeAreaInsets;
+  }
+
+  return UIEdgeInsetsZero;
+}
+
 - (void)layoutSubviews
 {
   [super layoutSubviews];
   UIScrollView *scrollView = findScrollView(self);
   if (scrollView && CGSizeEqualToSize(scrollView.bounds.size, self.bounds.size)) {
-    [scrollView setContentInset:self.safeAreaInsets];
+    [scrollView setContentInset:self._safeAreaInsets];
   } else {
     if (_state != nullptr) {
       CGSize size = self.bounds.size;
-      size.height -= self.safeAreaInsets.bottom;
+      size.height -= self._safeAreaInsets.bottom;
       auto newState = SafeAreaViewState{RCTSizeFromCGSize(size)};
       _state->updateState(std::move(newState));
     }

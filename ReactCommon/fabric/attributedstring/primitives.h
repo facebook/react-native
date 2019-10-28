@@ -53,6 +53,8 @@ enum class EllipsizeMode {
   Middle // Truncate middle of line: "ab...yz".
 };
 
+enum class TextBreakStrategy { Simple, Balanced, HighQuality };
+
 enum class TextAlignment {
   Natural, // Indicates the default alignment for script.
   Left, // Visually left aligned.
@@ -148,6 +150,13 @@ struct hash<facebook::react::FontWeight> {
 template <>
 struct hash<facebook::react::EllipsizeMode> {
   size_t operator()(const facebook::react::EllipsizeMode &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
+struct hash<facebook::react::TextBreakStrategy> {
+  size_t operator()(const facebook::react::TextBreakStrategy &v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };

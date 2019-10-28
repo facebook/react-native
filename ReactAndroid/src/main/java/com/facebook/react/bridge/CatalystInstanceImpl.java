@@ -7,6 +7,7 @@
 
 package com.facebook.react.bridge;
 
+import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.res.AssetManager;
@@ -15,6 +16,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.MessageQueueThread;
@@ -24,6 +26,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
@@ -83,6 +86,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private final String mJsPendingCallsTitleForTrace =
       "pending_js_calls_instance" + sNextInstanceIdForTrace.getAndIncrement();
   private volatile boolean mDestroyed = false;
+  private volatile boolean mNativeModulesThreadDestructionComplete = false;
+  private volatile boolean mJSThreadDestructionComplete = false;
   private final TraceListener mTraceListener;
   private final JavaScriptModuleRegistry mJSModuleRegistry;
   private final JSBundleLoader mJSBundleLoader;
@@ -326,8 +331,21 @@ public class CatalystInstanceImpl implements CatalystInstance {
    * fully shut down other threads.
    */
   @Override
+  @ThreadConfined(UI)
   public void destroy() {
     Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() start");
+    UiThreadUtil.assertOnUiThread();
+
+    if (ReactFeatureFlags.useCatalystTeardownV2) {
+      destroyV2();
+    } else {
+      destroyV1();
+    }
+  }
+
+  @ThreadConfined(UI)
+  public void destroyV1() {
+    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroyV1() start");
     UiThreadUtil.assertOnUiThread();
 
     if (mDestroyed) {
@@ -400,6 +418,101 @@ public class CatalystInstanceImpl implements CatalystInstance {
                     });
           }
         });
+
+    // This is a noop if the listener was not yet registered.
+    Systrace.unregisterListener(mTraceListener);
+  }
+
+  /**
+   * Destroys this catalyst instance, waiting for any other threads in ReactQueueConfiguration
+   * (besides the UI thread) to finish running. Must be called from the UI thread so that we can
+   * fully shut down other threads.
+   */
+  @ThreadConfined(UI)
+  public void destroyV2() {
+    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroyV2() start");
+    UiThreadUtil.assertOnUiThread();
+
+    if (mDestroyed) {
+      return;
+    }
+
+    // TODO: tell all APIs to shut down
+    ReactMarker.logMarker(ReactMarkerConstants.DESTROY_CATALYST_INSTANCE_START);
+    mDestroyed = true;
+    mNativeModulesThreadDestructionComplete = false;
+    mJSThreadDestructionComplete = false;
+
+    mNativeModulesQueueThread.runOnQueue(
+        new Runnable() {
+          @Override
+          public void run() {
+            Log.d("CatalystInstanceImpl", ".destroy on native modules thread");
+            mNativeModuleRegistry.notifyJSInstanceDestroy();
+
+            // Notifies all JSI modules that they are being destroyed, including the FabricUIManager
+            // and Fabric Scheduler
+            mJSIModuleRegistry.notifyJSInstanceDestroy();
+            boolean wasIdle = (mPendingJSCalls.getAndSet(0) == 0);
+            if (!mBridgeIdleListeners.isEmpty()) {
+              for (NotThreadSafeBridgeIdleDebugListener listener : mBridgeIdleListeners) {
+                if (!wasIdle) {
+                  listener.onTransitionToBridgeIdle();
+                }
+                listener.onBridgeDestroyed();
+              }
+            }
+
+            mNativeModulesThreadDestructionComplete = true;
+            Log.d("CatalystInstanceImpl", ".destroy on native modules thread finished");
+          }
+        });
+
+    getReactQueueConfiguration()
+        .getJSQueueThread()
+        .runOnQueue(
+            new Runnable() {
+              @Override
+              public void run() {
+                Log.d("CatalystInstanceImpl", ".destroy on JS thread");
+                // We need to destroy the TurboModuleManager on the JS Thread
+                if (mTurboModuleManagerJSIModule != null) {
+                  mTurboModuleManagerJSIModule.onCatalystInstanceDestroy();
+                }
+
+                mJSThreadDestructionComplete = true;
+                Log.d("CatalystInstanceImpl", ".destroy on JS thread finished");
+              }
+            });
+
+    // Wait until destruction is complete
+    long waitStartTime = System.currentTimeMillis();
+    while (!mNativeModulesThreadDestructionComplete || !mJSThreadDestructionComplete) {
+      // Never wait here, blocking the UI thread, for more than 100ms
+      if ((System.currentTimeMillis() - waitStartTime) > 100) {
+        Log.w(
+            ReactConstants.TAG,
+            "CatalystInstanceImpl.destroy() timed out waiting for Native Modules and JS thread teardown");
+        break;
+      }
+    }
+
+    // Kill non-UI threads from neutral third party
+    // potentially expensive, so don't run on UI thread
+
+    // contextHolder is used as a lock to guard against
+    // other users of the JS VM having the VM destroyed
+    // underneath them, so notify them before we reset
+    // Native
+    mJavaScriptContextHolder.clear();
+
+    // Imperatively destruct the C++ CatalystInstance rather than
+    // wait for the JVM's GC to free it.
+    mHybridData.resetNative();
+
+    getReactQueueConfiguration().destroy();
+    Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() end");
+    ReactMarker.logMarker(ReactMarkerConstants.DESTROY_CATALYST_INSTANCE_END);
 
     // This is a noop if the listener was not yet registered.
     Systrace.unregisterListener(mTraceListener);

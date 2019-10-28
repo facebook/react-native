@@ -22,7 +22,6 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"Appearance", RCTAppearanceCls},
     {"DeviceInfo", RCTDeviceInfoCls},
     {"ExceptionsManager", RCTExceptionsManagerCls},
-    {"ImageLoader", RCTImageLoaderCls},
     {"PlatformConstants", RCTPlatformCls},
     {"Clipboard", RCTClipboardCls},
     {"I18nManager", RCTI18nManagerCls},

@@ -24,12 +24,12 @@ class StateTarget {
   /*
    * Creates an empty target.
    */
-  StateTarget();
+  explicit StateTarget();
 
   /*
    * Creates a target which points to a given `ShadowNode`.
    */
-  StateTarget(const ShadowNode &shadowNode);
+  explicit StateTarget(std::shared_ptr<ShadowNode const> shadowNode);
 
   /*
    * Copyable and moveable.
@@ -50,7 +50,7 @@ class StateTarget {
   const ShadowNode &getShadowNode() const;
 
  private:
-  std::shared_ptr<const void> shadowNode_;
+  std::shared_ptr<ShadowNode const> shadowNode_;
 };
 
 } // namespace react

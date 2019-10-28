@@ -21,10 +21,12 @@ class AndroidTextInputComponentDescriptor final
  public:
   AndroidTextInputComponentDescriptor(
       EventDispatcher::Weak eventDispatcher,
-      const ContextContainer::Shared &contextContainer)
+      const ContextContainer::Shared &contextContainer,
+      ComponentDescriptor::Flavor const &flavor = {})
       : ConcreteComponentDescriptor<AndroidTextInputShadowNode>(
             eventDispatcher,
-            contextContainer) {}
+            contextContainer,
+            flavor) {}
 
  protected:
   void adopt(UnsharedShadowNode shadowNode) const override {

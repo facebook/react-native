@@ -8,6 +8,7 @@
 package com.facebook.react.fabric.events;
 
 import android.annotation.SuppressLint;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -35,7 +36,7 @@ public class EventEmitterWrapper {
     mHybridData = initHybrid();
   }
 
-  private native void invokeEvent(String eventName, NativeMap params);
+  private native void invokeEvent(@NonNull String eventName, @NonNull NativeMap params);
 
   /**
    * Invokes the execution of the C++ EventEmitter.
@@ -43,7 +44,7 @@ public class EventEmitterWrapper {
    * @param eventName {@link String} name of the event to execute.
    * @param params {@link WritableMap} payload of the event
    */
-  public void invoke(String eventName, @Nullable WritableMap params) {
+  public void invoke(@NonNull String eventName, @Nullable WritableMap params) {
     NativeMap payload = params == null ? new WritableNativeMap() : (NativeMap) params;
     invokeEvent(eventName, payload);
   }

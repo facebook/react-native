@@ -7,6 +7,7 @@
 
 package com.facebook.react.fabric.mounting.mountitems;
 
+import androidx.annotation.NonNull;
 import com.facebook.react.fabric.mounting.MountingManager;
 
 public class RemoveDeleteMultiMountItem implements MountItem {
@@ -18,7 +19,7 @@ public class RemoveDeleteMultiMountItem implements MountItem {
   // `instruction*4 + 1`: react tag of view's parent
   // `instruction*4 + 2`: index of view in parents' children instruction
   // `instruction*4 + 3`: flags indicating if the view should be removed, and/or deleted
-  private int[] mMetadata;
+  @NonNull private int[] mMetadata;
 
   // Bitfields of "flag", indicating if a view should be removed and/or deleted
   private static final int REMOVE_FLAG = 1;
@@ -31,12 +32,12 @@ public class RemoveDeleteMultiMountItem implements MountItem {
   private static final int VIEW_INDEX_INDEX = 2;
   private static final int FLAGS_INDEX = 3;
 
-  public RemoveDeleteMultiMountItem(int[] metadata) {
+  public RemoveDeleteMultiMountItem(@NonNull int[] metadata) {
     mMetadata = metadata;
   }
 
   @Override
-  public void execute(MountingManager mountingManager) {
+  public void execute(@NonNull MountingManager mountingManager) {
     // First, go through instructions and remove all views that are marked
     // for removal.
     // Not all views that are removed are deleted, and not all deleted views

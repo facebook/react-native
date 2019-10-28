@@ -23,8 +23,9 @@ class AndroidSwitchComponentDescriptor final
  public:
   AndroidSwitchComponentDescriptor(
       EventDispatcher::Weak eventDispatcher,
-      ContextContainer::Shared const &contextContainer)
-      : ConcreteComponentDescriptor(eventDispatcher),
+      ContextContainer::Shared const &contextContainer,
+      ComponentDescriptor::Flavor const &flavor = {})
+      : ConcreteComponentDescriptor(eventDispatcher, contextContainer, flavor),
         measurementsManager_(std::make_shared<AndroidSwitchMeasurementsManager>(
             contextContainer)) {}
 

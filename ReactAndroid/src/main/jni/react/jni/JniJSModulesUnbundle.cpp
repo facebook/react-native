@@ -15,8 +15,6 @@
 #include <sys/endian.h>
 #include <utility>
 
-#include <folly/Memory.h>
-
 using magic_number_t = uint32_t;
 const magic_number_t MAGIC_FILE_HEADER = 0xFB0BD1E5;
 const char* MAGIC_FILE_NAME = "UNBUNDLE";
@@ -46,7 +44,7 @@ static asset_ptr openAsset(
 std::unique_ptr<JniJSModulesUnbundle> JniJSModulesUnbundle::fromEntryFile(
   AAssetManager *assetManager,
   const std::string& entryFile) {
-    return folly::make_unique<JniJSModulesUnbundle>(assetManager, jsModulesDir(entryFile));
+    return std::make_unique<JniJSModulesUnbundle>(assetManager, jsModulesDir(entryFile));
   }
 
 JniJSModulesUnbundle::JniJSModulesUnbundle(AAssetManager *assetManager, const std::string& moduleDirectory) :

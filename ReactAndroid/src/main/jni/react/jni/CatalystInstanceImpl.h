@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <memory>
 #include <string>
 
 #include <ReactCommon/BridgeJSCallInvoker.h>
 #include <ReactCommon/CallInvokerHolder.h>
 #include <fb/fbjni.h>
-#include <folly/Memory.h>
 
 #include "CxxModuleWrapper.h"
 #include "JMessageQueueThread.h"

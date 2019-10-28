@@ -352,25 +352,29 @@ static void jni_YGNodeCalculateLayoutJNI(
     jlongArray nativePointers,
     jobjectArray javaNodes) {
 
-  void* layoutContext = nullptr;
-  auto map = PtrJNodeMapVanilla{};
-  if (nativePointers) {
-    size_t nativePointersSize = env->GetArrayLength(nativePointers);
-    jlong result[nativePointersSize];
-    env->GetLongArrayRegion(nativePointers, 0, nativePointersSize, result);
+  try {
+    void* layoutContext = nullptr;
+    auto map = PtrJNodeMapVanilla{};
+    if (nativePointers) {
+      size_t nativePointersSize = env->GetArrayLength(nativePointers);
+      jlong result[nativePointersSize];
+      env->GetLongArrayRegion(nativePointers, 0, nativePointersSize, result);
 
-    map = PtrJNodeMapVanilla{result, nativePointersSize, javaNodes};
-    layoutContext = &map;
+      map = PtrJNodeMapVanilla{result, nativePointersSize, javaNodes};
+      layoutContext = &map;
+    }
+
+    const YGNodeRef root = _jlong2YGNodeRef(nativePointer);
+    YGNodeCalculateLayoutWithContext(
+        root,
+        static_cast<float>(width),
+        static_cast<float>(height),
+        YGNodeStyleGetDirection(_jlong2YGNodeRef(nativePointer)),
+        layoutContext);
+    YGTransferLayoutOutputsRecursive(env, obj, root, layoutContext);
+  } catch (jthrowable throwable) {
+    env->Throw(throwable);
   }
-
-  const YGNodeRef root = _jlong2YGNodeRef(nativePointer);
-  YGNodeCalculateLayoutWithContext(
-      root,
-      static_cast<float>(width),
-      static_cast<float>(height),
-      YGNodeStyleGetDirection(_jlong2YGNodeRef(nativePointer)),
-      layoutContext);
-  YGTransferLayoutOutputsRecursive(env, obj, root, layoutContext);
 }
 
 static void jni_YGNodeMarkDirtyJNI(
@@ -717,17 +721,6 @@ static jlong jni_YGNodeCloneJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
 // Yoga specific properties, not compatible with flexbox specification
 YG_NODE_JNI_STYLE_PROP(jfloat, float, AspectRatio);
 
-static void jni_YGNodeSetStyleInputsJNI(
-    JNIEnv* env,
-    jobject obj,
-    jlong nativePointer,
-    jfloatArray styleInputs,
-    jint size) {
-  float result[size];
-  env->GetFloatArrayRegion(styleInputs, 0, size, result);
-  YGNodeSetStyleInputs(_jlong2YGNodeRef(nativePointer), result, size);
-}
-
 static JNINativeMethod methods[] = {
     {"jni_YGConfigNewJNI", "()J", (void*) jni_YGConfigNewJNI},
     {"jni_YGConfigFreeJNI", "(J)V", (void*) jni_YGConfigFreeJNI},
@@ -965,9 +958,6 @@ static JNINativeMethod methods[] = {
      "(JZ)V",
      (void*) jni_YGNodeSetHasBaselineFuncJNI},
     {"jni_YGNodePrintJNI", "(J)V", (void*) jni_YGNodePrintJNI},
-    {"jni_YGNodeSetStyleInputsJNI",
-     "(J[FI)V",
-     (void*) jni_YGNodeSetStyleInputsJNI},
     {"jni_YGNodeCloneJNI", "(J)J", (void*) jni_YGNodeCloneJNI},
 };
 

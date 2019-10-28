@@ -6,6 +6,7 @@
  */
 
 #include "ParagraphShadowNode.h"
+#include <Glog/logging.h>
 #include "ParagraphMeasurementCache.h"
 #include "ParagraphState.h"
 
@@ -19,8 +20,8 @@ AttributedString ParagraphShadowNode::getAttributedString() const {
     auto textAttributes = TextAttributes::defaultTextAttributes();
     textAttributes.apply(getProps()->textAttributes);
 
-    cachedAttributedString_ = BaseTextShadowNode::getAttributedString(
-        textAttributes, shared_from_this());
+    cachedAttributedString_ =
+        BaseTextShadowNode::getAttributedString(textAttributes, *this);
   }
 
   return cachedAttributedString_.value();
@@ -54,7 +55,8 @@ void ParagraphShadowNode::updateStateIfNeeded() {
     return;
   }
 
-  setStateData(ParagraphState{attributedString, textLayoutManager_});
+  setStateData(ParagraphState{
+      attributedString, getProps()->paragraphAttributes, textLayoutManager_});
 }
 
 #pragma mark - LayoutableShadowNode

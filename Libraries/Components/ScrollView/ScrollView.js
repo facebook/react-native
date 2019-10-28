@@ -11,8 +11,6 @@
 'use strict';
 
 const AnimatedImplementation = require('../../Animated/src/AnimatedImplementation');
-const codegenNativeCommands = require('../../Utilities/codegenNativeCommands')
-  .default;
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const ReactNative = require('../../Renderer/shims/ReactNative');
@@ -585,22 +583,6 @@ export type Props = $ReadOnly<{|
   children?: React.Node,
 |}>;
 
-type ScrollViewNativeComponentType = Class<ReactNative.NativeComponent<Props>>;
-
-interface NativeCommands {
-  +zoomToRect: (
-    viewRef: React.ElementRef<ScrollViewNativeComponentType>,
-    rect: {|
-      x: number,
-      y: number,
-      width: number,
-      height: number,
-      animated?: boolean,
-    |},
-    animated?: boolean,
-  ) => void;
-}
-
 type State = {|
   layoutHeight: ?number,
   ...ScrollResponderState,
@@ -663,7 +645,6 @@ const standardVerticalContext: ContextType = Object.freeze({horizontal: false});
  * supports out of the box.
  */
 class ScrollView extends React.Component<Props, State> {
-  static Commands: NativeCommands;
   static Context: React$Context<ContextType> = Context;
   /**
    * Part 1: Removing ScrollResponder.Mixin:
@@ -1227,10 +1208,6 @@ const styles = StyleSheet.create({
   contentContainerHorizontal: {
     flexDirection: 'row',
   },
-});
-
-ScrollView.Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['zoomToRect'],
 });
 
 module.exports = ScrollView;

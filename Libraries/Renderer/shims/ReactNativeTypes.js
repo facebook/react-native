@@ -83,7 +83,6 @@ export type ViewConfigGetter = () => ReactNativeBaseComponentViewConfig<>;
 /**
  * Class only exists for its Flow type.
  */
-export type {ReactNativeComponent};
 class ReactNativeComponent<Props> extends React.Component<Props> {
   blur(): void {}
   focus(): void {}
@@ -201,7 +200,6 @@ export type ReactFaricEvent = {
 
 export type ReactNativeResponderEvent = {
   nativeEvent: ReactFaricEvent,
-  responderTarget: null | ReactNativeEventTarget,
   target: null | ReactNativeEventTarget,
   type: string,
 };
@@ -227,9 +225,8 @@ export type ReactNativeResponderContext = {
   ): void,
   addRootEventTypes: (rootEventTypes: Array<string>) => void,
   removeRootEventTypes: (rootEventTypes: Array<string>) => void,
-  setTimeout: (func: () => void, timeout: number) => number,
-  clearTimeout: (timerId: number) => void,
   getTimeStamp: () => number,
+  getResponderNode(): ReactNativeEventTarget | null,
 };
 
 export type PointerType =

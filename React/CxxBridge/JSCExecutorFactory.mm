@@ -10,6 +10,8 @@
 #import <React/RCTLog.h>
 #import <jsi/JSCRuntime.h>
 
+#import<memory>
+
 namespace facebook {
 namespace react {
 
@@ -28,7 +30,7 @@ std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
       runtimeInstaller(runtime);
     }
   };
-  return folly::make_unique<JSIExecutor>(
+  return std::make_unique<JSIExecutor>(
       facebook::jsc::makeJSCRuntime(),
       delegate,
       JSIExecutor::defaultTimeoutInvoker,
