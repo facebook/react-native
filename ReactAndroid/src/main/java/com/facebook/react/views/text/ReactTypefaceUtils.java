@@ -43,7 +43,7 @@ public class ReactTypefaceUtils {
     return fontStyle;
   }
 
-  public static String parseFontVariant(ReadableArray fontVariantArray) {
+  public static @Nullable String parseFontVariant(@Nullable ReadableArray fontVariantArray) {
     if (fontVariantArray == null || fontVariantArray.size() == 0) {
       return null;
     }

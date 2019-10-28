@@ -492,7 +492,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   }
 
   @ReactProp(name = ViewProps.FONT_VARIANT)
-  public void setFontVariant(ReadableArray fontVariantArray) {
+  public void setFontVariant(@Nullable ReadableArray fontVariantArray) {
     String fontFeatureSettings = ReactTypefaceUtils.parseFontVariant(fontVariantArray);
 
     if (!Objects.equals(fontFeatureSettings, mFontFeatureSettings)) {

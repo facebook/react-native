@@ -162,7 +162,7 @@ public class TextAttributeProps {
     }
   }
 
-  private ReadableArray getArrayProp(String name) {
+  private @Nullable ReadableArray getArrayProp(String name) {
     if (mProps.hasKey(name)) {
       return mProps.getArray(name);
     } else {
@@ -295,7 +295,7 @@ public class TextAttributeProps {
     mFontFamily = fontFamily;
   }
 
-  public void setFontVariant(ReadableArray fontVariant) {
+  public void setFontVariant(@Nullable ReadableArray fontVariant) {
     mFontFeatureSettings = ReactTypefaceUtils.parseFontVariant(fontVariant);
   }
 

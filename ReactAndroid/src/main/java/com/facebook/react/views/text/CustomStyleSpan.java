@@ -39,7 +39,7 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   public CustomStyleSpan(
       int fontStyle,
       int fontWeight,
-      String fontFeatureSettings,
+      @Nullable String fontFeatureSettings,
       @Nullable String fontFamily,
       @NonNull AssetManager assetManager) {
     mStyle = fontStyle;
