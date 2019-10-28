@@ -125,7 +125,9 @@ using namespace facebook::react;
     return;
   }
 
-  _scrollViewComponentView.scrollView.refreshControl = _refreshControl;
+  if (@available(iOS 10.0, macOS 13.0, *)) {
+    _scrollViewComponentView.scrollView.refreshControl = _refreshControl;
+  }
 }
 
 - (void)_detach
