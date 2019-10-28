@@ -58,6 +58,7 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 experimental.well_formed_exports=true
 experimental.types_first=true
+experimental.allow_skip_direct_dependents=true
 
 [lints]
 sketchy-null-number=warn
