@@ -29,19 +29,18 @@ type Props = $ReadOnly<{|
 |}>;
 
 function LogBoxInspectorHeader(props: Props): React.Node {
-  const prevIndex = props.selectedIndex - 1;
-  const nextIndex = props.selectedIndex + 1;
+  const prevIndex =
+    props.selectedIndex - 1 < 0 ? props.total - 1 : props.selectedIndex - 1;
+  const nextIndex =
+    props.selectedIndex + 1 > props.total - 1 ? 0 : props.selectedIndex + 1;
 
-  const titleText =
-    props.total === 1
-      ? 'Log'
-      : `Log ${props.selectedIndex + 1} of ${props.total}`;
+  const titleText = `Log ${props.selectedIndex + 1} of ${props.total}`;
 
   return (
     <SafeAreaView style={styles[props.level]}>
       <View style={styles.header}>
         <LogBoxInspectorHeaderButton
-          disabled={prevIndex < 0}
+          disabled={props.total <= 1}
           level={props.level}
           image={LogBoxImageSource.chevronLeft}
           onPress={() => props.onSelectIndex(prevIndex)}
@@ -50,7 +49,7 @@ function LogBoxInspectorHeader(props: Props): React.Node {
           <Text style={styles.titleText}>{titleText}</Text>
         </View>
         <LogBoxInspectorHeaderButton
-          disabled={nextIndex >= props.total}
+          disabled={props.total <= 1}
           level={props.level}
           image={LogBoxImageSource.chevronRight}
           onPress={() => props.onSelectIndex(nextIndex)}

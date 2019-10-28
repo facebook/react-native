@@ -29,7 +29,7 @@ describe('LogBoxInspectorHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render one left button for two total, right selected', () => {
+  it('should render both buttons for two total', () => {
     const output = render.shallowRender(
       <LogBoxInspectorHeader
         onSelectIndex={() => {}}
@@ -42,38 +42,12 @@ describe('LogBoxInspectorHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render two buttons for three total, middle selected (warning)', () => {
+  it('should render two buttons for three or more total', () => {
     const output = render.shallowRender(
       <LogBoxInspectorHeader
         onSelectIndex={() => {}}
         selectedIndex={0}
         total={1}
-        level="warn"
-      />,
-    );
-
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should render two buttons for three total, middle selected (error)', () => {
-    const output = render.shallowRender(
-      <LogBoxInspectorHeader
-        onSelectIndex={() => {}}
-        selectedIndex={0}
-        total={1}
-        level="error"
-      />,
-    );
-
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should render one right button for two total, left selected', () => {
-    const output = render.shallowRender(
-      <LogBoxInspectorHeader
-        onSelectIndex={() => {}}
-        selectedIndex={0}
-        total={2}
         level="warn"
       />,
     );
