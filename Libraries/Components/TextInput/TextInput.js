@@ -1098,6 +1098,7 @@ const TextInput = createReactClass({
     if (this.props.onFocus) {
       this.props.onFocus(event);
     }
+    this.focus();
   },
 
   _onPress: function(event: PressEvent) {
