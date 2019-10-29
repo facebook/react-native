@@ -106,6 +106,7 @@ module.exports = {
     setImmediate: true,
     setInterval: false,
     setTimeout: false,
+    WebSocket: true,
     window: false,
     XMLHttpRequest: false,
   },
