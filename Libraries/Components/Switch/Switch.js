@@ -15,11 +15,14 @@ const Platform = require('../../Utilities/Platform');
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 
+import AndroidSwitchNativeComponent, {
+  Commands as AndroidSwitchCommands,
+} from './AndroidSwitchNativeComponent';
+
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import SwitchNativeComponent from './SwitchNativeComponent';
-import AndroidSwitchNativeComponent from './AndroidSwitchNativeComponent';
 
 type SwitchChangeEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -214,7 +217,14 @@ class Switch extends React.Component<Props> {
       this._nativeSwitchRef &&
       this._nativeSwitchRef.setNativeProps
     ) {
-      this._nativeSwitchRef.setNativeProps(nativeProps);
+      if (Platform.OS === 'android') {
+        AndroidSwitchCommands.setNativeValue(
+          this._nativeSwitchRef,
+          nativeProps.value,
+        );
+      } else {
+        this._nativeSwitchRef.setNativeProps(nativeProps);
+      }
     }
   }
 
