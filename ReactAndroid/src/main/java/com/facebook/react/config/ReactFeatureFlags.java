@@ -61,4 +61,13 @@ public class ReactFeatureFlags {
    * CatalystInstanceImpl `destroy` method.
    */
   public static boolean useCatalystTeardownV2 = false;
+
+  /**
+   * When the ReactContext is destroyed, should the CatalystInstance immediately be nullified? This
+   * is the safest thing to do since the CatalystInstance shouldn't be used, and should be
+   * garbage-collected after it's destroyed, but this is a breaking change in that many native
+   * modules assume that a ReactContext will always have a CatalystInstance. This will be deleted
+   * and the CatalystInstance will always be destroyed in some future release.
+   */
+  public static boolean nullifyCatalystInstanceOnDestroy = false;
 }
