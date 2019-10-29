@@ -18,7 +18,6 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 
 const invariant = require('invariant');
 
-import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
@@ -442,7 +441,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   /**
    * Provides a handle to the underlying scroll responder.
    */
-  getScrollResponder(): ?ScrollResponderType {
+  getScrollResponder(): any {
     if (this._listRef) {
       return this._listRef.getScrollResponder();
     }
