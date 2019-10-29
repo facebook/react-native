@@ -1034,6 +1034,8 @@ public class ReactInstanceManager {
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
     }
 
+    // There is a race condition here - `finalListeners` can contain null entries
+    // See usage below for more details.
     ReactInstanceEventListener[] listeners =
         new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
     final ReactInstanceEventListener[] finalListeners =
@@ -1044,7 +1046,13 @@ public class ReactInstanceManager {
           @Override
           public void run() {
             for (ReactInstanceEventListener listener : finalListeners) {
-              listener.onReactContextInitialized(reactContext);
+              // Sometimes this listener is null - probably due to race
+              // condition between allocating listeners with a certain
+              // size, and getting a `final` version of the array on
+              // the following line.
+              if (listener != null) {
+                listener.onReactContextInitialized(reactContext);
+              }
             }
           }
         });
