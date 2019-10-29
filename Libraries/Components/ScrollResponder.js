@@ -570,14 +570,8 @@ const ScrollResponderMixin = {
         this.scrollResponderInputMeasureAndScrollToKeyboard,
       );
     } else {
-      const innerRef = this.getInnerViewRef();
-
-      if (innerRef == null) {
-        return;
-      }
-
       nodeHandle.measureLayout(
-        innerRef,
+        this.getInnerViewRef(),
         this.scrollResponderInputMeasureAndScrollToKeyboard,
         this.scrollResponderTextInputFocusError,
       );
