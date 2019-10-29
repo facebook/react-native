@@ -59,8 +59,8 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - v3-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
-            - v3-yarn-cache-{{ arch }}
+            - v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+            - v4-yarn-cache-{{ arch }}
       - run:
           name: Run Yarn
           command: |
@@ -72,14 +72,14 @@ commands:
       - save_cache:
           paths:
             - ~/.cache/yarn
-          key: v3-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
+          key: v4-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
 
   install_buck_tooling:
     steps:
       - restore_cache:
           keys:
-            - v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
-            - v3-buck-v2019.01.10.01-
+            - v4-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+            - v4-buck-v2019.01.10.01-
       - run:
           name: Install BUCK
           command: |
@@ -92,7 +92,7 @@ commands:
           paths:
             - ~/buck
             - ~/okbuck
-          key: v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
+          key: v4-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
 
   brew_install:
     parameters:
@@ -183,12 +183,12 @@ commands:
 jobs:
   setup:
     parameters:
-        executor:
-          type: executor
-          default: node8
-        checkout_type:
-          type: string
-          default: node
+      executor:
+        type: executor
+        default: node8
+      checkout_type:
+        type: string
+        default: node
     executor: << parameters.executor >>
     steps:
       - checkout
@@ -234,7 +234,6 @@ jobs:
             cd bots
             DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" yarn danger ci --use-github-checks
           when: always
-
 
   # -------------------------
   #    JOBS: Analyze Code
