@@ -10,6 +10,7 @@ package com.facebook.react.views.text;
 import android.content.res.AssetManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
 import androidx.annotation.NonNull;
@@ -32,27 +33,30 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
 
   private final int mStyle;
   private final int mWeight;
+  private final @Nullable String mFeatureSettings;
   private final @Nullable String mFontFamily;
 
   public CustomStyleSpan(
       int fontStyle,
       int fontWeight,
+      @Nullable String fontFeatureSettings,
       @Nullable String fontFamily,
       @NonNull AssetManager assetManager) {
     mStyle = fontStyle;
     mWeight = fontWeight;
+    mFeatureSettings = fontFeatureSettings;
     mFontFamily = fontFamily;
     mAssetManager = assetManager;
   }
 
   @Override
   public void updateDrawState(TextPaint ds) {
-    apply(ds, mStyle, mWeight, mFontFamily, mAssetManager);
+    apply(ds, mStyle, mWeight, mFeatureSettings, mFontFamily, mAssetManager);
   }
 
   @Override
   public void updateMeasureState(@NonNull TextPaint paint) {
-    apply(paint, mStyle, mWeight, mFontFamily, mAssetManager);
+    apply(paint, mStyle, mWeight, mFeatureSettings, mFontFamily, mAssetManager);
   }
 
   /** Returns {@link Typeface#NORMAL} or {@link Typeface#ITALIC}. */
@@ -71,9 +75,17 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   }
 
   private static void apply(
-      Paint paint, int style, int weight, @Nullable String family, AssetManager assetManager) {
+      Paint paint,
+      int style,
+      int weight,
+      @Nullable String fontFeatureSettings,
+      @Nullable String family,
+      AssetManager assetManager) {
     Typeface typeface = ReactTypefaceUtils.applyStyles(
       paint.getTypeface(), style, weight, family, assetManager);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      paint.setFontFeatureSettings(fontFeatureSettings);
+    }
     paint.setTypeface(typeface);
     paint.setSubpixelText(true);
   }

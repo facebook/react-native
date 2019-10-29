@@ -54,9 +54,6 @@ const DeprecatedTextStylePropTypes = {
     | '800'
     | '900',
   >),
-  /**
-   * @platform ios
-   */
   fontVariant: (ReactPropTypes.arrayOf(
     ReactPropTypes.oneOf([
       'small-caps',
