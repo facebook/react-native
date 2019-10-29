@@ -69,7 +69,6 @@ export type ScrollResponderType = {
   // issue by specifying them manually.
   getScrollableNode: $PropertyType<ScrollView, 'getScrollableNode'>,
   getInnerViewNode: $PropertyType<ScrollView, 'getInnerViewNode'>,
-  getInnerViewRef: $PropertyType<ScrollView, 'getInnerViewRef'>,
   getNativeScrollRef: $PropertyType<ScrollView, 'getNativeScrollRef'>,
 
   setNativeProps: $PropertyType<ScrollView, 'setNativeProps'>,
@@ -769,15 +768,7 @@ class ScrollView extends React.Component<Props, State> {
     return ReactNative.findNodeHandle(this._innerViewRef);
   }
 
-  getInnerViewRef(): ?React.ElementRef<
-    Class<ReactNative.NativeComponent<mixed>>,
-  > {
-    return this._innerViewRef;
-  }
-
-  getNativeScrollRef(): ?React.ElementRef<
-    Class<ReactNative.NativeComponent<mixed>>,
-  > {
+  getNativeScrollRef(): ?ScrollView {
     return this._scrollViewRef;
   }
 
@@ -950,21 +941,13 @@ class ScrollView extends React.Component<Props, State> {
       this.props.onContentSizeChange(width, height);
   };
 
-  _scrollViewRef: ?React.ElementRef<
-    Class<ReactNative.NativeComponent<mixed>>,
-  > = null;
-  _setScrollViewRef = (
-    ref: ?React.ElementRef<Class<ReactNative.NativeComponent<mixed>>>,
-  ) => {
+  _scrollViewRef: ?ScrollView = null;
+  _setScrollViewRef = (ref: ?ScrollView) => {
     this._scrollViewRef = ref;
   };
 
-  _innerViewRef: ?React.ElementRef<
-    Class<ReactNative.NativeComponent<mixed>>,
-  > = null;
-  _setInnerViewRef = (
-    ref: ?React.ElementRef<Class<ReactNative.NativeComponent<mixed>>>,
-  ) => {
+  _innerViewRef: ?NativeMethodsMixinType = null;
+  _setInnerViewRef = (ref: ?NativeMethodsMixinType) => {
     this._innerViewRef = ref;
   };
 

@@ -904,12 +904,6 @@ const TextInput = createReactClass({
     this._inputRef = ref;
   },
 
-  getNativeRef: function(): ?React.ElementRef<
-    Class<ReactNative.NativeComponent<mixed>>,
-  > {
-    return this._inputRef;
-  },
-
   _renderIOSLegacy: function() {
     let textContainer;
 
@@ -1232,10 +1226,6 @@ const TextInput = createReactClass({
 
 class InternalTextInputType extends ReactNative.NativeComponent<Props> {
   clear() {}
-
-  getNativeRef(): ?React.ElementRef<
-    Class<ReactNative.NativeComponent<mixed>>,
-  > {}
 
   // $FlowFixMe
   isFocused(): boolean {}
