@@ -19,7 +19,7 @@
     "babel-jest": "^24.1.0",
     "jest": "^24.1.0",
     "metro-react-native-babel-preset": "^0.51.1",
-    "react-test-renderer": "16.8.1"
+    "react-test-renderer": "16.9.0"
   },
   "jest": {
     "preset": "react-native"
