@@ -68,8 +68,8 @@ RCT_EXTERN NSString *const RCTDidSetupModuleNotificationModuleNameKey;
 RCT_EXTERN NSString *const RCTDidSetupModuleNotificationSetupTimeKey;
 
 /**
- * This notification fires just before the bridge starts processing a request to
- * reload.
+ * DEPRECATED - Use RCTReloadCommand instead. This notification fires just before the bridge starts
+ * processing a request to reload.
  */
 RCT_EXTERN NSString *const RCTBridgeWillReloadNotification;
 
