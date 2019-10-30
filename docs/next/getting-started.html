@@ -153,16 +153,19 @@ npm start <span class="hljs-comment"># you can also use: expo start</span>
 <p><block class="native mac windows linux android" /></p>
 <p>While you can use any editor of your choice to develop your app, you will need to install Android Studio in order to set up the necessary tooling to build your React Native app for Android.</p>
 <p><block class="native mac ios android" /></p>
-<p><h3>Node, Watchman, JDK</h3></p>
-<p>We recommend installing Node, Watchman, and JDK using <a href="http://brew.sh/">Homebrew</a>. Run the following commands in a Terminal after installing Homebrew:</p>
-<pre><code class="hljs"><span class="hljs-keyword">brew </span>install yarn
-<span class="hljs-keyword">brew </span>install node
-<span class="hljs-keyword">brew </span>install watchman
-<span class="hljs-keyword">brew </span>tap AdoptOpenJDK/openjdk
-<span class="hljs-keyword">brew </span>cask install adoptopenjdk8
+<p><h3>Node &amp; Watchman</h3></p>
+<p>We recommend installing Node and Watchman using <a href="http://brew.sh/">Homebrew</a>. Run the following commands in a Terminal after installing Homebrew:</p>
+<pre><code class="hljs css language-sh">brew install node
+brew install watchman
 </code></pre>
 <p>If you have already installed Node on your system, make sure it is Node 8.3 or newer.</p>
 <p><a href="https://facebook.github.io/watchman">Watchman</a> is a tool by Facebook for watching changes in the filesystem. It is highly recommended you install it for better performance.</p>
+<p><block class="native mac android" /></p>
+<p><h3>Java Development Kit</h3></p>
+<p>We recommend installing JDK using <a href="http://brew.sh/">Homebrew</a>. Run the following commands in a Terminal after installing Homebrew:</p>
+<pre><code class="hljs css language-sh">brew tap AdoptOpenJDK/openjdk
+brew cask install adoptopenjdk8
+</code></pre>
 <p>If you have already installed JDK on your system, make sure it is JDK 8 or newer.</p>
 <p><block class="native linux android" /></p>
 <p><h3>Node</h3></p>
@@ -178,26 +181,8 @@ npm start <span class="hljs-comment"># you can also use: expo start</span>
 <blockquote>
 <p>You can find additional installation options on <a href="https://nodejs.org/en/download/">Node's Downloads page</a>.</p>
 </blockquote>
-<p><block class="native mac ios android" /></p>
-<p><h3>The React Native CLI</h3></p>
-<p>Node comes with npm, which lets you install the React Native command line interface.</p>
-<p>Run the following command in a Terminal:</p>
-<pre><code class="hljs"><span class="hljs-built_in">npm</span> install -g react-<span class="hljs-keyword">native</span>-cli
-</code></pre>
-<blockquote>
-<p>If you get an error like <code>Cannot find module 'npmlog'</code>, try installing npm directly: <code>curl -0 -L https://npmjs.org/install.sh | sudo sh</code>.</p>
-</blockquote>
-<p><block class="native windows linux android" /></p>
-<p><h3>The React Native CLI</h3></p>
-<p>Node comes with npm, which lets you install the React Native command line interface.</p>
-<p>Run the following command in a Command Prompt or shell:</p>
-<pre><code class="hljs css language-powershell">npm install -g react-native-cli
-</code></pre>
-<blockquote>
-<p>If you get an error like <code>Cannot find module 'npmlog'</code>, try installing npm directly: <code>curl -0 -L https://npmjs.org/install.sh | sudo sh</code>.</p>
-</blockquote>
 <p><block class="native mac ios" /></p>
-<p><h3>Xcode</h3></p>
+<p><h3>Xcode &amp; CocoaPods</h3></p>
 <p>The easiest way to install Xcode is via the <a href="https://itunes.apple.com/us/app/xcode/id497799835?mt=12">Mac App Store</a>. Installing Xcode will also install the iOS Simulator and all the necessary tools to build your iOS app.</p>
 <p>If you have already installed Xcode on your system, make sure it is version 9.4 or newer.</p>
 <p><h4>Command Line Tools</h4></p>
@@ -205,6 +190,12 @@ npm start <span class="hljs-comment"># you can also use: expo start</span>
 <p><img src="/react-native/docs/assets/GettingStartedXcodeCommandLineTools.png" alt="Xcode Command Line Tools"></p>
 <p><h4>Installing an iOS Simulator in Xcode</h4></p>
 <p>To install a simulator, open <strong>Xcode &gt; Preferences...</strong> and select the <strong>Components</strong> tab. Select a simulator with the corresponding version of iOS you wish to use.</p>
+<p><h4>CocoaPods</h4></p>
+<p><a href="https://cocoapods.org/">CocoaPods</a> is built with Ruby and it will be installable with the default Ruby available on macOS. You can use a Ruby Version manager, however we recommend that you use the standard Ruby available on macOS unless you know what you're doing.</p>
+<p>Using the default Ruby install will require you to use <code>sudo</code> when installing gems. (This is only an issue for the duration of the gem installation, though.)</p>
+<pre><code class="hljs css language-sh">sudo gem install cocoapods
+</code></pre>
+<p>For more information, please visit <a href="https://guides.cocoapods.org/using/getting-started.html">CocoaPods Getting Started guide</a>.</p>
 <p><block class="native linux android" /></p>
 <p><h3>Java Development Kit</h3></p>
 <p>React Native requires version 8 of the Java SE Development Kit (JDK). You may download and install <a href="http://openjdk.java.net">OpenJDK</a> from <a href="https://adoptopenjdk.net/">AdoptOpenJDK</a> or your system packager. You may also <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Download and install Oracle JDK 8</a> if desired.</p>
@@ -256,18 +247,18 @@ npm start <span class="hljs-comment"># you can also use: expo start</span>
 <p><block class="native mac linux android" /></p>
 <p>Add the following lines to your <code>$HOME/.bash_profile</code> or <code>$HOME/.bashrc</code> config file:</p>
 <p><block class="native mac android" /></p>
-<pre><code class="hljs"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">ANDROID_HOME</span>=<span class="hljs-variable">$HOME</span>/Library/Android/sdk
-<span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$ANDROID_HOME/emulator
-<span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$ANDROID_HOME/tools
-<span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$ANDROID_HOME/tools/bin
-<span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$ANDROID_HOME/platform-tools
+<pre><code class="hljs css language-sh"><span class="hljs-built_in">export</span> ANDROID_HOME=<span class="hljs-variable">$HOME</span>/Library/Android/sdk
+<span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$ANDROID_HOME</span>/emulator
+<span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$ANDROID_HOME</span>/tools
+<span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$ANDROID_HOME</span>/tools/bin
+<span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$ANDROID_HOME</span>/platform-tools
 </code></pre>
 <p><block class="native linux android" /></p>
-<pre><code class="hljs"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">ANDROID_HOME</span>=<span class="hljs-variable">$HOME</span>/Android/Sdk
-<span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$ANDROID_HOME/emulator
-<span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$ANDROID_HOME/tools
-<span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$ANDROID_HOME/tools/bin
-<span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$ANDROID_HOME/platform-tools
+<pre><code class="hljs css language-sh"><span class="hljs-built_in">export</span> ANDROID_HOME=<span class="hljs-variable">$HOME</span>/Android/Sdk
+<span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$ANDROID_HOME</span>/emulator
+<span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$ANDROID_HOME</span>/tools
+<span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$ANDROID_HOME</span>/tools/bin
+<span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$ANDROID_HOME</span>/platform-tools
 </code></pre>
 <p><block class="native mac linux android" /></p>
 <blockquote>
@@ -298,27 +289,35 @@ npm start <span class="hljs-comment"># you can also use: expo start</span>
 </blockquote>
 <p><block class="native mac ios" /></p>
 <p><h2>Creating a new application</h2></p>
-<p>Use the React Native command line interface to generate a new React Native project called &quot;AwesomeProject&quot;:</p>
-<pre><code class="hljs">react-<span class="hljs-keyword">native</span> <span class="hljs-keyword">init</span> AwesomeProject
+<blockquote>
+<p>If you previously installed a global <code>react-native-cli</code> package, please remove it as it may cause unexpected issues.</p>
+</blockquote>
+<p>React Native has a built-in command line interface, which you can use to generate a new project. You can access it without installing anything globally using <code>npx</code>, which ships with Node.js. Let's create a new React Native project called &quot;AwesomeProject&quot;:</p>
+<pre><code class="hljs css language-sh">npx react-native init AwesomeProject
 </code></pre>
-<p>This is not necessary if you are integrating React Native into an existing application, if you &quot;ejected&quot; from Expo (or Create React Native App), or if you're adding iOS support to an existing React Native project (see <a href="/react-native/docs/next/platform-specific-code">Platform Specific Code</a>). You can also use a third-party CLI to init your React Native app, such as <a href="https://github.com/infinitered/ignite">Ignite CLI</a>.</p>
-<p><h3>[Optional] Using a specific version</h3></p>
+<p>This is not necessary if you are integrating React Native into an existing application, if you &quot;ejected&quot; from Expo, or if you're adding iOS support to an existing React Native project (see <a href="/react-native/docs/next/platform-specific-code">Platform Specific Code</a>). You can also use a third-party CLI to init your React Native app, such as <a href="https://github.com/infinitered/ignite">Ignite CLI</a>.</p>
+<p><h3>[Optional] Using a specific version or template</h3></p>
 <p>If you want to start a new project with a specific React Native version, you can use the <code>--version</code> argument:</p>
-<pre><code class="hljs">react-native init AwesomeProject --version X<span class="hljs-selector-class">.XX</span><span class="hljs-selector-class">.X</span>
+<pre><code class="hljs css language-sh">npx react-native init AwesomeProject --version X.XX.X
 </code></pre>
-<pre><code class="hljs">react-<span class="hljs-keyword">native</span> init AwesomeProject --version react-<span class="hljs-keyword">native</span><span class="hljs-meta">@next</span>
+<p>You can also start a project with a custom React Native template, like TypeScript, with <code>--template</code> argument:</p>
+<pre><code class="hljs css language-sh">npx react-native init AwesomeTSProject --template react-native-template-typescript
 </code></pre>
 <p><block class="native mac windows linux android" /></p>
 <p><h2>Creating a new application</h2></p>
-<p>Use the React Native command line interface to generate a new React Native project called &quot;AwesomeProject&quot;:</p>
-<pre><code class="hljs">react-<span class="hljs-keyword">native</span> <span class="hljs-keyword">init</span> AwesomeProject
+<blockquote>
+<p>If you previously installed a global <code>react-native-cli</code> package, please remove it as it may cause unexpected issues.</p>
+</blockquote>
+<p>React Native has a built-in command line interface, which you can use to generate a new project. You can access it without installing anything globally using <code>npx</code>, which ships with Node.js. Let's create a new React Native project called &quot;AwesomeProject&quot;:</p>
+<pre><code class="hljs css language-sh">npx react-native init AwesomeProject
 </code></pre>
-<p>This is not necessary if you are integrating React Native into an existing application, if you &quot;ejected&quot; from Create React Native App, or if you're adding Android support to an existing React Native project (see <a href="/react-native/docs/next/platform-specific-code">Platform Specific Code</a>). You can also use a third-party CLI to init your React Native app, such as <a href="https://github.com/infinitered/ignite">Ignite CLI</a>.</p>
-<p><h3>[Optional] Using a specific version</h3></p>
+<p>This is not necessary if you are integrating React Native into an existing application, if you &quot;ejected&quot; from Expo, or if you're adding Android support to an existing React Native project (see <a href="/react-native/docs/next/platform-specific-code">Platform Specific Code</a>). You can also use a third-party CLI to init your React Native app, such as <a href="https://github.com/infinitered/ignite">Ignite CLI</a>.</p>
+<p><h3>[Optional] Using a specific version or template</h3></p>
 <p>If you want to start a new project with a specific React Native version, you can use the <code>--version</code> argument:</p>
-<pre><code class="hljs">react-native init AwesomeProject --version X<span class="hljs-selector-class">.XX</span><span class="hljs-selector-class">.X</span>
+<pre><code class="hljs css language-sh">npx react-native init AwesomeProject --version X.XX.X
 </code></pre>
-<pre><code class="hljs">react-<span class="hljs-keyword">native</span> init AwesomeProject --version react-<span class="hljs-keyword">native</span><span class="hljs-meta">@next</span>
+<p>You can also start a project with a custom React Native template, like TypeScript, with <code>--template</code> argument:</p>
+<pre><code class="hljs css language-sh">npx react-native init AwesomeTSProject --template react-native-template-typescript
 </code></pre>
 <p><block class="native mac windows linux android" /></p>
 <p><h2>Preparing the Android device</h2></p>
@@ -346,13 +345,16 @@ npm start <span class="hljs-comment"># you can also use: expo start</span>
 <p>Click &quot;Next&quot; then &quot;Finish&quot; to create your AVD. At this point you should be able to click on the green triangle button next to your AVD to launch it, then proceed to the next step.</p>
 <p><block class="native mac ios" /></p>
 <p><h2>Running your React Native application</h2></p>
-<p>Run <code>react-native run-ios</code> inside your React Native project folder:</p>
-<pre><code class="hljs">cd AwesomeProject
-react-native <span class="hljs-keyword">run</span><span class="bash">-ios</span>
+<blockquote>
+<p>If you use the Yarn package manager, you can use <code>yarn</code> instead of <code>npx</code> when running React Native commands inside an existing project.</p>
+</blockquote>
+<p>Run <code>npx react-native run-ios</code> inside your React Native project folder:</p>
+<pre><code class="hljs css language-sh"><span class="hljs-built_in">cd</span> AwesomeProject
+npx react-native run-ios
 </code></pre>
 <p>You should see your new app running in the iOS Simulator shortly.</p>
 <p><img src="/react-native/docs/assets/GettingStartediOSSuccess.png" alt="AwesomeProject on iOS"></p>
-<p><code>react-native run-ios</code> is one way to run your app. You can also run it directly from within Xcode.</p>
+<p><code>npx react-native run-ios</code> is one way to run your app. You can also run it directly from within Xcode.</p>
 <blockquote>
 <p>If you can't get this to work, see the <a href="/react-native/docs/next/troubleshooting#content">Troubleshooting</a> page.</p>
 </blockquote>
@@ -360,9 +362,12 @@ react-native <span class="hljs-keyword">run</span><span class="bash">-ios</span>
 <p>The above command will automatically run your app on the iOS Simulator by default. If you want to run the app on an actual physical iOS device, please follow the instructions <a href="/react-native/docs/next/running-on-device">here</a>.</p>
 <p><block class="native mac windows linux android" /></p>
 <p><h2>Running your React Native application</h2></p>
-<p>Run <code>react-native run-android</code> inside your React Native project folder:</p>
-<pre><code class="hljs">cd AwesomeProject
-react-native <span class="hljs-keyword">run</span><span class="bash">-android</span>
+<blockquote>
+<p>If you use the Yarn package manager, you can use <code>yarn</code> instead of <code>npx</code> when running React Native commands inside an existing project.</p>
+</blockquote>
+<p>Run <code>npx react-native run-android</code> inside your React Native project folder:</p>
+<pre><code class="hljs css language-sh"><span class="hljs-built_in">cd</span> AwesomeProject
+npx react-native run-android
 </code></pre>
 <p>If everything is set up correctly, you should see your new app running in your Android emulator shortly.</p>
 <p><block class="native mac android" /></p>
@@ -370,7 +375,7 @@ react-native <span class="hljs-keyword">run</span><span class="bash">-android</s
 <p><block class="native windows android" /></p>
 <p><img src="/react-native/docs/assets/GettingStartedAndroidSuccessWindows.png" alt="AwesomeProject on Android"></p>
 <p><block class="native mac windows linux android" /></p>
-<p><code>react-native run-android</code> is one way to run your app - you can also run it directly from within Android Studio.</p>
+<p><code>npx react-native run-android</code> is one way to run your app - you can also run it directly from within Android Studio.</p>
 <blockquote>
 <p>If you can't get this to work, see the <a href="/react-native/docs/next/troubleshooting#content">Troubleshooting</a> page.</p>
 </blockquote>
