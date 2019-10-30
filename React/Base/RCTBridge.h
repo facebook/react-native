@@ -271,12 +271,12 @@ RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 /**
  * Reload the bundle and reset executor & modules. Safe to call from any thread.
  */
-- (void)reload __deprecated_msg("Call reloadWithReason instead");
+- (void)reload __deprecated_msg("Use RCTReloadCommand instead");
 
 /**
  * Reload the bundle and reset executor & modules. Safe to call from any thread.
  */
-- (void)reloadWithReason:(NSString *)reason;
+- (void)reloadWithReason:(NSString *)reason __deprecated_msg("Use RCTReloadCommand instead");
 
 /**
  * Handle notifications for a fast refresh. Safe to call from any thread.
@@ -286,7 +286,7 @@ RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 /**
  * Inform the bridge, and anything subscribing to it, that it should reload.
  */
-- (void)requestReload __deprecated_msg("Call reloadWithReason instead");
+- (void)requestReload __deprecated_msg("Use RCTReloadCommand instead");
 
 /**
  * Says whether bridge has started receiving calls from javascript.

@@ -9,12 +9,21 @@
 
 #import <React/RCTDefines.h>
 
+/**
+ * A protocol which should be conformed to in order to be notified of RN reload events. These events can be
+ * created by CMD+R or dev menu during development, or anywhere the trigger is exposed to JS.
+ * The listener must also register itself using the method below.
+ */
 @protocol RCTReloadListener
 - (void)didReceiveReloadCommand;
 @end
 
-/** Registers a weakly-held observer of the Command+R reload key command. */
+/**
+ * Registers a weakly-held observer of RN reload events.
+ */
 RCT_EXTERN void RCTRegisterReloadCommandListener(id<RCTReloadListener> listener);
 
-/** Triggers a reload for all current listeners. You shouldn't need to use this directly in most cases. */
+/**
+ * Triggers a reload for all current listeners.
+ */
 RCT_EXTERN void RCTTriggerReloadCommandListeners(void);

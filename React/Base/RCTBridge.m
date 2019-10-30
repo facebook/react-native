@@ -294,13 +294,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 }
 
 /**
- * Legacy reload, please use reloadWithReason and provide a reason for stats.
+ * DEPRECATED - please use RCTReloadCommand.
  */
 - (void)reload
 {
    [self reloadWithReason:@"Unknown from bridge"];
 }
 
+/**
+ * DEPRECATED - please use RCTReloadCommand.
+ */
 - (void)reloadWithReason:(NSString *)reason
 {
   #if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC
@@ -328,6 +331,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeFastRefreshNotification object:self];
 }
 
+/**
+ * DEPRECATED - please use RCTReloadCommand.
+ */
 - (void)requestReload
 {
   [self reloadWithReason:@"Requested from bridge"];
