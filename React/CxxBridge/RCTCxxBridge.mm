@@ -1010,7 +1010,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   if (!_valid) {
     RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
   }
-  RCTTriggerReloadCommandListeners();
+  RCTTriggerReloadCommandListeners(@"Unknown from cxx bridge");
 }
 
 - (void)reloadWithReason:(NSString *)reason
@@ -1018,7 +1018,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   if (!_valid) {
     RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
   }
-  RCTTriggerReloadCommandListeners();
+  RCTTriggerReloadCommandListeners(reason);
 }
 
 - (Class)executorClass

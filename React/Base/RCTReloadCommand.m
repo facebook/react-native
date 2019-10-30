@@ -9,9 +9,13 @@
 
 #import "RCTAssert.h"
 #import "RCTKeyCommands.h"
+#import "RCTUtils.h"
 
 /** main queue only */
 static NSHashTable<id<RCTReloadListener>> *listeners;
+
+NSString *const RCTTriggerReloadCommandNotification = @"RCTTriggerReloadCommandNotification";
+NSString *const RCTTriggerReloadCommandReasonKey = @"reason";
 
 void RCTRegisterReloadCommandListener(id<RCTReloadListener> listener)
 {
@@ -23,15 +27,20 @@ void RCTRegisterReloadCommandListener(id<RCTReloadListener> listener)
                                                    modifierFlags:UIKeyModifierCommand
                                                           action:
      ^(__unused UIKeyCommand *command) {
-       RCTTriggerReloadCommandListeners();
+       RCTTriggerReloadCommandListeners(@"Command + R");
      }];
   });
   [listeners addObject:listener];
 }
 
-void RCTTriggerReloadCommandListeners(void)
+void RCTTriggerReloadCommandListeners(NSString *reason)
 {
   RCTAssertMainQueue();
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTTriggerReloadCommandNotification
+                                                      object:nil
+                                                    userInfo:@{RCTTriggerReloadCommandReasonKey: RCTNullIfNil(reason)} ];
+
   // Copy to protect against mutation-during-enumeration.
   // If listeners hasn't been initialized yet we get nil, which works just fine.
   NSArray<id<RCTReloadListener>> *copiedListeners = [listeners allObjects];

@@ -172,7 +172,7 @@ RCT_EXPORT_MODULE()
         if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
           weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
         }
-        RCTTriggerReloadCommandListeners();
+        RCTTriggerReloadCommandListeners(@"Global hotkey");
       }
                        queue:dispatch_get_main_queue()
                    forMethod:@"reload"];
@@ -247,12 +247,12 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(reload)
 {
-  RCTTriggerReloadCommandListeners();
+  RCTTriggerReloadCommandListeners(@"Unknown From JS");
 }
 
 RCT_EXPORT_METHOD(reloadWithReason : (NSString *) reason)
 {
-  RCTTriggerReloadCommandListeners();
+  RCTTriggerReloadCommandListeners(reason);
 }
 
 RCT_EXPORT_METHOD(onFastRefresh)
@@ -390,7 +390,7 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
     }
 
     self.bridge.executorClass = executorClass;
-    RCTTriggerReloadCommandListeners();
+    RCTTriggerReloadCommandListeners(@"Custom executor class reset");
   }
 }
 

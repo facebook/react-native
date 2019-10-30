@@ -26,4 +26,10 @@ RCT_EXTERN void RCTRegisterReloadCommandListener(id<RCTReloadListener> listener)
 /**
  * Triggers a reload for all current listeners. Replaces [_bridge reload].
  */
-RCT_EXTERN void RCTTriggerReloadCommandListeners(void);
+RCT_EXTERN void RCTTriggerReloadCommandListeners(NSString *reason);
+
+/**
+ * This notification fires anytime RCTTriggerReloadCommandListeners() is called.
+ */
+RCT_EXTERN NSString *const RCTTriggerReloadCommandNotification;
+RCT_EXTERN NSString *const RCTTriggerReloadCommandReasonKey; // key in userInfo for RCTTriggerReloadCommandNotification

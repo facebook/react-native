@@ -647,7 +647,7 @@ RCT_EXPORT_METHOD(dismiss)
     if (_overrideReloadAction) {
         _overrideReloadAction();
     } else {
-      RCTTriggerReloadCommandListeners();
+      RCTTriggerReloadCommandListeners(@"Redbox");
     }
     [self dismiss];
 }
