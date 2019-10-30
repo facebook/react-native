@@ -14,6 +14,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTJSStackFrame.h"
 #import "RCTRedBoxExtraDataViewController.h"
+#import "RCTReloadCommand.h"
 #import "RCTUtils.h"
 
 #import <objc/runtime.h>
@@ -646,7 +647,7 @@ RCT_EXPORT_METHOD(dismiss)
     if (_overrideReloadAction) {
         _overrideReloadAction();
     } else {
-        [_bridge reloadWithReason:@"Redbox"];
+      RCTTriggerReloadCommandListeners();
     }
     [self dismiss];
 }

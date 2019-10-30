@@ -354,11 +354,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   Class bridgeClass = self.bridgeClass;
 
-  #if RCT_DEV
   RCTExecuteOnMainQueue(^{
     RCTRegisterReloadCommandListener(self);
   });
-  #endif
 
   // Only update bundleURL from delegate if delegate bundleURL has changed
   NSURL *previousDelegateURL = _delegateBundleURL;

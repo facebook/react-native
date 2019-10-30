@@ -24,6 +24,6 @@
 RCT_EXTERN void RCTRegisterReloadCommandListener(id<RCTReloadListener> listener);
 
 /**
- * Triggers a reload for all current listeners.
+ * Triggers a reload for all current listeners. Replaces [_bridge reload].
  */
 RCT_EXTERN void RCTTriggerReloadCommandListeners(void);

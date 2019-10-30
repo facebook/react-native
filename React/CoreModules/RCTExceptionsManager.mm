@@ -12,6 +12,7 @@
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
 #import <React/RCTRedBox.h>
+#import <React/RCTReloadCommand.h>
 #import <React/RCTRootView.h>
 
 #import "CoreModulesPlugins.h"
@@ -58,7 +59,7 @@ RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
   static NSUInteger reloadRetries = 0;
   if (!RCT_DEBUG && reloadRetries < _maxReloadAttempts) {
     reloadRetries++;
-    [_bridge reload];
+    RCTTriggerReloadCommandListeners();
   } else {
     NSString *description = [@"Unhandled JS Exception: " stringByAppendingString:message];
     NSDictionary *errorInfo = @{ NSLocalizedDescriptionKey: description, RCTJSStackTraceKey: stack };

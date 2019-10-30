@@ -24,6 +24,7 @@
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTProfile.h>
 #import <React/RCTRedBox.h>
+#import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
 #import <React/RCTFollyConvert.h>
 #import <cxxreact/CxxNativeModule.h>
@@ -1009,7 +1010,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   if (!_valid) {
     RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
   }
-  [_parentBridge reloadWithReason:@"Unknown from cxx bridge"];
+  RCTTriggerReloadCommandListeners();
 }
 
 - (void)reloadWithReason:(NSString *)reason
@@ -1017,7 +1018,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   if (!_valid) {
     RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
   }
-  [_parentBridge reloadWithReason:reason];
+  RCTTriggerReloadCommandListeners();
 }
 
 - (Class)executorClass

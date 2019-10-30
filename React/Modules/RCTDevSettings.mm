@@ -14,6 +14,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
 #import "RCTProfile.h"
+#import "RCTReloadCommand.h"
 #import "RCTUtils.h"
 
 #import <React/RCTDevMenu.h>
@@ -171,7 +172,7 @@ RCT_EXPORT_MODULE()
         if (params != (id)kCFNull && [params[@"debug"] boolValue]) {
           weakBridge.executorClass = objc_lookUpClass("RCTWebSocketExecutor");
         }
-        [weakBridge reloadWithReason:@"Global hotkey"];
+        RCTTriggerReloadCommandListeners();
       }
                        queue:dispatch_get_main_queue()
                    forMethod:@"reload"];
@@ -246,13 +247,12 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(reload)
 {
-  [self.bridge reloadWithReason:@"Unknown From JS"];
+  RCTTriggerReloadCommandListeners();
 }
 
 RCT_EXPORT_METHOD(reloadWithReason : (NSString *) reason)
 {
-  [self.bridge reloadWithReason:reason];
-
+  RCTTriggerReloadCommandListeners();
 }
 
 RCT_EXPORT_METHOD(onFastRefresh)
@@ -390,7 +390,7 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
     }
 
     self.bridge.executorClass = executorClass;
-    [self.bridge reloadWithReason:@"Custom executor class reset"];
+    RCTTriggerReloadCommandListeners();
   }
 }
 

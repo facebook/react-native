@@ -61,7 +61,7 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 - (void)show;
 
 /**
- * Deprecated, use -[RCTBRidge reload] instead.
+ * Deprecated, use `RCTReloadCommand` instead.
  */
 - (void)reload DEPRECATED_ATTRIBUTE;
 
