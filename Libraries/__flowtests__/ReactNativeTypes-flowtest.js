@@ -14,7 +14,7 @@ import * as React from 'react';
 import type {
   HostComponent,
   _InternalReactNativeComponentClass,
-} from '../shims/ReactNativeTypes';
+} from '../Renderer/shims/ReactNativeTypes';
 
 function takesHostComponentInstance(
   instance: React$ElementRef<HostComponent<mixed>> | null,
