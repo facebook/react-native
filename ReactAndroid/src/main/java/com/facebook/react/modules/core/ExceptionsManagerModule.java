@@ -65,7 +65,14 @@ public class ExceptionsManagerModule extends BaseJavaModule {
     boolean isFatal = data.hasKey("isFatal") ? data.getBoolean("isFatal") : false;
 
     if (mDevSupportManager.getDevSupportEnabled()) {
-      mDevSupportManager.showNewJSError(message, stack, id);
+      boolean suppressRedBox = false;
+      if (data.getMap("extraData") != null && data.getMap("extraData").hasKey("suppressRedBox")) {
+        suppressRedBox = data.getMap("extraData").getBoolean("suppressRedBox");
+      }
+
+      if (!suppressRedBox) {
+        mDevSupportManager.showNewJSError(message, stack, id);
+      }
     } else {
       String extraDataAsJson = ExceptionDataHelper.getExtraDataAsJson(data);
       if (isFatal) {
