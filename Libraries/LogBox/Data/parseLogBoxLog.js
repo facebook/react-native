@@ -12,7 +12,6 @@
 
 import UTFSequence from '../../UTFSequence';
 import stringifySafe from '../../Utilities/stringifySafe';
-import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 import type {Stack} from './LogBoxSymbolication';
 
 export type Category = string;
@@ -118,7 +117,6 @@ function parseLog(
   componentStack: ComponentStack,
   category: Category,
   message: Message,
-  stack: Stack,
 |} {
   // This detects a very narrow case of a simple log string,
   // with a component stack appended by React DevTools.
@@ -152,8 +150,6 @@ function parseLog(
   return {
     ...parseCategory(argsWithoutComponentStack),
     componentStack,
-    // TODO: Use Error.captureStackTrace on Hermes
-    stack: parseErrorStack(new Error()),
   };
 }
 

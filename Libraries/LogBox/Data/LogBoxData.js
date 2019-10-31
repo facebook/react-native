@@ -13,6 +13,7 @@
 import LogBoxLog from './LogBoxLog';
 import parseLogBoxLog from './parseLogBoxLog';
 import type {LogLevel} from './LogBoxLog';
+import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 
 export type LogBoxLogs = Set<LogBoxLog>;
 
@@ -54,32 +55,41 @@ function handleUpdate(): void {
 }
 
 export function add(level: LogLevel, args: $ReadOnlyArray<mixed>): void {
-  // This is carried over from the old YellowBox, but it is not clear why.
-  if (typeof args[0] === 'string' && args[0].startsWith('(ADVICE)')) {
-    return;
-  }
+  const errorForStackTrace = new Error();
 
-  const {category, message, stack, componentStack} = parseLogBoxLog(args);
+  // Parsing logs are expensive so we schedule this
+  // otherwise spammy logs would pause rendering.
+  setImmediate(() => {
+    // This is carried over from the old YellowBox, but it is not clear why.
+    if (typeof args[0] === 'string' && args[0].startsWith('(ADVICE)')) {
+      return;
+    }
 
-  // We don't want to store these logs because they trigger a
-  // state update whenever we add them to the store, which is
-  // expensive to noisy logs. If we later want to display these
-  // we will store them in a different state object.
-  if (isMessageIgnored(message.content)) {
-    return;
-  }
+    // TODO: Use Error.captureStackTrace on Hermes
+    const stack = parseErrorStack(errorForStackTrace);
 
-  // If the next log has the same category as the previous one
-  // then we want to roll it up into the last log in the list
-  // by incrementing the count (simar to how Chrome does it).
-  const lastLog = Array.from(logs).pop();
-  if (lastLog && lastLog.category === category) {
-    lastLog.incrementCount();
-  } else {
-    logs.add(new LogBoxLog(level, message, stack, category, componentStack));
-  }
+    const {category, message, componentStack} = parseLogBoxLog(args);
 
-  handleUpdate();
+    // We don't want to store these logs because they trigger a
+    // state update whenever we add them to the store, which is
+    // expensive to noisy logs. If we later want to display these
+    // we will store them in a different state object.
+    if (isMessageIgnored(message.content)) {
+      return;
+    }
+
+    // If the next log has the same category as the previous one
+    // then we want to roll it up into the last log in the list
+    // by incrementing the count (simar to how Chrome does it).
+    const lastLog = Array.from(logs).pop();
+    if (lastLog && lastLog.category === category) {
+      lastLog.incrementCount();
+    } else {
+      logs.add(new LogBoxLog(level, message, stack, category, componentStack));
+    }
+
+    handleUpdate();
+  });
 }
 
 export function symbolicateLogNow(log: LogBoxLog) {

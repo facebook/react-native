@@ -36,13 +36,27 @@ const observe = () => {
   };
 };
 
+const logAndFlush = logs => {
+  logs.forEach(log => {
+    LogBoxData.add(log.level, log.args);
+  });
+
+  jest.runAllImmediates();
+};
+
+const logAndFlushAndUpdate = logs => {
+  logAndFlush(logs);
+
+  // We run immediates again to flush the updates.
+  jest.runAllImmediates();
+};
 describe('LogBoxData', () => {
   beforeEach(() => {
     jest.resetModules();
   });
 
   it('adds and dismisses logs', () => {
-    LogBoxData.add('warn', ['A']);
+    logAndFlush([{level: 'warn', args: ['A']}]);
 
     expect(registry().length).toBe(1);
     expect(registry()[0]).toBeDefined();
@@ -53,9 +67,11 @@ describe('LogBoxData', () => {
   });
 
   it('clears all logs', () => {
-    LogBoxData.add('warn', ['A']);
-    LogBoxData.add('warn', ['B']);
-    LogBoxData.add('warn', ['C']);
+    logAndFlush([
+      {level: 'warn', args: ['A']},
+      {level: 'warn', args: ['B']},
+      {level: 'warn', args: ['C']},
+    ]);
 
     expect(registry().length).toBe(3);
 
@@ -64,9 +80,11 @@ describe('LogBoxData', () => {
   });
 
   it('keeps logs in chronological order', () => {
-    LogBoxData.add('warn', ['A']);
-    LogBoxData.add('warn', ['B']);
-    LogBoxData.add('warn', ['C']);
+    logAndFlush([
+      {level: 'warn', args: ['A']},
+      {level: 'warn', args: ['B']},
+      {level: 'warn', args: ['C']},
+    ]);
 
     let logs = registry();
     expect(logs.length).toBe(3);
@@ -74,7 +92,7 @@ describe('LogBoxData', () => {
     expect(logs[1].category).toEqual('B');
     expect(logs[2].category).toEqual('C');
 
-    LogBoxData.add('warn', ['A']);
+    logAndFlush([{level: 'warn', args: ['A']}]);
 
     // Expect `A` to be added to the end of the registry.
     logs = registry();
@@ -86,8 +104,7 @@ describe('LogBoxData', () => {
   });
 
   it('increments the count of previous log with matching category', () => {
-    LogBoxData.add('warn', ['A']);
-    LogBoxData.add('warn', ['B']);
+    logAndFlush([{level: 'warn', args: ['A']}, {level: 'warn', args: ['B']}]);
 
     let logs = registry();
     expect(logs.length).toBe(2);
@@ -96,7 +113,7 @@ describe('LogBoxData', () => {
     expect(logs[1].category).toEqual('B');
     expect(logs[1].count).toBe(1);
 
-    LogBoxData.add('warn', ['B']);
+    logAndFlush([{level: 'warn', args: ['B']}]);
 
     // Expect `B` to be rolled into the last log.
     logs = registry();
@@ -108,9 +125,11 @@ describe('LogBoxData', () => {
   });
 
   it('ignores logs matching patterns', () => {
-    LogBoxData.add('warn', ['A!']);
-    LogBoxData.add('warn', ['B?']);
-    LogBoxData.add('warn', ['C!']);
+    logAndFlush([
+      {level: 'warn', args: ['A!']},
+      {level: 'warn', args: ['B?']},
+      {level: 'warn', args: ['C!']},
+    ]);
     expect(filteredRegistry().length).toBe(3);
 
     LogBoxData.addIgnorePatterns(['!']);
@@ -121,9 +140,12 @@ describe('LogBoxData', () => {
   });
 
   it('ignores logs matching regexs or pattern', () => {
-    LogBoxData.add('warn', ['There are 4 dogs']);
-    LogBoxData.add('warn', ['There are 3 cats']);
-    LogBoxData.add('warn', ['There are H cats']);
+    logAndFlush([
+      {level: 'warn', args: ['There are 4 dogs']},
+      {level: 'warn', args: ['There are 3 cats']},
+      {level: 'warn', args: ['There are H cats']},
+    ]);
+
     expect(filteredRegistry().length).toBe(3);
 
     LogBoxData.addIgnorePatterns(['dogs']);
@@ -137,9 +159,11 @@ describe('LogBoxData', () => {
   });
 
   it('ignores all logs when disabled', () => {
-    LogBoxData.add('warn', ['A!']);
-    LogBoxData.add('warn', ['B?']);
-    LogBoxData.add('warn', ['C!']);
+    logAndFlush([
+      {level: 'warn', args: ['A!']},
+      {level: 'warn', args: ['B?']},
+      {level: 'warn', args: ['C!']},
+    ]);
     expect(registry().length).toBe(3);
 
     LogBoxData.setDisabled(true);
@@ -150,56 +174,57 @@ describe('LogBoxData', () => {
   });
 
   it('groups consecutive logs by format string categories', () => {
-    LogBoxData.add('warn', ['%s', 'A']);
+    logAndFlush([{level: 'warn', args: ['%s', 'A']}]);
+
     expect(registry().length).toBe(1);
     expect(registry()[0].count).toBe(1);
 
-    LogBoxData.add('warn', ['%s', 'B']);
+    logAndFlush([{level: 'warn', args: ['%s', 'B']}]);
     expect(registry().length).toBe(1);
     expect(registry()[0].count).toBe(2);
 
-    LogBoxData.add('warn', ['A']);
+    logAndFlush([{level: 'warn', args: ['A']}]);
     expect(registry().length).toBe(2);
     expect(registry()[1].count).toBe(1);
 
-    LogBoxData.add('warn', ['B']);
+    logAndFlush([{level: 'warn', args: ['B']}]);
     expect(registry().length).toBe(3);
     expect(registry()[2].count).toBe(1);
   });
 
   it('groups warnings with consideration for arguments', () => {
-    LogBoxData.add('warn', ['A', 'B']);
+    logAndFlush([{level: 'warn', args: ['A', 'B']}]);
     expect(registry().length).toBe(1);
     expect(registry()[0].count).toBe(1);
 
-    LogBoxData.add('warn', ['A', 'B']);
+    logAndFlush([{level: 'warn', args: ['A', 'B']}]);
     expect(registry().length).toBe(1);
     expect(registry()[0].count).toBe(2);
 
-    LogBoxData.add('warn', ['A', 'C']);
+    logAndFlush([{level: 'warn', args: ['A', 'C']}]);
     expect(registry().length).toBe(2);
     expect(registry()[1].count).toBe(1);
 
-    LogBoxData.add('warn', ['%s', 'A', 'A']);
+    logAndFlush([{level: 'warn', args: ['%s', 'A', 'A']}]);
     expect(registry().length).toBe(3);
     expect(registry()[2].count).toBe(1);
 
-    LogBoxData.add('warn', ['%s', 'B', 'A']);
+    logAndFlush([{level: 'warn', args: ['%s', 'B', 'A']}]);
     expect(registry().length).toBe(3);
     expect(registry()[2].count).toBe(2);
 
-    LogBoxData.add('warn', ['%s', 'B', 'B']);
+    logAndFlush([{level: 'warn', args: ['%s', 'B', 'B']}]);
     expect(registry().length).toBe(4);
     expect(registry()[3].count).toBe(1);
   });
 
   it('ignores logs starting with "(ADVICE)"', () => {
-    LogBoxData.add('warn', ['(ADVICE) ...']);
+    logAndFlush([{level: 'warn', args: ['(ADVICE) ...']}]);
     expect(registry().length).toBe(0);
   });
 
   it('does not ignore logs formatted to start with "(ADVICE)"', () => {
-    LogBoxData.add('warn', ['%s ...', '(ADVICE)']);
+    logAndFlush([{level: 'warn', args: ['%s ...', '(ADVICE)']}]);
     expect(registry().length).toBe(1);
   });
 
@@ -218,9 +243,10 @@ describe('LogBoxData', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    LogBoxData.add('warn', ['A']);
-    LogBoxData.add('warn', ['B']);
-    jest.runAllImmediates();
+    logAndFlushAndUpdate([
+      {level: 'warn', args: ['A']},
+      {level: 'warn', args: ['B']},
+    ]);
     expect(observer.mock.calls.length).toBe(2);
 
     // We expect observers to recieve the same Set object in sequential updates
@@ -244,8 +270,7 @@ describe('LogBoxData', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    LogBoxData.add('warn', ['A']);
-    jest.runAllImmediates();
+    logAndFlushAndUpdate([{level: 'warn', args: ['A']}]);
     expect(observer.mock.calls.length).toBe(2);
 
     const lastLog = Array.from(observer.mock.calls[1][0])[0];
@@ -263,8 +288,7 @@ describe('LogBoxData', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    LogBoxData.add('warn', ['A']);
-    jest.runAllImmediates();
+    logAndFlushAndUpdate([{level: 'warn', args: ['A']}]);
     expect(observer.mock.calls.length).toBe(2);
 
     LogBoxData.clear();

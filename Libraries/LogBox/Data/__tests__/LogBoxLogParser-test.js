@@ -21,7 +21,6 @@ describe('parseLogBoxLog', () => {
   it('parses strings', () => {
     expect(parseLogBoxLog(['A'])).toEqual({
       componentStack: [],
-      stack: [],
       category: 'A',
       message: {
         content: 'A',
@@ -33,7 +32,6 @@ describe('parseLogBoxLog', () => {
   it('parses strings with arguments', () => {
     expect(parseLogBoxLog(['A', 'B', 'C'])).toEqual({
       componentStack: [],
-      stack: [],
       category: 'A B C',
       message: {
         content: 'A B C',
@@ -45,7 +43,6 @@ describe('parseLogBoxLog', () => {
   it('parses formatted strings', () => {
     expect(parseLogBoxLog(['%s', 'A'])).toEqual({
       componentStack: [],
-      stack: [],
       category: '\ufeff%s',
       message: {
         content: 'A',
@@ -62,7 +59,6 @@ describe('parseLogBoxLog', () => {
   it('parses formatted strings with insufficient arguments', () => {
     expect(parseLogBoxLog(['%s %s', 'A'])).toEqual({
       componentStack: [],
-      stack: [],
       category: '\ufeff%s %s',
       message: {
         content: 'A %s',
@@ -83,7 +79,6 @@ describe('parseLogBoxLog', () => {
   it('parses formatted strings with excess arguments', () => {
     expect(parseLogBoxLog(['%s', 'A', 'B'])).toEqual({
       componentStack: [],
-      stack: [],
       category: '\ufeff%s B',
       message: {
         content: 'A B',
@@ -100,7 +95,6 @@ describe('parseLogBoxLog', () => {
   it('treats "%s" in arguments as literals', () => {
     expect(parseLogBoxLog(['%s', '%s', 'A'])).toEqual({
       componentStack: [],
-      stack: [],
       category: '\ufeff%s A',
       message: {
         content: '%s A',
@@ -125,7 +119,6 @@ describe('parseLogBoxLog', () => {
         {component: 'MyComponent', location: 'filename.js:1'},
         {component: 'MyOtherComponent', location: 'filename2.js:1'},
       ],
-      stack: [],
       category: 'Some kind of message',
       message: {
         content: 'Some kind of message',
@@ -147,7 +140,6 @@ describe('parseLogBoxLog', () => {
         {component: 'MyComponent', location: 'filename.js:1'},
         {component: 'MyOtherComponent', location: 'filename2.js:1'},
       ],
-      stack: [],
       category:
         'Some kind of message Some other kind of message Some third kind of message',
       message: {
