@@ -17,15 +17,18 @@
 namespace facebook {
 namespace react {
 
-static std::string moduleNameFromComponentName(const std::string &moduleName)
+static std::string moduleNameFromComponentName(const std::string &componentName)
 {
   // TODO: remove FB specific code (T56174424)
-  std::string fbPrefix("FB");
-  if (std::mismatch(fbPrefix.begin(), fbPrefix.end(), moduleName.begin()).first == fbPrefix.end()) {
-    // If `moduleName` has "FB" prefix.
-    return moduleName + "Manager";
+  if (componentName == "StickerInputView") {
+    return "FBStickerInputViewManager";
   }
-  return "RCT" + moduleName + "Manager";
+  std::string fbPrefix("FB");
+  if (std::mismatch(fbPrefix.begin(), fbPrefix.end(), componentName.begin()).first == fbPrefix.end()) {
+    // If `moduleName` has "FB" prefix.
+    return componentName + "Manager";
+  }
+  return "RCT" + componentName + "Manager";
 }
 
 inline NSString *RCTNSStringFromString(const std::string &string)
