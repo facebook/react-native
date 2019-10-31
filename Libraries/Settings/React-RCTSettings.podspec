@@ -39,6 +39,8 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Folly\""
                              }
 
+  # test to see if CI fails
+
   s.dependency "Folly", folly_version
   s.dependency "FBReactNativeSpec", version
   s.dependency "React-Core/RCTSettingsHeaders", version
