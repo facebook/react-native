@@ -7,6 +7,8 @@
 
 package com.facebook.react.views.text;
 
+import static com.facebook.react.views.text.TextAttributeProps.UNSET;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -274,11 +276,25 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       setMovementMethod(LinkMovementMethod.getInstance());
     }
     setText(spannable);
-    setPadding(
-        (int) Math.floor(update.getPaddingLeft()),
-        (int) Math.floor(update.getPaddingTop()),
-        (int) Math.floor(update.getPaddingRight()),
-        (int) Math.floor(update.getPaddingBottom()));
+    float paddingLeft = update.getPaddingLeft();
+    float paddingTop = update.getPaddingTop();
+    float paddingRight = update.getPaddingRight();
+    float paddingBottom = update.getPaddingBottom();
+
+    // In Fabric padding is set by the update of Layout Metrics and not as part of the "setText"
+    // operation
+    // TODO T56559197: remove this condition when we migrate 100% to Fabric
+    if (paddingLeft != UNSET
+        && paddingBottom != UNSET
+        && paddingRight != UNSET
+        && paddingBottom != UNSET) {
+
+      setPadding(
+          (int) Math.floor(paddingLeft),
+          (int) Math.floor(paddingTop),
+          (int) Math.floor(paddingRight),
+          (int) Math.floor(paddingBottom));
+    }
 
     int nextTextAlign = update.getTextAlign();
     if (mTextAlign != nextTextAlign) {

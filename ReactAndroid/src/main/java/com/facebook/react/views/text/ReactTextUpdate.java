@@ -7,6 +7,8 @@
 
 package com.facebook.react.views.text;
 
+import static com.facebook.react.views.text.TextAttributeProps.UNSET;
+
 import android.text.Layout;
 import android.text.Spannable;
 
@@ -77,6 +79,28 @@ public class ReactTextUpdate {
         paddingTop,
         paddingEnd,
         paddingBottom,
+        textAlign,
+        textBreakStrategy,
+        justificationMode,
+        -1,
+        -1);
+  }
+
+  public ReactTextUpdate(
+      Spannable text,
+      int jsEventCounter,
+      boolean containsImages,
+      int textAlign,
+      int textBreakStrategy,
+      int justificationMode) {
+    this(
+        text,
+        jsEventCounter,
+        containsImages,
+        UNSET,
+        UNSET,
+        UNSET,
+        UNSET,
         textAlign,
         textBreakStrategy,
         justificationMode,

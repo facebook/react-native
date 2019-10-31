@@ -98,10 +98,6 @@ public class ReactTextViewManager
         spanned,
         -1, // TODO add this into local Data?
         false, // TODO add this into local Data
-        textViewProps.getStartPadding(),
-        textViewProps.getTopPadding(),
-        textViewProps.getEndPadding(),
-        textViewProps.getBottomPadding(),
         textViewProps.getTextAlign(),
         textBreakStrategy,
         justificationMode);
