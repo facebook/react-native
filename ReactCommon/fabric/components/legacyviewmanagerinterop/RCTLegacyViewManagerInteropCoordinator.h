@@ -19,7 +19,11 @@ typedef void (^InterceptorBlock)(std::string eventName, folly::dynamic event);
 
 - (instancetype)initWithComponentData:(RCTComponentData *)componentData;
 
-- (UIView *)viewWithInterceptor:(InterceptorBlock)block;
+- (UIView *)paperView;
+
+- (void)addObserveForTag:(NSInteger)tag usingBlock:(InterceptorBlock)block;
+
+- (void)removeObserveForTag:(NSInteger)tag;
 
 - (void)setProps:(folly::dynamic const &)props forView:(UIView *)view;
 

@@ -117,7 +117,7 @@ static RCTPropBlock createEventSetter(NSString *propName, SEL setter,Interceptor
         }
 
         if (eventInterceptor) {
-          eventInterceptor(propName, event, strongTarget);
+          eventInterceptor(propName, event, strongTarget.reactTag);
         } else {
           RCTComponentEvent *componentEvent = [[RCTComponentEvent alloc] initWithName:propName
                                                                               viewTag:strongTarget.reactTag

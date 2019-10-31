@@ -19,7 +19,7 @@ using namespace facebook::react;
    Each instnace of `RCTLegacyViewManagerInteropComponentView` registers a block to which events are dispatched.
    This is the container that maps unretained UIView pointer to a block to which the event is dispatched.
    */
-  NSMutableDictionary<NSValue *, InterceptorBlock> *_eventInterceptors;
+  NSMutableDictionary<NSNumber *, InterceptorBlock> *_eventInterceptors;
 }
 
 - (instancetype)initWithComponentData:(RCTComponentData *)componentData;
@@ -30,10 +30,9 @@ using namespace facebook::react;
     _eventInterceptors = [NSMutableDictionary new];
 
     __weak __typeof(self) weakSelf = self;
-    _componentData.eventInterceptor = ^(NSString *eventName, NSDictionary *event, id sender) {
+    _componentData.eventInterceptor = ^(NSString *eventName, NSDictionary *event, NSNumber *reactTag) {
       __typeof(self) strongSelf = weakSelf;
-      InterceptorBlock block =
-          [strongSelf->_eventInterceptors objectForKey:[NSValue valueWithNonretainedObject:sender]];
+      InterceptorBlock block = [strongSelf->_eventInterceptors objectForKey:reactTag];
       if (block) {
         block(std::string([RCTNormalizeInputEventName(eventName) UTF8String]), convertIdToFollyDynamic(event));
       }
@@ -42,11 +41,19 @@ using namespace facebook::react;
   return self;
 }
 
-- (UIView *)viewWithInterceptor:(InterceptorBlock)block
+- (void)addObserveForTag:(NSInteger)tag usingBlock:(InterceptorBlock)block
 {
-  UIView *view = [_componentData createViewWithTag:NULL];
-  [_eventInterceptors setObject:block forKey:[NSValue valueWithNonretainedObject:view]];
-  return view;
+  [_eventInterceptors setObject:block forKey:[NSNumber numberWithInteger:tag]];
+}
+
+- (void)removeObserveForTag:(NSInteger)tag
+{
+  [_eventInterceptors removeObjectForKey:[NSNumber numberWithInteger:tag]];
+}
+
+- (UIView *)paperView
+{
+  return [_componentData createViewWithTag:NULL];
 }
 
 - (void)setProps:(folly::dynamic const &)props forView:(UIView *)view

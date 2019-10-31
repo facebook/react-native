@@ -34,6 +34,12 @@ using namespace facebook::react;
   return self;
 }
 
+- (void)setTag:(NSInteger)tag
+{
+  [self.coordinator removeObserveForTag:self.tag];
+  [super setTag:tag];
+}
+
 + (NSMutableSet<NSString *> *)supportedViewManagers
 {
   static NSMutableSet<NSString *> *supported =
@@ -106,14 +112,19 @@ using namespace facebook::react;
 
   if (!_paperView) {
     __weak __typeof(self) weakSelf = self;
-    _paperView = [self.coordinator viewWithInterceptor:^(std::string eventName, folly::dynamic event) {
-      if (weakSelf) {
-        __typeof(self) strongSelf = weakSelf;
-        auto eventEmitter =
-            std::static_pointer_cast<LegacyViewManagerInteropViewEventEmitter const>(strongSelf->_eventEmitter);
-        eventEmitter->dispatchEvent(eventName, event);
-      }
-    }];
+    _paperView = self.coordinator.paperView;
+    [self.coordinator addObserveForTag:self.tag
+                            usingBlock:^(std::string eventName, folly::dynamic event) {
+                              if (weakSelf) {
+                                __typeof(self) strongSelf = weakSelf;
+                                auto eventEmitter =
+                                    std::static_pointer_cast<LegacyViewManagerInteropViewEventEmitter const>(
+                                        strongSelf->_eventEmitter);
+                                eventEmitter->dispatchEvent(eventName, event);
+                              }
+                            }];
+
+    _paperView.reactTag = [NSNumber numberWithInteger:self.tag];
     self.contentView = _paperView;
   }
 
