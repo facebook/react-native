@@ -56,19 +56,15 @@ class Instrumentation {
   ///
   /// \param path to save the heap capture
   ///
-  /// \param compact Whether the JSON should be compact or pretty
-  ///
   /// \return true iff the heap capture succeeded
-  virtual bool createSnapshotToFile(const std::string& path, bool compact) = 0;
+  virtual bool createSnapshotToFile(const std::string& path) = 0;
 
   /// Captures the heap to an output stream
   ///
   /// \param os output stream to write to.
   ///
-  /// \param compact Whether the JSON should be compact or pretty
-  ///
   /// \return true iff the heap capture succeeded.
-  virtual bool createSnapshotToStream(std::ostream& os, bool compact) = 0;
+  virtual bool createSnapshotToStream(std::ostream& os) = 0;
 
   /// Write a trace of bridge traffic to the given file name.
   virtual void writeBridgeTrafficTraceToFile(

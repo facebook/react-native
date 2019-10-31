@@ -78,11 +78,11 @@ Instrumentation& Runtime::instrumentation() {
 
     void collectGarbage() override {}
 
-    bool createSnapshotToFile(const std::string&, bool) override {
+    bool createSnapshotToFile(const std::string&) override {
       return false;
     }
 
-    bool createSnapshotToStream(std::ostream&, bool) override {
+    bool createSnapshotToStream(std::ostream&) override {
       return false;
     }
 
