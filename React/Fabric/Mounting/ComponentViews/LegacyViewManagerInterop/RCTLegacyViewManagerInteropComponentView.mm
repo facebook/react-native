@@ -36,11 +36,21 @@ using namespace facebook::react;
   return self;
 }
 
++ (NSMutableSet<NSString *> *)supportedViewManagers
+{
+  static NSMutableSet<NSString *> *supported =
+      [NSMutableSet setWithObjects:@"Picker", @"DatePicker", @"ProgressView", @"SegmentedControl", @"MaskedView", nil];
+  return supported;
+}
+
 + (BOOL)isSupported:(NSString *)componentName
 {
-  static NSSet<NSString *> *supportedComponents =
-      [NSSet setWithObjects:@"Picker", @"DatePicker", @"ProgressView", @"SegmentedControl", @"MaskedView", nil];
-  return [supportedComponents containsObject:componentName];
+  return [[RCTLegacyViewManagerInteropComponentView supportedViewManagers] containsObject:componentName];
+}
+
++ (void)supportLegacyViewManagerWithName:(NSString *)componentName
+{
+  [[RCTLegacyViewManagerInteropComponentView supportedViewManagers] addObject:componentName];
 }
 
 - (RCTLegacyViewManagerInteropCoordinator *)coordinator
