@@ -560,7 +560,7 @@ if (global.nativeLoggingHook) {
           // TODO(T43930203): remove this special case once originalConsole.assert properly checks
           // the condition
           if (methodName === 'assert') {
-            if (!arguments[0]) {
+            if (!arguments[0] && originalConsole.hasOwnProperty('assert')) {
               originalConsole.assert(...arguments);
             }
           } else {
