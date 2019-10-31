@@ -43,7 +43,7 @@ function verifyComponentAttributeEquivalence(
   componentName: string,
   config: ReactNativeBaseComponentViewConfig<>,
 ) {
-  if (__DEV__ && !global.RN$Bridgeless) {
+  if (!global.RN$Bridgeless) {
     const nativeAttributes = getNativeComponentAttributes(componentName);
 
     ['validAttributes', 'bubblingEventTypes', 'directEventTypes'].forEach(
