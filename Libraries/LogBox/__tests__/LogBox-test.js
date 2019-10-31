@@ -74,6 +74,47 @@ describe('LogBox', () => {
     expect(LogBoxData.addLog).not.toBeCalled();
 
     console.error('Warning: ...');
-    expect(LogBoxData.addLog).toBeCalledWith('warn', ['Warning: ...']);
+    expect(LogBoxData.addLog).toBeCalledWith({
+      category: 'Warning: ...',
+      componentStack: [],
+      level: 'warn',
+      message: {content: 'Warning: ...', substitutions: []},
+    });
+  });
+
+  it('ignores logs that are pattern ignored"', () => {
+    jest.mock('../Data/LogBoxData');
+    (LogBoxData.isMessageIgnored: any).mockReturnValue(true);
+
+    LogBox.install();
+
+    console.warn('ignored message');
+    expect(LogBoxData.addLog).not.toBeCalled();
+  });
+
+  it('ignores logs starting with "(ADVICE)"', () => {
+    jest.mock('../Data/LogBoxData');
+
+    LogBox.install();
+
+    console.warn('(ADVICE) ...');
+    expect(LogBoxData.addLog).not.toBeCalled();
+  });
+
+  it('does not ignore logs formatted to start with "(ADVICE)"', () => {
+    jest.mock('../Data/LogBoxData');
+
+    LogBox.install();
+
+    console.warn('%s ...', '(ADVICE)');
+    expect(LogBoxData.addLog).toBeCalledWith({
+      category: '﻿%s ...',
+      componentStack: [],
+      level: 'warn',
+      message: {
+        content: '(ADVICE) ...',
+        substitutions: [{length: 8, offset: 0}],
+      },
+    });
   });
 });

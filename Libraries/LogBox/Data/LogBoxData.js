@@ -11,16 +11,19 @@
 ('use strict');
 
 import LogBoxLog from './LogBoxLog';
-import {
-  parseLogBoxLog,
-  parseCategory,
-  parseComponentStack,
-} from './parseLogBoxLog';
+import {parseCategory, parseComponentStack} from './parseLogBoxLog';
 import type {LogLevel} from './LogBoxLog';
+import type {Message, Category, ComponentStack} from './parseLogBoxLog';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 import type {ExceptionData} from '../../Core/NativeExceptionsManager';
 
 export type LogBoxLogs = Set<LogBoxLog>;
+export type LogData = $ReadOnly<{|
+  level: LogLevel,
+  message: Message,
+  category: Category,
+  componentStack: ComponentStack,
+|}>;
 
 export type Observer = (logs: LogBoxLogs) => void;
 
@@ -36,11 +39,12 @@ let logs: LogBoxLogs = new Set();
 let updateTimeout = null;
 let _isDisabled = false;
 
-function isMessageIgnored(message: string): boolean {
+export function isMessageIgnored(message: string): boolean {
   for (const pattern of ignorePatterns) {
-    if (pattern instanceof RegExp && pattern.test(message)) {
-      return true;
-    } else if (typeof pattern === 'string' && message.includes(pattern)) {
+    if (
+      (pattern instanceof RegExp && pattern.test(message)) ||
+      (typeof pattern === 'string' && message.includes(pattern))
+    ) {
       return true;
     }
   }
@@ -59,38 +63,31 @@ function handleUpdate(): void {
   }
 }
 
-export function addLog(level: LogLevel, args: $ReadOnlyArray<mixed>): void {
+export function addLog(log: LogData): void {
   const errorForStackTrace = new Error();
 
   // Parsing logs are expensive so we schedule this
   // otherwise spammy logs would pause rendering.
   setImmediate(() => {
-    // This is carried over from the old YellowBox, but it is not clear why.
-    if (typeof args[0] === 'string' && args[0].startsWith('(ADVICE)')) {
-      return;
-    }
-
     // TODO: Use Error.captureStackTrace on Hermes
     const stack = parseErrorStack(errorForStackTrace);
-
-    const {category, message, componentStack} = parseLogBoxLog(args);
-
-    // We don't want to store these logs because they trigger a
-    // state update whenever we add them to the store, which is
-    // expensive to noisy logs. If we later want to display these
-    // we will store them in a different state object.
-    if (isMessageIgnored(message.content)) {
-      return;
-    }
 
     // If the next log has the same category as the previous one
     // then we want to roll it up into the last log in the list
     // by incrementing the count (simar to how Chrome does it).
     const lastLog = Array.from(logs).pop();
-    if (lastLog && lastLog.category === category) {
+    if (lastLog && lastLog.category === log.category) {
       lastLog.incrementCount();
     } else {
-      logs.add(new LogBoxLog(level, message, stack, category, componentStack));
+      logs.add(
+        new LogBoxLog(
+          log.level,
+          log.message,
+          stack,
+          log.category,
+          log.componentStack,
+        ),
+      );
     }
 
     handleUpdate();

@@ -37,8 +37,16 @@ const observe = () => {
 };
 
 const addLogs = logs => {
-  logs.forEach(log => {
-    LogBoxData.addLog('warn', typeof log === 'string' ? [log] : log);
+  logs.forEach(message => {
+    LogBoxData.addLog({
+      level: 'warn',
+      message: {
+        content: message,
+        substitutions: [],
+      },
+      category: message,
+      componentStack: [],
+    });
   });
 };
 
@@ -270,72 +278,6 @@ describe('LogBoxData', () => {
 
     LogBoxData.setDisabled(false);
     expect(registry().length).toBe(3);
-  });
-
-  it('groups consecutive logs by format string categories', () => {
-    addLogs([['%s', 'A']]);
-    jest.runAllImmediates();
-    expect(registry().length).toBe(1);
-    expect(registry()[0].count).toBe(1);
-
-    addLogs([['%s', 'B']]);
-    jest.runAllImmediates();
-    expect(registry().length).toBe(1);
-    expect(registry()[0].count).toBe(2);
-
-    addLogs(['A']);
-    jest.runAllImmediates();
-    expect(registry().length).toBe(2);
-    expect(registry()[1].count).toBe(1);
-
-    addLogs(['B']);
-    jest.runAllImmediates();
-    expect(registry().length).toBe(3);
-    expect(registry()[2].count).toBe(1);
-  });
-
-  it('groups warnings with consideration for arguments', () => {
-    addLogs([['A', 'B']]);
-    jest.runAllImmediates();
-    expect(registry().length).toBe(1);
-    expect(registry()[0].count).toBe(1);
-
-    addLogs([['A', 'B']]);
-    jest.runAllImmediates();
-    expect(registry().length).toBe(1);
-    expect(registry()[0].count).toBe(2);
-
-    addLogs([['A', 'C']]);
-    jest.runAllImmediates();
-    expect(registry().length).toBe(2);
-    expect(registry()[1].count).toBe(1);
-
-    addLogs([['%s', 'A', 'A']]);
-    jest.runAllImmediates();
-    expect(registry().length).toBe(3);
-    expect(registry()[2].count).toBe(1);
-
-    addLogs([['%s', 'B', 'A']]);
-    jest.runAllImmediates();
-    expect(registry().length).toBe(3);
-    expect(registry()[2].count).toBe(2);
-
-    addLogs([['%s', 'B', 'B']]);
-    jest.runAllImmediates();
-    expect(registry().length).toBe(4);
-    expect(registry()[3].count).toBe(1);
-  });
-
-  it('ignores logs starting with "(ADVICE)"', () => {
-    addLogs(['(ADVICE) ...']);
-    jest.runAllImmediates();
-    expect(registry().length).toBe(0);
-  });
-
-  it('does not ignore logs formatted to start with "(ADVICE)"', () => {
-    addLogs([['%s ...', '(ADVICE)']]);
-    jest.runAllImmediates();
-    expect(registry().length).toBe(1);
   });
 
   it('immediately updates new observers', () => {

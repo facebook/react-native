@@ -15,6 +15,7 @@ import Platform from '../Utilities/Platform';
 import RCTLog from '../Utilities/RCTLog';
 import LogBoxContainer from './UI/LogBoxContainer';
 import * as LogBoxData from './Data/LogBoxData';
+import {parseLogBoxLog} from './Data/parseLogBoxLog';
 
 import type {LogBoxLogs, Subscription, IgnorePattern} from './Data/LogBoxData';
 
@@ -64,7 +65,6 @@ if (__DEV__) {
       };
 
       warnImpl = function(...args) {
-        warn.call(console, ...args);
         registerWarning(...args);
       };
 
@@ -128,7 +128,21 @@ if (__DEV__) {
   };
 
   const registerWarning = (...args): void => {
-    LogBoxData.addLog('warn', args);
+    // This is carried over from the old YellowBox, but it is not clear why.
+    if (typeof args[0] !== 'string' || !args[0].startsWith('(ADVICE)')) {
+      const {category, message, componentStack} = parseLogBoxLog(args);
+
+      if (!LogBoxData.isMessageIgnored(message.content)) {
+        warn.call(console, ...args);
+
+        LogBoxData.addLog({
+          level: 'warn',
+          category,
+          message,
+          componentStack,
+        });
+      }
+    }
   };
 } else {
   LogBoxComponent = class extends React.Component<Props, State> {
