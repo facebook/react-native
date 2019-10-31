@@ -7567,6 +7567,18 @@ var roots = new Map(),
         return ReactNativeComponent;
       })(React.Component);
     })(findNodeHandle, findHostInstance),
+    findHostInstance_DEPRECATED: function(componentOrHandle) {
+      if (null == componentOrHandle) return null;
+      if (componentOrHandle._nativeTag) return componentOrHandle;
+      if (componentOrHandle.canonical && componentOrHandle.canonical._nativeTag)
+        return componentOrHandle.canonical;
+      componentOrHandle = findHostInstance(componentOrHandle);
+      return null == componentOrHandle
+        ? componentOrHandle
+        : componentOrHandle.canonical
+          ? componentOrHandle.canonical
+          : componentOrHandle;
+    },
     findNodeHandle: findNodeHandle,
     dispatchCommand: function(handle, command, args) {
       null != handle._nativeTag &&

@@ -24475,6 +24475,59 @@ var _nativeFabricUIManage = nativeFabricUIManager;
 var fabricDispatchCommand = _nativeFabricUIManage.dispatchCommand;
 var ReactCurrentOwner = ReactSharedInternals.ReactCurrentOwner;
 
+function findHostInstance_DEPRECATED(componentOrHandle) {
+  {
+    var owner = ReactCurrentOwner.current;
+
+    if (owner !== null && owner.stateNode !== null) {
+      !owner.stateNode._warnedAboutRefsInRender
+        ? warningWithoutStack$1(
+            false,
+            "%s is accessing findNodeHandle inside its render(). " +
+              "render() should be a pure function of props and state. It should " +
+              "never access something that requires stale data from the previous " +
+              "render, such as refs. Move this logic to componentDidMount and " +
+              "componentDidUpdate instead.",
+            getComponentName(owner.type) || "A component"
+          )
+        : void 0;
+      owner.stateNode._warnedAboutRefsInRender = true;
+    }
+  }
+
+  if (componentOrHandle == null) {
+    return null;
+  }
+
+  if (componentOrHandle._nativeTag) {
+    return componentOrHandle;
+  }
+
+  if (componentOrHandle.canonical && componentOrHandle.canonical._nativeTag) {
+    return componentOrHandle.canonical;
+  }
+
+  var hostInstance;
+
+  {
+    hostInstance = findHostInstanceWithWarning(
+      componentOrHandle,
+      "findHostInstance_DEPRECATED"
+    );
+  }
+
+  if (hostInstance == null) {
+    return hostInstance;
+  }
+
+  if (hostInstance.canonical) {
+    // Fabric
+    return hostInstance.canonical;
+  }
+
+  return hostInstance;
+}
+
 function findNodeHandle(componentOrHandle) {
   {
     var owner = ReactCurrentOwner.current;
@@ -24543,6 +24596,9 @@ setBatchingImplementation(
 var roots = new Map();
 var ReactFabric = {
   NativeComponent: ReactNativeComponent$1(findNodeHandle, findHostInstance),
+  // This is needed for implementation details of TouchableNativeFeedback
+  // Remove this once TouchableNativeFeedback doesn't use cloneElement
+  findHostInstance_DEPRECATED: findHostInstance_DEPRECATED,
   findNodeHandle: findNodeHandle,
   dispatchCommand: function(handle, command, args) {
     var invalid =
