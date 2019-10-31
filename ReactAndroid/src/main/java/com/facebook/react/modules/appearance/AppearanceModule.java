@@ -9,7 +9,6 @@ package com.facebook.react.modules.appearance;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.os.Build;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -18,7 +17,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
-/** Module that exposes the user's preferred color scheme. For API >= 29. */
+/** Module that exposes the user's preferred color scheme. */
 @ReactModule(name = AppearanceModule.NAME)
 public class AppearanceModule extends ReactContextBaseJavaModule {
 
@@ -35,16 +34,13 @@ public class AppearanceModule extends ReactContextBaseJavaModule {
   }
 
   private static String colorSchemeForCurrentConfiguration(Context context) {
-    // Night Mode is only available in Android P and up.
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      int currentNightMode =
-          context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-      switch (currentNightMode) {
-        case Configuration.UI_MODE_NIGHT_NO:
-          return "light";
-        case Configuration.UI_MODE_NIGHT_YES:
-          return "dark";
-      }
+    int currentNightMode =
+        context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+    switch (currentNightMode) {
+      case Configuration.UI_MODE_NIGHT_NO:
+        return "light";
+      case Configuration.UI_MODE_NIGHT_YES:
+        return "dark";
     }
 
     return "light";
@@ -73,8 +69,8 @@ public class AppearanceModule extends ReactContextBaseJavaModule {
    * Call this from your root activity whenever configuration changes. If the
    * color scheme has changed, an event will emitted.
    */
-  public void onConfigurationChanged() {
-    String newColorScheme = colorSchemeForCurrentConfiguration(getReactApplicationContext());
+  public void onConfigurationChanged(Context currentContext) {
+    String newColorScheme = colorSchemeForCurrentConfiguration(currentContext);
     if (!mColorScheme.equals(newColorScheme)) {
       mColorScheme = newColorScheme;
       emitAppearanceChanged(mColorScheme);

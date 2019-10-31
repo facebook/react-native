@@ -727,12 +727,14 @@ public class ReactInstanceManager {
 
   /** Call this from {@link Activity#onConfigurationChanged()}. */
   @ThreadConfined(UI)
-  public void onConfigurationChanged(@Nullable Configuration newConfig) {
+  public void onConfigurationChanged(Context updatedContext, @Nullable Configuration newConfig) {
     UiThreadUtil.assertOnUiThread();
 
-    ReactContext currentContext = getCurrentReactContext();
-    if (currentContext != null) {
-      currentContext.getNativeModule(AppearanceModule.class).onConfigurationChanged();
+    ReactContext currentReactContext = getCurrentReactContext();
+    if (currentReactContext != null) {
+      currentReactContext
+          .getNativeModule(AppearanceModule.class)
+          .onConfigurationChanged(updatedContext);
     }
   }
 
