@@ -169,7 +169,7 @@ public class RedBoxContentView extends LinearLayout implements AdapterView.OnIte
                 ? (TextView) convertView
                 : (TextView)
                     LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.redbox_item_title, parent, false);
+                        .inflate(R.layout.reactandroid_redbox_item_title, parent, false);
         // Remove ANSI color codes from the title
         String titleSafe = (mTitle == null ? "<unknown title>" : mTitle);
         title.setText(titleSafe.replaceAll("\\x1b\\[[0-9;]*m", ""));
@@ -178,7 +178,7 @@ public class RedBoxContentView extends LinearLayout implements AdapterView.OnIte
         if (convertView == null) {
           convertView =
               LayoutInflater.from(parent.getContext())
-                  .inflate(R.layout.redbox_item_frame, parent, false);
+                  .inflate(R.layout.reactandroid_redbox_item_frame, parent, false);
           convertView.setTag(new FrameViewHolder(convertView));
         }
         StackFrame frame = mStack[position - 1];
@@ -249,7 +249,7 @@ public class RedBoxContentView extends LinearLayout implements AdapterView.OnIte
   }
 
   public void init() {
-    LayoutInflater.from(getContext()).inflate(R.layout.redbox_view, this);
+    LayoutInflater.from(getContext()).inflate(R.layout.reactandroid_redbox_view, this);
 
     mStackView = (ListView) findViewById(R.id.rn_redbox_stack);
     mStackView.setOnItemClickListener(this);

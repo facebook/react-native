@@ -32,7 +32,7 @@ public class FpsView extends FrameLayout {
 
   public FpsView(ReactContext reactContext) {
     super(reactContext);
-    inflate(reactContext, R.layout.fps_view, this);
+    inflate(reactContext, R.layout.reactandroid_fps_view, this);
     mTextView = (TextView) findViewById(R.id.fps_text);
     mFrameCallback = new FpsDebugFrameCallback(reactContext);
     mFPSMonitorRunnable = new FPSMonitorRunnable();

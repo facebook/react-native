@@ -98,7 +98,7 @@ public class ReactTextViewManager
 
     if (clickableSpans.length > 0) {
       view.setTag(
-          R.id.accessibility_links,
+          R.id.reactandroid_accessibility_links,
           new ReactAccessibilityDelegate.AccessibilityLinks(clickableSpans, spannable));
       ReactAccessibilityDelegate.resetDelegate(
           view, view.isFocusable(), view.getImportantForAccessibility());

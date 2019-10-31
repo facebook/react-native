@@ -47,7 +47,7 @@ class BaseViewManagerTest {
   @Test
   fun testAccessibilityRoleNone() {
     viewManager.setAccessibilityRole(view, "none")
-    Assertions.assertThat(view.getTag(R.id.accessibility_role))
+    Assertions.assertThat(view.getTag(R.id.reactandroid_accessibility_role))
         .isEqualTo(ReactAccessibilityDelegate.AccessibilityRole.NONE)
   }
 
@@ -55,7 +55,7 @@ class BaseViewManagerTest {
   fun testAccessibilityRoleTurkish() {
     Locale.setDefault(Locale.forLanguageTag("tr-TR"))
     viewManager.setAccessibilityRole(view, "image")
-    Assertions.assertThat(view.getTag(R.id.accessibility_role))
+    Assertions.assertThat(view.getTag(R.id.reactandroid_accessibility_role))
         .isEqualTo(ReactAccessibilityDelegate.AccessibilityRole.IMAGE)
   }
 
@@ -64,13 +64,13 @@ class BaseViewManagerTest {
     val accessibilityState = JavaOnlyMap()
     accessibilityState.putBoolean("selected", true)
     viewManager.setViewState(view, accessibilityState)
-    Assertions.assertThat(view.getTag(R.id.accessibility_state)).isEqualTo(accessibilityState)
+    Assertions.assertThat(view.getTag(R.id.reactandroid_accessibility_state)).isEqualTo(accessibilityState)
     Assertions.assertThat(view.isSelected).isEqualTo(true)
   }
 
   @Test
   fun testRoleList() {
     viewManager.setRole(view, "list")
-    Assertions.assertThat(view.getTag(R.id.role)).isEqualTo(ReactAccessibilityDelegate.Role.LIST)
+    Assertions.assertThat(view.getTag(R.id.reactandroid_role)).isEqualTo(ReactAccessibilityDelegate.Role.LIST)
   }
 }

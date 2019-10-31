@@ -20,7 +20,7 @@ public class DevSettingsActivity extends PreferenceActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setTitle(getApplication().getResources().getString(R.string.catalyst_settings_title));
-    addPreferencesFromResource(R.xml.rn_dev_preferences);
+    setTitle(getApplication().getResources().getString(R.string.reactandroid_catalyst_settings_title));
+    addPreferencesFromResource(R.xml.reactandroid_rn_dev_preferences);
   }
 }

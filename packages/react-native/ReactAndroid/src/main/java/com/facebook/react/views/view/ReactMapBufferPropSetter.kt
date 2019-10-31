@@ -429,7 +429,7 @@ object ReactMapBufferPropSetter {
   }
 
   private fun ReactViewGroup.role(value: Int) {
-    setTag(R.id.role, Role.values()[value])
+    setTag(R.id.reactandroid_role, Role.values()[value])
   }
 
   private fun ReactViewGroup.pointerEvents(value: Int) {

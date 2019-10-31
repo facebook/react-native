@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.ReactNative.AppCompat.Light" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    <style name="ReactAndroidTheme.ReactNative.AppCompat.Light" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:textColor">@android:color/black</item>
     </style>
-    <style name="Theme.ReactNative.AppCompat.Light.NoActionBar.FullScreen"
-           parent="@style/Theme.ReactNative.AppCompat.Light">
+    <style name="ReactAndroidTheme.ReactNative.AppCompat.Light.NoActionBar.FullScreen"
+           parent="@style/ReactAndroidTheme.ReactNative.AppCompat.Light">
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
-    <style name="SpinnerDatePickerDialog" parent="Theme.AppCompat.Light.Dialog" tools:targetApi="lollipop">
-        <item name="android:datePickerStyle">@style/SpinnerDatePickerStyle</item>
+    <style name="ReactAndroidSpinnerDatePickerDialog" parent="Theme.AppCompat.Light.Dialog" tools:targetApi="lollipop">
+        <item name="android:datePickerStyle">@style/ReactAndroidSpinnerDatePickerStyle</item>
     </style>
 
-    <style name="SpinnerDatePickerStyle" parent="android:Widget.Material.Light.DatePicker" tools:targetApi="lollipop">
+    <style name="ReactAndroidSpinnerDatePickerStyle" parent="android:Widget.Material.Light.DatePicker" tools:targetApi="lollipop">
         <item name="android:datePickerMode">spinner</item>
     </style>
 
-    <style name="CalendarDatePickerDialog" parent="android:Theme.Material.Dialog.Alert" tools:targetApi="lollipop">
-        <item name="android:datePickerStyle">@style/CalendarDatePickerStyle</item>
+    <style name="ReactAndroidCalendarDatePickerDialog" parent="Theme.AppCompat.Light.Dialog" tools:targetApi="lollipop">
+        <item name="android:datePickerStyle">@style/ReactAndroidCalendarDatePickerStyle</item>
         <item name="android:windowIsFloating">true</item>
     </style>
 
-    <style name="CalendarDatePickerStyle" parent="android:Widget.Material.DatePicker" tools:targetApi="lollipop">
+    <style name="ReactAndroidCalendarDatePickerStyle" parent="android:Widget.Material.DatePicker" tools:targetApi="lollipop">
         <item name="android:datePickerMode">calendar</item>
     </style>
 
-    <style name="Theme.ReactNative.TextInput.DefaultBackground" parent="android:Widget.EditText">
+    <style name="ReactAndroidTheme.ReactNative.TextInput.DefaultBackground" parent="android:Widget.EditText">
       <item name="android:editTextBackground">@drawable/abc_edit_text_material</item>
     </style>
 

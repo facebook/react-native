@@ -142,7 +142,7 @@ public class ReactScrollView extends ScrollView
     // frameworks, which interact with the UI through the accessibility framework, do not have
     // access to view tags. This allows developers/testers to avoid polluting the
     // content-description with test identifiers.
-    final String testId = (String) this.getTag(R.id.react_test_id);
+    final String testId = (String) this.getTag(R.id.reactandroid_react_test_id);
     if (testId != null) {
       info.setViewIdResourceName(testId);
     }

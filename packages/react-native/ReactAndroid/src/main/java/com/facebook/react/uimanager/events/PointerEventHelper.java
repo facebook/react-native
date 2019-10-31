@@ -125,7 +125,7 @@ public class PointerEventHelper {
         return true;
     }
 
-    Integer pointerEvents = (Integer) view.getTag(R.id.pointer_events);
+    Integer pointerEvents = (Integer) view.getTag(R.id.reactandroid_pointer_events);
     if (pointerEvents != null) {
       return (pointerEvents.intValue() & (1 << event.ordinal())) != 0;
     }

@@ -3,10 +3,10 @@
 <!-- @generated -->
 <!-- FB Locale: so_SO -->
 <resources exclude-from-buck-resource-map="true">
-    <string name="link_description" gender="unknown">Linki</string>
-    <string name="image_description" gender="unknown">Sawir</string>
-    <string name="imagebutton_description" gender="unknown">Batoon, Sawir</string>
-    <string name="menu_description" gender="unknown">Tusmada</string>
-    <string name="state_on_description" gender="unknown">daaran</string>
-    <string name="state_off_description" gender="unknown">dansan</string>
+    <string name="reactandroid_link_description" gender="unknown">Linki</string>
+    <string name="reactandroid_image_description" gender="unknown">Sawir</string>
+    <string name="reactandroid_imagebutton_description" gender="unknown">Batoon, Sawir</string>
+    <string name="reactandroid_menu_description" gender="unknown">Tusmada</string>
+    <string name="reactandroid_state_on_description" gender="unknown">daaran</string>
+    <string name="reactandroid_state_off_description" gender="unknown">dansan</string>
 </resources>

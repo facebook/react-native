@@ -3,29 +3,29 @@
 <!-- @generated -->
 <!-- FB Locale: ru_RU -->
 <resources exclude-from-buck-resource-map="true">
-    <string name="link_description" gender="unknown">Ссылка</string>
-    <string name="image_description" gender="unknown">Изображение</string>
-    <string name="imagebutton_description" gender="unknown">Кнопка, изображение</string>
-    <string name="header_description" gender="unknown">Заголовок</string>
-    <string name="alert_description" gender="unknown">Оповещение</string>
-    <string name="combobox_description" gender="unknown">Комбинированный список</string>
-    <string name="menu_description" gender="unknown">Меню</string>
-    <string name="menubar_description" gender="unknown">Панель меню</string>
-    <string name="menuitem_description" gender="unknown">Элемент меню</string>
-    <string name="progressbar_description" gender="unknown">Индикатор прогресса</string>
-    <string name="radiogroup_description" gender="unknown">Группа кнопок-переключателей</string>
-    <string name="scrollbar_description" gender="unknown">Полоса прокрутки</string>
-    <string name="spinbutton_description" gender="unknown">Кнопка кольцевого списка</string>
-    <string name="rn_tab_description" gender="unknown">Вкладка</string>
-    <string name="tablist_description" gender="unknown">Список вкладок</string>
-    <string name="timer_description" gender="unknown">Таймер</string>
-    <string name="toolbar_description" gender="unknown">Панель инструментов</string>
-    <string name="summary_description" gender="unknown">Сводка</string>
-    <string name="state_busy_description" gender="unknown">занято</string>
-    <string name="state_expanded_description" gender="unknown">развернуто</string>
-    <string name="state_collapsed_description" gender="unknown">свернуто</string>
-    <string name="state_unselected_description" gender="unknown">не выбрано</string>
-    <string name="state_on_description" gender="unknown">включено</string>
-    <string name="state_off_description" gender="unknown">выкл</string>
-    <string name="state_mixed_description" gender="unknown">смешано</string>
+    <string name="reactandroid_link_description" gender="unknown">Ссылка</string>
+    <string name="reactandroid_image_description" gender="unknown">Изображение</string>
+    <string name="reactandroid_imagebutton_description" gender="unknown">Кнопка, изображение</string>
+    <string name="reactandroid_header_description" gender="unknown">Заголовок</string>
+    <string name="reactandroid_alert_description" gender="unknown">Оповещение</string>
+    <string name="reactandroid_combobox_description" gender="unknown">Комбинированный список</string>
+    <string name="reactandroid_menu_description" gender="unknown">Меню</string>
+    <string name="reactandroid_menubar_description" gender="unknown">Панель меню</string>
+    <string name="reactandroid_menuitem_description" gender="unknown">Элемент меню</string>
+    <string name="reactandroid_progressbar_description" gender="unknown">Индикатор прогресса</string>
+    <string name="reactandroid_radiogroup_description" gender="unknown">Группа кнопок-переключателей</string>
+    <string name="reactandroid_scrollbar_description" gender="unknown">Полоса прокрутки</string>
+    <string name="reactandroid_spinbutton_description" gender="unknown">Кнопка кольцевого списка</string>
+    <string name="reactandroid_rn_tab_description" gender="unknown">Вкладка</string>
+    <string name="reactandroid_tablist_description" gender="unknown">Список вкладок</string>
+    <string name="reactandroid_timer_description" gender="unknown">Таймер</string>
+    <string name="reactandroid_toolbar_description" gender="unknown">Панель инструментов</string>
+    <string name="reactandroid_summary_description" gender="unknown">Сводка</string>
+    <string name="reactandroid_state_busy_description" gender="unknown">занято</string>
+    <string name="reactandroid_state_expanded_description" gender="unknown">развернуто</string>
+    <string name="reactandroid_state_collapsed_description" gender="unknown">свернуто</string>
+    <string name="reactandroid_state_unselected_description" gender="unknown">не выбрано</string>
+    <string name="reactandroid_state_on_description" gender="unknown">включено</string>
+    <string name="reactandroid_state_off_description" gender="unknown">выкл</string>
+    <string name="reactandroid_state_mixed_description" gender="unknown">смешано</string>
 </resources>

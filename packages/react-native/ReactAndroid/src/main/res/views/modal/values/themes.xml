@@ -2,7 +2,7 @@
 
 <resources>
 
-  <style name="Theme.FullScreenDialog">
+  <style name="ReactAndroidTheme.FullScreenDialog">
     <item name="android:windowNoTitle">true</item>
     <item name="android:windowIsFloating">false</item>
     <item name="android:windowBackground">@android:color/transparent</item>
@@ -10,22 +10,22 @@
     <item name="android:statusBarColor">@android:color/transparent</item>
   </style>
 
-  <style name="Theme.FullScreenDialogAnimatedSlide" parent="Theme.FullScreenDialog">
-    <item name="android:windowAnimationStyle">@style/DialogAnimationSlide</item>
+  <style name="ReactAndroidTheme.FullScreenDialogAnimatedSlide" parent="ReactAndroidTheme.FullScreenDialog">
+    <item name="android:windowAnimationStyle">@style/ReactAndroidDialogAnimationSlide</item>
   </style>
 
-  <style name="Theme.FullScreenDialogAnimatedFade" parent="Theme.FullScreenDialog">
-    <item name="android:windowAnimationStyle">@style/DialogAnimationFade</item>
+  <style name="ReactAndroidTheme.FullScreenDialogAnimatedFade" parent="ReactAndroidTheme.FullScreenDialog">
+    <item name="android:windowAnimationStyle">@style/ReactAndroidDialogAnimationFade</item>
   </style>
 
-  <style name="DialogAnimationSlide">
-    <item name="android:windowEnterAnimation">@anim/catalyst_slide_up</item>
-    <item name="android:windowExitAnimation">@anim/catalyst_slide_down</item>
+  <style name="ReactAndroidDialogAnimationSlide">
+    <item name="android:windowEnterAnimation">@anim/reactandroid_catalyst_slide_up</item>
+    <item name="android:windowExitAnimation">@anim/reactandroid_catalyst_slide_down</item>
   </style>
 
-  <style name="DialogAnimationFade">
-    <item name="android:windowEnterAnimation">@anim/catalyst_fade_in</item>
-    <item name="android:windowExitAnimation">@anim/catalyst_fade_out</item>
+  <style name="ReactAndroidDialogAnimationFade">
+    <item name="android:windowEnterAnimation">@anim/reactandroid_catalyst_fade_in</item>
+    <item name="android:windowExitAnimation">@anim/reactandroid_catalyst_fade_out</item>
   </style>
 
 

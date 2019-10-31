@@ -3,14 +3,14 @@
 <!-- @generated -->
 <!-- FB Locale: en_GB -->
 <resources exclude-from-buck-resource-map="true">
-    <string name="imagebutton_description" gender="unknown">Button, image</string>
-    <string name="combobox_description" gender="unknown">Combo box</string>
-    <string name="menubar_description" gender="unknown">Menu bar</string>
-    <string name="menuitem_description" gender="unknown">Menu item</string>
-    <string name="progressbar_description" gender="unknown">Progress bar</string>
-    <string name="radiogroup_description" gender="unknown">Radio group</string>
-    <string name="scrollbar_description" gender="unknown">Scroll bar</string>
-    <string name="spinbutton_description" gender="unknown">Spin button</string>
-    <string name="tablist_description" gender="unknown">Tab list</string>
-    <string name="toolbar_description" gender="unknown">Tool bar</string>
+    <string name="reactandroid_imagebutton_description" gender="unknown">Button, image</string>
+    <string name="reactandroid_combobox_description" gender="unknown">Combo box</string>
+    <string name="reactandroid_menubar_description" gender="unknown">Menu bar</string>
+    <string name="reactandroid_menuitem_description" gender="unknown">Menu item</string>
+    <string name="reactandroid_progressbar_description" gender="unknown">Progress bar</string>
+    <string name="reactandroid_radiogroup_description" gender="unknown">Radio group</string>
+    <string name="reactandroid_scrollbar_description" gender="unknown">Scroll bar</string>
+    <string name="reactandroid_spinbutton_description" gender="unknown">Spin button</string>
+    <string name="reactandroid_tablist_description" gender="unknown">Tab list</string>
+    <string name="reactandroid_toolbar_description" gender="unknown">Tool bar</string>
 </resources>

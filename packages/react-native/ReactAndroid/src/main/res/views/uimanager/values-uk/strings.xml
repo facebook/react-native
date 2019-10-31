@@ -3,29 +3,29 @@
 <!-- @generated -->
 <!-- FB Locale: uk_UA -->
 <resources exclude-from-buck-resource-map="true">
-    <string name="link_description" gender="unknown">Посилання</string>
-    <string name="image_description" gender="unknown">Зображення</string>
-    <string name="imagebutton_description" gender="unknown">Кнопка, зображення</string>
-    <string name="header_description" gender="unknown">Заголовок</string>
-    <string name="alert_description" gender="unknown">Сповіщення</string>
-    <string name="combobox_description" gender="unknown">Комбінований список</string>
-    <string name="menu_description" gender="unknown">Меню</string>
-    <string name="menubar_description" gender="unknown">Рядок меню</string>
-    <string name="menuitem_description" gender="unknown">Об\'єкт меню</string>
-    <string name="progressbar_description" gender="unknown">Індикатор прогресу</string>
-    <string name="radiogroup_description" gender="unknown">Група перемикачів</string>
-    <string name="scrollbar_description" gender="unknown">Прокручування</string>
-    <string name="spinbutton_description" gender="unknown">Кнопка обертання</string>
-    <string name="rn_tab_description" gender="unknown">Вкладка</string>
-    <string name="tablist_description" gender="unknown">Список вкладок</string>
-    <string name="timer_description" gender="unknown">Таймер</string>
-    <string name="toolbar_description" gender="unknown">Панель інструментів</string>
-    <string name="summary_description" gender="unknown">Зведення</string>
-    <string name="state_busy_description" gender="unknown">зайнято</string>
-    <string name="state_expanded_description" gender="unknown">розгорнуто</string>
-    <string name="state_collapsed_description" gender="unknown">згорнуто</string>
-    <string name="state_unselected_description" gender="unknown">не вибрано</string>
-    <string name="state_on_description" gender="unknown">Увімк.</string>
-    <string name="state_off_description" gender="unknown">Вимк.</string>
-    <string name="state_mixed_description" gender="unknown">змішано</string>
+    <string name="reactandroid_link_description" gender="unknown">Посилання</string>
+    <string name="reactandroid_image_description" gender="unknown">Зображення</string>
+    <string name="reactandroid_imagebutton_description" gender="unknown">Кнопка, зображення</string>
+    <string name="reactandroid_header_description" gender="unknown">Заголовок</string>
+    <string name="reactandroid_alert_description" gender="unknown">Сповіщення</string>
+    <string name="reactandroid_combobox_description" gender="unknown">Комбінований список</string>
+    <string name="reactandroid_menu_description" gender="unknown">Меню</string>
+    <string name="reactandroid_menubar_description" gender="unknown">Рядок меню</string>
+    <string name="reactandroid_menuitem_description" gender="unknown">Об\'єкт меню</string>
+    <string name="reactandroid_progressbar_description" gender="unknown">Індикатор прогресу</string>
+    <string name="reactandroid_radiogroup_description" gender="unknown">Група перемикачів</string>
+    <string name="reactandroid_scrollbar_description" gender="unknown">Прокручування</string>
+    <string name="reactandroid_spinbutton_description" gender="unknown">Кнопка обертання</string>
+    <string name="reactandroid_rn_tab_description" gender="unknown">Вкладка</string>
+    <string name="reactandroid_tablist_description" gender="unknown">Список вкладок</string>
+    <string name="reactandroid_timer_description" gender="unknown">Таймер</string>
+    <string name="reactandroid_toolbar_description" gender="unknown">Панель інструментів</string>
+    <string name="reactandroid_summary_description" gender="unknown">Зведення</string>
+    <string name="reactandroid_state_busy_description" gender="unknown">зайнято</string>
+    <string name="reactandroid_state_expanded_description" gender="unknown">розгорнуто</string>
+    <string name="reactandroid_state_collapsed_description" gender="unknown">згорнуто</string>
+    <string name="reactandroid_state_unselected_description" gender="unknown">не вибрано</string>
+    <string name="reactandroid_state_on_description" gender="unknown">Увімк.</string>
+    <string name="reactandroid_state_off_description" gender="unknown">Вимк.</string>
+    <string name="reactandroid_state_mixed_description" gender="unknown">змішано</string>
 </resources>

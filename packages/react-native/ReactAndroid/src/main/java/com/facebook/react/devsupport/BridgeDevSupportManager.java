@@ -151,7 +151,7 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
         FLog.e(ReactConstants.TAG, "Failed to connect to debugger!", cause);
         future.setException(
             new IOException(
-                getApplicationContext().getString(com.facebook.react.R.string.catalyst_debug_error),
+                getApplicationContext().getString(com.facebook.react.R.string.reactandroid_catalyst_debug_error),
                 cause));
       }
     };

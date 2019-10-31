@@ -241,7 +241,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     // Otherwise, DrawableContainer is not a thread safe class, and it caused the npe in #29452.
     ContextThemeWrapper context =
         new ContextThemeWrapper(
-            getThemedContext(), R.style.Theme_ReactNative_TextInput_DefaultBackground);
+            getThemedContext(), R.style.ReactAndroidTheme_ReactNative_TextInput_DefaultBackground);
     return new EditText(context);
   }
 }

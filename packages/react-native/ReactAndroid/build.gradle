@@ -489,6 +489,8 @@ android {
         ndkVersion rootProject.ext.ndkVersion
     }
 
+    resourcePrefix 'reactandroid_'
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

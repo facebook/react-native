@@ -183,8 +183,8 @@ public class ReactTestHelper {
   }
 
   public static String getTestId(View view) {
-    return view.getTag(R.id.react_test_id) instanceof String
-        ? (String) view.getTag(R.id.react_test_id)
+    return view.getTag(R.id.reactandroid_react_test_id) instanceof String
+        ? (String) view.getTag(R.id.reactandroid_react_test_id)
         : null;
   }
 

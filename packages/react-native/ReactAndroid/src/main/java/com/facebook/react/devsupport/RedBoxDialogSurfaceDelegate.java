@@ -90,7 +90,7 @@ public class RedBoxDialogSurfaceDelegate implements SurfaceDelegate {
     mRedBoxContentView.refreshContentView();
     if (mDialog == null) {
       mDialog =
-          new Dialog(context, R.style.Theme_Catalyst_RedBox) {
+          new Dialog(context, R.style.ReactAndroidTheme_Catalyst_RedBox) {
             @Override
             public boolean onKeyUp(int keyCode, KeyEvent event) {
               if (keyCode == KeyEvent.KEYCODE_MENU) {
