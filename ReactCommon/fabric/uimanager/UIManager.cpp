@@ -131,17 +131,20 @@ void UIManager::setNativeProps(
 
   auto &componentDescriptor = shadowNode.getComponentDescriptor();
   auto props = componentDescriptor.cloneProps(shadowNode.getProps(), rawProps);
-  auto newShadowNode = shadowNode.clone({
-      /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-      /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
-      /* .props = */ props,
-  });
 
   shadowTreeRegistry_.visit(
       shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
         shadowTree.tryCommit(
             [&](RootShadowNode::Shared const &oldRootShadowNode) {
-              return oldRootShadowNode->clone(shadowNode, newShadowNode);
+              return oldRootShadowNode->clone(
+                  shadowNode, [&](ShadowNode const &oldShadowNode) {
+                    return oldShadowNode.clone({
+                        /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                        /* .surfaceId = */
+                        ShadowNodeFragment::surfaceIdPlaceholder(),
+                        /* .props = */ props,
+                    });
+                  });
             });
       });
 }
@@ -181,22 +184,27 @@ void UIManager::updateState(
   auto &componentDescriptor = shadowNode.getComponentDescriptor();
   auto state =
       componentDescriptor.createState(shadowNode.getState(), rawStateData);
-  auto newShadowNode = shadowNode.clone({
-      /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-      /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
-      /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-      /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
-      /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
-      /* .localData = */ ShadowNodeFragment::localDataPlaceholder(),
-      /* .state = */ state,
-  });
 
   shadowTreeRegistry_.visit(
-      shadowNode.getSurfaceId(), [&](const ShadowTree &shadowTree) {
-        shadowTree.tryCommit(
-            [&](RootShadowNode::Shared const &oldRootShadowNode) {
-              return oldRootShadowNode->clone(shadowNode, newShadowNode);
-            });
+      shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
+        shadowTree.tryCommit([&](RootShadowNode::Shared const
+                                     &oldRootShadowNode) {
+          return oldRootShadowNode->clone(
+              shadowNode, [&](ShadowNode const &oldShadowNode) {
+                return oldShadowNode.clone({
+                    /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                    /* .surfaceId = */
+                    ShadowNodeFragment::surfaceIdPlaceholder(),
+                    /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                    /* .eventEmitter = */
+                    ShadowNodeFragment::eventEmitterPlaceholder(),
+                    /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
+                    /* .localData = */
+                    ShadowNodeFragment::localDataPlaceholder(),
+                    /* .state = */ state,
+                });
+              });
+        });
       });
 }
 

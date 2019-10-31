@@ -47,14 +47,17 @@ class RootShadowNode final
       LayoutContext const &layoutContext) const;
 
   /*
-   * Clones the node replacing a given old shadow node with a new one in the
-   * tree by cloning all nodes on the path to the root node and then complete
-   * the tree. Returns `nullptr` if the operation cannot be finished
-   * successfully.
+   * Clones the node (and partially the tree starting from the node) by
+   * replacing a `oldShadowNode` (which corresponds to a given `shadowNode`)
+   * with a node that `callback` returns. `oldShadowNode` might not be the same
+   * as `shadowNode` but they must share the same family.
+   *
+   * Returns `nullptr` if the operation cannot be performed successfully.
    */
   RootShadowNode::Unshared clone(
-      ShadowNode const &oldShadowNode,
-      ShadowNode::Shared const &newShadowNode) const;
+      ShadowNode const &shadowNode,
+      std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
+          callback) const;
 
  private:
   using YogaLayoutableShadowNode::layout;

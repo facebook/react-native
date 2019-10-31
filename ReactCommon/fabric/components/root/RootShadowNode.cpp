@@ -49,13 +49,20 @@ RootShadowNode::Unshared RootShadowNode::clone(
 }
 
 RootShadowNode::Unshared RootShadowNode::clone(
-    ShadowNode const &oldShadowNode,
-    ShadowNode::Shared const &newShadowNode) const {
-  auto ancestors = oldShadowNode.getAncestors(*this);
+    ShadowNode const &shadowNode,
+    std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
+        callback) const {
+  auto ancestors = shadowNode.getAncestors(*this);
 
   if (ancestors.size() == 0) {
     return RootShadowNode::Unshared{nullptr};
   }
+
+  auto &parent = ancestors.back();
+  auto &oldShadowNode = parent.first.get().getChildren().at(parent.second);
+
+  assert(ShadowNode::sameFamily(shadowNode, *oldShadowNode));
+  auto newShadowNode = callback(*oldShadowNode);
 
   auto childNode = newShadowNode;
 
