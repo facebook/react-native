@@ -60,9 +60,9 @@ describe('LogBox', () => {
 
     LogBox.install();
 
-    expect(LogBoxData.add).not.toBeCalled();
+    expect(LogBoxData.addLog).not.toBeCalled();
     console.warn('...');
-    expect(LogBoxData.add).toBeCalled();
+    expect(LogBoxData.addLog).toBeCalled();
   });
 
   it('registers errors beginning with "Warning: " as warnings', () => {
@@ -71,9 +71,9 @@ describe('LogBox', () => {
     LogBox.install();
 
     console.error('...');
-    expect(LogBoxData.add).toBeCalledWith('error', ['...']);
+    expect(LogBoxData.addLog).not.toBeCalled();
 
     console.error('Warning: ...');
-    expect(LogBoxData.add).toBeCalledWith('warn', ['Warning: ...']);
+    expect(LogBoxData.addLog).toBeCalledWith('warn', ['Warning: ...']);
   });
 });

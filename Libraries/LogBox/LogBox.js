@@ -60,8 +60,6 @@ if (__DEV__) {
         // Show LogBox for the `warning` module.
         if (typeof args[0] === 'string' && args[0].startsWith('Warning: ')) {
           registerWarning(...args);
-        } else {
-          registerError(...args);
         }
       };
 
@@ -133,11 +131,7 @@ if (__DEV__) {
   };
 
   const registerWarning = (...args): void => {
-    LogBoxData.add('warn', args);
-  };
-
-  const registerError = (...args): void => {
-    LogBoxData.add('error', args);
+    LogBoxData.addLog('warn', args);
   };
 } else {
   LogBoxComponent = class extends React.Component<Props, State> {

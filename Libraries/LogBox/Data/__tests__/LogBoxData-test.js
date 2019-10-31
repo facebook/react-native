@@ -36,55 +36,71 @@ const observe = () => {
   };
 };
 
-const logAndFlush = logs => {
+const addLogs = logs => {
   logs.forEach(log => {
-    LogBoxData.add(log.level, log.args);
+    LogBoxData.addLog('warn', typeof log === 'string' ? [log] : log);
   });
-
-  jest.runAllImmediates();
 };
 
-const logAndFlushAndUpdate = logs => {
-  logAndFlush(logs);
-
-  // We run immediates again to flush the updates.
-  jest.runAllImmediates();
+const addExceptions = errors => {
+  errors.forEach(error => {
+    LogBoxData.addException(
+      Object.assign(
+        {},
+        {
+          message: '',
+          originalMessage: '',
+          name: 'console.error',
+          componentStack: '',
+          stack: [],
+          id: 0,
+          isFatal: false,
+        },
+        typeof error === 'string'
+          ? {message: error, originalMessage: error}
+          : error,
+      ),
+    );
+  });
 };
+
+beforeEach(() => {
+  jest.resetModules();
+});
+
 describe('LogBoxData', () => {
-  beforeEach(() => {
-    jest.resetModules();
-  });
-
   it('adds and dismisses logs', () => {
-    logAndFlush([{level: 'warn', args: ['A']}]);
+    addLogs(['A']);
+    addExceptions(['B']);
+    jest.runAllImmediates();
 
-    expect(registry().length).toBe(1);
+    expect(registry().length).toBe(2);
     expect(registry()[0]).toBeDefined();
+    expect(registry()[1]).toBeDefined();
 
+    LogBoxData.dismiss(registry()[0]);
+    expect(registry().length).toBe(1);
     LogBoxData.dismiss(registry()[0]);
     expect(registry().length).toBe(0);
     expect(registry()[0]).toBeUndefined();
   });
 
   it('clears all logs', () => {
-    logAndFlush([
-      {level: 'warn', args: ['A']},
-      {level: 'warn', args: ['B']},
-      {level: 'warn', args: ['C']},
-    ]);
+    addLogs(['A', 'B', 'C']);
+    addExceptions(['D']);
+    jest.runAllImmediates();
 
-    expect(registry().length).toBe(3);
+    expect(registry().length).toBe(4);
 
     LogBoxData.clear();
     expect(registry().length).toBe(0);
   });
 
   it('keeps logs in chronological order', () => {
-    logAndFlush([
-      {level: 'warn', args: ['A']},
-      {level: 'warn', args: ['B']},
-      {level: 'warn', args: ['C']},
-    ]);
+    addLogs(['A']);
+    addExceptions(['B']);
+    addLogs(['C']);
+    jest.runAllImmediates();
 
     let logs = registry();
     expect(logs.length).toBe(3);
@@ -92,7 +108,8 @@ describe('LogBoxData', () => {
     expect(logs[1].category).toEqual('B');
     expect(logs[2].category).toEqual('C');
 
-    logAndFlush([{level: 'warn', args: ['A']}]);
+    addLogs(['A']);
+    jest.runAllImmediates();
 
     // Expect `A` to be added to the end of the registry.
     logs = registry();
@@ -103,8 +120,9 @@ describe('LogBoxData', () => {
     expect(logs[3].category).toEqual('A');
   });
 
-  it('increments the count of previous log with matching category', () => {
-    logAndFlush([{level: 'warn', args: ['A']}, {level: 'warn', args: ['B']}]);
+  it('increments the count of previous log with matching category (logs)', () => {
+    addLogs(['A', 'B']);
+    jest.runAllImmediates();
 
     let logs = registry();
     expect(logs.length).toBe(2);
@@ -113,7 +131,8 @@ describe('LogBoxData', () => {
     expect(logs[1].category).toEqual('B');
     expect(logs[1].count).toBe(1);
 
-    logAndFlush([{level: 'warn', args: ['B']}]);
+    addLogs(['B']);
+    jest.runAllImmediates();
 
     // Expect `B` to be rolled into the last log.
     logs = registry();
@@ -124,12 +143,33 @@ describe('LogBoxData', () => {
     expect(logs[1].count).toBe(2);
   });
 
-  it('ignores logs matching patterns', () => {
-    logAndFlush([
-      {level: 'warn', args: ['A!']},
-      {level: 'warn', args: ['B?']},
-      {level: 'warn', args: ['C!']},
-    ]);
+  it('increments the count of previous log with matching category (exceptions)', () => {
+    addExceptions(['A', 'B']);
+    jest.runAllImmediates();
+
+    let logs = registry();
+    expect(logs.length).toBe(2);
+    expect(logs[0].category).toEqual('A');
+    expect(logs[0].count).toBe(1);
+    expect(logs[1].category).toEqual('B');
+    expect(logs[1].count).toBe(1);
+
+    addExceptions(['B']);
+    jest.runAllImmediates();
+
+    // Expect `B` to be rolled into the last log.
+    logs = registry();
+    expect(logs.length).toBe(2);
+    expect(logs[0].category).toEqual('A');
+    expect(logs[0].count).toBe(1);
+    expect(logs[1].category).toEqual('B');
+    expect(logs[1].count).toBe(2);
+  });
+
+  it('ignores logs matching patterns (logs)', () => {
+    addLogs(['A!', 'B?', 'C!']);
+    jest.runAllImmediates();
+
     expect(filteredRegistry().length).toBe(3);
 
     LogBoxData.addIgnorePatterns(['!']);
@@ -139,12 +179,38 @@ describe('LogBoxData', () => {
     expect(filteredRegistry().length).toBe(0);
   });
 
-  it('ignores logs matching regexs or pattern', () => {
-    logAndFlush([
-      {level: 'warn', args: ['There are 4 dogs']},
-      {level: 'warn', args: ['There are 3 cats']},
-      {level: 'warn', args: ['There are H cats']},
-    ]);
+  it('ignores logs matching patterns (exceptions)', () => {
+    addExceptions(['A!', 'B?', 'C!']);
+    jest.runAllImmediates();
+
+    expect(filteredRegistry().length).toBe(3);
+
+    LogBoxData.addIgnorePatterns(['!']);
+    expect(filteredRegistry().length).toBe(1);
+
+    LogBoxData.addIgnorePatterns(['?']);
+    expect(filteredRegistry().length).toBe(0);
+  });
+
+  it('ignores matching regexs or pattern (logs)', () => {
+    addLogs(['There are 4 dogs', 'There are 3 cats', 'There are H cats']);
+    jest.runAllImmediates();
+
+    expect(filteredRegistry().length).toBe(3);
+
+    LogBoxData.addIgnorePatterns(['dogs']);
+    expect(filteredRegistry().length).toBe(2);
+
+    LogBoxData.addIgnorePatterns([/There are \d+ cats/]);
+    expect(filteredRegistry().length).toBe(1);
+
+    LogBoxData.addIgnorePatterns(['cats']);
+    expect(filteredRegistry().length).toBe(0);
+  });
+
+  it('ignores matching regexs or pattern (exceptions)', () => {
+    addExceptions(['There are 4 dogs', 'There are 3 cats', 'There are H cats']);
+    jest.runAllImmediates();
 
     expect(filteredRegistry().length).toBe(3);
 
@@ -159,11 +225,10 @@ describe('LogBoxData', () => {
   });
 
   it('ignores all logs when disabled', () => {
-    logAndFlush([
-      {level: 'warn', args: ['A!']},
-      {level: 'warn', args: ['B?']},
-      {level: 'warn', args: ['C!']},
-    ]);
+    addLogs(['A!', 'B?']);
+    addExceptions(['C!']);
+    jest.runAllImmediates();
+
     expect(registry().length).toBe(3);
 
     LogBoxData.setDisabled(true);
@@ -174,57 +239,68 @@ describe('LogBoxData', () => {
   });
 
   it('groups consecutive logs by format string categories', () => {
-    logAndFlush([{level: 'warn', args: ['%s', 'A']}]);
-
+    addLogs([['%s', 'A']]);
+    jest.runAllImmediates();
     expect(registry().length).toBe(1);
     expect(registry()[0].count).toBe(1);
 
-    logAndFlush([{level: 'warn', args: ['%s', 'B']}]);
+    addLogs([['%s', 'B']]);
+    jest.runAllImmediates();
     expect(registry().length).toBe(1);
     expect(registry()[0].count).toBe(2);
 
-    logAndFlush([{level: 'warn', args: ['A']}]);
+    addLogs(['A']);
+    jest.runAllImmediates();
     expect(registry().length).toBe(2);
     expect(registry()[1].count).toBe(1);
 
-    logAndFlush([{level: 'warn', args: ['B']}]);
+    addLogs(['B']);
+    jest.runAllImmediates();
     expect(registry().length).toBe(3);
     expect(registry()[2].count).toBe(1);
   });
 
   it('groups warnings with consideration for arguments', () => {
-    logAndFlush([{level: 'warn', args: ['A', 'B']}]);
+    addLogs([['A', 'B']]);
+    jest.runAllImmediates();
     expect(registry().length).toBe(1);
     expect(registry()[0].count).toBe(1);
 
-    logAndFlush([{level: 'warn', args: ['A', 'B']}]);
+    addLogs([['A', 'B']]);
+    jest.runAllImmediates();
     expect(registry().length).toBe(1);
     expect(registry()[0].count).toBe(2);
 
-    logAndFlush([{level: 'warn', args: ['A', 'C']}]);
+    addLogs([['A', 'C']]);
+    jest.runAllImmediates();
     expect(registry().length).toBe(2);
     expect(registry()[1].count).toBe(1);
 
-    logAndFlush([{level: 'warn', args: ['%s', 'A', 'A']}]);
+    addLogs([['%s', 'A', 'A']]);
+    jest.runAllImmediates();
     expect(registry().length).toBe(3);
     expect(registry()[2].count).toBe(1);
 
-    logAndFlush([{level: 'warn', args: ['%s', 'B', 'A']}]);
+    addLogs([['%s', 'B', 'A']]);
+    jest.runAllImmediates();
     expect(registry().length).toBe(3);
     expect(registry()[2].count).toBe(2);
 
-    logAndFlush([{level: 'warn', args: ['%s', 'B', 'B']}]);
+    addLogs([['%s', 'B', 'B']]);
+    jest.runAllImmediates();
     expect(registry().length).toBe(4);
     expect(registry()[3].count).toBe(1);
   });
 
   it('ignores logs starting with "(ADVICE)"', () => {
-    logAndFlush([{level: 'warn', args: ['(ADVICE) ...']}]);
+    addLogs(['(ADVICE) ...']);
+    jest.runAllImmediates();
     expect(registry().length).toBe(0);
   });
 
   it('does not ignore logs formatted to start with "(ADVICE)"', () => {
-    logAndFlush([{level: 'warn', args: ['%s ...', '(ADVICE)']}]);
+    addLogs([['%s ...', '(ADVICE)']]);
+    jest.runAllImmediates();
     expect(registry().length).toBe(1);
   });
 
@@ -243,10 +319,8 @@ describe('LogBoxData', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    logAndFlushAndUpdate([
-      {level: 'warn', args: ['A']},
-      {level: 'warn', args: ['B']},
-    ]);
+    addLogs(['A']);
+    jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
 
     // We expect observers to recieve the same Set object in sequential updates
@@ -270,7 +344,8 @@ describe('LogBoxData', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    logAndFlushAndUpdate([{level: 'warn', args: ['A']}]);
+    addLogs(['A']);
+    jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
 
     const lastLog = Array.from(observer.mock.calls[1][0])[0];
@@ -288,7 +363,8 @@ describe('LogBoxData', () => {
     const {observer} = observe();
     expect(observer.mock.calls.length).toBe(1);
 
-    logAndFlushAndUpdate([{level: 'warn', args: ['A']}]);
+    addLogs(['A']);
+    jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
 
     LogBoxData.clear();

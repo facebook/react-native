@@ -11,9 +11,14 @@
 ('use strict');
 
 import LogBoxLog from './LogBoxLog';
-import parseLogBoxLog from './parseLogBoxLog';
+import {
+  parseLogBoxLog,
+  parseCategory,
+  parseComponentStack,
+} from './parseLogBoxLog';
 import type {LogLevel} from './LogBoxLog';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
+import type {ExceptionData} from '../../Core/NativeExceptionsManager';
 
 export type LogBoxLogs = Set<LogBoxLog>;
 
@@ -54,7 +59,7 @@ function handleUpdate(): void {
   }
 }
 
-export function add(level: LogLevel, args: $ReadOnlyArray<mixed>): void {
+export function addLog(level: LogLevel, args: $ReadOnlyArray<mixed>): void {
   const errorForStackTrace = new Error();
 
   // Parsing logs are expensive so we schedule this
@@ -105,6 +110,43 @@ export function retrySymbolicateLogNow(log: LogBoxLog) {
 
 export function symbolicateLogLazy(log: LogBoxLog) {
   log.symbolicate();
+}
+
+export function addException(error: ExceptionData): void {
+  // Parsing logs are expensive so we schedule this
+  // otherwise spammy logs would pause rendering.
+  setImmediate(() => {
+    const {category, message} = parseCategory([
+      error.originalMessage != null ? error.originalMessage : 'Unknown',
+    ]);
+
+    // We don't want to store these logs because they trigger a
+    // state update whenever we add them to the store, which is
+    // expensive to noisy logs. If we later want to display these
+    // we will store them in a different state object.
+    if (isMessageIgnored(message.content)) {
+      return;
+    }
+
+    const lastLog = Array.from(logs).pop();
+    if (lastLog && lastLog.category === category) {
+      lastLog.incrementCount();
+    } else {
+      logs.add(
+        new LogBoxLog(
+          'error',
+          message,
+          error.stack,
+          category,
+          error.componentStack != null
+            ? parseComponentStack(error.componentStack)
+            : [],
+        ),
+      );
+    }
+
+    handleUpdate();
+  });
 }
 
 export function clear(): void {

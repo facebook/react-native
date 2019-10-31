@@ -15,7 +15,7 @@ jest.mock('../../../Core/Devtools/parseErrorStack', () => {
   return {__esModule: true, default: jest.fn(() => [])};
 });
 
-const parseLogBoxLog = require('../parseLogBoxLog').default;
+const {parseLogBoxLog} = require('../parseLogBoxLog');
 
 describe('parseLogBoxLog', () => {
   it('parses strings', () => {

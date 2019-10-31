@@ -11,6 +11,7 @@
 'use strict';
 
 import type {ExtendedError} from './Devtools/parseErrorStack';
+import * as LogBoxData from '../LogBox/Data/LogBoxData';
 import type {ExceptionData} from './NativeExceptionsManager';
 
 class SyntheticError extends Error {
@@ -81,6 +82,14 @@ function reportException(e: ExtendedError, isFatal: boolean) {
     message =
       e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
 
+    // TransformErrors need to be popped to the user and can happen both in JS
+    // through Fast Resfresh and through native when reloading a broken bundle.
+    // We want a consistent experience here, so we're opting to always pass
+    // these errors to the native redbox handling.
+    const isHandledByLogBox =
+      !/^TransformError SyntaxError: /.test(originalMessage) &&
+      global.__reactExperimentalLogBox;
+
     const data = preprocessException({
       message,
       originalMessage: message === originalMessage ? null : originalMessage,
@@ -93,8 +102,16 @@ function reportException(e: ExtendedError, isFatal: boolean) {
       extraData: {
         jsEngine: e.jsEngine,
         rawStack: e.stack,
+
+        // Hack to hide native redboxes when in the LogBox experiment.
+        // This is intentionally untyped and stuffed here, because it is temporary.
+        suppressRedBox: isHandledByLogBox,
       },
     });
+
+    if (isHandledByLogBox) {
+      LogBoxData.addException(data);
+    }
 
     NativeExceptionsManager.reportException(data);
 
@@ -156,8 +173,13 @@ function reactConsoleErrorHandler() {
   } else {
     console._errorOriginal.apply(console, arguments);
     const stringifySafe = require('../Utilities/stringifySafe');
-    const str = Array.prototype.map.call(arguments, stringifySafe).join(', ');
-    if (str.slice(0, 10) === '"Warning: ') {
+    const str = Array.prototype.map
+      .call(arguments, value =>
+        typeof value === 'string' ? value : stringifySafe(value),
+      )
+      .join(' ');
+
+    if (str.slice(0, 9) === 'Warning: ') {
       // React warnings use console.error so that a stack trace is shown, but
       // we don't (currently) want these to show a redbox
       // (Note: Logic duplicated in polyfills/console.js.)

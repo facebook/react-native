@@ -301,10 +301,8 @@ describe('ExceptionsManager', () => {
 
       expect(nativeReportException.mock.calls.length).toBe(1);
       const exceptionData = nativeReportException.mock.calls[0][0];
-      expect(exceptionData.message).toBe(
-        'console.error: "Some error happened"',
-      );
-      expect(exceptionData.originalMessage).toBe('"Some error happened"');
+      expect(exceptionData.message).toBe('console.error: Some error happened');
+      expect(exceptionData.originalMessage).toBe('Some error happened');
       expect(exceptionData.name).toBe('console.error');
       expect(
         getLineFromFrame(getFirstFrameInThisFile(exceptionData.stack)),
@@ -321,10 +319,10 @@ describe('ExceptionsManager', () => {
       expect(nativeReportException.mock.calls.length).toBe(1);
       const exceptionData = nativeReportException.mock.calls[0][0];
       expect(exceptionData.message).toBe(
-        'console.error: 42, true, ["symbol" failed to stringify], {"y":null}',
+        'console.error: 42 true ["symbol" failed to stringify] {"y":null}',
       );
       expect(exceptionData.originalMessage).toBe(
-        '42, true, ["symbol" failed to stringify], {"y":null}',
+        '42 true ["symbol" failed to stringify] {"y":null}',
       );
       expect(exceptionData.name).toBe('console.error');
       expect(

@@ -34,7 +34,7 @@ export type ComponentStack = $ReadOnlyArray<
 
 const SUBSTITUTION = UTFSequence.BOM + '%s';
 
-function parseCategory(
+export function parseCategory(
   args: $ReadOnlyArray<mixed>,
 ): $ReadOnly<{|
   category: Category,
@@ -110,8 +110,23 @@ function parseCategory(
     },
   };
 }
+export function parseComponentStack(message: string): ComponentStack {
+  return message
+    .split(/\n {4}in /g)
+    .map(s => {
+      if (!s) {
+        return null;
+      }
+      let [component, location] = s.split(/ \(at /);
+      if (!location) {
+        [component, location] = s.split(/ \(/);
+      }
+      return {component, location: location && location.replace(')', '')};
+    })
+    .filter(Boolean);
+}
 
-function parseLog(
+export function parseLogBoxLog(
   args: $ReadOnlyArray<mixed>,
 ): {|
   componentStack: ComponentStack,
@@ -129,19 +144,7 @@ function parseLog(
   let argsWithoutComponentStack = [];
   for (const arg of args) {
     if (typeof arg === 'string' && /^\n {4}in/.exec(arg)) {
-      componentStack = arg
-        .split(/\n {4}in /g)
-        .map(s => {
-          if (!s) {
-            return null;
-          }
-          let [component, location] = s.split(/ \(at /);
-          if (!location) {
-            [component, location] = s.split(/ \(/);
-          }
-          return {component, location: location && location.replace(')', '')};
-        })
-        .filter(Boolean);
+      componentStack = parseComponentStack(arg);
     } else {
       argsWithoutComponentStack.push(arg);
     }
@@ -152,5 +155,3 @@ function parseLog(
     componentStack,
   };
 }
-
-export default parseLog;
