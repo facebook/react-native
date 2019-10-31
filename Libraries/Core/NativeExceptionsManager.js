@@ -92,8 +92,7 @@ const ExceptionsManager = {
     }
   },
   reportException(data: ExceptionData): void {
-    if (Platform.OS !== 'ios' && NativeModule.reportException) {
-      // TODO(T53311281): This is a noop on iOS now. Implement it.
+    if (NativeModule.reportException) {
       NativeModule.reportException(data);
       return;
     }

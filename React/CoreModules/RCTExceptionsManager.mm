@@ -35,36 +35,49 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
+- (void)reportSoft: (NSString *)message stack:(NSArray<NSDictionary *> *)stack exceptionId:(double)exceptionId suppressRedBox: (BOOL) suppressRedBox {
+    if (!suppressRedBox) {
+        [_bridge.redBox showErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
+    }
+
+    if (_delegate) {
+      [_delegate handleSoftJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
+    }
+}
+
+- (void)reportFatal: (NSString *)message stack:(NSArray<NSDictionary *> *)stack exceptionId:(double)exceptionId suppressRedBox: (BOOL) suppressRedBox {
+    if (!suppressRedBox) {
+        [_bridge.redBox showErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
+    }
+
+    if (_delegate) {
+      [_delegate handleFatalJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
+    }
+
+    static NSUInteger reloadRetries = 0;
+    if (!RCT_DEBUG && reloadRetries < _maxReloadAttempts) {
+      reloadRetries++;
+      RCTTriggerReloadCommandListeners(@"JS Crash Reload");
+    } else if (!RCT_DEV || !suppressRedBox) {
+      NSString *description = [@"Unhandled JS Exception: " stringByAppendingString:message];
+      NSDictionary *errorInfo = @{ NSLocalizedDescriptionKey: description, RCTJSStackTraceKey: stack };
+      RCTFatal([NSError errorWithDomain:RCTErrorDomain code:0 userInfo:errorInfo]);
+    }
+}
+
+
 RCT_EXPORT_METHOD(reportSoftException:(NSString *)message
                   stack:(NSArray<NSDictionary *> *)stack
                   exceptionId:(double)exceptionId)
 {
-  [_bridge.redBox showErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
-
-  if (_delegate) {
-    [_delegate handleSoftJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
-  }
+  [self reportSoft:message stack:stack exceptionId:exceptionId suppressRedBox:NO];
 }
 
 RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
                   stack:(NSArray<NSDictionary *> *)stack
                   exceptionId:(double) exceptionId)
 {
-  [_bridge.redBox showErrorMessage:message withStack:stack errorCookie:((int)exceptionId)];
-
-  if (_delegate) {
-    [_delegate handleFatalJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];
-  }
-
-  static NSUInteger reloadRetries = 0;
-  if (!RCT_DEBUG && reloadRetries < _maxReloadAttempts) {
-    reloadRetries++;
-    RCTTriggerReloadCommandListeners(@"JS Crash Reload");
-  } else {
-    NSString *description = [@"Unhandled JS Exception: " stringByAppendingString:message];
-    NSDictionary *errorInfo = @{ NSLocalizedDescriptionKey: description, RCTJSStackTraceKey: stack };
-    RCTFatal([NSError errorWithDomain:RCTErrorDomain code:0 userInfo:errorInfo]);
-  }
+  [self reportFatal:message stack:stack exceptionId:exceptionId suppressRedBox:NO];
 }
 
 RCT_EXPORT_METHOD(updateExceptionMessage:(NSString *)message
@@ -94,6 +107,7 @@ RCT_EXPORT_METHOD(reportException:(JS::NativeExceptionsManager::ExceptionData &)
 {
   NSString *message = data.message();
   double exceptionId = data.id_();
+  id<NSObject> extraData = data.extraData();
 
   // Reserialize data.stack() into an array of untyped dictionaries.
   // TODO: (moti) T53588496 Replace `(NSArray<NSDictionary *> *)stack` in
@@ -114,11 +128,13 @@ RCT_EXPORT_METHOD(reportException:(JS::NativeExceptionsManager::ExceptionData &)
     }
     [stackArray addObject:frameDict];
   }
+  NSDictionary *dict = (NSDictionary *)extraData;
+    BOOL suppressRedBox = [[dict objectForKey:@"suppressRedBox"] boolValue];
 
   if (data.isFatal()) {
-    [self reportFatalException:message stack:stackArray exceptionId:exceptionId];
+    [self reportFatal:message stack:stackArray exceptionId:exceptionId suppressRedBox:suppressRedBox];
   } else {
-    [self reportSoftException:message stack:stackArray exceptionId:exceptionId];
+    [self reportSoft:message stack:stackArray exceptionId:exceptionId suppressRedBox:suppressRedBox];
   }
 }
 
