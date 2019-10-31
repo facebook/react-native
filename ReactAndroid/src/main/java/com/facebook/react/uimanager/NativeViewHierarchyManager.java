@@ -228,7 +228,7 @@ public class NativeViewHierarchyManager {
 
   private void updateInstanceHandle(View viewToUpdate, long instanceHandle) {
     UiThreadUtil.assertOnUiThread();
-    viewToUpdate.setTag(R.id.view_tag_instance_handle, instanceHandle);
+    viewToUpdate.setTag(R.id.reactandroid_view_tag_instance_handle, instanceHandle);
   }
 
   @Nullable
@@ -237,7 +237,7 @@ public class NativeViewHierarchyManager {
     if (view == null) {
       throw new IllegalViewOperationException("Unable to find view for tag: " + reactTag);
     }
-    Long instanceHandle = (Long) view.getTag(R.id.view_tag_instance_handle);
+    Long instanceHandle = (Long) view.getTag(R.id.reactandroid_view_tag_instance_handle);
     if (instanceHandle == null) {
       throw new IllegalViewOperationException("Unable to find instanceHandle for tag: " + reactTag);
     }

@@ -15,7 +15,7 @@
     <uses-library android:name="android.test.runner" />
     <activity
       android:name="com.facebook.react.testing.ReactAppTestActivity"
-      android:theme="@style/Theme.ReactNative.AppCompat.Light.NoActionBar.FullScreen">
+      android:theme="@style/ReactAndroidTheme.ReactNative.AppCompat.Light.NoActionBar.FullScreen">
     </activity>
   </application>
 

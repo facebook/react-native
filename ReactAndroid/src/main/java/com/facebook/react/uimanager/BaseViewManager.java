@@ -46,9 +46,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public static final Map<String, Integer> sStateDescription = new HashMap<>();
 
   static {
-    sStateDescription.put("busy", R.string.state_busy_description);
-    sStateDescription.put("expanded", R.string.state_expanded_description);
-    sStateDescription.put("collapsed", R.string.state_collapsed_description);
+    sStateDescription.put("busy", R.string.reactandroid_state_busy_description);
+    sStateDescription.put("expanded", R.string.reactandroid_state_expanded_description);
+    sStateDescription.put("collapsed", R.string.reactandroid_state_collapsed_description);
   }
 
   // State definition constants -- must match the definition in
@@ -104,7 +104,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = ViewProps.TEST_ID)
   public void setTestId(@NonNull T view, String testId) {
-    view.setTag(R.id.react_test_id, testId);
+    view.setTag(R.id.reactandroid_react_test_id, testId);
 
     // temporarily set the tag and keyed tags to avoid end to end test regressions
     view.setTag(testId);
@@ -112,19 +112,19 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = ViewProps.NATIVE_ID)
   public void setNativeId(@NonNull T view, String nativeId) {
-    view.setTag(R.id.view_tag_native_id, nativeId);
+    view.setTag(R.id.reactandroid_view_tag_native_id, nativeId);
     ReactFindViewUtil.notifyViewRendered(view);
   }
 
   @ReactProp(name = ViewProps.ACCESSIBILITY_LABEL)
   public void setAccessibilityLabel(@NonNull T view, String accessibilityLabel) {
-    view.setTag(R.id.accessibility_label, accessibilityLabel);
+    view.setTag(R.id.reactandroid_accessibility_label, accessibilityLabel);
     updateViewContentDescription(view);
   }
 
   @ReactProp(name = ViewProps.ACCESSIBILITY_HINT)
   public void setAccessibilityHint(@NonNull T view, String accessibilityHint) {
-    view.setTag(R.id.accessibility_hint, accessibilityHint);
+    view.setTag(R.id.reactandroid_accessibility_hint, accessibilityHint);
     updateViewContentDescription(view);
   }
 
@@ -133,14 +133,14 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     if (accessibilityRole == null) {
       return;
     }
-    view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
+    view.setTag(R.id.reactandroid_accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
   }
 
   @ReactProp(name = ViewProps.ACCESSIBILITY_STATES)
   public void setViewStates(@NonNull T view, @Nullable ReadableArray accessibilityStates) {
     boolean shouldUpdateContentDescription =
-        view.getTag(R.id.accessibility_states) != null && accessibilityStates == null;
-    view.setTag(R.id.accessibility_states, accessibilityStates);
+        view.getTag(R.id.reactandroid_accessibility_states) != null && accessibilityStates == null;
+    view.setTag(R.id.reactandroid_accessibility_states, accessibilityStates);
     view.setSelected(false);
     view.setEnabled(true);
     if (accessibilityStates != null) {
@@ -166,7 +166,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     if (accessibilityState == null) {
       return;
     }
-    view.setTag(R.id.accessibility_state, accessibilityState);
+    view.setTag(R.id.reactandroid_accessibility_state, accessibilityState);
     view.setSelected(false);
     view.setEnabled(true);
 
@@ -188,11 +188,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   private void updateViewContentDescription(@NonNull T view) {
-    final String accessibilityLabel = (String) view.getTag(R.id.accessibility_label);
+    final String accessibilityLabel = (String) view.getTag(R.id.reactandroid_accessibility_label);
     final ReadableArray accessibilityStates =
-        (ReadableArray) view.getTag(R.id.accessibility_states);
-    final ReadableMap accessibilityState = (ReadableMap) view.getTag(R.id.accessibility_state);
-    final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
+        (ReadableArray) view.getTag(R.id.reactandroid_accessibility_states);
+    final ReadableMap accessibilityState = (ReadableMap) view.getTag(R.id.reactandroid_accessibility_state);
+    final String accessibilityHint = (String) view.getTag(R.id.reactandroid_accessibility_hint);
     final List<String> contentDescription = new ArrayList<>();
     if (accessibilityLabel != null) {
       contentDescription.add(accessibilityLabel);
@@ -213,18 +213,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         if (state.equals(STATE_CHECKED)
             && value.getType() == ReadableType.String
             && value.asString().equals(STATE_MIXED)) {
-          contentDescription.add(view.getContext().getString(R.string.state_mixed_description));
+          contentDescription.add(view.getContext().getString(R.string.reactandroid_state_mixed_description));
         } else if (state.equals(STATE_BUSY)
             && value.getType() == ReadableType.Boolean
             && value.asBoolean()) {
-          contentDescription.add(view.getContext().getString(R.string.state_busy_description));
+          contentDescription.add(view.getContext().getString(R.string.reactandroid_state_busy_description));
         } else if (state.equals(STATE_EXPANDED) && value.getType() == ReadableType.Boolean) {
           contentDescription.add(
               view.getContext()
                   .getString(
                       value.asBoolean()
-                          ? R.string.state_expanded_description
-                          : R.string.state_collapsed_description));
+                          ? R.string.reactandroid_state_expanded_description
+                          : R.string.reactandroid_state_collapsed_description));
         }
       }
     }
@@ -242,7 +242,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       return;
     }
 
-    view.setTag(R.id.accessibility_actions, accessibilityActions);
+    view.setTag(R.id.reactandroid_accessibility_actions, accessibilityActions);
   }
 
   @ReactProp(name = ViewProps.IMPORTANT_FOR_ACCESSIBILITY)

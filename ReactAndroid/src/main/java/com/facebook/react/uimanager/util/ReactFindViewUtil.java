@@ -134,7 +134,7 @@ public class ReactFindViewUtil {
   }
 
   private static @Nullable String getNativeId(View view) {
-    Object tag = view.getTag(R.id.view_tag_native_id);
+    Object tag = view.getTag(R.id.reactandroid_view_tag_native_id);
     return tag instanceof String ? (String) tag : null;
   }
 }

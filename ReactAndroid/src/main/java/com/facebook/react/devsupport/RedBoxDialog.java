@@ -167,7 +167,7 @@ import org.json.JSONObject;
                 ? (TextView) convertView
                 : (TextView)
                     LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.redbox_item_title, parent, false);
+                        .inflate(R.layout.reactandroid_redbox_item_title, parent, false);
         // Remove ANSI color codes from the title
         title.setText(mTitle.replaceAll("\\x1b\\[[0-9;]*m", ""));
         return title;
@@ -175,7 +175,7 @@ import org.json.JSONObject;
         if (convertView == null) {
           convertView =
               LayoutInflater.from(parent.getContext())
-                  .inflate(R.layout.redbox_item_frame, parent, false);
+                  .inflate(R.layout.reactandroid_redbox_item_frame, parent, false);
           convertView.setTag(new FrameViewHolder(convertView));
         }
         StackFrame frame = mStack[position - 1];
@@ -231,11 +231,11 @@ import org.json.JSONObject;
 
   protected RedBoxDialog(
       Context context, DevSupportManager devSupportManager, @Nullable RedBoxHandler redBoxHandler) {
-    super(context, R.style.Theme_Catalyst_RedBox);
+    super(context, R.style.ReactAndroidTheme_Catalyst_RedBox);
 
     requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-    setContentView(R.layout.redbox_view);
+    setContentView(R.layout.reactandroid_redbox_view);
 
     mDevSupportManager = devSupportManager;
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();

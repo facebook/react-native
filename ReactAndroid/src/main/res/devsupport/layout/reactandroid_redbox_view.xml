@@ -53,23 +53,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@drawable/redbox_top_border_background"
+        android:background="@drawable/reactandroid_redbox_top_border_background"
         >
         <Button
             android:id="@+id/rn_redbox_dismiss_button"
-            android:text="@string/catalyst_dismiss_button"
-            style="@style/redboxButton"
+            android:text="@string/reactandroid_catalyst_dismiss_button"
+            style="@style/ReactAndroidRedboxButton"
             />
         <Button
             android:id="@+id/rn_redbox_reload_button"
-            android:text="@string/catalyst_reload_button"
-            style="@style/redboxButton"
+            android:text="@string/reactandroid_catalyst_reload_button"
+            style="@style/ReactAndroidRedboxButton"
             />
         <Button
             android:id="@+id/rn_redbox_report_button"
-            android:text="@string/catalyst_report_button"
+            android:text="@string/reactandroid_catalyst_report_button"
             android:visibility="gone"
-            style="@style/redboxButton"
+            style="@style/ReactAndroidRedboxButton"
             />
     </LinearLayout>
 </LinearLayout>

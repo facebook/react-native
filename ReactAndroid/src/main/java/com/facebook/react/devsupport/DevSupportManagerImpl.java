@@ -432,7 +432,7 @@ public class DevSupportManagerImpl
     LinkedHashMap<String, DevOptionHandler> options = new LinkedHashMap<>();
     /* register standard options */
     options.put(
-        mApplicationContext.getString(R.string.catalyst_reload),
+        mApplicationContext.getString(R.string.reactandroid_catalyst_reload),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -440,7 +440,7 @@ public class DevSupportManagerImpl
                 && mDevSettings.isHotModuleReplacementEnabled()) {
               Toast.makeText(
                       mApplicationContext,
-                      mApplicationContext.getString(R.string.catalyst_hot_reloading_auto_disable),
+                      mApplicationContext.getString(R.string.reactandroid_catalyst_hot_reloading_auto_disable),
                       Toast.LENGTH_LONG)
                   .show();
               mDevSettings.setHotModuleReplacementEnabled(false);
@@ -451,11 +451,11 @@ public class DevSupportManagerImpl
     options.put(
         mDevSettings.isNuclideJSDebugEnabled()
             ? mDevSettings.isRemoteJSDebugEnabled()
-                ? mApplicationContext.getString(R.string.catalyst_debug_chrome_stop)
-                : mApplicationContext.getString(R.string.catalyst_debug_chrome)
+                ? mApplicationContext.getString(R.string.reactandroid_catalyst_debug_chrome_stop)
+                : mApplicationContext.getString(R.string.reactandroid_catalyst_debug_chrome)
             : mDevSettings.isRemoteJSDebugEnabled()
-                ? mApplicationContext.getString(R.string.catalyst_debug_stop)
-                : mApplicationContext.getString(R.string.catalyst_debug),
+                ? mApplicationContext.getString(R.string.reactandroid_catalyst_debug_stop)
+                : mApplicationContext.getString(R.string.reactandroid_catalyst_debug),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -465,7 +465,7 @@ public class DevSupportManagerImpl
         });
     if (mDevSettings.isNuclideJSDebugEnabled()) {
       options.put(
-          mApplicationContext.getString(R.string.catalyst_debug_nuclide),
+          mApplicationContext.getString(R.string.reactandroid_catalyst_debug_nuclide),
           new DevOptionHandler() {
             @Override
             public void onOptionSelected() {
@@ -474,7 +474,7 @@ public class DevSupportManagerImpl
           });
     }
     options.put(
-        mApplicationContext.getString(R.string.catalyst_change_bundle_location),
+        mApplicationContext.getString(R.string.reactandroid_catalyst_change_bundle_location),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -492,7 +492,7 @@ public class DevSupportManagerImpl
             AlertDialog bundleLocationDialog =
                 new AlertDialog.Builder(context)
                     .setTitle(
-                        mApplicationContext.getString(R.string.catalyst_change_bundle_location))
+                        mApplicationContext.getString(R.string.reactandroid_catalyst_change_bundle_location))
                     .setView(input)
                     .setPositiveButton(
                         android.R.string.ok,
@@ -510,7 +510,7 @@ public class DevSupportManagerImpl
         });
     options.put(
         // NOTE: `isElementInspectorEnabled` is not guaranteed to be accurate.
-        mApplicationContext.getString(R.string.catalyst_inspector),
+        mApplicationContext.getString(R.string.reactandroid_catalyst_inspector),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -523,8 +523,8 @@ public class DevSupportManagerImpl
     // See D15958697 for more context.
     options.put(
         mDevSettings.isHotModuleReplacementEnabled()
-            ? mApplicationContext.getString(R.string.catalyst_hot_reloading_stop)
-            : mApplicationContext.getString(R.string.catalyst_hot_reloading),
+            ? mApplicationContext.getString(R.string.reactandroid_catalyst_hot_reloading_stop)
+            : mApplicationContext.getString(R.string.reactandroid_catalyst_hot_reloading),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -540,7 +540,7 @@ public class DevSupportManagerImpl
             if (nextEnabled && !mDevSettings.isJSDevModeEnabled()) {
               Toast.makeText(
                       mApplicationContext,
-                      mApplicationContext.getString(R.string.catalyst_hot_reloading_auto_enable),
+                      mApplicationContext.getString(R.string.reactandroid_catalyst_hot_reloading_auto_enable),
                       Toast.LENGTH_LONG)
                   .show();
               mDevSettings.setJSDevModeEnabled(true);
@@ -551,8 +551,8 @@ public class DevSupportManagerImpl
 
     options.put(
         mIsSamplingProfilerEnabled
-            ? mApplicationContext.getString(R.string.catalyst_sample_profiler_disable)
-            : mApplicationContext.getString(R.string.catalyst_sample_profiler_enable),
+            ? mApplicationContext.getString(R.string.reactandroid_catalyst_sample_profiler_disable)
+            : mApplicationContext.getString(R.string.reactandroid_catalyst_sample_profiler_enable),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -562,8 +562,8 @@ public class DevSupportManagerImpl
 
     options.put(
         mDevSettings.isFpsDebugEnabled()
-            ? mApplicationContext.getString(R.string.catalyst_perf_monitor_stop)
-            : mApplicationContext.getString(R.string.catalyst_perf_monitor),
+            ? mApplicationContext.getString(R.string.reactandroid_catalyst_perf_monitor_stop)
+            : mApplicationContext.getString(R.string.reactandroid_catalyst_perf_monitor),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -580,7 +580,7 @@ public class DevSupportManagerImpl
           }
         });
     options.put(
-        mApplicationContext.getString(R.string.catalyst_settings),
+        mApplicationContext.getString(R.string.reactandroid_catalyst_settings),
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
@@ -1010,7 +1010,7 @@ public class DevSupportManagerImpl
         mDevLoadingViewVisible = false;
         FLog.e(ReactConstants.TAG, "Failed to connect to debugger!", cause);
         future.setException(
-            new IOException(mApplicationContext.getString(R.string.catalyst_debug_error), cause));
+            new IOException(mApplicationContext.getString(R.string.reactandroid_catalyst_debug_error), cause));
       }
     };
   }
@@ -1078,7 +1078,7 @@ public class DevSupportManagerImpl
                       showNewJavaError(debugServerException.getMessage(), cause);
                     } else {
                       showNewJavaError(
-                          mApplicationContext.getString(R.string.catalyst_reload_error), cause);
+                          mApplicationContext.getString(R.string.reactandroid_catalyst_reload_error), cause);
                     }
                   }
                 });

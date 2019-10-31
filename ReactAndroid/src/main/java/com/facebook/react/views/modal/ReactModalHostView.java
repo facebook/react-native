@@ -223,11 +223,11 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
     // Reset the flag since we are going to create a new dialog
     mPropertyRequiresNewDialog = false;
-    int theme = R.style.Theme_FullScreenDialog;
+    int theme = R.style.ReactAndroidTheme_FullScreenDialog;
     if (mAnimationType.equals("fade")) {
-      theme = R.style.Theme_FullScreenDialogAnimatedFade;
+      theme = R.style.ReactAndroidTheme_FullScreenDialogAnimatedFade;
     } else if (mAnimationType.equals("slide")) {
-      theme = R.style.Theme_FullScreenDialogAnimatedSlide;
+      theme = R.style.ReactAndroidTheme_FullScreenDialogAnimatedSlide;
     }
     Activity currentActivity = getCurrentActivity();
     Context context = currentActivity == null ? getContext() : currentActivity;

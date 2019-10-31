@@ -71,7 +71,7 @@ public class DevLoadingViewController {
 
     showMessage(
         context.getString(
-            R.string.catalyst_loading_from_url, parsedURL.getHost() + ":" + parsedURL.getPort()));
+            R.string.reactandroid_catalyst_loading_from_url, parsedURL.getHost() + ":" + parsedURL.getPort()));
   }
 
   public void showForRemoteJSEnabled() {
@@ -80,7 +80,7 @@ public class DevLoadingViewController {
       return;
     }
 
-    showMessage(context.getString(R.string.catalyst_debug_connecting));
+    showMessage(context.getString(R.string.reactandroid_catalyst_debug_connecting));
   }
 
   public void updateProgress(
@@ -150,7 +150,7 @@ public class DevLoadingViewController {
     LayoutInflater inflater =
         (LayoutInflater) currentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-    mDevLoadingView = (TextView) inflater.inflate(R.layout.dev_loading_view, null);
+    mDevLoadingView = (TextView) inflater.inflate(R.layout.reactandroid_dev_loading_view, null);
     mDevLoadingView.setText(message);
 
     mDevLoadingPopup = new PopupWindow(mDevLoadingView, MATCH_PARENT, WRAP_CONTENT);

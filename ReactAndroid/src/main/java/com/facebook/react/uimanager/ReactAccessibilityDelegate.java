@@ -154,15 +154,15 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
     final AccessibilityRole accessibilityRole =
-        (AccessibilityRole) host.getTag(R.id.accessibility_role);
+        (AccessibilityRole) host.getTag(R.id.reactandroid_accessibility_role);
     if (accessibilityRole != null) {
       setRole(info, accessibilityRole, host.getContext());
     }
 
     // states are changeable.
     final ReadableArray accessibilityStates =
-        (ReadableArray) host.getTag(R.id.accessibility_states);
-    final ReadableMap accessibilityState = (ReadableMap) host.getTag(R.id.accessibility_state);
+        (ReadableArray) host.getTag(R.id.reactandroid_accessibility_states);
+    final ReadableMap accessibilityState = (ReadableMap) host.getTag(R.id.reactandroid_accessibility_state);
     if (accessibilityStates != null) {
       setStates(info, accessibilityStates, host.getContext());
     }
@@ -170,7 +170,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
       setState(info, accessibilityState, host.getContext());
     }
     final ReadableArray accessibilityActions =
-        (ReadableArray) host.getTag(R.id.accessibility_actions);
+        (ReadableArray) host.getTag(R.id.reactandroid_accessibility_actions);
     if (accessibilityActions != null) {
       for (int i = 0; i < accessibilityActions.size(); i++) {
         final ReadableMap action = accessibilityActions.getMap(i);
@@ -221,14 +221,14 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
           info.setCheckable(true);
           info.setChecked(true);
           if (info.getClassName().equals(AccessibilityRole.getValue(AccessibilityRole.SWITCH))) {
-            info.setText(context.getString(R.string.state_on_description));
+            info.setText(context.getString(R.string.reactandroid_state_on_description));
           }
           break;
         case "unchecked":
           info.setCheckable(true);
           info.setChecked(false);
           if (info.getClassName().equals(AccessibilityRole.getValue(AccessibilityRole.SWITCH))) {
-            info.setText(context.getString(R.string.state_off_description));
+            info.setText(context.getString(R.string.reactandroid_state_off_description));
           }
           break;
       }
@@ -253,7 +253,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         if (info.getClassName().equals(AccessibilityRole.getValue(AccessibilityRole.SWITCH))) {
           info.setText(
               context.getString(
-                  boolValue ? R.string.state_on_description : R.string.state_off_description));
+                  boolValue ? R.string.reactandroid_state_on_description : R.string.reactandroid_state_off_description));
         }
       }
     }
@@ -270,7 +270,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     }
     nodeInfo.setClassName(AccessibilityRole.getValue(role));
     if (role.equals(AccessibilityRole.LINK)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.link_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_link_description));
 
       if (nodeInfo.getContentDescription() != null) {
         SpannableString spannable = new SpannableString(nodeInfo.getContentDescription());
@@ -284,45 +284,45 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         nodeInfo.setText(spannable);
       }
     } else if (role.equals(AccessibilityRole.SEARCH)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.search_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_search_description));
     } else if (role.equals(AccessibilityRole.IMAGE)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.image_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_image_description));
     } else if (role.equals(AccessibilityRole.IMAGEBUTTON)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.imagebutton_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_imagebutton_description));
       nodeInfo.setClickable(true);
     } else if (role.equals(AccessibilityRole.SUMMARY)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.summary_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_summary_description));
     } else if (role.equals(AccessibilityRole.HEADER)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.header_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_header_description));
       final AccessibilityNodeInfoCompat.CollectionItemInfoCompat itemInfo =
           AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(0, 1, 0, 1, true);
       nodeInfo.setCollectionItemInfo(itemInfo);
     } else if (role.equals(AccessibilityRole.ALERT)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.alert_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_alert_description));
     } else if (role.equals(AccessibilityRole.COMBOBOX)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.combobox_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_combobox_description));
     } else if (role.equals(AccessibilityRole.MENU)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.menu_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_menu_description));
     } else if (role.equals(AccessibilityRole.MENUBAR)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.menubar_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_menubar_description));
     } else if (role.equals(AccessibilityRole.MENUITEM)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.menuitem_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_menuitem_description));
     } else if (role.equals(AccessibilityRole.PROGRESSBAR)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.progressbar_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_progressbar_description));
     } else if (role.equals(AccessibilityRole.RADIOGROUP)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.radiogroup_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_radiogroup_description));
     } else if (role.equals(AccessibilityRole.SCROLLBAR)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.scrollbar_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_scrollbar_description));
     } else if (role.equals(AccessibilityRole.SPINBUTTON)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.spinbutton_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_spinbutton_description));
     } else if (role.equals(AccessibilityRole.TAB)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.rn_tab_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_rn_tab_description));
     } else if (role.equals(AccessibilityRole.TABLIST)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.tablist_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_tablist_description));
     } else if (role.equals(AccessibilityRole.TIMER)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.timer_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_timer_description));
     } else if (role.equals(AccessibilityRole.TOOLBAR)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.toolbar_description));
+      nodeInfo.setRoleDescription(context.getString(R.string.reactandroid_toolbar_description));
     }
   }
 
@@ -331,10 +331,10 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     // problems,
     // so leave it alone.
     if (!ViewCompat.hasAccessibilityDelegate(view)
-        && (view.getTag(R.id.accessibility_role) != null
-            || view.getTag(R.id.accessibility_states) != null
-            || view.getTag(R.id.accessibility_state) != null
-            || view.getTag(R.id.accessibility_actions) != null)) {
+        && (view.getTag(R.id.reactandroid_accessibility_role) != null
+            || view.getTag(R.id.reactandroid_accessibility_states) != null
+            || view.getTag(R.id.reactandroid_accessibility_state) != null
+            || view.getTag(R.id.reactandroid_accessibility_actions) != null)) {
       ViewCompat.setAccessibilityDelegate(view, new ReactAccessibilityDelegate());
     }
   }
