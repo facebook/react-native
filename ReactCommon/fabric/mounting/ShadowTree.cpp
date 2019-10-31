@@ -59,7 +59,7 @@ static void updateMountedFlag(
       continue;
     }
 
-    if (oldChild->getTag() != newChild->getTag()) {
+    if (!ShadowNode::sameFamily(*oldChild, *newChild)) {
       // Totally different nodes, updating is impossible.
       break;
     }
