@@ -79,7 +79,7 @@ function StackFrameHeader(props) {
     <View style={stackStyles.heading}>
       <Text style={stackStyles.headingText}>Stack</Text>
       <LogBoxInspectorSourceMapStatus
-        onPress={props.status === 'FAILED' ? props.onRetry() : null}
+        onPress={props.status !== 'COMPLETE' ? props.onRetry : null}
         status={props.status}
       />
     </View>

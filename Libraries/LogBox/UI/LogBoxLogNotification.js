@@ -20,63 +20,42 @@ import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import LogBoxLog from '../Data/LogBoxLog';
 import LogBoxMessage from './LogBoxMessage';
+import * as LogBoxData from '../Data/LogBoxData';
 
 type Props = $ReadOnly<{|
   log: LogBoxLog,
   totalLogCount: number,
   level: 'warn' | 'error',
-  onPressOpen: (index: number) => void,
+  onPressOpen: () => void,
   onPressList: () => void,
   onPressDismiss: () => void,
 |}>;
 
-class LogBoxLogNotification extends React.Component<Props> {
-  static GUTTER: number = StyleSheet.hairlineWidth;
-  static HEIGHT: number = 48;
+function LogBoxLogNotification(props: Props): React.Node {
+  const {totalLogCount, level, log} = props;
 
-  shouldComponentUpdate(nextProps: Props): boolean {
-    const prevProps = this.props;
-    return (
-      prevProps.onPressOpen !== nextProps.onPressOpen ||
-      prevProps.onPressList !== nextProps.onPressList ||
-      prevProps.onPressDismiss !== nextProps.onPressDismiss ||
-      prevProps.log !== nextProps.log
-    );
-  }
+  // Eagerly symbolicate so the stack is available when pressing to inspect.
+  React.useEffect(() => {
+    LogBoxData.symbolicateLogLazy(log);
+  }, [log]);
 
-  _handlePressOpen = () => {
-    this.props.onPressOpen(0);
-  };
-
-  _handlePressList = () => {
-    this.props.onPressList();
-  };
-
-  _handlePressDismiss = () => {
-    this.props.onPressDismiss();
-  };
-
-  render(): React.Node {
-    const {totalLogCount, level, log} = this.props;
-
-    return (
-      <View style={toastStyles.container}>
-        <LogBoxButton
-          onPress={this._handlePressOpen}
-          style={toastStyles.press}
-          backgroundColor={{
-            default: LogBoxStyle.getBackgroundColor(1),
-            pressed: LogBoxStyle.getBackgroundColor(0.9),
-          }}>
-          <View style={toastStyles.content}>
-            <CountBadge count={totalLogCount} level={level} />
-            <Message message={log.message} />
-            <DismissButton onPress={this._handlePressDismiss} />
-          </View>
-        </LogBoxButton>
-      </View>
-    );
-  }
+  return (
+    <View style={toastStyles.container}>
+      <LogBoxButton
+        onPress={props.onPressOpen}
+        style={toastStyles.press}
+        backgroundColor={{
+          default: LogBoxStyle.getBackgroundColor(1),
+          pressed: LogBoxStyle.getBackgroundColor(0.9),
+        }}>
+        <View style={toastStyles.content}>
+          <CountBadge count={totalLogCount} level={level} />
+          <Message message={log.message} />
+          <DismissButton onPress={props.onPressDismiss} />
+        </View>
+      </LogBoxButton>
+    </View>
+  );
 }
 
 function CountBadge(props) {
@@ -208,19 +187,19 @@ const dismissStyles = StyleSheet.create({
 
 const toastStyles = StyleSheet.create({
   container: {
-    height: LogBoxLogNotification.HEIGHT,
+    height: 48,
     position: 'relative',
     width: '100%',
     justifyContent: 'center',
-    marginTop: LogBoxLogNotification.GUTTER,
+    marginTop: 0.5,
     backgroundColor: LogBoxStyle.getTextColor(1),
   },
   press: {
-    height: LogBoxLogNotification.HEIGHT,
+    height: 48,
     position: 'relative',
     width: '100%',
     justifyContent: 'center',
-    marginTop: LogBoxLogNotification.GUTTER,
+    marginTop: 0.5,
     paddingHorizontal: 12,
   },
   content: {

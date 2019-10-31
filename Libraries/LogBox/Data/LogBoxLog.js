@@ -63,12 +63,14 @@ class LogBoxLog {
       : this.stack;
   }
 
-  retrySymbolicate(callback: () => void): SymbolicationRequest {
-    LogBoxSymbolication.deleteStack(this.stack);
+  retrySymbolicate(callback?: () => void): SymbolicationRequest {
+    if (this.symbolicated.status !== 'COMPLETE') {
+      LogBoxSymbolication.deleteStack(this.stack);
+    }
     return this.symbolicate(callback);
   }
 
-  symbolicate(callback: () => void): SymbolicationRequest {
+  symbolicate(callback?: () => void): SymbolicationRequest {
     let aborted = false;
 
     if (this.symbolicated.status !== 'COMPLETE') {
@@ -81,7 +83,9 @@ class LogBoxLog {
           this.symbolicated = {error: null, stack: null, status: 'PENDING'};
         }
         if (!aborted) {
-          callback();
+          if (callback != null) {
+            callback();
+          }
         }
       };
 

@@ -15,6 +15,7 @@ import * as React from 'react';
 import ScrollView from '../../Components/ScrollView/ScrollView';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import View from '../../Components/View/View';
+import * as LogBoxData from '../Data/LogBoxData';
 import LogBoxInspectorFooter from './LogBoxInspectorFooter';
 import LogBoxInspectorMessageHeader from './LogBoxInspectorMessageHeader';
 import LogBoxInspectorReactFrames from './LogBoxInspectorReactFrames';
@@ -24,7 +25,6 @@ import LogBoxInspectorHeader from './LogBoxInspectorHeader';
 import * as LogBoxStyle from './LogBoxStyle';
 
 import type LogBoxLog from '../Data/LogBoxLog';
-import type {SymbolicationRequest} from '../Data/LogBoxLog';
 
 type Props = $ReadOnly<{|
   onDismiss: () => void,
@@ -34,75 +34,52 @@ type Props = $ReadOnly<{|
   selectedIndex: number,
 |}>;
 
-class LogBoxInspector extends React.Component<Props> {
-  _symbolication: ?SymbolicationRequest;
+function LogBoxInspector(props: Props): React.Node {
+  const {logs, selectedIndex} = props;
 
-  _handleDismiss = () => {
-    this.props.onDismiss();
-  };
-
-  render(): React.Node {
-    const {logs, selectedIndex} = this.props;
-
-    const log = logs[selectedIndex];
-    if (log == null) {
-      return null;
+  const log = logs[selectedIndex];
+  React.useEffect(() => {
+    // Symbolicate the visible log if it hasn't been already.
+    if (log != null && log.symbolicated.status !== 'COMPLETE') {
+      LogBoxData.symbolicateLogNow(log);
     }
+  }, [log]);
 
-    return (
-      <View style={styles.root}>
-        <LogBoxInspectorHeader
-          onSelectIndex={this._handleSelectIndex}
-          selectedIndex={selectedIndex}
-          total={logs.length}
-          level={log.level}
-        />
-        <LogBoxInspectorBody
-          log={log}
-          onRetry={this._handleRetrySymbolication}
-        />
-        <LogBoxInspectorFooter
-          onDismiss={this._handleDismiss}
-          onMinimize={this.props.onMinimize}
-        />
-      </View>
-    );
-  }
-
-  componentDidMount(): void {
-    this._handleSymbolication();
-  }
-
-  componentDidUpdate(prevProps: Props): void {
-    if (
-      prevProps.logs[prevProps.selectedIndex] !==
-      this.props.logs[this.props.selectedIndex]
-    ) {
-      this._handleSymbolication();
+  React.useEffect(() => {
+    // Optimistically symbolicate the last and next logs.
+    if (logs.length > 1) {
+      const selected = selectedIndex;
+      const lastIndex = logs.length - 1;
+      const prevIndex = selected - 1 < 0 ? lastIndex : selected - 1;
+      const nextIndex = selected + 1 > lastIndex ? 0 : selected + 1;
+      LogBoxData.symbolicateLogLazy(logs[prevIndex]);
+      LogBoxData.symbolicateLogLazy(logs[nextIndex]);
     }
+  }, [logs, selectedIndex]);
+
+  function _handleRetry() {
+    LogBoxData.retrySymbolicateLogNow(log);
   }
 
-  _handleRetrySymbolication = () => {
-    this.forceUpdate(() => {
-      const log = this.props.logs[this.props.selectedIndex];
-      this._symbolication = log.retrySymbolicate(() => {
-        this.forceUpdate();
-      });
-    });
-  };
-
-  _handleSymbolication(): void {
-    const log = this.props.logs[this.props.selectedIndex];
-    if (log.symbolicated.status !== 'COMPLETE') {
-      this._symbolication = log.symbolicate(() => {
-        this.forceUpdate();
-      });
-    }
+  if (log == null) {
+    return null;
   }
 
-  _handleSelectIndex = (selectedIndex: number): void => {
-    this.props.onChangeSelectedIndex(selectedIndex);
-  };
+  return (
+    <View style={styles.root}>
+      <LogBoxInspectorHeader
+        onSelectIndex={props.onChangeSelectedIndex}
+        selectedIndex={selectedIndex}
+        total={logs.length}
+        level={log.level}
+      />
+      <LogBoxInspectorBody log={log} onRetry={_handleRetry} />
+      <LogBoxInspectorFooter
+        onDismiss={props.onDismiss}
+        onMinimize={props.onMinimize}
+      />
+    </View>
+  );
 }
 
 function LogBoxInspectorBody(props) {

@@ -17,7 +17,23 @@ const LogBoxInspectorSourceMapStatus = require('../LogBoxInspectorSourceMapStatu
 const render = require('../../../../jest/renderer');
 
 describe('LogBoxInspectorSourceMapStatus', () => {
-  it('should render complete', () => {
+  it('should render for failed', () => {
+    const output = render.shallowRender(
+      <LogBoxInspectorSourceMapStatus onPress={() => {}} status="FAILED" />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should render for pending', () => {
+    const output = render.shallowRender(
+      <LogBoxInspectorSourceMapStatus onPress={() => {}} status="PENDING" />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should render null for complete', () => {
     const output = render.shallowRender(
       <LogBoxInspectorSourceMapStatus onPress={() => {}} status="COMPLETE" />,
     );

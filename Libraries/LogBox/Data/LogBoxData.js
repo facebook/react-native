@@ -82,6 +82,21 @@ export function add(level: LogLevel, args: $ReadOnlyArray<mixed>): void {
   handleUpdate();
 }
 
+export function symbolicateLogNow(log: LogBoxLog) {
+  log.symbolicate(() => {
+    handleUpdate();
+  });
+}
+export function retrySymbolicateLogNow(log: LogBoxLog) {
+  log.retrySymbolicate(() => {
+    handleUpdate();
+  });
+}
+
+export function symbolicateLogLazy(log: LogBoxLog) {
+  log.symbolicate();
+}
+
 export function clear(): void {
   if (logs.size > 0) {
     logs.clear();
