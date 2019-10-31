@@ -17,11 +17,8 @@ using namespace facebook::react;
 
 @implementation RCTLegacyViewManagerInteropComponentView {
   UIView *_paperView;
-
-  /**
-   * A temporar storage of views that are being mounted to this component white paper component isn't yet ready.
-   */
-  NSMutableArray<UIView *> *_insertedViews;
+  NSMutableDictionary<NSNumber *, UIView *> *_viewsToBeMounted;
+  NSMutableArray<UIView *> *_viewsToBeUnmounted;
   LegacyViewManagerInteropShadowNode::ConcreteState::Shared _state;
 }
 
@@ -30,7 +27,8 @@ using namespace facebook::react;
   if (self = [super initWithFrame:frame]) {
     static const auto defaultProps = std::make_shared<const LegacyViewManagerInteropViewProps>();
     _props = defaultProps;
-    _insertedViews = [NSMutableArray new];
+    _viewsToBeMounted = [NSMutableDictionary new];
+    _viewsToBeUnmounted = [NSMutableArray new];
   }
 
   return self;
@@ -63,33 +61,6 @@ using namespace facebook::react;
   }
 }
 
-- (UIView *)paperView
-{
-  if (!_paperView) {
-    __weak __typeof(self) weakSelf = self;
-    UIView *view = [self.coordinator viewWithInterceptor:^(std::string eventName, folly::dynamic event) {
-      if (weakSelf) {
-        __typeof(self) strongSelf = weakSelf;
-        auto eventEmitter =
-            std::static_pointer_cast<LegacyViewManagerInteropViewEventEmitter const>(strongSelf->_eventEmitter);
-        eventEmitter->dispatchEvent(eventName, event);
-      }
-    }];
-    if (view) {
-      for (NSUInteger i = 0; i < _insertedViews.count; i++) {
-        [view insertReactSubview:_insertedViews[i] atIndex:i];
-      }
-
-      [_insertedViews removeAllObjects];
-
-      [view didUpdateReactSubviews];
-      _paperView = view;
-    }
-  }
-
-  return _paperView;
-}
-
 - (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN
 {
   const auto &state = _state->getData();
@@ -101,28 +72,22 @@ using namespace facebook::react;
 
 - (void)prepareForRecycle
 {
-  [_insertedViews removeAllObjects];
+  [_viewsToBeMounted removeAllObjects];
+  [_viewsToBeUnmounted removeAllObjects];
+  [_paperView removeFromSuperview];
+  _paperView = nil;
+  _state.reset();
   [super prepareForRecycle];
 }
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  if (self.paperView) {
-    [self.paperView insertReactSubview:childComponentView atIndex:index];
-    [self.paperView didUpdateReactSubviews];
-  } else {
-    [_insertedViews insertObject:childComponentView atIndex:index];
-  }
+  [_viewsToBeMounted setObject:childComponentView forKey:[NSNumber numberWithInteger:index]];
 }
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  if (self.paperView) {
-    [self.paperView removeReactSubview:childComponentView];
-    [self.paperView didUpdateReactSubviews];
-  } else {
-    [_insertedViews removeObjectAtIndex:index];
-  }
+  [_viewsToBeUnmounted addObject:childComponentView];
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -139,13 +104,36 @@ using namespace facebook::react;
 {
   [super finalizeUpdates:updateMask];
 
-  if (!self.contentView) {
-    self.contentView = self.paperView;
+  if (!_paperView) {
+    __weak __typeof(self) weakSelf = self;
+    _paperView = [self.coordinator viewWithInterceptor:^(std::string eventName, folly::dynamic event) {
+      if (weakSelf) {
+        __typeof(self) strongSelf = weakSelf;
+        auto eventEmitter =
+            std::static_pointer_cast<LegacyViewManagerInteropViewEventEmitter const>(strongSelf->_eventEmitter);
+        eventEmitter->dispatchEvent(eventName, event);
+      }
+    }];
+    self.contentView = _paperView;
   }
+
+  for (NSNumber *key in _viewsToBeMounted) {
+    [_paperView insertReactSubview:_viewsToBeMounted[key] atIndex:key.integerValue];
+  }
+
+  [_viewsToBeMounted removeAllObjects];
+
+  for (UIView *view in _viewsToBeUnmounted) {
+    [_paperView removeReactSubview:view];
+  }
+
+  [_viewsToBeUnmounted removeAllObjects];
+
+  [_paperView didUpdateReactSubviews];
 
   if (updateMask & RNComponentViewUpdateMaskProps) {
     const auto &newProps = *std::static_pointer_cast<const LegacyViewManagerInteropViewProps>(_props);
-    [self.coordinator setProps:newProps.otherProps forView:self.paperView];
+    [self.coordinator setProps:newProps.otherProps forView:_paperView];
   }
 }
 
