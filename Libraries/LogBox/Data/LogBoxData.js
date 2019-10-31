@@ -32,7 +32,7 @@ export type Subscription = $ReadOnly<{|
 
 const observers: Set<{observer: Observer}> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
-const logs: LogBoxLogs = new Set();
+let logs: LogBoxLogs = new Set();
 let updateTimeout = null;
 let _isDisabled = false;
 
@@ -154,6 +154,16 @@ export function clear(): void {
     logs.clear();
     handleUpdate();
   }
+}
+
+export function clearWarnings(): void {
+  logs = new Set(Array.from(logs).filter(log => log.level !== 'warn'));
+  handleUpdate();
+}
+
+export function clearErrors(): void {
+  logs = new Set(Array.from(logs).filter(log => log.level !== 'error'));
+  handleUpdate();
 }
 
 export function dismiss(log: LogBoxLog): void {

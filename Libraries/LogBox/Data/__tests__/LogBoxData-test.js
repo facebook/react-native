@@ -86,13 +86,47 @@ describe('LogBoxData', () => {
   });
 
   it('clears all logs', () => {
-    addLogs(['A', 'B', 'C']);
-    addExceptions(['D']);
+    addLogs(['A', 'B']);
+    addExceptions(['C', 'D']);
     jest.runAllImmediates();
 
     expect(registry().length).toBe(4);
 
     LogBoxData.clear();
+    expect(registry().length).toBe(0);
+  });
+
+  it('clears only warnings', () => {
+    addLogs(['A', 'B']);
+    addExceptions(['C', 'D', 'E']);
+    jest.runAllImmediates();
+
+    expect(registry().length).toBe(5);
+
+    LogBoxData.clearWarnings();
+    expect(registry().length).toBe(3);
+  });
+
+  it('clears only errors', () => {
+    addLogs(['A', 'B']);
+    addExceptions(['C', 'D', 'E']);
+    jest.runAllImmediates();
+
+    expect(registry().length).toBe(5);
+
+    LogBoxData.clearErrors();
+    expect(registry().length).toBe(2);
+  });
+
+  it('clears both errors and warnings', () => {
+    addLogs(['A', 'B']);
+    addExceptions(['C', 'D', 'E']);
+    jest.runAllImmediates();
+
+    expect(registry().length).toBe(5);
+
+    LogBoxData.clearErrors();
+    LogBoxData.clearWarnings();
     expect(registry().length).toBe(0);
   });
 

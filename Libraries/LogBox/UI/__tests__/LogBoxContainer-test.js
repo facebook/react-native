@@ -21,7 +21,8 @@ describe('LogBoxContainer', () => {
     const output = render.shallowRender(
       <LogBoxContainer
         onDismiss={() => {}}
-        onDismissAll={() => {}}
+        onDismissWarns={() => {}}
+        onDismissErrors={() => {}}
         logs={new Set()}
       />,
     );
@@ -33,7 +34,8 @@ describe('LogBoxContainer', () => {
     const output = render.shallowRender(
       <LogBoxContainer
         onDismiss={() => {}}
-        onDismissAll={() => {}}
+        onDismissWarns={() => {}}
+        onDismissErrors={() => {}}
         logs={
           new Set([
             new LogBoxLog(
@@ -68,7 +70,8 @@ describe('LogBoxContainer', () => {
     const output = render.shallowRender(
       <LogBoxContainer
         onDismiss={() => {}}
-        onDismissAll={() => {}}
+        onDismissWarns={() => {}}
+        onDismissErrors={() => {}}
         logs={
           new Set([
             new LogBoxLog(
@@ -103,7 +106,8 @@ describe('LogBoxContainer', () => {
     const output = render.shallowRender(
       <LogBoxContainer
         onDismiss={() => {}}
-        onDismissAll={() => {}}
+        onDismissWarns={() => {}}
+        onDismissErrors={() => {}}
         logs={
           new Set([
             new LogBoxLog(

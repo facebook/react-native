@@ -103,7 +103,8 @@ if (__DEV__) {
       return this.state.logs == null ? null : (
         <LogBoxContainer
           onDismiss={this._handleDismiss}
-          onDismissAll={this._handleDismissAll}
+          onDismissWarns={LogBoxData.clearWarnings}
+          onDismissErrors={LogBoxData.clearErrors}
           logs={this.state.logs}
         />
       );
@@ -119,10 +120,6 @@ if (__DEV__) {
       if (this._subscription != null) {
         this._subscription.unsubscribe();
       }
-    }
-
-    _handleDismissAll(): void {
-      LogBoxData.clear();
     }
 
     _handleDismiss(log: LogBoxLog): void {

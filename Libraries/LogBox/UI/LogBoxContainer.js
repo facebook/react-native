@@ -21,7 +21,8 @@ import type {LogBoxLogs} from '../Data/LogBoxData';
 
 type Props = $ReadOnly<{|
   onDismiss: (log: LogBoxLog) => void,
-  onDismissAll: () => void,
+  onDismissWarns: () => void,
+  onDismissErrors: () => void,
   logs: LogBoxLogs,
 |}>;
 
@@ -29,10 +30,6 @@ function LogBoxContainer(props: Props): React.Node {
   const [selectedLogIndex, setSelectedLog] = React.useState(null);
 
   const logs = Array.from(props.logs);
-
-  function handleInspectorDismissAll() {
-    props.onDismissAll();
-  }
 
   function handleInspectorDismiss() {
     // Here we handle the cases when the log is dismissed and it
@@ -92,7 +89,7 @@ function LogBoxContainer(props: Props): React.Node {
             onPressList={() => {
               /* TODO: open log list */
             }}
-            onPressDismiss={handleInspectorDismissAll}
+            onPressDismiss={props.onDismissWarns}
           />
         </View>
       )}
@@ -106,7 +103,7 @@ function LogBoxContainer(props: Props): React.Node {
             onPressList={() => {
               /* TODO: open log list */
             }}
-            onPressDismiss={handleInspectorDismissAll}
+            onPressDismiss={props.onDismissErrors}
           />
         </View>
       )}
