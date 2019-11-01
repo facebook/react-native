@@ -16,7 +16,7 @@ namespace react {
 /*
  * Contains all (meta)information related to a MountingTransaction except a list
  * of mutation instructions.
- * The class is meant to be used when a cosumer should not have access to all
+ * The class is meant to be used when a consumer should not have access to all
  * information about the transaction (incapsulation) but still needs to observe
  * it to produce some side-effects.
  */

@@ -20,6 +20,13 @@ class RCTComponentViewClassDescriptor final {
    * Associated (and owned) native view class.
    */
   Class<RCTComponentViewProtocol> viewClass;
+
+  /*
+   * Indicates a requirement to call on the view methods from
+   * `RCTMountingTransactionObserving` protocol.
+   */
+  bool observesMountingTransactionWillMount{false};
+  bool observesMountingTransactionDidMount{false};
 };
 
 NS_ASSUME_NONNULL_END

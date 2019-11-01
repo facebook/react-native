@@ -22,6 +22,31 @@ class RCTComponentViewDescriptor final {
    * Associated (and owned) native view instance.
    */
   UIView<RCTComponentViewProtocol> *view;
+
+  /*
+   * Indicates a requirement to call on the view methods from
+   * `RCTMountingTransactionObserving` protocol.
+   */
+  bool observesMountingTransactionWillMount{false};
+  bool observesMountingTransactionDidMount{false};
+};
+
+inline bool operator==(RCTComponentViewDescriptor const &lhs, RCTComponentViewDescriptor const &rhs)
+{
+  return lhs.view == rhs.view;
+}
+
+inline bool operator!=(RCTComponentViewDescriptor const &lhs, RCTComponentViewDescriptor const &rhs)
+{
+  return lhs.view != rhs.view;
+}
+
+template <>
+struct std::hash<RCTComponentViewDescriptor> {
+  size_t operator()(RCTComponentViewDescriptor const &componentViewDescriptor) const
+  {
+    return std::hash<void *>()((__bridge void *)componentViewDescriptor.view);
+  }
 };
 
 NS_ASSUME_NONNULL_END

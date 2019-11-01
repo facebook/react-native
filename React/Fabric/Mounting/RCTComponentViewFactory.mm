@@ -9,6 +9,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTConversions.h>
+
 #import <better/map.h>
 #import <better/mutex.h>
 
@@ -21,6 +22,7 @@
 #import "RCTImageComponentView.h"
 #import "RCTLegacyViewManagerInteropComponentView.h"
 #import "RCTModalHostViewComponentView.h"
+#import "RCTMountingTransactionObserving.h"
 #import "RCTParagraphComponentView.h"
 #import "RCTPullToRefreshViewComponentView.h"
 #import "RCTRootComponentView.h"
@@ -30,6 +32,8 @@
 #import "RCTSwitchComponentView.h"
 #import "RCTUnimplementedNativeComponentView.h"
 #import "RCTViewComponentView.h"
+
+#import <objc/runtime.h>
 
 using namespace facebook::react;
 
@@ -79,7 +83,17 @@ using namespace facebook::react;
 
 - (RCTComponentViewClassDescriptor)_componentViewClassDescriptorFromClass:(Class<RCTComponentViewProtocol>)viewClass
 {
-  return RCTComponentViewClassDescriptor{.viewClass = viewClass};
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+  return RCTComponentViewClassDescriptor
+  {
+    .viewClass = viewClass,
+    .observesMountingTransactionWillMount =
+        (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionWillMountWithMetadata:)),
+    .observesMountingTransactionDidMount =
+        (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionDidMountWithMetadata:)),
+  };
+#pragma clang diagnostic pop
 }
 
 - (void)registerComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass
@@ -120,7 +134,11 @@ using namespace facebook::react;
   auto componentViewClassDescriptor = iterator->second;
   Class viewClass = componentViewClassDescriptor.viewClass;
 
-  return RCTComponentViewDescriptor{.view = [[viewClass alloc] init]};
+  return RCTComponentViewDescriptor{
+      .view = [[viewClass alloc] init],
+      .observesMountingTransactionWillMount = componentViewClassDescriptor.observesMountingTransactionWillMount,
+      .observesMountingTransactionDidMount = componentViewClassDescriptor.observesMountingTransactionDidMount,
+  };
 }
 
 - (facebook::react::ComponentDescriptorRegistry::Shared)createComponentDescriptorRegistryWithParameters:
