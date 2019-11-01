@@ -69,6 +69,8 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
    */
   void setSize(Size size) const;
 
+  void setPadding(RectangleEdges<Float> padding) const;
+
   /**
    * Sets position type of Yoga node (relative, absolute).
    */

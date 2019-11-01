@@ -35,12 +35,7 @@ class SafeAreaViewComponentDescriptor final
             shadowNode->getState());
     auto stateData = state->getData();
 
-    if (stateData.safeAreaSize.width != 0 &&
-        stateData.safeAreaSize.height != 0) {
-      layoutableShadowNode->setSize(
-          Size{stateData.safeAreaSize.width, stateData.safeAreaSize.height});
-      layoutableShadowNode->setPositionType(YGPositionTypeAbsolute);
-    }
+    layoutableShadowNode->setPadding(stateData.padding);
 
     ConcreteComponentDescriptor::adopt(shadowNode);
   }

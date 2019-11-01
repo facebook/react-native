@@ -138,6 +138,18 @@ void YogaLayoutableShadowNode::setSize(Size size) const {
   yogaNode_.setDirty(true);
 }
 
+void YogaLayoutableShadowNode::setPadding(RectangleEdges<Float> padding) const {
+  ensureUnsealed();
+
+  auto style = yogaNode_.getStyle();
+  style.padding()[YGEdgeTop] = yogaStyleValueFromFloat(padding.top);
+  style.padding()[YGEdgeLeft] = yogaStyleValueFromFloat(padding.left);
+  style.padding()[YGEdgeRight] = yogaStyleValueFromFloat(padding.right);
+  style.padding()[YGEdgeBottom] = yogaStyleValueFromFloat(padding.bottom);
+  yogaNode_.setStyle(style);
+  yogaNode_.setDirty(true);
+}
+
 void YogaLayoutableShadowNode::setPositionType(
     YGPositionType positionType) const {
   ensureUnsealed();

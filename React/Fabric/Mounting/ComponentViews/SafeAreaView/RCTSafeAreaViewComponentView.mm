@@ -13,27 +13,6 @@
 
 using namespace facebook::react;
 
-static UIScrollView *findScrollView(UIView *view, uint recursionDepth = 0)
-{
-  if (recursionDepth >= 3) {
-    return NULL;
-  }
-  if ([view isKindOfClass:[UIScrollView class]]) {
-    return (UIScrollView *)view;
-  }
-
-  if (view.subviews.count >= 1) {
-    for (UIView *subview in view.subviews) {
-      UIScrollView *scrollView = findScrollView(subview.subviews.firstObject, recursionDepth + 1);
-      if (scrollView) {
-        return scrollView;
-      }
-    }
-  }
-
-  return NULL;
-}
-
 @implementation RCTSafeAreaViewComponentView {
   SafeAreaViewShadowNode::ConcreteState::Shared _state;
 }
@@ -61,16 +40,14 @@ static UIScrollView *findScrollView(UIView *view, uint recursionDepth = 0)
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  UIScrollView *scrollView = findScrollView(self);
-  if (scrollView && CGSizeEqualToSize(scrollView.bounds.size, self.bounds.size)) {
-    [scrollView setContentInset:self._safeAreaInsets];
-  } else {
-    if (_state != nullptr) {
-      CGSize size = self.bounds.size;
-      size.height -= self._safeAreaInsets.bottom;
-      auto newState = SafeAreaViewState{RCTSizeFromCGSize(size)};
-      _state->updateState(std::move(newState));
-    }
+}
+
+- (void)safeAreaInsetsDidChange
+{
+  [super safeAreaInsetsDidChange];
+  if (_state != nullptr) {
+    auto newState = SafeAreaViewState{RCTEdgeInsetsFromUIEdgeInsets(self._safeAreaInsets)};
+    _state->updateState(std::move(newState));
   }
 }
 

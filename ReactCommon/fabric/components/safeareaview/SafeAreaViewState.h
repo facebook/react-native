@@ -19,10 +19,10 @@ class SafeAreaViewState final {
  public:
   using Shared = std::shared_ptr<const SafeAreaViewState>;
 
-  SafeAreaViewState(){};
-  SafeAreaViewState(Size screenSize_) : safeAreaSize(screenSize_){};
+  SafeAreaViewState() = default;
+  SafeAreaViewState(EdgeInsets padding_) : padding(padding_){};
 
-  const Size safeAreaSize{};
+  const EdgeInsets padding{};
 
 #pragma mark - Getters
 };
