@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`LogBoxInspectorStackFrame should render null for empty stack frames 1`] = `null`;
+
 exports[`LogBoxInspectorStackFrame should render stack frames with 1 frame collapsed 1`] = `
 <View
   style={

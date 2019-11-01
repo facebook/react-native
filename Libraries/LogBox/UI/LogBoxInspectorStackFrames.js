@@ -54,6 +54,11 @@ function LogBoxInspectorStackFrames(props: Props): React.Node {
       return `Collapse ${collapsedCount} frames`;
     }
   }
+
+  if (props.log.getAvailableStack().length === 0) {
+    return null;
+  }
+
   return (
     <View style={stackStyles.section}>
       <StackFrameHeader

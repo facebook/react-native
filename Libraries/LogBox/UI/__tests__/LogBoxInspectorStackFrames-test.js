@@ -43,10 +43,29 @@ const log = new LogBoxLog(
   [],
 );
 
+const logNoStackFrames = new LogBoxLog(
+  'warn',
+  {
+    content: 'Some kind of message (latest)',
+    substitutions: [],
+  },
+  [],
+  'Some kind of message (latest)',
+  [],
+);
+
 describe('LogBoxInspectorStackFrame', () => {
   it('should render stack frames with 1 frame collapsed', () => {
     const output = render.shallowRender(
       <LogBoxInspectorStackFrames onRetry={() => {}} log={log} />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should render null for empty stack frames', () => {
+    const output = render.shallowRender(
+      <LogBoxInspectorStackFrames onRetry={() => {}} log={logNoStackFrames} />,
     );
 
     expect(output).toMatchSnapshot();
