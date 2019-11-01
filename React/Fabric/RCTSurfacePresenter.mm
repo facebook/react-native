@@ -259,11 +259,11 @@ using namespace facebook::react;
 
   RCTMountingManager *mountingManager = _mountingManager;
   RCTExecuteOnMainQueue(^{
-    UIView<RCTComponentViewProtocol> *rootView =
-        [mountingManager.componentViewRegistry componentViewByTag:surface.rootTag];
+    RCTComponentViewDescriptor rootViewDescriptor =
+        [mountingManager.componentViewRegistry componentViewDescriptorWithTag:surface.rootTag];
     [mountingManager.componentViewRegistry enqueueComponentViewWithComponentHandle:RootShadowNode::Handle()
                                                                                tag:surface.rootTag
-                                                                     componentView:rootView];
+                                                           componentViewDescriptor:rootViewDescriptor];
   });
 
   [surface _unsetStage:(RCTSurfaceStagePrepared | RCTSurfaceStageMounted)];
@@ -344,8 +344,9 @@ using namespace facebook::react;
   if (stage & RCTSurfaceStagePrepared) {
     // We have to progress the stage only if the preparing phase is done.
     if ([surface _setStage:RCTSurfaceStageMounted]) {
-      UIView *rootComponentView = [_mountingManager.componentViewRegistry componentViewByTag:rootTag];
-      surface.view.rootView = (RCTSurfaceRootView *)rootComponentView;
+      auto rootComponentViewDescriptor =
+          [_mountingManager.componentViewRegistry componentViewDescriptorWithTag:rootTag];
+      surface.view.rootView = (RCTSurfaceRootView *)rootComponentViewDescriptor.view;
     }
   }
 

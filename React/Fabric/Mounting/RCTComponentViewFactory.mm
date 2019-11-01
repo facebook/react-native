@@ -98,8 +98,7 @@ using namespace facebook::react;
   _providerRegistry.remove(componentDescriptorProvider);
 }
 
-- (UIView<RCTComponentViewProtocol> *)createComponentViewWithComponentHandle:
-    (facebook::react::ComponentHandle)componentHandle
+- (RCTComponentViewDescriptor)createComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle
 {
   RCTAssertMainQueue();
   std::shared_lock<better::shared_mutex> lock(_mutex);
@@ -111,7 +110,8 @@ using namespace facebook::react;
       componentHandle,
       (char *)componentHandle);
   Class componentViewClass = iterator->second;
-  return [[componentViewClass alloc] init];
+
+  return RCTComponentViewDescriptor{.view = [[componentViewClass alloc] init]};
 }
 
 - (facebook::react::ComponentDescriptorRegistry::Shared)createComponentDescriptorRegistryWithParameters:

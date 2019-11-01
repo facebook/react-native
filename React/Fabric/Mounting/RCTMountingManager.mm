@@ -34,11 +34,10 @@ static void RNCreateMountInstruction(ShadowViewMutation const &mutation, RCTComp
 static void RNDeleteMountInstruction(ShadowViewMutation const &mutation, RCTComponentViewRegistry *registry)
 {
   auto const &oldChildShadowView = mutation.oldChildShadowView;
-  UIView<RCTComponentViewProtocol> *componentView = [registry componentViewByTag:oldChildShadowView.tag];
-
+  RCTComponentViewDescriptor componentViewDescriptor = [registry componentViewDescriptorWithTag:oldChildShadowView.tag];
   [registry enqueueComponentViewWithComponentHandle:oldChildShadowView.componentHandle
                                                 tag:oldChildShadowView.tag
-                                      componentView:componentView];
+                            componentViewDescriptor:componentViewDescriptor];
 }
 
 // `Insert` instruction
@@ -47,10 +46,10 @@ static void RNInsertMountInstruction(ShadowViewMutation const &mutation, RCTComp
   auto const &newShadowView = mutation.newChildShadowView;
   auto const &parentShadowView = mutation.parentShadowView;
 
-  UIView<RCTComponentViewProtocol> *childComponentView = [registry componentViewByTag:newShadowView.tag];
-  UIView<RCTComponentViewProtocol> *parentComponentView = [registry componentViewByTag:parentShadowView.tag];
+  auto const &childComponentViewDescriptor = [registry componentViewDescriptorWithTag:newShadowView.tag];
+  auto const &parentComponentViewDescriptor = [registry componentViewDescriptorWithTag:parentShadowView.tag];
 
-  [parentComponentView mountChildComponentView:childComponentView index:mutation.index];
+  [parentComponentViewDescriptor.view mountChildComponentView:childComponentViewDescriptor.view index:mutation.index];
 }
 
 // `Remove` instruction
@@ -59,10 +58,10 @@ static void RNRemoveMountInstruction(ShadowViewMutation const &mutation, RCTComp
   auto const &oldShadowView = mutation.oldChildShadowView;
   auto const &parentShadowView = mutation.parentShadowView;
 
-  UIView<RCTComponentViewProtocol> *childComponentView = [registry componentViewByTag:oldShadowView.tag];
-  UIView<RCTComponentViewProtocol> *parentComponentView = [registry componentViewByTag:parentShadowView.tag];
+  auto const &childComponentViewDescriptor = [registry componentViewDescriptorWithTag:oldShadowView.tag];
+  auto const &parentComponentViewDescriptor = [registry componentViewDescriptorWithTag:parentShadowView.tag];
 
-  [parentComponentView unmountChildComponentView:childComponentView index:mutation.index];
+  [parentComponentViewDescriptor.view unmountChildComponentView:childComponentViewDescriptor.view index:mutation.index];
 }
 
 // `Update Props` instruction
@@ -70,16 +69,16 @@ static void RNUpdatePropsMountInstruction(ShadowViewMutation const &mutation, RC
 {
   auto const &oldShadowView = mutation.oldChildShadowView;
   auto const &newShadowView = mutation.newChildShadowView;
-  UIView<RCTComponentViewProtocol> *componentView = [registry componentViewByTag:newShadowView.tag];
-  [componentView updateProps:newShadowView.props oldProps:oldShadowView.props];
+  auto const &componentViewDescriptor = [registry componentViewDescriptorWithTag:newShadowView.tag];
+  [componentViewDescriptor.view updateProps:newShadowView.props oldProps:oldShadowView.props];
 }
 
 // `Update EventEmitter` instruction
 static void RNUpdateEventEmitterMountInstruction(ShadowViewMutation const &mutation, RCTComponentViewRegistry *registry)
 {
   auto const &newShadowView = mutation.newChildShadowView;
-  UIView<RCTComponentViewProtocol> *componentView = [registry componentViewByTag:newShadowView.tag];
-  [componentView updateEventEmitter:newShadowView.eventEmitter];
+  auto const &componentViewDescriptor = [registry componentViewDescriptorWithTag:newShadowView.tag];
+  [componentViewDescriptor.view updateEventEmitter:newShadowView.eventEmitter];
 }
 
 // `Update LayoutMetrics` instruction
@@ -89,8 +88,9 @@ static void RNUpdateLayoutMetricsMountInstruction(
 {
   auto const &oldShadowView = mutation.oldChildShadowView;
   auto const &newShadowView = mutation.newChildShadowView;
-  UIView<RCTComponentViewProtocol> *componentView = [registry componentViewByTag:newShadowView.tag];
-  [componentView updateLayoutMetrics:newShadowView.layoutMetrics oldLayoutMetrics:oldShadowView.layoutMetrics];
+  auto const &componentViewDescriptor = [registry componentViewDescriptorWithTag:newShadowView.tag];
+  [componentViewDescriptor.view updateLayoutMetrics:newShadowView.layoutMetrics
+                                   oldLayoutMetrics:oldShadowView.layoutMetrics];
 }
 
 // `Update LocalData` instruction
@@ -98,8 +98,8 @@ static void RNUpdateLocalDataMountInstruction(ShadowViewMutation const &mutation
 {
   auto const &oldShadowView = mutation.oldChildShadowView;
   auto const &newShadowView = mutation.newChildShadowView;
-  UIView<RCTComponentViewProtocol> *componentView = [registry componentViewByTag:newShadowView.tag];
-  [componentView updateLocalData:newShadowView.localData oldLocalData:oldShadowView.localData];
+  auto const &componentViewDescriptor = [registry componentViewDescriptorWithTag:newShadowView.tag];
+  [componentViewDescriptor.view updateLocalData:newShadowView.localData oldLocalData:oldShadowView.localData];
 }
 
 // `Update State` instruction
@@ -107,8 +107,8 @@ static void RNUpdateStateMountInstruction(ShadowViewMutation const &mutation, RC
 {
   auto const &oldShadowView = mutation.oldChildShadowView;
   auto const &newShadowView = mutation.newChildShadowView;
-  UIView<RCTComponentViewProtocol> *componentView = [registry componentViewByTag:newShadowView.tag];
-  [componentView updateState:newShadowView.state oldState:oldShadowView.state];
+  auto const &componentViewDescriptor = [registry componentViewDescriptorWithTag:newShadowView.tag];
+  [componentViewDescriptor.view updateState:newShadowView.state oldState:oldShadowView.state];
 }
 
 // `Finalize Updates` instruction
@@ -118,8 +118,8 @@ static void RNFinalizeUpdatesMountInstruction(
     RCTComponentViewRegistry *registry)
 {
   auto const &newShadowView = mutation.newChildShadowView;
-  UIView<RCTComponentViewProtocol> *componentView = [registry componentViewByTag:newShadowView.tag];
-  [componentView finalizeUpdates:mask];
+  auto const &componentViewDescriptor = [registry componentViewDescriptorWithTag:newShadowView.tag];
+  [componentViewDescriptor.view finalizeUpdates:mask];
 }
 
 // `Update` instruction
