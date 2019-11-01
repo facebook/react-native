@@ -129,6 +129,24 @@ class ColorPickerExample extends React.Component<{}, ColorState> {
     );
   }
 }
+class AccessibilityLabelPickerExample extends React.Component<{}, State> {
+  state: State = {
+    value: 'key1',
+  };
+
+  render(): React.Node {
+    return (
+      <Picker
+        accessibilityLabel="This is the accessibility label"
+        style={styles.picker}
+        selectedValue={this.state.value}
+        onValueChange={v => this.setState({value: v})}>
+        <Item label="hello" value="key0" />
+        <Item label="world" value="key1" />
+      </Picker>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   picker: {
@@ -188,6 +206,12 @@ exports.examples = [
     title: 'Colorful pickers',
     render: function(): React.Element<typeof ColorPickerExample> {
       return <ColorPickerExample />;
+    },
+  },
+  {
+    title: 'AccessibilityLabel pickers',
+    render: function(): React.Element<typeof AccessibilityLabelPickerExample> {
+      return <AccessibilityLabelPickerExample />;
     },
   },
 ];

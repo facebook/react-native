@@ -43,6 +43,11 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
     view.setPrompt(prompt);
   }
 
+  @ReactProp(name = "accessibilityLabel")
+  public void setAccessibilityLabel(ReactPicker view, @Nullable String accessibilityLabel) {
+    view.setContentDescription(accessibilityLabel);
+  }
+
   @ReactProp(name = ViewProps.ENABLED, defaultBoolean = true)
   public void setEnabled(ReactPicker view, boolean enabled) {
     view.setEnabled(enabled);

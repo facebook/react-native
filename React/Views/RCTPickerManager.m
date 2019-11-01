@@ -23,6 +23,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_VIEW_PROPERTY(items, NSArray<NSDictionary *>)
 RCT_EXPORT_VIEW_PROPERTY(selectedIndex, NSInteger)
+RCT_REMAP_VIEW_PROPERTY(accessibilityLabel, reactAccessibilityElement.accessibilityLabel, NSString)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(textAlign, NSTextAlignment)
@@ -43,7 +44,7 @@ RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RCTPicker)
   view.font = [RCTFont updateFont:view.font withFamily:json ?: defaultView.font.familyName];
 }
 
-RCT_EXPORT_METHOD(setNativeSelectedIndex : (nonnull NSNumber *)viewTag toIndex : (NSNumber *)index)
+RCT_EXPORT_METHOD(setNativeSelectedIndex : (nonnull NSNumber *)viewTag toIndex : (nonnull NSNumber *)index)
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     UIView *view = viewRegistry[viewTag];
