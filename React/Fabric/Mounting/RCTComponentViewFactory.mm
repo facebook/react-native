@@ -17,6 +17,7 @@
 
 #import "RCTARTSurfaceViewComponentView.h"
 #import "RCTActivityIndicatorViewComponentView.h"
+#import "RCTComponentViewClassDescriptor.h"
 #import "RCTImageComponentView.h"
 #import "RCTLegacyViewManagerInteropComponentView.h"
 #import "RCTModalHostViewComponentView.h"
@@ -33,7 +34,7 @@
 using namespace facebook::react;
 
 @implementation RCTComponentViewFactory {
-  better::map<ComponentHandle, Class<RCTComponentViewProtocol>> _componentViewClasses;
+  better::map<ComponentHandle, RCTComponentViewClassDescriptor> _componentViewClasses;
   ComponentDescriptorProviderRegistry _providerRegistry;
   better::shared_mutex _mutex;
 }
@@ -68,11 +69,17 @@ using namespace facebook::react;
 
       providerRegistry->add(ComponentDescriptorProvider{componentHandle, componentName, flavor, constructor});
 
-      componentViewFactory->_componentViewClasses[componentHandle] = [RCTLegacyViewManagerInteropComponentView class];
+      componentViewFactory->_componentViewClasses[componentHandle] = [componentViewFactory
+          _componentViewClassDescriptorFromClass:[RCTLegacyViewManagerInteropComponentView class]];
     }
   });
 
   return componentViewFactory;
+}
+
+- (RCTComponentViewClassDescriptor)_componentViewClassDescriptorFromClass:(Class<RCTComponentViewProtocol>)viewClass
+{
+  return RCTComponentViewClassDescriptor{.viewClass = viewClass};
 }
 
 - (void)registerComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass
@@ -80,7 +87,8 @@ using namespace facebook::react;
   std::unique_lock<better::shared_mutex> lock(_mutex);
 
   auto componentDescriptorProvider = [componentViewClass componentDescriptorProvider];
-  _componentViewClasses[componentDescriptorProvider.handle] = componentViewClass;
+  _componentViewClasses[componentDescriptorProvider.handle] =
+      [self _componentViewClassDescriptorFromClass:componentViewClass];
   _providerRegistry.add(componentDescriptorProvider);
 
   auto supplementalComponentDescriptorProviders = [componentViewClass supplementalComponentDescriptorProviders];
@@ -109,9 +117,10 @@ using namespace facebook::react;
       @"ComponentView with componentHandle `%lli` (`%s`) not found.",
       componentHandle,
       (char *)componentHandle);
-  Class componentViewClass = iterator->second;
+  auto componentViewClassDescriptor = iterator->second;
+  Class viewClass = componentViewClassDescriptor.viewClass;
 
-  return RCTComponentViewDescriptor{.view = [[componentViewClass alloc] init]};
+  return RCTComponentViewDescriptor{.view = [[viewClass alloc] init]};
 }
 
 - (facebook::react::ComponentDescriptorRegistry::Shared)createComponentDescriptorRegistryWithParameters:
