@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {LogLevel} from '../Data/LogBoxLog';
+
 import * as React from 'react';
 import SafeAreaView from '../../Components/SafeAreaView/SafeAreaView';
 import StyleSheet from '../../StyleSheet/StyleSheet';
@@ -21,14 +23,31 @@ import * as LogBoxStyle from './LogBoxStyle';
 type Props = $ReadOnly<{|
   onDismiss: () => void,
   onMinimize: () => void,
-  hasFatal: boolean,
+  level: LogLevel,
 |}>;
 
 function LogBoxInspectorFooter(props: Props): React.Node {
-  if (props.hasFatal) {
+  if (props.level === 'fatal' || props.level === 'syntax') {
     return (
       <View style={styles.root}>
-        <FatalButton />
+        <LogBoxButton
+          backgroundColor={{
+            default: LogBoxStyle.getFatalColor(),
+            pressed: LogBoxStyle.getFatalDarkColor(),
+          }}
+          onPress={() =>
+            require('../../Utilities/DevSettings').reload('LogBox fatal')
+          }
+          style={fatalStyles.button}>
+          <View style={[fatalStyles.content]}>
+            <Text style={fatalStyles.label}>Reload</Text>
+            <Text style={fatalStyles.subtextLabel}>
+              {{fatal: 'Fatal', syntax: 'Syntax'}[props.level]} errors require a
+              full reload
+            </Text>
+          </View>
+          <SafeAreaView />
+        </LogBoxButton>
       </View>
     );
   }
@@ -57,28 +76,6 @@ function FooterButton(props: ButtonProps): React.Node {
       style={buttonStyles.button}>
       <View style={buttonStyles.content}>
         <Text style={buttonStyles.label}>{props.text}</Text>
-      </View>
-      <SafeAreaView />
-    </LogBoxButton>
-  );
-}
-
-function FatalButton(): React.Node {
-  return (
-    <LogBoxButton
-      backgroundColor={{
-        default: LogBoxStyle.getFatalColor(),
-        pressed: LogBoxStyle.getFatalDarkColor(),
-      }}
-      onPress={() =>
-        require('../../Utilities/DevSettings').reload('LogBox fatal')
-      }
-      style={fatalStyles.button}>
-      <View style={[fatalStyles.content]}>
-        <Text style={fatalStyles.label}>Reload</Text>
-        <Text style={fatalStyles.subtextLabel}>
-          Fatal errors require a full reload
-        </Text>
       </View>
       <SafeAreaView />
     </LogBoxButton>

@@ -17,7 +17,134 @@ exports[`LogBoxInspectorFooter should render fatal button 1`] = `
     }
   }
 >
-  <FatalButton />
+  <LogBoxButton
+    backgroundColor={
+      Object {
+        "default": "rgba(243, 83, 105, 1)",
+        "pressed": "rgba(208, 75, 95, 1)",
+      }
+    }
+    onPress={[Function]}
+    style={
+      Object {
+        "flex": 1,
+      }
+    }
+  >
+    <View
+      style={
+        Array [
+          Object {
+            "alignItems": "center",
+            "height": 60,
+            "justifyContent": "center",
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 1)",
+            "fontSize": 14,
+            "fontWeight": "600",
+            "includeFontPadding": false,
+            "lineHeight": 20,
+          }
+        }
+      >
+        Reload
+      </Text>
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 0.8)",
+            "fontSize": 11,
+            "includeFontPadding": false,
+            "lineHeight": 12,
+          }
+        }
+      >
+        Fatal
+         errors require a full reload
+      </Text>
+    </View>
+    <ForwardRef(SafeAreaView) />
+  </LogBoxButton>
+</View>
+`;
+
+exports[`LogBoxInspectorFooter should render fatal button for syntax erorr 1`] = `
+<View
+  style={
+    Object {
+      "backgroundColor": "rgba(51, 51, 51, 1)",
+      "elevation": 1,
+      "flexDirection": "row",
+      "shadowColor": "#000",
+      "shadowOffset": Object {
+        "height": -2,
+        "width": 0,
+      },
+      "shadowOpacity": 0.5,
+      "shadowRadius": 2,
+    }
+  }
+>
+  <LogBoxButton
+    backgroundColor={
+      Object {
+        "default": "rgba(243, 83, 105, 1)",
+        "pressed": "rgba(208, 75, 95, 1)",
+      }
+    }
+    onPress={[Function]}
+    style={
+      Object {
+        "flex": 1,
+      }
+    }
+  >
+    <View
+      style={
+        Array [
+          Object {
+            "alignItems": "center",
+            "height": 60,
+            "justifyContent": "center",
+          },
+        ]
+      }
+    >
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 1)",
+            "fontSize": 14,
+            "fontWeight": "600",
+            "includeFontPadding": false,
+            "lineHeight": 20,
+          }
+        }
+      >
+        Reload
+      </Text>
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 0.8)",
+            "fontSize": 11,
+            "includeFontPadding": false,
+            "lineHeight": 12,
+          }
+        }
+      >
+        Syntax
+         errors require a full reload
+      </Text>
+    </View>
+    <ForwardRef(SafeAreaView) />
+  </LogBoxButton>
 </View>
 `;
 

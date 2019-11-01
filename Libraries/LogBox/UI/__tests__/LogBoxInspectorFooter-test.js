@@ -21,7 +21,7 @@ describe('LogBoxInspectorFooter', () => {
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
-        hasFatal={false}
+        level="warn"
       />,
     );
 
@@ -33,7 +33,19 @@ describe('LogBoxInspectorFooter', () => {
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
-        hasFatal
+        level="fatal"
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should render fatal button for syntax erorr', () => {
+    const output = render.shallowRender(
+      <LogBoxInspectorFooter
+        onMinimize={() => {}}
+        onDismiss={() => {}}
+        level="syntax"
       />,
     );
 

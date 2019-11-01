@@ -11,7 +11,7 @@
 ('use strict');
 
 import LogBoxLog from './LogBoxLog';
-import {parseCategory, parseComponentStack} from './parseLogBoxLog';
+import {parseLogBoxException} from './parseLogBoxLog';
 import type {LogLevel} from './LogBoxLog';
 import type {Message, Category, ComponentStack} from './parseLogBoxLog';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
@@ -111,9 +111,14 @@ export function addException(error: ExceptionData): void {
   // Parsing logs are expensive so we schedule this
   // otherwise spammy logs would pause rendering.
   setImmediate(() => {
-    const {category, message} = parseCategory([
-      error.originalMessage != null ? error.originalMessage : 'Unknown',
-    ]);
+    const {
+      category,
+      message,
+      codeFrame,
+      componentStack,
+      stack,
+      level,
+    } = parseLogBoxException(error);
 
     // We don't want to store these logs because they trigger a
     // state update whenever we add them to the store, which is
@@ -128,17 +133,16 @@ export function addException(error: ExceptionData): void {
       lastLog.incrementCount();
     } else {
       const newLog = new LogBoxLog(
-        error.isFatal ? 'fatal' : 'error',
+        level,
         message,
-        error.stack,
+        stack,
         category,
-        error.componentStack != null
-          ? parseComponentStack(error.componentStack)
-          : [],
+        componentStack != null ? componentStack : [],
+        codeFrame,
       );
 
       // Start symbolicating now so it's warm when it renders.
-      if (error.isFatal) {
+      if (level === 'fatal') {
         symbolicateLogLazy(newLog);
       }
       logs.add(newLog);
@@ -156,13 +160,27 @@ export function clear(): void {
 }
 
 export function clearWarnings(): void {
-  logs = new Set(Array.from(logs).filter(log => log.level !== 'warn'));
-  handleUpdate();
+  const newLogs = Array.from(logs).filter(log => log.level !== 'warn');
+  if (newLogs.length !== logs.size) {
+    logs = new Set(newLogs);
+    handleUpdate();
+  }
 }
 
 export function clearErrors(): void {
-  logs = new Set(Array.from(logs).filter(log => log.level !== 'error'));
-  handleUpdate();
+  const newLogs = Array.from(logs).filter(log => log.level !== 'error');
+  if (newLogs.length !== logs.size) {
+    logs = new Set(newLogs);
+    handleUpdate();
+  }
+}
+
+export function clearSyntaxErrors(): void {
+  const newLogs = Array.from(logs).filter(log => log.level !== 'syntax');
+  if (newLogs.length !== logs.size) {
+    logs = new Set(newLogs);
+    handleUpdate();
+  }
 }
 
 export function dismiss(log: LogBoxLog): void {

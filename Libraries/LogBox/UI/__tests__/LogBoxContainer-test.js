@@ -219,4 +219,60 @@ describe('LogBoxContainer', () => {
 
     expect(output).toMatchSnapshot();
   });
+
+  it('should render most recent syntax error', () => {
+    const output = render.shallowRender(
+      <LogBoxContainer
+        onDismiss={() => {}}
+        onDismissWarns={() => {}}
+        onDismissErrors={() => {}}
+        logs={
+          new Set([
+            new LogBoxLog(
+              'syntax',
+              {
+                content: 'Should not be selected',
+                substitutions: [],
+              },
+              [],
+              'Some kind of syntax error message',
+              [],
+              {
+                fileName:
+                  '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
+                location: '(199:0)',
+                content: `  197 | });
+  198 |
+> 199 | export default CrashReactApp;
+      | ^
+  200 |`,
+              },
+            ),
+            new LogBoxLog(
+              'syntax',
+              {
+                content: 'Should be selected',
+                substitutions: [],
+              },
+              [],
+              'Some kind of syntax error message',
+              [],
+              {
+                fileName:
+                  '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
+                location: '(199:0)',
+                content: `  197 | });
+  198 |
+> 199 | export default CrashReactApp;
+      | ^
+  200 |`,
+              },
+            ),
+          ])
+        }
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
 });

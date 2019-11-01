@@ -25,6 +25,7 @@ exports[`LogBoxContainer should render both an error and warning 1`] = `
       log={
         LogBoxLog {
           "category": "Some kind of message",
+          "codeFrame": undefined,
           "componentStack": Array [],
           "count": 1,
           "level": "warn",
@@ -60,6 +61,7 @@ exports[`LogBoxContainer should render both an error and warning 1`] = `
       log={
         LogBoxLog {
           "category": "Some kind of message (latest)",
+          "codeFrame": undefined,
           "componentStack": Array [],
           "count": 1,
           "level": "error",
@@ -109,6 +111,7 @@ exports[`LogBoxContainer should render fatal before warn and error 1`] = `
       Array [
         LogBoxLog {
           "category": "Some kind of fatal message",
+          "codeFrame": undefined,
           "componentStack": Array [],
           "count": 1,
           "level": "fatal",
@@ -125,6 +128,7 @@ exports[`LogBoxContainer should render fatal before warn and error 1`] = `
         },
         LogBoxLog {
           "category": "Some kind of message",
+          "codeFrame": undefined,
           "componentStack": Array [],
           "count": 1,
           "level": "warn",
@@ -141,6 +145,7 @@ exports[`LogBoxContainer should render fatal before warn and error 1`] = `
         },
         LogBoxLog {
           "category": "Some kind of message (latest)",
+          "codeFrame": undefined,
           "componentStack": Array [],
           "count": 1,
           "level": "error",
@@ -183,6 +188,7 @@ exports[`LogBoxContainer should render most recent fatal 1`] = `
       Array [
         LogBoxLog {
           "category": "Some kind of fatal message",
+          "codeFrame": undefined,
           "componentStack": Array [],
           "count": 1,
           "level": "fatal",
@@ -199,9 +205,86 @@ exports[`LogBoxContainer should render most recent fatal 1`] = `
         },
         LogBoxLog {
           "category": "Some kind of message",
+          "codeFrame": undefined,
           "componentStack": Array [],
           "count": 1,
           "level": "fatal",
+          "message": Object {
+            "content": "Should be selected",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+        },
+      ]
+    }
+    onChangeSelectedIndex={[Function]}
+    onDismiss={[Function]}
+    onMinimize={[Function]}
+    selectedIndex={1}
+  />
+</View>
+`;
+
+exports[`LogBoxContainer should render most recent syntax error 1`] = `
+<View
+  style={
+    Object {
+      "bottom": 0,
+      "left": 0,
+      "position": "absolute",
+      "right": 0,
+      "top": 0,
+    }
+  }
+>
+  <LogBoxInspector
+    hasFatal={true}
+    logs={
+      Array [
+        LogBoxLog {
+          "category": "Some kind of syntax error message",
+          "codeFrame": Object {
+            "content": "  197 | });
+  198 |
+> 199 | export default CrashReactApp;
+      | ^
+  200 |",
+            "fileName": "/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js",
+            "location": "(199:0)",
+          },
+          "componentStack": Array [],
+          "count": 1,
+          "level": "syntax",
+          "message": Object {
+            "content": "Should not be selected",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+        },
+        LogBoxLog {
+          "category": "Some kind of syntax error message",
+          "codeFrame": Object {
+            "content": "  197 | });
+  198 |
+> 199 | export default CrashReactApp;
+      | ^
+  200 |",
+            "fileName": "/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js",
+            "location": "(199:0)",
+          },
+          "componentStack": Array [],
+          "count": 1,
+          "level": "syntax",
           "message": Object {
             "content": "Should be selected",
             "substitutions": Array [],
@@ -250,6 +333,7 @@ exports[`LogBoxContainer should render the latest error 1`] = `
       log={
         LogBoxLog {
           "category": "Some kind of message (latest)",
+          "codeFrame": undefined,
           "componentStack": Array [],
           "count": 1,
           "level": "error",
@@ -306,6 +390,7 @@ exports[`LogBoxContainer should render the latest warning 1`] = `
       log={
         LogBoxLog {
           "category": "Some kind of message (latest)",
+          "codeFrame": undefined,
           "componentStack": Array [],
           "count": 1,
           "level": "warn",

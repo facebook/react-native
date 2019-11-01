@@ -49,6 +49,22 @@ describe('LogBoxInspectorMessageHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
+  it('should render syntax error', () => {
+    const output = render.shallowRender(
+      <LogBoxInspectorMessageHeader
+        level="syntax"
+        collapsed={false}
+        message={{
+          content: 'Some syntax error message',
+          substitutions: [],
+        }}
+        onPress={() => {}}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
   it('should not render collapse button for short content', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader

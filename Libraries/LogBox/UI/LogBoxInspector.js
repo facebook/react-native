@@ -10,6 +10,7 @@
 
 'use strict';
 
+import LogBoxInspectorCodeFrame from './LogBoxInspectorCodeFrame';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 import ScrollView from '../../Components/ScrollView/ScrollView';
@@ -78,7 +79,7 @@ function LogBoxInspector(props: Props): React.Node {
       <LogBoxInspectorFooter
         onDismiss={props.onDismiss}
         onMinimize={props.onMinimize}
-        hasFatal={props.hasFatal}
+        level={log.level}
       />
     </View>
   );
@@ -96,6 +97,7 @@ function LogBoxInspectorBody(props) {
           level={props.log.level}
         />
         <ScrollView style={styles.scrollBody}>
+          <LogBoxInspectorCodeFrame codeFrame={props.log.codeFrame} />
           <LogBoxInspectorReactFrames log={props.log} />
           <LogBoxInspectorStackFrames log={props.log} onRetry={props.onRetry} />
           <LogBoxInspectorMeta />

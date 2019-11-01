@@ -12,9 +12,16 @@
 
 import UTFSequence from '../../UTFSequence';
 import stringifySafe from '../../Utilities/stringifySafe';
+import type {LogLevel} from './LogBoxLog';
+import type {ExceptionData} from '../../Core/NativeExceptionsManager';
 import type {Stack} from './LogBoxSymbolication';
 
 export type Category = string;
+export type CodeFrame = $ReadOnly<{|
+  content: string,
+  location: string,
+  fileName: string,
+|}>;
 export type Message = $ReadOnly<{|
   content: string,
   substitutions: $ReadOnlyArray<
@@ -124,6 +131,51 @@ export function parseComponentStack(message: string): ComponentStack {
       return {component, location: location && location.replace(')', '')};
     })
     .filter(Boolean);
+}
+
+export function parseLogBoxException(
+  error: ExceptionData,
+): {|
+  level: LogLevel,
+  category: Category,
+  message: Message,
+  codeFrame?: CodeFrame,
+  stack: Stack,
+  componentStack?: ComponentStack,
+|} {
+  const message =
+    error.originalMessage != null ? error.originalMessage : 'Unknown';
+  const match = message.match(
+    /(?:TransformError )?(?:SyntaxError: )(.*): (.*) (.*)\n\n([\s\S]+)/,
+  );
+
+  if (!match) {
+    return {
+      level: error.isFatal ? 'fatal' : 'error',
+      stack: error.stack,
+      componentStack:
+        error.componentStack != null
+          ? parseComponentStack(error.componentStack)
+          : [],
+      ...parseCategory([message]),
+    };
+  }
+
+  const [fileName, content, location, codeFrame] = match.slice(1);
+  return {
+    level: 'syntax',
+    stack: [],
+    codeFrame: {
+      fileName,
+      location,
+      content: codeFrame,
+    },
+    message: {
+      content,
+      substitutions: [],
+    },
+    category: `${fileName} ${location}`,
+  };
 }
 
 export function parseLogBoxLog(

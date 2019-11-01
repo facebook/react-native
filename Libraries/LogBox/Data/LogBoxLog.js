@@ -12,10 +12,15 @@
 
 import * as LogBoxSymbolication from './LogBoxSymbolication';
 
-import type {Category, Message, ComponentStack} from './parseLogBoxLog';
+import type {
+  Category,
+  Message,
+  ComponentStack,
+  CodeFrame,
+} from './parseLogBoxLog';
 import type {Stack} from './LogBoxSymbolication';
 
-export type LogLevel = 'warn' | 'error' | 'fatal';
+export type LogLevel = 'warn' | 'error' | 'fatal' | 'syntax';
 
 export type SymbolicationRequest = $ReadOnly<{|
   abort: () => void,
@@ -28,6 +33,7 @@ class LogBoxLog {
   stack: Stack;
   count: number;
   level: LogLevel;
+  codeFrame: ?CodeFrame;
   symbolicated:
     | $ReadOnly<{|error: null, stack: null, status: 'NONE'|}>
     | $ReadOnly<{|error: null, stack: null, status: 'PENDING'|}>
@@ -44,12 +50,14 @@ class LogBoxLog {
     stack: Stack,
     category: string,
     componentStack: ComponentStack,
+    codeFrame?: ?CodeFrame,
   ) {
     this.level = level;
     this.message = message;
     this.stack = stack;
     this.category = category;
     this.componentStack = componentStack;
+    this.codeFrame = codeFrame;
     this.count = 1;
   }
 

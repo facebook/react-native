@@ -72,6 +72,27 @@ const addExceptions = errors => {
   });
 };
 
+const addSyntaxError = () => {
+  addExceptions([
+    {
+      message: `
+
+  197 | });
+  198 |
+> 199 | export default CrashReactApp;
+      | ^
+  200 |`,
+      originalMessage: `TransformError SyntaxError: /path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js: 'import' and 'export' may only appear at the top level (199:0)
+
+  197 | });
+  198 |
+> 199 | export default CrashReactApp;
+      | ^
+  200 |`,
+    },
+  ]);
+};
+
 beforeEach(() => {
   jest.resetModules();
 });
@@ -107,34 +128,50 @@ describe('LogBoxData', () => {
   it('clears only warnings', () => {
     addLogs(['A', 'B']);
     addExceptions(['C', 'D', 'E']);
+    addSyntaxError();
     jest.runAllImmediates();
 
-    expect(registry().length).toBe(5);
+    expect(registry().length).toBe(6);
 
     LogBoxData.clearWarnings();
-    expect(registry().length).toBe(3);
+    expect(registry().length).toBe(4);
   });
 
   it('clears only errors', () => {
     addLogs(['A', 'B']);
     addExceptions(['C', 'D', 'E']);
+    addSyntaxError();
     jest.runAllImmediates();
 
-    expect(registry().length).toBe(5);
+    expect(registry().length).toBe(6);
 
     LogBoxData.clearErrors();
-    expect(registry().length).toBe(2);
+    expect(registry().length).toBe(3);
   });
 
-  it('clears both errors and warnings', () => {
+  it('clears only syntax errors', () => {
     addLogs(['A', 'B']);
     addExceptions(['C', 'D', 'E']);
+    addSyntaxError();
     jest.runAllImmediates();
 
+    expect(registry().length).toBe(6);
+
+    LogBoxData.clearSyntaxErrors();
     expect(registry().length).toBe(5);
+  });
+
+  it('clears all types', () => {
+    addLogs(['A', 'B']);
+    addExceptions(['C', 'D', 'E']);
+    addSyntaxError();
+    jest.runAllImmediates();
+
+    expect(registry().length).toBe(6);
 
     LogBoxData.clearErrors();
     LogBoxData.clearWarnings();
+    LogBoxData.clearSyntaxErrors();
     expect(registry().length).toBe(0);
   });
 
@@ -208,6 +245,22 @@ describe('LogBoxData', () => {
     expect(logs[1].count).toBe(2);
   });
 
+  it('increments the count of previous log with matching category (syntax)', () => {
+    addSyntaxError();
+    jest.runAllImmediates();
+
+    let logs = registry();
+    expect(logs.length).toBe(1);
+    expect(logs[0].count).toBe(1);
+
+    addSyntaxError();
+    jest.runAllImmediates();
+
+    logs = registry();
+    expect(logs.length).toBe(1);
+    expect(logs[0].count).toBe(2);
+  });
+
   it('ignores logs matching patterns (logs)', () => {
     addLogs(['A!', 'B?', 'C!']);
     jest.runAllImmediates();
@@ -269,15 +322,16 @@ describe('LogBoxData', () => {
   it('ignores all logs when disabled', () => {
     addLogs(['A!', 'B?']);
     addExceptions(['C!']);
+    addSyntaxError();
     jest.runAllImmediates();
 
-    expect(registry().length).toBe(3);
+    expect(registry().length).toBe(4);
 
     LogBoxData.setDisabled(true);
     expect(registry().length).toBe(0);
 
     LogBoxData.setDisabled(false);
-    expect(registry().length).toBe(3);
+    expect(registry().length).toBe(4);
   });
 
   it('immediately updates new observers', () => {
@@ -349,6 +403,63 @@ describe('LogBoxData', () => {
 
     // Does nothing when already empty.
     LogBoxData.clear();
+    jest.runAllImmediates();
+    expect(observer.mock.calls.length).toBe(3);
+  });
+
+  it('updates observers when warnings cleared', () => {
+    const {observer} = observe();
+    expect(observer.mock.calls.length).toBe(1);
+
+    addLogs(['A']);
+    addExceptions(['B']);
+    jest.runAllImmediates();
+    expect(observer.mock.calls.length).toBe(2);
+
+    LogBoxData.clearWarnings();
+    jest.runAllImmediates();
+    expect(observer.mock.calls.length).toBe(3);
+
+    // Does nothing when already empty.
+    LogBoxData.clearWarnings();
+    jest.runAllImmediates();
+    expect(observer.mock.calls.length).toBe(3);
+  });
+
+  it('updates observers when errors cleared', () => {
+    const {observer} = observe();
+    expect(observer.mock.calls.length).toBe(1);
+
+    addLogs(['A']);
+    addExceptions(['B']);
+    jest.runAllImmediates();
+    expect(observer.mock.calls.length).toBe(2);
+
+    LogBoxData.clearErrors();
+    jest.runAllImmediates();
+    expect(observer.mock.calls.length).toBe(3);
+
+    // Does nothing when already empty.
+    LogBoxData.clearErrors();
+    jest.runAllImmediates();
+    expect(observer.mock.calls.length).toBe(3);
+  });
+
+  it('updates observers when syntax errors cleared', () => {
+    const {observer} = observe();
+    expect(observer.mock.calls.length).toBe(1);
+
+    addLogs(['A']);
+    addSyntaxError();
+    jest.runAllImmediates();
+    expect(observer.mock.calls.length).toBe(2);
+
+    LogBoxData.clearSyntaxErrors();
+    jest.runAllImmediates();
+    expect(observer.mock.calls.length).toBe(3);
+
+    // Does nothing when already empty.
+    LogBoxData.clearSyntaxErrors();
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(3);
   });

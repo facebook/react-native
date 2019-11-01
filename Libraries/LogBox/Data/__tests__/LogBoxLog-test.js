@@ -24,6 +24,11 @@ function getLogBoxLog() {
     createStack(['A', 'B', 'C']),
     'Message category...',
     [{component: 'LogBoxLog', location: 'LogBoxLog.js:1'}],
+    {
+      fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
+      location: '(199:0)',
+      content: '<code frame>',
+    },
   );
 }
 
@@ -56,12 +61,18 @@ describe('LogBoxLog', () => {
   it('creates a LogBoxLog object', () => {
     const log = getLogBoxLog();
 
+    expect(log.level).toEqual('warn');
     expect(log.message).toEqual({content: '...', substitutions: []});
     expect(log.stack).toEqual(createStack(['A', 'B', 'C']));
     expect(log.category).toEqual('Message category...');
     expect(log.componentStack).toEqual([
       {component: 'LogBoxLog', location: 'LogBoxLog.js:1'},
     ]);
+    expect(log.codeFrame).toEqual({
+      fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
+      location: '(199:0)',
+      content: '<code frame>',
+    });
   });
 
   it('increments LogBoxLog count', () => {

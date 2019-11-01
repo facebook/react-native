@@ -82,13 +82,7 @@ function reportException(e: ExtendedError, isFatal: boolean) {
     message =
       e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
 
-    // TransformErrors need to be popped to the user and can happen both in JS
-    // through Fast Resfresh and through native when reloading a broken bundle.
-    // We want a consistent experience here, so we're opting to always pass
-    // these errors to the native redbox handling.
-    const isHandledByLogBox =
-      !/^TransformError SyntaxError: /.test(originalMessage) &&
-      global.__reactExperimentalLogBox;
+    const isHandledByLogBox = global.__reactExperimentalLogBox;
 
     const data = preprocessException({
       message,

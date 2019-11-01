@@ -20,6 +20,7 @@ exports[`LogBoxContainer should render fatal with selectedIndex 2 1`] = `
     log={
       LogBoxLog {
         "category": "Some kind of message (third)",
+        "codeFrame": undefined,
         "componentStack": Array [],
         "count": 1,
         "level": "fatal",
@@ -38,7 +39,7 @@ exports[`LogBoxContainer should render fatal with selectedIndex 2 1`] = `
     onRetry={[Function]}
   />
   <LogBoxInspectorFooter
-    hasFatal={true}
+    level="fatal"
     onDismiss={[Function]}
     onMinimize={[Function]}
   />
@@ -67,6 +68,7 @@ exports[`LogBoxContainer should render warning with selectedIndex 0 1`] = `
     log={
       LogBoxLog {
         "category": "Some kind of message (first)",
+        "codeFrame": undefined,
         "componentStack": Array [],
         "count": 1,
         "level": "warn",
@@ -85,7 +87,7 @@ exports[`LogBoxContainer should render warning with selectedIndex 0 1`] = `
     onRetry={[Function]}
   />
   <LogBoxInspectorFooter
-    hasFatal={false}
+    level="warn"
     onDismiss={[Function]}
     onMinimize={[Function]}
   />

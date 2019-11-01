@@ -73,6 +73,10 @@ const backgroundForLevel = (level: LogLevel) =>
       default: LogBoxStyle.getFatalColor(),
       pressed: LogBoxStyle.getFatalDarkColor(),
     },
+    syntax: {
+      default: LogBoxStyle.getFatalColor(),
+      pressed: LogBoxStyle.getFatalDarkColor(),
+    },
   }[level]);
 
 function LogBoxInspectorHeaderButton(
@@ -115,6 +119,9 @@ const headerStyles = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
+  syntax: {
+    backgroundColor: LogBoxStyle.getFatalColor(),
+  },
   fatal: {
     backgroundColor: LogBoxStyle.getFatalColor(),
   },

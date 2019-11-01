@@ -61,10 +61,10 @@ function LogBoxContainer(props: Props): React.Node {
 
   let fatalIndex = logs.length - 1;
   while (fatalIndex >= 0) {
-    if (logs[fatalIndex].level === 'fatal') {
+    const level = logs[fatalIndex].level;
+    if (level === 'fatal' || level === 'syntax') {
       break;
     }
-
     fatalIndex -= 1;
   }
 

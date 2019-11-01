@@ -447,3 +447,81 @@ exports[`LogBoxInspectorMessageHeader should render fatal 1`] = `
   </Text>
 </View>
 `;
+
+exports[`LogBoxInspectorMessageHeader should render syntax error 1`] = `
+<View
+  style={
+    Object {
+      "backgroundColor": "rgba(51, 51, 51, 1)",
+      "elevation": 2,
+      "flex": 0,
+      "shadowColor": "#000",
+      "shadowOffset": Object {
+        "height": 2,
+        "width": 0,
+      },
+      "shadowOpacity": 0.5,
+      "shadowRadius": 2,
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "marginBottom": 5,
+        "marginTop": 10,
+        "paddingHorizontal": 12,
+      }
+    }
+  >
+    <Text
+      style={
+        Array [
+          Object {
+            "flex": 1,
+            "fontSize": 20,
+            "fontWeight": "600",
+            "includeFontPadding": false,
+            "lineHeight": 28,
+          },
+          Object {
+            "color": "rgba(243, 83, 105, 1)",
+          },
+        ]
+      }
+    >
+      Syntax Error
+    </Text>
+  </View>
+  <Text
+    numberOfLines={null}
+    style={
+      Object {
+        "color": "rgba(255, 255, 255, 1)",
+        "fontSize": 14,
+        "fontWeight": "500",
+        "includeFontPadding": false,
+        "lineHeight": 20,
+        "paddingBottom": 10,
+        "paddingHorizontal": 12,
+      }
+    }
+  >
+    <LogBoxMessage
+      message={
+        Object {
+          "content": "Some syntax error message",
+          "substitutions": Array [],
+        }
+      }
+      style={
+        Object {
+          "color": "rgba(255, 255, 255, 0.6)",
+        }
+      }
+    />
+  </Text>
+</View>
+`;

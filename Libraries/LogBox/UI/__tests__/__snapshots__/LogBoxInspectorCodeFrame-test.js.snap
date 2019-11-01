@@ -1,0 +1,66 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LogBoxInspectorCodeFrame should render a code frame 1`] = `
+<View
+  style={
+    Object {
+      "marginBottom": 20,
+      "marginTop": 30,
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "backgroundColor": "rgba(51, 51, 51, 1)",
+        "borderRadius": 3,
+        "marginLeft": 10,
+        "marginRight": 10,
+        "padding": 10,
+      }
+    }
+  >
+    <ScrollViewMock
+      horizontal={true}
+    >
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 1)",
+            "flex": 1,
+            "fontFamily": "Menlo",
+            "fontSize": 12,
+            "includeFontPadding": false,
+            "lineHeight": 20,
+          }
+        }
+      >
+          197 | });
+    198 |
+  &gt; 199 | export default CrashReactApp;
+        | ^
+    200 |
+      </Text>
+    </ScrollViewMock>
+  </View>
+  <Text
+    style={
+      Object {
+        "color": "rgba(255, 255, 255, 0.5)",
+        "flex": 1,
+        "fontFamily": "Menlo",
+        "fontSize": 12,
+        "includeFontPadding": false,
+        "lineHeight": 20,
+        "textAlign": "center",
+      }
+    }
+  >
+    CrashReactApp.js
+     
+    (199:0)
+  </Text>
+</View>
+`;
+
+exports[`LogBoxInspectorCodeFrame should render null for no code frame 1`] = `null`;
