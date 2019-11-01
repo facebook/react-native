@@ -32,6 +32,6 @@ public class UpdateLocalDataMountItem implements MountItem {
 
   @Override
   public String toString() {
-    return "UpdateLocalDataMountItem [" + mReactTag + "] - localData: " + mNewLocalData;
+    return "UpdateLocalDataMountItem [" + mReactTag + "]";
   }
 }

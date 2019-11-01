@@ -64,8 +64,6 @@ public class PreAllocateViewMountItem implements MountItem {
         + " rootTag: "
         + mRootTag
         + " isLayoutable: "
-        + mIsLayoutable
-        + " props: "
-        + mProps;
+        + mIsLayoutable;
   }
 }

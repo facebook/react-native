@@ -29,6 +29,6 @@ public class UpdateStateMountItem implements MountItem {
 
   @Override
   public String toString() {
-    return "UpdateStateMountItem [" + mReactTag + "] - stateWrapper: " + mStateWrapper;
+    return "UpdateStateMountItem [" + mReactTag + "]";
   }
 }

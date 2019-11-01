@@ -28,6 +28,6 @@ public class UpdatePropsMountItem implements MountItem {
 
   @Override
   public String toString() {
-    return "UpdatePropsMountItem [" + mReactTag + "] - props: " + mUpdatedProps;
+    return "UpdatePropsMountItem [" + mReactTag + "]";
   }
 }
