@@ -475,7 +475,7 @@ local_ref<JMountItem::javaobject> createDeleteMountItem(
 
 local_ref<JMountItem::javaobject> createRemoveAndDeleteMultiMountItem(
   const jni::global_ref<jobject> &javaUIManager,
-  std::vector<RemoveDeleteMetadata> metadata) {
+  const std::vector<RemoveDeleteMetadata> &metadata) {
 
   auto env = Environment::current();
   auto removeAndDeleteArray = env->NewIntArray(metadata.size()*4);
