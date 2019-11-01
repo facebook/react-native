@@ -111,7 +111,7 @@ inline facebook::react::Rect RCTRectFromCGRect(const CGRect &rect) {
 }
 
 inline facebook::react::EdgeInsets RCTEdgeInsetsFromUIEdgeInsets(const UIEdgeInsets &edgeInsets) {
-  return {edgeInsets.top, edgeInsets.left, edgeInsets.bottom, edgeInsets.right};
+  return {edgeInsets.left, edgeInsets.top, edgeInsets.right, edgeInsets.bottom};
 }
 
 NS_ASSUME_NONNULL_END
