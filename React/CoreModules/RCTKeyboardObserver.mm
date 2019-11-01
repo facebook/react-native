@@ -7,9 +7,15 @@
 
 #import "RCTKeyboardObserver.h"
 
-#import "RCTEventDispatcher.h"
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <React/RCTEventDispatcher.h>
+
+#import "CoreModulesPlugins.h"
 
 static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification);
+
+@interface RCTKeyboardObserver() <NativeKeyboardObserverSpec>
+@end
 
 @implementation RCTKeyboardObserver
 
@@ -72,6 +78,11 @@ IMPLEMENT_KEYBOARD_HANDLER(keyboardDidHide)
 IMPLEMENT_KEYBOARD_HANDLER(keyboardWillChangeFrame)
 IMPLEMENT_KEYBOARD_HANDLER(keyboardDidChangeFrame)
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeKeyboardObserverSpecJSI>(self, jsInvoker);
+}
+
 @end
 
 NS_INLINE NSDictionary *RCTRectDictionaryValue(CGRect rect)
@@ -109,7 +120,7 @@ static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification)
   CGRect beginFrame = [userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
   CGRect endFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
   NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-  UIViewAnimationCurve curve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+  UIViewAnimationCurve curve = static_cast<UIViewAnimationCurve>([userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]);
   NSInteger isLocalUserInfoKey = [userInfo[UIKeyboardIsLocalUserInfoKey] integerValue];
 
   return @{
@@ -120,4 +131,8 @@ static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification)
     @"isEventFromThisApp": isLocalUserInfoKey == 1 ? @YES : @NO,
   };
 #endif
+}
+
+Class RCTKeyboardObserverCls(void) {
+  return RCTKeyboardObserver.class;
 }
