@@ -65,6 +65,7 @@ const PickerIOSItem = (props: ItemProps): null => {
 
 class PickerIOS extends React.Component<Props, State> {
   _picker: ?React.ElementRef<typeof RCTPickerNativeComponent> = null;
+  _lastNativeValue: ?number;
 
   state: State = {
     selectedIndex: 0,
@@ -108,6 +109,21 @@ class PickerIOS extends React.Component<Props, State> {
     );
   }
 
+  componentDidUpdate() {
+    // This is necessary in case native updates the picker and JS decides
+    // that the update should be ignored and we should stick with the value
+    // that we have in JS.
+    if (
+      this._picker &&
+      this._picker.setNativeProps &&
+      this._lastNativeValue !== this.state.selectedIndex
+    ) {
+      this._picker.setNativeProps({
+        selectedIndex: this.state.selectedIndex,
+      });
+    }
+  }
+
   _onChange = event => {
     if (this.props.onChange) {
       this.props.onChange(event);
@@ -119,20 +135,8 @@ class PickerIOS extends React.Component<Props, State> {
       );
     }
 
-    // The picker is a controlled component. This means we expect the
-    // on*Change handlers to be in charge of updating our
-    // `selectedValue` prop. That way they can also
-    // disallow/undo/mutate the selection of certain values. In other
-    // words, the embedder of this component should be the source of
-    // truth, not the native component.
-    if (
-      this._picker &&
-      this.state.selectedIndex !== event.nativeEvent.newIndex
-    ) {
-      this._picker.setNativeProps({
-        selectedIndex: this.state.selectedIndex,
-      });
-    }
+    this._lastNativeValue = event.nativeEvent.newIndex;
+    this.forceUpdate();
   };
 }
 
