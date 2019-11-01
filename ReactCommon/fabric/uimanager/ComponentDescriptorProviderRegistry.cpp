@@ -13,6 +13,19 @@ namespace react {
 void ComponentDescriptorProviderRegistry::add(
     ComponentDescriptorProvider provider) const {
   std::unique_lock<better::shared_mutex> lock(mutex_);
+
+  assert(
+      componentDescriptorProviders_.find(provider.handle) ==
+          componentDescriptorProviders_.end() &&
+      "Attempt to register an already registered ComponentDescriptorProvider.");
+
+  if (componentDescriptorProviders_.find(provider.handle) !=
+      componentDescriptorProviders_.end()) {
+    // Re-registering a provider makes no sense because it's copyable: already
+    // registered one is as good as any new can be.
+    return;
+  }
+
   componentDescriptorProviders_.insert({provider.handle, provider});
 
   for (auto const &weakRegistry : componentDescriptorRegistries_) {
