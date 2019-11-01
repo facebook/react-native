@@ -181,12 +181,6 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   return [_registry objectForKey:(__bridge id)(void *)tag];
 }
 
-- (ReactTag)tagByComponentView:(UIView<RCTComponentViewProtocol> *)componentView
-{
-  RCTAssertMainQueue();
-  return componentView.tag;
-}
-
 - (nullable UIView<RCTComponentViewProtocol> *)_dequeueComponentViewWithComponentHandle:(ComponentHandle)componentHandle
 {
   RCTAssertMainQueue();

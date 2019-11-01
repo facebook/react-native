@@ -44,11 +44,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIView<RCTComponentViewProtocol> *)componentViewByTag:(ReactTag)tag;
 
 /**
- * Returns `tag` associated with given `componentView`.
- */
-- (ReactTag)tagByComponentView:(UIView<RCTComponentViewProtocol> *)componentView;
-
-/**
  * Creates a component view with a given type and puts it to the recycle pool.
  */
 - (void)optimisticallyCreateComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
