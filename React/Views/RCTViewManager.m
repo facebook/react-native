@@ -115,7 +115,7 @@ RCT_EXPORT_MODULE()
 #pragma mark - View properties
 
 #if TARGET_OS_TV
-// Apple TV properties
+// TODO: Delete props for Apple TV.
 RCT_EXPORT_VIEW_PROPERTY(isTVSelectable, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(hasTVPreferredFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)

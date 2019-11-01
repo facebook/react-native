@@ -60,10 +60,6 @@ class TouchableHighlightBox extends React.Component<{}, $FlowFixMeState> {
             style={styles.wrapper}
             testID="touchable_highlight_text_button"
             activeOpacity={1}
-            tvParallaxProperties={{
-              pressMagnification: 1.3,
-              pressDuration: 0.6,
-            }}
             underlayColor="rgb(210, 230, 255)"
             onPress={this.touchableOnPress}>
             <View style={styles.wrapperCustom}>

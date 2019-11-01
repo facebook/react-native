@@ -13,7 +13,6 @@
 const DeprecatedEdgeInsetsPropType = require('./DeprecatedEdgeInsetsPropType');
 const DeprecatedStyleSheetPropType = require('./DeprecatedStyleSheetPropType');
 const DeprecatedViewStylePropTypes = require('./DeprecatedViewStylePropTypes');
-const PlatformViewPropTypes = require('../Components/View/PlatformViewPropTypes');
 const PropTypes = require('prop-types');
 
 const {DeprecatedAccessibilityRoles} = require('./DeprecatedViewAccessibility');
@@ -406,9 +405,4 @@ module.exports = {
    * See http://facebook.github.io/react-native/docs/view.html#needsoffscreenalphacompositing
    */
   needsOffscreenAlphaCompositing: PropTypes.bool,
-
-  /**
-   * Any additional platform-specific view prop types, or prop type overrides.
-   */
-  ...PlatformViewPropTypes,
 };

@@ -25,7 +25,6 @@ const flattenStyle = require('../../StyleSheet/flattenStyle');
 
 import type {Props as TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {TVParallaxPropertiesType} from '../AppleTV/TVViewPropTypes';
 import type {PressEvent} from '../../Types/CoreEventTypes';
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
@@ -37,7 +36,6 @@ type TVProps = $ReadOnly<{|
   nextFocusLeft?: ?number,
   nextFocusRight?: ?number,
   nextFocusUp?: ?number,
-  tvParallaxProperties?: ?TVParallaxPropertiesType,
 |}>;
 
 export type Props = $ReadOnly<{|
@@ -183,10 +181,6 @@ const TouchableOpacity = ((createReactClass({
      * @platform android
      */
     nextFocusUp: PropTypes.number,
-    /**
-     * Apple TV parallax effects
-     */
-    tvParallaxProperties: PropTypes.object,
   },
 
   getDefaultProps: function() {
@@ -318,14 +312,12 @@ const TouchableOpacity = ((createReactClass({
         nativeID={this.props.nativeID}
         testID={this.props.testID}
         onLayout={this.props.onLayout}
-        isTVSelectable={true}
         nextFocusDown={this.props.nextFocusDown}
         nextFocusForward={this.props.nextFocusForward}
         nextFocusLeft={this.props.nextFocusLeft}
         nextFocusRight={this.props.nextFocusRight}
         nextFocusUp={this.props.nextFocusUp}
         hasTVPreferredFocus={this.props.hasTVPreferredFocus}
-        tvParallaxProperties={this.props.tvParallaxProperties}
         hitSlop={this.props.hitSlop}
         focusable={
           this.props.focusable !== false && this.props.onPress !== undefined
