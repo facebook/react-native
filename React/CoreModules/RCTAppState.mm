@@ -7,10 +7,13 @@
 
 #import "RCTAppState.h"
 
-#import "RCTAssert.h"
-#import "RCTBridge.h"
-#import "RCTEventDispatcher.h"
-#import "RCTUtils.h"
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <React/RCTAssert.h>
+#import <React/RCTBridge.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTUtils.h>
+
+#import "CoreModulesPlugins.h"
 
 static NSString *RCTCurrentAppState()
 {
@@ -30,6 +33,9 @@ static NSString *RCTCurrentAppState()
   return states[@(RCTSharedApplication().applicationState)] ?: @"unknown";
 }
 
+@interface RCTAppState() <NativeAppStateSpec>
+@end
+
 @implementation RCTAppState
 {
   NSString *_lastKnownState;
@@ -47,14 +53,16 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-- (NSDictionary *)constantsToExport
+- (facebook::react::ModuleConstants<JS::NativeAppState::Constants>)constantsToExport
 {
-  return [self getConstants];
+  return (facebook::react::ModuleConstants<JS::NativeAppState::Constants>)[self getConstants];
 }
 
-- (NSDictionary *)getConstants
+- (facebook::react::ModuleConstants<JS::NativeAppState::Constants>)getConstants
 {
-  return @{@"initialAppState": RCTCurrentAppState()};
+  return facebook::react::typedConstants<JS::NativeAppState::Constants>({
+    .initialAppState = RCTCurrentAppState(),
+  });
 }
 
 #pragma mark - Lifecycle
@@ -126,4 +134,13 @@ RCT_EXPORT_METHOD(getCurrentAppState:(RCTResponseSenderBlock)callback
   callback(@[@{@"app_state": RCTCurrentAppState()}]);
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeAppStateSpecJSI>(self, jsInvoker);
+}
+
 @end
+
+Class RCTAppStateCls(void) {
+  return RCTAppState.class;
+}

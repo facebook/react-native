@@ -32,6 +32,7 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"Timing", RCTTimingCls},
     {"StatusBarManager", RCTStatusBarManagerCls},
     {"KeyboardObserver", RCTKeyboardObserverCls},
+    {"AppState", RCTAppStateCls},
   };
 
   auto p = sCoreModuleClassMap.find(name);

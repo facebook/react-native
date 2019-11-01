@@ -81,6 +81,9 @@ rn_apple_library(
         ) + react_module_plugin_providers(
             name = "KeyboardObserver",
             native_class_func = "RCTKeyboardObserverCls",
+        ) + react_module_plugin_providers(
+            name = "AppState",
+            native_class_func = "RCTAppStateCls",
         ),
     plugins_header = "FBCoreModulesPlugins.h",
     preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_extra_build_flags() + [

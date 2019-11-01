@@ -380,7 +380,7 @@ namespace JS {
 @protocol NativeAppStateSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)getCurrentAppState:(RCTResponseSenderBlock)success
-                   failure:(RCTResponseSenderBlock)failure;
+                     error:(RCTResponseSenderBlock)error;
 - (void)addListener:(NSString *)eventName;
 - (void)removeListeners:(double)count;
 - (facebook::react::ModuleConstants<JS::NativeAppState::Constants::Builder>)constantsToExport;

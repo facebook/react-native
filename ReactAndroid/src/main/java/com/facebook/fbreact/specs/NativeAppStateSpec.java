@@ -34,7 +34,7 @@ public abstract class NativeAppStateSpec extends ReactContextBaseJavaModule impl
   public abstract void removeListeners(double count);
 
   @ReactMethod
-  public abstract void getCurrentAppState(Callback success, Callback failure);
+  public abstract void getCurrentAppState(Callback success, Callback error);
 
   @ReactMethod
   public abstract void addListener(String eventName);
