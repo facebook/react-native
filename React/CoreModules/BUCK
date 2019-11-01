@@ -84,6 +84,9 @@ rn_apple_library(
         ) + react_module_plugin_providers(
             name = "AppState",
             native_class_func = "RCTAppStateCls",
+        ) + react_module_plugin_providers(
+            name = "PerfMonitor",
+            native_class_func = "RCTPerfMonitorCls",
         ),
     plugins_header = "FBCoreModulesPlugins.h",
     preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_extra_build_flags() + [

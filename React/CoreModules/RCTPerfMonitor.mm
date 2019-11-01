@@ -5,7 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTDefines.h"
+#import <React/RCTDefines.h>
+
+#import "CoreModulesPlugins.h"
 
 #if RCT_DEV
 
@@ -13,19 +15,21 @@
 
 #import <mach/mach.h>
 
-#import "RCTBridge.h"
-#import "RCTDevSettings.h"
-#import "RCTFPSGraph.h"
-#import "RCTInvalidating.h"
-#import "RCTJavaScriptExecutor.h"
-#import "RCTPerformanceLogger.h"
-#import "RCTRootView.h"
-#import "RCTUIManager.h"
-#import "RCTBridge+Private.h"
-#import "RCTUtils.h"
+#import <React/RCTDevSettings.h>
 
-#if __has_include("RCTDevMenu.h")
-#import "RCTDevMenu.h"
+#import <React/RCTBridge.h>
+#import <React/RCTFPSGraph.h>
+#import <React/RCTInvalidating.h>
+#import <React/RCTJavaScriptExecutor.h>
+#import <React/RCTPerformanceLogger.h>
+#import <React/RCTRootView.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTBridge+Private.h>
+#import <React/RCTUtils.h>
+#import <ReactCommon/RCTTurboModule.h>
+
+#if __has_include(<React/RCTDevMenu.h>)
+#import <React/RCTDevMenu.h>
 #endif
 
 static NSString *const RCTPerfMonitorCellIdentifier = @"RCTPerfMonitorCellIdentifier";
@@ -46,7 +50,7 @@ static BOOL RCTJSCSetOption(const char *option)
      *
      * JSC::Options::setOptions - JavaScriptCore/runtime/Options.h
      */
-    setOption = dlsym(RTLD_DEFAULT, "_ZN3JSC7Options9setOptionEPKc");
+    setOption = reinterpret_cast<RCTJSCSetOptionType>(dlsym(RTLD_DEFAULT, "_ZN3JSC7Options9setOptionEPKc"));
 
     if (RCT_DEBUG && setOption == NULL) {
       RCTLogWarn(@"The symbol used to enable JSC runtime options is not available in this iOS version");
@@ -68,13 +72,13 @@ static vm_size_t RCTGetResidentMemorySize(void)
     kern_return_t kernelReturn = task_info(mach_task_self(), TASK_VM_INFO, (task_info_t) &vmInfo, &count);
     if(kernelReturn == KERN_SUCCESS) {
         memoryUsageInByte = (vm_size_t) vmInfo.phys_footprint;
-    } 
+    }
     return memoryUsageInByte;
 }
 
-@interface RCTPerfMonitor : NSObject <RCTBridgeModule, RCTInvalidating, UITableViewDataSource, UITableViewDelegate>
+@interface RCTPerfMonitor : NSObject <RCTBridgeModule, RCTTurboModule, RCTInvalidating, UITableViewDataSource, UITableViewDelegate>
 
-#if __has_include("RCTDevMenu.h")
+#if __has_include(<React/RCTDevMenu.h>)
 @property (nonatomic, strong, readonly) RCTDevMenuItem *devMenuItem;
 #endif
 @property (nonatomic, strong, readonly) UIPanGestureRecognizer *gestureRecognizer;
@@ -91,7 +95,7 @@ static vm_size_t RCTGetResidentMemorySize(void)
 @end
 
 @implementation RCTPerfMonitor {
-#if __has_include("RCTDevMenu.h")
+#if __has_include(<React/RCTDevMenu.h>)
   RCTDevMenuItem *_devMenuItem;
 #endif
   UIPanGestureRecognizer *_gestureRecognizer;
@@ -140,7 +144,7 @@ RCT_EXPORT_MODULE()
 {
   _bridge = bridge;
 
-#if __has_include("RCTDevMenu.h")
+#if __has_include(<React/RCTDevMenu.h>)
   [_bridge.devMenu addItem:self.devMenuItem];
 #endif
 }
@@ -150,7 +154,7 @@ RCT_EXPORT_MODULE()
   [self hide];
 }
 
-#if __has_include("RCTDevMenu.h")
+#if __has_include(<React/RCTDevMenu.h>)
 - (RCTDevMenuItem *)devMenuItem
 {
   if (!_devMenuItem) {
@@ -576,3 +580,11 @@ heightForRowAtIndexPath:(__unused NSIndexPath *)indexPath
 @end
 
 #endif
+
+Class RCTPerfMonitorCls(void) {
+#if RCT_DEV
+  return RCTPerfMonitor.class;
+#else
+  return nil;
+#endif
+}

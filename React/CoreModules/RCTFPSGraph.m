@@ -7,7 +7,7 @@
 
 #import "RCTFPSGraph.h"
 
-#import "RCTAssert.h"
+#import <React/RCTAssert.h>
 
 #if RCT_DEV
 
