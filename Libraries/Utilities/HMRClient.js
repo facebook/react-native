@@ -16,7 +16,7 @@ const invariant = require('invariant');
 const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
 
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
-
+import * as LogBoxData from '../LogBox/Data/LogBoxData';
 import type {ExtendedError} from '../Core/Devtools/parseErrorStack';
 
 const pendingEntryPoints = [];
@@ -297,6 +297,8 @@ function flushEarlyLogs(client) {
 }
 
 function dismissRedbox() {
+  LogBoxData.clearSyntaxErrors();
+
   if (
     Platform.OS === 'ios' &&
     NativeRedBox != null &&
