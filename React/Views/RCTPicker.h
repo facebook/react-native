@@ -17,6 +17,7 @@
 @property (nonatomic, strong) UIColor *color;
 @property (nonatomic, strong) UIFont *font;
 @property (nonatomic, assign) NSTextAlignment textAlign;
+@property (nonatomic, copy, nullable) NSString* accessibilityLabel;
 
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 

@@ -106,6 +106,11 @@ type PickerProps = $ReadOnly<{|
    * Used to locate this view in end-to-end tests.
    */
   testID?: ?string,
+
+  /**
+   * Screen reader will read this string when a user selects the Picker.
+   */
+  accessibilityLabel?: ?string,
 |}>;
 
 /**
