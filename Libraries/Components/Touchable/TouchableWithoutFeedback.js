@@ -25,7 +25,12 @@ const {
   DeprecatedAccessibilityRoles,
 } = require('../../DeprecatedPropTypes/DeprecatedViewAccessibility');
 
-import type {LayoutEvent, PressEvent} from '../../Types/CoreEventTypes';
+import type {
+  BlurEvent,
+  FocusEvent,
+  LayoutEvent,
+  PressEvent,
+} from '../../Types/CoreEventTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {
   AccessibilityRole,
@@ -54,18 +59,7 @@ const OVERRIDE_PROPS = [
   'testID',
 ];
 
-type TVEvent = {
-  dispatchConfig: {},
-  tag: number,
-};
-
-type TVTouchableProps = $ReadOnly<{|
-  onBlur?: ?(event: TVEvent) => mixed,
-  onFocus?: ?(event: TVEvent) => mixed,
-|}>;
-
 export type Props = $ReadOnly<{|
-  ...TVTouchableProps,
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   accessibilityHint?: ?Stringish,
   accessibilityIgnoresInvertColors?: ?boolean,
@@ -83,6 +77,8 @@ export type Props = $ReadOnly<{|
   hitSlop?: ?EdgeInsetsProp,
   nativeID?: ?string,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
+  onBlur?: ?(event: BlurEvent) => mixed,
+  onFocus?: ?(event: FocusEvent) => mixed,
   onLayout?: ?(event: LayoutEvent) => mixed,
   onLongPress?: ?(event: PressEvent) => mixed,
   onPress?: ?(event: PressEvent) => mixed,

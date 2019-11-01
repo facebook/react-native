@@ -129,3 +129,25 @@ export type ScrollEvent = SyntheticEvent<
     responderIgnoreScroll?: boolean,
   |}>,
 >;
+
+export type BlurEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+  |}>,
+>;
+
+export type FocusEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+  |}>,
+>;
+
+export type MouseEvent = SyntheticEvent<
+  $ReadOnly<{|
+    clientX: number,
+    clientY: number,
+    pageX: number,
+    pageY: number,
+    timestamp: number,
+  |}>,
+>;
