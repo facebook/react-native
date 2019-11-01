@@ -2027,81 +2027,115 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
-@implementation RCTCxxConvert (NativeStatusBarManager_SpecGetHeightCallbackResult)
-+ (RCTManagedPointer *)JS_NativeStatusBarManager_SpecGetHeightCallbackResult:(id)json
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerAndroidSpecJSI_setColor(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setColor", @selector(setColor:animated:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerAndroidSpecJSI_setTranslucent(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setTranslucent", @selector(setTranslucent:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerAndroidSpecJSI_setStyle(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setStyle", @selector(setStyle:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerAndroidSpecJSI_setHidden(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setHidden", @selector(setHidden:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerAndroidSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, "getConstants", @selector(getConstants), args, count);
+    }
+
+
+    NativeStatusBarManagerAndroidSpecJSI::NativeStatusBarManagerAndroidSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
+      : ObjCTurboModule("StatusBarManagerAndroid", instance, jsInvoker) {
+        
+        methodMap_["setColor"] = MethodMetadata {2, __hostFunction_NativeStatusBarManagerAndroidSpecJSI_setColor};
+        
+        
+        methodMap_["setTranslucent"] = MethodMetadata {1, __hostFunction_NativeStatusBarManagerAndroidSpecJSI_setTranslucent};
+        
+        
+        methodMap_["setStyle"] = MethodMetadata {1, __hostFunction_NativeStatusBarManagerAndroidSpecJSI_setStyle};
+        
+        
+        methodMap_["setHidden"] = MethodMetadata {1, __hostFunction_NativeStatusBarManagerAndroidSpecJSI_setHidden};
+        
+        
+        methodMap_["getConstants"] = MethodMetadata {0, __hostFunction_NativeStatusBarManagerAndroidSpecJSI_getConstants};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+@implementation RCTCxxConvert (NativeStatusBarManagerIOS_SpecGetHeightCallbackResult)
++ (RCTManagedPointer *)JS_NativeStatusBarManagerIOS_SpecGetHeightCallbackResult:(id)json
 {
-  return facebook::react::managedPointer<JS::NativeStatusBarManager::SpecGetHeightCallbackResult>(json);
+  return facebook::react::managedPointer<JS::NativeStatusBarManagerIOS::SpecGetHeightCallbackResult>(json);
 }
 @end
 namespace facebook {
   namespace react {
 
     
-    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerSpecJSI_setColor(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setColor", @selector(setColor:animated:), args, count);
-    }
-
-    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerSpecJSI_setTranslucent(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setTranslucent", @selector(setTranslucent:), args, count);
-    }
-
-    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerSpecJSI_getHeight(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerIOSSpecJSI_getHeight(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "getHeight", @selector(getHeight:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerSpecJSI_setNetworkActivityIndicatorVisible(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerIOSSpecJSI_setNetworkActivityIndicatorVisible(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setNetworkActivityIndicatorVisible", @selector(setNetworkActivityIndicatorVisible:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerSpecJSI_addListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerIOSSpecJSI_addListener(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "addListener", @selector(addListener:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerSpecJSI_removeListeners(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerIOSSpecJSI_removeListeners(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "removeListeners", @selector(removeListeners:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerSpecJSI_setStyle(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerIOSSpecJSI_setStyle(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setStyle", @selector(setStyle:animated:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerSpecJSI_setHidden(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerIOSSpecJSI_setHidden(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setHidden", @selector(setHidden:withAnimation:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeStatusBarManagerIOSSpecJSI_getConstants(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, ObjectKind, "getConstants", @selector(getConstants), args, count);
     }
 
 
-    NativeStatusBarManagerSpecJSI::NativeStatusBarManagerSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
-      : ObjCTurboModule("StatusBarManager", instance, jsInvoker) {
+    NativeStatusBarManagerIOSSpecJSI::NativeStatusBarManagerIOSSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
+      : ObjCTurboModule("StatusBarManagerIOS", instance, jsInvoker) {
         
-        methodMap_["setColor"] = MethodMetadata {2, __hostFunction_NativeStatusBarManagerSpecJSI_setColor};
-        
-        
-        methodMap_["setTranslucent"] = MethodMetadata {1, __hostFunction_NativeStatusBarManagerSpecJSI_setTranslucent};
+        methodMap_["getHeight"] = MethodMetadata {1, __hostFunction_NativeStatusBarManagerIOSSpecJSI_getHeight};
         
         
-        methodMap_["getHeight"] = MethodMetadata {1, __hostFunction_NativeStatusBarManagerSpecJSI_getHeight};
+        methodMap_["setNetworkActivityIndicatorVisible"] = MethodMetadata {1, __hostFunction_NativeStatusBarManagerIOSSpecJSI_setNetworkActivityIndicatorVisible};
         
         
-        methodMap_["setNetworkActivityIndicatorVisible"] = MethodMetadata {1, __hostFunction_NativeStatusBarManagerSpecJSI_setNetworkActivityIndicatorVisible};
+        methodMap_["addListener"] = MethodMetadata {1, __hostFunction_NativeStatusBarManagerIOSSpecJSI_addListener};
         
         
-        methodMap_["addListener"] = MethodMetadata {1, __hostFunction_NativeStatusBarManagerSpecJSI_addListener};
+        methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeStatusBarManagerIOSSpecJSI_removeListeners};
         
         
-        methodMap_["removeListeners"] = MethodMetadata {1, __hostFunction_NativeStatusBarManagerSpecJSI_removeListeners};
+        methodMap_["setStyle"] = MethodMetadata {2, __hostFunction_NativeStatusBarManagerIOSSpecJSI_setStyle};
         
         
-        methodMap_["setStyle"] = MethodMetadata {2, __hostFunction_NativeStatusBarManagerSpecJSI_setStyle};
+        methodMap_["setHidden"] = MethodMetadata {2, __hostFunction_NativeStatusBarManagerIOSSpecJSI_setHidden};
         
         
-        methodMap_["setHidden"] = MethodMetadata {2, __hostFunction_NativeStatusBarManagerSpecJSI_setHidden};
-        
-        
-        methodMap_["getConstants"] = MethodMetadata {0, __hostFunction_NativeStatusBarManagerSpecJSI_getConstants};
+        methodMap_["getConstants"] = MethodMetadata {0, __hostFunction_NativeStatusBarManagerIOSSpecJSI_getConstants};
         
         
 
