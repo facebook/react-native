@@ -17,13 +17,29 @@ const LogBoxInspectorMessageHeader = require('../LogBoxInspectorMessageHeader')
 const render = require('../../../../jest/renderer');
 
 describe('LogBoxInspectorMessageHeader', () => {
-  it('should not render error', () => {
+  it('should render error', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
         level="error"
         collapsed={false}
         message={{
-          content: 'Short',
+          content: 'Some error message',
+          substitutions: [],
+        }}
+        onPress={() => {}}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should render fatal', () => {
+    const output = render.shallowRender(
+      <LogBoxInspectorMessageHeader
+        level="fatal"
+        collapsed={false}
+        message={{
+          content: 'Some fatal message',
           substitutions: [],
         }}
         onPress={() => {}}

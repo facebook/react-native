@@ -1,5 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`LogBoxInspectorFooter should render fatal button 1`] = `
+<View
+  style={
+    Object {
+      "backgroundColor": "rgba(51, 51, 51, 1)",
+      "elevation": 1,
+      "flexDirection": "row",
+      "shadowColor": "#000",
+      "shadowOffset": Object {
+        "height": -2,
+        "width": 0,
+      },
+      "shadowOpacity": 0.5,
+      "shadowRadius": 2,
+    }
+  }
+>
+  <FatalButton />
+</View>
+`;
+
 exports[`LogBoxInspectorFooter should render two buttons 1`] = `
 <View
   style={

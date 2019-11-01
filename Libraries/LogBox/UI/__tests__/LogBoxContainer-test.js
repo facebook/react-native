@@ -137,4 +137,86 @@ describe('LogBoxContainer', () => {
 
     expect(output).toMatchSnapshot();
   });
+
+  it('should render fatal before warn and error', () => {
+    const output = render.shallowRender(
+      <LogBoxContainer
+        onDismiss={() => {}}
+        onDismissWarns={() => {}}
+        onDismissErrors={() => {}}
+        logs={
+          new Set([
+            new LogBoxLog(
+              'fatal',
+              {
+                content: 'Some kind of fatal message',
+                substitutions: [],
+              },
+              [],
+              'Some kind of fatal message',
+              [],
+            ),
+            new LogBoxLog(
+              'warn',
+              {
+                content: 'Some kind of message',
+                substitutions: [],
+              },
+              [],
+              'Some kind of message',
+              [],
+            ),
+            new LogBoxLog(
+              'error',
+              {
+                content: 'Some kind of message (latest)',
+                substitutions: [],
+              },
+              [],
+              'Some kind of message (latest)',
+              [],
+            ),
+          ])
+        }
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should render most recent fatal', () => {
+    const output = render.shallowRender(
+      <LogBoxContainer
+        onDismiss={() => {}}
+        onDismissWarns={() => {}}
+        onDismissErrors={() => {}}
+        logs={
+          new Set([
+            new LogBoxLog(
+              'fatal',
+              {
+                content: 'Should not be selected',
+                substitutions: [],
+              },
+              [],
+              'Some kind of fatal message',
+              [],
+            ),
+            new LogBoxLog(
+              'fatal',
+              {
+                content: 'Should be selected',
+                substitutions: [],
+              },
+              [],
+              'Some kind of message',
+              [],
+            ),
+          ])
+        }
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
 });

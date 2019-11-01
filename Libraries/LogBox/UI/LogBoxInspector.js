@@ -32,6 +32,7 @@ type Props = $ReadOnly<{|
   onMinimize: () => void,
   logs: $ReadOnlyArray<LogBoxLog>,
   selectedIndex: number,
+  hasFatal: boolean,
 |}>;
 
 function LogBoxInspector(props: Props): React.Node {
@@ -77,6 +78,7 @@ function LogBoxInspector(props: Props): React.Node {
       <LogBoxInspectorFooter
         onDismiss={props.onDismiss}
         onMinimize={props.onMinimize}
+        hasFatal={props.hasFatal}
       />
     </View>
   );

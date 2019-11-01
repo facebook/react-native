@@ -51,7 +51,7 @@ function LogBoxInspectorMessageHeader(props: Props): React.Node {
     <View style={messageStyles.body}>
       <View style={messageStyles.heading}>
         <Text style={[messageStyles.headingText, messageStyles[props.level]]}>
-          {props.level === 'warn' ? 'Warning' : 'Error'}
+          {{warn: 'Warning', error: 'Error', fatal: 'Fatal Error'}[props.level]}
         </Text>
         {renderShowMore()}
       </View>
@@ -105,6 +105,9 @@ const messageStyles = StyleSheet.create({
   },
   error: {
     color: LogBoxStyle.getErrorColor(1),
+  },
+  fatal: {
+    color: LogBoxStyle.getFatalColor(1),
   },
   messageText: {
     color: LogBoxStyle.getTextColor(0.6),

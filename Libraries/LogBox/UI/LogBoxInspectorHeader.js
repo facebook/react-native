@@ -59,6 +59,22 @@ function LogBoxInspectorHeader(props: Props): React.Node {
   );
 }
 
+const backgroundForLevel = (level: LogLevel) =>
+  ({
+    warn: {
+      default: LogBoxStyle.getWarningColor(),
+      pressed: LogBoxStyle.getWarningDarkColor(),
+    },
+    error: {
+      default: LogBoxStyle.getErrorColor(),
+      pressed: LogBoxStyle.getErrorDarkColor(),
+    },
+    fatal: {
+      default: LogBoxStyle.getFatalColor(),
+      pressed: LogBoxStyle.getFatalDarkColor(),
+    },
+  }[level]);
+
 function LogBoxInspectorHeaderButton(
   props: $ReadOnly<{|
     disabled: boolean,
@@ -69,16 +85,7 @@ function LogBoxInspectorHeaderButton(
 ): React.Node {
   return (
     <LogBoxButton
-      backgroundColor={{
-        default:
-          props.level === 'warn'
-            ? LogBoxStyle.getWarningColor()
-            : LogBoxStyle.getErrorColor(),
-        pressed:
-          props.level === 'warn'
-            ? LogBoxStyle.getWarningDarkColor()
-            : LogBoxStyle.getErrorDarkColor(),
-      }}
+      backgroundColor={backgroundForLevel(props.level)}
       onPress={props.disabled ? null : props.onPress}
       style={headerStyles.button}>
       {props.disabled ? null : (
@@ -96,7 +103,7 @@ const headerStyles = StyleSheet.create({
     alignItems: 'center',
     aspectRatio: 1,
     justifyContent: 'center',
-    marginTop: 3,
+    marginTop: 5,
     marginRight: 6,
     marginLeft: 6,
     marginBottom: -8,
@@ -108,6 +115,9 @@ const headerStyles = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
+  fatal: {
+    backgroundColor: LogBoxStyle.getFatalColor(),
+  },
   warn: {
     backgroundColor: LogBoxStyle.getWarningColor(),
   },

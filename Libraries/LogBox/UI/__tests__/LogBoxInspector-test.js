@@ -37,6 +37,16 @@ const logs = [
     'Some kind of message (second)',
     [],
   ),
+  new LogBoxLog(
+    'fatal',
+    {
+      content: 'Some kind of message (third)',
+      substitutions: [],
+    },
+    [],
+    'Some kind of message (third)',
+    [],
+  ),
 ];
 
 describe('LogBoxContainer', () => {
@@ -48,6 +58,7 @@ describe('LogBoxContainer', () => {
         onChangeSelectedIndex={() => {}}
         logs={[]}
         selectedIndex={0}
+        hasFatal={false}
       />,
     );
 
@@ -62,20 +73,22 @@ describe('LogBoxContainer', () => {
         onChangeSelectedIndex={() => {}}
         logs={logs}
         selectedIndex={0}
+        hasFatal={false}
       />,
     );
 
     expect(output).toMatchSnapshot();
   });
 
-  it('should render error with selectedIndex 1', () => {
+  it('should render fatal with selectedIndex 2', () => {
     const output = render.shallowRender(
       <LogBoxInspector
         onDismiss={() => {}}
         onMinimize={() => {}}
         onChangeSelectedIndex={() => {}}
         logs={logs}
-        selectedIndex={1}
+        selectedIndex={2}
+        hasFatal={true}
       />,
     );
 

@@ -51,10 +51,36 @@ function LogBoxContainer(props: Props): React.Node {
 
   function openLog(log: LogBoxLog) {
     let index = logs.length - 1;
+
+    // Stop at zero because if we don't find any log, we'll open the first log.
     while (index > 0 && logs[index] !== log) {
       index -= 1;
     }
     setSelectedLog(index);
+  }
+
+  let fatalIndex = logs.length - 1;
+  while (fatalIndex >= 0) {
+    if (logs[fatalIndex].level === 'fatal') {
+      break;
+    }
+
+    fatalIndex -= 1;
+  }
+
+  if (selectedLogIndex == null && fatalIndex >= 0) {
+    return (
+      <View style={StyleSheet.absoluteFill}>
+        <LogBoxInspector
+          onDismiss={handleInspectorDismiss}
+          onMinimize={handleInspectorMinimize}
+          onChangeSelectedIndex={setSelectedLog}
+          logs={logs}
+          hasFatal={true}
+          selectedIndex={fatalIndex}
+        />
+      </View>
+    );
   }
 
   if (selectedLogIndex != null) {
@@ -65,6 +91,7 @@ function LogBoxContainer(props: Props): React.Node {
           onMinimize={handleInspectorMinimize}
           onChangeSelectedIndex={setSelectedLog}
           logs={logs}
+          hasFatal={fatalIndex != null}
           selectedIndex={selectedLogIndex}
         />
       </View>

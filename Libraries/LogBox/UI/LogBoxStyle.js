@@ -30,6 +30,14 @@ export function getWarningDarkColor(opacity?: number): string {
   return `rgba(224, 167, 8, ${opacity == null ? 1 : opacity})`;
 }
 
+export function getFatalColor(opacity?: number): string {
+  return `rgba(243, 83, 105, ${opacity == null ? 1 : opacity})`;
+}
+
+export function getFatalDarkColor(opacity?: number): string {
+  return `rgba(208, 75, 95, ${opacity == null ? 1 : opacity})`;
+}
+
 export function getErrorColor(opacity?: number): string {
   return `rgba(243, 83, 105, ${opacity == null ? 1 : opacity})`;
 }

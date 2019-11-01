@@ -18,7 +18,23 @@ const render = require('../../../../jest/renderer');
 describe('LogBoxInspectorFooter', () => {
   it('should render two buttons', () => {
     const output = render.shallowRender(
-      <LogBoxInspectorFooter onMinimize={() => {}} onDismiss={() => {}} />,
+      <LogBoxInspectorFooter
+        onMinimize={() => {}}
+        onDismiss={() => {}}
+        hasFatal={false}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should render fatal button', () => {
+    const output = render.shallowRender(
+      <LogBoxInspectorFooter
+        onMinimize={() => {}}
+        onDismiss={() => {}}
+        hasFatal
+      />,
     );
 
     expect(output).toMatchSnapshot();

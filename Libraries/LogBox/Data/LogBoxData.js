@@ -127,17 +127,21 @@ export function addException(error: ExceptionData): void {
     if (lastLog && lastLog.category === category) {
       lastLog.incrementCount();
     } else {
-      logs.add(
-        new LogBoxLog(
-          'error',
-          message,
-          error.stack,
-          category,
-          error.componentStack != null
-            ? parseComponentStack(error.componentStack)
-            : [],
-        ),
+      const newLog = new LogBoxLog(
+        error.isFatal ? 'fatal' : 'error',
+        message,
+        error.stack,
+        category,
+        error.componentStack != null
+          ? parseComponentStack(error.componentStack)
+          : [],
       );
+
+      // Start symbolicating now so it's warm when it renders.
+      if (error.isFatal) {
+        symbolicateLogLazy(newLog);
+      }
+      logs.add(newLog);
     }
 
     handleUpdate();

@@ -91,6 +91,138 @@ exports[`LogBoxContainer should render both an error and warning 1`] = `
 </View>
 `;
 
+exports[`LogBoxContainer should render fatal before warn and error 1`] = `
+<View
+  style={
+    Object {
+      "bottom": 0,
+      "left": 0,
+      "position": "absolute",
+      "right": 0,
+      "top": 0,
+    }
+  }
+>
+  <LogBoxInspector
+    hasFatal={true}
+    logs={
+      Array [
+        LogBoxLog {
+          "category": "Some kind of fatal message",
+          "componentStack": Array [],
+          "count": 1,
+          "level": "fatal",
+          "message": Object {
+            "content": "Some kind of fatal message",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+        },
+        LogBoxLog {
+          "category": "Some kind of message",
+          "componentStack": Array [],
+          "count": 1,
+          "level": "warn",
+          "message": Object {
+            "content": "Some kind of message",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+        },
+        LogBoxLog {
+          "category": "Some kind of message (latest)",
+          "componentStack": Array [],
+          "count": 1,
+          "level": "error",
+          "message": Object {
+            "content": "Some kind of message (latest)",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+        },
+      ]
+    }
+    onChangeSelectedIndex={[Function]}
+    onDismiss={[Function]}
+    onMinimize={[Function]}
+    selectedIndex={0}
+  />
+</View>
+`;
+
+exports[`LogBoxContainer should render most recent fatal 1`] = `
+<View
+  style={
+    Object {
+      "bottom": 0,
+      "left": 0,
+      "position": "absolute",
+      "right": 0,
+      "top": 0,
+    }
+  }
+>
+  <LogBoxInspector
+    hasFatal={true}
+    logs={
+      Array [
+        LogBoxLog {
+          "category": "Some kind of fatal message",
+          "componentStack": Array [],
+          "count": 1,
+          "level": "fatal",
+          "message": Object {
+            "content": "Should not be selected",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+        },
+        LogBoxLog {
+          "category": "Some kind of message",
+          "componentStack": Array [],
+          "count": 1,
+          "level": "fatal",
+          "message": Object {
+            "content": "Should be selected",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+        },
+      ]
+    }
+    onChangeSelectedIndex={[Function]}
+    onDismiss={[Function]}
+    onMinimize={[Function]}
+    selectedIndex={1}
+  />
+</View>
+`;
+
 exports[`LogBoxContainer should render null with no logs 1`] = `null`;
 
 exports[`LogBoxContainer should render the latest error 1`] = `

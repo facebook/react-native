@@ -15,7 +15,7 @@ import * as LogBoxSymbolication from './LogBoxSymbolication';
 import type {Category, Message, ComponentStack} from './parseLogBoxLog';
 import type {Stack} from './LogBoxSymbolication';
 
-export type LogLevel = 'warn' | 'error';
+export type LogLevel = 'warn' | 'error' | 'fatal';
 
 export type SymbolicationRequest = $ReadOnly<{|
   abort: () => void,
