@@ -162,7 +162,8 @@ using namespace facebook::react;
 {
   std::lock_guard<std::mutex> lock(_schedulerMutex);
   ReactTag tag = [reactTag integerValue];
-  UIView<RCTComponentViewProtocol> *componentView = [_mountingManager.componentViewRegistry componentViewByTag:tag];
+  UIView<RCTComponentViewProtocol> *componentView =
+      [_mountingManager.componentViewRegistry findComponentViewWithTag:tag];
   if (componentView == nil) {
     return NO; // This view probably isn't managed by Fabric
   }

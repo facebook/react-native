@@ -178,6 +178,14 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 - (UIView<RCTComponentViewProtocol> *)componentViewByTag:(ReactTag)tag
 {
   RCTAssertMainQueue();
+  UIView<RCTComponentViewProtocol> *componentView = [_registry objectForKey:(__bridge id)(void *)tag];
+  RCTAssert(componentView, @"RCTComponentViewRegistry: Attempt to query unregistered component.");
+  return componentView;
+}
+
+- (nullable UIView<RCTComponentViewProtocol> *)findComponentViewWithTag:(ReactTag)tag
+{
+  RCTAssertMainQueue();
   return [_registry objectForKey:(__bridge id)(void *)tag];
 }
 
