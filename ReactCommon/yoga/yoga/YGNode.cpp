@@ -188,7 +188,7 @@ void YGNode::setMeasureFunc(YGMeasureFunc measureFunc) {
   setMeasureFunc(m);
 }
 
-void YGNode::setMeasureFunc(MeasureWithContextFn measureFunc) {
+YOGA_EXPORT void YGNode::setMeasureFunc(MeasureWithContextFn measureFunc) {
   flags_.at<measureUsesContext_>() = true;
   decltype(YGNode::measure_) m;
   m.withContext = measureFunc;
@@ -378,7 +378,7 @@ YGDirection YGNode::resolveDirection(const YGDirection ownerDirection) {
   }
 }
 
-void YGNode::clearChildren() {
+YOGA_EXPORT void YGNode::clearChildren() {
   children_.clear();
   children_.shrink_to_fit();
 }

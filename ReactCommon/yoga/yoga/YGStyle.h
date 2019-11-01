@@ -17,7 +17,7 @@
 #include "Yoga-internal.h"
 #include "Yoga.h"
 
-class YGStyle {
+class YOGA_EXPORT YGStyle {
   template <typename Enum>
   using Values =
       facebook::yoga::detail::Values<facebook::yoga::enums::count<Enum>()>;
@@ -197,7 +197,7 @@ public:
   Ref<YGFloatOptional, &YGStyle::aspectRatio_> aspectRatio() { return {*this}; }
 };
 
-bool operator==(const YGStyle& lhs, const YGStyle& rhs);
-inline bool operator!=(const YGStyle& lhs, const YGStyle& rhs) {
+YOGA_EXPORT bool operator==(const YGStyle& lhs, const YGStyle& rhs);
+YOGA_EXPORT inline bool operator!=(const YGStyle& lhs, const YGStyle& rhs) {
   return !(lhs == rhs);
 }

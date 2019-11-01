@@ -33,7 +33,7 @@ void vlog(
 }
 } // namespace
 
-void Log::log(
+YOGA_EXPORT void Log::log(
     YGNode* node,
     YGLogLevel level,
     void* context,

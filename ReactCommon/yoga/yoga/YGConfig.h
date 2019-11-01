@@ -9,7 +9,7 @@
 #include "Yoga-internal.h"
 #include "Yoga.h"
 
-struct YGConfig {
+struct YOGA_EXPORT YGConfig {
   using LogWithContextFn = int (*)(
       YGConfigRef config,
       YGNodeRef node,

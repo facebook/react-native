@@ -42,7 +42,8 @@ jint ensureInitialized(JNIEnv** env, JavaVM* vm) {
   return JNI_VERSION_1_6;
 }
 
-JNIEnv* getCurrentEnv() {
+// TODO why we need JNIEXPORT for getCurrentEnv ?
+JNIEXPORT JNIEnv* getCurrentEnv() {
   JNIEnv* env;
   jint ret = globalVm->GetEnv((void**) &env, JNI_VERSION_1_6);
   if (ret != JNI_OK) {

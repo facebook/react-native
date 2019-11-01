@@ -21,6 +21,14 @@
 #define WIN_EXPORT
 #endif
 
+#ifndef YOGA_EXPORT
+#ifdef _MSC_VER
+#define YOGA_EXPORT
+#else
+#define YOGA_EXPORT __attribute__((visibility("default")))
+#endif
+#endif
+
 #ifdef NS_ENUM
 // Cannot use NSInteger as NSInteger has a different size than int (which is the
 // default type of a enum). Therefor when linking the Yoga C library into obj-c
