@@ -56,9 +56,7 @@ function handleUpdate(): void {
     updateTimeout = setImmediate(() => {
       updateTimeout = null;
       const logsSet = _isDisabled ? new Set() : logs;
-      for (const {observer} of observers) {
-        observer(logsSet);
-      }
+      observers.forEach(({observer}) => observer(logsSet));
     });
   }
 }
@@ -200,11 +198,9 @@ export function addIgnorePatterns(
     // This allows adding an ignore pattern anywhere in the codebase.
     // Without this, if you ignore a pattern after the a log is created,
     // then we would keep showing the log.
-    for (let log of logs) {
-      if (isMessageIgnored(log.message.content)) {
-        logs.delete(log);
-      }
-    }
+    logs = new Set(
+      Array.from(logs).filter(log => !isMessageIgnored(log.message.content)),
+    );
   }
   handleUpdate();
 }
