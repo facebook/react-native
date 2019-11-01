@@ -15,7 +15,6 @@
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/TurboModule.h>
 #import <ReactCommon/TurboModuleUtils.h>
-#import <cxxreact/MessageQueueThread.h>
 #import <string>
 #import <unordered_map>
 
