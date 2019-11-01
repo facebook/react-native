@@ -16,7 +16,7 @@ import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
 export interface Spec extends TurboModule {
   +getConstants: () => {|
     +HEIGHT: number,
-    +DEFAULT_BACKGROUND_COLOR: number,
+    +DEFAULT_BACKGROUND_COLOR?: number,
   |};
 
   // TODO(T47754272) Can we remove this method?

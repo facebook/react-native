@@ -6,12 +6,15 @@
  */
 
 #import "RCTStatusBarManager.h"
+#import "CoreModulesPlugins.h"
 
-#import "RCTEventDispatcher.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
 
 #if !TARGET_OS_TV
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
+
 @implementation RCTConvert (UIStatusBar)
 
 + (UIStatusBarStyle)UIStatusBarStyle:(id)json RCT_DYNAMIC
@@ -40,7 +43,7 @@
     }
   });
   return _RCT_CAST(
-      type, [RCTConvertEnumValue("UIStatusBarStyle", mapping, @(UIStatusBarStyleDefault), json) integerValue]);
+      UIStatusBarStyle, [RCTConvertEnumValue("UIStatusBarStyle", mapping, @(UIStatusBarStyleDefault), json) integerValue]);
 }
 
 RCT_ENUM_CONVERTER(
@@ -54,6 +57,13 @@ RCT_ENUM_CONVERTER(
     integerValue);
 
 @end
+#endif
+
+#if !TARGET_OS_TV
+
+@interface RCTStatusBarManager() <NativeStatusBarManagerIOSSpec>
+@end
+
 #endif
 
 @implementation RCTStatusBarManager
@@ -134,8 +144,9 @@ RCT_EXPORT_METHOD(getHeight : (RCTResponseSenderBlock)callback)
   } ]);
 }
 
-RCT_EXPORT_METHOD(setStyle : (UIStatusBarStyle)statusBarStyle animated : (BOOL)animated)
+RCT_EXPORT_METHOD(setStyle : (NSString *)style animated : (BOOL)animated)
 {
+  UIStatusBarStyle statusBarStyle = [RCTConvert UIStatusBarStyle:style];
   if (RCTViewControllerBasedStatusBarAppearance()) {
     RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
@@ -147,8 +158,9 @@ RCT_EXPORT_METHOD(setStyle : (UIStatusBarStyle)statusBarStyle animated : (BOOL)a
 #pragma clang diagnostic pop
 }
 
-RCT_EXPORT_METHOD(setHidden : (BOOL)hidden withAnimation : (UIStatusBarAnimation)animation)
+RCT_EXPORT_METHOD(setHidden : (BOOL)hidden withAnimation : (NSString *)withAnimation)
 {
+  UIStatusBarAnimation animation = [RCTConvert UIStatusBarAnimation:withAnimation];
   if (RCTViewControllerBasedStatusBarAppearance()) {
     RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
@@ -165,6 +177,28 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible)
   RCTSharedApplication().networkActivityIndicatorVisible = visible;
 }
 
+- (facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants>)getConstants
+{
+  return facebook::react::typedConstants<JS::NativeStatusBarManagerIOS::Constants>({
+    .HEIGHT = RCTSharedApplication().statusBarFrame.size.height,
+    .DEFAULT_BACKGROUND_COLOR = folly::none,
+  });
+}
+
+- (facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants>)constantsToExport
+{
+  return (facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants>)[self getConstants];
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeStatusBarManagerIOSSpecJSI>(self, jsInvoker);
+}
+
 #endif // TARGET_OS_TV
 
 @end
+
+Class RCTStatusBarManagerCls(void) {
+  return RCTStatusBarManager.class;
+}

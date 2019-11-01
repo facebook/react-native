@@ -2236,7 +2236,7 @@ namespace JS {
       struct Builder {
         struct Input {
           RCTRequired<double> HEIGHT;
-          RCTRequired<double> DEFAULT_BACKGROUND_COLOR;
+          folly::Optional<double> DEFAULT_BACKGROUND_COLOR;
         };
 
         /** Initialize with a set of values */
@@ -3378,8 +3378,8 @@ inline JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(const Input i)
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto HEIGHT = i.HEIGHT.get();
   d[@"HEIGHT"] = @(HEIGHT);
-  auto DEFAULT_BACKGROUND_COLOR = i.DEFAULT_BACKGROUND_COLOR.get();
-  d[@"DEFAULT_BACKGROUND_COLOR"] = @(DEFAULT_BACKGROUND_COLOR);
+  auto DEFAULT_BACKGROUND_COLOR = i.DEFAULT_BACKGROUND_COLOR;
+  d[@"DEFAULT_BACKGROUND_COLOR"] = DEFAULT_BACKGROUND_COLOR.hasValue() ? @((double)DEFAULT_BACKGROUND_COLOR.value()) : nil;
   return d;
 }) {}
 inline JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(Constants i) : _factory(^{

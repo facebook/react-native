@@ -30,6 +30,7 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"AlertManager", RCTAlertManagerCls},
     {"AsyncLocalStorage", RCTAsyncLocalStorageCls},
     {"Timing", RCTTimingCls},
+    {"StatusBarManager", RCTStatusBarManagerCls},
   };
 
   auto p = sCoreModuleClassMap.find(name);

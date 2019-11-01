@@ -55,10 +55,11 @@ public abstract class NativeStatusBarManagerIOSSpec extends ReactContextBaseJava
     Map<String, Object> constants = getTypedExportedConstants();
     if (ReactBuildConfig.DEBUG || ReactBuildConfig.IS_INTERNAL_BUILD) {
       Set<String> obligatoryFlowConstants = new HashSet<>(Arrays.asList(
-          "DEFAULT_BACKGROUND_COLOR",
           "HEIGHT"
       ));
-      Set<String> optionalFlowConstants = new HashSet<>();
+      Set<String> optionalFlowConstants = new HashSet<>(Arrays.asList(
+          "DEFAULT_BACKGROUND_COLOR"
+      ));
       Set<String> undeclaredConstants = new HashSet<>(constants.keySet());
       undeclaredConstants.removeAll(obligatoryFlowConstants);
       undeclaredConstants.removeAll(optionalFlowConstants);
