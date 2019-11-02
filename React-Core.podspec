@@ -64,7 +64,8 @@ Pod::Spec.new do |s|
                                 "React/Views/RCTPicker*",
                                 "React/Views/RCTRefreshControl*",
                                 "React/Views/RCTSlider*",
-                                "React/Views/RCTSwitch*"
+                                "React/Views/RCTSwitch*",
+    ss.private_header_files   = "React/Cxx*/*.h"
   end
 
   s.subspec "DevSupport" do |ss|

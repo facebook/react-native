@@ -38,12 +38,9 @@ Pod::Spec.new do |spec|
       '-fexceptions',
       '-Wall',
       '-Werror',
+      '-std=c++1y',
       '-fPIC'
   ]
-
-  spec.pod_target_xcconfig    = {
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" 
-  }
 
   # Pinning to the same version as React.podspec.
   spec.platforms = { :ios => "9.0", :tvos => "9.2" }
@@ -54,7 +51,7 @@ Pod::Spec.new do |spec|
   source_files = File.join('ReactCommon/yoga', source_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
   spec.source_files = source_files
 
-  header_files = 'yoga/{Yoga,YGEnums,YGMacros,YGValue,YGNode,YGStyle}.h'
+  header_files = 'yoga/{Yoga,YGEnums,YGMacros,YGValue}.h'
   header_files = File.join('ReactCommon/yoga', header_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
   spec.public_header_files = header_files
 end
