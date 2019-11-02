@@ -557,7 +557,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
     String moduleName = getNameFromAnnotation(nativeModuleInterface);
-    return mTurboModuleRegistry != null && mTurboModuleRegistry.hasModule(moduleName)
+    return getTurboModuleRegistry() != null && getTurboModuleRegistry().hasModule(moduleName)
         ? true
         : mNativeModuleRegistry.hasModule(moduleName);
   }
@@ -567,10 +567,20 @@ public class CatalystInstanceImpl implements CatalystInstance {
     return (T) getNativeModule(getNameFromAnnotation(nativeModuleInterface));
   }
 
+  private TurboModuleRegistry getTurboModuleRegistry() {
+    if (ReactFeatureFlags.useTurboModules) {
+      return Assertions.assertNotNull(
+          mTurboModuleRegistry,
+          "TurboModules are enabled, but mTurboModuleRegistry hasn't been set.");
+    }
+
+    return null;
+  }
+
   @Override
   public NativeModule getNativeModule(String moduleName) {
-    if (mTurboModuleRegistry != null) {
-      TurboModule turboModule = mTurboModuleRegistry.getModule(moduleName);
+    if (getTurboModuleRegistry() != null) {
+      TurboModule turboModule = getTurboModuleRegistry().getModule(moduleName);
 
       if (turboModule != null) {
         return (NativeModule) turboModule;
@@ -595,8 +605,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
     Collection<NativeModule> nativeModules = new ArrayList<>();
     nativeModules.addAll(mNativeModuleRegistry.getAllModules());
 
-    if (mTurboModuleRegistry != null) {
-      for (TurboModule turboModule : mTurboModuleRegistry.getModules()) {
+    if (getTurboModuleRegistry() != null) {
+      for (TurboModule turboModule : getTurboModuleRegistry().getModules()) {
         nativeModules.add((NativeModule) turboModule);
       }
     }
