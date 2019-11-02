@@ -25,7 +25,7 @@ import LogBoxInspectorMeta from './LogBoxInspectorMeta';
 import LogBoxInspectorHeader from './LogBoxInspectorHeader';
 import * as LogBoxStyle from './LogBoxStyle';
 
-import type LogBoxLog from '../Data/LogBoxLog';
+import type LogBoxLog, {LogLevel} from '../Data/LogBoxLog';
 
 type Props = $ReadOnly<{|
   onDismiss: () => void,
@@ -33,7 +33,7 @@ type Props = $ReadOnly<{|
   onMinimize: () => void,
   logs: $ReadOnlyArray<LogBoxLog>,
   selectedIndex: number,
-  hasFatal: boolean,
+  fatalType?: ?LogLevel,
 |}>;
 
 function LogBoxInspector(props: Props): React.Node {
@@ -79,7 +79,7 @@ function LogBoxInspector(props: Props): React.Node {
       <LogBoxInspectorFooter
         onDismiss={props.onDismiss}
         onMinimize={props.onMinimize}
-        level={log.level}
+        fatalType={props.fatalType}
       />
     </View>
   );

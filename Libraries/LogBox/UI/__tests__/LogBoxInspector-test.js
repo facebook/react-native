@@ -58,7 +58,6 @@ describe('LogBoxContainer', () => {
         onChangeSelectedIndex={() => {}}
         logs={[]}
         selectedIndex={0}
-        hasFatal={false}
       />,
     );
 
@@ -73,7 +72,6 @@ describe('LogBoxContainer', () => {
         onChangeSelectedIndex={() => {}}
         logs={logs}
         selectedIndex={0}
-        hasFatal={false}
       />,
     );
 
@@ -88,7 +86,7 @@ describe('LogBoxContainer', () => {
         onChangeSelectedIndex={() => {}}
         logs={logs}
         selectedIndex={2}
-        hasFatal={true}
+        fatalType="fatal"
       />,
     );
 

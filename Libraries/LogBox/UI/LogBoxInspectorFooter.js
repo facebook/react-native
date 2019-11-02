@@ -23,11 +23,11 @@ import * as LogBoxStyle from './LogBoxStyle';
 type Props = $ReadOnly<{|
   onDismiss: () => void,
   onMinimize: () => void,
-  level: LogLevel,
+  fatalType?: ?LogLevel,
 |}>;
 
 function LogBoxInspectorFooter(props: Props): React.Node {
-  if (props.level === 'fatal' || props.level === 'syntax') {
+  if (props.fatalType === 'fatal' || props.fatalType === 'syntax') {
     return (
       <View style={styles.root}>
         <LogBoxButton
@@ -42,8 +42,8 @@ function LogBoxInspectorFooter(props: Props): React.Node {
           <View style={[fatalStyles.content]}>
             <Text style={fatalStyles.label}>Reload</Text>
             <Text style={fatalStyles.subtextLabel}>
-              {{fatal: 'Fatal', syntax: 'Syntax'}[props.level]} errors require a
-              full reload
+              {{fatal: 'Fatal', syntax: 'Syntax'}[props.fatalType]} errors
+              require a full reload
             </Text>
           </View>
           <SafeAreaView />

@@ -76,7 +76,7 @@ function LogBoxContainer(props: Props): React.Node {
           onMinimize={handleInspectorMinimize}
           onChangeSelectedIndex={setSelectedLog}
           logs={logs}
-          hasFatal={true}
+          fatalType={logs[fatalIndex].level}
           selectedIndex={fatalIndex}
         />
       </View>
@@ -91,7 +91,7 @@ function LogBoxContainer(props: Props): React.Node {
           onMinimize={handleInspectorMinimize}
           onChangeSelectedIndex={setSelectedLog}
           logs={logs}
-          hasFatal={fatalIndex != null}
+          fatalType={fatalIndex != null ? logs[fatalIndex].level : null}
           selectedIndex={selectedLogIndex}
         />
       </View>

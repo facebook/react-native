@@ -16,12 +16,20 @@ const LogBoxInspectorFooter = require('../LogBoxInspectorFooter').default;
 const render = require('../../../../jest/renderer');
 
 describe('LogBoxInspectorFooter', () => {
-  it('should render two buttons', () => {
+  it('should render two buttons for warning with no fatal', () => {
+    const output = render.shallowRender(
+      <LogBoxInspectorFooter onMinimize={() => {}} onDismiss={() => {}} />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should render fatal for warning with a fatal', () => {
     const output = render.shallowRender(
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
-        level="warn"
+        fatalType="syntax"
       />,
     );
 
@@ -33,7 +41,7 @@ describe('LogBoxInspectorFooter', () => {
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
-        level="fatal"
+        fatalType="fatal"
       />,
     );
 
@@ -45,7 +53,7 @@ describe('LogBoxInspectorFooter', () => {
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
-        level="syntax"
+        fatalType="syntax"
       />,
     );
 

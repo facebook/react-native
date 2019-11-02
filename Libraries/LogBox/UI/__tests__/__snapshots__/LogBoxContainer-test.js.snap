@@ -106,7 +106,7 @@ exports[`LogBoxContainer should render fatal before warn and error 1`] = `
   }
 >
   <LogBoxInspector
-    hasFatal={true}
+    fatalType="fatal"
     logs={
       Array [
         LogBoxLog {
@@ -183,7 +183,7 @@ exports[`LogBoxContainer should render most recent fatal 1`] = `
   }
 >
   <LogBoxInspector
-    hasFatal={true}
+    fatalType="fatal"
     logs={
       Array [
         LogBoxLog {
@@ -243,7 +243,7 @@ exports[`LogBoxContainer should render most recent syntax error 1`] = `
   }
 >
   <LogBoxInspector
-    hasFatal={true}
+    fatalType="syntax"
     logs={
       Array [
         LogBoxLog {
