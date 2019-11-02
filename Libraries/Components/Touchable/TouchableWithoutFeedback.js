@@ -10,7 +10,7 @@
 
 'use strict';
 
-import TouchableWithoutFeedbackInjection from './TouchableWithoutFeedbackInjection';
+import TouchableInjection from './TouchableInjection';
 
 const DeprecatedEdgeInsetsPropType = require('../../DeprecatedPropTypes/DeprecatedEdgeInsetsPropType');
 const React = require('react');
@@ -281,8 +281,8 @@ const TouchableWithoutFeedbackImpl = ((createReactClass({
 }): any): React.ComponentType<Props>);
 
 const TouchableWithoutFeedback: React.ComponentType<Props> =
-  TouchableWithoutFeedbackInjection.unstable_Override == null
+  TouchableInjection.unstable_TouchableWithoutFeedback == null
     ? TouchableWithoutFeedbackImpl
-    : TouchableWithoutFeedbackInjection.unstable_Override;
+    : TouchableInjection.unstable_TouchableWithoutFeedback;
 
 module.exports = TouchableWithoutFeedback;

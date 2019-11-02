@@ -10,6 +10,8 @@
 
 'use strict';
 
+import TouchableInjection from './TouchableInjection';
+
 const DeprecatedColorPropType = require('../../DeprecatedPropTypes/DeprecatedColorPropType');
 const DeprecatedViewPropTypes = require('../../DeprecatedPropTypes/DeprecatedViewPropTypes');
 const NativeMethodsMixin = require('../../Renderer/shims/NativeMethodsMixin');
@@ -160,7 +162,7 @@ export type Props = $ReadOnly<{|
  *
  */
 
-const TouchableHighlight = ((createReactClass({
+const TouchableHighlightImpl = ((createReactClass({
   displayName: 'TouchableHighlight',
   propTypes: {
     /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
@@ -435,5 +437,10 @@ const TouchableHighlight = ((createReactClass({
     );
   },
 }): any): React.ComponentType<Props>);
+
+const TouchableHighlight: React.ComponentType<Props> =
+  TouchableInjection.unstable_TouchableHighlight == null
+    ? TouchableHighlightImpl
+    : TouchableInjection.unstable_TouchableHighlight;
 
 module.exports = TouchableHighlight;

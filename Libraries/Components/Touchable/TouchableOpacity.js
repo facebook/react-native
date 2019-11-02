@@ -10,6 +10,8 @@
 
 'use strict';
 
+import TouchableInjection from './TouchableInjection';
+
 const Animated = require('../../Animated/src/Animated');
 const Easing = require('../../Animated/src/Easing');
 const NativeMethodsMixin = require('../../Renderer/shims/NativeMethodsMixin');
@@ -133,7 +135,7 @@ export type Props = $ReadOnly<{|
  * ```
  *
  */
-const TouchableOpacity = ((createReactClass({
+const TouchableOpacityImpl = ((createReactClass({
   displayName: 'TouchableOpacity',
   mixins: [Touchable.Mixin.withoutDefaultFocusAndBlur, NativeMethodsMixin],
 
@@ -340,5 +342,10 @@ const TouchableOpacity = ((createReactClass({
     );
   },
 }): any): React.ComponentType<Props>);
+
+const TouchableOpacity: React.ComponentType<Props> =
+  TouchableInjection.unstable_TouchableOpacity == null
+    ? TouchableOpacityImpl
+    : TouchableInjection.unstable_TouchableOpacity;
 
 module.exports = TouchableOpacity;
