@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTFPSGraph.h"
+#import <React/RCTFPSGraph.h>
 
 #import <React/RCTAssert.h>
 

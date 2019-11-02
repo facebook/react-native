@@ -41,6 +41,8 @@ Pod::Spec.new do |s|
 
   s.dependency "Folly", folly_version
   s.dependency "FBReactNativeSpec", version
+  s.dependency "RCTTypeSafety", version
+  s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "React-Core/RCTImageHeaders", version
   s.dependency "React-RCTNetwork", version
 end

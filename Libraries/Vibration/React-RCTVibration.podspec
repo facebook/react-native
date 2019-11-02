@@ -38,8 +38,10 @@ Pod::Spec.new do |s|
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Folly\""
                              }
+  s.frameworks             = "AudioToolbox"
 
   s.dependency "Folly", folly_version
   s.dependency "FBReactNativeSpec", version
+  s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "React-Core/RCTVibrationHeaders", version
 end
