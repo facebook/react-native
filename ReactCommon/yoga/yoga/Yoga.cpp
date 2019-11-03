@@ -3645,7 +3645,7 @@ static inline bool YGMeasureModeNewMeasureSizeIsStricterAndStillValid(
       (lastComputedSize <= size || YGFloatsEqual(size, lastComputedSize));
 }
 
-float YGRoundValueToPixelGrid(
+YOGA_EXPORT float YGRoundValueToPixelGrid(
     const float value,
     const float pointScaleFactor,
     const bool forceCeil,
@@ -3696,7 +3696,7 @@ float YGRoundValueToPixelGrid(
       : scaledValue / pointScaleFactor;
 }
 
-bool YGNodeCanUseCachedMeasurement(
+YOGA_EXPORT bool YGNodeCanUseCachedMeasurement(
     const YGMeasureMode widthMode,
     const float width,
     const YGMeasureMode heightMode,
