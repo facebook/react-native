@@ -105,6 +105,7 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
 
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
   bool shouldCollateRemovesAndDeletes_{false};
+  bool collapseDeleteCreateMountingInstructions_{true};
   bool disablePreallocateViews_{false};
 };
 
