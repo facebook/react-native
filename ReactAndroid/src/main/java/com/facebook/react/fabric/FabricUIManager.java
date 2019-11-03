@@ -429,6 +429,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     try {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
+      if (DEBUG) {
+        FLog.d(TAG, "SynchronouslyUpdateViewOnUIThread for tag %d", reactTag);
+      }
       scheduleMountItem(
           updatePropsMountItem(reactTag, props), commitNumber, time, 0, 0, 0, 0, 0, 0);
     } catch (Exception ex) {
