@@ -128,7 +128,11 @@ describe('Animated tests', () => {
       };
       c.UNSAFE_componentWillMount();
 
-      Animated.timing(anim, {toValue: 10, duration: 1000}).start(callback);
+      Animated.timing(anim, {
+        toValue: 10,
+        duration: 1000,
+        useNativeDriver: false,
+      }).start(callback);
       c._component = {};
       c.componentWillUnmount();
 
@@ -139,7 +143,11 @@ describe('Animated tests', () => {
     it('triggers callback when spring is at rest', () => {
       const anim = new Animated.Value(0);
       const callback = jest.fn();
-      Animated.spring(anim, {toValue: 0, velocity: 0}).start(callback);
+      Animated.spring(anim, {
+        toValue: 0,
+        velocity: 0,
+        useNativeDriver: false,
+      }).start(callback);
       expect(callback).toBeCalled();
     });
 
@@ -149,7 +157,7 @@ describe('Animated tests', () => {
       const anim = new Animated.Value(0);
       const listener = jest.fn();
       anim.addListener(listener);
-      Animated.spring(anim, {toValue: 15}).start();
+      Animated.spring(anim, {toValue: 15, useNativeDriver: false}).start();
       jest.runAllTimers();
       const lastValue =
         listener.mock.calls[listener.mock.calls.length - 2][0].value;
@@ -166,6 +174,7 @@ describe('Animated tests', () => {
         stiffness: 8000,
         damping: 2000,
         toValue: 15,
+        useNativeDriver: false,
       }).start();
       jest.runAllTimers();
       const lastValue =
@@ -177,6 +186,21 @@ describe('Animated tests', () => {
 
     it('convert to JSON', () => {
       expect(JSON.stringify(new Animated.Value(10))).toBe('10');
+    });
+
+    it('warns if `useNativeDriver` is missing', () => {
+      jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
+
+      Animated.spring(new Animated.Value(0), {
+        toValue: 0,
+        velocity: 0,
+        // useNativeDriver
+      }).start();
+
+      expect(console.warn).toBeCalledWith(
+        'Animated: `useNativeDriver` was not specified. This is a required option and must be explicitly set to `true` or `false`',
+      );
+      console.warn.mockRestore();
     });
   });
 
@@ -601,14 +625,19 @@ describe('Animated tests', () => {
   describe('Animated Events', () => {
     it('should map events', () => {
       const value = new Animated.Value(0);
-      const handler = Animated.event([null, {state: {foo: value}}]);
+      const handler = Animated.event([null, {state: {foo: value}}], {
+        useNativeDriver: false,
+      });
       handler({bar: 'ignoreBar'}, {state: {baz: 'ignoreBaz', foo: 42}});
       expect(value.__getValue()).toBe(42);
     });
     it('should call listeners', () => {
       const value = new Animated.Value(0);
       const listener = jest.fn();
-      const handler = Animated.event([{foo: value}], {listener});
+      const handler = Animated.event([{foo: value}], {
+        listener,
+        useNativeDriver: false,
+      });
       handler({foo: 42});
       expect(value.__getValue()).toBe(42);
       expect(listener.mock.calls.length).toBe(1);
@@ -617,7 +646,10 @@ describe('Animated tests', () => {
     it('should call forked event listeners, with Animated.event() listener', () => {
       const value = new Animated.Value(0);
       const listener = jest.fn();
-      const handler = Animated.event([{foo: value}], {listener});
+      const handler = Animated.event([{foo: value}], {
+        listener,
+        useNativeDriver: false,
+      });
       const listener2 = jest.fn();
       const forkedHandler = Animated.forkEvent(handler, listener2);
       forkedHandler({foo: 42});
@@ -671,6 +703,7 @@ describe('Animated tests', () => {
       Animated.timing(value, {
         toValue: 100,
         duration: 100,
+        useNativeDriver: false,
       }).start(callback);
       jest.runAllTimers();
 
@@ -686,6 +719,7 @@ describe('Animated tests', () => {
         toValue: 100,
         duration: 100,
         isInteraction: false,
+        useNativeDriver: false,
       }).start(callback);
       jest.runAllTimers();
 
@@ -702,6 +736,7 @@ describe('Animated tests', () => {
       Animated.timing(value2, {
         toValue: value1,
         duration: 0,
+        useNativeDriver: false,
       }).start();
       value1.setValue(42);
       expect(value2.__getValue()).toBe(42);
@@ -718,6 +753,7 @@ describe('Animated tests', () => {
           outputRange: [0, 1],
         }),
         duration: 0,
+        useNativeDriver: false,
       }).start();
       value1.setValue(42);
       expect(value2.__getValue()).toBe(42 / 2);
@@ -729,12 +765,14 @@ describe('Animated tests', () => {
       Animated.timing(value2, {
         toValue: value1,
         duration: 0,
+        useNativeDriver: false,
       }).start();
       value1.setValue(42);
       expect(value2.__getValue()).toBe(42);
       Animated.timing(value2, {
         toValue: 7,
         duration: 0,
+        useNativeDriver: false,
       }).start();
       value1.setValue(1492);
       expect(value2.__getValue()).toBe(7);
@@ -795,6 +833,7 @@ describe('Animated tests', () => {
       Animated.timing(value2, {
         toValue: value1,
         duration: 0,
+        useNativeDriver: false,
       }).start();
       value1.setValue({x: 42, y: 1492});
       expect(value2.__getValue()).toEqual({x: 42, y: 1492});
@@ -812,6 +851,7 @@ describe('Animated tests', () => {
         toValue: value1,
         tension: 3000, // faster spring for faster test
         friction: 60,
+        useNativeDriver: false,
       }).start();
       value1.setValue({x: 1, y: 1});
       jest.runAllTimers();

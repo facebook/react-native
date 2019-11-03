@@ -14,7 +14,10 @@ const TimingAnimation = require('../animations/TimingAnimation');
 
 describe('Timing Animation', () => {
   it('should return array of 61 items', () => {
-    const timingAnim = new TimingAnimation({duration: 1000});
+    const timingAnim = new TimingAnimation({
+      duration: 1000,
+      useNativeDriver: false,
+    });
     const config = timingAnim.__getNativeAnimationConfig();
 
     expect(config.frames.length).toBe(61);
@@ -23,7 +26,10 @@ describe('Timing Animation', () => {
   });
 
   it('should cope with zero duration', () => {
-    const timingAnim = new TimingAnimation({duration: 0});
+    const timingAnim = new TimingAnimation({
+      duration: 0,
+      useNativeDriver: false,
+    });
     const config = timingAnim.__getNativeAnimationConfig();
 
     expect(config.frames.length).toBe(1);
