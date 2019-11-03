@@ -125,25 +125,6 @@ jest
       '../Libraries/Components/ActivityIndicator/ActivityIndicator',
     ),
   )
-  .mock('../Libraries/Animated/src/Animated', () => {
-    const Animated = jest.requireActual('../Libraries/Animated/src/Animated');
-    Animated.Text.__skipSetNativeProps_FOR_TESTS_ONLY = true;
-    Animated.View.__skipSetNativeProps_FOR_TESTS_ONLY = true;
-    return Animated;
-  })
-  .mock('../Libraries/Animated/src/createAnimatedComponent', () => {
-    const createAnimatedComponent = jest.requireActual(
-      '../Libraries/Animated/src/createAnimatedComponent',
-    );
-
-    return Component => {
-      const Wrapped = createAnimatedComponent(Component);
-
-      Wrapped.__skipSetNativeProps_FOR_TESTS_ONLY = true;
-
-      return Wrapped;
-    };
-  })
   .mock('../Libraries/AppState/AppState', () => ({
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),

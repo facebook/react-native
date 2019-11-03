@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Animated tests Animated bypasses \`setNativeProps\` in test environments 1`] = `
+<View
+  style={
+    Object {
+      "opacity": 0,
+    }
+  }
+/>
+`;
+
+exports[`Animated tests Animated bypasses \`setNativeProps\` in test environments 2`] = `
+<View
+  style={
+    Object {
+      "opacity": 1,
+    }
+  }
+/>
+`;

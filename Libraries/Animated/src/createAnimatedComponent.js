@@ -42,8 +42,6 @@ function createAnimatedComponent<Props, Instance>(
     _propsAnimated: AnimatedProps;
     _eventDetachers: Array<Function> = [];
 
-    static __skipSetNativeProps_FOR_TESTS_ONLY = false;
-
     constructor(props: Object) {
       super(props);
     }
@@ -106,7 +104,7 @@ function createAnimatedComponent<Props, Instance>(
         // So a deferred call won't always be invoked.
         this._invokeAnimatedPropsCallbackOnMount = true;
       } else if (
-        AnimatedComponent.__skipSetNativeProps_FOR_TESTS_ONLY ||
+        process.env.NODE_ENV === 'test' ||
         // For animating properties of non-leaf/non-native components
         typeof this._component.setNativeProps !== 'function' ||
         // In Fabric, force animations to go through forceUpdate and skip setNativeProps

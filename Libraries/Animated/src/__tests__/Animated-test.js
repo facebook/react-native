@@ -10,6 +10,9 @@
 
 'use strict';
 
+import TestRenderer from 'react-test-renderer';
+import * as React from 'react';
+
 jest.mock('../../../BatchedBridge/NativeModules', () => ({
   NativeAnimatedModule: {},
   PlatformConstants: {
@@ -186,6 +189,24 @@ describe('Animated tests', () => {
 
     it('convert to JSON', () => {
       expect(JSON.stringify(new Animated.Value(10))).toBe('10');
+    });
+
+    it('bypasses `setNativeProps` in test environments', () => {
+      const opacity = new Animated.Value(0);
+
+      const testRenderer = TestRenderer.create(
+        <Animated.View style={{opacity}} />,
+      );
+
+      expect(testRenderer.toJSON()).toMatchSnapshot();
+
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 0,
+        useNativeDriver: false,
+      }).start();
+
+      expect(testRenderer.toJSON()).toMatchSnapshot();
     });
 
     it('warns if `useNativeDriver` is missing', () => {
