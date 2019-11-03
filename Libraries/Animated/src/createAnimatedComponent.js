@@ -13,7 +13,6 @@
 const {AnimatedEvent} = require('./AnimatedEvent');
 const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('react');
-const DeprecatedViewStylePropTypes = require('../../DeprecatedPropTypes/DeprecatedViewStylePropTypes');
 
 const invariant = require('invariant');
 
@@ -41,33 +40,6 @@ function createAnimatedComponent<Props, Instance>(
     _prevComponent: any;
     _propsAnimated: AnimatedProps;
     _eventDetachers: Array<Function> = [];
-
-    constructor(props: Object) {
-      super(props);
-    }
-
-    componentWillUnmount() {
-      this._propsAnimated && this._propsAnimated.__detach();
-      this._detachNativeEvents();
-    }
-
-    setNativeProps(props) {
-      this._component.setNativeProps(props);
-    }
-
-    UNSAFE_componentWillMount() {
-      this._attachProps(this.props);
-    }
-
-    componentDidMount() {
-      if (this._invokeAnimatedPropsCallbackOnMount) {
-        this._invokeAnimatedPropsCallbackOnMount = false;
-        this._animatedPropsCallback();
-      }
-
-      this._propsAnimated.setNativeView(this._component);
-      this._attachNativeEvents();
-    }
 
     _attachNativeEvents() {
       // Make sure to get the scrollable node for components that implement
@@ -144,18 +116,19 @@ function createAnimatedComponent<Props, Instance>(
       oldPropsAnimated && oldPropsAnimated.__detach();
     }
 
-    UNSAFE_componentWillReceiveProps(newProps) {
-      this._attachProps(newProps);
+    _setComponentRef = c => {
+      this._prevComponent = this._component;
+      this._component = c;
+    };
+
+    // A third party library can use getNode()
+    // to get the node reference of the decorated component
+    getNode() {
+      return this._component;
     }
 
-    componentDidUpdate(prevProps) {
-      if (this._component !== this._prevComponent) {
-        this._propsAnimated.setNativeView(this._component);
-      }
-      if (this._component !== this._prevComponent || prevProps !== this.props) {
-        this._detachNativeEvents();
-        this._attachNativeEvents();
-      }
+    setNativeProps(props) {
+      this._component.setNativeProps(props);
     }
 
     render() {
@@ -175,42 +148,39 @@ function createAnimatedComponent<Props, Instance>(
       );
     }
 
-    _setComponentRef = c => {
-      this._prevComponent = this._component;
-      this._component = c;
-    };
+    UNSAFE_componentWillMount() {
+      this._attachProps(this.props);
+    }
 
-    // A third party library can use getNode()
-    // to get the node reference of the decorated component
-    getNode() {
-      return this._component;
+    componentDidMount() {
+      if (this._invokeAnimatedPropsCallbackOnMount) {
+        this._invokeAnimatedPropsCallbackOnMount = false;
+        this._animatedPropsCallback();
+      }
+
+      this._propsAnimated.setNativeView(this._component);
+      this._attachNativeEvents();
+    }
+
+    UNSAFE_componentWillReceiveProps(newProps) {
+      this._attachProps(newProps);
+    }
+
+    componentDidUpdate(prevProps) {
+      if (this._component !== this._prevComponent) {
+        this._propsAnimated.setNativeView(this._component);
+      }
+      if (this._component !== this._prevComponent || prevProps !== this.props) {
+        this._detachNativeEvents();
+        this._attachNativeEvents();
+      }
+    }
+
+    componentWillUnmount() {
+      this._propsAnimated && this._propsAnimated.__detach();
+      this._detachNativeEvents();
     }
   }
-
-  // $FlowFixMe We don't want people using propTypes so we don't include it in the type
-  const propTypes = Component.propTypes;
-
-  AnimatedComponent.propTypes = {
-    style: function(props, propName, componentName) {
-      if (!propTypes) {
-        return;
-      }
-
-      for (const key in DeprecatedViewStylePropTypes) {
-        if (!propTypes[key] && props[key] !== undefined) {
-          console.warn(
-            'You are setting the style `{ ' +
-              key +
-              ': ... }` as a prop. You ' +
-              'should nest it in a style object. ' +
-              'E.g. `{ style: { ' +
-              key +
-              ': ... } }`',
-          );
-        }
-      }
-    },
-  };
 
   return AnimatedComponent;
 }
