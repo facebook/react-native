@@ -136,8 +136,8 @@ jest
       '../Libraries/Animated/src/createAnimatedComponent',
     );
 
-    return (Component, defaultProps) => {
-      const Wrapped = createAnimatedComponent(Component, defaultProps);
+    return Component => {
+      const Wrapped = createAnimatedComponent(Component);
 
       Wrapped.__skipSetNativeProps_FOR_TESTS_ONLY = true;
 

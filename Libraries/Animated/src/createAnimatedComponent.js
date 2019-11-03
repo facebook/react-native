@@ -27,7 +27,6 @@ export type AnimatedComponentType<Props, Instance> = React.AbstractComponent<
 
 function createAnimatedComponent<Props, Instance>(
   Component: React.AbstractComponent<Props, Instance>,
-  defaultProps: any,
 ): AnimatedComponentType<Props, Instance> {
   invariant(
     typeof Component !== 'function' ||
@@ -165,7 +164,6 @@ function createAnimatedComponent<Props, Instance>(
       const props = this._propsAnimated.__getValue();
       return (
         <Component
-          {...defaultProps}
           {...props}
           ref={this._setComponentRef}
           // The native driver updates views directly through the UI thread so we
