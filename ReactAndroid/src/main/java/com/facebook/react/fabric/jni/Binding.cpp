@@ -11,6 +11,7 @@
 #include "ReactNativeConfigHolder.h"
 #include "StateWrapperImpl.h"
 
+#import <better/set.h>
 #include <fb/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
@@ -572,6 +573,21 @@ void Binding::schedulerDidFinishTransaction(
   auto surfaceId = mountingTransaction->getSurfaceId();
   auto &mutations = mountingTransaction->getMutations();
 
+  facebook::better::set<int> createAndDeleteTagsToProcess;
+  if (collapseDeleteCreateMountingInstructions_) {
+    for (const auto &mutation : mutations) {
+      if (mutation.type == ShadowViewMutation::Delete) {
+        createAndDeleteTagsToProcess.insert(mutation.oldChildShadowView.tag);
+      } else if (mutation.type == ShadowViewMutation::Create) {
+        int tag = mutation.oldChildShadowView.tag;
+        if (createAndDeleteTagsToProcess.find(tag) != createAndDeleteTagsToProcess.end()) {
+          createAndDeleteTagsToProcess.erase(tag);
+        } else {
+          createAndDeleteTagsToProcess.insert(tag);
+        }
+      }
+    }
+  }
   int64_t commitNumber = telemetry.getCommitNumber();
 
   std::vector<local_ref<jobject>> queue;
@@ -591,6 +607,14 @@ void Binding::schedulerDidFinishTransaction(
   for (const auto &mutation : mutations) {
     auto oldChildShadowView = mutation.oldChildShadowView;
     auto newChildShadowView = mutation.newChildShadowView;
+    auto mutationType = mutation.type;
+
+    if (collapseDeleteCreateMountingInstructions_ &&
+        (mutationType == ShadowViewMutation::Create || mutationType == ShadowViewMutation::Delete) &&
+        createAndDeleteTagsToProcess.size() > 0 &&
+        createAndDeleteTagsToProcess.find(mutation.newChildShadowView.tag) == createAndDeleteTagsToProcess.end())  {
+      continue;
+    }
 
     bool isVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
         oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;
