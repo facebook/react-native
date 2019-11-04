@@ -70,6 +70,9 @@ module.exports = {
         jest: true,
         'jest/globals': true,
       },
+      rules: {
+        'react-native/no-inline-styles': 0,
+      },
     },
   ],
 
