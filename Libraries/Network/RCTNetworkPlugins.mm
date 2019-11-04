@@ -19,6 +19,9 @@
 Class RCTNetworkClassProvider(const char *name) {
   static std::unordered_map<std::string, Class (*)(void)> sCoreModuleClassMap = {
     {"Networking", RCTNetworkingCls},
+    {"DataRequestHandler", RCTDataRequestHandlerCls},
+    {"FileRequestHandler", RCTFileRequestHandlerCls},
+    {"HTTPRequestHandler", RCTHTTPRequestHandlerCls},
   };
 
   auto p = sCoreModuleClassMap.find(name);

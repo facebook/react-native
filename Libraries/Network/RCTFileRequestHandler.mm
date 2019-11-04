@@ -10,6 +10,12 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #import <React/RCTUtils.h>
+#import <ReactCommon/RCTTurboModule.h>
+
+#import "RCTNetworkPlugins.h"
+
+@interface RCTFileRequestHandler() <RCTTurboModule>
+@end
 
 @implementation RCTFileRequestHandler
 {
@@ -88,3 +94,7 @@ RCT_EXPORT_MODULE()
 }
 
 @end
+
+Class RCTFileRequestHandlerCls(void) {
+  return RCTFileRequestHandler.class;
+}

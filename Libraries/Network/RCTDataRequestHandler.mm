@@ -6,6 +6,12 @@
  */
 
 #import <React/RCTDataRequestHandler.h>
+#import <ReactCommon/RCTTurboModule.h>
+
+#import "RCTNetworkPlugins.h"
+
+@interface RCTDataRequestHandler() <RCTTurboModule>
+@end
 
 @implementation RCTDataRequestHandler
 {
@@ -71,3 +77,7 @@ RCT_EXPORT_MODULE()
 }
 
 @end
+
+Class RCTDataRequestHandlerCls(void) {
+  return RCTDataRequestHandler.class;
+}

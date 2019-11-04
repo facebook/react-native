@@ -30,6 +30,9 @@ Class RCTNetworkClassProvider(const char *name);
 
 // Lookup functions
 Class RCTNetworkingCls(void) __attribute__((used));
+Class RCTDataRequestHandlerCls(void) __attribute__((used));
+Class RCTFileRequestHandlerCls(void) __attribute__((used));
+Class RCTHTTPRequestHandlerCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }
