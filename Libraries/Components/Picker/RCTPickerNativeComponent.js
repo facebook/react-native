@@ -15,6 +15,8 @@ const requireNativeComponent = require('../../ReactNative/requireNativeComponent
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import * as React from 'react';
 
 type PickerIOSChangeEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -39,8 +41,21 @@ type NativeProps = $ReadOnly<{|
   testID?: ?string,
 |}>;
 
-const RCTPickerNativeComponent: HostComponent<NativeProps> = requireNativeComponent<NativeProps>(
+type ComponentType = HostComponent<NativeProps>;
+
+interface NativeCommands {
+  +setNativeSelectedIndex: (
+    viewRef: React.ElementRef<ComponentType>,
+    index: number,
+  ) => void;
+}
+
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['setNativeSelectedIndex'],
+});
+
+const RCTPickerNativeComponent: ComponentType = requireNativeComponent<NativeProps>(
   'RCTPicker',
 );
 
-module.exports = RCTPickerNativeComponent;
+export default RCTPickerNativeComponent;

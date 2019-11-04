@@ -12,13 +12,15 @@
 
 'use strict';
 
-const RCTPickerNativeComponent = require('./RCTPickerNativeComponent');
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
 
 const processColor = require('../../StyleSheet/processColor');
 
+import RCTPickerNativeComponent, {
+  Commands as PickerCommands,
+} from './RCTPickerNativeComponent';
 import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
@@ -113,14 +115,11 @@ class PickerIOS extends React.Component<Props, State> {
     // This is necessary in case native updates the picker and JS decides
     // that the update should be ignored and we should stick with the value
     // that we have in JS.
-    if (
-      this._picker &&
-      this._picker.setNativeProps &&
-      this._lastNativeValue !== this.state.selectedIndex
-    ) {
-      this._picker.setNativeProps({
-        selectedIndex: this.state.selectedIndex,
-      });
+    if (this._picker && this._lastNativeValue !== this.state.selectedIndex) {
+      PickerCommands.setNativeSelectedIndex(
+        this._picker,
+        this.state.selectedIndex,
+      );
     }
   }
 
