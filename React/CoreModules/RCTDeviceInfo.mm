@@ -112,19 +112,6 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
   };
 }
 
-- (void)dealloc
-{
-  [NSNotificationCenter.defaultCenter removeObserver:self];
-}
-
-- (void)invalidate
-{
-  RCTExecuteOnMainQueue(^{
-    self->_bridge = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-  });
-}
-
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
   return [self getConstants];

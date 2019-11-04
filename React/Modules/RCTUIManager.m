@@ -88,11 +88,6 @@ RCT_EXPORT_MODULE()
   return NO;
 }
 
-- (void)dealloc
-{
-  [NSNotificationCenter.defaultCenter removeObserver:self];
-}
-
 - (void)invalidate
 {
   /**
@@ -339,9 +334,9 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   if (name) {
     return name;
   }
-  
+
   UIView *view = _viewRegistry[reactTag];
-  
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
 

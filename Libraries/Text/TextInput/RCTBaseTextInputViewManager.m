@@ -95,11 +95,6 @@ RCT_EXPORT_SHADOW_PROPERTY(onContentSizeChange, RCTBubblingEventBlock)
                                                     lazilyLoadIfNecessary:YES]];
 }
 
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 #pragma mark - RCTUIManagerObserver
 
 - (void)uiManagerWillPerformMounting:(__unused RCTUIManager *)uiManager

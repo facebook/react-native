@@ -62,11 +62,6 @@ RCT_EXPORT_MODULE()
   }
 }
 
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 @end
 
 @interface RCTModuleInitNotificationRaceTests : XCTestCase <RCTBridgeDelegate>

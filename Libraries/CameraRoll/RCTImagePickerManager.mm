@@ -59,11 +59,6 @@ RCT_EXPORT_MODULE(ImagePickerIOS);
   return NO;
 }
 
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:@"AVCaptureDeviceDidStartRunningNotification" object:nil];
-}
-
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();

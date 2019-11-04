@@ -92,7 +92,6 @@ static RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
 - (void)dealloc
 {
   [_surfacePresenter suspend];
-  [self _removeBridgeObservers:_bridge];
 }
 
 - (RCTBridge *)bridge

@@ -103,11 +103,6 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
   return self;
 }
 
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)

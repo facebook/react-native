@@ -34,11 +34,6 @@ RCT_EXPORT_MODULE()
   isEnabled = enabled;
 }
 
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 + (BOOL)requiresMainQueueSetup
 {
   return YES;

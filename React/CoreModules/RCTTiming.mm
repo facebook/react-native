@@ -160,7 +160,6 @@ RCT_EXPORT_MODULE()
 {
   [self markEndOfBackgroundTaskIfNeeded];
   [_sleepTimer invalidate];
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)markStartOfBackgroundTaskIfNeeded

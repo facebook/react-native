@@ -106,7 +106,6 @@
 - (void)dealloc
 {
   [self _stop];
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Immutable Properties (no need to enforce synchronization)

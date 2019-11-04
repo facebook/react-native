@@ -50,11 +50,6 @@ RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
                                                     lazilyLoadIfNecessary:YES]];
 }
 
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (UIView *)view
 {
   return [RCTTextView new];

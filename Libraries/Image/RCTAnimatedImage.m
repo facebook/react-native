@@ -164,7 +164,6 @@
     CFRelease(_imageSource);
     _imageSource = NULL;
   }
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
 }
 
 @end

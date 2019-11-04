@@ -157,9 +157,7 @@ RCT_EXPORT_MODULE()
 {
   _presentedItems = nil;
   [_actionSheet dismissViewControllerAnimated:YES
-                                   completion:^(void){
-                                   }];
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+                                   completion:^(void){}];
 }
 
 - (void)showOnShake
@@ -425,7 +423,7 @@ RCT_EXPORT_METHOD(show)
 
   _presentedItems = items;
   [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
-  
+
   [_bridge enqueueJSCall:@"RCTNativeAppEventEmitter"
                   method:@"emit"
                     args:@[@"RCTDevMenuShown"]

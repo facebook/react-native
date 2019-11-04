@@ -210,7 +210,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
     _stackTraceTableView.dataSource = nil;
     _stackTraceTableView.delegate = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (NSString *)stripAnsi:(NSString *)text

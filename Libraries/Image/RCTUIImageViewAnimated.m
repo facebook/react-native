@@ -311,7 +311,6 @@ static NSUInteger RCTDeviceFreeMemory() {
   // Removes the display link from all run loop modes.
   [_displayLink invalidate];
   _displayLink = nil;
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning:(NSNotification *)notification

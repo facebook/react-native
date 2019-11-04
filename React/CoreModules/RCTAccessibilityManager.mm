@@ -94,11 +94,6 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)didReceiveNewContentSizeCategory:(NSNotification *)note
 {
   self.contentSizeCategory = note.userInfo[UIContentSizeCategoryNewValueKey];

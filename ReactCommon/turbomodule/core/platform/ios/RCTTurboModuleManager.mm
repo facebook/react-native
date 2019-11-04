@@ -118,11 +118,6 @@ static Class getFallbackClassFromName(const char *name)
   return self;
 }
 
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)notifyAboutTurboModuleSetup:(const char *)name
 {
   NSString *moduleName = [[NSString alloc] initWithUTF8String:name];
