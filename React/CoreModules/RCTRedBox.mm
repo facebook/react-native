@@ -7,31 +7,21 @@
 
 #import "RCTRedBox.h"
 
-#import "RCTBridge.h"
-#import "RCTConvert.h"
-#import "RCTDefines.h"
-#import "RCTErrorInfo.h"
-#import "RCTEventDispatcher.h"
-#import "RCTJSStackFrame.h"
-#import "RCTRedBoxExtraDataViewController.h"
-#import "RCTReloadCommand.h"
-#import "RCTUtils.h"
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTDefines.h>
+#import <React/RCTErrorInfo.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTJSStackFrame.h>
+#import <React/RCTRedBoxExtraDataViewController.h>
+#import <React/RCTRedBoxSetEnabled.h>
+#import <React/RCTReloadCommand.h>
+#import <React/RCTUtils.h>
 
 #import <objc/runtime.h>
 
-#if RCT_DEV
-static BOOL redBoxEnabled = YES;
-#else
-static BOOL redBoxEnabled = NO;
-#endif
-
-void RCTRedBoxSetEnabled(BOOL enabled) {
-  redBoxEnabled = enabled;
-}
-
-BOOL RCTRedBoxGetEnabled() {
-  return redBoxEnabled;
-}
+#import "CoreModulesPlugins.h"
 
 #if RCT_DEV_MENU
 
@@ -441,7 +431,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 @end
 
-@interface RCTRedBox () <RCTInvalidating, RCTRedBoxWindowActionDelegate, RCTRedBoxExtraDataActionDelegate>
+@interface RCTRedBox () <RCTInvalidating, RCTRedBoxWindowActionDelegate, RCTRedBoxExtraDataActionDelegate, NativeRedBoxSpec>
 @end
 
 @implementation RCTRedBox
@@ -662,18 +652,26 @@ RCT_EXPORT_METHOD(dismiss)
   [_customButtonHandlers addObject:handler];
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(self, jsInvoker);
+}
+
 @end
 
 @implementation RCTBridge (RCTRedBox)
 
 - (RCTRedBox *)redBox
 {
-  return redBoxEnabled ? [self moduleForClass:[RCTRedBox class]] : nil;
+  return RCTRedBoxGetEnabled() ? [self moduleForClass:[RCTRedBox class]] : nil;
 }
 
 @end
 
 #else // Disabled
+
+@interface RCTRedBox() <NativeRedBoxSpec>
+@end
 
 @implementation RCTRedBox
 
@@ -692,10 +690,15 @@ RCT_EXPORT_METHOD(dismiss)
 - (void)updateErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack {}
 - (void)showErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack errorCookie:(int)errorCookie {}
 - (void)updateErrorMessage:(NSString *)message withParsedStack:(NSArray<RCTJSStackFrame *> *)stack errorCookie:(int)errorCookie {}
+- (void)setExtraData:(NSDictionary *)extraData forIdentifier:(NSString *)identifier {}
 
 - (void)dismiss {}
 
 - (void)addCustomButton:(NSString *)title onPressHandler:(RCTRedBoxButtonPressHandler)handler {}
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeRedBoxSpecJSI>(self, jsInvoker);
+}
 
 @end
 
@@ -706,3 +709,7 @@ RCT_EXPORT_METHOD(dismiss)
 @end
 
 #endif
+
+Class RCTRedBoxCls(void) {
+  return RCTRedBox.class;
+}

@@ -36,6 +36,7 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"PerfMonitor", RCTPerfMonitorCls},
     {"DevMenu", RCTDevMenuCls},
     {"DevSettings", RCTDevSettingsCls},
+    {"RedBox", RCTRedBoxCls},
   };
 
   auto p = sCoreModuleClassMap.find(name);

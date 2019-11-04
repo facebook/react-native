@@ -1990,7 +1990,7 @@ namespace facebook {
 @protocol NativeRedBoxSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)setExtraData:(NSDictionary *)extraData
-          identifier:(NSString *)identifier;
+       forIdentifier:(NSString *)forIdentifier;
 - (void)dismiss;
 
 @end

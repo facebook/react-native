@@ -9,11 +9,13 @@
 
 #include <cxxabi.h>
 
+#import <objc/message.h>
+
+#import "RCTRedBoxSetEnabled.h"
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
 #import "RCTDefines.h"
-#import "RCTRedBox.h"
 #import "RCTUtils.h"
 
 static NSString *const RCTLogFunctionStack = @"RCTLogFunctionStack";
@@ -169,7 +171,7 @@ NSString *RCTFormatLogLevel(RCTLogLevel level)
                                     @(RCTLogLevelWarning) : @"warning",
                                     @(RCTLogLevelFatal)   : @"fatal",
                                     @(RCTLogLevelError)   : @"error"};
-    
+
     return levelsToString[@(level)];
 }
 
@@ -177,7 +179,7 @@ NSString *RCTFormatLogSource(RCTLogSource source)
 {
     NSDictionary *sourcesToString = @{@(RCTLogSourceNative) : @"native",
                                      @(RCTLogSourceJavaScript)    : @"js"};
-    
+
     return sourcesToString[@(source)];
 }
 
@@ -246,10 +248,18 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
       dispatch_async(dispatch_get_main_queue(), ^{
         // red box is thread safe, but by deferring to main queue we avoid a startup
         // race condition that causes the module to be accessed before it has loaded
-        [[RCTBridge currentBridge].redBox showErrorMessage:message withStack:stack];
+        id redbox = [[RCTBridge currentBridge] moduleForName:@"RedBox" lazilyLoadIfNecessary:YES];
+        if (redbox) {
+          void (*showErrorMessage)(id, SEL, NSString *, NSMutableArray<NSDictionary *> *) = (__typeof__(showErrorMessage))objc_msgSend;
+          SEL showErrorMessageSEL = NSSelectorFromString(@"showErrorMessage:withStack:");
+
+          if ([redbox respondsToSelector:showErrorMessageSEL]) {
+            showErrorMessage(redbox, showErrorMessageSEL, message, stack);
+          }
+        }
       });
     }
-    
+
 #if RCT_DEBUG
     if (!RCTRunningInTestEnvironment()) {
       // Log to JS executor
