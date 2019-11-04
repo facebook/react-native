@@ -373,18 +373,22 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
 
   @ReactMethod
   public void disconnectAnimatedNodeFromView(final int animatedNodeTag, final int viewTag) {
-    mPreOperations.add(
-        new UIThreadOperation() {
-          @Override
-          public void execute(NativeAnimatedNodesManager animatedNodesManager) {
-            animatedNodesManager.restoreDefaultValues(animatedNodeTag, viewTag);
-          }
-        });
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
             animatedNodesManager.disconnectAnimatedNodeFromView(animatedNodeTag, viewTag);
+          }
+        });
+  }
+
+  @ReactMethod
+  public void restoreDefaultValues(final int animatedNodeTag) {
+    mPreOperations.add(
+        new UIThreadOperation() {
+          @Override
+          public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            animatedNodesManager.restoreDefaultValues(animatedNodeTag);
           }
         });
   }

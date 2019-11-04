@@ -281,6 +281,10 @@ namespace facebook {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "disconnectAnimatedNodeFromView", @selector(disconnectAnimatedNodeFromView:viewTag:), args, count);
     }
 
+    static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_restoreDefaultValues(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "restoreDefaultValues", @selector(restoreDefaultValues:), args, count);
+    }
+
     static facebook::jsi::Value __hostFunction_NativeAnimatedModuleSpecJSI_dropAnimatedNode(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "dropAnimatedNode", @selector(dropAnimatedNode:), args, count);
     }
@@ -342,6 +346,9 @@ namespace facebook {
         
         
         methodMap_["disconnectAnimatedNodeFromView"] = MethodMetadata {2, __hostFunction_NativeAnimatedModuleSpecJSI_disconnectAnimatedNodeFromView};
+        
+        
+        methodMap_["restoreDefaultValues"] = MethodMetadata {1, __hostFunction_NativeAnimatedModuleSpecJSI_restoreDefaultValues};
         
         
         methodMap_["dropAnimatedNode"] = MethodMetadata {1, __hostFunction_NativeAnimatedModuleSpecJSI_dropAnimatedNode};

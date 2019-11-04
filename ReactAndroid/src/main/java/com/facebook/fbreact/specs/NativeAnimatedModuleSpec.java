@@ -60,6 +60,9 @@ public abstract class NativeAnimatedModuleSpec extends ReactContextBaseJavaModul
   public abstract void setAnimatedNodeOffset(double nodeTag, double offset);
 
   @ReactMethod
+  public abstract void restoreDefaultValues(double nodeTag);
+
+  @ReactMethod
   public abstract void startAnimatingNode(double animationId, double nodeTag, ReadableMap config,
       Callback endCallback);
 

@@ -290,6 +290,7 @@ namespace JS {
                           viewTag:(double)viewTag;
 - (void)disconnectAnimatedNodeFromView:(double)nodeTag
                                viewTag:(double)viewTag;
+- (void)restoreDefaultValues:(double)nodeTag;
 - (void)dropAnimatedNode:(double)tag;
 - (void)addAnimatedEventToView:(double)viewTag
                      eventName:(NSString *)eventName
