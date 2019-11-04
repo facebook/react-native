@@ -97,7 +97,6 @@ static const NSTimeInterval kIdleCallbackFrameDeadline = 0.001;
   NSTimer *_sleepTimer;
   BOOL _sendIdleEvents;
   BOOL _inBackground;
-  UIBackgroundTaskIdentifier _backgroundTaskIdentifier;
 }
 
 @synthesize bridge = _bridge;
@@ -113,7 +112,6 @@ RCT_EXPORT_MODULE()
   _paused = YES;
   _timers = [NSMutableDictionary new];
   _inBackground = NO;
-  _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
 
   for (NSString *name in @[UIApplicationWillResignActiveNotification,
                            UIApplicationDidEnterBackgroundNotification,
@@ -137,33 +135,8 @@ RCT_EXPORT_MODULE()
 
 - (void)dealloc
 {
-  [self markEndOfBackgroundTaskIfNeeded];
   [_sleepTimer invalidate];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)markStartOfBackgroundTaskIfNeeded
-{
-  if (_backgroundTaskIdentifier == UIBackgroundTaskInvalid) {
-    __weak typeof(self) weakSelf = self;
-    // Marks the beginning of a new long-running background task. We can run the timer in the background.
-    _backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"rct.timing.gb.task" expirationHandler:^{
-      typeof(self) strongSelf = weakSelf;
-      if (!strongSelf) {
-        return;
-      }
-      // Mark the end of background task
-      [strongSelf markEndOfBackgroundTaskIfNeeded];
-    }];
-  }
-}
-
-- (void)markEndOfBackgroundTaskIfNeeded
-{
-  if (_backgroundTaskIdentifier != UIBackgroundTaskInvalid) {
-    [[UIApplication sharedApplication] endBackgroundTask:_backgroundTaskIdentifier];
-    _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
-  }
 }
 
 - (dispatch_queue_t)methodQueue
@@ -190,7 +163,6 @@ RCT_EXPORT_MODULE()
 
 - (void)appDidMoveToForeground
 {
-  [self markEndOfBackgroundTaskIfNeeded];
   _inBackground = NO;
   [self startTimers];
 }
@@ -288,7 +260,6 @@ RCT_EXPORT_MODULE()
   }
   if (_inBackground) {
     if (timerCount) {
-      [self markStartOfBackgroundTaskIfNeeded];
       [self scheduleSleepTimer:nextScheduledTarget];
     }
   } else if (!_sendIdleEvents && timersToCall.count == 0) {
@@ -367,7 +338,6 @@ RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
   }
 
   if (_inBackground) {
-    [self markStartOfBackgroundTaskIfNeeded];
     [self scheduleSleepTimer:timer.target];
   } else if (_paused) {
     if ([timer.target timeIntervalSinceNow] > kMinimumSleepInterval) {
