@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -13,7 +13,6 @@
 const Platform = require('../../Utilities/Platform');
 import SliderNativeComponent from './SliderNativeComponent';
 const React = require('react');
-const ReactNative = require('../../Renderer/shims/ReactNative');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 
 import type {ImageSource} from '../../Image/ImageSource';
@@ -204,7 +203,16 @@ const Slider = (
     props.style,
   );
 
-  const {onValueChange, onSlidingComplete, ...localProps} = props;
+  const {
+    disabled = false,
+    value = 0.5,
+    minimumValue = 0,
+    maximumValue = 1,
+    step = 0,
+    onValueChange,
+    onSlidingComplete,
+    ...localProps
+  } = props;
 
   const onValueChangeEvent = onValueChange
     ? (event: Event) => {
@@ -229,14 +237,18 @@ const Slider = (
   return (
     <SliderNativeComponent
       {...localProps}
-      ref={forwardedRef}
-      style={style}
+      enabled={!disabled}
+      maximumValue={maximumValue}
+      minimumValue={minimumValue}
       onChange={onChangeEvent}
-      onSlidingComplete={onSlidingCompleteEvent}
-      onValueChange={onValueChangeEvent}
-      enabled={!props.disabled}
-      onStartShouldSetResponder={() => true}
       onResponderTerminationRequest={() => false}
+      onSlidingComplete={onSlidingCompleteEvent}
+      onStartShouldSetResponder={() => true}
+      onValueChange={onValueChangeEvent}
+      ref={forwardedRef}
+      step={step}
+      style={style}
+      value={value}
     />
   );
 };
@@ -245,15 +257,6 @@ const SliderWithRef: React.AbstractComponent<
   Props,
   React.ElementRef<typeof SliderNativeComponent>,
 > = React.forwardRef(Slider);
-
-// $FlowFixMe
-SliderWithRef.defaultProps = {
-  disabled: false,
-  value: 0,
-  minimumValue: 0,
-  maximumValue: 1,
-  step: 0,
-};
 
 let styles;
 if (Platform.OS === 'ios') {
