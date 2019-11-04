@@ -7,7 +7,7 @@
 
 import org.apache.tools.ant.taskdefs.condition.Os
 
-def config = project.hasProperty("react") ? project.react : [];
+def config = project.hasProperty("react") ? project.react : [:];
 
 def detectEntryFile(config) {
     if (System.getenv('ENTRY_FILE')) {
