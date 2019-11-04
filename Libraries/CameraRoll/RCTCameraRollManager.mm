@@ -69,6 +69,9 @@ RCT_ENUM_CONVERTER(PHAssetCollectionSubtype, (@{
 
 @end
 
+@interface RCTCameraRollManager() <NativeCameraRollManagerSpec>
+@end
+
 @implementation RCTCameraRollManager
 
 RCT_EXPORT_MODULE()
@@ -181,18 +184,18 @@ static void RCTResolvePromise(RCTPromiseResolveBlock resolve,
   });
 }
 
-RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
+RCT_EXPORT_METHOD(getPhotos:(JS::NativeCameraRollManager::GetPhotosParams &)params
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
   checkPhotoLibraryConfig();
 
-  NSUInteger const first = [RCTConvert NSInteger:params[@"first"]];
-  NSString *const afterCursor = [RCTConvert NSString:params[@"after"]];
-  NSString *const groupName = [RCTConvert NSString:params[@"groupName"]];
-  NSString *const groupTypes = [[RCTConvert NSString:params[@"groupTypes"]] lowercaseString];
-  NSString *const mediaType = [RCTConvert NSString:params[@"assetType"]];
-  NSArray<NSString *> *const mimeTypes = [RCTConvert NSStringArray:params[@"mimeTypes"]];
+  NSUInteger const first = [RCTConvert NSInteger:[NSNumber numberWithDouble:params.first()]];
+  NSString *const afterCursor = [RCTConvert NSString:params.after()];
+  NSString *const groupName = [RCTConvert NSString:params.groupName()];
+  NSString *const groupTypes = [[RCTConvert NSString:params.groupTypes()] lowercaseString];
+  NSString *const mediaType = [RCTConvert NSString:params.assetType()];
+  NSArray<NSString *> *const mimeTypes = [RCTConvert NSStringArray:RCTConvertOptionalVecToArray(params.mimeTypes())];
 
   // If groupTypes is "all", we want to fetch the SmartAlbum "all photos". Otherwise, all
   // other groupTypes values require the "album" collection type.
@@ -344,6 +347,11 @@ static void checkPhotoLibraryConfig()
     RCTLogError(@"NSPhotoLibraryUsageDescription key must be present in Info.plist to use camera roll.");
   }
 #endif
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeCameraRollManagerSpecJSI>(self, jsInvoker);
 }
 
 @end
