@@ -948,9 +948,6 @@ const TextInput = createReactClass({
           </Text>
         );
       }
-      if (props.inputView) {
-        children = [children, props.inputView];
-      }
       props.style.unshift(styles.multilineInput);
       textContainer = (
         <RCTMultilineTextInputView
