@@ -40,6 +40,12 @@ NSArray *RCTConvertOptionalVecToArray(const folly::Optional<ContainerT> &vec, id
   return vec.hasValue() ? RCTConvertVecToArray(vec.value(), convertor) : nil;
 }
 
+template<typename ContainerT>
+NSArray *RCTConvertOptionalVecToArray(const folly::Optional<ContainerT> &vec)
+{
+  return vec.hasValue() ? RCTConvertVecToArray(vec.value(), ^id(typename ContainerT::value_type element) { return element; }) : nil;
+}
+
 bool RCTBridgingToBool(id value);
 folly::Optional<bool> RCTBridgingToOptionalBool(id value);
 NSString *RCTBridgingToString(id value);
