@@ -241,11 +241,12 @@ const Slider = (
   );
 };
 
-const SliderWithRef = React.forwardRef(Slider);
+const SliderWithRef: React.AbstractComponent<
+  Props,
+  React.ElementRef<typeof SliderNativeComponent>,
+> = React.forwardRef(Slider);
 
-/* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.89 was deployed. To see the error, delete this comment
- * and run Flow. */
+// $FlowFixMe
 SliderWithRef.defaultProps = {
   disabled: false,
   value: 0,
@@ -267,7 +268,4 @@ if (Platform.OS === 'ios') {
   });
 }
 
-/* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.89 was deployed. To see the error, delete this comment
- * and run Flow. */
-module.exports = (SliderWithRef: Class<ReactNative.NativeComponent<Props>>);
+module.exports = SliderWithRef;
