@@ -178,6 +178,7 @@ RCT_EXPORT_METHOD(addImageFromBase64:(NSString *)base64String
                                                         MIMEType:MIMEType
                                            expectedContentLength:imageData.length
                                                 textEncodingName:nil];
+    CFRelease(UTI);
 
     [delegate URLRequest:cancellationBlock didReceiveResponse:response];
     [delegate URLRequest:cancellationBlock didReceiveData:imageData];
