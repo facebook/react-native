@@ -43,6 +43,7 @@ exports.examples = [
               _scrollView = scrollView;
             }}
             automaticallyAdjustContentInsets={false}
+            scrollIndicatorInsets={{top: 50, bottom: 50}}
             onScroll={() => {
               console.log('onScroll!');
             }}
@@ -89,6 +90,7 @@ exports.examples = [
               ref={scrollView => {
                 _scrollView = scrollView;
               }}
+              scrollIndicatorInsets={{left: 50, right: 50}}
               automaticallyAdjustContentInsets={false}
               horizontal={true}
               style={[styles.scrollView, styles.horizontalScrollView]}>
