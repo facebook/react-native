@@ -46,6 +46,7 @@ describe('Native Animated', () => {
       extractAnimatedNodeOffset: jest.fn(),
       flattenAnimatedNodeOffset: jest.fn(),
       removeAnimatedEventFromView: jest.fn(),
+      restoreDefaultValues: jest.fn(),
       setAnimatedNodeOffset: jest.fn(),
       setAnimatedNodeValue: jest.fn(),
       startAnimatingNode: jest.fn(),
@@ -835,6 +836,27 @@ describe('Native Animated', () => {
 
       animation.stop();
       expect(NativeAnimatedModule.stopAnimation).toBeCalledWith(animationId);
+    });
+  });
+
+  describe('Animated Components', () => {
+    it('Should restore default values on prop updates only', () => {
+      const opacity = new Animated.Value(0);
+      opacity.__makeNative();
+
+      const root = TestRenderer.create(<Animated.View style={{opacity}} />);
+      expect(NativeAnimatedModule.restoreDefaultValues).not.toHaveBeenCalled();
+
+      root.update(<Animated.View style={{opacity}} />);
+      expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledWith(
+        expect.any(Number),
+      );
+
+      root.unmount();
+      // Make sure it doesn't get called on unmount.
+      expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
+        1,
+      );
     });
   });
 });
