@@ -45,6 +45,8 @@ Class RCTStatusBarManagerCls(void) __attribute__((used));
 Class RCTKeyboardObserverCls(void) __attribute__((used));
 Class RCTAppStateCls(void) __attribute__((used));
 Class RCTPerfMonitorCls(void) __attribute__((used));
+Class RCTDevMenuCls(void) __attribute__((used));
+Class RCTDevSettingsCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }

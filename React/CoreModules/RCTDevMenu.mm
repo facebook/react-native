@@ -7,6 +7,7 @@
 
 #import <React/RCTDevMenu.h>
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
@@ -15,6 +16,8 @@
 #import <React/RCTLog.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
+
+#import "CoreModulesPlugins.h"
 
 #if RCT_DEV_MENU
 
@@ -84,7 +87,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 
-@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating>
+@interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, NativeDevMenuSpec>
 
 @end
 
@@ -229,7 +232,7 @@ RCT_EXPORT_MODULE()
                                           [UIAlertController alertControllerWithTitle:@"Debugger Unavailable"
                                                                               message:message
                                                                        preferredStyle:UIAlertControllerStyleAlert];
-                                      __weak typeof(alertController) weakAlertController = alertController;
+                                      __weak __typeof__(alertController) weakAlertController = alertController;
                                       [alertController
                                           addAction:[UIAlertAction actionWithTitle:@"OK"
                                                                              style:UIAlertActionStyleDefault
@@ -301,7 +304,7 @@ RCT_EXPORT_MODULE()
                                  [UIAlertController alertControllerWithTitle:@"Systrace Unavailable"
                                                                      message:@"Stop debugging to enable Systrace."
                                                               preferredStyle:UIAlertControllerStyleAlert];
-                             __weak typeof(alertController) weakAlertController = alertController;
+                             __weak __typeof__(alertController) weakAlertController = alertController;
                              [alertController
                                  addAction:[UIAlertAction actionWithTitle:@"OK"
                                                                     style:UIAlertActionStyleDefault
@@ -490,9 +493,17 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
   return _bridge.devSettings.isHotLoadingEnabled;
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker);
+}
+
 @end
 
 #else // Unavailable when not in dev mode
+
+@interface RCTDevMenu() <NativeDevMenuSpec>
+@end
 
 @implementation RCTDevMenu
 
@@ -508,13 +519,23 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 - (void)addItem:(RCTDevMenu *)item
 {
 }
+
+- (void)debugRemotely : (BOOL)enableDebug
+{
+}
+
 - (BOOL)isActionSheetShown
 {
   return NO;
 }
 + (NSString *)moduleName
 {
-  return @"";
+  return @"DevMenu";
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeDevMenuSpecJSI>(self, jsInvoker);
 }
 
 @end
@@ -546,3 +567,7 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 }
 
 @end
+
+Class RCTDevMenuCls(void) {
+  return RCTDevMenu.class;
+}

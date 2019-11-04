@@ -237,6 +237,7 @@ PODS:
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTTest (1000.0.0):
     - React-Core (= 1000.0.0)
+    - React-CoreModules (= 1000.0.0)
   - React-RCTText (1000.0.0):
     - React-Core/RCTTextHeaders (= 1000.0.0)
   - React-RCTVibration (1000.0.0):
@@ -389,7 +390,7 @@ SPEC CHECKSUMS:
   React-RCTNetwork: c8f9d40297f35ea3792ea81866f33e8b45c25935
   React-RCTPushNotification: acffa8af6a20e6d41b041a8c4cb4bea0de9df0dd
   React-RCTSettings: 8138286da8de74839cb436dd37704ed64d4bfe78
-  React-RCTTest: 73df09ec226fcad6e7e058a313e5dd16cccf86a8
+  React-RCTTest: d148e0657ce77ffd43a10325c284f47f25fb0532
   React-RCTText: 9078167d3bc011162326f2d8ef4dd580ec1eca17
   React-RCTVibration: e3269787c533de8c4f54f489202d848fdef33e1d
   ReactCommon: 9d212865526209dc2d01be40340c8d27b53e6bea

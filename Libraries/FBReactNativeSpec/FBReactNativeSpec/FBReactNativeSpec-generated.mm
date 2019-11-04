@@ -774,6 +774,54 @@ namespace facebook {
   namespace react {
 
     
+    static facebook::jsi::Value __hostFunction_NativeDevMenuSpecJSI_show(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "show", @selector(show), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeDevMenuSpecJSI_reload(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "reload", @selector(reload), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeDevMenuSpecJSI_debugRemotely(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "debugRemotely", @selector(debugRemotely:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeDevMenuSpecJSI_setProfilingEnabled(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setProfilingEnabled", @selector(setProfilingEnabled:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeDevMenuSpecJSI_setHotLoadingEnabled(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "setHotLoadingEnabled", @selector(setHotLoadingEnabled:), args, count);
+    }
+
+
+    NativeDevMenuSpecJSI::NativeDevMenuSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
+      : ObjCTurboModule("DevMenu", instance, jsInvoker) {
+        
+        methodMap_["show"] = MethodMetadata {0, __hostFunction_NativeDevMenuSpecJSI_show};
+        
+        
+        methodMap_["reload"] = MethodMetadata {0, __hostFunction_NativeDevMenuSpecJSI_reload};
+        
+        
+        methodMap_["debugRemotely"] = MethodMetadata {1, __hostFunction_NativeDevMenuSpecJSI_debugRemotely};
+        
+        
+        methodMap_["setProfilingEnabled"] = MethodMetadata {1, __hostFunction_NativeDevMenuSpecJSI_setProfilingEnabled};
+        
+        
+        methodMap_["setHotLoadingEnabled"] = MethodMetadata {1, __hostFunction_NativeDevMenuSpecJSI_setHotLoadingEnabled};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
     static facebook::jsi::Value __hostFunction_NativeDevSettingsSpecJSI_reload(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "reload", @selector(reload), args, count);
     }

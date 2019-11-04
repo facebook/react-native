@@ -9,15 +9,18 @@
 
 #import <objc/runtime.h>
 
-#import "RCTBridge+Private.h"
-#import "RCTBridgeModule.h"
-#import "RCTEventDispatcher.h"
-#import "RCTLog.h"
-#import "RCTProfile.h"
-#import "RCTReloadCommand.h"
-#import "RCTUtils.h"
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import <React/RCTBridge+Private.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTLog.h>
+#import <React/RCTProfile.h>
+#import <React/RCTReloadCommand.h>
+#import <React/RCTUtils.h>
 
 #import <React/RCTDevMenu.h>
+
+#import "CoreModulesPlugins.h"
 
 static NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
 static NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
@@ -30,12 +33,12 @@ static NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
 static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 #if ENABLE_PACKAGER_CONNECTION
-#import "RCTPackagerClient.h"
-#import "RCTPackagerConnection.h"
+#import <React/RCTPackagerClient.h>
+#import <React/RCTPackagerConnection.h>
 #endif
 
 #if RCT_ENABLE_INSPECTOR
-#import "RCTInspectorDevServerHelper.h"
+#import <React/RCTInspectorDevServerHelper.h>
 #endif
 
 #if RCT_DEV
@@ -110,7 +113,7 @@ void RCTDevSettingsSetEnabled(BOOL enabled) {
 
 @end
 
-@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating> {
+@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec> {
   BOOL _isJSLoaded;
 #if ENABLE_PACKAGER_CONNECTION
   RCTHandlerToken _reloadToken;
@@ -437,9 +440,17 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
   });
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker);
+}
+
 @end
 
 #else // #if RCT_DEV
+
+@interface RCTDevSettings () <NativeDevSettingsSpec>
+@end
 
 @implementation RCTDevSettings
 
@@ -462,11 +473,34 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 - (void)reload
 {
 }
-- (void)reloadWithReason
+- (void)reloadWithReason:(NSString *)reason
+{
+}
+- (void)onFastRefresh
+{
+}
+- (void)setHotLoadingEnabled:(BOOL)isHotLoadingEnabled
+{
+}
+- (void)setIsDebuggingRemotely:(BOOL)isDebuggingRemotelyEnabled
+{
+}
+- (void)setProfilingEnabled:(BOOL)isProfilingEnabled
 {
 }
 - (void)toggleElementInspector
 {
+}
+- (void)addMenuItem:(NSString *)title
+{
+}
+- (void)setIsShakeToShowDevMenuEnabled:(BOOL)enabled
+{
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker);
 }
 
 @end
@@ -485,3 +519,7 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 }
 
 @end
+
+Class RCTDevSettingsCls(void) {
+  return RCTDevSettings.class;
+}

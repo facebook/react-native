@@ -705,6 +705,28 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
+@protocol NativeDevMenuSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)show;
+- (void)reload;
+- (void)debugRemotely:(BOOL)enableDebug;
+- (void)setProfilingEnabled:(BOOL)enabled;
+- (void)setHotLoadingEnabled:(BOOL)enabled;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'DevMenu'
+     */
+
+    class JSI_EXPORT NativeDevMenuSpecJSI : public ObjCTurboModule {
+    public:
+      NativeDevMenuSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
 @protocol NativeDevSettingsSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)reload;

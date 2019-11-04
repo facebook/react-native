@@ -87,6 +87,12 @@ rn_apple_library(
         ) + react_module_plugin_providers(
             name = "PerfMonitor",
             native_class_func = "RCTPerfMonitorCls",
+        ) + react_module_plugin_providers(
+            name = "DevMenu",
+            native_class_func = "RCTDevMenuCls",
+        ) + react_module_plugin_providers(
+            name = "DevSettings",
+            native_class_func = "RCTDevSettingsCls",
         ),
     plugins_header = "FBCoreModulesPlugins.h",
     preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_extra_build_flags() + [
