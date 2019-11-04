@@ -581,9 +581,9 @@ void Binding::schedulerDidFinishTransaction(
       } else if (mutation.type == ShadowViewMutation::Create) {
         int tag = mutation.oldChildShadowView.tag;
         if (createAndDeleteTagsToProcess.find(tag) != createAndDeleteTagsToProcess.end()) {
-          createAndDeleteTagsToProcess.erase(tag);
-        } else {
           createAndDeleteTagsToProcess.insert(tag);
+        } else {
+          createAndDeleteTagsToProcess.erase(tag);
         }
       }
     }
