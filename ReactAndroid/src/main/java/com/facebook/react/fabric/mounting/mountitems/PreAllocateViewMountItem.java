@@ -7,7 +7,8 @@
 
 package com.facebook.react.fabric.mounting.mountitems;
 
-import static com.facebook.react.fabric.FabricUIManager.DEBUG;
+import static com.facebook.react.fabric.FabricUIManager.ENABLE_FABRIC_LOGS;
+import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT;
 import static com.facebook.react.fabric.FabricUIManager.TAG;
 
 import androidx.annotation.NonNull;
@@ -48,7 +49,7 @@ public class PreAllocateViewMountItem implements MountItem {
 
   @Override
   public void execute(@NonNull MountingManager mountingManager) {
-    if (DEBUG) {
+    if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Executing pre-allocation of: " + toString());
     }
     mountingManager.preallocateView(
@@ -57,13 +58,24 @@ public class PreAllocateViewMountItem implements MountItem {
 
   @Override
   public String toString() {
-    return "PreAllocateViewMountItem ["
-        + mReactTag
-        + "] - component: "
-        + mComponent
-        + " rootTag: "
-        + mRootTag
-        + " isLayoutable: "
-        + mIsLayoutable;
+    StringBuilder result =
+        new StringBuilder("PreAllocateViewMountItem [")
+            .append(mReactTag)
+            .append("] - component: ")
+            .append(mComponent)
+            .append(" rootTag: ")
+            .append(mRootTag)
+            .append(" isLayoutable: ")
+            .append(mIsLayoutable);
+
+    if (IS_DEVELOPMENT_ENVIRONMENT) {
+      result
+          .append(" props: ")
+          .append(mProps != null ? mProps : "<null>")
+          .append(" state: ")
+          .append(mStateWrapper != null ? mStateWrapper : "<null>");
+    }
+
+    return result.toString();
   }
 }

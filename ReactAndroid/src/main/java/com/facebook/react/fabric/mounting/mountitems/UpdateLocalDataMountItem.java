@@ -7,6 +7,8 @@
 
 package com.facebook.react.fabric.mounting.mountitems;
 
+import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT;
+
 import androidx.annotation.NonNull;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.mounting.MountingManager;
@@ -32,6 +34,13 @@ public class UpdateLocalDataMountItem implements MountItem {
 
   @Override
   public String toString() {
-    return "UpdateLocalDataMountItem [" + mReactTag + "]";
+    StringBuilder result =
+        new StringBuilder("UpdateLocalDataMountItem [").append(mReactTag).append("]");
+
+    if (IS_DEVELOPMENT_ENVIRONMENT) {
+      result.append(" localData: ").append(mNewLocalData);
+    }
+
+    return result.toString();
   }
 }

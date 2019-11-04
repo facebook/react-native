@@ -84,7 +84,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   public static final String TAG = "FabricUIManager";
-  public static final boolean DEBUG =
+  // The IS_DEVELOPMENT_ENVIRONMENT variable is used to log extra data when running fabric in a
+  // development environment. DO NOT ENABLE THIS ON PRODUCTION OR YOU WILL BE FIRED!
+  public static final boolean IS_DEVELOPMENT_ENVIRONMENT = false;
+  public static final boolean ENABLE_FABRIC_LOGS =
       ReactFeatureFlags.enableFabricLogs
           || PrinterHolder.getPrinter()
               .shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
@@ -166,7 +169,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mMountingManager.addRootView(rootTag, rootView);
     mReactContextForRootTag.put(rootTag, reactContext);
     String moduleName = ((ReactRoot) rootView).getJSModuleName();
-    if (DEBUG) {
+    if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
     mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
@@ -186,7 +189,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, rootView.getContext());
-    if (DEBUG) {
+    if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
     mMountingManager.addRootView(rootTag, rootView);
@@ -429,7 +432,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     try {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
-      if (DEBUG) {
+      if (ENABLE_FABRIC_LOGS) {
         FLog.d(TAG, "SynchronouslyUpdateViewOnUIThread for tag %d", reactTag);
       }
       scheduleMountItem(
@@ -547,7 +550,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     long batchedExecutionStartTime = SystemClock.uptimeMillis();
     for (MountItem mountItem : mountItemsToDispatch) {
-      if (DEBUG) {
+      if (ENABLE_FABRIC_LOGS) {
         // If a MountItem description is split across multiple lines, it's because it's a compound
         // MountItem. Log each line separately.
         String[] mountItemLines = mountItem.toString().split("\n");
@@ -595,7 +598,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void updateRootLayoutSpecs(
       final int rootTag, final int widthMeasureSpec, final int heightMeasureSpec) {
 
-    if (DEBUG) {
+    if (ENABLE_FABRIC_LOGS) {
       FLog.d(TAG, "Updating Root Layout Specs");
     }
 

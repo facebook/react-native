@@ -7,6 +7,8 @@
 
 package com.facebook.react.fabric.mounting.mountitems;
 
+import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT;
+
 import androidx.annotation.NonNull;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.mounting.MountingManager;
@@ -28,6 +30,13 @@ public class UpdatePropsMountItem implements MountItem {
 
   @Override
   public String toString() {
-    return "UpdatePropsMountItem [" + mReactTag + "]";
+    StringBuilder result =
+        new StringBuilder("UpdatePropsMountItem [").append(mReactTag).append("]");
+
+    if (IS_DEVELOPMENT_ENVIRONMENT) {
+      result.append(" props: ").append(mUpdatedProps);
+    }
+
+    return result.toString();
   }
 }
