@@ -686,6 +686,7 @@ exports.examples = [
         'decimal-pad',
         'twitter',
         'web-search',
+        'ascii-capable-number-pad',
         'numeric',
       ];
       const examples = keyboardTypes.map(type => {

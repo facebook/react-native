@@ -138,6 +138,8 @@ export type KeyboardType =
   | 'name-phone-pad'
   | 'twitter'
   | 'web-search'
+  // iOS 10+ only
+  | 'ascii-capable-number-pad'
   // Android-only
   | 'visible-password';
 

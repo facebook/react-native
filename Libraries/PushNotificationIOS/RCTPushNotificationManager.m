@@ -102,6 +102,7 @@ static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notificatio
   return formattedLocalNotification;
 }
 
+API_AVAILABLE(ios(10.0))
 static NSDictionary *RCTFormatUNNotification(UNNotification *notification)
 {
   NSMutableDictionary *formattedNotification = [NSMutableDictionary dictionary];
@@ -435,7 +436,8 @@ RCT_EXPORT_METHOD(getScheduledLocalNotifications:(RCTResponseSenderBlock)callbac
 
 RCT_EXPORT_METHOD(removeAllDeliveredNotifications)
 {
-  if ([UNUserNotificationCenter class]) {
+  // TODO: T56867629
+  if (@available(iOS 10.0, tvOS 10.0, *)) {
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center removeAllDeliveredNotifications];
   }
@@ -443,7 +445,8 @@ RCT_EXPORT_METHOD(removeAllDeliveredNotifications)
 
 RCT_EXPORT_METHOD(removeDeliveredNotifications:(NSArray<NSString *> *)identifiers)
 {
-  if ([UNUserNotificationCenter class]) {
+  // TODO: T56867629
+  if (@available(iOS 10.0, tvOS 10.0, *)) {
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center removeDeliveredNotificationsWithIdentifiers:identifiers];
   }
@@ -451,7 +454,8 @@ RCT_EXPORT_METHOD(removeDeliveredNotifications:(NSArray<NSString *> *)identifier
 
 RCT_EXPORT_METHOD(getDeliveredNotifications:(RCTResponseSenderBlock)callback)
 {
-  if ([UNUserNotificationCenter class]) {
+  // TODO: T56867629
+  if (@available(iOS 10.0, tvOS 10.0, *)) {
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> *_Nonnull notifications) {
       NSMutableArray<NSDictionary *> *formattedNotifications = [NSMutableArray new];
