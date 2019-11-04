@@ -226,7 +226,11 @@ PODS:
   - React-RCTLinking (1000.0.0):
     - React-Core/RCTLinkingHeaders (= 1000.0.0)
   - React-RCTNetwork (1000.0.0):
+    - FBReactNativeSpec (= 1000.0.0)
+    - Folly (= 2018.10.22.00)
+    - RCTTypeSafety (= 1000.0.0)
     - React-Core/RCTNetworkHeaders (= 1000.0.0)
+    - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTPushNotification (1000.0.0):
     - React-Core/RCTPushNotificationHeaders (= 1000.0.0)
   - React-RCTSettings (1000.0.0):
@@ -387,7 +391,7 @@ SPEC CHECKSUMS:
   React-RCTBlob: 8df793b30385b7ffe7e6703651043bad369cd756
   React-RCTImage: 3ee9a6cd02c7741ebe3a001d51a18c349019778f
   React-RCTLinking: d7d7f792e63a8d57380cecbb9b7a3b31f92d1bb6
-  React-RCTNetwork: c8f9d40297f35ea3792ea81866f33e8b45c25935
+  React-RCTNetwork: 156d1edeff084555eb31ba35d4cee6bc76c91908
   React-RCTPushNotification: acffa8af6a20e6d41b041a8c4cb4bea0de9df0dd
   React-RCTSettings: 8138286da8de74839cb436dd37704ed64d4bfe78
   React-RCTTest: d148e0657ce77ffd43a10325c284f47f25fb0532

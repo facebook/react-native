@@ -1813,7 +1813,7 @@ namespace JS {
       NSString *url() const;
       id<NSObject> data() const;
       id<NSObject> headers() const;
-      id<NSObject> responseType() const;
+      NSString *responseType() const;
       bool incrementalUpdates() const;
       double timeout() const;
       bool withCredentials() const;
@@ -3490,10 +3490,10 @@ inline id<NSObject> JS::NativeNetworkingIOS::SpecSendRequestQuery::headers() con
   id const p = _v[@"headers"];
   return p;
 }
-inline id<NSObject> JS::NativeNetworkingIOS::SpecSendRequestQuery::responseType() const
+inline NSString *JS::NativeNetworkingIOS::SpecSendRequestQuery::responseType() const
 {
   id const p = _v[@"responseType"];
-  return p;
+  return RCTBridgingToString(p);
 }
 inline bool JS::NativeNetworkingIOS::SpecSendRequestQuery::incrementalUpdates() const
 {
