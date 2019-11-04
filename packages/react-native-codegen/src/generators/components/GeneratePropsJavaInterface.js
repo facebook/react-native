@@ -208,33 +208,41 @@ module.exports = {
         return;
       }
 
-      return Object.keys(components).forEach(componentName => {
-        const component = components[componentName];
-        const className = getInterfaceJavaClassName(componentName);
-        const fileName = `${className}.java`;
+      return Object.keys(components)
+        .filter(componentName => {
+          const component = components[componentName];
+          return component.excludedPlatform !== 'android';
+        })
+        .forEach(componentName => {
+          const component = components[componentName];
+          const className = getInterfaceJavaClassName(componentName);
+          const fileName = `${className}.java`;
 
-        const imports = getImports(component);
-        const propsString = generatePropsString(component, imports);
-        const commandsString = generateCommandsString(component, componentName);
-        const extendString = getClassExtendString(component);
+          const imports = getImports(component);
+          const propsString = generatePropsString(component, imports);
+          const commandsString = generateCommandsString(
+            component,
+            componentName,
+          );
+          const extendString = getClassExtendString(component);
 
-        const replacedTemplate = template
-          .replace(
-            /::_IMPORTS_::/g,
-            Array.from(imports)
-              .sort()
-              .join('\n'),
-          )
-          .replace(/::_CLASSNAME_::/g, className)
-          .replace('::_EXTEND_CLASSES_::', extendString)
-          .replace(
-            '::_METHODS_::',
-            [propsString, commandsString].join('\n' + '  ').trimRight(),
-          )
-          .replace('::_COMMAND_HANDLERS_::', commandsString);
+          const replacedTemplate = template
+            .replace(
+              /::_IMPORTS_::/g,
+              Array.from(imports)
+                .sort()
+                .join('\n'),
+            )
+            .replace(/::_CLASSNAME_::/g, className)
+            .replace('::_EXTEND_CLASSES_::', extendString)
+            .replace(
+              '::_METHODS_::',
+              [propsString, commandsString].join('\n' + '  ').trimRight(),
+            )
+            .replace('::_COMMAND_HANDLERS_::', commandsString);
 
-        files.set(fileName, replacedTemplate);
-      });
+          files.set(fileName, replacedTemplate);
+        });
     });
 
     return files;

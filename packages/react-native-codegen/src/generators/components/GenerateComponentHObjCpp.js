@@ -295,6 +295,10 @@ module.exports = {
         }
 
         return Object.keys(components)
+          .filter(componentName => {
+            const component = components[componentName];
+            return component.excludedPlatform !== 'iOS';
+          })
           .map(componentName => {
             return [
               generateProtocol(components[componentName], componentName),

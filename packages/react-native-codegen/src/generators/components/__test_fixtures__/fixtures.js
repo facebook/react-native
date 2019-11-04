@@ -1503,6 +1503,27 @@ const COMMANDS_AND_PROPS: SchemaType = {
   },
 };
 
+const EXCLUDE_ANDROID: SchemaType = {
+  modules: {
+    ExcludedAndroid: {
+      components: {
+        ExcludedAndroidComponent: {
+          excludedPlatform: 'android',
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
 module.exports = {
   NO_PROPS_NO_EVENTS,
   INTERFACE_ONLY,
@@ -1528,4 +1549,5 @@ module.exports = {
   TWO_COMPONENTS_DIFFERENT_FILES,
   COMMANDS,
   COMMANDS_AND_PROPS,
+  EXCLUDE_ANDROID,
 };

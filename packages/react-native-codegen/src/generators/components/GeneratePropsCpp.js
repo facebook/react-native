@@ -101,6 +101,10 @@ module.exports = {
         }
 
         return Object.keys(components)
+          .filter(componentName => {
+            const component = components[componentName];
+            return component.excludedPlatform !== 'iOS';
+          })
           .map(componentName => {
             const component = components[componentName];
             const newName = `${componentName}Props`;
