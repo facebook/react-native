@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTEventEmitter.h"
+#import <React/RCTEventEmitter.h>
 
 RCT_EXTERN NSString *const RCTTVNavigationEventNotification;
 

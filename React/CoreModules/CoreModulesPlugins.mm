@@ -37,6 +37,7 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"DevMenu", RCTDevMenuCls},
     {"DevSettings", RCTDevSettingsCls},
     {"RedBox", RCTRedBoxCls},
+    {"TVNavigationEventEmitter", RCTTVNavigationEventEmitterCls},
   };
 
   auto p = sCoreModuleClassMap.find(name);

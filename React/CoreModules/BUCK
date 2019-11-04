@@ -96,6 +96,9 @@ rn_apple_library(
         ) + react_module_plugin_providers(
             name = "RedBox",
             native_class_func = "RCTRedBoxCls",
+        ) + react_module_plugin_providers(
+            name = "TVNavigationEventEmitter",
+            native_class_func = "RCTTVNavigationEventEmitterCls",
         ),
     plugins_header = "FBCoreModulesPlugins.h",
     preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_extra_build_flags() + [

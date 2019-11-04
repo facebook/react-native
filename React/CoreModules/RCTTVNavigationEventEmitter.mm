@@ -7,9 +7,15 @@
 
 #import "RCTTVNavigationEventEmitter.h"
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
+#import "CoreModulesPlugins.h"
+
 NSString *const RCTTVNavigationEventNotification = @"RCTTVNavigationEventNotification";
 
 static NSString *const TVNavigationEventName = @"onHWKeyEvent";
+
+@interface RCTTVNavigationEventEmitter() <NativeTVNavigationEventEmitterSpec>
+@end
 
 @implementation RCTTVNavigationEventEmitter
 
@@ -44,4 +50,13 @@ RCT_EXPORT_MODULE()
   }
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeTVNavigationEventEmitterSpecJSI>(self, jsInvoker);
+}
+
 @end
+
+Class RCTTVNavigationEventEmitterCls(void) {
+  return RCTTVNavigationEventEmitter.class;
+}
