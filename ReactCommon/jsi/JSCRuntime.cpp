@@ -417,10 +417,18 @@ bool JSCRuntime::isInspectable() {
 namespace {
 
 bool smellsLikeES6Symbol(JSGlobalContextRef ctx, JSValueRef ref) {
-  // Empirically, an es6 Symbol is not an object, but its type is
+  // Since iOS 13, JSValueGetType will return kJSTypeSymbol
+  // Before: Empirically, an es6 Symbol is not an object, but its type is
   // object.  This makes no sense, but we'll run with it.
-  return (!JSValueIsObject(ctx, ref) &&
-          JSValueGetType(ctx, ref) == kJSTypeObject);
+  // https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSValueRef.cpp#L79-L82
+
+  JSType type = JSValueGetType(ctx, ref);
+
+  if (type == /* kJSTypeSymbol */ 6) {
+    return true;
+  }
+
+  return (!JSValueIsObject(ctx, ref) && type == kJSTypeObject);
 }
 
 }
@@ -1335,10 +1343,16 @@ jsi::Value JSCRuntime::createValue(JSValueRef value) const {
       JSObjectRef objRef = JSValueToObject(ctx_, value, nullptr);
       return jsi::Value(createObject(objRef));
     }
+// TODO: Uncomment this when all supported JSC versions have this symbol
 //    case kJSTypeSymbol:
-    default:
-      // WHAT ARE YOU
-      abort();
+    default: {
+      if (smellsLikeES6Symbol(ctx_, value)) {
+        return jsi::Value(createSymbol(value));
+      } else {
+        // WHAT ARE YOU
+        abort();
+      }
+    }
   }
 }
 
