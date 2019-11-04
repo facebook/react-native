@@ -25,6 +25,8 @@ const {
   View,
 } = require('react-native');
 
+import {useEffect, useRef, useState} from 'react';
+
 const forceTouchAvailable =
   (Platform.OS === 'ios' && Platform.constants.forceTouchAvailable) || false;
 
@@ -299,6 +301,48 @@ class TouchableHitSlop extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
+function TouchableNativeMethodChecker<
+  T: React.AbstractComponent<any, any>,
+>(props: {|Component: T, name: string|}): React.Node {
+  const [status, setStatus] = useState<?boolean>(null);
+  const ref = useRef<?React.ElementRef<T>>(null);
+
+  useEffect(() => {
+    setStatus(ref.current != null && typeof ref.current.measure === 'function');
+  }, []);
+
+  return (
+    <View style={[styles.row, styles.block]}>
+      <props.Component ref={ref}>
+        <View />
+      </props.Component>
+      <Text>
+        {props.name + ': '}
+        {status == null
+          ? 'Missing Ref!'
+          : status === true
+          ? 'Native Methods Exist'
+          : 'Native Methods Missing!'}
+      </Text>
+    </View>
+  );
+}
+
+function TouchableNativeMethods() {
+  return (
+    <View>
+      <TouchableNativeMethodChecker
+        Component={TouchableHighlight}
+        name="TouchableHighlight"
+      />
+      <TouchableNativeMethodChecker
+        Component={TouchableOpacity}
+        name="TouchableOpacity"
+      />
+    </View>
+  );
+}
+
 class TouchableDisabled extends React.Component<{}> {
   render() {
     return (
@@ -549,6 +593,13 @@ exports.examples = [
       'without changing the view bounds.': string),
     render: function(): React.Element<any> {
       return <TouchableHitSlop />;
+    },
+  },
+  {
+    title: 'Touchable Native Methods',
+    description: ('Some <Touchable*> components expose native methods like `measure`.': string),
+    render: function(): React.Element<any> {
+      return <TouchableNativeMethods />;
     },
   },
   {

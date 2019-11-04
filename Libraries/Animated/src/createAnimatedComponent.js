@@ -15,6 +15,7 @@ const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('react');
 
 const invariant = require('invariant');
+const setAndForwardRef = require('../../Utilities/setAndForwardRef');
 
 export type AnimatedComponentType<Props, Instance> = React.AbstractComponent<
   any,
@@ -116,20 +117,26 @@ function createAnimatedComponent<Props, Instance>(
       oldPropsAnimated && oldPropsAnimated.__detach();
     }
 
-    _setComponentRef = c => {
-      this._prevComponent = this._component;
-      this._component = c;
-    };
+    _setComponentRef = setAndForwardRef({
+      getForwardedRef: () => this.props.forwardedRef,
+      setLocalRef: ref => {
+        this._prevComponent = this._component;
+        this._component = ref;
 
-    // A third party library can use getNode()
-    // to get the node reference of the decorated component
-    getNode() {
-      return this._component;
-    }
-
-    setNativeProps(props) {
-      this._component.setNativeProps(props);
-    }
+        // TODO: Delete this in a future release.
+        if (ref != null && ref.getNode == null) {
+          ref.getNode = () => {
+            console.warn(
+              '%s: Calling `getNode()` on the ref of an Animated component ' +
+                'is no longer necessary. You can now directly use the ref ' +
+                'instead. This method will be removed in a future release.',
+              ref.constructor.name ?? '<<anonymous>>',
+            );
+            return ref;
+          };
+        }
+      },
+    });
 
     render() {
       const props = this._propsAnimated.__getValue();
@@ -182,7 +189,14 @@ function createAnimatedComponent<Props, Instance>(
     }
   }
 
-  return AnimatedComponent;
+  return React.forwardRef(function AnimatedComponentWrapper(props, ref) {
+    return (
+      <AnimatedComponent
+        {...props}
+        {...(ref == null ? null : {forwardedRef: ref})}
+      />
+    );
+  });
 }
 
 module.exports = createAnimatedComponent;

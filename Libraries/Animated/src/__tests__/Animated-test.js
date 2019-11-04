@@ -95,51 +95,33 @@ describe('Animated tests', () => {
     });
 
     it('does not detach on updates', () => {
-      const anim = new Animated.Value(0);
-      anim.__detach = jest.fn();
+      const opacity = new Animated.Value(0);
+      opacity.__detach = jest.fn();
 
-      const c = new Animated.View();
-      c.props = {
-        style: {
-          opacity: anim,
-        },
-      };
-      c.UNSAFE_componentWillMount();
+      const root = TestRenderer.create(<Animated.View style={{opacity}} />);
+      expect(opacity.__detach).not.toBeCalled();
 
-      expect(anim.__detach).not.toBeCalled();
-      c._component = {};
-      c.UNSAFE_componentWillReceiveProps({
-        style: {
-          opacity: anim,
-        },
-      });
-      expect(anim.__detach).not.toBeCalled();
+      root.update(<Animated.View style={{opacity}} />);
+      expect(opacity.__detach).not.toBeCalled();
 
-      c.componentWillUnmount();
-      expect(anim.__detach).toBeCalled();
+      root.unmount();
+      expect(opacity.__detach).toBeCalled();
     });
 
     it('stops animation when detached', () => {
-      const anim = new Animated.Value(0);
+      const opacity = new Animated.Value(0);
       const callback = jest.fn();
 
-      const c = new Animated.View();
-      c.props = {
-        style: {
-          opacity: anim,
-        },
-      };
-      c.UNSAFE_componentWillMount();
+      const root = TestRenderer.create(<Animated.View style={{opacity}} />);
 
-      Animated.timing(anim, {
+      Animated.timing(opacity, {
         toValue: 10,
         duration: 1000,
         useNativeDriver: false,
       }).start(callback);
-      c._component = {};
-      c.componentWillUnmount();
 
-      expect(callback).toBeCalledWith({finished: false});
+      root.unmount();
+
       expect(callback).toBeCalledWith({finished: false});
     });
 
@@ -198,7 +180,7 @@ describe('Animated tests', () => {
         <Animated.View style={{opacity}} />,
       );
 
-      expect(testRenderer.toJSON()).toMatchSnapshot();
+      expect(testRenderer.toJSON().props.style.opacity).toEqual(0);
 
       Animated.timing(opacity, {
         toValue: 1,
@@ -206,7 +188,7 @@ describe('Animated tests', () => {
         useNativeDriver: false,
       }).start();
 
-      expect(testRenderer.toJSON()).toMatchSnapshot();
+      expect(testRenderer.toJSON().props.style.opacity).toEqual(1);
     });
 
     it('warns if `useNativeDriver` is missing', () => {

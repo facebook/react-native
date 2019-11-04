@@ -27,7 +27,7 @@ exports[`LogBoxInspectorSourceMapStatus should render for failed 1`] = `
     }
   }
 >
-  <AnimatedComponent
+  <ForwardRef(AnimatedComponentWrapper)
     source={
       Object {
         "height": 16,
@@ -94,7 +94,7 @@ exports[`LogBoxInspectorSourceMapStatus should render for pending 1`] = `
     }
   }
 >
-  <AnimatedComponent
+  <ForwardRef(AnimatedComponentWrapper)
     source={
       Object {
         "height": 16,
