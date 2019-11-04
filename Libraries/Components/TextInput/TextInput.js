@@ -20,12 +20,10 @@ const Text = require('../../Text/Text');
 const TextAncestor = require('../../Text/TextAncestor');
 const TextInputState = require('./TextInputState');
 const TouchableWithoutFeedback = require('../Touchable/TouchableWithoutFeedback');
-const UIManager = require('../../ReactNative/UIManager');
 
 const createReactClass = require('create-react-class');
 const invariant = require('invariant');
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
-const warning = require('fbjs/lib/warning');
 
 import type {TextStyleProp, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
@@ -48,11 +46,6 @@ if (Platform.OS === 'android') {
     'RCTSinglelineTextInputView',
   );
 }
-
-const onlyMultiline = {
-  onTextInput: true,
-  children: true,
-};
 
 export type ChangeEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -865,9 +858,7 @@ const TextInput = createReactClass({
   render: function() {
     let textInput;
     if (Platform.OS === 'ios') {
-      textInput = UIManager.getViewManagerConfig('RCTVirtualText')
-        ? this._renderIOS()
-        : this._renderIOSLegacy();
+      textInput = this._renderIOS();
     } else if (Platform.OS === 'android') {
       textInput = this._renderAndroid();
     }
@@ -890,98 +881,6 @@ const TextInput = createReactClass({
 
   getNativeRef: function(): ?React.ElementRef<HostComponent<mixed>> {
     return this._inputRef;
-  },
-
-  _renderIOSLegacy: function() {
-    let textContainer;
-
-    const props = Object.assign({}, this.props);
-    props.style = [this.props.style];
-
-    if (props.selection && props.selection.end == null) {
-      props.selection = {
-        start: props.selection.start,
-        end: props.selection.start,
-      };
-    }
-
-    if (!props.multiline) {
-      if (__DEV__) {
-        for (const propKey in onlyMultiline) {
-          if (props[propKey]) {
-            const error = new Error(
-              'TextInput prop `' +
-                propKey +
-                '` is only supported with multiline.',
-            );
-            warning(false, '%s', error.stack);
-          }
-        }
-      }
-      textContainer = (
-        <RCTSinglelineTextInputView
-          ref={this._setNativeRef}
-          {...props}
-          onFocus={this._onFocus}
-          onBlur={this._onBlur}
-          onChange={this._onChange}
-          onSelectionChange={this._onSelectionChange}
-          onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
-          text={this._getText()}
-        />
-      );
-    } else {
-      let children = props.children;
-      let childCount = 0;
-      React.Children.forEach(children, () => ++childCount);
-      invariant(
-        !(props.value && childCount),
-        'Cannot specify both value and children.',
-      );
-      if (childCount >= 1) {
-        children = (
-          <Text
-            style={props.style}
-            allowFontScaling={props.allowFontScaling}
-            maxFontSizeMultiplier={props.maxFontSizeMultiplier}>
-            {children}
-          </Text>
-        );
-      }
-      props.style.unshift(styles.multilineInput);
-      textContainer = (
-        <RCTMultilineTextInputView
-          ref={this._setNativeRef}
-          {...props}
-          children={children}
-          onFocus={this._onFocus}
-          onBlur={this._onBlur}
-          onChange={this._onChange}
-          onContentSizeChange={this.props.onContentSizeChange}
-          onSelectionChange={this._onSelectionChange}
-          onTextInput={this._onTextInput}
-          onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
-          text={this._getText()}
-          dataDetectorTypes={this.props.dataDetectorTypes}
-          onScroll={this._onScroll}
-        />
-      );
-    }
-
-    return (
-      <TouchableWithoutFeedback
-        onLayout={props.onLayout}
-        onPress={this._onPress}
-        rejectResponderTermination={true}
-        accessible={props.accessible}
-        accessibilityLabel={props.accessibilityLabel}
-        accessibilityRole={props.accessibilityRole}
-        accessibilityState={props.accessibilityState}
-        nativeID={this.props.nativeID}
-        testID={props.testID}>
-        {textContainer}
-      </TouchableWithoutFeedback>
-    );
   },
 
   _renderIOS: function() {
