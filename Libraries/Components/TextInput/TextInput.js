@@ -993,7 +993,7 @@ const TextInput = createReactClass({
   },
 
   _onFocus: function(event: FocusEvent) {
-    this.focus();
+    TextInputState.focusField(ReactNative.findNodeHandle(this._inputRef));
     if (this.props.onFocus) {
       this.props.onFocus(event);
     }
@@ -1079,9 +1079,7 @@ const TextInput = createReactClass({
   },
 
   _onBlur: function(event: BlurEvent) {
-    // This is a hack to fix https://fburl.com/toehyir8
-    // @todo(rsnara) Figure out why this is necessary.
-    this.blur();
+    TextInputState.blurField(ReactNative.findNodeHandle(this._inputRef));
     if (this.props.onBlur) {
       this.props.onBlur(event);
     }

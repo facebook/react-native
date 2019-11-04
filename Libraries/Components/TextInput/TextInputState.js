@@ -28,14 +28,26 @@ function currentlyFocusedField(): ?number {
   return currentlyFocusedID;
 }
 
+function focusField(textFieldID: ?number): void {
+  if (currentlyFocusedID !== textFieldID && textFieldID != null) {
+    currentlyFocusedID = textFieldID;
+  }
+}
+
+function blurField(textFieldID: ?number) {
+  if (currentlyFocusedID === textFieldID && textFieldID != null) {
+    currentlyFocusedID = null;
+  }
+}
+
 /**
  * @param {number} TextInputID id of the text field to focus
  * Focuses the specified text field
  * noop if the text field was already focused
  */
 function focusTextInput(textFieldID: ?number) {
-  if (currentlyFocusedID !== textFieldID && textFieldID !== null) {
-    currentlyFocusedID = textFieldID;
+  if (currentlyFocusedID !== textFieldID && textFieldID != null) {
+    focusField(textFieldID);
     if (Platform.OS === 'ios') {
       UIManager.focus(textFieldID);
     } else if (Platform.OS === 'android') {
@@ -55,8 +67,8 @@ function focusTextInput(textFieldID: ?number) {
  * noop if it wasn't focused
  */
 function blurTextInput(textFieldID: ?number) {
-  if (currentlyFocusedID === textFieldID && textFieldID !== null) {
-    currentlyFocusedID = null;
+  if (currentlyFocusedID === textFieldID && textFieldID != null) {
+    blurField(textFieldID);
     if (Platform.OS === 'ios') {
       UIManager.blur(textFieldID);
     } else if (Platform.OS === 'android') {
@@ -84,6 +96,8 @@ function isTextInput(textFieldID: number): boolean {
 
 module.exports = {
   currentlyFocusedField,
+  focusField,
+  blurField,
   focusTextInput,
   blurTextInput,
   registerInput,

@@ -77,7 +77,19 @@ describe('TextInput tests', () => {
     ReactTestRenderer.create(<TextInput ref={textInputRef} value="value1" />);
 
     expect(textInputRef.current.isFocused()).toBe(false);
+    ReactNative.findNodeHandle = jest.fn().mockImplementation(ref => {
+      if (
+        ref === textInputRef.current ||
+        ref === textInputRef.current.getNativeRef()
+      ) {
+        return 1;
+      }
+
+      return 2;
+    });
+
     const inputTag = ReactNative.findNodeHandle(textInputRef.current);
+
     TextInput.State.focusTextInput(inputTag);
     expect(textInputRef.current.isFocused()).toBe(true);
     expect(TextInput.State.currentlyFocusedField()).toBe(inputTag);
