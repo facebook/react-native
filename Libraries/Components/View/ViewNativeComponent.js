@@ -16,6 +16,9 @@ const ReactNativeViewViewConfigAndroid = require('./ReactNativeViewViewConfigAnd
 const registerGeneratedViewConfig = require('../../Utilities/registerGeneratedViewConfig');
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
+import * as React from 'react';
+
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import type {ViewProps} from './ViewPropTypes';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
@@ -65,4 +68,21 @@ if (__DEV__) {
 }
 
 export const __INTERNAL_VIEW_CONFIG = viewConfig;
+
+interface NativeCommands {
+  +hotspotUpdate: (
+    viewRef: React.ElementRef<HostComponent<mixed>>,
+    x: number,
+    y: number,
+  ) => void;
+  +setPressed: (
+    viewRef: React.ElementRef<HostComponent<mixed>>,
+    pressed: boolean,
+  ) => void;
+}
+
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['hotspotUpdate', 'setPressed'],
+});
+
 export default ((NativeViewComponent: any): ViewNativeComponentType);

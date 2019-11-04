@@ -18,8 +18,8 @@ const React = require('react');
 const ReactNative = require('../../Renderer/shims/ReactNative');
 const Touchable = require('./Touchable');
 const TouchableWithoutFeedback = require('./TouchableWithoutFeedback');
-const UIManager = require('../../ReactNative/UIManager');
 const View = require('../View/View');
+import {Commands} from '../View/ViewNativeComponent';
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('./ensurePositiveDelayProps');
@@ -291,19 +291,28 @@ const TouchableNativeFeedbackImpl = createReactClass({
   },
 
   _dispatchHotspotUpdate: function(destX, destY) {
-    UIManager.dispatchViewManagerCommand(
-      ReactNative.findNodeHandle(this),
-      UIManager.getViewManagerConfig('RCTView').Commands.hotspotUpdate,
-      [destX || 0, destY || 0],
-    );
+    const hostComponentRef = ReactNative.findHostInstance_DEPRECATED(this);
+
+    if (hostComponentRef == null) {
+      console.warn(
+        'Touchable: Unable to find HostComponent instance. ' +
+          'Has your Touchable component been unmounted?',
+      );
+    } else {
+      Commands.hotspotUpdate(hostComponentRef, destX || 0, destY || 0);
+    }
   },
 
   _dispatchPressedStateChange: function(pressed) {
-    UIManager.dispatchViewManagerCommand(
-      ReactNative.findNodeHandle(this),
-      UIManager.getViewManagerConfig('RCTView').Commands.setPressed,
-      [pressed],
-    );
+    const hostComponentRef = ReactNative.findHostInstance_DEPRECATED(this);
+    if (hostComponentRef == null) {
+      console.warn(
+        'Touchable: Unable to find HostComponent instance. ' +
+          'Has your Touchable component been unmounted?',
+      );
+    } else {
+      Commands.setPressed(hostComponentRef, pressed);
+    }
   },
 
   render: function() {
