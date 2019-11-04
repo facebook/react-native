@@ -189,6 +189,7 @@ def rn_codegen_components(
             "ComponentDescriptors.h": ":{}".format(generate_component_descriptor_h_name),
             "EventEmitters.h": ":{}".format(generate_event_emitter_h_name),
             "Props.h": ":{}".format(generate_props_h_name),
+            "RCTComponentViewHelpers.h": ":{}".format(generate_component_hobjcpp_name),
             "ShadowNodes.h": ":{}".format(generate_shadow_node_h_name),
         },
         ios_exported_headers = {

@@ -139,40 +139,40 @@ if ([commandName isEqualToString:@\\"allTypes\\"]) {
   }
 #endif
 
-  #if RCT_DEBUG
   NSObject *arg0 = args[0];
+#if RCT_DEBUG
   if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @\\"number\\", @\\"CommandNativeComponent\\", commandName, @\\"1st\\")) {
     return;
   }
 #endif
   NSInteger x = [(NSNumber *)arg0 intValue];
 
+NSObject *arg1 = args[1];
 #if RCT_DEBUG
-  NSObject *arg1 = args[1];
   if (!RCTValidateTypeOfViewCommandArgument(arg1, [NSNumber class], @\\"float\\", @\\"CommandNativeComponent\\", commandName, @\\"2nd\\")) {
     return;
   }
 #endif
   float y = [(NSNumber *)arg1 floatValue];
 
+NSObject *arg2 = args[2];
 #if RCT_DEBUG
-  NSObject *arg2 = args[2];
   if (!RCTValidateTypeOfViewCommandArgument(arg2, [NSNumber class], @\\"double\\", @\\"CommandNativeComponent\\", commandName, @\\"3rd\\")) {
     return;
   }
 #endif
   double z = [(NSNumber *)arg2 doubleValue];
 
+NSObject *arg3 = args[3];
 #if RCT_DEBUG
-  NSObject *arg3 = args[3];
   if (!RCTValidateTypeOfViewCommandArgument(arg3, [NSString class], @\\"string\\", @\\"CommandNativeComponent\\", commandName, @\\"4th\\")) {
     return;
   }
 #endif
   NSString * message = (NSString *)arg3;
 
+NSObject *arg4 = args[4];
 #if RCT_DEBUG
-  NSObject *arg4 = args[4];
   if (!RCTValidateTypeOfViewCommandArgument(arg4, [NSNumber class], @\\"boolean\\", @\\"CommandNativeComponent\\", commandName, @\\"5th\\")) {
     return;
   }
@@ -224,16 +224,16 @@ RCT_EXTERN inline void RCTCommandNativeComponentHandleCommand(
   }
 #endif
 
-  #if RCT_DEBUG
   NSObject *arg0 = args[0];
+#if RCT_DEBUG
   if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @\\"number\\", @\\"CommandNativeComponent\\", commandName, @\\"1st\\")) {
     return;
   }
 #endif
   NSInteger x = [(NSNumber *)arg0 intValue];
 
+NSObject *arg1 = args[1];
 #if RCT_DEBUG
-  NSObject *arg1 = args[1];
   if (!RCTValidateTypeOfViewCommandArgument(arg1, [NSNumber class], @\\"number\\", @\\"CommandNativeComponent\\", commandName, @\\"2nd\\")) {
     return;
   }

@@ -43,8 +43,8 @@ const protocolTemplate = `
 `.trim();
 
 const commandHandlerIfCaseConvertArgTemplate = `
-#if RCT_DEBUG
   NSObject *arg::_ARG_NUMBER_:: = args[::_ARG_NUMBER_::];
+#if RCT_DEBUG
   if (!RCTValidateTypeOfViewCommandArgument(arg::_ARG_NUMBER_::, ::_EXPECTED_KIND_::, @"::_EXPECTED_KIND_STRING_::", @"::_COMPONENT_NAME_::", commandName, @"::_ARG_NUMBER_STR_::")) {
     return;
   }
