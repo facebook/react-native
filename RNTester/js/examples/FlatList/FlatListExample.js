@@ -247,7 +247,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
     this._listRef.getNode().recordInteraction();
     pressItem(this, key);
   };
-  _listRef: Animated.FlatList;
+  _listRef: React.ElementRef<typeof Animated.FlatList>;
 }
 
 const styles = StyleSheet.create({

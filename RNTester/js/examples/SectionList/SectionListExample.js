@@ -92,7 +92,7 @@ class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
     {useNativeDriver: true},
   );
 
-  _sectionListRef: Animated.SectionList;
+  _sectionListRef: React.ElementRef<typeof Animated.SectionList>;
   _captureRef = ref => {
     this._sectionListRef = ref;
   };
