@@ -831,39 +831,46 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       if (stickyIndicesFromProps.has(ii + stickyOffset)) {
         stickyHeaderIndices.push(cells.length);
       }
-      cells.push(
-        <CellRenderer
-          CellRendererComponent={CellRendererComponent}
-          ItemSeparatorComponent={ii < end ? ItemSeparatorComponent : undefined}
-          cellKey={key}
-          fillRateHelper={this._fillRateHelper}
-          horizontal={horizontal}
-          index={ii}
-          inversionStyle={inversionStyle}
-          item={item}
-          key={key}
-          prevCellKey={prevCellKey}
-          onUpdateSeparators={this._onUpdateSeparators}
-          onUnmount={this._onCellUnmount}
-          {...experimentalVirtualizedListOpt && {
-            experimentalVirtualizedListOpt: true,
-            getItemLayout,
-            renderItem,
-            ListItemComponent,
-            onLayout: this._onCellLayout,
-            debug,
-          }}
-          {...!experimentalVirtualizedListOpt && {
-            experimentalVirtualizedListOpt: false,
-            onLayout: e => this._onCellLayout(e, key, ii),
-            parentProps: this.props,
-          }}
-          extraData={extraData}
-          ref={ref => {
-            this._cellRefs[key] = ref;
-          }}
-        />,
-      );
+      const cellRendererBaseProps: CellRendererBaseProps = {
+        CellRendererComponent: CellRendererComponent,
+        ItemSeparatorComponent: ii < end ? ItemSeparatorComponent : undefined,
+        cellKey: key,
+        fillRateHelper: this._fillRateHelper,
+        horizontal: horizontal,
+        index: ii,
+        inversionStyle: inversionStyle,
+        item: item,
+        key: key,
+        prevCellKey: prevCellKey,
+        onUpdateSeparators: this._onUpdateSeparators,
+        onUnmount: this._onCellUnmount,
+        extraData: extraData,
+        ref: ref => {
+          this._cellRefs[key] = ref;
+        },
+      };
+      if (experimentalVirtualizedListOpt) {
+        cells.push(
+          <CellRenderer
+            {...cellRendererBaseProps}
+            experimentalVirtualizedListOpt
+            onLayout={this._onCellLayout}
+            getItemLayout={getItemLayout}
+            renderItem={renderItem}
+            ListItemComponent={ListItemComponent}
+            debug={debug}
+          />,
+        );
+      } else {
+        cells.push(
+          <CellRenderer
+            {...cellRendererBaseProps}
+            experimentalVirtualizedListOpt={false}
+            onLayout={e => this._onCellLayout(e, key, ii)}
+            parentProps={this.props}
+          />,
+        );
+      }
       prevCellKey = key;
     }
   }
@@ -1859,7 +1866,7 @@ type FlattenedParentProps = CellRendererBaseProps & {
 };
 
 type UnFlattenedParentProps = CellRendererBaseProps & {
-  experimentalVirtualizedListOpt?: false,
+  experimentalVirtualizedListOpt: false,
   onLayout: (event: LayoutEvent) => void, // This is extracted by ScrollViewStickyHeader
   parentProps: {
     getItemLayout?: (

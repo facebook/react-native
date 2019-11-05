@@ -168,12 +168,17 @@ const styles = StyleSheet.create({
 });
 
 class ScrollViewStickyHeaderWrapped extends React.Component<Props, State> {
+  _childRef: ?React.ElementRef<typeof ScrollViewStickyHeader>;
+  setNextHeaderY(y: number) {
+    this._childRef && this._childRef.setNextHeaderY(y);
+  }
   render() {
     return (
       <ExperimentalVirtualizedListOptContext.Consumer>
         {experimentalVirtualizedListOpt => {
           <ScrollViewStickyHeader
             {...this.props}
+            ref={ref => (this._childRef = ref)}
             experimentalVirtualizedListOpt={experimentalVirtualizedListOpt}
           />;
         }}
