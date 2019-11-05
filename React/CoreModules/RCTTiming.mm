@@ -12,9 +12,9 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
-#import <React/RCTConvert.h>
 
 #import "CoreModulesPlugins.h"
 
@@ -75,8 +75,7 @@ static const NSTimeInterval kIdleCallbackFrameDeadline = 0.001;
 @end
 
 // NSTimer retains its target, insert this class to break potential retain cycles
-@implementation _RCTTimingProxy
-{
+@implementation _RCTTimingProxy {
   __weak id _target;
 }
 
@@ -96,16 +95,14 @@ static const NSTimeInterval kIdleCallbackFrameDeadline = 0.001;
 
 @end
 
-@interface RCTTiming() <NativeTimingSpec>
+@interface RCTTiming () <NativeTimingSpec>
 @end
 
-@implementation RCTTiming
-{
+@implementation RCTTiming {
   NSMutableDictionary<NSNumber *, _RCTTimer *> *_timers;
   NSTimer *_sleepTimer;
   BOOL _sendIdleEvents;
   BOOL _inBackground;
-  UIBackgroundTaskIdentifier _backgroundTaskIdentifier;
   id<RCTTimingDelegate> _timingDelegate;
 }
 
@@ -115,7 +112,7 @@ static const NSTimeInterval kIdleCallbackFrameDeadline = 0.001;
 
 RCT_EXPORT_MODULE()
 
-- (instancetype)initWithDelegate:(id<RCTTimingDelegate>) delegate
+- (instancetype)initWithDelegate:(id<RCTTimingDelegate>)delegate
 {
   if (self = [super init]) {
     [self setup];
@@ -136,19 +133,19 @@ RCT_EXPORT_MODULE()
   _paused = YES;
   _timers = [NSMutableDictionary new];
   _inBackground = NO;
-  _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
 
-  for (NSString *name in @[UIApplicationWillResignActiveNotification,
-                           UIApplicationDidEnterBackgroundNotification,
-                           UIApplicationWillTerminateNotification]) {
+  for (NSString *name in @[
+         UIApplicationWillResignActiveNotification,
+         UIApplicationDidEnterBackgroundNotification,
+         UIApplicationWillTerminateNotification
+       ]) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appDidMoveToBackground)
                                                  name:name
                                                object:nil];
   }
 
-  for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
-                           UIApplicationWillEnterForegroundNotification]) {
+  for (NSString *name in @[ UIApplicationDidBecomeActiveNotification, UIApplicationWillEnterForegroundNotification ]) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appDidMoveToForeground)
                                                  name:name
@@ -158,32 +155,7 @@ RCT_EXPORT_MODULE()
 
 - (void)dealloc
 {
-  [self markEndOfBackgroundTaskIfNeeded];
   [_sleepTimer invalidate];
-}
-
-- (void)markStartOfBackgroundTaskIfNeeded
-{
-  if (_backgroundTaskIdentifier == UIBackgroundTaskInvalid) {
-    __weak RCTTiming *weakSelf = self;
-    // Marks the beginning of a new long-running background task. We can run the timer in the background.
-    _backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithName:@"rct.timing.gb.task" expirationHandler:^{
-      RCTTiming *strongSelf = weakSelf;
-      if (!strongSelf) {
-        return;
-      }
-      // Mark the end of background task
-      [strongSelf markEndOfBackgroundTaskIfNeeded];
-    }];
-  }
-}
-
-- (void)markEndOfBackgroundTaskIfNeeded
-{
-  if (_backgroundTaskIdentifier != UIBackgroundTaskInvalid) {
-    [[UIApplication sharedApplication] endBackgroundTask:_backgroundTaskIdentifier];
-    _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
-  }
 }
 
 - (dispatch_queue_t)methodQueue
@@ -211,7 +183,6 @@ RCT_EXPORT_MODULE()
 
 - (void)appDidMoveToForeground
 {
-  [self markEndOfBackgroundTaskIfNeeded];
   _inBackground = NO;
   [self startTimers];
 }
@@ -246,7 +217,7 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)hasPendingTimers
 {
-  @synchronized (_timers) {
+  @synchronized(_timers) {
     return _sendIdleEvents || _timers.count > 0;
   }
 }
@@ -256,7 +227,7 @@ RCT_EXPORT_MODULE()
   NSDate *nextScheduledTarget = [NSDate distantFuture];
   NSMutableArray<_RCTTimer *> *timersToCall = [NSMutableArray new];
   NSDate *now = [NSDate date]; // compare all the timers to the same base time
-  @synchronized (_timers) {
+  @synchronized(_timers) {
     for (_RCTTimer *timer in _timers.allValues) {
       if ([timer shouldFire:now]) {
         [timersToCall addObject:timer];
@@ -272,7 +243,7 @@ RCT_EXPORT_MODULE()
       return [a.target compare:b.target];
     }] valueForKey:@"callbackID"];
     if (_bridge) {
-      [_bridge enqueueJSCall:@"JSTimers" method:@"callTimers" args:@[sortedTimers] completion:NULL];
+      [_bridge enqueueJSCall:@"JSTimers" method:@"callTimers" args:@[ sortedTimers ] completion:NULL];
     } else {
       [_timingDelegate callTimers:sortedTimers];
     }
@@ -283,7 +254,7 @@ RCT_EXPORT_MODULE()
       [timer reschedule];
       nextScheduledTarget = [nextScheduledTarget earlierDate:timer.target];
     } else {
-      @synchronized (_timers) {
+      @synchronized(_timers) {
         [_timers removeObjectForKey:timer.callbackID];
       }
     }
@@ -294,12 +265,11 @@ RCT_EXPORT_MODULE()
     NSTimeInterval frameElapsed = currentTimestamp - update.timestamp;
     if (kFrameDuration - frameElapsed >= kIdleCallbackFrameDeadline) {
       NSNumber *absoluteFrameStartMS = @((currentTimestamp - frameElapsed) * 1000);
-      if (_bridge){
-        [_bridge enqueueJSCall:@"JSTimers" method:@"callIdleCallbacks" args:@[absoluteFrameStartMS] completion:NULL];
+      if (_bridge) {
+        [_bridge enqueueJSCall:@"JSTimers" method:@"callIdleCallbacks" args:@[ absoluteFrameStartMS ] completion:NULL];
       } else {
         [_timingDelegate callIdleCallbacks:absoluteFrameStartMS];
       }
-
     }
   }
 
@@ -307,12 +277,11 @@ RCT_EXPORT_MODULE()
   // in response to this timer another timer is scheduled, we don't pause and unpause
   // the displaylink frivolously.
   NSUInteger timerCount;
-  @synchronized (_timers) {
+  @synchronized(_timers) {
     timerCount = _timers.count;
   }
   if (_inBackground) {
     if (timerCount) {
-      [self markStartOfBackgroundTaskIfNeeded];
       [self scheduleSleepTimer:nextScheduledTarget];
     }
   } else if (!_sendIdleEvents && timersToCall.count == 0) {
@@ -331,13 +300,13 @@ RCT_EXPORT_MODULE()
 
 - (void)scheduleSleepTimer:(NSDate *)sleepTarget
 {
-  @synchronized (self) {
+  @synchronized(self) {
     if (!_sleepTimer || !_sleepTimer.valid) {
       _sleepTimer = [[NSTimer alloc] initWithFireDate:sleepTarget
-                                            interval:0
-                                              target:[_RCTTimingProxy proxyWithTarget:self]
-                                            selector:@selector(timerDidFire)
-                                            userInfo:nil
+                                             interval:0
+                                               target:[_RCTTimingProxy proxyWithTarget:self]
+                                             selector:@selector(timerDidFire)
+                                             userInfo:nil
                                               repeats:NO];
       [[NSRunLoop currentRunLoop] addTimer:_sleepTimer forMode:NSDefaultRunLoopMode];
     } else {
@@ -367,13 +336,14 @@ RCT_EXPORT_MODULE()
  * calculating the timer's target time. We calculate this by passing in
  * Date.now() from JS and then subtracting that from the current time here.
  */
-RCT_EXPORT_METHOD(createTimer:(double)callbackID
-                  duration:(NSTimeInterval)jsDuration
-                  jsSchedulingTime:(double)jsSchedulingTime
-                  repeats:(BOOL)repeats)
+RCT_EXPORT_METHOD(createTimer
+                  : (double)callbackID duration
+                  : (NSTimeInterval)jsDuration jsSchedulingTime
+                  : (double)jsSchedulingTime repeats
+                  : (BOOL)repeats)
 {
   NSNumber *callbackIdObjc = [NSNumber numberWithDouble:callbackID];
-  NSDate *schedulingTime = [RCTConvert NSDate:[NSNumber numberWithDouble: jsSchedulingTime]];
+  NSDate *schedulingTime = [RCTConvert NSDate:[NSNumber numberWithDouble:jsSchedulingTime]];
   if (jsDuration == 0 && repeats == NO) {
     // For super fast, one-off timers, just enqueue them immediately rather than waiting a frame.
     if (_bridge) {
@@ -384,10 +354,7 @@ RCT_EXPORT_METHOD(createTimer:(double)callbackID
     return;
   }
 
-  [self createTimerForNextFrame:callbackIdObjc
-                       duration:jsDuration
-               jsSchedulingTime:schedulingTime
-                        repeats:repeats];
+  [self createTimerForNextFrame:callbackIdObjc duration:jsDuration jsSchedulingTime:schedulingTime repeats:repeats];
 }
 
 /**
@@ -410,12 +377,11 @@ RCT_EXPORT_METHOD(createTimer:(double)callbackID
                                                   interval:jsDuration
                                                 targetTime:targetTime
                                                    repeats:repeats];
-  @synchronized (_timers) {
+  @synchronized(_timers) {
     _timers[callbackID] = timer;
   }
 
   if (_inBackground) {
-    [self markStartOfBackgroundTaskIfNeeded];
     [self scheduleSleepTimer:timer.target];
   } else if (_paused) {
     if ([timer.target timeIntervalSinceNow] > kMinimumSleepInterval) {
@@ -426,9 +392,9 @@ RCT_EXPORT_METHOD(createTimer:(double)callbackID
   }
 }
 
-RCT_EXPORT_METHOD(deleteTimer:(double)timerID)
+RCT_EXPORT_METHOD(deleteTimer : (double)timerID)
 {
-  @synchronized (_timers) {
+  @synchronized(_timers) {
     [_timers removeObjectForKey:[NSNumber numberWithDouble:timerID]];
   }
   if (![self hasPendingTimers]) {
@@ -436,7 +402,7 @@ RCT_EXPORT_METHOD(deleteTimer:(double)timerID)
   }
 }
 
-RCT_EXPORT_METHOD(setSendIdleEvents:(BOOL)sendIdleEvents)
+RCT_EXPORT_METHOD(setSendIdleEvents : (BOOL)sendIdleEvents)
 {
   _sendIdleEvents = sendIdleEvents;
   if (sendIdleEvents) {
@@ -446,13 +412,15 @@ RCT_EXPORT_METHOD(setSendIdleEvents:(BOOL)sendIdleEvents)
   }
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
+    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
   return std::make_shared<facebook::react::NativeTimingSpecJSI>(self, jsInvoker);
 }
 
 @end
 
-Class RCTTimingCls(void) {
+Class RCTTimingCls(void)
+{
   return RCTTiming.class;
 }
