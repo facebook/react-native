@@ -12,7 +12,9 @@
 
 'use strict';
 
-const RCTDatePickerNativeComponent = require('./RCTDatePickerNativeComponent');
+import RCTDatePickerNativeComponent, {
+  Commands as DatePickerCommands,
+} from './RCTDatePickerNativeComponent';
 const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const View = require('../View/View');
@@ -121,9 +123,7 @@ class DatePickerIOS extends React.Component<Props> {
     if (this.props.date) {
       const propsTimeStamp = this.props.date.getTime();
       if (this._picker) {
-        this._picker.setNativeProps({
-          date: propsTimeStamp,
-        });
+        DatePickerCommands.setNativeDate(this._picker, propsTimeStamp);
       }
     }
   }
@@ -133,6 +133,7 @@ class DatePickerIOS extends React.Component<Props> {
     this.props.onDateChange &&
       this.props.onDateChange(new Date(nativeTimeStamp));
     this.props.onChange && this.props.onChange(event);
+    this.forceUpdate();
   };
 
   render(): React.Node {
