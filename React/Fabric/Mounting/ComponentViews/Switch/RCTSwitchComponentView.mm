@@ -10,8 +10,12 @@
 #import <react/components/rncore/ComponentDescriptors.h>
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
+#import <react/components/rncore/RCTComponentViewHelpers.h>
 
 using namespace facebook::react;
+
+@interface RCTSwitchComponentView () <RCTSwitchViewProtocol>
+@end
 
 @implementation RCTSwitchComponentView {
   UISwitch *_switchView;
@@ -94,6 +98,18 @@ using namespace facebook::react;
 
   std::dynamic_pointer_cast<const SwitchEventEmitter>(_eventEmitter)
       ->onChange(SwitchOnChangeStruct{.value = static_cast<bool>(sender.on)});
+}
+
+#pragma mark - Native Commands
+
+- (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
+{
+  RCTSwitchHandleCommand(self, commandName, args);
+}
+
+- (void)setValue:(BOOL)value
+{
+  [_switchView setOn:value animated:YES];
 }
 
 @end
