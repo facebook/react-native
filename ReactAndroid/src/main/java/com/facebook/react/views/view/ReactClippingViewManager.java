@@ -8,6 +8,7 @@
 package com.facebook.react.views.view;
 
 import android.view.View;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
@@ -21,11 +22,15 @@ public abstract class ReactClippingViewManager<T extends ReactViewGroup>
   @ReactProp(
       name = com.facebook.react.uimanager.ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
   public void setRemoveClippedSubviews(T view, boolean removeClippedSubviews) {
+    UiThreadUtil.assertOnUiThread();
+
     view.setRemoveClippedSubviews(removeClippedSubviews);
   }
 
   @Override
   public void addView(T parent, View child, int index) {
+    UiThreadUtil.assertOnUiThread();
+
     boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
     if (removeClippedSubviews) {
       parent.addViewWithSubviewClippingEnabled(child, index);
@@ -56,6 +61,8 @@ public abstract class ReactClippingViewManager<T extends ReactViewGroup>
 
   @Override
   public void removeViewAt(T parent, int index) {
+    UiThreadUtil.assertOnUiThread();
+
     boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
     if (removeClippedSubviews) {
       View child = getChildAt(parent, index);
@@ -70,6 +77,8 @@ public abstract class ReactClippingViewManager<T extends ReactViewGroup>
 
   @Override
   public void removeAllViews(T parent) {
+    UiThreadUtil.assertOnUiThread();
+
     boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
     if (removeClippedSubviews) {
       parent.removeAllViewsWithSubviewClippingEnabled();

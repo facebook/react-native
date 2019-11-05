@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
@@ -358,6 +359,8 @@ public class ReactViewGroup extends ViewGroup
   }
 
   private void updateSubviewClipStatus(Rect clippingRect, int idx, int clippedSoFar) {
+    UiThreadUtil.assertOnUiThread();
+
     View child = Assertions.assertNotNull(mAllChildren)[idx];
     sHelperRect.set(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
     boolean intersects =
@@ -462,6 +465,8 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   public void removeView(View view) {
+    UiThreadUtil.assertOnUiThread();
+
     mDrawingOrderHelper.handleRemoveView(view);
     setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
 
@@ -470,6 +475,8 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   public void removeViewAt(int index) {
+    UiThreadUtil.assertOnUiThread();
+
     mDrawingOrderHelper.handleRemoveView(getChildAt(index));
     setChildrenDrawingOrderEnabled(mDrawingOrderHelper.shouldEnableCustomDrawingOrder());
 
@@ -543,6 +550,8 @@ public class ReactViewGroup extends ViewGroup
   }
 
   /*package*/ void removeViewWithSubviewClippingEnabled(View view) {
+    UiThreadUtil.assertOnUiThread();
+
     Assertions.assertCondition(mRemoveClippedSubviews);
     Assertions.assertNotNull(mClippingRect);
     Assertions.assertNotNull(mAllChildren);
