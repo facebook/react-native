@@ -25,7 +25,7 @@
         <link href="https://facebook.github.io/react-native/blog/2019/07/17/hermes.html">
         </link>
         <updated>2019-07-17T06:00:00Z</updated>
-        <summary type="html"><![CDATA[<p>Last week at Chain React we announced Hermes, an open source JavaScript engine we’ve been working on at Facebook. It’s a small and lightweight JavaScript engine optimized for running React Native on Android. <a href="https://code.fb.com/android/hermes/">Check it out!</a></p> <p>Hermes improves React Native ...</p>]]></summary>
+        <summary type="html"><![CDATA[<p>Last week at Chain React we announced Hermes, an open source JavaScript engine we’ve been working on at Facebook. It’s a small and lightweight JavaScript engine optimized for running React Native on Android. <a href="https://code.fb.com/android/hermes/">Check it out!</a></p> <p>Hermes improves React Native...</p>]]></summary>
         <author>
             <name>Rachel Nabors</name>
             <uri>https://twitter.com/rachelnabors</uri>
@@ -97,7 +97,7 @@
         <link href="https://facebook.github.io/react-native/blog/2019/01/07/state-of-react-native-community.html">
         </link>
         <updated>2019-01-07T06:00:00Z</updated>
-        <summary type="html"><![CDATA[<p>In 2018 the React Native Community made a number of changes to the way we develop and communicate about React Native. We believe that a few years from now we will look back and see that this shift was a turning point for React Native.</p> <p>A lot of people ...</p>]]></summary>
+        <summary type="html"><![CDATA[<p>In 2018 the React Native Community made a number of changes to the way we develop and communicate about React Native. We believe that a few years from now we will look back and see that this shift was a turning point for React Native.</p> <p>A lot of people...</p>]]></summary>
         <author>
             <name>Lorenzo Sciandra</name>
             <uri>https://github.com/kelset</uri>
@@ -133,7 +133,7 @@
         <link href="https://facebook.github.io/react-native/blog/2018/08/13/react-native-accessibility-updates.html">
         </link>
         <updated>2018-08-13T06:00:00Z</updated>
-        <summary type="html"><![CDATA[<h2><a class="anchor" aria-hidden="true" id="motivation"></a><a href="#motivation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewbox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>Motivation</h2> <p>As technology advances and mobile apps become increasingly important to everyday life, the necessity of creating accessible applications has likewise grown in importance.</p> <p>React Native's limited Accessibility API has always been a huge pain ...</p>]]></summary>
+        <summary type="html"><![CDATA[<h2><a class="anchor" aria-hidden="true" id="motivation"></a><a href="#motivation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewbox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>Motivation</h2> <p>As technology advances and mobile apps become increasingly important to everyday life, the necessity of creating accessible applications has likewise grown in importance.</p> <p>React Native's limited Accessibility API has always been a huge pain...</p>]]></summary>
         <author>
             <name>Ziqi Chen</name>
             <uri>https://ziqichen.com/</uri>
@@ -241,7 +241,7 @@
         <link href="https://facebook.github.io/react-native/blog/2017/11/06/react-native-monthly-5.html">
         </link>
         <updated>2017-11-06T06:00:00Z</updated>
-        <summary type="html"><![CDATA[<p>The React Native monthly meeting continues! Let's see what our teams are up to.</p> <h3><a class="anchor" aria-hidden="true" id="callstack"></a><a href="#callstack" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewbox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>Callstack</h3> <ul> <li>We’ve been working on React Native CI. Most importantly, we have migrated from Travis to Circle, leaving React Native with a single, unified CI pipeline.</li> <li>We’ve ...</li></ul>]]></summary>
+        <summary type="html"><![CDATA[<p>The React Native monthly meeting continues! Let's see what our teams are up to.</p> <h3><a class="anchor" aria-hidden="true" id="callstack"></a><a href="#callstack" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewbox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a>Callstack</h3> <ul> <li>We’ve been working on React Native CI. Most importantly, we have migrated from Travis to Circle, leaving React Native with a single, unified CI pipeline.</li> <li>We’ve...</li></ul>]]></summary>
         <author>
             <name>Tomislav Tenodi</name>
             <uri>https://github.com/tenodi</uri>
@@ -289,7 +289,7 @@
         <link href="https://facebook.github.io/react-native/blog/2017/07/28/react-native-monthly-2.html">
         </link>
         <updated>2017-07-28T06:00:00Z</updated>
-        <summary type="html"><![CDATA[<p>The React Native monthly meeting continues! On this session, we were joined by <a href="https://infinite.red/">Infinite Red</a>, great minds behind <a href="https://infinite.red/ChainReactConf">Chain React, the React Native Conference</a>. As most of the people here were presenting talks at Chain React, we pushed the meeting to a week ...</p>]]></summary>
+        <summary type="html"><![CDATA[<p>The React Native monthly meeting continues! On this session, we were joined by <a href="https://infinite.red/">Infinite Red</a>, great minds behind <a href="https://infinite.red/ChainReactConf">Chain React, the React Native Conference</a>. As most of the people here were presenting talks at Chain React, we pushed the meeting to a week...</p>]]></summary>
         <author>
             <name>Tomislav Tenodi</name>
             <uri>https://github.com/tenodi</uri>
@@ -517,7 +517,7 @@
         <link href="https://facebook.github.io/react-native/blog/2015/03/26/react-native-bringing-modern-web-techniques-to-mobile.html">
         </link>
         <updated>2015-03-26T06:00:00Z</updated>
-        <summary type="html"><![CDATA[<p>We introduced <a href="https://code.facebook.com/projects/176988925806765/react/">React</a> to the world two years ago, and since then it's seen impressive growth, both inside and outside of Facebook. Today, even though no one is forced to use it, new web projects at Facebook are commonly built using React in one form or ...</p>]]></summary>
+        <summary type="html"><![CDATA[<p>We introduced <a href="https://code.facebook.com/projects/176988925806765/react/">React</a> to the world two years ago, and since then it's seen impressive growth, both inside and outside of Facebook. Today, even though no one is forced to use it, new web projects at Facebook are commonly built using React in one form or...</p>]]></summary>
         <author>
             <name>Tom Occhino</name>
             <uri>https://github.com/tomocchino</uri>
