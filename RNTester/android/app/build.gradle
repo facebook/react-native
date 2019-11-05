@@ -65,7 +65,6 @@ plugins {
  */
 
 project.ext.react = [
-    cliPath: "$rootDir/cli.js",
     bundleAssetName: "RNTesterApp.android.bundle",
     entryFile: file("../../js/RNTesterApp.android.js"),
     root: "$rootDir",
