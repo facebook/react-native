@@ -555,7 +555,7 @@ void Binding::schedulerDidFinishTransaction(
   std::lock_guard<std::recursive_mutex> lock(commitMutex_);
 
   SystraceSection s("FabricUIManagerBinding::schedulerDidFinishTransaction");
-  long finishTransactionStartTime = getTime();
+  long finishTransactionStartTime = monotonicTimeInMilliseconds();
 
   jni::global_ref<jobject> localJavaUIManager = getJavaUIManager();
   if (!localJavaUIManager) {
@@ -784,7 +784,7 @@ void Binding::schedulerDidFinishTransaction(
           ->getMethod<void(JMountItem::javaobject, jint, jlong, jlong, jlong, jlong, jlong, jlong, jlong)>(
               "scheduleMountItem");
 
-  long finishTransactionEndTime = getTime();
+  long finishTransactionEndTime = monotonicTimeInMilliseconds();
 
   scheduleMountItem(
       localJavaUIManager,
