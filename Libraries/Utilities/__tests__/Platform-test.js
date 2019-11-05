@@ -27,5 +27,17 @@ describe('Platform', () => {
       expect(PlatformIOS.select(obj)).toEqual(obj.ios);
       expect(PlatformAndroid.select(obj)).toEqual(obj.android);
     });
+
+    it('should return native value if no specific value was found', () => {
+      const obj = {native: 'native', default: 'default'};
+      expect(PlatformIOS.select(obj)).toEqual(obj.native);
+      expect(PlatformAndroid.select(obj)).toEqual(obj.native);
+    });
+
+    it('should return default value if no specific value was found', () => {
+      const obj = {default: 'default'};
+      expect(PlatformIOS.select(obj)).toEqual(obj.default);
+      expect(PlatformAndroid.select(obj)).toEqual(obj.default);
+    });
   });
 });

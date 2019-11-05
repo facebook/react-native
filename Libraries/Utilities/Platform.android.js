@@ -12,8 +12,9 @@
 
 import NativePlatformConstantsAndroid from './NativePlatformConstantsAndroid';
 
-export type PlatformSelectSpec<A, D> = {
+export type PlatformSelectSpec<A, N, D> = {
   android?: A,
+  native?: N,
   default?: D,
 };
 
@@ -53,8 +54,12 @@ const Platform = {
   get isTV(): boolean {
     return this.constants.uiMode === 'tv';
   },
-  select: <A, D>(spec: PlatformSelectSpec<A, D>): A | D =>
-    'android' in spec ? spec.android : spec.default,
+  select: <A, N, D>(spec: PlatformSelectSpec<A, N, D>): A | N | D =>
+    'android' in spec
+      ? spec.android
+      : 'native' in spec
+      ? spec.native
+      : spec.default,
 };
 
 module.exports = Platform;
