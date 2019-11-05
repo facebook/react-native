@@ -51,6 +51,18 @@ void MountingTelemetry::didLayout() {
   layoutEndTime_ = monotonicTimeInMilliseconds();
 }
 
+void MountingTelemetry::willMount() {
+  assert(mountStartTime_ == kUndefinedTime);
+  assert(mountEndTime_ == kUndefinedTime);
+  mountStartTime_ = monotonicTimeInMilliseconds();
+}
+
+void MountingTelemetry::didMount() {
+  assert(mountStartTime_ != kUndefinedTime);
+  assert(mountEndTime_ == kUndefinedTime);
+  mountEndTime_ = monotonicTimeInMilliseconds();
+}
+
 int64_t MountingTelemetry::getDiffStartTime() const {
   assert(diffStartTime_ != kUndefinedTime);
   assert(diffEndTime_ != kUndefinedTime);
@@ -89,6 +101,18 @@ int64_t MountingTelemetry::getLayoutEndTime() const {
   assert(layoutStartTime_ != kUndefinedTime);
   assert(layoutEndTime_ != kUndefinedTime);
   return layoutEndTime_;
+}
+
+int64_t MountingTelemetry::getMountStartTime() const {
+  assert(mountStartTime_ != kUndefinedTime);
+  assert(mountEndTime_ != kUndefinedTime);
+  return mountStartTime_;
+}
+
+int64_t MountingTelemetry::getMountEndTime() const {
+  assert(mountStartTime_ != kUndefinedTime);
+  assert(mountEndTime_ != kUndefinedTime);
+  return mountEndTime_;
 }
 
 } // namespace react

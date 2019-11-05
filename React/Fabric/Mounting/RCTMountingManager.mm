@@ -269,12 +269,15 @@ static void RNPerformMountInstructions(
   }
 
   RCTAssertMainQueue();
-  auto metadata = MountingTransactionMetadata{surfaceId, transaction->getNumber(), transaction->getTelemetry()};
+  auto telemetry = transaction->getTelemetry();
+  auto number = transaction->getNumber();
 
   [self.delegate mountingManager:self willMountComponentsWithRootTag:surfaceId];
-  _observerCoordinator.notifyObserversMountingTransactionWillMount(metadata);
+  _observerCoordinator.notifyObserversMountingTransactionWillMount({surfaceId, number, telemetry});
+  telemetry.willMount();
   RNPerformMountInstructions(mutations, self.componentViewRegistry, _observerCoordinator, surfaceId);
-  _observerCoordinator.notifyObserversMountingTransactionDidMount(metadata);
+  telemetry.didMount();
+  _observerCoordinator.notifyObserversMountingTransactionDidMount({surfaceId, number, telemetry});
   [self.delegate mountingManager:self didMountComponentsWithRootTag:surfaceId];
 }
 
