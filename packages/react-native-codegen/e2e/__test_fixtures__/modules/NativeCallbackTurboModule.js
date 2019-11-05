@@ -10,8 +10,7 @@
 
 'use strict';
 
-import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
-import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export type String = string;
 type CB = (value: String) => void;

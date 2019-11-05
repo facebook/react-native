@@ -23,8 +23,7 @@ const EMPTY_NATIVE_MODULE = `
 
 'use strict';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export interface Spec extends TurboModule {
   // mo methods
@@ -47,8 +46,7 @@ const NATIVE_MODULE_WITH_COMPLEX_OBJECTS = `
 
 'use strict';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export type String = string;
 
@@ -82,8 +80,7 @@ const NATIVE_MODULE_WITH_COMPLEX_OBJECTS_WITH_NULLABLE_KEY = `
 
 'use strict';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export interface Spec extends TurboModule {
   +getConstants: () => {|
@@ -118,8 +115,7 @@ const NATIVE_MODULE_WITH_BASIC_PARAM_TYPES = `
 
 'use strict';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export interface Spec extends TurboModule {
   +passBool?: (arg: boolean) => void;
@@ -145,8 +141,7 @@ const NATIVE_MODULE_WITH_WITH_ALIASES = `
 
 'use strict';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 type NumNum = number;
 export type Num = (arg: NumNum) => void;
@@ -179,8 +174,7 @@ const NATIVE_MODULE_WITH_WITH_FLOAT_AND_INT32 = `
 
 'use strict';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 import type {Int32, Float} from 'react-native/Libraries/Types/CodegenTypes';
 
 export interface Spec extends TurboModule {
@@ -204,8 +198,7 @@ const NATIVE_MODULE_WITH_SIMPLE_OBJECT = `
 
 'use strict';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export interface Spec extends TurboModule {
   +getObject: (o : Object) => Object,
@@ -228,8 +221,7 @@ const NATIVE_MODULE_WITH_NULLABLE_PARAM = `
 
 'use strict';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export interface Spec extends TurboModule {
   // Exported methods.
@@ -253,8 +245,7 @@ const NATIVE_MODULE_WITH_BASIC_ARRAY = `
 
 'use strict';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export interface Spec extends TurboModule {
   +getArray: (arg: Array<string>) => Array<string>;
@@ -278,8 +269,7 @@ const NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEIFNED_IN_FILE_AS_PROPERTY = `
 
 'use strict';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 type DisplayMetricsAndroid = {|
  width: number,
@@ -314,8 +304,7 @@ const NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE = `
 
 'use strict';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export interface Spec extends TurboModule {
   +getArray: (arg: Array<[string, string]>) => Array<string | number | boolean>;
@@ -338,8 +327,7 @@ const NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS = `
 
 'use strict';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export type SomeString = string;
 
@@ -364,8 +352,7 @@ const NATIVE_MODULE_WITH_COMPLEX_ARRAY = `
 
 'use strict';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export interface Spec extends TurboModule {
   +getArray: (arg: Array<Array<Array<Array<Array<any>>>>>) => Array<Array<Array<string>>>;
@@ -387,8 +374,7 @@ const NATIVE_MODULE_WITH_PROMISE = `/**
 
 'use strict';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export type String = string;
 export type SomeObj = {| a: string |};
@@ -416,8 +402,7 @@ const NATIVE_MODULE_WITH_CALLBACK = `
 
 'use strict';
 
-import type {TurboModule} from '../RCTExport';
-import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export interface Spec extends TurboModule {
   // Exported methods.
