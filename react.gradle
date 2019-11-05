@@ -85,6 +85,19 @@ afterEvaluate {
         // Additional node and packager commandline arguments
         def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
         def extraPackagerArgs = config.extraPackagerArgs ?: []
+        def npx = Os.isFamily(Os.FAMILY_WINDOWS) ? "npx.cmd" : "npx"
+
+        def execCommand = []
+
+        if (config.cliPath || config.nodeExecutableAndArgs) {
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                execCommand.addAll(["cmd", "/c", *nodeExecutableAndArgs, cliPath])
+            } else {
+                execCommand.addAll([*nodeExecutableAndArgs, cliPath])
+            }
+        } else {
+            execCommand.addAll([npx, "react-native"])
+        }
 
         def enableHermes = enableHermesForVariant(variant)
 
@@ -126,15 +139,10 @@ afterEvaluate {
                 extraArgs.add(bundleConfig);
             }
 
-            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine("cmd", "/c", *nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
-                    "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir,
-                    "--sourcemap-output", enableHermes ? jsPackagerSourceMapFile : jsOutputSourceMapFile, *extraArgs)
-            } else {
-                commandLine(*nodeExecutableAndArgs, cliPath, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
-                    "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir,
-                    "--sourcemap-output", enableHermes ? jsPackagerSourceMapFile : jsOutputSourceMapFile, *extraArgs)
-            }
+            commandLine(*execCommand, bundleCommand, "--platform", "android", "--dev", "${devEnabled}",
+                "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir,
+                "--sourcemap-output", enableHermes ? jsPackagerSourceMapFile : jsOutputSourceMapFile, *extraArgs)
+
 
             if (enableHermes) {
                 doLast {
