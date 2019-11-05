@@ -11,7 +11,7 @@
 
 const React = require('react');
 
-const ExperimentalVirtualizedListOptContext = React.createContext<boolean>(
+const ExperimentalVirtualizedListOptContext: React.Context<boolean> = React.createContext<boolean>(
   false,
 );
 

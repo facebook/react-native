@@ -172,7 +172,7 @@ class ScrollViewStickyHeaderWrapped extends React.Component<Props, State> {
   setNextHeaderY(y: number) {
     this._childRef && this._childRef.setNextHeaderY(y);
   }
-  render() {
+  render(): React.Node {
     return (
       <ExperimentalVirtualizedListOptContext.Consumer>
         {experimentalVirtualizedListOpt => {
