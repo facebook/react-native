@@ -8,13 +8,10 @@
 package com.facebook.react.views.text;
 
 import android.content.res.AssetManager;
-import android.graphics.Paint;
 import android.graphics.Typeface;
-
+import android.text.TextUtils;
 import androidx.annotation.Nullable;
-
 import com.facebook.react.bridge.ReadableArray;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,30 +48,37 @@ public class ReactTypefaceUtils {
     List<String> features = new ArrayList<>();
     for (int i = 0; i < fontVariantArray.size(); i++) {
       // see https://docs.microsoft.com/en-us/typography/opentype/spec/featurelist
-      switch (fontVariantArray.getString(i)) {
-        case "small-caps":
-          features.add("'smcp'");
-          break;
-        case "oldstyle-nums":
-          features.add("'onum'");
-          break;
-        case "lining-nums":
-          features.add("'lnum'");
-          break;
-        case "tabular-nums":
-          features.add("'tnum'");
-          break;
-        case "proportional-nums":
-          features.add("'pnum'");
-          break;
+      String fontVariant = fontVariantArray.getString(i);
+      if (fontVariant != null) {
+        switch (fontVariant) {
+          case "small-caps":
+            features.add("'smcp'");
+            break;
+          case "oldstyle-nums":
+            features.add("'onum'");
+            break;
+          case "lining-nums":
+            features.add("'lnum'");
+            break;
+          case "tabular-nums":
+            features.add("'tnum'");
+            break;
+          case "proportional-nums":
+            features.add("'pnum'");
+            break;
+        }
       }
     }
 
-    return String.join(", ", features);
+    return TextUtils.join(", ", features);
   }
 
-  public static Typeface applyStyles(@Nullable Typeface typeface,
-                                         int style, int weight, @Nullable String family, AssetManager assetManager) {
+  public static Typeface applyStyles(
+      @Nullable Typeface typeface,
+      int style,
+      int weight,
+      @Nullable String family,
+      AssetManager assetManager) {
     int oldStyle;
     if (typeface == null) {
       oldStyle = 0;
@@ -114,9 +118,9 @@ public class ReactTypefaceUtils {
   private static int parseNumericFontWeight(String fontWeightString) {
     // This should be much faster than using regex to verify input and Integer.parseInt
     return fontWeightString.length() == 3
-        && fontWeightString.endsWith("00")
-        && fontWeightString.charAt(0) <= '9'
-        && fontWeightString.charAt(0) >= '1'
+            && fontWeightString.endsWith("00")
+            && fontWeightString.charAt(0) <= '9'
+            && fontWeightString.charAt(0) >= '1'
         ? 100 * (fontWeightString.charAt(0) - '0')
         : UNSET;
   }
