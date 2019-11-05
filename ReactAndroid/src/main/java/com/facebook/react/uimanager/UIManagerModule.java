@@ -469,7 +469,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   @ReactMethod
-  public void updateView(int tag, String className, ReadableMap props) {
+  public void updateView(final int tag, final String className, final ReadableMap props) {
     if (DEBUG) {
       String message =
           "(UIManager.updateView) tag: " + tag + ", class: " + className + ", props: " + props;
@@ -478,10 +478,19 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
     int uiManagerType = ViewUtil.getUIManagerType(tag);
     if (uiManagerType == FABRIC) {
-      UIManager fabricUIManager =
-          UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
-      if (fabricUIManager != null) {
-        fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
+      ReactApplicationContext reactApplicationContext = getReactApplicationContext();
+      if (reactApplicationContext.hasActiveCatalystInstance()) {
+        final UIManager fabricUIManager =
+            UIManagerHelper.getUIManager(reactApplicationContext, uiManagerType);
+        if (fabricUIManager != null) {
+          reactApplicationContext.runOnUiQueueThread(
+              new Runnable() {
+                @Override
+                public void run() {
+                  fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
+                }
+              });
+        }
       }
     } else {
       mUIImplementation.updateView(tag, className, props);
