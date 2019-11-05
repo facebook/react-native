@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -33,6 +33,7 @@
 #endif
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
+static NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
 
 @interface RCTUIManager (RCTRootView)
 
@@ -347,7 +348,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (bothSizesHaveAZeroDimension || sizesAreEqual) {
     return;
   }
-  
+
   [self invalidateIntrinsicContentSize];
   [self.superview setNeedsLayout];
 
@@ -366,9 +367,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [self showLoadingView];
 }
 
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 13.0, *)) {
+    if ([previousTraitCollection hasDifferentColorAppearanceComparedToTraitCollection:self.traitCollection]) {
+      [[NSNotificationCenter defaultCenter] postNotificationName:RCTUserInterfaceStyleDidChangeNotification
+                                                          object:self
+                                                        userInfo:@{@"traitCollection": self.traitCollection}];
+    }
+  }
+}
+#endif
+
 - (void)dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [_contentView invalidate];
 }
 

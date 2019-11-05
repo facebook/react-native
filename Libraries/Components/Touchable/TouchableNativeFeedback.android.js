@@ -10,19 +10,22 @@
 
 'use strict';
 
+import TouchableInjection from './TouchableInjection';
+
 const Platform = require('../../Utilities/Platform');
-const React = require('react');
 const PropTypes = require('prop-types');
+const React = require('react');
 const ReactNative = require('../../Renderer/shims/ReactNative');
 const Touchable = require('./Touchable');
 const TouchableWithoutFeedback = require('./TouchableWithoutFeedback');
-const UIManager = require('../../ReactNative/UIManager');
 const View = require('../View/View');
+import {Commands} from '../View/ViewNativeComponent';
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('./ensurePositiveDelayProps');
 const processColor = require('../../StyleSheet/processColor');
 
+import type {Props as TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
 import type {PressEvent} from '../../Types/CoreEventTypes';
 
 const rippleBackgroundPropType = PropTypes.shape({
@@ -42,6 +45,31 @@ const backgroundPropType = PropTypes.oneOfType([
 ]);
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+
+export type Props = $ReadOnly<{|
+  ...TouchableWithoutFeedbackProps,
+
+  background?: ?(
+    | $ReadOnly<{|
+        type: 'ThemeAttrAndroid',
+        attribute:
+          | 'selectableItemBackground'
+          | 'selectableItemBackgroundBorderless',
+      |}>
+    | $ReadOnly<{|
+        type: 'RippleAndroid',
+        color: ?number,
+        borderless: boolean,
+      |}>
+  ),
+  hasTVPreferredFocus?: ?boolean,
+  nextFocusDown?: ?number,
+  nextFocusForward?: ?number,
+  nextFocusLeft?: ?number,
+  nextFocusRight?: ?number,
+  nextFocusUp?: ?number,
+  useForeground?: ?boolean,
+|}>;
 
 /**
  * A wrapper for making views respond properly to touches (Android only).
@@ -72,7 +100,7 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * ```
  */
 
-const TouchableNativeFeedback = createReactClass({
+const TouchableNativeFeedbackImpl = createReactClass({
   displayName: 'TouchableNativeFeedback',
   propTypes: {
     /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
@@ -263,19 +291,28 @@ const TouchableNativeFeedback = createReactClass({
   },
 
   _dispatchHotspotUpdate: function(destX, destY) {
-    UIManager.dispatchViewManagerCommand(
-      ReactNative.findNodeHandle(this),
-      UIManager.getViewManagerConfig('RCTView').Commands.hotspotUpdate,
-      [destX || 0, destY || 0],
-    );
+    const hostComponentRef = ReactNative.findHostInstance_DEPRECATED(this);
+
+    if (hostComponentRef == null) {
+      console.warn(
+        'Touchable: Unable to find HostComponent instance. ' +
+          'Has your Touchable component been unmounted?',
+      );
+    } else {
+      Commands.hotspotUpdate(hostComponentRef, destX || 0, destY || 0);
+    }
   },
 
   _dispatchPressedStateChange: function(pressed) {
-    UIManager.dispatchViewManagerCommand(
-      ReactNative.findNodeHandle(this),
-      UIManager.getViewManagerConfig('RCTView').Commands.setPressed,
-      [pressed],
-    );
+    const hostComponentRef = ReactNative.findHostInstance_DEPRECATED(this);
+    if (hostComponentRef == null) {
+      console.warn(
+        'Touchable: Unable to find HostComponent instance. ' +
+          'Has your Touchable component been unmounted?',
+      );
+    } else {
+      Commands.setPressed(hostComponentRef, pressed);
+    }
   },
 
   render: function() {
@@ -294,7 +331,7 @@ const TouchableNativeFeedback = createReactClass({
     }
     if (
       this.props.useForeground &&
-      !TouchableNativeFeedback.canUseNativeForeground()
+      !TouchableNativeFeedbackImpl.canUseNativeForeground()
     ) {
       console.warn(
         'Requested foreground ripple, but it is not available on this version of Android. ' +
@@ -304,7 +341,7 @@ const TouchableNativeFeedback = createReactClass({
     }
     const drawableProp =
       this.props.useForeground &&
-      TouchableNativeFeedback.canUseNativeForeground()
+      TouchableNativeFeedbackImpl.canUseNativeForeground()
         ? 'nativeForegroundAndroid'
         : 'nativeBackgroundAndroid';
     const childProps = {
@@ -313,15 +350,14 @@ const TouchableNativeFeedback = createReactClass({
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
       accessibilityRole: this.props.accessibilityRole,
-      accessibilityStates: this.props.accessibilityStates,
       accessibilityState: this.props.accessibilityState,
       accessibilityActions: this.props.accessibilityActions,
       onAccessibilityAction: this.props.onAccessibilityAction,
+      accessibilityValue: this.props.accessibilityValue,
       children,
       testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,
-      isTVSelectable: true,
       nextFocusDown: this.props.nextFocusDown,
       nextFocusForward: this.props.nextFocusForward,
       nextFocusLeft: this.props.nextFocusLeft,
@@ -349,4 +385,9 @@ const TouchableNativeFeedback = createReactClass({
   },
 });
 
-module.exports = TouchableNativeFeedback;
+const TouchableNativeFeedback: React.ComponentType<Props> =
+  TouchableInjection.unstable_TouchableNativeFeedback == null
+    ? TouchableNativeFeedbackImpl
+    : TouchableInjection.unstable_TouchableNativeFeedback;
+
+module.exports = (TouchableNativeFeedback: $FlowFixMe);

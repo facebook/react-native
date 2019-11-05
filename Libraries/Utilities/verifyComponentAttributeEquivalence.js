@@ -43,7 +43,7 @@ function verifyComponentAttributeEquivalence(
   componentName: string,
   config: ReactNativeBaseComponentViewConfig<>,
 ) {
-  if (__DEV__ && !global.RN$Bridgeless) {
+  if (!global.RN$Bridgeless) {
     const nativeAttributes = getNativeComponentAttributes(componentName);
 
     ['validAttributes', 'bubblingEventTypes', 'directEventTypes'].forEach(
@@ -105,7 +105,7 @@ export function lefthandObjectDiff(leftObj: Object, rightObj: Object): Object {
 export function getConfigWithoutViewProps(
   viewConfig: ReactNativeBaseComponentViewConfig<>,
   propName: string,
-): $TEMPORARY$object<{||}> {
+): {...} {
   if (!viewConfig[propName]) {
     return {};
   }

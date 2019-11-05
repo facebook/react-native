@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -104,9 +104,7 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
         std::static_pointer_cast<ConcreteViewShadowNode>(
             childShadowNode->clone({}));
     ShadowNode::replaceChild(
-        childShadowNode->shared_from_this(),
-        clonedChildShadowNode,
-        suggestedIndex);
+        *childShadowNode, clonedChildShadowNode, suggestedIndex);
     return clonedChildShadowNode.get();
   }
 

@@ -10,16 +10,17 @@
 
 'use strict';
 
-import type {TurboModule} from '../../TurboModule/RCTExport';
-import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export interface Spec extends TurboModule {
   +reload: () => void;
+  +reloadWithReason?: (reason: string) => void;
+  +onFastRefresh?: () => void;
   +setHotLoadingEnabled: (isHotLoadingEnabled: boolean) => void;
   +setIsDebuggingRemotely: (isDebuggingRemotelyEnabled: boolean) => void;
-  +setLiveReloadEnabled: (isLiveReloadEnabled: boolean) => void;
   +setProfilingEnabled: (isProfilingEnabled: boolean) => void;
   +toggleElementInspector: () => void;
+  +addMenuItem: (title: string) => void;
 
   // iOS only.
   +setIsShakeToShowDevMenuEnabled: (enabled: boolean) => void;

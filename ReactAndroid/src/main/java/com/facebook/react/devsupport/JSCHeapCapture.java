@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport;
 
 import androidx.annotation.Nullable;
@@ -18,6 +19,8 @@ import java.io.File;
 // requires it to already be initialized, thus we eagerly initialize this module
 @ReactModule(name = "JSCHeapCapture", needsEagerInit = true)
 public class JSCHeapCapture extends ReactContextBaseJavaModule {
+  public static final String TAG = JSCHeapCapture.class.getSimpleName();
+
   public interface HeapCapture extends JavaScriptModule {
     void captureHeap(String path);
   }
@@ -53,13 +56,17 @@ public class JSCHeapCapture extends ReactContextBaseJavaModule {
     File f = new File(path + "/capture.json");
     f.delete();
 
-    HeapCapture heapCapture = getReactApplicationContext().getJSModule(HeapCapture.class);
-    if (heapCapture == null) {
-      callback.onFailure(new CaptureException("Heap capture js module not registered."));
-      return;
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+
+    if (reactApplicationContext != null) {
+      HeapCapture heapCapture = reactApplicationContext.getJSModule(HeapCapture.class);
+      if (heapCapture == null) {
+        callback.onFailure(new CaptureException("Heap capture js module not registered."));
+        return;
+      }
+      mCaptureInProgress = callback;
+      heapCapture.captureHeap(f.getPath());
     }
-    mCaptureInProgress = callback;
-    heapCapture.captureHeap(f.getPath());
   }
 
   @ReactMethod

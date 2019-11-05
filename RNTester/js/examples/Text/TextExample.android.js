@@ -10,12 +10,13 @@
 
 'use strict';
 
-const React = require('react');
-const {StyleSheet, Text, View} = require('react-native');
 const RNTesterBlock = require('../../components/RNTesterBlock');
 const RNTesterPage = require('../../components/RNTesterPage');
+const React = require('react');
 const TextInlineView = require('../../components/TextInlineView');
 const TextLegend = require('../../components/TextLegend');
+
+const {StyleSheet, Text, View} = require('react-native');
 
 class Entity extends React.Component<{|children: React.Node|}> {
   render() {
@@ -70,7 +71,7 @@ class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
 }
 
 class TextExample extends React.Component<{}> {
-  render() {
+  render(): React.Node {
     return (
       <RNTesterPage title="<Text>">
         <RNTesterBlock title="Wrap">
@@ -571,6 +572,33 @@ class TextExample extends React.Component<{}> {
           </Text>
           <Text ellipsizeMode="clip" numberOfLines={1}>
             This very long text should be clipped and this will not be visible.
+          </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Font variants">
+          <Text style={{fontVariant: ['small-caps']}}>Small Caps{'\n'}</Text>
+          <Text
+            style={{
+              fontFamily: 'Roboto',
+              fontVariant: ['oldstyle-nums'],
+            }}>
+            Old Style nums 0123456789{'\n'}
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'Roboto',
+              fontVariant: ['lining-nums'],
+            }}>
+            Lining nums 0123456789{'\n'}
+          </Text>
+          <Text style={{fontVariant: ['tabular-nums']}}>
+            Tabular nums{'\n'}
+            1111{'\n'}
+            2222{'\n'}
+          </Text>
+          <Text style={{fontVariant: ['proportional-nums']}}>
+            Proportional nums{'\n'}
+            1111{'\n'}
+            2222{'\n'}
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Include Font Padding">

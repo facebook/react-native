@@ -10,8 +10,7 @@
 
 'use strict';
 
-import type {TurboModule} from '../../TurboModule/RCTExport';
-import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 /**
  * Native Module used for playing sounds in native platform.
@@ -20,4 +19,4 @@ export interface Spec extends TurboModule {
   +playTouchSound: () => void;
 }
 
-export default (TurboModuleRegistry.getEnforcing<Spec>('SoundManager'): Spec);
+export default (TurboModuleRegistry.get<Spec>('SoundManager'): ?Spec);

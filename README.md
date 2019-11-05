@@ -41,13 +41,13 @@
   <span> · </span>
   <a href="https://facebook.github.io/react-native/en/help">Community</a>
   <span> · </span>
-  <a href="https://github.com/facebook/react-native/blob/master/.github/SUPPORT">Support</a>
+  <a href="https://github.com/facebook/react-native/blob/master/.github/SUPPORT.md">Support</a>
 </h3>
 
 React Native brings [**React**'s][r] declarative UI framework to iOS and Android. With React Native, you use native UI controls and have full access to the native platform.
 
 - **Declarative.** React makes it painless to create interactive UIs. Declarative views make your code more predictable and easier to debug.
-- **Component-Based.** Build encapsulated components that manage their own state, then compose them to make complex UIs.
+- **Component-Based.** Build encapsulated components that manage their state, then compose them to make complex UIs.
 - **Developer Velocity.** See local changes in seconds. Changes to JavaScript code can be live reloaded without rebuilding the native app.
 - **Portability.** Reuse code across iOS, Android, and [other platforms][p].
 
@@ -98,7 +98,7 @@ The source for the React Native documentation and website is hosted on a separat
 
 ## 🚀 Upgrading
 
-Upgrading to new versions of React Native may give you access to more APIs, views, developer tools and other goodies. See the [Upgrading Guide][u] for instructions.
+Upgrading to new versions of React Native may give you access to more APIs, views, developer tools, and other goodies. See the [Upgrading Guide][u] for instructions.
 
 React Native releases are discussed in the React Native Community, [**@react-native-community/react-native-releases**][repo-releases].
 
@@ -107,7 +107,7 @@ React Native releases are discussed in the React Native Community, [**@react-nat
 
 ## 👏 How to Contribute
 
-The main purpose of this repository is to continue evolving React Native core. We want to make contributing to this project as easy and transparent as possible, and we are grateful to the community for contributing bugfixes and improvements. Read below to learn how you can take part in improving React Native.
+The main purpose of this repository is to continue evolving React Native core. We want to make contributing to this project as easy and transparent as possible, and we are grateful to the community for contributing bug fixes and improvements. Read below to learn how you can take part in improving React Native.
 
 ### [Code of Conduct][code]
 

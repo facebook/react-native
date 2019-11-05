@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,6 +8,7 @@
 #import "RCTImageManager.h"
 
 #import <react/debug/SystraceSection.h>
+#import <react/utils/ManagedObjectWrapper.h>
 #import <react/utils/SharedFunction.h>
 
 #import <React/RCTImageLoader.h>
@@ -65,8 +66,7 @@ using namespace facebook::react;
       }
 
       if (image && !error) {
-        auto imageResponse = ImageResponse(std::shared_ptr<void>((__bridge_retained void *)image, CFRelease));
-        observerCoordinator->nativeImageResponseComplete(std::move(imageResponse));
+        observerCoordinator->nativeImageResponseComplete(ImageResponse(wrapManagedObject(image)));
       } else {
         observerCoordinator->nativeImageResponseFailed();
       }

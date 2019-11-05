@@ -13,8 +13,6 @@
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 
-const nullthrows = require('nullthrows');
-
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import AndroidSwipeRefreshLayoutNativeComponent from './AndroidSwipeRefreshLayoutNativeComponent';

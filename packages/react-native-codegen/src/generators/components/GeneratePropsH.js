@@ -11,10 +11,14 @@
 'use strict';
 
 const {
+  convertDefaultTypeToString,
   getCppTypeForAnnotation,
+  getEnumMaskName,
+  getEnumName,
   toSafeCppString,
   generateStructName,
   getImports,
+  toIntEnumValueName,
 } = require('./CppHelpers.js');
 
 import type {
@@ -77,6 +81,24 @@ static inline std::string toString(const ::_ENUM_NAME_:: &value) {
 }
 `.trim();
 
+const intEnumTemplate = `
+enum class ::_ENUM_NAME_:: { ::_VALUES_:: };
+
+static inline void fromRawValue(const RawValue &value, ::_ENUM_NAME_:: &result) {
+  assert(value.hasType<int>());
+  auto integerValue = (int)value;
+  switch (integerValue) {::_FROM_CASES_::
+  }
+  abort();
+}
+
+static inline std::string toString(const ::_ENUM_NAME_:: &value) {
+  switch (value) {
+    ::_TO_CASES_::
+  }
+}
+`.trim();
+
 const structTemplate = `struct ::_STRUCT_NAME_:: {
   ::_FIELDS_::
 };
@@ -98,6 +120,20 @@ const arrayConversionFunction = `static inline void fromRawValue(const RawValue 
     ::_STRUCT_NAME_:: newItem;
     fromRawValue(item, newItem);
     result.emplace_back(newItem);
+  }
+}
+`;
+
+const doubleArrayConversionFunction = `static inline void fromRawValue(const RawValue &value, std::vector<std::vector<::_STRUCT_NAME_::>> &result) {
+  auto items = (std::vector<std::vector<RawValue>>)value;
+  for (const std::vector<RawValue> &item : items) {
+    auto nestedArray = std::vector<::_STRUCT_NAME_::>{};
+    for (const RawValue &nestedItem : item) {
+      ::_STRUCT_NAME_:: newItem;
+      fromRawValue(nestedItem, newItem);
+      nestedArray.emplace_back(newItem);
+    }
+    result.emplace_back(nestedArray);
   }
 }
 `;
@@ -193,24 +229,29 @@ function getNativeTypeFromAnnotation(
           return 'ImageSource';
         case 'PointPrimitive':
           return 'Point';
+        case 'EdgeInsetsPrimitive':
+          return 'EdgeInsets';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Received unknown NativePrimitiveTypeAnnotation');
       }
     case 'ArrayTypeAnnotation': {
-      if (typeAnnotation.elementType.type === 'ArrayTypeAnnotation') {
-        throw new Error(
-          'ArrayTypeAnnotation of type ArrayTypeAnnotation not supported',
-        );
+      const arrayType = typeAnnotation.elementType.type;
+      if (arrayType === 'ArrayTypeAnnotation') {
+        return `std::vector<${getNativeTypeFromAnnotation(
+          componentName,
+          {typeAnnotation: typeAnnotation.elementType, name: ''},
+          nameParts.concat([prop.name]),
+        )}>`;
       }
-      if (typeAnnotation.elementType.type === 'ObjectTypeAnnotation') {
+      if (arrayType === 'ObjectTypeAnnotation') {
         const structName = generateStructName(
           componentName,
           nameParts.concat([prop.name]),
         );
         return `std::vector<${structName}>`;
       }
-      if (typeAnnotation.elementType.type === 'StringEnumTypeAnnotation') {
+      if (arrayType === 'StringEnumTypeAnnotation') {
         const enumName = getEnumName(componentName, prop.name);
         return getEnumMaskName(enumName);
       }
@@ -229,6 +270,8 @@ function getNativeTypeFromAnnotation(
     }
     case 'StringEnumTypeAnnotation':
       return getEnumName(componentName, prop.name);
+    case 'Int32EnumTypeAnnotation':
+      return getEnumName(componentName, prop.name);
     default:
       (typeAnnotation: empty);
       throw new Error(
@@ -237,80 +280,6 @@ function getNativeTypeFromAnnotation(
         }, received ${typeAnnotation.type}`,
       );
   }
-}
-
-function convertDefaultTypeToString(componentName: string, prop): string {
-  const typeAnnotation = prop.typeAnnotation;
-  switch (typeAnnotation.type) {
-    case 'BooleanTypeAnnotation':
-      return String(typeAnnotation.default);
-    case 'StringTypeAnnotation':
-      if (typeAnnotation.default == null) {
-        return '';
-      }
-      return `"${typeAnnotation.default}"`;
-    case 'Int32TypeAnnotation':
-      return String(typeAnnotation.default);
-    case 'DoubleTypeAnnotation':
-      const defaultDoubleVal = typeAnnotation.default;
-      return parseInt(defaultDoubleVal, 10) === defaultDoubleVal
-        ? typeAnnotation.default.toFixed(1)
-        : String(typeAnnotation.default);
-    case 'FloatTypeAnnotation':
-      const defaultFloatVal = typeAnnotation.default;
-      return parseInt(defaultFloatVal, 10) === defaultFloatVal
-        ? typeAnnotation.default.toFixed(1)
-        : String(typeAnnotation.default);
-    case 'NativePrimitiveTypeAnnotation':
-      switch (typeAnnotation.name) {
-        case 'ColorPrimitive':
-          return '';
-        case 'ImageSourcePrimitive':
-          return '';
-        case 'PointPrimitive':
-          return '';
-        default:
-          (typeAnnotation.name: empty);
-          throw new Error('Received unknown NativePrimitiveTypeAnnotation');
-      }
-    case 'ArrayTypeAnnotation': {
-      switch (typeAnnotation.elementType.type) {
-        case 'StringEnumTypeAnnotation':
-          if (typeAnnotation.elementType.default == null) {
-            throw new Error(
-              'A default is required for array StringEnumTypeAnnotation',
-            );
-          }
-          const enumName = getEnumName(componentName, prop.name);
-          const enumMaskName = getEnumMaskName(enumName);
-          const defaultValue = `${enumName}::${toSafeCppString(
-            typeAnnotation.elementType.default || '',
-          )}`;
-          return `static_cast<${enumMaskName}>(${defaultValue})`;
-        default:
-          return '';
-      }
-    }
-    case 'ObjectTypeAnnotation': {
-      return '';
-    }
-    case 'StringEnumTypeAnnotation':
-      return `${getEnumName(componentName, prop.name)}::${toSafeCppString(
-        typeAnnotation.default,
-      )}`;
-    default:
-      (typeAnnotation: empty);
-      throw new Error('Received invalid typeAnnotation');
-  }
-}
-
-function getEnumName(componentName, propName): string {
-  const uppercasedPropName = toSafeCppString(propName);
-  return `${componentName}${uppercasedPropName}`;
-}
-
-function getEnumMaskName(enumName: string): string {
-  return `${enumName}Mask`;
 }
 
 function convertValueToEnumOption(value: string): string {
@@ -355,37 +324,85 @@ function generateArrayEnumString(
     .replace('::_FROM_CASES_::', fromCases)
     .replace('::_TO_CASES_::', toCases);
 }
-function generateEnum(componentName, prop) {
-  if (!prop.typeAnnotation.options) {
-    return '';
+
+function generateStringEnum(componentName, prop) {
+  const typeAnnotation = prop.typeAnnotation;
+  if (typeAnnotation.type === 'StringEnumTypeAnnotation') {
+    const values: $ReadOnlyArray<string> = typeAnnotation.options.map(
+      option => option.name,
+    );
+    const enumName = getEnumName(componentName, prop.name);
+
+    const fromCases = values
+      .map(
+        value =>
+          `if (string == "${value}") { result = ${enumName}::${convertValueToEnumOption(
+            value,
+          )}; return; }`,
+      )
+      .join('\n' + '  ');
+
+    const toCases = values
+      .map(
+        value =>
+          `case ${enumName}::${convertValueToEnumOption(
+            value,
+          )}: return "${value}";`,
+      )
+      .join('\n' + '    ');
+
+    return enumTemplate
+      .replace(/::_ENUM_NAME_::/g, enumName)
+      .replace('::_VALUES_::', values.map(toSafeCppString).join(', '))
+      .replace('::_FROM_CASES_::', fromCases)
+      .replace('::_TO_CASES_::', toCases);
   }
-  const values = prop.typeAnnotation.options.map(option => option.name);
-  const enumName = getEnumName(componentName, prop.name);
 
-  const fromCases = values
-    .map(
-      value =>
-        `if (string == "${value}") { result = ${enumName}::${convertValueToEnumOption(
-          value,
-        )}; return; }`,
-    )
-    .join('\n' + '  ');
-
-  const toCases = values
-    .map(
-      value =>
-        `case ${enumName}::${convertValueToEnumOption(
-          value,
-        )}: return "${value}";`,
-    )
-    .join('\n' + '    ');
-
-  return enumTemplate
-    .replace(/::_ENUM_NAME_::/g, enumName)
-    .replace('::_VALUES_::', values.map(toSafeCppString).join(', '))
-    .replace('::_FROM_CASES_::', fromCases)
-    .replace('::_TO_CASES_::', toCases);
+  return '';
 }
+
+function generateIntEnum(componentName, prop) {
+  const typeAnnotation = prop.typeAnnotation;
+  if (typeAnnotation.type === 'Int32EnumTypeAnnotation') {
+    const values: $ReadOnlyArray<number> = typeAnnotation.options.map(
+      option => option.value,
+    );
+    const enumName = getEnumName(componentName, prop.name);
+
+    const fromCases = values
+      .map(
+        value =>
+          `
+    case ${value}:
+      result = ${enumName}::${toIntEnumValueName(prop.name, value)};
+      return;`,
+      )
+      .join('');
+
+    const toCases = values
+      .map(
+        value =>
+          `case ${enumName}::${toIntEnumValueName(
+            prop.name,
+            value,
+          )}: return "${value}";`,
+      )
+      .join('\n' + '    ');
+
+    const valueVariables = values
+      .map(val => `${toIntEnumValueName(prop.name, val)} = ${val}`)
+      .join(', ');
+
+    return intEnumTemplate
+      .replace(/::_ENUM_NAME_::/g, enumName)
+      .replace('::_VALUES_::', valueVariables)
+      .replace('::_FROM_CASES_::', fromCases)
+      .replace('::_TO_CASES_::', toCases);
+  }
+
+  return '';
+}
+
 function generateEnumString(componentName: string, component): string {
   return component.props
     .map(prop => {
@@ -401,17 +418,24 @@ function generateEnumString(componentName: string, component): string {
       }
 
       if (prop.typeAnnotation.type === 'StringEnumTypeAnnotation') {
-        return generateEnum(componentName, prop);
+        return generateStringEnum(componentName, prop);
+      }
+
+      if (prop.typeAnnotation.type === 'Int32EnumTypeAnnotation') {
+        return generateIntEnum(componentName, prop);
       }
 
       if (prop.typeAnnotation.type === 'ObjectTypeAnnotation') {
         return prop.typeAnnotation.properties
-          .filter(
-            property =>
-              property.typeAnnotation.type === 'StringEnumTypeAnnotation',
-          )
           .map(property => {
-            return generateEnum(componentName, property);
+            if (property.typeAnnotation.type === 'StringEnumTypeAnnotation') {
+              return generateStringEnum(componentName, property);
+            } else if (
+              property.typeAnnotation.type === 'Int32EnumTypeAnnotation'
+            ) {
+              return generateIntEnum(componentName, property);
+            }
+            return null;
           })
           .filter(Boolean)
           .join('\n');
@@ -474,6 +498,9 @@ function getLocalImports(
         imports.add('#include <react/imagemanager/primitives.h>');
         return;
       case 'PointPrimitive':
+        imports.add('#include <react/graphics/Geometry.h>');
+        return;
+      case 'EdgeInsetsPrimitive':
         imports.add('#include <react/graphics/Geometry.h>');
         return;
       default:
@@ -602,6 +629,45 @@ function generateStructs(
         ),
       );
     }
+    if (
+      prop.typeAnnotation.type === 'ArrayTypeAnnotation' &&
+      prop.typeAnnotation.elementType.type === 'ArrayTypeAnnotation' &&
+      prop.typeAnnotation.elementType.elementType.type ===
+        'ObjectTypeAnnotation'
+    ) {
+      // Recursively visit all of the object properties.
+      // Note: this is depth first so that the nested structs are ordered first.
+      const elementProperties =
+        prop.typeAnnotation.elementType.elementType.properties;
+      const nestedStructs = generateStructs(
+        componentName,
+        elementProperties,
+        nameParts.concat([prop.name]),
+      );
+      nestedStructs.forEach(function(value, key) {
+        structs.set(key, value);
+      });
+
+      // Generate this struct and its conversion function.
+      generateStruct(
+        structs,
+        componentName,
+        nameParts.concat([prop.name]),
+        elementProperties,
+      );
+
+      // Generate the conversion function for std:vector<Object>.
+      // Note: This needs to be at the end since it references the struct above.
+      structs.set(
+        `${[componentName, ...nameParts.concat([prop.name])].join(
+          '',
+        )}ArrayArrayStruct`,
+        doubleArrayConversionFunction.replace(
+          /::_STRUCT_NAME_::/g,
+          generateStructName(componentName, nameParts.concat([prop.name])),
+        ),
+      );
+    }
   });
 
   return structs;
@@ -644,6 +710,8 @@ function generateStruct(
       case 'ArrayTypeAnnotation':
         return;
       case 'StringEnumTypeAnnotation':
+        return;
+      case 'Int32EnumTypeAnnotation':
         return;
       case 'DoubleTypeAnnotation':
         return;
@@ -704,6 +772,10 @@ module.exports = {
         }
 
         return Object.keys(components)
+          .filter(componentName => {
+            const component = components[componentName];
+            return component.excludedPlatform !== 'iOS';
+          })
           .map(componentName => {
             const component = components[componentName];
 

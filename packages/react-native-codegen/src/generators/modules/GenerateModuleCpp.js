@@ -37,7 +37,7 @@ const proprertyDefTemplate =
 const moduleTemplate = `
 ::_MODULE_PROPERTIES_::
 
-Native::_MODULE_NAME_::CxxSpecJSI::Native::_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<JSCallInvoker> jsInvoker)
+Native::_MODULE_NAME_::CxxSpecJSI::Native::_MODULE_NAME_::CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule("::_MODULE_NAME_::", jsInvoker) {
 ::_PROPERTIES_MAP_::
 }`.trim();

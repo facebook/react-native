@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LogBoxInspectorStackFrame should render null for empty stack frames 1`] = `null`;
+
+exports[`LogBoxInspectorStackFrame should render stack frames with 1 frame collapsed 1`] = `
+<View
+  style={
+    Object {
+      "marginTop": 15,
+    }
+  }
+>
+  <StackFrameHeader
+    onRetry={[Function]}
+    status="NONE"
+  />
+  <View
+    style={
+      Object {
+        "paddingBottom": 10,
+      }
+    }
+  >
+    <StackFrameList
+      list={
+        Array [
+          Object {
+            "collapse": false,
+            "column": 1,
+            "file": "app.js",
+            "lineNumber": 1,
+            "methodName": "foo",
+          },
+        ]
+      }
+      status="NONE"
+    />
+    <StackFrameFooter
+      message="See 1 more frames"
+      onPress={[Function]}
+    />
+  </View>
+</View>
+`;

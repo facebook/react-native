@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -26,11 +26,11 @@ State::State(State const &state) : stateCoordinator_(state.stateCoordinator_){};
 State::State(StateCoordinator::Shared const &stateCoordinator)
     : stateCoordinator_(stateCoordinator){};
 
-void State::commit(const ShadowNode &shadowNode) const {
+void State::commit(std::shared_ptr<ShadowNode const> const &shadowNode) const {
   stateCoordinator_->setTarget(StateTarget{shadowNode});
 }
 
-State::Shared State::getCommitedState() const {
+State::Shared State::getMostRecentState() const {
   auto target = stateCoordinator_->getTarget();
   return target ? target.getShadowNode().getState()
                 : ShadowNodeFragment::statePlaceholder();

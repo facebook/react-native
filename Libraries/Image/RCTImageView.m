@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -101,11 +101,6 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
     [self addSubview:_imageView];
   }
   return self;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
@@ -326,7 +321,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     };
 
     _reloadImageCancellationBlock =
-    [[_bridge moduleForName:@"ImageLoader"] loadImageWithURLRequest:source.request
+    [[_bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES] loadImageWithURLRequest:source.request
                                                                         size:imageSize
                                                                        scale:imageScale
                                                                      clipped:NO

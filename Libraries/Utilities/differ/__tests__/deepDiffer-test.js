@@ -128,4 +128,56 @@ describe('deepDiffer', function() {
       ),
     ).toBe(false);
   });
+  it('should consider all functions equal', () => {
+    expect(deepDiffer(() => {}, x => x)).toBe(false);
+    const f = () => {};
+    expect(deepDiffer(f, f)).toBe(false);
+  });
+  it('should compare functions if unsafelyIgnoreFunctions is false', () => {
+    expect(
+      deepDiffer(() => {}, x => x, undefined, {unsafelyIgnoreFunctions: false}),
+    ).toBe(true);
+    const f = () => {};
+    expect(deepDiffer(f, f, undefined, {unsafelyIgnoreFunctions: false})).toBe(
+      false,
+    );
+
+    // shorthand, omitting maxDepth
+    expect(deepDiffer(() => {}, x => x, {unsafelyIgnoreFunctions: false})).toBe(
+      true,
+    );
+    expect(deepDiffer(f, f, {unsafelyIgnoreFunctions: false})).toBe(false);
+  });
+  it('should log when implicitly considering two different functions equal', () => {
+    function a() {}
+    function b() {}
+    const listeners = {onDifferentFunctionsIgnored: jest.fn()};
+    deepDiffer.unstable_setLogListeners(listeners);
+    try {
+      deepDiffer(a, a);
+      expect(listeners.onDifferentFunctionsIgnored).not.toHaveBeenCalled();
+
+      deepDiffer(a, b);
+      expect(listeners.onDifferentFunctionsIgnored.mock.calls).toEqual([
+        ['a', 'b'],
+      ]);
+    } finally {
+      deepDiffer.unstable_setLogListeners(null);
+    }
+  });
+  it('should not log when explicitly considering two different functions equal', () => {
+    function a() {}
+    function b() {}
+    const listeners = {onDifferentFunctionsIgnored: jest.fn()};
+    deepDiffer.unstable_setLogListeners(listeners);
+    try {
+      deepDiffer(a, a, {unsafelyIgnoreFunctions: true});
+      expect(listeners.onDifferentFunctionsIgnored).not.toHaveBeenCalled();
+
+      deepDiffer(a, b, {unsafelyIgnoreFunctions: true});
+      expect(listeners.onDifferentFunctionsIgnored).not.toHaveBeenCalled();
+    } finally {
+      deepDiffer.unstable_setLogListeners(null);
+    }
+  });
 });

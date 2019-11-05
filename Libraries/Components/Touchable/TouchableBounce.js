@@ -7,7 +7,10 @@
  * @flow
  * @format
  */
+
 'use strict';
+
+import TouchableInjection from './TouchableInjection';
 
 const Animated = require('../../Animated/src/Animated');
 const DeprecatedViewPropTypes = require('../../DeprecatedPropTypes/DeprecatedViewPropTypes');
@@ -51,7 +54,7 @@ type Props = $ReadOnly<{|
  * `TouchableMixin` expects us to implement some abstract methods to handle
  * interesting interactions such as `handleTouchablePress`.
  */
-const TouchableBounce = ((createReactClass({
+const TouchableBounceImpl = ((createReactClass({
   displayName: 'TouchableBounce',
   mixins: [Touchable.Mixin.withoutDefaultFocusAndBlur, NativeMethodsMixin],
 
@@ -180,10 +183,10 @@ const TouchableBounce = ((createReactClass({
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityHint={this.props.accessibilityHint}
         accessibilityRole={this.props.accessibilityRole}
-        accessibilityStates={this.props.accessibilityStates}
         accessibilityState={this.props.accessibilityState}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
+        accessibilityValue={this.props.accessibilityValue}
         nativeID={this.props.nativeID}
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
@@ -210,5 +213,10 @@ const TouchableBounce = ((createReactClass({
     );
   },
 }): any): React.ComponentType<Props>);
+
+const TouchableBounce: React.ComponentType<Props> =
+  TouchableInjection.unstable_TouchableBounce == null
+    ? TouchableBounceImpl
+    : TouchableInjection.unstable_TouchableBounce;
 
 module.exports = TouchableBounce;

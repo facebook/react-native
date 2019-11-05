@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -115,7 +115,7 @@ RCT_EXPORT_MODULE()
 #pragma mark - View properties
 
 #if TARGET_OS_TV
-// Apple TV properties
+// TODO: Delete props for Apple TV.
 RCT_EXPORT_VIEW_PROPERTY(isTVSelectable, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(hasTVPreferredFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)
@@ -126,6 +126,7 @@ RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.isAccessibilityEle
 RCT_REMAP_VIEW_PROPERTY(accessibilityActions, reactAccessibilityElement.accessibilityActions, NSDictionaryArray)
 RCT_REMAP_VIEW_PROPERTY(accessibilityLabel, reactAccessibilityElement.accessibilityLabel, NSString)
 RCT_REMAP_VIEW_PROPERTY(accessibilityHint, reactAccessibilityElement.accessibilityHint, NSString)
+RCT_REMAP_VIEW_PROPERTY(accessibilityValue, reactAccessibilityElement.accessibilityValueInternal, NSDictionary)
 RCT_REMAP_VIEW_PROPERTY(accessibilityViewIsModal, reactAccessibilityElement.accessibilityViewIsModal, BOOL)
 RCT_REMAP_VIEW_PROPERTY(accessibilityElementsHidden, reactAccessibilityElement.accessibilityElementsHidden, BOOL)
 RCT_REMAP_VIEW_PROPERTY(accessibilityIgnoresInvertColors, reactAccessibilityElement.shouldAccessibilityIgnoresInvertColors, BOOL)
@@ -178,34 +179,6 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
   }
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(accessibilityStates, NSArray<NSString *>, RCTView)
-{
-  NSArray<NSString *> *states = json ? [RCTConvert NSStringArray:json] : nil;
-  NSMutableArray *newStates = [NSMutableArray new];
-
-  if (!states) {
-    return;
-  }
-
-  const UIAccessibilityTraits AccessibilityStatesMask = UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected;
-  view.reactAccessibilityElement.accessibilityTraits = view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityStatesMask;
-
-  for (NSString *state in states) {
-    if ([state isEqualToString:@"selected"]) {
-      view.reactAccessibilityElement.accessibilityTraits |= UIAccessibilityTraitSelected;
-    } else if ([state isEqualToString:@"disabled"]) {
-      view.reactAccessibilityElement.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
-    } else {
-      [newStates addObject:state];
-    }
-  }
-  if (newStates.count > 0) {
-    view.reactAccessibilityElement.accessibilityStates = newStates;
-  } else {
-    view.reactAccessibilityElement.accessibilityStates = nil;
-  }
-}
-
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
 {
   NSDictionary<NSString *, id> *state = json ? [RCTConvert NSDictionary:json] : nil;
@@ -233,9 +206,13 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
   }
   if (newState.count > 0) {
     view.reactAccessibilityElement.accessibilityState = newState;
+    // Post a layout change notification to make sure VoiceOver get notified for the state
+    // changes that don't happen upon users' click.
+    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, nil);
   } else {
     view.reactAccessibilityElement.accessibilityState = nil;
   }
+
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(nativeID, NSString *, RCTView)

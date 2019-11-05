@@ -14,6 +14,7 @@ fb_apple_library(
         "Foundation",
         "UIKit",
     ],
+    labels = ["supermodule:ios/isolation/infra.react_native"],
     reexport_all_header_dependencies = True,
     deps = [
         "fbsource//xplat/js/react-native-github:RCTTypeSafety",

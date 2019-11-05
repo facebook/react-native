@@ -10,8 +10,7 @@
 
 'use strict';
 
-import type {TurboModule} from '../TurboModule/RCTExport';
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 // TODO: Use proper enum types.
 export type PermissionStatus = string;
@@ -25,6 +24,7 @@ export type PermissionType =
   | 'android.permission.READ_CONTACTS'
   | 'android.permission.WRITE_CONTACTS'
   | 'android.permission.GET_ACCOUNTS'
+  | 'android.permission.ACCESS_BACKGROUND_LOCATION'
   | 'android.permission.ACCESS_FINE_LOCATION'
   | 'android.permission.ACCESS_COARSE_LOCATION'
   | 'android.permission.RECORD_AUDIO'

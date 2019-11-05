@@ -7,7 +7,10 @@
  * @flow
  * @format
  */
+
 'use strict';
+
+import TouchableInjection from './TouchableInjection';
 
 const DeprecatedColorPropType = require('../../DeprecatedPropTypes/DeprecatedColorPropType');
 const DeprecatedViewPropTypes = require('../../DeprecatedPropTypes/DeprecatedViewPropTypes');
@@ -28,7 +31,6 @@ import type {PressEvent} from '../../Types/CoreEventTypes';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {Props as TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
-import type {TVParallaxPropertiesType} from '../AppleTV/TVViewPropTypes';
 
 const DEFAULT_PROPS = {
   activeOpacity: 0.85,
@@ -40,7 +42,6 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 type IOSProps = $ReadOnly<{|
   hasTVPreferredFocus?: ?boolean,
-  tvParallaxProperties?: ?TVParallaxPropertiesType,
 |}>;
 
 type AndroidProps = $ReadOnly<{|
@@ -51,7 +52,7 @@ type AndroidProps = $ReadOnly<{|
   nextFocusUp?: ?number,
 |}>;
 
-type Props = $ReadOnly<{|
+export type Props = $ReadOnly<{|
   ...TouchableWithoutFeedbackProps,
   ...IOSProps,
   ...AndroidProps,
@@ -161,7 +162,7 @@ type Props = $ReadOnly<{|
  *
  */
 
-const TouchableHighlight = ((createReactClass({
+const TouchableHighlightImpl = ((createReactClass({
   displayName: 'TouchableHighlight',
   propTypes: {
     /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
@@ -227,21 +228,6 @@ const TouchableHighlight = ((createReactClass({
      * @platform android
      */
     nextFocusUp: PropTypes.number,
-    /**
-     * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
-     *
-     * enabled: If true, parallax effects are enabled.  Defaults to true.
-     * shiftDistanceX: Defaults to 2.0.
-     * shiftDistanceY: Defaults to 2.0.
-     * tiltAngle: Defaults to 0.05.
-     * magnification: Defaults to 1.0.
-     * pressMagnification: Defaults to 1.0.
-     * pressDuration: Defaults to 0.3.
-     * pressDelay: Defaults to 0.0.
-     *
-     * @platform ios
-     */
-    tvParallaxProperties: PropTypes.object,
     /**
      * Handy for snapshot tests.
      */
@@ -407,8 +393,8 @@ const TouchableHighlight = ((createReactClass({
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityHint={this.props.accessibilityHint}
         accessibilityRole={this.props.accessibilityRole}
-        accessibilityStates={this.props.accessibilityStates}
         accessibilityState={this.props.accessibilityState}
+        accessibilityValue={this.props.accessibilityValue}
         accessibilityActions={this.props.accessibilityActions}
         onAccessibilityAction={this.props.onAccessibilityAction}
         style={StyleSheet.compose(
@@ -417,8 +403,6 @@ const TouchableHighlight = ((createReactClass({
         )}
         onLayout={this.props.onLayout}
         hitSlop={this.props.hitSlop}
-        isTVSelectable={true}
-        tvParallaxProperties={this.props.tvParallaxProperties}
         hasTVPreferredFocus={this.props.hasTVPreferredFocus}
         nextFocusDown={this.props.nextFocusDown}
         nextFocusForward={this.props.nextFocusForward}
@@ -453,5 +437,10 @@ const TouchableHighlight = ((createReactClass({
     );
   },
 }): any): React.ComponentType<Props>);
+
+const TouchableHighlight: React.ComponentType<Props> =
+  TouchableInjection.unstable_TouchableHighlight == null
+    ? TouchableHighlightImpl
+    : TouchableInjection.unstable_TouchableHighlight;
 
 module.exports = TouchableHighlight;

@@ -91,7 +91,7 @@ export type ObjectPropertyType =
 type PropTypeTypeAnnotation =
   | $ReadOnly<{|
       type: 'BooleanTypeAnnotation',
-      default: boolean,
+      default: boolean | null,
     |}>
   | $ReadOnly<{|
       type: 'StringTypeAnnotation',
@@ -103,7 +103,7 @@ type PropTypeTypeAnnotation =
     |}>
   | $ReadOnly<{|
       type: 'FloatTypeAnnotation',
-      default: number,
+      default: number | null,
     |}>
   | $ReadOnly<{|
       type: 'Int32TypeAnnotation',
@@ -117,8 +117,19 @@ type PropTypeTypeAnnotation =
       |}>,
     |}>
   | $ReadOnly<{|
+      type: 'Int32EnumTypeAnnotation',
+      default: number,
+      options: $ReadOnlyArray<{|
+        value: number,
+      |}>,
+    |}>
+  | $ReadOnly<{|
       type: 'NativePrimitiveTypeAnnotation',
-      name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
+      name:
+        | 'ColorPrimitive'
+        | 'ImageSourcePrimitive'
+        | 'PointPrimitive'
+        | 'EdgeInsetsPrimitive',
     |}>
   | $ReadOnly<{|
       type: 'ObjectTypeAnnotation',
@@ -155,7 +166,18 @@ type PropTypeTypeAnnotation =
           |}>
         | $ReadOnly<{|
             type: 'NativePrimitiveTypeAnnotation',
-            name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
+            name:
+              | 'ColorPrimitive'
+              | 'ImageSourcePrimitive'
+              | 'PointPrimitive'
+              | 'EdgeInsetsPrimitive',
+          |}>
+        | $ReadOnly<{|
+            type: 'ArrayTypeAnnotation',
+            elementType: $ReadOnly<{|
+              type: 'ObjectTypeAnnotation',
+              properties: $ReadOnlyArray<PropTypeShape>,
+            |}>,
           |}>,
     |}>;
 
@@ -269,6 +291,9 @@ export type OptionsShape = $ReadOnly<{|
   // Use for components with no current paper rename in progress
   // Does not check for new name
   paperComponentName?: string,
+
+  // Use for components that are not used on one or the other platform.
+  excludedPlatform?: 'iOS' | 'android',
 
   // Use for components currently being renamed in paper
   // Will use new name if it is available and fallback to this name

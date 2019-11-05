@@ -22,14 +22,14 @@ const render = require('../../../../jest/renderer');
 describe('<ProgressBarAndroid />', () => {
   it('should render as <ProgressBarAndroid> when mocked', () => {
     const instance = render.create(
-      <ProgressBarAndroid styleAttr="Horizontal" />,
+      <ProgressBarAndroid styleAttr="Horizontal" indeterminate={true} />,
     );
     expect(instance).toMatchSnapshot();
   });
 
   it('should shallow render as <ForwardRef(ProgressBarAndroid)> when mocked', () => {
     const output = render.shallow(
-      <ProgressBarAndroid styleAttr="Horizontal" />,
+      <ProgressBarAndroid styleAttr="Horizontal" indeterminate={true} />,
     );
     expect(output).toMatchSnapshot();
   });
@@ -38,7 +38,7 @@ describe('<ProgressBarAndroid />', () => {
     jest.dontMock('../ProgressBarAndroid');
 
     const output = render.shallow(
-      <ProgressBarAndroid styleAttr="Horizontal" />,
+      <ProgressBarAndroid styleAttr="Horizontal" indeterminate={true} />,
     );
     expect(output).toMatchSnapshot();
   });
@@ -47,7 +47,7 @@ describe('<ProgressBarAndroid />', () => {
     jest.dontMock('../ProgressBarAndroid');
 
     const instance = render.create(
-      <ProgressBarAndroid styleAttr="Horizontal" />,
+      <ProgressBarAndroid styleAttr="Horizontal" indeterminate={true} />,
     );
     expect(instance).toMatchSnapshot();
   });

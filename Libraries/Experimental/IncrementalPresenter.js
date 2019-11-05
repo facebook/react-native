@@ -46,10 +46,10 @@ class IncrementalPresenter extends React.Component<Props> {
 
   static contextTypes:
     | any
-    | $TEMPORARY$object<{|
+    | {|
         incrementalGroup: React$PropType$Primitive<any>,
         incrementalGroupEnabled: React$PropType$Primitive<boolean>,
-      |}> = {
+      |} = {
     incrementalGroup: PropTypes.object,
     incrementalGroupEnabled: PropTypes.bool,
   };

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -17,38 +17,50 @@ namespace react {
 void MountingTelemetry::willCommit() {
   assert(commitStartTime_ == kUndefinedTime);
   assert(commitEndTime_ == kUndefinedTime);
-  commitStartTime_ = getTime();
+  commitStartTime_ = monotonicTimeInMilliseconds();
   commitNumber_++;
 }
 
 void MountingTelemetry::didCommit() {
   assert(commitStartTime_ != kUndefinedTime);
   assert(commitEndTime_ == kUndefinedTime);
-  commitEndTime_ = getTime();
+  commitEndTime_ = monotonicTimeInMilliseconds();
 }
 
 void MountingTelemetry::willDiff() {
   assert(diffStartTime_ == kUndefinedTime);
   assert(diffEndTime_ == kUndefinedTime);
-  diffStartTime_ = getTime();
+  diffStartTime_ = monotonicTimeInMilliseconds();
 }
 
 void MountingTelemetry::didDiff() {
   assert(diffStartTime_ != kUndefinedTime);
   assert(diffEndTime_ == kUndefinedTime);
-  diffEndTime_ = getTime();
+  diffEndTime_ = monotonicTimeInMilliseconds();
 }
 
 void MountingTelemetry::willLayout() {
   assert(layoutStartTime_ == kUndefinedTime);
   assert(layoutEndTime_ == kUndefinedTime);
-  layoutStartTime_ = getTime();
+  layoutStartTime_ = monotonicTimeInMilliseconds();
 }
 
 void MountingTelemetry::didLayout() {
   assert(layoutStartTime_ != kUndefinedTime);
   assert(layoutEndTime_ == kUndefinedTime);
-  layoutEndTime_ = getTime();
+  layoutEndTime_ = monotonicTimeInMilliseconds();
+}
+
+void MountingTelemetry::willMount() {
+  assert(mountStartTime_ == kUndefinedTime);
+  assert(mountEndTime_ == kUndefinedTime);
+  mountStartTime_ = monotonicTimeInMilliseconds();
+}
+
+void MountingTelemetry::didMount() {
+  assert(mountStartTime_ != kUndefinedTime);
+  assert(mountEndTime_ == kUndefinedTime);
+  mountEndTime_ = monotonicTimeInMilliseconds();
 }
 
 int64_t MountingTelemetry::getDiffStartTime() const {
@@ -89,6 +101,18 @@ int64_t MountingTelemetry::getLayoutEndTime() const {
   assert(layoutStartTime_ != kUndefinedTime);
   assert(layoutEndTime_ != kUndefinedTime);
   return layoutEndTime_;
+}
+
+int64_t MountingTelemetry::getMountStartTime() const {
+  assert(mountStartTime_ != kUndefinedTime);
+  assert(mountEndTime_ != kUndefinedTime);
+  return mountStartTime_;
+}
+
+int64_t MountingTelemetry::getMountEndTime() const {
+  assert(mountStartTime_ != kUndefinedTime);
+  assert(mountEndTime_ != kUndefinedTime);
+  return mountEndTime_;
 }
 
 } // namespace react

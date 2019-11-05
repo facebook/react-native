@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -64,7 +64,7 @@ configurationBlock:nil];
 // This list should be kept in sync with IntegrationTestsApp.js
 RCT_TEST(IntegrationTestHarnessTest)
 // RCT_TEST(TimersTest) // Disabled due to issue introduced in 61346d3
-RCT_TEST(AsyncStorageTest)
+// TODO(TD15973709) RCT_TEST(AsyncStorageTest)
 RCT_TEST(AppEventsTest)
 //RCT_TEST(ImageCachePolicyTest) // This test never passed.
 RCT_TEST(ImageSnapshotTest)

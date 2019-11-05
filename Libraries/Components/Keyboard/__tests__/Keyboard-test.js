@@ -31,6 +31,7 @@ describe('Keyboard', () => {
 
     // $FlowFixMe
     expect(Keyboard._subscriber).toBe(KeyboardEventEmitter._subscriber);
+    // $FlowFixMe Cannot access private property
     expect(Keyboard._nativeModule).toBe(KeyboardEventEmitter._nativeModule);
   });
 

@@ -1,19 +1,21 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #include <../instrumentation/HermesMemoryDumper.h>
 #include <HermesExecutorFactory.h>
 #include <fb/fbjni.h>
-#include <folly/Memory.h>
 #include <hermes/Public/GCConfig.h>
 #include <hermes/Public/RuntimeConfig.h>
 #include <jni.h>
 #include <react/jni/JReactMarker.h>
 #include <react/jni/JSLogging.h>
 #include <react/jni/JavaScriptExecutorHolder.h>
+
+#include <memory>
 
 namespace facebook {
 namespace react {
@@ -102,7 +104,7 @@ class HermesExecutorHolder
     JReactMarker::setLogPerfMarkerIfNeeded();
 
     return makeCxxInstance(
-        folly::make_unique<HermesExecutorFactory>(installBindings));
+        std::make_unique<HermesExecutorFactory>(installBindings));
   }
 
   static jni::local_ref<jhybriddata> initHybrid(
@@ -123,7 +125,7 @@ class HermesExecutorHolder
         heapDumper,
         tripWireCooldownMS,
         tripWireLimitBytes);
-    return makeCxxInstance(folly::make_unique<HermesExecutorFactory>(
+    return makeCxxInstance(std::make_unique<HermesExecutorFactory>(
         installBindings, JSIExecutor::defaultTimeoutInvoker, runtimeConfig));
   }
 

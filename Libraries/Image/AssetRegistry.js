@@ -7,6 +7,7 @@
  * @flow strict
  * @format
  */
+
 'use strict';
 
 export type PackagerAsset = {

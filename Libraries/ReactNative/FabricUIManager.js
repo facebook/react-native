@@ -7,6 +7,7 @@
  * @flow strict-local
  * @format
  */
+
 'use strict';
 
 import type {
@@ -48,6 +49,7 @@ type Spec = {|
     onFail: () => void,
     onSuccess: MeasureLayoutOnSuccessCallback,
   ) => void,
+  +findShadowNodeByTag_DEPRECATED: (reactTag: number) => ?Node,
 |};
 
 const FabricUIManager: ?Spec = global.nativeFabricUIManager;

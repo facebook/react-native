@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -11,6 +11,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTSwitch.h"
 #import "UIView+React.h"
+#import <React/RCTUIManager.h>
 
 @implementation RCTSwitchManager
 
@@ -33,6 +34,24 @@ RCT_EXPORT_MODULE()
     }
     sender.wasOn = sender.on;
   }
+}
+
+RCT_EXPORT_METHOD(setValue : (nonnull NSNumber *)viewTag toValue : (BOOL)value)
+{
+  [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    UIView *view = viewRegistry[viewTag];
+    
+    if ([view isKindOfClass:[UISwitch class]]) {
+      [(UISwitch *)view setOn:value animated:NO];
+    } else {
+      UIView *subview = view.subviews.firstObject;
+      if ([subview isKindOfClass:[UISwitch class]]) {
+        [(UISwitch *)subview setOn:value animated:NO];
+      } else {
+        RCTLogError(@"view type must be UISwitch");
+      }
+    }
+  }];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(onTintColor, UIColor);

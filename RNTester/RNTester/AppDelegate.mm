@@ -1,9 +1,8 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
  */
 
 #import "AppDelegate.h"
@@ -14,6 +13,9 @@
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLinkingManager.h>
+#import <React/RCTImageLoader.h>
+#import <React/RCTLocalAssetImageLoader.h>
+#import <React/RCTGIFImageDecoder.h>
 #import <React/RCTRootView.h>
 
 #import <cxxreact/JSExecutor.h>
@@ -108,6 +110,7 @@
 
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
+  _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:self];
   __weak __typeof(self) weakSelf = self;
   return std::make_unique<facebook::react::JSCExecutorFactory>([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
     if (!bridge) {
@@ -115,7 +118,6 @@
     }
     __typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
-      strongSelf->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:strongSelf];
       [strongSelf->_turboModuleManager installJSBindingWithRuntime:&runtime];
     }
   });
@@ -129,20 +131,27 @@
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                      jsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
+                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
   return facebook::react::RNTesterTurboModuleProvider(name, jsInvoker);
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                        instance:(id<RCTTurboModule>)instance
-                                                      jsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
+                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
   return facebook::react::RNTesterTurboModuleProvider(name, instance, jsInvoker);
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
+  if (moduleClass == RCTImageLoader.class) {
+    return [[moduleClass alloc] initWithRedirectDelegate:nil loadersProvider:^NSArray<id<RCTImageURLLoader>> *{
+      return @[[RCTLocalAssetImageLoader new]];
+    } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *{
+      return @[[RCTGIFImageDecoder new]];
+    }];
+  }
   // No custom initializer here.
   return [moduleClass new];
 }

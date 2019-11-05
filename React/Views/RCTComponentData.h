@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -28,6 +28,8 @@
 - (RCTShadowView *)createShadowViewWithTag:(NSNumber *)tag;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView;
+
+@property (nonatomic, copy, nullable) void (^eventInterceptor)(NSString *eventName, NSDictionary *event, NSNumber *reactTag);
 
 - (NSDictionary<NSString *, id> *)viewConfig;
 

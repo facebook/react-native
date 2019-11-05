@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -14,13 +14,15 @@ namespace react {
 
 /*
  * Represents any observer of ImageResponse progression, completion, or failure.
+ * All methods must be thread-safe.
  */
 class ImageResponseObserver {
  public:
-  virtual void didReceiveProgress(float) = 0;
-  virtual void didReceiveImage(const ImageResponse &imageResponse) = 0;
-  virtual void didReceiveFailure() = 0;
   virtual ~ImageResponseObserver() noexcept = default;
+
+  virtual void didReceiveProgress(float progress) const = 0;
+  virtual void didReceiveImage(ImageResponse const &imageResponse) const = 0;
+  virtual void didReceiveFailure() const = 0;
 };
 
 } // namespace react

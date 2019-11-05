@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport;
 
 import android.util.Log;
@@ -109,11 +110,7 @@ public class BundleDownloader {
     final Request request =
         requestBuilder
             .url(formatBundleUrl(bundleURL))
-            // FIXME: there is a bug that makes MultipartStreamReader to never find the end of the
-            // multipart message. This temporarily disables the multipart mode to work around it,
-            // but
-            // it means there is no progress bar displayed in the React Native overlay anymore.
-            // .addHeader("Accept", "multipart/mixed")
+            .addHeader("Accept", "multipart/mixed")
             .build();
     mDownloadBundleFromURLCall = Assertions.assertNotNull(mClient.newCall(request));
     mDownloadBundleFromURLCall.enqueue(

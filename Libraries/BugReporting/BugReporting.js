@@ -11,7 +11,6 @@
 'use strict';
 
 const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
-const infoLog = require('../Utilities/infoLog');
 
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 import NativeBugReporting from './NativeBugReporting';
@@ -122,7 +121,6 @@ class BugReporting {
     for (const [key, callback] of BugReporting._fileSources) {
       fileData[key] = callback();
     }
-    infoLog('BugReporting extraData:', extraData);
 
     if (NativeBugReporting != null && NativeBugReporting.setExtraData != null) {
       NativeBugReporting.setExtraData(extraData, fileData);

@@ -101,6 +101,7 @@ rn_xplat_cxx_library(
     fbobjc_frameworks = [
         "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
     ],
+    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
     visibility = ["PUBLIC"],
     xplat_mangled_args = {
         "soname": "libjscjsi.$(ext)",

@@ -49,6 +49,7 @@ type PickerItemProps = $ReadOnly<{|
 /**
  * Individual selectable item in a Picker.
  */
+export type {PickerItem};
 class PickerItem extends React.Component<PickerItemProps> {
   render() {
     // The items are not rendered directly
@@ -130,9 +131,7 @@ class Picker extends React.Component<PickerProps> {
 
   static Item: typeof PickerItem = PickerItem;
 
-  static defaultProps: $TEMPORARY$object<{|
-    mode: $TEMPORARY$string<'dialog'>,
-  |}> = {
+  static defaultProps: {|mode: $TEMPORARY$string<'dialog'>|} = {
     mode: MODE_DIALOG,
   };
 

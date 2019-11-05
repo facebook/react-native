@@ -61,10 +61,7 @@ type State = {|
  * adjusting its height, position, or bottom padding.
  */
 class KeyboardAvoidingView extends React.Component<Props, State> {
-  static defaultProps: $TEMPORARY$object<{|
-    enabled: boolean,
-    keyboardVerticalOffset: number,
-  |}> = {
+  static defaultProps: {|enabled: boolean, keyboardVerticalOffset: number|} = {
     enabled: true,
     keyboardVerticalOffset: 0,
   };

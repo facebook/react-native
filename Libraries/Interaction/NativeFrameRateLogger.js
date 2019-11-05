@@ -8,8 +8,7 @@
  * @flow
  */
 
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-import type {TurboModule} from '../TurboModule/RCTExport';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export interface Spec extends TurboModule {
   +setGlobalOptions: (options: {|
@@ -21,4 +20,4 @@ export interface Spec extends TurboModule {
   +endScroll: () => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('FrameRateLogger');
+export default (TurboModuleRegistry.get<Spec>('FrameRateLogger'): ?Spec);

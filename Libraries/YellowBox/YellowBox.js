@@ -18,7 +18,7 @@ import type {
   Subscription,
   IgnorePattern,
 } from './Data/YellowBoxRegistry';
-
+import * as LogBoxData from '../LogBox/Data/LogBoxData';
 type Props = $ReadOnly<{||}>;
 type State = {|
   registry: ?Registry,
@@ -50,16 +50,27 @@ if (__DEV__) {
   const YellowBoxList = require('./UI/YellowBoxList');
   const YellowBoxRegistry = require('./Data/YellowBoxRegistry');
 
+  // YellowBox needs to insert itself early,
+  // in order to access the component stacks appended by React DevTools.
   const {error, warn} = console;
+  let errorImpl = error;
+  let warnImpl = warn;
+  (console: any).error = function(...args) {
+    errorImpl(...args);
+  };
+  (console: any).warn = function(...args) {
+    warnImpl(...args);
+  };
 
   // eslint-disable-next-line no-shadow
   YellowBox = class YellowBox extends React.Component<Props, State> {
     static ignoreWarnings(patterns: $ReadOnlyArray<IgnorePattern>): void {
+      LogBoxData.addIgnorePatterns(patterns);
       YellowBoxRegistry.addIgnorePatterns(patterns);
     }
 
     static install(): void {
-      (console: any).error = function(...args) {
+      errorImpl = function(...args) {
         error.call(console, ...args);
         // Show YellowBox for the `warning` module.
         if (typeof args[0] === 'string' && args[0].startsWith('Warning: ')) {
@@ -67,7 +78,7 @@ if (__DEV__) {
         }
       };
 
-      (console: any).warn = function(...args) {
+      warnImpl = function(...args) {
         warn.call(console, ...args);
         registerWarning(...args);
       };
@@ -91,8 +102,8 @@ if (__DEV__) {
     }
 
     static uninstall(): void {
-      (console: any).error = error;
-      (console: any).warn = error;
+      errorImpl = error;
+      warnImpl = warn;
       delete (console: any).disableYellowBox;
     }
 
@@ -135,7 +146,7 @@ if (__DEV__) {
   };
 
   const registerWarning = (...args): void => {
-    YellowBoxRegistry.add({args, framesToPop: 2});
+    YellowBoxRegistry.add({args});
   };
 } else {
   YellowBox = class extends React.Component<Props, State> {

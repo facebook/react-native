@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -40,8 +40,7 @@ using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
 
 class ShadowNode : public virtual Sealable,
-                   public virtual DebugStringConvertible,
-                   public std::enable_shared_from_this<ShadowNode> {
+                   public virtual DebugStringConvertible {
  public:
   using Shared = std::shared_ptr<ShadowNode const>;
   using Weak = std::weak_ptr<ShadowNode const>;
@@ -92,8 +91,8 @@ class ShadowNode : public virtual Sealable,
 
 #pragma mark - Getters
 
-  virtual ComponentHandle getComponentHandle() const = 0;
-  virtual ComponentName getComponentName() const = 0;
+  ComponentName getComponentName() const;
+  ComponentHandle getComponentHandle() const;
 
   SharedProps const &getProps() const;
   SharedShadowNodeList const &getChildren() const;
@@ -132,10 +131,10 @@ class ShadowNode : public virtual Sealable,
 
 #pragma mark - Mutating Methods
 
-  void appendChild(const SharedShadowNode &child);
+  void appendChild(ShadowNode::Shared const &child);
   void replaceChild(
-      const SharedShadowNode &oldChild,
-      const SharedShadowNode &newChild,
+      ShadowNode const &oldChild,
+      ShadowNode::Shared const &newChild,
       int suggestedIndex = -1);
 
   /*
@@ -169,6 +168,13 @@ class ShadowNode : public virtual Sealable,
   std::string getDebugValue() const override;
   SharedDebugStringConvertibleList getDebugChildren() const override;
   SharedDebugStringConvertibleList getDebugProps() const override;
+
+  /*
+   * A number of the generation of the ShadowNode instance;
+   * is used and useful for debug-printing purposes *only*.
+   * Do not access this value in any circumstances.
+   */
+  int const revision_;
 #endif
 
  protected:
@@ -194,13 +200,6 @@ class ShadowNode : public virtual Sealable,
    * to be cloned before the first mutation.
    */
   bool childrenAreShared_;
-
-  /*
-   * A number of the generation of the ShadowNode instance;
-   * is used and useful for debug-printing purposes *only*.
-   * Do not access this value in any circumstances.
-   */
-  const int revision_;
 };
 
 } // namespace react

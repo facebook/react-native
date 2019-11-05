@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,11 +9,13 @@
 
 #include <cxxabi.h>
 
+#import <objc/message.h>
+
+#import "RCTRedBoxSetEnabled.h"
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
 #import "RCTDefines.h"
-#import "RCTRedBox.h"
 #import "RCTUtils.h"
 
 static NSString *const RCTLogFunctionStack = @"RCTLogFunctionStack";
@@ -162,6 +164,25 @@ NSString *RCTFormatLog(
   return log;
 }
 
+NSString *RCTFormatLogLevel(RCTLogLevel level)
+{
+    NSDictionary *levelsToString = @{@(RCTLogLevelTrace) : @"trace",
+                                    @(RCTLogLevelInfo)    : @"info",
+                                    @(RCTLogLevelWarning) : @"warning",
+                                    @(RCTLogLevelFatal)   : @"fatal",
+                                    @(RCTLogLevelError)   : @"error"};
+
+    return levelsToString[@(level)];
+}
+
+NSString *RCTFormatLogSource(RCTLogSource source)
+{
+    NSDictionary *sourcesToString = @{@(RCTLogSourceNative) : @"native",
+                                     @(RCTLogSourceJavaScript)    : @"js"};
+
+    return sourcesToString[@(source)];
+}
+
 static NSRegularExpression *nativeStackFrameRegex()
 {
   static dispatch_once_t onceToken;
@@ -192,10 +213,8 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
       logFunction(level, RCTLogSourceNative, fileName ? @(fileName) : nil, lineNumber > 0 ? @(lineNumber) : nil, message);
     }
 
-#if RCT_DEBUG
-
-    // Log to red box in debug mode.
-    if (RCTSharedApplication() && level >= RCTLOG_REDBOX_LEVEL) {
+    // Log to red box if one is configured.
+    if (RCTSharedApplication() && RCTRedBoxGetEnabled() && level >= RCTLOG_REDBOX_LEVEL) {
       NSArray<NSString *> *stackSymbols = [NSThread callStackSymbols];
       NSMutableArray<NSDictionary *> *stack =
         [NSMutableArray arrayWithCapacity:(stackSymbols.count - 1)];
@@ -229,15 +248,23 @@ void _RCTLogNativeInternal(RCTLogLevel level, const char *fileName, int lineNumb
       dispatch_async(dispatch_get_main_queue(), ^{
         // red box is thread safe, but by deferring to main queue we avoid a startup
         // race condition that causes the module to be accessed before it has loaded
-        [[RCTBridge currentBridge].redBox showErrorMessage:message withStack:stack];
+        id redbox = [[RCTBridge currentBridge] moduleForName:@"RedBox" lazilyLoadIfNecessary:YES];
+        if (redbox) {
+          void (*showErrorMessage)(id, SEL, NSString *, NSMutableArray<NSDictionary *> *) = (__typeof__(showErrorMessage))objc_msgSend;
+          SEL showErrorMessageSEL = NSSelectorFromString(@"showErrorMessage:withStack:");
+
+          if ([redbox respondsToSelector:showErrorMessageSEL]) {
+            showErrorMessage(redbox, showErrorMessageSEL, message, stack);
+          }
+        }
       });
     }
 
+#if RCT_DEBUG
     if (!RCTRunningInTestEnvironment()) {
       // Log to JS executor
       [[RCTBridge currentBridge] logMessage:message level:level ? @(RCTLogLevels[level]) : @"info"];
     }
-
 #endif
 
   }

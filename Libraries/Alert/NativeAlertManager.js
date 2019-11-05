@@ -10,13 +10,12 @@
 
 'use strict';
 
-import type {TurboModule} from '../TurboModule/RCTExport';
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export type Args = {|
   title?: string,
   message?: string,
-  buttons?: Object, // TODO: have a better type
+  buttons?: Array<Object>, // TODO: have a better type
   type?: string,
   defaultValue?: string,
   cancelButtonKey?: string,

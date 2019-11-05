@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport.interfaces;
 
 import androidx.annotation.Nullable;
@@ -67,8 +68,6 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   void setHotModuleReplacementEnabled(final boolean isHotModuleReplacementEnabled);
 
   void setRemoteJSDebugEnabled(final boolean isRemoteJSDebugEnabled);
-
-  void setReloadOnJSChangeEnabled(final boolean isReloadOnJSChangeEnabled);
 
   void setFpsDebugEnabled(final boolean isFpsDebugEnabled);
 

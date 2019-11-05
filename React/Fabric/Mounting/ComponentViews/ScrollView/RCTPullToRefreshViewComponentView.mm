@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -125,7 +125,9 @@ using namespace facebook::react;
     return;
   }
 
-  _scrollViewComponentView.scrollView.refreshControl = _refreshControl;
+  if (@available(iOS 10.0, macOS 13.0, *)) {
+    _scrollViewComponentView.scrollView.refreshControl = _refreshControl;
+  }
 }
 
 - (void)_detach
@@ -137,7 +139,9 @@ using namespace facebook::react;
   // iOS requires to end refreshing before unmounting.
   [_refreshControl endRefreshing];
 
-  _scrollViewComponentView.scrollView.refreshControl = nil;
+  if (@available(iOS 10.0, macOS 13.0, *)) {
+    _scrollViewComponentView.scrollView.refreshControl = nil;
+  }
   _scrollViewComponentView = nil;
 }
 

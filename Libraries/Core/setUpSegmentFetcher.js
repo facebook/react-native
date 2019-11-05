@@ -7,6 +7,7 @@
  * @flow strict-local
  * @format
  */
+
 'use strict';
 
 export type FetchSegmentFunction = typeof __fetchSegment;

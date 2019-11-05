@@ -5,13 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
 const requireNativeComponent = require('../ReactNative/requireNativeComponent');
 
-const ImageViewNativeComponent: string = requireNativeComponent('RCTImageView');
+import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+
+const ImageViewNativeComponent: HostComponent<mixed> = requireNativeComponent<mixed>(
+  'RCTImageView',
+);
 
 module.exports = ImageViewNativeComponent;

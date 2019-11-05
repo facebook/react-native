@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -25,7 +25,7 @@ namespace react {
  */
 using ComponentRegistryFactory =
     std::function<SharedComponentDescriptorRegistry(
-        EventDispatcher::Shared const &eventDispatcher,
+        EventDispatcher::Weak const &eventDispatcher,
         ContextContainer::Shared const &contextContainer)>;
 
 ComponentRegistryFactory getDefaultComponentRegistryFactory();

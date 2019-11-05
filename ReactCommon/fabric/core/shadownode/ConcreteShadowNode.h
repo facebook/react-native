@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -69,14 +69,6 @@ class ConcreteShadowNode : public ShadowNode {
       ShadowNodeFragment const &fragment,
       ComponentDescriptor const &componentDescriptor) {
     return {};
-  }
-
-  ComponentName getComponentName() const override {
-    return ComponentName(concreteComponentName);
-  }
-
-  ComponentHandle getComponentHandle() const override {
-    return reinterpret_cast<ComponentHandle>(concreteComponentName);
   }
 
   const SharedConcreteProps getProps() const {

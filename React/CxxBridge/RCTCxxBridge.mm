@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -24,6 +24,7 @@
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTProfile.h>
 #import <React/RCTRedBox.h>
+#import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
 #import <React/RCTFollyConvert.h>
 #import <cxxreact/CxxNativeModule.h>
@@ -487,7 +488,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     }
     return moduleData.instance;
   }
-  
+
   static NSSet<NSString *> *ignoredModuleLoadFailures = [NSSet setWithArray: @[@"UIManager"]];
 
   // Module may not be loaded yet, so attempt to force load it here.
@@ -598,7 +599,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   _moduleRegistryCreated = YES;
 }
 
-- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance;
+- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance
 {
   NSString *const moduleName = RCTBridgeModuleNameForClass([instance class]);
   if (moduleName) {
@@ -915,7 +916,6 @@ struct RCTInstanceCallback : public InstanceCallback {
     [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:completion];
   }
 
-#if RCT_DEV
   if (self.devSettings.isHotLoadingAvailable) {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
     NSString *host = self.bundleURL.host;
@@ -926,7 +926,6 @@ struct RCTInstanceCallback : public InstanceCallback {
                    args:@[@"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled)]
              completion:NULL];
   }
-#endif
 }
 
 - (void)handleError:(NSError *)error
@@ -1011,7 +1010,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   if (!_valid) {
     RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
   }
-  [_parentBridge reload];
+  RCTTriggerReloadCommandListeners(@"Unknown from cxx bridge");
+}
+
+- (void)reloadWithReason:(NSString *)reason
+{
+  if (!_valid) {
+    RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
+  }
+  RCTTriggerReloadCommandListeners(reason);
 }
 
 - (Class)executorClass

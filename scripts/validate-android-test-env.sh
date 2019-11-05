@@ -3,7 +3,7 @@
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
-#
+
 # This script validates that Android is set up correctly for the
 # testing environment.
 #

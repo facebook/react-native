@@ -1,6 +1,9 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -25,9 +28,11 @@ class AsyncEventBeat : public EventBeat {
   friend class EventBeatManager;
 
   AsyncEventBeat(
+      EventBeat::SharedOwnerBox const &ownerBox,
       EventBeatManager* eventBeatManager,
       RuntimeExecutor runtimeExecutor,
       jni::global_ref<jobject> javaUIManager) :
+      EventBeat(ownerBox),
       eventBeatManager_(eventBeatManager),
       runtimeExecutor_(std::move(runtimeExecutor)),
       javaUIManager_(javaUIManager) {
@@ -39,7 +44,12 @@ class AsyncEventBeat : public EventBeat {
   }
 
   void induce() const override {
-    runtimeExecutor_([=](jsi::Runtime &runtime) {
+    runtimeExecutor_([this, ownerBox = ownerBox_](jsi::Runtime &runtime) {
+      auto owner = ownerBox->owner.lock();
+      if (!owner) {
+        return;
+      }
+
       this->beat(runtime);
     });
   }

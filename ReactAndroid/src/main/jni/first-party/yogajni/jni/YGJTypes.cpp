@@ -1,9 +1,10 @@
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the LICENSE
- * file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 #include "YGJTypes.h"
 
 using facebook::jni::alias_ref;
@@ -33,12 +34,10 @@ facebook::jni::local_ref<JYogaLogLevel> JYogaLogLevel::fromInt(jint logLevel) {
 }
 
 void JYogaLogger::log(
-    facebook::jni::alias_ref<JYogaNode> node,
     facebook::jni::alias_ref<JYogaLogLevel> logLevel,
     jstring message) {
   static auto javaMethod =
-      javaClassLocal()
-          ->getMethod<void(
-              alias_ref<JYogaNode>, alias_ref<JYogaLogLevel>, jstring)>("log");
-  javaMethod(self(), node, logLevel, message);
+      javaClassLocal()->getMethod<void(alias_ref<JYogaLogLevel>, jstring)>(
+          "log");
+  javaMethod(self(), logLevel, message);
 }

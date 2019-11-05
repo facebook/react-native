@@ -198,11 +198,11 @@ function buildEventSchema(
   }
 
   if (argumentProps === null) {
-    throw new Error(`Unabled to determine event arguments for "${name}"`);
+    throw new Error(`Unable to determine event arguments for "${name}"`);
   }
 
   if (bubblingType === null) {
-    throw new Error(`Unabled to determine event arguments for "${name}"`);
+    throw new Error(`Unable to determine event arguments for "${name}"`);
   }
 }
 

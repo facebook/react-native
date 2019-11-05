@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.modules.appstate;
 
 import com.facebook.react.bridge.Arguments;
@@ -19,10 +20,12 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 @ReactModule(name = AppStateModule.NAME)
 public class AppStateModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener, WindowFocusChangeListener {
+  public static final String TAG = AppStateModule.class.getSimpleName();
 
   public static final String NAME = "AppState";
 
@@ -80,9 +83,7 @@ public class AppStateModule extends ReactContextBaseJavaModule
 
   @Override
   public void onWindowFocusChange(boolean hasFocus) {
-    getReactApplicationContext()
-        .getJSModule(RCTDeviceEventEmitter.class)
-        .emit("appStateFocusChange", hasFocus);
+    sendEvent("appStateFocusChange", hasFocus);
   }
 
   private WritableMap createAppStateEventMap() {
@@ -91,9 +92,15 @@ public class AppStateModule extends ReactContextBaseJavaModule
     return appState;
   }
 
+  private void sendEvent(String eventName, @Nullable Object data) {
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+
+    if (reactApplicationContext != null) {
+      reactApplicationContext.getJSModule(RCTDeviceEventEmitter.class).emit(eventName, data);
+    }
+  }
+
   private void sendAppStateChangeEvent() {
-    getReactApplicationContext()
-        .getJSModule(RCTDeviceEventEmitter.class)
-        .emit("appStateDidChange", createAppStateEventMap());
+    sendEvent("appStateDidChange", createAppStateEventMap());
   }
 }

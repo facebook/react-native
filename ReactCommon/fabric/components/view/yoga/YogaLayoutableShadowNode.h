@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -68,6 +68,8 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
    * Sets layoutable size of node.
    */
   void setSize(Size size) const;
+
+  void setPadding(RectangleEdges<Float> padding) const;
 
   /**
    * Sets position type of Yoga node (relative, absolute).

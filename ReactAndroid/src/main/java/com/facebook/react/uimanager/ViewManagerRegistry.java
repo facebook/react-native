@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.uimanager;
 
 import androidx.annotation.Nullable;
@@ -52,7 +53,8 @@ public final class ViewManagerRegistry {
         mViewManagers.put(className, viewManager);
         return viewManager;
       }
+      throw new IllegalViewOperationException("ViewManagerResolver returned null for " + className);
     }
-    throw new IllegalViewOperationException("No ViewManager defined for class " + className);
+    throw new IllegalViewOperationException("No ViewManager found for class " + className);
   }
 }

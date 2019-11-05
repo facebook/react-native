@@ -10,12 +10,11 @@
 
 'use strict';
 
-import type {TurboModule} from '../TurboModule/RCTExport';
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export interface Spec extends TurboModule {
   +getConstants: () => {||};
-  +vibrate: (pattern?: number) => void;
+  +vibrate: (pattern?: ?number) => void;
 
   // Android only
   +vibrateByPattern: (pattern: Array<number>, repeat: number) => void;

@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const {AnimatedEvent, attachNativeEvent} = require('./AnimatedEvent');
@@ -30,7 +31,7 @@ import type {Mapping, EventConfig} from './AnimatedEvent';
  * animation functions from AnimatedImplementation with empty animations for
  * predictability in tests.
  */
-type CompositeAnimation = {
+export type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void,
   stop: () => void,
   reset: () => void,
@@ -119,7 +120,7 @@ const loop = function(
   return emptyAnimation;
 };
 
-const event = function(argMapping: Array<?Mapping>, config?: EventConfig): any {
+const event = function(argMapping: Array<?Mapping>, config: EventConfig): any {
   return null;
 };
 

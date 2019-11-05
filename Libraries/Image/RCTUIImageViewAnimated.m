@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -6,6 +6,7 @@
  */
 
 #import <React/RCTUIImageViewAnimated.h>
+#import <React/RCTWeakProxy.h>
 
 #import <mach/mach.h>
 #import <objc/runtime.h>
@@ -20,12 +21,12 @@ static NSUInteger RCTDeviceFreeMemory() {
   vm_size_t page_size;
   vm_statistics_data_t vm_stat;
   kern_return_t kern;
-  
+
   kern = host_page_size(host_port, &page_size);
   if (kern != KERN_SUCCESS) return 0;
   kern = host_statistics(host_port, HOST_VM_INFO, (host_info_t)&vm_stat, &host_size);
   if (kern != KERN_SUCCESS) return 0;
-  return vm_stat.free_count * page_size;
+  return (vm_stat.free_count - vm_stat.speculative_count) * page_size;
 }
 
 @interface RCTUIImageViewAnimated () <CALayerDelegate>
@@ -55,7 +56,7 @@ static NSUInteger RCTDeviceFreeMemory() {
   if (self = [super initWithFrame:frame]) {
     self.lock = dispatch_semaphore_create(1);
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
-    
+
   }
   return self;
 }
@@ -85,28 +86,28 @@ static NSUInteger RCTDeviceFreeMemory() {
   if (self.image == image) {
     return;
   }
-  
+
   [self stop];
   [self resetAnimatedImage];
 
   if ([image respondsToSelector:@selector(animatedImageFrameAtIndex:)]) {
     NSUInteger animatedImageFrameCount = ((UIImage<RCTAnimatedImage> *)image).animatedImageFrameCount;
-    
+
     // In case frame count is 0, there is no reason to continue.
     if (animatedImageFrameCount == 0) {
       return;
     }
-    
+
     self.animatedImage = (UIImage<RCTAnimatedImage> *)image;
     self.totalFrameCount = animatedImageFrameCount;
-    
+
     // Get the current frame and loop count.
     self.totalLoopCount = self.animatedImage.animatedImageLoopCount;
-    
+
     self.animatedImageScale = image.scale;
-    
+
     self.currentFrame = image;
-    
+
     dispatch_semaphore_wait(self.lock, DISPATCH_TIME_FOREVER);
     self.frameBuffer[@(self.currentFrameIndex)] = self.currentFrame;
     dispatch_semaphore_signal(self.lock);
@@ -117,7 +118,7 @@ static NSUInteger RCTDeviceFreeMemory() {
     if ([self paused]) {
       [self start];
     }
-    
+
     [self.layer setNeedsDisplay];
   } else {
     super.image = image;
@@ -145,9 +146,14 @@ static NSUInteger RCTDeviceFreeMemory() {
 
 - (CADisplayLink *)displayLink
 {
+  // We only need a displayLink in the case of animated images, so short-circuit this code and don't create one for most of the use cases.
+  // Since this class is used for all RCTImageView's, this is especially important.
+  if (!_animatedImage) {
+    return nil;
+  }
+
   if (!_displayLink) {
-    __weak __typeof(self) weakSelf = self;
-    _displayLink = [CADisplayLink displayLinkWithTarget:weakSelf selector:@selector(displayDidRefresh:)];
+    _displayLink = [CADisplayLink displayLinkWithTarget:[RCTWeakProxy weakProxyWithTarget:self] selector:@selector(displayDidRefresh:)];
     NSString *runLoopMode = [NSProcessInfo processInfo].activeProcessorCount > 1 ? NSRunLoopCommonModes : NSDefaultRunLoopMode;
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:runLoopMode];
   }
@@ -182,7 +188,7 @@ static NSUInteger RCTDeviceFreeMemory() {
   NSUInteger totalFrameCount = self.totalFrameCount;
   NSUInteger currentFrameIndex = self.currentFrameIndex;
   NSUInteger nextFrameIndex = (currentFrameIndex + 1) % totalFrameCount;
-  
+
   // Check if we have the frame buffer firstly to improve performance
   if (!self.bufferMiss) {
     // Then check if timestamp is reached
@@ -199,7 +205,7 @@ static NSUInteger RCTDeviceFreeMemory() {
       self.currentTime = nextDuration;
     }
   }
-  
+
   // Update the current frame
   UIImage *currentFrame;
   UIImage *fetchFrame;
@@ -226,7 +232,7 @@ static NSUInteger RCTDeviceFreeMemory() {
   } else {
     self.bufferMiss = YES;
   }
-  
+
   // Update the loop count when last frame rendered
   if (nextFrameIndex == 0 && !self.bufferMiss) {
     // Update the loop count
@@ -238,7 +244,7 @@ static NSUInteger RCTDeviceFreeMemory() {
       return;
     }
   }
-  
+
   // Check if we should prefetch next frame or current frame
   NSUInteger fetchFrameIndex;
   if (self.bufferMiss) {
@@ -248,7 +254,7 @@ static NSUInteger RCTDeviceFreeMemory() {
     // Or, most cases, the decode speed is faster than render speed, we fetch next frame
     fetchFrameIndex = nextFrameIndex;
   }
-  
+
   if (!fetchFrame && !bufferFull && self.fetchQueue.operationCount == 0) {
     // Prefetch next frame in background queue
     UIImage<RCTAnimatedImage> *animatedImage = self.animatedImage;
@@ -278,7 +284,7 @@ static NSUInteger RCTDeviceFreeMemory() {
 {
   NSUInteger bytes = CGImageGetBytesPerRow(self.currentFrame.CGImage) * CGImageGetHeight(self.currentFrame.CGImage);
   if (bytes == 0) bytes = 1024;
-  
+
   NSUInteger max = 0;
   if (self.maxBufferSize > 0) {
     max = self.maxBufferSize;
@@ -288,13 +294,13 @@ static NSUInteger RCTDeviceFreeMemory() {
     NSUInteger free = RCTDeviceFreeMemory();
     max = MIN(total * 0.2, free * 0.6);
   }
-  
+
   NSUInteger maxBufferCount = (double)max / (double)bytes;
   if (!maxBufferCount) {
     // At least 1 frame
     maxBufferCount = 1;
   }
-  
+
   self.maxBufferCount = maxBufferCount;
 }
 
@@ -305,7 +311,6 @@ static NSUInteger RCTDeviceFreeMemory() {
   // Removes the display link from all run loop modes.
   [_displayLink invalidate];
   _displayLink = nil;
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning:(NSNotification *)notification

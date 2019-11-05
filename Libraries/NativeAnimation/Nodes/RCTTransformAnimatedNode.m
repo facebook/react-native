@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -14,7 +14,7 @@
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
-                     config:(NSDictionary<NSString *, id> *)config;
+                     config:(NSDictionary<NSString *, id> *)config
 {
   if ((self = [super initWithTag:tag config:config])) {
     _propsDictionary = [NSMutableDictionary new];

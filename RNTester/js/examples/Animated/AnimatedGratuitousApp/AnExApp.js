@@ -15,7 +15,9 @@ const {
   Animated,
   LayoutAnimation,
   PanResponder,
+  Platform,
   StyleSheet,
+  UIManager,
   View,
 } = require('react-native');
 
@@ -39,6 +41,10 @@ class Circle extends React.Component<any, any> {
       pan: new Animated.ValueXY(), // Vectors reduce boilerplate.  (step1: uncomment)
       pop: new Animated.Value(0), // Initial value.               (step2a: uncomment)
     };
+
+    if (Platform.OS === 'android') {
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
   }
 
   _onLongPress(): void {
@@ -59,10 +65,13 @@ class Circle extends React.Component<any, any> {
     this.setState(
       {
         panResponder: PanResponder.create({
-          onPanResponderMove: Animated.event([
-            null, // native event - ignore      (step1: uncomment)
-            {dx: this.state.pan.x, dy: this.state.pan.y}, // links pan to gestureState  (step1: uncomment)
-          ]),
+          onPanResponderMove: Animated.event(
+            [
+              null, // native event - ignore      (step1: uncomment)
+              {dx: this.state.pan.x, dy: this.state.pan.y}, // links pan to gestureState  (step1: uncomment)
+            ],
+            {useNativeDriver: false},
+          ),
           onPanResponderRelease: (e, gestureState) => {
             LayoutAnimation.easeInEaseOut(); // @flowfixme animates layout update as one batch (step3: uncomment)
             Animated.spring(this.state.pop, {

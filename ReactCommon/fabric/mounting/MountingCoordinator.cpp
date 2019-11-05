@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -10,6 +10,8 @@
 #ifdef RN_SHADOW_TREE_INTROSPECTION
 #include <glog/logging.h>
 #endif
+
+#include <condition_variable>
 
 #include <react/mounting/Differentiator.h>
 #include <react/mounting/ShadowViewMutation.h>
@@ -31,17 +33,33 @@ SurfaceId MountingCoordinator::getSurfaceId() const {
 }
 
 void MountingCoordinator::push(ShadowTreeRevision &&revision) const {
-  std::lock_guard<std::mutex> lock(mutex_);
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
 
-  assert(revision.getNumber() > baseRevision_.getNumber());
-  assert(
-      !lastRevision_.has_value() ||
-      revision.getNumber() != lastRevision_->getNumber());
+    assert(revision.getNumber() > baseRevision_.getNumber());
+    assert(
+        !lastRevision_.has_value() ||
+        revision.getNumber() != lastRevision_->getNumber());
 
-  if (!lastRevision_.has_value() ||
-      lastRevision_->getNumber() < revision.getNumber()) {
-    lastRevision_ = std::move(revision);
+    if (!lastRevision_.has_value() ||
+        lastRevision_->getNumber() < revision.getNumber()) {
+      lastRevision_ = std::move(revision);
+    }
   }
+
+  signal_.notify_all();
+}
+
+void MountingCoordinator::revoke() const {
+  std::lock_guard<std::mutex> lock(mutex_);
+  lastRevision_.reset();
+}
+
+bool MountingCoordinator::waitForTransaction(
+    std::chrono::duration<double> timeout) const {
+  std::unique_lock<std::mutex> lock(mutex_);
+  return signal_.wait_for(
+      lock, timeout, [this]() { return lastRevision_.has_value(); });
 }
 
 better::optional<MountingTransaction> MountingCoordinator::pullTransaction()

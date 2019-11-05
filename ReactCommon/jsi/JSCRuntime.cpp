@@ -1,7 +1,9 @@
-//  Copyright (c) Facebook, Inc. and its affiliates.
-//
-// This source code is licensed under the MIT license found in the
- // LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "JSCRuntime.h"
 
@@ -630,7 +632,9 @@ jsi::String JSCRuntime::createStringFromUtf8(
     size_t length) {
   std::string tmp(reinterpret_cast<const char*>(str), length);
   JSStringRef stringRef = JSStringCreateWithUTF8CString(tmp.c_str());
-  return createString(stringRef);
+  auto result = createString(stringRef);
+  JSStringRelease(stringRef);
+  return result;
 }
 
 std::string JSCRuntime::utf8(const jsi::String& str) {

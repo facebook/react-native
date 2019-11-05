@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -130,17 +130,25 @@ static NSURL *serverRootWithHostPort(NSString *hostPort)
   return nil;
 }
 
-- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName fallbackExtension:(NSString *)extension
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackURLProvider:(NSURL *(^)(void))fallbackURLProvider
 {
   NSString *packagerServerHost = [self packagerServerHost];
   if (!packagerServerHost) {
-    return [self jsBundleURLForFallbackResource:resourceName fallbackExtension:extension];
+    return fallbackURLProvider();
   } else {
     return [RCTBundleURLProvider jsBundleURLForBundleRoot:bundleRoot
                                              packagerHost:packagerServerHost
                                                 enableDev:[self enableDev]
                                        enableMinification:[self enableMinification]];
   }
+}
+
+- (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                   fallbackResource:(NSString *)resourceName fallbackExtension:(NSString *)extension
+{
+  return [self jsBundleURLForBundleRoot:bundleRoot fallbackURLProvider:^NSURL*{
+    return [self jsBundleURLForFallbackResource:resourceName fallbackExtension:extension];
+  }];
 }
 
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackResource:(NSString *)resourceName

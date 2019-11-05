@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "ShadowTree.h"
 
@@ -18,6 +20,13 @@
 
 namespace facebook {
 namespace react {
+
+static void CommitState(ShadowNode::Shared const &shadowNode) {
+  auto state = shadowNode->getState();
+  if (state) {
+    state->commit(shadowNode);
+  }
+}
 
 static void updateMountedFlag(
     const SharedShadowNodeList &oldChildren,
@@ -50,12 +59,13 @@ static void updateMountedFlag(
       continue;
     }
 
-    if (oldChild->getTag() != newChild->getTag()) {
+    if (!ShadowNode::sameFamily(*oldChild, *newChild)) {
       // Totally different nodes, updating is impossible.
       break;
     }
 
     newChild->setMounted(true);
+    CommitState(newChild);
     oldChild->setMounted(false);
 
     updateMountedFlag(oldChild->getChildren(), newChild->getChildren());
@@ -67,6 +77,7 @@ static void updateMountedFlag(
   for (index = lastIndexAfterFirstStage; index < newChildren.size(); index++) {
     const auto &newChild = newChildren[index];
     newChild->setMounted(true);
+    CommitState(newChild);
     updateMountedFlag({}, newChild->getChildren());
   }
 
@@ -103,19 +114,7 @@ ShadowTree::ShadowTree(
 }
 
 ShadowTree::~ShadowTree() {
-  commit(
-      [](const SharedRootShadowNode &oldRootShadowNode) {
-        return std::make_shared<RootShadowNode>(
-            *oldRootShadowNode,
-            ShadowNodeFragment{
-                /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
-                /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                /* .eventEmitter = */
-                ShadowNodeFragment::eventEmitterPlaceholder(),
-                /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
-            });
-      });
+  mountingCoordinator_->revoke();
 }
 
 Tag ShadowTree::getSurfaceId() const {
@@ -145,7 +144,7 @@ bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
   auto telemetry = MountingTelemetry{};
   telemetry.willCommit();
 
-  SharedRootShadowNode oldRootShadowNode;
+  RootShadowNode::Shared oldRootShadowNode;
 
   {
     // Reading `rootShadowNode_` in shared manner.
@@ -153,7 +152,7 @@ bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
     oldRootShadowNode = rootShadowNode_;
   }
 
-  UnsharedRootShadowNode newRootShadowNode = transaction(oldRootShadowNode);
+  RootShadowNode::Unshared newRootShadowNode = transaction(oldRootShadowNode);
 
   if (!newRootShadowNode) {
     return false;
@@ -203,6 +202,23 @@ bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
   }
 
   return true;
+}
+
+void ShadowTree::commitEmptyTree() const {
+  commit(
+      [](RootShadowNode::Shared const &oldRootShadowNode)
+          -> RootShadowNode::Unshared {
+        return std::make_shared<RootShadowNode>(
+            *oldRootShadowNode,
+            ShadowNodeFragment{
+                /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                /* .eventEmitter = */
+                ShadowNodeFragment::eventEmitterPlaceholder(),
+                /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
+            });
+      });
 }
 
 void ShadowTree::emitLayoutEvents(

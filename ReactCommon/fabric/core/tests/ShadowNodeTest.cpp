@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -30,7 +30,8 @@ TEST(ShadowNodeTest, handleProps) {
 }
 
 TEST(ShadowNodeTest, handleShadowNodeCreation) {
-  auto componentDescriptor = TestComponentDescriptor(nullptr);
+  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
+  auto componentDescriptor = TestComponentDescriptor(eventDispatcher);
   auto node = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .tag = */ 9,
@@ -54,7 +55,8 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
 }
 
 TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
-  auto componentDescriptor = TestComponentDescriptor(nullptr);
+  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
+  auto componentDescriptor = TestComponentDescriptor(eventDispatcher);
   auto node = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .tag = */ 9,
@@ -73,7 +75,8 @@ TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
 }
 
 TEST(ShadowNodeTest, handleShadowNodeMutation) {
-  auto componentDescriptor = TestComponentDescriptor(nullptr);
+  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
+  auto componentDescriptor = TestComponentDescriptor(eventDispatcher);
   auto props = std::make_shared<const TestProps>();
   auto node1 = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
@@ -111,7 +114,7 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
   ASSERT_EQ(node1Children.at(1), node3);
 
   auto node4 = std::make_shared<TestShadowNode>(*node2, ShadowNodeFragment{});
-  node1->replaceChild(node2, node4);
+  node1->replaceChild(*node2, node4);
   node1Children = node1->getChildren();
   ASSERT_EQ(node1Children.size(), 2);
   ASSERT_EQ(node1Children.at(0), node4);
@@ -132,7 +135,8 @@ TEST(ShadowNodeTest, handleShadowNodeMutation) {
 }
 
 TEST(ShadowNodeTest, handleCloneFunction) {
-  auto componentDescriptor = TestComponentDescriptor(nullptr);
+  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
+  auto componentDescriptor = TestComponentDescriptor(eventDispatcher);
 
   auto firstNode = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
@@ -160,7 +164,8 @@ TEST(ShadowNodeTest, handleCloneFunction) {
 }
 
 TEST(ShadowNodeTest, handleLocalData) {
-  auto componentDescriptor = TestComponentDescriptor(nullptr);
+  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
+  auto componentDescriptor = TestComponentDescriptor(eventDispatcher);
   auto localData42 = std::make_shared<TestLocalData>();
   localData42->setNumber(42);
 
@@ -227,7 +232,8 @@ TEST(ShadowNodeTest, handleBacktracking) {
    * </A>
    */
 
-  auto componentDescriptor = TestComponentDescriptor(nullptr);
+  auto eventDispatcher = std::shared_ptr<EventDispatcher const>();
+  auto componentDescriptor = TestComponentDescriptor(eventDispatcher);
   auto props = std::make_shared<const TestProps>();
 
   auto nodeAA = std::make_shared<TestShadowNode>(

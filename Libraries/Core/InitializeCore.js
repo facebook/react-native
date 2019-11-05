@@ -23,6 +23,7 @@
  *   2. Bridged modules.
  *
  */
+
 'use strict';
 
 const start = Date.now();

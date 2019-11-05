@@ -8,8 +8,9 @@
  * @flow
  */
 
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
-import type {TurboModule} from '../TurboModule/RCTExport';
+'use strict';
+
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export interface Spec extends TurboModule {
   +startReportAProblemFlow: () => void;
@@ -17,4 +18,4 @@ export interface Spec extends TurboModule {
   +setCategoryID: (categoryID: string) => void;
 }
 
-export default TurboModuleRegistry.get<Spec>('BugReporting');
+export default (TurboModuleRegistry.get<Spec>('BugReporting'): ?Spec);

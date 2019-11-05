@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -31,14 +30,14 @@ Pod::Spec.new do |s|
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.source                 = source
-  s.header_dir             = "ReactCommon" # Use global header_dir for all subspecs for use_framework compatibility
+  s.header_dir             = "ReactCommon" # Use global header_dir for all subspecs for use_frameworks! compatibility
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
 
-  s.subspec "jscallinvoker" do |ss|
-    ss.source_files = "jscallinvoker/**/*.{cpp,h}"
+  s.subspec "callinvoker" do |ss|
+    ss.source_files = "callinvoker/**/*.{cpp,h}"
 
     ss.dependency "React-cxxreact", version
     ss.dependency "DoubleConversion"
@@ -47,7 +46,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "turbomodule" do |ss|
-    ss.dependency "ReactCommon/jscallinvoker", version
+    ss.dependency "ReactCommon/callinvoker", version
     ss.dependency "React-Core", version
     ss.dependency "React-cxxreact", version
     ss.dependency "React-jsi", version

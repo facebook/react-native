@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -31,10 +31,12 @@ NSString *const RCTDidSetupModuleNotification = @"RCTDidSetupModuleNotification"
 NSString *const RCTDidSetupModuleNotificationModuleNameKey = @"moduleName";
 NSString *const RCTDidSetupModuleNotificationSetupTimeKey = @"setupTime";
 NSString *const RCTBridgeWillReloadNotification = @"RCTBridgeWillReloadNotification";
+NSString *const RCTBridgeFastRefreshNotification = @"RCTBridgeFastRefreshNotification";
 NSString *const RCTBridgeWillDownloadScriptNotification = @"RCTBridgeWillDownloadScriptNotification";
 NSString *const RCTBridgeDidDownloadScriptNotification = @"RCTBridgeDidDownloadScriptNotification";
 NSString *const RCTBridgeWillInvalidateModulesNotification = @"RCTBridgeWillInvalidateModulesNotification";
 NSString *const RCTBridgeDidInvalidateModulesNotification = @"RCTBridgeDidInvalidateModulesNotification";
+NSString *const RCTBridgeWillBeInvalidatedNotification = @"RCTBridgeWillBeInvalidatedNotification";
 NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey = @"source";
 NSString *const RCTBridgeDidDownloadScriptNotificationBridgeDescriptionKey = @"bridgeDescription";
 
@@ -93,6 +95,12 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
 static BOOL turboModuleEnabled = NO;
 BOOL RCTTurboModuleEnabled(void)
 {
+#if RCT_DEBUG
+  // TODO(T53341772): Allow TurboModule for test environment. Right now this breaks RNTester tests if enabled.
+  if (RCTRunningInTestEnvironment()) {
+    return NO;
+  }
+#endif
   return turboModuleEnabled;
 }
 
@@ -238,7 +246,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)didReceiveReloadCommand
 {
-  [self reload];
+  [self reloadWithReason:@"Command"];
 }
 
 - (NSArray<Class> *)moduleClasses
@@ -284,14 +292,27 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleIsInitialized:moduleClass];
 }
 
+/**
+ * DEPRECATED - please use RCTReloadCommand.
+ */
 - (void)reload
+{
+   [self reloadWithReason:@"Unknown from bridge"];
+}
+
+/**
+ * DEPRECATED - please use RCTReloadCommand.
+ */
+- (void)reloadWithReason:(NSString *)reason
 {
   #if RCT_ENABLE_INSPECTOR && !TARGET_OS_UIKITFORMAC
   // Disable debugger to resume the JsVM & avoid thread locks while reloading
   [RCTInspectorDevServerHelper disableDebugger];
   #endif
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillReloadNotification object:self];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillReloadNotification
+                                                      object:self
+                                                    userInfo:nil];
 
   /**
    * Any thread
@@ -306,9 +327,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   });
 }
 
+- (void)onFastRefresh
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeFastRefreshNotification object:self];
+}
+
+/**
+ * DEPRECATED - please use RCTReloadCommand.
+ */
 - (void)requestReload
 {
-  [self reload];
+  [self reloadWithReason:@"Requested from bridge"];
 }
 
 - (Class)bridgeClass
@@ -326,11 +355,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   Class bridgeClass = self.bridgeClass;
 
-  #if RCT_DEV
   RCTExecuteOnMainQueue(^{
     RCTRegisterReloadCommandListener(self);
   });
-  #endif
 
   // Only update bundleURL from delegate if delegate bundleURL has changed
   NSURL *previousDelegateURL = _delegateBundleURL;
@@ -365,6 +392,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)invalidate
 {
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillBeInvalidatedNotification
+                                                      object:self];
+
   RCTBridge *batchedBridge = self.batchedBridge;
   self.batchedBridge = nil;
 
@@ -393,7 +423,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self enqueueJSCall:module method:method args:args completion:NULL];
 }
 
-- (void)enqueueJSCall:(NSString *)module method:(NSString *)method args:(NSArray *)args completion:(dispatch_block_t)completion
+- (void)enqueueJSCall:(NSString *)module
+               method:(NSString *)method
+                 args:(NSArray *)args
+           completion:(dispatch_block_t)completion
 {
   [self.batchedBridge enqueueJSCall:module method:method args:args completion:completion];
 }

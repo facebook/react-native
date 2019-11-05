@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,6 +8,8 @@
 #import "RCTScrollViewComponentView.h"
 
 #import <React/RCTAssert.h>
+#import <React/RCTBridge+Private.h>
+#import <React/RCTScrollEvent.h>
 
 #import <react/components/scrollview/ScrollViewComponentDescriptor.h>
 #import <react/components/scrollview/ScrollViewEventEmitter.h>
@@ -20,15 +22,30 @@
 
 using namespace facebook::react;
 
-@interface RCTScrollViewComponentView () <UIScrollViewDelegate>
+static void RCTSendPaperScrollEvent_DEPRECATED(UIScrollView *scrollView, NSInteger tag)
+{
+  static uint16_t coalescingKey = 0;
+  RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithEventName:@"onScroll"
+                                                                 reactTag:[NSNumber numberWithInt:tag]
+                                                  scrollViewContentOffset:scrollView.contentOffset
+                                                   scrollViewContentInset:scrollView.contentInset
+                                                    scrollViewContentSize:scrollView.contentSize
+                                                          scrollViewFrame:scrollView.frame
+                                                      scrollViewZoomScale:scrollView.zoomScale
+                                                                 userData:nil
+                                                            coalescingKey:coalescingKey];
+  [[RCTBridge currentBridge].eventDispatcher sendEvent:scrollEvent];
+}
 
-@property (nonatomic, assign) CGFloat scrollEventThrottle;
+@interface RCTScrollViewComponentView () <UIScrollViewDelegate>
 
 @end
 
 @implementation RCTScrollViewComponentView {
   ScrollViewShadowNode::ConcreteState::Shared _state;
   CGSize _contentSize;
+  NSTimeInterval _lastScrollEventDispatchTime;
+  NSTimeInterval _scrollEventThrottle;
 }
 
 + (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view
@@ -59,9 +76,17 @@ using namespace facebook::react;
     }];
 
     [_scrollViewDelegateSplitter addDelegate:self];
+
+    _scrollEventThrottle = INFINITY;
   }
 
   return self;
+}
+
+- (void)dealloc
+{
+  // This is not strictly necessary but that prevents a crash caused by a bug in UIKit.
+  _scrollView.delegate = nil;
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -107,7 +132,22 @@ using namespace facebook::react;
   MAP_SCROLL_VIEW_PROP(scrollsToTop);
   MAP_SCROLL_VIEW_PROP(showsHorizontalScrollIndicator);
   MAP_SCROLL_VIEW_PROP(showsVerticalScrollIndicator);
-  MAP_VIEW_PROP(scrollEventThrottle);
+
+  if (oldScrollViewProps.scrollEventThrottle != newScrollViewProps.scrollEventThrottle) {
+    // Zero means "send value only once per significant logical event".
+    // Prop value is in milliseconds.
+    // iOS implementation uses `NSTimeInterval` (in seconds).
+    CGFloat throttleInSeconds = newScrollViewProps.scrollEventThrottle / 1000.0;
+    CGFloat msPerFrame = 1.0 / 60.0;
+    if (throttleInSeconds < 0) {
+      _scrollEventThrottle = INFINITY;
+    } else if (throttleInSeconds <= msPerFrame) {
+      _scrollEventThrottle = 0;
+    } else {
+      _scrollEventThrottle = throttleInSeconds;
+    }
+  }
+
   MAP_SCROLL_VIEW_PROP(zoomScale);
 
   if (oldScrollViewProps.contentInset != newScrollViewProps.contentInset) {
@@ -173,6 +213,7 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   _scrollView.contentOffset = CGPointZero;
+  _state.reset();
   [super prepareForRecycle];
 }
 
@@ -184,85 +225,109 @@ using namespace facebook::react;
     return;
   }
 
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
+  NSTimeInterval now = CACurrentMediaTime();
+  if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
+    _lastScrollEventDispatchTime = now;
+    std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
+    // Once Fabric implements proper NativeAnimationDriver, this should be removed.
+    // This is just a workaround to allow animations based on onScroll event.
+    RCTSendPaperScrollEvent_DEPRECATED(scrollView, self.tag);
+  }
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
-  if (!_eventEmitter) {
-    return;
-  }
-
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
+  [self scrollViewDidScroll:scrollView];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
+  [self _forceDispatchNextScrollEvent];
+
   if (!_eventEmitter) {
     return;
   }
 
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
+  std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
                      withVelocity:(CGPoint)velocity
               targetContentOffset:(inout CGPoint *)targetContentOffset
 {
+  [self _forceDispatchNextScrollEvent];
+
   if (!_eventEmitter) {
     return;
   }
 
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
+  std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
 {
+  [self _forceDispatchNextScrollEvent];
+
   if (!_eventEmitter) {
     return;
   }
 
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)
+  std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)
       ->onMomentumScrollBegin([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
+  [self _forceDispatchNextScrollEvent];
+
   if (!_eventEmitter) {
     return;
   }
 
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
+  std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
   [self _updateStateWithContentOffset];
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
+  [self _forceDispatchNextScrollEvent];
+
   if (!_eventEmitter) {
     return;
   }
 
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
+  std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
   [self _updateStateWithContentOffset];
 }
 
 - (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view
 {
+  [self _forceDispatchNextScrollEvent];
+
   if (!_eventEmitter) {
     return;
   }
 
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
+  std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view atScale:(CGFloat)scale
 {
+  [self _forceDispatchNextScrollEvent];
+
   if (!_eventEmitter) {
     return;
   }
 
-  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
+  std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
   [self _updateStateWithContentOffset];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)_forceDispatchNextScrollEvent
+{
+  _lastScrollEventDispatchTime = 0;
 }
 
 @end
@@ -276,11 +341,13 @@ using namespace facebook::react;
 
 - (void)scrollToOffset:(CGPoint)offset
 {
+  [self _forceDispatchNextScrollEvent];
   [self scrollToOffset:offset animated:YES];
 }
 
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
 {
+  [self _forceDispatchNextScrollEvent];
   [self.scrollView setContentOffset:offset animated:animated];
 }
 

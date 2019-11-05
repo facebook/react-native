@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -44,6 +44,14 @@
 #else
 #define RCT_DEV 0
 #endif
+#endif
+
+/**
+ * RCT_DEV_MENU can be used to toggle the dev menu separately from RCT_DEV.
+ * By default though, it will inherit from RCT_DEV.
+ */
+#ifndef RCT_DEV_MENU
+#define RCT_DEV_MENU RCT_DEV
 #endif
 
 #ifndef RCT_ENABLE_INSPECTOR

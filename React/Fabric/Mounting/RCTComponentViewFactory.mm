@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,28 +8,37 @@
 #import "RCTComponentViewFactory.h"
 
 #import <React/RCTAssert.h>
+#import <React/RCTConversions.h>
+
 #import <better/map.h>
 #import <better/mutex.h>
 
 #import <react/core/ReactPrimitives.h>
 #import <react/uimanager/ComponentDescriptorProviderRegistry.h>
 
+#import "RCTARTSurfaceViewComponentView.h"
 #import "RCTActivityIndicatorViewComponentView.h"
+#import "RCTComponentViewClassDescriptor.h"
 #import "RCTImageComponentView.h"
+#import "RCTLegacyViewManagerInteropComponentView.h"
 #import "RCTModalHostViewComponentView.h"
+#import "RCTMountingTransactionObserving.h"
 #import "RCTParagraphComponentView.h"
 #import "RCTPullToRefreshViewComponentView.h"
 #import "RCTRootComponentView.h"
+#import "RCTSafeAreaViewComponentView.h"
 #import "RCTScrollViewComponentView.h"
 #import "RCTSliderComponentView.h"
 #import "RCTSwitchComponentView.h"
 #import "RCTUnimplementedNativeComponentView.h"
 #import "RCTViewComponentView.h"
 
+#import <objc/runtime.h>
+
 using namespace facebook::react;
 
 @implementation RCTComponentViewFactory {
-  better::map<ComponentHandle, Class<RCTComponentViewProtocol>> _componentViewClasses;
+  better::map<ComponentHandle, RCTComponentViewClassDescriptor> _componentViewClasses;
   ComponentDescriptorProviderRegistry _providerRegistry;
   better::shared_mutex _mutex;
 }
@@ -49,8 +58,42 @@ using namespace facebook::react;
   [componentViewFactory registerComponentViewClass:[RCTSwitchComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTUnimplementedNativeComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTModalHostViewComponentView class]];
+  [componentViewFactory registerComponentViewClass:[RCTARTSurfaceViewComponentView class]];
+  [componentViewFactory registerComponentViewClass:[RCTSafeAreaViewComponentView class]];
+
+  auto providerRegistry = &componentViewFactory->_providerRegistry;
+
+  providerRegistry->setComponentDescriptorProviderRequest([providerRegistry,
+                                                           componentViewFactory](ComponentName requestedComponentName) {
+    if ([RCTLegacyViewManagerInteropComponentView isSupported:RCTNSStringFromString(requestedComponentName)]) {
+      auto flavor = std::make_shared<std::string const>(requestedComponentName);
+      auto componentName = ComponentName{flavor->c_str()};
+      auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
+      auto constructor = [RCTLegacyViewManagerInteropComponentView componentDescriptorProvider].constructor;
+
+      providerRegistry->add(ComponentDescriptorProvider{componentHandle, componentName, flavor, constructor});
+
+      componentViewFactory->_componentViewClasses[componentHandle] = [componentViewFactory
+          _componentViewClassDescriptorFromClass:[RCTLegacyViewManagerInteropComponentView class]];
+    }
+  });
 
   return componentViewFactory;
+}
+
+- (RCTComponentViewClassDescriptor)_componentViewClassDescriptorFromClass:(Class<RCTComponentViewProtocol>)viewClass
+{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+  return RCTComponentViewClassDescriptor
+  {
+    .viewClass = viewClass,
+    .observesMountingTransactionWillMount =
+        (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionWillMountWithMetadata:)),
+    .observesMountingTransactionDidMount =
+        (bool)class_respondsToSelector(viewClass, @selector(mountingTransactionDidMountWithMetadata:)),
+  };
+#pragma clang diagnostic pop
 }
 
 - (void)registerComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass
@@ -58,7 +101,8 @@ using namespace facebook::react;
   std::unique_lock<better::shared_mutex> lock(_mutex);
 
   auto componentDescriptorProvider = [componentViewClass componentDescriptorProvider];
-  _componentViewClasses[componentDescriptorProvider.handle] = componentViewClass;
+  _componentViewClasses[componentDescriptorProvider.handle] =
+      [self _componentViewClassDescriptorFromClass:componentViewClass];
   _providerRegistry.add(componentDescriptorProvider);
 
   auto supplementalComponentDescriptorProviders = [componentViewClass supplementalComponentDescriptorProviders];
@@ -76,8 +120,7 @@ using namespace facebook::react;
   _providerRegistry.remove(componentDescriptorProvider);
 }
 
-- (UIView<RCTComponentViewProtocol> *)createComponentViewWithComponentHandle:
-    (facebook::react::ComponentHandle)componentHandle
+- (RCTComponentViewDescriptor)createComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle
 {
   RCTAssertMainQueue();
   std::shared_lock<better::shared_mutex> lock(_mutex);
@@ -88,8 +131,14 @@ using namespace facebook::react;
       @"ComponentView with componentHandle `%lli` (`%s`) not found.",
       componentHandle,
       (char *)componentHandle);
-  Class componentViewClass = iterator->second;
-  return [[componentViewClass alloc] init];
+  auto componentViewClassDescriptor = iterator->second;
+  Class viewClass = componentViewClassDescriptor.viewClass;
+
+  return RCTComponentViewDescriptor{
+      .view = [[viewClass alloc] init],
+      .observesMountingTransactionWillMount = componentViewClassDescriptor.observesMountingTransactionWillMount,
+      .observesMountingTransactionDidMount = componentViewClassDescriptor.observesMountingTransactionDidMount,
+  };
 }
 
 - (facebook::react::ComponentDescriptorRegistry::Shared)createComponentDescriptorRegistryWithParameters:

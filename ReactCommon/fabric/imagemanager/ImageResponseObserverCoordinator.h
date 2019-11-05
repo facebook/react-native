@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -10,7 +10,8 @@
 #include <react/imagemanager/ImageResponse.h>
 #include <react/imagemanager/ImageResponseObserver.h>
 
-#include <better/mutex.h>
+#include <better/small_vector.h>
+#include <mutex>
 #include <vector>
 
 namespace facebook {
@@ -25,35 +26,27 @@ namespace react {
 class ImageResponseObserverCoordinator {
  public:
   /*
-   * Default constructor.
-   */
-  ImageResponseObserverCoordinator();
-
-  /*
-   * Default destructor.
-   */
-  ~ImageResponseObserverCoordinator();
-
-  /*
    * Interested parties may observe the image response.
+   * If the current image request status is not equal to `Loading`, the observer
+   * will be called immediately.
    */
-  void addObserver(ImageResponseObserver *observer) const;
+  void addObserver(ImageResponseObserver const &observer) const;
 
   /*
    * Interested parties may stop observing the image response.
    */
-  void removeObserver(ImageResponseObserver *observer) const;
+  void removeObserver(ImageResponseObserver const &observer) const;
 
   /*
    * Platform-specific image loader will call this method with progress updates.
    */
-  void nativeImageResponseProgress(float) const;
+  void nativeImageResponseProgress(float progress) const;
 
   /*
    * Platform-specific image loader will call this method with a completed image
    * response.
    */
-  void nativeImageResponseComplete(const ImageResponse &imageResponse) const;
+  void nativeImageResponseComplete(ImageResponse const &imageResponse) const;
 
   /*
    * Platform-specific image loader will call this method in case of any
@@ -66,24 +59,24 @@ class ImageResponseObserverCoordinator {
    * List of observers.
    * Mutable: protected by mutex_.
    */
-  mutable std::vector<ImageResponseObserver *> observers_;
+  mutable better::small_vector<ImageResponseObserver const *, 1> observers_;
 
   /*
    * Current status of image loading.
    * Mutable: protected by mutex_.
    */
-  mutable ImageResponse::Status status_;
+  mutable ImageResponse::Status status_{ImageResponse::Status::Loading};
 
   /*
    * Cache image data.
    * Mutable: protected by mutex_.
    */
-  mutable std::shared_ptr<void> imageData_{};
+  mutable std::shared_ptr<void> imageData_;
 
   /*
    * Observer and data mutex.
    */
-  mutable better::shared_mutex mutex_;
+  mutable std::mutex mutex_;
 };
 
 } // namespace react

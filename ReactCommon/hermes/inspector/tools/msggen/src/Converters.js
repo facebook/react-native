@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 export function toCppNamespace(domain: string): string {

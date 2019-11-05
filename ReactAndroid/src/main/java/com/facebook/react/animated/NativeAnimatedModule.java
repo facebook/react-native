@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.animated;
 
 import androidx.annotation.Nullable;
@@ -115,10 +116,13 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
 
   @Override
   public void initialize() {
-    ReactApplicationContext reactCtx = getReactApplicationContext();
-    UIManagerModule uiManager = reactCtx.getNativeModule(UIManagerModule.class);
-    reactCtx.addLifecycleEventListener(this);
-    uiManager.addUIManagerListener(this);
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+
+    if (reactApplicationContext != null) {
+      UIManagerModule uiManager = reactApplicationContext.getNativeModule(UIManagerModule.class);
+      reactApplicationContext.addLifecycleEventListener(this);
+      uiManager.addUIManagerListener(this);
+    }
   }
 
   @Override
@@ -174,9 +178,12 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
 
   private NativeAnimatedNodesManager getNodesManager() {
     if (mNodesManager == null) {
-      UIManagerModule uiManager =
-          getReactApplicationContext().getNativeModule(UIManagerModule.class);
-      mNodesManager = new NativeAnimatedNodesManager(uiManager);
+      ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+
+      if (reactApplicationContext != null) {
+        UIManagerModule uiManager = reactApplicationContext.getNativeModule(UIManagerModule.class);
+        mNodesManager = new NativeAnimatedNodesManager(uiManager);
+      }
     }
 
     return mNodesManager;
@@ -218,9 +225,14 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
             WritableMap onAnimatedValueData = Arguments.createMap();
             onAnimatedValueData.putInt("tag", tag);
             onAnimatedValueData.putDouble("value", value);
-            getReactApplicationContext()
-                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit("onAnimatedValueUpdate", onAnimatedValueData);
+
+            ReactApplicationContext reactApplicationContext =
+                getReactApplicationContextIfActiveOrWarn();
+            if (reactApplicationContext != null) {
+              reactApplicationContext
+                  .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                  .emit("onAnimatedValueUpdate", onAnimatedValueData);
+            }
           }
         };
 
@@ -361,18 +373,22 @@ public class NativeAnimatedModule extends ReactContextBaseJavaModule
 
   @ReactMethod
   public void disconnectAnimatedNodeFromView(final int animatedNodeTag, final int viewTag) {
-    mPreOperations.add(
-        new UIThreadOperation() {
-          @Override
-          public void execute(NativeAnimatedNodesManager animatedNodesManager) {
-            animatedNodesManager.restoreDefaultValues(animatedNodeTag, viewTag);
-          }
-        });
     mOperations.add(
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
             animatedNodesManager.disconnectAnimatedNodeFromView(animatedNodeTag, viewTag);
+          }
+        });
+  }
+
+  @ReactMethod
+  public void restoreDefaultValues(final int animatedNodeTag) {
+    mPreOperations.add(
+        new UIThreadOperation() {
+          @Override
+          public void execute(NativeAnimatedNodesManager animatedNodesManager) {
+            animatedNodesManager.restoreDefaultValues(animatedNodeTag);
           }
         });
   }

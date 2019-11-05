@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -82,6 +82,26 @@
 - (UIImage *)thumbImage
 {
   return [self thumbImageForState:UIControlStateNormal];
+}
+
+- (void)accessibilityIncrement
+{
+  [super accessibilityIncrement];
+  if (_onSlidingComplete) {
+    _onSlidingComplete(@{
+        @"value": @(self.value),
+    });
+  }
+}
+
+- (void)accessibilityDecrement
+{
+  [super accessibilityDecrement];
+  if (_onSlidingComplete) {
+    _onSlidingComplete(@{
+        @"value": @(self.value),
+    });
+  }
 }
 
 @end

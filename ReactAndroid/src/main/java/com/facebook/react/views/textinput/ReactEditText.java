@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.textinput;
 
 import android.content.Context;
@@ -38,6 +39,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.text.ReactSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
@@ -83,6 +85,10 @@ public class ReactEditText extends EditText {
   private boolean mDetectScrollMovement = false;
   private boolean mOnKeyPress = false;
   private TextAttributes mTextAttributes;
+  private boolean mTypefaceDirty = false;
+  private @Nullable String mFontFamily = null;
+  private int mFontWeight = ReactTypefaceUtils.UNSET;
+  private int mFontStyle = ReactTypefaceUtils.UNSET;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -380,6 +386,39 @@ public class ReactEditText extends EditText {
     // accept all input from it
     mKeyListener.setInputType(type);
     setKeyListener(mKeyListener);
+  }
+
+  public void setFontFamily(String fontFamily) {
+    mFontFamily = fontFamily;
+    mTypefaceDirty = true;
+  }
+
+  public void setFontWeight(String fontWeightString) {
+    int fontWeight = ReactTypefaceUtils.parseFontWeight(fontWeightString);
+    if (fontWeight != mFontWeight) {
+      mFontWeight = fontWeight;
+      mTypefaceDirty = true;
+    }
+  }
+
+  public void setFontStyle(String fontStyleString) {
+    int fontStyle = ReactTypefaceUtils.parseFontStyle(fontStyleString);
+    if (fontStyle != mFontStyle) {
+      mFontStyle = fontStyle;
+      mTypefaceDirty = true;
+    }
+  }
+
+  public void maybeUpdateTypeface() {
+    if (!mTypefaceDirty) {
+      return;
+    }
+
+    mTypefaceDirty = false;
+
+    Typeface newTypeface = ReactTypefaceUtils.applyStyles(
+        getTypeface(), mFontStyle, mFontWeight, mFontFamily, getContext().getAssets());
+    setTypeface(newTypeface);
   }
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.

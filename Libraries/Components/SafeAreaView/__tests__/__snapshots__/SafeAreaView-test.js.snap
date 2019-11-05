@@ -25,21 +25,21 @@ exports[`<SafeAreaView /> should render as <SafeAreaView> when not mocked 1`] = 
 `;
 
 exports[`<SafeAreaView /> should shallow render as <ForwardRef(SafeAreaView)> when mocked 1`] = `
-<ForwardRef(_SafeAreaView)>
+<ForwardRef(SafeAreaView)>
   <View>
     <Text>
       Hello World!
     </Text>
   </View>
-</ForwardRef(_SafeAreaView)>
+</ForwardRef(SafeAreaView)>
 `;
 
 exports[`<SafeAreaView /> should shallow render as <ForwardRef(SafeAreaView)> when not mocked 1`] = `
-<ForwardRef(_SafeAreaView)>
+<ForwardRef(SafeAreaView)>
   <View>
     <Text>
       Hello World!
     </Text>
   </View>
-</ForwardRef(_SafeAreaView)>
+</ForwardRef(SafeAreaView)>
 `;

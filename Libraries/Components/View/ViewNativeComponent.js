@@ -11,22 +11,23 @@
 'use strict';
 
 const Platform = require('../../Utilities/Platform');
-const ReactNative = require('../../Renderer/shims/ReactNative');
 const ReactNativeViewViewConfigAndroid = require('./ReactNativeViewViewConfigAndroid');
 
 const registerGeneratedViewConfig = require('../../Utilities/registerGeneratedViewConfig');
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
-import type {ViewProps} from './ViewPropTypes';
+import * as React from 'react';
 
-export type ViewNativeComponentType = Class<
-  ReactNative.NativeComponent<ViewProps>,
->;
+import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
+import type {ViewProps} from './ViewPropTypes';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+
+export type ViewNativeComponentType = HostComponent<ViewProps>;
 
 let NativeViewComponent;
 let viewConfig:
-  | $TEMPORARY$object<{||}>
-  | $TEMPORARY$object<{|
+  | {...}
+  | {|
       bubblingEventTypes?: $ReadOnly<{
         [eventName: string]: $ReadOnly<{|
           phasedRegistrationNames: $ReadOnly<{|
@@ -47,7 +48,7 @@ let viewConfig:
               process?: (arg1: any) => any,
             |}>,
       },
-    |}>;
+    |};
 
 // Only use the JS view config in DEV
 if (__DEV__) {
@@ -67,4 +68,21 @@ if (__DEV__) {
 }
 
 export const __INTERNAL_VIEW_CONFIG = viewConfig;
+
+interface NativeCommands {
+  +hotspotUpdate: (
+    viewRef: React.ElementRef<HostComponent<mixed>>,
+    x: number,
+    y: number,
+  ) => void;
+  +setPressed: (
+    viewRef: React.ElementRef<HostComponent<mixed>>,
+    pressed: boolean,
+  ) => void;
+}
+
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['hotspotUpdate', 'setPressed'],
+});
+
 export default ((NativeViewComponent: any): ViewNativeComponentType);

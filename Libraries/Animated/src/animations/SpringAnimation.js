@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 const AnimatedValue = require('../nodes/AnimatedValue');
@@ -138,7 +139,7 @@ class SpringAnimation extends Animation {
     invariant(this._mass > 0, 'Mass value must be greater than 0');
   }
 
-  __getNativeAnimationConfig(): $TEMPORARY$object<{|
+  __getNativeAnimationConfig(): {|
     damping: number,
     initialVelocity: number,
     iterations: number,
@@ -149,7 +150,7 @@ class SpringAnimation extends Animation {
     stiffness: number,
     toValue: any,
     type: $TEMPORARY$string<'spring'>,
-  |}> {
+  |} {
     return {
       type: 'spring',
       overshootClamping: this._overshootClamping,

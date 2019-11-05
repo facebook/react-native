@@ -1,0 +1,166 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LogBoxInspectorHeader should render both buttons for two total 1`] = `
+<ForwardRef(SafeAreaView)
+  style={
+    Object {
+      "backgroundColor": "rgba(250, 186, 48, 1)",
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "flexDirection": "row",
+        "height": 44,
+      }
+    }
+  >
+    <LogBoxInspectorHeaderButton
+      disabled={false}
+      image="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAaUlEQVRYhe3WsQ2AMAwAwRcs5LEYg3HpYANoQKKgcEEUI/6adM5LbgySfmZsNDeACdiApdEfaQGswH6+Xd1jugc9xYQxxhjz9RhaxwxvDuul3MrAqDyjsozKKnWgXUqdsJcAZgqsTFJ5B7gjUNw0n0HHAAAAAElFTkSuQmCC"
+      level="warn"
+      onPress={[Function]}
+    />
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "flex": 1,
+          "justifyContent": "center",
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 1)",
+            "fontSize": 16,
+            "fontWeight": "600",
+            "includeFontPadding": false,
+            "lineHeight": 20,
+          }
+        }
+      >
+        Log 2 of 2
+      </Text>
+    </View>
+    <LogBoxInspectorHeaderButton
+      disabled={false}
+      image="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAZElEQVRYhe3WsQmAQAxA0Y8ulLEcw3HtdANtBNvzCJjD/5pUgQ9pApJ+Zu7YCWABDmDLzemzA+c94+MW4AkqExUY1caoVka1GibqlSm7qJJSJzPGGGMylYqBgi9sACtFYiQN7wKC6VDcJ7tlpQAAAABJRU5ErkJggg=="
+      level="warn"
+      onPress={[Function]}
+    />
+  </View>
+</ForwardRef(SafeAreaView)>
+`;
+
+exports[`LogBoxInspectorHeader should render no buttons for one total 1`] = `
+<ForwardRef(SafeAreaView)
+  style={
+    Object {
+      "backgroundColor": "rgba(250, 186, 48, 1)",
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "flexDirection": "row",
+        "height": 44,
+      }
+    }
+  >
+    <LogBoxInspectorHeaderButton
+      disabled={true}
+      image="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAaUlEQVRYhe3WsQ2AMAwAwRcs5LEYg3HpYANoQKKgcEEUI/6adM5LbgySfmZsNDeACdiApdEfaQGswH6+Xd1jugc9xYQxxhjz9RhaxwxvDuul3MrAqDyjsozKKnWgXUqdsJcAZgqsTFJ5B7gjUNw0n0HHAAAAAElFTkSuQmCC"
+      level="warn"
+      onPress={[Function]}
+    />
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "flex": 1,
+          "justifyContent": "center",
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 1)",
+            "fontSize": 16,
+            "fontWeight": "600",
+            "includeFontPadding": false,
+            "lineHeight": 20,
+          }
+        }
+      >
+        Log 1 of 1
+      </Text>
+    </View>
+    <LogBoxInspectorHeaderButton
+      disabled={true}
+      image="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAZElEQVRYhe3WsQmAQAxA0Y8ulLEcw3HtdANtBNvzCJjD/5pUgQ9pApJ+Zu7YCWABDmDLzemzA+c94+MW4AkqExUY1caoVka1GibqlSm7qJJSJzPGGGMylYqBgi9sACtFYiQN7wKC6VDcJ7tlpQAAAABJRU5ErkJggg=="
+      level="warn"
+      onPress={[Function]}
+    />
+  </View>
+</ForwardRef(SafeAreaView)>
+`;
+
+exports[`LogBoxInspectorHeader should render two buttons for three or more total 1`] = `
+<ForwardRef(SafeAreaView)
+  style={
+    Object {
+      "backgroundColor": "rgba(250, 186, 48, 1)",
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "flexDirection": "row",
+        "height": 44,
+      }
+    }
+  >
+    <LogBoxInspectorHeaderButton
+      disabled={true}
+      image="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAaUlEQVRYhe3WsQ2AMAwAwRcs5LEYg3HpYANoQKKgcEEUI/6adM5LbgySfmZsNDeACdiApdEfaQGswH6+Xd1jugc9xYQxxhjz9RhaxwxvDuul3MrAqDyjsozKKnWgXUqdsJcAZgqsTFJ5B7gjUNw0n0HHAAAAAElFTkSuQmCC"
+      level="warn"
+      onPress={[Function]}
+    />
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "flex": 1,
+          "justifyContent": "center",
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 1)",
+            "fontSize": 16,
+            "fontWeight": "600",
+            "includeFontPadding": false,
+            "lineHeight": 20,
+          }
+        }
+      >
+        Log 1 of 1
+      </Text>
+    </View>
+    <LogBoxInspectorHeaderButton
+      disabled={true}
+      image="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAZElEQVRYhe3WsQmAQAxA0Y8ulLEcw3HtdANtBNvzCJjD/5pUgQ9pApJ+Zu7YCWABDmDLzemzA+c94+MW4AkqExUY1caoVka1GibqlSm7qJJSJzPGGGMylYqBgi9sACtFYiQN7wKC6VDcJ7tlpQAAAABJRU5ErkJggg=="
+      level="warn"
+      onPress={[Function]}
+    />
+  </View>
+</ForwardRef(SafeAreaView)>
+`;

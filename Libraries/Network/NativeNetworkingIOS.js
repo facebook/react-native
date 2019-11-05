@@ -10,8 +10,7 @@
 
 'use strict';
 
-import type {TurboModule} from '../TurboModule/RCTExport';
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export interface Spec extends TurboModule {
   +sendRequest: (
@@ -20,7 +19,7 @@ export interface Spec extends TurboModule {
       url: string,
       data: Object,
       headers: Object,
-      responseType: Object, // TODO: Use stricter type.
+      responseType: string,
       incrementalUpdates: boolean,
       timeout: number,
       withCredentials: boolean,

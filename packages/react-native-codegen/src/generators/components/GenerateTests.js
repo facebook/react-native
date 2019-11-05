@@ -71,7 +71,7 @@ function getTestCasesForProp(propName, typeAnnotation) {
   } else if (typeAnnotation.type === 'BooleanTypeAnnotation') {
     cases.push({
       propName: propName,
-      propValue: typeAnnotation.default || true,
+      propValue: typeAnnotation.default != null ? typeAnnotation.default : true,
     });
   } else if (typeAnnotation.type === 'IntegerTypeAnnotation') {
     cases.push({
@@ -81,7 +81,7 @@ function getTestCasesForProp(propName, typeAnnotation) {
   } else if (typeAnnotation.type === 'FloatTypeAnnotation') {
     cases.push({
       propName,
-      propValue: typeAnnotation.default || 0.1,
+      propValue: typeAnnotation.default != null ? typeAnnotation.default : 0.1,
     });
   } else if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
     if (typeAnnotation.name === 'ColorPrimitive') {

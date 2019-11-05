@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -16,6 +18,7 @@
 namespace facebook {
 namespace react {
 
+class ComponentDescriptorProviderRegistry;
 class ComponentDescriptorRegistry;
 
 using SharedComponentDescriptorRegistry =
@@ -29,21 +32,12 @@ class ComponentDescriptorRegistry {
   using Shared = std::shared_ptr<const ComponentDescriptorRegistry>;
 
   /*
-   * Deprecated. Use custom constructor instead.
-   */
-  ComponentDescriptorRegistry() = default;
-
-  /*
    * Creates an object with stored `ComponentDescriptorParameters`  which will
    * be used later to create `ComponentDescriptor`s.
    */
-  ComponentDescriptorRegistry(ComponentDescriptorParameters const &parameters);
-
-  /*
-   * Deprecated. Use `add` instead.
-   */
-  void registerComponentDescriptor(
-      SharedComponentDescriptor componentDescriptor) const;
+  ComponentDescriptorRegistry(
+      ComponentDescriptorParameters const &parameters,
+      ComponentDescriptorProviderRegistry const &providerRegistry);
 
   ComponentDescriptor const &at(std::string const &componentName) const;
   ComponentDescriptor const &at(ComponentHandle componentHandle) const;
@@ -61,6 +55,9 @@ class ComponentDescriptorRegistry {
  private:
   friend class ComponentDescriptorProviderRegistry;
 
+  void registerComponentDescriptor(
+      SharedComponentDescriptor componentDescriptor) const;
+
   /*
    * Adds (or removes) a `ComponentDescriptor ` created using given
    * `ComponentDescriptorProvider` and stored `ComponentDescriptorParameters`.
@@ -76,6 +73,7 @@ class ComponentDescriptorRegistry {
   mutable better::map<std::string, SharedComponentDescriptor> _registryByName;
   ComponentDescriptor::Shared _fallbackComponentDescriptor;
   ComponentDescriptorParameters parameters_{};
+  ComponentDescriptorProviderRegistry const &providerRegistry_;
 };
 
 } // namespace react

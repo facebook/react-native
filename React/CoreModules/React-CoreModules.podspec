@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -40,6 +39,8 @@ Pod::Spec.new do |s|
 
   s.dependency "FBReactNativeSpec", version
   s.dependency "Folly", folly_version
+  s.dependency "RCTTypeSafety", version
   s.dependency "React-Core/CoreModulesHeaders", version
+  s.dependency "React-RCTImage", version
   s.dependency "ReactCommon/turbomodule/core", version
 end

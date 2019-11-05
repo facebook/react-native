@@ -70,14 +70,14 @@ const CustomSeparatorComponent = ({highlighted, text}) => (
 class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
   state:
     | any
-    | $TEMPORARY$object<{|
+    | {|
         data: Array<Item>,
         debug: boolean,
         filterText: string,
         inverted: boolean,
         logViewable: boolean,
         virtualized: boolean,
-      |}> = {
+      |} = {
     data: genItemData(1000),
     debug: false,
     filterText: '',
@@ -92,7 +92,7 @@ class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
     {useNativeDriver: true},
   );
 
-  _sectionListRef: Animated.SectionList;
+  _sectionListRef: React.ElementRef<typeof Animated.SectionList>;
   _captureRef = ref => {
     this._sectionListRef = ref;
   };

@@ -32,8 +32,6 @@ function getErrors(schema: SchemaType): $ReadOnlyArray<string> {
         return;
       }
 
-      const component = module.components[componentName];
-
       if (!componentModules.has(componentName)) {
         componentModules.set(componentName, []);
       }

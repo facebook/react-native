@@ -1,15 +1,18 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.uiapp;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
+import com.facebook.react.ReactInstanceManager;
 
 public class RNTesterActivity extends ReactActivity {
   public static class RNTesterActivityDelegate extends ReactActivityDelegate {
@@ -52,5 +55,15 @@ public class RNTesterActivity extends ReactActivity {
   @Override
   protected String getMainComponentName() {
     return "RNTesterApp";
+  }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    ReactInstanceManager instanceManager = getReactInstanceManager();
+
+    if (instanceManager != null) {
+      instanceManager.onConfigurationChanged(newConfig);
+    }
   }
 }

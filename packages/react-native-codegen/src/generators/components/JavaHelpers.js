@@ -16,6 +16,14 @@ function upperCaseFirst(inString: string): string {
   return inString[0].toUpperCase() + inString.slice(1);
 }
 
+function getInterfaceJavaClassName(componentName: string): string {
+  return `${componentName.replace(/^RCT/, '')}ManagerInterface`;
+}
+
+function getDelegateJavaClassName(componentName: string): string {
+  return `${componentName.replace(/^RCT/, '')}ManagerDelegate`;
+}
+
 function toSafeJavaString(
   input: string,
   shouldUpperCaseFirst?: boolean,
@@ -59,6 +67,9 @@ function getImports(component: ComponentShape): Set<string> {
       case 'PointPrimitive':
         imports.add('import com.facebook.react.bridge.ReadableMap;');
         return;
+      case 'EdgeInsetsPrimitive':
+        imports.add('import com.facebook.react.bridge.ReadableMap;');
+        return;
       default:
         (name: empty);
         throw new Error(
@@ -87,6 +98,8 @@ function getImports(component: ComponentShape): Set<string> {
 }
 
 module.exports = {
+  getInterfaceJavaClassName,
+  getDelegateJavaClassName,
   toSafeJavaString,
   getImports,
 };

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -40,8 +40,10 @@
 
 RCT_EXPORT_MODULE()
 
-// Used by RCTBlobModule
-@synthesize methodQueue = _methodQueue;
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
 
 - (NSArray *)supportedEvents
 {
@@ -82,7 +84,7 @@ RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols options:(N
   }];
 
   RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURLRequest:request protocols:protocols];
-  [webSocket setDelegateDispatchQueue:_methodQueue];
+  [webSocket setDelegateDispatchQueue:[self methodQueue]];
   webSocket.delegate = self;
   webSocket.reactTag = socketID;
   if (!_sockets) {

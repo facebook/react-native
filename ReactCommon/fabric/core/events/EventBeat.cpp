@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,6 +9,8 @@
 
 namespace facebook {
 namespace react {
+
+EventBeat::EventBeat(SharedOwnerBox const &ownerBox) : ownerBox_(ownerBox) {}
 
 void EventBeat::request() const {
   isRequested_ = true;
@@ -32,10 +34,6 @@ void EventBeat::induce() const {
 
 void EventBeat::setBeatCallback(const BeatCallback &beatCallback) {
   beatCallback_ = beatCallback;
-}
-
-void EventBeat::setFailCallback(const FailCallback &failCallback) {
-  failCallback_ = failCallback;
 }
 
 } // namespace react

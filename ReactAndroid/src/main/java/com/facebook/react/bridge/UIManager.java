@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.bridge;
 
 import android.view.View;
@@ -53,4 +54,12 @@ public interface UIManager extends JSIModule, PerformanceCounter {
    * @param props {@link ReadableMap} props that should be immediately updated in view
    */
   void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props);
+
+  /**
+   * Dispatch an accessibility event to a view asynchronously.
+   *
+   * @param reactTag
+   * @param eventType
+   */
+  void sendAccessibilityEvent(int reactTag, int eventType);
 }

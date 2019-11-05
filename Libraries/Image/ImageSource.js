@@ -7,6 +7,7 @@
  * @flow
  * @format
  */
+
 'use strict';
 
 // This is to sync with ImageSourcePropTypes.js.

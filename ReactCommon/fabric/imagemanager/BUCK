@@ -51,6 +51,7 @@ rn_xplat_cxx_library(
         ],
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_labels = ["supermodule:ios/isolation/infra.react_native"],
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags() + [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
@@ -59,7 +60,6 @@ rn_xplat_cxx_library(
     ios_deps = [
         "fbsource//xplat/js:RCTImage",
         "fbsource//xplat/js/react-native-github:RCTCxxBridge",
-        "fbsource//xplat/js/react-native-github/React/CoreModules:CoreModules",
     ],
     ios_exported_headers = subdir_glob(
         [

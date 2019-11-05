@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "ProxyExecutor.h"
 
@@ -11,9 +13,10 @@
 #include <fb/assert.h>
 #include <fb/Environment.h>
 #include <folly/json.h>
-#include <folly/Memory.h>
 #include <jni/LocalReference.h>
 #include <jni/LocalString.h>
+
+#include <memory>
 
 namespace facebook {
 namespace react {
@@ -36,7 +39,7 @@ static std::string executeJSCallWithProxy(
 
 std::unique_ptr<JSExecutor> ProxyExecutorOneTimeFactory::createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate, std::shared_ptr<MessageQueueThread>) {
-  return folly::make_unique<ProxyExecutor>(std::move(m_executor), delegate);
+  return std::make_unique<ProxyExecutor>(std::move(m_executor), delegate);
 }
 
 ProxyExecutor::ProxyExecutor(jni::global_ref<jobject>&& executorInstance,
@@ -72,7 +75,7 @@ void ProxyExecutor::loadApplicationScript(
     SystraceSection t("setGlobalVariable");
     setGlobalVariable(
       "__fbBatchedBridgeConfig",
-      folly::make_unique<JSBigStdString>(folly::toJson(config)));
+      std::make_unique<JSBigStdString>(folly::toJson(config)));
   }
 
   static auto loadApplicationScript =

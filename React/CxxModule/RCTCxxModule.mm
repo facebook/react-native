@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -50,7 +50,7 @@ using namespace facebook::react;
   return nullptr;
 }
 
-- (NSArray<id<RCTBridgeMethod>> *)methodsToExport;
+- (NSArray<id<RCTBridgeMethod>> *)methodsToExport
 {
   [self lazyInit];
   if (!_module) {
@@ -69,7 +69,7 @@ using namespace facebook::react;
   return [self getConstants];
 }
 
-- (NSDictionary<NSString *, id> *)getConstants;
+- (NSDictionary<NSString *, id> *)getConstants
 {
   [self lazyInit];
   if (!_module) {

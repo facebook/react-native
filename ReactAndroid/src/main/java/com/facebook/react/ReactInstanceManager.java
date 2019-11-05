@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react;
 
 import static com.facebook.infer.annotation.ThreadConfined.UI;
@@ -34,7 +35,9 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JS_VM_CALLS;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Process;
 import android.util.Log;
@@ -64,6 +67,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftException;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -78,6 +83,7 @@ import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.modules.appearance.AppearanceModule;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -315,7 +321,7 @@ public class ReactInstanceManager {
     return new ArrayList<>(mPackages);
   }
 
-  private static void initializeSoLoaderIfNecessary(Context applicationContext) {
+  static void initializeSoLoaderIfNecessary(Context applicationContext) {
     // Call SoLoader.initialize here, this is required for apps that does not use exopackage and
     // does not use SoLoader for loading other native code except from the one used by React Native
     // This way we don't need to require others to have additional initialization code and to
@@ -460,7 +466,9 @@ public class ReactInstanceManager {
       String action = intent.getAction();
       Uri uri = intent.getData();
 
-      if (Intent.ACTION_VIEW.equals(action) && uri != null) {
+      if (uri != null
+          && (Intent.ACTION_VIEW.equals(action)
+              || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
         DeviceEventManagerModule deviceEventManagerModule =
             currentContext.getNativeModule(DeviceEventManagerModule.class);
         deviceEventManagerModule.emitNewIntentReceived(uri);
@@ -471,10 +479,15 @@ public class ReactInstanceManager {
 
   private void toggleElementInspector() {
     ReactContext currentContext = getCurrentReactContext();
-    if (currentContext != null) {
+    if (currentContext != null && currentContext.hasActiveCatalystInstance()) {
       currentContext
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit("toggleElementInspector", null);
+    } else {
+      ReactSoftException.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "Cannot toggleElementInspector, CatalystInstance not available"));
     }
   }
 
@@ -709,6 +722,19 @@ public class ReactInstanceManager {
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null) {
       currentContext.onWindowFocusChange(hasFocus);
+    }
+  }
+
+  /** Call this from {@link Activity#onConfigurationChanged()}. */
+  @ThreadConfined(UI)
+  public void onConfigurationChanged(Context updatedContext, @Nullable Configuration newConfig) {
+    UiThreadUtil.assertOnUiThread();
+
+    ReactContext currentReactContext = getCurrentReactContext();
+    if (currentReactContext != null) {
+      currentReactContext
+          .getNativeModule(AppearanceModule.class)
+          .onConfigurationChanged(updatedContext);
     }
   }
 
@@ -1010,6 +1036,8 @@ public class ReactInstanceManager {
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
     }
 
+    // There is a race condition here - `finalListeners` can contain null entries
+    // See usage below for more details.
     ReactInstanceEventListener[] listeners =
         new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
     final ReactInstanceEventListener[] finalListeners =
@@ -1020,7 +1048,13 @@ public class ReactInstanceManager {
           @Override
           public void run() {
             for (ReactInstanceEventListener listener : finalListeners) {
-              listener.onReactContextInitialized(reactContext);
+              // Sometimes this listener is null - probably due to race
+              // condition between allocating listeners with a certain
+              // size, and getting a `final` version of the array on
+              // the following line.
+              if (listener != null) {
+                listener.onReactContextInitialized(reactContext);
+              }
             }
           }
         });
@@ -1109,9 +1143,12 @@ public class ReactInstanceManager {
       }
     }
 
+    // Remove memory pressure listener before tearing down react context
+    // We cannot access the CatalystInstance after destroying the ReactContext.
+    mMemoryPressureRouter.removeMemoryPressureListener(reactContext.getCatalystInstance());
+
     reactContext.destroy();
     mDevSupportManager.onReactInstanceDestroyed(reactContext);
-    mMemoryPressureRouter.removeMemoryPressureListener(reactContext.getCatalystInstance());
   }
 
   /** @return instance of {@link ReactContext} configured a {@link CatalystInstance} set */

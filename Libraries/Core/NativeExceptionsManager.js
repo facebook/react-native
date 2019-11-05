@@ -10,8 +10,7 @@
 
 'use strict';
 
-import type {TurboModule} from '../TurboModule/RCTExport';
-import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
+import {TurboModuleRegistry, type TurboModule} from 'react-native';
 
 export type StackFrame = {|
   column: ?number,
@@ -46,15 +45,18 @@ export interface Spec extends TurboModule {
     stack: Array<StackFrame>,
     exceptionId: number,
   ) => void;
+  // TODO(T53311281): This is a noop on iOS now. Implement it.
   +reportException?: (data: ExceptionData) => void;
   +updateExceptionMessage: (
     message: string,
     stack: Array<StackFrame>,
     exceptionId: number,
   ) => void;
-  // Android only
+  // TODO(T53311281): This is a noop on iOS now. Implement it.
   +dismissRedbox?: () => void;
 }
+
+const Platform = require('../Utilities/Platform');
 
 const NativeModule = TurboModuleRegistry.getEnforcing<Spec>(
   'ExceptionsManager',
@@ -83,7 +85,8 @@ const ExceptionsManager = {
     NativeModule.updateExceptionMessage(message, stack, exceptionId);
   },
   dismissRedbox(): void {
-    if (NativeModule.dismissRedbox) {
+    if (Platform.OS !== 'ios' && NativeModule.dismissRedbox) {
+      // TODO(T53311281): This is a noop on iOS now. Implement it.
       NativeModule.dismissRedbox();
     }
   },

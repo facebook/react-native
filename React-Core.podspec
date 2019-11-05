@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -96,6 +95,6 @@ Pod::Spec.new do |s|
   s.dependency "React-cxxreact", version
   s.dependency "React-jsi", version
   s.dependency "React-jsiexecutor", version
-  s.dependency "yoga", "#{version}.React"
+  s.dependency "Yoga"
   s.dependency "glog"
 end

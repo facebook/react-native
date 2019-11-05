@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.uimanager;
 
 import android.graphics.Color;
@@ -82,6 +83,7 @@ public class ViewProps {
   public static final String FONT_SIZE = "fontSize";
   public static final String FONT_WEIGHT = "fontWeight";
   public static final String FONT_STYLE = "fontStyle";
+  public static final String FONT_VARIANT = "fontVariant";
   public static final String FONT_FAMILY = "fontFamily";
   public static final String LINE_HEIGHT = "lineHeight";
   public static final String LETTER_SPACING = "letterSpacing";
@@ -139,9 +141,9 @@ public class ViewProps {
   public static final String ACCESSIBILITY_HINT = "accessibilityHint";
   public static final String ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
   public static final String ACCESSIBILITY_ROLE = "accessibilityRole";
-  public static final String ACCESSIBILITY_STATES = "accessibilityStates";
   public static final String ACCESSIBILITY_STATE = "accessibilityState";
   public static final String ACCESSIBILITY_ACTIONS = "accessibilityActions";
+  public static final String ACCESSIBILITY_VALUE = "accessibilityValue";
   public static final String IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
 
   // DEPRECATED

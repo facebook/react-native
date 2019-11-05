@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -40,6 +40,12 @@ NSArray *RCTConvertOptionalVecToArray(const folly::Optional<ContainerT> &vec, id
   return vec.hasValue() ? RCTConvertVecToArray(vec.value(), convertor) : nil;
 }
 
+template<typename ContainerT>
+NSArray *RCTConvertOptionalVecToArray(const folly::Optional<ContainerT> &vec)
+{
+  return vec.hasValue() ? RCTConvertVecToArray(vec.value(), ^id(typename ContainerT::value_type element) { return element; }) : nil;
+}
+
 bool RCTBridgingToBool(id value);
 folly::Optional<bool> RCTBridgingToOptionalBool(id value);
 NSString *RCTBridgingToString(id value);
@@ -59,7 +65,7 @@ facebook::react::LazyVector<T> RCTBridgingToVec(id value, T (^ctor)(id element))
 template<typename T>
 folly::Optional<facebook::react::LazyVector<T>> RCTBridgingToOptionalVec(id value, T (^ctor)(id element))
 {
-  if (value == nil) {
+  if (value == nil || value == (id)kCFNull) {
     return folly::none;
   } else {
     return RCTBridgingToVec(value, ctor);

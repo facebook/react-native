@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.checkbox;
 
 import android.content.Context;
@@ -24,7 +25,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 /** View manager for {@link ReactCheckBox} components. */
 public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {
 
-  private static final String REACT_CLASS = "AndroidCheckBox";
+  public static final String REACT_CLASS = "AndroidCheckBox";
 
   private static final CompoundButton.OnCheckedChangeListener ON_CHECKED_CHANGE_LISTENER =
       new CompoundButton.OnCheckedChangeListener() {

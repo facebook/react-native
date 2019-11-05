@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -46,9 +46,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   using ConcreteStateData = typename ShadowNodeT::ConcreteState::Data;
 
   ConcreteComponentDescriptor(
-      EventDispatcher::Shared const &eventDispatcher,
-      ContextContainer::Shared const &contextContainer = {})
-      : ComponentDescriptor(eventDispatcher, contextContainer) {
+      EventDispatcher::Weak const &eventDispatcher,
+      ContextContainer::Shared const &contextContainer = {},
+      ComponentDescriptor::Flavor const &flavor = {})
+      : ComponentDescriptor(eventDispatcher, contextContainer, flavor) {
     rawPropsParser_.prepare<ConcreteProps>();
   }
 
@@ -76,6 +77,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   UnsharedShadowNode cloneShadowNode(
       const ShadowNode &sourceShadowNode,
       const ShadowNodeFragment &fragment) const override {
+    assert(
+        dynamic_cast<ConcreteShadowNode const *>(&sourceShadowNode) &&
+        "Provided `sourceShadowNode` has an incompatible type.");
+
     auto shadowNode = std::make_shared<ShadowNodeT>(sourceShadowNode, fragment);
 
     adopt(shadowNode);
@@ -85,6 +90,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   void appendChild(
       const SharedShadowNode &parentShadowNode,
       const SharedShadowNode &childShadowNode) const override {
+    assert(
+        dynamic_cast<ConcreteShadowNode const *>(parentShadowNode.get()) &&
+        "Provided `parentShadowNode` has an incompatible type.");
+
     auto concreteParentShadowNode =
         std::static_pointer_cast<const ShadowNodeT>(parentShadowNode);
     auto concreteNonConstParentShadowNode =
@@ -95,6 +104,11 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   virtual SharedProps cloneProps(
       const SharedProps &props,
       const RawProps &rawProps) const override {
+    assert(
+        !props ||
+        dynamic_cast<ConcreteProps const *>(props.get()) &&
+            "Provided `props` has an incompatible type.");
+
     if (rawProps.isEmpty()) {
       return props ? props : ShadowNodeT::defaultSharedProps();
     }
@@ -130,6 +144,12 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       // Default case: Returning `null` for nodes that don't use `State`.
       return nullptr;
     }
+
+    assert(previousState && "Provided `previousState` is nullptr.");
+    assert(data && "Provided `data` is nullptr.");
+    assert(
+        dynamic_cast<ConcreteState const *>(previousState.get()) &&
+        "Provided `previousState` has an incompatible type.");
 
     return std::make_shared<const ConcreteState>(
         std::move(*std::static_pointer_cast<ConcreteStateData>(data)),

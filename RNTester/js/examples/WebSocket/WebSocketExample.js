@@ -6,6 +6,7 @@
  *
  * @format
  */
+
 'use strict';
 
 /* eslint-env browser */

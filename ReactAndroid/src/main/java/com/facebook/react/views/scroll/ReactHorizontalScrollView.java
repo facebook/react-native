@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.scroll;
 
 import android.content.Context;
@@ -489,6 +490,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   @Override
   public void getClippingRect(Rect outClippingRect) {
     outClippingRect.set(Assertions.assertNotNull(mClippingRect));
+  }
+
+  @Override
+  public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
+    return ReactClippingViewGroupHelper.getChildVisibleRectHelper(
+        child, r, offset, this, mOverflow);
   }
 
   private int getSnapInterval() {
