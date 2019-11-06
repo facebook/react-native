@@ -144,26 +144,50 @@
 <li><strong>timer</strong> Used to represent a timer.</li>
 <li><strong>toolbar</strong> Used to represent a tool bar (a container of action buttons or components).</li>
 </ul>
-<h4><a class="anchor" aria-hidden="true" id="accessibilitystates-ios-android"></a><a href="#accessibilitystates-ios-android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessibilityStates (iOS, Android)</h4>
+<h4><a class="anchor" aria-hidden="true" id="accessibilitystate-ios-android"></a><a href="#accessibilitystate-ios-android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessibilityState (iOS, Android)</h4>
 <p>Describes the current state of a component to the user of an assistive technology.</p>
-<p><code>accessibilityStates</code> is an array of values, and may include any of the following:</p>
+<p><code>accessibilityState</code> is an object. It contains the following fields:</p>
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>disabled</td><td>boolean</td><td>No</td></tr>
+<tr><td>selected</td><td>boolean</td><td>No</td></tr>
+<tr><td>checked</td><td>boolean or 'mixed'</td><td>No</td></tr>
+<tr><td>busy</td><td>boolean</td><td>No</td></tr>
+<tr><td>expanded</td><td>boolean</td><td>No</td></tr>
+</tbody>
+</table>
 <ul>
-<li><strong>selected</strong> Used when the element is in a selected state. For example, a button is selected.</li>
-<li><strong>disabled</strong> Used when the element is disabled and cannot be interacted with.</li>
-<li><strong>checked</strong> Used to indicate that a checkable element is currently checked.</li>
-<li><strong>unchecked</strong> Used to indicate that a checkable element is not currently checked.</li>
-<li><strong>busy</strong> Used to indicate that an element is currently busy.</li>
-<li><strong>expanded</strong> Used to indicate that an expandable element is currently expanded.</li>
-<li><strong>collapsed</strong> Used to indicate that an expandable element is currently collapsed.</li>
+<li><strong>disabled</strong> Used to indicate whether the element is disabled or not. When <code>true</code>, the element cannot be interacted with.</li>
+<li><strong>selected</strong> Used to indicate whether a selectable element is currently selected or not.</li>
+<li><strong>checked</strong> Used to indicate the state of a checkable element. This field can either take a boolean or the &quot;mixed&quot; string to represent mixed checkboxes.</li>
+<li><strong>busy</strong> Used to indicate whether an element is currently busy or not.</li>
+<li><strong>expanded</strong> Used to indicate whether an expandable element is currently expanded or collapsed.</li>
 </ul>
-<p>To use, set the <code>accessibilityStates</code> to an array containing the list of current states.</p>
+<p>To use, set the <code>accessibilityState</code> to an object with a specific definition.</p>
+<h4><a class="anchor" aria-hidden="true" id="accessibilityvalue-ios-android"></a><a href="#accessibilityvalue-ios-android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessibilityValue (iOS, Android)</h4>
+<p>Represents the current value of a component. It can be a textual description of a component's value, or for range-based components, such as sliders and progress bars, it contains range information (minimum, current, and maximum).</p>
+<p><code>accessibilityValue</code> is an object. It contains the following fields:</p>
+<table>
+<thead>
+<tr><th>Name</th><th>Description</th><th>Type</th><th>Required</th></tr>
+</thead>
+<tbody>
+<tr><td>min</td><td>The minimum value of this component's range.</td><td>integer</td><td>Required if <code>now</code> is set.</td></tr>
+<tr><td>max</td><td>The maximum value of this component's range.</td><td>integer</td><td>Required if <code>now</code> is set.</td></tr>
+<tr><td>now</td><td>The current value of this component's range.</td><td>integer</td><td>No</td></tr>
+<tr><td>text</td><td>A textual description of this component's value. Will override <code>min</code>, <code>now</code>, and <code>max</code> if set.</td><td>string</td><td>No</td></tr>
+</tbody>
+</table>
 <h4><a class="anchor" aria-hidden="true" id="accessibilityviewismodal-ios"></a><a href="#accessibilityviewismodal-ios" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessibilityViewIsModal (iOS)</h4>
 <p>A Boolean value indicating whether VoiceOver should ignore the elements within views that are siblings of the receiver.</p>
 <p>For example, in a window that contains sibling views <code>A</code> and <code>B</code>, setting <code>accessibilityViewIsModal</code> to <code>true</code> on view <code>B</code> causes VoiceOver to ignore the elements in the view <code>A</code>. On the other hand, if view <code>B</code> contains a child view <code>C</code> and you set <code>accessibilityViewIsModal</code> to <code>true</code> on view <code>C</code>, VoiceOver does not ignore the elements in view <code>A</code>.</p>
 <h4><a class="anchor" aria-hidden="true" id="accessibilityelementshidden-ios"></a><a href="#accessibilityelementshidden-ios" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>accessibilityElementsHidden (iOS)</h4>
 <p>A Boolean value indicating whether the accessibility elements contained within this accessibility element are hidden.</p>
 <p>For example, in a window that contains sibling views <code>A</code> and <code>B</code>, setting <code>accessibilityElementsHidden</code> to <code>true</code> on view <code>B</code> causes VoiceOver to ignore the elements in the view <code>B</code>. This is similar to the Android property <code>importantForAccessibility=&quot;no-hide-descendants&quot;</code>.</p>
-<h4><a class="anchor" aria-hidden="true" id="onaccessibilitytap-ios"></a><a href="#onaccessibilitytap-ios" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>onAccessibilityTap (iOS)</h4>
+<h4><a class="anchor" aria-hidden="true" id="onaccessibilitytap-ios-android"></a><a href="#onaccessibilitytap-ios-android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>onAccessibilityTap (iOS, Android)</h4>
 <p>Use this property to assign a custom function to be called when someone activates an accessible element by double tapping on it while it's selected.</p>
 <h4><a class="anchor" aria-hidden="true" id="onmagictap-ios"></a><a href="#onmagictap-ios" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>onMagicTap (iOS)</h4>
 <p>Assign this property to a custom function which will be called when someone performs the &quot;magic tap&quot; gesture, which is a double-tap with two fingers. A magic tap function should perform the most relevant action a user could take on a component. In the Phone app on iPhone, a magic tap answers a phone call, or ends the current one. If the selected element does not have an <code>onMagicTap</code> function, the system will traverse up the view hierarchy until it finds a view that does.</p>
@@ -253,29 +277,16 @@
 <h3><a class="anchor" aria-hidden="true" id="checking-if-a-screen-reader-is-enabled"></a><a href="#checking-if-a-screen-reader-is-enabled" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Checking if a Screen Reader is Enabled</h3>
 <p>The <code>AccessibilityInfo</code> API allows you to determine whether or not a screen reader is currently active. See the <a href="/react-native/docs/0.8/accessibilityinfo">AccessibilityInfo documentation</a> for details.</p>
 <h3><a class="anchor" aria-hidden="true" id="sending-accessibility-events-android"></a><a href="#sending-accessibility-events-android" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Sending Accessibility Events (Android)</h3>
-<p>Sometimes it is useful to trigger an accessibility event on a UI component (i.e. when a custom view appears on a screen or a custom radio button has been selected). Native UIManager module exposes a method ‘sendAccessibilityEvent’ for this purpose. It takes two arguments: view tag and a type of an event.</p>
-<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> <span class="token punctuation">{</span> UIManager<span class="token punctuation">,</span> findNodeHandle <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
+<p>Sometimes it is useful to trigger an accessibility event on a UI component (i.e. when a custom view appears on a screen or set accessibility focus to a view). Native UIManager module exposes a method ‘sendAccessibilityEvent’ for this purpose. It takes two arguments: view tag and a type of an event. The supported event types are <code>typeWindowStateChanged</code>, <code>typeViewFocused</code> and <code>typeViewClicked</code>.</p>
+<pre><code class="hljs css language-jsx"><span class="token keyword">import</span> <span class="token punctuation">{</span> Platform<span class="token punctuation">,</span> UIManager<span class="token punctuation">,</span> findNodeHandle <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
 
-<span class="token function-variable function">_onPress</span><span class="token punctuation">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> radioButton <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>radioButton <span class="token operator">===</span> <span class="token string">'radiobutton_checked'</span> <span class="token operator">?</span>
-    <span class="token string">'radiobutton_unchecked'</span> <span class="token punctuation">:</span> <span class="token string">'radiobutton_checked'</span>
-
-  <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-    radioButton<span class="token punctuation">:</span> radioButton
-  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-  <span class="token keyword">if</span> <span class="token punctuation">(</span>radioButton <span class="token operator">===</span> <span class="token string">'radiobutton_checked'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>Platform<span class="token punctuation">.</span><span class="token constant">OS</span> <span class="token operator">===</span> <span class="token string">'android'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     UIManager<span class="token punctuation">.</span><span class="token function">sendAccessibilityEvent</span><span class="token punctuation">(</span>
       <span class="token function">findNodeHandle</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-      UIManager<span class="token punctuation">.</span>AccessibilityEventTypes<span class="token punctuation">.</span>typeViewClicked<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      UIManager<span class="token punctuation">.</span>AccessibilityEventTypes<span class="token punctuation">.</span>typeViewFocused<span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
-
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token class-name">CustomRadioButton</span></span>
-  <span class="token attr-name">accessibilityComponentType</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>radioButton<span class="token punctuation">}</span></span>
-  <span class="token attr-name">onPress</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>_onPress<span class="token punctuation">}</span></span><span class="token punctuation">/></span></span>
 </code></pre>
-<p>In the above example we've created a custom radio button that now behaves like a native one. More specifically, TalkBack now correctly announces changes to the radio button selection.</p>
 <h2><a class="anchor" aria-hidden="true" id="testing-voiceover-support-ios"></a><a href="#testing-voiceover-support-ios" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Testing VoiceOver Support (iOS)</h2>
 <p>To enable VoiceOver, go to the Settings app on your iOS device (it's not available for simulator). Tap General, then Accessibility. There you will find many tools that people use to make their devices more usable, such as bolder text, increased contrast, and VoiceOver.</p>
 <p>To enable VoiceOver, tap on VoiceOver under &quot;Vision&quot; and toggle the switch that appears at the top.</p>
