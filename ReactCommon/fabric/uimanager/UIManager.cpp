@@ -285,5 +285,17 @@ ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
   return shadowTreeRegistry_;
 }
 
+#pragma mark - ShadowTreeDelegate
+
+void UIManager::shadowTreeDidCommit(
+    ShadowTree const &shadowTree,
+    MountingCoordinator::Shared const &mountingCoordinator) const {
+  SystraceSection s("UIManager::shadowTreeDidCommit");
+
+  if (delegate_) {
+    delegate_->uiManagerDidFinishTransaction(mountingCoordinator);
+  }
+}
+
 } // namespace react
 } // namespace facebook

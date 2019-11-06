@@ -9,6 +9,7 @@
 
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNode.h>
+#include <react/mounting/MountingCoordinator.h>
 
 namespace facebook {
 namespace react {
@@ -18,6 +19,13 @@ namespace react {
  */
 class UIManagerDelegate {
  public:
+  /*
+   * Called right after a new/updated Shadow Node tree is constructed.
+   * For this moment the tree is already laid out and sealed.
+   */
+  virtual void uiManagerDidFinishTransaction(
+      MountingCoordinator::Shared const &mountingCoordinator) = 0;
+
   /*
    * Called right after the new/updated Shadow Node tree is constructed.
    * The tree is not laid out and not sealed at this time.

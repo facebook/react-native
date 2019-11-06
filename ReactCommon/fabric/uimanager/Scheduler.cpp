@@ -95,7 +95,7 @@ void Scheduler::startSurface(
 
   auto shadowTree = std::make_unique<ShadowTree>(
       surfaceId, layoutConstraints, layoutContext, *rootComponentDescriptor_);
-  shadowTree->setDelegate(this);
+  shadowTree->setDelegate(uiManager_.get());
 
   auto uiManager = uiManager_;
 
@@ -230,19 +230,16 @@ SchedulerDelegate *Scheduler::getDelegate() const {
   return delegate_;
 }
 
-#pragma mark - ShadowTreeDelegate
+#pragma mark - UIManagerDelegate
 
-void Scheduler::shadowTreeDidCommit(
-    ShadowTree const &shadowTree,
-    MountingCoordinator::Shared const &mountingCoordinator) const {
-  SystraceSection s("Scheduler::shadowTreeDidCommit");
+void Scheduler::uiManagerDidFinishTransaction(
+    MountingCoordinator::Shared const &mountingCoordinator) {
+  SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
   if (delegate_) {
     delegate_->schedulerDidFinishTransaction(mountingCoordinator);
   }
 }
-
-#pragma mark - UIManagerDelegate
 
 void Scheduler::uiManagerDidFinishTransaction(
     SurfaceId surfaceId,

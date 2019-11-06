@@ -13,6 +13,8 @@
 
 #include <react/core/ShadowNode.h>
 #include <react/core/StateData.h>
+#include <react/mounting/ShadowTree.h>
+#include <react/mounting/ShadowTreeDelegate.h>
 #include <react/mounting/ShadowTreeRegistry.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/UIManagerDelegate.h>
@@ -22,7 +24,7 @@ namespace react {
 
 class UIManagerBinding;
 
-class UIManager {
+class UIManager final : public ShadowTreeDelegate {
  public:
 
   void setComponentDescriptorRegistry(
@@ -45,6 +47,12 @@ class UIManager {
   void visitBinding(
       std::function<void(UIManagerBinding const &uiManagerBinding)> callback)
       const;
+
+#pragma mark - ShadowTreeDelegate
+
+  void shadowTreeDidCommit(
+      ShadowTree const &shadowTree,
+      MountingCoordinator::Shared const &mountingCoordinator) const override;
 
  private:
   friend class UIManagerBinding;

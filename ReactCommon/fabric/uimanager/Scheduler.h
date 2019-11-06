@@ -14,8 +14,6 @@
 #include <react/config/ReactNativeConfig.h>
 #include <react/core/ComponentDescriptor.h>
 #include <react/core/LayoutConstraints.h>
-#include <react/mounting/ShadowTree.h>
-#include <react/mounting/ShadowTreeDelegate.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/SchedulerDelegate.h>
@@ -31,7 +29,7 @@ namespace react {
 /*
  * Scheduler coordinates Shadow Tree updates and event flows.
  */
-class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
+class Scheduler final : public UIManagerDelegate {
  public:
   Scheduler(SchedulerToolbox schedulerToolbox, SchedulerDelegate *delegate);
   ~Scheduler();
@@ -83,6 +81,8 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
 #pragma mark - UIManagerDelegate
 
   void uiManagerDidFinishTransaction(
+      MountingCoordinator::Shared const &mountingCoordinator) override;
+  void uiManagerDidFinishTransaction(
       SurfaceId surfaceId,
       const SharedShadowNodeUnsharedList &rootChildNodes) override;
   void uiManagerDidCreateShadowNode(
@@ -96,12 +96,6 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
       const SharedShadowNode &shadowView,
       bool blockNativeResponder) override;
   void uiManagerDidClearJSResponder() override;
-
-#pragma mark - ShadowTreeDelegate
-
-  void shadowTreeDidCommit(
-      ShadowTree const &shadowTree,
-      MountingCoordinator::Shared const &mountingCoordinator) const override;
 
  private:
   SchedulerDelegate *delegate_;
