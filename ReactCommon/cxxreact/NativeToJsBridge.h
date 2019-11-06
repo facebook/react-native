@@ -67,15 +67,11 @@ public:
   void loadApplication(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> bundle,
-    uint64_t bundleVersion, // TODO(OSS Candidate ISS#2710739)
-    std::string bundleURL,
-    std::string&& bytecodeFileName); // TODO(OSS Candidate ISS#2710739)
+    std::string bundleURL);
   void loadApplicationSync(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> bundle,
-    uint64_t bundleVersion, // TODO(OSS Candidate ISS#2710739)
-    std::string bundleURL,
-    std::string&& bytecodeFileName); // TODO(OSS Candidate ISS#2710739)
+    std::string bundleURL);
 
   void registerBundle(uint32_t bundleId, const std::string& bundlePath);
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);

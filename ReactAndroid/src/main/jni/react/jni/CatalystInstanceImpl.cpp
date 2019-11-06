@@ -211,7 +211,7 @@ void CatalystInstanceImpl::jniLoadScriptFromAssets(
   } else if (Instance::isIndexedRAMBundle(&script)) {
     instance_->loadRAMBundleFromString(std::move(script), sourceURL);
   } else {
-    instance_->loadScriptFromString(std::move(script), 0 /*bundleVersion*/, sourceURL, loadSynchronously, "" /*bytecodeFileName*/);
+    instance_->loadScriptFromString(std::move(script), sourceURL, loadSynchronously);
   }
 }
 
@@ -226,7 +226,7 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(const std::string& fileName,
       [&fileName, &script]() {
         script = JSBigFileString::fromPath(fileName);
       });
-    instance_->loadScriptFromString(std::move(script), 0 /*bundleVersion*/, sourceURL, loadSynchronously, "" /*bytecodeFileName*/);
+    instance_->loadScriptFromString(std::move(script), sourceURL, loadSynchronously);
   }
 }
 

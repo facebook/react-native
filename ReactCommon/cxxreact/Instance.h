@@ -62,9 +62,10 @@ public:
 
   void setSourceURL(std::string sourceURL);
 
-  virtual void loadScriptFromString(std::unique_ptr<const JSBigString> bundleString,
-                            uint64_t bundleVersion, std::string bundleURL, bool loadSynchronously,
-                            std::string&& bytecodeFileName);
+  virtual void loadScriptFromString(
+      std::unique_ptr<const JSBigString> bundleString,
+      std::string bundleURL,
+      bool loadSynchronously);
   static bool isIndexedRAMBundle(const char *sourcePath);
   static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString>* string);
   void loadRAMBundleFromString(std::unique_ptr<const JSBigString> script, const std::string& sourceURL);
@@ -106,14 +107,10 @@ private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);
   virtual void loadApplication(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                        std::unique_ptr<const JSBigString> bundle,
-                       uint64_t bundleVersion, // TODO(OSS Candidate ISS#2710739)
-                       std::string bundleURL,
-                       std::string&& bytecodeFileName); // TODO(OSS Candidate ISS#2710739)
+                       std::string bundleURL);
   virtual void loadApplicationSync(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                            std::unique_ptr<const JSBigString> bundle,
-                           uint64_t bundleVersion, // TODO(OSS Candidate ISS#2710739)
-                           std::string bundleURL,
-                           std::string&& bytecodeFileName); // TODO(OSS Candidate ISS#2710739)
+                           std::string bundleURL);
 
   std::shared_ptr<InstanceCallback> callback_;
   std::unique_ptr<NativeToJsBridge> nativeToJsBridge_;

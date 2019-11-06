@@ -368,9 +368,9 @@ static std::string simpleBasename(const std::string &path) {
   LOGV("V8Executor::simpleBasename exit");
 }
 
-void V8Executor::loadApplicationScript(std::unique_ptr<const JSBigString> script, uint64_t /*scriptVersion*/, std::string sourceURL, std::string&& bytecodeFileName) {
+void V8Executor::loadApplicationScript(std::unique_ptr<const JSBigString> script, std::string sourceURL) {
 
-  LOGV("V8Executor::loadApplicationScript entry sourceURL = %s, bytecodeFileName = %s", sourceURL.c_str(), bytecodeFileName.c_str());
+  LOGV("V8Executor::loadApplicationScript entry sourceURL = %s", sourceURL.c_str());
   SystraceSection s("V8Executor::loadApplicationScript", "sourceURL", sourceURL);
   std::string scriptName = simpleBasename(sourceURL);
   ReactMarker::logTaggedMarker(ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());

@@ -69,9 +69,7 @@ JSIExecutor::JSIExecutor(
 
 void JSIExecutor::loadApplicationScript(
       std::unique_ptr<const JSBigString> script,
-      uint64_t /*scriptVersion*/, // TODO(OSS Candidate ISS#2710739)
-      std::string sourceURL,
-      std::string&& /*bytecodeFileName*/) { // TODO(OSS Candidate ISS#2710739)
+      std::string sourceURL) {
   SystraceSection s("JSIExecutor::loadApplicationScript");
 
   // TODO: check for and use precompiled HBC

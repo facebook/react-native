@@ -79,7 +79,7 @@ std::shared_ptr<Instance> CreateReactInstance(
 				// Load from Assets.
 				script = loadScriptFromAssets(assetManager, platformBundle.BundleUrl);
 			}
-			instance->loadScriptFromString(std::move(script), platformBundle.Version, std::move(platformBundle.BundleUrl), true /*synchronously*/, "" /*bytecodeFileName*/);
+			instance->loadScriptFromString(std::move(script), std::move(platformBundle.BundleUrl), true /*synchronously*/);
 		}
 	}
 
@@ -95,7 +95,7 @@ std::shared_ptr<Instance> CreateReactInstance(
 		// Load from Assets.
 		script = loadScriptFromAssets(assetManager, jsBundleFile);
 	}
-	instance->loadScriptFromString(std::move(script), 0 /*bundleVersion*/, jsBundleFile, false, "" /*bytecodeFileName*/);
+	instance->loadScriptFromString(std::move(script), jsBundleFile, false);
 	return instance;
 }
 

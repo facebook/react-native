@@ -51,9 +51,7 @@ ProxyExecutor::~ProxyExecutor() {
 
 void ProxyExecutor::loadApplicationScript(
     std::unique_ptr<const JSBigString>,
-    uint64_t /*scriptVersion*/,
-    std::string sourceURL,
-    std::string&& /*bytecodeFileName*/) {
+    std::string sourceURL) {
 
   folly::dynamic nativeModuleConfig = folly::dynamic::array;
 

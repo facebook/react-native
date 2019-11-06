@@ -69,47 +69,39 @@ void Instance::initializeBridge(
 
 void Instance::loadApplication(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                                std::unique_ptr<const JSBigString> bundle,
-                               uint64_t bundleVersion, // TODO(OSS Candidate ISS#2710739)
-                               std::string bundleURL,
-                               std::string&& bytecodeFileName) { // TODO(OSS Candidate ISS#2710739)
+                               std::string bundleURL) { // TODO(OSS Candidate ISS#2710739)
   callback_->incrementPendingJSCalls();
-  SystraceSection s("Instance::loadApplication", "bundleURL",
-                    bundleURL);
-  nativeToJsBridge_->loadApplication(std::move(bundleRegistry), std::move(bundle), bundleVersion,
-                                     std::move(bundleURL), std::move(bytecodeFileName));
+  SystraceSection s("Instance::loadApplication", "bundleURL", bundleURL);
+  nativeToJsBridge_->loadApplication(
+      std::move(bundleRegistry), std::move(bundle), std::move(bundleURL));
 }
 
 void Instance::loadApplicationSync(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                                    std::unique_ptr<const JSBigString> bundle,
-                                   uint64_t bundleVersion, // TODO(OSS Candidate ISS#2710739)
-                                   std::string bundleURL,
-                                   std::string&& bytecodeFileName) { // TODO(OSS Candidate ISS#2710739)
+                                   std::string bundleURL) {
   std::unique_lock<std::mutex> lock(m_syncMutex);
   m_syncCV.wait(lock, [this] { return m_syncReady; });
 
-  SystraceSection s("Instance::loadApplicationSync", "bundleURL",
-                    bundleURL);
-  nativeToJsBridge_->loadApplicationSync(std::move(bundleRegistry), std::move(bundle), bundleVersion,
-                                         std::move(bundleURL), std::move(bytecodeFileName)); // TODO(OSS Candidate ISS#2710739)
+  SystraceSection s("Instance::loadApplicationSync", "bundleURL", bundleURL);
+  nativeToJsBridge_->loadApplicationSync(
+      std::move(bundleRegistry), std::move(bundle), std::move(bundleURL));
 }
 
 void Instance::setSourceURL(std::string sourceURL) {
   callback_->incrementPendingJSCalls();
   SystraceSection s("Instance::setSourceURL", "sourceURL", sourceURL);
 
-  nativeToJsBridge_->loadApplication(nullptr, nullptr, 0, std::move(sourceURL), "" /*bytecodeFileName*/); // TODO(OSS Candidate ISS#2710739)
+  nativeToJsBridge_->loadApplication(nullptr, nullptr, std::move(sourceURL));
 }
 
 void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> bundleString,
-                                    uint64_t bundleVersion,
                                     std::string bundleURL, // TODO(OSS Candidate ISS#2710739)
-                                    bool loadSynchronously,
-                                    std::string&& bytecodeFileName) { // TODO(OSS Candidate ISS#2710739)
+                                    bool loadSynchronously) {
   SystraceSection s("Instance::loadScriptFromString", "bundleURL", bundleURL); // TODO(OSS Candidate ISS#2710739)
   if (loadSynchronously) {
-    loadApplicationSync(nullptr, std::move(bundleString), bundleVersion, std::move(bundleURL), std::move(bytecodeFileName)); // TODO(OSS Candidate ISS#2710739)
+    loadApplicationSync(nullptr, std::move(bundleString), std::move(bundleURL));
   } else {
-    loadApplication(nullptr, std::move(bundleString), bundleVersion, std::move(bundleURL), std::move(bytecodeFileName)); // TODO(OSS Candidate ISS#2710739)
+    loadApplication(nullptr, std::move(bundleString), std::move(bundleURL));
   }
 }
 
@@ -161,11 +153,11 @@ void Instance::loadRAMBundle(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                              std::string startupScriptSourceURL,
                              bool loadSynchronously) {
   if (loadSynchronously) {
-    loadApplicationSync(std::move(bundleRegistry), std::move(startupScript), 0 /*bundleVersion*/, // TODO(OSS Candidate ISS#2710739)
-                        std::move(startupScriptSourceURL), "" /*bytecodeFileName*/); // TODO(OSS Candidate ISS#2710739)
+    loadApplicationSync(std::move(bundleRegistry), std::move(startupScript),
+                        std::move(startupScriptSourceURL));
   } else {
-    loadApplication(std::move(bundleRegistry), std::move(startupScript), 0 /*bundleVersion*/, // TODO(OSS Candidate ISS#2710739)
-                    std::move(startupScriptSourceURL), "" /*bytecodeFileName*/); // TODO(OSS Candidate ISS#2710739)
+    loadApplication(std::move(bundleRegistry), std::move(startupScript),
+                    std::move(startupScriptSourceURL));
   }
 }
 

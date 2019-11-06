@@ -77,9 +77,7 @@ public:
    * Execute an application script bundle in the JS context.
    */
   virtual void loadApplicationScript(std::unique_ptr<const JSBigString> script,
-                                     uint64_t scriptVersion, // TODO(OSS Candidate ISS#2710739)
-                                     std::string sourceURL,
-                                     std::string&& bytecodeFileName) = 0; // TODO(OSS Candidate ISS#2710739)
+                                     std::string sourceURL) = 0;
 
   /**
    * Add an application "RAM" bundle registry
