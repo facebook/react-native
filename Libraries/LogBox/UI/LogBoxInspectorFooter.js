@@ -70,7 +70,7 @@ function FooterButton(props: ButtonProps): React.Node {
     <LogBoxButton
       backgroundColor={{
         default: 'transparent',
-        pressed: LogBoxStyle.getBackgroundLightColor(),
+        pressed: LogBoxStyle.getBackgroundDarkColor(),
       }}
       onPress={props.onPress}
       style={buttonStyles.button}>
