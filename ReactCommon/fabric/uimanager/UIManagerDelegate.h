@@ -27,14 +27,6 @@ class UIManagerDelegate {
       MountingCoordinator::Shared const &mountingCoordinator) = 0;
 
   /*
-   * Called right after the new/updated Shadow Node tree is constructed.
-   * The tree is not laid out and not sealed at this time.
-   */
-  virtual void uiManagerDidFinishTransaction(
-      SurfaceId surfaceId,
-      const SharedShadowNodeUnsharedList &rootChildNodes) = 0;
-
-  /*
    * Called each time when UIManager constructs a new Shadow Node. Receiver
    * might use this to optimistically allocate a new native view
    * instances.

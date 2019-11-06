@@ -241,28 +241,6 @@ void Scheduler::uiManagerDidFinishTransaction(
   }
 }
 
-void Scheduler::uiManagerDidFinishTransaction(
-    SurfaceId surfaceId,
-    const SharedShadowNodeUnsharedList &rootChildNodes) {
-  SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
-
-  uiManager_->getShadowTreeRegistry().visit(
-      surfaceId, [&](const ShadowTree &shadowTree) {
-        shadowTree.commit([&](RootShadowNode::Shared const &oldRootShadowNode) {
-          return std::make_shared<RootShadowNode>(
-              *oldRootShadowNode,
-              ShadowNodeFragment{
-                  /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                  /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
-                  /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                  /* .eventEmitter = */
-                  ShadowNodeFragment::eventEmitterPlaceholder(),
-                  /* .children = */ rootChildNodes,
-              });
-        });
-      });
-}
-
 void Scheduler::uiManagerDidCreateShadowNode(
     const SharedShadowNode &shadowNode) {
   SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");

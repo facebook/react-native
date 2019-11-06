@@ -104,9 +104,20 @@ void UIManager::completeSurface(
     const SharedShadowNodeUnsharedList &rootChildren) const {
   SystraceSection s("UIManager::completeSurface");
 
-  if (delegate_) {
-    delegate_->uiManagerDidFinishTransaction(surfaceId, rootChildren);
-  }
+  shadowTreeRegistry_.visit(surfaceId, [&](ShadowTree const &shadowTree) {
+    shadowTree.commit([&](RootShadowNode::Shared const &oldRootShadowNode) {
+      return std::make_shared<RootShadowNode>(
+          *oldRootShadowNode,
+          ShadowNodeFragment{
+              /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+              /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+              /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+              /* .eventEmitter = */
+              ShadowNodeFragment::eventEmitterPlaceholder(),
+              /* .children = */ rootChildren,
+          });
+    });
+  });
 }
 
 void UIManager::setJSResponder(
