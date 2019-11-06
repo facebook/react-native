@@ -45,6 +45,7 @@ import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeade
 import ScrollViewNativeComponent from './ScrollViewNativeComponent';
 import ScrollContentViewNativeComponent from './ScrollContentViewNativeComponent';
 import AndroidHorizontalScrollViewNativeComponent from './AndroidHorizontalScrollViewNativeComponent';
+import AndroidHorizontalScrollContentViewNativeComponent from './AndroidHorizontalScrollContentViewNativeComponent';
 
 let AndroidScrollView;
 let AndroidHorizontalScrollContentView;
@@ -55,9 +56,7 @@ let RCTScrollContentView;
 if (Platform.OS === 'android') {
   AndroidScrollView = ScrollViewNativeComponent;
   AndroidHorizontalScrollView = AndroidHorizontalScrollViewNativeComponent;
-  AndroidHorizontalScrollContentView = requireNativeComponent(
-    'AndroidHorizontalScrollContentView',
-  );
+  AndroidHorizontalScrollContentView = AndroidHorizontalScrollContentViewNativeComponent;
 } else if (Platform.OS === 'ios') {
   RCTScrollView = ScrollViewNativeComponent;
   RCTScrollContentView = ScrollContentViewNativeComponent;
