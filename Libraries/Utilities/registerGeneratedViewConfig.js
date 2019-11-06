@@ -14,7 +14,7 @@ const ReactNativeViewConfigRegistry = require('../Renderer/shims/ReactNativeView
 const ReactNativeViewViewConfig = require('../Components/View/ReactNativeViewViewConfig');
 import verifyComponentAttributeEquivalence from './verifyComponentAttributeEquivalence';
 
-type GeneratedViewConfig = {
+export type GeneratedViewConfig = {
   uiViewClassName: string,
   bubblingEventTypes?: $ReadOnly<{
     [eventName: string]: $ReadOnly<{|

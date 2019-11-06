@@ -42,6 +42,8 @@ import type {State as ScrollResponderState} from '../ScrollResponder';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {Props as ScrollViewStickyHeaderProps} from './ScrollViewStickyHeader';
 
+import ScrollViewNativeComponent from './ScrollViewNativeComponent';
+
 let AndroidScrollView;
 let AndroidHorizontalScrollContentView;
 let AndroidHorizontalScrollView;
@@ -49,7 +51,7 @@ let RCTScrollView;
 let RCTScrollContentView;
 
 if (Platform.OS === 'android') {
-  AndroidScrollView = requireNativeComponent('RCTScrollView');
+  AndroidScrollView = ScrollViewNativeComponent;
   AndroidHorizontalScrollView = requireNativeComponent(
     'AndroidHorizontalScrollView',
   );
@@ -57,7 +59,7 @@ if (Platform.OS === 'android') {
     'AndroidHorizontalScrollContentView',
   );
 } else if (Platform.OS === 'ios') {
-  RCTScrollView = requireNativeComponent('RCTScrollView');
+  RCTScrollView = ScrollViewNativeComponent;
   RCTScrollContentView = requireNativeComponent('RCTScrollContentView');
 } else {
   RCTScrollView = requireNativeComponent('RCTScrollView');
