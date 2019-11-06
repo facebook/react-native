@@ -87,6 +87,11 @@
   [_jsDisplayLink addToRunLoop:runLoop forMode:NSRunLoopCommonModes];
 }
 
+- (void)dealloc
+{
+  [self invalidate];
+}
+
 - (void)invalidate
 {
   [_jsDisplayLink invalidate];

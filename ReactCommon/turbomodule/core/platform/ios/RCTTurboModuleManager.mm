@@ -445,11 +445,11 @@ static Class getFallbackClassFromName(const char *name)
         if (methodQueue) {
           dispatch_group_enter(moduleInvalidationGroup);
           [bridge
-              dispatchBlock:^{
-                [((id<RCTInvalidating>)module) invalidate];
-                dispatch_group_leave(moduleInvalidationGroup);
-              }
-                      queue:methodQueue];
+           dispatchBlock:^{
+            [((id<RCTInvalidating>)module) invalidate];
+            dispatch_group_leave(moduleInvalidationGroup);
+          }
+           queue:methodQueue];
           continue;
         }
       }
@@ -459,6 +459,32 @@ static Class getFallbackClassFromName(const char *name)
 
   if (dispatch_group_wait(moduleInvalidationGroup, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC))) {
     RCTLogError(@"TurboModuleManager: Timed out waiting for modules to be invalidated");
+  }
+
+  {
+    std::unique_lock<std::mutex> lock(_rctTurboModuleCacheLock);
+    _rctTurboModuleCache.clear();
+  }
+
+  _turboModuleCache.clear();
+
+  _binding->invalidate();
+}
+
+- (void)invalidate
+{
+  std::unordered_map<std::string, id<RCTTurboModule>> rctCacheCopy;
+  {
+    std::unique_lock<std::mutex> lock(_rctTurboModuleCacheLock);
+    rctCacheCopy.insert(_rctTurboModuleCache.begin(), _rctTurboModuleCache.end());
+  }
+
+  // Backward-compatibility: RCTInvalidating handling, but not adhering to desired methodQueue.
+  for (const auto &p : rctCacheCopy) {
+     id<RCTTurboModule> module = p.second;
+     if ([module respondsToSelector:@selector(invalidate)]) {
+       [((id<RCTInvalidating>)module) invalidate];
+     }
   }
 
   {
