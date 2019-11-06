@@ -484,6 +484,10 @@ public class NativeViewHierarchyManager {
               new LayoutAnimationListener() {
                 @Override
                 public void onAnimationEnd() {
+                  // This should be called only on the UI thread, because
+                  // onAnimationEnd is called (indirectly) by Android View Animation.
+                  UiThreadUtil.assertOnUiThread();
+
                   viewManager.removeView(viewToManage, viewToDestroy);
                   dropView(viewToDestroy);
 
