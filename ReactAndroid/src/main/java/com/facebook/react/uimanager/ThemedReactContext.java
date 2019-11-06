@@ -53,4 +53,10 @@ public class ThemedReactContext extends ReactContext {
   public @Nullable Activity getCurrentActivity() {
     return mReactApplicationContext.getCurrentActivity();
   }
+
+  @Nullable
+  @Override
+  public String getInstanceKey() {
+    return mReactApplicationContext.getInstanceKey();
+  }
 }
