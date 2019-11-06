@@ -19,13 +19,19 @@ const LogBoxData = require('../LogBoxData');
 const registry = () => {
   const observer = jest.fn();
   LogBoxData.observe(observer).unsubscribe();
-  return Array.from(observer.mock.calls[0][0]);
+  return Array.from(observer.mock.calls[0][0].logs);
 };
 
 const filteredRegistry = () => {
   const observer = jest.fn();
   LogBoxData.observe(observer).unsubscribe();
-  return Array.from(observer.mock.calls[0][0]);
+  return Array.from(observer.mock.calls[0][0].logs);
+};
+
+const disabledState = () => {
+  const observer = jest.fn();
+  LogBoxData.observe(observer).unsubscribe();
+  return observer.mock.calls[0][0].isDisabled;
 };
 
 const observe = () => {
@@ -319,19 +325,22 @@ describe('LogBoxData', () => {
     expect(filteredRegistry().length).toBe(0);
   });
 
-  it('ignores all logs when disabled', () => {
+  it('ignores all logs except fatals when disabled', () => {
     addLogs(['A!', 'B?']);
     addExceptions(['C!']);
     addSyntaxError();
     jest.runAllImmediates();
 
     expect(registry().length).toBe(4);
+    expect(disabledState()).toBe(false);
 
     LogBoxData.setDisabled(true);
-    expect(registry().length).toBe(0);
+    expect(registry().length).toBe(4);
+    expect(disabledState()).toBe(true);
 
     LogBoxData.setDisabled(false);
     expect(registry().length).toBe(4);
+    expect(disabledState()).toBe(false);
   });
 
   it('immediately updates new observers', () => {
@@ -355,7 +364,7 @@ describe('LogBoxData', () => {
 
     // We expect observers to recieve the same Set object in sequential updates
     // so that it doesn't break memoization for components observing state.
-    expect(observer.mock.calls[0][0]).toBe(observer.mock.calls[1][0]);
+    expect(observer.mock.calls[0][0].logs).toBe(observer.mock.calls[1][0].logs);
   });
 
   it('stops sending updates to unsubscribed observers', () => {
@@ -378,7 +387,7 @@ describe('LogBoxData', () => {
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(2);
 
-    const lastLog = Array.from(observer.mock.calls[1][0])[0];
+    const lastLog = Array.from(observer.mock.calls[1][0].logs)[0];
     LogBoxData.dismiss(lastLog);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(3);

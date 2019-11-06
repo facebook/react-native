@@ -24,6 +24,7 @@ type Props = $ReadOnly<{|
   onDismissWarns: () => void,
   onDismissErrors: () => void,
   logs: LogBoxLogs,
+  isDisabled?: ?boolean,
 |}>;
 
 function LogBoxContainer(props: Props): React.Node {
@@ -98,7 +99,7 @@ function LogBoxContainer(props: Props): React.Node {
     );
   }
 
-  if (logs.length === 0) {
+  if (logs.length === 0 || props.isDisabled === true) {
     return null;
   }
 

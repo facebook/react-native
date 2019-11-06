@@ -23,7 +23,8 @@ import LogBoxLog from './Data/LogBoxLog';
 
 type Props = $ReadOnly<{||}>;
 type State = {|
-  logs: ?LogBoxLogs,
+  logs: LogBoxLogs,
+  isDisabled: boolean,
 |};
 
 let LogBoxComponent;
@@ -95,7 +96,8 @@ if (__DEV__) {
     _subscription: ?Subscription;
 
     state = {
-      logs: null,
+      logs: new Set(),
+      isDisabled: false,
     };
 
     render(): React.Node {
@@ -106,13 +108,14 @@ if (__DEV__) {
           onDismissWarns={LogBoxData.clearWarnings}
           onDismissErrors={LogBoxData.clearErrors}
           logs={this.state.logs}
+          isDisabled={this.state.isDisabled}
         />
       );
     }
 
     componentDidMount(): void {
-      this._subscription = LogBoxData.observe(logs => {
-        this.setState({logs});
+      this._subscription = LogBoxData.observe(data => {
+        this.setState(data);
       });
     }
 

@@ -25,7 +25,9 @@ export type LogData = $ReadOnly<{|
   componentStack: ComponentStack,
 |}>;
 
-export type Observer = (logs: LogBoxLogs) => void;
+export type Observer = (
+  $ReadOnly<{|logs: LogBoxLogs, isDisabled: boolean|}>,
+) => void;
 
 export type IgnorePattern = string | RegExp;
 
@@ -55,8 +57,9 @@ function handleUpdate(): void {
   if (updateTimeout == null) {
     updateTimeout = setImmediate(() => {
       updateTimeout = null;
-      const logsSet = _isDisabled ? new Set() : logs;
-      observers.forEach(({observer}) => observer(logsSet));
+      observers.forEach(({observer}) =>
+        observer({logs, isDisabled: _isDisabled}),
+      );
     });
   }
 }
@@ -243,8 +246,7 @@ export function observe(observer: Observer): Subscription {
   const subscription = {observer};
   observers.add(subscription);
 
-  const logsToObserve = _isDisabled ? new Set() : logs;
-  observer(logsToObserve);
+  observer({logs, isDisabled: _isDisabled});
 
   return {
     unsubscribe(): void {

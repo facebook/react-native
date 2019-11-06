@@ -138,6 +138,43 @@ describe('LogBoxContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
+  it('should render null when disabled with non-fatal error and warning', () => {
+    const output = render.shallowRender(
+      <LogBoxContainer
+        isDisabled
+        onDismiss={() => {}}
+        onDismissWarns={() => {}}
+        onDismissErrors={() => {}}
+        logs={
+          new Set([
+            new LogBoxLog(
+              'warn',
+              {
+                content: 'Some kind of message',
+                substitutions: [],
+              },
+              [],
+              'Some kind of message',
+              [],
+            ),
+            new LogBoxLog(
+              'error',
+              {
+                content: 'Some kind of message (latest)',
+                substitutions: [],
+              },
+              [],
+              'Some kind of message (latest)',
+              [],
+            ),
+          ])
+        }
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
   it('should render fatal before warn and error', () => {
     const output = render.shallowRender(
       <LogBoxContainer
@@ -220,6 +257,33 @@ describe('LogBoxContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
+  it('should render fatal error even when disabled', () => {
+    const output = render.shallowRender(
+      <LogBoxContainer
+        isDisabled
+        onDismiss={() => {}}
+        onDismissWarns={() => {}}
+        onDismissErrors={() => {}}
+        logs={
+          new Set([
+            new LogBoxLog(
+              'fatal',
+              {
+                content: 'Should be selected',
+                substitutions: [],
+              },
+              [],
+              'Some kind of message',
+              [],
+            ),
+          ])
+        }
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
   it('should render most recent syntax error', () => {
     const output = render.shallowRender(
       <LogBoxContainer
@@ -248,6 +312,43 @@ describe('LogBoxContainer', () => {
   200 |`,
               },
             ),
+            new LogBoxLog(
+              'syntax',
+              {
+                content: 'Should be selected',
+                substitutions: [],
+              },
+              [],
+              'Some kind of syntax error message',
+              [],
+              {
+                fileName:
+                  '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
+                location: '(199:0)',
+                content: `  197 | });
+  198 |
+> 199 | export default CrashReactApp;
+      | ^
+  200 |`,
+              },
+            ),
+          ])
+        }
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should render syntax error even when disabled', () => {
+    const output = render.shallowRender(
+      <LogBoxContainer
+        isDisabled
+        onDismiss={() => {}}
+        onDismissWarns={() => {}}
+        onDismissErrors={() => {}}
+        logs={
+          new Set([
             new LogBoxLog(
               'syntax',
               {
