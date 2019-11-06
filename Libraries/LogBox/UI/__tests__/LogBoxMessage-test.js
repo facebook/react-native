@@ -44,6 +44,21 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
+  it('should render a plaintext message with no substitutions', () => {
+    const output = render.shallowRender(
+      <LogBoxMessage
+        plaintext
+        style={{}}
+        message={{
+          content: 'normal substitution normal',
+          substitutions: [{length: 12, offset: 7}],
+        }}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
   it('Should strip "Warning: " without breaking substitution', () => {
     const output = render.shallowRender(
       <LogBoxMessage

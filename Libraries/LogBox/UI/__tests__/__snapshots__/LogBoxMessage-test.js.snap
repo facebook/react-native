@@ -32,6 +32,12 @@ exports[`LogBoxMessage Should strip "Warning: Warning: " without breaking substi
 </React.Fragment>
 `;
 
+exports[`LogBoxMessage should render a plaintext message with no substitutions 1`] = `
+<Text>
+  normal substitution normal
+</Text>
+`;
+
 exports[`LogBoxMessage should render message 1`] = `
 <React.Fragment>
   <Text>

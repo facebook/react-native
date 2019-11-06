@@ -19,12 +19,18 @@ import type {Message} from '../Data/parseLogBoxLog';
 type Props = {
   message: Message,
   style: TextStyleProp,
+  plaintext?: ?boolean,
 };
 
 const cleanContent = content => content.replace(/(Warning|Error): /g, '');
 
 function LogBoxMessage(props: Props): React.Node {
   const {content, substitutions}: Message = props.message;
+
+  if (props.plaintext === true) {
+    return <Text>{content}</Text>;
+  }
+
   const substitutionStyle: TextStyleProp = props.style;
   const elements = [];
 

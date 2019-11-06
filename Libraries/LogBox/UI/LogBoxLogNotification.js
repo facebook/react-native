@@ -76,6 +76,7 @@ function Message(props) {
       <Text numberOfLines={1} style={messageStyles.text}>
         {props.message && (
           <LogBoxMessage
+            plaintext
             message={props.message}
             style={messageStyles.substitutionText}
           />
