@@ -113,7 +113,7 @@ void RCTDevSettingsSetEnabled(BOOL enabled) {
 
 @end
 
-@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating, NativeDevSettingsSpec> {
+@interface RCTDevSettings () <RCTBridgeModule, RCTInvalidating> {
   BOOL _isJSLoaded;
 #if ENABLE_PACKAGER_CONNECTION
   RCTHandlerToken _reloadToken;
@@ -440,17 +440,9 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
   });
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-{
-  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker);
-}
-
 @end
 
 #else // #if RCT_DEV
-
-@interface RCTDevSettings () <NativeDevSettingsSpec>
-@end
 
 @implementation RCTDevSettings
 
@@ -496,11 +488,6 @@ RCT_EXPORT_METHOD(addMenuItem:(NSString *)title)
 }
 - (void)setIsShakeToShowDevMenuEnabled:(BOOL)enabled
 {
-}
-
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-{
-  return std::make_shared<facebook::react::NativeDevSettingsSpecJSI>(self, jsInvoker);
 }
 
 @end
