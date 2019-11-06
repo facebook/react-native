@@ -59,13 +59,13 @@ class ComponentDescriptorRegistry {
       SharedComponentDescriptor componentDescriptor) const;
 
   /*
-   * Adds (or removes) a `ComponentDescriptor ` created using given
-   * `ComponentDescriptorProvider` and stored `ComponentDescriptorParameters`.
+   * Creates a `ComponentDescriptor` using specified
+   * `ComponentDescriptorProvider` and stored `ComponentDescriptorParameters`,
+   * and then adds that to the registry.
    * To be used by `ComponentDescriptorProviderRegistry` only.
    * Thread safe.
    */
   void add(ComponentDescriptorProvider componentDescriptorProvider) const;
-  void remove(ComponentDescriptorProvider componentDescriptorProvider) const;
 
   mutable better::shared_mutex mutex_;
   mutable better::map<ComponentHandle, SharedComponentDescriptor>

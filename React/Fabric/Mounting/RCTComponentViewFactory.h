@@ -31,11 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)registerComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass;
 
 /**
- * Unregisters a component view class in the factory.
- */
-- (void)unregisterComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass;
-
-/**
  * Creates a component view with given component handle.
  */
 - (RCTComponentViewDescriptor)createComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;

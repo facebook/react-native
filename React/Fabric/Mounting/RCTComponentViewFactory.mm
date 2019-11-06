@@ -111,15 +111,6 @@ using namespace facebook::react;
   }
 }
 
-- (void)unregisterComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass
-{
-  std::unique_lock<better::shared_mutex> lock(_mutex);
-
-  auto componentDescriptorProvider = [componentViewClass componentDescriptorProvider];
-  _componentViewClasses.erase(componentDescriptorProvider.handle);
-  _providerRegistry.remove(componentDescriptorProvider);
-}
-
 - (RCTComponentViewDescriptor)createComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle
 {
   RCTAssertMainQueue();

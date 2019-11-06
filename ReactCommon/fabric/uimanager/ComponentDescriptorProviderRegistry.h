@@ -28,12 +28,11 @@ using ComponentDescriptorProviderRequest =
 class ComponentDescriptorProviderRegistry final {
  public:
   /*
-   * Adds (or removes) a `ComponentDescriptorProvider`s and update the managed
+   * Adds a `ComponentDescriptorProvider`s and update the managed
    * `ComponentDescriptorRegistry`s accordingly.
    * The methods can be called on any thread.
    */
   void add(ComponentDescriptorProvider provider) const;
-  void remove(ComponentDescriptorProvider provider) const;
 
   /*
    * ComponenDescriptorRegistry will call the `request` in case if a component

@@ -47,21 +47,6 @@ void ComponentDescriptorRegistry::add(
   }
 }
 
-void ComponentDescriptorRegistry::remove(
-    ComponentDescriptorProvider componentDescriptorProvider) const {
-  std::unique_lock<better::shared_mutex> lock(mutex_);
-
-  assert(
-      _registryByHandle.find(componentDescriptorProvider.handle) !=
-      _registryByHandle.end());
-  assert(
-      _registryByName.find(componentDescriptorProvider.name) !=
-      _registryByName.end());
-
-  _registryByHandle.erase(componentDescriptorProvider.handle);
-  _registryByName.erase(componentDescriptorProvider.name);
-}
-
 void ComponentDescriptorRegistry::registerComponentDescriptor(
     SharedComponentDescriptor componentDescriptor) const {
   ComponentHandle componentHandle = componentDescriptor->getComponentHandle();

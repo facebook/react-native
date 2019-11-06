@@ -38,21 +38,6 @@ void ComponentDescriptorProviderRegistry::add(
   }
 }
 
-void ComponentDescriptorProviderRegistry::remove(
-    ComponentDescriptorProvider provider) const {
-  std::unique_lock<better::shared_mutex> lock(mutex_);
-  componentDescriptorProviders_.erase(provider.handle);
-
-  for (auto const &weakRegistry : componentDescriptorRegistries_) {
-    auto registry = weakRegistry.lock();
-    if (!registry) {
-      continue;
-    }
-
-    registry->remove(provider);
-  }
-}
-
 void ComponentDescriptorProviderRegistry::setComponentDescriptorProviderRequest(
     ComponentDescriptorProviderRequest componentDescriptorProviderRequest)
     const {
