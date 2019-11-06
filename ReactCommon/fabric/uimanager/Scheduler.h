@@ -107,7 +107,6 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
   SchedulerDelegate *delegate_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   std::unique_ptr<const RootComponentDescriptor> rootComponentDescriptor_;
-  ShadowTreeRegistry shadowTreeRegistry_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManager> uiManager_;
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
