@@ -63,7 +63,6 @@ if (__DEV__) {
           'debug',
         ].forEach(level => {
           const originalFunction = console[level];
-          // $FlowFixMe Overwrite console methods
           console[level] = function(...args) {
             HMRClient.log(level, args);
             originalFunction.apply(console, args);

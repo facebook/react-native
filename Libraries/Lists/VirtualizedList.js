@@ -946,6 +946,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
                 initBlock.offset -
                 (this.props.initialScrollIndex ? 0 : initBlock.length);
               cells.push(
+                /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment
+                 * suppresses an error found when Flow v0.111 was deployed. To
+                 * see the error, delete this comment and run Flow. */
                 <View key="$sticky_lead" style={{[spacerKey]: leadSpace}} />,
               );
               this._pushCells(
@@ -960,6 +963,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
                 this._getFrameMetricsApprox(first).offset -
                 (stickyBlock.offset + stickyBlock.length);
               cells.push(
+                /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment
+                 * suppresses an error found when Flow v0.111 was deployed. To
+                 * see the error, delete this comment and run Flow. */
                 <View key="$sticky_trail" style={{[spacerKey]: trailSpace}} />,
               );
               insertedStickySpacer = true;
@@ -973,6 +979,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             this._getFrameMetricsApprox(first).offset -
             (initBlock.offset + initBlock.length);
           cells.push(
+            /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment
+             * suppresses an error found when Flow v0.111 was deployed. To see
+             * the error, delete this comment and run Flow. */
             <View key="$lead_spacer" style={{[spacerKey]: firstSpace}} />,
           );
         }
@@ -1007,6 +1016,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           endFrame.length -
           (lastFrame.offset + lastFrame.length);
         cells.push(
+          /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.111 was deployed. To see the error,
+           * delete this comment and run Flow. */
           <View key="$tail_spacer" style={{[spacerKey]: tailSpacerLength}} />,
         );
       }
@@ -1211,6 +1223,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       invariant(
         typeof props.refreshing === 'boolean',
         '`refreshing` prop must be set as a boolean in order to use `onRefresh`, but got `' +
+          /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.111 was deployed. To see the error,
+           * delete this comment and run Flow. */
           JSON.stringify(props.refreshing) +
           '`',
       );

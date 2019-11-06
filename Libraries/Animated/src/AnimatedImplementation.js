@@ -169,6 +169,9 @@ const spring = function(
 
       _startNativeLoop: function(iterations?: number): void {
         const singleConfig = {...config, iterations};
+        /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
+         * an error found when Flow v0.111 was deployed. To see the error,
+         * delete this comment and run Flow. */
         start(value, singleConfig);
       },
 
@@ -223,6 +226,9 @@ const timing = function(
 
       _startNativeLoop: function(iterations?: number): void {
         const singleConfig = {...config, iterations};
+        /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
+         * an error found when Flow v0.111 was deployed. To see the error,
+         * delete this comment and run Flow. */
         start(value, singleConfig);
       },
 
@@ -265,6 +271,9 @@ const decay = function(
 
       _startNativeLoop: function(iterations?: number): void {
         const singleConfig = {...config, iterations};
+        /* $FlowFixMe(>=0.111.0 site=react_native_fb) This comment suppresses
+         * an error found when Flow v0.111 was deployed. To see the error,
+         * delete this comment and run Flow. */
         start(value, singleConfig);
       },
 

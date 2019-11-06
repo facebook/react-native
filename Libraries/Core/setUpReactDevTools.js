@@ -11,7 +11,6 @@
 'use strict';
 
 if (__DEV__) {
-  // $FlowFixMe Module is untyped
   const reactDevTools = require('react-devtools-core');
   const connectToDevTools = () => {
     // not when debugging in chrome
