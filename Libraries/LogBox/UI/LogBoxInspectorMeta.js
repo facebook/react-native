@@ -60,7 +60,7 @@ const metaStyles = StyleSheet.create({
   body: {
     paddingLeft: 25,
     paddingRight: 25,
-    paddingBottom: 100,
+    paddingBottom: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },

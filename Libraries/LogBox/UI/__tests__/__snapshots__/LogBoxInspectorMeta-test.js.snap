@@ -38,7 +38,7 @@ exports[`LogBoxInspectorMeta should render meta information 1`] = `
       Object {
         "flexDirection": "row",
         "justifyContent": "space-between",
-        "paddingBottom": 100,
+        "paddingBottom": 20,
         "paddingLeft": 25,
         "paddingRight": 25,
       }
