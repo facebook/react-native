@@ -82,6 +82,26 @@ Scheduler::Scheduler(
 }
 
 Scheduler::~Scheduler() {
+#ifndef NDEBUG
+  /*
+   * This requirement must be satisfied to make concurrent deallocation of
+   * `Scheduler` and calling on it from `UIManager` side thread-safe.
+   * Conceptually, `UIManager` is allowed to call `Scheduler` only if the
+   * corresponding `ShadowTree` instance exists (which is not fully enforced
+   * yet).
+   */
+  auto hasRunningSurfaces = false;
+  uiManager_->getShadowTreeRegistry().enumerate(
+      [&](ShadowTree const &shadowTree, bool &stop) {
+        stop = true;
+        hasRunningSurfaces = true;
+      });
+
+  assert(
+      !hasRunningSurfaces &&
+      "Scheduler was destroyed with sill running Surfaces.");
+#endif
+
   uiManager_->setDelegate(nullptr);
 }
 
