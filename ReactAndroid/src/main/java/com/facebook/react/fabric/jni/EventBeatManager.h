@@ -34,11 +34,14 @@ class EventBeatManager : public jni::HybridClass<EventBeatManager> {
 
   void unregisterEventBeat(EventBeat* eventBeat) const;
 
-  void beat();
-
   EventBeatManager(jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject);
 
  private:
+  /*
+   * Called by Java counterpart at the end of every run loop tick.
+   */
+  void tick();
+
   RuntimeExecutor runtimeExecutor_;
 
   jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject_;

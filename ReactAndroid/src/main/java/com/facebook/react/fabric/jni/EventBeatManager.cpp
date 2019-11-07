@@ -37,7 +37,7 @@ void EventBeatManager::unregisterEventBeat(EventBeat* eventBeat) const {
   registeredEventBeats_.erase(eventBeat);
 }
 
-void EventBeatManager::beat() {
+void EventBeatManager::tick() {
   std::lock_guard<std::mutex> lock(mutex_);
 
   for (const auto eventBeat : registeredEventBeats_) {
@@ -50,7 +50,7 @@ void EventBeatManager::beat() {
 void EventBeatManager::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", EventBeatManager::initHybrid),
-      makeNativeMethod("beat", EventBeatManager::beat),
+      makeNativeMethod("tick", EventBeatManager::tick),
   });
 }
 

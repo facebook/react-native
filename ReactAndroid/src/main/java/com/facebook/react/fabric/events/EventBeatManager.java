@@ -30,7 +30,7 @@ public class EventBeatManager implements BatchEventDispatchedListener {
 
   private static native HybridData initHybrid();
 
-  private native void beat();
+  private native void tick();
 
   public EventBeatManager(@NonNull ReactApplicationContext reactApplicationContext) {
     mHybridData = initHybrid();
@@ -39,23 +39,6 @@ public class EventBeatManager implements BatchEventDispatchedListener {
 
   @Override
   public void onBatchEventDispatched() {
-    dispatchEventsAsync();
-  }
-
-  /**
-   * Induce a beat in the AsyncEventBeat, calling the JNI method {@link #beat()} in the JS thread.
-   */
-  private void dispatchEventsAsync() {
-    if (mReactApplicationContext.isOnJSQueueThread()) {
-      beat();
-    } else {
-      mReactApplicationContext.runOnJSQueueThread(
-          new Runnable() {
-            @Override
-            public void run() {
-              beat();
-            }
-          });
-    }
+    tick();
   }
 }
