@@ -33,4 +33,21 @@ describe('LogBoxInspectorStackFrame', () => {
 
     expect(output).toMatchSnapshot();
   });
+
+  it('should render collapsed stack frame with dimmed text', () => {
+    const output = render.shallowRender(
+      <LogBoxInspectorStackFrame
+        onPress={() => {}}
+        frame={{
+          column: 1,
+          file: 'app.js',
+          lineNumber: 1,
+          methodName: 'foo',
+          collapse: true,
+        }}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
 });

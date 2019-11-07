@@ -35,11 +35,13 @@ function LogBoxInspectorStackFrame(props: Props): React.Node {
       }}
       onPress={onPress}
       style={styles.frame}>
-      <Text style={styles.frameName}>{frame.methodName}</Text>
+      <Text style={[styles.name, frame.collapse === true && styles.dim]}>
+        {frame.methodName}
+      </Text>
       <Text
         ellipsizeMode="middle"
         numberOfLines={1}
-        style={styles.frameLocation}>
+        style={[styles.location, frame.collapse === true && styles.dim]}>
         {formatFrameLocation(frame)}
       </Text>
     </LogBoxButton>
@@ -75,19 +77,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     paddingVertical: 4,
   },
-  frameName: {
+  name: {
     color: LogBoxStyle.getTextColor(1),
     fontSize: 14,
     includeFontPadding: false,
     lineHeight: 18,
   },
-  frameLocation: {
+  location: {
     color: LogBoxStyle.getTextColor(0.7),
     fontSize: 12,
     fontWeight: '300',
     includeFontPadding: false,
     lineHeight: 16,
     paddingLeft: 10,
+  },
+  dim: {
+    color: LogBoxStyle.getTextColor(0.4),
   },
 });
 
