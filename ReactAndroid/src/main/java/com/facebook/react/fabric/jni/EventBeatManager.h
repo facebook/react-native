@@ -7,19 +7,15 @@
 
 #pragma once
 
-#include <fb/fbjni.h>
-#include <jsi/jsi.h>
-#include <react/core/EventBeat.h>
-#include <react/utils/RuntimeExecutor.h>
 #include <mutex>
 #include <unordered_set>
 
-using namespace facebook::jsi;
+#include <fb/fbjni.h>
+#include <react/core/EventBeat.h>
+#include <react/utils/RuntimeExecutor.h>
 
 namespace facebook {
 namespace react {
-
-class Instance;
 
 class EventBeatManager : public jni::HybridClass<EventBeatManager> {
  public:
