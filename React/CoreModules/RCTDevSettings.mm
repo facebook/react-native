@@ -155,11 +155,6 @@ RCT_EXPORT_MODULE()
                                              selector:@selector(jsLoaded:)
                                                  name:RCTJavaScriptDidLoadNotification
                                                object:nil];
-
-    // Delay setup until after Bridge init
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self _synchronizeAllSettings];
-    });
   }
   return self;
 }
@@ -195,6 +190,10 @@ RCT_EXPORT_MODULE()
                 queue:RCTJSThread];
   });
 #endif
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self _synchronizeAllSettings];
+  });
 }
 
 - (dispatch_queue_t)methodQueue
