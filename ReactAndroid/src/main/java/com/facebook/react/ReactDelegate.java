@@ -128,7 +128,7 @@ public class ReactDelegate {
           Assertions.assertNotNull(mDoubleTapReloadRecognizer)
               .didDoubleTapR(keyCode, mActivity.getCurrentFocus());
       if (didDoubleTapR) {
-        getReactNativeHost().getReactInstanceManager().getDevSupportManager().handleReloadJS();
+        getReactNativeHost().getReactInstanceManager().getDevSupportManager().reloadExpoApp();
         return true;
       }
     }
