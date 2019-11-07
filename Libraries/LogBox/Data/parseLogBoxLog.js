@@ -19,7 +19,10 @@ import type {Stack} from './LogBoxSymbolication';
 export type Category = string;
 export type CodeFrame = $ReadOnly<{|
   content: string,
-  location: string,
+  location: {
+    row: number,
+    column: number,
+  },
   fileName: string,
 |}>;
 export type Message = $ReadOnly<{|
@@ -146,7 +149,7 @@ export function parseLogBoxException(
   const message =
     error.originalMessage != null ? error.originalMessage : 'Unknown';
   const match = message.match(
-    /(?:TransformError )?(?:SyntaxError: )(.*): (.*) (.*)\n\n([\s\S]+)/,
+    /(?:TransformError )?(?:SyntaxError: )(.*): (.*) \((\d+):(\d+)\)\n\n([\s\S]+)/,
   );
 
   if (!match) {
@@ -161,20 +164,23 @@ export function parseLogBoxException(
     };
   }
 
-  const [fileName, content, location, codeFrame] = match.slice(1);
+  const [fileName, content, row, column, codeFrame] = match.slice(1);
   return {
     level: 'syntax',
     stack: [],
     codeFrame: {
       fileName,
-      location,
+      location: {
+        row: parseInt(row, 10),
+        column: parseInt(column, 10),
+      },
       content: codeFrame,
     },
     message: {
       content,
       substitutions: [],
     },
-    category: `${fileName} ${location}`,
+    category: `${fileName}-${row}-${column}`,
   };
 }
 

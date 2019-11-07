@@ -4,11 +4,36 @@ exports[`LogBoxInspectorCodeFrame should render a code frame 1`] = `
 <View
   style={
     Object {
-      "marginBottom": 20,
-      "marginTop": 30,
+      "marginBottom": 10,
+      "marginTop": 20,
     }
   }
 >
+  <View
+    style={
+      Object {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "marginBottom": 10,
+        "paddingHorizontal": 12,
+      }
+    }
+  >
+    <Text
+      style={
+        Object {
+          "color": "rgba(255, 255, 255, 1)",
+          "flex": 1,
+          "fontSize": 20,
+          "fontWeight": "600",
+          "includeFontPadding": false,
+          "lineHeight": 20,
+        }
+      }
+    >
+      Location
+    </Text>
+  </View>
   <View
     style={
       Object {
@@ -16,50 +41,79 @@ exports[`LogBoxInspectorCodeFrame should render a code frame 1`] = `
         "borderRadius": 3,
         "marginLeft": 10,
         "marginRight": 10,
-        "padding": 10,
+        "marginTop": 5,
       }
     }
   >
-    <ScrollViewMock
-      horizontal={true}
-    >
-      <Text
-        style={
-          Object {
-            "color": "rgba(255, 255, 255, 1)",
-            "flex": 1,
-            "fontFamily": "Menlo",
-            "fontSize": 12,
-            "includeFontPadding": false,
-            "lineHeight": 20,
-          }
+    <View
+      style={
+        Object {
+          "borderBottomColor": "rgba(255, 255, 255, 0.1)",
+          "borderBottomWidth": 1,
+          "padding": 10,
         }
+      }
+    >
+      <ScrollViewMock
+        horizontal={true}
       >
-          197 | });
+        <Text
+          style={
+            Object {
+              "color": "rgba(255, 255, 255, 1)",
+              "flex": 1,
+              "fontFamily": "Menlo",
+              "fontSize": 12,
+              "includeFontPadding": false,
+              "lineHeight": 20,
+            }
+          }
+        >
+            197 | });
     198 |
   &gt; 199 | export default CrashReactApp;
         | ^
     200 |
-      </Text>
-    </ScrollViewMock>
-  </View>
-  <Text
-    style={
-      Object {
-        "color": "rgba(255, 255, 255, 0.5)",
-        "flex": 1,
-        "fontFamily": "Menlo",
-        "fontSize": 12,
-        "includeFontPadding": false,
-        "lineHeight": 20,
-        "textAlign": "center",
+        </Text>
+      </ScrollViewMock>
+    </View>
+    <LogBoxButton
+      backgroundColor={
+        Object {
+          "default": "transparent",
+          "pressed": "rgba(34, 34, 34, 1)",
+        }
       }
-    }
-  >
-    CrashReactApp.js
-     
-    (199:0)
-  </Text>
+      onPress={[Function]}
+      style={
+        Object {
+          "paddingBottom": 10,
+          "paddingTop": 10,
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 0.5)",
+            "flex": 1,
+            "fontFamily": "Menlo",
+            "fontSize": 12,
+            "includeFontPadding": false,
+            "lineHeight": 16,
+            "textAlign": "center",
+          }
+        }
+      >
+        CrashReactApp.js
+         (
+        199
+        :
+        0
+        )
+      </Text>
+    </LogBoxButton>
+  </View>
 </View>
 `;
 

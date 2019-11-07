@@ -298,7 +298,10 @@ exports[`LogBoxContainer should render most recent syntax error 1`] = `
       | ^
   200 |",
             "fileName": "/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js",
-            "location": "(199:0)",
+            "location": Object {
+              "column": 0,
+              "row": 199,
+            },
           },
           "componentStack": Array [],
           "count": 1,
@@ -323,7 +326,10 @@ exports[`LogBoxContainer should render most recent syntax error 1`] = `
       | ^
   200 |",
             "fileName": "/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js",
-            "location": "(199:0)",
+            "location": Object {
+              "column": 0,
+              "row": 199,
+            },
           },
           "componentStack": Array [],
           "count": 1,
@@ -378,7 +384,10 @@ exports[`LogBoxContainer should render syntax error even when disabled 1`] = `
       | ^
   200 |",
             "fileName": "/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js",
-            "location": "(199:0)",
+            "location": Object {
+              "column": 0,
+              "row": 199,
+            },
           },
           "componentStack": Array [],
           "count": 1,

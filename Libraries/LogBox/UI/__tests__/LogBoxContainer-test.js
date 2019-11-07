@@ -304,7 +304,7 @@ describe('LogBoxContainer', () => {
               {
                 fileName:
                   '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
-                location: '(199:0)',
+                location: {row: 199, column: 0},
                 content: `  197 | });
   198 |
 > 199 | export default CrashReactApp;
@@ -324,7 +324,7 @@ describe('LogBoxContainer', () => {
               {
                 fileName:
                   '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
-                location: '(199:0)',
+                location: {row: 199, column: 0},
                 content: `  197 | });
   198 |
 > 199 | export default CrashReactApp;
@@ -361,7 +361,7 @@ describe('LogBoxContainer', () => {
               {
                 fileName:
                   '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
-                location: '(199:0)',
+                location: {row: 199, column: 0},
                 content: `  197 | });
   198 |
 > 199 | export default CrashReactApp;

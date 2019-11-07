@@ -26,7 +26,7 @@ function getLogBoxLog() {
     [{component: 'LogBoxLog', location: 'LogBoxLog.js:1'}],
     {
       fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
-      location: '(199:0)',
+      location: {row: 199, column: 0},
       content: '<code frame>',
     },
   );
@@ -70,7 +70,7 @@ describe('LogBoxLog', () => {
     ]);
     expect(log.codeFrame).toEqual({
       fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
-      location: '(199:0)',
+      location: {row: 199, column: 0},
       content: '<code frame>',
     });
   });

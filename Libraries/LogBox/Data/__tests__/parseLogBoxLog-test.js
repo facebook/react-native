@@ -178,7 +178,7 @@ describe('parseLogBoxLog', () => {
       level: 'syntax',
       codeFrame: {
         fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
-        location: '(199:0)',
+        location: {row: 199, column: 0},
         content: `  197 | });
   198 |
 > 199 | export default CrashReactApp;
@@ -190,7 +190,7 @@ describe('parseLogBoxLog', () => {
         substitutions: [],
       },
       stack: [],
-      category: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js (199:0)',
+      category: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js-199-0',
     });
   });
 
