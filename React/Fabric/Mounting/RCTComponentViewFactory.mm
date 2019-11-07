@@ -31,6 +31,7 @@
 #import "RCTSliderComponentView.h"
 #import "RCTSwitchComponentView.h"
 #import "RCTUnimplementedNativeComponentView.h"
+#import "RCTUnimplementedViewComponentView.h"
 #import "RCTViewComponentView.h"
 
 #import <objc/runtime.h>
@@ -65,6 +66,10 @@ using namespace facebook::react;
 
   providerRegistry->setComponentDescriptorProviderRequest([providerRegistry,
                                                            componentViewFactory](ComponentName requestedComponentName) {
+    // Fallback 1: Call the delegate.
+    // To be implemented.
+
+    // Fallback 2: Try to use Paper Interop.
     if ([RCTLegacyViewManagerInteropComponentView isSupported:RCTNSStringFromString(requestedComponentName)]) {
       auto flavor = std::make_shared<std::string const>(requestedComponentName);
       auto componentName = ComponentName{flavor->c_str()};
@@ -75,7 +80,19 @@ using namespace facebook::react;
 
       componentViewFactory->_componentViewClasses[componentHandle] = [componentViewFactory
           _componentViewClassDescriptorFromClass:[RCTLegacyViewManagerInteropComponentView class]];
+      return;
     }
+
+    // Fallback 3: Finally use <UnimplementedView>.
+    auto flavor = std::make_shared<std::string const>(requestedComponentName);
+    auto componentName = ComponentName{flavor->c_str()};
+    auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
+    auto constructor = [RCTUnimplementedViewComponentView componentDescriptorProvider].constructor;
+
+    providerRegistry->add(ComponentDescriptorProvider{componentHandle, componentName, flavor, constructor});
+
+    componentViewFactory->_componentViewClasses[componentHandle] =
+        [componentViewFactory _componentViewClassDescriptorFromClass:[RCTUnimplementedViewComponentView class]];
   });
 
   return componentViewFactory;
