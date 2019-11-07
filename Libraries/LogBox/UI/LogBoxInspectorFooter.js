@@ -29,7 +29,7 @@ type Props = $ReadOnly<{|
 function LogBoxInspectorFooter(props: Props): React.Node {
   if (props.fatalType === 'fatal' || props.fatalType === 'syntax') {
     return (
-      <View style={styles.root}>
+      <View style={[styles.root, fatalStyles.root]}>
         <LogBoxButton
           backgroundColor={{
             default: LogBoxStyle.getFatalColor(),
@@ -83,6 +83,9 @@ function FooterButton(props: ButtonProps): React.Node {
 }
 
 const fatalStyles = StyleSheet.create({
+  root: {
+    shadowColor: LogBoxStyle.getBackgroundDarkColor(1),
+  },
   button: {
     flex: 1,
   },

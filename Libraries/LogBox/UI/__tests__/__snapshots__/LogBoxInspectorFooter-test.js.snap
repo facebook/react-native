@@ -3,18 +3,23 @@
 exports[`LogBoxInspectorFooter should render fatal button 1`] = `
 <View
   style={
-    Object {
-      "backgroundColor": "rgba(51, 51, 51, 1)",
-      "elevation": 1,
-      "flexDirection": "row",
-      "shadowColor": "#000",
-      "shadowOffset": Object {
-        "height": -2,
-        "width": 0,
+    Array [
+      Object {
+        "backgroundColor": "rgba(51, 51, 51, 1)",
+        "elevation": 1,
+        "flexDirection": "row",
+        "shadowColor": "#000",
+        "shadowOffset": Object {
+          "height": -2,
+          "width": 0,
+        },
+        "shadowOpacity": 0.5,
+        "shadowRadius": 2,
       },
-      "shadowOpacity": 0.5,
-      "shadowRadius": 2,
-    }
+      Object {
+        "shadowColor": "rgba(34, 34, 34, 1)",
+      },
+    ]
   }
 >
   <LogBoxButton
@@ -77,18 +82,23 @@ exports[`LogBoxInspectorFooter should render fatal button 1`] = `
 exports[`LogBoxInspectorFooter should render fatal button for syntax erorr 1`] = `
 <View
   style={
-    Object {
-      "backgroundColor": "rgba(51, 51, 51, 1)",
-      "elevation": 1,
-      "flexDirection": "row",
-      "shadowColor": "#000",
-      "shadowOffset": Object {
-        "height": -2,
-        "width": 0,
+    Array [
+      Object {
+        "backgroundColor": "rgba(51, 51, 51, 1)",
+        "elevation": 1,
+        "flexDirection": "row",
+        "shadowColor": "#000",
+        "shadowOffset": Object {
+          "height": -2,
+          "width": 0,
+        },
+        "shadowOpacity": 0.5,
+        "shadowRadius": 2,
       },
-      "shadowOpacity": 0.5,
-      "shadowRadius": 2,
-    }
+      Object {
+        "shadowColor": "rgba(34, 34, 34, 1)",
+      },
+    ]
   }
 >
   <LogBoxButton
@@ -151,18 +161,23 @@ exports[`LogBoxInspectorFooter should render fatal button for syntax erorr 1`] =
 exports[`LogBoxInspectorFooter should render fatal for warning with a fatal 1`] = `
 <View
   style={
-    Object {
-      "backgroundColor": "rgba(51, 51, 51, 1)",
-      "elevation": 1,
-      "flexDirection": "row",
-      "shadowColor": "#000",
-      "shadowOffset": Object {
-        "height": -2,
-        "width": 0,
+    Array [
+      Object {
+        "backgroundColor": "rgba(51, 51, 51, 1)",
+        "elevation": 1,
+        "flexDirection": "row",
+        "shadowColor": "#000",
+        "shadowOffset": Object {
+          "height": -2,
+          "width": 0,
+        },
+        "shadowOpacity": 0.5,
+        "shadowRadius": 2,
       },
-      "shadowOpacity": 0.5,
-      "shadowRadius": 2,
-    }
+      Object {
+        "shadowColor": "rgba(34, 34, 34, 1)",
+      },
+    ]
   }
 >
   <LogBoxButton
