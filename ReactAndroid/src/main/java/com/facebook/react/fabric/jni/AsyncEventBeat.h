@@ -16,34 +16,25 @@
 namespace facebook {
 namespace react {
 
-namespace {
-
-class AsyncEventBeat : public EventBeat {
- private:
-  EventBeatManager* eventBeatManager_;
-  RuntimeExecutor runtimeExecutor_;
-  jni::global_ref<jobject> javaUIManager_;
-
+class AsyncEventBeat final : public EventBeat, public EventBeatManagerObserver {
  public:
-  friend class EventBeatManager;
-
   AsyncEventBeat(
       EventBeat::SharedOwnerBox const &ownerBox,
-      EventBeatManager* eventBeatManager,
+      EventBeatManager *eventBeatManager,
       RuntimeExecutor runtimeExecutor,
-      jni::global_ref<jobject> javaUIManager) :
-      EventBeat(ownerBox),
-      eventBeatManager_(eventBeatManager),
-      runtimeExecutor_(std::move(runtimeExecutor)),
-      javaUIManager_(javaUIManager) {
-    eventBeatManager->registerEventBeat(this);
+      jni::global_ref<jobject> javaUIManager)
+      : EventBeat(ownerBox),
+        eventBeatManager_(eventBeatManager),
+        runtimeExecutor_(runtimeExecutor),
+        javaUIManager_(javaUIManager) {
+    eventBeatManager->addObserver(*this);
   }
 
   ~AsyncEventBeat() {
-    eventBeatManager_->unregisterEventBeat(this);
+    eventBeatManager_->removeObserver(*this);
   }
 
-  void induce() const override {
+  void tick() const override {
     runtimeExecutor_([this, ownerBox = ownerBox_](jsi::Runtime &runtime) {
       auto owner = ownerBox->owner.lock();
       if (!owner) {
@@ -52,6 +43,10 @@ class AsyncEventBeat : public EventBeat {
 
       this->beat(runtime);
     });
+  }
+
+  void induce() const override {
+    tick();
   }
 
   void request() const override {
@@ -65,9 +60,12 @@ class AsyncEventBeat : public EventBeat {
       onRequestEventBeat(javaUIManager_);
     }
   }
-};
 
-} // namespace
+ private:
+  EventBeatManager *eventBeatManager_;
+  RuntimeExecutor runtimeExecutor_;
+  jni::global_ref<jobject> javaUIManager_;
+};
 
 } // namespace react
 } // namespace facebook

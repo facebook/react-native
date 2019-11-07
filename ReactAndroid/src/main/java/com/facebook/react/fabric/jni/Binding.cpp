@@ -214,8 +214,6 @@ void Binding::installFabricUIManager(
             });
       };
 
-  eventBeatManager->setRuntimeExecutor(runtimeExecutor);
-
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
   EventBeat::Factory synchronousBeatFactory =

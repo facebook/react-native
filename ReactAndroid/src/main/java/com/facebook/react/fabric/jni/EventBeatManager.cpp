@@ -21,29 +21,23 @@ jni::local_ref<EventBeatManager::jhybriddata> EventBeatManager::initHybrid(
   return makeCxxInstance(jhybridobject);
 }
 
-void EventBeatManager::setRuntimeExecutor(RuntimeExecutor runtimeExecutor) {
-  runtimeExecutor_ = runtimeExecutor;
+void EventBeatManager::addObserver(
+    EventBeatManagerObserver const &observer) const {
+  std::lock_guard<std::mutex> lock(mutex_);
+  observers_.insert(&observer);
 }
 
-void EventBeatManager::registerEventBeat(EventBeat* eventBeat) const {
+void EventBeatManager::removeObserver(
+    EventBeatManagerObserver const &observer) const {
   std::lock_guard<std::mutex> lock(mutex_);
-
-  registeredEventBeats_.insert(eventBeat);
-}
-
-void EventBeatManager::unregisterEventBeat(EventBeat* eventBeat) const {
-  std::lock_guard<std::mutex> lock(mutex_);
-
-  registeredEventBeats_.erase(eventBeat);
+  observers_.erase(&observer);
 }
 
 void EventBeatManager::tick() {
   std::lock_guard<std::mutex> lock(mutex_);
 
-  for (const auto eventBeat : registeredEventBeats_) {
-    runtimeExecutor_([=](jsi::Runtime &runtime) mutable {
-      eventBeat->beat(runtime);
-    });
+  for (auto observer : observers_) {
+    observer->tick();
   }
 }
 
