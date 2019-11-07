@@ -67,9 +67,10 @@ void RCTMessageThread::runOnQueue(std::function<void()>&& func) {
     return;
   }
 
-  runAsync([this, func=std::make_shared<std::function<void()>>(std::move(func))] {
-    if (!m_shutdown) {
-      tryFunc(*func);
+  auto sharedThis = shared_from_this(); // TODO(OSS Candidate ISS#2710739): `this` can be deleted before the RunLoop executes the block as revealed by ASAN test runs.
+  runAsync([sharedThis, func=std::make_shared<std::function<void()>>(std::move(func))] {
+    if (sharedThis->m_shutdown == false) {
+      sharedThis->tryFunc(*func);
     }
   });
 }
@@ -78,9 +79,11 @@ void RCTMessageThread::runOnQueueSync(std::function<void()>&& func) {
   if (m_shutdown) {
     return;
   }
-  runSync([this, func=std::move(func)] {
-    if (!m_shutdown) {
-      tryFunc(func);
+
+  auto sharedThis = shared_from_this(); // TODO(OSS Candidate ISS#2710739): `this` can be deleted before the RunLoop executes the block as revealed by ASAN test runs.
+  runSync([sharedThis, func=std::move(func)] {
+    if (sharedThis->m_shutdown == false) {
+      sharedThis->tryFunc(func);
     }
   });
 }

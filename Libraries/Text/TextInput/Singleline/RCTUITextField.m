@@ -11,6 +11,7 @@
 #import <React/UIView+React.h>
 
 #import "RCTBackedTextInputDelegateAdapter.h"
+#import "RCTBackedTextInputDelegate.h" // TODO(OSS Candidate ISS#2710739)
 #import "RCTTextAttributes.h"
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)

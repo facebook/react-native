@@ -5,13 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTBackedTextInputViewProtocol.h"
-#import "RCTBackedTextInputDelegate.h"
 #import "../RCTTextUIKit.h" // TODO(macOS ISS#2323203)
 
 NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - RCTBackedTextFieldDelegateAdapter (for UITextField)
+
+@protocol RCTBackedTextInputViewProtocol; // TODO(OSS Candidate ISS#2710739)
+@protocol RCTBackedTextInputDelegate; // TODO(OSS Candidate ISS#2710739)
 
 @interface RCTBackedTextFieldDelegateAdapter : NSObject
 

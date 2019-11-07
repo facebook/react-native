@@ -15,7 +15,7 @@
 namespace facebook {
 namespace react {
 
-class RCTMessageThread : public MessageQueueThread {
+class RCTMessageThread : public MessageQueueThread, public std::enable_shared_from_this<RCTMessageThread> { // TODO(OSS Candidate ISS#2710739)
  public:
   RCTMessageThread(NSRunLoop *runLoop, RCTJavaScriptCompleteBlock errorBlock);
   ~RCTMessageThread() override;
