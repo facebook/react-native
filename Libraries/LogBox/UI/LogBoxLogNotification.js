@@ -62,7 +62,7 @@ function CountBadge(props) {
   return (
     <View style={countStyles.outside}>
       <View style={[countStyles.inside, countStyles[props.level]]}>
-        <Text style={[countStyles.text, countStyles[`${props.level}Text`]]}>
+        <Text style={countStyles.text}>
           {props.count <= 1 ? '!' : props.count}
         </Text>
       </View>
@@ -113,20 +113,11 @@ const countStyles = StyleSheet.create({
   warn: {
     backgroundColor: LogBoxStyle.getWarningColor(1),
   },
-  warnText: {
-    color: LogBoxStyle.getBackgroundLightColor(),
-  },
   error: {
     backgroundColor: LogBoxStyle.getErrorColor(1),
   },
-  errorText: {
-    color: LogBoxStyle.getTextColor(1),
-  },
   log: {
     backgroundColor: LogBoxStyle.getLogColor(1),
-  },
-  logText: {
-    color: LogBoxStyle.getTextColor(1),
   },
   outside: {
     padding: 2,
@@ -147,6 +138,9 @@ const countStyles = StyleSheet.create({
     lineHeight: 18,
     textAlign: 'center',
     fontWeight: '600',
+    textShadowColor: LogBoxStyle.getBackgroundColor(0.4),
+    textShadowOffset: {width: 0, height: 0},
+    textShadowRadius: 3,
   },
 });
 
