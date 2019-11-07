@@ -138,4 +138,11 @@ using namespace facebook::react;
   }
 }
 
+#pragma mark - Native Commands
+
+- (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
+{
+  [_adapter handleCommand:(NSString *)commandName args:(NSArray *)args];
+}
+
 @end

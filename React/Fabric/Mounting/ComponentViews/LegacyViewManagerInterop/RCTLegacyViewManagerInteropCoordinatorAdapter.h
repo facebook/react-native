@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setProps:(folly::dynamic const &)props;
 
+- (void)handleCommand:(NSString *)commandName args:(NSArray *)args;
+
 @end
 
 NS_ASSUME_NONNULL_END

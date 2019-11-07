@@ -50,4 +50,9 @@
   [_coordinator setProps:props forView:self.paperView];
 }
 
+- (void)handleCommand:(NSString *)commandName args:(NSArray *)args
+{
+  [_coordinator handleCommand:commandName args:args reactTag:_tag];
+}
+
 @end

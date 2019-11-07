@@ -8,6 +8,7 @@
 #include "LegacyViewManagerInteropComponentDescriptor.h"
 #include <React/RCTBridge.h>
 #include <React/RCTComponentData.h>
+#include <React/RCTModuleData.h>
 #include <React/RCTUIManager.h>
 #include <react/utils/ContextContainer.h>
 #include <react/utils/ManagedObjectWrapper.h>
@@ -46,7 +47,8 @@ static std::shared_ptr<void> const contructCoordinator(
   assert(module);
   RCTBridge *bridge = (RCTBridge *)unwrapManagedObjectWeakly(contextContainer->at<std::shared_ptr<void>>("Bridge"));
   RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:module bridge:bridge];
-  return wrapManagedObject([[RCTLegacyViewManagerInteropCoordinator alloc] initWithComponentData:componentData]);
+  return wrapManagedObject([[RCTLegacyViewManagerInteropCoordinator alloc] initWithComponentData:componentData
+                                                                                          bridge:bridge]);
 }
 
 LegacyViewManagerInteropComponentDescriptor::LegacyViewManagerInteropComponentDescriptor(
