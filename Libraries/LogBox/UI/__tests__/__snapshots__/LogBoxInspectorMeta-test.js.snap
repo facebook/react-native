@@ -54,12 +54,30 @@ exports[`LogBoxInspectorMeta should render meta information 1`] = `
       <Text
         style={
           Object {
-            "color": "rgba(255, 255, 255, 1)",
+            "color": "rgba(255, 255, 255, 0.5)",
             "flex": 0,
             "flexGrow": 0,
             "fontSize": 14,
             "includeFontPadding": false,
             "lineHeight": 20,
+            "paddingBottom": 3,
+            "paddingTop": 3,
+          }
+        }
+      >
+        Platform
+      </Text>
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 0.5)",
+            "flex": 0,
+            "flexGrow": 0,
+            "fontSize": 14,
+            "includeFontPadding": false,
+            "lineHeight": 20,
+            "paddingBottom": 3,
+            "paddingTop": 3,
           }
         }
       >
@@ -75,14 +93,42 @@ exports[`LogBoxInspectorMeta should render meta information 1`] = `
     >
       <Text
         style={
-          Object {
-            "color": "rgba(255, 255, 255, 1)",
-            "flex": 0,
-            "flexGrow": 0,
-            "fontSize": 14,
-            "includeFontPadding": false,
-            "lineHeight": 20,
-          }
+          Array [
+            Object {
+              "color": "rgba(255, 255, 255, 0.5)",
+              "flex": 0,
+              "flexGrow": 0,
+              "fontSize": 14,
+              "includeFontPadding": false,
+              "lineHeight": 20,
+              "paddingBottom": 3,
+              "paddingTop": 3,
+            },
+            Object {
+              "textAlign": "right",
+            },
+          ]
+        }
+      >
+        iOS
+      </Text>
+      <Text
+        style={
+          Array [
+            Object {
+              "color": "rgba(255, 255, 255, 0.5)",
+              "flex": 0,
+              "flexGrow": 0,
+              "fontSize": 14,
+              "includeFontPadding": false,
+              "lineHeight": 20,
+              "paddingBottom": 3,
+              "paddingTop": 3,
+            },
+            Object {
+              "textAlign": "right",
+            },
+          ]
         }
       >
         Unknown

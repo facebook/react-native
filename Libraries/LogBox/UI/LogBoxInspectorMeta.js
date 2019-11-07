@@ -14,6 +14,7 @@ import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import View from '../../Components/View/View';
+import Platform from '../../Utilities/Platform';
 import * as LogBoxStyle from './LogBoxStyle';
 
 type Props = $ReadOnly<{||}>;
@@ -26,11 +27,15 @@ function LogBoxInspectorMeta(props: Props): React.Node {
       </View>
       <View style={metaStyles.body}>
         <View style={metaStyles.bodyItem}>
+          <Text style={metaStyles.bodyText}>Platform</Text>
           <Text style={metaStyles.bodyText}>Engine</Text>
         </View>
         <View style={metaStyles.bodyItem}>
           {/* TODO: Determine engine correctly */}
-          <Text style={metaStyles.bodyText}>
+          <Text style={[metaStyles.bodyText, metaStyles.bodyTextRight]}>
+            {Platform.OS === 'android' ? 'Android' : 'iOS'}
+          </Text>
+          <Text style={[metaStyles.bodyText, metaStyles.bodyTextRight]}>
             {global.HermesInternal ? 'Hermes' : 'Unknown'}
           </Text>
         </View>
@@ -68,12 +73,17 @@ const metaStyles = StyleSheet.create({
     flex: 0,
   },
   bodyText: {
-    color: LogBoxStyle.getTextColor(1),
+    color: LogBoxStyle.getTextColor(0.5),
     fontSize: 14,
+    paddingTop: 3,
+    paddingBottom: 3,
     includeFontPadding: false,
     lineHeight: 20,
     flex: 0,
     flexGrow: 0,
+  },
+  bodyTextRight: {
+    textAlign: 'right',
   },
 });
 
