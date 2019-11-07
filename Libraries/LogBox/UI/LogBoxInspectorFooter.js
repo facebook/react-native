@@ -54,8 +54,8 @@ function LogBoxInspectorFooter(props: Props): React.Node {
 
   return (
     <View style={styles.root}>
-      <FooterButton text="Minimize" onPress={props.onMinimize} />
       <FooterButton text="Dismiss" onPress={props.onDismiss} />
+      <FooterButton text="Close" onPress={props.onMinimize} />
     </View>
   );
 }

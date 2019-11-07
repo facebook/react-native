@@ -256,11 +256,11 @@ exports[`LogBoxInspectorFooter should render two buttons for warning with no fat
 >
   <FooterButton
     onPress={[Function]}
-    text="Minimize"
+    text="Dismiss"
   />
   <FooterButton
     onPress={[Function]}
-    text="Dismiss"
+    text="Close"
   />
 </View>
 `;
