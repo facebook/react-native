@@ -23,8 +23,8 @@ const NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT = `
 
 'use strict';
 
-import type {TurboModule} from 'RCTExport';
-import TurboModuleRegistry from 'TurboModuleRegistry';
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   getString: (arg: string) => Array;
@@ -47,8 +47,8 @@ const NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM = `
 
 'use strict';
 
-import type {TurboModule} from 'RCTExport';
-import TurboModuleRegistry from 'TurboModuleRegistry';
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   getString: (arg : Array) => string;
@@ -71,8 +71,8 @@ const NATIVE_MODULES_WITH_READ_ONLY_OBJECT_NO_TYPE_FOR_CONTENT = `
 
 'use strict';
 
-import type {TurboModule} from 'RCTExport';
-import TurboModuleRegistry from 'TurboModuleRegistry';
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   getString: (arg : $ReadOnly<>) => string;
@@ -95,8 +95,8 @@ const NATIVE_MODULES_WITH_NOT_ONLY_METHODS = `
 
 'use strict';
 
-import type {TurboModule} from 'RCTExport';
-import TurboModuleRegistry from 'TurboModuleRegistry';
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +getBool: (arg: boolean) => boolean;
@@ -123,8 +123,8 @@ const NATIVE_MODULES_WITH_UNNAMED_PARAMS = `
 
 'use strict';
 
-import type {TurboModule} from 'RCTExport';
-import TurboModuleRegistry from 'TurboModuleRegistry';
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +getBool: (boolean) => boolean;
@@ -148,8 +148,8 @@ const NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE = `
 
 'use strict';
 
-import type {TurboModule} from 'RCTExport';
-import TurboModuleRegistry from 'TurboModuleRegistry';
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +getBool: (arg: boolean) => Promise;
@@ -173,8 +173,8 @@ const TWO_NATIVE_MODULES_EXPORTED_WITH_DEFAULT = `
 
 'use strict';
 
-import type {TurboModule} from 'RCTExport';
-import TurboModuleRegistry from 'TurboModuleRegistry';
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 
 export default TurboModuleRegistry.getEnforcing<Spec1>('SampleTurboModule1');
@@ -195,8 +195,8 @@ const TWO_NATIVE_EXTENDING_TURBO_MODULE = `
 
 'use strict';
 
-import type {TurboModule} from 'RCTExport';
-import TurboModuleRegistry from 'TurboModuleRegistry';
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +getSth: (a : ?number) => void

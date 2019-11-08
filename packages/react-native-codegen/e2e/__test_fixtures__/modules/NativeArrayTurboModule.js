@@ -10,7 +10,8 @@
 
 'use strict';
 
-import {TurboModuleRegistry, type TurboModule} from 'react-native';
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export type ArrayType = string;
 type AnotherArray = Array<ArrayType>;

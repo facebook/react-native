@@ -8,7 +8,8 @@
  * @flow
  */
 
-import {TurboModuleRegistry, type TurboModule} from 'react-native';
+import type {TurboModule} from '../TurboModule/RCTExport';
+import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +setGlobalOptions: (options: {|

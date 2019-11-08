@@ -11,7 +11,7 @@
 'use strict';
 
 const NativeModules = require('../BatchedBridge/NativeModules');
-import {type TurboModule} from 'react-native';
+import type {TurboModule} from './RCTExport';
 import invariant from 'invariant';
 
 const turboModuleProxy = global.__turboModuleProxy;

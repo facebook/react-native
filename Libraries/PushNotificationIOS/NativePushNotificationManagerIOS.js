@@ -4,13 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
  * @format
+ * @flow
  */
 
-'use strict';
-
-import {TurboModuleRegistry, type TurboModule} from 'react-native';
+import type {TurboModule} from '../TurboModule/RCTExport';
+import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 type Permissions = {|
   alert: boolean,

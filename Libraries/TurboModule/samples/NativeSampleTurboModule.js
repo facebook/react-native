@@ -10,7 +10,8 @@
 
 'use strict';
 
-import {TurboModuleRegistry, type TurboModule} from 'react-native';
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   // Exported methods.

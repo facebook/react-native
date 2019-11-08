@@ -10,7 +10,8 @@
 
 'use strict';
 
-import {TurboModuleRegistry, type TurboModule} from 'react-native';
+import type {TurboModule} from '../TurboModule/RCTExport';
+import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 type Header = [string, string];
 
