@@ -306,18 +306,16 @@ class PushNotificationIOS {
     badge: boolean,
     sound: boolean,
   }> {
-    let requestedPermissions = {};
+    let requestedPermissions = {
+      alert: true,
+      badge: true,
+      sound: true,
+    };
     if (permissions) {
       requestedPermissions = {
         alert: !!permissions.alert,
         badge: !!permissions.badge,
         sound: !!permissions.sound,
-      };
-    } else {
-      requestedPermissions = {
-        alert: true,
-        badge: true,
-        sound: true,
       };
     }
     invariant(

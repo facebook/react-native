@@ -2054,9 +2054,9 @@ namespace facebook {
 namespace JS {
   namespace NativePushNotificationManagerIOS {
     struct SpecRequestPermissionsPermission {
-      folly::Optional<bool> alert() const;
-      folly::Optional<bool> badge() const;
-      folly::Optional<bool> sound() const;
+      bool alert() const;
+      bool badge() const;
+      bool sound() const;
 
       SpecRequestPermissionsPermission(NSDictionary *const v) : _v(v) {}
     private:
@@ -3568,20 +3568,20 @@ inline JS::NativePlatformConstantsIOS::Constants::Builder::Builder(const Input i
 inline JS::NativePlatformConstantsIOS::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline folly::Optional<bool> JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission::alert() const
+inline bool JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission::alert() const
 {
   id const p = _v[@"alert"];
-  return RCTBridgingToOptionalBool(p);
+  return RCTBridgingToBool(p);
 }
-inline folly::Optional<bool> JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission::badge() const
+inline bool JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission::badge() const
 {
   id const p = _v[@"badge"];
-  return RCTBridgingToOptionalBool(p);
+  return RCTBridgingToBool(p);
 }
-inline folly::Optional<bool> JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission::sound() const
+inline bool JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission::sound() const
 {
   id const p = _v[@"sound"];
-  return RCTBridgingToOptionalBool(p);
+  return RCTBridgingToBool(p);
 }
 inline bool JS::NativePushNotificationManagerIOS::Permissions::alert() const
 {
