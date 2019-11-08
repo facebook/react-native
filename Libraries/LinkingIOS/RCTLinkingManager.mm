@@ -7,10 +7,13 @@
 
 #import <React/RCTLinkingManager.h>
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTUtils.h>
 #import <React/RCTLog.h>
+
+#import "RCTLinkingPlugins.h"
 
 static NSString *const kOpenURLNotification = @"RCTOpenURLNotification";
 
@@ -21,6 +24,9 @@ static void postNotificationWithURL(NSURL *URL, id sender)
                                                       object:sender
                                                     userInfo:payload];
 }
+
+@interface RCTLinkingManager() <NativeLinkingSpec>
+@end
 
 @implementation RCTLinkingManager
 
@@ -208,4 +214,21 @@ RCT_EXPORT_METHOD(openSettings:(RCTPromiseResolveBlock)resolve
   }
 }
 
+RCT_EXPORT_METHOD(sendIntent:(NSString *)action
+                  extras:(NSArray *_Nullable)extras
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeLinkingSpecJSI>(self, jsInvoker);
+}
+
 @end
+
+Class RCTLinkingManagerCls(void) {
+  return RCTLinkingManager.class;
+}
