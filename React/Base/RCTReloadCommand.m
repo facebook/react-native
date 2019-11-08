@@ -11,40 +11,46 @@
 #import "RCTKeyCommands.h"
 #import "RCTUtils.h"
 
-/** main queue only */
 static NSHashTable<id<RCTReloadListener>> *listeners;
+static NSLock *listenersLock;
 
 NSString *const RCTTriggerReloadCommandNotification = @"RCTTriggerReloadCommandNotification";
 NSString *const RCTTriggerReloadCommandReasonKey = @"reason";
 
 void RCTRegisterReloadCommandListener(id<RCTReloadListener> listener)
 {
+  if (!listenersLock) {
+    listenersLock = [NSLock new];
+  }
+  [listenersLock lock];
+  if (!listeners) {
+    listeners = [NSHashTable weakObjectsHashTable];
+  }
+#if RCT_DEV
   RCTAssertMainQueue(); // because registerKeyCommandWithInput: must be called on the main thread
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    listeners = [NSHashTable weakObjectsHashTable];
     [[RCTKeyCommands sharedInstance] registerKeyCommandWithInput:@"r"
                                                    modifierFlags:UIKeyModifierCommand
                                                           action:
      ^(__unused UIKeyCommand *command) {
-       RCTTriggerReloadCommandListeners(@"Command + R");
-     }];
+      RCTTriggerReloadCommandListeners(@"Command + R");
+    }];
   });
+#endif
   [listeners addObject:listener];
+  [listenersLock unlock];
 }
 
 void RCTTriggerReloadCommandListeners(NSString *reason)
 {
-  RCTAssertMainQueue();
-
+  [listenersLock lock];
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTTriggerReloadCommandNotification
                                                       object:nil
                                                     userInfo:@{RCTTriggerReloadCommandReasonKey: RCTNullIfNil(reason)} ];
 
-  // Copy to protect against mutation-during-enumeration.
-  // If listeners hasn't been initialized yet we get nil, which works just fine.
-  NSArray<id<RCTReloadListener>> *copiedListeners = [listeners allObjects];
-  for (id<RCTReloadListener> l in copiedListeners) {
+  for (id<RCTReloadListener> l in [listeners allObjects]) {
     [l didReceiveReloadCommand];
   }
+  [listenersLock unlock];
 }
