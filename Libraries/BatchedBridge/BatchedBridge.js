@@ -23,6 +23,7 @@ const BatchedBridge: MessageQueue = new MessageQueue();
 Object.defineProperty(global, '__fbBatchedBridge', {
   configurable: true,
   value: BatchedBridge,
+  test: test,
 });
 
 module.exports = BatchedBridge;
