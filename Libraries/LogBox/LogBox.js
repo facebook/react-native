@@ -25,6 +25,7 @@ type Props = $ReadOnly<{||}>;
 type State = {|
   logs: LogBoxLogs,
   isDisabled: boolean,
+  hasError: boolean,
 |};
 
 let LogBoxComponent;
@@ -47,6 +48,14 @@ if (__DEV__) {
   };
 
   LogBoxComponent = class LogBox extends React.Component<Props, State> {
+    static getDerivedStateFromError() {
+      return {hasError: true};
+    }
+
+    componentDidCatch(err, errorInfo) {
+      LogBoxData.reportLogBoxError(err, errorInfo.componentStack);
+    }
+
     // TODO: deprecated, replace with ignoreLogs
     static ignoreWarnings(patterns: $ReadOnlyArray<IgnorePattern>): void {
       LogBox.ignoreLogs(patterns);
@@ -72,6 +81,7 @@ if (__DEV__) {
       if ((console: any).disableLogBox === true) {
         LogBoxData.setDisabled(true);
       }
+
       (Object.defineProperty: any)(console, 'disableLogBox', {
         configurable: true,
         get: () => LogBoxData.isDisabled(),
@@ -98,10 +108,16 @@ if (__DEV__) {
     state = {
       logs: new Set(),
       isDisabled: false,
+      hasError: false,
     };
 
     render(): React.Node {
-      // TODO: Ignore logs that fire when rendering `LogBox` itself.
+      if (this.state.hasError) {
+        // This happens when the component failed to render, in which case we delegate to the native redbox.
+        // We can't show anyback fallback UI here, because the error may be with <View> or <Text>.
+        return null;
+      }
+
       return this.state.logs == null ? null : (
         <LogBoxContainer
           onDismiss={this._handleDismiss}
@@ -131,20 +147,27 @@ if (__DEV__) {
   };
 
   const registerWarning = (...args): void => {
-    // This is carried over from the old YellowBox, but it is not clear why.
-    if (typeof args[0] !== 'string' || !args[0].startsWith('(ADVICE)')) {
-      const {category, message, componentStack} = parseLogBoxLog(args);
+    try {
+      // This is carried over from the old YellowBox, but it is not clear why.
+      if (typeof args[0] !== 'string' || !args[0].startsWith('(ADVICE)')) {
+        const {category, message, componentStack} = parseLogBoxLog(args);
 
-      if (!LogBoxData.isMessageIgnored(message.content)) {
-        warn.call(console, ...args);
+        if (!LogBoxData.isMessageIgnored(message.content)) {
+          // Be sure to pass LogBox warnings through.
+          warn.call(console, ...args);
 
-        LogBoxData.addLog({
-          level: 'warn',
-          category,
-          message,
-          componentStack,
-        });
+          if (!LogBoxData.isLogBoxErrorMessage(message.content)) {
+            LogBoxData.addLog({
+              level: 'warn',
+              category,
+              message,
+              componentStack,
+            });
+          }
+        }
       }
+    } catch (err) {
+      LogBoxData.reportLogBoxError(err);
     }
   };
 } else {

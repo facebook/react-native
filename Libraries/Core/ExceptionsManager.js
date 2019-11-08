@@ -82,7 +82,8 @@ function reportException(e: ExtendedError, isFatal: boolean) {
     message =
       e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
 
-    const isHandledByLogBox = global.__reactExperimentalLogBox;
+    const isHandledByLogBox =
+      e.forceRedbox !== true && global.__reactExperimentalLogBox;
 
     const data = preprocessException({
       message,

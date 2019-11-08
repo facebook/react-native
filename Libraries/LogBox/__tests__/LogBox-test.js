@@ -65,6 +65,24 @@ describe('LogBox', () => {
     expect(LogBoxData.addLog).toBeCalled();
   });
 
+  it('reports a LogBox exception if we fail to add warnings', () => {
+    jest.mock('../Data/LogBoxData');
+    const mockError = new Error('Simulated error');
+
+    // Picking a random implemention detail to simulate throwing.
+    (LogBoxData.isMessageIgnored: any).mockImplementation(() => {
+      throw mockError;
+    });
+
+    LogBox.install();
+
+    expect(LogBoxData.addLog).not.toBeCalled();
+    expect(LogBoxData.reportLogBoxError).not.toBeCalled();
+    console.warn('...');
+    expect(LogBoxData.addLog).not.toBeCalled();
+    expect(LogBoxData.reportLogBoxError).toBeCalledWith(mockError);
+  });
+
   it('registers errors beginning with "Warning: " as warnings', () => {
     jest.mock('../Data/LogBoxData');
 

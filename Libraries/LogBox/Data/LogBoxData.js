@@ -16,6 +16,7 @@ import type {LogLevel} from './LogBoxLog';
 import type {Message, Category, ComponentStack} from './parseLogBoxLog';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 import type {ExceptionData} from '../../Core/NativeExceptionsManager';
+import type {ExtendedError} from '../../Core/Devtools/parseErrorStack';
 
 export type LogBoxLogs = Set<LogBoxLog>;
 export type LogData = $ReadOnly<{|
@@ -40,6 +41,27 @@ const ignorePatterns: Set<IgnorePattern> = new Set();
 let logs: LogBoxLogs = new Set();
 let updateTimeout = null;
 let _isDisabled = false;
+
+const LOGBOX_ERROR_MESSAGE =
+  'An error was thrown when attempting to render log messages via LogBox.';
+
+export function reportLogBoxError(
+  error: ExtendedError,
+  componentStack?: string,
+): void {
+  const ExceptionsManager = require('../../Core/ExceptionsManager');
+
+  error.forceRedbox = true;
+  error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
+  if (componentStack != null) {
+    error.componentStack = componentStack;
+  }
+  ExceptionsManager.handleException(error, /* isFatal */ true);
+}
+
+export function isLogBoxErrorMessage(message: string): boolean {
+  return typeof message === 'string' && message.includes(LOGBOX_ERROR_MESSAGE);
+}
 
 export function isMessageIgnored(message: string): boolean {
   for (const pattern of ignorePatterns) {
@@ -70,28 +92,32 @@ export function addLog(log: LogData): void {
   // Parsing logs are expensive so we schedule this
   // otherwise spammy logs would pause rendering.
   setImmediate(() => {
-    // TODO: Use Error.captureStackTrace on Hermes
-    const stack = parseErrorStack(errorForStackTrace);
+    try {
+      // TODO: Use Error.captureStackTrace on Hermes
+      const stack = parseErrorStack(errorForStackTrace);
 
-    // If the next log has the same category as the previous one
-    // then we want to roll it up into the last log in the list
-    // by incrementing the count (simar to how Chrome does it).
-    const lastLog = Array.from(logs).pop();
-    if (lastLog && lastLog.category === log.category) {
-      lastLog.incrementCount();
-    } else {
-      logs.add(
-        new LogBoxLog(
-          log.level,
-          log.message,
-          stack,
-          log.category,
-          log.componentStack,
-        ),
-      );
+      // If the next log has the same category as the previous one
+      // then we want to roll it up into the last log in the list
+      // by incrementing the count (simar to how Chrome does it).
+      const lastLog = Array.from(logs).pop();
+      if (lastLog && lastLog.category === log.category) {
+        lastLog.incrementCount();
+      } else {
+        logs.add(
+          new LogBoxLog(
+            log.level,
+            log.message,
+            stack,
+            log.category,
+            log.componentStack,
+          ),
+        );
+      }
+
+      handleUpdate();
+    } catch (error) {
+      reportLogBoxError(error);
     }
-
-    handleUpdate();
   });
 }
 
@@ -114,44 +140,48 @@ export function addException(error: ExceptionData): void {
   // Parsing logs are expensive so we schedule this
   // otherwise spammy logs would pause rendering.
   setImmediate(() => {
-    const {
-      category,
-      message,
-      codeFrame,
-      componentStack,
-      stack,
-      level,
-    } = parseLogBoxException(error);
-
-    // We don't want to store these logs because they trigger a
-    // state update whenever we add them to the store, which is
-    // expensive to noisy logs. If we later want to display these
-    // we will store them in a different state object.
-    if (isMessageIgnored(message.content)) {
-      return;
-    }
-
-    const lastLog = Array.from(logs).pop();
-    if (lastLog && lastLog.category === category) {
-      lastLog.incrementCount();
-    } else {
-      const newLog = new LogBoxLog(
-        level,
-        message,
-        stack,
+    try {
+      const {
         category,
-        componentStack != null ? componentStack : [],
+        message,
         codeFrame,
-      );
+        componentStack,
+        stack,
+        level,
+      } = parseLogBoxException(error);
 
-      // Start symbolicating now so it's warm when it renders.
-      if (level === 'fatal') {
-        symbolicateLogLazy(newLog);
+      // We don't want to store these logs because they trigger a
+      // state update whenever we add them to the store, which is
+      // expensive to noisy logs. If we later want to display these
+      // we will store them in a different state object.
+      if (isMessageIgnored(message.content)) {
+        return;
       }
-      logs.add(newLog);
-    }
 
-    handleUpdate();
+      const lastLog = Array.from(logs).pop();
+      if (lastLog && lastLog.category === category) {
+        lastLog.incrementCount();
+      } else {
+        const newLog = new LogBoxLog(
+          level,
+          message,
+          stack,
+          category,
+          componentStack != null ? componentStack : [],
+          codeFrame,
+        );
+
+        // Start symbolicating now so it's warm when it renders.
+        if (level === 'fatal') {
+          symbolicateLogLazy(newLog);
+        }
+        logs.add(newLog);
+      }
+
+      handleUpdate();
+    } catch (loggingError) {
+      reportLogBoxError(loggingError);
+    }
   });
 }
 

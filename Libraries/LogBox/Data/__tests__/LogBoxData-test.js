@@ -6,7 +6,7 @@
  *
  * @emails oncall+react_native
  * @format
- * @flow strict-local
+ * @flow
  */
 
 'use strict';
@@ -14,7 +14,10 @@ jest.mock('../../../Core/Devtools/parseErrorStack', () => {
   return {__esModule: true, default: jest.fn(() => [])};
 });
 
+jest.mock('../../../Core/ExceptionsManager');
+
 const LogBoxData = require('../LogBoxData');
+const ExceptionsManager: any = require('../../../Core/ExceptionsManager');
 
 const registry = () => {
   const observer = jest.fn();
@@ -512,5 +515,40 @@ describe('LogBoxData', () => {
     LogBoxData.setDisabled(false);
     jest.runAllImmediates();
     expect(observer.mock.calls.length).toBe(3);
+  });
+
+  it('reportLogBoxError creates a native redbox with a componentStack', () => {
+    LogBoxData.reportLogBoxError(
+      new Error('Simulated Error'),
+      '    in Component (file.js:1)',
+    );
+
+    const receivedError = ExceptionsManager.handleException.mock.calls[0][0];
+    expect(receivedError.componentStack).toBe('    in Component (file.js:1)');
+    expect(receivedError.forceRedbox).toBe(true);
+    expect(receivedError.message).toBe(
+      'An error was thrown when attempting to render log messages via LogBox.\n\nSimulated Error',
+    );
+  });
+
+  it('reportLogBoxError creates a native redbox without a componentStack', () => {
+    LogBoxData.reportLogBoxError(new Error('Simulated Error'));
+
+    const receivedError = ExceptionsManager.handleException.mock.calls[0][0];
+    expect(receivedError.componentStack).toBeUndefined();
+    expect(receivedError.forceRedbox).toBe(true);
+    expect(receivedError.message).toBe(
+      'An error was thrown when attempting to render log messages via LogBox.\n\nSimulated Error',
+    );
+  });
+
+  it('reportLogBoxError creates an error message that is also ignored', () => {
+    LogBoxData.reportLogBoxError(new Error('Simulated Error'));
+
+    const receivedErrorMessage =
+      ExceptionsManager.handleException.mock.calls[0][0].message;
+
+    expect(LogBoxData.isLogBoxErrorMessage(receivedErrorMessage)).toBe(true);
+    expect(LogBoxData.isLogBoxErrorMessage('Some other error')).toBe(false);
   });
 });
