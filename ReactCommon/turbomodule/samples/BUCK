@@ -41,6 +41,7 @@ rn_xplat_cxx_library(
     ios_deps = [
         "fbsource//xplat/FBBaseLite:FBBaseLite",
         "fbsource//xplat/js:RCTLinking",
+        "fbsource//xplat/js:RCTPushNotification",
         "fbsource//xplat/js/react-native-github:RCTCxxBridge",
         "fbsource//xplat/js/react-native-github:RCTCxxModule",
         "fbsource//xplat/js/react-native-github:ReactInternal",

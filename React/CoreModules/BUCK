@@ -114,6 +114,7 @@ rn_apple_library(
     visibility = ["PUBLIC"],
     exported_deps = [
         "fbsource//xplat/js:RCTLinkingApple",
+        "fbsource//xplat/js:RCTPushNotificationApple",
         "fbsource//xplat/js/react-native-github:ReactInternalApple",
         "fbsource//xplat/js/react-native-github/Libraries/FBReactNativeSpec:FBReactNativeSpecApple",
     ],
