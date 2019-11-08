@@ -13,14 +13,17 @@
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
-
 #import <React/RCTSRWebSocket.h>
+
+#import <ReactCommon/RCTTurboModule.h>
+
+#import "CoreModulesPlugins.h"
 
 #if RCT_DEV // Debug executors are only supported in dev mode
 
 typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary<NSString *, id> *reply);
 
-@interface RCTWebSocketExecutor () <RCTSRWebSocketDelegate>
+@interface RCTWebSocketExecutor () <RCTSRWebSocketDelegate, RCTTurboModule>
 
 @end
 
@@ -271,3 +274,11 @@ RCT_EXPORT_MODULE()
 @end
 
 #endif
+
+Class RCTWebSocketExecutorCls(void) {
+#if RCT_DEV
+  return RCTWebSocketExecutor.class;
+#else
+  return nil;
+#endif
+}

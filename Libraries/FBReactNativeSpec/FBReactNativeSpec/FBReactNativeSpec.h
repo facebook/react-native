@@ -2699,24 +2699,8 @@ namespace facebook {
 
 namespace JS {
   namespace NativeWebSocketModule {
-    struct SpecConnectOptionsHeaders {
-      NSString *origin() const;
-
-      SpecConnectOptionsHeaders(NSDictionary *const v) : _v(v) {}
-    private:
-      NSDictionary *_v;
-    };
-  }
-}
-
-@interface RCTCxxConvert (NativeWebSocketModule_SpecConnectOptionsHeaders)
-+ (RCTManagedPointer *)JS_NativeWebSocketModule_SpecConnectOptionsHeaders:(id)json;
-@end
-
-namespace JS {
-  namespace NativeWebSocketModule {
     struct SpecConnectOptions {
-      folly::Optional<JS::NativeWebSocketModule::SpecConnectOptionsHeaders> headers() const;
+      id<NSObject> _Nullable headers() const;
 
       SpecConnectOptions(NSDictionary *const v) : _v(v) {}
     private:
@@ -2735,9 +2719,9 @@ namespace JS {
         options:(JS::NativeWebSocketModule::SpecConnectOptions &)options
        socketID:(double)socketID;
 - (void)send:(NSString *)message
-    socketID:(double)socketID;
+ forSocketID:(double)forSocketID;
 - (void)sendBinary:(NSString *)base64String
-          socketID:(double)socketID;
+       forSocketID:(double)forSocketID;
 - (void)ping:(double)socketID;
 - (void)close:(double)code
        reason:(NSString *)reason
@@ -3738,13 +3722,8 @@ inline JS::NativeUIManager::Constants::Builder::Builder(const Input i) : _factor
 inline JS::NativeUIManager::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline NSString *JS::NativeWebSocketModule::SpecConnectOptionsHeaders::origin() const
-{
-  id const p = _v[@"origin"];
-  return RCTBridgingToString(p);
-}
-inline folly::Optional<JS::NativeWebSocketModule::SpecConnectOptionsHeaders> JS::NativeWebSocketModule::SpecConnectOptions::headers() const
+inline id<NSObject> _Nullable JS::NativeWebSocketModule::SpecConnectOptions::headers() const
 {
   id const p = _v[@"headers"];
-  return (p == nil ? folly::none : folly::make_optional(JS::NativeWebSocketModule::SpecConnectOptionsHeaders(p)));
+  return p;
 }

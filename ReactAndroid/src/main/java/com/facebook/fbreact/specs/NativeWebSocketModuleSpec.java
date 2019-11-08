@@ -26,7 +26,7 @@ public abstract class NativeWebSocketModuleSpec extends ReactContextBaseJavaModu
   }
 
   @ReactMethod
-  public abstract void sendBinary(String base64String, double socketID);
+  public abstract void sendBinary(String base64String, double forSocketID);
 
   @ReactMethod
   public abstract void removeListeners(double count);
@@ -38,7 +38,7 @@ public abstract class NativeWebSocketModuleSpec extends ReactContextBaseJavaModu
   public abstract void close(double code, String reason, double socketID);
 
   @ReactMethod
-  public abstract void send(String message, double socketID);
+  public abstract void send(String message, double forSocketID);
 
   @ReactMethod
   public abstract void connect(String url, ReadableArray protocols, ReadableMap options,

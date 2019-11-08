@@ -9,10 +9,12 @@
 
 #import <objc/runtime.h>
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
-
 #import <React/RCTSRWebSocket.h>
+
+#import "CoreModulesPlugins.h"
 
 @implementation RCTSRWebSocket (React)
 
@@ -28,7 +30,7 @@
 
 @end
 
-@interface RCTWebSocketModule () <RCTSRWebSocketDelegate>
+@interface RCTWebSocketModule () <RCTSRWebSocketDelegate, NativeWebSocketModuleSpec>
 
 @end
 
@@ -62,7 +64,7 @@ RCT_EXPORT_MODULE()
   }
 }
 
-RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols options:(NSDictionary *)options socketID:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols options:(JS::NativeWebSocketModule::SpecConnectOptions &)options socketID:(double)socketID)
 {
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
 
@@ -79,45 +81,48 @@ RCT_EXPORT_METHOD(connect:(NSURL *)URL protocols:(NSArray *)protocols options:(N
   request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
 
   // Load supplied headers
-  [options[@"headers"] enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
-    [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
-  }];
+  if ([options.headers() isKindOfClass:NSDictionary.class]) {
+    NSDictionary *headers = (NSDictionary *)options.headers();
+    [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id value, BOOL *stop) {
+      [request addValue:[RCTConvert NSString:value] forHTTPHeaderField:key];
+    }];
+  }
 
   RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURLRequest:request protocols:protocols];
   [webSocket setDelegateDispatchQueue:[self methodQueue]];
   webSocket.delegate = self;
-  webSocket.reactTag = socketID;
+  webSocket.reactTag = @(socketID);
   if (!_sockets) {
     _sockets = [NSMutableDictionary new];
   }
-  _sockets[socketID] = webSocket;
+  _sockets[@(socketID)] = webSocket;
   [webSocket open];
 }
 
-RCT_EXPORT_METHOD(send:(NSString *)message forSocketID:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(send:(NSString *)message forSocketID:(double)socketID)
 {
-  [_sockets[socketID] send:message];
+  [_sockets[@(socketID)] send:message];
 }
 
-RCT_EXPORT_METHOD(sendBinary:(NSString *)base64String forSocketID:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(sendBinary:(NSString *)base64String forSocketID:(double)socketID)
 {
-  [self sendData:[[NSData alloc] initWithBase64EncodedString:base64String options:0] forSocketID:socketID];
+  [self sendData:[[NSData alloc] initWithBase64EncodedString:base64String options:0] forSocketID:@(socketID)];
 }
 
-- (void)sendData:(NSData *)data forSocketID:(nonnull NSNumber *)socketID
+- (void)sendData:(NSData *)data forSocketID:(NSNumber * __nonnull)socketID
 {
   [_sockets[socketID] send:data];
 }
 
-RCT_EXPORT_METHOD(ping:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(ping:(double)socketID)
 {
-  [_sockets[socketID] sendPing:NULL];
+  [_sockets[@(socketID)] sendPing:NULL];
 }
 
-RCT_EXPORT_METHOD(close:(NSInteger)code reason:(NSString *)reason socketID:(nonnull NSNumber *)socketID)
+RCT_EXPORT_METHOD(close:(double)code reason:(NSString *)reason socketID:(double)socketID)
 {
-  [_sockets[socketID] closeWithCode:code reason:reason];
-  [_sockets removeObjectForKey:socketID];
+  [_sockets[@(socketID)] closeWithCode:code reason:reason];
+  [_sockets removeObjectForKey:@(socketID)];
 }
 
 - (void)setContentHandler:(id<RCTWebSocketContentHandler>)handler forSocketID:(NSString *)socketID
@@ -189,6 +194,11 @@ RCT_EXPORT_METHOD(close:(NSInteger)code reason:(NSString *)reason socketID:(nonn
   }];
 }
 
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  return std::make_shared<facebook::react::NativeWebSocketModuleSpecJSI>(self, jsInvoker);
+}
+
 @end
 
 @implementation RCTBridge (RCTWebSocketModule)
@@ -199,3 +209,7 @@ RCT_EXPORT_METHOD(close:(NSInteger)code reason:(NSString *)reason socketID:(nonn
 }
 
 @end
+
+Class RCTWebSocketModuleCls(void) {
+  return RCTWebSocketModule.class;
+}

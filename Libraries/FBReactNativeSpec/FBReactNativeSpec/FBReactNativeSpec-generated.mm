@@ -2613,12 +2613,6 @@ namespace facebook {
 
   } // namespace react
 } // namespace facebook
-@implementation RCTCxxConvert (NativeWebSocketModule_SpecConnectOptionsHeaders)
-+ (RCTManagedPointer *)JS_NativeWebSocketModule_SpecConnectOptionsHeaders:(id)json
-{
-  return facebook::react::managedPointer<JS::NativeWebSocketModule::SpecConnectOptionsHeaders>(json);
-}
-@end
 @implementation RCTCxxConvert (NativeWebSocketModule_SpecConnectOptions)
 + (RCTManagedPointer *)JS_NativeWebSocketModule_SpecConnectOptions:(id)json
 {
@@ -2634,11 +2628,11 @@ namespace facebook {
     }
 
     static facebook::jsi::Value __hostFunction_NativeWebSocketModuleSpecJSI_send(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "send", @selector(send:socketID:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "send", @selector(send:forSocketID:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeWebSocketModuleSpecJSI_sendBinary(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "sendBinary", @selector(sendBinary:socketID:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "sendBinary", @selector(sendBinary:forSocketID:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeWebSocketModuleSpecJSI_ping(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {

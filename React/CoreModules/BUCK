@@ -99,6 +99,12 @@ rn_apple_library(
         ) + react_module_plugin_providers(
             name = "TVNavigationEventEmitter",
             native_class_func = "RCTTVNavigationEventEmitterCls",
+        ) + react_module_plugin_providers(
+            name = "WebSocketExecutor",
+            native_class_func = "RCTWebSocketExecutorCls",
+        ) + react_module_plugin_providers(
+            name = "WebSocketModule",
+            native_class_func = "RCTWebSocketModuleCls",
         ),
     plugins_header = "FBCoreModulesPlugins.h",
     preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags() + rn_extra_build_flags() + [

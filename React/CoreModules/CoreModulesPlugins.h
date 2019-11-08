@@ -49,6 +49,8 @@ Class RCTDevMenuCls(void) __attribute__((used));
 Class RCTDevSettingsCls(void) __attribute__((used));
 Class RCTRedBoxCls(void) __attribute__((used));
 Class RCTTVNavigationEventEmitterCls(void) __attribute__((used));
+Class RCTWebSocketExecutorCls(void) __attribute__((used));
+Class RCTWebSocketModuleCls(void) __attribute__((used));
 
 #ifdef __cplusplus
 }
