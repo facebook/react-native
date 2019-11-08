@@ -116,7 +116,7 @@ function reportException(e: ExtendedError, isFatal: boolean) {
       }
       const symbolicateStackTrace = require('./Devtools/symbolicateStackTrace');
       symbolicateStackTrace(stack)
-        .then(prettyStack => {
+        .then(({stack: prettyStack}) => {
           if (prettyStack) {
             NativeExceptionsManager.updateExceptionMessage(
               data.message,

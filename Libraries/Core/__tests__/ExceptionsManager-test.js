@@ -39,11 +39,13 @@ describe('ExceptionsManager', () => {
       };
     });
     // Make symbolication a no-op.
-    jest.mock('../Devtools/symbolicateStackTrace', () => {
-      return async function symbolicateStackTrace(stack) {
-        return stack;
-      };
-    });
+    jest.mock(
+      '../Devtools/symbolicateStackTrace',
+      () =>
+        async function symbolicateStackTrace(stack) {
+          return {stack};
+        },
+    );
     jest.spyOn(console, 'error').mockImplementation(() => {});
     ReactFiberErrorDialog = require('../ReactFiberErrorDialog');
     NativeExceptionsManager = require('../NativeExceptionsManager').default;

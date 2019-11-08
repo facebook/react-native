@@ -12,6 +12,7 @@
 'use strict';
 
 import type {StackFrame} from '../../../Core/NativeExceptionsManager';
+import type {SymbolicatedStackTrace} from '../../../Core/Devtools/symbolicateStackTrace';
 
 jest.mock('../LogBoxSymbolication', () => {
   return {__esModule: true, symbolicate: jest.fn(), deleteStack: jest.fn()};
@@ -35,7 +36,7 @@ function getLogBoxLog() {
 function getLogBoxSymbolication(): {|
   symbolicate: JestMockFn<
     $ReadOnlyArray<Array<StackFrame>>,
-    Promise<Array<StackFrame>>,
+    Promise<SymbolicatedStackTrace>,
   >,
 |} {
   return (require('../LogBoxSymbolication'): any);
@@ -53,9 +54,10 @@ describe('LogBoxLog', () => {
   beforeEach(() => {
     jest.resetModules();
 
-    getLogBoxSymbolication().symbolicate.mockImplementation(async stack =>
-      createStack(stack.map(frame => `S(${frame.methodName})`)),
-    );
+    getLogBoxSymbolication().symbolicate.mockImplementation(async stack => ({
+      stack: createStack(stack.map(frame => `S(${frame.methodName})`)),
+      codeFrame: null,
+    }));
   });
 
   it('creates a LogBoxLog object', () => {

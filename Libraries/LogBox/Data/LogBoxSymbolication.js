@@ -13,15 +13,19 @@
 import symbolicateStackTrace from '../../Core/Devtools/symbolicateStackTrace';
 
 import type {StackFrame} from '../../Core/NativeExceptionsManager';
+import type {SymbolicatedStackTrace} from '../../Core/Devtools/symbolicateStackTrace';
 
 export type Stack = Array<StackFrame>;
 
-const cache: Map<Stack, Promise<Stack>> = new Map();
+const cache: Map<Stack, Promise<SymbolicatedStackTrace>> = new Map();
 
 /**
  * Sanitize because sometimes, `symbolicateStackTrace` gives us invalid values.
  */
-const sanitize = (maybeStack: mixed): Stack => {
+const sanitize = ({
+  stack: maybeStack,
+  codeFrame,
+}: SymbolicatedStackTrace): SymbolicatedStackTrace => {
   if (!Array.isArray(maybeStack)) {
     throw new Error('Expected stack to be an array.');
   }
@@ -58,14 +62,14 @@ const sanitize = (maybeStack: mixed): Stack => {
       collapse,
     });
   }
-  return stack;
+  return {stack, codeFrame};
 };
 
 export function deleteStack(stack: Stack): void {
   cache.delete(stack);
 }
 
-export function symbolicate(stack: Stack): Promise<Stack> {
+export function symbolicate(stack: Stack): Promise<SymbolicatedStackTrace> {
   let promise = cache.get(stack);
   if (promise == null) {
     promise = symbolicateStackTrace(stack).then(sanitize);

@@ -13,6 +13,7 @@
 const symbolicateStackTrace = require('../../Core/Devtools/symbolicateStackTrace');
 
 import type {StackFrame} from '../../Core/NativeExceptionsManager';
+import type {SymbolicatedStackTrace} from '../../Core/Devtools/symbolicateStackTrace';
 
 type CacheKey = string;
 
@@ -45,7 +46,8 @@ const getCacheKey = (stack: Stack): CacheKey => {
 /**
  * Sanitize because sometimes, `symbolicateStackTrace` gives us invalid values.
  */
-const sanitize = (maybeStack: mixed): Stack => {
+const sanitize = (data: SymbolicatedStackTrace): Stack => {
+  const maybeStack = data?.stack;
   if (!Array.isArray(maybeStack)) {
     throw new Error('Expected stack to be an array.');
   }

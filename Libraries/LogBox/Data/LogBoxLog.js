@@ -82,13 +82,33 @@ class LogBoxLog {
     let aborted = false;
 
     if (this.symbolicated.status !== 'COMPLETE') {
-      const updateStatus = (error: ?Error, stack: ?Stack): void => {
+      const updateStatus = (
+        error: ?Error,
+        stack: ?Stack,
+        codeFrame: ?CodeFrame,
+      ): void => {
         if (error != null) {
-          this.symbolicated = {error, stack: null, status: 'FAILED'};
+          this.symbolicated = {
+            error,
+            stack: null,
+            status: 'FAILED',
+          };
         } else if (stack != null) {
-          this.symbolicated = {error: null, stack, status: 'COMPLETE'};
+          if (codeFrame) {
+            this.codeFrame = codeFrame;
+          }
+
+          this.symbolicated = {
+            error: null,
+            stack,
+            status: 'COMPLETE',
+          };
         } else {
-          this.symbolicated = {error: null, stack: null, status: 'PENDING'};
+          this.symbolicated = {
+            error: null,
+            stack: null,
+            status: 'PENDING',
+          };
         }
         if (!aborted) {
           if (callback != null) {
@@ -99,8 +119,8 @@ class LogBoxLog {
 
       updateStatus(null, null);
       LogBoxSymbolication.symbolicate(this.stack).then(
-        stack => {
-          updateStatus(null, stack);
+        data => {
+          updateStatus(null, data?.stack, data?.codeFrame);
         },
         error => {
           updateStatus(error, null);
