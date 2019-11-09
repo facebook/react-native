@@ -80,9 +80,6 @@ Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
         return textLayoutManager_->measure(
             attributedString, paragraphAttributes, layoutConstraints);
       });
-
-  return textLayoutManager_->measure(
-      attributedString, paragraphAttributes, layoutConstraints);
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
