@@ -680,12 +680,16 @@ const TouchableMixin = {
    * @private
    */
   _remeasureMetricsOnActivation: function() {
-    const tag = this.state.touchable.responderID;
-    if (tag == null) {
+    const responderID = this.state.touchable.responderID;
+    if (responderID == null) {
       return;
     }
 
-    UIManager.measure(tag, this._handleQueryLayout);
+    if (typeof responderID === 'number') {
+      UIManager.measure(responderID, this._handleQueryLayout);
+    } else {
+      responderID.measure(this._handleQueryLayout);
+    }
   },
 
   _handleQueryLayout: function(
@@ -752,8 +756,10 @@ const TouchableMixin = {
           '` or state `' +
           curState +
           '` for Touchable responder `' +
-          responderID +
-          '`',
+          typeof this.state.touchable.responderID ===
+        'number'
+          ? this.state.touchable.responderID
+          : 'host component' + '`',
       );
     }
     if (nextState === States.ERROR) {
@@ -763,8 +769,10 @@ const TouchableMixin = {
           '` to `' +
           signal +
           '` for responder `' +
-          responderID +
-          '`',
+          typeof this.state.touchable.responderID ===
+        'number'
+          ? this.state.touchable.responderID
+          : '<<host component>>' + '`',
       );
     }
     if (curState !== nextState) {
