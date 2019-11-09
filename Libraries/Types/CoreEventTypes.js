@@ -29,7 +29,7 @@ export type SyntheticEvent<T> = $ReadOnly<{|
   isTrusted: ?boolean,
   nativeEvent: T,
   persist: () => void,
-  target: ?number,
+  target: ?number | React.ElementRef<HostComponent<mixed>>,
   timeStamp: number,
   type: ?string,
 |}>;

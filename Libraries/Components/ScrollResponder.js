@@ -188,7 +188,7 @@ const ScrollResponderMixin = {
     if (
       this.props.keyboardShouldPersistTaps === 'handled' &&
       currentlyFocusedTextInput != null &&
-      e.target !== currentlyFocusedTextInput
+      ReactNative.findNodeHandle(e.target) !== currentlyFocusedTextInput
     ) {
       return true;
     }
@@ -228,11 +228,13 @@ const ScrollResponderMixin = {
     const {keyboardShouldPersistTaps} = this.props;
     const keyboardNeverPersistTaps =
       !keyboardShouldPersistTaps || keyboardShouldPersistTaps === 'never';
+
+    const reactTag = ReactNative.findNodeHandle(e.target);
     if (
       keyboardNeverPersistTaps &&
       currentlyFocusedTextInput != null &&
-      e.target &&
-      !TextInputState.isTextInput(e.target)
+      reactTag &&
+      !TextInputState.isTextInput(reactTag)
     ) {
       return true;
     }
@@ -305,7 +307,7 @@ const ScrollResponderMixin = {
       this.props.keyboardShouldPersistTaps !== true &&
       this.props.keyboardShouldPersistTaps !== 'always' &&
       currentlyFocusedTextInput != null &&
-      e.target !== currentlyFocusedTextInput &&
+      ReactNative.findNodeHandle(e.target) !== currentlyFocusedTextInput &&
       !this.state.observedScrollSinceBecomingResponder &&
       !this.state.becameResponderWhileAnimating
     ) {
