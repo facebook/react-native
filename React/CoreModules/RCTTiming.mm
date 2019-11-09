@@ -95,9 +95,6 @@ static const NSTimeInterval kIdleCallbackFrameDeadline = 0.001;
 
 @end
 
-@interface RCTTiming () <NativeTimingSpec>
-@end
-
 @implementation RCTTiming {
   NSMutableDictionary<NSNumber *, _RCTTimer *> *_timers;
   NSTimer *_sleepTimer;
@@ -410,12 +407,6 @@ RCT_EXPORT_METHOD(setSendIdleEvents : (BOOL)sendIdleEvents)
   } else if (![self hasPendingTimers]) {
     [self stopTimers];
   }
-}
-
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
-    (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-{
-  return std::make_shared<facebook::react::NativeTimingSpecJSI>(self, jsInvoker);
 }
 
 @end
