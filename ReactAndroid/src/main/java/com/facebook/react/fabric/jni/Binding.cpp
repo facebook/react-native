@@ -574,13 +574,24 @@ void Binding::schedulerDidFinishTransaction(
   auto &mutations = mountingTransaction->getMutations();
 
   facebook::better::set<int> createAndDeleteTagsToProcess;
+  // When collapseDeleteCreateMountingInstructions_ is enabled, the
+  // createAndDeleteTagsToProcess set will contain all the tags belonging to
+  // CREATE and DELETE mutation instructions that needs to be processed. If a
+  // CREATE or DELETE mutation instruction does not belong in the set, it means
+  // that the we received a pair of mutation instructions: DELETE - CREATE and
+  // it is not necessary to create or delete on the screen.
   if (collapseDeleteCreateMountingInstructions_) {
     for (const auto &mutation : mutations) {
       if (mutation.type == ShadowViewMutation::Delete) {
+        // TAG on 'Delete' mutation instructions are part of the
+        // oldChildShadowView
         createAndDeleteTagsToProcess.insert(mutation.oldChildShadowView.tag);
       } else if (mutation.type == ShadowViewMutation::Create) {
-        int tag = mutation.oldChildShadowView.tag;
-        if (createAndDeleteTagsToProcess.find(tag) != createAndDeleteTagsToProcess.end()) {
+        // TAG on 'Create' mutation instructions are part of the
+        // newChildShadowView
+        int tag = mutation.newChildShadowView.tag;
+        if (createAndDeleteTagsToProcess.find(tag) ==
+            createAndDeleteTagsToProcess.end()) {
           createAndDeleteTagsToProcess.insert(tag);
         } else {
           createAndDeleteTagsToProcess.erase(tag);
@@ -610,10 +621,19 @@ void Binding::schedulerDidFinishTransaction(
     auto mutationType = mutation.type;
 
     if (collapseDeleteCreateMountingInstructions_ &&
-        (mutationType == ShadowViewMutation::Create || mutationType == ShadowViewMutation::Delete) &&
-        createAndDeleteTagsToProcess.size() > 0 &&
-        createAndDeleteTagsToProcess.find(mutation.newChildShadowView.tag) == createAndDeleteTagsToProcess.end())  {
-      continue;
+        (mutationType == ShadowViewMutation::Create ||
+         mutationType == ShadowViewMutation::Delete) &&
+        createAndDeleteTagsToProcess.size() > 0) {
+      // The TAG on 'Delete' mutation instructions are part of the
+      // oldChildShadowView. On the other side, the TAG on 'Create' mutation
+      // instructions are part of the newChildShadowView
+      int tag = mutationType == ShadowViewMutation::Create
+          ? mutation.newChildShadowView.tag
+          : mutation.oldChildShadowView.tag;
+      if (createAndDeleteTagsToProcess.find(tag) ==
+          createAndDeleteTagsToProcess.end()) {
+        continue;
+      }
     }
 
     bool isVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics &&
