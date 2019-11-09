@@ -52,6 +52,11 @@ void MountingCoordinator::push(ShadowTreeRevision &&revision) const {
 
 void MountingCoordinator::revoke() const {
   std::lock_guard<std::mutex> lock(mutex_);
+  // We have two goals here.
+  // 1. We need to stop retaining `ShadowNode`s to not prolong their lifetime
+  // to prevent them from overliving `ComponentDescriptor`s.
+  // 2. A possible call to `pullTransaction()` should return empty optional.
+  baseRevision_.rootShadowNode_.reset();
   lastRevision_.reset();
 }
 
