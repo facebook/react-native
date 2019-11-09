@@ -236,9 +236,9 @@ void Binding::installFabricUIManager(
   // Keep reference to config object and cache some feature flags here
   reactNativeConfig_ = config;
   shouldCollateRemovesAndDeletes_ = reactNativeConfig_->getBool("react_fabric:enable_removedelete_collation_android");
-  // TODO T56932267: re-enable collapsing of mounting instructions using
-  // reactNativeConfig_->getBool("react_fabric:enabled_collapse_delete_create_mounting_instructions");
-  collapseDeleteCreateMountingInstructions_ = false;
+  collapseDeleteCreateMountingInstructions_ = reactNativeConfig_->getBool(
+      "react_fabric:enabled_collapse_delete_create_mounting_instructions");
+  ;
 
   disablePreallocateViews_ = reactNativeConfig_->getBool("react_fabric:disabled_view_preallocation_android");
 
