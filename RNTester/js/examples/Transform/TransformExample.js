@@ -10,69 +10,63 @@
 
 'use strict';
 
-const React = require('react');
+import React, {useEffect, useState} from 'react';
+import {Animated, StyleSheet, Text, View} from 'react-native';
 
-const {Animated, StyleSheet, Text, View} = require('react-native');
-
-class Flip extends React.Component<{}, $FlowFixMeState> {
-  state = {
-    theta: new Animated.Value(45),
-  };
-
-  componentDidMount() {
-    this._animate();
-  }
-
-  _animate = () => {
-    this.state.theta.setValue(0);
-    Animated.timing(this.state.theta, {
+function Flip() {
+  const [theta] = useState(new Animated.Value(45));
+  const animate = () => {
+    theta.setValue(0);
+    Animated.timing(theta, {
       toValue: 360,
       duration: 5000,
       useNativeDriver: false,
-    }).start(this._animate);
+    }).start(animate);
   };
 
-  render() {
-    return (
-      <View style={styles.flipCardContainer}>
-        <Animated.View
-          style={[
-            styles.flipCard,
-            {
-              transform: [
-                {perspective: 850},
-                {
-                  rotateX: this.state.theta.interpolate({
-                    inputRange: [0, 180],
-                    outputRange: ['0deg', '180deg'],
-                  }),
-                },
-              ],
-            },
-          ]}>
-          <Text style={styles.flipText}>This text is flipping great.</Text>
-        </Animated.View>
-        <Animated.View
-          style={[
-            styles.flipCard,
-            styles.flipCard1,
-            {
-              transform: [
-                {perspective: 850},
-                {
-                  rotateX: this.state.theta.interpolate({
-                    inputRange: [0, 180],
-                    outputRange: ['180deg', '360deg'],
-                  }),
-                },
-              ],
-            },
-          ]}>
-          <Text style={styles.flipText}>On the flip side...</Text>
-        </Animated.View>
-      </View>
-    );
-  }
+  useEffect(() => {
+    animate();
+  });
+
+  return (
+    <View style={styles.flipCardContainer}>
+      <Animated.View
+        style={[
+          styles.flipCard,
+          {
+            transform: [
+              {perspective: 850},
+              {
+                rotateX: theta.interpolate({
+                  inputRange: [0, 180],
+                  outputRange: ['0deg', '180deg'],
+                }),
+              },
+            ],
+          },
+        ]}>
+        <Text style={styles.flipText}>This text is flipping great.</Text>
+      </Animated.View>
+      <Animated.View
+        style={[
+          styles.flipCard,
+          styles.flipCard1,
+          {
+            transform: [
+              {perspective: 850},
+              {
+                rotateX: theta.interpolate({
+                  inputRange: [0, 180],
+                  outputRange: ['180deg', '360deg'],
+                }),
+              },
+            ],
+          },
+        ]}>
+        <Text style={styles.flipText}>On the flip side...</Text>
+      </Animated.View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
