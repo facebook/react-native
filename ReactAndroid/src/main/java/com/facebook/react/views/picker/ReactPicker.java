@@ -123,6 +123,15 @@ public class ReactPicker extends AppCompatSpinner {
     mStagedSelection = selection;
   }
 
+  /** Will set the "selection" value immediately as opposed to {@link #setStagedSelection(int)} */
+  /* package */ void setImmediateSelection(int selection) {
+    if (selection != getSelectedItemPosition()) {
+      setOnItemSelectedListener(null);
+      setSelection(selection, false);
+      setOnItemSelectedListener(mItemSelectedListener);
+    }
+  }
+
   /* package */ void setStagedPrimaryTextColor(@Nullable Integer primaryColor) {
     mStagedPrimaryTextColor = primaryColor;
   }

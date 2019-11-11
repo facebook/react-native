@@ -10,6 +10,9 @@
 
 'use strict';
 
+import * as React from 'react';
+
+import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import {requireNativeComponent} from 'react-native';
 
 import type {
@@ -46,8 +49,19 @@ type NativeProps = $ReadOnly<{|
   onSelect?: DirectEventHandler<PickerItemSelectEvent>,
 |}>;
 
-const AndroidDropdownPickerNativeComponent: HostComponent<NativeProps> = requireNativeComponent<NativeProps>(
-  'AndroidDropdownPicker',
-);
+type NativeType = HostComponent<NativeProps>;
 
-module.exports = AndroidDropdownPickerNativeComponent;
+interface NativeCommands {
+  +setNativeSelectedPosition: (
+    viewRef: React.ElementRef<NativeType>,
+    index: number,
+  ) => void;
+}
+
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['setNativeSelectedPosition'],
+});
+
+export default (requireNativeComponent<NativeProps>(
+  'AndroidDropdownPicker',
+): NativeType);
