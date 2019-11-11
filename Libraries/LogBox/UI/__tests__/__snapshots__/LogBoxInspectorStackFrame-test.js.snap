@@ -52,7 +52,7 @@ exports[`LogBoxInspectorStackFrame should render collapsed stack frame with dimm
       ]
     }
   >
-    app.js:1:1
+    app.js:1:2
   </Text>
 </LogBoxButton>
 `;
@@ -105,7 +105,7 @@ exports[`LogBoxInspectorStackFrame should render stack frame 1`] = `
       ]
     }
   >
-    app.js:1:1
+    app.js:1:2
   </Text>
 </LogBoxButton>
 `;

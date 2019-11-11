@@ -62,7 +62,9 @@ function LogBoxInspectorCodeFrame(props: Props): React.Node {
           }}>
           <Text style={styles.fileText}>
             {getFileName()} ({codeFrame.location.row}:
-            {codeFrame.location.column})
+            {codeFrame.location.column +
+              1 /* Code frame columns are zero indexed */}
+            )
           </Text>
         </LogBoxButton>
       </View>

@@ -65,11 +65,12 @@ function formatFrameLocation(frame: StackFrame): string {
 
   location = location + ':' + lineNumber;
 
-  if (column == null) {
+  if (column == null || isNaN(parseInt(column, 10))) {
     return location;
   }
 
-  return location + ':' + column;
+  // Stack frame columns are zero indexed but editors start at one.
+  return location + ':' + (parseInt(column, 10) + 1);
 }
 
 const styles = StyleSheet.create({

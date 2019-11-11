@@ -109,7 +109,7 @@ exports[`LogBoxInspectorCodeFrame should render a code frame 1`] = `
          (
         199
         :
-        0
+        1
         )
       </Text>
     </LogBoxButton>
