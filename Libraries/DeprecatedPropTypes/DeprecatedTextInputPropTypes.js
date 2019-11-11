@@ -147,6 +147,7 @@ module.exports = {
    * - `name-phone-pad`
    * - `twitter`
    * - `web-search`
+   * - `ascii-capable-number-pad`
    *
    * *Android Only*
    *
@@ -169,6 +170,8 @@ module.exports = {
     'decimal-pad',
     'twitter',
     'web-search',
+    // iOS 10+ only
+    'ascii-capable-number-pad',
     // Android-only
     'visible-password',
   ]): React$PropType$Primitive<
@@ -184,6 +187,7 @@ module.exports = {
     | 'decimal-pad'
     | 'twitter'
     | 'web-search'
+    | 'ascii-capable-number-pad'
     | 'visible-password',
   >),
   /**
