@@ -1129,33 +1129,27 @@ exports.examples = [
       return (
         <View>
           <TextInput
-            style={[styles.default, {fontFamily: 'sans-serif'}]}
-            placeholder="Custom fonts like Sans-Serif are supported"
+            style={[styles.default, {fontFamily: 'Cochin'}]}
+            placeholder="Custom fonts like Cochin are supported"
+          />
+          <TextInput
+            style={[styles.default, {fontFamily: 'Cochin', fontWeight: 'bold'}]}
+            placeholder="Cochin bold"
+          />
+          <TextInput
+            style={[styles.default, {fontFamily: 'Cochin', fontWeight: '500'}]}
+            placeholder="Cochin 500"
           />
           <TextInput
             style={[
               styles.default,
-              {fontFamily: 'sans-serif', fontWeight: 'bold'},
+              {fontFamily: 'Cochin', fontStyle: 'italic'},
             ]}
-            placeholder="Sans-Serif bold"
+            placeholder="Cochin italic"
           />
           <TextInput
-            style={[
-              styles.default,
-              {fontFamily: 'sans-serif', fontWeight: '500'},
-            ]}
-            placeholder="Sans-Serif 500"
-          />
-          <TextInput
-            style={[
-              styles.default,
-              {fontFamily: 'sans-serif', fontStyle: 'italic'},
-            ]}
-            placeholder="Sans-Serif italic"
-          />
-          <TextInput
-            style={[styles.default, {fontFamily: 'serif'}]}
-            placeholder="Serif"
+            style={[styles.default, {fontFamily: 'Courier'}]}
+            placeholder="Courier"
           />
         </View>
       );
