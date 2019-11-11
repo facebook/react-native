@@ -335,7 +335,10 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     return name;
   }
 
-  UIView *view = _viewRegistry[reactTag];
+  __block UIView *view;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    view = self->_viewRegistry[reactTag];
+  });
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
