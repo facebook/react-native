@@ -47,8 +47,8 @@ static constexpr auto UIManagerJavaDescriptor =
     "com/facebook/react/fabric/FabricUIManager";
 
 struct RemoveDeleteMetadata {
-  int tag;
-  int parentTag;
+  Tag tag;
+  Tag parentTag;
   int index;
   bool shouldRemove;
   bool shouldDelete;
@@ -573,7 +573,7 @@ void Binding::schedulerDidFinishTransaction(
   auto surfaceId = mountingTransaction->getSurfaceId();
   auto &mutations = mountingTransaction->getMutations();
 
-  facebook::better::set<int> createAndDeleteTagsToProcess;
+  facebook::better::set<Tag> createAndDeleteTagsToProcess;
   // When collapseDeleteCreateMountingInstructions_ is enabled, the
   // createAndDeleteTagsToProcess set will contain all the tags belonging to
   // CREATE and DELETE mutation instructions that needs to be processed. If a
@@ -589,7 +589,7 @@ void Binding::schedulerDidFinishTransaction(
       } else if (mutation.type == ShadowViewMutation::Create) {
         // TAG on 'Create' mutation instructions are part of the
         // newChildShadowView
-        int tag = mutation.newChildShadowView.tag;
+        Tag tag = mutation.newChildShadowView.tag;
         if (createAndDeleteTagsToProcess.find(tag) ==
             createAndDeleteTagsToProcess.end()) {
           createAndDeleteTagsToProcess.insert(tag);
@@ -627,7 +627,7 @@ void Binding::schedulerDidFinishTransaction(
       // The TAG on 'Delete' mutation instructions are part of the
       // oldChildShadowView. On the other side, the TAG on 'Create' mutation
       // instructions are part of the newChildShadowView
-      int tag = mutationType == ShadowViewMutation::Create
+      Tag tag = mutationType == ShadowViewMutation::Create
           ? mutation.newChildShadowView.tag
           : mutation.oldChildShadowView.tag;
       if (createAndDeleteTagsToProcess.find(tag) ==
