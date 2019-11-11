@@ -10,6 +10,7 @@
 
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import * as React from 'react';
+import type {Double} from 'react-native/Libraries/Types/CodegenTypes';
 
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
@@ -20,8 +21,8 @@ interface NativeCommands {
   ) => void;
   +scrollTo: (
     viewRef: React.ElementRef<ScrollViewNativeComponentType>,
-    x: number,
-    y: number,
+    x: Double,
+    y: Double,
     animated: boolean,
   ) => void;
   +scrollToEnd: (
@@ -31,10 +32,10 @@ interface NativeCommands {
   +zoomToRect: (
     viewRef: React.ElementRef<ScrollViewNativeComponentType>,
     rect: {|
-      x: number,
-      y: number,
-      width: number,
-      height: number,
+      x: Double,
+      y: Double,
+      width: Double,
+      height: Double,
       animated?: boolean,
     |},
     animated?: boolean,
