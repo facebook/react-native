@@ -72,8 +72,11 @@ Scheduler::Scheduler(
     uiManagerBinding->attach(uiManager);
   });
 
+  auto componentDescriptorRegistryKey =
+      "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE";
+  schedulerToolbox.contextContainer->erase(componentDescriptorRegistryKey);
   schedulerToolbox.contextContainer->insert(
-      "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE",
+      componentDescriptorRegistryKey,
       std::weak_ptr<ComponentDescriptorRegistry const>(
           componentDescriptorRegistry_));
 
