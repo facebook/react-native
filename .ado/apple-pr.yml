@@ -29,10 +29,7 @@ jobs:
           xcode_sdk: macosx
           xcode_scheme: 'RNTester-macOS'
           xcode_destination: 'platform=macOS,arch=x86_64'
-#           TODO: There's a build failure on ADO Mac VMs where XCodeHelper lost Accessibility permission to control the computer. The issue is tracked here
-# https://developercommunity.visualstudio.com/content/problem/788271/xcode-helper-not-configured-for-accessibility-on-m.html
-#   To unblock Mac loop builds, we need to temporarily disable integration tests since they consistently fail without proper access. Once the ticket is resolved, we can uncomment the tests below.
-          xcode_actions_debug: 'build'
+          xcode_actions_debug: 'build test'
           xcode_actions_release: 'build'
     pool:
       vmImage: macOS-10.14
