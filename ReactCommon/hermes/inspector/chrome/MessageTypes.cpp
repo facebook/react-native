@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated <<SignedSource::*O*zOeWoEQle#+L!plEphiEmie@IsG>>
+// @generated SignedSource<<c7c0c65530bebfdff3f081ad2736d42b>>
 
 #include "MessageTypes.h"
 
@@ -39,7 +39,10 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.stepInto", makeUnique<debugger::StepIntoRequest>},
       {"Debugger.stepOut", makeUnique<debugger::StepOutRequest>},
       {"Debugger.stepOver", makeUnique<debugger::StepOverRequest>},
+      {"HeapProfiler.takeHeapSnapshot",
+       makeUnique<heapProfiler::TakeHeapSnapshotRequest>},
       {"Runtime.evaluate", makeUnique<runtime::EvaluateRequest>},
+      {"Runtime.getHeapUsage", makeUnique<runtime::GetHeapUsageRequest>},
       {"Runtime.getProperties", makeUnique<runtime::GetPropertiesRequest>},
   };
 
@@ -553,6 +556,35 @@ void debugger::StepOverRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
+heapProfiler::TakeHeapSnapshotRequest::TakeHeapSnapshotRequest()
+    : Request("HeapProfiler.takeHeapSnapshot") {}
+
+heapProfiler::TakeHeapSnapshotRequest::TakeHeapSnapshotRequest(
+    const dynamic &obj)
+    : Request("HeapProfiler.takeHeapSnapshot") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(reportProgress, params, "reportProgress");
+}
+
+dynamic heapProfiler::TakeHeapSnapshotRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "reportProgress", reportProgress);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void heapProfiler::TakeHeapSnapshotRequest::accept(
+    RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
 runtime::EvaluateRequest::EvaluateRequest() : Request("Runtime.evaluate") {}
 
 runtime::EvaluateRequest::EvaluateRequest(const dynamic &obj)
@@ -588,6 +620,26 @@ dynamic runtime::EvaluateRequest::toDynamic() const {
 }
 
 void runtime::EvaluateRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+runtime::GetHeapUsageRequest::GetHeapUsageRequest()
+    : Request("Runtime.getHeapUsage") {}
+
+runtime::GetHeapUsageRequest::GetHeapUsageRequest(const dynamic &obj)
+    : Request("Runtime.getHeapUsage") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+}
+
+dynamic runtime::GetHeapUsageRequest::toDynamic() const {
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  return obj;
+}
+
+void runtime::GetHeapUsageRequest::accept(RequestHandler &handler) const {
   handler.handle(*this);
 }
 
@@ -707,6 +759,25 @@ dynamic runtime::EvaluateResponse::toDynamic() const {
   dynamic res = dynamic::object;
   put(res, "result", result);
   put(res, "exceptionDetails", exceptionDetails);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+runtime::GetHeapUsageResponse::GetHeapUsageResponse(const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(usedSize, res, "usedSize");
+  assign(totalSize, res, "totalSize");
+}
+
+dynamic runtime::GetHeapUsageResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "usedSize", usedSize);
+  put(res, "totalSize", totalSize);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
@@ -835,6 +906,57 @@ dynamic debugger::ScriptParsedNotification::toDynamic() const {
   put(params, "hash", hash);
   put(params, "executionContextAuxData", executionContextAuxData);
   put(params, "sourceMapURL", sourceMapURL);
+
+  dynamic obj = dynamic::object;
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+heapProfiler::AddHeapSnapshotChunkNotification::
+    AddHeapSnapshotChunkNotification()
+    : Notification("HeapProfiler.addHeapSnapshotChunk") {}
+
+heapProfiler::AddHeapSnapshotChunkNotification::
+    AddHeapSnapshotChunkNotification(const dynamic &obj)
+    : Notification("HeapProfiler.addHeapSnapshotChunk") {
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(chunk, params, "chunk");
+}
+
+dynamic heapProfiler::AddHeapSnapshotChunkNotification::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "chunk", chunk);
+
+  dynamic obj = dynamic::object;
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+heapProfiler::ReportHeapSnapshotProgressNotification::
+    ReportHeapSnapshotProgressNotification()
+    : Notification("HeapProfiler.reportHeapSnapshotProgress") {}
+
+heapProfiler::ReportHeapSnapshotProgressNotification::
+    ReportHeapSnapshotProgressNotification(const dynamic &obj)
+    : Notification("HeapProfiler.reportHeapSnapshotProgress") {
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(done, params, "done");
+  assign(total, params, "total");
+  assign(finished, params, "finished");
+}
+
+dynamic heapProfiler::ReportHeapSnapshotProgressNotification::toDynamic()
+    const {
+  dynamic params = dynamic::object;
+  put(params, "done", done);
+  put(params, "total", total);
+  put(params, "finished", finished);
 
   dynamic obj = dynamic::object;
   put(obj, "method", method);

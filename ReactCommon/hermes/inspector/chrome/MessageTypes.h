@@ -1,5 +1,5 @@
 // Copyright 2004-present Facebook. All Rights Reserved.
-// @generated <<SignedSource::*O*zOeWoEQle#+L!plEphiEmie@IsG>>
+// @generated SignedSource<<05cab93d7bde75fe57f76baaf4117c9d>>
 
 #pragma once
 
@@ -51,6 +51,8 @@ struct ExceptionDetails;
 struct ExecutionContextCreatedNotification;
 struct ExecutionContextDescription;
 using ExecutionContextId = int;
+struct GetHeapUsageRequest;
+struct GetHeapUsageResponse;
 struct GetPropertiesRequest;
 struct GetPropertiesResponse;
 struct InternalPropertyDescriptor;
@@ -62,6 +64,12 @@ struct StackTrace;
 using Timestamp = double;
 using UnserializableValue = std::string;
 } // namespace runtime
+
+namespace heapProfiler {
+struct AddHeapSnapshotChunkNotification;
+struct ReportHeapSnapshotProgressNotification;
+struct TakeHeapSnapshotRequest;
+} // namespace heapProfiler
 
 /// RequestHandler handles requests via the visitor pattern.
 struct RequestHandler {
@@ -79,7 +87,9 @@ struct RequestHandler {
   virtual void handle(const debugger::StepIntoRequest &req) = 0;
   virtual void handle(const debugger::StepOutRequest &req) = 0;
   virtual void handle(const debugger::StepOverRequest &req) = 0;
+  virtual void handle(const heapProfiler::TakeHeapSnapshotRequest &req) = 0;
   virtual void handle(const runtime::EvaluateRequest &req) = 0;
+  virtual void handle(const runtime::GetHeapUsageRequest &req) = 0;
   virtual void handle(const runtime::GetPropertiesRequest &req) = 0;
 };
 
@@ -97,7 +107,9 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(const debugger::StepIntoRequest &req) override {}
   void handle(const debugger::StepOutRequest &req) override {}
   void handle(const debugger::StepOverRequest &req) override {}
+  void handle(const heapProfiler::TakeHeapSnapshotRequest &req) override {}
   void handle(const runtime::EvaluateRequest &req) override {}
+  void handle(const runtime::GetHeapUsageRequest &req) override {}
   void handle(const runtime::GetPropertiesRequest &req) override {}
 };
 
@@ -345,6 +357,16 @@ struct debugger::StepOverRequest : public Request {
   void accept(RequestHandler &handler) const override;
 };
 
+struct heapProfiler::TakeHeapSnapshotRequest : public Request {
+  TakeHeapSnapshotRequest();
+  explicit TakeHeapSnapshotRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+
+  folly::Optional<bool> reportProgress;
+};
+
 struct runtime::EvaluateRequest : public Request {
   EvaluateRequest();
   explicit EvaluateRequest(const folly::dynamic &obj);
@@ -359,6 +381,14 @@ struct runtime::EvaluateRequest : public Request {
   folly::Optional<runtime::ExecutionContextId> contextId;
   folly::Optional<bool> returnByValue;
   folly::Optional<bool> awaitPromise;
+};
+
+struct runtime::GetHeapUsageRequest : public Request {
+  GetHeapUsageRequest();
+  explicit GetHeapUsageRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
 };
 
 struct runtime::GetPropertiesRequest : public Request {
@@ -416,6 +446,15 @@ struct runtime::EvaluateResponse : public Response {
   folly::Optional<runtime::ExceptionDetails> exceptionDetails;
 };
 
+struct runtime::GetHeapUsageResponse : public Response {
+  GetHeapUsageResponse() = default;
+  explicit GetHeapUsageResponse(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  double usedSize{};
+  double totalSize{};
+};
+
 struct runtime::GetPropertiesResponse : public Response {
   GetPropertiesResponse() = default;
   explicit GetPropertiesResponse(const folly::dynamic &obj);
@@ -470,6 +509,25 @@ struct debugger::ScriptParsedNotification : public Notification {
   std::string hash;
   folly::Optional<folly::dynamic> executionContextAuxData;
   folly::Optional<std::string> sourceMapURL;
+};
+
+struct heapProfiler::AddHeapSnapshotChunkNotification : public Notification {
+  AddHeapSnapshotChunkNotification();
+  explicit AddHeapSnapshotChunkNotification(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  std::string chunk;
+};
+
+struct heapProfiler::ReportHeapSnapshotProgressNotification
+    : public Notification {
+  ReportHeapSnapshotProgressNotification();
+  explicit ReportHeapSnapshotProgressNotification(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  int done{};
+  int total{};
+  folly::Optional<bool> finished;
 };
 
 struct runtime::ConsoleAPICalledNotification : public Notification {

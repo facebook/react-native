@@ -190,7 +190,10 @@ void Inspector::triggerAsyncPause(bool andTickle) {
   // In order to ensure that we pause soon, we both set the async pause flag on
   // the runtime, and we run a bit of dummy JS to ensure we enter the Hermes
   // interpreter loop.
-  debugger_.triggerAsyncPause(debugger::AsyncPauseKind::Explicit);
+  debugger_.triggerAsyncPause(
+      pendingPauseState_ == AsyncPauseState::Implicit
+          ? debugger::AsyncPauseKind::Implicit
+          : debugger::AsyncPauseKind::Explicit);
 
   if (andTickle) {
     // We run the dummy JS on a background thread to avoid any reentrancy issues
@@ -211,8 +214,7 @@ ScriptInfo Inspector::getScriptInfoFromTopCallFrame() {
   auto stackTrace = debugger_.getProgramState().getStackTrace();
 
   if (stackTrace.callFrameCount() > 0) {
-    uint32_t i = stackTrace.callFrameCount() - 1;
-    debugger::SourceLocation loc = stackTrace.callFrameForIndex(i).location;
+    debugger::SourceLocation loc = stackTrace.callFrameForIndex(0).location;
 
     info.fileId = loc.fileId;
     info.fileName = loc.fileName;
@@ -226,6 +228,7 @@ void Inspector::addCurrentScriptToLoadedScripts() {
   ScriptInfo info = getScriptInfoFromTopCallFrame();
 
   if (!loadedScripts_.count(info.fileId)) {
+    loadedScriptIdByName_[info.fileName] = info.fileId;
     loadedScripts_[info.fileId] = LoadedScriptInfo{std::move(info), false};
   }
 }
@@ -581,6 +584,49 @@ void Inspector::setPauseOnExceptionsOnExecutor(
     debugger_.setPauseOnThrowMode(mode);
     promise->setValue();
   });
+}
+
+static const char *kSuppressionVariable = "_hermes_suppress_superseded_warning";
+void Inspector::alertIfPausedInSupersededFile() {
+  if (isExecutingSupersededFile() &&
+      !shouldSuppressAlertAboutSupersededFiles()) {
+    ScriptInfo info = getScriptInfoFromTopCallFrame();
+    std::string warning =
+        "You have loaded the current file multiple times, and you are "
+        "now paused in one of the previous instances. The source "
+        "code you see may not correspond to what's being executed "
+        "(set JS variable " +
+        std::string(kSuppressionVariable) +
+        "=true to "
+        "suppress this warning. Filename: " +
+        info.fileName + ").";
+    jsi::Array jsiArray(adapter_->getRuntime(), 1);
+    jsiArray.setValueAtIndex(adapter_->getRuntime(), 0, warning);
+
+    ConsoleMessageInfo logMessage("warning", std::move(jsiArray));
+    observer_.onMessageAdded(*this, logMessage);
+  }
+}
+
+bool Inspector::shouldSuppressAlertAboutSupersededFiles() {
+  jsi::Runtime &rt = adapter_->getRuntime();
+  jsi::Value setting = rt.global().getProperty(rt, kSuppressionVariable);
+
+  if (setting.isUndefined() || !setting.isBool())
+    return false;
+  return setting.getBool();
+}
+
+bool Inspector::isExecutingSupersededFile() {
+  ScriptInfo info = getScriptInfoFromTopCallFrame();
+  if (info.fileName.empty())
+    return false;
+
+  auto it = loadedScriptIdByName_.find(info.fileName);
+  if (it != loadedScriptIdByName_.end()) {
+    return it->second > info.fileId;
+  }
+  return false;
 }
 
 } // namespace inspector

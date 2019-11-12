@@ -11,6 +11,7 @@
 #include <mutex>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 #include <hermes/hermes.h>
 #include <hermes/inspector/RuntimeAdapter.h>

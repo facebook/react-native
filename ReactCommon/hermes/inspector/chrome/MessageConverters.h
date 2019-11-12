@@ -23,6 +23,8 @@ namespace inspector {
 namespace chrome {
 namespace message {
 
+std::string stripCachePrevention(const std::string &url);
+
 template <typename T>
 void setHermesLocation(
     facebook::hermes::debugger::SourceLocation &hermesLoc,
@@ -42,9 +44,9 @@ void setHermesLocation(
   }
 
   if (chromeLoc.url.hasValue()) {
-    hermesLoc.fileName = chromeLoc.url.value();
+    hermesLoc.fileName = stripCachePrevention(chromeLoc.url.value());
   } else if (chromeLoc.urlRegex.hasValue()) {
-    const std::regex regex(chromeLoc.urlRegex.value());
+    const std::regex regex(stripCachePrevention(chromeLoc.urlRegex.value()));
     for (const auto &fileName : parsedScripts) {
       if (std::regex_match(fileName, regex)) {
         hermesLoc.fileName = fileName;

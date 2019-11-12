@@ -13,7 +13,6 @@
 
 #include <hermes/hermes.h>
 #include <hermes/inspector/RuntimeAdapter.h>
-#include <hermes/inspector/chrome/MessageTypes.h>
 #include <jsinspector/InspectorInterfaces.h>
 
 namespace facebook {

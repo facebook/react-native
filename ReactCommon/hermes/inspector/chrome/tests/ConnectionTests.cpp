@@ -186,14 +186,15 @@ void expectCallFrames(
   }
 }
 
-// Helper to send a request wait for an empty response containing the req id.
-template <typename RequestType>
-void send(SyncConnection &conn, int id) {
+// Helper to send a request with no params and wait for a response (defaults
+// to empty) containing the req id.
+template <typename RequestType, typename ResponseType = m::OkResponse>
+ResponseType send(SyncConnection &conn, int id) {
   RequestType req;
   req.id = id;
   conn.send(req.toJson());
 
-  expectResponse<m::OkResponse>(conn, id);
+  return expectResponse<ResponseType>(conn, id);
 }
 
 void sendRuntimeEvalRequest(
@@ -1245,6 +1246,49 @@ TEST(ConnectionTests, testLoadMultipleScripts) {
 
   send<m::debugger::ResumeRequest>(conn, msgId++);
   expectNotification<m::debugger::ResumedNotification>(conn);
+}
+
+TEST(ConnectionTests, testGetHeapUsage) {
+  using HUReq = m::runtime::GetHeapUsageRequest;
+  using HUResp = m::runtime::GetHeapUsageResponse;
+
+  TestContext context;
+  AsyncHermesRuntime &asyncRuntime = context.runtime();
+  SyncConnection &conn = context.conn();
+
+  int msgId = 1;
+
+  asyncRuntime.executeScriptAsync(R"(
+    debugger; // [1]
+    var a = [];
+    for (var i = 0; i < 100; ++i) {
+      a.push({b: i});
+    }
+    debugger; // [2]
+  )");
+
+  send<m::debugger::EnableRequest>(conn, msgId++);
+  expectExecutionContextCreated(conn);
+  expectNotification<m::debugger::ScriptParsedNotification>(conn);
+
+  // [1] (line 1) hit debugger statement, check heap usage, resume.
+  expectNotification<m::debugger::PausedNotification>(conn);
+  const auto before = send<HUReq, HUResp>(conn, msgId++);
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+
+  // [2] (line 6) hit debugger statement, check heap usage, resume;
+  expectNotification<m::debugger::PausedNotification>(conn);
+  const auto after = send<HUReq, HUResp>(conn, msgId++);
+  send<m::debugger::ResumeRequest>(conn, msgId++);
+  expectNotification<m::debugger::ResumedNotification>(conn);
+
+  // Sanity checks
+  EXPECT_LE(before.usedSize, before.totalSize);
+  EXPECT_LE(after.usedSize, after.totalSize);
+
+  // Check for growth
+  EXPECT_LT(before.usedSize, after.usedSize);
 }
 
 TEST(ConnectionTests, testGetProperties) {

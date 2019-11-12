@@ -35,6 +35,11 @@ m::OkResponse m::makeOkResponse(int id) {
   return resp;
 }
 
+std::string m::stripCachePrevention(const std::string &url) {
+  std::regex regex("&?cachePrevention=[0-9]*");
+  return std::regex_replace(url, regex, "");
+}
+
 /*
  * debugger message conversion helpers
  */
