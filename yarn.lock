@@ -3552,10 +3552,10 @@ has@^1.0.1, has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
-hermes-engine@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.2.1.tgz#25c0f1ff852512a92cb5c5cc47cf967e1e722ea2"
-  integrity sha512-eNHUQHuadDMJARpaqvlCZoK/Nitpj6oywq3vQ3wCwEsww5morX34mW5PmKWQTO7aU0ck0hgulxR+EVDlXygGxQ==
+hermes-engine@~0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.3.0.tgz#c03ded211102eef775045a5f55e286783db8ad48"
+  integrity sha512-Xl21n/FohkoeQyz/9AeisoePhXaLvXRyT41xkYHOrqoNr+pkLUGc1xIo486ctIxSp5SN4BkN6T3YFWOdD0ntaQ==
 
 home-or-tmp@^3.0.0:
   version "3.0.0"

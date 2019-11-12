@@ -66,7 +66,7 @@ static ::hermes::vm::RuntimeConfig makeRuntimeConfig(
               path += crashId;
               path += ".hermes";
 
-              bool successful = ctx.createSnapshotToFile(path, true);
+              bool successful = ctx.createSnapshotToFile(path);
               if (!successful) {
                 LOG(ERROR) << "Failed to write Hermes Memory Dump to " << path
                            << "\n";

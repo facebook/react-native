@@ -190,7 +190,7 @@ void Inspector::triggerAsyncPause(bool andTickle) {
   // In order to ensure that we pause soon, we both set the async pause flag on
   // the runtime, and we run a bit of dummy JS to ensure we enter the Hermes
   // interpreter loop.
-  debugger_.triggerAsyncPause();
+  debugger_.triggerAsyncPause(debugger::AsyncPauseKind::Explicit);
 
   if (andTickle) {
     // We run the dummy JS on a background thread to avoid any reentrancy issues

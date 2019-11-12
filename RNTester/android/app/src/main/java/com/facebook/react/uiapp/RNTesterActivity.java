@@ -63,7 +63,7 @@ public class RNTesterActivity extends ReactActivity {
     ReactInstanceManager instanceManager = getReactInstanceManager();
 
     if (instanceManager != null) {
-      instanceManager.onConfigurationChanged(newConfig);
+      instanceManager.onConfigurationChanged(this, newConfig);
     }
   }
 }
