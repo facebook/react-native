@@ -68,11 +68,7 @@ if (__DEV__) {
 
     static install(): void {
       errorImpl = function(...args) {
-        error.call(console, ...args);
-        // Show LogBox for the `warning` module.
-        if (typeof args[0] === 'string' && args[0].startsWith('Warning: ')) {
-          registerWarning(...args);
-        }
+        registerError(...args);
       };
 
       warnImpl = function(...args) {
@@ -172,6 +168,49 @@ if (__DEV__) {
               componentStack,
             });
           }
+        }
+      }
+    } catch (err) {
+      LogBoxData.reportLogBoxError(err);
+    }
+  };
+
+  const registerError = (...args): void => {
+    try {
+      // Only show LogBox for the `warning` module, otherwise pass through and skip.
+      if (typeof args[0] !== 'string' || !args[0].startsWith('Warning: ')) {
+        error.call(console, ...args);
+        return;
+      }
+
+      const format = args[0].replace('Warning: ', '');
+      const filterResult = LogBoxData.checkWarningFilter(format);
+      if (filterResult.suppressCompletely) {
+        return;
+      }
+
+      let level = 'error';
+      if (filterResult.suppressDialog_LEGACY === true) {
+        level = 'warn';
+      } else if (filterResult.forceDialogImmediately === true) {
+        level = 'fatal'; // Do not downgrade. These are real bugs with same severity as throws.
+      }
+
+      // Unfortunately, we need to add the Warning: prefix back for downstream dependencies.
+      args[0] = `Warning: ${filterResult.finalFormat}`;
+      const {category, message, componentStack} = parseLogBoxLog(args);
+
+      if (!LogBoxData.isMessageIgnored(message.content)) {
+        // Be sure to pass LogBox errors through.
+        error.call(console, ...args);
+
+        if (!LogBoxData.isLogBoxErrorMessage(message.content)) {
+          LogBoxData.addLog({
+            level,
+            category,
+            message,
+            componentStack,
+          });
         }
       }
     } catch (err) {

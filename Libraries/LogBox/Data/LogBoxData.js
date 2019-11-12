@@ -40,12 +40,36 @@ export type Subscription = $ReadOnly<{|
   unsubscribe: () => void,
 |}>;
 
+type WarningInfo = {|
+  finalFormat: string,
+  forceDialogImmediately: boolean,
+  suppressDialog_LEGACY: boolean,
+  suppressCompletely: boolean,
+  monitorEvent: string | null,
+  monitorListVersion: number,
+  monitorSampleRate: number,
+|};
+
+type WarningFilter = (format: string) => WarningInfo;
+
 const observers: Set<{observer: Observer}> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
 let logs: LogBoxLogs = new Set();
 let updateTimeout = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
+
+let warningFilter: WarningFilter = function(format) {
+  return {
+    finalFormat: format,
+    forceDialogImmediately: false,
+    suppressDialog_LEGACY: false,
+    suppressCompletely: false,
+    monitorEvent: 'unknown',
+    monitorListVersion: 0,
+    monitorSampleRate: 1,
+  };
+};
 
 const LOGBOX_ERROR_MESSAGE =
   'An error was thrown when attempting to render log messages via LogBox.';
@@ -112,6 +136,58 @@ function handleUpdate(): void {
   }
 }
 
+function appendNewLog(newLog) {
+  // We don't want to store these logs because they trigger a
+  // state update whenever we add them to the store, which is
+  // expensive to noisy logs. If we later want to display these
+  // we will store them in a different state object.
+  if (isMessageIgnored(newLog.message.content)) {
+    return;
+  }
+
+  // If the next log has the same category as the previous one
+  // then we want to roll it up into the last log in the list
+  // by incrementing the count (simar to how Chrome does it).
+  const lastLog = Array.from(logs).pop();
+  if (lastLog && lastLog.category === newLog.category) {
+    lastLog.incrementCount();
+    handleUpdate();
+    return;
+  }
+
+  if (newLog.level === 'fatal') {
+    // If possible, to avoid jank, we don't want to open the error before
+    // it's symbolicated. To do that, we optimistically wait for
+    // sybolication for up to a second before adding the log.
+    const OPTIMISTIC_WAIT_TIME = 1000;
+
+    let addPendingLog = () => {
+      logs.add(newLog);
+      if (_selectedIndex <= 0) {
+        _selectedIndex = logs.size - 1;
+      }
+      handleUpdate();
+      addPendingLog = null;
+    };
+
+    const optimisticTimeout = setTimeout(() => {
+      if (addPendingLog) {
+        addPendingLog();
+      }
+    }, OPTIMISTIC_WAIT_TIME);
+
+    newLog.symbolicate(status => {
+      if (addPendingLog && status !== 'PENDING') {
+        addPendingLog();
+        clearTimeout(optimisticTimeout);
+      }
+    });
+  } else {
+    logs.add(newLog);
+    handleUpdate();
+  }
+}
+
 export function addLog(log: LogData): void {
   const errorForStackTrace = new Error();
 
@@ -122,27 +198,47 @@ export function addLog(log: LogData): void {
       // TODO: Use Error.captureStackTrace on Hermes
       const stack = parseErrorStack(errorForStackTrace);
 
-      // If the next log has the same category as the previous one
-      // then we want to roll it up into the last log in the list
-      // by incrementing the count (simar to how Chrome does it).
-      const lastLog = Array.from(logs).pop();
-      if (lastLog && lastLog.category === log.category) {
-        lastLog.incrementCount();
-      } else {
-        logs.add(
-          new LogBoxLog(
-            log.level,
-            log.message,
-            stack,
-            log.category,
-            log.componentStack,
-          ),
-        );
-      }
-
-      handleUpdate();
+      appendNewLog(
+        new LogBoxLog(
+          log.level,
+          log.message,
+          stack,
+          log.category,
+          log.componentStack,
+        ),
+      );
     } catch (error) {
       reportLogBoxError(error);
+    }
+  });
+}
+
+export function addException(error: ExceptionData): void {
+  // Parsing logs are expensive so we schedule this
+  // otherwise spammy logs would pause rendering.
+  setImmediate(() => {
+    try {
+      const {
+        category,
+        message,
+        codeFrame,
+        componentStack,
+        stack,
+        level,
+      } = parseLogBoxException(error);
+
+      appendNewLog(
+        new LogBoxLog(
+          level,
+          message,
+          stack,
+          category,
+          componentStack != null ? componentStack : [],
+          codeFrame,
+        ),
+      );
+    } catch (loggingError) {
+      reportLogBoxError(loggingError);
     }
   });
 }
@@ -160,81 +256,6 @@ export function retrySymbolicateLogNow(log: LogBoxLog) {
 
 export function symbolicateLogLazy(log: LogBoxLog) {
   log.symbolicate();
-}
-
-export function addException(error: ExceptionData): void {
-  // Parsing logs are expensive so we schedule this
-  // otherwise spammy logs would pause rendering.
-  setImmediate(() => {
-    try {
-      const {
-        category,
-        message,
-        codeFrame,
-        componentStack,
-        stack,
-        level,
-      } = parseLogBoxException(error);
-
-      // We don't want to store these logs because they trigger a
-      // state update whenever we add them to the store, which is
-      // expensive to noisy logs. If we later want to display these
-      // we will store them in a different state object.
-      if (isMessageIgnored(message.content)) {
-        return;
-      }
-
-      const lastLog = Array.from(logs).pop();
-      if (lastLog && lastLog.category === category) {
-        lastLog.incrementCount();
-        handleUpdate();
-        return;
-      } else {
-        const newLog = new LogBoxLog(
-          level,
-          message,
-          stack,
-          category,
-          componentStack != null ? componentStack : [],
-          codeFrame,
-        );
-
-        if (level === 'fatal') {
-          // If possible, to avoid jank, we don't want to open the error before
-          // it's symbolicated to avoid To do that, we optimistically wait for
-          // sybolication for up to a second before adding the log.
-          const OPTIMISTIC_WAIT_TIME = 1000;
-
-          let addPendingLog = () => {
-            logs.add(newLog);
-            if (_selectedIndex <= 0) {
-              _selectedIndex = logs.size - 1;
-            }
-            handleUpdate();
-            addPendingLog = null;
-          };
-
-          const optimisticTimeout = setTimeout(() => {
-            if (addPendingLog) {
-              addPendingLog();
-            }
-          }, OPTIMISTIC_WAIT_TIME);
-
-          newLog.symbolicate(status => {
-            if (addPendingLog && status !== 'PENDING') {
-              addPendingLog();
-              clearTimeout(optimisticTimeout);
-            }
-          });
-        } else {
-          logs.add(newLog);
-          handleUpdate();
-        }
-      }
-    } catch (loggingError) {
-      reportLogBoxError(loggingError);
-    }
-  });
 }
 
 export function clear(): void {
@@ -281,6 +302,14 @@ export function dismiss(log: LogBoxLog): void {
     logs.delete(log);
     handleUpdate();
   }
+}
+
+export function setWarningFilter(filter: WarningFilter): void {
+  warningFilter = filter;
+}
+
+export function checkWarningFilter(format: string): WarningInfo {
+  return warningFilter(format);
 }
 
 export function addIgnorePatterns(
