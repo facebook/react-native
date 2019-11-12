@@ -9,10 +9,10 @@ yarn install
 yarn build
 
 FBSOURCE=$(hg root)
-MSGTYPES_PATH="${FBSOURCE}/xplat/hermes-inspector/tools/message_types.txt"
+MSGTYPES_PATH="${FBSOURCE}/xplat/js/react-native-github/ReactCommon/hermes/inspector/tools/message_types.txt"
 PROTO_PATH="${FBSOURCE}/xplat/third-party/chrome-devtools-protocol/json/js_protocol.json"
-HEADER_PATH="${FBSOURCE}/xplat/hermes-inspector/chrome/MessageTypes.h"
-CPP_PATH="${FBSOURCE}/xplat/hermes-inspector/chrome/MessageTypes.cpp"
+HEADER_PATH="${FBSOURCE}/xplat/js/react-native-github/ReactCommon/hermes/inspector/chrome/MessageTypes.h"
+CPP_PATH="${FBSOURCE}/xplat/js/react-native-github/ReactCommon/hermes/inspector/chrome/MessageTypes.cpp"
 
 node bin/index.js \
   --ignore-experimental \
