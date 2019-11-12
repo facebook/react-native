@@ -21,6 +21,10 @@ jobs:
         submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
         persistCredentials: false # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
+      - task: UseNode@1
+        inputs:
+          version: '10.x'
+
       - task: CmdLine@2
         displayName: npm install
         inputs:

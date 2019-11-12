@@ -10,7 +10,7 @@
 #include <string>
 
 #include <cxxreact/SystraceSection.h>
-#include <jsireact/LongLivedObject.h>
+#include <turbomodule/core/LongLivedObject.h>
 
 using namespace facebook;
 
