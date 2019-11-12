@@ -5,13 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-//
-//  RCTScrollEvent.m
-//  RCTCxxBridgeApple
-//
-//  Created by Samuel Susla on 08/10/2019.
-//
-
 #import "RCTScrollEvent.h"
 #import <React/RCTAssert.h>
 
