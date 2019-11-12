@@ -1,38 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`LogBoxInspectorMeta should render meta information 1`] = `
-<View
-  style={
-    Object {
-      "marginTop": 15,
-    }
-  }
+<LogBoxInspectorSection
+  heading="Meta"
 >
-  <View
-    style={
-      Object {
-        "alignItems": "center",
-        "flexDirection": "row",
-        "marginBottom": 10,
-        "paddingHorizontal": 12,
-      }
-    }
-  >
-    <Text
-      style={
-        Object {
-          "color": "rgba(255, 255, 255, 1)",
-          "flex": 1,
-          "fontSize": 20,
-          "fontWeight": "600",
-          "includeFontPadding": false,
-          "lineHeight": 20,
-        }
-      }
-    >
-      Meta
-    </Text>
-  </View>
   <View
     style={
       Object {
@@ -135,5 +106,5 @@ exports[`LogBoxInspectorMeta should render meta information 1`] = `
       </Text>
     </View>
   </View>
-</View>
+</LogBoxInspectorSection>
 `;

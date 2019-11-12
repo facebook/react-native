@@ -17,6 +17,7 @@ import View from '../../Components/View/View';
 import LogBoxButton from './LogBoxButton';
 import LogBoxInspectorSourceMapStatus from './LogBoxInspectorSourceMapStatus';
 import LogBoxInspectorStackFrame from './LogBoxInspectorStackFrame';
+import LogBoxInspectorSection from './LogBoxInspectorSection';
 import * as LogBoxStyle from './LogBoxStyle';
 import openFileInEditor from '../../Core/Devtools/openFileInEditor';
 
@@ -60,34 +61,25 @@ function LogBoxInspectorStackFrames(props: Props): React.Node {
   }
 
   return (
-    <View style={stackStyles.section}>
-      <StackFrameHeader
-        status={props.log.symbolicated.status}
-        onRetry={props.onRetry}
-      />
-      <View style={stackStyles.body}>
-        <StackFrameList
-          list={getStackList()}
+    <LogBoxInspectorSection
+      heading="Call Stack"
+      action={
+        <LogBoxInspectorSourceMapStatus
+          onPress={
+            props.log.symbolicated.status !== 'COMPLETE' ? props.onRetry : null
+          }
           status={props.log.symbolicated.status}
         />
-        <StackFrameFooter
-          onPress={() => setCollapsed(!collapsed)}
-          message={getCollapseMessage()}
-        />
-      </View>
-    </View>
-  );
-}
-
-function StackFrameHeader(props) {
-  return (
-    <View style={stackStyles.heading}>
-      <Text style={stackStyles.headingText}>Stack</Text>
-      <LogBoxInspectorSourceMapStatus
-        onPress={props.status !== 'COMPLETE' ? props.onRetry : null}
-        status={props.status}
+      }>
+      <StackFrameList
+        list={getStackList()}
+        status={props.log.symbolicated.status}
       />
-    </View>
+      <StackFrameFooter
+        onPress={() => setCollapsed(!collapsed)}
+        message={getCollapseMessage()}
+      />
+    </LogBoxInspectorSection>
   );
 }
 

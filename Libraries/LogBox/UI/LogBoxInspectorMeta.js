@@ -16,15 +16,12 @@ import Text from '../../Text/Text';
 import View from '../../Components/View/View';
 import Platform from '../../Utilities/Platform';
 import * as LogBoxStyle from './LogBoxStyle';
-
+import LogBoxInspectorSection from './LogBoxInspectorSection';
 type Props = $ReadOnly<{||}>;
 
 function LogBoxInspectorMeta(props: Props): React.Node {
   return (
-    <View style={metaStyles.section}>
-      <View style={metaStyles.heading}>
-        <Text style={metaStyles.headingText}>Meta</Text>
-      </View>
+    <LogBoxInspectorSection heading="Meta">
       <View style={metaStyles.body}>
         <View style={metaStyles.bodyItem}>
           <Text style={metaStyles.bodyText}>Platform</Text>
@@ -40,28 +37,11 @@ function LogBoxInspectorMeta(props: Props): React.Node {
           </Text>
         </View>
       </View>
-    </View>
+    </LogBoxInspectorSection>
   );
 }
 
 const metaStyles = StyleSheet.create({
-  section: {
-    marginTop: 15,
-  },
-  heading: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    marginBottom: 10,
-  },
-  headingText: {
-    color: LogBoxStyle.getTextColor(1),
-    flex: 1,
-    fontSize: 20,
-    fontWeight: '600',
-    includeFontPadding: false,
-    lineHeight: 20,
-  },
   body: {
     paddingLeft: 25,
     paddingRight: 25,

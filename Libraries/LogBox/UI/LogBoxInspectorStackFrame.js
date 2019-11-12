@@ -13,6 +13,8 @@
 import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
+import View from '../../Components/View/View';
+import Platform from '../../Utilities/Platform';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 
@@ -38,39 +40,38 @@ function LogBoxInspectorStackFrame(props: Props): React.Node {
       <Text style={[styles.name, frame.collapse === true && styles.dim]}>
         {frame.methodName}
       </Text>
-      <Text
-        ellipsizeMode="middle"
-        numberOfLines={1}
-        style={[styles.location, frame.collapse === true && styles.dim]}>
-        {formatFrameLocation(frame)}
-      </Text>
+
+      <View style={styles.lineLocation}>
+        <Text
+          ellipsizeMode="middle"
+          numberOfLines={1}
+          style={[styles.location, frame.collapse === true && styles.dim]}>
+          {getFileName(frame)}
+        </Text>
+        {frame.lineNumber != null && (
+          <Text style={[styles.line, frame.collapse === true && styles.dim]}>
+            :{frame.lineNumber}
+          </Text>
+        )}
+        {frame.column != null && !isNaN(parseInt(frame.column, 10)) && (
+          <Text style={[styles.line, frame.collapse === true && styles.dim]}>
+            :{parseInt(frame.column, 10) + 1}
+          </Text>
+        )}
+      </View>
     </LogBoxButton>
   );
 }
 
-function formatFrameLocation(frame: StackFrame): string {
-  const {file, lineNumber, column} = frame;
+function getFileName(frame: StackFrame): string {
+  const {file} = frame;
   if (file == null) {
     return '<unknown>';
   }
   const queryIndex = file.indexOf('?');
-  const query = queryIndex < 0 ? '' : file.substr(queryIndex);
 
   const path = queryIndex < 0 ? file : file.substr(0, queryIndex);
-  let location = path.substr(path.lastIndexOf('/') + 1) + query;
-
-  if (lineNumber == null) {
-    return location;
-  }
-
-  location = location + ':' + lineNumber;
-
-  if (column == null || isNaN(parseInt(column, 10))) {
-    return location;
-  }
-
-  // Stack frame columns are zero indexed but editors start at one.
-  return location + ':' + (parseInt(column, 10) + 1);
+  return path.substr(path.lastIndexOf('/') + 1);
 }
 
 const styles = StyleSheet.create({
@@ -78,14 +79,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     paddingVertical: 4,
   },
+  lineLocation: {
+    flexDirection: 'row',
+  },
   name: {
     color: LogBoxStyle.getTextColor(1),
     fontSize: 14,
     includeFontPadding: false,
     lineHeight: 18,
+    fontWeight: '400',
+    fontFamily: Platform.select({android: 'monospace', ios: 'Menlo'}),
   },
   location: {
-    color: LogBoxStyle.getTextColor(0.7),
+    color: LogBoxStyle.getTextColor(0.8),
     fontSize: 12,
     fontWeight: '300',
     includeFontPadding: false,
@@ -94,6 +100,14 @@ const styles = StyleSheet.create({
   },
   dim: {
     color: LogBoxStyle.getTextColor(0.4),
+    fontWeight: '300',
+  },
+  line: {
+    color: LogBoxStyle.getTextColor(0.8),
+    fontSize: 12,
+    fontWeight: '300',
+    includeFontPadding: false,
+    lineHeight: 16,
   },
 });
 

@@ -1,57 +1,43 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`LogBoxInspectorReactFrames should render componentStack frames 1`] = `
-<View
-  style={
-    Object {
-      "marginTop": 15,
-    }
-  }
+<LogBoxInspectorSection
+  heading="Component Stack"
 >
   <View
     style={
       Object {
-        "alignItems": "center",
-        "flexDirection": "row",
-        "marginBottom": 10,
-        "paddingHorizontal": 12,
-      }
-    }
-  >
-    <Text
-      style={
-        Object {
-          "color": "rgba(255, 255, 255, 1)",
-          "flex": 1,
-          "fontSize": 20,
-          "fontWeight": "600",
-          "includeFontPadding": false,
-          "lineHeight": 20,
-        }
-      }
-    >
-      React
-    </Text>
-  </View>
-  <View
-    style={
-      Object {
-        "paddingBottom": 10,
+        "paddingHorizontal": 25,
+        "paddingVertical": 4,
       }
     }
   >
     <View
       style={
         Object {
-          "paddingHorizontal": 25,
-          "paddingVertical": 4,
+          "flexDirection": "row",
         }
       }
     >
       <Text
         style={
           Object {
+            "color": "rgba(255, 255, 255, 0.4)",
+            "fontFamily": "Menlo",
+            "fontSize": 14,
+            "fontWeight": "500",
+            "includeFontPadding": false,
+            "lineHeight": 18,
+          }
+        }
+      >
+        &lt;
+      </Text>
+      <Text
+        style={
+          Object {
             "color": "rgba(255, 255, 255, 1)",
+            "fontFamily": "Menlo",
             "fontSize": 14,
             "includeFontPadding": false,
             "lineHeight": 18,
@@ -63,45 +49,59 @@ exports[`LogBoxInspectorReactFrames should render componentStack frames 1`] = `
       <Text
         style={
           Object {
-            "color": "rgba(255, 255, 255, 0.7)",
-            "fontSize": 12,
-            "fontWeight": "300",
+            "color": "rgba(255, 255, 255, 0.4)",
+            "fontFamily": "Menlo",
+            "fontSize": 14,
+            "fontWeight": "500",
             "includeFontPadding": false,
-            "lineHeight": 16,
-            "paddingLeft": 10,
+            "lineHeight": 18,
           }
         }
       >
-        MyComponentFile.js:1
+         /&gt;
       </Text>
     </View>
-    <LogBoxButton
-      backgroundColor={
+    <Text
+      style={
         Object {
-          "default": "transparent",
-          "pressed": "rgba(51, 51, 51, 1)",
+          "color": "rgba(255, 255, 255, 0.7)",
+          "fontSize": 12,
+          "fontWeight": "300",
+          "includeFontPadding": false,
+          "lineHeight": 16,
+          "paddingLeft": 10,
         }
       }
-      onPress={[Function]}
     >
-      <Text
-        style={
-          Object {
-            "color": "rgba(255, 255, 255, 0.7)",
-            "fontSize": 12,
-            "fontWeight": "300",
-            "lineHeight": 20,
-            "marginLeft": 25,
-            "marginTop": 0,
-            "paddingVertical": 5,
-          }
-        }
-      >
-        See -2 more components
-      </Text>
-    </LogBoxButton>
+      MyComponentFile.js:1
+    </Text>
   </View>
-</View>
+  <LogBoxButton
+    backgroundColor={
+      Object {
+        "default": "transparent",
+        "pressed": "rgba(51, 51, 51, 1)",
+      }
+    }
+    onPress={[Function]}
+  >
+    <Text
+      style={
+        Object {
+          "color": "rgba(255, 255, 255, 0.7)",
+          "fontSize": 12,
+          "fontWeight": "300",
+          "lineHeight": 20,
+          "marginLeft": 25,
+          "marginTop": 0,
+          "paddingVertical": 5,
+        }
+      }
+    >
+      See -2 more components
+    </Text>
+  </LogBoxButton>
+</LogBoxInspectorSection>
 `;
 
 exports[`LogBoxInspectorReactFrames should render null for no componentStack frames 1`] = `null`;

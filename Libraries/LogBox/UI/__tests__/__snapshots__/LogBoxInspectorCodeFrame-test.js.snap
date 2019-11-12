@@ -1,39 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`LogBoxInspectorCodeFrame should render a code frame 1`] = `
-<View
-  style={
-    Object {
-      "marginBottom": 10,
-      "marginTop": 20,
-    }
-  }
+<LogBoxInspectorSection
+  heading="Source"
 >
-  <View
-    style={
-      Object {
-        "alignItems": "center",
-        "flexDirection": "row",
-        "marginBottom": 10,
-        "paddingHorizontal": 12,
-      }
-    }
-  >
-    <Text
-      style={
-        Object {
-          "color": "rgba(255, 255, 255, 1)",
-          "flex": 1,
-          "fontSize": 20,
-          "fontWeight": "600",
-          "includeFontPadding": false,
-          "lineHeight": 20,
-        }
-      }
-    >
-      Location
-    </Text>
-  </View>
   <View
     style={
       Object {
@@ -114,7 +84,7 @@ exports[`LogBoxInspectorCodeFrame should render a code frame 1`] = `
       </Text>
     </LogBoxButton>
   </View>
-</View>
+</LogBoxInspectorSection>
 `;
 
 exports[`LogBoxInspectorCodeFrame should render null for no code frame 1`] = `null`;

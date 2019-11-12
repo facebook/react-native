@@ -20,7 +20,7 @@ import type {CodeFrame} from '../Data/parseLogBoxLog';
 import LogBoxButton from './LogBoxButton';
 import openFileInEditor from '../../Core/Devtools/openFileInEditor';
 import stripAnsi from 'strip-ansi';
-
+import LogBoxInspectorSection from './LogBoxInspectorSection';
 type Props = $ReadOnly<{|
   codeFrame: ?CodeFrame,
 |}>;
@@ -41,10 +41,7 @@ function LogBoxInspectorCodeFrame(props: Props): React.Node {
   }
 
   return (
-    <View style={styles.section}>
-      <View style={styles.heading}>
-        <Text style={styles.headingText}>Location</Text>
-      </View>
+    <LogBoxInspectorSection heading="Source">
       <View style={styles.box}>
         <View style={styles.frame}>
           <ScrollView horizontal>
@@ -68,15 +65,11 @@ function LogBoxInspectorCodeFrame(props: Props): React.Node {
           </Text>
         </LogBoxButton>
       </View>
-    </View>
+    </LogBoxInspectorSection>
   );
 }
 
 const styles = StyleSheet.create({
-  section: {
-    marginTop: 20,
-    marginBottom: 10,
-  },
   box: {
     backgroundColor: LogBoxStyle.getBackgroundColor(),
     marginLeft: 10,
@@ -92,20 +85,6 @@ const styles = StyleSheet.create({
   button: {
     paddingTop: 10,
     paddingBottom: 10,
-  },
-  heading: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    marginBottom: 10,
-  },
-  headingText: {
-    color: LogBoxStyle.getTextColor(1),
-    flex: 1,
-    fontSize: 20,
-    fontWeight: '600',
-    includeFontPadding: false,
-    lineHeight: 20,
   },
   content: {
     color: LogBoxStyle.getTextColor(1),

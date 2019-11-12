@@ -12,11 +12,12 @@
 
 import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
+import Platform from '../../Utilities/Platform';
 import Text from '../../Text/Text';
 import View from '../../Components/View/View';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
-
+import LogBoxInspectorSection from './LogBoxInspectorSection';
 import type LogBoxLog from '../Data/LogBoxLog';
 
 type Props = $ReadOnly<{|
@@ -47,61 +48,33 @@ function LogBoxInspectorReactFrames(props: Props): React.Node {
   }
 
   return (
-    <View style={componentStyles.section}>
-      <View style={componentStyles.heading}>
-        <Text style={componentStyles.headingText}>React</Text>
-      </View>
-      <View style={componentStyles.body}>
-        {getStackList().map((frame, index) => (
-          <View
-            // Unfortunately we don't have a unique identifier for stack traces.
-            key={index}
-            style={componentStyles.frame}>
+    <LogBoxInspectorSection heading="Component Stack">
+      {getStackList().map((frame, index) => (
+        <View
+          // Unfortunately we don't have a unique identifier for stack traces.
+          key={index}
+          style={componentStyles.frame}>
+          <View style={componentStyles.component}>
+            <Text style={componentStyles.bracket}>{'<'}</Text>
             <Text style={componentStyles.frameName}>{frame.component}</Text>
-            <Text style={componentStyles.frameLocation}>{frame.location}</Text>
+            <Text style={componentStyles.bracket}>{' />'}</Text>
           </View>
-        ))}
-        <LogBoxButton
-          backgroundColor={{
-            default: 'transparent',
-            pressed: LogBoxStyle.getBackgroundColor(1),
-          }}
-          onPress={() => setCollapsed(!collapsed)}>
-          <Text style={componentStyles.collapse}>{getCollapseMessage()}</Text>
-        </LogBoxButton>
-      </View>
-    </View>
+          <Text style={componentStyles.frameLocation}>{frame.location}</Text>
+        </View>
+      ))}
+      <LogBoxButton
+        backgroundColor={{
+          default: 'transparent',
+          pressed: LogBoxStyle.getBackgroundColor(1),
+        }}
+        onPress={() => setCollapsed(!collapsed)}>
+        <Text style={componentStyles.collapse}>{getCollapseMessage()}</Text>
+      </LogBoxButton>
+    </LogBoxInspectorSection>
   );
 }
 
 const componentStyles = StyleSheet.create({
-  section: {
-    marginTop: 15,
-  },
-  heading: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    marginBottom: 10,
-  },
-  headingText: {
-    color: LogBoxStyle.getTextColor(1),
-    flex: 1,
-    fontSize: 20,
-    fontWeight: '600',
-    includeFontPadding: false,
-    lineHeight: 20,
-  },
-  body: {
-    paddingBottom: 10,
-  },
-  bodyText: {
-    color: LogBoxStyle.getTextColor(1),
-    fontSize: 14,
-    includeFontPadding: false,
-    lineHeight: 18,
-    fontWeight: '500',
-  },
   collapse: {
     color: LogBoxStyle.getTextColor(0.7),
     fontSize: 12,
@@ -115,9 +88,21 @@ const componentStyles = StyleSheet.create({
     paddingHorizontal: 25,
     paddingVertical: 4,
   },
+  component: {
+    flexDirection: 'row',
+  },
   frameName: {
+    fontFamily: Platform.select({android: 'monospace', ios: 'Menlo'}),
     color: LogBoxStyle.getTextColor(1),
     fontSize: 14,
+    includeFontPadding: false,
+    lineHeight: 18,
+  },
+  bracket: {
+    fontFamily: Platform.select({android: 'monospace', ios: 'Menlo'}),
+    color: LogBoxStyle.getTextColor(0.4),
+    fontSize: 14,
+    fontWeight: '500',
     includeFontPadding: false,
     lineHeight: 18,
   },
