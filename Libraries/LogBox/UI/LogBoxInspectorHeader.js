@@ -29,6 +29,18 @@ type Props = $ReadOnly<{|
 |}>;
 
 function LogBoxInspectorHeader(props: Props): React.Node {
+  if (props.level === 'syntax') {
+    return (
+      <SafeAreaView style={styles[props.level]}>
+        <View style={styles.header}>
+          <View style={styles.title}>
+            <Text style={styles.titleText}>Failed to compile</Text>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   const prevIndex =
     props.selectedIndex - 1 < 0 ? props.total - 1 : props.selectedIndex - 1;
   const nextIndex =

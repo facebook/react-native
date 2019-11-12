@@ -110,6 +110,49 @@ exports[`LogBoxInspectorHeader should render no buttons for one total 1`] = `
 </ForwardRef(SafeAreaView)>
 `;
 
+exports[`LogBoxInspectorHeader should render syntax error header 1`] = `
+<ForwardRef(SafeAreaView)
+  style={
+    Object {
+      "backgroundColor": "rgba(243, 83, 105, 1)",
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "flexDirection": "row",
+        "height": 44,
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "flex": 1,
+          "justifyContent": "center",
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 1)",
+            "fontSize": 16,
+            "fontWeight": "600",
+            "includeFontPadding": false,
+            "lineHeight": 20,
+          }
+        }
+      >
+        Failed to compile
+      </Text>
+    </View>
+  </View>
+</ForwardRef(SafeAreaView)>
+`;
+
 exports[`LogBoxInspectorHeader should render two buttons for three or more total 1`] = `
 <ForwardRef(SafeAreaView)
   style={

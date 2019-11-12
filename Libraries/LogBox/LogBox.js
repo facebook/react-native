@@ -26,6 +26,7 @@ type State = {|
   logs: LogBoxLogs,
   isDisabled: boolean,
   hasError: boolean,
+  selectedLogIndex: number,
 |};
 
 let LogBoxComponent;
@@ -109,6 +110,7 @@ if (__DEV__) {
       logs: new Set(),
       isDisabled: false,
       hasError: false,
+      selectedLogIndex: -1,
     };
 
     render(): React.Node {
@@ -125,6 +127,8 @@ if (__DEV__) {
           onDismissErrors={LogBoxData.clearErrors}
           logs={this.state.logs}
           isDisabled={this.state.isDisabled}
+          selectedLogIndex={this.state.selectedLogIndex}
+          setSelectedLog={this._handleSetSelectedLog}
         />
       );
     }
@@ -143,6 +147,10 @@ if (__DEV__) {
 
     _handleDismiss(log: LogBoxLog): void {
       LogBoxData.dismiss(log);
+    }
+
+    _handleSetSelectedLog(index: number): void {
+      LogBoxData.setSelectedLog(index);
     }
   };
 

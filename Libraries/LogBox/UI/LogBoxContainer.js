@@ -23,12 +23,14 @@ type Props = $ReadOnly<{|
   onDismiss: (log: LogBoxLog) => void,
   onDismissWarns: () => void,
   onDismissErrors: () => void,
+  setSelectedLog: number => void,
   logs: LogBoxLogs,
+  selectedLogIndex: number,
   isDisabled?: ?boolean,
 |}>;
 
 function LogBoxContainer(props: Props): React.Node {
-  const [selectedLogIndex, setSelectedLog] = React.useState(null);
+  const {selectedLogIndex, setSelectedLog} = props;
 
   const logs = Array.from(props.logs);
 
@@ -38,7 +40,7 @@ function LogBoxContainer(props: Props): React.Node {
     // is now outside the bounds of the log array.
     if (selectedLogIndex != null) {
       if (logs.length - 1 <= 0) {
-        setSelectedLog(null);
+        setSelectedLog(-1);
       } else if (selectedLogIndex >= logs.length - 1) {
         setSelectedLog(selectedLogIndex - 1);
       }
@@ -47,7 +49,7 @@ function LogBoxContainer(props: Props): React.Node {
   }
 
   function handleInspectorMinimize() {
-    setSelectedLog(null);
+    setSelectedLog(-1);
   }
 
   function openLog(log: LogBoxLog) {
@@ -60,16 +62,7 @@ function LogBoxContainer(props: Props): React.Node {
     setSelectedLog(index);
   }
 
-  let fatalIndex = logs.length - 1;
-  while (fatalIndex >= 0) {
-    const level = logs[fatalIndex].level;
-    if (level === 'fatal' || level === 'syntax') {
-      break;
-    }
-    fatalIndex -= 1;
-  }
-
-  if (selectedLogIndex == null && fatalIndex >= 0) {
+  if (selectedLogIndex > -1) {
     return (
       <View style={StyleSheet.absoluteFill}>
         <LogBoxInspector
@@ -77,22 +70,6 @@ function LogBoxContainer(props: Props): React.Node {
           onMinimize={handleInspectorMinimize}
           onChangeSelectedIndex={setSelectedLog}
           logs={logs}
-          fatalType={logs[fatalIndex].level}
-          selectedIndex={fatalIndex}
-        />
-      </View>
-    );
-  }
-
-  if (selectedLogIndex != null) {
-    return (
-      <View style={StyleSheet.absoluteFill}>
-        <LogBoxInspector
-          onDismiss={handleInspectorDismiss}
-          onMinimize={handleInspectorMinimize}
-          onChangeSelectedIndex={setSelectedLog}
-          logs={logs}
-          fatalType={fatalIndex >= 0 ? logs[fatalIndex].level : null}
           selectedIndex={selectedLogIndex}
         />
       </View>
@@ -104,7 +81,9 @@ function LogBoxContainer(props: Props): React.Node {
   }
 
   const warnings = logs.filter(log => log.level === 'warn');
-  const errors = logs.filter(log => log.level === 'error');
+  const errors = logs.filter(
+    log => log.level === 'error' || log.level === 'fatal',
+  );
   return (
     <View style={styles.list}>
       {warnings.length > 0 && (
@@ -114,9 +93,6 @@ function LogBoxContainer(props: Props): React.Node {
             level="warn"
             totalLogCount={warnings.length}
             onPressOpen={() => openLog(warnings[warnings.length - 1])}
-            onPressList={() => {
-              /* TODO: open log list */
-            }}
             onPressDismiss={props.onDismissWarns}
           />
         </View>
@@ -128,9 +104,6 @@ function LogBoxContainer(props: Props): React.Node {
             level="error"
             totalLogCount={errors.length}
             onPressOpen={() => openLog(errors[errors.length - 1])}
-            onPressList={() => {
-              /* TODO: open log list */
-            }}
             onPressDismiss={props.onDismissErrors}
           />
         </View>

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`LogBoxContainer should render both an error and warning 1`] = `
+exports[`LogBoxContainer should render both an error and warning notification 1`] = `
 <View
   style={
     Object {
@@ -42,7 +42,6 @@ exports[`LogBoxContainer should render both an error and warning 1`] = `
         }
       }
       onPressDismiss={[Function]}
-      onPressList={[Function]}
       onPressOpen={[Function]}
       totalLogCount={1}
     />
@@ -78,7 +77,6 @@ exports[`LogBoxContainer should render both an error and warning 1`] = `
         }
       }
       onPressDismiss={[Function]}
-      onPressList={[Function]}
       onPressOpen={[Function]}
       totalLogCount={1}
     />
@@ -93,273 +91,11 @@ exports[`LogBoxContainer should render both an error and warning 1`] = `
 </View>
 `;
 
-exports[`LogBoxContainer should render fatal before warn and error 1`] = `
-<View
-  style={
-    Object {
-      "bottom": 0,
-      "left": 0,
-      "position": "absolute",
-      "right": 0,
-      "top": 0,
-    }
-  }
->
-  <LogBoxInspector
-    fatalType="fatal"
-    logs={
-      Array [
-        LogBoxLog {
-          "category": "Some kind of fatal message",
-          "codeFrame": undefined,
-          "componentStack": Array [],
-          "count": 1,
-          "level": "fatal",
-          "message": Object {
-            "content": "Some kind of fatal message",
-            "substitutions": Array [],
-          },
-          "stack": Array [],
-          "symbolicated": Object {
-            "error": null,
-            "stack": null,
-            "status": "NONE",
-          },
-        },
-        LogBoxLog {
-          "category": "Some kind of message",
-          "codeFrame": undefined,
-          "componentStack": Array [],
-          "count": 1,
-          "level": "warn",
-          "message": Object {
-            "content": "Some kind of message",
-            "substitutions": Array [],
-          },
-          "stack": Array [],
-          "symbolicated": Object {
-            "error": null,
-            "stack": null,
-            "status": "NONE",
-          },
-        },
-        LogBoxLog {
-          "category": "Some kind of message (latest)",
-          "codeFrame": undefined,
-          "componentStack": Array [],
-          "count": 1,
-          "level": "error",
-          "message": Object {
-            "content": "Some kind of message (latest)",
-            "substitutions": Array [],
-          },
-          "stack": Array [],
-          "symbolicated": Object {
-            "error": null,
-            "stack": null,
-            "status": "NONE",
-          },
-        },
-      ]
-    }
-    onChangeSelectedIndex={[Function]}
-    onDismiss={[Function]}
-    onMinimize={[Function]}
-    selectedIndex={0}
-  />
-</View>
-`;
-
-exports[`LogBoxContainer should render fatal error even when disabled 1`] = `
-<View
-  style={
-    Object {
-      "bottom": 0,
-      "left": 0,
-      "position": "absolute",
-      "right": 0,
-      "top": 0,
-    }
-  }
->
-  <LogBoxInspector
-    fatalType="fatal"
-    logs={
-      Array [
-        LogBoxLog {
-          "category": "Some kind of message",
-          "codeFrame": undefined,
-          "componentStack": Array [],
-          "count": 1,
-          "level": "fatal",
-          "message": Object {
-            "content": "Should be selected",
-            "substitutions": Array [],
-          },
-          "stack": Array [],
-          "symbolicated": Object {
-            "error": null,
-            "stack": null,
-            "status": "NONE",
-          },
-        },
-      ]
-    }
-    onChangeSelectedIndex={[Function]}
-    onDismiss={[Function]}
-    onMinimize={[Function]}
-    selectedIndex={0}
-  />
-</View>
-`;
-
-exports[`LogBoxContainer should render most recent fatal 1`] = `
-<View
-  style={
-    Object {
-      "bottom": 0,
-      "left": 0,
-      "position": "absolute",
-      "right": 0,
-      "top": 0,
-    }
-  }
->
-  <LogBoxInspector
-    fatalType="fatal"
-    logs={
-      Array [
-        LogBoxLog {
-          "category": "Some kind of fatal message",
-          "codeFrame": undefined,
-          "componentStack": Array [],
-          "count": 1,
-          "level": "fatal",
-          "message": Object {
-            "content": "Should not be selected",
-            "substitutions": Array [],
-          },
-          "stack": Array [],
-          "symbolicated": Object {
-            "error": null,
-            "stack": null,
-            "status": "NONE",
-          },
-        },
-        LogBoxLog {
-          "category": "Some kind of message",
-          "codeFrame": undefined,
-          "componentStack": Array [],
-          "count": 1,
-          "level": "fatal",
-          "message": Object {
-            "content": "Should be selected",
-            "substitutions": Array [],
-          },
-          "stack": Array [],
-          "symbolicated": Object {
-            "error": null,
-            "stack": null,
-            "status": "NONE",
-          },
-        },
-      ]
-    }
-    onChangeSelectedIndex={[Function]}
-    onDismiss={[Function]}
-    onMinimize={[Function]}
-    selectedIndex={1}
-  />
-</View>
-`;
-
-exports[`LogBoxContainer should render most recent syntax error 1`] = `
-<View
-  style={
-    Object {
-      "bottom": 0,
-      "left": 0,
-      "position": "absolute",
-      "right": 0,
-      "top": 0,
-    }
-  }
->
-  <LogBoxInspector
-    fatalType="syntax"
-    logs={
-      Array [
-        LogBoxLog {
-          "category": "Some kind of syntax error message",
-          "codeFrame": Object {
-            "content": "  197 | });
-  198 |
-> 199 | export default CrashReactApp;
-      | ^
-  200 |",
-            "fileName": "/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js",
-            "location": Object {
-              "column": 0,
-              "row": 199,
-            },
-          },
-          "componentStack": Array [],
-          "count": 1,
-          "level": "syntax",
-          "message": Object {
-            "content": "Should not be selected",
-            "substitutions": Array [],
-          },
-          "stack": Array [],
-          "symbolicated": Object {
-            "error": null,
-            "stack": null,
-            "status": "NONE",
-          },
-        },
-        LogBoxLog {
-          "category": "Some kind of syntax error message",
-          "codeFrame": Object {
-            "content": "  197 | });
-  198 |
-> 199 | export default CrashReactApp;
-      | ^
-  200 |",
-            "fileName": "/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js",
-            "location": Object {
-              "column": 0,
-              "row": 199,
-            },
-          },
-          "componentStack": Array [],
-          "count": 1,
-          "level": "syntax",
-          "message": Object {
-            "content": "Should be selected",
-            "substitutions": Array [],
-          },
-          "stack": Array [],
-          "symbolicated": Object {
-            "error": null,
-            "stack": null,
-            "status": "NONE",
-          },
-        },
-      ]
-    }
-    onChangeSelectedIndex={[Function]}
-    onDismiss={[Function]}
-    onMinimize={[Function]}
-    selectedIndex={1}
-  />
-</View>
-`;
-
-exports[`LogBoxContainer should render null when disabled with non-fatal error and warning 1`] = `null`;
-
 exports[`LogBoxContainer should render null with no logs 1`] = `null`;
 
-exports[`LogBoxContainer should render syntax error even when disabled 1`] = `
+exports[`LogBoxContainer should render null with no selected log and disabled 1`] = `null`;
+
+exports[`LogBoxContainer should render selected fatal error even when disabled 1`] = `
 <View
   style={
     Object {
@@ -372,7 +108,48 @@ exports[`LogBoxContainer should render syntax error even when disabled 1`] = `
   }
 >
   <LogBoxInspector
-    fatalType="syntax"
+    logs={
+      Array [
+        LogBoxLog {
+          "category": "Some kind of message",
+          "codeFrame": undefined,
+          "componentStack": Array [],
+          "count": 1,
+          "level": "fatal",
+          "message": Object {
+            "content": "Should be selected",
+            "substitutions": Array [],
+          },
+          "stack": Array [],
+          "symbolicated": Object {
+            "error": null,
+            "stack": null,
+            "status": "NONE",
+          },
+        },
+      ]
+    }
+    onChangeSelectedIndex={[Function]}
+    onDismiss={[Function]}
+    onMinimize={[Function]}
+    selectedIndex={0}
+  />
+</View>
+`;
+
+exports[`LogBoxContainer should render selected syntax error even when disabled 1`] = `
+<View
+  style={
+    Object {
+      "bottom": 0,
+      "left": 0,
+      "position": "absolute",
+      "right": 0,
+      "top": 0,
+    }
+  }
+>
+  <LogBoxInspector
     logs={
       Array [
         LogBoxLog {
@@ -413,7 +190,7 @@ exports[`LogBoxContainer should render syntax error even when disabled 1`] = `
 </View>
 `;
 
-exports[`LogBoxContainer should render the latest error 1`] = `
+exports[`LogBoxContainer should render the latest error notification 1`] = `
 <View
   style={
     Object {
@@ -455,7 +232,6 @@ exports[`LogBoxContainer should render the latest error 1`] = `
         }
       }
       onPressDismiss={[Function]}
-      onPressList={[Function]}
       onPressOpen={[Function]}
       totalLogCount={2}
     />
@@ -470,7 +246,7 @@ exports[`LogBoxContainer should render the latest error 1`] = `
 </View>
 `;
 
-exports[`LogBoxContainer should render the latest warning 1`] = `
+exports[`LogBoxContainer should render the latest warning notification 1`] = `
 <View
   style={
     Object {
@@ -512,7 +288,6 @@ exports[`LogBoxContainer should render the latest warning 1`] = `
         }
       }
       onPressDismiss={[Function]}
-      onPressList={[Function]}
       onPressOpen={[Function]}
       totalLogCount={2}
     />

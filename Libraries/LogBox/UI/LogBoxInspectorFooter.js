@@ -23,31 +23,16 @@ import * as LogBoxStyle from './LogBoxStyle';
 type Props = $ReadOnly<{|
   onDismiss: () => void,
   onMinimize: () => void,
-  fatalType?: ?LogLevel,
+  level?: ?LogLevel,
 |}>;
 
 function LogBoxInspectorFooter(props: Props): React.Node {
-  if (props.fatalType === 'fatal' || props.fatalType === 'syntax') {
+  if (props.level === 'syntax') {
     return (
-      <View style={[styles.root, fatalStyles.root]}>
-        <LogBoxButton
-          backgroundColor={{
-            default: LogBoxStyle.getFatalColor(),
-            pressed: LogBoxStyle.getFatalDarkColor(),
-          }}
-          onPress={() =>
-            require('../../Utilities/DevSettings').reload('LogBox fatal')
-          }
-          style={fatalStyles.button}>
-          <View style={[fatalStyles.content]}>
-            <Text style={fatalStyles.label}>Reload</Text>
-            <Text style={fatalStyles.subtextLabel}>
-              {{fatal: 'Fatal', syntax: 'Syntax'}[props.fatalType]} errors
-              require a full reload
-            </Text>
-          </View>
-          <SafeAreaView />
-        </LogBoxButton>
+      <View style={styles.root}>
+        <Text style={styles.syntaxErrorText}>
+          This error cannot be dismissed.
+        </Text>
       </View>
     );
   }
@@ -82,36 +67,6 @@ function FooterButton(props: ButtonProps): React.Node {
   );
 }
 
-const fatalStyles = StyleSheet.create({
-  root: {
-    shadowColor: LogBoxStyle.getBackgroundDarkColor(1),
-  },
-  button: {
-    flex: 1,
-  },
-  content: {
-    alignItems: 'center',
-    height: 60,
-    justifyContent: 'center',
-  },
-  subtext: {
-    height: 60,
-  },
-  label: {
-    color: LogBoxStyle.getTextColor(1),
-    fontSize: 14,
-    fontWeight: '600',
-    includeFontPadding: false,
-    lineHeight: 20,
-  },
-  subtextLabel: {
-    color: LogBoxStyle.getTextColor(0.8),
-    fontSize: 11,
-    includeFontPadding: false,
-    lineHeight: 12,
-  },
-});
-
 const buttonStyles = StyleSheet.create({
   button: {
     flex: 1,
@@ -138,6 +93,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     elevation: 1,
     flexDirection: 'row',
+  },
+  syntaxErrorText: {
+    textAlign: 'center',
+    width: '100%',
+    fontSize: 14,
+    paddingTop: 15,
+    paddingBottom: 15,
+    fontStyle: 'italic',
+    color: LogBoxStyle.getTextColor(0.6),
   },
 });
 

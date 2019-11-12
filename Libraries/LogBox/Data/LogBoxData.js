@@ -27,7 +27,11 @@ export type LogData = $ReadOnly<{|
 |}>;
 
 export type Observer = (
-  $ReadOnly<{|logs: LogBoxLogs, isDisabled: boolean|}>,
+  $ReadOnly<{|
+    logs: LogBoxLogs,
+    isDisabled: boolean,
+    selectedLogIndex: number,
+  |}>,
 ) => void;
 
 export type IgnorePattern = string | RegExp;
@@ -41,9 +45,32 @@ const ignorePatterns: Set<IgnorePattern> = new Set();
 let logs: LogBoxLogs = new Set();
 let updateTimeout = null;
 let _isDisabled = false;
+let _selectedIndex = -1;
 
 const LOGBOX_ERROR_MESSAGE =
   'An error was thrown when attempting to render log messages via LogBox.';
+
+function getNextState() {
+  const logArray = Array.from(logs);
+  let index = logArray.length - 1;
+  while (index >= 0) {
+    // The latest syntax error is selected and displayed before all other logs.
+    if (logArray[index].level === 'syntax') {
+      return {
+        logs,
+        isDisabled: _isDisabled,
+        selectedLogIndex: index,
+      };
+    }
+    index -= 1;
+  }
+
+  return {
+    logs,
+    isDisabled: _isDisabled,
+    selectedLogIndex: _selectedIndex,
+  };
+}
 
 export function reportLogBoxError(
   error: ExtendedError,
@@ -79,9 +106,7 @@ function handleUpdate(): void {
   if (updateTimeout == null) {
     updateTimeout = setImmediate(() => {
       updateTimeout = null;
-      observers.forEach(({observer}) =>
-        observer({logs, isDisabled: _isDisabled}),
-      );
+      observers.forEach(({observer}) => observer(getNextState()));
     });
   }
 }
@@ -172,10 +197,12 @@ export function addException(error: ExceptionData): void {
         );
 
         // Start symbolicating now so it's warm when it renders.
+        logs.add(newLog);
+
         if (level === 'fatal') {
+          _selectedIndex = logs.size - 1;
           symbolicateLogLazy(newLog);
         }
-        logs.add(newLog);
       }
 
       handleUpdate();
@@ -186,10 +213,16 @@ export function addException(error: ExceptionData): void {
 }
 
 export function clear(): void {
-  if (logs.size > 0) {
-    logs.clear();
+  const newLogs = Array.from(logs).filter(log => log.level === 'syntax');
+  if (newLogs.length !== logs.size) {
+    logs = new Set(newLogs);
     handleUpdate();
   }
+}
+
+export function setSelectedLog(index: number): void {
+  _selectedIndex = index;
+  handleUpdate();
 }
 
 export function clearWarnings(): void {
@@ -201,7 +234,9 @@ export function clearWarnings(): void {
 }
 
 export function clearErrors(): void {
-  const newLogs = Array.from(logs).filter(log => log.level !== 'error');
+  const newLogs = Array.from(logs).filter(
+    log => log.level !== 'error' && log.level !== 'fatal',
+  );
   if (newLogs.length !== logs.size) {
     logs = new Set(newLogs);
     handleUpdate();
@@ -276,7 +311,7 @@ export function observe(observer: Observer): Subscription {
   const subscription = {observer};
   observers.add(subscription);
 
-  observer({logs, isDisabled: _isDisabled});
+  observer(getNextState());
 
   return {
     unsubscribe(): void {

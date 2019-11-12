@@ -39,7 +39,7 @@ exports[`LogBoxContainer should render fatal with selectedIndex 2 1`] = `
     onRetry={[Function]}
   />
   <LogBoxInspectorFooter
-    fatalType="fatal"
+    level="fatal"
     onDismiss={[Function]}
     onMinimize={[Function]}
   />
@@ -87,6 +87,7 @@ exports[`LogBoxContainer should render warning with selectedIndex 0 1`] = `
     onRetry={[Function]}
   />
   <LogBoxInspectorFooter
+    level="warn"
     onDismiss={[Function]}
     onMinimize={[Function]}
   />

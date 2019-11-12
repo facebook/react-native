@@ -35,7 +35,6 @@ describe('LogBoxLogNotification', () => {
         totalLogCount={1}
         level="warn"
         onPressOpen={() => {}}
-        onPressList={() => {}}
         onPressDismiss={() => {}}
       />,
     );

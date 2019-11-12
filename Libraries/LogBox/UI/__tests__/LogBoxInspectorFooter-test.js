@@ -16,44 +16,48 @@ const LogBoxInspectorFooter = require('../LogBoxInspectorFooter').default;
 const render = require('../../../../jest/renderer');
 
 describe('LogBoxInspectorFooter', () => {
-  it('should render two buttons for warning with no fatal', () => {
-    const output = render.shallowRender(
-      <LogBoxInspectorFooter onMinimize={() => {}} onDismiss={() => {}} />,
-    );
-
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should render fatal for warning with a fatal', () => {
+  it('should render two buttons for warning', () => {
     const output = render.shallowRender(
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
-        fatalType="syntax"
+        level="warn"
       />,
     );
 
     expect(output).toMatchSnapshot();
   });
 
-  it('should render fatal button', () => {
+  it('should render two buttons for error', () => {
     const output = render.shallowRender(
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
-        fatalType="fatal"
+        level="error"
       />,
     );
 
     expect(output).toMatchSnapshot();
   });
 
-  it('should render fatal button for syntax erorr', () => {
+  it('should render two buttons for fatal', () => {
     const output = render.shallowRender(
       <LogBoxInspectorFooter
         onMinimize={() => {}}
         onDismiss={() => {}}
-        fatalType="syntax"
+        level="fatal"
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should render no buttons and a message for syntax error', () => {
+    const output = render.shallowRender(
+      <LogBoxInspectorFooter
+        onMinimize={() => {}}
+        onDismiss={() => {}}
+        level="syntax"
       />,
     );
 

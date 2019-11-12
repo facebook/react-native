@@ -27,7 +27,6 @@ type Props = $ReadOnly<{|
   totalLogCount: number,
   level: 'warn' | 'error',
   onPressOpen: () => void,
-  onPressList: () => void,
   onPressDismiss: () => void,
 |}>;
 

@@ -54,4 +54,17 @@ describe('LogBoxInspectorHeader', () => {
 
     expect(output).toMatchSnapshot();
   });
+
+  it('should render syntax error header', () => {
+    const output = render.shallowRender(
+      <LogBoxInspectorHeader
+        onSelectIndex={() => {}}
+        selectedIndex={0}
+        total={1}
+        level="syntax"
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
 });

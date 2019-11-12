@@ -79,7 +79,7 @@ function LogBoxInspector(props: Props): React.Node {
       <LogBoxInspectorFooter
         onDismiss={props.onDismiss}
         onMinimize={props.onMinimize}
-        fatalType={props.fatalType}
+        level={log.level}
       />
     </View>
   );
