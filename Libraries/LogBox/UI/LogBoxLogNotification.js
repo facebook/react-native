@@ -93,6 +93,12 @@ function DismissButton(props) {
           default: LogBoxStyle.getTextColor(0.3),
           pressed: LogBoxStyle.getTextColor(0.5),
         }}
+        hitSlop={{
+          top: 12,
+          right: 10,
+          bottom: 12,
+          left: 10,
+        }}
         onPress={props.onPress}
         style={dismissStyles.press}>
         <Image
