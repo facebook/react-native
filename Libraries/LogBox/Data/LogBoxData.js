@@ -106,7 +106,8 @@ function handleUpdate(): void {
   if (updateTimeout == null) {
     updateTimeout = setImmediate(() => {
       updateTimeout = null;
-      observers.forEach(({observer}) => observer(getNextState()));
+      const nextState = getNextState();
+      observers.forEach(({observer}) => observer(nextState));
     });
   }
 }
@@ -186,6 +187,8 @@ export function addException(error: ExceptionData): void {
       const lastLog = Array.from(logs).pop();
       if (lastLog && lastLog.category === category) {
         lastLog.incrementCount();
+        handleUpdate();
+        return;
       } else {
         const newLog = new LogBoxLog(
           level,
@@ -196,16 +199,38 @@ export function addException(error: ExceptionData): void {
           codeFrame,
         );
 
-        // Start symbolicating now so it's warm when it renders.
-        logs.add(newLog);
-
         if (level === 'fatal') {
-          _selectedIndex = logs.size - 1;
-          symbolicateLogLazy(newLog);
+          // If possible, to avoid jank, we don't want to open the error before
+          // it's symbolicated to avoid To do that, we optimistically wait for
+          // sybolication for up to a second before adding the log.
+          const OPTIMISTIC_WAIT_TIME = 1000;
+
+          let addPendingLog = () => {
+            logs.add(newLog);
+            if (_selectedIndex <= 0) {
+              _selectedIndex = logs.size - 1;
+            }
+            handleUpdate();
+            addPendingLog = null;
+          };
+
+          const optimisticTimeout = setTimeout(() => {
+            if (addPendingLog) {
+              addPendingLog();
+            }
+          }, OPTIMISTIC_WAIT_TIME);
+
+          newLog.symbolicate(status => {
+            if (addPendingLog && status !== 'PENDING') {
+              addPendingLog();
+              clearTimeout(optimisticTimeout);
+            }
+          });
+        } else {
+          logs.add(newLog);
+          handleUpdate();
         }
       }
-
-      handleUpdate();
     } catch (loggingError) {
       reportLogBoxError(loggingError);
     }

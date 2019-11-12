@@ -103,7 +103,8 @@ describe('LogBoxLog', () => {
     const callback = jest.fn();
     log.symbolicate(callback);
 
-    expect(callback.mock.calls.length).toBe(1);
+    expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith('PENDING');
     expect(log.symbolicated).toEqual({
       error: null,
       stack: null,
@@ -116,10 +117,13 @@ describe('LogBoxLog', () => {
 
     const callback = jest.fn();
     log.symbolicate(callback);
+    expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith('PENDING');
 
     jest.runAllTicks();
 
-    expect(callback.mock.calls.length).toBe(2);
+    expect(callback).toBeCalledTimes(2);
+    expect(callback).toBeCalledWith('COMPLETE');
     expect(log.symbolicated).toEqual({
       error: null,
       stack: createStack(['S(A)', 'S(B)', 'S(C)']),
@@ -137,10 +141,13 @@ describe('LogBoxLog', () => {
 
     const callback = jest.fn();
     log.symbolicate(callback);
+    expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith('PENDING');
 
     jest.runAllTicks();
 
-    expect(callback.mock.calls.length).toBe(2);
+    expect(callback).toBeCalledTimes(2);
+    expect(callback).toBeCalledWith('FAILED');
     expect(log.symbolicated).toEqual({
       error,
       stack: null,
@@ -153,10 +160,14 @@ describe('LogBoxLog', () => {
 
     const callback = jest.fn();
     const request = log.symbolicate(callback);
+    expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith('PENDING');
+
     request.abort();
 
     jest.runAllTicks();
 
-    expect(callback.mock.calls.length).toBe(1);
+    expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith('PENDING');
   });
 });

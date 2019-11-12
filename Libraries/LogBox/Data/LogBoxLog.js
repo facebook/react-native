@@ -20,6 +20,8 @@ import type {
 } from './parseLogBoxLog';
 import type {Stack} from './LogBoxSymbolication';
 
+type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
+
 export type LogLevel = 'warn' | 'error' | 'fatal' | 'syntax';
 
 export type SymbolicationRequest = $ReadOnly<{|
@@ -78,7 +80,9 @@ class LogBoxLog {
     return this.symbolicate(callback);
   }
 
-  symbolicate(callback?: () => void): SymbolicationRequest {
+  symbolicate(
+    callback?: (status: SymbolicationStatus) => void,
+  ): SymbolicationRequest {
     let aborted = false;
 
     if (this.symbolicated.status !== 'COMPLETE') {
@@ -112,7 +116,7 @@ class LogBoxLog {
         }
         if (!aborted) {
           if (callback != null) {
-            callback();
+            callback(this.symbolicated.status);
           }
         }
       };
