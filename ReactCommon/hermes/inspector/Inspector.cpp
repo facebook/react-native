@@ -16,12 +16,13 @@
 #include <hermes/inspector/detail/SerialExecutor.h>
 #include <hermes/inspector/detail/Thread.h>
 
+#ifdef HERMES_INSPECTOR_FOLLY_KLUDGE
 // <kludge> This is here, instead of linking against
 // folly/futures/Future.cpp, to avoid pulling in another pile of
 // dependencies, including the separate dependency libevent.  This is
 // likely specific to the version of folly RN uses, so may need to be
 // changed.  Even better, perhaps folly can be refactored to simplify
-// this.
+// this.  Providing a RN-specific Timekeeper impl may also help.
 
 template class folly::Future<folly::Unit>;
 template class folly::Future<bool>;
@@ -29,7 +30,7 @@ template class folly::Future<bool>;
 namespace folly {
 namespace futures {
 
-Future<Unit> sleep(Duration dur, Timekeeper *tk) {
+Future<Unit> sleep(Duration, Timekeeper *) {
   LOG(FATAL) << "folly::futures::sleep() not implemented";
 }
 
@@ -45,6 +46,7 @@ std::shared_ptr<Timekeeper> getTimekeeperSingleton() {
 } // namespace folly
 
 // </kludge>
+#endif
 
 namespace facebook {
 namespace hermes {
