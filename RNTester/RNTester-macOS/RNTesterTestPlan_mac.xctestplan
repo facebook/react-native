@@ -1,0 +1,54 @@
+{
+  "configurations" : [
+    {
+      "id" : "AFD9E2BD-E33C-4C4A-A384-5EAE06C9A403",
+      "name" : "Memory Checking",
+      "options" : {
+        "addressSanitizer" : {
+          "detectStackUseAfterReturn" : true,
+          "enabled" : true
+        },
+        "nsZombieEnabled" : true
+      }
+    },
+    {
+      "id" : "25FE48EC-9A2D-4569-A6B2-13F09014C2AB",
+      "name" : "Concurrency",
+      "options" : {
+        "testExecutionOrdering" : "random",
+        "undefinedBehaviorSanitizerEnabled" : true
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "environmentVariableEntries" : [
+      {
+        "key" : "CI_USE_PACKAGER",
+        "value" : "1"
+      }
+    ],
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:RNTester.xcodeproj",
+      "identifier" : "18FC77851EF4770B002B3F17",
+      "name" : "RNTester-macOS"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:RNTester.xcodeproj",
+        "identifier" : "18FC779A1EF4770B002B3F17",
+        "name" : "RNTester-macOSUnitTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RNTester.xcodeproj",
+        "identifier" : "18FC77A51EF4770B002B3F17",
+        "name" : "RNTester-macOSIntegrationTests"
+      }
+    }
+  ],
+  "version" : 1
+}

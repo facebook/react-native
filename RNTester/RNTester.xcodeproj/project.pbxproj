@@ -916,6 +916,7 @@
 		8385CF051B8747A000C6273E /* RCTImageLoaderHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTImageLoaderHelpers.h; sourceTree = "<group>"; };
 		9F1534BD233AB44F006DFE44 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		9F1C4D00236CB06B0022EC0D /* RNTesterTestPlan_iOS.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = RNTesterTestPlan_iOS.xctestplan; sourceTree = "<group>"; };
+		9F4D1F022375E7A10012B4A9 /* RNTesterTestPlan_mac.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = RNTesterTestPlan_mac.xctestplan; sourceTree = "<group>"; };
 		9F5C1923230F46CB00E3E5A7 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		9FBFA513233C7E4C003D9A8D /* RNTesterBundle-macOS.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "RNTesterBundle-macOS.bundle"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FBFA515233C7E4C003D9A8D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1362,6 +1363,7 @@
 		18FC77871EF4770B002B3F17 /* RNTester-macOS */ = {
 			isa = PBXGroup;
 			children = (
+				9F4D1F022375E7A10012B4A9 /* RNTesterTestPlan_mac.xctestplan */,
 				18FC77881EF4770B002B3F17 /* AppDelegate.h */,
 				18FC77891EF4770B002B3F17 /* AppDelegate.m */,
 				18FC778E1EF4770B002B3F17 /* ViewController.h */,
