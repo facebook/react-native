@@ -1325,36 +1325,84 @@ namespace facebook {
   namespace react {
 
     
-    static facebook::jsi::Value __hostFunction_NativeImageLoaderSpecJSI_getSize(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeImageLoaderAndroidSpecJSI_abortRequest(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "abortRequest", @selector(abortRequest:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeImageLoaderAndroidSpecJSI_getSize(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "getSize", @selector(getSize:resolve:reject:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeImageLoaderSpecJSI_getSizeWithHeaders(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeImageLoaderAndroidSpecJSI_getSizeWithHeaders(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "getSizeWithHeaders", @selector(getSizeWithHeaders:headers:resolve:reject:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeImageLoaderSpecJSI_prefetchImage(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "prefetchImage", @selector(prefetchImage:resolve:reject:), args, count);
+    static facebook::jsi::Value __hostFunction_NativeImageLoaderAndroidSpecJSI_prefetchImage(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "prefetchImage", @selector(prefetchImage:requestId:resolve:reject:), args, count);
     }
 
-    static facebook::jsi::Value __hostFunction_NativeImageLoaderSpecJSI_queryCache(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+    static facebook::jsi::Value __hostFunction_NativeImageLoaderAndroidSpecJSI_queryCache(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "queryCache", @selector(queryCache:resolve:reject:), args, count);
     }
 
 
-    NativeImageLoaderSpecJSI::NativeImageLoaderSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
-      : ObjCTurboModule("ImageLoader", instance, jsInvoker) {
+    NativeImageLoaderAndroidSpecJSI::NativeImageLoaderAndroidSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
+      : ObjCTurboModule("ImageLoaderAndroid", instance, jsInvoker) {
         
-        methodMap_["getSize"] = MethodMetadata {1, __hostFunction_NativeImageLoaderSpecJSI_getSize};
-        
-        
-        methodMap_["getSizeWithHeaders"] = MethodMetadata {2, __hostFunction_NativeImageLoaderSpecJSI_getSizeWithHeaders};
+        methodMap_["abortRequest"] = MethodMetadata {1, __hostFunction_NativeImageLoaderAndroidSpecJSI_abortRequest};
         
         
-        methodMap_["prefetchImage"] = MethodMetadata {1, __hostFunction_NativeImageLoaderSpecJSI_prefetchImage};
+        methodMap_["getSize"] = MethodMetadata {1, __hostFunction_NativeImageLoaderAndroidSpecJSI_getSize};
         
         
-        methodMap_["queryCache"] = MethodMetadata {1, __hostFunction_NativeImageLoaderSpecJSI_queryCache};
+        methodMap_["getSizeWithHeaders"] = MethodMetadata {2, __hostFunction_NativeImageLoaderAndroidSpecJSI_getSizeWithHeaders};
+        
+        
+        methodMap_["prefetchImage"] = MethodMetadata {2, __hostFunction_NativeImageLoaderAndroidSpecJSI_prefetchImage};
+        
+        
+        methodMap_["queryCache"] = MethodMetadata {1, __hostFunction_NativeImageLoaderAndroidSpecJSI_queryCache};
+        
+        
+
+    }
+
+  } // namespace react
+} // namespace facebook
+namespace facebook {
+  namespace react {
+
+    
+    static facebook::jsi::Value __hostFunction_NativeImageLoaderIOSSpecJSI_getSize(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "getSize", @selector(getSize:resolve:reject:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeImageLoaderIOSSpecJSI_getSizeWithHeaders(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "getSizeWithHeaders", @selector(getSizeWithHeaders:headers:resolve:reject:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeImageLoaderIOSSpecJSI_prefetchImage(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "prefetchImage", @selector(prefetchImage:resolve:reject:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeImageLoaderIOSSpecJSI_queryCache(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "queryCache", @selector(queryCache:resolve:reject:), args, count);
+    }
+
+
+    NativeImageLoaderIOSSpecJSI::NativeImageLoaderIOSSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker)
+      : ObjCTurboModule("ImageLoaderIOS", instance, jsInvoker) {
+        
+        methodMap_["getSize"] = MethodMetadata {1, __hostFunction_NativeImageLoaderIOSSpecJSI_getSize};
+        
+        
+        methodMap_["getSizeWithHeaders"] = MethodMetadata {2, __hostFunction_NativeImageLoaderIOSSpecJSI_getSizeWithHeaders};
+        
+        
+        methodMap_["prefetchImage"] = MethodMetadata {1, __hostFunction_NativeImageLoaderIOSSpecJSI_prefetchImage};
+        
+        
+        methodMap_["queryCache"] = MethodMetadata {1, __hostFunction_NativeImageLoaderIOSSpecJSI_queryCache};
         
         
 

@@ -24,7 +24,7 @@ import type {ImageProps as ImagePropsType} from './ImageProps';
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 
 import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
-import NativeImageLoader from './NativeImageLoader';
+import NativeImageLoaderIOS from './NativeImageLoaderIOS';
 
 const ImageViewManager = NativeModules.ImageViewManager;
 const RCTImageView: HostComponent<mixed> = requireNativeComponent(
@@ -36,7 +36,7 @@ function getSize(
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
 ) {
-  NativeImageLoader.getSize(uri)
+  NativeImageLoaderIOS.getSize(uri)
     .then(([width, height]) => success(width, height))
     .catch(
       failure ||
@@ -52,7 +52,7 @@ function getSizeWithHeaders(
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
 ): any {
-  return NativeImageLoader.getSizeWithHeaders(uri, headers)
+  return NativeImageLoaderIOS.getSizeWithHeaders(uri, headers)
     .then(function(sizes) {
       success(sizes.width, sizes.height);
     })
@@ -65,13 +65,13 @@ function getSizeWithHeaders(
 }
 
 function prefetch(url: string): any {
-  return NativeImageLoader.prefetchImage(url);
+  return NativeImageLoaderIOS.prefetchImage(url);
 }
 
 async function queryCache(
   urls: Array<string>,
 ): Promise<{[string]: 'memory' | 'disk' | 'disk/memory'}> {
-  return await NativeImageLoader.queryCache(urls);
+  return await NativeImageLoaderIOS.queryCache(urls);
 }
 
 type ImageComponentStatics = $ReadOnly<{|

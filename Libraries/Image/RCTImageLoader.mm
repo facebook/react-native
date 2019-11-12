@@ -28,7 +28,7 @@ static NSInteger RCTImageBytesForImage(UIImage *image)
   return image.images ? image.images.count * singleImageBytes : singleImageBytes;
 }
 
-@interface RCTImageLoader() <NativeImageLoaderSpec>
+@interface RCTImageLoader() <NativeImageLoaderIOSSpec>
 
 @end
 
@@ -946,7 +946,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:
   (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  return std::make_shared<facebook::react::NativeImageLoaderSpecJSI>(self, jsInvoker);
+  return std::make_shared<facebook::react::NativeImageLoaderIOSSpecJSI>(self, jsInvoker);
 }
 
 RCT_EXPORT_METHOD(getSize:(NSString *)uri resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)

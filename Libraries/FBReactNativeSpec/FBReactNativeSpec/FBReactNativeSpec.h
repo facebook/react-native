@@ -1466,7 +1466,39 @@ namespace facebook {
     };
   } // namespace react
 } // namespace facebook
-@protocol NativeImageLoaderSpec <RCTBridgeModule, RCTTurboModule>
+@protocol NativeImageLoaderAndroidSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)abortRequest:(double)requestId;
+- (void)getSize:(NSString *)uri
+        resolve:(RCTPromiseResolveBlock)resolve
+         reject:(RCTPromiseRejectBlock)reject;
+- (void)getSizeWithHeaders:(NSString *)uri
+                   headers:(NSDictionary *)headers
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject;
+- (void)prefetchImage:(NSString *)uri
+            requestId:(double)requestId
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject;
+- (void)queryCache:(NSArray *)uris
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject;
+
+@end
+namespace facebook {
+  namespace react {
+    /**
+     * ObjC++ class for module 'ImageLoaderAndroid'
+     */
+
+    class JSI_EXPORT NativeImageLoaderAndroidSpecJSI : public ObjCTurboModule {
+    public:
+      NativeImageLoaderAndroidSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
+
+    };
+  } // namespace react
+} // namespace facebook
+@protocol NativeImageLoaderIOSSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)getSize:(NSString *)uri
         resolve:(RCTPromiseResolveBlock)resolve
@@ -1486,12 +1518,12 @@ namespace facebook {
 namespace facebook {
   namespace react {
     /**
-     * ObjC++ class for module 'ImageLoader'
+     * ObjC++ class for module 'ImageLoaderIOS'
      */
 
-    class JSI_EXPORT NativeImageLoaderSpecJSI : public ObjCTurboModule {
+    class JSI_EXPORT NativeImageLoaderIOSSpecJSI : public ObjCTurboModule {
     public:
-      NativeImageLoaderSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
+      NativeImageLoaderIOSSpecJSI(id<RCTTurboModule> instance, std::shared_ptr<CallInvoker> jsInvoker);
 
     };
   } // namespace react

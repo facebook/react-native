@@ -14,7 +14,6 @@ const DeprecatedImageStylePropTypes = require('../DeprecatedPropTypes/Deprecated
 const DeprecatedStyleSheetPropType = require('../DeprecatedPropTypes/DeprecatedStyleSheetPropType');
 const DeprecatedViewPropTypes = require('../DeprecatedPropTypes/DeprecatedViewPropTypes');
 const ImageViewNativeComponent = require('./ImageViewNativeComponent');
-const NativeModules = require('../BatchedBridge/NativeModules');
 const PropTypes = require('prop-types');
 const React = require('react');
 const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
@@ -24,7 +23,7 @@ const TextAncestor = require('../Text/TextAncestor');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const resolveAssetSource = require('./resolveAssetSource');
 
-const {ImageLoader} = NativeModules;
+import NativeImageLoaderAndroid from './NativeImageLoaderAndroid';
 
 const TextInlineImageNativeComponent = require('./TextInlineImageNativeComponent');
 
@@ -149,7 +148,7 @@ function getSize(
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
 ): any {
-  return ImageLoader.getSize(url)
+  return NativeImageLoaderAndroid.getSize(url)
     .then(function(sizes) {
       success(sizes.width, sizes.height);
     })
@@ -173,7 +172,7 @@ function getSizeWithHeaders(
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
 ): any {
-  return ImageLoader.getSizeWithHeaders(url, headers)
+  return NativeImageLoaderAndroid.getSizeWithHeaders(url, headers)
     .then(function(sizes) {
       success(sizes.width, sizes.height);
     })
@@ -188,11 +187,11 @@ function getSizeWithHeaders(
 function prefetch(url: string, callback: ?Function): any {
   const requestId = generateRequestId();
   callback && callback(requestId);
-  return ImageLoader.prefetchImage(url, requestId);
+  return NativeImageLoaderAndroid.prefetchImage(url, requestId);
 }
 
 function abortPrefetch(requestId: number) {
-  ImageLoader.abortRequest(requestId);
+  NativeImageLoaderAndroid.abortRequest(requestId);
 }
 
 /**
@@ -203,7 +202,7 @@ function abortPrefetch(requestId: number) {
 async function queryCache(
   urls: Array<string>,
 ): Promise<{[string]: 'memory' | 'disk' | 'disk/memory'}> {
-  return await ImageLoader.queryCache(urls);
+  return await NativeImageLoaderAndroid.queryCache(urls);
 }
 
 type ImageComponentStatics = $ReadOnly<{|
