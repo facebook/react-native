@@ -341,14 +341,6 @@ static RCTBorderColors RCTBorderColorsFromBorderColors(BorderColors borderColors
                          .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)};
 }
 
-static UIEdgeInsets UIEdgeInsetsFromBorderInsets(EdgeInsets edgeInsets)
-{
-  return UIEdgeInsets{.left = (CGFloat)edgeInsets.left,
-                      .top = (CGFloat)edgeInsets.top,
-                      .bottom = (CGFloat)edgeInsets.bottom,
-                      .right = (CGFloat)edgeInsets.right};
-}
-
 static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 {
   switch (borderStyle) {
@@ -431,7 +423,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),
         layer.bounds.size,
         RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
-        UIEdgeInsetsFromBorderInsets(borderMetrics.borderWidths),
+        RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
         RCTBorderColorsFromBorderColors(borderMetrics.borderColors),
         _backgroundColor.CGColor,
         self.clipsToBounds);
