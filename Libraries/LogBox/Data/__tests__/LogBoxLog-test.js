@@ -19,18 +19,19 @@ jest.mock('../LogBoxSymbolication', () => {
 });
 
 function getLogBoxLog() {
-  return new (require('../LogBoxLog')).default(
-    'warn',
-    {content: '...', substitutions: []},
-    createStack(['A', 'B', 'C']),
-    'Message category...',
-    [{component: 'LogBoxLog', location: 'LogBoxLog.js:1'}],
-    {
+  return new (require('../LogBoxLog')).default({
+    level: 'warn',
+    isComponentError: false,
+    message: {content: '...', substitutions: []},
+    stack: createStack(['A', 'B', 'C']),
+    category: 'Message category...',
+    componentStack: [{component: 'LogBoxLog', location: 'LogBoxLog.js:1'}],
+    codeFrame: {
       fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
       location: {row: 199, column: 0},
       content: '<code frame>',
     },
-  );
+  });
 }
 
 function getLogBoxSymbolication(): {|

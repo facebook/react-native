@@ -28,6 +28,7 @@ exports[`LogBoxContainer should render both an error and warning notification 1`
           "codeFrame": undefined,
           "componentStack": Array [],
           "count": 1,
+          "isComponentError": false,
           "level": "warn",
           "message": Object {
             "content": "Some kind of message",
@@ -63,6 +64,7 @@ exports[`LogBoxContainer should render both an error and warning notification 1`
           "codeFrame": undefined,
           "componentStack": Array [],
           "count": 1,
+          "isComponentError": false,
           "level": "error",
           "message": Object {
             "content": "Some kind of message (latest)",
@@ -115,6 +117,7 @@ exports[`LogBoxContainer should render selected fatal error even when disabled 1
           "codeFrame": undefined,
           "componentStack": Array [],
           "count": 1,
+          "isComponentError": false,
           "level": "fatal",
           "message": Object {
             "content": "Should be selected",
@@ -168,6 +171,7 @@ exports[`LogBoxContainer should render selected syntax error even when disabled 
           },
           "componentStack": Array [],
           "count": 1,
+          "isComponentError": false,
           "level": "syntax",
           "message": Object {
             "content": "Should be selected",
@@ -218,6 +222,7 @@ exports[`LogBoxContainer should render the latest error notification 1`] = `
           "codeFrame": undefined,
           "componentStack": Array [],
           "count": 1,
+          "isComponentError": false,
           "level": "error",
           "message": Object {
             "content": "Some kind of message (latest)",
@@ -274,6 +279,7 @@ exports[`LogBoxContainer should render the latest warning notification 1`] = `
           "codeFrame": undefined,
           "componentStack": Array [],
           "count": 1,
+          "isComponentError": false,
           "level": "warn",
           "message": Object {
             "content": "Some kind of message (latest)",

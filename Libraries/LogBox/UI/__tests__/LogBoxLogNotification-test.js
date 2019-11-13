@@ -16,16 +16,17 @@ const LogBoxLogNotification = require('../LogBoxLogNotification').default;
 const LogBoxLog = require('../../Data/LogBoxLog').default;
 const render = require('../../../../jest/renderer');
 
-const log = new LogBoxLog(
-  'warn',
-  {
+const log = new LogBoxLog({
+  level: 'warn',
+  isComponentError: false,
+  message: {
     content: 'Some kind of message',
     substitutions: [],
   },
-  [],
-  'Some kind of message',
-  [],
-);
+  stack: [],
+  category: 'Some kind of message',
+  componentStack: [],
+});
 
 describe('LogBoxLogNotification', () => {
   it('should render log', () => {

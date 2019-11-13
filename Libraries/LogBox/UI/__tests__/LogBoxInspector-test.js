@@ -17,36 +17,39 @@ const LogBoxLog = require('../../Data/LogBoxLog').default;
 const render = require('../../../../jest/renderer');
 
 const logs = [
-  new LogBoxLog(
-    'warn',
-    {
+  new LogBoxLog({
+    level: 'warn',
+    isComponentError: false,
+    message: {
       content: 'Some kind of message (first)',
       substitutions: [],
     },
-    [],
-    'Some kind of message (first)',
-    [],
-  ),
-  new LogBoxLog(
-    'error',
-    {
+    stack: [],
+    category: 'Some kind of message (first)',
+    componentStack: [],
+  }),
+  new LogBoxLog({
+    level: 'error',
+    isComponentError: false,
+    message: {
       content: 'Some kind of message (second)',
       substitutions: [],
     },
-    [],
-    'Some kind of message (second)',
-    [],
-  ),
-  new LogBoxLog(
-    'fatal',
-    {
+    stack: [],
+    category: 'Some kind of message (second)',
+    componentStack: [],
+  }),
+  new LogBoxLog({
+    level: 'fatal',
+    isComponentError: false,
+    message: {
       content: 'Some kind of message (third)',
       substitutions: [],
     },
-    [],
-    'Some kind of message (third)',
-    [],
-  ),
+    stack: [],
+    category: 'Some kind of message (third)',
+    componentStack: [],
+  }),
 ];
 
 describe('LogBoxContainer', () => {

@@ -43,16 +43,17 @@ describe('LogBoxContainer', () => {
         selectedLogIndex={-1}
         logs={
           new Set([
-            new LogBoxLog(
-              'warn',
-              {
+            new LogBoxLog({
+              level: 'warn',
+              isComponentError: false,
+              message: {
                 content: 'Some kind of message',
                 substitutions: [],
               },
-              [],
-              'Some kind of message',
-              [],
-            ),
+              stack: [],
+              category: 'Some kind of message',
+              componentStack: [],
+            }),
           ])
         }
       />,
@@ -71,26 +72,28 @@ describe('LogBoxContainer', () => {
         selectedLogIndex={-1}
         logs={
           new Set([
-            new LogBoxLog(
-              'warn',
-              {
+            new LogBoxLog({
+              level: 'warn',
+              isComponentError: false,
+              message: {
                 content: 'Some kind of message',
                 substitutions: [],
               },
-              [],
-              'Some kind of message',
-              [],
-            ),
-            new LogBoxLog(
-              'warn',
-              {
+              stack: [],
+              category: 'Some kind of message',
+              componentStack: [],
+            }),
+            new LogBoxLog({
+              level: 'warn',
+              isComponentError: false,
+              message: {
                 content: 'Some kind of message (latest)',
                 substitutions: [],
               },
-              [],
-              'Some kind of message (latest)',
-              [],
-            ),
+              stack: [],
+              category: 'Some kind of message (latest)',
+              componentStack: [],
+            }),
           ])
         }
       />,
@@ -109,26 +112,28 @@ describe('LogBoxContainer', () => {
         selectedLogIndex={-1}
         logs={
           new Set([
-            new LogBoxLog(
-              'error',
-              {
+            new LogBoxLog({
+              level: 'error',
+              isComponentError: false,
+              message: {
                 content: 'Some kind of message',
                 substitutions: [],
               },
-              [],
-              'Some kind of message',
-              [],
-            ),
-            new LogBoxLog(
-              'error',
-              {
+              stack: [],
+              category: 'Some kind of message',
+              componentStack: [],
+            }),
+            new LogBoxLog({
+              level: 'error',
+              isComponentError: false,
+              message: {
                 content: 'Some kind of message (latest)',
                 substitutions: [],
               },
-              [],
-              'Some kind of message (latest)',
-              [],
-            ),
+              stack: [],
+              category: 'Some kind of message (latest)',
+              componentStack: [],
+            }),
           ])
         }
       />,
@@ -147,26 +152,28 @@ describe('LogBoxContainer', () => {
         selectedLogIndex={-1}
         logs={
           new Set([
-            new LogBoxLog(
-              'warn',
-              {
+            new LogBoxLog({
+              level: 'warn',
+              isComponentError: false,
+              message: {
                 content: 'Some kind of message',
                 substitutions: [],
               },
-              [],
-              'Some kind of message',
-              [],
-            ),
-            new LogBoxLog(
-              'error',
-              {
+              stack: [],
+              category: 'Some kind of message',
+              componentStack: [],
+            }),
+            new LogBoxLog({
+              level: 'error',
+              isComponentError: false,
+              message: {
                 content: 'Some kind of message (latest)',
                 substitutions: [],
               },
-              [],
-              'Some kind of message (latest)',
-              [],
-            ),
+              stack: [],
+              category: 'Some kind of message (latest)',
+              componentStack: [],
+            }),
           ])
         }
       />,
@@ -186,16 +193,17 @@ describe('LogBoxContainer', () => {
         selectedLogIndex={0}
         logs={
           new Set([
-            new LogBoxLog(
-              'fatal',
-              {
+            new LogBoxLog({
+              level: 'fatal',
+              isComponentError: false,
+              message: {
                 content: 'Should be selected',
                 substitutions: [],
               },
-              [],
-              'Some kind of message',
-              [],
-            ),
+              stack: [],
+              category: 'Some kind of message',
+              componentStack: [],
+            }),
           ])
         }
       />,
@@ -215,16 +223,17 @@ describe('LogBoxContainer', () => {
         selectedLogIndex={0}
         logs={
           new Set([
-            new LogBoxLog(
-              'syntax',
-              {
+            new LogBoxLog({
+              level: 'syntax',
+              isComponentError: false,
+              message: {
                 content: 'Should be selected',
                 substitutions: [],
               },
-              [],
-              'Some kind of syntax error message',
-              [],
-              {
+              stack: [],
+              category: 'Some kind of syntax error message',
+              componentStack: [],
+              codeFrame: {
                 fileName:
                   '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
                 location: {row: 199, column: 0},
@@ -234,7 +243,7 @@ describe('LogBoxContainer', () => {
       | ^
   200 |`,
               },
-            ),
+            }),
           ])
         }
       />,

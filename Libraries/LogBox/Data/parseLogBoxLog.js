@@ -12,9 +12,8 @@
 
 import UTFSequence from '../../UTFSequence';
 import stringifySafe from '../../Utilities/stringifySafe';
-import type {LogLevel} from './LogBoxLog';
 import type {ExceptionData} from '../../Core/NativeExceptionsManager';
-import type {Stack} from './LogBoxSymbolication';
+import type {LogBoxLogData} from './LogBoxLog';
 
 export type ExtendedExceptionData = ExceptionData & {isComponentError: boolean};
 export type Category = string;
@@ -139,14 +138,7 @@ export function parseComponentStack(message: string): ComponentStack {
 
 export function parseLogBoxException(
   error: ExtendedExceptionData,
-): {|
-  level: LogLevel,
-  category: Category,
-  message: Message,
-  codeFrame?: CodeFrame,
-  stack: Stack,
-  componentStack?: ComponentStack,
-|} {
+): LogBoxLogData {
   const message =
     error.originalMessage != null ? error.originalMessage : 'Unknown';
   const match = message.match(
@@ -155,8 +147,9 @@ export function parseLogBoxException(
 
   if (!match) {
     return {
-      level: error.isFatal ? 'fatal' : 'error',
+      level: error.isFatal || error.isComponentError ? 'fatal' : 'error',
       stack: error.stack,
+      isComponentError: error.isComponentError,
       componentStack:
         error.componentStack != null
           ? parseComponentStack(error.componentStack)
@@ -169,6 +162,8 @@ export function parseLogBoxException(
   return {
     level: 'syntax',
     stack: [],
+    isComponentError: false,
+    componentStack: [],
     codeFrame: {
       fileName,
       location: {

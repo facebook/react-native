@@ -17,13 +17,14 @@ const LogBoxInspectorStackFrames = require('../LogBoxInspectorStackFrames')
 const LogBoxLog = require('../../Data/LogBoxLog').default;
 const render = require('../../../../jest/renderer');
 
-const log = new LogBoxLog(
-  'warn',
-  {
+const log = new LogBoxLog({
+  level: 'warn',
+  isComponentError: false,
+  message: {
     content: 'Some kind of message (latest)',
     substitutions: [],
   },
-  [
+  stack: [
     {
       column: 1,
       file: 'dependency.js',
@@ -39,20 +40,21 @@ const log = new LogBoxLog(
       collapse: false,
     },
   ],
-  'Some kind of message (latest)',
-  [],
-);
+  category: 'Some kind of message (latest)',
+  componentStack: [],
+});
 
-const logNoStackFrames = new LogBoxLog(
-  'warn',
-  {
+const logNoStackFrames = new LogBoxLog({
+  level: 'warn',
+  isComponentError: false,
+  message: {
     content: 'Some kind of message (latest)',
     substitutions: [],
   },
-  [],
-  'Some kind of message (latest)',
-  [],
-);
+  stack: [],
+  category: 'Some kind of message (latest)',
+  componentStack: [],
+});
 
 describe('LogBoxInspectorStackFrame', () => {
   it('should render stack frames with 1 frame collapsed', () => {

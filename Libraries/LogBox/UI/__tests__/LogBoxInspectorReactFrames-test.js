@@ -22,16 +22,17 @@ describe('LogBoxInspectorReactFrames', () => {
     const output = render.shallowRender(
       <LogBoxInspectorReactFrames
         log={
-          new LogBoxLog(
-            'warn',
-            {
+          new LogBoxLog({
+            level: 'warn',
+            isComponentError: false,
+            message: {
               content: 'Some kind of message',
               substitutions: [],
             },
-            [],
-            'Some kind of message',
-            [],
-          )
+            stack: [],
+            category: 'Some kind of message',
+            componentStack: [],
+          })
         }
       />,
     );
@@ -43,21 +44,22 @@ describe('LogBoxInspectorReactFrames', () => {
     const output = render.shallowRender(
       <LogBoxInspectorReactFrames
         log={
-          new LogBoxLog(
-            'warn',
-            {
+          new LogBoxLog({
+            level: 'warn',
+            isComponentError: false,
+            message: {
               content: 'Some kind of message',
               substitutions: [],
             },
-            [],
-            'Some kind of message',
-            [
+            stack: [],
+            category: 'Some kind of message',
+            componentStack: [
               {
                 component: 'MyComponent',
                 location: 'MyComponentFile.js:1',
               },
             ],
-          )
+          })
         }
       />,
     );

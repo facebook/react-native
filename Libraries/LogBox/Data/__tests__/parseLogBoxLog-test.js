@@ -167,15 +167,16 @@ describe('parseLogBoxLog', () => {
       | ^
   200 |`,
       name: '',
+      isComponentError: false,
       componentStack: '',
       stack: [],
       id: 0,
       isFatal: true,
-      isComponentError: false,
     };
 
     expect(parseLogBoxException(error)).toEqual({
       level: 'syntax',
+      isComponentError: false,
       codeFrame: {
         fileName: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js',
         location: {row: 199, column: 0},
@@ -190,6 +191,7 @@ describe('parseLogBoxLog', () => {
         substitutions: [],
       },
       stack: [],
+      componentStack: [],
       category: '/path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js-199-0',
     });
   });
@@ -218,6 +220,7 @@ describe('parseLogBoxLog', () => {
     expect(parseLogBoxException(error)).toEqual({
       level: 'error',
       category: '### Error',
+      isComponentError: false,
       message: {
         content: '### Error',
         substitutions: [],
@@ -247,7 +250,48 @@ describe('parseLogBoxLog', () => {
   it('parses a fatal exception', () => {
     const error = {
       id: 0,
+      isFatal: true,
       isComponentError: false,
+      message: '### Fatal',
+      originalMessage: '### Fatal',
+      componentStack: null,
+      name: '',
+      stack: [
+        {
+          column: 1,
+          file: 'foo.js',
+          lineNumber: 1,
+          methodName: 'bar',
+          collapse: false,
+        },
+      ],
+    };
+
+    expect(parseLogBoxException(error)).toEqual({
+      level: 'fatal',
+      category: '### Fatal',
+      isComponentError: false,
+      message: {
+        content: '### Fatal',
+        substitutions: [],
+      },
+      componentStack: [],
+      stack: [
+        {
+          column: 1,
+          file: 'foo.js',
+          lineNumber: 1,
+          methodName: 'bar',
+          collapse: false,
+        },
+      ],
+    });
+  });
+
+  it('parses a render error', () => {
+    const error = {
+      id: 0,
+      isComponentError: true,
       isFatal: true,
       message: '### Fatal',
       originalMessage: '### Fatal',
@@ -267,6 +311,7 @@ describe('parseLogBoxLog', () => {
     expect(parseLogBoxException(error)).toEqual({
       level: 'fatal',
       category: '### Fatal',
+      isComponentError: true,
       message: {
         content: '### Fatal',
         substitutions: [],
@@ -316,6 +361,7 @@ describe('parseLogBoxLog', () => {
           "TransformError SyntaxError: /path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js: 'import' and 'export' may only appear at the top level (199:0)",
         substitutions: [],
       },
+      isComponentError: false,
       componentStack: [],
       stack: [
         {

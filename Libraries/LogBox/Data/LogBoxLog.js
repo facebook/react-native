@@ -24,6 +24,16 @@ type SymbolicationStatus = 'NONE' | 'PENDING' | 'COMPLETE' | 'FAILED';
 
 export type LogLevel = 'warn' | 'error' | 'fatal' | 'syntax';
 
+export type LogBoxLogData = $ReadOnly<{|
+  level: LogLevel,
+  message: Message,
+  stack: Stack,
+  category: string,
+  componentStack: ComponentStack,
+  codeFrame?: ?CodeFrame,
+  isComponentError: boolean,
+|}>;
+
 export type SymbolicationRequest = $ReadOnly<{|
   abort: () => void,
 |}>;
@@ -36,6 +46,7 @@ class LogBoxLog {
   count: number;
   level: LogLevel;
   codeFrame: ?CodeFrame;
+  isComponentError: boolean;
   symbolicated:
     | $ReadOnly<{|error: null, stack: null, status: 'NONE'|}>
     | $ReadOnly<{|error: null, stack: null, status: 'PENDING'|}>
@@ -46,20 +57,14 @@ class LogBoxLog {
     status: 'NONE',
   };
 
-  constructor(
-    level: LogLevel,
-    message: Message,
-    stack: Stack,
-    category: string,
-    componentStack: ComponentStack,
-    codeFrame?: ?CodeFrame,
-  ) {
-    this.level = level;
-    this.message = message;
-    this.stack = stack;
-    this.category = category;
-    this.componentStack = componentStack;
-    this.codeFrame = codeFrame;
+  constructor(data: LogBoxLogData) {
+    this.level = data.level;
+    this.message = data.message;
+    this.stack = data.stack;
+    this.category = data.category;
+    this.componentStack = data.componentStack;
+    this.codeFrame = data.codeFrame;
+    this.isComponentError = data.isComponentError;
     this.count = 1;
   }
 

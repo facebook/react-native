@@ -203,13 +203,14 @@ export function addLog(log: LogData): void {
       const stack = parseErrorStack(errorForStackTrace);
 
       appendNewLog(
-        new LogBoxLog(
-          log.level,
-          log.message,
+        new LogBoxLog({
+          level: log.level,
+          message: log.message,
+          isComponentError: false,
           stack,
-          log.category,
-          log.componentStack,
-        ),
+          category: log.category,
+          componentStack: log.componentStack,
+        }),
       );
     } catch (error) {
       reportLogBoxError(error);
@@ -222,25 +223,7 @@ export function addException(error: ExtendedExceptionData): void {
   // otherwise spammy logs would pause rendering.
   setImmediate(() => {
     try {
-      const {
-        category,
-        message,
-        codeFrame,
-        componentStack,
-        stack,
-        level,
-      } = parseLogBoxException(error);
-
-      appendNewLog(
-        new LogBoxLog(
-          level,
-          message,
-          stack,
-          category,
-          componentStack != null ? componentStack : [],
-          codeFrame,
-        ),
-      );
+      appendNewLog(new LogBoxLog(parseLogBoxException(error)));
     } catch (loggingError) {
       reportLogBoxError(loggingError);
     }
