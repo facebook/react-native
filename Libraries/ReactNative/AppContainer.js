@@ -133,8 +133,8 @@ class AppContainer extends React.Component<Props, State> {
       <RootTagContext.Provider value={this.props.rootTag}>
         <View style={styles.appContainer} pointerEvents="box-none">
           {innerView}
-          {logBox}
           {this.state.inspector}
+          {logBox}
         </View>
       </RootTagContext.Provider>
     );
