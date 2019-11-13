@@ -45,4 +45,12 @@ public class AndroidSwipeRefreshLayoutManagerDelegate<T extends View, U extends 
         super.setProperty(view, propName, value);
     }
   }
+
+  public void receiveCommand(AndroidSwipeRefreshLayoutManagerInterface<T> viewManager, T view, String commandName, ReadableArray args) {
+    switch (commandName) {
+      case "setNativeRefreshing":
+        viewManager.setNativeRefreshing(view, args.getBoolean(0));
+        break;
+    }
+  }
 }

@@ -20,4 +20,5 @@ public interface AndroidSwipeRefreshLayoutManagerInterface<T extends View> {
   void setSize(T view, int value);
   void setProgressViewOffset(T view, float value);
   void setRefreshing(T view, boolean value);
+  void setNativeRefreshing(T view, boolean value);
 }

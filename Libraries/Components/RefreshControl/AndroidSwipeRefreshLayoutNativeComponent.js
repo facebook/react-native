@@ -10,6 +10,9 @@
 
 'use strict';
 
+import * as React from 'react';
+
+import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
@@ -65,6 +68,19 @@ type NativeProps = $ReadOnly<{|
   refreshing: boolean,
 |}>;
 
+type NativeType = HostComponent<NativeProps>;
+
+interface NativeCommands {
+  +setNativeRefreshing: (
+    viewRef: React.ElementRef<NativeType>,
+    value: boolean,
+  ) => void;
+}
+
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['setNativeRefreshing'],
+});
+
 export default (codegenNativeComponent<NativeProps>(
   'AndroidSwipeRefreshLayout',
-): HostComponent<NativeProps>);
+): NativeType);
