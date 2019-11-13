@@ -14,9 +14,10 @@ const React = require('react');
 const StyleSheet = require('../../StyleSheet/StyleSheet');
 const processColor = require('../../StyleSheet/processColor');
 
-const AndroidCheckBoxNativeComponent = require('./AndroidCheckBoxNativeComponent');
 const nullthrows = require('nullthrows');
 const setAndForwardRef = require('../../Utilities/setAndForwardRef');
+
+import AndroidCheckBoxNativeComponent from './AndroidCheckBoxNativeComponent';
 
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';

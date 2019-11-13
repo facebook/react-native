@@ -10,6 +10,10 @@
 
 'use strict';
 
+import * as React from 'react';
+
+import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
+
 const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
 import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
@@ -46,8 +50,19 @@ type NativeProps = $ReadOnly<{|
   tintColors: {|true: ?number, false: ?number|} | typeof undefined,
 |}>;
 
-const AndroidCheckBoxNativeComponent: HostComponent<NativeProps> = requireNativeComponent<NativeProps>(
-  'AndroidCheckBox',
-);
+type NativeType = HostComponent<NativeProps>;
 
-module.exports = AndroidCheckBoxNativeComponent;
+interface NativeCommands {
+  +setNativeValue: (
+    viewRef: React.ElementRef<NativeType>,
+    value: boolean,
+  ) => void;
+}
+
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: ['setNativeValue'],
+});
+
+export default (requireNativeComponent<NativeProps>(
+  'AndroidCheckBox',
+): NativeType);
