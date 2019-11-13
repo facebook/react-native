@@ -102,6 +102,7 @@ class Connection::Impl : public inspector::InspectorObserver,
   void sendResponseToClientViaExecutor(int id);
   void sendResponseToClientViaExecutor(folly::Future<Unit> future, int id);
   void sendNotificationToClientViaExecutor(const m::Notification &note);
+  void sendErrorToClientViaExecutor(int id, const std::string &error);
 
   std::shared_ptr<RuntimeAdapter> runtimeAdapter_;
   std::string title_;
@@ -513,7 +514,9 @@ void Connection::Impl::handle(
   } else if (req.state == "uncaught") {
     mode = debugger::PauseOnThrowMode::Uncaught;
   } else {
-    sendErrorToClient(req.id);
+    sendErrorToClientViaExecutor(
+        req.id, "Unknown pause-on-exception state: " + req.state);
+    return;
   }
 
   sendResponseToClientViaExecutor(
@@ -695,6 +698,17 @@ void Connection::Impl::sendResponseToClientViaExecutor(
         sendResponseToClient(m::makeOkResponse(id));
       })
       .thenError<std::exception>(sendErrorToClient(id));
+}
+
+void Connection::Impl::sendErrorToClientViaExecutor(
+    int id,
+    const std::string &error) {
+  folly::makeFuture()
+      .via(executor_.get())
+      .thenValue([this, id, error](const Unit &unit) {
+        sendResponseToClient(
+            makeErrorResponse(id, m::ErrorCode::ServerError, error));
+      });
 }
 
 void Connection::Impl::sendNotificationToClientViaExecutor(

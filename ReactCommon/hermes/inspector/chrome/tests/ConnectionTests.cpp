@@ -1673,6 +1673,17 @@ TEST(ConnectionTests, testSetPauseOnExceptionsUncaught) {
   EXPECT_EQ(asyncRuntime.getLastThrownExceptionMessage(), "Uncaught exception");
 }
 
+TEST(ConnectionTests, invalidPauseModeGivesError) {
+  TestContext context;
+  SyncConnection &conn = context.conn();
+
+  m::debugger::SetPauseOnExceptionsRequest req;
+  req.id = 1;
+  req.state = "badgers";
+  conn.send(req.toJson());
+  expectResponse<m::ErrorResponse>(conn, req.id);
+}
+
 TEST(ConnectionTests, testShouldPauseOnThrow) {
   TestContext context;
   AsyncHermesRuntime &asyncRuntime = context.runtime();
