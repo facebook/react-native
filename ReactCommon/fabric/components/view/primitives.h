@@ -47,9 +47,9 @@ struct CascadedRectangleEdges {
 
     return {
         /* .left = */ left.value_or(leading.value_or(horizontalOrAllOrDefault)),
+        /* .top = */ top.value_or(verticalOrAllOrDefault),
         /* .right = */
         right.value_or(trailing.value_or(horizontalOrAllOrDefault)),
-        /* .top = */ top.value_or(verticalOrAllOrDefault),
         /* .bottom = */ bottom.value_or(verticalOrAllOrDefault),
     };
   }
