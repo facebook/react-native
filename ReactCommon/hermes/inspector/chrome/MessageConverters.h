@@ -47,11 +47,16 @@ void setHermesLocation(
     hermesLoc.fileName = stripCachePrevention(chromeLoc.url.value());
   } else if (chromeLoc.urlRegex.hasValue()) {
     const std::regex regex(stripCachePrevention(chromeLoc.urlRegex.value()));
-    for (const auto &fileName : parsedScripts) {
-      if (std::regex_match(fileName, regex)) {
-        hermesLoc.fileName = fileName;
+    auto it = parsedScripts.rbegin();
+
+    // We currently only support one physical breakpoint per location, so
+    // search backwards so that we find the latest matching file.
+    while (it != parsedScripts.rend()) {
+      if (std::regex_match(*it, regex)) {
+        hermesLoc.fileName = *it;
         break;
       }
+      it++;
     }
   }
 }
