@@ -16,6 +16,7 @@ import type {LogLevel} from './LogBoxLog';
 import type {ExceptionData} from '../../Core/NativeExceptionsManager';
 import type {Stack} from './LogBoxSymbolication';
 
+export type ExtendedExceptionData = ExceptionData & {isComponentError: boolean};
 export type Category = string;
 export type CodeFrame = $ReadOnly<{|
   content: string,
@@ -137,7 +138,7 @@ export function parseComponentStack(message: string): ComponentStack {
 }
 
 export function parseLogBoxException(
-  error: ExceptionData,
+  error: ExtendedExceptionData,
 ): {|
   level: LogLevel,
   category: Category,

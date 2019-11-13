@@ -16,7 +16,6 @@ jest.mock('../../../Core/Devtools/parseErrorStack', () => {
 });
 
 const {parseLogBoxLog, parseLogBoxException} = require('../parseLogBoxLog');
-import type {ExceptionData} from '../../../Core/NativeExceptionsManager';
 
 describe('parseLogBoxLog', () => {
   it('parses strings', () => {
@@ -152,7 +151,7 @@ describe('parseLogBoxLog', () => {
   });
 
   it('parses a syntax error', () => {
-    const error: ExceptionData = {
+    const error = {
       message: `
 
   197 | });
@@ -172,6 +171,7 @@ describe('parseLogBoxLog', () => {
       stack: [],
       id: 0,
       isFatal: true,
+      isComponentError: false,
     };
 
     expect(parseLogBoxException(error)).toEqual({
@@ -195,9 +195,10 @@ describe('parseLogBoxLog', () => {
   });
 
   it('parses a error log', () => {
-    const error: ExceptionData = {
+    const error = {
       id: 0,
       isFatal: false,
+      isComponentError: false,
       message: '### Error',
       originalMessage: '### Error',
       name: '',
@@ -244,8 +245,9 @@ describe('parseLogBoxLog', () => {
   });
 
   it('parses a fatal exception', () => {
-    const error: ExceptionData = {
+    const error = {
       id: 0,
+      isComponentError: false,
       isFatal: true,
       message: '### Fatal',
       originalMessage: '### Fatal',
@@ -283,9 +285,10 @@ describe('parseLogBoxLog', () => {
   });
 
   it('a malformed syntax error falls back to a fatal', () => {
-    const error: ExceptionData = {
+    const error = {
       id: 0,
       isFatal: true,
+      isComponentError: false,
       // Note no code frame.
       message:
         "TransformError SyntaxError: /path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js: 'import' and 'export' may only appear at the top level (199:0)",

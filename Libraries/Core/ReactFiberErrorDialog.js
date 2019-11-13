@@ -41,6 +41,7 @@ function showErrorDialog(capturedError: CapturedError): boolean {
   }
   try {
     errorToHandle.componentStack = componentStack;
+    errorToHandle.isComponentError = true;
   } catch (e) {}
   handleException(errorToHandle, false);
 

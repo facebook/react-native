@@ -105,7 +105,10 @@ function reportException(e: ExtendedError, isFatal: boolean) {
     });
 
     if (isHandledByLogBox) {
-      LogBoxData.addException(data);
+      LogBoxData.addException({
+        ...data,
+        isComponentError: !!e.isComponentError,
+      });
     }
 
     NativeExceptionsManager.reportException(data);

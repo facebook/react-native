@@ -13,9 +13,13 @@
 import LogBoxLog from './LogBoxLog';
 import {parseLogBoxException} from './parseLogBoxLog';
 import type {LogLevel} from './LogBoxLog';
-import type {Message, Category, ComponentStack} from './parseLogBoxLog';
+import type {
+  Message,
+  Category,
+  ComponentStack,
+  ExtendedExceptionData,
+} from './parseLogBoxLog';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
-import type {ExceptionData} from '../../Core/NativeExceptionsManager';
 import type {ExtendedError} from '../../Core/Devtools/parseErrorStack';
 
 export type LogBoxLogs = Set<LogBoxLog>;
@@ -213,7 +217,7 @@ export function addLog(log: LogData): void {
   });
 }
 
-export function addException(error: ExceptionData): void {
+export function addException(error: ExtendedExceptionData): void {
   // Parsing logs are expensive so we schedule this
   // otherwise spammy logs would pause rendering.
   setImmediate(() => {

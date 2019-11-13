@@ -17,6 +17,7 @@ export type ExtendedError = Error & {
   preventSymbolication?: boolean,
   componentStack?: string,
   forceRedbox?: boolean,
+  isComponentError?: boolean,
 };
 
 function parseErrorStack(e: ExtendedError): Array<StackFrame> {

@@ -72,6 +72,7 @@ const addSoftErrors = errors => {
         {},
         {
           message: '',
+          isComponentError: false,
           originalMessage: '',
           name: 'console.error',
           componentStack: '',
@@ -94,6 +95,7 @@ const addFatalErrors = errors => {
         {},
         {
           message: '',
+          isComponentError: false,
           originalMessage: '',
           name: 'console.error',
           componentStack: '',
