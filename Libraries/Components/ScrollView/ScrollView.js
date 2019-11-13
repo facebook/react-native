@@ -1053,6 +1053,9 @@ class ScrollView extends React.Component<Props, State> {
       Array.isArray(stickyHeaderIndices) && stickyHeaderIndices.length > 0;
 
     const contentContainer = (
+      /* $FlowFixMe(>=0.112.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.112 was deployed. To see the error, delete
+       * this comment and run Flow. */
       <ScrollContentContainerViewClass
         {...contentSizeChangeProps}
         ref={this._setInnerViewRef}
