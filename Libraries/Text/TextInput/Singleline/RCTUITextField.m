@@ -104,6 +104,22 @@
   return NO;
 }
 
+- (void)setSecureTextEntry:(BOOL)secureTextEntry
+{
+  if (self.secureTextEntry == secureTextEntry) {
+    return;
+  }
+
+  [super setSecureTextEntry:secureTextEntry];
+
+  // Fix for trailing whitespate issue
+  // Read more:
+  // https://stackoverflow.com/questions/14220187/uitextfield-has-trailing-whitespace-after-securetextentry-toggle/22537788#22537788
+  NSAttributedString *originalText = [self.attributedText copy];
+  self.attributedText = [NSAttributedString new];
+  self.attributedText = originalText;
+}
+
 #pragma mark - Placeholder
 
 - (NSDictionary<NSAttributedStringKey, id> *)_placeholderTextAttributes
