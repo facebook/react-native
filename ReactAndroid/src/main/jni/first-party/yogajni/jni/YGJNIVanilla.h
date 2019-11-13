@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include "jni.h"
+
 namespace YGJNIVanilla {
 void registerNatives(JNIEnv* env);
 };

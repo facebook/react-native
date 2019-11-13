@@ -12,10 +12,6 @@ public class YogaConfigJNIFinalizer extends YogaConfigJNIBase {
     super();
   }
 
-  public YogaConfigJNIFinalizer(boolean useVanillaJNI) {
-    super(useVanillaJNI);
-  }
-
   @Override
   protected void finalize() throws Throwable {
     try {
@@ -29,10 +25,7 @@ public class YogaConfigJNIFinalizer extends YogaConfigJNIBase {
     if (mNativePointer != 0) {
       long nativePointer = mNativePointer;
       mNativePointer = 0;
-      if (useVanillaJNI)
-        YogaNative.jni_YGConfigFreeJNI(nativePointer);
-      else
-        YogaNative.jni_YGConfigFree(nativePointer);
+      YogaNative.jni_YGConfigFreeJNI(nativePointer);
     }
   }
 }

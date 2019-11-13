@@ -38,8 +38,4 @@ public abstract class YogaConfig {
   public abstract YogaLogger getLogger();
 
   abstract long getNativePointer();
-
-  public abstract void setUseVanillaJNI(boolean useVanillaJNI);
-
-  public abstract boolean useVanillaJNI();
 }
